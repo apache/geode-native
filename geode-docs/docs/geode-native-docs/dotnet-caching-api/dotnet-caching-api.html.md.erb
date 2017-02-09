@@ -1,0 +1,65 @@
+---
+title:  Pivotal GemFire Native Client .NET API
+---
+
+This section describes the primary classes, usage conventions, and C++ to .NET class mappings of the native client .NET API. It demonstrates how to use the API to create caches and perform data serialization.
+
+The .NET API documentation is available at [http://gemfire-apis.docs.pivotal.io](http://gemfire-apis.docs.pivotal.io).
+
+-   **[About the Native Client .NET API](csharp-dotnet-api.html)**
+
+    The Microsoft .NET Framework interface for the Apache Geode native client provides complete access to the native client C++ functionality from any .NET Framework language (C\#, C++/CLI, VB.NET, and J\#). This enables clients using C\# and other .NET languages to use the capabilities provided by the Geode C++ API.
+
+-   **[C++ Class to .NET Class Mappings](cpp-class-to-dotnet-class-mappings.html)**
+
+    Wherever the native C++ class methods use pass-by-reference semantics to return data, the corresponding .NET methods return the object instead of using pass-by-reference semantics.
+
+-   **[Java to .NET Type Mapping Table](java-to-dotnet-type-mapping.html)**
+
+    The following table provides a mapping between Java and .NET types.
+
+-   **[Object Lifetimes](object-lifetimes.html)**
+
+    The .NET API provides a managed set of assemblies for the C++ API. The underlying C++ object will stay in memory until the .NET object is garbage-collected.
+
+-   **[.NET Application Domains](dotnet-application-domains.html)**
+
+    Application domains, or `AppDomain`s, are units of isolation, security boundaries, and loading and unloading for applications in the .NET runtime. Multiple application domains can run in a single process. Each can have one or many threads, and a thread can switch application domains at runtime.
+
+-   **[Creating a Cache](creating-a-cache.html)**
+
+    You create a cache using the Geode `CacheFactory.Create` call. Cache creation initializes the distributed system and creates the cache using your `gfcpp.properties` and `cache.xml` file settings and any additional properties you provide to the call.
+
+-   **[Creating a Region](creating-a-region.html)**
+
+    To create a region, you create a `RegionFactory` using the `RegionShortcut` that most closely fits your region configuration.
+
+-   **[Adding an Entry to the Cache](dotnet-adding-entry-to-cache.html)**
+
+    You populate a native client region with cache entries by using the generic `IDictionary` API or by using the .NET `Region.Put` or the `Region.Create` API functions.
+
+-   **[Accessing an Entry](dotnet-accessing-an-entry.html)**
+
+    The region entry retrieval methods return the value associated with the specified key, and pass the callback argument to any cache loaders or cache writers that are invoked during the operation.
+
+-   **[Removing an Entry](removing-entry.html)**
+
+    The standard `Region::Remove` API removes the entry with specified key and provides a user-defined parameter object to any `CacheWriter` or `CacheListener` invoked in the process.
+
+-   **[Data Serialization](dotnet-data-serialization.html)**
+
+    All data that Geode moves out of the local cache must be serializable.
+
+-   **[Application Callbacks](application-callbacks.html)**
+
+    For region-level events, an application can use `AttributesFactory.SetCache*` methods to implement and register the `ICacheLoader`, `ICacheWriter`, and `ICacheListener` interfaces to perform custom actions.
+
+-   **[A Simple C\# Example](simple-csharp-example.html)**
+
+    An example shows how to connect to Geode, create a cache and region, put and get keys and values, and disconnect.
+
+-   **[Troubleshooting .NET Applications](troubleshooting-dotnet-applications.html)**
+
+    The .NET Framework does not find managed DLLs using the conventional `PATH` environment variable. In order for your assembly to find and load a managed DLL, it must either be loaded as a private assembly using `assemblyBinding`, or it must be installed into the Global Assembly Cache (GAC).
+
+

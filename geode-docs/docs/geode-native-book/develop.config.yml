@@ -1,0 +1,25 @@
+book_repo: Pivotal-DataFabric/docs-book-gemfire-nc
+layout_repo: pivotal-cf/docs-layout-repo
+broken_link_exclusions: iefix|javadoc|css|cpp_api|net_api|cache_xml|#
+public_host: gemfire-native-client.docs.pivotal.io
+elastic_search: false
+
+sections:
+- repository:
+    name: gemfire/docs-gemfire-nc
+    ref: develop
+  directory: native
+  subnav_template: gemfire-nc-nav
+
+
+template_variables:
+  support_url: http://support.pivotal.io
+  product_url: https://pivotal.io/big-data/pivotal-gemfire
+  book_title: Pivotal GemFire&reg; Native Client Documentation
+  cse_id: 012029519579280034868:3hzywhss5ik
+  support_link: <a href="http://support.pivotal.io" target="_blank">Support</a>
+  support_call_to_action: <a href="http://support.pivotal.io" target="_blank">Need Support?</a>
+  product_link: <div class="header-item"><a href="https://pivotal.io/big-data/pivotal-gemfire">Back to Product Page</a></div>
+  ga_account_id: UA-39702075-1
+  domain_name: pivotal.io
+  book_title_short: Pivotal GemFire Native Client Docs

@@ -1,0 +1,20 @@
+---
+title:  Programmatic Region Creation
+---
+
+You create regions programmatically with the `regionFactory` class.
+
+**Note:**
+Before creating a region, specify region attributes. See [Region Attributes](region-attributes.html).
+
+Create your regions using the `regionFactory` class.
+
+**C++ RegionFactory Example**
+
+``` pre
+RegionFactoryPtr regionFactory =
+    cachePtr->createRegionFactory(CACHING_PROXY);
+RegionPtr regPtr0 = regionFactory->setLruEntriesLimit(20000)
+        ->create("exampleRegion0");
+    
+```
