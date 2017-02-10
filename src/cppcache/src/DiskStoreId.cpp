@@ -16,7 +16,6 @@
  */
 
 #include "DiskStoreId.hpp"
-#include <ace/OS.h>
 
 namespace apache {
 namespace geode {
@@ -32,10 +31,9 @@ std::string DiskStoreId::getHashKey() {
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
     */
-    ACE_OS::snprintf(hashCode, 128, "%" PRIx64 "_%" PRIx64, m_mostSig,
-                     m_leastSig);
+    std::snprintf(hashCode, 128, "%" PRIx64 "_%" PRIx64, m_mostSig,
+                  m_leastSig);
     m_hashCode.append(hashCode);
   }
   return m_hashCode;

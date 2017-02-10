@@ -18,8 +18,6 @@
 #include <gfcpp/gfcpp_globals.hpp>
 
 #if defined(_SOLARIS)
-#include <ace/OS_NS_sys_utsname.h>
-#include <ace/OS_NS_errno.h>
 #include "HostStatHelperSolaris.hpp"
 #include <procfs.h>
 #include <sys/types.h>
@@ -32,7 +30,6 @@
 #include <glob.h>
 #include <gfcpp/ExceptionTypes.hpp>
 #include "SolarisProcessStats.hpp"
-#include <ace/OS.h>
 
 using namespace apache::geode::statistics;
 
@@ -68,7 +65,7 @@ void HostStatHelperSolaris::refreshProcess(ProcessStats* processStats) {
   prusage_t currentUsage;
   psinfo_t currentInfo;
 
-  ACE_OS::snprintf(procFileName, 64, "/proc/%lu/psinfo", (uint32)thePid);
+  std::snprintf(procFileName, 64, "/proc/%lu/psinfo", (uint32)thePid);
   // fread was returning errno 2 FILENOTFOUND so it was switched to read
   // This matches what was done in the Geode Project also
   fPtr = open(procFileName, O_RDONLY, 0); /* read only */
@@ -86,7 +83,7 @@ void HostStatHelperSolaris::refreshProcess(ProcessStats* processStats) {
     }
     close(fPtr);
   }
-  ACE_OS::snprintf(procFileName, 64, "/proc/%u/usage", (uint32)thePid);
+  std::snprintf(procFileName, 64, "/proc/%u/usage", (uint32)thePid);
   fPtr = open(procFileName, O_RDONLY, 0);
   if (fPtr != -1) {
     if (read(fPtr, &currentUsage, sizeof(currentUsage)) !=
@@ -171,8 +168,8 @@ void HostStatHelperSolaris::getKernelStats(uint32_t* cpuUtil) {
     m_kstat = kstat_open();
     if (m_kstat == NULL) {
       char buf[128];
-      ACE_OS::snprintf(buf, 128, "Unable to obtain kstat data, errno %d",
-                       errno);
+      std::snprintf(buf, 128, "Unable to obtain kstat data, errno %d",
+                    errno);
       throw NullPointerException(buf);
     }
   }

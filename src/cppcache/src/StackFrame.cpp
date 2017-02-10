@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <ace/OS.h>
+#include <cstdio>
 #include <gfcpp/gfcpp_globals.hpp>
 #include "StackFrame.hpp"
 #include <gfcpp/gf_base.hpp>
@@ -33,8 +33,8 @@ char* StackFrame::asString() {
       }
       modlen--;
     }
-    ACE_OS::snprintf(m_string, 1024, "%s at %s in %s", m_symbol, m_offset,
-                     tmp_module + modlen);
+    std::snprintf(m_string, 1024, "%s at %s in %s", m_symbol, m_offset,
+                  tmp_module + modlen);
   }
   return m_string;
 }

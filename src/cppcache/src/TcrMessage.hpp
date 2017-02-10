@@ -1114,10 +1114,10 @@ class TcrMessageHelper {
     } else if (!isObj) {
       // otherwise we're currently always expecting an object
       char exMsg[256];
-      ACE_OS::snprintf(exMsg, 255,
-                       "TcrMessageHelper::readChunkPartHeader: "
-                       "%s: part is not object",
-                       methodName);
+      std::snprintf(exMsg, 255,
+                    "TcrMessageHelper::readChunkPartHeader: "
+                    "%s: part is not object",
+                    methodName);
       LOGDEBUG("%s ", exMsg);
       // throw MessageException(exMsg);
       return EXCEPTION;
@@ -1135,7 +1135,7 @@ class TcrMessageHelper {
         return EXCEPTION;
       } else {
         char exMsg[256];
-        ACE_OS::snprintf(
+        std::snprintf(
             exMsg, 255,
             "TcrMessageHelper::readChunkPartHeader: %s: cannot handle "
             "java serializable object from server",
@@ -1150,10 +1150,10 @@ class TcrMessageHelper {
     if (expectedFirstType > 0) {
       if (partType != expectedFirstType) {
         char exMsg[256];
-        ACE_OS::snprintf(exMsg, 255,
-                         "TcrMessageHelper::readChunkPartHeader: "
-                         "%s: got unhandled object class = %d",
-                         methodName, partType);
+        std::snprintf(exMsg, 255,
+                      "TcrMessageHelper::readChunkPartHeader: "
+                      "%s: got unhandled object class = %d",
+                      methodName, partType);
         throw MessageException(exMsg);
       }
       // This is for GETALL
@@ -1170,10 +1170,10 @@ class TcrMessageHelper {
     }
     if (compId != expectedPartType) {
       char exMsg[256];
-      ACE_OS::snprintf(exMsg, 255,
-                       "TcrMessageHelper::readChunkPartHeader: "
-                       "%s: got unhandled object type = %d",
-                       methodName, compId);
+      std::snprintf(exMsg, 255,
+                    "TcrMessageHelper::readChunkPartHeader: "
+                    "%s: got unhandled object type = %d",
+                    methodName, compId);
       throw MessageException(exMsg);
     }
     return OBJECT;
@@ -1192,10 +1192,10 @@ class TcrMessageHelper {
     } else if (!isObj) {
       // otherwise we're currently always expecting an object
       char exMsg[256];
-      ACE_OS::snprintf(exMsg, 255,
-                       "TcrMessageHelper::readChunkPartHeader: "
-                       "%s: part is not object",
-                       methodName);
+      std::snprintf(exMsg, 255,
+                    "TcrMessageHelper::readChunkPartHeader: "
+                    "%s: part is not object",
+                    methodName);
       throw MessageException(exMsg);
     }
 
@@ -1209,7 +1209,7 @@ class TcrMessageHelper {
         return static_cast<int8_t>(EXCEPTION);
       } else {
         char exMsg[256];
-        ACE_OS::snprintf(
+        std::snprintf(
             exMsg, 255,
             "TcrMessageHelper::readChunkPartHeader: %s: cannot handle "
             "java serializable object from server",

@@ -23,8 +23,6 @@
 
 #include <cwchar>
 #include <cstdlib>
-#include <ace/ACE.h>
-#include <ace/OS.h>
 
 using namespace apache::geode::client;
 
@@ -299,12 +297,12 @@ CacheableString::~CacheableString() {
 
 int32_t CacheableString::logString(char* buffer, int32_t maxLength) const {
   if (isCString()) {
-    return ACE_OS::snprintf(
+    return std::snprintf(
         buffer, maxLength, "%s( %s )", className(),
         (m_str != NULL ? reinterpret_cast<const char*>(m_str) : "null"));
   } else {
     GF_DEV_ASSERT(isWideString());
-    int32_t numChars = ACE_OS::snprintf(buffer, maxLength, "%s( ", className());
+    int32_t numChars = std::snprintf(buffer, maxLength, "%s( ", className());
     if (numChars >= (int)maxLength || numChars <= 0) {
       return numChars;
     }
@@ -318,7 +316,7 @@ int32_t CacheableString::logString(char* buffer, int32_t maxLength) const {
     }
     buffer += numChars;
     maxLength -= numChars;
-    numChars = ACE_OS::snprintf(buffer, maxLength, " )");
+    numChars = std::snprintf(buffer, maxLength, " )");
     return numChars + static_cast<int32_t>(buffer - bufStart);
   }
 }

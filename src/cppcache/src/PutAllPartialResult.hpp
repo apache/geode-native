@@ -81,8 +81,8 @@ class PutAllPartialResult : public Serializable {
   virtual CacheableStringPtr toString() const {
     char msgStr1[1024];
     if (m_firstFailedKey != NULLPTR) {
-      ACE_OS::snprintf(msgStr1, 1024, "[ Key =%s ]",
-                       m_firstFailedKey->toString()->asChar());
+      std::snprintf(msgStr1, 1024, "[ Key =%s ]",
+                    m_firstFailedKey->toString()->asChar());
     }
 
     char msgStr2[1024];
@@ -90,12 +90,12 @@ class PutAllPartialResult : public Serializable {
       // TODO:: impl. CacheableObjectPartList.size();
       int failedKeyNum = m_totalMapSize - m_succeededKeys->size();
       if (failedKeyNum > 0) {
-        ACE_OS::snprintf(
+        std::snprintf(
             msgStr2, 1024,
             "The putAll operation failed to put %d out of %d entries ",
             failedKeyNum, m_totalMapSize);
       } else {
-        ACE_OS::snprintf(
+        std::snprintf(
             msgStr2, 1024,
             "The putAll operation successfully put %d out of %d entries ",
             m_succeededKeys->size(), m_totalMapSize);
@@ -103,8 +103,8 @@ class PutAllPartialResult : public Serializable {
     }
 
     char stringBuf[7000];
-    ACE_OS::snprintf(stringBuf, 7000, "PutAllPartialResult: %s%s", msgStr1,
-                     msgStr2);
+    std::snprintf(stringBuf, 7000, "PutAllPartialResult: %s%s", msgStr1,
+                  msgStr2);
     return CacheableString::create(stringBuf);
   }
 
