@@ -16,7 +16,6 @@
  */
 
 #include "ServerLocation.hpp"
-#include <ace/OS_NS_stdio.h>
 
 namespace apache {
 namespace geode {
@@ -24,7 +23,7 @@ namespace client {
 void ServerLocation::makeEpString() {
   if (m_serverName != NULLPTR) {
     char epstring[1024] = {0};
-    ACE_OS::snprintf(epstring, 1024, "%s:%d", m_serverName->asChar(), m_port);
+    std::snprintf(epstring, 1024, "%s:%d", m_serverName->asChar(), m_port);
     m_epString = epstring;
   }
 }

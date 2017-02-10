@@ -19,7 +19,7 @@
 
 #include <gfcpp/CacheableKey.hpp>
 
-#include <ace/OS.h>
+#include <cstdio>
 #include <typeinfo>
 
 namespace apache {
@@ -27,8 +27,8 @@ namespace geode {
 namespace client {
 
 int32_t CacheableKey::logString(char* buffer, int32_t maxLength) const {
-  return ACE_OS::snprintf(buffer, maxLength, "%s( @0x%08lX )",
-                          typeid(*this).name(), (unsigned long)this);
+  return std::snprintf(buffer, maxLength, "%s( @0x%08lX )",
+                       typeid(*this).name(), (unsigned long)this);
 }
 }  // namespace client
 }  // namespace geode

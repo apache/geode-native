@@ -20,6 +20,7 @@
 #include "NanoTimer.hpp"
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/INET_Addr.h>
+#include <cstring>
 
 extern "C" {
 #include <stdio.h>
@@ -189,7 +190,7 @@ std::string Utils::convertHostToCanonicalForm(const char* endpoints) {
     struct hostent* host;
     host = ACE_OS::gethostbyname(hostName);
     if (host) {
-      ACE_OS::snprintf(fullName, 256, "%s:%d", host->h_name, port);
+      std::snprintf(fullName, 256, "%s:%d", host->h_name, port);
       return fullName;
     }
   } else {
@@ -197,7 +198,7 @@ std::string Utils::convertHostToCanonicalForm(const char* endpoints) {
     if (pos != std::string::npos) {
       ACE_INET_Addr addr(endpoints);
       addr.get_host_name(hostName, 256);
-      ACE_OS::snprintf(fullName, 256, "%s:%d", hostName, port);
+      std::snprintf(fullName, 256, "%s:%d", hostName, port);
       return fullName;
     }
   }
@@ -250,7 +251,7 @@ CacheableStringPtr Utils::convertBytesToString(const uint8_t* bytes,
     size_t totalBytes = 0;
     char byteStr[20];
     for (int32_t index = 0; index < length; ++index) {
-      int len = ACE_OS::snprintf(byteStr, 20, "%d ", bytes[index]);
+      int len = std::snprintf(byteStr, 20, "%d ", bytes[index]);
       totalBytes += len;
       // no use going beyond maxLength since LOG* methods will truncate
       // in any case
@@ -268,7 +269,7 @@ CacheableStringPtr Utils::convertBytesToString(const uint8_t* bytes,
 int32_t Utils::logWideString(char* buf, size_t maxLen, const wchar_t* wStr) {
   if (wStr != NULL) {
     mbstate_t state;
-    ACE_OS::memset(&state, 0, sizeof(mbstate_t));
+    std::memset(&state, 0, sizeof(mbstate_t));
     const char* bufStart = buf;
     do {
       if (maxLen < static_cast<size_t>(MB_CUR_MAX)) {
@@ -277,7 +278,7 @@ int32_t Utils::logWideString(char* buf, size_t maxLen, const wchar_t* wStr) {
       size_t numChars = wcrtomb(buf, *wStr, &state);
       if (numChars == static_cast<size_t>(-1)) {
         // write short when conversion cannot be done
-        numChars = ACE_OS::snprintf(buf, maxLen, "<%u>", *wStr);
+        numChars = std::snprintf(buf, maxLen, "<%u>", *wStr);
       }
       buf += numChars;
       if (numChars >= maxLen) {
@@ -287,6 +288,6 @@ int32_t Utils::logWideString(char* buf, size_t maxLen, const wchar_t* wStr) {
     } while (*wStr++ != L'\0');
     return static_cast<int32_t>(buf - bufStart);
   } else {
-    return ACE_OS::snprintf(buf, maxLen, "null");
+    return std::snprintf(buf, maxLen, "null");
   }
 }

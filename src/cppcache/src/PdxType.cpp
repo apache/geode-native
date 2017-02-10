@@ -28,7 +28,8 @@
 #include "Utils.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "PdxHelper.hpp"
-#include <ace/OS.h>
+
+#include <cstring>
 
 namespace apache {
 namespace geode {
@@ -182,9 +183,8 @@ void PdxType::addFixedLengthTypeField(const char* fieldName,
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
     */
-    ACE_OS::snprintf(
+    std::snprintf(
         excpStr, 256,
         "Field: %s is either already added into PdxWriter or it is null ",
         fieldName);
@@ -204,7 +204,7 @@ void PdxType::addVariableLengthTypeField(const char* fieldName,
           m_fieldNameVsPdxType
               .end()) {  // COVERITY ---> 30289 Same on both sides
     char excpStr[256] = {0};
-    ACE_OS::snprintf(
+    std::snprintf(
         excpStr, 256,
         "Field: %s is either already added into PdxWriter or it is null ",
         fieldName);
@@ -625,7 +625,7 @@ bool PdxType::Equals(PdxTypePtr otherObj) {
 }
 
 bool PdxType::operator<(const PdxType& other) const {
-  return ACE_OS::strcmp(this->m_className, other.m_className) < 0;
+  return std::strcmp(this->m_className, other.m_className) < 0;
 }
 }  // namespace client
 }  // namespace geode

@@ -20,6 +20,7 @@
 #include <gfcpp/SystemProperties.hpp>
 #include <gfcpp/Log.hpp>
 
+#include <cstdio>
 #include <memory.h>
 
 #include <ace/INET_Addr.h>
@@ -121,8 +122,8 @@ void TcpConn::init() {
     LOGERROR("Failed to create socket. Errno: %d: %s", lastError,
              ACE_OS::strerror(lastError));
     char msg[256];
-    ACE_OS::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
-                     lastError, ACE_OS::strerror(lastError));
+    std::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
+                  lastError, ACE_OS::strerror(lastError));
     throw GeodeIOException(msg);
   }
 
@@ -197,17 +198,15 @@ void TcpConn::listen(ACE_INET_Addr addr, uint32_t waitSeconds) {
       * arbitrarily long string,
       * callers must be careful not to overflow the actual space of the
       * destination.
-      * Use snprintf() instead, or correct precision specifiers.
-      * Fix : using ACE_OS::snprintf
       */
-      ACE_OS::snprintf(
+      std::snprintf(
           msg, 256,
           "TcpConn::listen Attempt to listen timed out after %d seconds.",
           waitSeconds);
       throw TimeoutException(msg);
     }
-    ACE_OS::snprintf(msg, 256, "TcpConn::listen failed with errno: %d: %s",
-                     lastError, ACE_OS::strerror(lastError));
+    std::snprintf(msg, 256, "TcpConn::listen failed with errno: %d: %s",
+                  lastError, ACE_OS::strerror(lastError));
     throw GeodeIOException(msg);
   }
 }
@@ -258,7 +257,7 @@ void TcpConn::connect() {
     char msg[256];
     int32_t lastError = ACE_OS::last_error();
     if (lastError == ETIME || lastError == ETIMEDOUT) {
-      ACE_OS::snprintf(
+      std::snprintf(
           msg, 256,
           "TcpConn::connect Attempt to connect timed out after %d seconds.",
           waitSeconds);
@@ -266,8 +265,8 @@ void TcpConn::connect() {
       GF_SAFE_DELETE(m_io);
       throw TimeoutException(msg);
     }
-    ACE_OS::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
-                     lastError, ACE_OS::strerror(lastError));
+    std::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
+                  lastError, ACE_OS::strerror(lastError));
     //  this is only called by constructor, so we must delete m_io
     GF_SAFE_DELETE(m_io);
     throw GeodeIOException(msg);
@@ -276,8 +275,8 @@ void TcpConn::connect() {
   if (-1 == rc) {
     char msg[250];
     int32_t lastError = ACE_OS::last_error();
-    ACE_OS::snprintf(msg, 256, "TcpConn::NONBLOCK: %d: %s", lastError,
-                     ACE_OS::strerror(lastError));
+    std::snprintf(msg, 256, "TcpConn::NONBLOCK: %d: %s", lastError,
+                  ACE_OS::strerror(lastError));
 
     LOGINFO(msg);
   }

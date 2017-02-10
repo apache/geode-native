@@ -562,9 +562,9 @@ std::string ThinClientPoolDM::selectEndpoint(
     getStats().incLoctorResposes();
 
     char epNameStr[128] = {0};
-    ACE_OS::snprintf(epNameStr, 128, "%s:%d",
-                     outEndpoint.getServerName().c_str(),
-                     outEndpoint.getPort());
+    std::snprintf(epNameStr, 128, "%s:%d",
+                  outEndpoint.getServerName().c_str(),
+                  outEndpoint.getPort());
     LOGFINE("ThinClientPoolDM: Locator returned endpoint [%s]", epNameStr);
     return epNameStr;
   } else if (m_attrs->m_initServList
@@ -731,8 +731,8 @@ const CacheableStringArrayPtr ThinClientPoolDM::getServers() {
     int i = 0;
     for (it = vec.begin(); it < vec.end(); it++) {
       ServerLocation serLoc = *it;
-      ACE_OS::snprintf(buffer, 256, "%s:%d", serLoc.getServerName().c_str(),
-                       serLoc.getPort());
+      std::snprintf(buffer, 256, "%s:%d", serLoc.getServerName().c_str(),
+                    serLoc.getPort());
       ptrArr[i++] = CacheableString::create(buffer);
     }
   }
@@ -2038,7 +2038,7 @@ TcrEndpoint* ThinClientPoolDM::addEP(ServerLocation& serverLoc) {
   std::string serverName = serverLoc.getServerName();
   int port = serverLoc.getPort();
   char endpointName[100];
-  ACE_OS::snprintf(endpointName, 100, "%s:%d", serverName.c_str(), port);
+  std::snprintf(endpointName, 100, "%s:%d", serverName.c_str(), port);
 
   return addEP(endpointName);
 }

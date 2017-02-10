@@ -131,7 +131,7 @@ void Properties::insert(const char* key, const int value) {
     throw NullPointerException("Properties::insert: Null key given.");
   }
   char temp[64];
-  ACE_OS::snprintf(temp, 64, "%d", value);
+  std::snprintf(temp, 64, "%d", value);
   CacheableStringPtr keyptr = CacheableString::create(key);
   CacheableStringPtr valptr = CacheableString::create(temp);
   MAP->rebind(keyptr, valptr);

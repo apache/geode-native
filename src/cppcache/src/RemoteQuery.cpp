@@ -59,10 +59,10 @@ SelectResultsPtr RemoteQuery::execute(uint32_t timeout, const char* func,
                                       CacheableVectorPtr paramList) {
   if ((timeout * 1000) >= 0x7fffffff) {
     char exMsg[1024];
-    ACE_OS::snprintf(exMsg, 1023,
-                     "%s: timeout parameter "
-                     "greater than maximum allowed (2^31/1000 i.e 2147483)",
-                     func);
+    std::snprintf(exMsg, 1023,
+                  "%s: timeout parameter "
+                  "greater than maximum allowed (2^31/1000 i.e 2147483)",
+                  func);
     throw IllegalArgumentException(exMsg);
   }
   ThinClientPoolDM* pool = dynamic_cast<ThinClientPoolDM*>(tcdm);
@@ -92,10 +92,10 @@ SelectResultsPtr RemoteQuery::execute(uint32_t timeout, const char* func,
   } else {
     if (values->size() % fieldNameVec.size() != 0) {
       char exMsg[1024];
-      ACE_OS::snprintf(exMsg, 1023,
-                       "%s: Number of values coming from "
-                       "server has to be exactly divisible by field count",
-                       func);
+      std::snprintf(exMsg, 1023,
+                    "%s: Number of values coming from "
+                    "server has to be exactly divisible by field count",
+                    func);
       throw MessageException(exMsg);
     } else {
       LOGFINEST("%s: creating StructSet for query: %s", func,
