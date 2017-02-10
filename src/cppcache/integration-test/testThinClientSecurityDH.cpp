@@ -224,14 +224,14 @@ void initSecurityServer(int instance) {
 
       std::string testsrc = ACE_OS::getenv("TESTSRC");
       if (instance == 1) {
-        testsrc += "/keystore/gemfire1.keystore";
+        testsrc += "/keystore/geode1.keystore";
         cmdServerAuthenticator += " security-server-kspath=";
         cmdServerAuthenticator += testsrc;
         cmdServerAuthenticator +=
             " security-server-ksalias=geode1 "
             "security-server-kspasswd=geode";
       } else if (instance == 2) {
-        testsrc += "/keystore/gemfire2.keystore";
+        testsrc += "/keystore/geode2.keystore";
         cmdServerAuthenticator += " security-server-kspath=";
         cmdServerAuthenticator += testsrc;
         cmdServerAuthenticator +=
