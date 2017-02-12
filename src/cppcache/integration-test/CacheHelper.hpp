@@ -279,6 +279,11 @@ class CacheHelper {
 
   static void cleanupTmpConfigFiles();
 
+  static void replacePortsInFile(int hostPort1, int hostPort2, int hostPort3,
+                                 int hostPort4, int locPort1, int locPort2,
+                                 const std::string& inFile,
+                                 const std::string& outFile);
+
   static std::list<int> staticLocatorInstanceList;
   static bool isLocatorCleanupCallbackRegistered;
   static void cleanupLocatorInstances();
@@ -331,4 +336,4 @@ int CacheHelper::staticLocatorHostPort2 = CacheHelper::getRandomAvailablePort();
 int CacheHelper::staticLocatorHostPort3 = CacheHelper::getRandomAvailablePort();
 #endif
 
-#endif // GEODE_INTEGRATION_TEST_CACHEHELPER_H_
+#endif  // GEODE_INTEGRATION_TEST_CACHEHELPER_H_
