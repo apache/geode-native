@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <gfcpp/GeodeCppCache.hpp>
 #include <stdlib.h>
 #include <gfcpp/SystemProperties.hpp>
@@ -21,6 +22,7 @@
 #include <ace/INET_Addr.h>
 #include <ace/SOCK_Acceptor.h>
 #include <fstream>
+#include <regex>
 
 #include "TimeBomb.hpp"
 #include <list>
@@ -1360,18 +1362,11 @@ void CacheHelper::createDuplicateXMLFile(std::string& originalFile,
   testSrc += PATH_SEP;
   // file name will have hostport1.xml(i.e. CacheHelper::staticHostPort1) as
   // suffix
-  sprintf(cmd,
-          "sed -e s/HOST_PORT1/%d/g -e s/HOST_PORT2/%d/g -e s/HOST_PORT3/%d/g "
-          "-e s/HOST_PORT4/%d/g -e s/LOC_PORT1/%d/g -e s/LOC_PORT2/%d/g <%s%s> "
-          "%s%s%d.xml",
-          hostport1, hostport2, CacheHelper::staticHostPort3,
-          CacheHelper::staticHostPort4, locport1, locport2, testSrc.c_str(),
-          originalFile.c_str(), currDir.c_str(), originalFile.c_str(),
-          hostport1);
 
-  LOG(cmd);
-  int e = ACE_OS::system(cmd);
-  ASSERT(0 == e, "cmd failed");
+  replacePortsInFile(
+      hostport1, hostport2, CacheHelper::staticHostPort3,
+      CacheHelper::staticHostPort4, locport1, locport2, testSrc + originalFile,
+      currDir + originalFile + std::to_string(hostport1) + ".xml");
 
   // this file need to delete
   sprintf(cmd, "%s%s%d.xml", currDir.c_str(), originalFile.c_str(), hostport1);
@@ -1380,6 +1375,29 @@ void CacheHelper::createDuplicateXMLFile(std::string& originalFile,
 
   printf("createDuplicateXMLFile added file %s %ld", cmd,
          CacheHelper::staticConfigFileList.size());
+}
+
+void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
+                                     int hostPort3, int hostPort4, int locPort1,
+                                     int locPort2, const std::string& inFile,
+                                     const std::string& outFile) {
+  std::ifstream in(inFile, std::ios::in | std::ios::binary);
+  if (in) {
+    std::string contents;
+    contents.assign(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
+    in.close();
+
+    contents = std::regex_replace(contents, std::regex("HOST_PORT1"), std::to_string(hostPort1));
+    contents = std::regex_replace(contents, std::regex("HOST_PORT2"), std::to_string(hostPort2));
+    contents = std::regex_replace(contents, std::regex("HOST_PORT3"), std::to_string(hostPort3));
+    contents = std::regex_replace(contents, std::regex("HOST_PORT4"), std::to_string(hostPort4));
+    contents = std::regex_replace(contents, std::regex("LOC_PORT1"), std::to_string(locPort1));
+    contents = std::regex_replace(contents, std::regex("LOC_PORT2"), std::to_string(locPort2));
+
+    std::ofstream out(outFile, std::ios::out);
+    out << contents;
+    out.close();
+  }
 }
 
 void CacheHelper::createDuplicateXMLFile(std::string& duplicateFile,
