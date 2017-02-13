@@ -92,11 +92,18 @@
 
 #endif
 
-#if defined(__has_cpp_attribute) && __has_cpp_attribute(deprecated)
+#ifndef __has_cpp_attribute
+#define __has_cpp_attribute(x) 0
+#endif
+
+#if __has_cpp_attribute(deprecated)
+// C++14 standard deprecated attribute
 #define __DEPRECATED__(msg) [[deprecated(msg)]]
 #elif defined(__GNUC__)
-#define __DEPRECATED__(msg) __attribute__(deprecated(msg))
+// GCC style deprecated attribute
+#define __DEPRECATED__(msg) __attribute__((deprecated(msg)))
 #elif defined(_MSC_VER)
+// Visual C++ style deprecated attribute
 #define __DEPRECATED__(msg) __declspec(deprecated(msg))
 #else
 #define __DEPRECATED__(msg)
@@ -126,4 +133,4 @@ extern void CPPCACHE_EXPORT setNewAndDelete(pNew, pDelete);
 #include "Log.hpp"
 #include "Assert.hpp"
 
-#endif // GEODE_GFCPP_GFCPP_GLOBALS_H_
+#endif  // GEODE_GFCPP_GFCPP_GLOBALS_H_
