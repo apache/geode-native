@@ -1,0 +1,85 @@
+---
+title: Pivotal GemFire&reg; Native Client 9.0 Documentation
+---
+
+Published January 5, 2017
+
+This documentation provides step-by-step procedures for installation, configuration, and development of native clients.
+
+-   **[Pivotal GemFire Native Client 9.0 Release Notes](relnotes/release_notes_nc-9.0.html)**
+
+-   **[Supported Configurations and System Requirements](getting_started/system_requirements/gemfire_native_client_requirements.html)**
+
+-   **[C++ and .NET API](http://gemfire-apis.docs.pivotal.io)**
+
+-   **[Getting Started with a Native Client](introduction/native-client-intro.html)**
+
+    This section gives you a conceptual overview of the native client. It shows you how to install the product, build native client applications on various platforms, and run the product examples.
+
+-   **[Setting System Properties](setting-properties/chapter-overview.html)**
+
+    *Setting System Properties* describes how to configure Apache Geode native clients and cache servers to participate in a distributed system.
+
+-   **[Configuring the Native Client Cache](client-cache/chapter-overview.html)**
+
+    *Configuring the Native Client Cache* describes the native client cache functionality, initialization file, and APIs. It provides information about creating and working with caches, cache regions, and region entries.
+
+-   **[Pivotal GemFire Native Client C++ API](cpp-caching-api/cpp-caching-api.html)**
+
+    This section describes the primary classes, and usage conventions for the native client C++ API. It demonstrates how to use the API to create caches and perform data serialization. The C++ API documentation is available at [http://gemfire-apis.docs.pivotal.io](http://gemfire-apis.docs.pivotal.io).
+
+-   **[Pivotal GemFire Native Client .NET API](dotnet-caching-api/dotnet-caching-api.html)**
+
+    This section describes the primary classes, usage conventions, and C++ to .NET class mappings of the native client .NET API. It demonstrates how to use the API to create caches and perform data serialization. The .NET API documentation is available at [http://gemfire-apis.docs.pivotal.io](http://gemfire-apis.docs.pivotal.io).
+
+-   **[Preserving Data](preserving-data/preserving-data.html)**
+
+    A server may preserve the data queued and intended to be sent to a native client, such that the data is not discarded if communication between the server and native client is disrupted. Preservation prevents message loss, which can cause a native client to have inconsistent data. Redundant queues and a high availability server implementation may further ensure that queued data is not lost.
+
+-   **[Security](security/overviewsecurity.html)**
+
+    *Security* describes how to implement the security framework for the Geode native client, including authentication, authorization, ecryption, and SSL client/server communication.
+
+-   **[Remote Querying](remote-querying/remote-querying.html)**
+
+    *Remote Querying* documents remote querying from the native client to the Geode cache server. Using examples and procedures, it describes how to use the APIs to run queries against cached data; work with query strings in the native client; create and manage queries; and create indexes.
+
+-   **[Continuous Querying](continuous-querying/continuous-querying.html)**
+
+    *Continuous Querying* describes how to implement continuous querying in the Apache Geode native client so that C++ and .NET clients can run queries against events in the Geode cache server region. It also describes main features and the native client CQ API.
+
+-   **[Using Connection Pools](connection-pools/connection-pools.html)**
+
+    *Using Connection Pools* describes how connection pools achieve load balancing for the client and describes how to configure connection pools as server locators or as a list of servers.
+
+-   **[Transactions](transactions/transactions.html)**
+
+    *Transactions* describes how transactions work on the client side. It provides examples for running, suspending, and resuming transactions.
+
+-   **[Function Execution](function-execution/function-execution.html)**
+
+    *Function Execution* describes how you can execute application functions to achieve linear scalability. It explains how function execution works and lists specific use cases.
+
+-   **[Delta Propagation](delta-propagation/delta-propagation.html)**
+
+    *Delta Propagation* describes how deltas (updates to data) are propagated and how to implement delta propagation. It also analyzes performance limitations.
+
+-   **[Programming Examples](programming-examples/programming-examples.html)**
+
+    This chapter provides a set of programming examples to help you understand the Geode native client API.
+
+-   **[Interoperability of Language Classes and Types](type_mappings/chapter_overview.html)**
+
+    *Interoperability of Language Classes and Types* provides a table that maps C++ class methods to corresponding .NET class methods and a table that maps Java types to .NET types.
+
+-   **[System Statistics](system-statistics/chapter_overview.html)**
+
+    *System Statistics* provides information on the Pivotal GemFire installation and includes standard statistics for caching and distribution activities.
+
+-   **[Installing the SQLite Persistence Manager](sqlite-persistence/chapter_overview.html)**
+
+    *Installing the SQLite Persistence Manager* describes how to download, build and install the SQLite database libraries for use with disk overflow.
+
+-   **[Glossary](glossary.html)**
+
+    This glossary defines terms used in the documentation.

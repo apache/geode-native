@@ -1,0 +1,30 @@
+---
+title:  Primary APIs
+---
+
+These are the main APIs within `GemStone::GemFire::Cache::Generic` used for cache, region, and data entry management in Geode .NET. For details, see the .NET API documentation at [http://gemfire-apis.docs.pivotal.io](http://gemfire-apis.docs.pivotal.io).
+
+**Note:**
+Declarative configuration via XML of application plug-ins such as cache listener, cache writer, cache loader and partition resolver is not supported when clients are operated in the new .NET Generic API.
+
+-   **[Cache APIs](cache-apis.html)**
+
+    This section describes the `CacheFactory` and `Cache` classes.
+
+-   **[Region and Entry APIs](region-entry-apis.html)**
+
+    This section describes classes for working with Geode regions and region entries.
+
+-   **[Data Serialization APIs](data-serialization-apis.html)**
+
+    Use either `IPdxSerializable` or `IGFSerializable` for each region. Do not mix the two.
+
+-   **[Event Handling APIs](event-handling-apis.html)**
+
+    Code your event handlers to do minimal work before returning control to Geode.
+
+-   **[Property Collections and Logging APIs](other-apis.html)**
+
+    This section describes classes for property collections and logging.
+
+
