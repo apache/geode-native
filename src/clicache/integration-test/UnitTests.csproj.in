@@ -200,7 +200,6 @@
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientConflationTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientCqIRTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientCqTestsN.cs" />
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientDocExamplesN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientStringArrayTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientCSTXN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientDeltaTestN.cs" />
@@ -213,7 +212,6 @@
     <Compile Include="$(CMAKE_SOURCE_DIR)\tests\cli\NewTestObject\DeltaEx.cs">
       <Link>DeltaEx.cs</Link>
     </Compile>
-    <Compile Include="$(CMAKE_SOURCE_DIR)\..\examples\clicache\CacheRunner\ComplexNumber.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(CMAKE_CURRENT_SOURCE_DIR)\gfcpp.properties.mixed">
