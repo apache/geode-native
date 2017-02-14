@@ -21,7 +21,7 @@
  */
 
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include "CacheHelper.hpp"
 class DeltaEx : public Cacheable, public Delta {
@@ -151,4 +151,4 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
 };
 typedef SharedPtr<PdxDeltaEx> PdxDeltaExPtr;
 
-#endif // GEODE_INTEGRATION_TEST_DELTAEX_H_
+#endif  // GEODE_INTEGRATION_TEST_DELTAEX_H_

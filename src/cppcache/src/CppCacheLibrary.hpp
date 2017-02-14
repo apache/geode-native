@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include <string>
 
 namespace apache {
@@ -54,4 +54,4 @@ class CPPCACHE_EXPORT CppCacheLibrary {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CPPCACHELIBRARY_H_
+#endif  // GEODE_CPPCACHELIBRARY_H_

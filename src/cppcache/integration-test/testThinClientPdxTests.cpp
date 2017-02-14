@@ -30,7 +30,7 @@
 END_MAIN*/
 
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include <string>
@@ -46,8 +46,8 @@ END_MAIN*/
 #include "QueryStrings.hpp"
 #include "QueryHelper.hpp"
 #include <Utils.hpp>
-#include <gfcpp/Query.hpp>
-#include <gfcpp/QueryService.hpp>
+#include <geode/Query.hpp>
+#include <geode/QueryService.hpp>
 #include "CachePerfStats.hpp"
 #include <LocalRegion.hpp>
 

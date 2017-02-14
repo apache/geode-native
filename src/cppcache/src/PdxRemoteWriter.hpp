@@ -26,7 +26,6 @@
  *      Author: npatel
  */
 
-
 #include "PdxLocalWriter.hpp"
 
 namespace apache {
@@ -242,4 +241,4 @@ typedef SharedPtr<PdxRemoteWriter> PdxRemoteWriterPtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PDXREMOTEWRITER_H_
+#endif  // GEODE_PDXREMOTEWRITER_H_

@@ -26,7 +26,7 @@
 #include "DataOutput.hpp"
 #include "CacheableString.hpp"
 
-#include "gfcpp/Properties.hpp"
+#include "geode/Properties.hpp"
 #include "impl/SafeConvert.hpp"
 #include "Serializable.hpp"
 

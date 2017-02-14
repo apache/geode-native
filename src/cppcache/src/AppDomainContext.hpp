@@ -39,4 +39,4 @@ extern AppDomainContext::factory createAppDomainContext;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_APPDOMAINCONTEXT_H_
+#endif  // GEODE_APPDOMAINCONTEXT_H_

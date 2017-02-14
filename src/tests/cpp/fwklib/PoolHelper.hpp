@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_b2a51368e1c04b7833061e32a761f2df
-#define APACHE_GEODE_GUARD_b2a51368e1c04b7833061e32a761f2df
+#ifndef GEODE_FWKLIB_POOLHELPER_H_
+#define GEODE_FWKLIB_POOLHELPER_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,14 +20,13 @@
  * limitations under the License.
  */
 
-
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <AtomicInc.hpp>
 #include "fwklib/FrameworkTest.hpp"
 #include "fwklib/FwkObjects.hpp"
 #include "fwklib/FwkStrCvt.hpp"
 #include "fwklib/FwkLog.hpp"
-#include <gfcpp/PoolFactory.hpp>
+#include <geode/PoolFactory.hpp>
 #include <stdlib.h>
 
 #include <string>
@@ -150,5 +149,4 @@ class PoolHelper {
 
 // ----------------------------------------------------------------------------
 
-
-#endif // APACHE_GEODE_GUARD_b2a51368e1c04b7833061e32a761f2df
+#endif  // GEODE_FWKLIB_POOLHELPER_H_

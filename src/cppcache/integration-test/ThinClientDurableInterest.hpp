@@ -26,7 +26,6 @@
  *      Author: abhaware
  */
 
-
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 
@@ -363,5 +362,4 @@ DUNIT_TASK_DEFINITION(SERVER1, closeServer)
   }
 END_TASK_DEFINITION
 
-
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTDURABLEINTEREST_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTDURABLEINTEREST_H_

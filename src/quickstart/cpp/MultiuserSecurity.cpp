@@ -30,7 +30,7 @@
  */
 
 // Include the Geode library.
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;
@@ -147,7 +147,7 @@ int main(int argc, char** argv) {
     // secProp->insert("security-client-dhalgo", "Blowfish:128");
 
     // Connect to the Geode Distributed System using the settings from the
-    // gfcpp.properties file by default, programatically
+    // geode.properties file by default, programatically
     // overriding secProp properties.
 
     // Create a Geode Cache.

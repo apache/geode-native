@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "LRUAction.hpp"
 #include "RegionInternal.hpp"
 #include "MapEntry.hpp"
@@ -54,4 +54,4 @@ class CPPCACHE_EXPORT LRULocalDestroyAction : public virtual LRUAction {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_LRULOCALDESTROYACTION_H_
+#endif  // GEODE_LRULOCALDESTROYACTION_H_

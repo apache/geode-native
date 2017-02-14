@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 
-
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 #include "TallyListener.hpp"
@@ -35,7 +34,7 @@
 using namespace apache::geode::client;
 using namespace test;
 
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <string>
 
 class MyListener : public CacheListener {
@@ -190,4 +189,4 @@ void runListenerInit(bool poolConfig = true, bool isLocator = true) {
   CALL_TASK(StopLocator2);
 }
 
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTGATEWAYTEST_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTGATEWAYTEST_H_

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/CqStatusListener.hpp>
+#include <geode/CqStatusListener.hpp>
 
 namespace apache {
 namespace geode {

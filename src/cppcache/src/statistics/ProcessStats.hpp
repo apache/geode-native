@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/statistics/Statistics.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/statistics/Statistics.hpp>
 using namespace apache::geode::client;
 
 /** @file
@@ -80,4 +80,4 @@ class CPPCACHE_EXPORT ProcessStats {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STATISTICS_PROCESSSTATS_H_
+#endif  // GEODE_STATISTICS_PROCESSSTATS_H_

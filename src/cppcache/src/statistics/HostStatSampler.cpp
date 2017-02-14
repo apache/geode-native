@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 #include <ace/ACE.h>
 #include <ace/Thread_Mutex.h>
@@ -32,9 +32,9 @@
 #include "HostStatHelper.hpp"
 #include "StatArchiveWriter.hpp"
 #include <NanoTimer.hpp>
-#include <gfcpp/DistributedSystem.hpp>
-#include <gfcpp/SystemProperties.hpp>
-#include <gfcpp/Log.hpp>
+#include <geode/DistributedSystem.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/Log.hpp>
 #include "GeodeStatisticsFactory.hpp"
 #include <ClientHealthStats.hpp>
 #include <ClientProxyMembershipID.hpp>

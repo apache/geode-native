@@ -17,7 +17,7 @@
 
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2

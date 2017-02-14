@@ -16,9 +16,9 @@
  */
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
-#include <gfcpp/FunctionService.hpp>
-#include <gfcpp/Execution.hpp>
-#include <gfcpp/ResultCollector.hpp>
+#include <geode/FunctionService.hpp>
+#include <geode/Execution.hpp>
+#include <geode/ResultCollector.hpp>
 
 #define CLIENT1 s1p1
 #define LOCATOR1 s2p1
@@ -40,18 +40,17 @@ char* OnServerHAExceptionFunction = (char*)"OnServerHAExceptionFunction";
 char* OnServerHAShutdownFunction = (char*)"OnServerHAShutdownFunction";
 
 char* RegionOperationsHAFunction = (char*)"RegionOperationsHAFunction";
-#define verifyGetResults()                                            \
-  bool found = false;                                                 \
-  for (int j = 0; j < 34; j++) {                                      \
-    if (j % 2 == 0) continue;                                         \
-    sprintf(buf, "VALUE--%d", j);                                     \
-    if (strcmp(buf,                                                   \
-               dynCast<CacheableStringPtr>(resultList->operator[](i)) \
-                   ->asChar()) == 0) {                                \
-      found = true;                                                   \
-      break;                                                          \
-    }                                                                 \
-  }                                                                   \
+#define verifyGetResults()                                                 \
+  bool found = false;                                                      \
+  for (int j = 0; j < 34; j++) {                                           \
+    if (j % 2 == 0) continue;                                              \
+    sprintf(buf, "VALUE--%d", j);                                          \
+    if (strcmp(buf, dynCast<CacheableStringPtr>(resultList->operator[](i)) \
+                        ->asChar()) == 0) {                                \
+      found = true;                                                        \
+      break;                                                               \
+    }                                                                      \
+  }                                                                        \
   ASSERT(found, "this returned value is invalid");
 
 #define verifyPutResults()                   \

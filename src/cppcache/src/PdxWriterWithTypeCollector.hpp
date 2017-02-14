@@ -228,4 +228,4 @@ typedef SharedPtr<PdxWriterWithTypeCollector> PdxWriterWithTypeCollectorPtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PDXWRITERWITHTYPECOLLECTOR_H_
+#endif  // GEODE_PDXWRITERWITHTYPECOLLECTOR_H_

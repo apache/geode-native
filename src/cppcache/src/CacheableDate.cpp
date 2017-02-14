@@ -16,12 +16,12 @@
  */
 
 #include "config.h"
-#include <gfcpp/CacheableDate.hpp>
-#include <gfcpp/CacheableKeys.hpp>
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/GeodeTypeIds.hpp>
+#include <geode/CacheableDate.hpp>
+#include <geode/CacheableKeys.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/GeodeTypeIds.hpp>
 
 #include <cwchar>
 #include <ace/OS.h>

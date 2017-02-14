@@ -3,7 +3,6 @@
 #ifndef GEODE_PDXINSTANCEIMPL_H_
 #define GEODE_PDXINSTANCEIMPL_H_
 
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -21,12 +20,12 @@
  * limitations under the License.
  */
 
-#include <gfcpp/PdxInstance.hpp>
-#include <gfcpp/WritablePdxInstance.hpp>
-#include <gfcpp/PdxSerializable.hpp>
+#include <geode/PdxInstance.hpp>
+#include <geode/WritablePdxInstance.hpp>
+#include <geode/PdxSerializable.hpp>
 #include "PdxType.hpp"
 #include "PdxLocalWriter.hpp"
-#include <gfcpp/PdxFieldTypes.hpp>
+#include <geode/PdxFieldTypes.hpp>
 #include <vector>
 #include <map>
 
@@ -1170,5 +1169,4 @@ typedef SharedPtr<PdxInstanceImpl> PdxInstanceImplPtr;
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_PDXINSTANCEIMPL_H_
+#endif  // GEODE_PDXINSTANCEIMPL_H_

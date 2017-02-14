@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include <ace/Condition_Recursive_Thread_Mutex.h>
 #include <ace/OS_NS_sys_time.h>
 
@@ -77,4 +77,4 @@ class CPPCACHE_EXPORT Condition {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CONDITION_H_
+#endif  // GEODE_CONDITION_H_

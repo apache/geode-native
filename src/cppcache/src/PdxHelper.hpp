@@ -26,8 +26,7 @@
  *      Author: npatel
  */
 
-
-#include <gfcpp/DataOutput.hpp>
+#include <geode/DataOutput.hpp>
 #include "EnumInfo.hpp"
 #include "PdxType.hpp"
 #include "CacheImpl.hpp"
@@ -85,4 +84,4 @@ class PdxHelper {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PDXHELPER_H_
+#endif  // GEODE_PDXHELPER_H_

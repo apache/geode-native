@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/DataInput.hpp>
+#include <geode/DataInput.hpp>
 #include "EventId.hpp"
 #include "GeodeTypeIdsImpl.hpp"
 #include "ClientProxyMembershipID.hpp"

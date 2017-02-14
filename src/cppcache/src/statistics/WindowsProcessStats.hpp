@@ -19,13 +19,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/statistics/Statistics.hpp>
-#include <gfcpp/statistics/StatisticsType.hpp>
-#include <gfcpp/statistics/StatisticDescriptor.hpp>
-#include <gfcpp/statistics/StatisticsFactory.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/statistics/Statistics.hpp>
+#include <geode/statistics/StatisticsType.hpp>
+#include <geode/statistics/StatisticDescriptor.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
 #include "ProcessStats.hpp"
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/ExceptionTypes.hpp>
 
 using namespace apache::geode::client;
 
@@ -87,4 +87,4 @@ class CPPCACHE_EXPORT WindowsProcessStats : public ProcessStats {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STATISTICS_WINDOWSPROCESSSTATS_H_
+#endif  // GEODE_STATISTICS_WINDOWSPROCESSSTATS_H_

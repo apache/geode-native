@@ -18,7 +18,7 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/CqServiceStatistics.hpp>
+#include <geode/CqServiceStatistics.hpp>
 #include "impl/NativeWrapper.hpp"
 
 

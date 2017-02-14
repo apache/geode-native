@@ -20,7 +20,7 @@
 
 #include "gf_defs.hpp"
 #include "IResultCollector.hpp"
-#include <gfcpp/ResultCollector.hpp>
+#include <geode/ResultCollector.hpp>
 #include "impl/NativeWrapper.hpp"
 
 

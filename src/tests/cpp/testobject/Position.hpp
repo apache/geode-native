@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_6b0a46d8e03f0ffb9c53c7c14ef5eed4
-#define APACHE_GEODE_GUARD_6b0a46d8e03f0ffb9c53c7c14ef5eed4
+#ifndef GEODE_TESTOBJECT_POSITION_H_
+#define GEODE_TESTOBJECT_POSITION_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -24,8 +24,7 @@
  * @brief User class for testing the put functionality for object.
  */
 
-
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <string.h>
 
 #ifdef _WIN32
@@ -109,4 +108,4 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
 typedef apache::geode::client::SharedPtr<Position> PositionPtr;
 }  // namespace testobject
 
-#endif // APACHE_GEODE_GUARD_6b0a46d8e03f0ffb9c53c7c14ef5eed4
+#endif  // GEODE_TESTOBJECT_POSITION_H_

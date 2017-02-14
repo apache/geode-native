@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_602c04192305d5a8fa539c0c989ef65f
-#define APACHE_GEODE_GUARD_602c04192305d5a8fa539c0c989ef65f
+#ifndef GEODE_SECURITY_CREDENTIALGENERATOR_H_
+#define GEODE_SECURITY_CREDENTIALGENERATOR_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -30,11 +30,10 @@
 
 // ----------------------------------------------------------------------------
 
-
 // ----------------------------------------------------------------------------
 
-#include <gfcpp/SharedBase.hpp>
-#include <gfcpp/Properties.hpp>
+#include <geode/SharedBase.hpp>
+#include <geode/Properties.hpp>
 
 #ifndef __COMPILE_DUNIT_
 #include "fwklib/FwkLog.hpp"
@@ -275,5 +274,4 @@ class CredentialGenerator : public SharedBase {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_602c04192305d5a8fa539c0c989ef65f
+#endif  // GEODE_SECURITY_CREDENTIALGENERATOR_H_

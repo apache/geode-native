@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/SharedBase.hpp>
+#include <geode/SharedBase.hpp>
 #include <HostAsm.hpp>
 
 #include <typeinfo>

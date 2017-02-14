@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/CqAttributes.hpp>
-#include <gfcpp/CqAttributesMutator.hpp>
+#include <geode/CqAttributes.hpp>
+#include <geode/CqAttributesMutator.hpp>
 #include <ace/ACE.h>
 #include <ace/Condition_Recursive_Thread_Mutex.h>
 #include <ace/Time_Value.h>
@@ -79,4 +79,4 @@ class CPPCACHE_EXPORT CqAttributesImpl : public CqAttributes {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CQATTRIBUTESIMPL_H_
+#endif  // GEODE_CQATTRIBUTESIMPL_H_

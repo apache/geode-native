@@ -24,8 +24,8 @@
  */
 
 // Include the Geode library.
-#include <gfcpp/GeodeCppCache.hpp>
-#include <gfcpp/CacheLoader.hpp>
+#include <geode/GeodeCppCache.hpp>
+#include <geode/CacheLoader.hpp>
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;

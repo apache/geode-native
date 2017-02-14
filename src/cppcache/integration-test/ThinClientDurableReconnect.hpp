@@ -26,7 +26,6 @@
  *      Author: abhaware
  */
 
-
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 
@@ -170,5 +169,4 @@ void doThinClientDurableReconnect() {
   closeLocator();
 }
 
-
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTDURABLERECONNECT_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTDURABLERECONNECT_H_

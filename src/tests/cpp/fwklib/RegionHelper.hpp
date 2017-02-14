@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_ecbb34b204212c99ce0936eb50297d23
-#define APACHE_GEODE_GUARD_ecbb34b204212c99ce0936eb50297d23
+#ifndef GEODE_FWKLIB_REGIONHELPER_H_
+#define GEODE_FWKLIB_REGIONHELPER_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,8 +20,7 @@
  * limitations under the License.
  */
 
-
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <AtomicInc.hpp>
 #include "fwklib/FrameworkTest.hpp"
 #include "fwklib/FwkObjects.hpp"
@@ -261,5 +260,4 @@ class RegionHelper {
 
 // ----------------------------------------------------------------------------
 
-
-#endif // APACHE_GEODE_GUARD_ecbb34b204212c99ce0936eb50297d23
+#endif  // GEODE_FWKLIB_REGIONHELPER_H_

@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 class PdxTypes {
  public:
@@ -43,4 +43,4 @@ class PdxTypes {
   static const int8_t DATE_SIZE = 8;
 };
 
-#endif // GEODE_PDXTYPES_H_
+#endif  // GEODE_PDXTYPES_H_

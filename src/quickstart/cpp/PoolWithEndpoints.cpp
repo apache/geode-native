@@ -20,7 +20,7 @@
  *
  * This example takes the following steps:
  *
- * 1. Create CacheFactory using the settings from the gfcpp.properties file by
+ * 1. Create CacheFactory using the settings from the geode.properties file by
  * default.
  * 2. Create a Geode Cache.
  * 3. Create Poolfactory with endpoint and then create pool using poolfactory.
@@ -34,7 +34,7 @@
  */
 
 // Include the Geode library.
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;
@@ -42,7 +42,7 @@ using namespace apache::geode::client;
 // The PoolWithEndpoints QuickStart example.
 int main(int argc, char** argv) {
   try {
-    // Create CacheFactory using the settings from the gfcpp.properties file by
+    // Create CacheFactory using the settings from the geode.properties file by
     // default.
     CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
 

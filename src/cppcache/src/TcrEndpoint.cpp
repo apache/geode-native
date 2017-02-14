@@ -19,7 +19,7 @@
 #include "ThinClientRegion.hpp"
 #include "ThinClientPoolHADM.hpp"
 #include "StackTrace.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 #include "CacheImpl.hpp"
 #include "Utils.hpp"
 #include "DistributedSystemImpl.hpp"
@@ -916,9 +916,8 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
           LOGFINE(
               "Creating a new connection when connection-pool-size system "
               "property set to 0");
-          if ((error =
-                   createNewConnection(conn, false, false,
-                                       DistributedSystem::getSystemProperties()
+          if ((error = createNewConnection(
+                   conn, false, false, DistributedSystem::getSystemProperties()
                                            ->connectTimeout())) != GF_NOERR) {
             epFailure = true;
             continue;

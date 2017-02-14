@@ -30,7 +30,7 @@
 #include <cstring>
 #include <cctype>
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 /*
 static DH * m_dh = NULL;

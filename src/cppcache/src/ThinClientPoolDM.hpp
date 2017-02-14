@@ -22,7 +22,7 @@
 
 #include <string>
 #include "ThinClientBaseDM.hpp"
-#include <gfcpp/Pool.hpp>
+#include <geode/Pool.hpp>
 #include "PoolAttributes.hpp"
 #include "ThinClientLocatorHelper.hpp"
 #include "RemoteQueryService.hpp"
@@ -34,7 +34,7 @@
 #include "FairQueue.hpp"
 #include "TcrPoolEndPoint.hpp"
 #include "ThinClientRegion.hpp"
-#include <gfcpp/ResultCollector.hpp>
+#include <geode/ResultCollector.hpp>
 #include "ExecutionImpl.hpp"
 #include "ClientMetadataService.hpp"
 #include "ThreadPool.hpp"
@@ -681,5 +681,4 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_THINCLIENTPOOLDM_H_
+#endif  // GEODE_THINCLIENTPOOLDM_H_

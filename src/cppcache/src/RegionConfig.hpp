@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_REGIONCONFIG_H_
+#define GEODE_REGIONCONFIG_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -22,16 +27,10 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_CACHEREGION_H__B8A44D1C_F9A4_49A8_A3A2_86CAE5E73C6F__INCLUDED_)
-#define AFX_CACHEREGION_H__B8A44D1C_F9A4_49A8_A3A2_86CAE5E73C6F__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif  // _MSC_VER > 1000
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/SharedPtr.hpp>
 
 #include <string>
-#include <gfcpp/Properties.hpp>
+#include <geode/Properties.hpp>
 #include <stdlib.h>
 
 namespace apache {
@@ -63,4 +62,4 @@ class CPPCACHE_EXPORT RegionConfig : virtual public SharedBase {
 }  // namespace geode
 }  // namespace apache
 
-#endif  // !defined(AFX_CACHEREGION_H__B8A44D1C_F9A4_49A8_A3A2_86CAE5E73C6F__INCLUDED_)
+#endif  // GEODE_REGIONCONFIG_H_

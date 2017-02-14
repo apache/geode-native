@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Cache.hpp>
+#include <geode/Cache.hpp>
 #include "EntriesMapFactory.hpp"
 #include "LRUEntriesMap.hpp"
 #include "ExpMapEntry.hpp"
 #include "LRUExpMapEntry.hpp"
-#include <gfcpp/DiskPolicyType.hpp>
-//#include <gfcpp/ExpirationAction.hpp>
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/DiskPolicyType.hpp>
+//#include <geode/ExpirationAction.hpp>
+#include <geode/SystemProperties.hpp>
 
 using namespace apache::geode::client;
 

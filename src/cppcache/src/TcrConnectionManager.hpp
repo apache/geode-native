@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "GF_TASK_T.hpp"
 #include <string>
 #include <ace/Recursive_Thread_Mutex.h>
@@ -211,5 +211,4 @@ class DistManagersLockGuard {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TCRCONNECTIONMANAGER_H_
+#endif  // GEODE_TCRCONNECTIONMANAGER_H_

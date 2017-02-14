@@ -16,7 +16,7 @@
  */
 
 #include "PkcsAuthInitMN.hpp"
-#include <gfcpp/Properties.hpp>
+#include <geode/Properties.hpp>
 #include "impl/ManagedString.hpp"
 
 using namespace System;

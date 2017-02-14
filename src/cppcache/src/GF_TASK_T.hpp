@@ -26,7 +26,6 @@
 *@version 1.0
 */
 
-
 #include "DistributedSystemImpl.hpp"
 #include <ace/Task.h>
 namespace apache {
@@ -84,4 +83,4 @@ class CPPCACHE_EXPORT GF_TASK_T : public ACE_Task_Base {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_GF_TASK_T_H_
+#endif  // GEODE_GF_TASK_T_H_

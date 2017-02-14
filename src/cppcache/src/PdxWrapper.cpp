@@ -21,7 +21,7 @@
  *      Author: vrao
  */
 
-#include <gfcpp/PdxWrapper.hpp>
+#include <geode/PdxWrapper.hpp>
 #include <Utils.hpp>
 #include <PdxHelper.hpp>
 #include <SerializationRegistry.hpp>

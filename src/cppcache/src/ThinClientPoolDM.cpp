@@ -17,18 +17,18 @@
 #include "ThinClientPoolDM.hpp"
 #include "TcrEndpoint.hpp"
 #include "ThinClientRegion.hpp"
-#include <gfcpp/ResultCollector.hpp>
+#include <geode/ResultCollector.hpp>
 #include "ExecutionImpl.hpp"
 #include "ExpiryHandler_T.hpp"
 #include <ace/INET_Addr.h>
 #include "ExpiryTaskManager.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 #include <statistics/PoolStatsSampler.hpp>
 #include "DistributedSystemImpl.hpp"
 #include "UserAttributes.hpp"
 #include <algorithm>
 #include "ThinClientStickyManager.hpp"
-#include <gfcpp/PoolManager.hpp>
+#include <geode/PoolManager.hpp>
 
 #include "NonCopyable.hpp"
 
@@ -1765,8 +1765,7 @@ void ThinClientPoolDM::reducePoolSize(int num) {
 }
 GfErrType ThinClientPoolDM::createPoolConnection(
     TcrConnection*& conn, std::set<ServerLocation>& excludeServers,
-    bool& maxConnLimit, const TcrConnection* currentserver)
-{
+    bool& maxConnLimit, const TcrConnection* currentserver) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_queueLock);
   GfErrType error = GF_NOERR;
   int max = m_attrs->getMaxConnections();

@@ -26,7 +26,7 @@
 #include "RemoteQueryService.hpp"
 #include "CacheImpl.hpp"
 #include "ThinClientRegion.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 #include "ClientProxyMembershipID.hpp"
 #include "ExpiryHandler_T.hpp"
 

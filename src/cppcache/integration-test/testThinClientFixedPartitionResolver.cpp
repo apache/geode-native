@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include "BuiltinCacheableWrappers.hpp"
 #include <Utils.hpp>
-#include <gfcpp/FixedPartitionResolver.hpp>
+#include <geode/FixedPartitionResolver.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 

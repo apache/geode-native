@@ -20,12 +20,10 @@
  * limitations under the License.
  */
 
-
 static int numberOfLocators = 1;
 bool isLocalServer = false;
 bool isLocator = false;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
-
-#endif // GEODE_INTEGRATION_TEST_LOCATOR_GLOBALS_H_
+#endif  // GEODE_INTEGRATION_TEST_LOCATOR_GLOBALS_H_

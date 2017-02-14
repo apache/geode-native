@@ -18,7 +18,7 @@
 #define ROOT_NAME "testConnect"
 
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 using namespace apache::geode::client;
 

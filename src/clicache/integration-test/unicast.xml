@@ -357,13 +357,13 @@ ${output}
       </fileset>
     </copy>
     
-    <propertyfile file="${tst_res}/cpp/${test.type}/native-client-only/gfcpp.properties">
+    <propertyfile file="${tst_res}/cpp/${test.type}/native-client-only/geode.properties">
       <entry key="log-level" value="${logLevel}"/>
       <!--entry key="stacktrace-enabled" value="true"/-->
       <!--entry key="license-file" value="${hidden.dir}/internal.license.nativeclientonly.zip"/-->
     </propertyfile>
 
-    <propertyfile file="${tst_res}/cpp/${test.type}/gfcpp.properties">
+    <propertyfile file="${tst_res}/cpp/${test.type}/geode.properties">
       <entry key="log-level" value="${logLevel}"/>
       <!--entry key="stacktrace-enabled" value="true"/-->
       <!--entry key="cache-server-version" value="5.7"/-->

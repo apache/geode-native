@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_1628cb6366f926a3cac7309d67d1a4d7
-#define APACHE_GEODE_GUARD_1628cb6366f926a3cac7309d67d1a4d7
+#ifndef GEODE_FWKLIB_TIMELIMIT_H_
+#define GEODE_FWKLIB_TIMELIMIT_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -19,7 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 
 #include "fwklib/FwkLog.hpp"
 #include <ace/Time_Value.h>
@@ -52,5 +51,4 @@ class TimeLimit {
 }
 }
 
-
-#endif // APACHE_GEODE_GUARD_1628cb6366f926a3cac7309d67d1a4d7
+#endif  // GEODE_FWKLIB_TIMELIMIT_H_

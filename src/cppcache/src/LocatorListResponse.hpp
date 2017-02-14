@@ -52,4 +52,4 @@ typedef SharedPtr<LocatorListResponse> LocatorListResponsePtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_LOCATORLISTRESPONSE_H_
+#endif  // GEODE_LOCATORLISTRESPONSE_H_

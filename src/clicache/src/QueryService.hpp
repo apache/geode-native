@@ -19,7 +19,7 @@
 
 #include "gf_defs.hpp"
 #include "impl/NativeWrapper.hpp"
-#include <gfcpp/QueryService.hpp>
+#include <geode/QueryService.hpp>
 
 
 

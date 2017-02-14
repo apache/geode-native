@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 #include <sys/types.h>
 #ifndef WIN32
@@ -30,9 +30,9 @@
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Map_Manager.h>
 #include "StatisticsTypeImpl.hpp"
-#include <gfcpp/statistics/StatisticsFactory.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
 #include "StatisticsManager.hpp"
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/ExceptionTypes.hpp>
 
 using namespace apache::geode::client;
 
@@ -152,4 +152,4 @@ class GeodeStatisticsFactory : public StatisticsFactory {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STATISTICS_GEODESTATISTICSFACTORY_H_
+#endif  // GEODE_STATISTICS_GEODESTATISTICSFACTORY_H_

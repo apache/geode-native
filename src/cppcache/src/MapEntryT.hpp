@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "MapEntry.hpp"
 #include "TrackedMapEntry.hpp"
 
@@ -292,4 +292,4 @@ inline int MapEntryST<TBase, 0, UPDATE_COUNT>::incUpdateCount(TBase* loc) {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_MAPENTRYT_H_
+#endif  // GEODE_MAPENTRYT_H_

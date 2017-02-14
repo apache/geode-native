@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_f3340c9b2d447c884bfa8bef6b826bb9
-#define APACHE_GEODE_GUARD_f3340c9b2d447c884bfa8bef6b826bb9
+#ifndef GEODE_TESTOBJECT_TIMESTAMPEDOBJECT_H_
+#define GEODE_TESTOBJECT_TIMESTAMPEDOBJECT_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
@@ -54,4 +54,4 @@ typedef apache::geode::client::SharedPtr<TimestampedObject>
     TimestampedObjectPtr;
 }  // namespace testobject
 
-#endif // APACHE_GEODE_GUARD_f3340c9b2d447c884bfa8bef6b826bb9
+#endif  // GEODE_TESTOBJECT_TIMESTAMPEDOBJECT_H_

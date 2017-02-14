@@ -21,7 +21,7 @@
 
 #include <gtest/gtest.h>
 
-#include <gfcpp/DataOutput.hpp>
+#include <geode/DataOutput.hpp>
 #include "ByteArrayFixture.hpp"
 
 using namespace apache::geode::client;

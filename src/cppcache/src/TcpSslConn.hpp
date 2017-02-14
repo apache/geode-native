@@ -88,5 +88,4 @@ class TcpSslConn : public TcpConn {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TCPSSLCONN_H_
+#endif  // GEODE_TCPSSLCONN_H_

@@ -21,7 +21,7 @@
  */
 #include <list>
 #include "ServerLocationResponse.hpp"
-#include <gfcpp/DataInput.hpp>
+#include <geode/DataInput.hpp>
 #include "ServerLocation.hpp"
 namespace apache {
 namespace geode {
@@ -53,4 +53,4 @@ typedef SharedPtr<QueueConnectionResponse> QueueConnectionResponsePtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_QUEUECONNECTIONRESPONSE_H_
+#endif  // GEODE_QUEUECONNECTIONRESPONSE_H_

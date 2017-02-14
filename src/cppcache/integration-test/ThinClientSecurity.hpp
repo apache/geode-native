@@ -26,7 +26,6 @@
  *      Author: vrao
  */
 
-
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 #include "CacheImplHelper.hpp"
@@ -79,5 +78,4 @@ RegionServicePtr getVirtualCache(PropertiesPtr creds, PoolPtr pool) {
   return cachePtr->createAuthenticatedView(creds, pool->getName());
 }
 
-
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTSECURITY_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTSECURITY_H_

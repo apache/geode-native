@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 #if defined(_SOLARIS)
 #include <ace/OS_NS_sys_utsname.h>
@@ -30,7 +30,7 @@
 #include <sys/proc.h>
 #include <sys/kstat.h>
 #include <glob.h>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "SolarisProcessStats.hpp"
 #include <ace/OS.h>
 

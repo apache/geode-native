@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/CacheTransactionManager.hpp>
+#include <geode/CacheTransactionManager.hpp>
 
 namespace apache {
 namespace geode {

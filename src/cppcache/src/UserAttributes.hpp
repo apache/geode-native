@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/Properties.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/Properties.hpp>
 #include "TcrEndpoint.hpp"
 #include <ace/TSS_T.h>
 #include <string>
@@ -155,4 +155,4 @@ class GuardUserAttribures {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_USERATTRIBUTES_H_
+#endif  // GEODE_USERATTRIBUTES_H_

@@ -26,7 +26,6 @@
  *      Author: abhaware
  */
 
-
 #include "ThinClientHARegion.hpp"
 
 namespace apache {
@@ -56,5 +55,4 @@ class ThinClientPoolRegion : public ThinClientRegion {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_THINCLIENTPOOLREGION_H_
+#endif  // GEODE_THINCLIENTPOOLREGION_H_

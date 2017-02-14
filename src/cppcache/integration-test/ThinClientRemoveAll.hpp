@@ -20,9 +20,8 @@
  * limitations under the License.
  */
 
-
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include "testobject/PdxType.hpp"
@@ -31,7 +30,7 @@
 
 #include "BuiltinCacheableWrappers.hpp"
 #include <Utils.hpp>
-#include <gfcpp/statistics/StatisticsFactory.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
 
 #define ROOT_NAME "ThinClientRemoveAll"
 #define ROOT_SCOPE DISTRIBUTED_ACK
@@ -425,5 +424,4 @@ DUNIT_TASK_DEFINITION(SERVER2, CloseServer2)
   }
 END_TASK_DEFINITION
 
-
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTREMOVEALL_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTREMOVEALL_H_

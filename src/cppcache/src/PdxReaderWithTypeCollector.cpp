@@ -23,8 +23,8 @@
 
 #include "PdxReaderWithTypeCollector.hpp"
 #include "PdxTypes.hpp"
-#include <gfcpp/PdxFieldTypes.hpp>
 #include <ace/OS_NS_stdio.h>
+#include <geode/PdxFieldTypes.hpp>
 
 namespace apache {
 namespace geode {

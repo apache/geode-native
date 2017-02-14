@@ -28,7 +28,7 @@
 #include "StructSet.hpp"
 #include "impl/AuthenticatedCache.hpp"
 #include "impl/SafeConvert.hpp"
-//#include <gfcpp/Serializable.hpp>
+//#include <geode/Serializable.hpp>
 //#include <cppcache/DataOutPut.hpp>
 #include "LocalRegion.hpp"
 #include "Pool.hpp"

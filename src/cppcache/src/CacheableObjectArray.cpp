@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/CacheableObjectArray.hpp>
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/GeodeTypeIds.hpp>
+#include <geode/CacheableObjectArray.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/GeodeTypeIds.hpp>
 #include <GeodeTypeIdsImpl.hpp>
 
 namespace apache {

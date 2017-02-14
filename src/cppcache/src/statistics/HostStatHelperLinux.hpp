@@ -21,7 +21,7 @@
  */
 
 #if defined(_LINUX)
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include <string>
 #include <sys/sysinfo.h>
 #include "ProcessStats.hpp"
@@ -52,4 +52,4 @@ class HostStatHelperLinux {
 
 #endif  // if def(_LINUX)
 
-#endif // GEODE_STATISTICS_HOSTSTATHELPERLINUX_H_
+#endif  // GEODE_STATISTICS_HOSTSTATHELPERLINUX_H_

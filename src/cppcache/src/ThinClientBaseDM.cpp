@@ -14,15 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "ThinClientBaseDM.hpp"
 #include "ThinClientRegion.hpp"
 #include "TcrMessage.hpp"
 #include "TcrEndpoint.hpp"
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "Utils.hpp"
 #include "CacheImpl.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 //#include "UserAttributes.hpp"
 #include "ProxyCache.hpp"
 

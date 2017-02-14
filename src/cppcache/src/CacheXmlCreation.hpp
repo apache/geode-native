@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "RegionXmlCreation.hpp"
 #include "PoolXmlCreation.hpp"
 #include <vector>
@@ -96,4 +96,4 @@ class CPPCACHE_EXPORT CacheXmlCreation {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CACHEXMLCREATION_H_
+#endif  // GEODE_CACHEXMLCREATION_H_

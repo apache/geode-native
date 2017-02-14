@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Region.hpp>
+#include <geode/Region.hpp>
 
 namespace apache {
 namespace geode {

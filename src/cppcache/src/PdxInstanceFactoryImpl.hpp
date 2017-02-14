@@ -3,7 +3,6 @@
 #ifndef GEODE_PDXINSTANCEFACTORYIMPL_H_
 #define GEODE_PDXINSTANCEFACTORYIMPL_H_
 
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -21,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/PdxInstanceFactory.hpp>
-#include <gfcpp/CacheableBuiltins.hpp>
+#include <geode/PdxInstanceFactory.hpp>
+#include <geode/CacheableBuiltins.hpp>
 #include <map>
 #include "PdxType.hpp"
 
@@ -458,5 +457,4 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl : public PdxInstanceFactory {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_PDXINSTANCEFACTORYIMPL_H_
+#endif  // GEODE_PDXINSTANCEFACTORYIMPL_H_

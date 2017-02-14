@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/statistics/Statistics.hpp>
+#include <geode/statistics/Statistics.hpp>
 #include "StatisticsTypeImpl.hpp"
-#include <gfcpp/statistics/StatisticsFactory.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
 #include <NonCopyable.hpp>
 
 using namespace apache::geode::client;
@@ -260,4 +260,4 @@ class OsStatisticsImpl : public Statistics,
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STATISTICS_OSSTATISTICSIMPL_H_
+#endif  // GEODE_STATISTICS_OSSTATISTICSIMPL_H_

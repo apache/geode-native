@@ -22,7 +22,7 @@
 
 #if defined(_WIN32)
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include <string>
 #include <Windows.h>
 #include <WinPerf.h>
@@ -303,4 +303,4 @@ class HostStatHelperWin {
 
 #endif  // (_WIN32)
 
-#endif // GEODE_STATISTICS_HOSTSTATHELPERWIN_H_
+#endif  // GEODE_STATISTICS_HOSTSTATHELPERWIN_H_

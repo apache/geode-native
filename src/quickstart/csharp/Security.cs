@@ -43,7 +43,7 @@ namespace Apache.Geode.Client.QuickStart
   {
     public void RunSecurityExampleWithPutPermission()
     {
-      // Create client's Authentication Intializer and Credentials using api ( Same can be set to gfcpp.properties & comment following code ).
+      // Create client's Authentication Intializer and Credentials using api ( Same can be set to geode.properties & comment following code ).
       Properties<string, string> properties = Properties<string, string>.Create<string, string>();
       properties.Insert("security-client-auth-factory", "Apache.Geode.Templates.Cache.Security.UserPasswordAuthInit.Create");
       properties.Insert("security-client-auth-library", "Apache.Geode.Templates.Cache.Security");
@@ -86,7 +86,7 @@ namespace Apache.Geode.Client.QuickStart
 
     public void RunSecurityExampleWithGetPermission()
     {
-      // Create client's Authentication Intializer and Credentials using api ( Same can be set to gfcpp.properties & comment following code ).
+      // Create client's Authentication Intializer and Credentials using api ( Same can be set to geode.properties & comment following code ).
       Properties<string, string> properties = Properties<string, string>.Create<string, string>();
       properties.Insert("security-client-auth-factory", "Apache.Geode.Templates.Cache.Security.UserPasswordAuthInit.Create");
       properties.Insert("security-client-auth-library", "Apache.Geode.Templates.Cache.Security");
@@ -129,7 +129,7 @@ namespace Apache.Geode.Client.QuickStart
 
     public void RunSecurityExampleWithAllPermission()
     {
-      // Create client's Authentication Intializer and Credentials using api ( Same can be set to gfcpp.properties & comment following code ).
+      // Create client's Authentication Intializer and Credentials using api ( Same can be set to geode.properties & comment following code ).
       Properties<string, string> properties = Properties<string, string>.Create<string, string>();
       properties.Insert("security-client-auth-factory", "Apache.Geode.Templates.Cache.Security.UserPasswordAuthInit.Create");
       properties.Insert("security-client-auth-library", "Apache.Geode.Templates.Cache.Security");

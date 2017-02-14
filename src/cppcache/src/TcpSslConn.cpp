@@ -16,8 +16,8 @@
  */
 #include "TcpSslConn.hpp"
 
-#include <gfcpp/SystemProperties.hpp>
-#include <gfcpp/DistributedSystem.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/DistributedSystem.hpp>
 #include "../../cryptoimpl/GFSsl.hpp"
 
 using namespace apache::geode::client;

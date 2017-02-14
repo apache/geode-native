@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Cache.hpp>
-#include <gfcpp/CacheableKey.hpp>
+#include <geode/Cache.hpp>
+#include <geode/CacheableKey.hpp>
 #include <CacheableToken.hpp>
 
 using namespace apache::geode::client;

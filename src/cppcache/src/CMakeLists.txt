@@ -138,7 +138,7 @@ install(TARGETS apache-geode
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
-  PUBLIC_HEADER DESTINATION include/gfcpp
+  PUBLIC_HEADER DESTINATION include/geode
 )
 
 # For Visual Studio organization

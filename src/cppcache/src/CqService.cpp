@@ -16,14 +16,14 @@
  */
 #include "CqService.hpp"
 #include "ReadWriteLock.hpp"
-#include <gfcpp/DistributedSystem.hpp>
-#include <gfcpp/SystemProperties.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/DistributedSystem.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "CqQueryImpl.hpp"
 #include "CqEventImpl.hpp"
-#include <gfcpp/CqServiceStatistics.hpp>
+#include <geode/CqServiceStatistics.hpp>
 #include "ThinClientPoolDM.hpp"
-#include <gfcpp/CqStatusListener.hpp>
+#include <geode/CqStatusListener.hpp>
 using namespace apache::geode::client;
 
 CqService::CqService(ThinClientBaseDM* tccdm)
@@ -263,10 +263,9 @@ void CqService::executeCqs(VectorOfCqQuery& cqs, bool afterFailover) {
           cq->execute();
         }
       } catch (QueryException& qe) {
-        LOGFINE("%s",
-                ("Failed to execute the CQ, CqName : " + cqName + " Error : " +
-                 qe.getMessage())
-                    .c_str());
+        LOGFINE("%s", ("Failed to execute the CQ, CqName : " + cqName +
+                       " Error : " + qe.getMessage())
+                          .c_str());
       } catch (CqClosedException& cce) {
         LOGFINE(("Failed to execute the CQ, CqName : " + cqName + " Error : " +
                  cce.getMessage())

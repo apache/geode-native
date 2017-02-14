@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Region.hpp>
+#include <geode/Region.hpp>
 #include <CacheRegionHelper.hpp>
 #include <RegionInternal.hpp>
 #include <MapEntry.hpp>

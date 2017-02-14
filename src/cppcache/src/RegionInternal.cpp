@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 #include "RegionInternal.hpp"
-#include <gfcpp/RegionEntry.hpp>
+#include <geode/RegionEntry.hpp>
 #include "TombstoneList.hpp"
 
 namespace apache {

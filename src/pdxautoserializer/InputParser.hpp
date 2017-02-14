@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_906466ac6028b9eac9226aa77077245f
-#define APACHE_GEODE_GUARD_906466ac6028b9eac9226aa77077245f
+#ifndef GEODE_PDXAUTOSERIALIZER_INPUTPARSER_H_
+#define GEODE_PDXAUTOSERIALIZER_INPUTPARSER_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -19,7 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 
 #include "base_types.hpp"
 #include "CodeGenerator.hpp"
@@ -182,5 +181,4 @@ class InputParser {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_906466ac6028b9eac9226aa77077245f
+#endif  // GEODE_PDXAUTOSERIALIZER_INPUTPARSER_H_

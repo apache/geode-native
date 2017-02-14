@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Cacheable.hpp>
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/Cacheable.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 
 namespace apache {
@@ -102,5 +102,4 @@ typedef SharedPtr<CachedDeserializableHelper> CachedDeserializableHelperPtr;
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_CACHEDDESERIALIZABLEHELPER_H_
+#endif  // GEODE_CACHEDDESERIALIZABLEHELPER_H_

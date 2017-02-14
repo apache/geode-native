@@ -21,8 +21,8 @@
  */
 
 #include <string>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/statistics/StatisticDescriptor.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/statistics/StatisticDescriptor.hpp>
 
 /** @file
 */
@@ -250,4 +250,4 @@ s
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STATISTICS_STATISTICDESCRIPTORIMPL_H_
+#endif  // GEODE_STATISTICS_STATISTICDESCRIPTORIMPL_H_

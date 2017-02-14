@@ -21,7 +21,7 @@
  */
 
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include "BuiltinCacheableWrappers.hpp"
@@ -255,4 +255,4 @@ void runHeapLRU(bool poolConfig = true, bool isLocator = true) {
   }
 }
 
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTHEAPLRU_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTHEAPLRU_H_

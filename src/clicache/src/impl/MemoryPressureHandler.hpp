@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include <ExpiryTaskManager.hpp>
 
 namespace Apache

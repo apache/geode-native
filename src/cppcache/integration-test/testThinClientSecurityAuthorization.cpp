@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 #define ROOT_NAME "testThinClientSecurityAuthentication"
 #define ROOT_SCOPE DISTRIBUTED_ACK

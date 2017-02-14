@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_571a5e03438f4ddbf05bf82f4b838736
-#define APACHE_GEODE_GUARD_571a5e03438f4ddbf05bf82f4b838736
+#ifndef GEODE_PDXAUTOSERIALIZER_IMPL_CPPCODEGENERATOR_H_
+#define GEODE_PDXAUTOSERIALIZER_IMPL_CPPCODEGENERATOR_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -19,7 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 
 #include "../CodeGenerator.hpp"
 #include "../OutputFormatter.hpp"
@@ -237,5 +236,4 @@ class CPPCodeGenerator : public CodeGenerator {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_571a5e03438f4ddbf05bf82f4b838736
+#endif  // GEODE_PDXAUTOSERIALIZER_IMPL_CPPCODEGENERATOR_H_

@@ -21,7 +21,7 @@
  */
 
 #include <string>
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "TcrEndpoint.hpp"
 #include "ServerLocation.hpp"
 #include <set>
@@ -71,4 +71,4 @@ class ThinClientLocatorHelper {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_THINCLIENTLOCATORHELPER_H_
+#endif  // GEODE_THINCLIENTLOCATORHELPER_H_

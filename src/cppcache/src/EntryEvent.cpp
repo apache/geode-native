@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/EntryEvent.hpp>
+#include <geode/EntryEvent.hpp>
 #include <CacheableToken.hpp>
 
 namespace apache {

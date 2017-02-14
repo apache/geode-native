@@ -20,7 +20,7 @@
 
 #include "gf_defs.hpp"
 #include "Serializable.hpp"
-#include <gfcpp/Struct.hpp>
+#include <geode/Struct.hpp>
 
 using namespace System;
 

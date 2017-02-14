@@ -17,7 +17,7 @@
 #include "TcrMessage.hpp"
 #include "ClientMetadataService.hpp"
 #include "ThinClientPoolDM.hpp"
-#include <gfcpp/FixedPartitionResolver.hpp>
+#include <geode/FixedPartitionResolver.hpp>
 #include <iterator>
 #include <cstdlib>
 #include <climits>

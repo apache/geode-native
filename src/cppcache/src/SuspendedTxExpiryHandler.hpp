@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/Cache.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/Cache.hpp>
 #include "CacheTransactionManagerImpl.hpp"
 
 /**
@@ -67,4 +67,4 @@ class CPPCACHE_EXPORT SuspendedTxExpiryHandler : public ACE_Event_Handler {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_SUSPENDEDTXEXPIRYHANDLER_H_
+#endif  // GEODE_SUSPENDEDTXEXPIRYHANDLER_H_

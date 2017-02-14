@@ -27,7 +27,7 @@
 #include "ThinClientRegion.hpp"
 #include "ThinClientHARegion.hpp"
 #include "TcrConnection.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 #include "RemoteQueryService.hpp"
 #include "ThinClientLocatorHelper.hpp"
 #include "ServerLocation.hpp"

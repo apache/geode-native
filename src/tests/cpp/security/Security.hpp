@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_d8d76480867ce6629add87fe227d225f
-#define APACHE_GEODE_GUARD_d8d76480867ce6629add87fe227d225f
+#ifndef GEODE_SECURITY_SECURITY_H_
+#define GEODE_SECURITY_SECURITY_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -30,14 +30,13 @@
 
 // ----------------------------------------------------------------------------
 
-
 // ----------------------------------------------------------------------------
 
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
-#include <gfcpp/CacheableString.hpp>
-#include <gfcpp/Cache.hpp>
-#include <gfcpp/Region.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/Cache.hpp>
+#include <geode/Region.hpp>
 
 #include "fwklib/FrameworkTest.hpp"
 #include "fwklib/FwkObjects.hpp"
@@ -122,5 +121,4 @@ class Security : public FrameworkTest {
 }  // namespace apache
 // ----------------------------------------------------------------------------
 
-
-#endif // APACHE_GEODE_GUARD_d8d76480867ce6629add87fe227d225f
+#endif  // GEODE_SECURITY_SECURITY_H_

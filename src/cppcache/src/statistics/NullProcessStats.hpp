@@ -20,10 +20,10 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/statistics/Statistics.hpp>
-#include <gfcpp/statistics/StatisticsType.hpp>
-#include <gfcpp/statistics/StatisticDescriptor.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/statistics/Statistics.hpp>
+#include <geode/statistics/StatisticsType.hpp>
+#include <geode/statistics/StatisticDescriptor.hpp>
 #include "ProcessStats.hpp"
 #include "HostStatHelper.hpp"
 
@@ -57,4 +57,4 @@ class CPPCACHE_EXPORT NullProcessStats : public ProcessStats {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STATISTICS_NULLPROCESSSTATS_H_
+#endif  // GEODE_STATISTICS_NULLPROCESSSTATS_H_

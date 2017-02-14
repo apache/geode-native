@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/PersistenceManager.hpp>
-#include <gfcpp/Region.hpp>
+#include <geode/PersistenceManager.hpp>
+#include <geode/Region.hpp>
 
 using namespace apache::geode::client;
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_eb7690d50321df9f22960c0ceecdeea5
-#define APACHE_GEODE_GUARD_eb7690d50321df9f22960c0ceecdeea5
+#ifndef GEODE_PDXAUTOSERIALIZER_ASBUILTINS_H_
+#define GEODE_PDXAUTOSERIALIZER_ASBUILTINS_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -19,7 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
@@ -123,5 +122,4 @@ inline void readObject(apache::geode::client::DataInput& input,
 }
 }
 
-
-#endif // APACHE_GEODE_GUARD_eb7690d50321df9f22960c0ceecdeea5
+#endif  // GEODE_PDXAUTOSERIALIZER_ASBUILTINS_H_

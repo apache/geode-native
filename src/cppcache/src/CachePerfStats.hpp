@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/statistics/Statistics.hpp>
-#include <gfcpp/statistics/StatisticsFactory.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/statistics/Statistics.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
 
 namespace apache {
 namespace geode {
@@ -362,4 +362,4 @@ class CPPCACHE_EXPORT CachePerfStats {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CACHEPERFSTATS_H_
+#endif  // GEODE_CACHEPERFSTATS_H_

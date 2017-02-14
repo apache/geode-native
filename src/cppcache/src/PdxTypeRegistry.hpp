@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/PdxSerializable.hpp>
+#include <geode/PdxSerializable.hpp>
 #include "PdxRemotePreservedData.hpp"
 #include "ReadWriteLock.hpp"
 #include <map>
@@ -140,4 +140,4 @@ class CPPCACHE_EXPORT PdxTypeRegistry {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PDXTYPEREGISTRY_H_
+#endif  // GEODE_PDXTYPEREGISTRY_H_

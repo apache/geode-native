@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include <ace/File_Lock.h>
 #include <ace/Process.h>
 #include <ace/SPIPE_Addr.h>

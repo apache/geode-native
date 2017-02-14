@@ -176,4 +176,4 @@ class FairQueue {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_FAIRQUEUE_H_
+#endif  // GEODE_FAIRQUEUE_H_

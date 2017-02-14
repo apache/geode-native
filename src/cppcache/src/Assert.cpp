@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/Assert.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/Log.hpp>
+#include <geode/Assert.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/Log.hpp>
 
 namespace apache {
 namespace geode {

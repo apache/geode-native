@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_51f14f2d7ae4ce792fd44841b21b89dd
-#define APACHE_GEODE_GUARD_51f14f2d7ae4ce792fd44841b21b89dd
+#ifndef GEODE_SECURITY_DUMMYCREDENTIALGENERATOR3_H_
+#define GEODE_SECURITY_DUMMYCREDENTIALGENERATOR3_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -104,5 +104,4 @@ class DummyCredentialGenerator3 : public CredentialGenerator {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_51f14f2d7ae4ce792fd44841b21b89dd
+#endif  // GEODE_SECURITY_DUMMYCREDENTIALGENERATOR3_H_

@@ -64,4 +64,4 @@ class TcrPoolEndPoint : public TcrEndpoint {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_TCRPOOLENDPOINT_H_
+#endif  // GEODE_TCRPOOLENDPOINT_H_

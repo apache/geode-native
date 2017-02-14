@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-#include <gfcpp/CacheFactory.hpp>
-#include <gfcpp/RegionFactory.hpp>
+#include <geode/CacheFactory.hpp>
+#include <geode/RegionFactory.hpp>
 #include <CppCacheLibrary.hpp>
-#include <gfcpp/Cache.hpp>
+#include <geode/Cache.hpp>
 #include <CacheImpl.hpp>
-#include <gfcpp/SystemProperties.hpp>
-#include <gfcpp/PoolManager.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/PoolManager.hpp>
 #include <CacheConfig.hpp>
 #include <CacheRegionHelper.hpp>
 #include <ace/Recursive_Thread_Mutex.h>

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 #include <cctype>
 #include <string>
@@ -34,9 +34,9 @@
 #include <ace/Dirent_Selector.h>
 #include <ace/OS_NS_sys_stat.h>
 
-#include <gfcpp/Log.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcppBanner.hpp>
+#include <geode/Log.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geodeBanner.hpp>
 
 #if defined(_WIN32)
 #include <io.h>
@@ -496,7 +496,7 @@ void Log::writeBanner() {
   if (s_logLevel == Log::None) {
     return;
   }
-  std::string bannertext = gfcppBanner::getBanner();
+  std::string bannertext = geodeBanner::getBanner();
 
   if (g_logFile == NULL) {
     fprintf(stdout, "%s", bannertext.c_str());

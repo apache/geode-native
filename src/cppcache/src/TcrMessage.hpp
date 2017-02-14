@@ -20,21 +20,21 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "AtomicInc.hpp"
-#include <gfcpp/Cacheable.hpp>
-#include <gfcpp/CacheableKey.hpp>
-#include <gfcpp/CacheableString.hpp>
-#include <gfcpp/UserData.hpp>
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/Cacheable.hpp>
+#include <geode/CacheableKey.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/UserData.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "InterestResultPolicy.hpp"
 #include "EventId.hpp"
 #include "EventIdMap.hpp"
-#include <gfcpp/CacheableBuiltins.hpp>
+#include <geode/CacheableBuiltins.hpp>
 #include "TcrChunkedContext.hpp"
-#include <gfcpp/VectorT.hpp>
+#include <geode/VectorT.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 #include "BucketServerLocation.hpp"
 #include "FixedPartitionAttributesImpl.hpp"
@@ -1227,5 +1227,4 @@ class TcrMessageHelper {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TCRMESSAGE_H_
+#endif  // GEODE_TCRMESSAGE_H_

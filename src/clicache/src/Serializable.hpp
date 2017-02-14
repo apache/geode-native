@@ -18,8 +18,8 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/CacheableKey.hpp>
-#include <gfcpp/CacheableBuiltins.hpp>
+#include <geode/CacheableKey.hpp>
+#include <geode/CacheableBuiltins.hpp>
 #include "IGFSerializable.hpp"
 #include "IGFDelta.hpp"
 #include "impl/ManagedString.hpp"

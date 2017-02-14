@@ -32,14 +32,14 @@
 
 #if defined(_WIN32)
 #if (FD_SETSIZE != 1024)
-+++bad fdsetsize...
+++ + bad fdsetsize...
 #endif
 #endif
 
 #include "ace/Process.h"
 #include "ace/Log_Msg.h"
 
-  namespace dunit {
+    namespace dunit {
 
   // Listing 1 code/ch10
   class Manager : virtual public ACE_Process {
@@ -126,5 +126,4 @@
 
 };  // namespace dunit.
 
-
-#endif // GEODE_INTEGRATION_TEST_FW_SPAWN_H_
+#endif  // GEODE_INTEGRATION_TEST_FW_SPAWN_H_

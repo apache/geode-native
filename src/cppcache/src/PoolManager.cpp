@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/PoolManager.hpp>
+#include <geode/PoolManager.hpp>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Guard_T.h>
 

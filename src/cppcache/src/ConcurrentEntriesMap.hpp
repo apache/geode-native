@@ -20,12 +20,12 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "EntriesMap.hpp"
 #include "MapSegment.hpp"
 #include "AtomicInc.hpp"
 #include "ExpMapEntry.hpp"
-#include <gfcpp/RegionEntry.hpp>
+#include <geode/RegionEntry.hpp>
 
 namespace apache {
 namespace geode {
@@ -169,4 +169,4 @@ class CPPCACHE_EXPORT ConcurrentEntriesMap : public EntriesMap {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CONCURRENTENTRIESMAP_H_
+#endif  // GEODE_CONCURRENTENTRIESMAP_H_

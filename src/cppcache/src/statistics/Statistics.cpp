@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/statistics/Statistics.hpp>
+#include <geode/statistics/Statistics.hpp>
 using namespace apache::geode::statistics;
 
 void Statistics::close() {}

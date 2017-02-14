@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include <string>
@@ -420,4 +420,4 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseServer1)
   }
 END_TASK_DEFINITION
 
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTINTERESTLIST_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTINTERESTLIST_H_

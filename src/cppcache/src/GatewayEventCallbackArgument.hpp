@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Serializable.hpp>
+#include <geode/Serializable.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 
 namespace apache {
@@ -69,5 +69,4 @@ class GatewayEventCallbackArgument : public Serializable {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_GATEWAYEVENTCALLBACKARGUMENT_H_
+#endif  // GEODE_GATEWAYEVENTCALLBACKARGUMENT_H_

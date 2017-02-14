@@ -128,4 +128,4 @@ class CPPCACHE_EXPORT Set : private NonAssignable {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_SET_H_
+#endif  // GEODE_SET_H_

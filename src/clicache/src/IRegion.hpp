@@ -19,7 +19,7 @@
 
 #include "gf_defs.hpp"
 #include "ISubscriptionService.hpp"
-#include <gfcpp/DataOutput.hpp>
+#include <geode/DataOutput.hpp>
 //#include "ExceptionTypes.hpp"
 
 using namespace System;

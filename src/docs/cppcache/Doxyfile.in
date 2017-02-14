@@ -70,7 +70,7 @@ This functionality is unsupported in the Native Client Product. \endif" \
 
 ALPHABETICAL_INDEX     = YES
 ENABLED_SECTIONS       = nativeclient 
-EXCLUDE_PATTERNS       = */impl/* AtomicBits.hpp AtomicInc.hpp AtomicOpT.hpp BridgeLoader.hpp CacheableToken.hpp Debug.hpp ExpirationAttributes.hpp gfcpp_globals.hpp Lock.hpp SpinLock.hpp Task.hpp Timecode.hpp 
+EXCLUDE_PATTERNS       = */impl/* AtomicBits.hpp AtomicInc.hpp AtomicOpT.hpp BridgeLoader.hpp CacheableToken.hpp Debug.hpp ExpirationAttributes.hpp geode_globals.hpp Lock.hpp SpinLock.hpp Task.hpp Timecode.hpp 
 EXTRACT_PRIVATE        = NO
 EXTRACT_STATIC         = NO
 FILE_PATTERNS          = *.h *.hpp statistics/*.hpp
@@ -80,7 +80,7 @@ HIDE_UNDOC_CLASSES     = YES
 HIDE_UNDOC_MEMBERS     = YES
 HTML_FOOTER            = @CMAKE_CURRENT_SOURCE_DIR@/footer.html
 IMAGE_PATH             = @CMAKE_CURRENT_SOURCE_DIR@
-INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/../../cppcache/include/gfcpp  @CMAKE_CURRENT_SOURCE_DIR@/../../cppcache/include/gfcpp/statistics
+INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/../../cppcache/include/geode  @CMAKE_CURRENT_SOURCE_DIR@/../../cppcache/include/geode/statistics
 JAVADOC_AUTOBRIEF      = YES
 MACRO_EXPANSION        = YES
 OUTPUT_DIRECTORY       = @CMAKE_CURRENT_BINARY_DIR@

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/CacheableEnum.hpp>
+#include <geode/CacheableEnum.hpp>
 #include <Utils.hpp>
 #include <PdxHelper.hpp>
 #include <GeodeTypeIdsImpl.hpp>

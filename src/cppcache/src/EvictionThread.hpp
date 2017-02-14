@@ -25,8 +25,8 @@
 #include <ace/Singleton.h>
 #include <ace/Thread_Mutex.h>
 #include <ace/Task.h>
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/Log.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/Log.hpp>
 #include "IntQueue.hpp"
 /**
  * This class does the actual evictions
@@ -69,5 +69,4 @@ class CPPCACHE_EXPORT EvictionThread : public ACE_Task_Base {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_EVICTIONTHREAD_H_
+#endif  // GEODE_EVICTIONTHREAD_H_

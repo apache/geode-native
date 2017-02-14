@@ -26,13 +26,12 @@
  *      Author: ankurs
  */
 
-
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/SharedBase.hpp>
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/VectorOfSharedBase.hpp>
-#include <gfcpp/CacheableString.hpp>
-#include <gfcpp/Cache.hpp>
+#include <geode/gf_types.hpp>
+#include <geode/SharedBase.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/VectorOfSharedBase.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/Cache.hpp>
 #include <vector>
 #include "FarSideEntryOp.hpp"
 
@@ -63,5 +62,4 @@ class RegionCommit : public apache::geode::client::SharedBase {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_REGIONCOMMIT_H_
+#endif  // GEODE_REGIONCOMMIT_H_

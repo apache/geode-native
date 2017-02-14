@@ -18,11 +18,11 @@
 #include "PdxTypeRegistry.hpp"
 #include "PdxHelper.hpp"
 #include "PdxTypes.hpp"
-#include <gfcpp/PdxFieldTypes.hpp>
+#include <geode/PdxFieldTypes.hpp>
 #include "PdxLocalWriter.hpp"
-#include <gfcpp/PdxReader.hpp>
+#include <geode/PdxReader.hpp>
 #include "CacheRegionHelper.hpp"
-#include <gfcpp/Cache.hpp>
+#include <geode/Cache.hpp>
 #include "CacheImpl.hpp"
 #include "Utils.hpp"
 #include <algorithm>

@@ -18,7 +18,7 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include "gfcpp/gf_types.hpp"
+#include "geode/gf_types.hpp"
 
 using namespace System;
 

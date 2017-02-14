@@ -18,7 +18,7 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/Query.hpp>
+#include <geode/Query.hpp>
 #include "impl/NativeWrapper.hpp"
 
 #include "IGFSerializable.hpp"

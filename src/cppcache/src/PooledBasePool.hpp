@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/SharedPtr.hpp>
 #include "SpinLock.hpp"
 #include "PooledBase.hpp"
 #include <deque>
@@ -82,4 +82,4 @@ class CPPCACHE_EXPORT PooledBasePool {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_POOLEDBASEPOOL_H_
+#endif  // GEODE_POOLEDBASEPOOL_H_

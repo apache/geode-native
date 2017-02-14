@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_e0125e37a3eca017a80d206a8d22c2e8
-#define APACHE_GEODE_GUARD_e0125e37a3eca017a80d206a8d22c2e8
+#ifndef GEODE_TESTOBJECT_TESTOBJECT1_H_
+#define GEODE_TESTOBJECT_TESTOBJECT1_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -26,8 +26,7 @@
  *      Author: abhaware
  */
 
-
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <string>
 
 #ifdef _WIN32
@@ -69,4 +68,4 @@ class TESTOBJECT_EXPORT TestObject1 : public Cacheable {
 typedef SharedPtr<TestObject1> TestObject1Ptr;
 }  // namespace testobject
 
-#endif // APACHE_GEODE_GUARD_e0125e37a3eca017a80d206a8d22c2e8
+#endif  // GEODE_TESTOBJECT_TESTOBJECT1_H_

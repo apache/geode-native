@@ -22,9 +22,9 @@
  */
 
 #include "TransactionalOperation.hpp"
-#include <gfcpp/CacheableString.hpp>
-#include <gfcpp/Cache.hpp>
-#include <gfcpp/FunctionService.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/Cache.hpp>
+#include <geode/FunctionService.hpp>
 
 namespace apache {
 namespace geode {

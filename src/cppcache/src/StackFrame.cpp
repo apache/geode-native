@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 #include <ace/OS.h>
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "StackFrame.hpp"
-#include <gfcpp/gf_base.hpp>
+#include <geode/gf_base.hpp>
 
 namespace apache {
 namespace geode {

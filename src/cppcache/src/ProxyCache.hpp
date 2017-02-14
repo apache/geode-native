@@ -19,14 +19,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/Region.hpp>
-#include <gfcpp/DistributedSystem.hpp>
-#include <gfcpp/QueryService.hpp>
-#include <gfcpp/PoolFactory.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/gf_types.hpp>
+#include <geode/Region.hpp>
+#include <geode/DistributedSystem.hpp>
+#include <geode/QueryService.hpp>
+#include <geode/PoolFactory.hpp>
 #include "UserAttributes.hpp"
-#include <gfcpp/RegionService.hpp>
+#include <geode/RegionService.hpp>
 
 /**
  * @file
@@ -137,4 +137,4 @@ class CPPCACHE_EXPORT ProxyCache : public RegionService {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PROXYCACHE_H_
+#endif  // GEODE_PROXYCACHE_H_

@@ -1314,5 +1314,4 @@ void registerBuiltins(bool isRegisterFileName = false) {
 }
 }  // namespace CacheableHelper
 
-
-#endif // GEODE_INTEGRATION_TEST_BUILTINCACHEABLEWRAPPERS_H_
+#endif  // GEODE_INTEGRATION_TEST_BUILTINCACHEABLEWRAPPERS_H_

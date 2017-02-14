@@ -23,7 +23,7 @@
 #include "RegionEntry.hpp"
 #include "impl/AuthenticatedCache.hpp"
 #include "impl/SafeConvert.hpp"
-//#include <gfcpp/Serializable.hpp>
+//#include <geode/Serializable.hpp>
 //#include <cppcache/DataOutPut.hpp>
 
 using namespace System;

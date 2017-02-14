@@ -1,8 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_0b4f257a1a4de03f53b0299148e95656
-#define APACHE_GEODE_GUARD_0b4f257a1a4de03f53b0299148e95656
-
+#ifndef GEODE_DHIMPL_DHIMPL_H_
+#define GEODE_DHIMPL_DHIMPL_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -27,7 +26,7 @@
 #include <string>
 #include <vector>
 
-#include <gfcpp/gf_base.hpp>
+#include <geode/gf_base.hpp>
 
 #define DH_ERR_NO_ERROR 0
 #define DH_ERR_UNSUPPORTED_ALGO 1
@@ -67,5 +66,4 @@ CPPCACHE_EXPORT bool gf_verifyDH(const char* subject,
                                  int* reason);
 }
 
-
-#endif // APACHE_GEODE_GUARD_0b4f257a1a4de03f53b0299148e95656
+#endif  // GEODE_DHIMPL_DHIMPL_H_

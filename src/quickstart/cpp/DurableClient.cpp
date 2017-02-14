@@ -30,7 +30,7 @@
  */
 
 // Include the Geode library.
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 // Include cachelistener
 #include "plugins/DurableCacheListener.hpp"

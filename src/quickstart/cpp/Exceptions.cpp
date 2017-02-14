@@ -21,7 +21,7 @@
  * This example takes the following steps:
  *
  * 1. Create CacheFactory using the user specified settings or from the
- * gfcpp.properties file by default.
+ * geode.properties file by default.
  * 2. Create a Geode Cache.
  * 3. Get the example Regions from the Cache.
  * 4. Perform some operations which should cause exceptions.
@@ -31,7 +31,7 @@
  */
 
 // Include the Geode library.
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;
@@ -40,7 +40,7 @@ using namespace apache::geode::client;
 int main(int argc, char** argv) {
   try {
     // Create CacheFactory using the user specified settings or from the
-    // gfcpp.properties file by default.
+    // geode.properties file by default.
     PropertiesPtr prp = Properties::create();
     prp->insert("cache-xml-file", "XMLs/clientExceptions.xml");
 

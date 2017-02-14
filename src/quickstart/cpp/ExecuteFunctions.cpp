@@ -30,7 +30,7 @@
  */
 
 // Include the Geode library.
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;
@@ -43,7 +43,7 @@ char* putFuncName = (char*)"MultiPutFunction";
 // The Execute Function QuickStart example.
 int main(int argc, char** argv) {
   try {
-    // Create CacheFactory using the settings from the gfcpp.properties file by
+    // Create CacheFactory using the settings from the geode.properties file by
     // default.
     CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
     LOGINFO("Created CacheFactory");

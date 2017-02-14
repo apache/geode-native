@@ -22,16 +22,16 @@
 
 #include <map>
 #include <list>
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "StatsDef.hpp"
-#include <gfcpp/statistics/Statistics.hpp>
-#include <gfcpp/statistics/StatisticDescriptor.hpp>
+#include <geode/statistics/Statistics.hpp>
+#include <geode/statistics/StatisticDescriptor.hpp>
 #include "StatisticDescriptorImpl.hpp"
-#include <gfcpp/statistics/StatisticsType.hpp>
+#include <geode/statistics/StatisticsType.hpp>
 #include "HostStatSampler.hpp"
-#include <gfcpp/Log.hpp>
-#include <gfcpp/DataOutput.hpp>
+#include <geode/Log.hpp>
+#include <geode/DataOutput.hpp>
 #include <NonCopyable.hpp>
 
 using namespace apache::geode::client;
@@ -268,4 +268,4 @@ class CPPCACHE_EXPORT StatArchiveWriter {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STATISTICS_STATARCHIVEWRITER_H_
+#endif  // GEODE_STATISTICS_STATARCHIVEWRITER_H_

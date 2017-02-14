@@ -18,7 +18,7 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/FunctionService.hpp>
+#include <geode/FunctionService.hpp>
 #include "Cache.hpp"
 //#include "impl/NativeWrapper.hpp"
 

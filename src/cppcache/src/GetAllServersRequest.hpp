@@ -20,10 +20,10 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Serializable.hpp>
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/CacheableString.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/CacheableString.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 #include <string>
 
@@ -53,5 +53,4 @@ class GetAllServersRequest : public Serializable {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_GETALLSERVERSREQUEST_H_
+#endif  // GEODE_GETALLSERVERSREQUEST_H_

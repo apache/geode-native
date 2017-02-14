@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_fc0317ed5799f03f58df423db009e0b5
-#define APACHE_GEODE_GUARD_fc0317ed5799f03f58df423db009e0b5
+#ifndef GEODE_PDXAUTOSERIALIZERCLASS_POSITIONPDX_H_
+#define GEODE_PDXAUTOSERIALIZERCLASS_POSITIONPDX_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -24,11 +24,10 @@
  * @brief User class for testing the put functionality for object.
  */
 
-
-#include <gfcpp/GeodeCppCache.hpp>
-#include <gfcpp/PdxSerializable.hpp>
-#include <gfcpp/PdxWriter.hpp>
-#include <gfcpp/PdxReader.hpp>
+#include <geode/GeodeCppCache.hpp>
+#include <geode/PdxSerializable.hpp>
+#include <geode/PdxWriter.hpp>
+#include <geode/PdxReader.hpp>
 #include <string.h>
 
 #ifdef _WIN32
@@ -108,4 +107,4 @@ class GFIGNORE(TESTOBJECT_EXPORT) PositionPdx
 typedef apache::geode::client::SharedPtr<PositionPdx> PositionPdxPtr;
 }  // namespace AutoPdxTests
 
-#endif // APACHE_GEODE_GUARD_fc0317ed5799f03f58df423db009e0b5
+#endif  // GEODE_PDXAUTOSERIALIZERCLASS_POSITIONPDX_H_

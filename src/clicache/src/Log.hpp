@@ -18,7 +18,7 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/Log.hpp>
+#include <geode/Log.hpp>
 
 
 using namespace System;

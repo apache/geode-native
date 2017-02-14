@@ -20,16 +20,16 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
-#include <gfcpp/CacheableKey.hpp>
+#include <geode/CacheableKey.hpp>
 #include "MapEntry.hpp"
-#include <gfcpp/RegionEntry.hpp>
-#include <gfcpp/VectorT.hpp>
+#include <geode/RegionEntry.hpp>
+#include <geode/VectorT.hpp>
 #include "SpinLock.hpp"
 #include "MapWithLock.hpp"
 #include "CacheableToken.hpp"
-#include <gfcpp/Delta.hpp>
+#include <geode/Delta.hpp>
 
 #include <ace/Hash_Map_Manager.h>
 #include <ace/Functor_T.h>
@@ -310,4 +310,4 @@ class CPPCACHE_EXPORT MapSegment {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_MAPSEGMENT_H_
+#endif  // GEODE_MAPSEGMENT_H_

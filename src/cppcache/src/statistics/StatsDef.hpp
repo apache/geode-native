@@ -54,4 +54,4 @@ typedef enum {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STATISTICS_STATSDEF_H_
+#endif  // GEODE_STATISTICS_STATSDEF_H_

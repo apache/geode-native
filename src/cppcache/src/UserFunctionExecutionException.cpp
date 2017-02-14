@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/UserFunctionExecutionException.hpp>
+#include <geode/UserFunctionExecutionException.hpp>
 
 namespace apache {
 namespace geode {

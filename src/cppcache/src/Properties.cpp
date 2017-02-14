@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/Properties.hpp>
-#include <gfcpp/GeodeTypeIds.hpp>
+#include <geode/Properties.hpp>
+#include <geode/GeodeTypeIds.hpp>
 
 #include <string>
 #include <ace/Hash_Map_Manager.h>

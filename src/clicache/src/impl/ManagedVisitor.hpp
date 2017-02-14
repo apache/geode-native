@@ -19,7 +19,7 @@
 
 #include "../gf_defs.hpp"
 #include <vcclr.h>
-#include <gfcpp/Properties.hpp>
+#include <geode/Properties.hpp>
 #include "../Properties.hpp"
 
 //using namespace apache::geode::client;

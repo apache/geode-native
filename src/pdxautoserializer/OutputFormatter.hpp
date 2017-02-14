@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_8157a8a77b151f9beadc02d24c462c34
-#define APACHE_GEODE_GUARD_8157a8a77b151f9beadc02d24c462c34
+#ifndef GEODE_PDXAUTOSERIALIZER_OUTPUTFORMATTER_H_
+#define GEODE_PDXAUTOSERIALIZER_OUTPUTFORMATTER_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -19,7 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 
 #include <ostream>
 #include <streambuf>
@@ -228,5 +227,4 @@ class OutputFormatter : public std::ostream {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_8157a8a77b151f9beadc02d24c462c34
+#endif  // GEODE_PDXAUTOSERIALIZER_OUTPUTFORMATTER_H_

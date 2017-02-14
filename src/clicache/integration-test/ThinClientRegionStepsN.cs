@@ -53,7 +53,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       get
       {
-        return "gfcpp.properties.nativeclient";
+        return "geode.properties.nativeclient";
       }
     }
 

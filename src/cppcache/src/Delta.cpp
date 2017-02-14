@@ -21,7 +21,7 @@
  *      Author: abhaware
  */
 
-#include <gfcpp/Delta.hpp>
+#include <geode/Delta.hpp>
 
 using namespace apache::geode::client;
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_79d494cc4b256bbd77fabec6e825390a
-#define APACHE_GEODE_GUARD_79d494cc4b256bbd77fabec6e825390a
+#ifndef GEODE_FWKLIB_TIMEBOMB_H_
+#define GEODE_FWKLIB_TIMEBOMB_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -19,7 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 
 #include "fwklib/PerfFwk.hpp"
 #include "fwklib/FwkLog.hpp"
@@ -85,4 +84,4 @@ class TimeBomb : public ACE_Task_Base {
 }  // namespace geode
 }  // namespace apache
 
-#endif // APACHE_GEODE_GUARD_79d494cc4b256bbd77fabec6e825390a
+#endif  // GEODE_FWKLIB_TIMEBOMB_H_

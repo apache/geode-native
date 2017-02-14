@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/statistics/Statistics.hpp>
-#include <gfcpp/statistics/StatisticsFactory.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/statistics/Statistics.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
 #include "SpinLock.hpp"
 //#include "NanoTimer.hpp"
 //#include <SystemProperties.hpp>
@@ -235,4 +235,4 @@ class RegionStatType {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_REGIONSTATS_H_
+#endif  // GEODE_REGIONSTATS_H_

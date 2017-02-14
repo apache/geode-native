@@ -19,7 +19,7 @@
 
 #include "gf_defs.hpp"
 #include "CqState.hpp"
-#include <gfcpp/CqQuery.hpp>
+#include <geode/CqQuery.hpp>
 //#include "impl/NativeWrapper.hpp"
 
 

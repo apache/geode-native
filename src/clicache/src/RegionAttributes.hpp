@@ -18,7 +18,7 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/RegionAttributes.hpp>
+#include <geode/RegionAttributes.hpp>
 //#include "impl/NativeWrapper.hpp"
 #include "IGFSerializable.hpp"
 #include "ExpirationAction.hpp"

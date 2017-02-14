@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Region.hpp>
-#include <gfcpp/CacheWriter.hpp>
-#include <gfcpp/EntryEvent.hpp>
-#include <gfcpp/RegionEvent.hpp>
+#include <geode/Region.hpp>
+#include <geode/CacheWriter.hpp>
+#include <geode/EntryEvent.hpp>
+#include <geode/RegionEvent.hpp>
 
 namespace apache {
 namespace geode {

@@ -26,7 +26,6 @@
  *      Author: abhaware
  */
 
-
 bool isLocalServer = false;
 
 const char* durableIds[] = {"DurableId1", "DurableId2"};
@@ -111,4 +110,4 @@ void initClientAndTwoRegionsAndTwoPools(int ClientIdx, int redundancy,
   }
 }
 
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTDURABLEINIT_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTDURABLEINIT_H_

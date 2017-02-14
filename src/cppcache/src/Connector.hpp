@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/ExceptionTypes.hpp>
 
 /*
 These are superseded by the connect-timeout system property for SR # 6525.
@@ -108,5 +108,4 @@ class Connector {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_CONNECTOR_H_
+#endif  // GEODE_CONNECTOR_H_

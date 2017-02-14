@@ -64,4 +64,4 @@ class QueueConnectionRequest : public ServerLocationRequest {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_QUEUECONNECTIONREQUEST_H_
+#endif  // GEODE_QUEUECONNECTIONREQUEST_H_

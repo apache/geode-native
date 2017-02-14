@@ -19,7 +19,7 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include "gfcpp/UserFunctionExecutionException.hpp"
+#include "geode/UserFunctionExecutionException.hpp"
 #include "IGFSerializable.hpp"
 #include "DataInput.hpp"
 #include "DataOutput.hpp"

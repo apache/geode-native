@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_b1ca2169435caedbb3e0ccb04094fb46
-#define APACHE_GEODE_GUARD_b1ca2169435caedbb3e0ccb04094fb46
+#ifndef GEODE_FWKLIB_TESTCLIENT_H_
+#define GEODE_FWKLIB_TESTCLIENT_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -19,7 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 
 #include "fwklib/PerfFwk.hpp"
 #include "fwklib/ClientTask.hpp"
@@ -121,4 +120,4 @@ class TestClient : public ACE_Task_Base {
 }  // namespace geode
 }  // namespace apache
 
-#endif // APACHE_GEODE_GUARD_b1ca2169435caedbb3e0ccb04094fb46
+#endif  // GEODE_FWKLIB_TESTCLIENT_H_

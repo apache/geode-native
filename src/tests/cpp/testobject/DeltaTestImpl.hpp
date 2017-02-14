@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_f0dde88a60c43a402c317bb0bafa6c73
-#define APACHE_GEODE_GUARD_f0dde88a60c43a402c317bb0bafa6c73
+#ifndef GEODE_TESTOBJECT_DELTATESTIMPL_H_
+#define GEODE_TESTOBJECT_DELTATESTIMPL_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -25,7 +25,6 @@
  *  Created on: Jul 14, 2009
  *      Author: abhaware
  */
-
 
 #include <ace/ACE.h>
 #include <ace/OS.h>
@@ -124,4 +123,4 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
 };
 }  // namespace testobject
 
-#endif // APACHE_GEODE_GUARD_f0dde88a60c43a402c317bb0bafa6c73
+#endif  // GEODE_TESTOBJECT_DELTATESTIMPL_H_

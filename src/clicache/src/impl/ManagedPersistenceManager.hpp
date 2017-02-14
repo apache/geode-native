@@ -19,7 +19,7 @@
 #pragma once
 #include "../gf_defs.hpp"
 #include <vcclr.h>
-#include <gfcpp/PersistenceManager.hpp>
+#include <geode/PersistenceManager.hpp>
 #include "PersistenceManagerProxy.hpp"
 
 namespace apache {

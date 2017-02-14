@@ -27,7 +27,7 @@
 #include "Queue.hpp"
 #include "TcrChunkedContext.hpp"
 #include "CacheableObjectPartList.hpp"
-#include <gfcpp/ResultCollector.hpp>
+#include <geode/ResultCollector.hpp>
 
 #include <ace/Task.h>
 
@@ -622,4 +622,4 @@ typedef SharedPtr<ChunkedDurableCQListResponse> ChunkedDurableCQListResponsePtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_THINCLIENTREGION_H_
+#endif  // GEODE_THINCLIENTREGION_H_

@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include "ThinClientHelper.hpp"
 #include "ace/Process.h"
 
@@ -259,4 +259,4 @@ class putThread : public ACE_Task_Base {
   int m_waitTime;
 };
 
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTSECURITYHELPER_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTSECURITYHELPER_H_

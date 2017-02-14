@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_ec3211e9438cbef839aaab90eac09a4b
-#define APACHE_GEODE_GUARD_ec3211e9438cbef839aaab90eac09a4b
+#ifndef GEODE_TESTOBJECT_ARRAYOFBYTE_H_
+#define GEODE_TESTOBJECT_ARRAYOFBYTE_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <string.h>
 #include "fwklib/FwkLog.hpp"
 #include "fwklib/FrameworkTest.hpp"
@@ -125,5 +125,4 @@ class TESTOBJECT_EXPORT ArrayOfByte {
 };
 }  // namespace testobject
 
-
-#endif // APACHE_GEODE_GUARD_ec3211e9438cbef839aaab90eac09a4b
+#endif  // GEODE_TESTOBJECT_ARRAYOFBYTE_H_

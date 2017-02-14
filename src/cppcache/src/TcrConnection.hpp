@@ -21,12 +21,12 @@
  */
 
 #include <ace/Semaphore.h>
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "Connector.hpp"
 #include "Set.hpp"
 #include "TcrMessage.hpp"
-#include <gfcpp/CacheableBuiltins.hpp>
+#include <geode/CacheableBuiltins.hpp>
 #include "DiffieHellman.hpp"
 
 #define DEFAULT_TIMEOUT_RETRIES 12
@@ -194,11 +194,10 @@ class CPPCACHE_EXPORT TcrConnection {
             uint32_t sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
             bool checkConnected = true);
 
-  void send(
-      uint32_t& timeSpent, const char* buffer, int len,
-      uint32_t sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
-      bool checkConnected = true,
-      int32_t notPublicApiWithTimeout = -2 /*NOT_PUBLIC_API_WITH_TIMEOUT*/);
+  void send(uint32_t& timeSpent, const char* buffer, int len,
+            uint32_t sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
+            bool checkConnected = true, int32_t notPublicApiWithTimeout =
+                                            -2 /*NOT_PUBLIC_API_WITH_TIMEOUT*/);
 
   /**
   * This method is for receiving client notification. It will read 2 times as
@@ -407,5 +406,4 @@ class CPPCACHE_EXPORT TcrConnection {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TCRCONNECTION_H_
+#endif  // GEODE_TCRCONNECTION_H_

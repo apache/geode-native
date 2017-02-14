@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_c4d769074b0c6edf12cc639d50a34284
-#define APACHE_GEODE_GUARD_c4d769074b0c6edf12cc639d50a34284
+#ifndef GEODE_TESTOBJECT_NOOPAUTHINIT_H_
+#define GEODE_TESTOBJECT_NOOPAUTHINIT_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include "gfcpp/AuthInitialize.hpp"
+#include "geode/AuthInitialize.hpp"
 
 /**
  * @file
@@ -86,4 +86,4 @@ class NoopAuthInit : public AuthInitialize {
 }  // namespace geode
 }  // namespace apache
 
-#endif // APACHE_GEODE_GUARD_c4d769074b0c6edf12cc639d50a34284
+#endif  // GEODE_TESTOBJECT_NOOPAUTHINIT_H_

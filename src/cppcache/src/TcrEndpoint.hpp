@@ -20,12 +20,12 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include <string>
 #include <list>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
-#include <gfcpp/gf_base.hpp>
+#include <geode/gf_base.hpp>
 #include "FairQueue.hpp"
 #include "Set.hpp"
 #include "TcrConnection.hpp"
@@ -267,4 +267,4 @@ class CPPCACHE_EXPORT TcrEndpoint {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_TCRENDPOINT_H_
+#endif  // GEODE_TCRENDPOINT_H_

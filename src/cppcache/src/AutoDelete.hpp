@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 namespace apache {
 namespace geode {
@@ -70,4 +70,4 @@ class DeleteArray {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_AUTODELETE_H_
+#endif  // GEODE_AUTODELETE_H_

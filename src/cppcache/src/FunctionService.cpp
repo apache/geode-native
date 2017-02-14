@@ -14,15 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/FunctionService.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/FunctionService.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include <ExecutionImpl.hpp>
 #include <ProxyRegion.hpp>
 #include <UserAttributes.hpp>
 #include <ProxyCache.hpp>
-#include <gfcpp/PoolManager.hpp>
+#include <geode/PoolManager.hpp>
 #include <CacheRegionHelper.hpp>
-#include <gfcpp/TypeHelper.hpp>
+#include <geode/TypeHelper.hpp>
 
 using namespace apache::geode::client;
 

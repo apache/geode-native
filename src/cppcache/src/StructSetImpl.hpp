@@ -20,14 +20,14 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/gf_types.hpp>
 
-#include <gfcpp/StructSet.hpp>
-#include <gfcpp/Struct.hpp>
-#include <gfcpp/CacheableBuiltins.hpp>
+#include <geode/StructSet.hpp>
+#include <geode/Struct.hpp>
+#include <geode/CacheableBuiltins.hpp>
 
-#include <gfcpp/SelectResultsIterator.hpp>
+#include <geode/SelectResultsIterator.hpp>
 
 #include <string>
 #include <map>
@@ -76,4 +76,4 @@ class CPPCACHE_EXPORT StructSetImpl : public StructSet {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STRUCTSETIMPL_H_
+#endif  // GEODE_STRUCTSETIMPL_H_

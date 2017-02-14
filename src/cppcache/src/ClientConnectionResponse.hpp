@@ -21,7 +21,7 @@
  */
 #include "ServerLocationResponse.hpp"
 #include "ServerLocation.hpp"
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/SharedPtr.hpp>
 namespace apache {
 namespace geode {
 namespace client {
@@ -52,4 +52,4 @@ typedef SharedPtr<ClientConnectionResponse> ClientConnectionResponsePtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CLIENTCONNECTIONRESPONSE_H_
+#endif  // GEODE_CLIENTCONNECTIONRESPONSE_H_

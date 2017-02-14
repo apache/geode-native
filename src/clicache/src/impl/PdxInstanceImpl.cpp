@@ -25,7 +25,7 @@
 #include "../DataInput.hpp"
 #include "DotNetTypes.hpp"
 #include <CacheRegionHelper.hpp>
-#include <gfcpp/Cache.hpp>
+#include <geode/Cache.hpp>
 #include <CacheImpl.hpp>
 #include "PdxType.hpp"
 using namespace System::Text;

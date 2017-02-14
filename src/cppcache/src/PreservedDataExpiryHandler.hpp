@@ -26,9 +26,9 @@
  *      Author: npatel
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/Cache.hpp>
-#include <gfcpp/PdxSerializable.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/Cache.hpp>
+#include <geode/PdxSerializable.hpp>
 #include "CacheImpl.hpp"
 #include "ExpiryTaskManager.hpp"
 //#include "CacheTransactionManagerImpl.hpp"
@@ -75,5 +75,4 @@ class CPPCACHE_EXPORT PreservedDataExpiryHandler : public ACE_Event_Handler {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_PRESERVEDDATAEXPIRYHANDLER_H_
+#endif  // GEODE_PRESERVEDDATAEXPIRYHANDLER_H_

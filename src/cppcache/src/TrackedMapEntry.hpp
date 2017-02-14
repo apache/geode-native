@@ -81,4 +81,4 @@ class TrackedMapEntry : public MapEntry {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_TRACKEDMAPENTRY_H_
+#endif  // GEODE_TRACKEDMAPENTRY_H_

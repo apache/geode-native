@@ -20,10 +20,10 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Serializable.hpp>
+#include <geode/Serializable.hpp>
 #include "ServerLocation.hpp"
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/DataOutput.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
 #include <vector>
 
 namespace apache {
@@ -55,5 +55,4 @@ typedef SharedPtr<GetAllServersResponse> GetAllServersResponsePtr;
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_GETALLSERVERSRESPONSE_H_
+#endif  // GEODE_GETALLSERVERSRESPONSE_H_

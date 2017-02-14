@@ -20,11 +20,11 @@
  * limitations under the License.
  */
 
-#include <gfcpp/PdxReader.hpp>
+#include <geode/PdxReader.hpp>
 #include "PdxType.hpp"
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/CacheableObjectArray.hpp>
-#include <gfcpp/CacheableDate.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/CacheableObjectArray.hpp>
+#include <geode/CacheableDate.hpp>
 #include "PdxRemotePreservedData.hpp"
 namespace apache {
 namespace geode {
@@ -219,4 +219,4 @@ typedef SharedPtr<PdxLocalReader> PdxLocalReaderPtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PDXLOCALREADER_H_
+#endif  // GEODE_PDXLOCALREADER_H_

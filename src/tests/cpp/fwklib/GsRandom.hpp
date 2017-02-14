@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_07015f9e9a2d1cdc790e5e202a3742fe
-#define APACHE_GEODE_GUARD_07015f9e9a2d1cdc790e5e202a3742fe
+#ifndef GEODE_FWKLIB_GSRANDOM_H_
+#define GEODE_FWKLIB_GSRANDOM_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,8 +20,7 @@
  * limitations under the License.
  */
 
-
-#include <gfcpp/gf_base.hpp>
+#include <geode/gf_base.hpp>
 
 #include <string>
 
@@ -238,4 +237,4 @@ class GsRandom {
 }  // namespace geode
 }  // namespace apache
 
-#endif // APACHE_GEODE_GUARD_07015f9e9a2d1cdc790e5e202a3742fe
+#endif  // GEODE_FWKLIB_GSRANDOM_H_

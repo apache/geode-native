@@ -159,11 +159,11 @@ void CPPCodeGenerator::addReferences(const ReferenceVector& references) {
       *m_cppFormatter << "#include \"" << headerPath << "\"\n\n";
     }
   }
-  *m_cppFormatter << "#include <gfcpp/PdxWriter.hpp>"
+  *m_cppFormatter << "#include <geode/PdxWriter.hpp>"
                   << "\n";
-  *m_cppFormatter << "#include <gfcpp/PdxReader.hpp>"
+  *m_cppFormatter << "#include <geode/PdxReader.hpp>"
                   << "\n";
-  *m_cppFormatter << "#include <gfcpp/PdxAutoSerializer.hpp>"
+  *m_cppFormatter << "#include <geode/PdxAutoSerializer.hpp>"
                   << "\n\n";
 }
 

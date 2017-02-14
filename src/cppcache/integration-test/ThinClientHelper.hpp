@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include "testUtils.hpp"
@@ -705,5 +705,4 @@ class RegionOperations {
   RegionPtr m_regionPtr;
 };
 
-
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTHELPER_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTHELPER_H_

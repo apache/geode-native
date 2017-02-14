@@ -21,8 +21,8 @@ extern "C" {
 }
 #include <ace/OS.h>
 
-#include <gfcpp/Exception.hpp>
-#include <gfcpp/CacheableString.hpp>
+#include <geode/Exception.hpp>
+#include <geode/CacheableString.hpp>
 #include <StackTrace.hpp>
 #include <ace/TSS_T.h>
 

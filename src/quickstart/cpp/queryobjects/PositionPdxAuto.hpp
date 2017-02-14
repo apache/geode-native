@@ -22,10 +22,10 @@
 #ifndef __POSITIONPDX_AUTO__HPP__
 #define __POSITIONPDX_AUTO__HPP__
 
-#include <gfcpp/GeodeCppCache.hpp>
-#include <gfcpp/PdxSerializable.hpp>
-#include <gfcpp/PdxWriter.hpp>
-#include <gfcpp/PdxReader.hpp>
+#include <geode/GeodeCppCache.hpp>
+#include <geode/PdxSerializable.hpp>
+#include <geode/PdxWriter.hpp>
+#include <geode/PdxReader.hpp>
 #include <string.h>
 
 #ifdef _WIN32

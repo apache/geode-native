@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_dbef31dd4224e58666543cc33c286150
-#define APACHE_GEODE_GUARD_dbef31dd4224e58666543cc33c286150
+#ifndef GEODE_PDXAUTOSERIALIZER_BASE_TYPES_H_
+#define GEODE_PDXAUTOSERIALIZER_BASE_TYPES_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -19,7 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 
 #include <string>
 #include <vector>
@@ -254,5 +253,4 @@ typedef std::vector<VariableInfo>::const_iterator VariableVectorIterator;
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_dbef31dd4224e58666543cc33c286150
+#endif  // GEODE_PDXAUTOSERIALIZER_BASE_TYPES_H_

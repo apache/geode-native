@@ -46,5 +46,4 @@ enum RegionEventType {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_EVENTTYPE_H_
+#endif  // GEODE_EVENTTYPE_H_

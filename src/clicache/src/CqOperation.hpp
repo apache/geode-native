@@ -20,7 +20,7 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/CqOperation.hpp>
+#include <geode/CqOperation.hpp>
 
 
 using namespace System;

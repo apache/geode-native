@@ -20,8 +20,7 @@
  * limitations under the License.
  */
 
-
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <string>
 
 using namespace apache::geode::client;
@@ -223,5 +222,4 @@ void TallyListener::afterRegionClear(const EntryEvent& event) {
   checkcallbackArg(event);
 }
 
-
-#endif // GEODE_INTEGRATION_TEST_TALLYLISTENER_H_
+#endif  // GEODE_INTEGRATION_TEST_TALLYLISTENER_H_

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/ExpirationAction.hpp>
+#include <geode/ExpirationAction.hpp>
 
 #include <string.h>
 #include <ace/OS.h>

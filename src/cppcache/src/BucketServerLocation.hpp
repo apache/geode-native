@@ -177,5 +177,4 @@ class BucketServerLocation : public ServerLocation {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_BUCKETSERVERLOCATION_H_
+#endif  // GEODE_BUCKETSERVERLOCATION_H_

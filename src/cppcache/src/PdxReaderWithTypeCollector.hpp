@@ -179,4 +179,4 @@ typedef SharedPtr<PdxReaderWithTypeCollector> PdxReaderWithTypeCollectorPtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PDXREADERWITHTYPECOLLECTOR_H_
+#endif  // GEODE_PDXREADERWITHTYPECOLLECTOR_H_

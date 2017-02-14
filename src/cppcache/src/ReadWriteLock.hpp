@@ -92,4 +92,4 @@ class TryWriteGuard {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_READWRITELOCK_H_
+#endif  // GEODE_READWRITELOCK_H_

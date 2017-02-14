@@ -25,11 +25,11 @@
 #include "fw_dunit.hpp"
 #include <string>
 #include "CacheHelper.hpp"
-#include <gfcpp/CqAttributesFactory.hpp>
-#include <gfcpp/CqAttributes.hpp>
-#include <gfcpp/CqListener.hpp>
-#include <gfcpp/CqQuery.hpp>
-#include <gfcpp/CqServiceStatistics.hpp>
+#include <geode/CqAttributesFactory.hpp>
+#include <geode/CqAttributes.hpp>
+#include <geode/CqListener.hpp>
+#include <geode/CqQuery.hpp>
+#include <geode/CqServiceStatistics.hpp>
 
 using namespace apache::geode::client;
 using namespace test;

@@ -81,5 +81,4 @@ class DiskVersionTag : public VersionTag {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_DISKVERSIONTAG_H_
+#endif  // GEODE_DISKVERSIONTAG_H_

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 #include "SslSockStream.hpp"
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include <ace/OS_NS_stdio.h>
 
 using namespace apache::geode::client;
