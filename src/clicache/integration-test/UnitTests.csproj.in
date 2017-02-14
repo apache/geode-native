@@ -213,7 +213,7 @@
     <Compile Include="$(CMAKE_SOURCE_DIR)\tests\cli\NewTestObject\DeltaEx.cs">
       <Link>DeltaEx.cs</Link>
     </Compile>
-    <Compile Include="$(CMAKE_SOURCE_DIR)\..\examples\clicache\CacheRunner\ComplexNumber.cs" />
+    <Compile Include="$(CMAKE_SOURCE_DIR)\tests\cli\NewTestObject\ComplexNumber.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(CMAKE_CURRENT_SOURCE_DIR)\gfcpp.properties.mixed">
