@@ -88,7 +88,6 @@ set_property(TEST ThinClientCqTestsN PROPERTY LABELS FLAKY)
 # Label any tests that always fail here
 set_property(TEST OverflowTestsN PROPERTY LABELS OMITTED)
 set_property(TEST ThinClientDeltaTestN PROPERTY LABELS OMITTED)
-set_property(TEST ThinClientDocExamplesN PROPERTY LABELS OMITTED)
 set_property(TEST ThinClientDurableTestsN PROPERTY LABELS OMITTED)
 set_property(TEST ThinClientFunctionExecutionTestsN PROPERTY LABELS OMITTED)
 set_property(TEST ThinClientHARegionTestsN PROPERTY LABELS OMITTED)
