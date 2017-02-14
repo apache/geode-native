@@ -16,9 +16,9 @@
  */
 #include "config.h"
 #include "ExpiryTaskManager.hpp"
-#include <gfcpp/Log.hpp>
-#include <gfcpp/Assert.hpp>
-#include <gfcpp/DistributedSystem.hpp>
+#include <geode/Log.hpp>
+#include <geode/Assert.hpp>
+#include <geode/DistributedSystem.hpp>
 #include "DistributedSystemImpl.hpp"
 
 #if defined(_WIN32)

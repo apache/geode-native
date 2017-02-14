@@ -228,7 +228,7 @@ namespace Apache.Geode.Client.FwkLib
     public static void InitConfig(Properties<string,string> config,
       string cacheXml, bool PdxReadSerialized)
     {
-      string gfcppPropsFile = Util.AssemblyDir + "/gfcpp.properties";
+      string gfcppPropsFile = Util.AssemblyDir + "/geode.properties";
       if (File.Exists(gfcppPropsFile))
       {
         Properties<string,string> newConfig = new Properties<string,string>();

@@ -26,7 +26,6 @@
  *      Author: ankurs
  */
 
-
 #include "TXState.hpp"
 
 namespace apache {
@@ -45,5 +44,4 @@ class TransactionSuspender {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TRANSACTIONSUSPENDER_H_
+#endif  // GEODE_TRANSACTIONSUSPENDER_H_

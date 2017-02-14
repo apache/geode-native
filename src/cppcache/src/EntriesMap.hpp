@@ -22,11 +22,11 @@
 
 // This needs to be ace free so that the region can include it.
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "MapEntry.hpp"
-#include <gfcpp/CacheableKey.hpp>
+#include <geode/CacheableKey.hpp>
 #include "MapSegment.hpp"
-#include <gfcpp/RegionEntry.hpp>
+#include <geode/RegionEntry.hpp>
 
 namespace apache {
 namespace geode {
@@ -178,4 +178,4 @@ class CPPCACHE_EXPORT EntriesMap {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_ENTRIESMAP_H_
+#endif  // GEODE_ENTRIESMAP_H_

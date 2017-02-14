@@ -20,11 +20,11 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/Execution.hpp>
-#include <gfcpp/CacheableBuiltins.hpp>
-#include <gfcpp/ResultCollector.hpp>
-#include <gfcpp/Region.hpp>
+#include <geode/gf_types.hpp>
+#include <geode/Execution.hpp>
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/ResultCollector.hpp>
+#include <geode/Region.hpp>
 #include "ProxyCache.hpp"
 #include <ace/Condition_Recursive_Thread_Mutex.h>
 #include <ace/Guard_T.h>
@@ -113,4 +113,4 @@ class ExecutionImpl : public Execution {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_EXECUTIONIMPL_H_
+#endif  // GEODE_EXECUTIONIMPL_H_

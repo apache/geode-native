@@ -43,4 +43,4 @@ class CPPCACHE_EXPORT RegionGlobalLocks {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_REGIONGLOBALLOCKS_H_
+#endif  // GEODE_REGIONGLOBALLOCKS_H_

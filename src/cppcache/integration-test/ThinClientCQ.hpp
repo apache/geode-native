@@ -26,7 +26,6 @@
  *      Author: vrao
  */
 
-
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 #include "CacheImplHelper.hpp"
@@ -62,5 +61,4 @@ void createRegionForCQMU(const char* name, bool ackMode,
   createRegionAndAttachPool(name, ackMode, name, caching);
 }
 
-
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTCQ_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTCQ_H_

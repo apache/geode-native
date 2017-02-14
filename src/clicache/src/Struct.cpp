@@ -16,7 +16,7 @@
  */
 
 //#include "gf_includes.hpp"
-#include <gfcpp/Struct.hpp>
+#include <geode/Struct.hpp>
 #include "Struct.hpp"
 #include "StructSet.hpp"
 #include "ExceptionTypes.hpp"

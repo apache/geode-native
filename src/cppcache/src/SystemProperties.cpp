@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 #include <string>
 #include <stdlib.h>
 #include <string.h>
 
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 #include <CppCacheLibrary.hpp>
-#include <gfcpp/Log.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/Log.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include <ace/OS.h>
 #include <ace/DLL.h>
 
@@ -264,7 +264,7 @@ SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
   // Load the file from product tree.
   try {
     std::string defsysprops =
-        CppCacheLibrary::getProductDir() + "/defaultSystem/gfcpp.properties";
+        CppCacheLibrary::getProductDir() + "/defaultSystem/geode.properties";
     givenConfigPtr->load(defsysprops.c_str());
   } catch (Exception&) {
     LOGERROR(
@@ -275,7 +275,7 @@ SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
 
   // Load the file from current directory.
   if (configFile == NULL) {
-    givenConfigPtr->load("./gfcpp.properties");
+    givenConfigPtr->load("./geode.properties");
   } else {
     givenConfigPtr->load(configFile);
   }

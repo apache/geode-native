@@ -22,11 +22,11 @@
 
 #include <string>
 #include <vector>
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/Region.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/Region.hpp>
 #include "RegionXmlCreation.hpp"
-#include <gfcpp/RegionAttributes.hpp>
+#include <geode/RegionAttributes.hpp>
 
 namespace apache {
 namespace geode {
@@ -131,4 +131,4 @@ class CPPCACHE_EXPORT RegionXmlCreation {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_REGIONXMLCREATION_H_
+#endif  // GEODE_REGIONXMLCREATION_H_

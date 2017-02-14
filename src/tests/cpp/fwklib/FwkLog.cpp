@@ -17,7 +17,7 @@
 
 #include "fwklib/FwkLog.hpp"
 #include "fwklib/PerfFwk.hpp"
-#include <gfcpp/Exception.hpp>
+#include <geode/Exception.hpp>
 
 using namespace apache::geode::client;
 using namespace testframework;

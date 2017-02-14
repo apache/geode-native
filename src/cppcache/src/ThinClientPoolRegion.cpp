@@ -23,9 +23,9 @@
 
 #include "ThinClientPoolRegion.hpp"
 #include "CacheImpl.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 #include "ThinClientPoolDM.hpp"
-#include <gfcpp/PoolManager.hpp>
+#include <geode/PoolManager.hpp>
 
 using namespace apache::geode::client;
 

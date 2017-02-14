@@ -18,7 +18,7 @@
 #pragma once
 
 #include "../gf_defs.hpp"
-#include <gfcpp/RegionService.hpp>
+#include <geode/RegionService.hpp>
 #include "NativeWrapper.hpp"
 #include "../RegionShortcut.hpp"
 #include "../RegionFactory.hpp"

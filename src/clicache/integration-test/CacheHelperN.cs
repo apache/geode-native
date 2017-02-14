@@ -642,7 +642,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       CacheHelper.Close();
       Properties<string, string> config = new Properties<string, string>();
-      config.Load("gfcpp.properties");
+      config.Load("geode.properties");
       CacheHelper.InitConfig(config);
     }
 

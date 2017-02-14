@@ -20,11 +20,11 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gf_types.hpp>
+#include <geode/gf_types.hpp>
 #include "ThinClientCacheDistributionManager.hpp"
 #include "ReadWriteLock.hpp"
-#include <gfcpp/Serializable.hpp>
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/SharedPtr.hpp>
 //#include <statistics/HostStatSampler.hpp>
 
 #include "NonCopyable.hpp"
@@ -83,5 +83,4 @@ typedef SharedPtr<AdminRegion> AdminRegionPtr;
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_ADMINREGION_H_
+#endif  // GEODE_ADMINREGION_H_

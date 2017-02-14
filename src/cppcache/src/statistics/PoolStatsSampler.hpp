@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 #include <ace/Task.h>
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 namespace apache {
 namespace geode {
 namespace client {
@@ -63,4 +63,4 @@ class CPPCACHE_EXPORT PoolStatsSampler : public ACE_Task_Base {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STATISTICS_POOLSTATSSAMPLER_H_
+#endif  // GEODE_STATISTICS_POOLSTATSSAMPLER_H_

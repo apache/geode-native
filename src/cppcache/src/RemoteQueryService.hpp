@@ -19,11 +19,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/SharedPtr.hpp>
 #include "CqService.hpp"
 
-#include <gfcpp/QueryService.hpp>
+#include <geode/QueryService.hpp>
 #include "ThinClientCacheDistributionManager.hpp"
 
 #include <ace/Recursive_Thread_Mutex.h>
@@ -90,4 +90,4 @@ typedef SharedPtr<RemoteQueryService> RemoteQueryServicePtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_REMOTEQUERYSERVICE_H_
+#endif  // GEODE_REMOTEQUERYSERVICE_H_

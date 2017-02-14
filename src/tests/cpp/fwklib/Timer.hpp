@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_8d07450f18b766edac2c13c91b9680d4
-#define APACHE_GEODE_GUARD_8d07450f18b766edac2c13c91b9680d4
+#ifndef GEODE_FWKLIB_TIMER_H_
+#define GEODE_FWKLIB_TIMER_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,8 +20,7 @@
  * limitations under the License.
  */
 
-
-#include <gfcpp/gf_base.hpp>
+#include <geode/gf_base.hpp>
 #include "fwklib/FwkLog.hpp"
 
 #include <ace/Time_Value.h>
@@ -180,5 +179,4 @@ class HRTimer {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_8d07450f18b766edac2c13c91b9680d4
+#endif  // GEODE_FWKLIB_TIMER_H_

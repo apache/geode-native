@@ -40,11 +40,11 @@
 #include "Log.hpp"
 #include "Struct.hpp"
 #include "impl/MemoryPressureHandler.hpp"
-#include <gfcpp/CacheLoader.hpp>
-#include <gfcpp/CacheListener.hpp>
-#include <gfcpp/FixedPartitionResolver.hpp>
-#include <gfcpp/CacheWriter.hpp>
-#include <gfcpp/GeodeTypeIds.hpp>
+#include <geode/CacheLoader.hpp>
+#include <geode/CacheListener.hpp>
+#include <geode/FixedPartitionResolver.hpp>
+#include <geode/CacheWriter.hpp>
+#include <geode/GeodeTypeIds.hpp>
 #include <CacheImpl.hpp>
 #include <PooledBasePool.hpp>
 #include <CacheXmlParser.hpp>

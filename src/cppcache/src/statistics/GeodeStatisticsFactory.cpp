@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/OS.h>
 #include <ace/Thread_Mutex.h>
 #include <ace/Guard_T.h>
-#include <gfcpp/Exception.hpp>
+#include <geode/Exception.hpp>
 #include "GeodeStatisticsFactory.hpp"
-#include <gfcpp/Log.hpp>
+#include <geode/Log.hpp>
 #include <string>
 #include "AtomicStatisticsImpl.hpp"
 #include "OsStatisticsImpl.hpp"

@@ -19,10 +19,10 @@
 
 #include "../gf_defs.hpp"
 #include <vcclr.h>
-#include <gfcpp/CacheableKey.hpp>
+#include <geode/CacheableKey.hpp>
 #include <GeodeTypeIdsImpl.hpp>
 #include "../IPdxSerializable.hpp"
-#include <gfcpp/Delta.hpp>
+#include <geode/Delta.hpp>
 #include "../IGFDelta.hpp"
 using namespace System;
 using namespace apache::geode::client;

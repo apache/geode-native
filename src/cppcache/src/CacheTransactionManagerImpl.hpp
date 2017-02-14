@@ -26,11 +26,10 @@
  *      Author: ankurs
  */
 
-
-#include <gfcpp/CacheTransactionManager.hpp>
-#include <gfcpp/HashSetOfSharedBase.hpp>
+#include <geode/CacheTransactionManager.hpp>
+#include <geode/HashSetOfSharedBase.hpp>
 #include "TXCommitMessage.hpp"
-#include <gfcpp/Log.hpp>
+#include <geode/Log.hpp>
 #include "SuspendedTxExpiryHandler.hpp"
 
 namespace apache {
@@ -111,5 +110,4 @@ class CacheTransactionManagerImpl
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_CACHETRANSACTIONMANAGERIMPL_H_
+#endif  // GEODE_CACHETRANSACTIONMANAGERIMPL_H_

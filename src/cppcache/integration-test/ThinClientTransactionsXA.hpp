@@ -21,7 +21,7 @@
  */
 
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <ace/Auto_Event.h>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
@@ -1166,5 +1166,4 @@ void runTransactionOps(bool poolConfig = true, bool isLocator = true,
   CALL_TASK(CloseLocator1);
 }
 
-
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTTRANSACTIONSXA_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTTRANSACTIONSXA_H_

@@ -20,11 +20,11 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/Serializable.hpp>
-#include <gfcpp/CacheableString.hpp>
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/DataOutput.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
 #include <string>
 
 namespace apache {
@@ -108,4 +108,4 @@ class CPPCACHE_EXPORT PdxFieldType : public Serializable {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PDXFIELDTYPE_H_
+#endif  // GEODE_PDXFIELDTYPE_H_

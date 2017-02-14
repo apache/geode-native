@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 namespace apache {
 namespace geode {
@@ -39,4 +39,4 @@ class CPPCACHE_EXPORT ConnectCounter {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CONNECTCOUNTER_H_
+#endif  // GEODE_CONNECTCOUNTER_H_

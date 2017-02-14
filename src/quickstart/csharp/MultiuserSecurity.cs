@@ -43,14 +43,14 @@ namespace Apache.Geode.Client.QuickStart
 
     public void RunMultiuserSecurityExample()
     {
-      // Create client's Authentication Intializer and Credentials using api ( Same can be set to gfcpp.properties & comment following code ).
+      // Create client's Authentication Intializer and Credentials using api ( Same can be set to geode.properties & comment following code ).
       Properties<string, string> secProp = Properties<string, string>.Create<string, string>();
 
       //By setting this property client will send credential in encrypted form.
       //to do this one need to setup OpenSSL.
       //secProp.Insert("security-client-dhalgo", "Blowfish:128");
 
-      // Connect to the Geode Distributed System using the settings from the gfcpp.properties file by default.
+      // Connect to the Geode Distributed System using the settings from the geode.properties file by default.
       // Create a Geode Cache.
       CacheFactory cacheFactory = CacheFactory.CreateCacheFactory(null);
 

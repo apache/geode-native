@@ -18,7 +18,7 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/EntryEvent.hpp>
+#include <geode/EntryEvent.hpp>
 #include "impl/NativeWrapper.hpp"
 #include "IRegion.hpp"
 //#include "Region.hpp"

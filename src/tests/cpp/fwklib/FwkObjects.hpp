@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_e9a3be6b0d737dd314e3ec4bc3a93eba
-#define APACHE_GEODE_GUARD_e9a3be6b0d737dd314e3ec4bc3a93eba
+#ifndef GEODE_FWKLIB_FWKOBJECTS_H_
+#define GEODE_FWKLIB_FWKOBJECTS_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -29,12 +29,11 @@
 
 // ----------------------------------------------------------------------------
 
-
-#include <gfcpp/Properties.hpp>
-#include <gfcpp/ExpirationAction.hpp>
-#include <gfcpp/RegionAttributes.hpp>
-#include <gfcpp/AttributesFactory.hpp>
-#include <gfcpp/PoolManager.hpp>
+#include <geode/Properties.hpp>
+#include <geode/ExpirationAction.hpp>
+#include <geode/RegionAttributes.hpp>
+#include <geode/AttributesFactory.hpp>
+#include <geode/PoolManager.hpp>
 
 #include "fwklib/FwkStrCvt.hpp"
 #include "fwklib/FwkLog.hpp"
@@ -1620,5 +1619,4 @@ class TestDriver {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_e9a3be6b0d737dd314e3ec4bc3a93eba
+#endif  // GEODE_FWKLIB_FWKOBJECTS_H_

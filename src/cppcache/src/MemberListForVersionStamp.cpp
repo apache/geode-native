@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 #include "MemberListForVersionStamp.hpp"
-#include <gfcpp/Log.hpp>
+#include <geode/Log.hpp>
 
 using namespace apache::geode::client;
 

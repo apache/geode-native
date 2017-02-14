@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <stdlib.h>
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 #include <ace/OS.h>
 #include <ace/INET_Addr.h>
 #include <ace/SOCK_Acceptor.h>
@@ -32,7 +32,7 @@
 #include <chrono>
 #include "DistributedSystemImpl.hpp"
 #include "Utils.hpp"
-#include <gfcpp/PoolManager.hpp>
+#include <geode/PoolManager.hpp>
 #ifndef ROOT_NAME
 #define ROOT_NAME "Root"
 #endif

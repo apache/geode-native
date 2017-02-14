@@ -214,4 +214,4 @@ typedef SharedPtr<PdxRemoteReader> PdxRemoteReaderPtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PDXREMOTEREADER_H_
+#endif  // GEODE_PDXREMOTEREADER_H_

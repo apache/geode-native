@@ -26,7 +26,6 @@
  *      Author: abhaware
  */
 
-
 #include "TcrMessage.hpp"
 #include "TcrEndpoint.hpp"
 #include "ServerLocation.hpp"
@@ -148,5 +147,4 @@ class ThinClientRedundancyManager {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_THINCLIENTREDUNDANCYMANAGER_H_
+#endif  // GEODE_THINCLIENTREDUNDANCYMANAGER_H_

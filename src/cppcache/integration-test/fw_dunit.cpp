@@ -33,7 +33,7 @@
 
 #include <ace/ACE.h>
 
-// #include <gfcpp/GeodeCppCache.hpp>
+// #include <geode/GeodeCppCache.hpp>
 
 #include <typeinfo>
 

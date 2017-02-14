@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_435faaccc293c5822dd1ce9185411ec7
-#define APACHE_GEODE_GUARD_435faaccc293c5822dd1ce9185411ec7
+#ifndef GEODE_PDXAUTOSERIALIZER_ASCLIBUILTINS_H_
+#define GEODE_PDXAUTOSERIALIZER_ASCLIBUILTINS_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -19,7 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 
 #ifdef GEMFIRE_CLR
 
@@ -460,5 +459,4 @@ inline void ReadObject(apache::geode::client::DataInput& input,
 
 #endif  // GEMFIRE_CLR
 
-
-#endif // APACHE_GEODE_GUARD_435faaccc293c5822dd1ce9185411ec7
+#endif  // GEODE_PDXAUTOSERIALIZER_ASCLIBUILTINS_H_

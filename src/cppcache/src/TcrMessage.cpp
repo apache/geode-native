@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 #include "TcrMessage.hpp"
-#include <gfcpp/Assert.hpp>
-#include <gfcpp/CacheableBuiltins.hpp>
-#include <gfcpp/DistributedSystem.hpp>
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/Assert.hpp>
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/DistributedSystem.hpp>
+#include <geode/SystemProperties.hpp>
 #include "TcrConnection.hpp"
 #include "AutoDelete.hpp"
 #include "TcrChunkedContext.hpp"
-#include <gfcpp/CacheableObjectArray.hpp>
+#include <geode/CacheableObjectArray.hpp>
 #include "ThinClientRegion.hpp"
 #include "ThinClientBaseDM.hpp"
 #include "StackTrace.hpp"

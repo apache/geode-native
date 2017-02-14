@@ -22,9 +22,9 @@
 
 #include <map>
 #include <string>
-#include <gfcpp/statistics/StatisticsType.hpp>
-#include <gfcpp/statistics/StatisticsFactory.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/statistics/StatisticsType.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "StatsDef.hpp"
 
 /** @file
@@ -102,4 +102,4 @@ class StatisticsTypeImpl : public StatisticsType {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STATISTICS_STATISTICSTYPEIMPL_H_
+#endif  // GEODE_STATISTICS_STATISTICSTYPEIMPL_H_

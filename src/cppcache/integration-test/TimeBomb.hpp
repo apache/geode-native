@@ -111,5 +111,4 @@ class TimeBomb : public ACE_Task_Base {
   ~TimeBomb() {}
 };
 
-
-#endif // GEODE_INTEGRATION_TEST_TIMEBOMB_H_
+#endif  // GEODE_INTEGRATION_TEST_TIMEBOMB_H_

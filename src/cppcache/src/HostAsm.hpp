@@ -34,7 +34,7 @@ included.
 */
 
 #include "config.h"
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include <ace/ACE.h>
 #include <ace/Time_Value.h>
 #include <ace/OS_NS_time.h>
@@ -446,4 +446,4 @@ return true;
 #pragma clang diagnostic pop
 #endif
 
-#endif // GEODE_HOSTASM_H_
+#endif  // GEODE_HOSTASM_H_

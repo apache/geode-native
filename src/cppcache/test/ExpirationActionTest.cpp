@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 
-#include <gfcpp/ExpirationAction.hpp>
+#include <geode/ExpirationAction.hpp>
 
 using namespace apache::geode::client;
 

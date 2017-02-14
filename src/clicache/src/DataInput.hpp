@@ -18,7 +18,7 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/DataInput.hpp>
+#include <geode/DataInput.hpp>
 #include "impl/NativeWrapper.hpp"
 #include "Log.hpp"
 #include "ExceptionTypes.hpp"

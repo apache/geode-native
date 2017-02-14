@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/gf_types.hpp>
 #include "ExecutionImpl.hpp"
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "ThinClientRegion.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "NoResult.hpp"

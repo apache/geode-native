@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/DataInput.hpp>
+#include <geode/DataInput.hpp>
 
 #include <SerializationRegistry.hpp>
 

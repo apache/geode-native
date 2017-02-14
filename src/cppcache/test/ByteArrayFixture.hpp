@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_BYTEARRAYFIXTURE_H_
+#define GEODE_BYTEARRAYFIXTURE_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -30,3 +35,5 @@ class ByteArrayFixture {
       const char* expectedStr, const char* bytesStr, const char* expected,
       const apache::geode::client::ByteArray& bytes);
 };
+
+#endif  // GEODE_BYTEARRAYFIXTURE_H_

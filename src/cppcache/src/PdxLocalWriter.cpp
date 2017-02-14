@@ -24,7 +24,7 @@
 #include "PdxLocalWriter.hpp"
 #include "PdxHelper.hpp"
 #include "PdxTypeRegistry.hpp"
-#include <gfcpp/CacheableEnum.hpp>
+#include <geode/CacheableEnum.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 
 namespace apache {

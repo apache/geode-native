@@ -16,7 +16,7 @@
  */
 
 #include "DistributedSystemImpl.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 
 using namespace apache::geode::client;
 

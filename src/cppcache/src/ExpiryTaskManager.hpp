@@ -24,8 +24,8 @@
 #include <ace/Timer_Heap.h>
 #include "ReadWriteLock.hpp"
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/Log.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/Log.hpp>
 
 /**
  * @file ExpiryTaskManager.hpp
@@ -274,4 +274,4 @@ class CPPCACHE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_EXPIRYTASKMANAGER_H_
+#endif  // GEODE_EXPIRYTASKMANAGER_H_

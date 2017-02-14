@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_66e094f2e630a8aefdce2e4d93340f13
-#define APACHE_GEODE_GUARD_66e094f2e630a8aefdce2e4d93340f13
+#ifndef GEODE_CRYPTOIMPL_GFSSL_H_
+#define GEODE_CRYPTOIMPL_GFSSL_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -26,7 +26,6 @@
  *      Author: ankurs
  */
 
-
 #include <ace/INET_Addr.h>
 #include <ace/OS.h>
 
@@ -42,5 +41,4 @@ class GFSsl {
   virtual void close() = 0;
 };
 
-
-#endif // APACHE_GEODE_GUARD_66e094f2e630a8aefdce2e4d93340f13
+#endif  // GEODE_CRYPTOIMPL_GFSSL_H_

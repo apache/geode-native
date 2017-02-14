@@ -21,7 +21,7 @@
  * This example takes the following steps:
  *
  * 1. Create CacheFactory using the user specified properties or from the
- * gfcpp.properties file by default.
+ * geode.properties file by default.
  * 2. Create a Geode Cache.
  * 3. Get the Portfolios Region from the Pool.
  * 4. Populate some query objects on the Region.
@@ -33,7 +33,7 @@
  */
 
 // Include the Geode library.
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 // Include our Query objects, viz. Portfolio and Position.
 #include "queryobjects/Portfolio.hpp"
@@ -81,7 +81,7 @@ class MyCqListener : public CqListener {
 int main(int argc, char** argv) {
   try {
     // Create CacheFactory using the user specified properties or from the
-    // gfcpp.properties file by default.
+    // geode.properties file by default.
     PropertiesPtr prp = Properties::create();
     prp->insert("cache-xml-file", "XMLs/clientPoolCqQuery.xml");
 

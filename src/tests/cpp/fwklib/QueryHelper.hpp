@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_f57a1f9a1b1286d041f077ee231e8637
-#define APACHE_GEODE_GUARD_f57a1f9a1b1286d041f077ee231e8637
+#ifndef GEODE_FWKLIB_QUERYHELPER_H_
+#define GEODE_FWKLIB_QUERYHELPER_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <stdlib.h>
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 #include <ace/OS.h>
 
 #include "DistributedSystemImpl.hpp"
@@ -36,8 +36,8 @@
 #include "../pdxautoserializerclass/PositionPdx.hpp"
 #include "fwklib/FwkLog.hpp"
 
-#include <gfcpp/ResultSet.hpp>
-#include <gfcpp/StructSet.hpp>
+#include <geode/ResultSet.hpp>
+#include <geode/StructSet.hpp>
 
 #ifndef ROOT_SCOPE
 #define ROOT_SCOPE LOCAL
@@ -1151,5 +1151,4 @@ bool QueryHelper::verifySS(SelectResultsPtr& structSet, int expectedRows,
   return false;
 }
 
-
-#endif // APACHE_GEODE_GUARD_f57a1f9a1b1286d041f077ee231e8637
+#endif  // GEODE_FWKLIB_QUERYHELPER_H_

@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 using namespace apache::geode::client;
 using namespace test;
@@ -72,5 +72,4 @@ class TallyLoader : virtual public CacheLoader {
   }
 };
 
-
-#endif // GEODE_INTEGRATION_TEST_TALLYLOADER_H_
+#endif  // GEODE_INTEGRATION_TEST_TALLYLOADER_H_

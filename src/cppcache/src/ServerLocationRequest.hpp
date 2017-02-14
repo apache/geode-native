@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/Serializable.hpp>
+#include <geode/Serializable.hpp>
 namespace apache {
 namespace geode {
 namespace client {
@@ -38,4 +38,4 @@ class ServerLocationRequest : public Serializable {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_SERVERLOCATIONREQUEST_H_
+#endif  // GEODE_SERVERLOCATIONREQUEST_H_

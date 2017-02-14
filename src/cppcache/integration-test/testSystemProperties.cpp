@@ -18,9 +18,9 @@
 #define ROOT_NAME "testSystemProperties"
 
 #include "fw_helper.hpp"
-#include "gfcpp/GeodeCppCache.hpp"
-#include "gfcpp/SystemProperties.hpp"
-#include "gfcpp/Properties.hpp"
+#include "geode/GeodeCppCache.hpp"
+#include "geode/SystemProperties.hpp"
+#include "geode/Properties.hpp"
 
 #ifndef WIN32
 #include <unistd.h>

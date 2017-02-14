@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "EntriesMap.hpp"
-#include <gfcpp/RegionAttributes.hpp>
+#include <geode/RegionAttributes.hpp>
 
 namespace apache {
 namespace geode {
@@ -45,4 +45,4 @@ class CPPCACHE_EXPORT EntriesMapFactory {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_ENTRIESMAPFACTORY_H_
+#endif  // GEODE_ENTRIESMAPFACTORY_H_

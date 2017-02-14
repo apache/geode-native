@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_a7058f04d2a065ec8cd9179a5349a649
-#define APACHE_GEODE_GUARD_a7058f04d2a065ec8cd9179a5349a649
+#ifndef GEODE_FWKLIB_TASKCLIENT_H_
+#define GEODE_FWKLIB_TASKCLIENT_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -19,7 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 
 #include "PerfFwk.hpp"
 #include "FwkLog.hpp"
@@ -185,5 +184,4 @@ class TaskClient : public ACE_Task_Base {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_a7058f04d2a065ec8cd9179a5349a649
+#endif  // GEODE_FWKLIB_TASKCLIENT_H_

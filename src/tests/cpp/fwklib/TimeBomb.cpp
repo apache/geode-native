@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "fwklib/TimeBomb.hpp"
 #include "fwklib/FwkLog.hpp"
 #include "fwklib/PerfFwk.hpp"

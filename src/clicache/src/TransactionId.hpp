@@ -18,7 +18,7 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/TransactionId.hpp>
+#include <geode/TransactionId.hpp>
 #include "impl/NativeWrapper.hpp"
 
 using namespace System;

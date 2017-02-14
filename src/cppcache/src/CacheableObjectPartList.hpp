@@ -20,13 +20,13 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/Cacheable.hpp>
-#include <gfcpp/VectorT.hpp>
-#include <gfcpp/HashMapT.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/gf_types.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/Cacheable.hpp>
+#include <geode/VectorT.hpp>
+#include <geode/HashMapT.hpp>
 #include "MapWithLock.hpp"
 
 #include <vector>
@@ -146,4 +146,4 @@ typedef SharedPtr<CacheableObjectPartList> CacheableObjectPartListPtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CACHEABLEOBJECTPARTLIST_H_
+#endif  // GEODE_CACHEABLEOBJECTPARTLIST_H_

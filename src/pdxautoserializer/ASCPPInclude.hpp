@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_ce84784877faf1099879ab9252de0187
-#define APACHE_GEODE_GUARD_ce84784877faf1099879ab9252de0187
+#ifndef GEODE_PDXAUTOSERIALIZER_ASCPPINCLUDE_H_
+#define GEODE_PDXAUTOSERIALIZER_ASCPPINCLUDE_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 
-
 #define GFINCLUDE
 #define GFEXCLUDE
 #define GFARRAYSIZE(x)
@@ -36,5 +35,4 @@
  #define __builtin_va_list int
  */
 
-
-#endif // APACHE_GEODE_GUARD_ce84784877faf1099879ab9252de0187
+#endif  // GEODE_PDXAUTOSERIALIZER_ASCPPINCLUDE_H_

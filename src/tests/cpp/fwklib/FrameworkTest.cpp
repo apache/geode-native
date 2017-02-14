@@ -18,9 +18,9 @@
 #include "fwklib/FrameworkTest.hpp"
 #include "fwklib/TestClient.hpp"
 #include "fwklib/FwkLog.hpp"
-#include <gfcpp/AttributesFactory.hpp>
-//#include <gfcpp/RegionAttributes.hpp>
-#include <gfcpp/PoolFactory.hpp>
+#include <geode/AttributesFactory.hpp>
+//#include <geode/RegionAttributes.hpp>
+#include <geode/PoolFactory.hpp>
 #include "PoolAttributes.hpp"
 
 using namespace apache::geode::client;

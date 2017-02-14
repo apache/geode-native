@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/CacheableBuiltins.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/CacheableBuiltins.hpp>
 
 #include <ace/OS.h>
 extern "C" {

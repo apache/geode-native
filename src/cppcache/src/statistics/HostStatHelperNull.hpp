@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 /** @file
  */
@@ -37,4 +37,4 @@ class HostStatHelperNull {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STATISTICS_HOSTSTATHELPERNULL_H_
+#endif  // GEODE_STATISTICS_HOSTSTATHELPERNULL_H_

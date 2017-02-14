@@ -21,7 +21,7 @@
 
 #include "gf_defs.hpp"
 #include "impl/NativeWrapper.hpp"
-#include <gfcpp/statistics/StatisticDescriptor.hpp>
+#include <geode/statistics/StatisticDescriptor.hpp>
 
 namespace Apache
 {

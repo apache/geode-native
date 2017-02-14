@@ -16,7 +16,7 @@
  */
 #include "ProxyRemoteQueryService.hpp"
 #include "ThinClientPoolDM.hpp"
-#include <gfcpp/PoolManager.hpp>
+#include <geode/PoolManager.hpp>
 #include "CqQueryImpl.hpp"
 
 ProxyRemoteQueryService::ProxyRemoteQueryService(ProxyCache* cptr) {

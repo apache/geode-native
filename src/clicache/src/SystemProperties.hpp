@@ -18,7 +18,7 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 #include "impl/NativeWrapper.hpp"
 #include "Log.hpp"
 #include "Properties.hpp"
@@ -35,7 +35,7 @@ namespace Apache
       /// <summary>
       /// A class for internal use, that encapsulates the properties that can be
       /// set through <see cref="DistributedSystem.Connect" />
-      /// or a gfcpp.properties file.
+      /// or a geode.properties file.
       /// </summary>
       public ref class SystemProperties sealed
         : public Internal::UMWrap<apache::geode::client::SystemProperties>
@@ -54,9 +54,9 @@ namespace Apache
         /// Constructor.
         /// <ol>
         /// <li>Sets the default (hard-coded) values.</li>
-        /// <li>Overwrites those with any values from <c>systemDefault/gfcpp.properties</c></li>
+        /// <li>Overwrites those with any values from <c>systemDefault/geode.properties</c></li>
         /// <li>Overwrites those with any values from the given file (if it exists)
-        /// or the local <c>./gfcpp.properties</c> (if the given file does not exist).</li>
+        /// or the local <c>./geode.properties</c> (if the given file does not exist).</li>
         /// <li>Overwrites those with any values found in the given properties.</li>
         /// </ol>
         /// </summary>

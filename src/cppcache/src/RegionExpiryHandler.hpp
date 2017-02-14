@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/Region.hpp>
-#include <gfcpp/ExpirationAction.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/Region.hpp>
+#include <geode/ExpirationAction.hpp>
 #include "RegionInternal.hpp"
 
 /**
@@ -72,4 +72,4 @@ class CPPCACHE_EXPORT RegionExpiryHandler : public ACE_Event_Handler {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_REGIONEXPIRYHANDLER_H_
+#endif  // GEODE_REGIONEXPIRYHANDLER_H_

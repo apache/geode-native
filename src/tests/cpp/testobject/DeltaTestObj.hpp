@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_ae1a70d692bfcc850903bc09f7fe0b96
-#define APACHE_GEODE_GUARD_ae1a70d692bfcc850903bc09f7fe0b96
+#ifndef GEODE_TESTOBJECT_DELTATESTOBJ_H_
+#define GEODE_TESTOBJECT_DELTATESTOBJ_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include "DeltaTestImpl.hpp"
 
 #ifdef _WIN32
@@ -98,4 +98,4 @@ class TESTOBJECT_EXPORT DeltaTestObj : public DeltaTestImpl {
 typedef apache::geode::client::SharedPtr<DeltaTestObj> DeltaTestObjPtr;
 }
 
-#endif // APACHE_GEODE_GUARD_ae1a70d692bfcc850903bc09f7fe0b96
+#endif  // GEODE_TESTOBJECT_DELTATESTOBJ_H_

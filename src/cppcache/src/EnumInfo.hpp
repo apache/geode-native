@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/GeodeTypeIds.hpp>
-#include <gfcpp/CacheableString.hpp>
-#include <gfcpp/CacheableKey.hpp>
+#include <geode/GeodeTypeIds.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/CacheableKey.hpp>
 
 namespace apache {
 namespace geode {
@@ -66,5 +66,4 @@ typedef SharedPtr<EnumInfo> EnumInfoPtr;
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_ENUMINFO_H_
+#endif  // GEODE_ENUMINFO_H_

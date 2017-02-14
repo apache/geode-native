@@ -17,7 +17,7 @@
 
 #include "PdxWriterWithTypeCollector.hpp"
 #include "../DataOutput.hpp"
-#include <gfcpp/GeodeTypeIds.hpp>
+#include <geode/GeodeTypeIds.hpp>
 #include "../GeodeClassIds.hpp"
 #include "PdxHelper.hpp"
 

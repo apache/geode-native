@@ -21,10 +21,10 @@
 
 #include "gf_defs.hpp"
 #include "impl/NativeWrapper.hpp"
-#include <gfcpp/statistics/StatisticsFactory.hpp>
-#include <gfcpp/statistics/StatisticsType.hpp>
-#include <gfcpp/statistics/StatisticDescriptor.hpp>
-#include <gfcpp/statistics/Statistics.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
+#include <geode/statistics/StatisticsType.hpp>
+#include <geode/statistics/StatisticDescriptor.hpp>
+#include <geode/statistics/Statistics.hpp>
 
 namespace Apache
 {

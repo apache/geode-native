@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_4bb699f806bb1f49d020175dd0840394
-#define APACHE_GEODE_GUARD_4bb699f806bb1f49d020175dd0840394
+#ifndef GEODE_TESTOBJECT_FASTASSETACCOUNT_H_
+#define GEODE_TESTOBJECT_FASTASSETACCOUNT_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -24,8 +24,7 @@
  * @brief User class for testing the query functionality.
  */
 
-
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <string.h>
 #include "fwklib/Timer.hpp"
 #include "fwklib/FrameworkTest.hpp"
@@ -124,4 +123,4 @@ class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
 typedef apache::geode::client::SharedPtr<FastAssetAccount> FastAssetAccountPtr;
 }  // namespace testobject
 
-#endif // APACHE_GEODE_GUARD_4bb699f806bb1f49d020175dd0840394
+#endif  // GEODE_TESTOBJECT_FASTASSETACCOUNT_H_

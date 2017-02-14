@@ -23,7 +23,7 @@
 
 #include "TXState.hpp"
 #include "TransactionalOperation.hpp"
-#include <gfcpp/Cache.hpp>
+#include <geode/Cache.hpp>
 #include "TssConnectionWrapper.hpp"
 #include "ThinClientPoolDM.hpp"
 

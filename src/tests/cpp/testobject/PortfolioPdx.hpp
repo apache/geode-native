@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_c671317d09616c448db78f20e3208e41
-#define APACHE_GEODE_GUARD_c671317d09616c448db78f20e3208e41
+#ifndef GEODE_TESTOBJECT_PORTFOLIOPDX_H_
+#define GEODE_TESTOBJECT_PORTFOLIOPDX_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -23,7 +23,6 @@
 /*
  * @brief User class for testing the put functionality for object.
  */
-
 
 #include "PositionPdx.hpp"
 
@@ -109,4 +108,4 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
 typedef SharedPtr<PortfolioPdx> PortfolioPdxPtr;
 }  // namespace testobject
 
-#endif // APACHE_GEODE_GUARD_c671317d09616c448db78f20e3208e41
+#endif  // GEODE_TESTOBJECT_PORTFOLIOPDX_H_

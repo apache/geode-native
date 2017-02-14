@@ -16,13 +16,13 @@
  */
 
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include "testobject/NestedPdxObject.hpp"
 #include "ThinClientHelper.hpp"
 #include "QueryStrings.hpp"
 #include "QueryHelper.hpp"
-#include <gfcpp/Query.hpp>
-#include <gfcpp/QueryService.hpp>
+#include <geode/Query.hpp>
+#include <geode/QueryService.hpp>
 
 using namespace apache::geode::client;
 using namespace test;

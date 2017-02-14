@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 #include "LocatorListResponse.hpp"
-#include <gfcpp/DataInput.hpp>
+#include <geode/DataInput.hpp>
 #include <vector>
 using namespace apache::geode::client;
 LocatorListResponse* LocatorListResponse::fromData(DataInput& input) {

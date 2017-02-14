@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Serializable.hpp>
-#include <gfcpp/CacheableEnum.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/CacheableEnum.hpp>
 
 namespace apache {
 namespace geode {
@@ -54,4 +54,4 @@ class PdxEnumInstantiator : public Serializable {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PDXENUMINSTANTIATOR_H_
+#endif  // GEODE_PDXENUMINSTANTIATOR_H_

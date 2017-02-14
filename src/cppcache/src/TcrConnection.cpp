@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 #include "TcrConnection.hpp"
-#include <gfcpp/DistributedSystem.hpp>
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/DistributedSystem.hpp>
+#include <geode/SystemProperties.hpp>
 #include "Connector.hpp"
 #include "TcpSslConn.hpp"
 #include "ClientProxyMembershipID.hpp"

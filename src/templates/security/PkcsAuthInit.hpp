@@ -17,7 +17,7 @@
 
 #ifndef __PKCSAUTHINIT__
 #define __PKCSAUTHINIT__
-#include "gfcpp/AuthInitialize.hpp"
+#include "geode/AuthInitialize.hpp"
 #include <stdio.h>
 #include <stdlib.h>
 #include <openssl/pem.h>

@@ -18,7 +18,7 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/StructSet.hpp>
+#include <geode/StructSet.hpp>
 #include "impl/NativeWrapper.hpp"
 #include "ICqResults.hpp"
 

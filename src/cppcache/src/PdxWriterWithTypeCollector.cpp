@@ -25,7 +25,7 @@
 #include "PdxType.hpp"
 #include "PdxHelper.hpp"
 #include "PdxTypes.hpp"
-#include <gfcpp/PdxFieldTypes.hpp>
+#include <geode/PdxFieldTypes.hpp>
 
 namespace apache {
 namespace geode {

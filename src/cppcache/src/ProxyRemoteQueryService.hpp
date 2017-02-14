@@ -19,11 +19,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/SharedPtr.hpp>
 #include "CqService.hpp"
 #include "UserAttributes.hpp"
-#include <gfcpp/QueryService.hpp>
+#include <geode/QueryService.hpp>
 #include "ProxyCache.hpp"
 #include "ThinClientCacheDistributionManager.hpp"
 
@@ -73,4 +73,4 @@ typedef SharedPtr<ProxyRemoteQueryService> ProxyRemoteQueryServicePtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PROXYREMOTEQUERYSERVICE_H_
+#endif  // GEODE_PROXYREMOTEQUERYSERVICE_H_

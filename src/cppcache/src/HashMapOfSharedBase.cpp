@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/HashMapOfSharedBase.hpp>
+#include <geode/HashMapOfSharedBase.hpp>
 
 namespace apache {
 namespace geode {

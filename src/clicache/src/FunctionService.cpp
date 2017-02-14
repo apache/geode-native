@@ -20,7 +20,7 @@
 #include "Pool.hpp"
 #include "Region.hpp"
 #include "Execution.hpp"
-#include <gfcpp/RegionService.hpp>
+#include <geode/RegionService.hpp>
 #include "impl/AuthenticatedCache.hpp"
 #include "impl/SafeConvert.hpp"
 using namespace System;

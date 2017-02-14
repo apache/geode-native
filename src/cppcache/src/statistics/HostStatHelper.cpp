@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 #include <ace/OS_NS_sys_utsname.h>
 #include "HostStatHelper.hpp"

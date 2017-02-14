@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
-#include <gfcpp/DistributedSystem.hpp>
+#include <geode/DistributedSystem.hpp>
 #include "statistics/StatisticsManager.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 
 #include <CppCacheLibrary.hpp>
 #include <Utils.hpp>
-#include <gfcpp/Log.hpp>
-#include <gfcpp/CacheFactory.hpp>
+#include <geode/Log.hpp>
+#include <geode/CacheFactory.hpp>
 #include <ace/OS.h>
 
 #include <ExpiryTaskManager.hpp>
 #include <CacheImpl.hpp>
 #include <ace/Guard_T.h>
 #include <ace/Recursive_Thread_Mutex.h>
-#include <gfcpp/DataOutput.hpp>
+#include <geode/DataOutput.hpp>
 #include <TcrMessage.hpp>
 #include <DistributedSystemImpl.hpp>
 #include <RegionStats.hpp>

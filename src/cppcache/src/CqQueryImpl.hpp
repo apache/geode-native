@@ -20,17 +20,17 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/gf_types.hpp>
 
-#include <gfcpp/CqResults.hpp>
-#include <gfcpp/CqQuery.hpp>
-#include <gfcpp/CqState.hpp>
+#include <geode/CqResults.hpp>
+#include <geode/CqQuery.hpp>
+#include <geode/CqState.hpp>
 #include "CqQueryVsdStats.hpp"
 #include "CqService.hpp"
-#include <gfcpp/CqOperation.hpp>
-#include <gfcpp/CqAttributes.hpp>
-#include <gfcpp/Region.hpp>
+#include <geode/CqOperation.hpp>
+#include <geode/CqAttributes.hpp>
+#include <geode/Region.hpp>
 #include "MapWithLock.hpp"
 #include <string>
 #include <ace/ACE.h>
@@ -275,4 +275,4 @@ class CqQueryImpl : public CqQuery {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CQQUERYIMPL_H_
+#endif  // GEODE_CQQUERYIMPL_H_

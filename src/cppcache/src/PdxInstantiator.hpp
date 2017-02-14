@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Serializable.hpp>
+#include <geode/Serializable.hpp>
 
 namespace apache {
 namespace geode {
@@ -51,4 +51,4 @@ class PdxInstantiator : public Serializable {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PDXINSTANTIATOR_H_
+#endif  // GEODE_PDXINSTANTIATOR_H_

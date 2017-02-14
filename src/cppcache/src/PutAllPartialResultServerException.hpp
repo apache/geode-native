@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Serializable.hpp>
-#include <gfcpp/CacheableString.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/CacheableString.hpp>
 #include "VersionedCacheableObjectPartList.hpp"
 #include "PutAllPartialResult.hpp"
 
@@ -145,4 +145,4 @@ class CPPCACHE_EXPORT PutAllPartialResultServerException : public Serializable {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PUTALLPARTIALRESULTSERVEREXCEPTION_H_
+#endif  // GEODE_PUTALLPARTIALRESULTSERVEREXCEPTION_H_

@@ -18,8 +18,8 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/CacheTransactionManager.hpp>
-#include <gfcpp/InternalCacheTransactionManager2PC.hpp>
+#include <geode/CacheTransactionManager.hpp>
+#include <geode/InternalCacheTransactionManager2PC.hpp>
 #include "TransactionId.hpp"
 //#include "impl/NativeWrapper.hpp"
 //#include "impl/TransactionWriter.hpp"

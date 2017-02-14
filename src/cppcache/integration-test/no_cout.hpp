@@ -80,4 +80,4 @@ extern NOCout::FLAGS hex;
 extern NOCout::FLAGS dec;
 }  // namespace test
 
-#endif // GEODE_INTEGRATION_TEST_NO_COUT_H_
+#endif  // GEODE_INTEGRATION_TEST_NO_COUT_H_

@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_dd058cd17302e55845b453e0c42c27c9
-#define APACHE_GEODE_GUARD_dd058cd17302e55845b453e0c42c27c9
+#ifndef GEODE_FWKLIB_FWKEXPORT_H_
+#define GEODE_FWKLIB_FWKEXPORT_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -35,4 +35,4 @@
 #define TEST_EXPORT extern "C"
 #endif
 
-#endif // APACHE_GEODE_GUARD_dd058cd17302e55845b453e0c42c27c9
+#endif  // GEODE_FWKLIB_FWKEXPORT_H_

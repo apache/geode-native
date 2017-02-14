@@ -23,9 +23,9 @@
 
 #include <gtest/gtest.h>
 
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/SharedPtr.hpp>
 #include "ByteArrayFixture.hpp"
 
 using namespace apache::geode::client;

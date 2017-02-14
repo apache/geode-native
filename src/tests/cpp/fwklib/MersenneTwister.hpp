@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_2cbb06e4c156792558ba80dbf0fbc5e9
-#define APACHE_GEODE_GUARD_2cbb06e4c156792558ba80dbf0fbc5e9
+#ifndef GEODE_FWKLIB_MERSENNETWISTER_H_
+#define GEODE_FWKLIB_MERSENNETWISTER_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -76,7 +76,6 @@
 // It would be nice to CC: rjwagner@writeme.com and Cokus@math.washington.edu
 // when you write.
 
-
 // Not thread safe (unless auto-initialization is avoided and each thread has
 // its own MTRand object)
 
@@ -87,7 +86,7 @@
 #include <math.h>
 
 #include "SpinLock.hpp"
-#include <gfcpp/gf_base.hpp>
+#include <geode/gf_base.hpp>
 
 class MTRand {
   // Data
@@ -201,4 +200,4 @@ class MTRand {
 //      - Improved portability by substituting literal constants for long enum's
 //      - Changed license from GNU LGPL to BSD
 
-#endif // APACHE_GEODE_GUARD_2cbb06e4c156792558ba80dbf0fbc5e9
+#endif  // GEODE_FWKLIB_MERSENNETWISTER_H_

@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/Struct.hpp>
+#include <geode/Struct.hpp>
 #include <GeodeTypeIdsImpl.hpp>
-#include <gfcpp/DataInput.hpp>
+#include <geode/DataInput.hpp>
 
 namespace apache {
 namespace geode {

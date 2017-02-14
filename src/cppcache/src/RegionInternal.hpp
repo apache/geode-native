@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Region.hpp>
+#include <geode/Region.hpp>
 #include "RegionStats.hpp"
 #include <string>
 #include <map>
@@ -297,4 +297,4 @@ typedef SharedPtr<RegionInternal> RegionInternalPtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_REGIONINTERNAL_H_
+#endif  // GEODE_REGIONINTERNAL_H_

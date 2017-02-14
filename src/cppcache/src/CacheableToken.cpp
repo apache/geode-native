@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 #include "CacheableToken.hpp"
 
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/CacheableString.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/CacheableString.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 
 using namespace apache::geode::client;

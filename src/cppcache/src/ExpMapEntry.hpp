@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "MapEntry.hpp"
 #include "VersionStamp.hpp"
 
@@ -95,4 +95,4 @@ class CPPCACHE_EXPORT ExpEntryFactory : public EntryFactory {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_EXPMAPENTRY_H_
+#endif  // GEODE_EXPMAPENTRY_H_

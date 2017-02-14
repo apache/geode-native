@@ -18,7 +18,7 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/CqState.hpp>
+#include <geode/CqState.hpp>
 #include "impl/NativeWrapper.hpp"
 
 using namespace System;

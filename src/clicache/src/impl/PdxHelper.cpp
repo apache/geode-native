@@ -29,7 +29,7 @@
 #include "PdxInstanceImpl.hpp"
 #include <CacheImpl.hpp>
 #include <CacheRegionHelper.hpp>
-#include <gfcpp/Cache.hpp>
+#include <geode/Cache.hpp>
 using namespace System;
 
 namespace Apache

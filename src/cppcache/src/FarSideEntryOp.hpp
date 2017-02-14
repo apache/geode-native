@@ -26,13 +26,12 @@
  *      Author: ankurs
  */
 
-
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/Cacheable.hpp>
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/UserData.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/gf_types.hpp>
+#include <geode/Cacheable.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/UserData.hpp>
 #include "LocalRegion.hpp"
 
 namespace apache {
@@ -125,5 +124,4 @@ class FarSideEntryOp : public apache::geode::client::SharedBase {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_FARSIDEENTRYOP_H_
+#endif  // GEODE_FARSIDEENTRYOP_H_

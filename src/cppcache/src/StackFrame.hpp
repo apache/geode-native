@@ -144,4 +144,4 @@ class StackFrame {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STACKFRAME_H_
+#endif  // GEODE_STACKFRAME_H_

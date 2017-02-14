@@ -20,18 +20,18 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
-#include <gfcpp/Serializable.hpp>
-#include <gfcpp/PdxSerializer.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/PdxSerializer.hpp>
 #include <ace/Hash_Map_Manager.h>
 #include <ace/Thread_Mutex.h>
 #include <ace/Null_Mutex.h>
-#include <gfcpp/GeodeTypeIds.hpp>
+#include <geode/GeodeTypeIds.hpp>
 #include "GeodeTypeIdsImpl.hpp"
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/Delta.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/Delta.hpp>
 #include <string>
 
 #if defined(_MACOSX)
@@ -157,4 +157,4 @@ class CPPCACHE_EXPORT SerializationRegistry {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_SERIALIZATIONREGISTRY_H_
+#endif  // GEODE_SERIALIZATIONREGISTRY_H_

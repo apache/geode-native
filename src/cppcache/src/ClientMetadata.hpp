@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/PartitionResolver.hpp>
+#include <geode/PartitionResolver.hpp>
 #include "ServerLocation.hpp"
 #include "BucketServerLocation.hpp"
 #include "ReadWriteLock.hpp"
@@ -108,5 +108,4 @@ class CPPCACHE_EXPORT ClientMetadata : public SharedBase, public NonAssignable {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_CLIENTMETADATA_H_
+#endif  // GEODE_CLIENTMETADATA_H_

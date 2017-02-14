@@ -19,7 +19,7 @@
 
 #include "../gf_defs.hpp"
 #include <vcclr.h>
-#include <gfcpp/Delta.hpp>
+#include <geode/Delta.hpp>
 #include "../IGFDelta.hpp"
 #include "../IGFSerializable.hpp"
 

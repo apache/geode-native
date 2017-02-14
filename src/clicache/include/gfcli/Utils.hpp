@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <gfcpp/gf_base.hpp>
+#include <geode/gf_base.hpp>
 #include "gf_defs.hpp"
 //#include "SystemProperties.hpp"
 //#include "../../impl/NativeWrapper.hpp"

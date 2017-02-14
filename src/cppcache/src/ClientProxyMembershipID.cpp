@@ -18,10 +18,10 @@
 #include "ClientProxyMembershipID.hpp"
 #include <time.h>
 #include <ace/OS.h>
-#include <gfcpp/DistributedSystem.hpp>
-#include <gfcpp/GeodeTypeIds.hpp>
+#include <geode/DistributedSystem.hpp>
+#include <geode/GeodeTypeIds.hpp>
 #include "GeodeTypeIdsImpl.hpp"
-#include <gfcpp/CacheableBuiltins.hpp>
+#include <geode/CacheableBuiltins.hpp>
 #include "Version.hpp"
 #include <string>
 

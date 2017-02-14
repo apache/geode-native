@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/SharedPtr.hpp>
 #include "SpinLock.hpp"
 
 namespace apache {
@@ -153,4 +153,4 @@ class LRUList {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_LRULIST_H_
+#endif  // GEODE_LRULIST_H_

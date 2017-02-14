@@ -26,7 +26,6 @@
  *      Author: abhaware
  */
 
-
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 
@@ -413,5 +412,4 @@ void doThinClientDurableFailoverClientClosedRedundancy() {
   CALL_TASK(CloseLocator);
 }
 
-
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTDURABLEFAILOVER_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTDURABLEFAILOVER_H_

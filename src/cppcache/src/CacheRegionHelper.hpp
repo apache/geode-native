@@ -23,11 +23,11 @@
 /**
  * @file
  */
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/Region.hpp>
-#include <gfcpp/Cache.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/Region.hpp>
+#include <geode/Cache.hpp>
 #include "CacheImpl.hpp"
-#include <gfcpp/DistributedSystem.hpp>
+#include <geode/DistributedSystem.hpp>
 
 namespace apache {
 namespace geode {
@@ -51,4 +51,4 @@ class CacheRegionHelper {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CACHEREGIONHELPER_H_
+#endif  // GEODE_CACHEREGIONHELPER_H_

@@ -18,7 +18,7 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/Pool.hpp>
+#include <geode/Pool.hpp>
 #include "impl/NativeWrapper.hpp"
 
 

@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <string>
 #include "Utils.hpp"
-#include <gfcpp/Exception.hpp>
+#include <geode/Exception.hpp>
 #include <ace/TSS_T.h>
 
 void initLibDllEntry(void);

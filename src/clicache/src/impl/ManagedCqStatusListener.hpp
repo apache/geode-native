@@ -19,7 +19,7 @@
 #pragma once
 #include "../gf_defs.hpp"
 #include <vcclr.h>
-#include <gfcpp/CqStatusListener.hpp>
+#include <geode/CqStatusListener.hpp>
 #include "../ICqStatusListener.hpp"
 #include "CqStatusListenerProxy.hpp"
 

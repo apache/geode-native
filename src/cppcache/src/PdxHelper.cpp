@@ -33,7 +33,7 @@
 #include "Utils.hpp"
 #include "PdxRemoteWriter.hpp"
 #include "CacheRegionHelper.hpp"
-#include <gfcpp/Cache.hpp>
+#include <geode/Cache.hpp>
 
 namespace apache {
 namespace geode {

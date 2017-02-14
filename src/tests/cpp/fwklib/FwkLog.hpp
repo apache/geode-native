@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_09e162ef70ce6628f1f097a2c0333b34
-#define APACHE_GEODE_GUARD_09e162ef70ce6628f1f097a2c0333b34
+#ifndef GEODE_FWKLIB_FWKLOG_H_
+#define GEODE_FWKLIB_FWKLOG_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -30,8 +30,7 @@
 
 // ----------------------------------------------------------------------------
 
-
-#include <gfcpp/gf_base.hpp>
+#include <geode/gf_base.hpp>
 
 #include "FwkException.hpp"
 
@@ -126,5 +125,4 @@ const char* getNodeName();
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_09e162ef70ce6628f1f097a2c0333b34
+#endif  // GEODE_FWKLIB_FWKLOG_H_

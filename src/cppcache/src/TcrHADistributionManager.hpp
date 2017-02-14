@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gf_base.hpp>
+#include <geode/gf_base.hpp>
 #include "ThinClientDistributionManager.hpp"
-#include <gfcpp/CacheAttributes.hpp>
+#include <geode/CacheAttributes.hpp>
 #include "TcrEndpoint.hpp"
 
 namespace apache {
@@ -97,5 +97,4 @@ class CPPCACHE_EXPORT TcrHADistributionManager
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TCRHADISTRIBUTIONMANAGER_H_
+#endif  // GEODE_TCRHADISTRIBUTIONMANAGER_H_

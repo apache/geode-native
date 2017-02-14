@@ -28,10 +28,10 @@
 #include "ExpMapEntry.hpp"
 #include "LRUMapEntry.hpp"
 #include "LRUExpMapEntry.hpp"
-#include <gfcpp/CacheFactory.hpp>
+#include <geode/CacheFactory.hpp>
 #include "SerializationRegistry.hpp"
 #include "CacheableToken.hpp"
-#include <gfcpp/DataOutput.hpp>
+#include <geode/DataOutput.hpp>
 #include "TcrMessage.hpp"
 #include "Utils.hpp"
 #include "PdxTypeRegistry.hpp"

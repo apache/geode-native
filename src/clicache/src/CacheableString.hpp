@@ -20,7 +20,7 @@
 
 
 #include "gf_defs.hpp"
-#include <gfcpp/CacheableString.hpp>
+#include <geode/CacheableString.hpp>
 #include "impl/ManagedString.hpp"
 #include "CacheableKey.hpp"
 #include "GeodeClassIds.hpp"

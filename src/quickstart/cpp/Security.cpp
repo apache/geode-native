@@ -28,7 +28,7 @@
  */
 
 // Include the Geode library.
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;
@@ -37,7 +37,7 @@ using namespace apache::geode::client;
 int main(int argc, char** argv) {
   try {
     // Create client's Authentication Intializer and Credentials using api (
-    // Same can be set to gfcpp.properties & comment following code ).
+    // Same can be set to geode.properties & comment following code ).
     PropertiesPtr properties = Properties::create();
     properties->insert("security-client-auth-factory",
                        "createPKCSAuthInitInstance");

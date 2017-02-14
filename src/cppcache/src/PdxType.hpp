@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Serializable.hpp>
+#include <geode/Serializable.hpp>
 #include "PdxFieldType.hpp"
-#include <gfcpp/CacheableBuiltins.hpp>
+#include <geode/CacheableBuiltins.hpp>
 #include <map>
 #include <vector>
 #include <list>
@@ -221,4 +221,4 @@ class PdxType : public Serializable,
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PDXTYPE_H_
+#endif  // GEODE_PDXTYPE_H_

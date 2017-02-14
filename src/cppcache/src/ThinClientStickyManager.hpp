@@ -60,4 +60,4 @@ class ThinClientStickyManager {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_THINCLIENTSTICKYMANAGER_H_
+#endif  // GEODE_THINCLIENTSTICKYMANAGER_H_

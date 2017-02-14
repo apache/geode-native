@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_d211265b7b7a98aa276892bb897cf15f
-#define APACHE_GEODE_GUARD_d211265b7b7a98aa276892bb897cf15f
+#ifndef GEODE_TESTOBJECT_PDXCLASSV1WITHAUTO_H_
+#define GEODE_TESTOBJECT_PDXCLASSV1WITHAUTO_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,10 +20,10 @@
  * limitations under the License.
  */
 
-#include <gfcpp/PdxSerializable.hpp>
-#include <gfcpp/GeodeCppCache.hpp>
-#include <gfcpp/PdxWriter.hpp>
-#include <gfcpp/PdxReader.hpp>
+#include <geode/PdxSerializable.hpp>
+#include <geode/GeodeCppCache.hpp>
+#include <geode/PdxWriter.hpp>
+#include <geode/PdxReader.hpp>
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
@@ -569,4 +569,4 @@ class GFIGNORE(TESTOBJECT_EXPORT) TestEqualsV1 : public PdxSerializable {
 
 } /* namespace PdxTestsAuto */
 
-#endif // APACHE_GEODE_GUARD_d211265b7b7a98aa276892bb897cf15f
+#endif  // GEODE_TESTOBJECT_PDXCLASSV1WITHAUTO_H_

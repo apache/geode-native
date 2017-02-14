@@ -43,4 +43,4 @@ class LocatorListRequest : public ServerLocationRequest {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_LOCATORLISTREQUEST_H_
+#endif  // GEODE_LOCATORLISTREQUEST_H_

@@ -214,12 +214,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(CMAKE_CURRENT_SOURCE_DIR)\gfcpp.properties.mixed">
-      <Link>gfcpp.properties.mixed</Link>
+    <None Include="$(CMAKE_CURRENT_SOURCE_DIR)\geode.properties.mixed">
+      <Link>geode.properties.mixed</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="$(CMAKE_CURRENT_SOURCE_DIR)\gfcpp.properties.nativeclient">
-      <Link>gfcpp.properties.nativeclient</Link>
+    <None Include="$(CMAKE_CURRENT_SOURCE_DIR)\geode.properties.nativeclient">
+      <Link>geode.properties.nativeclient</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="$(CMAKE_CURRENT_SOURCE_DIR)\system.properties">

@@ -20,12 +20,12 @@
  * limitations under the License.
  */
 
-#include <gfcpp/PdxWriter.hpp>
+#include <geode/PdxWriter.hpp>
 #include "PdxType.hpp"
-#include <gfcpp/DataOutput.hpp>
+#include <geode/DataOutput.hpp>
 #include <vector>
 #include "PdxRemotePreservedData.hpp"
-#include <gfcpp/CacheableObjectArray.hpp>
+#include <geode/CacheableObjectArray.hpp>
 
 namespace apache {
 namespace geode {
@@ -339,4 +339,4 @@ typedef SharedPtr<PdxLocalWriter> PdxLocalWriterPtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PDXLOCALWRITER_H_
+#endif  // GEODE_PDXLOCALWRITER_H_

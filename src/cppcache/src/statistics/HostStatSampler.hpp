@@ -24,14 +24,14 @@
 #include <vector>
 #include <ace/Task.h>
 #include <ace/Recursive_Thread_Mutex.h>
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/statistics/Statistics.hpp>
-#include <gfcpp/statistics/StatisticDescriptor.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/statistics/Statistics.hpp>
+#include <geode/statistics/StatisticDescriptor.hpp>
 #include "StatisticsManager.hpp"
-#include <gfcpp/statistics/StatisticsType.hpp>
+#include <geode/statistics/StatisticsType.hpp>
 #include "StatSamplerStats.hpp"
 #include "StatArchiveWriter.hpp"
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/ExceptionTypes.hpp>
 
 #include <NonCopyable.hpp>
 
@@ -253,4 +253,4 @@ class CPPCACHE_EXPORT HostStatSampler : public ACE_Task_Base,
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STATISTICS_HOSTSTATSAMPLER_H_
+#endif  // GEODE_STATISTICS_HOSTSTATSAMPLER_H_

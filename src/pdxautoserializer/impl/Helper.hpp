@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_debdc61f2b91c81fc06a894ab962375d
-#define APACHE_GEODE_GUARD_debdc61f2b91c81fc06a894ab962375d
+#ifndef GEODE_PDXAUTOSERIALIZER_IMPL_HELPER_H_
+#define GEODE_PDXAUTOSERIALIZER_IMPL_HELPER_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -19,7 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 
 #include "../InputParser.hpp"
 #include <algorithm>
@@ -189,5 +188,4 @@ class Helper {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_debdc61f2b91c81fc06a894ab962375d
+#endif  // GEODE_PDXAUTOSERIALIZER_IMPL_HELPER_H_

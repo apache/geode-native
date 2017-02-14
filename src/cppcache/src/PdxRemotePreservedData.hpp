@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/PdxUnreadFields.hpp>
+#include <geode/PdxUnreadFields.hpp>
 #include <vector>
 
 namespace apache {
@@ -114,4 +114,4 @@ class PdxRemotePreservedData : public PdxUnreadFields {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PDXREMOTEPRESERVEDDATA_H_
+#endif  // GEODE_PDXREMOTEPRESERVEDDATA_H_

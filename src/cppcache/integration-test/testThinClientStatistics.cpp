@@ -16,7 +16,7 @@
  */
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
-#include <gfcpp/statistics/StatisticsFactory.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
 
 #include <ace/ACE.h>
 #include <ace/Guard_T.h>

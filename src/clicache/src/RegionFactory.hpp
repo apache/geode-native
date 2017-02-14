@@ -18,12 +18,12 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/AttributesFactory.hpp>
+#include <geode/AttributesFactory.hpp>
 //#include "impl/NativeWrapper.hpp"
 #include "ExpirationAction.hpp"
 #include "DiskPolicyType.hpp"
 //#include "ScopeType.hpp"
-#include <gfcpp/RegionFactory.hpp>
+#include <geode/RegionFactory.hpp>
 #include "RegionShortcut.hpp"
 
 #include "ICacheLoader.hpp"

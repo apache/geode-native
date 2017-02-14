@@ -16,9 +16,9 @@
  */
 
 #include "DiffieHellman.hpp"
-#include <gfcpp/Log.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/Log.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/SystemProperties.hpp>
 #include <ace/Guard_T.h>
 namespace apache {
 namespace geode {

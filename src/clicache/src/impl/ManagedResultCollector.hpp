@@ -18,7 +18,7 @@
 #pragma once
 #include "../gf_defs.hpp"
 #include <vcclr.h>
-#include <gfcpp/ResultCollector.hpp>
+#include <geode/ResultCollector.hpp>
 //#include "../ResultCollector.hpp"
 //#include "../IResultCollector.hpp"
 //#include "../../../IResultCollector.hpp"

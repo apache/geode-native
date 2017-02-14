@@ -19,7 +19,7 @@
 
 #include <gtest/gtest.h>
 
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/SharedPtr.hpp>
 
 using namespace apache::geode::client;
 

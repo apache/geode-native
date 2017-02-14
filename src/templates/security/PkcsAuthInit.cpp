@@ -16,9 +16,9 @@
  */
 
 #include "PkcsAuthInit.hpp"
-#include "gfcpp/Properties.hpp"
-#include "gfcpp/CacheableBuiltins.hpp"
-#include "gfcpp/ExceptionTypes.hpp"
+#include "geode/Properties.hpp"
+#include "geode/CacheableBuiltins.hpp"
+#include "geode/ExceptionTypes.hpp"
 #include "stdio.h"
 
 namespace apache {

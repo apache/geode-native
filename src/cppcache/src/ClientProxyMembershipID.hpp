@@ -20,9 +20,8 @@
  * limitations under the License.
  */
 
-
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/DataOutput.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/DataOutput.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 #include "DSMemberForVersionStamp.hpp"
 #include <ace/OS.h>
@@ -148,5 +147,4 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_CLIENTPROXYMEMBERSHIPID_H_
+#endif  // GEODE_CLIENTPROXYMEMBERSHIPID_H_

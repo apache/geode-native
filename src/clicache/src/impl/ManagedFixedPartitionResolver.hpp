@@ -19,7 +19,7 @@
 
 #include "../gf_defs.hpp"
 #include <vcclr.h>
-#include <gfcpp/FixedPartitionResolver.hpp>
+#include <geode/FixedPartitionResolver.hpp>
 
 #include "FixedPartitionResolver.hpp"
 

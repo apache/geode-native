@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_27b17454dd8037d9589090f2615d5988
-#define APACHE_GEODE_GUARD_27b17454dd8037d9589090f2615d5988
+#ifndef GEODE_FWKLIB_CLIENTTASK_H_
+#define GEODE_FWKLIB_CLIENTTASK_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,8 +20,7 @@
  * limitations under the License.
  */
 
-
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <AtomicInc.hpp>
 #include "fwklib/PerfFwk.hpp"
 #include "fwklib/FwkObjects.hpp"
@@ -161,5 +160,4 @@ class ThreadedTask : public ClientTask {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_27b17454dd8037d9589090f2615d5988
+#endif  // GEODE_FWKLIB_CLIENTTASK_H_

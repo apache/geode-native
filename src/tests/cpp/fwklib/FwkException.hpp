@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_43257b24105ffca3ff3bd16dc0cd17d2
-#define APACHE_GEODE_GUARD_43257b24105ffca3ff3bd16dc0cd17d2
+#ifndef GEODE_FWKLIB_FWKEXCEPTION_H_
+#define GEODE_FWKLIB_FWKEXCEPTION_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -29,7 +29,6 @@
   */
 
 // ----------------------------------------------------------------------------
-
 
 #include <string>
 
@@ -69,5 +68,4 @@ class FwkException {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_43257b24105ffca3ff3bd16dc0cd17d2
+#endif  // GEODE_FWKLIB_FWKEXCEPTION_H_

@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_ebe55397742f4c3cb6d6e6eaf7338769
-#define APACHE_GEODE_GUARD_ebe55397742f4c3cb6d6e6eaf7338769
+#ifndef GEODE_FWK_UDPIPC_H_
+#define GEODE_FWK_UDPIPC_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -30,9 +30,8 @@
 
 // ----------------------------------------------------------------------------
 
-
 // ----------------------------------------------------------------------------
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 #include "fwklib/FrameworkTest.hpp"
 
@@ -91,5 +90,4 @@ class TestProcessor : public ServiceTask {
 }  // namespace apache
 // ----------------------------------------------------------------------------
 
-
-#endif // APACHE_GEODE_GUARD_ebe55397742f4c3cb6d6e6eaf7338769
+#endif  // GEODE_FWK_UDPIPC_H_

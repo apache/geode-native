@@ -22,10 +22,10 @@
 #include <string>
 #include <vector>
 #include "ace/OS.h"
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/SharedBase.hpp>
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/SharedBase.hpp>
+#include <geode/gf_types.hpp>
+#include <geode/ExceptionTypes.hpp>
 
 /**
  * @file
@@ -163,4 +163,4 @@ class PoolAttributes : public SharedBase {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_POOLATTRIBUTES_H_
+#endif  // GEODE_POOLATTRIBUTES_H_

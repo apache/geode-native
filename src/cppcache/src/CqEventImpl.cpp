@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 #include "CqEventImpl.hpp"
-#include <gfcpp/CacheableString.hpp>
+#include <geode/CacheableString.hpp>
 #include "ThinClientPoolHADM.hpp"
 #include "ThinClientCacheDistributionManager.hpp"
 #include "TcrMessage.hpp"

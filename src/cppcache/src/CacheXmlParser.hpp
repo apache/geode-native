@@ -23,18 +23,18 @@
 #include <stack>
 #include <map>
 #include <libxml/parser.h>
-#include <gfcpp/Cache.hpp>
-#include <gfcpp/CacheAttributes.hpp>
+#include <geode/Cache.hpp>
+#include <geode/CacheAttributes.hpp>
 #include "CacheXml.hpp"
 #include "RegionXmlCreation.hpp"
 #include "CacheXmlCreation.hpp"
-#include <gfcpp/ExpirationAction.hpp>
-#include <gfcpp/ExpirationAttributes.hpp>
-#include <gfcpp/CacheLoader.hpp>
-#include <gfcpp/CacheListener.hpp>
-#include <gfcpp/PartitionResolver.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/RegionShortcut.hpp>
+#include <geode/ExpirationAction.hpp>
+#include <geode/ExpirationAttributes.hpp>
+#include <geode/CacheLoader.hpp>
+#include <geode/CacheListener.hpp>
+#include <geode/PartitionResolver.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/RegionShortcut.hpp>
 
 namespace apache {
 namespace geode {
@@ -157,5 +157,4 @@ class CPPCACHE_EXPORT CacheXmlParser : public CacheXml {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_CACHEXMLPARSER_H_
+#endif  // GEODE_CACHEXMLPARSER_H_

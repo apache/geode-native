@@ -22,7 +22,7 @@
 GFCPP=`echo $1 | perl -p -e 's/\\\/\//g'`
 #echo $GFCPP
 INCDIR=$GFCPP/include
-if [ ! -f "${INCDIR}/gfcpp/Region.hpp" ]; then
+if [ ! -f "${INCDIR}/geode/Region.hpp" ]; then
   echo "ERROR: Header files are not packed in product."
   exit 1
 fi

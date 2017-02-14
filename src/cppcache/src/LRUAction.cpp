@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/Cache.hpp>
+#include <geode/Cache.hpp>
 #include "LRUAction.hpp"
 #include "LRULocalDestroyAction.hpp"
 #include "LRUEntriesMap.hpp"

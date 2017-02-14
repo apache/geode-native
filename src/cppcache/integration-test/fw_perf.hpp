@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 
-
 /**
 
 fw_perf.hpp provides framework macros for measuring performance,
@@ -54,8 +53,8 @@ established limits, a TestException will be thrown.
 #include <string>
 #include <map>
 
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/DataInput.hpp>
 
 #include <ace/Task.h>
 #include <ace/Condition_T.h>
@@ -246,5 +245,4 @@ class Thread : public ACE_Task_Base {
 //};
 }  // namespace perf
 
-
-#endif // GEODE_INTEGRATION_TEST_FW_PERF_H_
+#endif  // GEODE_INTEGRATION_TEST_FW_PERF_H_

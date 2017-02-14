@@ -52,7 +52,7 @@
 #ifndef CPPDictionary_hpp
 #define CPPDictionary_hpp
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "Dictionary.hpp"
 
 class CPPDictionary : public Dictionary {

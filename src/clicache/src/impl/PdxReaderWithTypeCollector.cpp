@@ -16,7 +16,7 @@
  */
 
 #include "PdxReaderWithTypeCollector.hpp"
-#include <gfcpp/GeodeTypeIds.hpp>
+#include <geode/GeodeTypeIds.hpp>
 #include "../GeodeClassIds.hpp"
 using namespace System;
 

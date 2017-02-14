@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/DiskPolicyType.hpp>
+#include <geode/DiskPolicyType.hpp>
 #include "ace/OS.h"
 
 using namespace apache::geode::client;

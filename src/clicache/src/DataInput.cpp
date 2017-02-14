@@ -17,11 +17,11 @@
 
 //#include "gf_includes.hpp"
 #include "DataInput.hpp"
-#include <gfcpp/Cache.hpp>
+#include <geode/Cache.hpp>
 //#include "CacheFactory.hpp"
 #include "Cache.hpp"
 #include <vcclr.h>
-//#include <gfcpp/GeodeTypeIds.hpp>
+//#include <geode/GeodeTypeIds.hpp>
 #include <GeodeTypeIdsImpl.hpp>
 #include "CacheableString.hpp"
 #include "CacheableHashMap.hpp"

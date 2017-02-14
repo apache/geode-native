@@ -47,4 +47,4 @@ class BBNamingContextServer {
   ~BBNamingContextServer();
 };
 
-#endif // GEODE_INTEGRATION_TEST_BBNAMINGCONTEXT_H_
+#endif  // GEODE_INTEGRATION_TEST_BBNAMINGCONTEXT_H_

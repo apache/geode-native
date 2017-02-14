@@ -19,11 +19,11 @@
 
 #include "../gf_defs.hpp"
 #include <vcclr.h>
-#include <gfcpp/CacheableKey.hpp>
+#include <geode/CacheableKey.hpp>
 #include "../Log.hpp"
 #include "../DataOutput.hpp"
 #include "PdxHelper.hpp"
-#include <gfcpp/Delta.hpp>
+#include <geode/Delta.hpp>
 
 using namespace System;
 

@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <string>
 #include <map>
 #include <vector>
@@ -132,5 +132,4 @@ std::string CacheableWrapperFactory::getTypeForId(int8_t typeId) {
   }
 }
 
-
-#endif // GEODE_INTEGRATION_TEST_CACHEABLEWRAPPER_H_
+#endif  // GEODE_INTEGRATION_TEST_CACHEABLEWRAPPER_H_

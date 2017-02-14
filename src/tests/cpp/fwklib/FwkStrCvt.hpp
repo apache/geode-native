@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_596076185d7a905f2040a9113cab41f2
-#define APACHE_GEODE_GUARD_596076185d7a905f2040a9113cab41f2
+#ifndef GEODE_FWKLIB_FWKSTRCVT_H_
+#define GEODE_FWKLIB_FWKSTRCVT_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -30,9 +30,8 @@
 
 // ----------------------------------------------------------------------------
 
-
 #include "config.h"
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 #if defined(_MACOSX)
 #include <inttypes.h>
@@ -351,5 +350,4 @@ class FwkStrCvt {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_596076185d7a905f2040a9113cab41f2
+#endif  // GEODE_FWKLIB_FWKSTRCVT_H_

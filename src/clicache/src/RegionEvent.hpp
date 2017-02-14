@@ -18,7 +18,7 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/RegionEvent.hpp>
+#include <geode/RegionEvent.hpp>
 //#include "impl/NativeWrapper.hpp"
 #include "IGFSerializable.hpp"
 #include "IRegion.hpp"

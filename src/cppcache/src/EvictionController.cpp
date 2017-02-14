@@ -19,7 +19,7 @@
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "RegionInternal.hpp"
-#include <gfcpp/DistributedSystem.hpp>
+#include <geode/DistributedSystem.hpp>
 #include "ReadWriteLock.hpp"
 #include <string>
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gf_base.hpp>
+#include <geode/gf_base.hpp>
 
 #include "fw_dunit.hpp"
 
@@ -33,7 +33,7 @@ END_MAIN
 #else
 
 //#define BUILD_CPPCACHE 1
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <LRUEntriesMap.hpp>
 #include <LRUMapEntry.hpp>
 #include <LRUExpMapEntry.hpp>
@@ -44,7 +44,7 @@ END_MAIN
 #include <string>
 #include <vector>
 #include <LocalRegion.hpp>
-#include <gfcpp/DataInput.hpp>
+#include <geode/DataInput.hpp>
 #include "DeltaEx.hpp"
 #include "CacheableToken.hpp"
 #include "DiskStoreId.hpp"

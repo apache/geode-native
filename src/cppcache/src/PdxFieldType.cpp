@@ -24,7 +24,7 @@
 #include "PdxFieldType.hpp"
 #include "GeodeTypeIdsImpl.hpp"
 #include "PdxTypes.hpp"
-#include <gfcpp/PdxFieldTypes.hpp>
+#include <geode/PdxFieldTypes.hpp>
 //#include <malloc.h>
 
 #include "ace/OS.h"

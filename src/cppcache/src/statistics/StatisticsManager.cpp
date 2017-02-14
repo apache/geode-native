@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 #include <ace/Atomic_Op_T.h>
 #include <ace/Recursive_Thread_Mutex.h>
@@ -24,9 +24,9 @@
 #include <ace/Thread_Mutex.h>
 #include <ace/Time_Value.h>
 #include <ace/Guard_T.h>
-#include <gfcpp/Exception.hpp>
+#include <geode/Exception.hpp>
 #include "StatisticsManager.hpp"
-#include <gfcpp/Log.hpp>
+#include <geode/Log.hpp>
 #include "GeodeStatisticsFactory.hpp"
 #include <string>
 #include "AtomicStatisticsImpl.hpp"

@@ -22,11 +22,11 @@
 
 #include <string>
 #include <vector>
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/Pool.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/Pool.hpp>
 #include "PoolXmlCreation.hpp"
-#include <gfcpp/PoolFactory.hpp>
+#include <geode/PoolFactory.hpp>
 
 namespace apache {
 namespace geode {
@@ -88,4 +88,4 @@ class CPPCACHE_EXPORT PoolXmlCreation {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_POOLXMLCREATION_H_
+#endif  // GEODE_POOLXMLCREATION_H_

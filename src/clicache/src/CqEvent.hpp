@@ -18,7 +18,7 @@
 #pragma once
 
 #include "gf_defs.hpp"
-#include <gfcpp/CqEvent.hpp>
+#include <geode/CqEvent.hpp>
 #include "CqQuery.hpp"
 #include "CqOperation.hpp"
 //#include "impl/NativeWrapper.hpp"

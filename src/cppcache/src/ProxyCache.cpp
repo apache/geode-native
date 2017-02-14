@@ -14,23 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/SharedPtr.hpp>
 
-#include <gfcpp/DistributedSystem.hpp>
+#include <geode/DistributedSystem.hpp>
 #include "DistributedSystemImpl.hpp"
 #include "CacheXmlParser.hpp"
 #include "CacheRegionHelper.hpp"
-#include <gfcpp/Cache.hpp>
+#include <geode/Cache.hpp>
 #include "CacheImpl.hpp"
 #include "UserAttributes.hpp"
 #include "ProxyRegion.hpp"
-#include <gfcpp/FunctionService.hpp>
+#include <geode/FunctionService.hpp>
 #include "ProxyRemoteQueryService.hpp"
 #include "FunctionServiceImpl.hpp"
 #include "ProxyCache.hpp"
 #include <string.h>
-#include <gfcpp/PoolManager.hpp>
+#include <geode/PoolManager.hpp>
 #include "ThinClientPoolDM.hpp"
 #include "PdxInstanceFactoryImpl.hpp"
 

@@ -16,7 +16,7 @@
  */
 
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 #define ROOT_NAME "testFwPerf"
 

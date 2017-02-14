@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 #include "TcrPoolEndPoint.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 #include "ThinClientPoolDM.hpp"
 using namespace apache::geode::client;
 #define DEFAULT_CALLBACK_CONNECTION_TIMEOUT_SECONDS 180

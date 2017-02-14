@@ -43,5 +43,4 @@ class CPPCACHE_EXPORT NonAssignable {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_NONCOPYABLE_H_
+#endif  // GEODE_NONCOPYABLE_H_

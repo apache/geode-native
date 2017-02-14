@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 #include "ClientConnectionResponse.hpp"
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/DataInput.hpp>
 using namespace apache::geode::client;
 ClientConnectionResponse* ClientConnectionResponse::fromData(DataInput& input) {
   input.readBoolean(&m_serverFound);

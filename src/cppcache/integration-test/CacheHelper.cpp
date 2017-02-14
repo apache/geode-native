@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-#include <gfcpp/GeodeCppCache.hpp>
 #include <stdlib.h>
-#include <gfcpp/SystemProperties.hpp>
 #include <ace/OS.h>
 #include <ace/INET_Addr.h>
 #include <ace/SOCK_Acceptor.h>
 #include <fstream>
 #include <regex>
-
-#include "TimeBomb.hpp"
 #include <list>
-#include "DistributedSystemImpl.hpp"
-#include "Utils.hpp"
-#include <gfcpp/PoolManager.hpp>
+#include <geode/GeodeCppCache.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/PoolManager.hpp>
 #include <CacheRegionHelper.hpp>
+#include "DistributedSystemImpl.hpp"
+#include "TimeBomb.hpp"
+#include "Utils.hpp"
 
 #include "CacheHelper.hpp"
 #define __DUNIT_NO_MAIN__

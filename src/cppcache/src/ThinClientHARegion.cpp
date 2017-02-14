@@ -18,9 +18,9 @@
 #include "ThinClientHARegion.hpp"
 #include "TcrHADistributionManager.hpp"
 #include "CacheImpl.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 #include "ReadWriteLock.hpp"
-#include <gfcpp/PoolManager.hpp>
+#include <geode/PoolManager.hpp>
 #include "ThinClientPoolHADM.hpp"
 namespace apache {
 namespace geode {

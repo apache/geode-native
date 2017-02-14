@@ -26,7 +26,6 @@
  *      Author: ankurs
  */
 
-
 namespace apache {
 namespace geode {
 namespace client {
@@ -40,5 +39,4 @@ class InternalDataView {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_INTERNALDATAVIEW_H_
+#endif  // GEODE_INTERNALDATAVIEW_H_

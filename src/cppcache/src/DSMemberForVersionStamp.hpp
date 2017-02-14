@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/CacheableKey.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/CacheableKey.hpp>
 #include <string>
 
 namespace apache {
@@ -46,5 +46,4 @@ class DSMemberForVersionStamp : public CacheableKey {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_DSMEMBERFORVERSIONSTAMP_H_
+#endif  // GEODE_DSMEMBERFORVERSIONSTAMP_H_

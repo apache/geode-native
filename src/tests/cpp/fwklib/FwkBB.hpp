@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_e4048febbad0240d5090fde0a083a7ac
-#define APACHE_GEODE_GUARD_e4048febbad0240d5090fde0a083a7ac
+#ifndef GEODE_FWKLIB_FWKBB_H_
+#define GEODE_FWKLIB_FWKBB_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -27,8 +27,7 @@
   * @see
   */
 
-
-#include <gfcpp/gf_base.hpp>
+#include <geode/gf_base.hpp>
 #include "fwklib/FwkLog.hpp"
 
 #include <vector>
@@ -233,5 +232,4 @@ class FwkBBMessage {
 
 // ----------------------------------------------------------------------------
 
-
-#endif // APACHE_GEODE_GUARD_e4048febbad0240d5090fde0a083a7ac
+#endif  // GEODE_FWKLIB_FWKBB_H_

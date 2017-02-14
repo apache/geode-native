@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include <algorithm>
 
 namespace {
@@ -91,4 +91,4 @@ class CPPCACHE_EXPORT TableOfPrimes {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_TABLEOFPRIMES_H_
+#endif  // GEODE_TABLEOFPRIMES_H_

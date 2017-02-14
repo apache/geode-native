@@ -16,7 +16,7 @@
  */
 
 #include "config.h"
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "StackTrace.hpp"
 #include <string>
 

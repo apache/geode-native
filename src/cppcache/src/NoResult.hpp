@@ -20,10 +20,10 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/ResultCollector.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/gf_types.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/ResultCollector.hpp>
 
 /**
  * @file
@@ -66,4 +66,4 @@ class CPPCACHE_EXPORT NoResult : public ResultCollector {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_NORESULT_H_
+#endif  // GEODE_NORESULT_H_

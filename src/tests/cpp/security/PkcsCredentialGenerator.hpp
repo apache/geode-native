@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_7531b050ea22f83a394ce20e9ea4949d
-#define APACHE_GEODE_GUARD_7531b050ea22f83a394ce20e9ea4949d
+#ifndef GEODE_SECURITY_PKCSCREDENTIALGENERATOR_H_
+#define GEODE_SECURITY_PKCSCREDENTIALGENERATOR_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -145,5 +145,4 @@ class PKCSCredentialGenerator : public CredentialGenerator {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_7531b050ea22f83a394ce20e9ea4949d
+#endif  // GEODE_SECURITY_PKCSCREDENTIALGENERATOR_H_

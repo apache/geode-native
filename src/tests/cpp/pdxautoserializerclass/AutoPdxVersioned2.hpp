@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_6e3336d3474c5bad468aecf72316fc4b
-#define APACHE_GEODE_GUARD_6e3336d3474c5bad468aecf72316fc4b
+#ifndef GEODE_PDXAUTOSERIALIZERCLASS_AUTOPDXVERSIONED2_H_
+#define GEODE_PDXAUTOSERIALIZERCLASS_AUTOPDXVERSIONED2_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,11 +20,10 @@
  * limitations under the License.
  */
 
-
-#include <gfcpp/PdxSerializable.hpp>
-#include <gfcpp/GeodeCppCache.hpp>
-#include <gfcpp/PdxWriter.hpp>
-#include <gfcpp/PdxReader.hpp>
+#include <geode/PdxSerializable.hpp>
+#include <geode/GeodeCppCache.hpp>
+#include <geode/PdxWriter.hpp>
+#include <geode/PdxReader.hpp>
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
@@ -273,4 +272,4 @@ class GFIGNORE(TESTOBJECT_EXPORT) AutoPdxVersioned2 : public PdxSerializable {
 typedef SharedPtr<AutoPdxTests::AutoPdxVersioned2> AutoPdxVersioned2Ptr;
 }  // namespace AutoPdxTests
 
-#endif // APACHE_GEODE_GUARD_6e3336d3474c5bad468aecf72316fc4b
+#endif  // GEODE_PDXAUTOSERIALIZERCLASS_AUTOPDXVERSIONED2_H_

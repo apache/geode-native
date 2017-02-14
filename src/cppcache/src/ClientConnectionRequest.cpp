@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 #include "ClientConnectionRequest.hpp"
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/DataInput.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 using namespace apache::geode::client;
 void ClientConnectionRequest::toData(DataOutput& output) const {

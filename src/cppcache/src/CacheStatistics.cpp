@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/CacheStatistics.hpp>
+#include <geode/CacheStatistics.hpp>
 #include <HostAsm.hpp>
 
 using namespace apache::geode::client;

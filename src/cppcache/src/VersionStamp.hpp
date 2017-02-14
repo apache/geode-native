@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/SharedPtr.hpp>
 #include "ClientProxyMembershipID.hpp"
 #include "VersionTag.hpp"
 
@@ -83,4 +83,4 @@ typedef SharedPtr<VersionStamp> VersionStampPtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_VERSIONSTAMP_H_
+#endif  // GEODE_VERSIONSTAMP_H_

@@ -34,7 +34,7 @@
  */
 
 // Include the Geode library.
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 // Include our Query objects, viz. PortfolioPdx and PositionPdx.
 #include "queryobjects/PortfolioPdx.hpp"

@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_e8d4e6f6728b309933eb81791b61fc90
-#define APACHE_GEODE_GUARD_e8d4e6f6728b309933eb81791b61fc90
+#ifndef GEODE_TESTOBJECT_VARIOUSPDXTYPES_H_
+#define GEODE_TESTOBJECT_VARIOUSPDXTYPES_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -26,11 +26,10 @@
  *      Author: npatel
  */
 
-
-#include <gfcpp/PdxSerializable.hpp>
-#include <gfcpp/GeodeCppCache.hpp>
-#include <gfcpp/PdxWriter.hpp>
-#include <gfcpp/PdxReader.hpp>
+#include <geode/PdxSerializable.hpp>
+#include <geode/GeodeCppCache.hpp>
+#include <geode/PdxWriter.hpp>
+#include <geode/PdxReader.hpp>
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
@@ -539,4 +538,4 @@ typedef SharedPtr<PdxInsideIGFSerializable> PdxInsideIGFSerializablePtr;
 
 } /* namespace PdxTests */
 
-#endif // APACHE_GEODE_GUARD_e8d4e6f6728b309933eb81791b61fc90
+#endif  // GEODE_TESTOBJECT_VARIOUSPDXTYPES_H_

@@ -16,8 +16,8 @@
  */
 #include "CacheXmlParser.hpp"
 #include "CacheRegionHelper.hpp"
-#include <gfcpp/PoolManager.hpp>
-#include <gfcpp/PoolFactory.hpp>
+#include <geode/PoolManager.hpp>
+#include <geode/PoolFactory.hpp>
 #include "AutoDelete.hpp"
 #include "CacheImpl.hpp"
 

@@ -16,8 +16,8 @@
  */
 
 #include "LocalRegion.hpp"
-#include <gfcpp/Log.hpp>
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/Log.hpp>
+#include <geode/SystemProperties.hpp>
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheableToken.hpp"
@@ -32,7 +32,7 @@
 #include "TXState.hpp"
 #include "VersionTag.hpp"
 #include <vector>
-#include <gfcpp/PoolManager.hpp>
+#include <geode/PoolManager.hpp>
 
 using namespace apache::geode::client;
 

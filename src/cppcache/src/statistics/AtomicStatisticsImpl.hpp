@@ -20,13 +20,13 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include <ace/Atomic_Op_T.h>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <HostAsm.hpp>
-#include <gfcpp/statistics/Statistics.hpp>
+#include <geode/statistics/Statistics.hpp>
 #include "StatisticsTypeImpl.hpp"
-#include <gfcpp/statistics/StatisticsFactory.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
 #include <string>
 
 #include <NonCopyable.hpp>
@@ -249,4 +249,4 @@ class AtomicStatisticsImpl : public Statistics, private NonCopyable {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STATISTICS_ATOMICSTATISTICSIMPL_H_
+#endif  // GEODE_STATISTICS_ATOMICSTATISTICSIMPL_H_

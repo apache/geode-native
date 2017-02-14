@@ -20,12 +20,12 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/SharedPtr.hpp>
 
-#include <gfcpp/Cache.hpp>
-#include <gfcpp/CacheAttributes.hpp>
-#include <gfcpp/DistributedSystem.hpp>
+#include <geode/Cache.hpp>
+#include <geode/CacheAttributes.hpp>
+#include <geode/DistributedSystem.hpp>
 #include "MapWithLock.hpp"
 #include "SpinLock.hpp"
 #include <ace/ACE.h>
@@ -341,4 +341,4 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CACHEIMPL_H_
+#endif  // GEODE_CACHEIMPL_H_

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/CqListener.hpp>
+#include <geode/CqListener.hpp>
 
 using namespace apache::geode::client;
 CqListener::CqListener() {}
