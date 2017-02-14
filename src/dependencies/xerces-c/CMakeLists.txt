@@ -23,6 +23,12 @@ set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
 set ( ${PROJECT_NAME}_CFLAGS "${${PROJECT_NAME}_CFLAGS} ${CFLAGS_ARCH}" )
 set ( ${PROJECT_NAME}_CXXFLAGS "${${PROJECT_NAME}_CXXFLAGS} ${CXXFLAGS_ARCH} ${CXXFLAGS_C++}" )
 
+
+  if (MSVC_VERSION GREATER 14)
+    # Only have project files for VS14 and older
+    set(MSVC_VERSION 14)
+  endiF()
+
 if (WIN32)
   if (64 EQUAL ${BUILD_BITS})
     set( _PLATFORM x64 )
@@ -31,11 +37,6 @@ if (WIN32)
     set( _PLATFORM win32 )
     set( _BUILD_DIR Build/Win32/VC${MSVC_VERSION}/${_DEBUG_OR_RELEASE} )
   endif()
-
-  if (MSVC_VERSION GREATER 12)
-    # Only have project files for VS12 and older
-    set(MSVC_VERSION 12)
-  endiF()
 
   set ( _CONFIGURE_COMMAND "" )
   set ( _BUILD_COMMAND ${MSBUILD} projects\\Win32\\VC${MSVC_VERSION}\\xerces-all\\xerces-all.sln /m /p:Configuration=${_DEBUG_OR_RELEASE} /p:Platform=${_PLATFORM} )
