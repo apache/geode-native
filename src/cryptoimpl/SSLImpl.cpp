@@ -28,7 +28,8 @@ volatile bool SSLImpl::s_initialized = false;
 
 void *gf_create_SslImpl(ACE_SOCKET sock, const char *pubkeyfile,
                         const char *privkeyfile, const char *pemPassword) {
-  return (void *)new SSLImpl(sock, pubkeyfile, privkeyfile, pemPassword);
+  return reinterpret_cast<void *>(
+      new SSLImpl(sock, pubkeyfile, privkeyfile, pemPassword));
 }
 
 void gf_destroy_SslImpl(void *impl) {
@@ -38,7 +39,6 @@ void gf_destroy_SslImpl(void *impl) {
 
 extern "C" {
 
-// adongre: Added for Ticket #758
 static int pem_passwd_cb(char *buf, int size, int rwflag, void *passwd) {
   strncpy(buf, (char *)passwd, size);
   buf[size - 1] = '\0';
@@ -52,25 +52,23 @@ SSLImpl::SSLImpl(ACE_SOCKET sock, const char *pubkeyfile,
 
   if (SSLImpl::s_initialized == false) {
     ACE_SSL_Context *sslctx = ACE_SSL_Context::instance();
-    SSL_CTX *opensslctx = sslctx->context();
 
-    if (SSL_CTX_set_cipher_list(opensslctx, "eNULL:DEFAULT") == 0) {
-      // if it fails here error is caught at connect.
-    }
-    // sslctx->set_mode(ACE_SSL_Context::SSLv23_client);
+    SSL_CTX_set_cipher_list(sslctx->context(), "DEFAULT");
+    sslctx->set_mode(ACE_SSL_Context::SSLv23_client);
     sslctx->load_trusted_ca(pubkeyfile);
-    // adongre: Added for Ticket #758
+
     if (strlen(password) > 0) {
       SSL_CTX_set_default_passwd_cb(sslctx->context(), pem_passwd_cb);
       SSL_CTX_set_default_passwd_cb_userdata(sslctx->context(),
                                              const_cast<char *>(password));
     }
+
     sslctx->private_key(privkeyfile);
     sslctx->certificate(privkeyfile);
     SSLImpl::s_initialized = true;
   }
   m_io = new ACE_SSL_SOCK_Stream();
-  m_io->set_handle((ACE_HANDLE)sock);
+  m_io->set_handle(sock);
 }
 
 SSLImpl::~SSLImpl() {
@@ -118,14 +116,14 @@ int SSLImpl::connect(ACE_INET_Addr ipaddr, unsigned waitSeconds) {
   return retVal;
 }
 
-ssize_t SSLImpl::recv(void *buf, size_t len, const ACE_Time_Value *timeout = 0,
-                      size_t *bytes_transferred = 0) {
+ssize_t SSLImpl::recv(void *buf, size_t len, const ACE_Time_Value *timeout,
+                      size_t *bytes_transferred) {
   return m_io->recv_n(buf, len, 0, timeout, bytes_transferred);
 }
 
 ssize_t SSLImpl::send(const void *buf, size_t len,
-                      const ACE_Time_Value *timeout = 0,
-                      size_t *bytes_transferred = 0) {
+                      const ACE_Time_Value *timeout,
+                      size_t *bytes_transferred) {
   return m_io->send_n(buf, len, 0, timeout, bytes_transferred);
 }
 

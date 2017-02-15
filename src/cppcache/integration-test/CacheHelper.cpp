@@ -1816,7 +1816,7 @@ std::string CacheHelper::generateGeodeProperties(const std::string& path,
     msg += "jmx-manager-ssl-enabled=false\n";
     msg += "cluster-ssl-enabled=true\n";
     msg += "cluster-ssl-require-authentication=true\n";
-    msg += "cluster-ssl-ciphers=SSL_RSA_WITH_NULL_MD5\n";
+    msg += "cluster-ssl-ciphers=TLS_RSA_WITH_AES_128_CBC_SHA\n";
     msg += "cluster-ssl-keystore-type=jks\n";
     msg += "cluster-ssl-keystore=" + keystore + "/server_keystore.jks\n";
     msg += "cluster-ssl-keystore-password=gemstone\n";
