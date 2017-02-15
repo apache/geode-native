@@ -68,7 +68,7 @@ SSLImpl::SSLImpl(ACE_SOCKET sock, const char *pubkeyfile,
     SSLImpl::s_initialized = true;
   }
   m_io = new ACE_SSL_SOCK_Stream();
-  m_io->set_handle(sock);
+  m_io->set_handle(reinterpret_cast<ACE_HANDLE>(sock));
 }
 
 SSLImpl::~SSLImpl() {
