@@ -19,6 +19,7 @@
 
 #if defined(_SOLARIS)
 #include "HostStatHelperSolaris.hpp"
+#include <cstring>
 #include <procfs.h>
 #include <sys/types.h>
 #include <sys/stat.h>
