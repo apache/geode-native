@@ -99,7 +99,7 @@ void PositionPdx::init() {
   volatility = 0;
   pid = 0;
 }
-/*
+
 void PositionPdx::toData( PdxWriterPtr pw)  {
   pw->writeLong("avg20DaysVol", avg20DaysVol);
   pw->markIdentityField("avg20DaysVol");
@@ -169,7 +169,6 @@ void PositionPdx::fromData( PdxReaderPtr pr ){
   volatility = pr->readLong("volatility");
   pid = pr->readInt("pid");
 }
-*/
 CacheableStringPtr PositionPdx::toString() const {
   char buf[1024];
   sprintf(buf, "PositionPdx Object:[ id=%d ]", this->pid);
