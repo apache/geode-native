@@ -20,6 +20,10 @@
  * limitations under the License.
  */
 
+//#include <cstdio>
+#include <sstream>
+#include <iostream>
+
 #include <gfcpp/gfcpp_globals.hpp>
 #include "AtomicInc.hpp"
 #include <gfcpp/Cacheable.hpp>
@@ -1113,12 +1117,11 @@ class TcrMessageHelper {
       return NULL_OBJECT;
     } else if (!isObj) {
       // otherwise we're currently always expecting an object
-      char exMsg[256];
-      std::snprintf(exMsg, 255,
-                    "TcrMessageHelper::readChunkPartHeader: "
-                    "%s: part is not object",
-                    methodName);
-      LOGDEBUG("%s ", exMsg);
+
+      std::stringstream s;
+      s << "TcrMessageHelper::readChunkPartHeader: " << methodName << ": part is not object\n";
+      LOGDEBUG("%s ", s.str().c_str());
+
       // throw MessageException(exMsg);
       return EXCEPTION;
     }
@@ -1134,13 +1137,9 @@ class TcrMessageHelper {
         msg.setMessageType(TcrMessage::EXCEPTION);
         return EXCEPTION;
       } else {
-        char exMsg[256];
-        std::snprintf(
-            exMsg, 255,
-            "TcrMessageHelper::readChunkPartHeader: %s: cannot handle "
-            "java serializable object from server",
-            methodName);
-        throw MessageException(exMsg);
+        std::stringstream s;
+        s << "TcrMessageHelper::readChunkPartHeader: " << methodName << ": cannot handle java serializable object from server\n";
+        throw MessageException(s.str().c_str());
       }
     } else if (partType == GeodeTypeIds::NullObj) {
       // special null object is case for scalar query result
@@ -1149,12 +1148,9 @@ class TcrMessageHelper {
 
     if (expectedFirstType > 0) {
       if (partType != expectedFirstType) {
-        char exMsg[256];
-        std::snprintf(exMsg, 255,
-                      "TcrMessageHelper::readChunkPartHeader: "
-                      "%s: got unhandled object class = %d",
-                      methodName, partType);
-        throw MessageException(exMsg);
+        std::stringstream s;
+        s << "TcrMessageHelper::readChunkPartHeader: " << methodName << ": got unhandled object class = " << partType << "\n";
+        throw MessageException(s.str().c_str());
       }
       // This is for GETALL
       if (expectedFirstType == GeodeTypeIdsImpl::FixedIDShort) {
@@ -1169,12 +1165,9 @@ class TcrMessageHelper {
       }
     }
     if (compId != expectedPartType) {
-      char exMsg[256];
-      std::snprintf(exMsg, 255,
-                    "TcrMessageHelper::readChunkPartHeader: "
-                    "%s: got unhandled object type = %d",
-                    methodName, compId);
-      throw MessageException(exMsg);
+      std::stringstream s;
+      s << "TcrMessageHelper::readChunkPartHeader: " << methodName << ": got unhandled object type = " << compId << "\n";
+      throw MessageException(s.str().c_str());
     }
     return OBJECT;
   }
@@ -1190,13 +1183,9 @@ class TcrMessageHelper {
       // special null object is case for scalar query result
       return static_cast<int8_t>(NULL_OBJECT);
     } else if (!isObj) {
-      // otherwise we're currently always expecting an object
-      char exMsg[256];
-      std::snprintf(exMsg, 255,
-                    "TcrMessageHelper::readChunkPartHeader: "
-                    "%s: part is not object",
-                    methodName);
-      throw MessageException(exMsg);
+      std::stringstream s;
+      s << "TcrMessageHelper::readChunkPartHeader: " << methodName << ": part is not object\n";
+      throw MessageException(s.str().c_str());
     }
 
     int8_t partType;
@@ -1208,13 +1197,9 @@ class TcrMessageHelper {
         msg.setMessageType(TcrMessage::EXCEPTION);
         return static_cast<int8_t>(EXCEPTION);
       } else {
-        char exMsg[256];
-        std::snprintf(
-            exMsg, 255,
-            "TcrMessageHelper::readChunkPartHeader: %s: cannot handle "
-            "java serializable object from server",
-            methodName);
-        throw MessageException(exMsg);
+        std::stringstream s;
+        s << "TcrMessageHelper::readChunkPartHeader: " << methodName << ": cannot handle java serializable object from server\n";
+        throw MessageException(s.str().c_str());
       }
     } else if (partType == GeodeTypeIds::NullObj) {
       // special null object is case for scalar query result
