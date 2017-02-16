@@ -98,7 +98,9 @@ class GFIGNORE(TESTOBJECT_EXPORT) PositionPdx
 
   static PdxSerializable* createDeserializable();
 
-  const char* getClassName() const;
+  const char* getClassName() { return "PositionPdxType"; }
+
+  const char* getClassName() const { return "PositionPdxType"; }
 
  private:
   void init();

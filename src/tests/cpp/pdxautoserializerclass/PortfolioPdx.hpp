@@ -100,7 +100,7 @@ class GFIGNORE(TESTOBJECT_EXPORT) PortfolioPdx : public PdxSerializable {
 
   static PdxSerializable* createDeserializable();
 
-  const char* getClassName() const;
+  const char* getClassName() const { return this->type; }
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;

@@ -97,9 +97,9 @@ PortfolioPdx::~PortfolioPdx() {
     newVal = NULL;
   }
 }
-/*
+
 void PortfolioPdx::toData( PdxWriterPtr pw  )  {
-  pw->writeInt("ID", id);
+  pw->writeInt("ID", ID);
   pw->markIdentityField("ID");
 
   pw->writeString("pkid", pkid);
@@ -136,7 +136,7 @@ void PortfolioPdx::toData( PdxWriterPtr pw  )  {
 
 void PortfolioPdx::fromData( PdxReaderPtr pr )
 {
-  id = pr->readInt("ID");
+  ID = pr->readInt("ID");
   pkid = pr->readString("pkid");
 
   position1 = dynCast<PositionPdxPtr>(pr->readObject("position1"));
@@ -156,7 +156,7 @@ void PortfolioPdx::fromData( PdxReaderPtr pr )
   arrayZeroSize = pr->readByteArray("arrayZeroSize", arrayZeroSizeLen);
 
 }
-*/
+
 CacheableStringPtr PortfolioPdx::toString() const {
   LOGINFO("PortfolioPdx::toString() Start");
   char idbuf[1024];
