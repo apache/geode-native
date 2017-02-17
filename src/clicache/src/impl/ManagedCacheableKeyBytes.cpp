@@ -229,7 +229,7 @@ namespace apache
         return false;
       }
 
-      uint32_t ManagedCacheableKeyBytesGeneric::hashcode() const
+      int32_t ManagedCacheableKeyBytesGeneric::hashcode() const
       {
         return m_hashCode;
       }

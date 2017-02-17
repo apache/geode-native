@@ -197,7 +197,7 @@ int32_t EventSource::getMemIdLen() { return m_srcIdLen - sizeof(m_thrId); }
 
 int64_t EventSource::getThrId() { return m_thrId; }
 
-uint32_t EventSource::hashcode() {
+int32_t EventSource::hashcode() {
   if (m_srcId == NULL || m_srcIdLen <= 0) {
     return 0;
   }

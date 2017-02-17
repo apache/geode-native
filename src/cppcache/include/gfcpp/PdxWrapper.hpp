@@ -66,7 +66,7 @@ class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
   bool operator==(const CacheableKey& other) const;
 
   /** return the hashcode for this key. */
-  uint32_t hashcode() const;
+  int32_t hashcode() const;
 
   /**
   *@brief serialize this object in geode PDX format

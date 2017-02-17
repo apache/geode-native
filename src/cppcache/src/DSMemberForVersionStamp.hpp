@@ -40,7 +40,7 @@ class DSMemberForVersionStamp : public CacheableKey {
   virtual bool operator==(const CacheableKey& other) const = 0;
 
   /** return the hashcode for this key. */
-  virtual uint32_t hashcode() const = 0;
+  virtual int32_t hashcode() const = 0;
 };
 }  // namespace client
 }  // namespace geode

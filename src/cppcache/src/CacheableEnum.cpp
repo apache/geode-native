@@ -61,7 +61,7 @@ Serializable* CacheableEnum::fromData(apache::geode::client::DataInput& input) {
   return enumVal.ptr();
 }
 
-uint32_t CacheableEnum::hashcode() const {
+int32_t CacheableEnum::hashcode() const {
   int localHash = 1;
   if (m_hashcode == 0) {
     int prime = 31;

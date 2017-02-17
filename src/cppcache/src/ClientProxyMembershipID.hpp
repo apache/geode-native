@@ -86,7 +86,7 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   uint32_t getHostPort() const { return m_hostPort; }
   virtual std::string getHashKey();
   virtual int16_t compareTo(DSMemberForVersionStampPtr);
-  virtual uint32_t hashcode() const {
+  virtual int32_t hashcode() const {
     uint32_t result = 0;
     char hostInfo[255] = {0};
     uint32_t offset = 0;

@@ -34,7 +34,7 @@ EnumInfo::EnumInfo(const char *enumClassName, const char *enumName,
   m_enumName = CacheableString::create(enumName);
 }
 
-uint32_t EnumInfo::hashcode() const {
+int32_t EnumInfo::hashcode() const {
   return ((m_enumClassName != NULLPTR ? m_enumClassName->hashcode() : 0) +
           (m_enumName != NULLPTR ? m_enumName->hashcode() : 0));
 }
