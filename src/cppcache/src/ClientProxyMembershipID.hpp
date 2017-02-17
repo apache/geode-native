@@ -25,6 +25,7 @@
 #include <gfcpp/DataOutput.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 #include "DSMemberForVersionStamp.hpp"
+#include <ace/OS.h>
 #include <string>
 
 namespace apache {
@@ -91,8 +92,8 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
     char hostInfo[255] = {0};
     uint32_t offset = 0;
     for (uint32_t i = 0; i < getHostAddrLen(); i++) {
-      offset += std::snprintf(hostInfo + offset, 255 - offset, ":%x",
-                              m_hostAddr[i]);
+      offset += ACE_OS::snprintf(hostInfo + offset, 255 - offset, ":%x",
+                                 m_hostAddr[i]);
     }
     CacheableStringPtr tempHashCode = CacheableString::create(hostInfo, offset);
     result = result + tempHashCode->hashcode();

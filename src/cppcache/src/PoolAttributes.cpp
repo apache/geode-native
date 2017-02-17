@@ -134,7 +134,7 @@ void PoolAttributes::addLocator(const char* host, int port) {
         "Cannot add both locators and servers to a pool");
   }
   char buff[128] = {'\0'};
-  std::snprintf(buff, 128, "%s:%d", host, port);
+  ACE_OS::snprintf(buff, 128, "%s:%d", host, port);
   m_initLocList.push_back(buff);
 }
 
@@ -144,6 +144,6 @@ void PoolAttributes::addServer(const char* host, int port) {
         "Cannot add both locators and servers to a pool");
   }
   char buff[128] = {'\0'};
-  std::snprintf(buff, 128, "%s:%d", host, port);
+  ACE_OS::snprintf(buff, 128, "%s:%d", host, port);
   m_initServList.push_back(buff);
 }

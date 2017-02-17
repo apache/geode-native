@@ -19,7 +19,9 @@
 #include "GeodeTypeIdsImpl.hpp"
 #include "ClientProxyMembershipID.hpp"
 #include <ace/TSS_T.h>
-#include <cstring>
+
+#include <ace/OS.h>
+#include <ace/INET_Addr.h>
 
 namespace apache {
 namespace geode {
@@ -132,7 +134,7 @@ int8_t EventId::typeId() const { return GeodeTypeIdsImpl::EventId; }
 
 EventId::EventId(char* memId, uint32_t memIdLen, int64_t thr, int64_t seq) {
   // TODO: statics being assigned; not thread-safe??
-  std::memcpy(m_eidMem, memId, memIdLen);
+  ACE_OS::memcpy(m_eidMem, memId, memIdLen);
   m_eidMemLen = memIdLen;
   m_eidThr = thr;
   m_eidSeq = seq;
@@ -178,10 +180,10 @@ EventId::~EventId() {}
 
 /** used to render as a string for logging. */
 size_t EventId::logString(char* buffer, size_t maxLength) const {
-  return std::snprintf(buffer, maxLength,
-                       "EventId( memID=[binary], thr=%" PRIi64
-                       ", seq=%" PRIi64 " )",
-                       m_eidThr, m_eidSeq);
+  return ACE_OS::snprintf(buffer, maxLength,
+                          "EventId( memID=[binary], thr=%" PRIi64
+                          ", seq=%" PRIi64 " )",
+                          m_eidThr, m_eidSeq);
 }
 }  // namespace client
 }  // namespace geode

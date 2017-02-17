@@ -16,8 +16,6 @@
  */
 #include "TcpSslConn.hpp"
 
-#include <cstdio>
-
 #include <gfcpp/SystemProperties.hpp>
 #include <gfcpp/DistributedSystem.hpp>
 #include "../../cryptoimpl/GFSsl.hpp"
@@ -29,7 +27,7 @@ GFSsl* TcpSslConn::getSSLImpl(ACE_SOCKET sock, const char* pubkeyfile,
   const char* libName = "cryptoImpl";
   if (m_dll.open(libName, RTLD_NOW | RTLD_GLOBAL, 0) == -1) {
     char msg[1000] = {0};
-    std::snprintf(msg, 1000, "cannot open library: %s", libName);
+    ACE_OS::snprintf(msg, 1000, "cannot open library: %s", libName);
     LOGERROR(msg);
     throw FileNotFoundException(msg);
   }
@@ -38,9 +36,9 @@ GFSsl* TcpSslConn::getSSLImpl(ACE_SOCKET sock, const char* pubkeyfile,
       reinterpret_cast<gf_create_SslImpl>(m_dll.symbol("gf_create_SslImpl"));
   if (func == NULL) {
     char msg[1000];
-    std::snprintf(msg, 1000,
-                  "cannot find function %s in library gf_create_SslImpl",
-                  "cryptoImpl");
+    ACE_OS::snprintf(msg, 1000,
+                     "cannot find function %s in library gf_create_SslImpl",
+                     "cryptoImpl");
     LOGERROR(msg);
     throw IllegalStateException(msg);
   }
@@ -77,10 +75,12 @@ void TcpSslConn::listen(ACE_INET_Addr addr, uint32_t waitSeconds) {
        * arbitrarily long string,
        * callers must be careful not to overflow the actual space of the
        * destination.
+       * Use snprintf() instead, or correct precision specifiers.
+       * Fix : using ACE_OS::snprintf
        */
       // sprintf( msg, "TcpSslConn::listen Attempt to listen timed out after %d
       // seconds.", waitSeconds );
-      std::snprintf(
+      ACE_OS::snprintf(
           msg, 256,
           "TcpSslConn::listen Attempt to listen timed out after %d seconds.",
           waitSeconds);
@@ -88,8 +88,8 @@ void TcpSslConn::listen(ACE_INET_Addr addr, uint32_t waitSeconds) {
     }
     // sprintf( msg, "TcpSslConn::listen failed with errno: %d: %s", lastError,
     // ACE_OS::strerror(lastError) );
-    std::snprintf(msg, 255, "TcpSslConn::listen failed with errno: %d: %s",
-                  lastError, ACE_OS::strerror(lastError));
+    ACE_OS::snprintf(msg, 255, "TcpSslConn::listen failed with errno: %d: %s",
+                     lastError, ACE_OS::strerror(lastError));
     throw GeodeIOException(msg);
   }
 }
@@ -119,7 +119,7 @@ void TcpSslConn::connect() {
     char msg[256];
     int32_t lastError = ACE_OS::last_error();
     if (lastError == ETIME || lastError == ETIMEDOUT) {
-      std::snprintf(
+      ACE_OS::snprintf(
           msg, 256,
           "TcpSslConn::connect Attempt to connect timed out after %d seconds.",
           m_waitSeconds);
@@ -127,8 +127,8 @@ void TcpSslConn::connect() {
       GF_SAFE_DELETE(m_ssl);
       throw TimeoutException(msg);
     }
-    std::snprintf(msg, 256, "TcpSslConn::connect failed with errno: %d: %s",
-                  lastError, ACE_OS::strerror(lastError));
+    ACE_OS::snprintf(msg, 256, "TcpSslConn::connect failed with errno: %d: %s",
+                     lastError, ACE_OS::strerror(lastError));
     // this is only called by constructor, so we must delete m_ssl
     GF_SAFE_DELETE(m_ssl);
     throw GeodeIOException(msg);

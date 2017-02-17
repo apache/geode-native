@@ -24,6 +24,7 @@
 #include "PdxReaderWithTypeCollector.hpp"
 #include "PdxTypes.hpp"
 #include <gfcpp/PdxFieldTypes.hpp>
+#include <ace/OS_NS_stdio.h>
 
 namespace apache {
 namespace geode {
@@ -51,7 +52,7 @@ void PdxReaderWithTypeCollector::checkType(const char* fieldName, int8_t typeId,
   if (pft != NULLPTR) {
     if (typeId != pft->getTypeId()) {
       char excpStr[128] = {0};
-      std::snprintf(
+      ACE_OS::snprintf(
           excpStr, 128,
           "Expected %s fieldType field but found field of type %s ", fieldType,
           pft->toString()->asChar());

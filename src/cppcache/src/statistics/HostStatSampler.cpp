@@ -25,8 +25,6 @@
 #include <ace/Dirent.h>
 #include <ace/Dirent_Selector.h>
 #include <ace/OS_NS_sys_stat.h>
-#include <cstdlib>
-#include <cstring>
 #include <utility>
 #include <vector>
 
@@ -70,16 +68,16 @@ int selector(const dirent* d) {
   std::string filebasename = ACE::basename(
       apache::geode::statistics::globals::g_statFileWithExt.c_str());
   size_t actualHyphenPos = filebasename.find_last_of('.');
-  if (std::strcmp(filebasename.c_str(), d->d_name) == 0) return 1;
+  if (strcmp(filebasename.c_str(), d->d_name) == 0) return 1;
   size_t fileExtPos = inputname.find_last_of('.');
   std::string extName = inputname.substr(fileExtPos + 1, inputname.length());
-  if (std::strcmp(extName.c_str(), "gfs") != 0) return 0;
+  if (strcmp(extName.c_str(), "gfs") != 0) return 0;
   if (fileExtPos != std::string::npos) {
     std::string tempname = inputname.substr(0, fileExtPos);
     size_t fileHyphenPos = tempname.find_last_of('-');
     if (fileHyphenPos != std::string::npos) {
       std::string buff1 = tempname.substr(0, fileHyphenPos);
-      if (std::strstr(filebasename.c_str(), buff1.c_str()) == 0) {
+      if (ACE_OS::strstr(filebasename.c_str(), buff1.c_str()) == 0) {
         return 0;
       }
       if (fileHyphenPos != actualHyphenPos) return 0;
@@ -106,7 +104,7 @@ int comparator(const dirent** d1, const dirent** d2) {
   } else if (strlen((*d1)->d_name) > strlen((*d2)->d_name)) {
     return 1;
   }
-  int diff = std::strcmp((*d1)->d_name, (*d2)->d_name);
+  int diff = ACE_OS::strcmp((*d1)->d_name, (*d2)->d_name);
   if (diff < 0) {
     return -1;
   } else if (diff > 0) {
@@ -179,7 +177,7 @@ HostStatSampler::HostStatSampler(const char* filePath, int64 sampleIntervalMs,
     // replace all '\' with '/' to make everything easier..
     size_t len = g_statFile.length() + 1;
     char* slashtmp = new char[len];
-    std::strncpy(slashtmp, g_statFile.c_str(), len);
+    ACE_OS::strncpy(slashtmp, g_statFile.c_str(), len);
     for (size_t i = 0; i < g_statFile.length(); i++) {
       if (slashtmp[i] == '/') {
         slashtmp[i] = '\\';
@@ -207,7 +205,7 @@ HostStatSampler::HostStatSampler(const char* filePath, int64 sampleIntervalMs,
           if (fileHyphenPos != std::string::npos) {
             std::string buff =
                 tempname.substr(fileHyphenPos + 1, tempname.length());
-            rollIndex = std::atoi(buff.c_str()) + 1;
+            rollIndex = ACE_OS::atoi(buff.c_str()) + 1;
           }
         }
       }
@@ -266,11 +264,11 @@ std::string HostStatSampler::createArchiveFileName() {
     int32 len = static_cast<int32>(m_archiveFileName.length());
     size_t fileExtPos = m_archiveFileName.find_last_of('.', len);
     if (fileExtPos == std::string::npos) {
-      std::snprintf(buff, 1024, "%s-%d.gfs", m_archiveFileName.c_str(), pid);
+      ACE_OS::snprintf(buff, 1024, "%s-%d.gfs", m_archiveFileName.c_str(), pid);
     } else {
       std::string tmp;
       tmp = m_archiveFileName.substr(0, fileExtPos);
-      std::snprintf(buff, 1024, "%s-%d.gfs", tmp.c_str(), pid);
+      ACE_OS::snprintf(buff, 1024, "%s-%d.gfs", tmp.c_str(), pid);
     }
     m_archiveFileName = buff;
     return m_archiveFileName;
@@ -462,13 +460,13 @@ int32 HostStatSampler::rollArchive(std::string filename) {
   while (!gotNewFileName) {
     char newfilename[1000] = {0};
     if (i < 10) {
-      std::snprintf(newfilename, 1000, "%s%c%s-%d.%s", statsdirname.c_str(),
-                    ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(), i,
-                    extName.c_str());
+      ACE_OS::snprintf(newfilename, 1000, "%s%c%s-%d.%s", statsdirname.c_str(),
+                       ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(), i,
+                       extName.c_str());
     } else {
-      std::snprintf(newfilename, 1000, "%s%c%s-%d.%s", statsdirname.c_str(),
-                    ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(), i,
-                    extName.c_str());
+      ACE_OS::snprintf(newfilename, 1000, "%s%c%s-%d.%s", statsdirname.c_str(),
+                       ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(), i,
+                       extName.c_str());
     }
     FILE* fp = fopen(newfilename, "r");
 
@@ -656,8 +654,8 @@ void HostStatSampler::checkDiskLimit() {
   int status = sds.open(dirname.c_str(), selector, comparator);
   if (status != -1) {
     for (int i = 1; i < sds.length(); i++) {
-      std::snprintf(fullpath, 512, "%s%c%s", dirname.c_str(),
-                    ACE_DIRECTORY_SEPARATOR_CHAR, sds[i]->d_name);
+      ACE_OS::snprintf(fullpath, 512, "%s%c%s", dirname.c_str(),
+                       ACE_DIRECTORY_SEPARATOR_CHAR, sds[i]->d_name);
       ACE_OS::stat(fullpath, &statBuf);
       g_fileInfoPair = std::make_pair(fullpath, statBuf.st_size);
       fileInfo.push_back(g_fileInfoPair);

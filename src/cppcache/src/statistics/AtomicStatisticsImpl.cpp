@@ -165,7 +165,7 @@ void AtomicStatisticsImpl::close() {
 void AtomicStatisticsImpl::_setInt(int32 offset, int32 value) {
   if (offset >= statsType->getIntStatCount()) {
     char s[128] = {'\0'};
-    std::snprintf(
+    ACE_OS::snprintf(
         s, 128, "setInt:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
     throw IllegalArgumentException(s);
@@ -183,10 +183,12 @@ void AtomicStatisticsImpl::_setLong(int32 offset, int64 value) {
      * arbitrarily long string,
      * callers must be careful not to overflow the actual space of the
      * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
      */
     // sprintf(s, "setLong:The id (%d) of the Statistic Descriptor is not valid
     // ", offset);
-    std::snprintf(
+    ACE_OS::snprintf(
         s, 128, "setLong:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
     throw IllegalArgumentException(s);
@@ -198,7 +200,7 @@ void AtomicStatisticsImpl::_setLong(int32 offset, int64 value) {
 void AtomicStatisticsImpl::_setDouble(int32 offset, double value) {
   if (offset >= statsType->getDoubleStatCount()) {
     char s[128] = {'\0'};
-    std::snprintf(
+    ACE_OS::snprintf(
         s, 128,
         "setDouble:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
@@ -213,7 +215,7 @@ void AtomicStatisticsImpl::_setDouble(int32 offset, double value) {
 int32 AtomicStatisticsImpl::_getInt(int32 offset) {
   if (offset >= statsType->getIntStatCount()) {
     char s[128] = {'\0'};
-    std::snprintf(
+    ACE_OS::snprintf(
         s, 128, "getInt:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
     throw IllegalArgumentException(s);
@@ -225,7 +227,7 @@ int32 AtomicStatisticsImpl::_getInt(int32 offset) {
 int64 AtomicStatisticsImpl::_getLong(int32 offset) {
   if (offset >= statsType->getLongStatCount()) {
     char s[128] = {'\0'};
-    std::snprintf(
+    ACE_OS::snprintf(
         s, 128, "getLong:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
     throw IllegalArgumentException(s);
@@ -236,7 +238,7 @@ int64 AtomicStatisticsImpl::_getLong(int32 offset) {
 double AtomicStatisticsImpl::_getDouble(int32 offset) {
   if (offset >= statsType->getDoubleStatCount()) {
     char s[128] = {'\0'};
-    std::snprintf(
+    ACE_OS::snprintf(
         s, 128,
         "getDouble:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
@@ -284,7 +286,7 @@ int64 AtomicStatisticsImpl::getRawBits(StatisticDescriptor* descriptor) {
 int32 AtomicStatisticsImpl::_incInt(int32 offset, int32 delta) {
   if (offset >= statsType->getIntStatCount()) {
     char s[128] = {'\0'};
-    std::snprintf(
+    ACE_OS::snprintf(
         s, 128, "incInt:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
     throw IllegalArgumentException(s);
@@ -303,11 +305,13 @@ int64 AtomicStatisticsImpl::_incLong(int32 offset, int64 delta) {
      * arbitrarily long string,
      * callers must be careful not to overflow the actual space of the
      * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
      */
     // sprintf(s, "incLong:The id (%d) of the Statistic Descriptor is not valid
     // ", offset);
 
-    std::snprintf(
+    ACE_OS::snprintf(
         s, 128, "incLong:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
     throw IllegalArgumentException(s);
@@ -319,7 +323,7 @@ int64 AtomicStatisticsImpl::_incLong(int32 offset, int64 delta) {
 double AtomicStatisticsImpl::_incDouble(int32 offset, double delta) {
   if (offset >= statsType->getDoubleStatCount()) {
     char s[128] = {'\0'};
-    std::snprintf(
+    ACE_OS::snprintf(
         s, 128,
         "incDouble:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
