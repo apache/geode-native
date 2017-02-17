@@ -30,6 +30,8 @@
 #define PRODUCT_VENDOR_NAME "@PRODUCT_VENDOR_NAME@"
 #define PRODUCT_NAME "@PRODUCT_NAME@"
 #define PRODUCT_BITS "@PRODUCT_BITS@"
+#define PRODUCT_LIB_NAME "@PRODUCT_LIB_NAME@"
+#define PRODUCT_DLL_NAME "@PRODUCT_DLL_NAME@"
 
 // TODO relace with CMake checks
 #define WITH_ACE_Select_Reactor 1

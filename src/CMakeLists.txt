@@ -27,6 +27,8 @@ set(PRODUCT_PACKAGE_NAME "apache-geode-native" CACHE STRING "Product package nam
 
 set(PRODUCT_BITS "${BUILD_BITS}bit")
 
+set(PRODUCT_LIB_NAME "apache-geode" CACHE STRING "Binary name")
+
 if(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
   if (CMAKE_SYSTEM_PROCESSOR STREQUAL "sparc")
     set(PRODUCT_SYSTEM_NAME "solaris-sparc")

@@ -24,6 +24,7 @@
 #include <ace/Singleton.h>
 
 //#include <StatisticsFactory.hpp>
+#include "config.h"
 #include "MapEntry.hpp"
 #include "ExpMapEntry.hpp"
 #include "LRUMapEntry.hpp"
@@ -127,15 +128,18 @@ std::string CppCacheLibrary::getProductLibDir() {
   for (int i = 0; i < PATH_MAX && path[i] != 0; i++) {
     path[i] = ::tolower(path[i]);
   }
-  dllNamePtr = strstr(path, "apache-geode.dll");
+  std::string cppName = PRODUCT_LIB_NAME;
+  cppName += ".dll";
+  std::string dotNetName = PRODUCT_DLL_NAME;
+  dotNetName += ".dll";
+  dllNamePtr = strstr(path, cppName.c_str());
   if (dllNamePtr == NULL) {
-    dllNamePtr = strstr(path, "apache-geode_g.dll");
-    if (dllNamePtr == NULL) {
-      dllNamePtr = strstr(path, "Apache.Geode.dll");
-    }
+      dllNamePtr = strstr(path, dotNetName.c_str());
   }
 #else
-  dllNamePtr = strstr(path, "libapache-geode");
+  std::string cppName = "lib";
+  cppName += PRODUCT_LIB_NAME;
+  dllNamePtr = strstr(path, cppName.c_str());
 #endif
   std::string libDir;
   if (dllNamePtr != NULL) {

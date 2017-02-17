@@ -22,7 +22,7 @@ target_link_libraries(pdxautoserializer
   PRIVATE
     antlr
   PUBLIC
-    apache-geode
+    ${PRODUCT_LIB_NAME}
     c++11
 )
 

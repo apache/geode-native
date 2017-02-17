@@ -17,7 +17,7 @@ rem limitations under the License.
 
 setlocal
 
-set PATH=%PATH%;$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:apache-geode>>
+set PATH=%PATH%;$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:${PRODUCT_LIB_NAME}>>
 set PATH=%PATH%;$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:framework>>
 set PATH=%PATH%;$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:testobject>>
 set PATH=%PATH%;$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:SqLiteImpl>>

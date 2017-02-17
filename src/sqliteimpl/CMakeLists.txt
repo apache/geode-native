@@ -20,7 +20,7 @@ file(GLOB_RECURSE SOURCES "*.cpp")
 add_library(SqLiteImpl SHARED ${SOURCES})
 target_link_libraries(SqLiteImpl
   PUBLIC
-    apache-geode
+    ${PRODUCT_LIB_NAME}
     sqlite
     c++11
 )

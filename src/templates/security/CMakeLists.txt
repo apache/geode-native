@@ -21,6 +21,6 @@ add_library(securityImpl SHARED ${SOURCES} CMakeLists.txt.forInstall)
 
 target_link_libraries(securityImpl
   PUBLIC
-    apache-geode
+    ${PRODUCT_LIB_NAME}
     crypto
 )

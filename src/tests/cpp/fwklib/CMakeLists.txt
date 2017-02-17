@@ -24,7 +24,7 @@ target_link_libraries(framework
   PRIVATE
     ACE
   PUBLIC 
-    apache-geode
+    ${PRODUCT_LIB_NAME}
     xerces-c
 )
 
