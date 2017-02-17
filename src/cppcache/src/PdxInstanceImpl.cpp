@@ -26,7 +26,6 @@
 #include "CacheImpl.hpp"
 #include "Utils.hpp"
 #include <algorithm>
-#include <cstring>
 
 /* adongre  - Coverity II
 * CID 29255: Calling risky function (SECURE_CODING)[VERY RISKY]. Using "sprintf"
@@ -35,12 +34,13 @@
 * arbitrarily long string,
 * callers must be careful not to overflow the actual space of the destination.
 * Use snprintf() instead, or correct precision specifiers.
+* Fix : using ACE_OS::snprintf
 */
 
 #define VERIFY_PDX_INSTANCE_FIELD_THROW                                 \
   if (pft == NULLPTR) {                                                 \
     char excpStr[256] = {0};                                            \
-    std::snprintf(excpStr, 256, "PdxInstance doesn't has field %s ", \
+    ACE_OS::snprintf(excpStr, 256, "PdxInstance doesn't has field %s ", \
                      fieldname);                                        \
     throw IllegalStateException(excpStr);                               \
   }
@@ -68,7 +68,7 @@ PdxFieldTypePtr PdxInstanceImpl::m_DefaultPdxFieldType(
                      -1 /*field index*/, false, 1, -1 /*var len field idx*/));
 
 bool sortFunc(PdxFieldTypePtr field1, PdxFieldTypePtr field2) {
-  int diff = std::strcmp(field1->getFieldName(), field2->getFieldName());
+  int diff = ACE_OS::strcmp(field1->getFieldName(), field2->getFieldName());
   if (diff < 0) {
     return true;
   } else {
@@ -570,8 +570,9 @@ bool PdxInstanceImpl::deepArrayEquals(CacheablePtr obj, CacheablePtr otherObj) {
       * callers must be careful not to overflow the actual space of the
       * destination.
       * Use snprintf() instead, or correct precision specifiers.
+      * Fix : using ACE_OS::snprintf
       */
-      std::snprintf(excpStr, 256,
+      ACE_OS::snprintf(excpStr, 256,
                        "PdxInstance cannot calculate equals of the field %s "
                        "since equals is only supported for CacheableKey "
                        "derived types ",
@@ -726,8 +727,9 @@ int PdxInstanceImpl::deepArrayHashCode(CacheablePtr obj) {
       * callers must be careful not to overflow the actual space of the
       * destination.
       * Use snprintf() instead, or correct precision specifiers.
+      * Fix : using ACE_OS::snprintf
       */
-      std::snprintf(excpStr, 256,
+      ACE_OS::snprintf(excpStr, 256,
                        "PdxInstance cannot calculate hashcode of the field %s "
                        "since hashcode is only supported for CacheableKey "
                        "derived types ",
@@ -804,8 +806,9 @@ uint32_t PdxInstanceImpl::hashcode() const {
         * callers must be careful not to overflow the actual space of the
         * destination.
         * Use snprintf() instead, or correct precision specifiers.
+        * Fix : using ACE_OS::snprintf
         */
-        std::snprintf(excpStr, 256, "PdxInstance not found typeid %d ",
+        ACE_OS::snprintf(excpStr, 256, "PdxInstance not found typeid %d ",
                          pField->getTypeId());
         throw IllegalStateException(excpStr);
       }
@@ -1208,14 +1211,15 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
   * arbitrarily long string,
   * callers must be careful not to overflow the actual space of the destination.
   * Use snprintf() instead, or correct precision specifiers.
+  * Fix : using ACE_OS::snprintf
   */
   PdxTypePtr pt = getPdxType();
   std::string toString = "PDX[";
   char buf[2048];
-  std::snprintf(buf, 2048, "%d", pt->getTypeId());
+  ACE_OS::snprintf(buf, 2048, "%d", pt->getTypeId());
   toString += buf;
   toString += ",";
-  std::snprintf(buf, 2048, "%s", pt->getPdxClassName());
+  ACE_OS::snprintf(buf, 2048, "%s", pt->getPdxClassName());
   toString += buf;
   toString += "]{";
   bool firstElement = true;
@@ -1226,7 +1230,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
     } else {
       toString += ",";
     }
-    std::snprintf(buf, 2048, "%s", identityFields.at(i)->getFieldName());
+    ACE_OS::snprintf(buf, 2048, "%s", identityFields.at(i)->getFieldName());
     toString += buf;
     toString += "=";
 
@@ -1234,63 +1238,63 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
       case PdxFieldTypes::BOOLEAN: {
         bool value = false;
         getField(identityFields.at(i)->getFieldName(), value);
-        std::snprintf(buf, 2048, "%s", value ? "true" : "false");
+        ACE_OS::snprintf(buf, 2048, "%s", value ? "true" : "false");
         toString += buf;
         break;
       }
       case PdxFieldTypes::BYTE: {
         signed char value = 0;
         getField(identityFields.at(i)->getFieldName(), value);
-        std::snprintf(buf, 2048, "%d", value);
+        ACE_OS::snprintf(buf, 2048, "%d", value);
         toString += buf;
         break;
       }
       case PdxFieldTypes::SHORT: {
         int16_t value = 0;
         getField(identityFields.at(i)->getFieldName(), value);
-        std::snprintf(buf, 2048, "%d", value);
+        ACE_OS::snprintf(buf, 2048, "%d", value);
         toString += buf;
         break;
       }
       case PdxFieldTypes::INT: {
         int32_t value = 0;
         getField(identityFields.at(i)->getFieldName(), value);
-        std::snprintf(buf, 2048, "%d", value);
+        ACE_OS::snprintf(buf, 2048, "%d", value);
         toString += buf;
         break;
       }
       case PdxFieldTypes::LONG: {
         int64_t value = 0;
         getField(identityFields.at(i)->getFieldName(), value);
-        std::snprintf(buf, 2048, "%lld", value);
+        ACE_OS::snprintf(buf, 2048, "%lld", value);
         toString += buf;
         break;
       }
       case PdxFieldTypes::FLOAT: {
         float value = 0;
         getField(identityFields.at(i)->getFieldName(), value);
-        std::snprintf(buf, 2048, "%f", value);
+        ACE_OS::snprintf(buf, 2048, "%f", value);
         toString += buf;
         break;
       }
       case PdxFieldTypes::DOUBLE: {
         double value = 0;
         getField(identityFields.at(i)->getFieldName(), value);
-        std::snprintf(buf, 2048, "%f", value);
+        ACE_OS::snprintf(buf, 2048, "%f", value);
         toString += buf;
         break;
       }
       case PdxFieldTypes::CHAR: {
         wchar_t value = 0;
         getField(identityFields.at(i)->getFieldName(), value);
-        std::snprintf(buf, 2048, "%c", value);
+        ACE_OS::snprintf(buf, 2048, "%c", value);
         toString += buf;
         break;
       }
       case PdxFieldTypes::STRING: {
         wchar_t* value = 0;
         getField(identityFields.at(i)->getFieldName(), &value);
-        std::snprintf(buf, 2048, "%ls", value);
+        ACE_OS::snprintf(buf, 2048, "%ls", value);
         toString += buf;
         break;
       }
@@ -1300,7 +1304,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         getField(identityFields.at(i)->getFieldName(), &value, length);
         if (length > 0) {
           for (int i = 0; i < length; i++) {
-            std::snprintf(buf, 2048, "%c\t", value[i]);
+            ACE_OS::snprintf(buf, 2048, "%c\t", value[i]);
             toString += buf;
           }
           GF_SAFE_DELETE_ARRAY(value);
@@ -1313,7 +1317,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         getField(identityFields.at(i)->getFieldName(), &value, length);
         if (length > 0) {
           for (int i = 0; i < length; i++) {
-            std::snprintf(buf, 2048, "%ls\t", value[i]);
+            ACE_OS::snprintf(buf, 2048, "%ls\t", value[i]);
             toString += buf;
           }
         }
@@ -1325,7 +1329,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         getField(identityFields.at(i)->getFieldName(), &value, length);
         if (length > 0) {
           for (int i = 0; i < length; i++) {
-            std::snprintf(buf, 2048, "%d\t", value[i]);
+            ACE_OS::snprintf(buf, 2048, "%d\t", value[i]);
             toString += buf;
           }
           GF_SAFE_DELETE_ARRAY(value);
@@ -1338,7 +1342,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         getField(identityFields.at(i)->getFieldName(), &value, length);
         if (length > 0) {
           for (int i = 0; i < length; i++) {
-            std::snprintf(buf, 2048, "%d\t", value[i]);
+            ACE_OS::snprintf(buf, 2048, "%d\t", value[i]);
             toString += buf;
           }
           GF_SAFE_DELETE_ARRAY(value);
@@ -1351,7 +1355,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         getField(identityFields.at(i)->getFieldName(), &value, length);
         if (length > 0) {
           for (int i = 0; i < length; i++) {
-            std::snprintf(buf, 2048, "%d\t", value[i]);
+            ACE_OS::snprintf(buf, 2048, "%d\t", value[i]);
             toString += buf;
           }
           GF_SAFE_DELETE_ARRAY(value);
@@ -1364,7 +1368,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         getField(identityFields.at(i)->getFieldName(), &value, length);
         if (length > 0) {
           for (int i = 0; i < length; i++) {
-            std::snprintf(buf, 2048, "%lld\t", value[i]);
+            ACE_OS::snprintf(buf, 2048, "%lld\t", value[i]);
             toString += buf;
           }
         }
@@ -1376,7 +1380,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         getField(identityFields.at(i)->getFieldName(), &value, length);
         if (length > 0) {
           for (int i = 0; i < length; i++) {
-            std::snprintf(buf, 2048, "%f\t", value[i]);
+            ACE_OS::snprintf(buf, 2048, "%f\t", value[i]);
             toString += buf;
           }
           GF_SAFE_DELETE_ARRAY(value);
@@ -1389,7 +1393,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         getField(identityFields.at(i)->getFieldName(), &value, length);
         if (length > 0) {
           for (int i = 0; i < length; i++) {
-            std::snprintf(buf, 2048, "%f\t", value[i]);
+            ACE_OS::snprintf(buf, 2048, "%f\t", value[i]);
             toString += buf;
           }
         }
@@ -1399,7 +1403,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         CacheableDatePtr value = NULLPTR;
         getField(identityFields.at(i)->getFieldName(), value);
         if (value != NULLPTR) {
-          std::snprintf(buf, 2048, "%s", value->toString()->asChar());
+          ACE_OS::snprintf(buf, 2048, "%s", value->toString()->asChar());
           toString += buf;
         }
         break;
@@ -1410,7 +1414,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         getField(identityFields.at(i)->getFieldName(), &value, length);
         if (length > 0) {
           for (int i = 0; i < length; i++) {
-            std::snprintf(buf, 2048, "%s\t", value[i] ? "true" : "false");
+            ACE_OS::snprintf(buf, 2048, "%s\t", value[i] ? "true" : "false");
             toString += buf;
           }
           GF_SAFE_DELETE_ARRAY(value);
@@ -1426,7 +1430,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         if (arrayLength > 0) {
           for (int j = 0; j < arrayLength; j++) {
             for (int k = 0; k < elementLength[j]; k++) {
-              std::snprintf(buf, 2048, "%d\t", value[j][k]);
+              ACE_OS::snprintf(buf, 2048, "%d\t", value[j][k]);
               toString += buf;
             }
           }
@@ -1437,7 +1441,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         CacheableObjectArrayPtr value;
         getField(identityFields.at(i)->getFieldName(), value);
         if (value != NULLPTR) {
-          std::snprintf(buf, 2048, "%s\t", value->toString()->asChar());
+          ACE_OS::snprintf(buf, 2048, "%s\t", value->toString()->asChar());
           toString += buf;
         }
         break;
@@ -1446,7 +1450,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         CacheablePtr value;
         getField(identityFields.at(i)->getFieldName(), value);
         if (value != NULLPTR) {
-          std::snprintf(buf, 2048, "%s\t", value->toString()->asChar());
+          ACE_OS::snprintf(buf, 2048, "%s\t", value->toString()->asChar());
           toString += buf;
         }
       }
@@ -1530,7 +1534,7 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
   char* myPdxClassName = myPdxType->getPdxClassName();
   char* otherPdxClassName = otherPdxType->getPdxClassName();
 
-  if (std::strcmp(otherPdxClassName, myPdxClassName) != 0) {
+  if (ACE_OS::strcmp(otherPdxClassName, myPdxClassName) != 0) {
     return false;
   }
 
@@ -1641,8 +1645,9 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
         * callers must be careful not to overflow the actual space of the
         * destination.
         * Use snprintf() instead, or correct precision specifiers.
+        * Fix : using ACE_OS::snprintf
         */
-        std::snprintf(excpStr, 256, "PdxInstance not found typeid  %d ",
+        ACE_OS::snprintf(excpStr, 256, "PdxInstance not found typeid  %d ",
                          myPFT->getTypeId());
         throw IllegalStateException(excpStr);
       }
@@ -1803,7 +1808,7 @@ const char* PdxInstanceImpl::getClassName() const {
     PdxTypePtr pdxtype = PdxTypeRegistry::getPdxType(m_typeId);
     if (pdxtype == NULLPTR) {
       char excpStr[256] = {0};
-      std::snprintf(excpStr, 256,
+      ACE_OS::snprintf(excpStr, 256,
                        "PdxType is not defined for PdxInstance: %d ", m_typeId);
       throw IllegalStateException(excpStr);
     }
@@ -2034,8 +2039,9 @@ void PdxInstanceImpl::setField(const char* fieldName, bool value) {
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2059,8 +2065,9 @@ void PdxInstanceImpl::setField(const char* fieldName, signed char value) {
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2084,8 +2091,9 @@ void PdxInstanceImpl::setField(const char* fieldName, unsigned char value) {
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2101,7 +2109,7 @@ void PdxInstanceImpl::setField(const char* fieldName, int16_t value) {
 
   if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::SHORT) {
     char excpStr[256] = {0};
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2125,8 +2133,9 @@ void PdxInstanceImpl::setField(const char* fieldName, int32_t value) {
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2150,8 +2159,9 @@ void PdxInstanceImpl::setField(const char* fieldName, int64_t value) {
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2175,8 +2185,9 @@ void PdxInstanceImpl::setField(const char* fieldName, float value) {
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2200,8 +2211,9 @@ void PdxInstanceImpl::setField(const char* fieldName, double value) {
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2225,8 +2237,9 @@ void PdxInstanceImpl::setField(const char* fieldName, wchar_t value) {
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2250,8 +2263,9 @@ void PdxInstanceImpl::setField(const char* fieldName, char value) {
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2268,7 +2282,7 @@ void PdxInstanceImpl::setField(const char* fieldName, CacheableDatePtr value) {
 
   if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::DATE) {
     char excpStr[256] = {0};
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2292,8 +2306,9 @@ void PdxInstanceImpl::setField(const char* fieldName, CacheablePtr value) {
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2309,7 +2324,7 @@ void PdxInstanceImpl::setField(const char* fieldName,
 
   if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::OBJECT_ARRAY) {
     char excpStr[256] = {0};
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2333,8 +2348,9 @@ void PdxInstanceImpl::setField(const char* fieldName, bool* value,
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2359,8 +2375,9 @@ void PdxInstanceImpl::setField(const char* fieldName, signed char* value,
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2386,8 +2403,9 @@ void PdxInstanceImpl::setField(const char* fieldName, unsigned char* value,
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2413,8 +2431,9 @@ void PdxInstanceImpl::setField(const char* fieldName, int16_t* value,
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2439,8 +2458,9 @@ void PdxInstanceImpl::setField(const char* fieldName, int32_t* value,
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2465,8 +2485,9 @@ void PdxInstanceImpl::setField(const char* fieldName, int64_t* value,
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2491,8 +2512,9 @@ void PdxInstanceImpl::setField(const char* fieldName, float* value,
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2517,8 +2539,9 @@ void PdxInstanceImpl::setField(const char* fieldName, double* value,
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2543,8 +2566,9 @@ void PdxInstanceImpl::setField(const char* fieldName, wchar_t* value,
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2569,8 +2593,9 @@ void PdxInstanceImpl::setField(const char* fieldName, char* value,
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2598,8 +2623,9 @@ void PdxInstanceImpl::setField(const char* fieldName, const wchar_t* value) {
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2623,8 +2649,9 @@ void PdxInstanceImpl::setField(const char* fieldName, const char* value) {
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2650,8 +2677,9 @@ void PdxInstanceImpl::setField(const char* fieldName, int8_t** value,
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2681,8 +2709,9 @@ void PdxInstanceImpl::setField(const char* fieldName, wchar_t** value,
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
@@ -2723,8 +2752,9 @@ void PdxInstanceImpl::setField(const char* fieldName, char** value,
     * callers must be careful not to overflow the actual space of the
     * destination.
     * Use snprintf() instead, or correct precision specifiers.
+    * Fix : using ACE_OS::snprintf
     */
-    std::snprintf(
+    ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));

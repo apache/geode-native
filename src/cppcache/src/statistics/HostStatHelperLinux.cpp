@@ -23,6 +23,7 @@
 #include <glob.h>
 #include "HostStatHelperLinux.hpp"
 #include "LinuxProcessStats.hpp"
+#include <ace/OS.h>
 
 using namespace apache::geode::statistics;
 
@@ -65,7 +66,7 @@ void HostStatHelperLinux::refreshProcess(ProcessStats* processStats) {
   char procFileName[64];
 
   FILE* fPtr;
-  std::snprintf(procFileName, 64, "/proc/%" PRIu32 "/stat", (uint32)thePid);
+  ACE_OS::snprintf(procFileName, 64, "/proc/%" PRIu32 "/stat", (uint32)thePid);
   fPtr = fopen(procFileName, "r"); /* read only */
   if (fPtr != NULL) {
     int32 status = fscanf(

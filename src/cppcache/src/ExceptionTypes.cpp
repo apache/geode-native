@@ -329,7 +329,7 @@ void GfErrTypeThrowException(const char* str, GfErrType err) {
       char buf[64];
       LOGINFO("error code: %d", err);
       if (exMsg == NULL) {
-        std::snprintf(buf, 64, "Unknown error code[0x%X]", err);
+        ACE_OS::snprintf(buf, 64, "Unknown error code[0x%X]", err);
         exMsg = buf;
       }
       UnknownException ex(str, exMsg);

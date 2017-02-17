@@ -17,7 +17,6 @@
 
 #include <gfcpp/gfcpp_globals.hpp>
 
-#include <cstring>
 #include <string>
 #include <stdlib.h>
 #include <string.h>
@@ -520,7 +519,7 @@ void SystemProperties::processProperty(const char* property,
     }
     size_t len = strlen(value) + 1;
     m_statisticsArchiveFile = new char[len];
-    std::strncpy(m_statisticsArchiveFile, value, len);
+    ACE_OS::strncpy(m_statisticsArchiveFile, value, len);
 
   } else if (prop == LogFilename) {
     if (m_logFilename != NULL) {
@@ -529,7 +528,7 @@ void SystemProperties::processProperty(const char* property,
     if (value != NULL) {
       size_t len = strlen(value) + 1;
       m_logFilename = new char[len];
-      std::strncpy(m_logFilename, value, len);
+      ACE_OS::strncpy(m_logFilename, value, len);
     }
   } else if (prop == LogLevel) {
     try {
@@ -558,7 +557,7 @@ void SystemProperties::processProperty(const char* property,
     if (value != NULL) {
       size_t len = strlen(value) + 1;
       m_name = new char[len];
-      std::strncpy(m_name, value, len);
+      ACE_OS::strncpy(m_name, value, len);
     }
   } else if (prop == DurableClientId) {
     if (m_durableClientId != NULL) {
@@ -568,7 +567,7 @@ void SystemProperties::processProperty(const char* property,
     if (value != NULL) {
       size_t len = strlen(value) + 1;
       m_durableClientId = new char[len];
-      std::strncpy(m_durableClientId, value, len);
+      ACE_OS::strncpy(m_durableClientId, value, len);
     }
   } else if (prop == SslKeyStore) {
     if (m_sslKeyStore != NULL) {
@@ -578,7 +577,7 @@ void SystemProperties::processProperty(const char* property,
     if (value != NULL) {
       size_t len = strlen(value) + 1;
       m_sslKeyStore = new char[len];
-      std::strncpy(m_sslKeyStore, value, len);
+      ACE_OS::strncpy(m_sslKeyStore, value, len);
     }
   } else if (prop == SslTrustStore) {
     if (m_sslTrustStore != NULL) {
@@ -588,7 +587,7 @@ void SystemProperties::processProperty(const char* property,
     if (value != NULL) {
       size_t len = strlen(value) + 1;
       m_sslTrustStore = new char[len];
-      std::strncpy(m_sslTrustStore, value, len);
+      ACE_OS::strncpy(m_sslTrustStore, value, len);
     }
     // adongre: Added for Ticket #758
   } else if (prop == SslKeystorePassword) {
@@ -599,7 +598,7 @@ void SystemProperties::processProperty(const char* property,
     if (value != NULL) {
       size_t len = strlen(value) + 1;
       m_sslKeystorePassword = new char[len];
-      std::strncpy(m_sslKeystorePassword, value, len);
+      ACE_OS::strncpy(m_sslKeystorePassword, value, len);
     }
   } else if (prop == ConflateEvents) {
     if (m_conflateEvents != NULL) {
@@ -609,7 +608,7 @@ void SystemProperties::processProperty(const char* property,
     if (value != NULL) {
       size_t len = strlen(value) + 1;
       m_conflateEvents = new char[len];
-      std::strncpy(m_conflateEvents, value, len);
+      ACE_OS::strncpy(m_conflateEvents, value, len);
     }
   } else if (prop == LicenseFilename) {
     // ignore license-file
@@ -622,7 +621,7 @@ void SystemProperties::processProperty(const char* property,
     if (value != NULL) {
       size_t len = strlen(value) + 1;
       m_cacheXMLFile = new char[len];
-      std::strncpy(m_cacheXMLFile, value, len);
+      ACE_OS::strncpy(m_cacheXMLFile, value, len);
     }
 
   } else if (prop == LogFileSizeLimit) {
@@ -739,8 +738,8 @@ void SystemProperties::processProperty(const char* property,
     }
   } else {
     char msg[1000];
-    std::snprintf(msg, 1000, "SystemProperties: unknown property: %s = %s",
-                  property, value);
+    ACE_OS::snprintf(msg, 1000, "SystemProperties: unknown property: %s = %s",
+                     property, value);
     throwError(msg);
   }
 }
@@ -755,18 +754,18 @@ void SystemProperties::logSettings() {
   settings += "\n  appdomain-enabled = ";
   settings += isAppDomainEnabled() ? "true" : "false";
 
-  std::snprintf(buf, 2048, "%" PRIu32, statsDiskSpaceLimit());
+  ACE_OS::snprintf(buf, 2048, "%" PRIu32, statsDiskSpaceLimit());
   settings += "\n  archive-disk-space-limit = ";
   settings += buf;
 
-  std::snprintf(buf, 2048, "%" PRIu32, statsFileSizeLimit());
+  ACE_OS::snprintf(buf, 2048, "%" PRIu32, statsFileSizeLimit());
   settings += "\n  archive-file-size-limit = ";
   settings += buf;
 
   settings += "\n  auto-ready-for-events = ";
   settings += autoReadyForEvents() ? "true" : "false";
 
-  std::snprintf(buf, 2048, "%" PRIu32, bucketWaitTimeout());
+  ACE_OS::snprintf(buf, 2048, "%" PRIu32, bucketWaitTimeout());
   settings += "\n  bucket-wait-timeout = ";
   settings += buf;
 
@@ -776,15 +775,15 @@ void SystemProperties::logSettings() {
   settings += "\n  conflate-events = ";
   settings += conflateEvents();
 
-  std::snprintf(buf, 2048, "%" PRIu32, connectTimeout());
+  ACE_OS::snprintf(buf, 2048, "%" PRIu32, connectTimeout());
   settings += "\n  connect-timeout = ";
   settings += buf;
 
-  std::snprintf(buf, 2048, "%" PRIu32, javaConnectionPoolSize());
+  ACE_OS::snprintf(buf, 2048, "%" PRIu32, javaConnectionPoolSize());
   settings += "\n  connection-pool-size = ";
   settings += buf;
 
-  std::snprintf(buf, 2048, "%" PRIu32, connectWaitTimeout());
+  ACE_OS::snprintf(buf, 2048, "%" PRIu32, connectWaitTimeout());
   settings += "\n  connect-wait-timeout = ";
   settings += buf;
 
@@ -800,7 +799,7 @@ void SystemProperties::logSettings() {
   settings += "\n  durable-client-id = ";
   settings += durableClientId();
 
-  std::snprintf(buf, 2048, "%" PRIu32, durableTimeout());
+  ACE_OS::snprintf(buf, 2048, "%" PRIu32, durableTimeout());
   settings += "\n  durable-timeout = ";
   settings += buf;
 
@@ -812,13 +811,13 @@ void SystemProperties::logSettings() {
   settings += "\n  grid-client = ";
   settings += isGridClient() ? "true" : "false";
 
-  std::snprintf(buf, 2048, "%" PRIu32, heapLRUDelta());
+  ACE_OS::snprintf(buf, 2048, "%" PRIu32, heapLRUDelta());
   settings += "\n  heap-lru-delta = ";
   settings += buf;
   /* adongre  - Coverity II
    * CID 29195: Printf arg type mismatch (PW.PRINTF_ARG_MISMATCH)
    */
-  std::snprintf(buf, 2048, "%" PRIu32, static_cast<int>(heapLRULimit()));
+  ACE_OS::snprintf(buf, 2048, "%" PRIu32, static_cast<int>(heapLRULimit()));
   settings += "\n  heap-lru-limit = ";
   settings += buf;
 
@@ -828,33 +827,33 @@ void SystemProperties::logSettings() {
   // settings += "\n  license-type = ";
   // settings += licenseType();
 
-  std::snprintf(buf, 2048, "%" PRIu32, logDiskSpaceLimit());
+  ACE_OS::snprintf(buf, 2048, "%" PRIu32, logDiskSpaceLimit());
   settings += "\n  log-disk-space-limit = ";
   settings += buf;
 
   settings += "\n  log-file = ";
   settings += logFilename();
 
-  std::snprintf(buf, 2048, "%" PRIu32, logFileSizeLimit());
+  ACE_OS::snprintf(buf, 2048, "%" PRIu32, logFileSizeLimit());
   settings += "\n  log-file-size-limit = ";
   settings += buf;
 
   settings += "\n  log-level = ";
   settings += Log::levelToChars(logLevel());
 
-  std::snprintf(buf, 2048, "%" PRIu32, threadPoolSize());
+  ACE_OS::snprintf(buf, 2048, "%" PRIu32, threadPoolSize());
   settings += "\n  max-fe-threads = ";
   settings += buf;
 
-  std::snprintf(buf, 2048, "%" PRIu32, maxSocketBufferSize());
+  ACE_OS::snprintf(buf, 2048, "%" PRIu32, maxSocketBufferSize());
   settings += "\n  max-socket-buffer-size = ";
   settings += buf;
 
-  std::snprintf(buf, 2048, "%" PRIi32, notifyAckInterval());
+  ACE_OS::snprintf(buf, 2048, "%" PRIi32, notifyAckInterval());
   settings += "\n  notify-ack-interval = ";
   settings += buf;
 
-  std::snprintf(buf, 2048, "%" PRIi32, notifyDupCheckLife());
+  ACE_OS::snprintf(buf, 2048, "%" PRIi32, notifyDupCheckLife());
   settings += "\n  notify-dupcheck-life = ";
   settings += buf;
 
@@ -863,14 +862,14 @@ void SystemProperties::logSettings() {
 
   // *** PLEASE ADD IN ALPHABETICAL ORDER - USER VISIBLE ***
 
-  std::snprintf(buf, 2048, "%" PRIi32, pingInterval());
+  ACE_OS::snprintf(buf, 2048, "%" PRIi32, pingInterval());
   settings += "\n  ping-interval = ";
   settings += buf;
 
   settings += "\n  read-timeout-unit-in-millis = ";
   settings += readTimeoutUnitInMillis() ? "true" : "false";
 
-  std::snprintf(buf, 2048, "%" PRIi32, redundancyMonitorInterval());
+  ACE_OS::snprintf(buf, 2048, "%" PRIi32, redundancyMonitorInterval());
   settings += "\n  redundancy-monitor-interval = ";
   settings += buf;
 
@@ -907,16 +906,16 @@ void SystemProperties::logSettings() {
   settings += "\n  statistic-sampling-enabled = ";
   settings += statisticsEnabled() ? "true" : "false";
 
-  std::snprintf(buf, 2048, "%" PRIu32, statisticsSampleInterval());
+  ACE_OS::snprintf(buf, 2048, "%" PRIu32, statisticsSampleInterval());
   settings += "\n  statistic-sample-rate = ";
   settings += buf;
 
-  std::snprintf(buf, 2048, "%" PRIu32, suspendedTxTimeout());
+  ACE_OS::snprintf(buf, 2048, "%" PRIu32, suspendedTxTimeout());
   settings += "\n  suspended-tx-timeout = ";
   settings += buf;
 
   // tombstone-timeout
-  std::snprintf(buf, 2048, "%" PRIu32, tombstoneTimeoutInMSec());
+  ACE_OS::snprintf(buf, 2048, "%" PRIu32, tombstoneTimeoutInMSec());
   settings += "\n  tombstone-timeout = ";
   settings += buf;
 

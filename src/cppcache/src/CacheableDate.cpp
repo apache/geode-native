@@ -23,7 +23,6 @@
 #include <gfcpp/ExceptionTypes.hpp>
 #include <gfcpp/GeodeTypeIds.hpp>
 
-#include <cstdio>
 #include <cwchar>
 #include <ace/OS.h>
 
@@ -114,9 +113,9 @@ CacheableStringPtr CacheableDate::toString() const {
   struct tm date = {0};
   time_t sec = m_timevalue / 1000;
   ACE_OS::localtime_r(&sec, &date);
-  std::snprintf(buffer, 24, "%d/%d/%d %d:%d:%d", date.tm_mon + 1,
-                date.tm_mday, date.tm_year + 1900, date.tm_hour, date.tm_min,
-                date.tm_sec);
+  ACE_OS::snprintf(buffer, 24, "%d/%d/%d %d:%d:%d", date.tm_mon + 1,
+                   date.tm_mday, date.tm_year + 1900, date.tm_hour, date.tm_min,
+                   date.tm_sec);
   return CacheableString::create(buffer);
 }
 
@@ -124,9 +123,9 @@ int32_t CacheableDate::logString(char* buffer, int32_t maxLength) const {
   struct tm date = {0};
   time_t sec = m_timevalue / 1000;
   ACE_OS::localtime_r(&sec, &date);
-  return std::snprintf(buffer, maxLength,
-                       "CacheableDate (mm/dd/yyyy) ( %d/%d/%d )",
-                       date.tm_mon + 1, date.tm_mday, date.tm_year + 1900);
+  return ACE_OS::snprintf(buffer, maxLength,
+                          "CacheableDate (mm/dd/yyyy) ( %d/%d/%d )",
+                          date.tm_mon + 1, date.tm_mday, date.tm_year + 1900);
 }
 
 }  // namespace client

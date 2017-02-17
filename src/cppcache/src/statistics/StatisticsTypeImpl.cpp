@@ -18,7 +18,7 @@
 #include "StatisticsTypeImpl.hpp"
 #include "StatisticDescriptorImpl.hpp"
 #include <string>
-#include <cstring>
+#include <ace/OS.h>
 using namespace apache::geode::statistics;
 
 /**
@@ -61,11 +61,11 @@ StatisticsTypeImpl::StatisticsTypeImpl(const char* nameArg,
   }
   if (statsLengthArg > MAX_DESCRIPTORS_PER_TYPE) {
     char buffer[100];
-    std::snprintf(buffer, 100, "%d", statsLengthArg);
+    ACE_OS::snprintf(buffer, 100, "%d", statsLengthArg);
     std::string temp(buffer);
     std::string s = "The requested descriptor count " + temp +
                     " exceeds the maximum which is ";
-    std::snprintf(buffer, 100, "%d", MAX_DESCRIPTORS_PER_TYPE);
+    ACE_OS::snprintf(buffer, 100, "%d", MAX_DESCRIPTORS_PER_TYPE);
     std::string buf(buffer);
     s += buf + ".";
     throw IllegalArgumentException(s.c_str());

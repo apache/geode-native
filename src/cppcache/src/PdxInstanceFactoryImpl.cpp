@@ -18,6 +18,7 @@
 #include "PdxType.hpp"
 #include "PdxTypes.hpp"
 #include "PdxInstanceImpl.hpp"
+#include <ace/OS_NS_stdio.h>
 
 namespace apache {
 namespace geode {
@@ -393,11 +394,12 @@ void PdxInstanceFactoryImpl::isFieldAdded(const char* fieldName) {
      * callers must be careful not to overflow the actual space of the
      * destination.
      * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
      */
-    std::snprintf(excpStr, 256,
-                  "Field: %s is either already added into "
-                  "PdxInstanceFactory or it is null ",
-                  fieldName);
+    ACE_OS::snprintf(excpStr, 256,
+                     "Field: %s is either already added into "
+                     "PdxInstanceFactory or it is null ",
+                     fieldName);
     throw IllegalStateException(excpStr);
   }
 }

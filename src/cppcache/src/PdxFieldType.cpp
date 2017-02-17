@@ -27,6 +27,8 @@
 #include <gfcpp/PdxFieldTypes.hpp>
 //#include <malloc.h>
 
+#include "ace/OS.h"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -153,8 +155,9 @@ CacheableStringPtr PdxFieldType::toString() const {
    * callers must be careful not to overflow the actual space of the
    * destination.
    * Use snprintf() instead, or correct precision specifiers.
+   * Fix : using ACE_OS::snprintf
    */
-  std::snprintf(
+  ACE_OS::snprintf(
       stringBuf, 1024,
       " PdxFieldName=%s TypeId=%d VarLenFieldIdx=%d sequenceid=%d\n",
       this->m_fieldName.c_str(), this->m_typeId, this->m_varLenFieldIdx,

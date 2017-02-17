@@ -37,8 +37,6 @@
 #include "VersionedCacheableObjectPartList.hpp"
 //#include "PutAllPartialResult.hpp"
 
-#include <cstring>
-
 using namespace apache::geode::client;
 
 namespace apache {
@@ -623,7 +621,7 @@ SelectResultsPtr ThinClientRegion::query(const char* predicate,
 
   bool isFullQuery = false;
 
-  size_t predlen = std::strlen(predicate);
+  size_t predlen = ACE_OS::strlen(predicate);
 
   if (predlen > 6)  // perhaps it has 'select' or 'import' if its > 6
   {
@@ -643,8 +641,8 @@ SelectResultsPtr ThinClientRegion::query(const char* predicate,
             ACE_OS::ace_tolower(predicate[charpos + skipspace]);
       }
 
-      if (!std::strcmp(firstWord, "select") ||
-          !std::strcmp(firstWord, "import")) {
+      if (!ACE_OS::strcmp(firstWord, "select") ||
+          !ACE_OS::strcmp(firstWord, "import")) {
         isFullQuery = true;
       }
     }
@@ -4136,7 +4134,7 @@ void ChunkedDurableCQListResponse::handleChunk(
   if (!isObj) {
     // we're currently always expecting an object
     char exMsg[256];
-    std::snprintf(
+    ACE_OS::snprintf(
         exMsg, 255,
         "ChunkedDurableCQListResponse::handleChunk: part is not object");
     throw MessageException(exMsg);

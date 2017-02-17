@@ -34,6 +34,7 @@
 #include "ClientProxyMembershipID.hpp"
 #include "AutoDelete.hpp"
 #include <string>
+#include "ace/OS.h"
 #include <gfcpp/PoolManager.hpp>
 #include <gfcpp/RegionAttributes.hpp>
 #include "ThinClientPoolHADM.hpp"
@@ -483,7 +484,7 @@ void CacheImpl::createRegion(const char* name,
     RegionPtr tmp;
     if (0 == m_regions->find(namestr, tmp)) {
       char buffer[256];
-      std::snprintf(
+      ACE_OS::snprintf(
           buffer, 256,
           "Cache::createRegion: \"%s\" region exists in local cache",
           namestr.c_str());
@@ -505,14 +506,14 @@ void CacheImpl::createRegion(const char* name,
       throw;
     } catch (std::exception& ex) {
       char buffer[512];
-      std::snprintf(buffer, 512,
+      ACE_OS::snprintf(buffer, 512,
                        "Cache::createRegion: Failed to create Region \"%s\" "
                        "due to unknown exception: %s",
                        namestr.c_str(), ex.what());
       throw UnknownException(buffer);
     } catch (...) {
       char buffer[256];
-      std::snprintf(buffer, 256,
+      ACE_OS::snprintf(buffer, 256,
                        "Cache::createRegion: Failed to create Region \"%s\" "
                        "due to unknown exception.",
                        namestr.c_str());
@@ -520,7 +521,7 @@ void CacheImpl::createRegion(const char* name,
     }
     if (rpImpl == NULL) {
       char buffer[256];
-      std::snprintf(buffer, 256,
+      ACE_OS::snprintf(buffer, 256,
                        "Cache::createRegion: Failed to create Region \"%s\"",
                        namestr.c_str());
       throw RegionCreationFailedException(buffer);

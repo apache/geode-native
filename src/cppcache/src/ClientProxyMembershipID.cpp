@@ -89,7 +89,7 @@ void ClientProxyMembershipID::init(const std::string& dsName) {
       randString[RAND_STRING_LEN] = '\0';
     }
     char ps[15] = {0};
-    std::snprintf(ps, 15, "%d", pid);
+    ACE_OS::snprintf(ps, 15, "%d", pid);
     g_randString = "GFNative_";
     g_randString.append(randString).append(ps);
     LOGINFO("Using %s as random data for ClientProxyMembershipID",
@@ -217,12 +217,13 @@ void ClientProxyMembershipID::initObjectVars(
    * callers must be careful not to overflow the actual space of the
    * destination.
    * Use snprintf() instead, or correct precision specifiers.
+   * Fix : using ACE_OS::snprintf
    */
   char PID[15] = {0};
   char Synch_Counter[15] = {0};
-  // std::snprintf(PID, 15, "%d",vPID);
+  // ACE_OS::snprintf(PID, 15, "%d",vPID);
   ACE_OS::itoa(vPID, PID, 10);
-  // std::snprintf(Synch_Counter, 15, "%d",synch_counter);
+  // ACE_OS::snprintf(Synch_Counter, 15, "%d",synch_counter);
   ACE_OS::itoa(synch_counter, Synch_Counter, 10);
   clientID.append(hostname);
   clientID.append("(");
@@ -238,7 +239,7 @@ void ClientProxyMembershipID::initObjectVars(
   // int offset = 0;
   for (uint32_t i = 0; i < getHostAddrLen(); i++) {
     char hostInfo[16] = {0};
-    // offset += std::snprintf(hostInfo + offset , 255 - offset, ":%x",
+    // offset += ACE_OS::snprintf(hostInfo + offset , 255 - offset, ":%x",
     // m_hostAddr[i]);
     ACE_OS::itoa(m_hostAddr[i], hostInfo, 16);
     m_hashKey.append(":");
@@ -247,7 +248,7 @@ void ClientProxyMembershipID::initObjectVars(
   m_hashKey.append(":");
   char hostInfoPort[16] = {0};
   ACE_OS::itoa(getHostPort(), hostInfoPort, 10);
-  //  offset += std::snprintf(hostInfo + offset, 255 - offset , ":%d",
+  //  offset += ACE_OS::snprintf(hostInfo + offset, 255 - offset , ":%d",
   //  getHostPort());
   m_hashKey.append(hostInfoPort);
   m_hashKey.append(":");
@@ -259,7 +260,7 @@ void ClientProxyMembershipID::initObjectVars(
     m_hashKey.append(":");
     char viewid[16] = {0};
     ACE_OS::itoa(m_vmViewId, viewid, 10);
-    // offset += std::snprintf(hostInfo + offset , 255 - offset , ":%d",
+    // offset += ACE_OS::snprintf(hostInfo + offset , 255 - offset , ":%d",
     // m_vmViewId);
     m_hashKey.append(viewid);
   }
@@ -317,7 +318,7 @@ void ClientProxyMembershipID::getClientProxyMembershipID() {
   // DSMemberId = DSMemberId.append(host);
   // DSMemberId= DSMemberId.append("(");
   m_dsmemID.write(static_cast<int8_t>('('));
-  int lenPid = std::snprintf(buf, 50, "%d", pid);
+  int lenPid = ACE_OS::snprintf(buf, 50, "%d", pid);
   // DSMemberId.append(buf);
   // m_dsmemID.writeInt((int32_t)pid);
   m_dsmemID.writeBytesOnly(reinterpret_cast<int8_t*>(buf), lenPid);
@@ -335,7 +336,7 @@ void ClientProxyMembershipID::getClientProxyMembershipID() {
   m_dsmemID.writeBytesOnly(reinterpret_cast<int8_t*>(hexBuf), 8);
   m_dsmemID.write(static_cast<int8_t>(':'));
   // DSMemberId = DSMemberId.append(":");
-  std::snprintf(dsName, 50, "%s", dsPtr->getName());
+  ACE_OS::snprintf(dsName, 50, "%s", dsPtr->getName());
   // DSMemberId.append(dsName);
   uint32_t dsLen = static_cast<uint32_t>(strlen(dsName));
   m_dsmemID.writeBytesOnly(reinterpret_cast<int8_t*>(dsName), dsLen);

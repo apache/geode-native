@@ -16,6 +16,7 @@
  */
 
 #include <gfcpp/gfcpp_globals.hpp>
+#include <ace/OS.h>
 
 #include "HostStatHelperWin.hpp"
 
@@ -82,11 +83,11 @@ char* HostStatHelperWin::getInstIdStr(PPERF_INSTANCE_DEFINITION PerfInst,
   static char resbuff[132];
   if (PerfInst->UniqueID == PERF_NO_UNIQUE_ID) {
     short* unicodePtr = (short*)((PBYTE)PerfInst + PerfInst->NameOffset);
-    std::snprintf(resbuff, 132, "%S length=%d unicode[0]=%d",
-                  (char*)((PBYTE)PerfInst + PerfInst->NameOffset),
-                  PerfInst->NameLength, unicodePtr[0]);
+    ACE_OS::snprintf(resbuff, 132, "%S length=%d unicode[0]=%d",
+                     (char*)((PBYTE)PerfInst + PerfInst->NameOffset),
+                     PerfInst->NameLength, unicodePtr[0]);
   } else {
-    std::snprintf(resbuff, 132, "%s%d", prefix, PerfInst->UniqueID);
+    ACE_OS::snprintf(resbuff, 132, "%s%d", prefix, PerfInst->UniqueID);
   }
   return resbuff;
 }

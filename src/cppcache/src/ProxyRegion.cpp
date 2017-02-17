@@ -21,7 +21,7 @@
 
 void ProxyRegion::unSupportedOperation(const char* operationName) const {
   char msg[256] = {'\0'};
-  std::snprintf(
+  ACE_OS::snprintf(
       msg, 256,
       "%s operation is not supported when Region instance is logical.",
       operationName);
