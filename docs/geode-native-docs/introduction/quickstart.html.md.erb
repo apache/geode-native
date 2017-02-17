@@ -23,7 +23,7 @@ directory.
 
 # <a id="ConfiguringQSE" class="no-quick-link"></a> Configuring the QuickStart Environment
 
-The following components must be in place to run the Quick Start examples on any system. System-specific configurations follow.
+The following components must be in place to run the QuickStart examples on any system. System-specific configurations follow.
 
 **For all systems:**
 
@@ -35,7 +35,7 @@ The following components must be in place to run the Quick Start examples on any
 for the latest Java version for your operating system. See the installation information in the
 GemFire User's Guide for the versions of Java that are compatible with GemFire. 
 
-- **Security Toolkit** (optional): The Quick Start security examples rely on a security plugin, `securityImpl`, which is based on the OpenSSL toolkit.
+- **Security Toolkit** (optional): The QuickStart security examples rely on a security plugin, `securityImpl`, which is based on the OpenSSL toolkit.
 If you plan to run the security examples, download the latest version of release 1.0.1 (must be 1.0.1) from the [OpenSSL website] (http://www.openssl.org/source/).
 Follow the instructions in the README and INSTALL files to install OpenSSL on your system.
 
@@ -48,30 +48,33 @@ installation directory. Add the GemFire libraries shown here to your `CLASSPATH`
 
     <code>
     % GEMFIRE=_gemfire-install-dir_; export GEMFIRE <br />
-    %&nbsp;CLASSPATH=$GEMFIRE/lib/gemfire.jar:$GEMFIRE/lib/antlr.jar:$GEMFIRE/lib/gfSecurityImpl.jar:$CLASSPATH; export CLASSPATH <br />
-    %&nbsp;CLASSPATH=$GEMFIRE/lib/geode-dependencies.jar:$GEMFIRE/lib/antlr-2.7.7.jar:$CLASSPATH; export CLASSPATH <br />
+    %&nbsp;CLASSPATH=$GEMFIRE/lib/gemfire.jar:$GEMFIRE/lib/antlr.jar:$GEMFIRE/lib/gfSecurityImpl.jar:$CLASSPATH<br />
+    %  export CLASSPATH <br />
+    %&nbsp;CLASSPATH=$GEMFIRE/lib/geode-dependencies.jar:$GEMFIRE/lib/antlr-2.7.7.jar:$CLASSPATH<br />
+    %  export CLASSPATH <br />
     </code>
 
-2. Set the `JAVA_HOME` and `GF_JAVA_HOME` environment variables to point to your installed JRE or
-JDK. The `JAVA_HOME` setting is for your applications, and `GF_JAVA_HOME` is for the GemFire
-scripts. Add `$JAVA_HOME/bin` to the start of your `PATH`.
+2. Set the `JAVA_HOME` environment variable to point to your installed JRE or
+JDK. Add `$JAVA_HOME/bin` to the start of your `PATH`.
 
     <code>
     % JAVA\_HOME=_installed-jre-path_; export JAVA\_HOME<br />
-    % GF\_JAVA\_HOME=$JAVA\_HOME; export GF\_JAVA\_HOME<br />
     % PATH=$JAVA\_HOME/bin:$GEMFIRE/bin:$PATH; export PATH<br />
     </code>
 
 3. Set the `GFCPP` environment variable to point to the directory in which you installed the native client, denoted here by  _nc-dir_. Add `$GFCPP/lib` to `LD_LIBRARY_PATH`.
     <code>
     % GFCPP=_nc-dir_; export GFCPP<br />
-    % LD\_LIBRARY\_PATH=$GFCPP/lib:${LD\_LIBRARY\_PATH}; export LD\_LIBRARY\_PATH
+    % LD\_LIBRARY\_PATH=$GFCPP/lib:${LD\_LIBRARY\_PATH}<br />
+    % export LD\_LIBRARY\_PATH<br />
     </code>
 
 4. Set the `OPENSSL_ROOT_DIR` environment variable, pointing it to the parent folder for the OpenSSL binaries created from the tarball. Add `OPENSSL/lib` to `LD_LIBRARY_PATH`:
     <code>
-    % OPENSSL_ROOT_DIR=_parent-folder-for-openssl-binaries_; export OPENSSL <br />
-    % LD\_LIBRARY\_PATH=$OPENSSL_ROOT_DIR/lib:${LD\_LIBRARY\_PATH}; export LD\_LIBRARY\_PATH
+    % OPENSSL\_ROOT\_DIR=_parent-folder-for-openssl-binaries_<br />
+    %  export OPENSSL<br />
+    % LD\_LIBRARY\_PATH=$OPENSSL\_ROOT\_DIR/lib:${LD\_LIBRARY\_PATH}<br />
+    % export LD\_LIBRARY\_PATH
     </code>
 
 5. Create a directory in which to build the `securityImpl` plug-in. This directory (shown here as
@@ -119,97 +122,93 @@ path to the `cmake` instructions located in the quickstart example directory (in
 
     This creates the examples in your working directory, plus supporting files such as the `runcpp.sh` shell script.
 
-9. Modify permissions on the example script to make it executable:
-
-    <code>
-    % chmod +x runcpp.sh
-    </code>
-
 See <a href="#AboutQSE">About the QuickStart Examples</a> for instructions on running the examples.
 
-## <a id="ConfiguringQSE_Windows" class="no-quick-link"></a> Configuring the QuickStart Environment - Windows
+## <a id="ConfiguringQSE_Windows" class="no-quick-link"></a> Configuring QuickStarts - Windows
 
 Follow these steps to prepare your Windows environment to run the QuickStart examples.
 
-1. Cmake is required to build the quickstart examples. If you have not already done so, download and install cmake, following the instructions on [cmake.org] (https://cmake.org).
-
-2. Run the Visual Studio 2010 Command Prompt to create a session with preset compiler environment configurations. Change to the GemFire product installation directory, then configure the environment settings by following these steps.
-
-    See the environment configuration list below for system-specific instructions for the following steps.
-
-2. Install OpenSSL (optional):
-    To enable security, the security plugin `securityImpl` needs to be compiled. The security plugin optionally depends on OpenSSL for its PKCS sample template, so OpenSSL needs to be compiled or installed first. You can get the OpenSSL installer [here](http://www.openssl.org/related/binaries.html).
-
-
-```
-cd SampleCode/quickstart
-mkdir build-cpp-quickstart
-cd build-cpp-quickstart
-
-```
-
-    **To install OpenSSL:**
-
-    Run the downloaded OpenSSL installer and accept the default installation path (C:\OpenSSL).
-
-3. Set the `JAVA_HOME` and `GF_JAVA_HOME` environment variables to your installed JRE or JDK. See
-the installation information in the GemFire User's Guide for the versions of Java that are
-compatible with GemFire. The `JAVA_HOME` setting is for your applications, and `GF_JAVA_HOME` is for the
-GemFire scripts. You must have a compatible JRE or JDK installed and you must set `JAVA_HOME` and
-`GF_JAVA_HOME` to point to it. See the [Sun Java website](http://java.sun.com) for the latest Java
-version for your operating system.
-
-4. Add `$JAVA_HOME/bin` to the start of your `PATH`.
-
-    Set the `GFCPP` environment variable to point to _nc-dir_.
-
-    Set the `OPENSSL` environment variable. If you accept the default installation path in step 2, it will be set to `OPENSSL=C:\OpenSSL`.
-
-5.  Set the `PATH` environment variable to point to the <code>_nc-dir_\bin</code> directory and the `%OPENSSL%\bin` directory for running the Security example.
-
-    &nbsp;
-
-    The following environment configuration list is a summary of the commands described in steps 1 through 6 that you need to run for the quickstart examples. Choose the set of commands that are appropriate for your operating system.
-
-    &nbsp;
+1. Run the Visual Studio Command Prompt to create a session with preset compiler environment
+configurations. Set the GEMFIRE environment variable to your GemFire installation directory. 
+Add the %GEMFIRE%\bin directory to your `PATH`. Add the GemFire libraries shown here to your `CLASSPATH`:
 
     <code>
-    \> cd _gemfire-install-dir_<br />
-    \> set GEMFIRE=_gemfire-install-dir_<br />
-    \> set CLASSPATH=%GEMFIRE%\lib\gemfire.jar;%GEMFIRE%\lib\antlr.jar;%GEMFIRE%\lib\gfSecurityImpl.jar%CLASSPATH%<br />
-    \> set JAVA\_HOME=_installed-jre-path_<br />
-    \> set GF\_JAVA\_HOME=%JAVA\_HOME%<br />
-    \> set GFCPP=C:\NativeClient\\_nc-dir_<br />
-    \> set OPENSSL=C:\OpenSSL<br />
-    \> set PATH=%JAVA\_HOME%\bin;%GFCPP%\bin;%OPENSSL%\bin;%GEMFIRE%\bin;%PATH%
+    \>&nbsp;GEMFIRE=_gemfire-install-dir_<br />
+    \> set PATH=%GEMFIRE%\bin;%PATH%<br />
+    \>&nbsp;set&nbsp;CLASSPATH=%GEMFIRE%\lib\gemfire.jar;%GEMFIRE%\lib\antlr.jar;%GEMFIRE%\lib\gfSecurityImpl.jar;%CLASSPATH%<br />
     </code>
 
-7. To compile the securityImpl security plugin:
+2. Set the `JAVA_HOME` environment variable to point to your installed JRE or
+JDK. Add `%JAVA_HOME%\bin` to the start of your `PATH`.
 
-    Execute the `buildit.bat` script in the <code>_nc-dir_/templates/security</code> directory.
+    <code>
+    \> set JAVA\_HOME=_installed-jre-path_<br />
+    \> set PATH=%JAVA\_HOME%\bin;%PATH%
+    </code>
 
-8. Create a directory to hold the quickstart examples. This directory (shown here as `/home/user/quickstart-examples`) should be created outside the native client directory hierarchy. After creating the directory, set it as your current working directory:
+3. Set the `GFCPP` environment variable to point to the directory in which you installed the native
+client, denoted here by _nc-dir_. 
+Add `%GFCPP%\bin` to `PATH`. Add `%GFCPP%\lib` to `LD_LIBRARY_PATH`.
 
-    ``` pre
-    mkdir /home/user/quickstart-examples
-    cd /home/user/quickstart-examples
-    ```
+    <code>
+    \> set GFCPP=_nc-dir_<br />
+    \> set PATH=%GFCPP%\bin;%PATH%<br />
+    \> set LD\_LIBRARY\_PATH=%GFCPP%\lib;%LD\_LIBRARY\_PATH%
+    </code>
 
-9. Run `cmake` to build the examples, specifying the path to the quickstart example code:
+4. Set the `OPENSSL_ROOT_DIR` environment variable, pointing it to the parent folder for the OpenSSL
+binaries created from the tarball. Add  `%OPENSSL_ROOT_DIR%\bin` to `PATH` and `%OPENSSL_ROOT_DIR%\lib` to `LD_LIBRARY_PATH`:
 
-    ``` pre
-    cmake $GFCPP/SampleCode/quickstart/cpp
-    ```
+    <code>
+    \> set OPENSSL\_ROOT\_DIR=c:\OpenSSL<br />
+    \> set PATH=%OPENSSL\_ROOT\_DIR%\bin;%PATH%<br />
+    \> set LD\_LIBRARY\_PATH=%OPENSSL%\bin;%LD\_LIBRARY\_PATH%<br />
+    </code>
 
-    The `cmake` utility creates a Makefile and some other supporting files in your working directory.
+5. Create a directory in which to build the `securityImpl` plug-in. This directory (shown here as
+`c:\build-sec`) should be created outside the native client directory
+hierarchy. After creating the directory, set it as your current working directory:
 
-10. Run `make` to build the quickstart examples:
+    <code>
+    \> mkdir c:\build-sec<br />
+    \> cd c:\build-sec
+    </code>
 
-    ``` pre
-    make
-    ```
+6. Run `cmake` three times, once to configure the build, specifying the path to the `cmake`
+instructions in the native client security template directory, a second time to perform the build,
+and a third time to install the resulting library into the native client installation directory
+tree:
 
-    This creates the examples in your working directory, plus supporting files such as the `runcpp.sh` shell script.
+    <code>
+    \> cmake c:\nc\templates\security -DGFCPP=c:\nc<br />
+    ... creates a makefile and other supporting files<br />
+    \> cmake --build .<br />
+    ... builds  securityImpl plug-in<br />
+    \> cmake --build . --target install<br />
+    ... installs securityImpl in the nc installation directory tree ($GFCPP)
+    </code>
+
+
+7. Create a directory to hold the quickstart examples. This directory (shown here as
+`c:\quickstart-examples-csharp`) should be created outside the native client directory
+hierarchy. After creating the directory, set it as your current working directory:
+
+    <code>
+    \> mkdir c:\quickstart-examples-csharp<br />
+    \> cd c:\quickstart-examples-csharp
+    </code>
+
+8. Run `cmake` twice, once to configure the build, then again to build the examples, specifying the
+path to the `cmake` instructions located in the quickstart example directory (in this case, we're building the the `csharp` examples):
+
+    <code>
+    \> cmake %GFCPP%\SampleCode\quickstart\csharp<br />
+    ... creates a makefile and other supporting files<br />
+    \> cmake --build .<br />
+    ... builds the examples
+    </code>
+
+    This creates the examples in your working directory, plus supporting files such as the `runcs.bat` script.
 
 # <a id="AboutQSE" class="no-quick-link"></a>About the QuickStart Examples
 
@@ -429,7 +428,6 @@ The C# examples are available only for Windows.
 **C# examples**
 
 `runcs ExampleName` (for example, `runcs RemoteQuery`)
-
  
 ## Running a C++ Example From the Menu
 
