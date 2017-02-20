@@ -19,13 +19,13 @@ extern "C" {
 #include <string.h>
 #include <stdlib.h>
 }
-#include <ace/OS.h>
 
 #include <gfcpp/Exception.hpp>
 #include <gfcpp/CacheableString.hpp>
 #include <StackTrace.hpp>
 #include <ace/TSS_T.h>
 
+#include <cstring>
 #include <string>
 
 namespace apache {
@@ -54,10 +54,10 @@ Exception::Exception(const char* msg1, const char* msg2, bool forceTrace,
   char* msg;
   GF_NEW(msg, char[len + 1]);
   if (msg1) {
-    ACE_OS::memcpy(msg, msg1, len1);
+    std::memcpy(msg, msg1, len1);
   }
   if (msg2) {
-    ACE_OS::memcpy(msg + len1, msg2, len2);
+    std::memcpy(msg + len1, msg2, len2);
   }
   msg[len] = '\0';
 
@@ -107,7 +107,7 @@ size_t Exception::getStackTrace(char* buffer, size_t maxLength) const {
       traceString += "Cause by exception: ";
       m_cause->m_stack->getString(traceString);
     }
-    len = ACE_OS::snprintf(buffer, maxLength, "%s", traceString.c_str());
+    len = std::snprintf(buffer, maxLength, "%s", traceString.c_str());
   }
   return len;
 }

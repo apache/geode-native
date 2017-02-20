@@ -17,7 +17,7 @@
 
 #include "StatisticDescriptorImpl.hpp"
 
-#include <ace/OS.h>
+#include <cstring>
 
 using namespace apache::geode::statistics;
 
@@ -45,12 +45,12 @@ StatisticDescriptorImpl::StatisticDescriptorImpl(const char* statName,
                                                  int8 statIsStatLargerBetter) {
   name = statName;
   descriptorType = statDescriptorType;
-  if (strcmp(statDescription, "") == 0) {
+  if (std::strcmp(statDescription, "") == 0) {
     description = "";
   } else {
     description = statDescription;
   }
-  if (strcmp(statUnit, "") == 0) {
+  if (std::strcmp(statUnit, "") == 0) {
     unit = "";
   } else {
     unit = statUnit;
@@ -167,7 +167,7 @@ const char* StatisticDescriptorImpl::getTypeCodeName(FieldType code) throw(
       return DoubleTypeName;
     default: {
       char buf[20];
-      ACE_OS::snprintf(buf, 20, "%d", code);
+      std::snprintf(buf, 20, "%d", code);
       std::string temp(buf);
       std::string s = "Unknown type code:" + temp;
       throw IllegalArgumentException(s.c_str());

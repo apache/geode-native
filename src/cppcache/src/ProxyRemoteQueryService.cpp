@@ -43,10 +43,10 @@ QueryPtr ProxyRemoteQueryService::newQuery(const char* querystring) {
 
 void ProxyRemoteQueryService::unSupportedException(const char* operationName) {
   char msg[256] = {'\0'};
-  ACE_OS::snprintf(msg, 256,
-                   "%s operation is not supported when pool is in multiuser "
-                   "authentication mode.",
-                   operationName);
+  std::snprintf(msg, 256,
+                "%s operation is not supported when pool is in multiuser "
+                "authentication mode.",
+                operationName);
   throw UnsupportedOperationException(msg);
 }
 

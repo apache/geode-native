@@ -53,9 +53,9 @@ void HostStatHelper::initOSCode() {
     osCode = GFS_OSTYPE_MACOSX;
   } else {
     char buf[1024] = {0};
-    ACE_OS::snprintf(buf, 1024,
-                     "HostStatHelper::initOSTypes:unhandled os type: %s",
-                     osName.c_str());
+    std::snprintf(buf, 1024,
+                  "HostStatHelper::initOSTypes:unhandled os type: %s",
+                  osName.c_str());
     throw IllegalArgumentException(buf);
   }
 }

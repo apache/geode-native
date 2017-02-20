@@ -186,13 +186,13 @@ PoolPtr PoolFactory::create(const char* name) {
 void PoolFactory::addCheck(const char* host, int port) {
   if (port <= 0) {
     char buff[100];
-    ACE_OS::snprintf(buff, 100, "port must be greater than 0 but was %d", port);
+    std::snprintf(buff, 100, "port must be greater than 0 but was %d", port);
     throw IllegalArgumentException(buff);
   }
   ACE_INET_Addr addr(port, host);
   if (!(addr.get_ip_address())) {
     char buff[100];
-    ACE_OS::snprintf(buff, 100, "Unknown host %s", host);
+    std::snprintf(buff, 100, "Unknown host %s", host);
     throw IllegalArgumentException(buff);
   }
 }

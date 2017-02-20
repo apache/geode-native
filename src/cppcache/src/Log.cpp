@@ -18,6 +18,9 @@
 #include <gfcpp/gfcpp_globals.hpp>
 
 #include <cctype>
+#include <cstdlib>
+#include <ctime>
+#include <cstring>
 #include <string>
 #include <utility>
 #include <vector>
@@ -110,7 +113,7 @@ static int selector(const dirent* d) {
     size_t fileHyphenPos = tempname.find_last_of('-');
     if (fileHyphenPos != std::string::npos) {
       std::string buff1 = tempname.substr(0, fileHyphenPos);
-      if (ACE_OS::strstr(filebasename.c_str(), buff1.c_str()) == 0) {
+      if (std::strstr(filebasename.c_str(), buff1.c_str()) == 0) {
         return 0;
       }
       if (fileHyphenPos != actualHyphenPos) return 0;
@@ -138,7 +141,7 @@ static int comparator(const dirent** d1, const dirent** d2) {
     return 1;
   }
 
-  int diff = ACE_OS::strcmp((*d1)->d_name, (*d2)->d_name);
+  int diff = std::strcmp((*d1)->d_name, (*d2)->d_name);
   if (diff < 0) {
     return -1;
   } else if (diff > 0) {
@@ -186,7 +189,7 @@ const char* Log::logFileName() {
       throw IllegalStateException(
           ("Log file name is too long: " + *g_logFile).c_str());
     }
-    ACE_OS::strncpy(g_logFileNameBuffer, g_logFile->c_str(),
+    std::strncpy(g_logFileNameBuffer, g_logFile->c_str(),
                     sizeof(g_logFileNameBuffer));
   }
 
@@ -230,7 +233,7 @@ void Log::init(LogLevel level, const char* logFileName, int32 logFileLimit,
     // replace all '\' with '/' to make everything easier..
     size_t length = g_logFile->length() + 1;
     char* slashtmp = new char[length];
-    ACE_OS::strncpy(slashtmp, g_logFile->c_str(), length);
+    std::strncpy(slashtmp, g_logFile->c_str(), length);
     for (size_t i = 0; i < g_logFile->length(); i++) {
       if (slashtmp[i] == '/') {
         slashtmp[i] = '\\';
@@ -319,7 +322,7 @@ void Log::init(LogLevel level, const char* logFileName, int32 logFileLimit,
           if (fileHyphenPos != std::string::npos) {
             std::string buff =
                 tempname.substr(fileHyphenPos + 1, tempname.length());
-            g_rollIndex = ACE_OS::atoi(buff.c_str()) + 1;
+            g_rollIndex = std::atoi(buff.c_str()) + 1;
           }
         }  // if loop
       }    // for loop
@@ -354,7 +357,6 @@ void Log::init(LogLevel level, const char* logFileName, int32 logFileLimit,
        * callers must be careful not to overflow the actual space of the
        * destination.
        * Use snprintf() instead, or correct precision specifiers.
-       * Fix : using ACE_OS::snprintf
        */
       char rollFile[1024] = {0};
       std::string logsdirname;
@@ -382,18 +384,18 @@ void Log::init(LogLevel level, const char* logFileName, int32 logFileLimit,
         fnameBeforeExt = logsbasename.substr(0, posOfExt);
         extName = logsbasename.substr(posOfExt + 1, baselen);
       }
-      ACE_OS::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                       ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                       g_rollIndex++, extName.c_str());
+      std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
+                    ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
+                    g_rollIndex++, extName.c_str());
       bool rollFileNameGot = false;
       while (!rollFileNameGot) {
         FILE* checkFile = fopen(rollFile, "r");
         if (checkFile != NULL) {
           fclose(checkFile);
           checkFile = NULL;
-          ACE_OS::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                           ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                           g_rollIndex++, extName.c_str());
+          std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
+                        ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
+                        g_rollIndex++, extName.c_str());
         } else {
           rollFileNameGot = true;
         }
@@ -562,7 +564,7 @@ const char* Log::levelToChars(Log::LogLevel level) {
 
     default: {
       char buf[64] = {0};
-      ACE_OS::snprintf(buf, 64, "Unexpected log level: %d", level);
+      std::snprintf(buf, 64, "Unexpected log level: %d", level);
       throw IllegalArgumentException(buf);
     }
   }
@@ -614,14 +616,14 @@ char* Log::formatLogLine(char* buf, Log::LogLevel level) {
   time_t secs = clock.sec();
   struct tm* tm_val = ACE_OS::localtime(&secs);
   char* pbuf = buf;
-  pbuf += ACE_OS::snprintf(pbuf, 15, "[%s ", Log::levelToChars(level));
-  pbuf += ACE_OS::strftime(pbuf, MINBUFSIZE, "%Y/%m/%d %H:%M:%S", tm_val);
+  pbuf += std::snprintf(pbuf, 15, "[%s ", Log::levelToChars(level));
+  pbuf += std::strftime(pbuf, MINBUFSIZE, "%Y/%m/%d %H:%M:%S", tm_val);
   pbuf +=
-      ACE_OS::snprintf(pbuf, 15, ".%06ld ", static_cast<long>(clock.usec()));
-  pbuf += ACE_OS::strftime(pbuf, MINBUFSIZE, "%Z ", tm_val);
+      std::snprintf(pbuf, 15, ".%06ld ", static_cast<long>(clock.usec()));
+  pbuf += std::strftime(pbuf, MINBUFSIZE, "%Z ", tm_val);
 
-  ACE_OS::snprintf(pbuf, 300, "%s:%d %lu] ", g_uname.nodename, g_pid,
-                   (unsigned long)ACE_OS::thr_self());
+  std::snprintf(pbuf, 300, "%s:%d %lu] ", g_uname.nodename, g_pid,
+                (unsigned long)ACE_OS::thr_self());
 
   return buf;
 }
@@ -660,7 +662,7 @@ void Log::put(LogLevel level, const char* msg) {
 
     formatLogLine(buf, level);
     size_t numChars =
-        static_cast<int>(ACE_OS::strlen(buf) + ACE_OS::strlen(msg));
+        static_cast<int>(std::strlen(buf) + std::strlen(msg));
     g_bytesWritten +=
         numChars + 2;  // bcoz we have to count trailing new line (\n)
 
@@ -691,17 +693,17 @@ void Log::put(LogLevel level, const char* msg) {
         fnameBeforeExt = logsbasename.substr(0, posOfExt);
         extName = logsbasename.substr(posOfExt + 1, baselen);
       }
-      ACE_OS::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                       ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                       g_rollIndex++, extName.c_str());
+      std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
+                    ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
+                    g_rollIndex++, extName.c_str());
       bool rollFileNameGot = false;
       while (!rollFileNameGot) {
         FILE* fp1 = fopen(rollFile, "r");
         if (fp1 != NULL) {
           fclose(fp1);
-          ACE_OS::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                           ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                           g_rollIndex++, extName.c_str());
+          std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
+                        ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
+                        g_rollIndex++, extName.c_str());
         } else {
           rollFileNameGot = true;
         }
@@ -736,7 +738,7 @@ void Log::put(LogLevel level, const char* msg) {
       g_spaceUsed = 0;
       ACE_stat statBuf = {0};
       /*for(int i = 1; i < entries_count; i++) {
-        ACE_OS::snprintf(fullpath , 512 ,
+        std::snprintf(fullpath , 512 ,
     "%s%c%s",dirname.c_str(),ACE_DIRECTORY_SEPARATOR_CHAR,resultArray[i]->d_name);
         ACE_OS::stat(fullpath,&statBuf);
         g_fileInfoPair = std::make_pair(fullpath,statBuf.st_size);
@@ -756,8 +758,8 @@ void Log::put(LogLevel level, const char* msg) {
       int status = sds.open(dirname.c_str(), selector, comparator);
       if (status != -1) {
         for (int index = 1; index < sds.length(); ++index) {
-          ACE_OS::snprintf(fullpath, 512, "%s%c%s", dirname.c_str(),
-                           ACE_DIRECTORY_SEPARATOR_CHAR, sds[index]->d_name);
+          std::snprintf(fullpath, 512, "%s%c%s", dirname.c_str(),
+                        ACE_DIRECTORY_SEPARATOR_CHAR, sds[index]->d_name);
           ACE_OS::stat(fullpath, &statBuf);
           g_fileInfoPair = std::make_pair(fullpath, statBuf.st_size);
           fileInfo.push_back(g_fileInfoPair);
@@ -774,8 +776,8 @@ void Log::put(LogLevel level, const char* msg) {
           g_spaceUsed -= fileSize;
         } else {
           char printmsg[256];
-          ACE_OS::snprintf(printmsg, 256, "%s\t%s\n", "Could not delete",
-                           fileInfo[fileIndex].first.c_str());
+          std::snprintf(printmsg, 256, "%s\t%s\n", "Could not delete",
+                        fileInfo[fileIndex].first.c_str());
           int numChars =
               fprintf(g_log, "%s%s\n", formatLogLine(buf, level), printmsg);
           g_bytesWritten +=
@@ -808,13 +810,13 @@ void Log::put(LogLevel level, const char* msg) {
 
 void Log::putThrow(LogLevel level, const char* msg, const Exception& ex) {
   char buf[128] = {0};
-  ACE_OS::snprintf(buf, 128, "Geode exception %s thrown: ", ex.getName());
+  std::snprintf(buf, 128, "Geode exception %s thrown: ", ex.getName());
   put(level, (std::string(buf) + ex.getMessage() + "\n" + msg).c_str());
 }
 
 void Log::putCatch(LogLevel level, const char* msg, const Exception& ex) {
   char buf[128] = {0};
-  ACE_OS::snprintf(buf, 128, "Geode exception %s caught: ", ex.getName());
+  std::snprintf(buf, 128, "Geode exception %s caught: ", ex.getName());
   put(level, (std::string(buf) + ex.getMessage() + "\n" + msg).c_str());
 }
 
@@ -825,7 +827,7 @@ void Log::enterFn(LogLevel level, const char* functionName) {
     fn = fn.substr(fn.size() - MAX_NAME_LENGTH, MAX_NAME_LENGTH);
   }
   char buf[MAX_NAME_LENGTH + 512] = {0};
-  ACE_OS::snprintf(buf, 1536, "{{{===>>> Entering function %s", fn.c_str());
+  std::snprintf(buf, 1536, "{{{===>>> Entering function %s", fn.c_str());
   put(level, buf);
 }
 
@@ -836,7 +838,7 @@ void Log::exitFn(LogLevel level, const char* functionName) {
     fn = fn.substr(fn.size() - MAX_NAME_LENGTH, MAX_NAME_LENGTH);
   }
   char buf[MAX_NAME_LENGTH + 512] = {0};
-  ACE_OS::snprintf(buf, 1536, "<<<===}}} Exiting function %s", fn.c_str());
+  std::snprintf(buf, 1536, "<<<===}}} Exiting function %s", fn.c_str());
   put(level, buf);
 }
 

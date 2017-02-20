@@ -18,12 +18,12 @@
 #include <gfcpp/Cache.hpp>
 #include <Utils.hpp>
 #include <gfcpp/DataOutput.hpp>
+#include <cstring>
 #include <string.h>
 #include <stdlib.h>
 #include <gfcpp/GeodeTypeIds.hpp>
 #include <CacheXmlParser.hpp>
 #include <ace/DLL.h>
-#include <ace/OS.h>
 #include <gfcpp/DataInput.hpp>
 #include <gfcpp/Properties.hpp>
 
@@ -100,28 +100,28 @@ RegionAttributes::RegionAttributes(const RegionAttributes& rhs)
   if (rhs.m_cacheLoaderLibrary != NULL) {
     size_t len = strlen(rhs.m_cacheLoaderLibrary) + 1;
     m_cacheLoaderLibrary = new char[len];
-    ACE_OS::strncpy(m_cacheLoaderLibrary, rhs.m_cacheLoaderLibrary, len);
+    std::strncpy(m_cacheLoaderLibrary, rhs.m_cacheLoaderLibrary, len);
   } else {
     m_cacheLoaderLibrary = NULL;
   }
   if (rhs.m_cacheWriterLibrary != NULL) {
     size_t len = strlen(rhs.m_cacheWriterLibrary) + 1;
     m_cacheWriterLibrary = new char[len];
-    ACE_OS::strncpy(m_cacheWriterLibrary, rhs.m_cacheWriterLibrary, len);
+    std::strncpy(m_cacheWriterLibrary, rhs.m_cacheWriterLibrary, len);
   } else {
     m_cacheWriterLibrary = NULL;
   }
   if (rhs.m_cacheListenerLibrary != NULL) {
     size_t len = strlen(rhs.m_cacheListenerLibrary) + 1;
     m_cacheListenerLibrary = new char[len];
-    ACE_OS::strncpy(m_cacheListenerLibrary, rhs.m_cacheListenerLibrary, len);
+    std::strncpy(m_cacheListenerLibrary, rhs.m_cacheListenerLibrary, len);
   } else {
     m_cacheListenerLibrary = NULL;
   }
   if (rhs.m_partitionResolverLibrary != NULL) {
     size_t len = strlen(rhs.m_partitionResolverLibrary) + 1;
     m_partitionResolverLibrary = new char[len];
-    ACE_OS::strncpy(m_partitionResolverLibrary, rhs.m_partitionResolverLibrary,
+    std::strncpy(m_partitionResolverLibrary, rhs.m_partitionResolverLibrary,
                     len);
   } else {
     m_partitionResolverLibrary = NULL;
@@ -129,28 +129,28 @@ RegionAttributes::RegionAttributes(const RegionAttributes& rhs)
   if (rhs.m_cacheLoaderFactory != NULL) {
     size_t len = strlen(rhs.m_cacheLoaderFactory) + 1;
     m_cacheLoaderFactory = new char[len];
-    ACE_OS::strncpy(m_cacheLoaderFactory, rhs.m_cacheLoaderFactory, len);
+    std::strncpy(m_cacheLoaderFactory, rhs.m_cacheLoaderFactory, len);
   } else {
     m_cacheLoaderFactory = NULL;
   }
   if (rhs.m_cacheWriterFactory != NULL) {
     size_t len = strlen(rhs.m_cacheWriterFactory) + 1;
     m_cacheWriterFactory = new char[len];
-    ACE_OS::strncpy(m_cacheWriterFactory, rhs.m_cacheWriterFactory, len);
+    std::strncpy(m_cacheWriterFactory, rhs.m_cacheWriterFactory, len);
   } else {
     m_cacheWriterFactory = NULL;
   }
   if (rhs.m_cacheListenerFactory != NULL) {
     size_t len = strlen(rhs.m_cacheListenerFactory) + 1;
     m_cacheListenerFactory = new char[len];
-    ACE_OS::strncpy(m_cacheListenerFactory, rhs.m_cacheListenerFactory, len);
+    std::strncpy(m_cacheListenerFactory, rhs.m_cacheListenerFactory, len);
   } else {
     m_cacheListenerFactory = NULL;
   }
   if (rhs.m_partitionResolverFactory != NULL) {
     size_t len = strlen(rhs.m_partitionResolverFactory) + 1;
     m_partitionResolverFactory = new char[len];
-    ACE_OS::strncpy(m_partitionResolverFactory, rhs.m_partitionResolverFactory,
+    std::strncpy(m_partitionResolverFactory, rhs.m_partitionResolverFactory,
                     len);
   } else {
     m_partitionResolverFactory = NULL;
@@ -158,28 +158,28 @@ RegionAttributes::RegionAttributes(const RegionAttributes& rhs)
   if (rhs.m_endpoints != NULL) {
     size_t len = strlen(rhs.m_endpoints) + 1;
     m_endpoints = new char[len];
-    ACE_OS::strncpy(m_endpoints, rhs.m_endpoints, len);
+    std::strncpy(m_endpoints, rhs.m_endpoints, len);
   } else {
     m_endpoints = NULL;
   }
   if (rhs.m_poolName != NULL) {
     size_t len = strlen(rhs.m_poolName) + 1;
     m_poolName = new char[len];
-    ACE_OS::strncpy(m_poolName, rhs.m_poolName, len);
+    std::strncpy(m_poolName, rhs.m_poolName, len);
   } else {
     m_poolName = NULL;
   }
   if (rhs.m_persistenceLibrary != NULL) {
     size_t len = strlen(rhs.m_persistenceLibrary) + 1;
     m_persistenceLibrary = new char[len];
-    ACE_OS::strncpy(m_persistenceLibrary, rhs.m_persistenceLibrary, len);
+    std::strncpy(m_persistenceLibrary, rhs.m_persistenceLibrary, len);
   } else {
     m_persistenceLibrary = NULL;
   }
   if (rhs.m_persistenceFactory != NULL) {
     size_t len = strlen(rhs.m_persistenceFactory) + 1;
     m_persistenceFactory = new char[len];
-    ACE_OS::strncpy(m_persistenceFactory, rhs.m_persistenceFactory, len);
+    std::strncpy(m_persistenceFactory, rhs.m_persistenceFactory, len);
   } else {
     m_persistenceFactory = NULL;
   }
@@ -222,13 +222,13 @@ void* getFactoryFunc(const char* lib, const char* funcName) {
   if (dll.open(lib, ACE_DEFAULT_SHLIB_MODE, 0) == -1) {
     // error...
     char msg[1000];
-    ACE_OS::snprintf(msg, 1000, "cannot open library: %s", lib);
+    std::snprintf(msg, 1000, "cannot open library: %s", lib);
     throw IllegalArgumentException(msg);
   }
   void* func = dll.symbol(funcName);
   if (func == NULL) {
     char msg[1000];
-    ACE_OS::snprintf(msg, 1000, "cannot find factory function %s in library %s",
+    std::snprintf(msg, 1000, "cannot find factory function %s in library %s",
                      funcName, lib);
     throw IllegalArgumentException(msg);
   }
