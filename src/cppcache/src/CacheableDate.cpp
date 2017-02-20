@@ -86,7 +86,7 @@ int CacheableDate::year() const {
 
 int64_t CacheableDate::milliseconds() const { return m_timevalue; }
 
-uint32_t CacheableDate::hashcode() const {
+int32_t CacheableDate::hashcode() const {
   return static_cast<int>(m_timevalue) ^ static_cast<int>(m_timevalue >> 32);
 }
 

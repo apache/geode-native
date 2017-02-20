@@ -71,7 +71,7 @@ class CPPCACHE_EXPORT PdxSerializable : public CacheableKey {
   virtual bool operator==(const CacheableKey& other) const;
 
   /** return the hashcode for this key. */
-  virtual uint32_t hashcode() const;
+  virtual int32_t hashcode() const;
 
   /**
    *@brief serialize this object

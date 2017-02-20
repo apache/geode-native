@@ -303,7 +303,7 @@ namespace apache
         return false;
       }
 
-      uint32_t ManagedCacheableDeltaBytesGeneric::hashcode() const
+      int32_t ManagedCacheableDeltaBytesGeneric::hashcode() const
       {
         throw gcnew System::NotSupportedException;
       }

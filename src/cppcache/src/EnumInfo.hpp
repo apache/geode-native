@@ -54,7 +54,7 @@ class CPPCACHE_EXPORT EnumInfo : public CacheableKey {
     return CacheableString::create("EnumInfo");
   }
   virtual bool operator==(const CacheableKey& other) const;
-  virtual uint32_t hashcode() const;
+  virtual int32_t hashcode() const;
 
   virtual int8_t DSFID() const;
   CacheableStringPtr getEnumClassName() const { return m_enumClassName; }

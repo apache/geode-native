@@ -175,7 +175,7 @@ namespace apache
         /// <summary>
         /// return the hashcode for this key.
         /// </summary>
-        virtual uint32_t hashcode() const;
+        virtual int32_t hashcode() const;
 
         /// <summary>
         /// return true if this key matches other CacheableKey
