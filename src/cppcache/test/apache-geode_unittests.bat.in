@@ -14,7 +14,7 @@ rem See the License for the specific language governing permissions and
 rem limitations under the License.
 @echo off
 setlocal
-set PATH=%PATH%;$<TARGET_LINKER_FILE_DIR:apache-geode>
+set PATH=%PATH%;$<TARGET_LINKER_FILE_DIR:${PRODUCT_LIB_NAME}>
 set LOG=${UNITTEST}.log
 
 rem In Windows, pipes to tee return tee's exit code instead of executable's

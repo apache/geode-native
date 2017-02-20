@@ -113,19 +113,19 @@ target_include_directories(_apache-geode INTERFACE
 )
 add_dependencies(_apache-geode version-header)
 
-add_library(apache-geode SHARED ${SOURCES_ALL} ${RESOURCES})
-target_link_libraries(apache-geode
+add_library(${PRODUCT_LIB_NAME} SHARED ${SOURCES_ALL} ${RESOURCES})
+target_link_libraries(${PRODUCT_LIB_NAME}
   PRIVATE
     _apache-geode
   PUBLIC
     c++11
 )
-target_include_directories(apache-geode
+target_include_directories(${PRODUCT_LIB_NAME}
   PUBLIC
     $<TARGET_PROPERTY:_apache-geode,INTERFACE_INCLUDE_DIRECTORIES>
 )
-add_dependencies(client-libraries apache-geode)
-set_target_properties(apache-geode PROPERTIES PUBLIC_HEADER "${PUBLIC_HEADERS}")
+add_dependencies(client-libraries ${PRODUCT_LIB_NAME})
+set_target_properties(${PRODUCT_LIB_NAME} PROPERTIES PUBLIC_HEADER "${PUBLIC_HEADERS}")
 
 add_library(apache-geode-static STATIC ${SOURCES_ALL})
 target_link_libraries(apache-geode-static
@@ -134,7 +134,7 @@ target_link_libraries(apache-geode-static
 )
 add_dependencies(client-libraries apache-geode-static)
 
-install(TARGETS apache-geode
+install(TARGETS ${PRODUCT_LIB_NAME}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib

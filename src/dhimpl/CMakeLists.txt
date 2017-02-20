@@ -20,7 +20,7 @@ file(GLOB_RECURSE SOURCES "*.cpp")
 add_library(DHImpl SHARED ${SOURCES})
 target_link_libraries(DHImpl
   PUBLIC 
-    apache-geode
+    ${PRODUCT_LIB_NAME}
     crypto
     c++11
 )

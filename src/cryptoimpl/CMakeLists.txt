@@ -23,7 +23,7 @@ target_link_libraries(cryptoImpl
   PRIVATE
     ACE_SSL
   PUBLIC
-   apache-geode
+   ${PRODUCT_LIB_NAME}
    crypto
    ssl
    c++11
