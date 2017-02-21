@@ -1,47 +1,20 @@
-book_repo: Pivotal-DataFabric/docs-book-gemfire-nc
-layout_repo: pivotal-cf/docs-layout-repo
-broken_link_exclusions: iefix|javadoc|css|cpp_api|net_api|cache_xml|#
-public_host: gemfire-native-client.docs.pivotal.io
-feedback_enabled: false
-repo_link_enabled: false
-elastic_search: true
-
-pcf_header: &local_gf
-  use_local_header: true
-  latest_stable_version: 9.0.4
-  changelog_href: /native/relnotes/release_notes_nc-9.0.html
-  local_header_img: /images/icon_gemfire.png
-  local_header_title: Pivotal GemFire&reg; Native Client
-  search_placeholder: Search GemFire 9.0
-  local_product_version: 9.0
-  local_header_links:
-    - <a href="https://network.pivotal.io/products/pivotal-gemfire/">Download</a>
-    - <a href="https://support.pivotal.io">Ask for Help</a>
-  local_header_version_list:
-    - <a href="/index-820.html">v8.2</a>
-    - <a href="/index-810.html">v8.1</a>
-    - <a href="/index-800.html">v8.0</a>
+book_repo: apache/geode-native/docs/geode-native-book
+public_host: localhost
 
 sections:
 - repository:
-    name: gemfire/docs-gemfire-nc
-    ref: develop
-  directory: native
-  subnav_template: gemfire-nc-nav
-  product_info: *local_gf
+    name: geode-native-docs
+  directory: docs/guide-native/11
+  subnav_template: geode-nc-nav
 
 template_variables:
-  title: <span class="title-deemph">Pivotal</span> Documentation
-  use_global_header: true
-  global_header_product_href: https://network.pivotal.io/
-  global_header_product_link_text: Downloads
-  support_url: http://support.pivotal.io
-  product_url: https://pivotal.io/big-data/pivotal-gemfire
-  book_title: Pivotal GemFire&reg; Native Client Documentation
-  cse_id: 012029519579280034868:3hzywhss5ik
-  support_link: <a href="http://support.pivotal.io" target="_blank">Support</a>
-  support_call_to_action: <a href="http://support.pivotal.io" target="_blank">Need Support?</a>
-  product_link: <div class="header-item"><a href="https://pivotal.io/big-data/pivotal-gemfire">Back to Product Page</a></div>
-  ga_account_id: UA-39702075-1
-  domain_name: pivotal.io
-  book_title_short: Pivotal GemFire Native Client Docs
+  support_url: http://geode.apache.org/community
+  product_url: http://geode.apache.org
+  book_title: Apache Geode Native Documentation
+  support_link: <a href="http://geode.apache.org/community" target="_blank">Community</a>
+  support_call_to_action: <a href="http://geode.apache.org/community" target="_blank">Need Help?</a>
+  product_link: <div class="header-item"><a href="http://geode.apache.org">Back to Product Page</a></div>
+  domain_name: apache.org
+  book_title_short: Geode Native Docs
+
+broken_link_exclusions: iefix|using_custom_classes|arrowhead|cppdocs|DotNetDocs|#
