@@ -1,14 +1,20 @@
-r301 %r{/gfmanual/(.*)}, 'http://gemfire.docs.pivotal.io/docs-gemfire/$1'
+#Licensed to the Apache Software Foundation (ASF) under one or more
+#contributor license agreements.  See the NOTICE file distributed with
+#this work for additional information regarding copyright ownership.
+#The ASF licenses this file to You under the Apache License, Version 2.0
+#(the "License"); you may not use this file except in compliance with
+#the License.  You may obtain a copy of the License at
+#
+#http://www.apache.org/licenses/LICENSE-2.0
+#
+#Unless required by applicable law or agreed to in writing, software
+#distributed under the License is distributed on an "AS IS" BASIS,
+#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+#express or implied. See the License for the specific language governing
+#permissions and limitations under the License.
+
+r301 %r{/releases/latest/javadoc/(.*)}, 'http://geode.apache.org/releases/latest/javadoc/$1'
 r301 %r{/geodeman/(.*)}, 'http://gemfire.docs.pivotal.io/docs-gemfire/latest/$1'
-r301 %r{/releases/latest/javadoc/(.*)}, 'http://data-docs-samples.cfapps.io/docs-gemfire/821/javadocs/japi/$1'
-r301 %r{/docs-gemfire/latest/cpp_api/(.*)}, 'http://data-docs-samples.cfapps.io/docs-gemfire/821/cpp_api/$1'
-r301 %r{/docs-gemfire/latest/net_api/(.*)}, 'http://data-docs-samples.cfapps.io/docs-gemfire/821/net_api/$1'
-r302 '/index-820.html', 'http://gemfire82.docs.pivotal.io/index.html'
-r302 '/index-810.html', 'http://gemfire81.docs.pivotal.io/index.html'
-r302 '/index-800.html', 'http://gemfire80.docs.pivotal.io/index.html'
-r302 '/index-702.html', 'http://gemfire702.docs.pivotal.io/7.0.2/index.html'
-r302 '/index-earlier.html', 'https://www.vmware.com/support/pubs/vfabric-gemfire.html'
-r302 '/bugnotes/KnownIssuesGemFire810.html', 'http://gemfire81.docs.pivotal.io/bugnotes/KnownIssuesGemFire810.html'
-r302 '/bugnotes/KnownIssuesPulseGemFire810.html', 'http://gemfire81.docs.pivotal.io/bugnotes/KnownIssuesPulseGemFire810.html'
-r302 '/bugnotes/KnownIssuesGemFire800.html', 'http://gemfire81.docs.pivotal.io/bugnotes/KnownIssuesGemFire800.html'
-r302 '/bugnotes/KnownIssuesPulseGemFire800.html', 'http://gemfire81.docs.pivotal.io/bugnotes/KnownIssuesPulseGemFire800.html'
+r302 '/index-10.html', 'http://geode.apache.org/docs/guide-native/10/about_native_client_users_guide.html'
+rewrite '/', '/docs/guide-native/11/about_native_client_users_guide.html'
+rewrite '/index.html', '/docs/guide-native/11/about_native_client_users_guide.html'
