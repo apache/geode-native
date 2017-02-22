@@ -1,7 +1,3 @@
----
-title:  Specifying Region Attributes
----
-
 <!--
 Licensed to the Apache Software Foundation (ASF) under one or more
 contributor license agreements.  See the NOTICE file distributed with
@@ -18,9 +14,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
-Region attributes govern the automated management of a region and its entries.
-
-Specify region attributes before creating the region. You can do this either through the declarative XML file or through the API. The API includes classes for defining a region's attributes before creation and for modifying some of them after creation. For details, see the API for `RegionShortcut`, `RegionAttributes`, `AttributesFactory`, and `AttributesMutator` at [http://gemfire-apis.docs.pivotal.io](http://gemfire-apis.docs.pivotal.io).
-
-
+<% if current_page.data.title %>
+  <h1 class="title-container" <%= current_page.data.dita ? 'style="display: none;"' : '' %>>
+    <%= current_page.data.title %>
+  </h1>
+<% end %>

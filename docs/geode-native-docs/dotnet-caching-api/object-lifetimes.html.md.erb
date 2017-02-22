@@ -2,6 +2,23 @@
 title:  Object Lifetimes
 ---
 
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 The .NET API provides a managed set of assemblies for the C++ API. The underlying C++ object will stay in memory until the .NET object is garbage-collected.
 
 The underlying C++ API employs reference counting using smart pointers for most classes. This means that all API operations with those objects return a reference to the underlying object and not a copy. Consequently, the underlying object will not be freed as long as the .NET application holds a reference to an object. In other words, the underlying object will stay in memory until the .NET object is garbage-collected. As long as a reference to an object is alive, the artifacts it maintains will also be alive.
