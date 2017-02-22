@@ -52,7 +52,7 @@ public class InstantiatorTest implements  Declarable,Serializable, DataSerializa
       m_intArray[0] = 1;
       m_intArray[1] = 2;
       m_intArray[2] = 3;
-      m_fileName = "gemstone.txt";
+      m_fileName = "geode.txt";
       m_string = "asciistring";
       m_stringArray = new String[2];
       m_stringArray[0] = "one";
@@ -134,7 +134,7 @@ public class InstantiatorTest implements  Declarable,Serializable, DataSerializa
       m_intArray[0] = 1;
       m_intArray[1] = 2;
       m_intArray[2] = 3;
-      m_fileName = "gemstone.txt";
+      m_fileName = "geode.txt";
       m_string = "asciistring";
       m_stringArray = new String[2];
       m_stringArray[0] = "one";

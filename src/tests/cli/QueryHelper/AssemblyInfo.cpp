@@ -29,9 +29,8 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyTitleAttribute("QueryWrapper")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
-[assembly:AssemblyCompanyAttribute("GEMSTONE")];
 [assembly:AssemblyProductAttribute("QueryWrapper")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c) GEMSTONE 2007")];
+[assembly:AssemblyCopyrightAttribute("Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership.")]
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 

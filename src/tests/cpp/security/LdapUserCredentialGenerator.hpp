@@ -58,7 +58,7 @@ class LdapUserCredentialGenerator : public CredentialGenerator {
     additionalArgs +=
         std::string(" --J=\\\"-Dgemfire.security-ldap-basedn=") +
         (ldapRoot != NULL ? ldapRoot
-                          : "ou=ldapTesting,dc=ldap,dc=gemstone,dc=com") +
+                          : "ou=ldapTesting,dc=ldap,dc=apache,dc=org") +
         "\\\"";
 
     char* ldapSSL = ACE_OS::getenv("LDAP_USESSL");

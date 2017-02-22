@@ -112,10 +112,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(CMAKE_SOURCE_DIR)\com\gemstone\gemfire\plugins\sqlite\AssemblyInfo.cs">
+    <Compile Include="$(CMAKE_SOURCE_DIR)\plugins\SQLiteCLI\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="$(CMAKE_SOURCE_DIR)\com\gemstone\gemfire\plugins\sqlite\SqLiteImpl.cs">
+    <Compile Include="$(CMAKE_SOURCE_DIR)\plugins\SQLiteCLI\SqLiteImpl.cs">
       <Link>SqLiteImpl.cs</Link>
     </Compile>
   </ItemGroup>

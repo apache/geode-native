@@ -1405,21 +1405,9 @@ namespace Apache.Geode.Client.UnitTests
        all.Add(26, p6);
        all.Add(27, p7);
        all.Add(28, p8);
-       //all.Add(p1, "Gemstone");
-       //all.Add(p2, p1);
        region0.PutAll(all);
        
        
-       /*
-        
-       all.Clear();
-       all.Add(p1, "Gemstone");
-       region0.PutAll(all);
-       
-       all.Clear();
-       all.Add(p2, p1);
-       region0.PutAll(all);
-         */
        ICollection<object> keys = new List<object>();
        IDictionary<object, object> getall = new Dictionary<object, object>();
 

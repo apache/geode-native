@@ -25,7 +25,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Geode.NETCacheTemplates")]
 [assembly: AssemblyDescription("Templates for Geode Native Client .NET Cache")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Pivotal Software, Inc.")]
 [assembly: AssemblyProduct("Geode.NETCacheTemplates")]
 [assembly: AssemblyCopyright("Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership.")]
 [assembly: AssemblyTrademark("All Rights Reserved")]

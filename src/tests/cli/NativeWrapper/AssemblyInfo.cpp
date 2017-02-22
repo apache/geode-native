@@ -29,9 +29,8 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyTitleAttribute("NativeWrapper")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
-[assembly:AssemblyCompanyAttribute("GEMSTONE SYSTEMS PVT LTD")];
 [assembly:AssemblyProductAttribute("NativeWrapper")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c) GEMSTONE SYSTEMS PVT LTD 2008")];
+[assembly:AssemblyCopyrightAttribute("Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership.")]
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 
