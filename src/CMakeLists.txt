@@ -231,7 +231,7 @@ if (${BUILD_CLI})
   add_subdirectory(plugins/SQLiteCLI)
 endif()
 
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/quickstart/ DESTINATION SampleCode/quickstart)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/quickstart/ DESTINATION SampleCode/quickstart USE_SOURCE_PERMISSIONS)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cppcache/integration-test/keystore/ DESTINATION SampleCode/quickstart/keystore)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/xsds/ DESTINATION xsds)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/defaultSystem/ DESTINATION defaultSystem)
