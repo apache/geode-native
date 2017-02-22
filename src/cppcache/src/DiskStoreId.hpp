@@ -79,7 +79,7 @@ class DiskStoreId : public DSMemberForVersionStamp {
   static Serializable* createDeserializable() { return new DiskStoreId(); }
   std::string getHashKey();
 
-  virtual uint32_t hashcode() const {
+  virtual int32_t hashcode() const {
     static uint32_t prime = 31;
     uint32_t result = 1;
     result =

@@ -100,7 +100,7 @@ class CPPCACHE_EXPORT CacheableFileName : public CacheableString {
   virtual const char* className() const { return "CacheableFileName"; }
 
   /** return the hashcode for this key. */
-  virtual uint32_t hashcode() const;
+  virtual int32_t hashcode() const;
 
  protected:
   /** Default constructor. */

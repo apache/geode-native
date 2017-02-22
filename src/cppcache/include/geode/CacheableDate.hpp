@@ -120,7 +120,7 @@ class CPPCACHE_EXPORT CacheableDate : public CacheableKey {
    * milliseconds() method.
    *
    * @return the hashcode for this object. */
-  virtual uint32_t hashcode() const;
+  virtual int32_t hashcode() const;
 
   operator time_t() const { return m_timevalue / 1000; }
   operator time_point() const {

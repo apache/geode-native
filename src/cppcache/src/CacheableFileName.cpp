@@ -43,7 +43,7 @@ int8_t CacheableFileName::typeId() const {
   return GeodeTypeIds::CacheableFileName;
 }
 
-uint32_t CacheableFileName::hashcode() const {
+int32_t CacheableFileName::hashcode() const {
 #ifndef _WIN32
   if (m_hashcode == 0) {
     m_hashcode = CacheableString::hashcode() ^ 1234321;

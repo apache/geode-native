@@ -96,7 +96,7 @@ class CacheableKeyType : public CacheableKey {
   // CacheableKey methods
 
   /** Return the hashcode for this key. */
-  virtual uint32_t hashcode() const {
+  virtual int32_t hashcode() const {
     return apache::geode::client::serializer::hashcode(m_value);
   }
 

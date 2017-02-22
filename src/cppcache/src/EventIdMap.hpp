@@ -150,7 +150,7 @@ class CPPCACHE_EXPORT EventSource : public SharedBase {
   EventSource(const char *memId, int32_t memIdLen, int64_t thrId);
   ~EventSource();
 
-  uint32_t hashcode();
+  int32_t hashcode();
   bool operator==(const EventSource &rhs) const;
 
   // Accessors
