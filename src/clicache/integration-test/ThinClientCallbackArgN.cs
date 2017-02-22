@@ -485,7 +485,7 @@ namespace Apache.Geode.Client.UnitTests
       Assert.IsNotNull(csa, "String array is null");
       Assert.AreEqual(2, csa.Length, "String array length is not two");
 
-      Assert.AreEqual(dc.CFileName, "gemstone.txt", "Cacheable filename is not equal");
+      Assert.AreEqual(dc.CFileName, "geode.txt", "Cacheable filename is not equal");
 
       /*
       Assert.IsNotNull(dc.CHashSet, "hashset is null");

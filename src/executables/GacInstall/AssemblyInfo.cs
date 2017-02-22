@@ -25,9 +25,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("GeodeGacInstall")]
 [assembly: AssemblyDescription("Geode utility to install/uninstall to GAC")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("GemStone Systems Inc.")]
 [assembly: AssemblyProduct("GeodeGacInstall")]
-[assembly: AssemblyCopyright("Copyright © GemStone Systems Inc. 2006")]
+[assembly: AssemblyCopyright("Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership.")]
 [assembly: AssemblyTrademark("All Rights Reserved")]
 [assembly: AssemblyCulture("")]
 

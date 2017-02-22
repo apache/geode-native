@@ -24,9 +24,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("RefIDExample")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Gemstone Systems Pvt. Ltd.")]
 [assembly: AssemblyProduct("RefIDExample")]
-[assembly: AssemblyCopyright("Copyright © Gemstone Systems Pvt. Ltd. 2010")]
+[assembly: AssemblyCopyright("Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

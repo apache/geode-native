@@ -378,9 +378,6 @@ Serializable* ClientProxyMembershipID::fromData(DataInput& input) {
   input.read(&vmKind);                 // vmkind
   CacheableStringArrayPtr aStringArray(CacheableStringArray::create());
   aStringArray->fromData(input);
-  // #925 - currently reading empty string keep watch here,
-  // server might remove even sending this string
-  // (https://svn.gemstone.com/trac/geode/changeset/44566).
   input.readObject(dsName);            // name
   input.readObject(uniqueTag);         // unique tag
   input.readObject(durableClientId);   // durable client id
@@ -437,9 +434,6 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
     vmViewId = atoi(vmViewIdstr.ptr()->asChar());
   }
 
-  // #925 - currently reading empty string keep watch here,
-  // server might remove even sending this string
-  // (https://svn.gemstone.com/trac/geode/changeset/44566).
   input.readObject(dsName);  // name
 
   if (vmKind != ClientProxyMembershipID::LONER_DM_TYPE) {
@@ -504,27 +498,7 @@ int16_t ClientProxyMembershipID::compareTo(DSMemberForVersionStampPtr other) {
     if (myAddr[i] < otherAddr[i]) return -1;
     if (myAddr[i] > otherAddr[i]) return 1;
   }
-  // #925 - currently reading empty string keep watch here,
-  // server might remove even sending this string
-  // (https://svn.gemstone.com/trac/geode/changeset/44566).
-  // InternalDistributedMember no longer uses "name" in comparisons.
-  // std::string myDSName = getDSName();
-  // std::string otherDSName = otherMember->getDSName();
 
-  // if (myDSName.empty()&& otherDSName.empty()) {
-  //  // do nothing
-  //} else if (myDSName.empty()) {
-  //  return -1;
-  //}
-  // else if (otherDSName.empty()) {
-  //  return 1;
-  //}
-  // else {
-  //  int i = myDSName.compare(otherDSName);
-  //  if (i != 0) {
-  //    return i;
-  //  }
-  //}
   std::string myUniqueTag = getUniqueTag();
   std::string otherUniqueTag = otherMember->getUniqueTag();
   if (myUniqueTag.empty() && otherUniqueTag.empty()) {

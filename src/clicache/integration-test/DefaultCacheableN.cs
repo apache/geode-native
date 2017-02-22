@@ -71,7 +71,7 @@ namespace Apache.Geode.Client.UnitTests
         
         m_cacheableInt32Array =new int[]{1,2,3};
         
-        m_cacheableFileName = "gemstone.txt";
+        m_cacheableFileName = "geode.txt";
         
         m_CacheableStringASCII = "asciistring";
         

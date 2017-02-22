@@ -42,7 +42,7 @@ namespace Apache.Geode.Client.Tests
       }
       if (ldapBaseDN == null || ldapBaseDN.Length == 0)
       {
-        ldapBaseDN = "ou=ldapTesting,dc=ldap,dc=gemstone,dc=com";
+        ldapBaseDN = "ou=ldapTesting,dc=ldap,dc=apache,dc=org";
       }
       if (ldapUseSSL == null || ldapUseSSL.Length == 0)
       {
