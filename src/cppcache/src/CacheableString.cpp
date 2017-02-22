@@ -129,7 +129,7 @@ bool CacheableString::operator==(const CacheableKey& other) const {
   }
 }
 
-uint32_t CacheableString::hashcode() const {
+int32_t CacheableString::hashcode() const {
   if (m_str == NULL) {
     return 0;
   }

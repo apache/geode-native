@@ -478,7 +478,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
   *
   * @see Serializable::registerPdxType
   */
-  virtual uint32_t hashcode() const = 0;
+  virtual int32_t hashcode() const = 0;
 
   /**
   * Prints out all of the identity fields of this PdxInstance.

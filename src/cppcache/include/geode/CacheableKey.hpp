@@ -46,7 +46,7 @@ class CPPCACHE_EXPORT CacheableKey : public Cacheable {
   virtual bool operator==(const CacheableKey& other) const = 0;
 
   /** return the hashcode for this key. */
-  virtual uint32_t hashcode() const = 0;
+  virtual int32_t hashcode() const = 0;
 
   /** Copy the string form of a key into a char* buffer for logging purposes.
    *

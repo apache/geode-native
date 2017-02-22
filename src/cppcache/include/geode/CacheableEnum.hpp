@@ -124,7 +124,7 @@ class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
   int32_t getEnumOrdinal() const { return m_ordinal; }
 
   /** @return the hashcode for this key. */
-  virtual uint32_t hashcode() const;
+  virtual int32_t hashcode() const;
 
   /** @return true if this key matches other. */
   virtual bool operator==(const CacheableKey& other) const;

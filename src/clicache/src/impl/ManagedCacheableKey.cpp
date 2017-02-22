@@ -202,7 +202,7 @@ namespace apache
         return false;
       }
 
-      uint32_t ManagedCacheableKeyGeneric::hashcode() const
+      int32_t ManagedCacheableKeyGeneric::hashcode() const
       {
         if (m_hashcode != 0)
           return m_hashcode;

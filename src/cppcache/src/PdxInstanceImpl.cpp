@@ -739,7 +739,7 @@ int PdxInstanceImpl::deepArrayHashCode(CacheablePtr obj) {
   }
 }
 
-uint32_t PdxInstanceImpl::hashcode() const {
+int32_t PdxInstanceImpl::hashcode() const {
   int hashCode = 1;
 
   PdxTypePtr pt = getPdxType();
