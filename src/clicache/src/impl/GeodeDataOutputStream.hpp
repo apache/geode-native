@@ -17,7 +17,9 @@
 
 #pragma once
 
-#include "../gf_defs.hpp"
+#include "../geode_defs.hpp"
+#include "../DataOutput.hpp"
+#include "../ExceptionTypes.hpp"
 
 using namespace System;
 using namespace System::IO;
@@ -29,9 +31,14 @@ namespace Apache
     namespace Client
     {
 
-      ref class GFNullStream : public Stream
+      ref class GeodeDataOutputStream : public Stream
       {
       public:
+
+        GeodeDataOutputStream(DataOutput^ output)
+        {
+          m_buffer = output;
+        }
 
         virtual property bool CanSeek { bool get() override { return false; } }
         virtual property bool CanRead { bool get() override { return false; } }
@@ -43,7 +50,7 @@ namespace Apache
         {
           int64_t get() override
           {
-            return (int64_t) m_position;
+            return (int64_t) m_buffer->BufferLength;
           }
         }
 
@@ -62,58 +69,50 @@ namespace Apache
 
         virtual int64_t Seek(int64_t offset, SeekOrigin origin) override
         {
-          throw gcnew System::NotSupportedException("Seek not supported by GFNullStream");
-          /*
-          int actual = 0;
-          switch (origin)
-          {
-          case SeekOrigin::Begin:
-            actual = (int) offset;
-            m_position = (int) actual;
-            break;
-
-          case SeekOrigin::Current:
-            actual = (int) offset;
-            m_position += (int) actual;
-            break;
-
-          case SeekOrigin::End:
-            actual = (int) offset;
-            m_position += (int) actual;
-            break;
-          }
-          // Seek is meaningless here?
-          return m_position;
-          */
+          throw gcnew System::NotSupportedException("Seek not supported by GeodeDataOutputStream");
         }
 
-        virtual void SetLength(int64_t value) override { /* do nothing */ }
+        virtual void SetLength(int64_t value) override
+        { 
+          //TODO: overflow check
+          //m_buffer->NativePtr->ensureCapacity((uint32_t)value);
+        }
 
         virtual void Write(array<Byte> ^ buffer, int offset, int count) override
         {
+          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+          /*
+          array<Byte> ^ chunk = gcnew array<Byte>(count);
+          array<Byte>::ConstrainedCopy(buffer, offset, chunk, 0, count);
+          m_buffer->WriteBytesOnly(chunk, count);
+          */
+          //pin_ptr<const Byte> pin_bytes = &buffer[offset];
+          //m_buffer->NativePtr->writeBytesOnly((const uint8_t*)pin_bytes, count);
+          m_buffer->WriteBytesOnly(buffer, count, offset);
           m_position += count;
+          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
         }
 
         virtual void WriteByte(unsigned char value) override
         {
+          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+          m_buffer->WriteByte(value);
           m_position++;
+          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
         }
 
         virtual int Read(array<Byte> ^ buffer, int offset, int count) override
         {
-          throw gcnew System::NotSupportedException("Seek not supported by GFNullStream");
-          /*
-          int actual = count;
-          m_position += actual;
-          return actual;
-          */
+          throw gcnew System::NotSupportedException("Read not supported by GeodeDataOutputStream");
         }
 
         virtual void Flush() override { /* do nothing */ }
 
       private:
         int m_position;
+        DataOutput ^ m_buffer;
       };
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
+

@@ -17,11 +17,11 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/Query.hpp>
 #include "impl/NativeWrapper.hpp"
 
-#include "IGFSerializable.hpp"
+#include "IGeodeSerializable.hpp"
 
 using namespace System;
 

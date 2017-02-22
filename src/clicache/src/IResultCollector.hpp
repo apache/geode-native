@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 
 using namespace System;
 namespace Apache
@@ -28,7 +28,7 @@ namespace Apache
     namespace Client
     {
 
-      interface class IGFSerializable;
+      interface class IGeodeSerializable;
       /*
       generic<class TKey>
       ref class ResultCollector;

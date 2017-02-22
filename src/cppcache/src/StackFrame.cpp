@@ -17,7 +17,7 @@
 #include <ace/OS.h>
 #include <geode/geode_globals.hpp>
 #include "StackFrame.hpp"
-#include <geode/gf_base.hpp>
+#include <geode/geode_base.hpp>
 
 namespace apache {
 namespace geode {

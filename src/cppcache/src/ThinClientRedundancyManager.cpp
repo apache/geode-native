@@ -1241,7 +1241,7 @@ void ThinClientRedundancyManager::doPeriodicAck() {
 }
 
 void ThinClientRedundancyManager::startPeriodicAck() {
-  m_periodicAckTask = new GF_TASK_T<ThinClientRedundancyManager>(
+  m_periodicAckTask = new Task<ThinClientRedundancyManager>(
       this, &ThinClientRedundancyManager::periodicAck, NC_PerodicACK);
   m_periodicAckTask->start();
   SystemProperties* props = DistributedSystem::getSystemProperties();

@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include "geode/gf_types.hpp"
+#include "geode_defs.hpp"
+#include "geode/geode_types.hpp"
 
 using namespace System;
 
@@ -37,7 +37,7 @@ namespace Apache
       /// This interface class is the superclass of all user objects 
       /// in the cache that can be serialized.
       /// </summary>
-      public interface class IGFSerializable
+      public interface class IGeodeSerializable
       {
       public:
 
@@ -59,7 +59,7 @@ namespace Apache
         /// the DataInput stream to use for reading the object data
         /// </param>
         /// <returns>the deserialized object</returns>
-        IGFSerializable^ FromData( DataInput^ input );
+        IGeodeSerializable^ FromData( DataInput^ input );
 
         /// <summary>
         /// Get the size of this object in bytes.
@@ -82,7 +82,7 @@ namespace Apache
         /// <remarks>
         /// The classId must be unique within an application suite
         /// and in the range 0 to ((2^31)-1) both inclusive. An application can
-        /// thus define upto 2^31 custom <c>IGFSerializable</c> classes.
+        /// thus define upto 2^31 custom <c>IGeodeSerializable</c> classes.
         /// Returning a value greater than ((2^31)-1) may result in undefined
         /// behaviour.
         /// </remarks>

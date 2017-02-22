@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-//#include "../../gf_includes.hpp"
-//#include "../../../gf_includes.hpp"
+//#include "../../geode_includes.hpp"
+//#include "../../../geode_includes.hpp"
 #include "ManagedResultCollector.hpp"
-//#include "../../../IGFSerializable.hpp"
+//#include "../../../IGeodeSerializable.hpp"
 
 
-//#include "../IGFSerializable.hpp"
+//#include "../IGeodeSerializable.hpp"
 #include "ManagedString.hpp"
 #include "SafeConvert.hpp"
 #include "../ExceptionTypes.hpp"
@@ -149,7 +149,7 @@ namespace apache
       void ManagedResultCollectorGeneric::addResult(CacheablePtr& result)
       {
         try {
-          //Apache::Geode::Client::IGFSerializable^ res = SafeUMSerializableConvertGeneric(result.ptr());
+          //Apache::Geode::Client::IGeodeSerializable^ res = SafeUMSerializableConvertGeneric(result.ptr());
           Object^ rs = Apache::Geode::Client::Serializable::GetManagedValueGeneric<Object^>(result);
           m_managedptr->AddResult(rs);
           //m_managedptr->AddResult( SafeUMSerializableConvert( result.ptr( ) ) );
@@ -169,11 +169,11 @@ namespace apache
       CacheableVectorPtr ManagedResultCollectorGeneric::getResult(uint32_t timeout)
       {
         try {
-          //array<IGFSerializable^>^ rs = m_managedptr->GetResult(timeout);
+          //array<IGeodeSerializable^>^ rs = m_managedptr->GetResult(timeout);
           //apache::geode::client::CacheableVectorPtr rsptr = apache::geode::client::CacheableVector::create();
           //for( int index = 0; index < rs->Length; index++ )
           //{
-          //  //apache::geode::client::CacheablePtr valueptr(Apache::Geode::Client::Serializable::GetUnmanagedValueGeneric<IGFSerializable^>(rs[ index]));
+          //  //apache::geode::client::CacheablePtr valueptr(Apache::Geode::Client::Serializable::GetUnmanagedValueGeneric<IGeodeSerializable^>(rs[ index]));
           //  apache::geode::client::CacheablePtr valueptr (SafeMSerializableConvert(rs[ index]));
           //  rsptr->push_back(valueptr);
           //}

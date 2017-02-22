@@ -69,7 +69,7 @@ namespace Apache
       }
         
     
-      IGFSerializable^ CacheableStringArray::FromData(DataInput^ input)
+      IGeodeSerializable^ CacheableStringArray::FromData(DataInput^ input)
       {
         int len = input->ReadArrayLen();
         if ( len == -1)

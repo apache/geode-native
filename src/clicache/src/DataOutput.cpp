@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "DataOutput.hpp"
 #include <GeodeTypeIdsImpl.hpp>
 #include <vcclr.h>
 
-#include "IGFSerializable.hpp"
+#include "IGeodeSerializable.hpp"
 #include "CacheableObjectArray.hpp"
 #include "impl/PdxHelper.hpp"
 #include "impl/PdxWrapper.hpp"
@@ -401,12 +401,12 @@ namespace Apache
 
       /*void DataOutput::WriteObject( Object^ obj )
       {
-      WriteObjectInternal((IGFSerializable^)obj);
+      WriteObjectInternal((IGeodeSerializable^)obj);
       }*/
 
       /*void DataOutput::WriteObject( Object^ obj )
       {
-      WriteObject( (IGFSerializable^)obj );
+      WriteObject( (IGeodeSerializable^)obj );
       }*/
 
       int8_t DataOutput::GetTypeId(uint32_t classId)
@@ -647,7 +647,7 @@ namespace Apache
               return;
             }
 
-            IGFSerializable^ ct = dynamic_cast<IGFSerializable^>(obj);
+            IGeodeSerializable^ ct = dynamic_cast<IGeodeSerializable^>(obj);
             if (ct != nullptr) {
               WriteObjectInternal(ct);
               return;
@@ -682,7 +682,7 @@ namespace Apache
           WriteByte(-1);
       }
 
-      void DataOutput::WriteObjectInternal(IGFSerializable^ obj)
+      void DataOutput::WriteObjectInternal(IGeodeSerializable^ obj)
       {
         //CacheableKey^ key = gcnew CacheableKey();
         if (obj == nullptr) {

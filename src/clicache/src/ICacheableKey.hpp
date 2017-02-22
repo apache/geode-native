@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include "IGFSerializable.hpp"
+#include "geode_defs.hpp"
+#include "IGeodeSerializable.hpp"
 
 
 using namespace System;
@@ -44,7 +44,7 @@ namespace Apache
       /// and will not work correctly.
       /// </remarks>
       public interface class ICacheableKey
-        : public IGFSerializable
+        : public IGeodeSerializable
       {
       public:
 

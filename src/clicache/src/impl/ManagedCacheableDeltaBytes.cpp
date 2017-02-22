@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "../gf_includes.hpp"
+//#include "../geode_includes.hpp"
 #include "ManagedCacheableDeltaBytes.hpp"
 #include "../DataInput.hpp"
 #include "../DataOutput.hpp"
@@ -55,7 +55,7 @@ namespace apache
           Apache::Geode::Client::DataInput mg_input(&input, true);
           const uint8_t* objStartPos = input.currentBufferPosition();
 
-          Apache::Geode::Client::IGFSerializable^ obj =
+          Apache::Geode::Client::IGeodeSerializable^ obj =
             Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId)();
           obj->FromData(%mg_input);
           input.advanceCursor(mg_input.BytesReadInternally);
@@ -150,7 +150,7 @@ namespace apache
 
       bool ManagedCacheableDeltaBytesGeneric::hasDelta()
       {
-        //Apache::Geode::Client::IGFDelta^ deltaObj = this->getManagedObject();
+        //Apache::Geode::Client::IGeodeDelta^ deltaObj = this->getManagedObject();
         //return deltaObj->HasDelta();
         return m_hasDelta;
       }
@@ -159,7 +159,7 @@ namespace apache
       {
         try {
           Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytes::toDelta: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((int)this) + " with its domain ID: " + m_domainId);
-          Apache::Geode::Client::IGFDelta^ deltaObj = this->getManagedObject();
+          Apache::Geode::Client::IGeodeDelta^ deltaObj = this->getManagedObject();
           Apache::Geode::Client::DataOutput mg_output(&output, true);
           deltaObj->ToDelta(%mg_output);
           mg_output.WriteBytesToUMDataOutput();
@@ -176,12 +176,12 @@ namespace apache
       {
         try {
           Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytes::fromDelta:");
-          Apache::Geode::Client::IGFDelta^ deltaObj = this->getManagedObject();
+          Apache::Geode::Client::IGeodeDelta^ deltaObj = this->getManagedObject();
           Apache::Geode::Client::DataInput mg_input(&input, true);
           deltaObj->FromDelta(%mg_input);
 
-          Apache::Geode::Client::IGFSerializable^ managedptr =
-            dynamic_cast <Apache::Geode::Client::IGFSerializable^> (deltaObj);
+          Apache::Geode::Client::IGeodeSerializable^ managedptr =
+            dynamic_cast <Apache::Geode::Client::IGeodeSerializable^> (deltaObj);
           if (managedptr != nullptr)
           {
             Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytes::fromDelta: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((int)this) + " with its domain ID: " + m_domainId);
@@ -212,11 +212,11 @@ namespace apache
       DeltaPtr ManagedCacheableDeltaBytesGeneric::clone()
       {
         try {
-          Apache::Geode::Client::IGFDelta^ deltaObj = this->getManagedObject();
-          ICloneable^ cloneable = dynamic_cast<ICloneable^>((Apache::Geode::Client::IGFDelta^) deltaObj);
+          Apache::Geode::Client::IGeodeDelta^ deltaObj = this->getManagedObject();
+          ICloneable^ cloneable = dynamic_cast<ICloneable^>((Apache::Geode::Client::IGeodeDelta^) deltaObj);
           if (cloneable) {
-            Apache::Geode::Client::IGFSerializable^ Mclone =
-              dynamic_cast<Apache::Geode::Client::IGFSerializable^>(cloneable->Clone());
+            Apache::Geode::Client::IGeodeSerializable^ Mclone =
+              dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(cloneable->Clone());
             return DeltaPtr(static_cast<ManagedCacheableDeltaBytesGeneric*>(
               SafeMSerializableConvertGeneric(Mclone)));
           }
@@ -233,7 +233,7 @@ namespace apache
         return NULLPTR;
       }
 
-      Apache::Geode::Client::IGFDelta^
+      Apache::Geode::Client::IGeodeDelta^
         ManagedCacheableDeltaBytesGeneric::getManagedObject() const
       {
 
@@ -243,10 +243,10 @@ namespace apache
         Apache::Geode::Client::DataInput mg_dinp(&dinp, true);
         Apache::Geode::Client::TypeFactoryMethodGeneric^ creationMethod =
           Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId);
-        Apache::Geode::Client::IGFSerializable^ newObj = creationMethod();
+        Apache::Geode::Client::IGeodeSerializable^ newObj = creationMethod();
 
-        Apache::Geode::Client::IGFDelta^ managedDeltaptr =
-          dynamic_cast <Apache::Geode::Client::IGFDelta^> (newObj->FromData(%mg_dinp));
+        Apache::Geode::Client::IGeodeDelta^ managedDeltaptr =
+          dynamic_cast <Apache::Geode::Client::IGeodeDelta^> (newObj->FromData(%mg_dinp));
         return managedDeltaptr;
       }
 
@@ -261,7 +261,7 @@ namespace apache
           if (p_other != NULL) {
             apache::geode::client::DataInput di(m_bytes, m_size);
             Apache::Geode::Client::DataInput mg_input(&di, true);
-            Apache::Geode::Client::IGFSerializable^ obj =
+            Apache::Geode::Client::IGeodeSerializable^ obj =
               Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId)();
             obj->FromData(%mg_input);
             bool ret = obj->Equals(p_other->ptr());
@@ -285,7 +285,7 @@ namespace apache
           Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytesGeneric::equal. ");
           apache::geode::client::DataInput di(m_bytes, m_size);
           Apache::Geode::Client::DataInput mg_input(&di, true);
-          Apache::Geode::Client::IGFSerializable^ obj =
+          Apache::Geode::Client::IGeodeSerializable^ obj =
             Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId)();
           obj->FromData(%mg_input);
           bool ret = obj->Equals(other.ptr());
@@ -311,7 +311,7 @@ namespace apache
       size_t ManagedCacheableDeltaBytesGeneric::logString(char* buffer, size_t maxLength) const
       {
         try {
-          Apache::Geode::Client::IGFDelta^ manageObject = getManagedObject();
+          Apache::Geode::Client::IGeodeDelta^ manageObject = getManagedObject();
           if (manageObject != nullptr)
           {
             if (maxLength > 0) {

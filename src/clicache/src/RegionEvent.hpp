@@ -17,10 +17,10 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/RegionEvent.hpp>
 //#include "impl/NativeWrapper.hpp"
-#include "IGFSerializable.hpp"
+#include "IGeodeSerializable.hpp"
 #include "IRegion.hpp"
 #include "Region.hpp"
 

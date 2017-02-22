@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/DataInput.hpp>
 #include "impl/NativeWrapper.hpp"
 #include "Log.hpp"
@@ -35,11 +35,11 @@ namespace Apache
     namespace Client
     {
 
-      interface class IGFSerializable;
+      interface class IGeodeSerializable;
 
       /// <summary>
       /// Provides operations for reading primitive data values, byte arrays,
-      /// strings, <c>IGFSerializable</c> objects from a byte stream.
+      /// strings, <c>IGeodeSerializable</c> objects from a byte stream.
       /// </summary>
       public ref class DataInput sealed
 				: public Client::Internal::UMWrap<apache::geode::client::DataInput>

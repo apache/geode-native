@@ -29,7 +29,7 @@
 
 #include <ace/Semaphore.h>
 #include <string>
-#include <geode/gf_types.hpp>
+#include <geode/geode_types.hpp>
 #include "Utils.hpp"
 #include "AppDomainContext.hpp"
 

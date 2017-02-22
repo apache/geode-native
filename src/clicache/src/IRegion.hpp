@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include "ISubscriptionService.hpp"
 #include <geode/DataOutput.hpp>
 //#include "ExceptionTypes.hpp"
@@ -39,7 +39,7 @@ namespace Apache
 
       ref class Cache;
       ref class CacheStatistics;
-      //interface class IGFSerializable;
+      //interface class IGeodeSerializable;
       interface class IRegionService;
 
       generic<class TResult>
@@ -920,7 +920,7 @@ namespace Apache
           /// </param>
           /// <param name="callbackArg">
           /// An argument passed into the CacheLoader if loader is used.
-          /// Has to be Serializable (i.e. implement <c>IGFSerializable</c>);
+          /// Has to be Serializable (i.e. implement <c>IGeodeSerializable</c>);
           /// can be null.
           /// </param>
           /// <returns>

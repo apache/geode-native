@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include "IRegion.hpp"
 #include "Properties.hpp"
 using namespace System;

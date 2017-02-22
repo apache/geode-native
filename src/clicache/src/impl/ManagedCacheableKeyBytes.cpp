@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "../gf_includes.hpp"
+//#include "../geode_includes.hpp"
 #include "ManagedCacheableKeyBytes.hpp"
 #include "../DataInput.hpp"
 #include "../DataOutput.hpp"
@@ -57,7 +57,7 @@ namespace apache
           Apache::Geode::Client::DataInput mg_input(&input, true);
           const uint8_t* objStartPos = input.currentBufferPosition();
 
-          Apache::Geode::Client::IGFSerializable^ obj = Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId)();
+          Apache::Geode::Client::IGeodeSerializable^ obj = Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId)();
           obj->FromData(%mg_input);
 
           input.advanceCursor(mg_input.BytesReadInternally);
@@ -158,7 +158,7 @@ namespace apache
       apache::geode::client::CacheableStringPtr ManagedCacheableKeyBytesGeneric::toString() const
       {
         try {
-          Apache::Geode::Client::IGFSerializable^ manageObject = getManagedObject();
+          Apache::Geode::Client::IGeodeSerializable^ manageObject = getManagedObject();
           if (manageObject != nullptr)
           {
             apache::geode::client::CacheableStringPtr cStr;
@@ -187,7 +187,7 @@ namespace apache
           if (p_other != NULL) {
             apache::geode::client::DataInput di(m_bytes, m_size);
             Apache::Geode::Client::DataInput mg_input(&di, true);
-            Apache::Geode::Client::IGFSerializable^ obj =
+            Apache::Geode::Client::IGeodeSerializable^ obj =
               Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId)();
             obj->FromData(%mg_input);
             bool ret = obj->Equals(p_other->ptr());
@@ -211,7 +211,7 @@ namespace apache
           Apache::Geode::Client::Log::Debug("ManagedCacheableKeyBytesGeneric::equal. ");
           apache::geode::client::DataInput di(m_bytes, m_size);
           Apache::Geode::Client::DataInput mg_input(&di, true);
-          Apache::Geode::Client::IGFSerializable^ obj =
+          Apache::Geode::Client::IGeodeSerializable^ obj =
             Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId)();
           obj->FromData(%mg_input);
           bool ret = obj->Equals(other.ptr());
@@ -237,7 +237,7 @@ namespace apache
       size_t ManagedCacheableKeyBytesGeneric::logString(char* buffer, size_t maxLength) const
       {
         try {
-          Apache::Geode::Client::IGFSerializable^ manageObject = getManagedObject();
+          Apache::Geode::Client::IGeodeSerializable^ manageObject = getManagedObject();
           if (manageObject != nullptr)
           {
             if (maxLength > 0) {
@@ -257,7 +257,7 @@ namespace apache
         return 0;
       }
 
-      Apache::Geode::Client::IGFSerializable^
+      Apache::Geode::Client::IGeodeSerializable^
         ManagedCacheableKeyBytesGeneric::getManagedObject() const
       {
 
@@ -276,7 +276,7 @@ namespace apache
         Apache::Geode::Client::DataInput mg_dinp(&dinp, true);
         Apache::Geode::Client::TypeFactoryMethodGeneric^ creationMethod =
           Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId);
-        Apache::Geode::Client::IGFSerializable^ newObj = creationMethod();
+        Apache::Geode::Client::IGeodeSerializable^ newObj = creationMethod();
         return newObj->FromData(%mg_dinp);
       }
     }  // namespace client

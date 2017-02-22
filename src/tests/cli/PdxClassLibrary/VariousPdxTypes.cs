@@ -804,7 +804,7 @@ namespace PdxTests
     #endregion
   }
     [Serializable]
-  public class PdxInsideIGFSerializable : IGFSerializable
+  public class PdxInsideIGeodeSerializable : IGeodeSerializable
   {
     NestedPdx m_npdx = new NestedPdx();
     PdxTypes3 m_pdx3 = new PdxTypes3();
@@ -816,9 +816,9 @@ namespace PdxTests
     int m_i4 = 73567;
 
 
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
-      return new PdxInsideIGFSerializable();
+      return new PdxInsideIGeodeSerializable();
     }
     public override int GetHashCode()
     {
@@ -829,7 +829,7 @@ namespace PdxTests
     {
       if (obj == null)
         return false;
-      PdxInsideIGFSerializable pap = obj as PdxInsideIGFSerializable;
+      PdxInsideIGeodeSerializable pap = obj as PdxInsideIGeodeSerializable;
 
       if (pap == null)
         return false;
@@ -850,14 +850,14 @@ namespace PdxTests
       return false;
     }
 
-    #region IGFSerializable Members
+    #region IGeodeSerializable Members
 
     public uint ClassId
     {
       get { return 5005; }
     }
 
-    public IGFSerializable FromData(DataInput input)
+    public IGeodeSerializable FromData(DataInput input)
     {
       m_i1 = input.ReadInt32();
       m_npdx = (NestedPdx)input.ReadObject();

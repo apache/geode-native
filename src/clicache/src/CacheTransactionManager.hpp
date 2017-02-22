@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/CacheTransactionManager.hpp>
 #include <geode/InternalCacheTransactionManager2PC.hpp>
 #include "TransactionId.hpp"

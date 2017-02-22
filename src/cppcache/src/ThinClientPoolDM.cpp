@@ -255,15 +255,15 @@ PropertiesPtr ThinClientPoolDM::getCredentials(TcrEndpoint* ep) {
 
 void ThinClientPoolDM::startBackgroundThreads() {
   LOGDEBUG("ThinClientPoolDM::startBackgroundThreads: Starting ping thread");
-  m_pingTask = new GF_TASK_T<ThinClientPoolDM>(
-      this, &ThinClientPoolDM::pingServer, NC_Ping_Thread);
+  m_pingTask = new Task<ThinClientPoolDM>(this, &ThinClientPoolDM::pingServer,
+                                          NC_Ping_Thread);
   m_pingTask->start();
 
   SystemProperties* props = DistributedSystem::getSystemProperties();
 
   if (props->onClientDisconnectClearPdxTypeIds() == true) {
     m_cliCallbackTask =
-        new GF_TASK_T<ThinClientPoolDM>(this, &ThinClientPoolDM::cliCallback);
+        new Task<ThinClientPoolDM>(this, &ThinClientPoolDM::cliCallback);
     m_cliCallbackTask->start();
   }
 
@@ -288,8 +288,8 @@ void ThinClientPoolDM::startBackgroundThreads() {
   long updateLocatorListInterval = getUpdateLocatorListInterval();
 
   if (updateLocatorListInterval > 0) {
-    m_updateLocatorListTask = new GF_TASK_T<ThinClientPoolDM>(
-        this, &ThinClientPoolDM::updateLocatorList);
+    m_updateLocatorListTask =
+        new Task<ThinClientPoolDM>(this, &ThinClientPoolDM::updateLocatorList);
     m_updateLocatorListTask->start();
 
     updateLocatorListInterval = updateLocatorListInterval / 1000;  // seconds
@@ -313,7 +313,7 @@ void ThinClientPoolDM::startBackgroundThreads() {
       "ThinClientPoolDM::startBackgroundThreads: Starting manageConnections "
       "thread");
   // Manage Connection Thread
-  m_connManageTask = new GF_TASK_T<ThinClientPoolDM>(
+  m_connManageTask = new Task<ThinClientPoolDM>(
       this, &ThinClientPoolDM::manageConnections, NC_MC_Thread);
   m_connManageTask->start();
 

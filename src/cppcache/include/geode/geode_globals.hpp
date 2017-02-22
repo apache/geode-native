@@ -114,7 +114,7 @@
 #endif
 #endif
 
-#include "gf_base.hpp"
+#include "geode_base.hpp"
 
 namespace apache {
 namespace geode {

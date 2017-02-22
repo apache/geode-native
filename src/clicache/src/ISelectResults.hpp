@@ -17,10 +17,10 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/SelectResults.hpp>
 //#include "impl/NativeWrapper.hpp"
-#include "IGFSerializable.hpp"
+#include "IGeodeSerializable.hpp"
 
 using namespace System;
 
@@ -39,7 +39,7 @@ namespace Apache
       /// </summary>
       generic<class TResult>
       public interface class ISelectResults
-        : public System::Collections::Generic::IEnumerable</*IGFSerializable^*/TResult>
+        : public System::Collections::Generic::IEnumerable</*IGeodeSerializable^*/TResult>
       {
       public:
 
@@ -62,9 +62,9 @@ namespace Apache
         /// <summary>
         /// Get an object at the given index.
         /// </summary>
-        property /*Apache::Geode::Client::IGFSerializable^*/TResult GFINDEXER( size_t )
+        property /*Apache::Geode::Client::IGeodeSerializable^*/TResult GFINDEXER( size_t )
         {
-          /*Apache::Geode::Client::IGFSerializable^*/TResult get( size_t index );
+          /*Apache::Geode::Client::IGeodeSerializable^*/TResult get( size_t index );
         }
 
         /// <summary>

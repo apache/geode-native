@@ -191,7 +191,7 @@ class ThinClientBaseDM {
   bool m_clientNotification;
 
   Queue<TcrChunkedContext> m_chunks;
-  GF_TASK_T<ThinClientBaseDM>* m_chunkProcessor;
+  Task<ThinClientBaseDM>* m_chunkProcessor;
 
  private:
   static volatile bool s_isDeltaEnabledOnServer;

@@ -113,7 +113,7 @@ void TcrConnectionManager::init(bool isPool) {
       GfErrTypeToException("TcrConnectionManager::init", err);
     }
 
-    m_redundancyTask = new GF_TASK_T<TcrConnectionManager>(
+    m_redundancyTask = new Task<TcrConnectionManager>(
         this, &TcrConnectionManager::redundancy, NC_Redundancy);
     m_redundancyTask->start();
 
@@ -129,7 +129,7 @@ void TcrConnectionManager::startFailoverAndCleanupThreads(bool isPool) {
   if (m_failoverTask == NULL || m_cleanupTask == NULL) {
     ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_distMngrsLock);
     if (m_failoverTask == NULL && !isPool) {
-      m_failoverTask = new GF_TASK_T<TcrConnectionManager>(
+      m_failoverTask = new Task<TcrConnectionManager>(
           this, &TcrConnectionManager::failover, NC_Failover);
       m_failoverTask->start();
     }
@@ -137,7 +137,7 @@ void TcrConnectionManager::startFailoverAndCleanupThreads(bool isPool) {
       if (m_redundancyManager->m_HAenabled && !isPool) {
         m_redundancyManager->startPeriodicAck();
       }
-      m_cleanupTask = new GF_TASK_T<TcrConnectionManager>(
+      m_cleanupTask = new Task<TcrConnectionManager>(
           this, &TcrConnectionManager::cleanup, NC_CleanUp);
       m_cleanupTask->start();
     }
@@ -517,7 +517,7 @@ int TcrConnectionManager::redundancy(volatile bool &isRunning) {
 }
 
 void TcrConnectionManager::addNotificationForDeletion(
-    GF_TASK_T<TcrEndpoint> *notifyReceiver, TcrConnection *notifyConnection,
+    Task<TcrEndpoint> *notifyReceiver, TcrConnection *notifyConnection,
     ACE_Semaphore &notifyCleanupSema) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notificationLock);
   m_connectionReleaseList.put(notifyConnection);
@@ -551,7 +551,7 @@ int TcrConnectionManager::cleanup(volatile bool &isRunning) {
 }
 
 void TcrConnectionManager::cleanNotificationLists() {
-  GF_TASK_T<TcrEndpoint> *notifyReceiver;
+  Task<TcrEndpoint> *notifyReceiver;
   TcrConnection *notifyConnection;
   ACE_Semaphore *notifyCleanupSema;
 

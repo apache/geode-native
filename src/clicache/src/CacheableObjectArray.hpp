@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include "IGFSerializable.hpp"
+#include "geode_defs.hpp"
+#include "IGeodeSerializable.hpp"
 #include "GeodeClassIds.hpp"
 
 
@@ -33,13 +33,13 @@ namespace Apache
     {
 
       /// <summary>
-      /// A mutable <c>IGFSerializable</c> object array wrapper that can serve
+      /// A mutable <c>IGeodeSerializable</c> object array wrapper that can serve
       /// as a distributable object for caching. Though this class provides
       /// compatibility with java Object[] serialization, it provides the
       /// semantics of .NET generic <c>List</c> class.
       /// </summary>
       public ref class CacheableObjectArray
-        : public List<Object^>, public IGFSerializable
+        : public List<Object^>, public IGeodeSerializable
       {
       public:
         /// <summary>
@@ -95,7 +95,7 @@ namespace Apache
           return gcnew CacheableObjectArray(capacity);
         }
 
-        // Region: IGFSerializable Members
+        // Region: IGeodeSerializable Members
 
         /// <summary>
         /// Serializes this object.
@@ -113,7 +113,7 @@ namespace Apache
         /// the DataInput stream to use for reading the object data
         /// </param>
         /// <returns>the deserialized object</returns>
-        virtual IGFSerializable^ FromData(DataInput^ input);
+        virtual IGeodeSerializable^ FromData(DataInput^ input);
 
         /// <summary>
         /// return the size of this object in bytes
@@ -137,12 +137,12 @@ namespace Apache
           }
         }
 
-        // End Region: IGFSerializable Members
+        // End Region: IGeodeSerializable Members
 
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGFSerializable^ CreateDeserializable()
+        static IGeodeSerializable^ CreateDeserializable()
         {
           return gcnew CacheableObjectArray();
         }

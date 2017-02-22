@@ -19,7 +19,7 @@
 
 // These definitions are to help parsing by Doxygen.
 
-/// @file gf_defs.hpp
+/// @file geode_defs.hpp
 /// API documentation helper file for the Doxygen source-comment-extraction tool.
 
 #define STATICCLASS abstract sealed
@@ -50,7 +50,7 @@
 /// @namespace Apache::Geode::Client::Template
 /// This namespace contains internal Geode .NET template classes.
 
-/// @file gf_includes.hpp
+/// @file geode_includes.hpp
 /// Provides a commonly-used set of include directives.
 
 /// @file AttributesFactory.hpp
@@ -190,8 +190,8 @@
 /// @file ICacheWriter.hpp
 /// Declares the ICacheWriter interface.
 
-/// @file IGFSerializable.hpp
-/// Declares the IGFSerializable interface.
+/// @file IGeodeSerializable.hpp
+/// Declares the IGeodeSerializable interface.
 
 /// @file ISelectResults.hpp
 /// Declares the ISelectResults interface.

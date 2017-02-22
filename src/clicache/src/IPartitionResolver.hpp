@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 //#include "ICacheableKey.hpp"
 
 #include "EntryEvent.hpp"
@@ -29,7 +29,7 @@ namespace Apache
     namespace Client
     {
 
-      interface class IGFSerializable;
+      interface class IGeodeSerializable;
 
 
       /// <summary>

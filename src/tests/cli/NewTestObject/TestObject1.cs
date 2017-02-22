@@ -21,7 +21,7 @@ namespace Apache.Geode.Client.Tests
 {
   using Apache.Geode.Client;
   public class TestObject1
-    : IGFSerializable
+    : IGeodeSerializable
   {
     private string name;
     private byte[] arr;
@@ -52,7 +52,7 @@ namespace Apache.Geode.Client.Tests
         return 0x1F;
       }
     }
-    public IGFSerializable FromData(DataInput input)
+    public IGeodeSerializable FromData(DataInput input)
     {
       arr = input.ReadBytes();
       name = (string)input.ReadObject();
@@ -66,7 +66,7 @@ namespace Apache.Geode.Client.Tests
       output.WriteInt32(identifire);
     }
 
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new TestObject1();
     }

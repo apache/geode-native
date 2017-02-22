@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/ExpirationAction.hpp>
 
 

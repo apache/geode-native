@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "../../../../gf_includes.hpp"
+//#include "../../../../geode_includes.hpp"
 #include "ManagedVisitor.hpp"
 #include "SafeConvert.hpp"
 #include "../ExceptionTypes.hpp"
@@ -35,9 +35,9 @@ namespace apache
         using namespace Apache::Geode::Client;
         try {
           ICacheableKey^ mg_key(SafeGenericUMKeyConvert<ICacheableKey^>(key.ptr()));
-          IGFSerializable^ mg_value(SafeUMSerializableConvertGeneric(value.ptr()));
+          IGeodeSerializable^ mg_value(SafeUMSerializableConvertGeneric(value.ptr()));
 
-          m_visitor->Invoke(mg_key, (Apache::Geode::Client::IGFSerializable^)mg_value);
+          m_visitor->Invoke(mg_key, (Apache::Geode::Client::IGeodeSerializable^)mg_value);
         }
         catch (GeodeException^ ex) {
           ex->ThrowNative();

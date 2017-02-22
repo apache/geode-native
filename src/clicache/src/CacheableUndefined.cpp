@@ -17,7 +17,7 @@
 
 
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "CacheableUndefined.hpp"
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
@@ -32,13 +32,13 @@ namespace Apache
     namespace Client
     {
 
-      // Region: IGFSerializable Members
+      // Region: IGeodeSerializable Members
 
       void CacheableUndefined::ToData(DataOutput^ output)
       {
       }
 
-      IGFSerializable^ CacheableUndefined::FromData(DataInput^ input)
+      IGeodeSerializable^ CacheableUndefined::FromData(DataInput^ input)
       {
         return this;
       }

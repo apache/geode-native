@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include "CacheableHashMap.hpp"
 
 
@@ -32,7 +32,7 @@ namespace Apache
     {
 
       /// <summary>
-      /// A mutable <c>ICacheableKey</c> to <c>IGFSerializable</c> hash map
+      /// A mutable <c>ICacheableKey</c> to <c>IGeodeSerializable</c> hash map
       /// that can serve as a distributable object for caching. This class
       /// extends .NET generic <c>Dictionary</c> class. This class is meant
       /// as a means to interoperate with java server side
@@ -96,7 +96,7 @@ namespace Apache
           return gcnew CacheableIdentityHashMap(capacity);
         }
 
-        // Region: IGFSerializable Members
+        // Region: IGeodeSerializable Members
 
         /// <summary>
         /// Returns the classId of the instance being serialized.
@@ -112,12 +112,12 @@ namespace Apache
           }
         }
 
-        // End Region: IGFSerializable Members
+        // End Region: IGeodeSerializable Members
 
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGFSerializable^ CreateDeserializable()
+        static IGeodeSerializable^ CreateDeserializable()
         {
           return gcnew CacheableIdentityHashMap();
         }

@@ -19,7 +19,7 @@
 
 
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/CacheableString.hpp>
 #include "impl/ManagedString.hpp"
 #include "CacheableKey.hpp"
@@ -87,13 +87,13 @@ namespace Apache
 
         /// <summary>
         /// Deserializes the managed object -- returns an instance of the
-        /// <c>IGFSerializable</c> class.
+        /// <c>IGeodeSerializable</c> class.
         /// </summary>
         /// <param name="input">
         /// the DataInput stream to use for reading the object data
         /// </param>
         /// <returns>the deserialized object</returns>
-        virtual IGFSerializable^ FromData(DataInput^ input) override;
+        virtual IGeodeSerializable^ FromData(DataInput^ input) override;
 
         // <summary>
         /// Returns the classId of the instance being serialized.
@@ -217,29 +217,29 @@ namespace Apache
         }
 
       internal:
-        static IGFSerializable^ CreateDeserializable()
+        static IGeodeSerializable^ CreateDeserializable()
         {
           return gcnew CacheableString(GeodeClassIds::CacheableASCIIString);
         }
 
-        static IGFSerializable^ createDeserializableHuge()
+        static IGeodeSerializable^ createDeserializableHuge()
         {
           return gcnew CacheableString(GeodeClassIds::CacheableASCIIStringHuge);
         }
 
-        static IGFSerializable^ createUTFDeserializable()
+        static IGeodeSerializable^ createUTFDeserializable()
         {
           return gcnew CacheableString(GeodeClassIds::CacheableString);
         }
 
-        static IGFSerializable^ createUTFDeserializableHuge()
+        static IGeodeSerializable^ createUTFDeserializableHuge()
         {
           return gcnew CacheableString(GeodeClassIds::CacheableStringHuge);
         }
         /// <summary>
         /// Factory function to register wrapper
         /// </summary>
-        static IGFSerializable^ Create(apache::geode::client::Serializable* obj)
+        static IGeodeSerializable^ Create(apache::geode::client::Serializable* obj)
         {
           return (obj != nullptr ?
                   gcnew CacheableString(obj) : nullptr);

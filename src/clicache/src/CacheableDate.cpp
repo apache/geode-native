@@ -18,7 +18,7 @@
 
 
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "CacheableDate.hpp"
 #include "DataInput.hpp"
 #include "DataOutput.hpp"
@@ -57,7 +57,7 @@ namespace Apache
         //Log::Fine("CacheableDate::Todata time " + m_dateTime.Ticks);
       }
 
-      IGFSerializable^ CacheableDate::FromData(DataInput^ input)
+      IGeodeSerializable^ CacheableDate::FromData(DataInput^ input)
       {
         DateTime epochTime = EpochTime;
         int64_t millisSinceEpoch = input->ReadInt64();

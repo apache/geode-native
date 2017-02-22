@@ -26,7 +26,7 @@
  *      Author: ankurs
  */
 
-#include <geode/gf_types.hpp>
+#include <geode/geode_types.hpp>
 
 using namespace apache::geode::client;
 

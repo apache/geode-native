@@ -52,7 +52,7 @@ namespace Apache.Geode.Client.Tests
         return 24;
       }
     }
-    public override IGFSerializable FromData(DataInput input)
+    public override IGeodeSerializable FromData(DataInput input)
     {
       assetId = input.ReadInt32();
       value = input.ReadDouble();
@@ -64,7 +64,7 @@ namespace Apache.Geode.Client.Tests
       output.WriteDouble(value);
     }
 
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new FastAsset();
     }

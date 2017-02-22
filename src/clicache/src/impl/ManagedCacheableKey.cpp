@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "../gf_includes.hpp"
+//#include "../geode_includes.hpp"
 #include "../ICacheableKey.hpp"
 #include "ManagedCacheableKey.hpp"
 #include "../DataInput.hpp"
@@ -172,7 +172,7 @@ namespace apache
             dynamic_cast<const ManagedCacheableKeyGeneric*>(&other);
           if (p_other != NULL) {
             return static_cast<Apache::Geode::Client::ICacheableKey^>(
-              (static_cast<Apache::Geode::Client::IGFSerializable^>((Apache::Geode::Client::IGFSerializable^)m_managedptr)))->Equals(
+              (static_cast<Apache::Geode::Client::IGeodeSerializable^>((Apache::Geode::Client::IGeodeSerializable^)m_managedptr)))->Equals(
               static_cast<Apache::Geode::Client::ICacheableKey^>(p_other->ptr()));
           }
           return false;
@@ -190,7 +190,7 @@ namespace apache
       {
         try {
           return static_cast<Apache::Geode::Client::ICacheableKey^>(
-            (Apache::Geode::Client::IGFSerializable^)(Apache::Geode::Client::IGFSerializable^)m_managedptr)->Equals(
+            (Apache::Geode::Client::IGeodeSerializable^)(Apache::Geode::Client::IGeodeSerializable^)m_managedptr)->Equals(
             static_cast<Apache::Geode::Client::ICacheableKey^>(other.ptr()));
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
@@ -210,7 +210,7 @@ namespace apache
 
           ManagedCacheableKeyGeneric* tmp = const_cast<ManagedCacheableKeyGeneric*>(this);
           tmp->m_hashcode = ((Apache::Geode::Client::ICacheableKey^)
-                             (Apache::Geode::Client::IGFSerializable^)m_managedptr)
+                             (Apache::Geode::Client::IGeodeSerializable^)m_managedptr)
                              ->GetHashCode();
           return m_hashcode;
         }

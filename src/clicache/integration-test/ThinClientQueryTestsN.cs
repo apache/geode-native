@@ -1471,9 +1471,9 @@ namespace Apache.Geode.Client.UnitTests
     //  if (map1.Count != map2.Count)
     //    Assert.Fail("Number of Keys dont match");
     //  if (map1.Count == 0) return;
-    //  foreach (KeyValuePair<ICacheableKey, IGFSerializable> entry in map1)
+    //  foreach (KeyValuePair<ICacheableKey, IGeodeSerializable> entry in map1)
     //  {
-    //    IGFSerializable value;
+    //    IGeodeSerializable value;
     //    if (!(map2.TryGetValue(entry.Key,out value)))
     //    {
     //      Assert.Fail("Key was not found");

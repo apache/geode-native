@@ -1236,7 +1236,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGFSInGet)
   {
     try {
       Serializable::registerType(
-          PdxTestsAuto::PdxInsideIGFSerializable::createDeserializable);
+          PdxTestsAuto::PdxInsideIGeodeSerializable::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1302,19 +1302,20 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGFSInGet)
     }
 
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxTestsAuto::PdxInsideIGFSerializablePtr np(
-        new PdxTestsAuto::PdxInsideIGFSerializable());
+    PdxTestsAuto::PdxInsideIGeodeSerializablePtr np(
+        new PdxTestsAuto::PdxInsideIGeodeSerializable());
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
     regPtr0->put(keyport, np);
 
     // GET
-    PdxTestsAuto::PdxInsideIGFSerializablePtr pRet =
-        dynCast<PdxTestsAuto::PdxInsideIGFSerializablePtr>(
+    PdxTestsAuto::PdxInsideIGeodeSerializablePtr pRet =
+        dynCast<PdxTestsAuto::PdxInsideIGeodeSerializablePtr>(
             regPtr0->get(keyport));
-    ASSERT(pRet->equals(np) == true,
-           "TASK PutAndVerifyPdxInIGFSInGet: PdxInsideIGFSerializable objects "
-           "should be equal");
+    ASSERT(
+        pRet->equals(np) == true,
+        "TASK PutAndVerifyPdxInIGFSInGet: PdxInsideIGeodeSerializable objects "
+        "should be equal");
   }
 END_TASK_DEFINITION
 
@@ -1322,7 +1323,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyPdxInGFSGetOnly)
   {
     try {
       Serializable::registerType(
-          PdxTestsAuto::PdxInsideIGFSerializable::createDeserializable);
+          PdxTestsAuto::PdxInsideIGeodeSerializable::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1388,18 +1389,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyPdxInGFSGetOnly)
     }
 
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxTestsAuto::PdxInsideIGFSerializablePtr orig(
-        new PdxTestsAuto::PdxInsideIGFSerializable());
+    PdxTestsAuto::PdxInsideIGeodeSerializablePtr orig(
+        new PdxTestsAuto::PdxInsideIGeodeSerializable());
 
     // GET
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxTestsAuto::PdxInsideIGFSerializablePtr pRet =
-        dynCast<PdxTestsAuto::PdxInsideIGFSerializablePtr>(
+    PdxTestsAuto::PdxInsideIGeodeSerializablePtr pRet =
+        dynCast<PdxTestsAuto::PdxInsideIGeodeSerializablePtr>(
             regPtr0->get(keyport));
-    ASSERT(
-        pRet->equals(orig) == true,
-        "TASK:VerifyPdxInIGFSGetOnly, PdxInsideIGFSerializable objects should "
-        "be equal");
+    ASSERT(pRet->equals(orig) == true,
+           "TASK:VerifyPdxInIGFSGetOnly, PdxInsideIGeodeSerializable objects "
+           "should "
+           "be equal");
   }
 END_TASK_DEFINITION
 

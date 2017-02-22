@@ -17,7 +17,7 @@
 #ifdef CSTX_COMMENTED
 #pragma once
 
-#include "../gf_defs.hpp"
+#include "../geode_defs.hpp"
 #include <vcclr.h>
 #include <cppcache/TransactionListener.hpp>
 #include "../ITransactionListener.hpp"

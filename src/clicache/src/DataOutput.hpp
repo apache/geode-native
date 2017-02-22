@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/DataOutput.hpp>
 //#include "impl/NativeWrapper.hpp"
 #include "Log.hpp"
@@ -40,11 +40,11 @@ namespace Apache
     namespace Client
     {
 
-      interface class IGFSerializable;
+      interface class IGeodeSerializable;
 
       /// <summary>
       /// Provides operations for writing primitive data values, and
-      /// user-defined objects implementing IGFSerializable, to a byte stream.
+      /// user-defined objects implementing IGeodeSerializable, to a byte stream.
       /// This class is intentionally not thread safe.
       /// </summary>
       public ref class DataOutput sealed
@@ -231,16 +231,16 @@ namespace Apache
         void WriteASCIIHuge( String^ value );
 
         /// <summary>
-        /// Write an <c>IGFSerializable</c> object to the <c>DataOutput</c>.
+        /// Write an <c>IGeodeSerializable</c> object to the <c>DataOutput</c>.
         /// </summary>
         /// <param name="obj">The object to write.</param>
-       // void WriteObject( IGFSerializable^ obj );
+       // void WriteObject( IGeodeSerializable^ obj );
 
         /// <summary>
         /// Write a <c>Serializable</c> object to the <c>DataOutput</c>.
         /// This is provided to conveniently pass primitive types (like string)
         /// that shall be implicitly converted to corresponding
-        /// <c>IGFSerializable</c> wrapper types.
+        /// <c>IGeodeSerializable</c> wrapper types.
         /// </summary>
         /// <param name="obj">The object to write.</param>
         void WriteObject( Object^ obj );
@@ -485,7 +485,7 @@ namespace Apache
         
         static int8_t DSFID(uint32_t classId);        
   
-        void WriteObjectInternal( IGFSerializable^ obj );     
+        void WriteObjectInternal( IGeodeSerializable^ obj );     
 
         void WriteBytesToUMDataOutput();
         

@@ -21,7 +21,7 @@ namespace Apache.Geode.Client.Tests
 {
   using Apache.Geode.Client;
   public class DeltaPSTObject
-    : IGFSerializable, IGFDelta
+    : IGeodeSerializable, IGeodeDelta
   {
     private long timestamp;
     private Int32 field1;
@@ -65,7 +65,7 @@ namespace Apache.Geode.Client.Tests
         return 42;
       }
     }
-    public IGFSerializable FromData(DataInput input)
+    public IGeodeSerializable FromData(DataInput input)
     {
       timestamp = input.ReadInt64();
       field1 = input.ReadInt32();
@@ -113,7 +113,7 @@ namespace Apache.Geode.Client.Tests
     {
       return new DeltaPSTObject();
     }
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new DeltaPSTObject();
     }

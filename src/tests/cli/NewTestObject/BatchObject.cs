@@ -63,7 +63,7 @@ namespace Apache.Geode.Client.Tests
       DateTime startTime = DateTime.Now;
       timestamp = startTime.Ticks * (1000000 / TimeSpan.TicksPerMillisecond);
     }
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new BatchObject();
     }
@@ -75,7 +75,7 @@ namespace Apache.Geode.Client.Tests
       batch = anIndex/batchSize;
       byteArray = new byte[size];
     }
-    public override IGFSerializable FromData(DataInput input)
+    public override IGeodeSerializable FromData(DataInput input)
     {
       index = input.ReadInt32();
       timestamp = input.ReadInt64();

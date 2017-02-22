@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include "IRegion.hpp"
 #include "IPdxUnreadFields.hpp"
 namespace Apache

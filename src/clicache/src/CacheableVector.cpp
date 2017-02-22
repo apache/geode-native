@@ -17,7 +17,7 @@
 
 
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "CacheableVector.hpp"
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
@@ -34,7 +34,7 @@ namespace Apache
     namespace Client
     {
 
-      // Region: IGFSerializable Members
+      // Region: IGeodeSerializable Members
 
       void CacheableVector::ToData(DataOutput^ output)
       {
@@ -50,7 +50,7 @@ namespace Apache
           output->WriteByte(0xFF);
       }
 
-      IGFSerializable^ CacheableVector::FromData(DataInput^ input)
+      IGeodeSerializable^ CacheableVector::FromData(DataInput^ input)
       {
         int len = input->ReadArrayLen();
         for( int i = 0; i < len; i++)
@@ -64,7 +64,7 @@ namespace Apache
       { 
         //TODO::
         /*uint32_t size = static_cast<uint32_t> (sizeof(CacheableVector^));
-        for each (IGFSerializable^ val in this) {
+        for each (IGeodeSerializable^ val in this) {
           if (val != nullptr) {
             size += val->ObjectSize;
           }

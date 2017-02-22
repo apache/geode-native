@@ -22,7 +22,7 @@ namespace Apache.Geode.Client.Tests
 {
   using Apache.Geode.Client;
   public class DeltaFastAssetAccount
-    : IGFSerializable, IGFDelta
+    : IGeodeSerializable, IGeodeDelta
   {
     private bool encodeTimestamp;
     private Int32 acctId;
@@ -73,7 +73,7 @@ namespace Apache.Geode.Client.Tests
         return 41;
       }
     }
-    public IGFSerializable FromData(DataInput input)
+    public IGeodeSerializable FromData(DataInput input)
     {
       acctId = input.ReadInt32();
       customerName = input.ReadUTF();
@@ -191,7 +191,7 @@ namespace Apache.Geode.Client.Tests
       }
       return clonePtr;
     }
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new DeltaFastAssetAccount();
     }

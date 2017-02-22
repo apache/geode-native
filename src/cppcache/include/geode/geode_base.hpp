@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef GEODE_GF_BASE_H_
-#define GEODE_GF_BASE_H_
+#ifndef GEODE_BASE_H_
+#define GEODE_BASE_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -355,4 +355,4 @@ void operator delete[](void *p);
     x = NULL;                   \
   }
 
-#endif  // GEODE_GF_BASE_H_
+#endif  // GEODE_BASE_H_

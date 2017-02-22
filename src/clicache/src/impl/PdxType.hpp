@@ -35,7 +35,7 @@ namespace Apache
       ref class DataInput;
       namespace Internal
       {
-        public ref class PdxType : public IGFSerializable
+        public ref class PdxType : public IGeodeSerializable
         {
         private:
           Object^                 m_lockObj;
@@ -110,7 +110,7 @@ namespace Apache
             m_geodeTypeId = 0;
           }
 
-          static IGFSerializable^ CreateDeserializable()
+          static IGeodeSerializable^ CreateDeserializable()
           {
             return gcnew PdxType();
           }
@@ -171,7 +171,7 @@ namespace Apache
             void set(bool val) { m_isLocal = val; }
           }
           virtual void ToData(DataOutput^ output);
-          virtual IGFSerializable^ FromData(DataInput^ input);
+          virtual IGeodeSerializable^ FromData(DataInput^ input);
           virtual property uint32_t ObjectSize
           {
             uint32_t get(){ return 0; }

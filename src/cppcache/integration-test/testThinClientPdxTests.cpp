@@ -1508,7 +1508,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGFSInGet)
   {
     try {
       Serializable::registerType(
-          PdxInsideIGFSerializable::createDeserializable);
+          PdxInsideIGeodeSerializable::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1565,17 +1565,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGFSInGet)
     }
 
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxInsideIGFSerializablePtr np(new PdxInsideIGFSerializable());
+    PdxInsideIGeodeSerializablePtr np(new PdxInsideIGeodeSerializable());
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
     regPtr0->put(keyport, np);
 
     // GET
-    PdxInsideIGFSerializablePtr pRet =
-        dynCast<PdxInsideIGFSerializablePtr>(regPtr0->get(keyport));
-    ASSERT(pRet->equals(np) == true,
-           "TASK PutAndVerifyPdxInIGFSInGet: PdxInsideIGFSerializable objects "
-           "should be equal");
+    PdxInsideIGeodeSerializablePtr pRet =
+        dynCast<PdxInsideIGeodeSerializablePtr>(regPtr0->get(keyport));
+    ASSERT(
+        pRet->equals(np) == true,
+        "TASK PutAndVerifyPdxInIGFSInGet: PdxInsideIGeodeSerializable objects "
+        "should be equal");
   }
 END_TASK_DEFINITION
 
@@ -1583,7 +1584,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyPdxInGFSGetOnly)
   {
     try {
       Serializable::registerType(
-          PdxInsideIGFSerializable::createDeserializable);
+          PdxInsideIGeodeSerializable::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1640,16 +1641,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyPdxInGFSGetOnly)
     }
 
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxInsideIGFSerializablePtr orig(new PdxInsideIGFSerializable());
+    PdxInsideIGeodeSerializablePtr orig(new PdxInsideIGeodeSerializable());
 
     // GET
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxInsideIGFSerializablePtr pRet =
-        dynCast<PdxInsideIGFSerializablePtr>(regPtr0->get(keyport));
-    ASSERT(
-        pRet->equals(orig) == true,
-        "TASK:VerifyPdxInIGFSGetOnly, PdxInsideIGFSerializable objects should "
-        "be equal");
+    PdxInsideIGeodeSerializablePtr pRet =
+        dynCast<PdxInsideIGeodeSerializablePtr>(regPtr0->get(keyport));
+    ASSERT(pRet->equals(orig) == true,
+           "TASK:VerifyPdxInIGFSGetOnly, PdxInsideIGeodeSerializable objects "
+           "should "
+           "be equal");
   }
 END_TASK_DEFINITION
 

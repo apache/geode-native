@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include "gf_base.hpp"
+#include "geode_base.hpp"
 #include "SharedBase.hpp"
 
 namespace apache {

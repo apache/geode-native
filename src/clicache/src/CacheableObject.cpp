@@ -16,13 +16,13 @@
  */
 
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "CacheableObject.hpp"
 #include "DataInput.hpp"
 #include "DataOutput.hpp"
-#include "impl/GFNullStream.hpp"
-#include "impl/GFDataInputStream.hpp"
-#include "impl/GFDataOutputStream.hpp"
+#include "impl/GeodeNullStream.hpp"
+#include "impl/GeodeDataInputStream.hpp"
+#include "impl/GeodeDataOutputStream.hpp"
 
 using namespace System;
 using namespace System::IO;
@@ -41,7 +41,7 @@ namespace Apache
         {
           output->AdvanceCursor(4); // placeholder for object size bytes needed while reading back.
 
-          GFDataOutputStream dos(output);
+          GeodeDataOutputStream dos(output);
           BinaryFormatter bf;
           int64_t checkpoint = dos.Length;
           bf.Serialize(%dos, m_obj);
@@ -53,10 +53,10 @@ namespace Apache
         }
       }
 
-      IGFSerializable^ CacheableObject::FromData(DataInput^ input)
+      IGeodeSerializable^ CacheableObject::FromData(DataInput^ input)
       {
         int maxSize = input->ReadInt32();
-        GFDataInputStream dis(input, maxSize);
+        GeodeDataInputStream dis(input, maxSize);
         uint32_t checkpoint = dis.BytesRead;
         BinaryFormatter bf;
         m_obj = bf.Deserialize(%dis);
@@ -67,7 +67,7 @@ namespace Apache
       uint32_t CacheableObject::ObjectSize::get()
       { 
         if (m_objectSize == 0) {
-          GFNullStream ns;
+          GeodeNullStream ns;
           BinaryFormatter bf;
           bf.Serialize(%ns, m_obj);
 

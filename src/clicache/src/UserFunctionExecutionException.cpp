@@ -28,14 +28,14 @@ namespace Apache
     namespace Client
     {
 
-        // IGFSerializable methods
+        // IGeodeSerializable methods
 
         void UserFunctionExecutionException::ToData( DataOutput^ output )
         {
           throw gcnew IllegalStateException("UserFunctionExecutionException::ToData is not intended for use.");
         }
 
-        IGFSerializable^ UserFunctionExecutionException::FromData( DataInput^ input )
+        IGeodeSerializable^ UserFunctionExecutionException::FromData( DataInput^ input )
         {
           throw gcnew IllegalStateException("UserFunctionExecutionException::FromData is not intended for use.");
           return this;

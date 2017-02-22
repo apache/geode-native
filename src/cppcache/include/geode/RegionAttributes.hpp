@@ -25,7 +25,7 @@
  */
 
 #include "geode_globals.hpp"
-#include "gf_types.hpp"
+#include "geode_types.hpp"
 #include "CacheLoader.hpp"
 #include "ExpirationAttributes.hpp"
 #include "CacheWriter.hpp"

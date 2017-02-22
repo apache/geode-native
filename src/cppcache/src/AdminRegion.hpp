@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/gf_types.hpp>
+#include <geode/geode_types.hpp>
 #include "ThinClientCacheDistributionManager.hpp"
 #include "ReadWriteLock.hpp"
 #include <geode/Serializable.hpp>

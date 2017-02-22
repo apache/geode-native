@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/gf_base.hpp>
+#include <geode/geode_base.hpp>
 #include "ace/ACE.h"
 #include "ace/OS.h"
 #include <ace/INET_Addr.h>
@@ -30,9 +30,9 @@
 #include <ace/OS.h>
 #include <ace/Recursive_Thread_Mutex.h>
 #include "ace/Time_Value.h"
-#include "GFSsl.hpp"
+#include "Ssl.hpp"
 
-class SSLImpl : public GFSsl {
+class SSLImpl : public apache::geode::client::Ssl {
  private:
   ACE_SSL_SOCK_Stream* m_io;
   static ACE_Recursive_Thread_Mutex s_mutex;

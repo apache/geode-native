@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef GEODE_GF_TASK_T_H_
-#define GEODE_GF_TASK_T_H_
+#ifndef GEODE_Task_H_
+#define GEODE_Task_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -21,7 +21,7 @@
  */
 
 /**
-*@file GF_TASK_T.hpp
+*@file Task.hpp
 *@since   1.0
 *@version 1.0
 */
@@ -33,14 +33,14 @@ namespace geode {
 namespace client {
 const char NC_thread[] = "NC thread";
 template <class T>
-class CPPCACHE_EXPORT GF_TASK_T : public ACE_Task_Base {
+class CPPCACHE_EXPORT Task : public ACE_Task_Base {
  public:
   /// Handle timeout events.
   typedef int (T::*OPERATION)(volatile bool& isRunning);
 
   // op_handler is the receiver of the timeout event. timeout is the method to
   // be executed by op_handler_
-  GF_TASK_T(T* op_handler, OPERATION op)
+  Task(T* op_handler, OPERATION op)
       : op_handler_(op_handler),
         m_op(op),
         m_run(false),
@@ -48,10 +48,10 @@ class CPPCACHE_EXPORT GF_TASK_T : public ACE_Task_Base {
 
   // op_handler is the receiver of the timeout event. timeout is the method to
   // be executed by op_handler_
-  GF_TASK_T(T* op_handler, OPERATION op, const char* tn)
+  Task(T* op_handler, OPERATION op, const char* tn)
       : op_handler_(op_handler), m_op(op), m_run(false), m_threadName(tn) {}
 
-  ~GF_TASK_T() {}
+  ~Task() {}
 
   void start() {
     m_run = true;
@@ -83,4 +83,4 @@ class CPPCACHE_EXPORT GF_TASK_T : public ACE_Task_Base {
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_GF_TASK_T_H_
+#endif  // GEODE_Task_H_

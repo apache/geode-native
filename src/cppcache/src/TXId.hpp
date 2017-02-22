@@ -26,7 +26,7 @@
  *      Author: ankurs
  */
 
-#include <geode/gf_types.hpp>
+#include <geode/geode_types.hpp>
 #include <geode/TransactionId.hpp>
 #include <geode/DataOutput.hpp>
 #include "AtomicInc.hpp"

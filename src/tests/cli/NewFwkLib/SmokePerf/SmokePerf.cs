@@ -148,7 +148,7 @@ namespace Apache.Geode.Client.FwkLib
 
     // VJR: added dummy load/close placeholders.
     /*
-    public IGFSerializable Load( Apache.Geode.Client.Region region, ICacheableKey key, IGFSerializable helper)
+    public IGeodeSerializable Load( Apache.Geode.Client.Region region, ICacheableKey key, IGeodeSerializable helper)
     {
       return new CacheableInt32(m_loads++);
     }

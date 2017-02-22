@@ -445,7 +445,7 @@ namespace Apache.Geode.Client.FwkLib
       }
     }
 
-    public static void LogValues(IGFSerializable[] cValues)
+    public static void LogValues(IGeodeSerializable[] cValues)
     {
       if (cValues != null)
       {

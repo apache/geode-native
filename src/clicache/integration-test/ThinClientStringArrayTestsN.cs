@@ -161,7 +161,7 @@ namespace Apache.Geode.Client.UnitTests
 
       while (iter.HasNext)
       {
-        /*IGFSerializable*/ object item = iter.Next();
+        /*IGeodeSerializable*/ object item = iter.Next();
         Portfolio port = item as Portfolio;
         if (port == null)
         {

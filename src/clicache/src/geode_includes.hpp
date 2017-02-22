@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CRYPTOIMPL_GFSSL_H_
-#define GEODE_CRYPTOIMPL_GFSSL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,26 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * GFSsl.hpp
- *
- *  Created on: 28-Apr-2010
- *      Author: ankurs
- */
 
-#include <ace/INET_Addr.h>
-#include <ace/OS.h>
+// geode_includes.hpp : include file for standard system include files,
+// and all project specific include files.
 
-class GFSsl {
- public:
-  virtual ~GFSsl(){};
-  virtual int setOption(int, int, void*, int) = 0;
-  virtual int listen(ACE_INET_Addr, unsigned) = 0;
-  virtual int connect(ACE_INET_Addr, unsigned) = 0;
-  virtual ssize_t recv(void*, size_t, const ACE_Time_Value*, size_t*) = 0;
-  virtual ssize_t send(const void*, size_t, const ACE_Time_Value*, size_t*) = 0;
-  virtual int getLocalAddr(ACE_Addr&) = 0;
-  virtual void close() = 0;
-};
+#pragma once
 
-#endif  // GEODE_CRYPTOIMPL_GFSSL_H_
+//#include "impl/ManagedCacheableKeyGCHandle.hpp"
+#include "impl/SafeConvert.hpp"
+
+#include <string>

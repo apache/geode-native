@@ -24,7 +24,7 @@
  * @file
  */
 #include "geode_globals.hpp"
-#include "gf_types.hpp"
+#include "geode_types.hpp"
 #include "Serializable.hpp"
 #include "DataInput.hpp"
 #include "DataOutput.hpp"

@@ -476,7 +476,7 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
                   m_name.c_str());
           return err;
         }
-        m_notifyReceiver = new GF_TASK_T<TcrEndpoint>(
+        m_notifyReceiver = new Task<TcrEndpoint>(
             this, &TcrEndpoint::receiveNotification, NC_Notification);
         m_notifyReceiver->start();
       }
@@ -1265,7 +1265,7 @@ void TcrEndpoint::stopNotifyReceiverAndCleanup() {
     // m_notifyReceiver->stopNoblock();
     m_notifyReceiver->wait();
     bool found = false;
-    for (std::list<GF_TASK_T<TcrEndpoint>*>::iterator it =
+    for (std::list<Task<TcrEndpoint>*>::iterator it =
              m_notifyReceiverList.begin();
          it != m_notifyReceiverList.end(); it++) {
       if (*it == m_notifyReceiver) {
@@ -1285,7 +1285,7 @@ void TcrEndpoint::stopNotifyReceiverAndCleanup() {
   if (m_notifyReceiverList.size() > 0) {
     LOGFINER("TcrEndpoint::stopNotifyReceiverAndCleanup: notifylist size = %d",
              m_notifyReceiverList.size());
-    for (std::list<GF_TASK_T<TcrEndpoint>*>::iterator it =
+    for (std::list<Task<TcrEndpoint>*>::iterator it =
              m_notifyReceiverList.begin();
          it != m_notifyReceiverList.end(); it++) {
       LOGFINER(

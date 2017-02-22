@@ -18,7 +18,7 @@
 
 
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "CacheableFileName.hpp"
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
@@ -44,7 +44,7 @@ namespace Apache
         }
       }
 
-      IGFSerializable^ CacheableFileName::FromData(DataInput^ input)
+      IGeodeSerializable^ CacheableFileName::FromData(DataInput^ input)
       {
         unsigned char filetype = input->ReadByte();
         if (filetype == apache::geode::client::GeodeTypeIds::CacheableString) {

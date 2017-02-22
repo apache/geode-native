@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "CqQuery.hpp"
 #include "Query.hpp"
 #include "CqAttributes.hpp"

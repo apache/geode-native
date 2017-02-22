@@ -711,12 +711,12 @@ namespace Apache.Geode.Client.FwkLib
             {
               Util.Log("PutAllMap:: key = {0} ", key);
             }
-            foreach (IGFSerializable val in putAllmap.Values)
+            foreach (IGeodeSerializable val in putAllmap.Values)
             {
               Util.Log("PutAllMap:: value = {0} ", val);
             }
             
-            foreach (KeyValuePair<ICacheableKey, IGFSerializable> item in putAllmap)
+            foreach (KeyValuePair<ICacheableKey, IGeodeSerializable> item in putAllmap)
             {
               Util.Log("PutAllMap:: key = {0} value = {1} localcont = {2}", item.Key, item.Value, localcnt);
             }

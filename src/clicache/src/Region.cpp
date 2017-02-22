@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "Region.hpp"
 #include "Cache.hpp"
 #include "CacheStatistics.hpp"
@@ -23,7 +23,7 @@
 #include "AttributesMutator.hpp"
 #include "RegionEntry.hpp"
 #include "ISelectResults.hpp"
-#include "IGFSerializable.hpp"
+#include "IGeodeSerializable.hpp"
 #include "ResultSet.hpp"
 #include "StructSet.hpp"
 #include "impl/AuthenticatedCache.hpp"

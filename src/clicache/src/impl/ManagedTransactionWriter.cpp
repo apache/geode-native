@@ -16,7 +16,7 @@
  */
 
 #ifdef CSTX_COMMENTED
-//#include "../gf_includes.hpp"
+//#include "../geode_includes.hpp"
 #include "ManagedTransactionWriter.hpp"
 //#include "../TransactionEvent.hpp"
 #include "../Log.hpp"

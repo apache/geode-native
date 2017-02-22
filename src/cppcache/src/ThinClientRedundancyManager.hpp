@@ -126,7 +126,7 @@ class ThinClientRedundancyManager {
 
   inline bool isDurable();
   int processEventIdMap(const ACE_Time_Value&, const void*);
-  GF_TASK_T<ThinClientRedundancyManager>* m_periodicAckTask;
+  Task<ThinClientRedundancyManager>* m_periodicAckTask;
   ACE_Semaphore m_periodicAckSema;
   long m_processEventIdMapTaskId;  // periodic check eventid map for notify ack
                                    // and/or expiry

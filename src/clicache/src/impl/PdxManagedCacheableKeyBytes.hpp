@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "../gf_defs.hpp"
+#include "../geode_defs.hpp"
 #include <vcclr.h>
 #include <geode/CacheableKey.hpp>
 #include "../Log.hpp"
@@ -48,7 +48,7 @@ namespace apache
     {
 
   /// <summary>
-  /// Wraps the managed <see cref="Apache.Geode.Client.IGFSerializable" />
+  /// Wraps the managed <see cref="Apache.Geode.Client.IGeodeSerializable" />
   /// object and implements the native <c>apache::geode::client::CacheableKey</c> interface.
   /// </summary>
   class PdxManagedCacheableKeyBytes
@@ -72,7 +72,7 @@ namespace apache
       m_hasDelta = false;
       if(storeBytes)
       {
-        Apache::Geode::Client::IGFDelta^ deltaObj = dynamic_cast<Apache::Geode::Client::IGFDelta^>(managedptr);
+        Apache::Geode::Client::IGeodeDelta^ deltaObj = dynamic_cast<Apache::Geode::Client::IGeodeDelta^>(managedptr);
 
         if(deltaObj != nullptr)
           m_hasDelta = deltaObj->HasDelta();
@@ -214,11 +214,11 @@ namespace apache
     
     /// <summary>
     /// Using gcroot to hold the managed delegate pointer (since it cannot be stored directly).
-    /// Note: not using auto_gcroot since it will result in 'Dispose' of the IGFSerializable
+    /// Note: not using auto_gcroot since it will result in 'Dispose' of the IGeodeSerializable
     /// to be called which is not what is desired when this object is destroyed. Normally this
     /// managed object may be created by the user and will be handled automatically by the GC.
     /// </summary>
-//    gcroot<IGFSerializable^> m_managedptr;
+//    gcroot<IGeodeSerializable^> m_managedptr;
     int m_domainId;
     UInt32 m_classId;
     uint8_t * m_bytes;
