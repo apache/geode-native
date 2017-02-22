@@ -146,7 +146,7 @@ class CPPCACHE_EXPORT SerializationRegistry {
   static int32_t GetEnumValue(SerializablePtr enumInfo);
   static SerializablePtr GetEnum(int32_t val);
 
-  static PdxSerializablePtr getPdxType(char* className);
+  static PdxSerializablePtr getPdxType(const char* className);
 
  private:
   static PoolPtr getPool();
