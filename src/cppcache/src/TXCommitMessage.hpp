@@ -27,7 +27,7 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include <geode/gf_types.hpp>
+#include <geode/geode_types.hpp>
 #include <geode/DataInput.hpp>
 #include "RegionCommit.hpp"
 #include <geode/VectorOfSharedBase.hpp>

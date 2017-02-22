@@ -19,7 +19,7 @@
 
 
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include "ICacheableKey.hpp"
 
 
@@ -59,7 +59,7 @@ namespace Apache
             gcnew CacheableFileName(value) : nullptr);
         }
 
-        // Region: IGFSerializable Members
+        // Region: IGeodeSerializable Members
 
         /// <summary>
         /// Serializes this object.
@@ -77,7 +77,7 @@ namespace Apache
         /// the DataInput stream to use for reading the object data
         /// </param>
         /// <returns>the deserialized object</returns>
-        virtual IGFSerializable^ FromData(DataInput^ input);
+        virtual IGeodeSerializable^ FromData(DataInput^ input);
 
         /// <summary>
         /// return the size of this object in bytes
@@ -107,7 +107,7 @@ namespace Apache
           return m_str;
         }
 
-        // End Region: IGFSerializable Members
+        // End Region: IGeodeSerializable Members
 
         // Region: ICacheableKey Members
 
@@ -143,7 +143,7 @@ namespace Apache
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGFSerializable^ CreateDeserializable()
+        static IGeodeSerializable^ CreateDeserializable()
         {
           return gcnew CacheableFileName((String^)nullptr);
         }

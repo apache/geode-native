@@ -21,7 +21,7 @@ namespace Apache.Geode.Client.Tests
 {
   using Apache.Geode.Client;
   public class TimeStampdObject
-    : IGFSerializable
+    : IGeodeSerializable
   {
 
     public virtual UInt32 ObjectSize
@@ -38,7 +38,7 @@ namespace Apache.Geode.Client.Tests
         return 0;
       }
     }
-    public virtual IGFSerializable FromData(DataInput input)
+    public virtual IGeodeSerializable FromData(DataInput input)
     {
       return this;
     }

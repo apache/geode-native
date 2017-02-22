@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "../gf_defs.hpp"
+#include "../geode_defs.hpp"
 #include <geode/AuthInitialize.hpp>
 #include <vcclr.h>
 #include "../IAuthInitialize.hpp"

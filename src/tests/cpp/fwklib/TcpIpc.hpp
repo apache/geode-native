@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/gf_base.hpp>
+#include <geode/geode_base.hpp>
 #include <ace/SOCK_Stream.h>
 #include <ace/SOCK_Acceptor.h>
 #include <string>

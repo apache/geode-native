@@ -86,7 +86,7 @@
 #include <math.h>
 
 #include "SpinLock.hpp"
-#include <geode/gf_base.hpp>
+#include <geode/geode_base.hpp>
 
 class MTRand {
   // Data

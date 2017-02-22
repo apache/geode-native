@@ -23,7 +23,7 @@
 //#### Warning: DO NOT directly include Region.hpp, include Cache.hpp instead.
 
 #include "geode_globals.hpp"
-#include "gf_types.hpp"
+#include "geode_types.hpp"
 #include "CacheableKey.hpp"
 #include "CacheableString.hpp"
 #include "CacheStatistics.hpp"

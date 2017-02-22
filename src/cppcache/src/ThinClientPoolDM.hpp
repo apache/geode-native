@@ -28,7 +28,7 @@
 #include "RemoteQueryService.hpp"
 #include <set>
 #include <vector>
-#include "GF_TASK_T.hpp"
+#include "Task.hpp"
 #include <ace/Semaphore.h>
 #include "PoolStatistics.hpp"
 #include "FairQueue.hpp"
@@ -405,10 +405,10 @@ class ThinClientPoolDM
 
   // Manage Connection thread
   ACE_Semaphore m_connSema;
-  GF_TASK_T<ThinClientPoolDM>* m_connManageTask;
-  GF_TASK_T<ThinClientPoolDM>* m_pingTask;
-  GF_TASK_T<ThinClientPoolDM>* m_updateLocatorListTask;
-  GF_TASK_T<ThinClientPoolDM>* m_cliCallbackTask;
+  Task<ThinClientPoolDM>* m_connManageTask;
+  Task<ThinClientPoolDM>* m_pingTask;
+  Task<ThinClientPoolDM>* m_updateLocatorListTask;
+  Task<ThinClientPoolDM>* m_cliCallbackTask;
   long m_pingTaskId;
   long m_updateLocatorListTaskId;
   long m_connManageTaskId;
@@ -477,7 +477,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
     m_poolDM = poolDM;
     m_userAttr = userAttr;
 
-    // m_functionExecutionTask = new GF_TASK_T<FunctionExecution>(this,
+    // m_functionExecutionTask = new Task<FunctionExecution>(this,
     //&FunctionExecution::execute);
   }
 

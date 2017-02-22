@@ -17,10 +17,10 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/RegionAttributes.hpp>
 //#include "impl/NativeWrapper.hpp"
-#include "IGFSerializable.hpp"
+#include "IGeodeSerializable.hpp"
 #include "ExpirationAction.hpp"
 #include "DiskPolicyType.hpp"
 #include "GeodeClassIds.hpp"
@@ -68,7 +68,7 @@ namespace Apache
       /// <seealso cref="Region.Attributes" />
       generic <class TKey, class TValue>
       public ref class RegionAttributes sealed
-        : public Client::Internal::SBWrap<apache::geode::client::RegionAttributes>, public IGFSerializable
+        : public Client::Internal::SBWrap<apache::geode::client::RegionAttributes>, public IGeodeSerializable
       {
       public:
 
@@ -444,7 +444,7 @@ namespace Apache
         /// </summary>
         /// <param name="input">the DataInput stream to use for reading data</param>
         /// <returns>the deserialized Properties object</returns>
-        virtual IGFSerializable^ FromData(DataInput^ input);
+        virtual IGeodeSerializable^ FromData(DataInput^ input);
 
         /// <summary>
         /// return the size of this object in bytes
@@ -461,7 +461,7 @@ namespace Apache
         /// Returns the classId of this class for serialization.
         /// </summary>
         /// <returns>classId of the Properties class</returns>
-        /// <seealso cref="../../IGFSerializable.ClassId" />
+        /// <seealso cref="../../IGeodeSerializable.ClassId" />
         virtual property uint32_t ClassId
         {
           inline virtual uint32_t get()

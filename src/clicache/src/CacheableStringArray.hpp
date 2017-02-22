@@ -19,7 +19,7 @@
 
 
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/CacheableBuiltins.hpp>
 #include "Serializable.hpp"
 #include "GeodeClassIds.hpp"
@@ -71,13 +71,13 @@ namespace Apache
 
         /// <summary>
         /// Deserializes the managed object -- returns an instance of the
-        /// <c>IGFSerializable</c> class.
+        /// <c>IGeodeSerializable</c> class.
         /// </summary>
         /// <param name="input">
         /// the DataInput stream to use for reading the object data
         /// </param>
         /// <returns>the deserialized object</returns>
-        virtual IGFSerializable^ FromData(DataInput^ input) override;
+        virtual IGeodeSerializable^ FromData(DataInput^ input) override;
 
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace Apache
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGFSerializable^ CreateDeserializable()
+        static IGeodeSerializable^ CreateDeserializable()
         {
           return gcnew CacheableStringArray();
         }
@@ -152,7 +152,7 @@ namespace Apache
         /// <summary>
         /// Factory function to register wrapper
         /// </summary>
-        static IGFSerializable^ Create(apache::geode::client::Serializable* obj)
+        static IGeodeSerializable^ Create(apache::geode::client::Serializable* obj)
         {
           return (obj != nullptr ?
                   gcnew CacheableStringArray(obj) : nullptr);

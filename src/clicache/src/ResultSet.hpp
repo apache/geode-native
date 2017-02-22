@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/ResultSet.hpp>
 #include "impl/NativeWrapper.hpp"
 #include "ISelectResults.hpp"
@@ -32,7 +32,7 @@ namespace Apache
     namespace Client
     {
 
-      interface class IGFSerializable;
+      interface class IGeodeSerializable;
 
       generic<class TResult>
       ref class SelectResultsIterator;
@@ -66,9 +66,9 @@ namespace Apache
         /// <summary>
         /// Get an object at the given index.
         /// </summary>
-        virtual property /*IGFSerializable^*/TResult GFINDEXER(size_t)
+        virtual property /*IGeodeSerializable^*/TResult GFINDEXER(size_t)
         {
-          virtual /*IGFSerializable^*/TResult get(size_t index);
+          virtual /*IGeodeSerializable^*/TResult get(size_t index);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace Apache
         /// A <c>System.Collections.Generic.IEnumerator</c> that
         /// can be used to iterate through the <c>ResultSet</c>.
         /// </returns>
-        virtual System::Collections::Generic::IEnumerator</*IGFSerializable^*/TResult>^
+        virtual System::Collections::Generic::IEnumerator</*IGeodeSerializable^*/TResult>^
           GetEnumerator();
 
 

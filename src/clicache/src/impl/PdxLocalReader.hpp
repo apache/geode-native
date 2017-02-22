@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "../gf_defs.hpp"
+#include "../geode_defs.hpp"
 #include "../IPdxReader.hpp"
 #include "PdxType.hpp"
 //#include "../DataInput.hpp"

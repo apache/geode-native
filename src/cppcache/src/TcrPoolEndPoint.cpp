@@ -94,7 +94,7 @@ GfErrType TcrPoolEndPoint::registerDM(bool clientNotification, bool isSecondary,
               name().c_str());
       return err;
     }
-    m_notifyReceiver = new GF_TASK_T<TcrEndpoint>(
+    m_notifyReceiver = new Task<TcrEndpoint>(
         this, &TcrEndpoint::receiveNotification, NC_Notification);
     m_notifyReceiver->start();
   }

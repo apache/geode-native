@@ -17,11 +17,11 @@
 
 #pragma once
 
-#include "../gf_defs.hpp"
+#include "../geode_defs.hpp"
 #include <vcclr.h>
 #include <geode/CacheableKey.hpp>
 #include <GeodeTypeIdsImpl.hpp>
-#include "../IGFSerializable.hpp"
+#include "../IGeodeSerializable.hpp"
 
 using namespace System;
 
@@ -33,7 +33,7 @@ namespace apache
     {
 
       /// <summary>
-      /// Wraps the managed <see cref="Apache.Geode.Client.IGFSerializable" />
+      /// Wraps the managed <see cref="Apache.Geode.Client.IGeodeSerializable" />
       /// object and implements the native <c>apache::geode::client::CacheableKey</c> interface.
       /// </summary>
       class ManagedCacheableKeyGeneric
@@ -46,7 +46,7 @@ namespace apache
       public:
 
         inline ManagedCacheableKeyGeneric(
-          Apache::Geode::Client::IGFSerializable^ managedptr, int hashcode, int classId)
+          Apache::Geode::Client::IGeodeSerializable^ managedptr, int hashcode, int classId)
           : m_managedptr(managedptr) {
           m_hashcode = hashcode;
           m_classId = classId;
@@ -58,7 +58,7 @@ namespace apache
         /// <param name="managedptr">
         /// The managed object.
         /// </param>
-        inline ManagedCacheableKeyGeneric(Apache::Geode::Client::IGFSerializable^ managedptr)
+        inline ManagedCacheableKeyGeneric(Apache::Geode::Client::IGeodeSerializable^ managedptr)
           : m_managedptr(managedptr) {
           // m_hashcode = managedptr->GetHashCode();
           m_hashcode = 0;
@@ -139,7 +139,7 @@ namespace apache
         /// <summary>
         /// Returns the wrapped managed object reference.
         /// </summary>
-        inline Apache::Geode::Client::IGFSerializable^ ptr() const
+        inline Apache::Geode::Client::IGeodeSerializable^ ptr() const
         {
           return m_managedptr;
         }
@@ -149,11 +149,11 @@ namespace apache
 
         /// <summary>
         /// Using gcroot to hold the managed delegate pointer (since it cannot be stored directly).
-        /// Note: not using auto_gcroot since it will result in 'Dispose' of the IGFSerializable
+        /// Note: not using auto_gcroot since it will result in 'Dispose' of the IGeodeSerializable
         /// to be called which is not what is desired when this object is destroyed. Normally this
         /// managed object may be created by the user and will be handled automatically by the GC.
         /// </summary>
-        gcroot<Apache::Geode::Client::IGFSerializable^> m_managedptr;
+        gcroot<Apache::Geode::Client::IGeodeSerializable^> m_managedptr;
 
         // Disable the copy and assignment constructors
         ManagedCacheableKeyGeneric(const ManagedCacheableKeyGeneric&);

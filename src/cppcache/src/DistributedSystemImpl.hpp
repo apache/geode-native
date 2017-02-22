@@ -26,7 +26,7 @@
 
 #include <geode/geode_globals.hpp>
 #include <geode/SharedPtr.hpp>
-#include <geode/gf_types.hpp>
+#include <geode/geode_types.hpp>
 #include "ace/Recursive_Thread_Mutex.h"
 #include "ace/Guard_T.h"
 #include "ace/OS.h"

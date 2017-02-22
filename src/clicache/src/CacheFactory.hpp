@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include "impl/NativeWrapper.hpp"
 #include <geode/CacheFactory.hpp>
 #include "Properties.hpp"

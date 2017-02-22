@@ -26,7 +26,7 @@
  *      Author: ankurs
  */
 
-#include <geode/gf_types.hpp>
+#include <geode/geode_types.hpp>
 #include <geode/SharedBase.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/VectorOfSharedBase.hpp>

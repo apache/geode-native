@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/CqEvent.hpp>
 #include "CqQuery.hpp"
 #include "CqOperation.hpp"
@@ -35,7 +35,7 @@ namespace Apache
     namespace Client
     {
 
-			interface class IGFSerializable;
+			interface class IGeodeSerializable;
       //interface class ICqEvent;
       //interface class ICacheableKey;
 

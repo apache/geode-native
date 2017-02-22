@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include "IGFSerializable.hpp"
+#include "geode_defs.hpp"
+#include "IGeodeSerializable.hpp"
 #include "GeodeClassIds.hpp"
 
 using namespace System;
@@ -43,7 +43,7 @@ namespace Apache
       /// of the object (or implement the <see cref="System.Xml.Serialization.IXmlSerializable" />)
       /// to change the serialization/deserialization. However, the latter should
       /// be avoided for efficiency reasons and the user should implement
-      /// <see cref="../../IGFSerializable" /> instead.
+      /// <see cref="../../IGeodeSerializable" /> instead.
       /// </para><para>
       /// The user must keep in mind that the rules that apply to <c>XmlSerializer</c>
       /// would be the rules that apply to this class. For instance the user
@@ -54,7 +54,7 @@ namespace Apache
       /// </para>
       /// </remarks>
       public ref class CacheableObjectXml
-        : public IGFSerializable
+        : public IGeodeSerializable
       {
       public:
         /// <summary>
@@ -86,7 +86,7 @@ namespace Apache
         /// the DataInput stream to use for reading the object data
         /// </param>
         /// <returns>the deserialized object</returns>
-        virtual IGFSerializable^ FromData(DataInput^ input);
+        virtual IGeodeSerializable^ FromData(DataInput^ input);
 
         /// <summary>
         /// return the size of this object in bytes
@@ -135,7 +135,7 @@ namespace Apache
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGFSerializable^ CreateDeserializable()
+        static IGeodeSerializable^ CreateDeserializable()
         {
           return gcnew CacheableObjectXml(nullptr);
         }

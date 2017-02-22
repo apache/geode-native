@@ -18,9 +18,9 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include "geode/UserFunctionExecutionException.hpp"
-#include "IGFSerializable.hpp"
+#include "IGeodeSerializable.hpp"
 #include "DataInput.hpp"
 #include "DataOutput.hpp"
 
@@ -37,10 +37,10 @@ namespace Apache
       /// UserFunctionExecutionException class is used to encapsulate geode sendException in case of Function execution. 
       /// </summary>
       public ref class UserFunctionExecutionException sealed
-        : public Internal::SBWrap<apache::geode::client::UserFunctionExecutionException>, public IGFSerializable
+        : public Internal::SBWrap<apache::geode::client::UserFunctionExecutionException>, public IGeodeSerializable
       {
       public:
-        // IGFSerializable members
+        // IGeodeSerializable members
 
         /// <summary>
         /// Serializes this object.
@@ -65,7 +65,7 @@ namespace Apache
         /// If this api is called from User code.
         /// </exception>
         /// <returns>the deserialized object</returns>
-        virtual IGFSerializable^ FromData(DataInput^ input);
+        virtual IGeodeSerializable^ FromData(DataInput^ input);
 
         /// <summary>
         /// Returns the classId of this class for serialization.
@@ -75,7 +75,7 @@ namespace Apache
         /// If this api is called from User code.
         /// </exception>
         /// <returns>classId of this class</returns>
-        /// <seealso cref="IGFSerializable.ClassId" />
+        /// <seealso cref="IGeodeSerializable.ClassId" />
         virtual property uint32_t ClassId
         {
           inline virtual uint32_t get()
@@ -97,7 +97,7 @@ namespace Apache
           virtual uint32_t get();
         }
 
-        // End: IGFSerializable members   
+        // End: IGeodeSerializable members   
 
         /// <summary>
         /// return as String the Exception message returned from geode sendException api.          

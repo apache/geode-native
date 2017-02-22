@@ -246,7 +246,7 @@ int ThinClientBaseDM::processChunks(volatile bool& isRunning) {
 void ThinClientBaseDM::startChunkProcessor() {
   if (m_chunkProcessor == NULL) {
     m_chunks.open();
-    m_chunkProcessor = new GF_TASK_T<ThinClientBaseDM>(
+    m_chunkProcessor = new Task<ThinClientBaseDM>(
         this, &ThinClientBaseDM::processChunks, NC_ProcessChunk);
     m_chunkProcessor->start();
   }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "SelectResultsIterator.hpp"
 
 #include "impl/SafeConvert.hpp"
@@ -29,7 +29,7 @@ namespace Apache
     {
 
       generic<class TResult>
-      /*Apache::Geode::Client::IGFSerializable^*/TResult SelectResultsIterator<TResult>::Current::get( )
+      /*Apache::Geode::Client::IGeodeSerializable^*/TResult SelectResultsIterator<TResult>::Current::get( )
       {
         //return SafeUMSerializableConvertGeneric( NativePtr->current( ).ptr( ) ); 
         return Serializable::GetManagedValueGeneric<TResult>(NativePtr->current( ));
@@ -48,7 +48,7 @@ namespace Apache
       }
 
       generic<class TResult>
-      /*Apache::Geode::Client::IGFSerializable^*/TResult SelectResultsIterator<TResult>::Next( )
+      /*Apache::Geode::Client::IGeodeSerializable^*/TResult SelectResultsIterator<TResult>::Next( )
       {
         //return SafeUMSerializableConvertGeneric( NativePtr->next( ).ptr( ) );
         return Serializable::GetManagedValueGeneric<TResult>(NativePtr->next( ));

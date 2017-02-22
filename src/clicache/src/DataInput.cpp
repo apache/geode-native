@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "DataInput.hpp"
 #include <geode/Cache.hpp>
 //#include "CacheFactory.hpp"
@@ -731,7 +731,7 @@ namespace Apache
 
         bool isPdxDeserialization = m_ispdxDesrialization;
         m_ispdxDesrialization = false;//for nested objects
-        IGFSerializable^ newObj = createType();
+        IGeodeSerializable^ newObj = createType();
         newObj->FromData(this);
         m_ispdxDesrialization = isPdxDeserialization;
         return newObj;
@@ -837,7 +837,7 @@ namespace Apache
 
         if (createType != nullptr)
         {
-          IGFSerializable^ newObj = createType();
+          IGeodeSerializable^ newObj = createType();
           newObj->FromData(this);
           return newObj;
         }

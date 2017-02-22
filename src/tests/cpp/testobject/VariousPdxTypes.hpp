@@ -494,10 +494,10 @@ class TESTOBJECT_EXPORT MixedVersionNestedPdx : public PdxSerializable {
 typedef SharedPtr<MixedVersionNestedPdx> MixedVersionNestedPdxPtr;
 
 /************************************************************
- *  PdxInsideIGFSerializable
+ *  PdxInsideIGeodeSerializable
  * *********************************************************/
 
-class TESTOBJECT_EXPORT PdxInsideIGFSerializable : public Serializable {
+class TESTOBJECT_EXPORT PdxInsideIGeodeSerializable : public Serializable {
  private:
   NestedPdxPtr m_npdx;
   PdxTypes3Ptr m_pdx3;
@@ -510,9 +510,9 @@ class TESTOBJECT_EXPORT PdxInsideIGFSerializable : public Serializable {
   int32_t m_i4;
 
  public:
-  PdxInsideIGFSerializable();
+  PdxInsideIGeodeSerializable();
 
-  virtual ~PdxInsideIGFSerializable();
+  virtual ~PdxInsideIGeodeSerializable();
 
   int32_t getHashCode();
 
@@ -527,14 +527,14 @@ class TESTOBJECT_EXPORT PdxInsideIGFSerializable : public Serializable {
   virtual int32_t classId() const { return 0x10; }
 
   const char* getClassName() const {
-    return "PdxTests::PdxInsideIGFSerializable";
+    return "PdxTests::PdxInsideIGeodeSerializable";
   }
 
   static Serializable* createDeserializable() {
-    return new PdxInsideIGFSerializable();
+    return new PdxInsideIGeodeSerializable();
   }
 };
-typedef SharedPtr<PdxInsideIGFSerializable> PdxInsideIGFSerializablePtr;
+typedef SharedPtr<PdxInsideIGeodeSerializable> PdxInsideIGeodeSerializablePtr;
 
 } /* namespace PdxTests */
 

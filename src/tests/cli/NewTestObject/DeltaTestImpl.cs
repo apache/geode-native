@@ -21,7 +21,7 @@ namespace Apache.Geode.Client.Tests
 {
   using Apache.Geode.Client;
   public class DeltaTestImpl
-    : IGFSerializable, IGFDelta
+    : IGeodeSerializable, IGeodeDelta
   {
     private static sbyte INT_MASK = 0x1;
     private static sbyte STR_MASK = 0X2;
@@ -94,7 +94,7 @@ namespace Apache.Geode.Client.Tests
         return 0x1E;
       }
     }
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new DeltaTestImpl();
     }
@@ -187,7 +187,7 @@ namespace Apache.Geode.Client.Tests
       return hasDelta;
     }
 
-    public IGFSerializable FromData(DataInput input)
+    public IGeodeSerializable FromData(DataInput input)
     {
       intVar = input.ReadInt32();
       str = (string)input.ReadObject();

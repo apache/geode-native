@@ -36,8 +36,8 @@ namespace Apache.Geode.Client.UnitTests
     }
   }
 
-  // VJR: TODO: IGFSerializable should be replaced by IPdxSerializable when ready
-  class DefaultType : IGFSerializable
+  // VJR: TODO: IGeodeSerializable should be replaced by IPdxSerializable when ready
+  class DefaultType : IGeodeSerializable
   {
     bool m_cacheableBoolean;
     int m_cacheableInt32;
@@ -155,14 +155,14 @@ namespace Apache.Geode.Client.UnitTests
       get { return m_cacheableObject; }
     }
 
-    #region IGFSerializable Members
+    #region IGeodeSerializable Members
 
     public uint ClassId
     {
       get { return 0x04; }
     }
 
-    public IGFSerializable FromData(DataInput input)
+    public IGeodeSerializable FromData(DataInput input)
     {
       if (!m_initialized)
       {
@@ -253,7 +253,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new DefaultType();
     }

@@ -25,7 +25,7 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include <geode/gf_base.hpp>
+#include <geode/geode_base.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/DataOutput.hpp>

@@ -16,7 +16,7 @@
  */
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 
 
 namespace Apache
@@ -32,14 +32,14 @@ namespace Apache
 
       /// <summary>
       /// This interface is used for delta propagation.
-      /// To use delta propagation, an application class must implement interfaces <c>IGFDelta</c> as well as <c>IGFSerializable</c>.
-      /// The <c>IGFDelta</c> interface methods <c>HasDelta( ), ToDelta( )</c> and <c>FromDelta( )</c> must be implemented by the class, as these methods are used by Geode
+      /// To use delta propagation, an application class must implement interfaces <c>IGeodeDelta</c> as well as <c>IGeodeSerializable</c>.
+      /// The <c>IGeodeDelta</c> interface methods <c>HasDelta( ), ToDelta( )</c> and <c>FromDelta( )</c> must be implemented by the class, as these methods are used by Geode
       /// to detect the presence of delta in an object, to serialize the delta, and to apply a serialized delta to an existing object
       /// of the class.
       /// If a customized cloning method is required, the class must also implement the interface <c>System.ICloneable</c>.
       /// To use cloning in delta propagation for a region, the region attribute for cloning must be enabled.
       /// </summary>
-      public interface class IGFDelta
+      public interface class IGeodeDelta
       {
       public:
 
@@ -66,9 +66,9 @@ namespace Apache
         void FromDelta(DataInput^ in);
 
         /// <summary>
-        /// <c>HasDelta( )</c> is invoked by Geode during <c>Region.Put( ICacheableKey, IGFSerializable )</c> to determine if the object contains a delta.
+        /// <c>HasDelta( )</c> is invoked by Geode during <c>Region.Put( ICacheableKey, IGeodeSerializable )</c> to determine if the object contains a delta.
         /// If <c>HasDelta( )</c> returns true, the delta in the object is serialized by invoking <c>ToDelta( DataOutput )</c>.
-        /// If <c>HasDelta( )</c> returns false, the object is serialized by invoking <c>IGFSerializable.ToData( DataOutput )</c>.
+        /// If <c>HasDelta( )</c> returns false, the object is serialized by invoking <c>IGeodeSerializable.ToData( DataOutput )</c>.
         /// </summary>
         bool HasDelta();
       };

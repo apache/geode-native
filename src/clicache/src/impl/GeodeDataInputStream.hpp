@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "../gf_defs.hpp"
-#include "../DataOutput.hpp"
+#include "../geode_defs.hpp"
+#include "../DataInput.hpp"
 #include "../ExceptionTypes.hpp"
 
 using namespace System;
@@ -31,18 +31,27 @@ namespace Apache
     namespace Client
     {
 
-      ref class GFDataOutputStream : public Stream
+      ref class GeodeDataInputStream : public Stream
       {
       public:
 
-        GFDataOutputStream(DataOutput^ output)
+        GeodeDataInputStream(DataInput^ input)
         {
-          m_buffer = output;
+          m_buffer = input;
+          m_maxSize = input->BytesRemaining;
+        }
+
+        GeodeDataInputStream(DataInput^ input, int maxSize)
+        {
+          m_buffer = input;
+          m_maxSize = maxSize;
+          m_buffer->AdvanceUMCursor();
+          m_buffer->SetBuffer();
         }
 
         virtual property bool CanSeek { bool get() override { return false; } }
-        virtual property bool CanRead { bool get() override { return false; } }
-        virtual property bool CanWrite { bool get() override { return true; } }
+        virtual property bool CanRead { bool get() override { return true; } }
+        virtual property bool CanWrite { bool get() override { return false; } }
 
         virtual void Close() override { Stream::Close(); }
 
@@ -50,7 +59,8 @@ namespace Apache
         {
           int64_t get() override
           {
-            return (int64_t) m_buffer->BufferLength;
+            //return (int64_t) m_buffer->BytesRead + m_buffer->BytesRemaining;
+            return (int64_t) m_maxSize;
           }
         }
 
@@ -69,50 +79,58 @@ namespace Apache
 
         virtual int64_t Seek(int64_t offset, SeekOrigin origin) override
         {
-          throw gcnew System::NotSupportedException("Seek not supported by GFDataOutputStream");
+          throw gcnew System::NotSupportedException("Seek not supported by GeodeDataInputStream");
         }
 
-        virtual void SetLength(int64_t value) override
-        { 
-          //TODO: overflow check
-          //m_buffer->NativePtr->ensureCapacity((uint32_t)value);
-        }
+        virtual void SetLength(int64_t value) override { /* do nothing */ }
 
         virtual void Write(array<Byte> ^ buffer, int offset, int count) override
         {
-          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          /*
-          array<Byte> ^ chunk = gcnew array<Byte>(count);
-          array<Byte>::ConstrainedCopy(buffer, offset, chunk, 0, count);
-          m_buffer->WriteBytesOnly(chunk, count);
-          */
-          //pin_ptr<const Byte> pin_bytes = &buffer[offset];
-          //m_buffer->NativePtr->writeBytesOnly((const uint8_t*)pin_bytes, count);
-          m_buffer->WriteBytesOnly(buffer, count, offset);
-          m_position += count;
-          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+          throw gcnew System::NotSupportedException("Write not supported by GeodeDataInputStream");
         }
 
         virtual void WriteByte(unsigned char value) override
         {
-          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          m_buffer->WriteByte(value);
-          m_position++;
-          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+          throw gcnew System::NotSupportedException("WriteByte not supported by GeodeDataInputStream");
         }
 
         virtual int Read(array<Byte> ^ buffer, int offset, int count) override
         {
-          throw gcnew System::NotSupportedException("Read not supported by GFDataOutputStream");
+          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+          int bytesRemaining = m_maxSize - (int) m_buffer->BytesReadInternally;
+					if(bytesRemaining == 0)
+						return bytesRemaining;
+          int actual =  bytesRemaining < count ? bytesRemaining : count;
+					if (actual > 0)
+          {
+            /*
+            array<Byte>::ConstrainedCopy(m_buffer->ReadBytesOnly(actual), 0,
+              buffer, offset, actual);
+              */
+            //pin_ptr<Byte> pin_buffer = &buffer[offset];
+            //m_buffer->NativePtr->readBytesOnly((uint8_t*)pin_buffer, actual);
+            m_buffer->ReadBytesOnly(buffer, offset, actual);
+            m_position += actual;
+          }
+          return actual;
+          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
         }
 
         virtual void Flush() override { /* do nothing */ }
 
+        property uint32_t BytesRead
+        {
+          uint32_t get()
+          {
+            return m_buffer->BytesReadInternally;
+          }
+        }
+
       private:
         int m_position;
-        DataOutput ^ m_buffer;
+        int m_maxSize;
+        DataInput ^ m_buffer;
       };
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-

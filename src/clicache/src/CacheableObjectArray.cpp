@@ -17,7 +17,7 @@
 
 
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include <GeodeTypeIdsImpl.hpp>
 #include "CacheableObjectArray.hpp"
 #include "DataOutput.hpp"
@@ -37,7 +37,7 @@ namespace Apache
     namespace Client
     {
 
-      // Region: IGFSerializable Members
+      // Region: IGeodeSerializable Members
 
       void CacheableObjectArray::ToData(DataOutput^ output)
       {
@@ -58,7 +58,7 @@ namespace Apache
           nativeOutput.write((int8_t)apache::geode::client::GeodeTypeIdsImpl::Class);
           nativeOutput.write((int8_t)apache::geode::client::GeodeTypeIds::CacheableASCIIString);
           nativeOutput.writeASCII("java.lang.Object");
-          for each (IGFSerializable^ obj in this) {
+          for each (IGeodeSerializable^ obj in this) {
             apache::geode::client::SerializablePtr objPtr(SafeMSerializableConvert(obj));
             nativeOutput.writeObject(objPtr);
           }
@@ -66,7 +66,7 @@ namespace Apache
         _GF_MG_EXCEPTION_CATCH_ALL*/
       }
 
-      IGFSerializable^ CacheableObjectArray::FromData(DataInput^ input)
+      IGeodeSerializable^ CacheableObjectArray::FromData(DataInput^ input)
       {
         int len = input->ReadArrayLen();
         if (len >= 0) {
@@ -109,7 +109,7 @@ namespace Apache
       uint32_t CacheableObjectArray::ObjectSize::get()
       { 
        /* uint32_t size = static_cast<uint32_t> (sizeof(CacheableObjectArray^));
-        for each (IGFSerializable^ val in this) {
+        for each (IGeodeSerializable^ val in this) {
           if (val != nullptr) {
             size += val->ObjectSize;
           }

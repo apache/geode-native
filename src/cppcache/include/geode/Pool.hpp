@@ -22,7 +22,7 @@
 
 #include "geode_globals.hpp"
 #include "SharedBase.hpp"
-#include "gf_types.hpp"
+#include "geode_types.hpp"
 #include "CacheableBuiltins.hpp"
 #include "Cache.hpp"
 #include "CacheFactory.hpp"

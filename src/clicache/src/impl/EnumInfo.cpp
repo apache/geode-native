@@ -38,7 +38,7 @@ namespace Apache
           output->WriteInt32(_hashcode);
         }
         
-        IGFSerializable^ EnumInfo::FromData( DataInput^ input )
+        IGeodeSerializable^ EnumInfo::FromData( DataInput^ input )
         {
           _enumClassName = input->ReadString();
           _enumName = input->ReadString();

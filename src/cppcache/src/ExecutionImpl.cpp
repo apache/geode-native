@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 #include <geode/geode_globals.hpp>
-#include <geode/gf_types.hpp>
+#include <geode/geode_types.hpp>
 #include "ExecutionImpl.hpp"
 #include <geode/ExceptionTypes.hpp>
 #include "ThinClientRegion.hpp"

@@ -25,11 +25,11 @@
 #include <list>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
-#include <geode/gf_base.hpp>
+#include <geode/geode_base.hpp>
 #include "FairQueue.hpp"
 #include "Set.hpp"
 #include "TcrConnection.hpp"
-#include "GF_TASK_T.hpp"
+#include "Task.hpp"
 #include "SpinLock.hpp"
 
 namespace apache {
@@ -199,10 +199,10 @@ class CPPCACHE_EXPORT TcrEndpoint {
   void closeConnection(TcrConnection*& conn);
   virtual void handleNotificationStats(int64 byteLength){};
   virtual void closeNotification();
-  std::list<GF_TASK_T<TcrEndpoint>*> m_notifyReceiverList;
+  std::list<Task<TcrEndpoint>*> m_notifyReceiverList;
   std::list<TcrConnection*> m_notifyConnectionList;
   TcrConnection* m_notifyConnection;
-  GF_TASK_T<TcrEndpoint>* m_notifyReceiver;
+  Task<TcrEndpoint>* m_notifyReceiver;
   int m_numRegionListener;
   bool m_isQueueHosted;
   ACE_Recursive_Thread_Mutex m_notifyReceiverLock;

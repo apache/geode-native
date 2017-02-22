@@ -21,7 +21,7 @@
  */
 
 #include "geode_globals.hpp"
-#include "gf_types.hpp"
+#include "geode_types.hpp"
 #include "SharedPtr.hpp"
 #include "VectorT.hpp"
 #include "CacheableBuiltins.hpp"

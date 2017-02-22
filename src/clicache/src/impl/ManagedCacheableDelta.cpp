@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "../gf_includes.hpp"
+//#include "../geode_includes.hpp"
 #include "ManagedCacheableDelta.hpp"
 #include "../DataInput.hpp"
 #include "../DataOutput.hpp"
@@ -196,10 +196,10 @@ namespace apache
       {
         try {
           ICloneable^ cloneable = dynamic_cast<ICloneable^>((
-            Apache::Geode::Client::IGFDelta^) m_managedptr);
+            Apache::Geode::Client::IGeodeDelta^) m_managedptr);
           if (cloneable) {
-            Apache::Geode::Client::IGFSerializable^ Mclone =
-              dynamic_cast<Apache::Geode::Client::IGFSerializable^>(cloneable->Clone());
+            Apache::Geode::Client::IGeodeSerializable^ Mclone =
+              dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(cloneable->Clone());
             return DeltaPtr(static_cast<ManagedCacheableDeltaGeneric*>(
               SafeMSerializableConvertGeneric(Mclone)));
           }

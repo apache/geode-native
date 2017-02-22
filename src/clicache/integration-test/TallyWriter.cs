@@ -30,10 +30,10 @@ namespace Apache.Geode.Client.UnitTests
     private int m_updates = 0;
     private int m_invalidates = 0;
     private int m_destroys = 0;
-    private Apache.Geode.Client.IGFSerializable m_callbackArg = null;
+    private Apache.Geode.Client.IGeodeSerializable m_callbackArg = null;
     private int m_clears = 0;
-    private Apache.Geode.Client.IGFSerializable m_lastKey = null;
-    private Apache.Geode.Client.IGFSerializable m_lastValue = null;
+    private Apache.Geode.Client.IGeodeSerializable m_lastKey = null;
+    private Apache.Geode.Client.IGeodeSerializable m_lastValue = null;
     private bool isWriterFailed = false;
     private bool isWriterInvoke = false;
     private bool isCallbackCalled = false;
@@ -82,7 +82,7 @@ namespace Apache.Geode.Client.UnitTests
     }
 
 
-    public Apache.Geode.Client.IGFSerializable LastKey
+    public Apache.Geode.Client.IGeodeSerializable LastKey
     {
       get
       {
@@ -90,7 +90,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public Apache.Geode.Client.IGFSerializable CallbackArgument
+    public Apache.Geode.Client.IGeodeSerializable CallbackArgument
     {
       get
       {
@@ -99,7 +99,7 @@ namespace Apache.Geode.Client.UnitTests
     }
 
 
-    public Apache.Geode.Client.IGFSerializable LastValue
+    public Apache.Geode.Client.IGeodeSerializable LastValue
     {
       get
       {
@@ -112,7 +112,7 @@ namespace Apache.Geode.Client.UnitTests
     isWriterFailed = true;
    }
 
-  public void SetCallBackArg( Apache.Geode.Client.IGFSerializable callbackArg )
+  public void SetCallBackArg( Apache.Geode.Client.IGeodeSerializable callbackArg )
   {
     m_callbackArg = callbackArg;
   }
@@ -174,7 +174,7 @@ namespace Apache.Geode.Client.UnitTests
           isWriterInvoke = true;
         if (m_callbackArg != null)
         {
-          Apache.Geode.Client.IGFSerializable callbkArg = (Apache.Geode.Client.IGFSerializable)ev.CallbackArgument;
+          Apache.Geode.Client.IGeodeSerializable callbkArg = (Apache.Geode.Client.IGeodeSerializable)ev.CallbackArgument;
           if (m_callbackArg.Equals(callbkArg))
             isCallbackCalled = true;
         }  

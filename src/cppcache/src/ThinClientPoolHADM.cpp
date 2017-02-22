@@ -75,7 +75,7 @@ void ThinClientPoolHADM::startBackgroundThreads() {
   }
 
   m_redundancyManager->startPeriodicAck();
-  m_redundancyTask = new GF_TASK_T<ThinClientPoolHADM>(
+  m_redundancyTask = new Task<ThinClientPoolHADM>(
       this, &ThinClientPoolHADM::redundancy, NC_Redundancy);
   m_redundancyTask->start();
 }

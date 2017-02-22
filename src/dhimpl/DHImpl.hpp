@@ -26,7 +26,7 @@
 #include <string>
 #include <vector>
 
-#include <geode/gf_base.hpp>
+#include <geode/geode_base.hpp>
 
 #define DH_ERR_NO_ERROR 0
 #define DH_ERR_UNSUPPORTED_ALGO 1

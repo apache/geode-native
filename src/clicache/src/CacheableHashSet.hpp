@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/CacheableBuiltins.hpp>
 #include "Serializable.hpp"
 #include "ExceptionTypes.hpp"
@@ -63,7 +63,7 @@ namespace Apache
             }
           }
 
-          virtual IGFSerializable^ FromData(DataInput^ input) override
+          virtual IGeodeSerializable^ FromData(DataInput^ input) override
           {
             int len = input->ReadArrayLen();
             if (len > 0)
@@ -476,7 +476,7 @@ namespace Apache
           /// <summary>
           /// Factory function to register wrapper
           /// </summary>
-          static IGFSerializable^ Create(apache::geode::client::Serializable* obj)
+          static IGeodeSerializable^ Create(apache::geode::client::Serializable* obj)
           {
             return (obj != NULL ?
                     gcnew CacheableHashSetType<TYPEID, HSTYPE>(obj) : nullptr);
@@ -566,13 +566,13 @@ namespace Apache
        * Factory function to register this class.
        * </summary>
        */                                                                   \
-       static IGFSerializable^ CreateDeserializable()                        \
+       static IGeodeSerializable^ CreateDeserializable()                        \
       {                                                                     \
       return gcnew m();                                                   \
       }                                                                     \
       \
             internal:                                                               \
-              static IGFSerializable^ Create(apache::geode::client::Serializable* obj)            \
+              static IGeodeSerializable^ Create(apache::geode::client::Serializable* obj)            \
       {                                                                     \
       return gcnew m(obj);                                                \
       }                                                                     \

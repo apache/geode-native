@@ -21,7 +21,7 @@
  */
 
 #include "geode_globals.hpp"
-#include "gf_types.hpp"
+#include "geode_types.hpp"
 #include "ExceptionTypes.hpp"
 #include "CqQuery.hpp"
 #include "CqAttributes.hpp"

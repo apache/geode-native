@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include "IGFSerializable.hpp"
+#include "geode_defs.hpp"
+#include "IGeodeSerializable.hpp"
 
 
 using namespace System;
@@ -32,11 +32,11 @@ namespace Apache
     {
 
       /// <summary>
-      /// A mutable <c>IGFSerializable</c> vector wrapper that can serve as
+      /// A mutable <c>IGeodeSerializable</c> vector wrapper that can serve as
       /// a distributable object for caching.
       /// </summary>
       ref class CacheableStack
-        : public IGFSerializable
+        : public IGeodeSerializable
       {
       public:
         /// <summary>
@@ -65,7 +65,7 @@ namespace Apache
 
         
         
-        // Region: IGFSerializable Members
+        // Region: IGeodeSerializable Members
 
         /// <summary>
         /// Serializes this object.
@@ -83,7 +83,7 @@ namespace Apache
         /// the DataInput stream to use for reading the object data
         /// </param>
         /// <returns>the deserialized object</returns>
-        virtual IGFSerializable^ FromData(DataInput^ input);
+        virtual IGeodeSerializable^ FromData(DataInput^ input);
 
         /// <summary>
         /// return the size of this object in bytes
@@ -111,12 +111,12 @@ namespace Apache
             return m_stack;
           }
         }
-        // End Region: IGFSerializable Members
+        // End Region: IGeodeSerializable Members
 
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGFSerializable^ CreateDeserializable()
+        static IGeodeSerializable^ CreateDeserializable()
         {
           return gcnew CacheableStack(gcnew System::Collections::Generic::Stack<Object^>());
         }

@@ -31,7 +31,7 @@ namespace Apache
 
       namespace Internal
       {
-        public ref class PdxFieldType : IGFSerializable
+        public ref class PdxFieldType : IGeodeSerializable
         {
         private:
           String^ m_fieldName;
@@ -129,7 +129,7 @@ namespace Apache
           virtual Int32 GetHashCode() override;
 
           virtual void ToData(DataOutput^ output);
-          virtual IGFSerializable^ FromData(DataInput^ input);
+          virtual IGeodeSerializable^ FromData(DataInput^ input);
           virtual property uint32_t ObjectSize
           {
             uint32_t get(){ return 0; }

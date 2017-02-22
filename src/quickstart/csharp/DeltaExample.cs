@@ -21,7 +21,7 @@ using Apache.Geode.Client;
 
 namespace Apache.Geode.Client.QuickStart
 {
-  public class DeltaExample : IGFDelta,IGFSerializable, ICloneable
+  public class DeltaExample : IGeodeDelta,IGeodeSerializable, ICloneable
     {
       // data members
       private Int32 m_field1;
@@ -161,7 +161,7 @@ namespace Apache.Geode.Client.QuickStart
         DataOut.WriteInt32(m_field3);
       }
 
-      public IGFSerializable FromData(DataInput DataIn)
+      public IGeodeSerializable FromData(DataInput DataIn)
       {
         m_field1 = DataIn.ReadInt32();
         m_field2 = DataIn.ReadInt32();
@@ -186,7 +186,7 @@ namespace Apache.Geode.Client.QuickStart
         }
       }
    
-      public static IGFSerializable create()
+      public static IGeodeSerializable create()
       {
         return new DeltaExample();
       }

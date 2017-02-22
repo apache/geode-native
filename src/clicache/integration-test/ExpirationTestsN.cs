@@ -185,7 +185,7 @@ namespace Apache.Geode.Client.UnitTests
       m_regionName = "RT1";
       SetupRegion(0, 0, 0, 0);
       PutKeyTouch(5);
-      IGFSerializable val = m_region.Get(m_key);
+      IGeodeSerializable val = m_region.Get(m_key);
       m_region.Destroy(m_key);
       val = m_region.Get(m_key);
       CheckRegion(false, 0);

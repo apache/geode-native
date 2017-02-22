@@ -17,7 +17,7 @@
 
 
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "CacheableStack.hpp"
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
@@ -35,7 +35,7 @@ namespace Apache
     namespace Client
     {
 
-      // Region: IGFSerializable Members
+      // Region: IGeodeSerializable Members
 
       void CacheableStack::ToData(DataOutput^ output)
       {
@@ -52,7 +52,7 @@ namespace Apache
         }
       }
 
-      IGFSerializable^ CacheableStack::FromData(DataInput^ input)
+      IGeodeSerializable^ CacheableStack::FromData(DataInput^ input)
       {
         int len = input->ReadArrayLen();
         if (len > 0)
@@ -76,7 +76,7 @@ namespace Apache
       {
         //TODO:
         /*uint32_t size = static_cast<uint32_t> (sizeof(CacheableStack^));
-        for each (IGFSerializable^ val in this) {
+        for each (IGeodeSerializable^ val in this) {
         if (val != nullptr) {
         size += val->ObjectSize;
         }

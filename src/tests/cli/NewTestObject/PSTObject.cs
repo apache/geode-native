@@ -63,7 +63,7 @@ namespace Apache.Geode.Client.Tests
         return 4;
       }
     }
-    public override IGFSerializable FromData(DataInput input)
+    public override IGeodeSerializable FromData(DataInput input)
     {
       timestamp = input.ReadInt64();
       field1 = input.ReadInt32();
@@ -79,7 +79,7 @@ namespace Apache.Geode.Client.Tests
       output.WriteBytes(valueData);
     }
 
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new PSTObject();
     }

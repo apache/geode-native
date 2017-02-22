@@ -32,8 +32,8 @@ namespace Apache.Geode.Client.UnitTests
     private int m_destroys = 0;
     private int m_clears = 0;
     private Apache.Geode.Client.ICacheableKey m_lastKey = null;
-    private Apache.Geode.Client.IGFSerializable m_lastValue = null;
-    private Apache.Geode.Client.IGFSerializable m_callbackArg = null;
+    private Apache.Geode.Client.IGeodeSerializable m_lastValue = null;
+    private Apache.Geode.Client.IGeodeSerializable m_callbackArg = null;
     private bool m_ignoreTimeout = false;
     private bool m_quiet = false;
     private bool isListenerInvoke = false;
@@ -83,7 +83,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public Apache.Geode.Client.IGFSerializable LastKey
+    public Apache.Geode.Client.IGeodeSerializable LastKey
     {
       get
       {
@@ -107,7 +107,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public Apache.Geode.Client.IGFSerializable LastValue
+    public Apache.Geode.Client.IGeodeSerializable LastValue
     {
       get
       {
@@ -131,7 +131,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-     public void SetCallBackArg(Apache.Geode.Client.IGFSerializable callbackArg)
+     public void SetCallBackArg(Apache.Geode.Client.IGeodeSerializable callbackArg)
     {
       m_callbackArg = callbackArg;
     }
@@ -145,7 +145,7 @@ namespace Apache.Geode.Client.UnitTests
         isListenerInvoke = true;
       if (m_callbackArg != null)
       {
-        Apache.Geode.Client.IGFSerializable callbkArg = (Apache.Geode.Client.IGFSerializable)ev.CallbackArgument;
+        Apache.Geode.Client.IGeodeSerializable callbkArg = (Apache.Geode.Client.IGeodeSerializable)ev.CallbackArgument;
         if (m_callbackArg.Equals(callbkArg))
           isCallbackCalled = true;
       }
@@ -238,7 +238,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       m_creates++;
       m_lastKey = (Apache.Geode.Client.ICacheableKey)ev.Key;
-      m_lastValue = (Apache.Geode.Client.IGFSerializable)ev.NewValue;
+      m_lastValue = (Apache.Geode.Client.IGeodeSerializable)ev.NewValue;
       CheckcallbackArg(ev);
 
       string keyString = m_lastKey.ToString();
@@ -257,7 +257,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       m_updates++;
       m_lastKey = (Apache.Geode.Client.ICacheableKey)ev.Key;
-      m_lastValue = (Apache.Geode.Client.IGFSerializable)ev.NewValue;
+      m_lastValue = (Apache.Geode.Client.IGeodeSerializable)ev.NewValue;
       CheckcallbackArg(ev);
      
       string keyString = m_lastKey.ToString();

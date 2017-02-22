@@ -30,7 +30,7 @@
 
 // ----------------------------------------------------------------------------
 
-#include <geode/gf_base.hpp>
+#include <geode/geode_base.hpp>
 
 #include "FwkException.hpp"
 

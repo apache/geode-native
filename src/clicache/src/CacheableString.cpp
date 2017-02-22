@@ -20,7 +20,7 @@
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "CacheableString.hpp"
 #include "ExceptionTypes.hpp"
 
@@ -50,7 +50,7 @@ namespace Apache
         }
       }
 
-      IGFSerializable^ CacheableString::FromData(DataInput^ input)
+      IGeodeSerializable^ CacheableString::FromData(DataInput^ input)
       {
         if (m_type == GeodeClassIds::CacheableASCIIString ||
             m_type == GeodeClassIds::CacheableString)

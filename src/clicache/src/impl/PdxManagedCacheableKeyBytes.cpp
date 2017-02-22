@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "../gf_includes.hpp"
+//#include "../geode_includes.hpp"
 #include "PdxManagedCacheableKeyBytes.hpp"
 #include "../DataInput.hpp"
 #include "../DataOutput.hpp"
@@ -59,7 +59,7 @@ namespace apache
 
           Apache::Geode::Client::IPdxSerializable^ obj = Apache::Geode::Client::Internal::PdxHelper::DeserializePdx(%mg_input, false);
 
-          //Apache::Geode::Client::IGFSerializable^ obj = Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId)();
+          //Apache::Geode::Client::IGeodeSerializable^ obj = Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId)();
           //obj->FromData(%mg_input);
 
           input.advanceCursor(mg_input.BytesReadInternally);
@@ -190,7 +190,7 @@ namespace apache
           if (p_other != NULL) {
             apache::geode::client::DataInput di(m_bytes, m_size);
             Apache::Geode::Client::DataInput mg_input(&di, true);
-            /* Apache::Geode::Client::IGFSerializable^ obj =
+            /* Apache::Geode::Client::IGeodeSerializable^ obj =
                Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId)();
                obj->FromData(%mg_input);*/
             Apache::Geode::Client::IPdxSerializable^ obj = getManagedObject();
@@ -215,7 +215,7 @@ namespace apache
           //Apache::Geode::Client::Log::Debug("PdxManagedCacheableKeyBytes::equal. ");
           apache::geode::client::DataInput di(m_bytes, m_size);
           Apache::Geode::Client::DataInput mg_input(&di, true);
-          /*Apache::Geode::Client::IGFSerializable^ obj =
+          /*Apache::Geode::Client::IGeodeSerializable^ obj =
             Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId)();
             obj->FromData(%mg_input);*/
           Apache::Geode::Client::IPdxSerializable^ obj = getManagedObject();
@@ -272,14 +272,14 @@ namespace apache
         Apache::Geode::Client::DataInput mg_dinp(&dinp, true);
         /*TypeFactoryMethodGeneric^ creationMethod =
           Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId);
-          Apache::Geode::Client::IGFSerializable^ newObj = creationMethod();
+          Apache::Geode::Client::IGeodeSerializable^ newObj = creationMethod();
           return newObj->FromData(%mg_dinp);*/
         return  Apache::Geode::Client::Internal::PdxHelper::DeserializePdx(%mg_dinp, false);
       }
 
       bool PdxManagedCacheableKeyBytes::hasDelta()
       {
-        /* Apache::Geode::Client::IGFDelta^ deltaObj = dynamic_cast<Apache::Geode::Client::IGFDelta^>(this->getManagedObject());
+        /* Apache::Geode::Client::IGeodeDelta^ deltaObj = dynamic_cast<Apache::Geode::Client::IGeodeDelta^>(this->getManagedObject());
 
          if(deltaObj)
          return deltaObj->HasDelta();*/
@@ -290,7 +290,7 @@ namespace apache
       {
         try {
           Apache::Geode::Client::Log::Debug("PdxManagedCacheableKeyBytes::toDelta: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((int)this) + " with its domain ID: " + m_domainId);
-          Apache::Geode::Client::IGFDelta^ deltaObj = dynamic_cast<Apache::Geode::Client::IGFDelta^>(this->getManagedObject());
+          Apache::Geode::Client::IGeodeDelta^ deltaObj = dynamic_cast<Apache::Geode::Client::IGeodeDelta^>(this->getManagedObject());
           Apache::Geode::Client::DataOutput mg_output(&output, true);
           deltaObj->ToDelta(%mg_output);
           mg_output.WriteBytesToUMDataOutput();
@@ -307,7 +307,7 @@ namespace apache
       {
         try {
           Apache::Geode::Client::Log::Debug("PdxManagedCacheableKeyBytes::fromDelta:");
-          Apache::Geode::Client::IGFDelta^ deltaObj = dynamic_cast<Apache::Geode::Client::IGFDelta^>(this->getManagedObject());
+          Apache::Geode::Client::IGeodeDelta^ deltaObj = dynamic_cast<Apache::Geode::Client::IGeodeDelta^>(this->getManagedObject());
           Apache::Geode::Client::DataInput mg_input(&input, true);
           deltaObj->FromDelta(%mg_input);
 
@@ -346,8 +346,8 @@ namespace apache
       DeltaPtr PdxManagedCacheableKeyBytes::clone()
       {
         try {
-          Apache::Geode::Client::IGFDelta^ deltaObj = dynamic_cast<Apache::Geode::Client::IGFDelta^>(this->getManagedObject());
-          ICloneable^ cloneable = dynamic_cast<ICloneable^>((Apache::Geode::Client::IGFDelta^) deltaObj);
+          Apache::Geode::Client::IGeodeDelta^ deltaObj = dynamic_cast<Apache::Geode::Client::IGeodeDelta^>(this->getManagedObject());
+          ICloneable^ cloneable = dynamic_cast<ICloneable^>((Apache::Geode::Client::IGeodeDelta^) deltaObj);
           if (cloneable) {
             Apache::Geode::Client::IPdxSerializable^ Mclone =
               dynamic_cast<Apache::Geode::Client::IPdxSerializable^>(cloneable->Clone());

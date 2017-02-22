@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef GEODE_GF_TYPES_H_
-#define GEODE_GF_TYPES_H_
+#ifndef GEODE_TYPES_H_
+#define GEODE_TYPES_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -108,4 +108,4 @@ _GF_PTR_DEF_(InternalCacheTransactionManager2PC,
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_GF_TYPES_H_
+#endif  // GEODE_TYPES_H_

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "Properties.hpp"
 #include "impl/ManagedVisitor.hpp"
 #include "impl/ManagedString.hpp"
@@ -45,7 +45,7 @@ namespace Apache
         inline PropertyToString( ) : m_str( "{" )
         { }
 
-        void Visit( Apache::Geode::Client::ICacheableKey^ key, IGFSerializable^ value )
+        void Visit( Apache::Geode::Client::ICacheableKey^ key, IGeodeSerializable^ value )
         {
           if ( m_str->Length > 1 ) {
             m_str += ",";
@@ -80,7 +80,7 @@ namespace Apache
        // _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
-      /*IGFSerializable^ Properties::Find( Apache::Geode::Client::ICacheableKey^ key)
+      /*IGeodeSerializable^ Properties::Find( Apache::Geode::Client::ICacheableKey^ key)
       {
         CacheableString^ cStr = dynamic_cast<CacheableString ^>(key);
 
@@ -112,7 +112,7 @@ namespace Apache
 
       /*
        generic<class TPropKey, class TPropValue>
-       IGFSerializable^ Properties<TPropKey, TPropValue>::ConvertCacheableString(apache::geode::client::CacheablePtr& value)
+       IGeodeSerializable^ Properties<TPropKey, TPropValue>::ConvertCacheableString(apache::geode::client::CacheablePtr& value)
        {
          apache::geode::client::CacheableString * cs =  dynamic_cast<apache::geode::client::CacheableString *>( value.ptr() );
           if ( cs == NULL) {
@@ -133,7 +133,7 @@ namespace Apache
         }
       */
 
-      /*IGFSerializable^ Properties::Find( CacheableKey^ key)
+      /*IGeodeSerializable^ Properties::Find( CacheableKey^ key)
       {
         CacheableString^ cStr = dynamic_cast<CacheableString ^>(key);
 
@@ -193,7 +193,7 @@ namespace Apache
         _GF_MG_EXCEPTION_CATCH_ALL2
       }*/
 
-      /*void Properties::Insert( Apache::Geode::Client::ICacheableKey^ key, IGFSerializable^ value)
+      /*void Properties::Insert( Apache::Geode::Client::ICacheableKey^ key, IGeodeSerializable^ value)
       {
         CacheableString^ cStr = dynamic_cast<CacheableString ^>(key);
         if (cStr != nullptr) {
@@ -223,7 +223,7 @@ namespace Apache
         }
       }*/
 
-      /*void Properties::Insert( CacheableKey^ key, IGFSerializable^ value)
+      /*void Properties::Insert( CacheableKey^ key, IGeodeSerializable^ value)
       {
         CacheableString^ cStr = dynamic_cast<CacheableString ^>(key);
         if (cStr != nullptr) {
@@ -461,7 +461,7 @@ namespace Apache
 				return "";
       }
 
-      // IGFSerializable methods
+      // IGeodeSerializable methods
 
       generic<class TPropKey, class TPropValue>
       void Properties<TPropKey, TPropValue>::ToData( DataOutput^ output )
@@ -489,7 +489,7 @@ namespace Apache
       }
 
       generic<class TPropKey, class TPropValue>
-      IGFSerializable^ Properties<TPropKey, TPropValue>::FromData( DataInput^ input )
+      IGeodeSerializable^ Properties<TPropKey, TPropValue>::FromData( DataInput^ input )
       {
         if(input->IsManagedObject()) {
           input->AdvanceUMCursor();

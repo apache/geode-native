@@ -18,7 +18,7 @@
 #ifdef CSTX_COMMENTED
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <cppcache/TransactionEvent.hpp>
 #include "impl/NativeWrapper.hpp"
 //#include "TransactionId.hpp"

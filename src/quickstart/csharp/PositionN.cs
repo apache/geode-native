@@ -21,7 +21,7 @@ namespace Apache.Geode.Client.Tests
 {
   using Apache.Geode.Client;
   public class Position
-    : IGFSerializable
+    : IGeodeSerializable
   {
     #region Private members
 
@@ -68,7 +68,7 @@ namespace Apache.Geode.Client.Tests
       m_pid = 0;
     }
 
-    private UInt32 GetObjectSize(IGFSerializable obj)
+    private UInt32 GetObjectSize(IGeodeSerializable obj)
     {
       return (obj == null ? 0 : obj.ObjectSize);
     }
@@ -157,9 +157,9 @@ namespace Apache.Geode.Client.Tests
 
     #endregion
 
-    #region IGFSerializable Members
+    #region IGeodeSerializable Members
 
-    public IGFSerializable FromData(DataInput input)
+    public IGeodeSerializable FromData(DataInput input)
     {
       m_avg20DaysVol = input.ReadInt64();
       m_bondRating = input.ReadUTF();
@@ -237,7 +237,7 @@ namespace Apache.Geode.Client.Tests
 
     #endregion
 
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new Position();
     }

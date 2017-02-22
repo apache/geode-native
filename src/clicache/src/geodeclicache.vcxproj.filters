@@ -91,22 +91,22 @@ limitations under the License.
     <ClInclude Include="impl\DelegateWrapper.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="impl\GFDataInputStream.hpp">
+    <ClInclude Include="impl\GeodeDataInputStream.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="impl\GFDataOutputStream.hpp">
+    <ClInclude Include="impl\GeodeDataOutputStream.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="impl\GFNullStream.hpp">
+    <ClInclude Include="impl\GeodeNullStream.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="impl\AuthenticatedCacheM.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gf_includes.hpp">
+    <ClInclude Include="geode_includes.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gf_defs.hpp">
+    <ClInclude Include="geode_defs.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="com\vmware\impl\ResultCollectorProxyMN.hpp">
@@ -244,13 +244,13 @@ limitations under the License.
     <ClInclude Include="com\vmware\impl\FixedPartitionResolverMN.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="com\vmware\impl\GFDataInputStreamN.hpp">
+    <ClInclude Include="com\vmware\impl\GeodeDataInputStreamN.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="com\vmware\impl\GFDataOutputStreamN.hpp">
+    <ClInclude Include="com\vmware\impl\GeodeDataOutputStreamN.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="com\vmware\impl\GFNullStreamN.hpp">
+    <ClInclude Include="com\vmware\impl\GeodeNullStreamN.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="com\vmware\impl\CqStatusListenerProxyMN.hpp">
@@ -439,10 +439,10 @@ limitations under the License.
     <ClInclude Include="com\vmware\IGemFireCacheN.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="com\vmware\IGFDeltaN.hpp">
+    <ClInclude Include="com\vmware\IGeodeDeltaN.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="com\vmware\IGFSerializableN.hpp">
+    <ClInclude Include="com\vmware\IGeodeSerializableN.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="com\vmware\IPartitionResolverN.hpp">
@@ -676,7 +676,7 @@ limitations under the License.
     <ClInclude Include="IGemFireCache.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IGFSerializable.hpp">
+    <ClInclude Include="IGeodeSerializable.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IPartitionResolver.hpp">
@@ -688,7 +688,7 @@ limitations under the License.
      <ClInclude Include="IFixedPartitionResolver.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IGFDelta.hpp">
+    <ClInclude Include="IGeodeDelta.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GemFireClassIdsM.hpp">

@@ -23,7 +23,7 @@
 #include "geode_globals.hpp"
 #include "ExceptionTypes.hpp"
 #include <string.h>
-#include "gf_types.hpp"
+#include "geode_types.hpp"
 #include "Serializable.hpp"
 #include "CacheableString.hpp"
 

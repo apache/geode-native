@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "../gf_defs.hpp"
+#include "../geode_defs.hpp"
 #include "../Serializable.hpp"
 #include "ManagedCacheableKey.hpp"
 #include "SafeConvert.hpp"
@@ -34,7 +34,7 @@ namespace Apache
 
       /// <summary>
       /// Template class to wrap a managed <see cref="TypeFactoryMethod" />
-      /// delegate that returns an <see cref="IGFSerializable" /> object. It contains
+      /// delegate that returns an <see cref="IGeodeSerializable" /> object. It contains
       /// a method that converts the managed object gotten by invoking the
       /// delegate to the native <c>apache::geode::client::Serializable</c> object
       /// (using the provided wrapper class constructor).
@@ -76,9 +76,9 @@ namespace Apache
         /// </returns>
         apache::geode::client::Serializable* NativeDelegateGeneric( )
         {
-          IGFSerializable^ tempObj = m_delegate( );
-          IGFDelta^ tempDelta =
-            dynamic_cast<IGFDelta^>(tempObj);
+          IGeodeSerializable^ tempObj = m_delegate( );
+          IGeodeDelta^ tempDelta =
+            dynamic_cast<IGeodeDelta^>(tempObj);
           if( tempDelta != nullptr )
           {
             if(!SafeConvertClassGeneric::isAppDomainEnabled)

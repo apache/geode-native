@@ -17,9 +17,7 @@
 
 #pragma once
 
-#include "../gf_defs.hpp"
-#include "../DataInput.hpp"
-#include "../ExceptionTypes.hpp"
+#include "../geode_defs.hpp"
 
 using namespace System;
 using namespace System::IO;
@@ -31,27 +29,13 @@ namespace Apache
     namespace Client
     {
 
-      ref class GFDataInputStream : public Stream
+      ref class GeodeNullStream : public Stream
       {
       public:
 
-        GFDataInputStream(DataInput^ input)
-        {
-          m_buffer = input;
-          m_maxSize = input->BytesRemaining;
-        }
-
-        GFDataInputStream(DataInput^ input, int maxSize)
-        {
-          m_buffer = input;
-          m_maxSize = maxSize;
-          m_buffer->AdvanceUMCursor();
-          m_buffer->SetBuffer();
-        }
-
         virtual property bool CanSeek { bool get() override { return false; } }
-        virtual property bool CanRead { bool get() override { return true; } }
-        virtual property bool CanWrite { bool get() override { return false; } }
+        virtual property bool CanRead { bool get() override { return false; } }
+        virtual property bool CanWrite { bool get() override { return true; } }
 
         virtual void Close() override { Stream::Close(); }
 
@@ -59,8 +43,7 @@ namespace Apache
         {
           int64_t get() override
           {
-            //return (int64_t) m_buffer->BytesRead + m_buffer->BytesRemaining;
-            return (int64_t) m_maxSize;
+            return (int64_t) m_position;
           }
         }
 
@@ -79,57 +62,57 @@ namespace Apache
 
         virtual int64_t Seek(int64_t offset, SeekOrigin origin) override
         {
-          throw gcnew System::NotSupportedException("Seek not supported by GFDataInputStream");
+          throw gcnew System::NotSupportedException("Seek not supported by GeodeNullStream");
+          /*
+          int actual = 0;
+          switch (origin)
+          {
+          case SeekOrigin::Begin:
+            actual = (int) offset;
+            m_position = (int) actual;
+            break;
+
+          case SeekOrigin::Current:
+            actual = (int) offset;
+            m_position += (int) actual;
+            break;
+
+          case SeekOrigin::End:
+            actual = (int) offset;
+            m_position += (int) actual;
+            break;
+          }
+          // Seek is meaningless here?
+          return m_position;
+          */
         }
 
         virtual void SetLength(int64_t value) override { /* do nothing */ }
 
         virtual void Write(array<Byte> ^ buffer, int offset, int count) override
         {
-          throw gcnew System::NotSupportedException("Write not supported by GFDataInputStream");
+          m_position += count;
         }
 
         virtual void WriteByte(unsigned char value) override
         {
-          throw gcnew System::NotSupportedException("WriteByte not supported by GFDataInputStream");
+          m_position++;
         }
 
         virtual int Read(array<Byte> ^ buffer, int offset, int count) override
         {
-          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          int bytesRemaining = m_maxSize - (int) m_buffer->BytesReadInternally;
-					if(bytesRemaining == 0)
-						return bytesRemaining;
-          int actual =  bytesRemaining < count ? bytesRemaining : count;
-					if (actual > 0)
-          {
-            /*
-            array<Byte>::ConstrainedCopy(m_buffer->ReadBytesOnly(actual), 0,
-              buffer, offset, actual);
-              */
-            //pin_ptr<Byte> pin_buffer = &buffer[offset];
-            //m_buffer->NativePtr->readBytesOnly((uint8_t*)pin_buffer, actual);
-            m_buffer->ReadBytesOnly(buffer, offset, actual);
-            m_position += actual;
-          }
+          throw gcnew System::NotSupportedException("Seek not supported by GeodeNullStream");
+          /*
+          int actual = count;
+          m_position += actual;
           return actual;
-          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+          */
         }
 
         virtual void Flush() override { /* do nothing */ }
 
-        property uint32_t BytesRead
-        {
-          uint32_t get()
-          {
-            return m_buffer->BytesReadInternally;
-          }
-        }
-
       private:
         int m_position;
-        int m_maxSize;
-        DataInput ^ m_buffer;
       };
     }  // namespace Client
   }  // namespace Geode

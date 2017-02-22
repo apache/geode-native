@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 #include "geode_globals.hpp"
-#include "gf_types.hpp"
+#include "geode_types.hpp"
 #include "Pool.hpp"
 #include "PoolFactory.hpp"
 #include "Region.hpp"

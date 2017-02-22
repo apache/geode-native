@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "StructSet.hpp"
 #include "SelectResultsIterator.hpp"
 #include "ExceptionTypes.hpp"
@@ -43,7 +43,7 @@ namespace Apache
       }
 
       generic<class TResult>
-      /*Apache::Geode::Client::IGFSerializable^*/ TResult StructSet<TResult>::default::get( size_t index )
+      /*Apache::Geode::Client::IGeodeSerializable^*/ TResult StructSet<TResult>::default::get( size_t index )
       {
         //return SafeUMSerializableConvertGeneric((NativePtr->operator[](static_cast<int32_t>(index))).ptr());
         return Serializable::GetManagedValueGeneric<TResult>((NativePtr->operator[](static_cast<int32_t>(index))));
@@ -58,7 +58,7 @@ namespace Apache
       }
 
       generic<class TResult>
-      System::Collections::Generic::IEnumerator</*Apache::Geode::Client::IGFSerializable^*/TResult>^
+      System::Collections::Generic::IEnumerator</*Apache::Geode::Client::IGeodeSerializable^*/TResult>^
         StructSet<TResult>::GetEnumerator( )
       {
         return GetIterator( );

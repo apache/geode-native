@@ -17,11 +17,11 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/CacheableKey.hpp>
 #include <geode/CacheableBuiltins.hpp>
-#include "IGFSerializable.hpp"
-#include "IGFDelta.hpp"
+#include "IGeodeSerializable.hpp"
+#include "IGeodeDelta.hpp"
 #include "impl/ManagedString.hpp"
 #include "impl/NativeWrapper.hpp"
 #include "impl/EnumInfo.hpp"
@@ -58,17 +58,17 @@ namespace Apache
       /// The delegate shall be stored in the internal <c>DelegateWrapper</c>
       /// class and an instance will be initialized in the
       /// <c>DelegateWrapper.NativeDelegate</c> method by a call to
-      /// <see cref="IGFSerializable.FromData" />.
+      /// <see cref="IGeodeSerializable.FromData" />.
       /// </summary>
-      public delegate Apache::Geode::Client::IGFSerializable^ TypeFactoryMethodGeneric();
+      public delegate Apache::Geode::Client::IGeodeSerializable^ TypeFactoryMethodGeneric();
       /// <summary>
       /// Delegate to wrap a native <c>apache::geode::client::Serializable</c> type.
       /// </summary>
       /// <remarks>
-      /// This delegate should return an object of type <c>IGFSerializable</c>
+      /// This delegate should return an object of type <c>IGeodeSerializable</c>
       /// given a native object.
       /// </remarks>
-      delegate Apache::Geode::Client::IGFSerializable^ WrapperDelegateGeneric(apache::geode::client::Serializable* obj);
+      delegate Apache::Geode::Client::IGeodeSerializable^ WrapperDelegateGeneric(apache::geode::client::Serializable* obj);
 
 			/// <summary>
       /// Signature of function delegates passed to
@@ -81,11 +81,11 @@ namespace Apache
       
       /// <summary>
       /// This class wraps the native C++ <c>apache::geode::client::Serializable</c> objects
-      /// as managed <see cref="IGFSerializable" /> objects.
+      /// as managed <see cref="IGeodeSerializable" /> objects.
       /// </summary>
       public ref class Serializable
         : public Apache::Geode::Client::Internal::SBWrap<apache::geode::client::Serializable>,
-        public Apache::Geode::Client::IGFSerializable
+        public Apache::Geode::Client::IGeodeSerializable
       {
       public:
         /// <summary>
@@ -104,7 +104,7 @@ namespace Apache
         /// the DataInput stream to use for reading the object data
         /// </param>
         /// <returns>the deserialized object</returns>
-        virtual Apache::Geode::Client::IGFSerializable^
+        virtual Apache::Geode::Client::IGeodeSerializable^
           FromData(Apache::Geode::Client::DataInput^ input);
         
         /// <summary>
@@ -247,7 +247,7 @@ namespace Apache
         /// <summary>
         /// Register an instance factory method for a given type.
         /// This should be used when registering types that implement
-        /// IGFSerializable.
+        /// IGeodeSerializable.
         /// </summary>
         /// <param name="creationMethod">
         /// the creation function to register
@@ -295,8 +295,8 @@ namespace Apache
 
       internal:
 
-				static int32 GetPDXIdForType(const char* poolName, IGFSerializable^ pdxType);
-				static IGFSerializable^ GetPDXTypeById(const char* poolName, int32 typeId);
+				static int32 GetPDXIdForType(const char* poolName, IGeodeSerializable^ pdxType);
+				static IGeodeSerializable^ GetPDXTypeById(const char* poolName, int32 typeId);
 				static IPdxSerializable^ Serializable::GetPdxType(String^ className);
 				static void RegisterPDXManagedCacheableKey(bool appDomainEnable);
         static bool IsObjectAndPdxSerializerRegistered(String^ className);
@@ -427,7 +427,7 @@ namespace Apache
         /// <summary>
         /// Register an instance factory method for a given type and typeId.
         /// This should be used when registering types that implement
-        /// IGFSerializable.
+        /// IGeodeSerializable.
         /// </summary>
         /// <param name="typeId">typeId of the type being registered.</param>
         /// <param name="creationMethod">

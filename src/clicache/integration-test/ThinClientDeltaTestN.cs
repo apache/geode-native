@@ -79,7 +79,7 @@ namespace Apache.Geode.Client.UnitTests
     private int m_valueCount;
   }
 
-  public class DeltaTestAD : IGFDelta, IGFSerializable
+  public class DeltaTestAD : IGeodeDelta, IGeodeSerializable
   {
     private int _deltaUpdate;
     private string _staticData;
@@ -96,7 +96,7 @@ namespace Apache.Geode.Client.UnitTests
     }
 
 
-    #region IGFDelta Members
+    #region IGeodeDelta Members
 
     public void FromDelta(DataInput input)
     {
@@ -118,14 +118,14 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    #region IGFSerializable Members
+    #region IGeodeSerializable Members
 
     public uint ClassId
     {
       get { return 151; }
     }
 
-    public IGFSerializable FromData(DataInput input)
+    public IGeodeSerializable FromData(DataInput input)
     {
       _deltaUpdate = input.ReadInt32();
       _staticData = input.ReadUTF();

@@ -21,7 +21,7 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include <geode/gf_types.hpp>
+#include <geode/geode_types.hpp>
 #include "ProxyCache.hpp"
 #include <geode/FunctionService.hpp>
 /**

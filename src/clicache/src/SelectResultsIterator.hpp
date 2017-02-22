@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/SelectResultsIterator.hpp>
 #include "impl/NativeWrapper.hpp"
 
@@ -31,7 +31,7 @@ namespace Apache
     namespace Client
     {
 
-      interface class IGFSerializable;
+      interface class IGeodeSerializable;
 
       /// <summary>
       /// Iterator for a query result.
@@ -39,7 +39,7 @@ namespace Apache
       generic<class TResult>
       public ref class SelectResultsIterator sealed
         : public Internal::UMWrap<apache::geode::client::SelectResultsIterator>,
-        public System::Collections::Generic::IEnumerator</*Apache::Geode::Client::IGFSerializable^*/TResult>
+        public System::Collections::Generic::IEnumerator</*Apache::Geode::Client::IGeodeSerializable^*/TResult>
       {
       public:
 
@@ -51,9 +51,9 @@ namespace Apache
         /// The element in the collection at the current position
         /// of the enumerator.
         /// </returns>
-        virtual property /*Apache::Geode::Client::IGFSerializable^*/TResult Current
+        virtual property /*Apache::Geode::Client::IGeodeSerializable^*/TResult Current
         {
-          virtual /*Apache::Geode::Client::IGFSerializable^*/TResult get( );
+          virtual /*Apache::Geode::Client::IGeodeSerializable^*/TResult get( );
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Apache
         /// <summary>
         /// Get the current element and move to the next one.
         /// </summary>
-        /*Apache::Geode::Client::IGFSerializable^*/TResult Next( );
+        /*Apache::Geode::Client::IGeodeSerializable^*/TResult Next( );
 
         /// <summary>
         /// Check if there is a next element.

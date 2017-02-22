@@ -85,7 +85,7 @@ namespace Apache
           }
         }
 
-        IGFSerializable^ PdxType::FromData(DataInput^ input)
+        IGeodeSerializable^ PdxType::FromData(DataInput^ input)
         {
           //defaulf java Dataserializable require this
           Byte val = input->ReadByte();//DS

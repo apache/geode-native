@@ -241,7 +241,7 @@ namespace Apache.Geode.Client.UnitTests
       m_accountid = accId;
     }
 
-    public IGFSerializable FromData(DataInput input)
+    public IGeodeSerializable FromData(DataInput input)
     {
       m_id = input.ReadInt32();
       m_accountid = input.ReadInt32();
@@ -273,7 +273,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new TradeKey();
     }
@@ -908,7 +908,7 @@ namespace Apache.Geode.Client.UnitTests
     //  else {
     //    region0 = CacheHelper.CreateTCRegion(RegionNames[0], true, true, null, endpoints, true); //caching enable true
     //  }
-    //  Dictionary<ICacheableKey, IGFSerializable> values = new Dictionary<ICacheableKey, IGFSerializable>();
+    //  Dictionary<ICacheableKey, IGeodeSerializable> values = new Dictionary<ICacheableKey, IGeodeSerializable>();
     //  Dictionary<ICacheableKey, Exception> exceptions = new Dictionary<ICacheableKey, Exception>();
     //  resultKeys.Clear();
     //  try {

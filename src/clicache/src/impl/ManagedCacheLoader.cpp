@@ -224,7 +224,7 @@ namespace apache
 
           ICacheableKey^ mkey = SafeGenericUMKeyConvert( key.ptr( ) );
 
-          IGFSerializable^ mcallbackArg = SafeGenericUMSerializableConvert(aCallbackArgument.ptr());
+          IGeodeSerializable^ mcallbackArg = SafeGenericUMSerializableConvert(aCallbackArgument.ptr());
           */
 
           /*

@@ -62,7 +62,7 @@ namespace apache
           //m_managedptr = m_managedptr->FromData( %mg_input );
           Apache::Geode::Client::IPdxSerializable^ tmp = Apache::Geode::Client::Internal::PdxHelper::DeserializePdx(%mg_input, false);
           m_managedptr = tmp;
-          m_managedDeltaptr = dynamic_cast<Apache::Geode::Client::IGFDelta^>(tmp);
+          m_managedDeltaptr = dynamic_cast<Apache::Geode::Client::IGeodeDelta^>(tmp);
 
           //this will move the cursor in c++ layer
           input.advanceCursor(mg_input.BytesReadInternally);
@@ -278,7 +278,7 @@ namespace apache
       {
         try {
           ICloneable^ cloneable = dynamic_cast<ICloneable^>((
-            Apache::Geode::Client::IGFDelta^) m_managedDeltaptr);
+            Apache::Geode::Client::IGeodeDelta^) m_managedDeltaptr);
           if (cloneable) {
             Apache::Geode::Client::IPdxSerializable^ Mclone =
               dynamic_cast<Apache::Geode::Client::IPdxSerializable^>(cloneable->Clone());

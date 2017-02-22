@@ -86,7 +86,7 @@ struct YesNoType<false> {
 }
 
 #define TYPE_IS_IGFSERIALIZABLE(T) \
-  TypeHelper::SuperSubclass<IGFSerializable, T>::result
+  TypeHelper::SuperSubclass<IGeodeSerializable, T>::result
 #define TYPE_IS_IGFSERIALIZABLE_TYPE(T) \
   TypeHelper::YesNoType<TYPE_IS_SERIALIZABLE(T)>::value
 

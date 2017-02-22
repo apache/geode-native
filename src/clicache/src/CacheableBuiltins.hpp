@@ -19,7 +19,7 @@
 
 
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/CacheableBuiltins.hpp>
 #include "CacheableKey.hpp"
 #include "Serializable.hpp"
@@ -185,7 +185,7 @@ namespace Apache
           output->WriteObject(m_value);
         }
 
-        virtual IGFSerializable^ FromData(DataInput^ input) override
+        virtual IGeodeSerializable^ FromData(DataInput^ input) override
         {
           input->ReadObject(m_value);
           return this;
@@ -358,13 +358,13 @@ namespace Apache
             * Factory function to register this class.
             * </summary>
             */                                                                   \
-            static IGFSerializable^ CreateDeserializable()                        \
+            static IGeodeSerializable^ CreateDeserializable()                        \
            {                                                                     \
            return gcnew m();                                       \
            }                                                                     \
            \
            internal:                                                               \
-           static IGFSerializable^ Create(apache::geode::client::Serializable* obj)            \
+           static IGeodeSerializable^ Create(apache::geode::client::Serializable* obj)            \
            {                                                                     \
            return (obj != nullptr ? gcnew m(obj) : nullptr);                   \
            }                                                                     \
@@ -421,13 +421,13 @@ namespace Apache
        * Factory function to register this class.
        * </summary>
        */                                                                   \
-       static IGFSerializable^ CreateDeserializable()                        \
+       static IGeodeSerializable^ CreateDeserializable()                        \
       {                                                                     \
       return gcnew m();                                                   \
       }                                                                     \
       \
             internal:                                                               \
-              static IGFSerializable^ Create(apache::geode::client::Serializable* obj)            \
+              static IGeodeSerializable^ Create(apache::geode::client::Serializable* obj)            \
       {                                                                     \
       return (obj != nullptr ? gcnew m(obj) : nullptr);                   \
       }                                                                     \

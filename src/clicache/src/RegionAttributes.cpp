@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "RegionAttributes.hpp"
 //#include "Region.hpp"
 #include "impl/ManagedCacheLoader.hpp"
@@ -58,7 +58,7 @@ namespace Apache
       }
 
       generic <class TKey, class TValue>
-      Apache::Geode::Client::IGFSerializable^ Client::RegionAttributes<TKey, TValue>::FromData(
+      Apache::Geode::Client::IGeodeSerializable^ Client::RegionAttributes<TKey, TValue>::FromData(
         Apache::Geode::Client::DataInput^ input )
       {
         apache::geode::client::DataInput* nativeInput =

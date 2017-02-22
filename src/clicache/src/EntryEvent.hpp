@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/EntryEvent.hpp>
 #include "impl/NativeWrapper.hpp"
 #include "IRegion.hpp"
@@ -32,7 +32,7 @@ namespace Apache
     namespace Client
     {
 
-        interface class IGFSerializable;
+        interface class IGeodeSerializable;
 
      // ref class Region;
       //interface class ICacheableKey;

@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include <geode/CacheableKey.hpp>
 //#include "impl/NativeWrapper.hpp"
 #include "Serializable.hpp"
@@ -35,7 +35,7 @@ namespace Apache
 
       /// <summary>
       /// This class wraps the native C++ <c>apache::geode::client::Serializable</c> objects
-      /// as managed <see cref="../../IGFSerializable" /> objects.
+      /// as managed <see cref="../../IGeodeSerializable" /> objects.
       /// </summary>
       public ref class CacheableKey
         : public Serializable, public ICacheableKey
