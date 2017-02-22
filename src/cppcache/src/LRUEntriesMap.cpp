@@ -20,6 +20,9 @@
 #include "MapSegment.hpp"
 #include "CacheImpl.hpp"
 
+#include <mutex>
+#include "util/concurrent/spinlock_mutex.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -48,11 +51,6 @@ class CPPCACHE_EXPORT TestMapAction : public virtual LRUAction {
   virtual LRUAction::Action getType() { return LRUAction::LOCAL_DESTROY; }
   friend class LRUAction;
 };
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
-
-using namespace apache::geode::client;
 
 LRUEntriesMap::LRUEntriesMap(EntryFactory* entryFactory, RegionInternal* region,
                              const LRUAction::Action& lruAction,
@@ -67,18 +65,18 @@ LRUEntriesMap::LRUEntriesMap(EntryFactory* entryFactory, RegionInternal* region,
       m_validEntries(0),
       m_heapLRUEnabled(heapLRUEnabled) {
   m_currentMapSize = 0;
-  m_action = NULL;
-  m_evictionControllerPtr = NULL;
+  m_action = nullptr;
+  m_evictionControllerPtr = nullptr;
   // translate action type to an instance.
-  if (region == NULL) {
+  if (region == nullptr) {
     m_action = new TestMapAction(this);
   } else {
     m_action = LRUAction::newLRUAction(lruAction, region, this);
     m_name = region->getName();
     CacheImpl* cImpl = region->getCacheImpl();
-    if (cImpl != NULL) {
+    if (cImpl != nullptr) {
       m_evictionControllerPtr = cImpl->getEvictionController();
-      if (m_evictionControllerPtr != NULL) {
+      if (m_evictionControllerPtr != nullptr) {
         m_evictionControllerPtr->registerRegion(m_name);
         LOGINFO("Heap LRU eviction controller registered region %s",
                 m_name.c_str());
@@ -88,7 +86,7 @@ LRUEntriesMap::LRUEntriesMap(EntryFactory* entryFactory, RegionInternal* region,
 }
 
 void LRUEntriesMap::close() {
-  if (m_evictionControllerPtr != NULL) {
+  if (m_evictionControllerPtr != nullptr) {
     m_evictionControllerPtr->updateRegionHeapInfo((-1 * (m_currentMapSize)));
     m_evictionControllerPtr->deregisterRegion(m_name);
   }
@@ -137,7 +135,7 @@ GfErrType LRUEntriesMap::create(const CacheableKeyPtr& key,
     m_lruList.appendEntry(mePtr);
     me = mePtr;
   }
-  if (m_evictionControllerPtr != NULL) {
+  if (m_evictionControllerPtr != nullptr) {
     int64_t newSize =
         static_cast<int64_t>(Utils::checkAndGetObjectSize(newValue));
     newSize += static_cast<int64_t>(Utils::checkAndGetObjectSize(key));
@@ -238,7 +236,7 @@ GfErrType LRUEntriesMap::invalidate(const CacheableKeyPtr& key,
     } else {
       newSize -= sizeof(void*);
     }
-    if (m_evictionControllerPtr != NULL) {
+    if (m_evictionControllerPtr != nullptr) {
       if (newSize != 0) {
         updateMapSize(newSize);
       }
@@ -253,12 +251,12 @@ GfErrType LRUEntriesMap::put(const CacheableKeyPtr& key,
                              int destroyTracker, VersionTagPtr versionTag,
                              bool& isUpdate, DataInput* delta) {
   MapSegment* segmentRPtr = segmentFor(key);
-  GF_D_ASSERT(segmentRPtr != NULL);
+  GF_D_ASSERT(segmentRPtr != nullptr);
 
   GfErrType err = GF_NOERR;
   bool segmentLocked = false;
   {
-    if (m_action != NULL &&
+    if (m_action != nullptr &&
         m_action->getType() == LRUAction::OVERFLOW_TO_DISK) {
       segmentRPtr->acquire();
       segmentLocked = true;
@@ -297,7 +295,7 @@ GfErrType LRUEntriesMap::put(const CacheableKeyPtr& key,
       }
     }
     // SpinLock& lock = segmentRPtr->getSpinLock();
-    // SpinLockGuard mapGuard( lock );
+    // std::lock_guard<spinlock_mutex> mapGuard( lock );
 
     // TODO:  when can newValue be a token ??
     if (CacheableToken::isToken(newValue) && !isOldValueToken) {
@@ -328,7 +326,7 @@ GfErrType LRUEntriesMap::put(const CacheableKeyPtr& key,
       }
     }
   }
-  if (m_evictionControllerPtr != NULL) {
+  if (m_evictionControllerPtr != nullptr) {
     int64_t newSize =
         static_cast<int64_t>(Utils::checkAndGetObjectSize(newValue));
     /*
@@ -372,7 +370,8 @@ bool LRUEntriesMap::get(const CacheableKeyPtr& key, CacheablePtr& returnPtr,
   bool doProcessLRU = false;
   MapSegment* segmentRPtr = segmentFor(key);
   bool segmentLocked = false;
-  if (m_action != NULL && m_action->getType() == LRUAction::OVERFLOW_TO_DISK) {
+  if (m_action != nullptr &&
+      m_action->getType() == LRUAction::OVERFLOW_TO_DISK) {
     segmentRPtr->acquire();
     segmentLocked = true;
   }
@@ -406,14 +405,14 @@ bool LRUEntriesMap::get(const CacheableKeyPtr& key, CacheablePtr& returnPtr,
       VersionTagPtr versionTag;
       if (GF_NOERR ==
           segmentRPtr->put(key, tmpObj, mePtr, oldValue, 0, 0, isUpdate,
-                           versionTag, NULL)) {
+                           versionTag, nullptr)) {
         // m_entriesRetrieved++;
         ++m_validEntries;
         lruProps.clearEvicted();
         m_lruList.appendEntry(nodeToMark);
       }
       doProcessLRU = true;
-      if (m_evictionControllerPtr != NULL) {
+      if (m_evictionControllerPtr != nullptr) {
         int64_t newSize = 0;
         if (tmpObj != NULLPTR) {
           newSize += static_cast<int64_t>(
@@ -475,7 +474,7 @@ GfErrType LRUEntriesMap::remove(const CacheableKeyPtr& key,
           m_pmPtr->destroy(key, persistenceInfo);
         }
       }
-      if (m_evictionControllerPtr != NULL) {
+      if (m_evictionControllerPtr != nullptr) {
         int64_t sizeToRemove = static_cast<int64_t>(key->objectSize());
         sizeToRemove += static_cast<int64_t>(result->objectSize());
         updateMapSize((-1 * sizeToRemove));
@@ -488,9 +487,9 @@ GfErrType LRUEntriesMap::remove(const CacheableKeyPtr& key,
 void LRUEntriesMap::updateMapSize(int64_t size) {
   // TODO: check and remove null check since this has already been done
   // by all the callers
-  if (m_evictionControllerPtr != NULL) {
+  if (m_evictionControllerPtr != nullptr) {
     {
-      SpinLockGuard __guard(m_mapInfoLock);
+      std::lock_guard<spinlock_mutex> __guard(m_mapInfoLock);
       m_currentMapSize += size;
     }
     m_evictionControllerPtr->updateRegionHeapInfo(size);
@@ -511,3 +510,6 @@ CacheablePtr LRUEntriesMap::getFromDisk(const CacheableKeyPtr& key,
   }
   return tmpObj;
 }
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
