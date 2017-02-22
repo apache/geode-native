@@ -25,6 +25,9 @@
 #include <geode/Exception.hpp>
 #include <ace/TSS_T.h>
 
+#include <string>
+#include "config.h"
+
 void initLibDllEntry(void);
 
 extern "C" {
@@ -64,12 +67,13 @@ LIBEXP void DllMainGetPath(char *result, int maxLen) {
     result[0] = '\0';
     return;
   }
-  HMODULE module = GetModuleHandle("apache-geode.dll");
+  std::string cppLibName = PRODUCT_LIB_NAME;
+  cppLibName += ".dll";
+  std::string dotNetLibName = PRODUCT_DLL_NAME;
+  dotNetLibName += ".dll";
+  HMODULE module = GetModuleHandle(cppLibName.c_str());
   if (module == 0) {
-    module = GetModuleHandle("apache-geode_g.dll");
-    if (module == 0) {
-      module = GetModuleHandle("Apache.Geode.dll");
-    }
+      module = GetModuleHandle(dotNetLibName.c_str());
   }
   if (module != 0) {
     GetModuleFileName(module, result, maxLen);
@@ -113,33 +117,7 @@ void setDefaultNewAndDelete() {
   Utils::s_pDelete = (pDelete)&free;  // operator delete;
 }
 
-/*
-void setDefaultNewAndDelete_disabled()
-{
-  HMODULE hModule = GetModuleHandle("msvcrtd");
 
-  if (!hModule) hModule = GetModuleHandle("msvcrt");
-
-  if (hModule)
-  {
-    // 32-bit versions
-    Utils::s_pNew = (pNew) GetProcAddress(hModule, "??2@YAPAXI@Z");
-    Utils::s_pDelete = (pDelete) GetProcAddress(hModule, "??3@YAXPAX@Z");
-
-    if (Utils::s_pNew && Utils::s_pDelete) return;
-
-    // 64-bit versions
-    Utils::s_pNew = (pNew) GetProcAddress(hModule, "??2@YAPEAX_K@Z");
-    Utils::s_pDelete = (pDelete) GetProcAddress(hModule, "??3@YAXPEAX@Z");
-  }
-
-  if (!Utils::s_pNew || !Utils::s_pDelete)
-  {
-    throw IllegalStateException("Could not set default new and delete
-operators.");
-  }
-}
-*/
 }
 }
 }

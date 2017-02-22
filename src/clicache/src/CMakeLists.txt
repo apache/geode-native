@@ -56,7 +56,7 @@ include_directories(${CMAKE_SOURCE_DIR}/clicache/src)
 include_directories(${CMAKE_SOURCE_DIR}/cppcache/src)
 
 set_target_properties(Apache.Geode PROPERTIES
-  OUTPUT_NAME Apache.Geode
+  OUTPUT_NAME ${PRODUCT_DLL_NAME}
   VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
   VS_DOTNET_REFERENCES "System;System.Xml")
 
