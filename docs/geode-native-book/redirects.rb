@@ -14,7 +14,7 @@
 #permissions and limitations under the License.
 
 r301 %r{/releases/latest/javadoc/(.*)}, 'http://geode.apache.org/releases/latest/javadoc/$1'
-r301 %r{/geodeman/(.*)}, 'http://gemfire.docs.pivotal.io/docs-gemfire/latest/$1'
+r301 %r{/geodeman/(.*)}, 'http://geode.apache.org/docs/guide/11/$1'
 r302 '/index-10.html', 'http://geode.apache.org/docs/guide-native/10/about_native_client_users_guide.html'
 rewrite '/', '/docs/guide-native/11/about_native_client_users_guide.html'
 rewrite '/index.html', '/docs/guide-native/11/about_native_client_users_guide.html'
