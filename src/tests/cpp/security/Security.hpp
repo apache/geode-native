@@ -114,7 +114,7 @@ class Security : public FrameworkTest {
   CacheableBytesPtr* m_CValue;
 };
 
-}  //   namespace security
+}  // namespace security
 }  // namespace testframework
 }  // namespace client
 }  // namespace geode

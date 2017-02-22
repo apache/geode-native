@@ -35,8 +35,15 @@
 
 #include "fwklib/FwkExport.hpp"
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
+#include <mutex>
+#include <util/concurrent/spinlock_mutex.hpp>
+
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
+
+using util::concurrent::spinlock_mutex;
 
 static UdpIpc *g_test = NULL;
 
@@ -72,7 +79,7 @@ TESTTASK finalize() {
 // ----------------------------------------------------------------------------
 
 void UdpIpc::checkTest(const char *taskId) {
-  SpinLockGuard guard(m_lck);
+  std::lock_guard<spinlock_mutex> guard(m_lck);
   setTask(taskId);
   if (m_cache == NULLPTR) {
     PropertiesPtr pp = Properties::create();
@@ -257,4 +264,8 @@ void UdpIpc::doClient() {
   }
   FWKINFO("Stop");
   FWKINFO("Client sent " << msgCnt << " messages");
+}
+}
+}
+}
 }

@@ -26,10 +26,14 @@
 
 #include <string>
 
+#include <util/concurrent/spinlock_mutex.hpp>
+
 namespace apache {
 namespace geode {
 namespace client {
 namespace testframework {
+
+using util::concurrent::spinlock_mutex;
 
 class FrameworkTest  // Base class all test classes written for xml testing
                      // should derive from.
@@ -46,7 +50,7 @@ class FrameworkTest  // Base class all test classes written for xml testing
   CachePtr m_cache;
   // bool m_istransaction;
   CacheTransactionManagerPtr txManager;
-  static SpinLock m_lck;
+  static spinlock_mutex m_lck;
 
 #ifdef _WIN32
   bool m_doneSetNewAndDelete;
