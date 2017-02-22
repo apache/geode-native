@@ -125,7 +125,9 @@ target_include_directories(apache-geode
     $<TARGET_PROPERTY:_apache-geode,INTERFACE_INCLUDE_DIRECTORIES>
 )
 add_dependencies(client-libraries apache-geode)
-set_target_properties(apache-geode PROPERTIES PUBLIC_HEADER "${PUBLIC_HEADERS}" OUTPUT_NAME ${PRODUCT_LIB_NAME} )
+set_target_properties(apache-geode PROPERTIES
+  PUBLIC_HEADER "${PUBLIC_HEADERS}"
+  OUTPUT_NAME ${PRODUCT_LIB_NAME})
 
 add_library(apache-geode-static STATIC ${SOURCES_ALL})
 target_link_libraries(apache-geode-static

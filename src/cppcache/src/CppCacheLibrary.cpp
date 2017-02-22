@@ -117,42 +117,35 @@ std::string CppCacheLibrary::getProductLibDir(const char* addon) {
 // return the directory where the library/DLL resides
 std::string CppCacheLibrary::getProductLibDir() {
   // otherwise... get the DLL path, and work backwards from it.
-  char path[PATH_MAX + 1];
-  char* dllNamePtr;
+  char buffer[PATH_MAX + 1];
+  buffer[0] = '\0';
+  DllMainGetPath(buffer, PATH_MAX);
 
-  path[0] = '\0';
-  DllMainGetPath(path, PATH_MAX);
+  std::string path(buffer);
+  fprintf(stderr, "MOOF: %s\n", path.c_str());
+  std::string::size_type pos = std::string::npos;
 #ifdef WIN32
-  // windows paths are case insensitive
-  for (int i = 0; i < PATH_MAX && path[i] != 0; i++) {
-    path[i] = ::tolower(path[i]);
-  }
   std::string cppName = PRODUCT_LIB_NAME;
   cppName += ".dll";
-  std::string dotNetName = PRODUCT_DLL_NAME;
-  dotNetName += ".dll";
-  dllNamePtr = strstr(path, cppName.c_str());
-  if (dllNamePtr == NULL) {
-      dllNamePtr = strstr(path, dotNetName.c_str());
+  pos = path.find(cppName);
+  if (std::string::npos == pos) {
+	  std::string dotNetName = PRODUCT_DLL_NAME;
+	  dotNetName += ".dll";
+	  pos = path.find(dotNetName);
   }
 #else
   std::string cppName = "lib";
   cppName += PRODUCT_LIB_NAME;
-  dllNamePtr = strstr(path, cppName.c_str());
+  pos = path.find(cppName);
 #endif
-  std::string libDir;
-  if (dllNamePtr != NULL) {
-    dllNamePtr--;
-    // null terminate at the directory containing the library.
-    *dllNamePtr = '\0';
-    libDir = path;
+  if (0 < pos) {
+	  return path.substr(0, --pos);
   }
-  return libDir;
+  return std::string();
 }
 
 std::string CppCacheLibrary::getProductDir() {
   // If the environment variable is set, use it.
-  // char * gfcppenv = ACE_OS::getenv( "GFCPP" );
   std::string gfcppenv = Utils::getEnv("GFCPP");
   if (gfcppenv.length() > 0) {
     return gfcppenv;
@@ -205,13 +198,5 @@ std::string CppCacheLibrary::getProductDir() {
   } else {
     return libdirname;
   }
-  /*  Bug 728 fix - don't fail here, rather assume user installs product
-  manually in place.
-  fprintf(stderr, "Cannot determine location of product directory.\n"
-      "Please set GFCPP environment variable.\n");
-  fflush(stderr);
-  throw apache::geode::client::IllegalStateException("Product installation
-  directory "
-      "not found. Please set GFCPP environment variable.");
-      */
+
 }
