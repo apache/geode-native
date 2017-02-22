@@ -41,8 +41,8 @@ StatisticDescriptorImpl::StatisticDescriptorImpl(const char* statName,
                                                  FieldType statDescriptorType,
                                                  const char* statDescription,
                                                  const char* statUnit,
-                                                 int8 statIsStatCounter,
-                                                 int8 statIsStatLargerBetter) {
+                                                 bool statIsStatCounter,
+                                                 bool statIsStatLargerBetter) {
   name = statName;
   descriptorType = statDescriptorType;
   if (strcmp(statDescription, "") == 0) {
@@ -66,7 +66,7 @@ StatisticDescriptorImpl::~StatisticDescriptorImpl() {}
 
 StatisticDescriptor* StatisticDescriptorImpl::createIntCounter(
     const char* statName, const char* description, const char* units,
-    int8 isLargerBetter) throw(OutOfMemoryException) {
+    bool isLargerBetter) throw(OutOfMemoryException) {
   FieldType fieldType = INT_TYPE;
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       statName, fieldType, description, units, true, isLargerBetter);
@@ -79,7 +79,7 @@ StatisticDescriptor* StatisticDescriptorImpl::createIntCounter(
 
 StatisticDescriptor* StatisticDescriptorImpl::createLongCounter(
     const char* name, const char* description, const char* units,
-    int8 isLargerBetter) throw(OutOfMemoryException) {
+    bool isLargerBetter) throw(OutOfMemoryException) {
   FieldType fieldType = LONG_TYPE;
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       name, fieldType, description, units, true, isLargerBetter);
@@ -92,7 +92,7 @@ StatisticDescriptor* StatisticDescriptorImpl::createLongCounter(
 
 StatisticDescriptor* StatisticDescriptorImpl::createDoubleCounter(
     const char* name, const char* description, const char* units,
-    int8 isLargerBetter) throw(OutOfMemoryException) {
+    bool isLargerBetter) throw(OutOfMemoryException) {
   FieldType fieldType = DOUBLE_TYPE;
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       name, fieldType, description, units, true, isLargerBetter);
@@ -105,7 +105,7 @@ StatisticDescriptor* StatisticDescriptorImpl::createDoubleCounter(
 
 StatisticDescriptor* StatisticDescriptorImpl::createIntGauge(
     const char* name, const char* description, const char* units,
-    int8 isLargerBetter) throw(OutOfMemoryException) {
+    bool isLargerBetter) throw(OutOfMemoryException) {
   FieldType fieldType = INT_TYPE;
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       name, fieldType, description, units, false, isLargerBetter);
@@ -118,7 +118,7 @@ StatisticDescriptor* StatisticDescriptorImpl::createIntGauge(
 
 StatisticDescriptor* StatisticDescriptorImpl::createLongGauge(
     const char* name, const char* description, const char* units,
-    int8 isLargerBetter) throw(OutOfMemoryException) {
+    bool isLargerBetter) throw(OutOfMemoryException) {
   FieldType fieldType = LONG_TYPE;
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       name, fieldType, description, units, false, isLargerBetter);
@@ -132,7 +132,7 @@ StatisticDescriptor* StatisticDescriptorImpl::createLongGauge(
 
 StatisticDescriptor* StatisticDescriptorImpl::createDoubleGauge(
     const char* name, const char* description, const char* units,
-    int8 isLargerBetter) throw(OutOfMemoryException) {
+    bool isLargerBetter) throw(OutOfMemoryException) {
   FieldType fieldType = DOUBLE_TYPE;
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       name, fieldType, description, units, false, isLargerBetter);
@@ -152,7 +152,7 @@ const char* StatisticDescriptorImpl::getDescription() {
   return description.c_str();
 }
 
-int32 StatisticDescriptorImpl::getStorageBits() {
+int32_t StatisticDescriptorImpl::getStorageBits() {
   return getTypeCodeBits(descriptorType);
 }
 
@@ -180,7 +180,7 @@ const char* StatisticDescriptorImpl::getTypeCodeName(FieldType code) throw(
  * @throws IllegalArgumentException/
  *         <code>code</code> is an unknown type
  */
-int32 StatisticDescriptorImpl::getTypeCodeBits(FieldType code) throw(
+int32_t StatisticDescriptorImpl::getTypeCodeBits(FieldType code) throw(
     IllegalArgumentException) {
   switch (code) {
     case INT_TYPE:
@@ -196,9 +196,9 @@ int32 StatisticDescriptorImpl::getTypeCodeBits(FieldType code) throw(
   }
 }
 
-int8 StatisticDescriptorImpl::isCounter() { return isStatCounter; }
+bool StatisticDescriptorImpl::isCounter() { return isStatCounter; }
 
-int8 StatisticDescriptorImpl::isLargerBetter() { return isStatLargerBetter; }
+bool StatisticDescriptorImpl::isLargerBetter() { return isStatLargerBetter; }
 
 const char* StatisticDescriptorImpl::getUnit() { return unit.c_str(); }
 
@@ -210,8 +210,8 @@ const char* StatisticDescriptorImpl::getUnit() { return unit.c_str(); }
  * doesn't allow it to be thrown.
  * This will cause a call to unexpected() which usually calls terminate().
  */
-// int32 StatisticDescriptorImpl::getId() throw(IllegalArgumentException)
-int32 StatisticDescriptorImpl::getId() throw(IllegalStateException) {
+// int32_t StatisticDescriptorImpl::getId() throw(IllegalArgumentException)
+int32_t StatisticDescriptorImpl::getId() throw(IllegalStateException) {
   if (id == -1) {
     std::string s = "The id has not been initialized yet.";
     throw IllegalStateException(s.c_str());
@@ -223,9 +223,9 @@ int32 StatisticDescriptorImpl::getId() throw(IllegalStateException) {
 
 FieldType StatisticDescriptorImpl::getTypeCode() { return descriptorType; }
 
-void StatisticDescriptorImpl::setId(int32 statId) { id = statId; }
+void StatisticDescriptorImpl::setId(int32_t statId) { id = statId; }
 
-int32 StatisticDescriptorImpl::checkInt() throw(IllegalArgumentException) {
+int32_t StatisticDescriptorImpl::checkInt() throw(IllegalArgumentException) {
   if (descriptorType != INT_TYPE) {
     std::string sb;
     std::string typeCode(getTypeCodeName(getTypeCode()));
@@ -236,7 +236,7 @@ int32 StatisticDescriptorImpl::checkInt() throw(IllegalArgumentException) {
   }
   return id;
 }
-int32 StatisticDescriptorImpl::checkLong() throw(IllegalArgumentException) {
+int32_t StatisticDescriptorImpl::checkLong() throw(IllegalArgumentException) {
   if (descriptorType != LONG_TYPE) {
     std::string sb;
     std::string typeCode(getTypeCodeName(getTypeCode()));
@@ -248,7 +248,7 @@ int32 StatisticDescriptorImpl::checkLong() throw(IllegalArgumentException) {
   return id;
 }
 
-int32 StatisticDescriptorImpl::checkDouble() throw(IllegalArgumentException) {
+int32_t StatisticDescriptorImpl::checkDouble() throw(IllegalArgumentException) {
   if (descriptorType != DOUBLE_TYPE) {
     std::string sb;
     std::string typeCode(getTypeCodeName(getTypeCode()));

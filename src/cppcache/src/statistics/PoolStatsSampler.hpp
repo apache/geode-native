@@ -38,11 +38,11 @@ namespace statistics {
 class StatisticsManager;
 class CPPCACHE_EXPORT PoolStatsSampler : public ACE_Task_Base {
  public:
-  PoolStatsSampler(int64 sampleRate, CacheImpl* cache,
+  PoolStatsSampler(int64_t sampleRate, CacheImpl* cache,
                    ThinClientPoolDM* distMan);
   void start();
   void stop();
-  int32 svc(void);
+  int32_t svc(void);
   bool isRunning();
   virtual ~PoolStatsSampler();
 
@@ -53,7 +53,7 @@ class CPPCACHE_EXPORT PoolStatsSampler : public ACE_Task_Base {
   void putStatsInAdminRegion();
   volatile bool m_running;
   volatile bool m_stopRequested;
-  int64 m_sampleRate;
+  int64_t m_sampleRate;
   AdminRegion* m_adminRegion;
   ThinClientPoolDM* m_distMan;
   ACE_Recursive_Thread_Mutex m_lock;

@@ -348,10 +348,10 @@ class CPPCACHE_EXPORT TcrMessage {
   uint32_t getMessageTypeForCq() const { return m_msgTypeForCq; }
   bool isInterestListPassed() const { return m_isInterestListPassed; }
   bool shouldIgnore() const { return m_shouldIgnore; }
-  int8 getMetaDataVersion() const { return m_metaDataVersion; }
+  int8_t getMetaDataVersion() const { return m_metaDataVersion; }
   uint32_t getEntryNotFound() const { return m_entryNotFound; }
-  int8 getserverGroupVersion() const { return m_serverGroupVersion; }
-  std::vector<int8>* getFunctionAttributes() { return m_functionAttributes; }
+  int8_t getserverGroupVersion() const { return m_serverGroupVersion; }
+  std::vector<int8_t>* getFunctionAttributes() { return m_functionAttributes; }
 
   // set the DM for chunked response messages
   void setDM(ThinClientBaseDM* dm) { m_tcdm = dm; }
@@ -609,8 +609,8 @@ class CPPCACHE_EXPORT TcrMessage {
   bool m_hasCqsPart;
   bool m_isInterestListPassed;
   bool m_shouldIgnore;
-  int8 m_metaDataVersion;
-  int8 m_serverGroupVersion;
+  int8_t m_metaDataVersion;
+  int8_t m_serverGroupVersion;
   std::vector<BucketServerLocationPtr> m_bucketServerLocations;
   std::vector<std::vector<BucketServerLocationPtr> >* m_metadata;
   int32_t m_bucketCount;
@@ -629,7 +629,7 @@ class CPPCACHE_EXPORT TcrMessage {
   BucketServerLocationPtr m_bucketServerLocation;
   uint32_t m_entryNotFound;
   std::vector<FixedPartitionAttributesImplPtr>* m_fpaSet;
-  std::vector<int8>* m_functionAttributes;
+  std::vector<int8_t>* m_functionAttributes;
   uint8_t m_hasResult;
   CacheableHashMapPtr m_tombstoneVersions;
   CacheableHashSetPtr m_tombstoneKeys;

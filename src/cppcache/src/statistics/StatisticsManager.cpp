@@ -40,9 +40,9 @@ using namespace apache::geode::statistics;
  */
 StatisticsManager* StatisticsManager::s_singleton = NULL;
 
-StatisticsManager::StatisticsManager(const char* filePath, int64 sampleInterval,
-                                     bool enabled, int64 statFileLimit,
-                                     int64 statDiskSpaceLimit)
+StatisticsManager::StatisticsManager(const char* filePath, int64_t sampleInterval,
+                                     bool enabled, int64_t statFileLimit,
+                                     int64_t statDiskSpaceLimit)
     : m_sampler(NULL), m_adminRegion(NULLPTR) {
   m_sampleIntervalMs =
       static_cast<int32_t>(sampleInterval) * 1000; /* convert to millis */
@@ -62,10 +62,10 @@ StatisticsManager::StatisticsManager(const char* filePath, int64 sampleInterval,
 }
 
 StatisticsManager* StatisticsManager::initInstance(const char* filePath,
-                                                   int64 sampleIntervalMs,
+                                                   int64_t sampleIntervalMs,
                                                    bool enabled,
-                                                   int64 statsFileLimit,
-                                                   int64 statsDiskSpaceLimit) {
+                                                   int64_t statsFileLimit,
+                                                   int64_t statsDiskSpaceLimit) {
   if (!s_singleton) {
     s_singleton = new StatisticsManager(filePath, sampleIntervalMs, enabled,
                                         statsFileLimit, statsDiskSpaceLimit);
@@ -96,7 +96,7 @@ StatisticsManager::~StatisticsManager() {
     // List should be empty if close() is called on each Stats object
     // If this is not done, delete all the pointers
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListLock);
-    int32 count = static_cast<int32>(m_statsList.size());
+    int32_t count = static_cast<int32_t>(m_statsList.size());
     if (count > 0) {
       LOGFINEST("~StatisticsManager has found %d leftover statistics:", count);
       std::vector<Statistics*>::iterator iterFind = m_statsList.begin();
@@ -168,9 +168,9 @@ void StatisticsManager::addStatisticsToList(Statistics* stat) {
   }
 }
 
-int32 StatisticsManager::getStatListModCount() {
+int32_t StatisticsManager::getStatListModCount() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListLock);
-  return static_cast<int32>(m_statsList.size());
+  return static_cast<int32_t>(m_statsList.size());
 }
 
 std::vector<Statistics*>& StatisticsManager::getStatsList() {
@@ -226,7 +226,7 @@ std::vector<Statistics*> StatisticsManager::findStatisticsByTextId(
 }
 
 std::vector<Statistics*> StatisticsManager::findStatisticsByNumericId(
-    int64 numericId) {
+    int64_t numericId) {
   std::vector<Statistics*> hits;
 
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListLock);
@@ -241,7 +241,7 @@ std::vector<Statistics*> StatisticsManager::findStatisticsByNumericId(
   return hits;
 }
 
-Statistics* StatisticsManager::findStatisticsByUniqueId(int64 uniqueId) {
+Statistics* StatisticsManager::findStatisticsByUniqueId(int64_t uniqueId) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListLock);
 
   std::vector<Statistics*>::iterator start = m_statsList.begin();

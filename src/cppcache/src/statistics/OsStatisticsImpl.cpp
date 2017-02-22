@@ -31,9 +31,9 @@ using namespace apache::geode::statistics;
 
 //////////////////////  Static Methods  //////////////////////
 
-int64 OsStatisticsImpl::calcNumericId(StatisticsFactory* system,
-                                      int64 userValue) {
-  int64 result;
+int64_t OsStatisticsImpl::calcNumericId(StatisticsFactory* system,
+                                      int64_t userValue) {
+  int64_t result;
   if (userValue != 0) {
     result = userValue;
   } else {
@@ -73,8 +73,8 @@ const char* OsStatisticsImpl::calcTextId(StatisticsFactory* system,
  *        statistics are stored (and collected) in local memory
  */
 OsStatisticsImpl::OsStatisticsImpl(StatisticsType* typeArg,
-                                   const char* textIdArg, int64 numericIdArg,
-                                   int64 uniqueIdArg, StatisticsFactory* system)
+                                   const char* textIdArg, int64_t numericIdArg,
+                                   int64_t uniqueIdArg, StatisticsFactory* system)
 
 {
   this->textId = calcTextId(system, textIdArg);
@@ -86,24 +86,24 @@ OsStatisticsImpl::OsStatisticsImpl(StatisticsType* typeArg,
    * CID 28981: Uninitialized pointer field (UNINIT_CTOR)
    */
   doubleStorage = (double*)0;
-  intStorage = (int32*)0;
-  longStorage = (int64*)0;
+  intStorage = (int32_t*)0;
+  longStorage = (int64_t*)0;
 
   if (statsType != NULL) {
-    int32 intCount = statsType->getIntStatCount();
-    int32 longCount = statsType->getLongStatCount();
-    int32 doubleCount = statsType->getDoubleStatCount();
+    int32_t intCount = statsType->getIntStatCount();
+    int32_t longCount = statsType->getLongStatCount();
+    int32_t doubleCount = statsType->getDoubleStatCount();
     if (intCount > 0) {
-      intStorage = new int32[intCount];
-      for (int32 i = 0; i < intCount; i++) {
+      intStorage = new int32_t[intCount];
+      for (int32_t i = 0; i < intCount; i++) {
         intStorage[i] = 0;  // Un-initialized state
       }
     } else {
       intStorage = NULL;
     }
     if (longCount > 0) {
-      longStorage = new int64[longCount];
-      for (int32 i = 0; i < longCount; i++) {
+      longStorage = new int64_t[longCount];
+      for (int32_t i = 0; i < longCount; i++) {
         longStorage[i] = 0;  // Un-initialized state
       }
     } else {
@@ -111,7 +111,7 @@ OsStatisticsImpl::OsStatisticsImpl(StatisticsType* typeArg,
     }
     if (doubleCount > 0) {
       doubleStorage = new double[doubleCount];
-      for (int32 i = 0; i < doubleCount; i++) {
+      for (int32_t i = 0; i < doubleCount; i++) {
         doubleStorage[i] = 0;  // Un-initialized state
       }
     } else {
@@ -156,7 +156,7 @@ void OsStatisticsImpl::close() {
 
 ////////////////////////  store() Methods  ///////////////////////
 
-void OsStatisticsImpl::_setInt(int32 offset, int32 value) {
+void OsStatisticsImpl::_setInt(int32_t offset, int32_t value) {
   if (offset >= statsType->getIntStatCount()) {
     char s[128] = {'\0'};
     ACE_OS::snprintf(
@@ -167,7 +167,7 @@ void OsStatisticsImpl::_setInt(int32 offset, int32 value) {
   intStorage[offset] = value;
 }
 
-void OsStatisticsImpl::_setLong(int32 offset, int64 value) {
+void OsStatisticsImpl::_setLong(int32_t offset, int64_t value) {
   if (offset >= statsType->getLongStatCount()) {
     char s[128] = {'\0'};
     /* adongre  - Coverity II
@@ -190,7 +190,7 @@ void OsStatisticsImpl::_setLong(int32 offset, int64 value) {
   longStorage[offset] = value;
 }
 
-void OsStatisticsImpl::_setDouble(int32 offset, double value) {
+void OsStatisticsImpl::_setDouble(int32_t offset, double value) {
   if (offset >= statsType->getDoubleStatCount()) {
     char s[128] = {'\0'};
     ACE_OS::snprintf(
@@ -204,7 +204,7 @@ void OsStatisticsImpl::_setDouble(int32 offset, double value) {
 
 ///////////////////////  get() Methods  ///////////////////////
 
-int32 OsStatisticsImpl::_getInt(int32 offset) {
+int32_t OsStatisticsImpl::_getInt(int32_t offset) {
   if (offset >= statsType->getIntStatCount()) {
     char s[128] = {'\0'};
     ACE_OS::snprintf(
@@ -216,7 +216,7 @@ int32 OsStatisticsImpl::_getInt(int32 offset) {
   return intStorage[offset];
 }
 
-int64 OsStatisticsImpl::_getLong(int32 offset) {
+int64_t OsStatisticsImpl::_getLong(int32_t offset) {
   if (offset >= statsType->getLongStatCount()) {
     char s[128] = {'\0'};
     ACE_OS::snprintf(
@@ -228,7 +228,7 @@ int64 OsStatisticsImpl::_getLong(int32 offset) {
   return longStorage[offset];
 }
 
-double OsStatisticsImpl::_getDouble(int32 offset) {
+double OsStatisticsImpl::_getDouble(int32_t offset) {
   if (offset >= statsType->getDoubleStatCount()) {
     char s[128] = {'\0'};
     ACE_OS::snprintf(
@@ -241,7 +241,7 @@ double OsStatisticsImpl::_getDouble(int32 offset) {
   return doubleStorage[offset];
 }
 
-int64 OsStatisticsImpl::_getRawBits(StatisticDescriptor* statDscp) {
+int64_t OsStatisticsImpl::_getRawBits(StatisticDescriptor* statDscp) {
   StatisticDescriptorImpl* stat =
       dynamic_cast<StatisticDescriptorImpl*>(statDscp);
   // dynamic cast is giving problems , so a normal cast was used
@@ -254,7 +254,7 @@ int64 OsStatisticsImpl::_getRawBits(StatisticDescriptor* statDscp) {
 
     case DOUBLE_TYPE: {
       double value = _getDouble(stat->getId());
-      int64* temp = reinterpret_cast<int64*>(&value);
+      int64_t* temp = reinterpret_cast<int64_t*>(&value);
       return *temp;
     }
 
@@ -266,7 +266,7 @@ int64 OsStatisticsImpl::_getRawBits(StatisticDescriptor* statDscp) {
 }
 ////////////////////////  inc() Methods  ////////////////////////
 
-int32 OsStatisticsImpl::_incInt(int32 offset, int32 delta) {
+int32_t OsStatisticsImpl::_incInt(int32_t offset, int32_t delta) {
   if (offset >= statsType->getIntStatCount()) {
     char s[128] = {'\0'};
     ACE_OS::snprintf(
@@ -279,7 +279,7 @@ int32 OsStatisticsImpl::_incInt(int32 offset, int32 delta) {
   return intStorage[offset];
 }
 
-int64 OsStatisticsImpl::_incLong(int32 offset, int64 delta) {
+int64_t OsStatisticsImpl::_incLong(int32_t offset, int64_t delta) {
   if (offset >= statsType->getLongStatCount()) {
     char s[128] = {'\0'};
     /* adongre  - Coverity II
@@ -304,7 +304,7 @@ int64 OsStatisticsImpl::_incLong(int32 offset, int64 delta) {
   return longStorage[offset];
 }
 
-double OsStatisticsImpl::_incDouble(int32 offset, double delta) {
+double OsStatisticsImpl::_incDouble(int32_t offset, double delta) {
   if (offset >= statsType->getDoubleStatCount()) {
     char s[128] = {'\0'};
     ACE_OS::snprintf(
@@ -319,7 +319,7 @@ double OsStatisticsImpl::_incDouble(int32 offset, double delta) {
 
 //////////////////////  Instance Methods  //////////////////////
 
-int32 OsStatisticsImpl::nameToId(const char* name) {
+int32_t OsStatisticsImpl::nameToId(const char* name) {
   return statsType->nameToId(name);
 }
 
@@ -337,38 +337,38 @@ StatisticsType* OsStatisticsImpl::getType() { return statsType; }
 
 const char* OsStatisticsImpl::getTextId() { return textId; }
 
-int64 OsStatisticsImpl::getNumericId() { return numericId; }
+int64_t OsStatisticsImpl::getNumericId() { return numericId; }
 
 /**
  * Gets the unique id for this resource
  */
-int64 OsStatisticsImpl::getUniqueId() { return uniqueId; }
+int64_t OsStatisticsImpl::getUniqueId() { return uniqueId; }
 ////////////////////////  set() Methods  ///////////////////////
 
-void OsStatisticsImpl::setInt(char* name, int32 value) {
+void OsStatisticsImpl::setInt(char* name, int32_t value) {
   setInt(nameToDescriptor(name), value);
 }
 
-void OsStatisticsImpl::setInt(StatisticDescriptor* descriptor, int32 value) {
+void OsStatisticsImpl::setInt(StatisticDescriptor* descriptor, int32_t value) {
   setInt(getIntId(descriptor), value);
 }
 
-void OsStatisticsImpl::setInt(int32 id, int32 value) {
+void OsStatisticsImpl::setInt(int32_t id, int32_t value) {
   if (isOpen()) {
     _setInt(id, value);
   }
 }
 ////////////////////////////////LONG METHODS/////////////////////////////
 
-void OsStatisticsImpl::setLong(char* name, int64 value) {
+void OsStatisticsImpl::setLong(char* name, int64_t value) {
   setLong(nameToDescriptor(name), value);
 }
 
-void OsStatisticsImpl::setLong(StatisticDescriptor* descriptor, int64 value) {
+void OsStatisticsImpl::setLong(StatisticDescriptor* descriptor, int64_t value) {
   setLong(getLongId(descriptor), value);
 }
 
-void OsStatisticsImpl::setLong(int32 id, int64 value) {
+void OsStatisticsImpl::setLong(int32_t id, int64_t value) {
   if (isOpen()) {
     _setLong(id, value);
   }
@@ -384,21 +384,21 @@ void OsStatisticsImpl::setDouble(StatisticDescriptor* descriptor,
   setDouble(getDoubleId(descriptor), value);
 }
 
-void OsStatisticsImpl::setDouble(int32 id, double value) {
+void OsStatisticsImpl::setDouble(int32_t id, double value) {
   if (isOpen()) {
     _setDouble(id, value);
   }
 }
 //////////////////////////Get INT Methods/////////////////////////////////////
-int32 OsStatisticsImpl::getInt(char* name) {
+int32_t OsStatisticsImpl::getInt(char* name) {
   return getInt(nameToDescriptor(name));
 }
 
-int32 OsStatisticsImpl::getInt(StatisticDescriptor* descriptor) {
+int32_t OsStatisticsImpl::getInt(StatisticDescriptor* descriptor) {
   return getInt(getIntId(descriptor));
 }
 
-int32 OsStatisticsImpl::getInt(int32 id) {
+int32_t OsStatisticsImpl::getInt(int32_t id) {
   if (isOpen()) {
     return _getInt(id);
   } else {
@@ -410,15 +410,15 @@ int32 OsStatisticsImpl::getInt(int32 id) {
 /////////////////////////////////////////Get Long
 /// Methods///////////////////////////////
 
-int64 OsStatisticsImpl::getLong(char* name) {
+int64_t OsStatisticsImpl::getLong(char* name) {
   return getLong(nameToDescriptor(name));
 }
 
-int64 OsStatisticsImpl::getLong(StatisticDescriptor* descriptor) {
+int64_t OsStatisticsImpl::getLong(StatisticDescriptor* descriptor) {
   return getLong(getLongId(descriptor));
 }
 
-int64 OsStatisticsImpl::getLong(int32 id) {
+int64_t OsStatisticsImpl::getLong(int32_t id) {
   if (isOpen()) {
     return _getLong(id);
   } else {
@@ -435,7 +435,7 @@ double OsStatisticsImpl::getDouble(StatisticDescriptor* descriptor) {
   return getDouble(getDoubleId(descriptor));
 }
 
-double OsStatisticsImpl::getDouble(int32 id) {
+double OsStatisticsImpl::getDouble(int32_t id) {
   if (isOpen()) {
     return _getDouble(id);
   } else {
@@ -445,7 +445,7 @@ double OsStatisticsImpl::getDouble(int32 id) {
 //////////////////////////////Get RAW BIT
 /// methods////////////////////////////////
 
-int64 OsStatisticsImpl::getRawBits(StatisticDescriptor* descriptor) {
+int64_t OsStatisticsImpl::getRawBits(StatisticDescriptor* descriptor) {
   if (isOpen()) {
     return _getRawBits(descriptor);
   } else {
@@ -453,20 +453,20 @@ int64 OsStatisticsImpl::getRawBits(StatisticDescriptor* descriptor) {
   }
 }
 
-int64 OsStatisticsImpl::getRawBits(char* name) {
+int64_t OsStatisticsImpl::getRawBits(char* name) {
   return getRawBits(nameToDescriptor(name));
 }
 
 ///////////////////////// INC INT //////////////////////////////////////////////
-int32 OsStatisticsImpl::incInt(char* name, int32 delta) {
+int32_t OsStatisticsImpl::incInt(char* name, int32_t delta) {
   return incInt(nameToDescriptor(name), delta);
 }
 
-int32 OsStatisticsImpl::incInt(StatisticDescriptor* descriptor, int32 delta) {
+int32_t OsStatisticsImpl::incInt(StatisticDescriptor* descriptor, int32_t delta) {
   return incInt(getIntId(descriptor), delta);
 }
 
-int32 OsStatisticsImpl::incInt(int32 id, int32 delta) {
+int32_t OsStatisticsImpl::incInt(int32_t id, int32_t delta) {
   if (isOpen()) {
     return _incInt(id, delta);
   } else {
@@ -476,15 +476,15 @@ int32 OsStatisticsImpl::incInt(int32 id, int32 delta) {
 
 //// //////////////// INC LONG ///////////////////////////////////
 
-int64 OsStatisticsImpl::incLong(char* name, int64 delta) {
+int64_t OsStatisticsImpl::incLong(char* name, int64_t delta) {
   return incLong(nameToDescriptor(name), delta);
 }
 
-int64 OsStatisticsImpl::incLong(StatisticDescriptor* descriptor, int64 delta) {
+int64_t OsStatisticsImpl::incLong(StatisticDescriptor* descriptor, int64_t delta) {
   return incLong(getLongId(descriptor), delta);
 }
 
-int64 OsStatisticsImpl::incLong(int32 id, int64 delta) {
+int64_t OsStatisticsImpl::incLong(int32_t id, int64_t delta) {
   if (isOpen()) {
     return _incLong(id, delta);
   } else {
@@ -502,7 +502,7 @@ double OsStatisticsImpl::incDouble(StatisticDescriptor* descriptor,
   return incDouble(getDoubleId(descriptor), delta);
 }
 
-double OsStatisticsImpl::incDouble(int32 id, double delta) {
+double OsStatisticsImpl::incDouble(int32_t id, double delta) {
   if (isOpen()) {
     return _incDouble(id, delta);
   } else {
@@ -511,19 +511,19 @@ double OsStatisticsImpl::incDouble(int32 id, double delta) {
 }
 /////////////////////////// GET ID /////////////////////////////////////////
 
-int32 OsStatisticsImpl::getIntId(StatisticDescriptor* descriptor) {
+int32_t OsStatisticsImpl::getIntId(StatisticDescriptor* descriptor) {
   StatisticDescriptorImpl* realDescriptor =
       dynamic_cast<StatisticDescriptorImpl*>(descriptor);
   return realDescriptor->checkInt();
 }
 
-int32 OsStatisticsImpl::getLongId(StatisticDescriptor* descriptor) {
+int32_t OsStatisticsImpl::getLongId(StatisticDescriptor* descriptor) {
   StatisticDescriptorImpl* realDescriptor =
       dynamic_cast<StatisticDescriptorImpl*>(descriptor);
   return realDescriptor->checkLong();
 }
 
-int32 OsStatisticsImpl::getDoubleId(StatisticDescriptor* descriptor) {
+int32_t OsStatisticsImpl::getDoubleId(StatisticDescriptor* descriptor) {
   StatisticDescriptorImpl* realDescriptor =
       dynamic_cast<StatisticDescriptorImpl*>(descriptor);
   return realDescriptor->checkDouble();

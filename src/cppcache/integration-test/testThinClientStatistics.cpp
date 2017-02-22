@@ -398,7 +398,7 @@ void StatFileTest() {
   LOG(" Starting Stat.gfs file test");
   /* Get Pid , Get File name : HARD Coding for File name pattern */
   char buff[1024];
-  int32 pid = ACE_OS::getpid();
+  int32_t pid = ACE_OS::getpid();
   ACE_OS::sprintf(buff, "./statArchive-%d.gfs", pid);
   std::string statFilename(buff);
 

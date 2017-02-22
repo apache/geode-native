@@ -89,7 +89,7 @@ int PdxTypeRegistry::testGetNumberOfPdxIds() {
 
 int PdxTypeRegistry::testNumberOfPreservedData() { return preserveData.size(); }
 
-int32 PdxTypeRegistry::getPDXIdForType(const char* type, const char* poolname,
+int32_t PdxTypeRegistry::getPDXIdForType(const char* type, const char* poolname,
                                        PdxTypePtr nType, bool checkIfThere) {
   // WriteGuard guard(g_readerWriterLock);
   if (checkIfThere) {
@@ -109,7 +109,7 @@ int32 PdxTypeRegistry::getPDXIdForType(const char* type, const char* poolname,
   return typeId;
 }
 
-int32 PdxTypeRegistry::getPDXIdForType(PdxTypePtr nType, const char* poolname) {
+int32_t PdxTypeRegistry::getPDXIdForType(PdxTypePtr nType, const char* poolname) {
   PdxTypeToTypeIdMap* tmp = pdxTypeToTypeIdMap;
   int32_t typeId = 0;
   PdxTypeToTypeIdMap::iterator iter = tmp->find(nType);
@@ -159,13 +159,13 @@ void PdxTypeRegistry::clear() {
   }
 }
 
-void PdxTypeRegistry::addPdxType(int32 typeId, PdxTypePtr pdxType) {
+void PdxTypeRegistry::addPdxType(int32_t typeId, PdxTypePtr pdxType) {
   WriteGuard guard(g_readerWriterLock);
-  std::pair<int32, PdxTypePtr> pc(typeId, pdxType);
+  std::pair<int32_t, PdxTypePtr> pc(typeId, pdxType);
   typeIdToPdxType->insert(pc);
 }
 
-PdxTypePtr PdxTypeRegistry::getPdxType(int32 typeId) {
+PdxTypePtr PdxTypeRegistry::getPdxType(int32_t typeId) {
   ReadGuard guard(g_readerWriterLock);
   PdxTypePtr retValue = NULLPTR;
   TypeIdVsPdxType::iterator iter;
@@ -196,13 +196,13 @@ PdxTypePtr PdxTypeRegistry::getLocalPdxType(const char* localType) {
   return NULLPTR;
 }
 
-void PdxTypeRegistry::setMergedType(int32 remoteTypeId, PdxTypePtr mergedType) {
+void PdxTypeRegistry::setMergedType(int32_t remoteTypeId, PdxTypePtr mergedType) {
   WriteGuard guard(g_readerWriterLock);
-  std::pair<int32, PdxTypePtr> mergedTypePair(remoteTypeId, mergedType);
+  std::pair<int32_t, PdxTypePtr> mergedTypePair(remoteTypeId, mergedType);
   remoteTypeIdToMergedPdxType->insert(mergedTypePair);
 }
 
-PdxTypePtr PdxTypeRegistry::getMergedType(int32 remoteTypeId) {
+PdxTypePtr PdxTypeRegistry::getMergedType(int32_t remoteTypeId) {
   PdxTypePtr retVal = NULLPTR;
   TypeIdVsPdxType::iterator it;
   it = remoteTypeIdToMergedPdxType->find(remoteTypeId);

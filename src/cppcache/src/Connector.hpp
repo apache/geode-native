@@ -97,7 +97,7 @@ class Connector {
   /**
    * Returns local port for this TCP connection
    */
-  virtual uint16 getPort() = 0;
+  virtual uint16_t getPort() = 0;
 
  private:
   // Disallow copy constructor and assignment operator.

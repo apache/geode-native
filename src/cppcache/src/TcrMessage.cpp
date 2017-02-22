@@ -1079,7 +1079,7 @@ void TcrMessage::handleByteArrayResponse(const char* bytearray, int32_t len,
         input.read(&isHA);
         int8_t oFW;
         input.read(&oFW);
-        m_functionAttributes = new std::vector<int8>();
+        m_functionAttributes = new std::vector<int8_t>();
         m_functionAttributes->push_back(hR);
         m_functionAttributes->push_back(isHA);
         m_functionAttributes->push_back(oFW);

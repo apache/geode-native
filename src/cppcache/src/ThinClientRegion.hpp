@@ -149,7 +149,7 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
                        CacheableVectorPtr routingObj, uint8_t getResult,
                        ResultCollectorPtr rc, int32_t retryAttempts,
                        uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
-  GfErrType getFuncAttributes(const char* func, std::vector<int8>** attr);
+  GfErrType getFuncAttributes(const char* func, std::vector<int8_t>** attr);
 
   ACE_RW_Thread_Mutex& getMataDataMutex() { return m_RegionMutex; }
 

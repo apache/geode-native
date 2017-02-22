@@ -47,13 +47,13 @@ namespace statistics {
 namespace globals {
 std::string g_statFile;
 std::string g_statFileWithExt;
-int64 g_spaceUsed = 0;
-int64 g_previoussamplesize = 0;
-int64 g_previoussamplesizeLastFile = 0;
+int64_t g_spaceUsed = 0;
+int64_t g_previoussamplesize = 0;
+int64_t g_previoussamplesizeLastFile = 0;
 // Make a pair for the filename & its size
 std::pair<std::string, size_t> g_fileInfoPair;
 // Vector to hold the fileInformation
-typedef std::vector<std::pair<std::string, int64> > g_fileInfo;
+typedef std::vector<std::pair<std::string, int64_t> > g_fileInfo;
 }  // namespace globals
 }  // namespace statistics
 }  // namespace geode
@@ -117,10 +117,10 @@ int comparator(const dirent** d1, const dirent** d2) {
 
 const char* HostStatSampler::NC_HSS_Thread = "NC HSS Thread";
 
-HostStatSampler::HostStatSampler(const char* filePath, int64 sampleIntervalMs,
+HostStatSampler::HostStatSampler(const char* filePath, int64_t sampleIntervalMs,
                                  StatisticsManager* statMngr,
-                                 int64 statFileLimit,
-                                 int64 statDiskSpaceLimit) {
+                                 int64_t statFileLimit,
+                                 int64_t statDiskSpaceLimit) {
   m_isStatDiskSpaceEnabled = false;
   m_adminError = false;
   m_running = false;
@@ -260,8 +260,8 @@ HostStatSampler::~HostStatSampler() {
 std::string HostStatSampler::createArchiveFileName() {
   if (!m_isStatDiskSpaceEnabled) {
     char buff[1024] = {0};
-    int32 pid = ACE_OS::getpid();
-    int32 len = static_cast<int32>(m_archiveFileName.length());
+    int32_t pid = ACE_OS::getpid();
+    int32_t len = static_cast<int32_t>(m_archiveFileName.length());
     size_t fileExtPos = m_archiveFileName.find_last_of('.', len);
     if (fileExtPos == std::string::npos) {
       ACE_OS::snprintf(buff, 1024, "%s-%d.gfs", m_archiveFileName.c_str(), pid);
@@ -279,23 +279,23 @@ std::string HostStatSampler::createArchiveFileName() {
 
 std::string HostStatSampler::getArchiveFileName() { return m_archiveFileName; }
 
-int64 HostStatSampler::getArchiveFileSizeLimit() {
+int64_t HostStatSampler::getArchiveFileSizeLimit() {
   return m_archiveFileSizeLimit;
 }
 
-int64 HostStatSampler::getArchiveDiskSpaceLimit() {
+int64_t HostStatSampler::getArchiveDiskSpaceLimit() {
   return m_archiveDiskSpaceLimit;
 }
 
-int64 HostStatSampler::getSampleRate() { return m_sampleRate; }
+int64_t HostStatSampler::getSampleRate() { return m_sampleRate; }
 
 bool HostStatSampler::isSamplingEnabled() { return true; }
 
-void HostStatSampler::accountForTimeSpentWorking(int64 nanosSpentWorking) {
+void HostStatSampler::accountForTimeSpentWorking(int64_t nanosSpentWorking) {
   m_samplerStats->tookSample(nanosSpentWorking);
 }
 
-bool HostStatSampler::statisticsExists(const int64 id) {
+bool HostStatSampler::statisticsExists(const int64_t id) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statMngr->getListMutex());
   std::vector<Statistics*>& statsList = m_statMngr->getStatsList();
   std::vector<Statistics*>::iterator i;
@@ -307,7 +307,7 @@ bool HostStatSampler::statisticsExists(const int64 id) {
   return false;
 }
 
-Statistics* HostStatSampler::findStatistics(const int64 id) {
+Statistics* HostStatSampler::findStatistics(const int64_t id) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statMngr->getListMutex());
   std::vector<Statistics*>& statsList = m_statMngr->getStatsList();
   std::vector<Statistics*>::iterator i;
@@ -323,7 +323,7 @@ ACE_Recursive_Thread_Mutex& HostStatSampler::getStatListMutex() {
   return m_statMngr->getListMutex();
 }
 
-int32 HostStatSampler::getStatisticsModCount() {
+int32_t HostStatSampler::getStatisticsModCount() {
   return m_statMngr->getStatListModCount();
 }
 
@@ -335,9 +335,9 @@ std::vector<Statistics*>& HostStatSampler::getNewStatistics() {
   return m_statMngr->getNewlyAddedStatsList();
 }
 
-int64 HostStatSampler::getSystemId() { return m_pid; }
+int64_t HostStatSampler::getSystemId() { return m_pid; }
 
-int64 HostStatSampler::getSystemStartTime() { return m_startTime; }
+int64_t HostStatSampler::getSystemStartTime() { return m_startTime; }
 
 std::string HostStatSampler::getSystemDirectoryPath() {
   ACE_utsname u;
@@ -383,7 +383,7 @@ void HostStatSampler::changeArchive(std::string filename) {
 
 std::string HostStatSampler::chkForGFSExt(std::string filename) {
   if (!m_isStatDiskSpaceEnabled) {
-    int32 len = static_cast<int32>(filename.length());
+    int32_t len = static_cast<int32_t>(filename.length());
     size_t posOfExt = filename.find_last_of('.', len);
     if (posOfExt == std::string::npos) {
       std::string newFilename = filename + "." + "gfs";
@@ -397,7 +397,7 @@ std::string HostStatSampler::chkForGFSExt(std::string filename) {
     return filename;
   } else {
     std::string filebasename = ACE::basename(filename.c_str());
-    int32 len = static_cast<int32>(filebasename.length());
+    int32_t len = static_cast<int32_t>(filebasename.length());
     size_t fileExtPos = filebasename.find_last_of('.', len);
     // if no extension then add .gfs extension
     if (fileExtPos == std::string::npos) {
@@ -418,7 +418,7 @@ std::string HostStatSampler::chkForGFSExt(std::string filename) {
   }
 }
 
-int32 HostStatSampler::rollArchive(std::string filename) {
+int32_t HostStatSampler::rollArchive(std::string filename) {
   FILE* fpExist = fopen(filename.c_str(), "r");
   if (fpExist == NULL) {
     return 0;  // no need to roll
@@ -435,8 +435,8 @@ int32 HostStatSampler::rollArchive(std::string filename) {
   std::string extName;
   std::string newfilestr;
   bool gotNewFileName = false;
-  int32 len = static_cast<int32>(filename.length());
-  int32 lastPosOfSep = static_cast<int32>(
+  int32_t len = static_cast<int32_t>(filename.length());
+  int32_t lastPosOfSep = static_cast<int32_t>(
       filename.find_last_of(ACE_DIRECTORY_SEPARATOR_CHAR, len));
   if (lastPosOfSep == -1) {
     statsdirname = ".";
@@ -445,9 +445,9 @@ int32 HostStatSampler::rollArchive(std::string filename) {
   }
   statsbasename = filename.substr(lastPosOfSep + 1, len);
   char gfsFileExtAfter = '.';
-  int32 baselen = static_cast<int32>(statsbasename.length());
-  int32 posOfExt = static_cast<int32>(
-      statsbasename.find_last_of(gfsFileExtAfter, static_cast<int32>(baselen)));
+  int32_t baselen = static_cast<int32_t>(statsbasename.length());
+  int32_t posOfExt = static_cast<int32_t>(
+      statsbasename.find_last_of(gfsFileExtAfter, static_cast<int32_t>(baselen)));
   if (posOfExt == -1) {
     // throw IllegalArgument;
   } else {
@@ -455,8 +455,8 @@ int32 HostStatSampler::rollArchive(std::string filename) {
     extName = statsbasename.substr(posOfExt + 1, baselen);
   }
 
-  int32 i = this->rollIndex;
-  // 1000 is a good enough val to hold even a very int64 filename.
+  int32_t i = this->rollIndex;
+  // 1000 is a good enough val to hold even a very int64_t filename.
   while (!gotNewFileName) {
     char newfilename[1000] = {0};
     if (i < 10) {
@@ -540,7 +540,7 @@ void HostStatSampler::putStatsInAdminRegion() {
         }
         int puts = 0, gets = 0, misses = 0, numListeners = 0, numThreads = 0,
             creates = 0;
-        int64 cpuTime = 0;
+        int64_t cpuTime = 0;
         GeodeStatisticsFactory* gf =
             GeodeStatisticsFactory::getExistingInstance();
         if (gf) {
@@ -620,8 +620,8 @@ void HostStatSampler::doSample(std::string& archivefilename) {
   m_archiver->sample();
 
   if (m_archiveFileSizeLimit != 0) {
-    int64 size = m_archiver->getSampleSize();
-    int64 bytesWritten = m_archiver->bytesWritten();  // + g_previoussamplesize;
+    int64_t size = m_archiver->getSampleSize();
+    int64_t bytesWritten = m_archiver->bytesWritten();  // + g_previoussamplesize;
     if (bytesWritten > (m_archiveFileSizeLimit - size)) {
       // roll the archive
       changeArchive(archivefilename);
@@ -674,7 +674,7 @@ void HostStatSampler::checkDiskLimit() {
   int fileIndex = 0;
   while ((g_spaceUsed >
           m_archiveDiskSpaceLimit) /*&& (fileIndex < entries_count)*/) {
-    int64 fileSize = fileInfo[fileIndex].second;
+    int64_t fileSize = fileInfo[fileIndex].second;
     if (ACE_OS::unlink(fileInfo[fileIndex].first.c_str()) == 0) {
       g_spaceUsed -= fileSize;
     } else {
@@ -685,7 +685,7 @@ void HostStatSampler::checkDiskLimit() {
   }
 }
 
-int32 HostStatSampler::svc(void) {
+int32_t HostStatSampler::svc(void) {
   DistributedSystemImpl::setThreadName(NC_HSS_Thread);
   try {
     initSpecialStats();
@@ -696,8 +696,8 @@ int32 HostStatSampler::svc(void) {
     if (!m_isStatDiskSpaceEnabled) {
       changeArchive(archivefilename);
     }
-    int32 msSpentWorking = 0;
-    int32 msRate = static_cast<int32>(getSampleRate());
+    int32_t msSpentWorking = 0;
+    int32_t msRate = static_cast<int32_t>(getSampleRate());
     bool gotexception = false;
     int waitTime = 0;
     while (!m_stopRequested) {
@@ -713,18 +713,18 @@ int32 HostStatSampler::svc(void) {
           gotexception = false;
           changeArchive(archivefilename);
         }
-        int64 sampleStartNanos = NanoTimer::now();
+        int64_t sampleStartNanos = NanoTimer::now();
 
         doSample(archivefilename);
 
-        int64 sampleEndNanos = NanoTimer::now();
-        int64 nanosSpentWorking = sampleEndNanos - sampleStartNanos;
+        int64_t sampleEndNanos = NanoTimer::now();
+        int64_t nanosSpentWorking = sampleEndNanos - sampleStartNanos;
         // updating the sampler statistics
         accountForTimeSpentWorking(nanosSpentWorking);
-        msSpentWorking = static_cast<int32>(nanosSpentWorking / 1000000);
+        msSpentWorking = static_cast<int32_t>(nanosSpentWorking / 1000000);
 
         // Continous check for m_stopRequested to sped up stop time.
-        int32 msToWait = msRate - msSpentWorking;
+        int32_t msToWait = msRate - msSpentWorking;
         while (msToWait > 0) {
           ACE_Time_Value sleepTime;
           sleepTime.msec(msToWait > 100 ? 100 : msToWait);

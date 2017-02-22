@@ -245,7 +245,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
         if (networkhop) {
           failureCount++;
         }
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGDEBUG(
             "CheckPrSingleHopForIntKeysTask_REGION: serverGroupFlag is %d "
@@ -290,7 +290,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
         LOGDEBUG("CheckPrSingleHopForIntKeysTask_REGION: networkhop %d ",
                  networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGDEBUG(
             "CheckPrSingleHopForIntKeysTask_REGION: serverGroupFlag is %d ",
@@ -337,7 +337,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
         LOGDEBUG("CheckPrSingleHopForIntKeysTask_REGION: networkhop %d ",
                  networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGDEBUG(
             "CheckPrSingleHopForIntKeysTask_REGION: serverGroupFlag is %d ",
@@ -374,7 +374,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
         LOGDEBUG("CheckPrSingleHopForIntKeysTask_REGION: networkhop %d ",
                  networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGDEBUG(
             "CheckPrSingleHopForIntKeysTask_REGION: serverGroupFlag is %d ",
@@ -417,7 +417,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
         LOGDEBUG("CheckPrSingleHopForIntKeysTask_REGION: networkhop %d ",
                  networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGDEBUG(
             "CheckPrSingleHopForIntKeysTask_REGION: serverGroupFlag is %d ",

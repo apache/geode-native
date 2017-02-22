@@ -116,6 +116,8 @@
 
 #include "geode_base.hpp"
 
+#include <cstdint>
+
 namespace apache {
 namespace geode {
 namespace client {

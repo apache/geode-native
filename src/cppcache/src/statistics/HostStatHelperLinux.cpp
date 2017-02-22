@@ -49,27 +49,27 @@ void HostStatHelperLinux::refreshProcess(ProcessStats* processStats) {
     return;
   }
   Statistics* stats = linProcessStat->stats;
-  int32 thePid = (int32)stats->getNumericId();  // int64 is converted to int
+  int32_t thePid = (int32_t)stats->getNumericId();  // int64 is converted to int
 
-  int32 pid = 0;
+  int32_t pid = 0;
   char commandLine[100];
   commandLine[0] = '\0';
   commandLine[sizeof(commandLine) - 1] = '\0';
   char state = 0;
-  uint32 userTime = 0;
-  uint32 sysTime = 0;
-  uint32 vsize = 0;
-  int32 rss = 0;
-  uint32 tempimageSize = 0;
-  uint32 temprssSize = 0;
+  uint32_t userTime = 0;
+  uint32_t sysTime = 0;
+  uint32_t vsize = 0;
+  int32_t rss = 0;
+  uint32_t tempimageSize = 0;
+  uint32_t temprssSize = 0;
   int32_t cpuUsage = 0;
   char procFileName[64];
 
   FILE* fPtr;
-  ACE_OS::snprintf(procFileName, 64, "/proc/%" PRIu32 "/stat", (uint32)thePid);
+  ACE_OS::snprintf(procFileName, 64, "/proc/%" PRIu32 "/stat", (uint32_t)thePid);
   fPtr = fopen(procFileName, "r"); /* read only */
   if (fPtr != NULL) {
-    int32 status = fscanf(
+    int32_t status = fscanf(
         fPtr,
         "%d %100s %c %*d %*d %*d %*d %*d %*u %*u \
 %*u %*u %*u %u %u %*d %*d %*d %*d %*d %*d %*u %u %d ",
@@ -99,26 +99,26 @@ void HostStatHelperLinux::refreshProcess(ProcessStats* processStats) {
         );
 
     if (status != 7 && status != EOF) {
-      int32 errNum = errno;  // for debugging
+      int32_t errNum = errno;  // for debugging
       if (m_logStatErrorCountDown-- > 0) {
         LOGFINE("Error reading procFileName %s, status %d errno %d pid %lu",
-                procFileName, status, errNum, (uint32)thePid);
+                procFileName, status, errNum, (uint32_t)thePid);
       }
       //  UTL_ASSERT(status == 7);
     }
     status = fclose(fPtr);
     if (status) {
       /*
-      int32 errNum = errno; // for debugging
+      int32_t errNum = errno; // for debugging
       errNum = errNum; // lint
       */
     }
   }
   tempimageSize = vsize / (1024 * 1024);  // assume linux units = Kbytes
 
-  uint32 pageSize = 1;
+  uint32_t pageSize = 1;
   struct sysinfo info;
-  int32 status = sysinfo(&info);
+  int32_t status = sysinfo(&info);
   if (status == 0) {
     pageSize = info.mem_unit;
   }
@@ -134,12 +134,12 @@ void HostStatHelperLinux::refreshProcess(ProcessStats* processStats) {
   if (fPtr != NULL) {
     double newUptime = 0;
     double newIdle = 0;
-    int32 status = fscanf(fPtr, "%lf %lf", &newUptime, &newIdle);
+    int32_t status = fscanf(fPtr, "%lf %lf", &newUptime, &newIdle);
     if (status != 2 && status != EOF) {
-      int32 errNum = errno;  // for debugging
+      int32_t errNum = errno;  // for debugging
       if (m_logStatErrorCountDown-- > 0) {
         LOGFINE("Error reading procFileName %s, status %d errno %d pid %lu",
-                procFileName, status, errNum, (uint32)thePid);
+                procFileName, status, errNum, (uint32_t)thePid);
       }
     }
     fclose(fPtr);

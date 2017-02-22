@@ -159,7 +159,7 @@ namespace Apache
         /// if a type with the given <c>name</c> already exists.
         /// </exception>
         virtual StatisticsType^ CreateType(String^ name, String^ description,
-                                           array<StatisticDescriptor^>^ stats, int32 statsLength);
+                                           array<StatisticDescriptor^>^ stats, int32_t statsLength);
 
         /// <summary>
         /// Finds and returns an already created <see cref="StatisticsType" /> 
@@ -213,7 +213,7 @@ namespace Apache
         /// <para>
         /// The created instance will be <see cref="Statistics#isAtomic" /> atomic.
         /// </para>
-        virtual Statistics^ CreateAtomicStatistics(StatisticsType^ type, String^ textId, int64 numericId);
+        virtual Statistics^ CreateAtomicStatistics(StatisticsType^ type, String^ textId, int64_t numericId);
 
         /// <summary>
         /// Return the first instance that matches the type, or NULL

@@ -68,7 +68,7 @@ class CPPCACHE_EXPORT StatisticsType {
    *         No statistic named <code>name</code> exists in this
    *         statistics instance.
    */
-  virtual int32 nameToId(const char* name) = 0;
+  virtual int32_t nameToId(const char* name) = 0;
   /**
    * Returns the descriptor of the statistic with the given name in this
    * statistics instance.
@@ -82,7 +82,7 @@ class CPPCACHE_EXPORT StatisticsType {
   /**
    * Returns the total number of statistics descriptors in the type.
    */
-  virtual int32 getDescriptorsCount() = 0;
+  virtual int32_t getDescriptorsCount() = 0;
 
   // protected:
   /**

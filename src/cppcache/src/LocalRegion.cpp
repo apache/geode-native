@@ -306,7 +306,7 @@ void LocalRegion::getEntry(const CacheableKeyPtr& key, CacheablePtr& valuePtr) {
 CacheablePtr LocalRegion::get(const CacheableKeyPtr& key,
                               const UserDataPtr& aCallbackArgument) {
   CacheablePtr rptr;
-  int64 sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = Utils::startStatOpTime();
   GfErrType err = getNoThrow(key, rptr, aCallbackArgument);
   Utils::updateStatOpTime(m_regionStats->getStat(),
                           RegionStatType::getInstance()->getGetTimeId(),
@@ -322,7 +322,7 @@ CacheablePtr LocalRegion::get(const CacheableKeyPtr& key,
 void LocalRegion::put(const CacheableKeyPtr& key, const CacheablePtr& value,
                       const UserDataPtr& aCallbackArgument) {
   CacheablePtr oldValue;
-  int64 sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = Utils::startStatOpTime();
   VersionTagPtr versionTag;
   GfErrType err = putNoThrow(key, value, aCallbackArgument, oldValue, -1,
                              CacheEventFlags::NORMAL, versionTag);
@@ -350,7 +350,7 @@ void LocalRegion::putAll(const HashMapOfCacheable& map, uint32_t timeout,
         "Region::putAll: timeout parameter "
         "greater than maximum allowed (2^31/1000 i.e 2147483).");
   }
-  int64 sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = Utils::startStatOpTime();
   GfErrType err = putAllNoThrow(map, timeout, aCallbackArgument);
   Utils::updateStatOpTime(m_regionStats->getStat(),
                           RegionStatType::getInstance()->getPutAllTimeId(),
@@ -364,7 +364,7 @@ void LocalRegion::removeAll(const VectorOfCacheableKey& keys,
   if (keys.size() == 0) {
     throw IllegalArgumentException("Region::removeAll: zero keys provided");
   }
-  int64 sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = Utils::startStatOpTime();
   GfErrType err = removeAllNoThrow(keys, aCallbackArgument);
   Utils::updateStatOpTime(m_regionStats->getStat(),
                           RegionStatType::getInstance()->getRemoveAllTimeId(),
@@ -541,7 +541,7 @@ void LocalRegion::getAll(const VectorOfCacheableKey& keys,
         getFullPath());
   }
 
-  int64 sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = Utils::startStatOpTime();
   GfErrType err = getAllNoThrow(keys, values, exceptions, addToLocalCache,
                                 aCallbackArgument);
   Utils::updateStatOpTime(m_regionStats->getStat(),
@@ -550,7 +550,7 @@ void LocalRegion::getAll(const VectorOfCacheableKey& keys,
   // handleReplay(err, NULLPTR);
   GfErrTypeToException("Region::getAll", err);
 }
-uint32 LocalRegion::size_remote() {
+uint32_t LocalRegion::size_remote() {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::size);
   if (m_regionAttributes->getCachingEnabled()) {
     return m_entries->size();
@@ -877,7 +877,7 @@ GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
     try {
       isLoaderInvoked = true;
       /*Update the statistics*/
-      int64 sampleStartNanos = Utils::startStatOpTime();
+      int64_t sampleStartNanos = Utils::startStatOpTime();
       value = m_loader->load(RegionPtr(this), keyPtr, aCallbackArgument);
       Utils::updateStatOpTime(
           m_regionStats->getStat(),
@@ -2172,7 +2172,7 @@ GfErrType LocalRegion::removeAllNoThrow(const VectorOfCacheableKey& keys,
 
 void LocalRegion::clear(const UserDataPtr& aCallbackArgument) {
   /*update the stats */
-  int64 sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = Utils::startStatOpTime();
   localClear(aCallbackArgument);
   Utils::updateStatOpTime(m_regionStats->getStat(),
                           RegionStatType::getInstance()->getClearsId(),
@@ -2556,7 +2556,7 @@ bool LocalRegion::invokeCacheWriterForEntryEvent(
     try {
       bool updateStats = true;
       /*Update the CacheWriter Stats*/
-      int64 sampleStartNanos = Utils::startStatOpTime();
+      int64_t sampleStartNanos = Utils::startStatOpTime();
       switch (type) {
         case BEFORE_UPDATE: {
           if (oldValue != NULLPTR) {
@@ -2614,7 +2614,7 @@ bool LocalRegion::invokeCacheWriterForRegionEvent(
     try {
       bool updateStats = true;
       /*Update the CacheWriter Stats*/
-      int64 sampleStartNanos = Utils::startStatOpTime();
+      int64_t sampleStartNanos = Utils::startStatOpTime();
       switch (type) {
         case BEFORE_REGION_DESTROY: {
           eventStr = "beforeRegionDestroy";
@@ -2667,7 +2667,7 @@ GfErrType LocalRegion::invokeCacheListenerForEntryEvent(
     try {
       bool updateStats = true;
       /*Update the CacheWriter Stats*/
-      int64 sampleStartNanos = Utils::startStatOpTime();
+      int64_t sampleStartNanos = Utils::startStatOpTime();
       switch (type) {
         case AFTER_UPDATE: {
           //  when CREATE is received from server for notification
@@ -2735,7 +2735,7 @@ GfErrType LocalRegion::invokeCacheListenerForRegionEvent(
     try {
       bool updateStats = true;
       /*Update the CacheWriter Stats*/
-      int64 sampleStartNanos = Utils::startStatOpTime();
+      int64_t sampleStartNanos = Utils::startStatOpTime();
       switch (type) {
         case AFTER_REGION_DESTROY: {
           eventStr = "afterRegionDestroy";
@@ -3117,7 +3117,7 @@ void LocalRegion::evict(int32_t percentage) {
 }
 void LocalRegion::invokeAfterAllEndPointDisconnected() {
   if (m_listener != NULLPTR) {
-    int64 sampleStartNanos = Utils::startStatOpTime();
+    int64_t sampleStartNanos = Utils::startStatOpTime();
     try {
       m_listener->afterRegionDisconnected(RegionPtr(this));
     } catch (const Exception& ex) {

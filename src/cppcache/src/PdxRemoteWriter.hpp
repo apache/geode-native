@@ -34,11 +34,11 @@ namespace client {
 
 class PdxRemoteWriter : public PdxLocalWriter {
  private:
-  int32* m_remoteTolocalMap;
-  int32 m_preserveDataIdx;
-  int32 m_currentDataIdx;
+  int32_t* m_remoteTolocalMap;
+  int32_t m_preserveDataIdx;
+  int32_t m_currentDataIdx;
 
-  int32 m_remoteTolocalMapLength;
+  int32_t m_remoteTolocalMapLength;
 
   void initialize();
   void writePreserveData();

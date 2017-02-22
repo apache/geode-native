@@ -148,7 +148,7 @@ class CPPCACHE_EXPORT Utils {
     }
   }
 
-  inline static int64 startStatOpTime() {
+  inline static int64_t startStatOpTime() {
     if (DistributedSystem::getSystemProperties() != NULL) {
       return (DistributedSystem::getSystemProperties()
                   ->getEnableTimeStatistics())
@@ -182,7 +182,7 @@ class CPPCACHE_EXPORT Utils {
   }
 
   inline static void updateStatOpTime(statistics::Statistics* m_regionStats,
-                                      int32 statId, int64 start) {
+                                      int32_t statId, int64_t start) {
     if (DistributedSystem::getSystemProperties() != NULL) {
       if (DistributedSystem::getSystemProperties()->getEnableTimeStatistics()) {
         m_regionStats->incLong(statId, startStatOpTime() - start);

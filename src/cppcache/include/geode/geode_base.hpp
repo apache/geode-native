@@ -70,31 +70,6 @@
 #endif
 
 #if defined(_MSC_VER)
-/* 32 bit Windows only, for now */
-typedef signed char int8;        /**< single byte, character or boolean field */
-typedef unsigned char uint8;     /**< unsigned integer value */
-typedef signed short int16;      /**< signed 16 bit integer (short) */
-typedef unsigned short uint16;   /**< unsigned 16 bit integer (ushort) */
-typedef signed int int32;        /**< signed 32 bit integer */
-typedef unsigned int uint32;     /**< unsigned 32 bit integer */
-typedef signed __int64 int64;    /**< signed 64 bit integer */
-typedef unsigned __int64 uint64; /**< unsigned 64 bit integer */
-
-// typedef int32            intptr_t; /**< a pointer to a 32 bit integer */
-// typedef uint32           uintptr_t; /**< a pointer to an unsigned 32 bit
-// integer */
-
-/* Windows does not have stdint.h */
-typedef int8 int8_t;
-typedef uint8 uint8_t;
-typedef int16 int16_t;
-typedef uint16 uint16_t;
-typedef int32 int32_t;
-typedef uint32 uint32_t;
-typedef int64 int64_t;
-typedef uint64 uint64_t;
-/* end stdint.h */
-
 /* Windows does not have inttypes.h */
 /* 32 bit Windows only, for now */
 #if !defined PRId8
@@ -178,16 +153,6 @@ typedef uint64 uint64_t;
 #else
 /* Unix, including both Sparc Solaris and Linux */
 #define __STDC_FORMAT_MACROS
-#include <inttypes.h>
-typedef int8_t int8;     /**< single byte, character or boolean field */
-typedef uint8_t uint8;   /**< unsigned integer value */
-typedef int16_t int16;   /**< signed 16 bit integer (short) */
-typedef uint16_t uint16; /**< unsigned 16 bit integer (ushort) */
-typedef int32_t int32;   /**< signed 32 bit integer */
-typedef uint32_t uint32; /**< unsigned 32 bit integer */
-typedef int64_t int64;   /**< signed 64 bit integer */
-typedef uint64_t uint64; /**< unsigned 64 bit integer */
-
 #ifndef _WCHAR_H
 #include <wchar.h>
 #endif

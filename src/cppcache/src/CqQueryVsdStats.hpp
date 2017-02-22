@@ -75,7 +75,7 @@ class CPPCACHE_EXPORT CqQueryVsdStats : public CqStatistics {
 
 class CqQueryStatType {
  private:
-  static int8 instanceFlag;
+  static int8_t instanceFlag;
   static CqQueryStatType* single;
   static SpinLock m_singletonLock;
   static SpinLock m_statTypeLock;

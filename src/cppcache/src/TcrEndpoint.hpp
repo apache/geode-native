@@ -197,7 +197,7 @@ class CPPCACHE_EXPORT TcrEndpoint {
                                              TcrConnection* conn);
   virtual void closeFailedConnection(TcrConnection*& conn);
   void closeConnection(TcrConnection*& conn);
-  virtual void handleNotificationStats(int64 byteLength){};
+  virtual void handleNotificationStats(int64_t byteLength){};
   virtual void closeNotification();
   std::list<Task<TcrEndpoint>*> m_notifyReceiverList;
   std::list<TcrConnection*> m_notifyConnectionList;

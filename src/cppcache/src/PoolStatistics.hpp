@@ -45,11 +45,11 @@ class PoolStats {
     statistics::StatisticsManager::getExistingInstance()->forceSample();
   }
 
-  void setLocators(int32 curVal) { getStats()->setInt(m_locatorsId, curVal); }
+  void setLocators(int32_t curVal) { getStats()->setInt(m_locatorsId, curVal); }
 
-  void setServers(int32 curVal) { getStats()->setInt(m_serversId, curVal); }
+  void setServers(int32_t curVal) { getStats()->setInt(m_serversId, curVal); }
 
-  void setSubsServers(int32 curVal) {
+  void setSubsServers(int32_t curVal) {
     getStats()->setInt(m_subsServsId, curVal);
   }
 
@@ -57,7 +57,7 @@ class PoolStats {
 
   void incLoctorResposes() { getStats()->incLong(m_locRespsId, 1); }
 
-  void setCurPoolConnections(int32 curVal) {
+  void setCurPoolConnections(int32_t curVal) {
     getStats()->setInt(m_poolConnsId, curVal);
   }
 
@@ -79,13 +79,13 @@ class PoolStats {
     getStats()->incInt(m_loadCondDisconnectsId, 1);
   }
 
-  void setCurWaitingConnections(int32 curVal) {
+  void setCurWaitingConnections(int32_t curVal) {
     getStats()->setInt(m_waitingConnectionsId, curVal);
   }
 
   void incWaitingConnections() { getStats()->incInt(m_totalWaitingConnsId, 1); }
 
-  void setCurClientOps(int32 curVal) {
+  void setCurClientOps(int32_t curVal) {
     getStats()->setInt(m_curClientOpsId, curVal);
   }
 
@@ -95,7 +95,7 @@ class PoolStats {
 
   void incTimeoutClientOps() { getStats()->incInt(m_clientOpsTimeoutId, 1); }
 
-  void incReceivedBytes(int64 value) {  // counter
+  void incReceivedBytes(int64_t value) {  // counter
     getStats()->incLong(m_receivedBytesId, value);
   }
 
@@ -109,20 +109,20 @@ class PoolStats {
   void incDeltaMessageFailures() {  // counter
     getStats()->incLong(m_deltaMessageFailuresId, 1);
   }
-  void incProcessedDeltaMessagesTime(int64 value) {  // counter
+  void incProcessedDeltaMessagesTime(int64_t value) {  // counter
     getStats()->incLong(m_processedDeltaMessagesTimeId, value);
   }
 
-  void incTotalWaitingConnTime(int64 value) {  // counter
+  void incTotalWaitingConnTime(int64_t value) {  // counter
     getStats()->incLong(m_totalWaitingConnTimeId, value);
   }
-  void incClientOpsSuccessTime(int64 value) {  // counter
+  void incClientOpsSuccessTime(int64_t value) {  // counter
     getStats()->incLong(m_clientOpsSuccessTimeId, value);
   }
   void incQueryExecutionId() {  // counter
     getStats()->incInt(m_queryExecutionsId, 1);
   }
-  void incQueryExecutionTimeId(int64 value) {  // counter
+  void incQueryExecutionTimeId(int64_t value) {  // counter
     getStats()->incLong(m_queryExecutionTimeId, value);
   }
   inline apache::geode::statistics::Statistics* getStats() {

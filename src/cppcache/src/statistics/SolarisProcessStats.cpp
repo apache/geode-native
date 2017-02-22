@@ -28,7 +28,7 @@ using namespace apache::geode::statistics;
  *
  */
 
-SolarisProcessStats::SolarisProcessStats(int64 pid, const char* name) {
+SolarisProcessStats::SolarisProcessStats(int64_t pid, const char* name) {
   GeodeStatisticsFactory* statFactory =
       GeodeStatisticsFactory::getExistingInstance();
 
@@ -105,16 +105,16 @@ void SolarisProcessStats::createType(StatisticsFactory* statFactory) {
   }
 }
 
-int64 SolarisProcessStats::getProcessSize() {
-  return static_cast<int64>(stats->getInt(rssSizeINT));
+int64_t SolarisProcessStats::getProcessSize() {
+  return static_cast<int64_t>(stats->getInt(rssSizeINT));
 }
 
-int32 SolarisProcessStats::getCpuUsage() {
+int32_t SolarisProcessStats::getCpuUsage() {
   return stats->getInt(hostCpuUsageINT);
 }
-int64 SolarisProcessStats::getCPUTime() { return stats->getInt(userTimeINT); }
-int32 SolarisProcessStats::getNumThreads() { return stats->getInt(threadsINT); }
-int64 SolarisProcessStats::getAllCpuTime() {
+int64_t SolarisProcessStats::getCPUTime() { return stats->getInt(userTimeINT); }
+int32_t SolarisProcessStats::getNumThreads() { return stats->getInt(threadsINT); }
+int64_t SolarisProcessStats::getAllCpuTime() {
   return ((stats->getInt(userTimeINT)) + (stats->getInt(systemTimeINT)));
 }
 

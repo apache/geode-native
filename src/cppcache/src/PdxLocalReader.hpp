@@ -44,7 +44,7 @@ class PdxLocalReader : public PdxReader {
   PdxRemotePreservedDataPtr m_pdxRemotePreserveData;
   int32_t* m_localToRemoteMap;
   int32_t* m_remoteToLocalMap;
-  int32 m_remoteToLocalMapSize;
+  int32_t m_remoteToLocalMapSize;
 
   void initialize();
   void resettoPdxHead();

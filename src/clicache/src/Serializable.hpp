@@ -295,8 +295,8 @@ namespace Apache
 
       internal:
 
-				static int32 GetPDXIdForType(const char* poolName, IGeodeSerializable^ pdxType);
-				static IGeodeSerializable^ GetPDXTypeById(const char* poolName, int32 typeId);
+				static int32_t GetPDXIdForType(const char* poolName, IGeodeSerializable^ pdxType);
+				static IGeodeSerializable^ GetPDXTypeById(const char* poolName, int32_t typeId);
 				static IPdxSerializable^ Serializable::GetPdxType(String^ className);
 				static void RegisterPDXManagedCacheableKey(bool appDomainEnable);
         static bool IsObjectAndPdxSerializerRegistered(String^ className);
@@ -344,19 +344,19 @@ namespace Apache
         static apache::geode::client::CacheableKeyPtr getCacheableFloat(float val);
         
         //int16
-        static int16 getInt16(apache::geode::client::SerializablePtr nativeptr);
+        static int16_t getInt16(apache::geode::client::SerializablePtr nativeptr);
         
         static apache::geode::client::CacheableKeyPtr getCacheableInt16(int val);
         
         //int32
-        static int32 getInt32(apache::geode::client::SerializablePtr nativeptr);
+        static int32_t getInt32(apache::geode::client::SerializablePtr nativeptr);
         
-        static apache::geode::client::CacheableKeyPtr getCacheableInt32(int32 val);
+        static apache::geode::client::CacheableKeyPtr getCacheableInt32(int32_t val);
         
         //int64
-        static int64 getInt64(apache::geode::client::SerializablePtr nativeptr);
+        static int64_t getInt64(apache::geode::client::SerializablePtr nativeptr);
         
-        static apache::geode::client::CacheableKeyPtr getCacheableInt64(int64 val);
+        static apache::geode::client::CacheableKeyPtr getCacheableInt64(int64_t val);
         
         //cacheable ascii string
         static String^ getASCIIString(apache::geode::client::SerializablePtr nativeptr);        

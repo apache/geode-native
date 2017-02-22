@@ -111,10 +111,10 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   static int blackListBucketTimeouts();
   static void setBlackListBucketTimeouts();
 
-  static void setServerGroupFlag(int8 serverGroupFlag) {
+  static void setServerGroupFlag(int8_t serverGroupFlag) {
     CacheImpl::s_serverGroupFlag = serverGroupFlag;
   }
-  static int8 getAndResetServerGroupFlag();
+  static int8_t getAndResetServerGroupFlag();
   static MemberListForVersionStampPtr getMemberListForVersionStamp();
 
   /** Returns the name of this cache.
@@ -285,7 +285,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
  private:
   static volatile bool s_networkhop;
   static volatile int s_blacklistBucketTimeout;
-  static volatile int8 s_serverGroupFlag;
+  static volatile int8_t s_serverGroupFlag;
   static MemberListForVersionStampPtr s_versionStampMemIdList;
   PoolPtr m_defaultPool;
   bool m_ignorePdxUnreadFields;

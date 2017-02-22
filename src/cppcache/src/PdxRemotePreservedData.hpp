@@ -32,9 +32,9 @@ typedef SharedPtr<PdxRemotePreservedData> PdxRemotePreservedDataPtr;
 class PdxRemotePreservedData : public PdxUnreadFields {
  private:
   std::vector<std::vector<int8_t> > m_preservedData;
-  int32 m_typeId;
-  int32 m_mergedTypeId;
-  int32 m_currentIndex;
+  int32_t m_typeId;
+  int32_t m_mergedTypeId;
+  int32_t m_currentIndex;
   SerializablePtr /*Object^*/ m_owner;
   long m_expiryTakId;
 
@@ -54,8 +54,8 @@ class PdxRemotePreservedData : public PdxUnreadFields {
 
     delete[] m_preservedData;*/
   }
-  PdxRemotePreservedData(int32 typeId, int32 mergedTypeId,
-                         int32 numberOfFields, /*Object^*/
+  PdxRemotePreservedData(int32_t typeId, int32_t mergedTypeId,
+                         int32_t numberOfFields, /*Object^*/
                          SerializablePtr owner) {
     m_typeId = typeId;
     m_mergedTypeId = mergedTypeId;
@@ -64,8 +64,8 @@ class PdxRemotePreservedData : public PdxUnreadFields {
     m_expiryTakId = 0;
   }
 
-  void initialize(int32 typeId, int32 mergedTypeId,
-                  int32 numberOfFields, /*Object^*/
+  void initialize(int32_t typeId, int32_t mergedTypeId,
+                  int32_t numberOfFields, /*Object^*/
                   SerializablePtr owner) {
     m_typeId = typeId;
     m_mergedTypeId = mergedTypeId;
@@ -74,7 +74,7 @@ class PdxRemotePreservedData : public PdxUnreadFields {
     m_expiryTakId = 0;
   }
 
-  inline int32 getMergedTypeId() { return m_mergedTypeId; }
+  inline int32_t getMergedTypeId() { return m_mergedTypeId; }
 
   inline void setPreservedDataExpiryTaskId(long expId) {
     m_expiryTakId = expId;
@@ -86,7 +86,7 @@ class PdxRemotePreservedData : public PdxUnreadFields {
 
   void setOwner(SerializablePtr val) { m_owner = val; }
 
-  inline std::vector<int8_t> getPreservedData(int32 idx) {
+  inline std::vector<int8_t> getPreservedData(int32_t idx) {
     return m_preservedData[idx];
   }
 

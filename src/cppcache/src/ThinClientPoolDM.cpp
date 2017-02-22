@@ -1870,7 +1870,7 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueue(
   getStats().incWaitingConnections();
 
   /*get the start time for connectionWaitTime stat*/
-  int64 sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = Utils::startStatOpTime();
   TcrConnection* mp =
       getUntil(timeoutTime, error, excludeServers, maxConnLimit);
   /*Update the time stat for clientOpsTime */

@@ -85,7 +85,7 @@ enum { SPINLOCK_CLEAR_BYTE = 0 };
 // implemented in hostsolaris.asm
 extern "C" {
 void HostAsmUnlock(int32_t, SpinLockField*);
-bool HostAsmTryLock(SpinLockField*, int32, uint32);
+bool HostAsmTryLock(SpinLockField*, int32_t, uint32_t);
 int32_t InterlockedExchangeAdd(volatile int32_t*, int32_t);
 // int64_t InterlockedExchangeAddLong(volatile int64_t *, int64_t);
 }

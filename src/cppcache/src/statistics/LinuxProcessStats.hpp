@@ -47,12 +47,12 @@ class CPPCACHE_EXPORT LinuxProcessStats : public ProcessStats {
   StatisticsType* m_statsType;
 
   /** Ids of All Stats Desciptors for seting new values */
-  int32 rssSizeINT;
-  int32 imageSizeINT;
-  int32 userTimeINT;
-  int32 systemTimeINT;
-  int32 hostCpuUsageINT;
-  int32 threadsINT;
+  int32_t rssSizeINT;
+  int32_t imageSizeINT;
+  int32_t userTimeINT;
+  int32_t systemTimeINT;
+  int32_t hostCpuUsageINT;
+  int32_t threadsINT;
 
   /** The underlying statistics */
   Statistics* stats;
@@ -60,14 +60,14 @@ class CPPCACHE_EXPORT LinuxProcessStats : public ProcessStats {
   void createType(StatisticsFactory* statFactory);
 
  public:
-  LinuxProcessStats(int64 pid, const char* name);
+  LinuxProcessStats(int64_t pid, const char* name);
   ~LinuxProcessStats();
 
-  int64 getProcessSize();
-  int32 getCpuUsage();
-  int32 getNumThreads();
-  int64 getCPUTime();
-  int64 getAllCpuTime();
+  int64_t getProcessSize();
+  int32_t getCpuUsage();
+  int32_t getNumThreads();
+  int64_t getCPUTime();
+  int64_t getAllCpuTime();
   /**
    * Close Underline Statistics
    */

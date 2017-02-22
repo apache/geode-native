@@ -41,18 +41,18 @@ class CPPCACHE_EXPORT PdxFieldType : public Serializable {
 
   bool m_isVariableLengthType;
   bool m_isIdentityField;
-  int32 m_fixedSize;
-  int32 m_varLenFieldIdx;
+  int32_t m_fixedSize;
+  int32_t m_varLenFieldIdx;
 
-  int32 m_vlOffsetIndex;
-  int32 m_relativeOffset;
+  int32_t m_vlOffsetIndex;
+  int32_t m_relativeOffset;
 
-  int32 getFixedTypeSize() const;
+  int32_t getFixedTypeSize() const;
 
  public:
   PdxFieldType(const char* fieldName, const char* className, uint8_t typeId,
-               int32 sequenceId, bool isVariableLengthType, int32 fixedSize,
-               int32 varLenFieldIdx);
+               int32_t sequenceId, bool isVariableLengthType, int32_t fixedSize,
+               int32_t varLenFieldIdx);
 
   PdxFieldType();
 
@@ -68,13 +68,13 @@ class CPPCACHE_EXPORT PdxFieldType : public Serializable {
 
   bool getIdentityField() const { return m_isIdentityField; }
 
-  int32 getVarLenFieldIdx() const { return m_varLenFieldIdx; }
+  int32_t getVarLenFieldIdx() const { return m_varLenFieldIdx; }
 
-  void setVarLenOffsetIndex(int32 value) { m_vlOffsetIndex = value; }
+  void setVarLenOffsetIndex(int32_t value) { m_vlOffsetIndex = value; }
 
-  void setRelativeOffset(int32 value) { m_relativeOffset = value; }
+  void setRelativeOffset(int32_t value) { m_relativeOffset = value; }
 
-  int32 getFixedSize() const { return m_fixedSize; }
+  int32_t getFixedSize() const { return m_fixedSize; }
   void setIdentityField(bool identityField) {
     m_isIdentityField = identityField;
   }
@@ -100,9 +100,9 @@ class CPPCACHE_EXPORT PdxFieldType : public Serializable {
 
   bool equals(PdxFieldTypePtr otherObj);
 
-  int32 getVarLenOffsetIndex() const { return m_vlOffsetIndex; }
+  int32_t getVarLenOffsetIndex() const { return m_vlOffsetIndex; }
 
-  int32 getRelativeOffset() const { return m_relativeOffset; }
+  int32_t getRelativeOffset() const { return m_relativeOffset; }
 };
 }  // namespace client
 }  // namespace geode

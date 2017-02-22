@@ -52,15 +52,16 @@ void HostStatHelperSolaris::refreshProcess(ProcessStats* processStats) {
     return;
   }
   Statistics* stats = solProcessStat->stats;
-  int32 thePid = (int32)stats->getNumericId();  // int64 is converted to int
+  // int64 is converted to int
+  int32_t thePid = static_cast<int32_t>(stats->getNumericId());
 
-  int32 pid = 0;
-  uint32 userTime = 0;
-  uint32 sysTime = 0;
-  uint32 vsize = 0;
-  int32 rss = 0;
-  uint32 tempimageSize = 0;
-  uint32 temprssSize = 0;
+  int32_t pid = 0;
+  uint32_t userTime = 0;
+  uint32_t sysTime = 0;
+  uint32_t vsize = 0;
+  int32_t rss = 0;
+  uint32_t tempimageSize = 0;
+  uint32_t temprssSize = 0;
   int32_t cpuUsage = 0;
   int32_t processCpuUsage = 0;
   char procFileName[64];
@@ -68,16 +69,17 @@ void HostStatHelperSolaris::refreshProcess(ProcessStats* processStats) {
   prusage_t currentUsage;
   psinfo_t currentInfo;
 
-  ACE_OS::snprintf(procFileName, 64, "/proc/%lu/psinfo", (uint32)thePid);
+  ACE_OS::snprintf(procFileName, 64, "/proc/%lu/psinfo",
+                   static_cast<uint32_t>(thePid));
   // fread was returning errno 2 FILENOTFOUND so it was switched to read
   // This matches what was done in the Geode Project also
   fPtr = open(procFileName, O_RDONLY, 0); /* read only */
   if (fPtr != -1) {
     if (read(fPtr, &currentInfo, sizeof(currentInfo)) != sizeof(currentInfo)) {
-      int32 errNum = errno;  // for debugging
+      int32_t errNum = errno;  // for debugging
       if (m_logStatErrorCountDown-- > 0) {
         LOGFINE("Error reading procFileName %s, errno %d pid %lu", procFileName,
-                errNum, (uint32)thePid);
+                errNum, static_cast<uint32_t>(thePid));
       }
     } else {
       tempimageSize = currentInfo.pr_size / 1024UL;
@@ -86,23 +88,24 @@ void HostStatHelperSolaris::refreshProcess(ProcessStats* processStats) {
     }
     close(fPtr);
   }
-  ACE_OS::snprintf(procFileName, 64, "/proc/%u/usage", (uint32)thePid);
+  ACE_OS::snprintf(procFileName, 64, "/proc/%u/usage",
+                   static_cast<uint32_t>(thePid));
   fPtr = open(procFileName, O_RDONLY, 0);
   if (fPtr != -1) {
     if (read(fPtr, &currentUsage, sizeof(currentUsage)) !=
         sizeof(currentUsage)) {
-      int32 errNum = errno;  // for debugging
+      int32_t errNum = errno;  // for debugging
       if (m_logStatErrorCountDown-- > 0) {
         LOGFINE("Error reading procFileName %s, errno %d pid %lu", procFileName,
-                errNum, (uint32)thePid);
+                errNum, static_cast<uint32_t>(thePid));
       }
     } else {
-      uint32 usrTimeSecs = currentUsage.pr_utime.tv_sec;
-      uint32 usrTimeNanos = currentUsage.pr_utime.tv_nsec;
+      uint32_t usrTimeSecs = currentUsage.pr_utime.tv_sec;
+      uint32_t usrTimeNanos = currentUsage.pr_utime.tv_nsec;
       userTime = (usrTimeSecs * 1000 * 1000) + (usrTimeNanos / (1000));
 
-      uint32 sysTimeSecs = currentUsage.pr_stime.tv_sec;
-      uint32 sysTimeNanos = currentUsage.pr_stime.tv_nsec;
+      uint32_t sysTimeSecs = currentUsage.pr_stime.tv_sec;
+      uint32_t sysTimeNanos = currentUsage.pr_stime.tv_nsec;
       sysTime = (sysTimeSecs * 1000 * 1000) + (sysTimeNanos / (1000));
     }
     close(fPtr);

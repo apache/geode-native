@@ -49,7 +49,7 @@ class StatisticsManager {
   //--------------------Properties-------------------------------------------------
 
   // interval at which the sampler will take a sample of Stats
-  int32 m_sampleIntervalMs;
+  int32_t m_sampleIntervalMs;
 
   //----------------Sampler and Stat Lists-----------------------------------
 
@@ -71,8 +71,8 @@ class StatisticsManager {
 
   static StatisticsManager* s_singleton;
 
-  StatisticsManager(const char* filePath, int64 sampleIntervalMs, bool enabled,
-                    int64 statFileLimit = 0, int64 statDiskSpaceLimit = 0);
+  StatisticsManager(const char* filePath, int64_t sampleIntervalMs, bool enabled,
+                    int64_t statFileLimit = 0, int64_t statDiskSpaceLimit = 0);
 
   void closeSampler();
 
@@ -80,9 +80,9 @@ class StatisticsManager {
 
  public:
   static StatisticsManager* initInstance(const char* filePath,
-                                         int64 sampleIntervalMs, bool enabled,
-                                         int64 statFileLimit = 0,
-                                         int64 statDiskSpaceLimit = 0);
+                                         int64_t sampleIntervalMs, bool enabled,
+                                         int64_t statFileLimit = 0,
+                                         int64_t statDiskSpaceLimit = 0);
 
   static StatisticsManager* getExistingInstance();
 
@@ -96,7 +96,7 @@ class StatisticsManager {
 
   ~StatisticsManager();
 
-  int32 getStatListModCount();
+  int32_t getStatListModCount();
 
   void addStatisticsToList(Statistics* stat);
 
@@ -119,9 +119,9 @@ class StatisticsManager {
 
   std::vector<Statistics*> findStatisticsByTextId(char* textId);
 
-  std::vector<Statistics*> findStatisticsByNumericId(int64 numericId);
+  std::vector<Statistics*> findStatisticsByNumericId(int64_t numericId);
 
-  Statistics* findStatisticsByUniqueId(int64 uniqueId);
+  Statistics* findStatisticsByUniqueId(int64_t uniqueId);
 
   static void deleteStatistics(Statistics*& stat);
 

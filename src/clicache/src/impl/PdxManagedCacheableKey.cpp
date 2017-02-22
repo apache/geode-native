@@ -37,7 +37,7 @@ namespace apache
       void PdxManagedCacheableKey::toData(apache::geode::client::DataOutput& output) const
       {
         try {
-          uint32 pos = (int)output.getBufferLength();
+          uint32_t pos = (int)output.getBufferLength();
           Apache::Geode::Client::DataOutput mg_output(&output, true);
           Apache::Geode::Client::Internal::PdxHelper::SerializePdx(%mg_output, m_managedptr);
           //m_managedptr->ToData( %mg_output );

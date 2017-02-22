@@ -133,8 +133,8 @@ void PdxLocalWriter::endObjectWriting() {
 }
 
 void PdxLocalWriter::writePdxHeader() {
-  int32 len = calculateLenWithOffsets();
-  int32 typeId = m_pdxType->getTypeId();
+  int32_t len = calculateLenWithOffsets();
+  int32_t typeId = m_pdxType->getTypeId();
 
   const uint8_t* starpos = m_dataOutput->getBuffer() + m_startPositionOffset;
   PdxHelper::writeInt32(const_cast<uint8_t*>(starpos), len);
@@ -143,7 +143,7 @@ void PdxLocalWriter::writePdxHeader() {
   writeOffsets(len);
 }
 
-void PdxLocalWriter::writeOffsets(int32 len) {
+void PdxLocalWriter::writeOffsets(int32_t len) {
   if (len <= 0xff) {
     for (int i = static_cast<int>(m_offsets.size()) - 1; i > 0; i--) {
       m_dataOutput->write(static_cast<uint8_t>(m_offsets[i]));
@@ -185,14 +185,14 @@ PdxWriterPtr PdxLocalWriter::writeUnreadFields(PdxUnreadFieldsPtr unread) {
   return PdxWriterPtr(this);
 }
 
-int32 PdxLocalWriter::calculateLenWithOffsets() {
+int32_t PdxLocalWriter::calculateLenWithOffsets() {
   int bufferLen = m_dataOutput->getBufferLength() - m_startPositionOffset;
-  int32 totalOffsets = 0;
+  int32_t totalOffsets = 0;
   if (m_pdxType->getNumberOfVarLenFields() > 0) {
     totalOffsets = m_pdxType->getNumberOfVarLenFields() -
                    1;  // for first var len no need to append offset
   }
-  int32 totalLen = bufferLen - PdxHelper::PdxHeader + totalOffsets;
+  int32_t totalLen = bufferLen - PdxHelper::PdxHeader + totalOffsets;
 
   if (totalLen <= 0xff) {  // 1 byte
     return totalLen;

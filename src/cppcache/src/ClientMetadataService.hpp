@@ -136,7 +136,7 @@ class ClientMetadataService : public ACE_Task_Base,
                             ClientMetadataPtr clientmetadata);
 
   void enqueueForMetadataRefresh(const char* regionFullPath,
-                                 int8 serverGroupFlag);
+                                 int8_t serverGroupFlag);
 
   HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>*
   getServerToFilterMap(const VectorOfCacheableKey* keys,

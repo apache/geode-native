@@ -29,7 +29,7 @@ namespace client {
 
 class PdxWriterWithTypeCollector : public PdxLocalWriter {
  private:
-  std::vector<int32> m_offsets;
+  std::vector<int32_t> m_offsets;
   void initialize();
 
  public:
@@ -46,9 +46,9 @@ class PdxWriterWithTypeCollector : public PdxLocalWriter {
 
   virtual bool isFieldWritingStarted();
 
-  virtual int32 calculateLenWithOffsets();
+  virtual int32_t calculateLenWithOffsets();
 
-  virtual void writeOffsets(int32 len);
+  virtual void writeOffsets(int32_t len);
 
   /**
    *Write a 8-bit integer or byte to the PdxWriter.

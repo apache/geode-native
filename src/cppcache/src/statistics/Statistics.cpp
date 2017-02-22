@@ -22,19 +22,19 @@ void Statistics::close() {}
 
 ////////////////////////  accessor Methods  ///////////////////////
 
-int32 Statistics::nameToId(const char* name) { return 0; }
+int32_t Statistics::nameToId(const char* name) { return 0; }
 
 StatisticDescriptor* Statistics::nameToDescriptor(const char* name) {
   return NULL;
 }
 
-int64 Statistics::getUniqueId() { return 0; }
+int64_t Statistics::getUniqueId() { return 0; }
 
 StatisticsType* Statistics::getType() { return NULL; }
 
 const char* Statistics::getTextId() { return ""; }
 
-int64 Statistics::getNumericId() { return 0; }
+int64_t Statistics::getNumericId() { return 0; }
 
 bool Statistics::isAtomic() { return 0; }
 
@@ -44,19 +44,19 @@ bool Statistics::isClosed() { return 0; }
 
 ////////////////////////  set() Methods  ///////////////////////
 
-void Statistics::setInt(int32 id, int32 value) {}
+void Statistics::setInt(int32_t id, int32_t value) {}
 
-void Statistics::setInt(char* name, int32 value) {}
+void Statistics::setInt(char* name, int32_t value) {}
 
-void Statistics::setInt(StatisticDescriptor* descriptor, int32 value) {}
+void Statistics::setInt(StatisticDescriptor* descriptor, int32_t value) {}
 
-void Statistics::setLong(int32 id, int64 value) {}
+void Statistics::setLong(int32_t id, int64_t value) {}
 
-void Statistics::setLong(StatisticDescriptor* descriptor, int64 value) {}
+void Statistics::setLong(StatisticDescriptor* descriptor, int64_t value) {}
 
-void Statistics::setLong(char* name, int64 value) {}
+void Statistics::setLong(char* name, int64_t value) {}
 
-void Statistics::setDouble(int32 id, double value) {}
+void Statistics::setDouble(int32_t id, double value) {}
 
 void Statistics::setDouble(StatisticDescriptor* descriptor, double value) {}
 
@@ -64,19 +64,19 @@ void setDouble(char* name, double value) {}
 
 ///////////////////////  get() Methods  ///////////////////////
 
-int32 Statistics::getInt(int32 id) { return 0; }
+int32_t Statistics::getInt(int32_t id) { return 0; }
 
-int32 Statistics::getInt(StatisticDescriptor* descriptor) { return 0; }
+int32_t Statistics::getInt(StatisticDescriptor* descriptor) { return 0; }
 
-int32 Statistics::getInt(char* name) { return 0; }
+int32_t Statistics::getInt(char* name) { return 0; }
 
-int64 Statistics::getLong(int32 id) { return 0; }
+int64_t Statistics::getLong(int32_t id) { return 0; }
 
-int64 Statistics::getLong(StatisticDescriptor* descriptor) { return 0; }
+int64_t Statistics::getLong(StatisticDescriptor* descriptor) { return 0; }
 
-int64 Statistics::getLong(char* name) { return 0; }
+int64_t Statistics::getLong(char* name) { return 0; }
 
-double Statistics::getDouble(int32 id) { return 0; }
+double Statistics::getDouble(int32_t id) { return 0; }
 
 double Statistics::getDouble(StatisticDescriptor* descriptor) { return 0; }
 
@@ -95,14 +95,14 @@ double Statistics::getDouble(char* name) { return 0; }
  * @throws IllegalArgumentException
  *         If the described statistic does not exist
  */
-//  int64 Statistics::getRawBits(StatisticDescriptor* descriptor){ return }
+//  int64_t Statistics::getRawBits(StatisticDescriptor* descriptor){ return }
 
 /**
  * Returns the bits that represent the raw value of the named statistic.
  *
  * @throws IllegalArgumentException
  *         If the named statistic does not exist
- //  int64  Statistics::getRawBits(char* name){ return }
+ //  int64_t  Statistics::getRawBits(char* name){ return }
  */
 
 ////////////////////////  inc() Methods  ////////////////////////
@@ -119,23 +119,23 @@ double Statistics::getDouble(char* name) { return 0; }
  * @throws IllegalArgumentException
  *         If the id is invalid.
  */
-int32 Statistics::incInt(int32 id, int32 delta) { return 0; }
+int32_t Statistics::incInt(int32_t id, int32_t delta) { return 0; }
 
-int32 Statistics::incInt(StatisticDescriptor* descriptor, int32 delta) {
+int32_t Statistics::incInt(StatisticDescriptor* descriptor, int32_t delta) {
   return 0;
 }
 
-int32 Statistics::incInt(char* name, int32 delta) { return 0; }
+int32_t Statistics::incInt(char* name, int32_t delta) { return 0; }
 
-int64 Statistics::incLong(int32 id, int64 delta) { return 0; }
+int64_t Statistics::incLong(int32_t id, int64_t delta) { return 0; }
 
-int64 Statistics::incLong(StatisticDescriptor* descriptor, int64 delta) {
+int64_t Statistics::incLong(StatisticDescriptor* descriptor, int64_t delta) {
   return 0;
 }
 
-int64 Statistics::incLong(char* name, int64 delta) { return 0; }
+int64_t Statistics::incLong(char* name, int64_t delta) { return 0; }
 
-double Statistics::incDouble(int32 id, double delta) { return 0; }
+double Statistics::incDouble(int32_t id, double delta) { return 0; }
 
 double Statistics::incDouble(StatisticDescriptor* descriptor, double delta) {
   return 0;

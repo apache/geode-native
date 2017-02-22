@@ -57,7 +57,6 @@ class PdxType : public Serializable,
                 private NonAssignable {
  private:
   ACE_RW_Thread_Mutex m_lockObj;
-  // SerializablePtr m_lockObj;
 
   static const char* m_javaPdxClass;
 
@@ -65,34 +64,23 @@ class PdxType : public Serializable,
 
   std::list<PdxTypePtr> m_otherVersions;
 
-  // TODO
-  // Serializable* m_pdxDomainType;
-
   char* m_className;
 
-  int32 m_geodeTypeId;
+  int32_t m_geodeTypeId;
 
   bool m_isLocal;
 
-  int32 m_numberOfVarLenFields;
+  int32_t m_numberOfVarLenFields;
 
-  int32 m_varLenFieldIdx;
+  int32_t m_varLenFieldIdx;
 
-  int32 m_numberOfFieldsExtra;
+  int32_t m_numberOfFieldsExtra;
 
   bool m_isVarLenFieldAdded;
 
-  // TODO:
   int32_t* m_remoteToLocalFieldMap;
 
-  // TODO:
   int32_t* m_localToRemoteFieldMap;
-
-  // TODO:
-  // int32 **m_positionMap;
-
-  // TODO:
-  // CacheableHashMapPtr m_fieldNameVsPdxType;
 
   NameVsPdxType m_fieldNameVsPdxType;
 
@@ -111,12 +99,6 @@ class PdxType : public Serializable,
   PdxTypePtr clone();
   void generatePositionMap();
 
-  // first has more fields than second
-  /*PdxType isContains(PdxType &first, PdxType &second);
-  PdxType clone();
-
-  void generatePositionMap();
-  */
   PdxTypePtr isLocalTypeContains(PdxTypePtr otherType);
   PdxTypePtr isRemoteTypeContains(PdxTypePtr localType);
 
@@ -163,27 +145,27 @@ class PdxType : public Serializable,
     return size;
   }
 
-  virtual int32 getTypeId() const { return m_geodeTypeId; }
+  virtual int32_t getTypeId() const { return m_geodeTypeId; }
 
-  virtual void setTypeId(int32 typeId) { m_geodeTypeId = typeId; }
+  virtual void setTypeId(int32_t typeId) { m_geodeTypeId = typeId; }
 
-  int32 getNumberOfVarLenFields() const { return m_numberOfVarLenFields; }
+  int32_t getNumberOfVarLenFields() const { return m_numberOfVarLenFields; }
 
-  void setNumberOfVarLenFields(int32 value) { m_numberOfVarLenFields = value; }
+  void setNumberOfVarLenFields(int32_t value) { m_numberOfVarLenFields = value; }
 
-  int32 getTotalFields() const {
-    return static_cast<int32>(m_pdxFieldTypes->size());
+  int32_t getTotalFields() const {
+    return static_cast<int32_t>(m_pdxFieldTypes->size());
   }
 
   char* getPdxClassName() const { return m_className; }
 
   void setPdxClassName(char* className) { m_className = className; }
 
-  int32 getNumberOfExtraFields() const { return m_numberOfFieldsExtra; }
+  int32_t getNumberOfExtraFields() const { return m_numberOfFieldsExtra; }
 
-  void setVarLenFieldIdx(int32 value) { m_varLenFieldIdx = value; }
+  void setVarLenFieldIdx(int32_t value) { m_varLenFieldIdx = value; }
 
-  int32 getVarLenFieldIdx() const { return m_varLenFieldIdx; }
+  int32_t getVarLenFieldIdx() const { return m_varLenFieldIdx; }
 
   PdxFieldTypePtr getPdxField(const char* fieldName) {
     NameVsPdxType::iterator iter = m_fieldNameVsPdxType.find(fieldName);
@@ -202,7 +184,7 @@ class PdxType : public Serializable,
   }
 
   void addFixedLengthTypeField(const char* fieldName, const char* className,
-                               int8_t typeId, int32 size);
+                               int8_t typeId, int32_t size);
   void addVariableLengthTypeField(const char* fieldName, const char* className,
                                   int8_t typeId);
   void InitializeType();

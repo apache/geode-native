@@ -51,7 +51,7 @@ class CPPCACHE_EXPORT StatisticDescriptor {
     * }. The id is initialized when its statistics
     * type is created.
     */
-  virtual int32 getId() = 0;
+  virtual int32_t getId() = 0;
 
   /**
    * Returns the name of this statistic
@@ -68,12 +68,12 @@ class CPPCACHE_EXPORT StatisticDescriptor {
    * Counter statistics have values that always increase.
    * Gauge statistics have unconstrained values.
    */
-  virtual int8 isCounter() = 0;
+  virtual bool isCounter() = 0;
 
   /**
    *  Returns true if a larger statistic value indicates better performance.
    */
-  virtual int8 isLargerBetter() = 0;
+  virtual bool isLargerBetter() = 0;
 
   /**
    *  Returns the unit in which this statistic is measured

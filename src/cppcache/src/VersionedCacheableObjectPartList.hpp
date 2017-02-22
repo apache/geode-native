@@ -66,7 +66,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   bool m_hasTags;
   bool m_hasKeys;
   std::vector<VersionTagPtr> m_versionTags;
-  std::vector<uint8> m_byteArray;
+  std::vector<uint8_t> m_byteArray;
   uint16_t m_endpointMemId;
   VectorOfCacheableKeyPtr m_tempKeys;
   ACE_Recursive_Thread_Mutex& m_responseLock;

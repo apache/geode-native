@@ -23,6 +23,6 @@ using namespace apache::geode::statistics;
  */
 ProcessStats::ProcessStats() {}
 
-int64 ProcessStats::getProcessSize() { return 0; }
+int64_t ProcessStats::getProcessSize() { return 0; }
 
 ProcessStats::~ProcessStats() {}

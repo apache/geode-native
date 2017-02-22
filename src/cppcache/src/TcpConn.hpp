@@ -135,7 +135,7 @@ class CPPCACHE_EXPORT TcpConn : public Connector {
     setOption(level, option, (void*)&val, sizeof(bool));
   }
 
-  virtual uint16 getPort();
+  virtual uint16_t getPort();
 };
 }  // namespace client
 }  // namespace geode

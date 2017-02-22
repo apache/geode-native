@@ -148,7 +148,7 @@ namespace Apache
       }
 
       StatisticsType^ StatisticsFactory::CreateType( String^ name, String^ description,
-                                   array<StatisticDescriptor^>^ stats, int32 statsLength)
+                                   array<StatisticDescriptor^>^ stats, int32_t statsLength)
       {
         ManagedString mg_name( name );
         ManagedString mg_description( description );

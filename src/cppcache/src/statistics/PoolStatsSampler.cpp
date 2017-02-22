@@ -27,7 +27,7 @@ using namespace apache::geode::statistics;
 using namespace apache::geode::client;
 const char* PoolStatsSampler::NC_PSS_Thread = "NC PSS Thread";
 
-PoolStatsSampler::PoolStatsSampler(int64 sampleRate, CacheImpl* cache,
+PoolStatsSampler::PoolStatsSampler(int64_t sampleRate, CacheImpl* cache,
                                    ThinClientPoolDM* distMan)
     : m_sampleRate(sampleRate), m_distMan(distMan) {
   m_running = false;
@@ -39,18 +39,18 @@ PoolStatsSampler::~PoolStatsSampler() {
   // GF_SAFE_DELETE(m_adminRegion);
 }
 
-int32 PoolStatsSampler::svc() {
+int32_t PoolStatsSampler::svc() {
   DistributedSystemImpl::setThreadName(NC_PSS_Thread);
-  int32 msSpentWorking = 0;
-  int32 msRate = static_cast<int32>(m_sampleRate);
+  int32_t msSpentWorking = 0;
+  int32_t msRate = static_cast<int32_t>(m_sampleRate);
   // ACE_Guard < ACE_Recursive_Thread_Mutex > _guard( m_lock );
   while (!m_stopRequested) {
-    int64 sampleStartNanos = NanoTimer::now();
+    int64_t sampleStartNanos = NanoTimer::now();
     putStatsInAdminRegion();
-    int64 sampleEndNanos = NanoTimer::now();
-    int64 nanosSpentWorking = sampleEndNanos - sampleStartNanos;
-    msSpentWorking = static_cast<int32>(nanosSpentWorking / 1000000);
-    int32 msToWait = msRate - msSpentWorking;
+    int64_t sampleEndNanos = NanoTimer::now();
+    int64_t nanosSpentWorking = sampleEndNanos - sampleStartNanos;
+    msSpentWorking = static_cast<int32_t>(nanosSpentWorking / 1000000);
+    int32_t msToWait = msRate - msSpentWorking;
     while (msToWait > 0) {
       ACE_Time_Value sleepTime;
       sleepTime.msec(msToWait > 100 ? 100 : msToWait);
@@ -85,7 +85,7 @@ void PoolStatsSampler::putStatsInAdminRegion() {
     if (!m_adminRegion->isDestroyed()) {
       int puts = 0, gets = 0, misses = 0, numListeners = 0, numThreads = 0,
           creates = 0;
-      int64 cpuTime = 0;
+      int64_t cpuTime = 0;
       GeodeStatisticsFactory* gf =
           GeodeStatisticsFactory::getExistingInstance();
       if (gf) {

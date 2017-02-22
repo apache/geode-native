@@ -108,7 +108,7 @@ void ThinClientHARegion::handleMarker() {
 
   if (m_listener != NULLPTR && !m_processedMarker) {
     RegionEvent event(RegionPtr(this), NULLPTR, false);
-    int64 sampleStartNanos = Utils::startStatOpTime();
+    int64_t sampleStartNanos = Utils::startStatOpTime();
     try {
       m_listener->afterRegionLive(event);
     } catch (const Exception& ex) {

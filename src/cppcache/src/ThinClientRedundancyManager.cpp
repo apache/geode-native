@@ -448,7 +448,7 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
   // Update pool stats
   if (m_poolHADM) {
     m_poolHADM->getStats().setSubsServers(
-        static_cast<int32>(m_redundantEndpoints.size()));
+        static_cast<int32_t>(m_redundantEndpoints.size()));
   }
 
   if (isRedundancySatisfied) {

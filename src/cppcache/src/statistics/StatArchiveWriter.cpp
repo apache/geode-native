@@ -54,21 +54,21 @@ StatDataOutput::~StatDataOutput() {
   }
 }
 
-int64 StatDataOutput::getBytesWritten() { return this->bytesWritten; }
+int64_t StatDataOutput::getBytesWritten() { return this->bytesWritten; }
 
 void StatDataOutput::flush() {
-  const uint8 *buffBegin = dataBuffer.getBuffer();
+  const uint8_t *buffBegin = dataBuffer.getBuffer();
   if (buffBegin == NULL) {
     std::string s("undefined stat data buffer beginning");
     throw NullPointerException(s.c_str());
   }
-  const uint8 *buffEnd = dataBuffer.getCursor();
+  const uint8_t *buffEnd = dataBuffer.getCursor();
   if (buffEnd == NULL) {
     std::string s("undefined stat data buffer end");
     throw NullPointerException(s.c_str());
   }
-  int32 sizeOfUInt8 = sizeof(uint8);
-  int32 len = static_cast<int32>(buffEnd - buffBegin);
+  int32_t sizeOfUInt8 = sizeof(uint8_t);
+  int32_t len = static_cast<int32_t>(buffEnd - buffBegin);
 
   if (len > 0) {
     if (fwrite(buffBegin, sizeOfUInt8, len, m_fp) != static_cast<size_t>(len)) {
@@ -88,24 +88,24 @@ void StatDataOutput::resetBuffer() {
   bytesWritten = 0;
 }
 
-void StatDataOutput::writeByte(int8 v) {
+void StatDataOutput::writeByte(int8_t v) {
   dataBuffer.write((int8_t)v);
   bytesWritten += 1;
 }
 
-void StatDataOutput::writeBoolean(int8 v) { writeByte(v); }
+void StatDataOutput::writeBoolean(int8_t v) { writeByte(v); }
 
-void StatDataOutput::writeShort(int16 v) {
+void StatDataOutput::writeShort(int16_t v) {
   dataBuffer.writeInt(v);
   bytesWritten += 2;
 }
 
-void StatDataOutput::writeInt(int32 v) {
+void StatDataOutput::writeInt(int32_t v) {
   dataBuffer.writeInt(v);
   bytesWritten += 4;
 }
 
-void StatDataOutput::writeLong(int64 v) {
+void StatDataOutput::writeLong(int64_t v) {
   dataBuffer.writeInt(v);
   bytesWritten += 8;
 }
@@ -128,7 +128,7 @@ void StatDataOutput::close() {
   closed = true;
 }
 
-void StatDataOutput::openFile(std::string filename, int64 size) {
+void StatDataOutput::openFile(std::string filename, int64_t size) {
   m_fp = fopen(filename.c_str(), "a+b");
   if (m_fp == NULL) {
     std::string s("error in opening archive file for writing");
@@ -140,7 +140,7 @@ void StatDataOutput::openFile(std::string filename, int64 size) {
 
 // Constructor and Member functions of ResourceType class
 
-ResourceType::ResourceType(int32 idArg, StatisticsType *typeArg) {
+ResourceType::ResourceType(int32_t idArg, StatisticsType *typeArg) {
   StatisticsType *typeImpl = dynamic_cast<StatisticsType *>(typeArg);
   if (typeImpl == NULL) {
     std::string s("could not down cast to StatisticsType");
@@ -148,28 +148,28 @@ ResourceType::ResourceType(int32 idArg, StatisticsType *typeArg) {
   }
   this->id = idArg;
   this->stats = typeImpl->getStatistics();
-  int32 desc = typeImpl->getDescriptorsCount();
+  int32_t desc = typeImpl->getDescriptorsCount();
   this->numOfDescriptors = desc;
 }
 
-int32 ResourceType::getId() { return this->id; }
+int32_t ResourceType::getId() { return this->id; }
 
-int32 ResourceType::getNumOfDescriptors() { return this->numOfDescriptors; }
+int32_t ResourceType::getNumOfDescriptors() { return this->numOfDescriptors; }
 
 StatisticDescriptor **ResourceType::getStats() { return this->stats; }
 
 // Constructor and Member functions of ResourceInst class
 
-ResourceInst::ResourceInst(int32 idArg, Statistics *resourceArg,
+ResourceInst::ResourceInst(int32_t idArg, Statistics *resourceArg,
                            ResourceType *typeArg, StatDataOutput *dataOutArg) {
   this->id = idArg;
   this->resource = resourceArg;
   this->type = typeArg;
   this->dataOut = dataOutArg;
-  int32 cnt = type->getNumOfDescriptors();
-  archivedStatValues = new int64[cnt];
+  int32_t cnt = type->getNumOfDescriptors();
+  archivedStatValues = new int64_t[cnt];
   // initialize to zero
-  for (int32 i = 0; i < cnt; i++) {
+  for (int32_t i = 0; i < cnt; i++) {
     archivedStatValues[i] = 0;
   }
   numOfDescps = cnt;
@@ -178,13 +178,13 @@ ResourceInst::ResourceInst(int32 idArg, Statistics *resourceArg,
 
 ResourceInst::~ResourceInst() { delete[] archivedStatValues; }
 
-int32 ResourceInst::getId() { return this->id; }
+int32_t ResourceInst::getId() { return this->id; }
 
 Statistics *ResourceInst::getResource() { return this->resource; }
 
 ResourceType *ResourceInst::getType() { return this->type; }
 
-int64 ResourceInst::getStatValue(StatisticDescriptor *f) {
+int64_t ResourceInst::getStatValue(StatisticDescriptor *f) {
   return this->resource->getRawBits(f);
 }
 
@@ -201,10 +201,10 @@ void ResourceInst::writeSample() {
     firstTime = false;
     checkForChange = false;
   }
-  for (int32 i = 0; i < numOfDescps; i++) {
-    int64 value = getStatValue(stats[i]);
+  for (int32_t i = 0; i < numOfDescps; i++) {
+    int64_t value = getStatValue(stats[i]);
     if (!checkForChange || value != archivedStatValues[i]) {
-      int64 delta = value - archivedStatValues[i];
+      int64_t delta = value - archivedStatValues[i];
       archivedStatValues[i] = value;
       if (!wroteInstId) {
         wroteInstId = true;
@@ -219,7 +219,7 @@ void ResourceInst::writeSample() {
   }
 }
 
-void ResourceInst::writeStatValue(StatisticDescriptor *sd, int64 v) {
+void ResourceInst::writeStatValue(StatisticDescriptor *sd, int64_t v) {
   StatisticDescriptorImpl *sdImpl = (StatisticDescriptorImpl *)sd;
   if (sdImpl == NULL) {
     throw NullPointerException("could not downcast to StatisticDescriptorImpl");
@@ -227,12 +227,6 @@ void ResourceInst::writeStatValue(StatisticDescriptor *sd, int64 v) {
   FieldType typeCode = sdImpl->getTypeCode();
 
   switch (typeCode) {
-    /*  case GF_FIELDTYPE_BYTE:
-        this->dataOut->writeByte((int8)v);
-        break; */
-    /*  case GF_FIELDTYPE_SHORT:
-        this->dataOut->writeShort((int16)v);
-        break; */
     case INT_TYPE:
     case LONG_TYPE:
     //   case GF_FIELDTYPE_FLOAT:
@@ -246,18 +240,18 @@ void ResourceInst::writeStatValue(StatisticDescriptor *sd, int64 v) {
   }
 }
 
-void ResourceInst::writeCompactValue(int64 v) {
+void ResourceInst::writeCompactValue(int64_t v) {
   if (v <= MAX_1BYTE_COMPACT_VALUE && v >= MIN_1BYTE_COMPACT_VALUE) {
-    this->dataOut->writeByte(static_cast<int8>(v));
+    this->dataOut->writeByte(static_cast<int8_t>(v));
   } else if (v <= MAX_2BYTE_COMPACT_VALUE && v >= MIN_2BYTE_COMPACT_VALUE) {
     this->dataOut->writeByte(COMPACT_VALUE_2_TOKEN);
-    this->dataOut->writeShort(static_cast<int16>(v));
+    this->dataOut->writeShort(static_cast<int16_t>(v));
   } else {
-    int8 buffer[8];
-    int32 idx = 0;
+    int8_t buffer[8];
+    int32_t idx = 0;
     if (v < 0) {
       while (v != -1 && v != 0) {
-        buffer[idx++] = static_cast<int8>(v & 0xFF);
+        buffer[idx++] = static_cast<int8_t>(v & 0xFF);
         v >>= 8;
       }
       // On windows v goes to zero somtimes; seems like a bug
@@ -276,7 +270,7 @@ void ResourceInst::writeCompactValue(int64 v) {
       }
     } else {
       while (v != 0) {
-        buffer[idx++] = static_cast<int8>(v & 0xFF);
+        buffer[idx++] = static_cast<int8_t>(v & 0xFF);
         v >>= 8;
       }
       if ((buffer[idx - 1] & 0x80) != 0) {
@@ -286,25 +280,25 @@ void ResourceInst::writeCompactValue(int64 v) {
         buffer[idx++] = 0;
       }
     }
-    int8 token = COMPACT_VALUE_2_TOKEN + (idx - 2);
+    int8_t token = COMPACT_VALUE_2_TOKEN + (idx - 2);
     this->dataOut->writeByte(token);
-    for (int32 i = idx - 1; i >= 0; i--) {
+    for (int32_t i = idx - 1; i >= 0; i--) {
       this->dataOut->writeByte(buffer[i]);
     }
   }
 }
 
-void ResourceInst::writeResourceInst(StatDataOutput *dataOutArg, int32 instId) {
+void ResourceInst::writeResourceInst(StatDataOutput *dataOutArg, int32_t instId) {
   if (instId > MAX_BYTE_RESOURCE_INST_ID) {
     if (instId > MAX_SHORT_RESOURCE_INST_ID) {
-      dataOutArg->writeByte(static_cast<int8>(INT_RESOURCE_INST_ID_TOKEN));
+      dataOutArg->writeByte(static_cast<int8_t>(INT_RESOURCE_INST_ID_TOKEN));
       dataOutArg->writeInt(instId);
     } else {
-      dataOutArg->writeByte(static_cast<int8>(SHORT_RESOURCE_INST_ID_TOKEN));
+      dataOutArg->writeByte(static_cast<int8_t>(SHORT_RESOURCE_INST_ID_TOKEN));
       dataOutArg->writeShort(instId);
     }
   } else {
-    dataOutArg->writeByte(static_cast<int8>(instId));
+    dataOutArg->writeByte(static_cast<int8_t>(instId));
   }
 }
 
@@ -330,20 +324,19 @@ StatArchiveWriter::StatArchiveWriter(std::string outfile,
   this->previousTimeStamp += NANOS_PER_MILLI / 2;
   this->previousTimeStamp /= NANOS_PER_MILLI;
   ACE_Time_Value now = ACE_OS::gettimeofday();
-  int64 epochsec = now.sec();
-  int64 initialDate = epochsec * 1000;
+  int64_t epochsec = now.sec();
+  int64_t initialDate = epochsec * 1000;
 
   this->dataBuffer->writeByte(HEADER_TOKEN);
   this->dataBuffer->writeByte(ARCHIVE_VERSION);
   this->dataBuffer->writeLong(initialDate);
-  int64 sysId = sampler->getSystemId();
+  int64_t sysId = sampler->getSystemId();
   this->dataBuffer->writeLong(sysId);
-  int64 sysStartTime = sampler->getSystemStartTime();
+  int64_t sysStartTime = sampler->getSystemStartTime();
   this->dataBuffer->writeLong(sysStartTime);
-  int32 tzOffset = ACE_OS::timezone();
+  int32_t tzOffset = ACE_OS::timezone();
   // offset in milli seconds
   tzOffset = tzOffset * -1 * 1000;
-  // tzOffset = tzOffset  * 1000;
   this->dataBuffer->writeInt(tzOffset);
 
   struct tm *tm_val;
@@ -391,11 +384,11 @@ StatArchiveWriter::~StatArchiveWriter() {
   }
 }
 
-int64 StatArchiveWriter::bytesWritten() { return bytesWrittenToFile; }
+int64_t StatArchiveWriter::bytesWritten() { return bytesWrittenToFile; }
 
-int64 StatArchiveWriter::getSampleSize() { return m_samplesize; }
+int64_t StatArchiveWriter::getSampleSize() { return m_samplesize; }
 
-void StatArchiveWriter::sample(int64 timeStamp) {
+void StatArchiveWriter::sample(int64_t timeStamp) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(sampler->getStatListMutex());
   m_samplesize = dataBuffer->getBytesWritten();
 
@@ -410,12 +403,12 @@ void StatArchiveWriter::sample(int64 timeStamp) {
     }
   }
   writeResourceInst(this->dataBuffer,
-                    static_cast<int32>(ILLEGAL_RESOURCE_INST_ID));
+                    static_cast<int32_t>(ILLEGAL_RESOURCE_INST_ID));
   m_samplesize = dataBuffer->getBytesWritten() - m_samplesize;
 }
 
 void StatArchiveWriter::sample() {
-  int64 timestamp = NanoTimer::now();
+  int64_t timestamp = NanoTimer::now();
   sample(timestamp);
 }
 
@@ -432,60 +425,17 @@ void StatArchiveWriter::openFile(std::string filename) {
 
   StatDataOutput *p_dataBuffer = new StatDataOutput(filename);
 
-  /*
-  ACE_Time_Value now = ACE_OS::gettimeofday();
-  int64 epochsec = now.sec();
-  int64 initialDate = (int64)epochsec * 1000;
-
-  p_dataBuffer->writeByte(HEADER_TOKEN);
-  p_dataBuffer->writeByte(ARCHIVE_VERSION);
-  p_dataBuffer->writeLong(initialDate);
-  int64 sysId = sampler->getSystemId();
-  p_dataBuffer->writeLong((int64)sysId);
-  int64 sysStartTime =  sampler->getSystemStartTime();
-  p_dataBuffer->writeLong(sysStartTime);
-  int32 tzOffset = ACE_OS::timezone();
-  // offset in milli seconds
-  tzOffset = tzOffset * -1 * 1000;
-  // tzOffset = tzOffset  * 1000;
-  p_dataBuffer->writeInt(tzOffset);
-
-  struct tm* tm_val;
-  time_t clock = ACE_OS::time();
-  tm_val = localtime(&clock);
-  char buf[512] = {0};
-  ACE_OS::strftime(buf, sizeof(buf), "%Z", tm_val);
-  std::string tzId(buf);
-  p_dataBuffer->writeString(tzId);
-
-  std::string sysDirPath = sampler->getSystemDirectoryPath();
-  p_dataBuffer->writeString(sysDirPath);
-  std::string prodDesc = sampler->getProductDescription();
-
-  p_dataBuffer->writeString(prodDesc);
-  ACE_utsname u;
-  ACE_OS::uname(&u);
-  std::string os(u.sysname);
-  os += " ";
-
-  p_dataBuffer->writeString(os);
-  std::string machineInfo(u.machine);
-  machineInfo += " ";
-  machineInfo += u.nodename;
-  p_dataBuffer->writeString(machineInfo);
-  */
-
-  const uint8 *buffBegin = dataBuffer->dataBuffer.getBuffer();
+  const uint8_t *buffBegin = dataBuffer->dataBuffer.getBuffer();
   if (buffBegin == NULL) {
     std::string s("undefined stat data buffer beginning");
     throw NullPointerException(s.c_str());
   }
-  const uint8 *buffEnd = dataBuffer->dataBuffer.getCursor();
+  const uint8_t *buffEnd = dataBuffer->dataBuffer.getCursor();
   if (buffEnd == NULL) {
     std::string s("undefined stat data buffer end");
     throw NullPointerException(s.c_str());
   }
-  int32 len = static_cast<int32>(buffEnd - buffBegin);
+  int32_t len = static_cast<int32_t>(buffEnd - buffBegin);
 
   for (int pos = 0; pos < len; pos++) {
     p_dataBuffer->writeByte(buffBegin[pos]);
@@ -533,7 +483,7 @@ void StatArchiveWriter::sampleResources() {
       if (mapIter != resourceInstMap.end()) {
         // Write delete token to file and delete from map
         ResourceInst *rinst = (*mapIter).second;
-        int32 id = rinst->getId();
+        int32_t id = rinst->getId();
         this->dataBuffer->writeByte(RESOURCE_INSTANCE_DELETE_TOKEN);
         this->dataBuffer->writeInt(id);
         resourceInstMap.erase(mapIter);
@@ -561,16 +511,15 @@ void StatArchiveWriter::resampleResources() {
   }
 }
 
-void StatArchiveWriter::writeTimeStamp(int64 timeStamp) {
+void StatArchiveWriter::writeTimeStamp(int64_t timeStamp) {
   timeStamp += NANOS_PER_MILLI / 2;
   timeStamp /= NANOS_PER_MILLI;
-  int64 delta = timeStamp - this->previousTimeStamp;
-  // printf("delta = %lld\n", delta);
+  int64_t delta = timeStamp - this->previousTimeStamp;
   if (delta > MAX_SHORT_TIMESTAMP) {
     dataBuffer->writeShort(static_cast<int16_t>(INT_TIMESTAMP_TOKEN));
-    dataBuffer->writeInt(static_cast<int32>(delta));
+    dataBuffer->writeInt(static_cast<int32_t>(delta));
   } else {
-    dataBuffer->writeShort(static_cast<uint16>(delta));
+    dataBuffer->writeShort(static_cast<uint16_t>(delta));
   }
   this->previousTimeStamp = timeStamp;
 }
@@ -629,9 +578,9 @@ ResourceType *StatArchiveWriter::getResourceType(Statistics *s) {
     this->dataBuffer->writeString(type->getName());
     this->dataBuffer->writeString(type->getDescription());
     StatisticDescriptor **stats = rt->getStats();
-    int32 descCnt = rt->getNumOfDescriptors();
-    this->dataBuffer->writeShort(static_cast<int16>(descCnt));
-    for (int32 i = 0; i < descCnt; i++) {
+    int32_t descCnt = rt->getNumOfDescriptors();
+    this->dataBuffer->writeShort(static_cast<int16_t>(descCnt));
+    for (int32_t i = 0; i < descCnt; i++) {
       std::string statsName = stats[i]->getName();
       this->dataBuffer->writeString(statsName);
       StatisticDescriptorImpl *sdImpl = (StatisticDescriptorImpl *)stats[i];
@@ -639,7 +588,7 @@ ResourceType *StatArchiveWriter::getResourceType(Statistics *s) {
         std::string err("could not down cast to StatisticDescriptorImpl");
         throw NullPointerException(err.c_str());
       }
-      this->dataBuffer->writeByte(static_cast<int8>(sdImpl->getTypeCode()));
+      this->dataBuffer->writeByte(static_cast<int8_t>(sdImpl->getTypeCode()));
       this->dataBuffer->writeBoolean(stats[i]->isCounter());
       this->dataBuffer->writeBoolean(stats[i]->isLargerBetter());
       this->dataBuffer->writeString(stats[i]->getUnit());
@@ -652,16 +601,16 @@ ResourceType *StatArchiveWriter::getResourceType(Statistics *s) {
 }
 
 void StatArchiveWriter::writeResourceInst(StatDataOutput *dataOut,
-                                          int32 instId) {
+                                          int32_t instId) {
   if (instId > MAX_BYTE_RESOURCE_INST_ID) {
     if (instId > MAX_SHORT_RESOURCE_INST_ID) {
-      dataOut->writeByte(static_cast<int8>(INT_RESOURCE_INST_ID_TOKEN));
+      dataOut->writeByte(static_cast<int8_t>(INT_RESOURCE_INST_ID_TOKEN));
       dataOut->writeInt(instId);
     } else {
-      dataOut->writeByte(static_cast<int8>(SHORT_RESOURCE_INST_ID_TOKEN));
+      dataOut->writeByte(static_cast<int8_t>(SHORT_RESOURCE_INST_ID_TOKEN));
       dataOut->writeShort(instId);
     }
   } else {
-    dataOut->writeByte(static_cast<int8>(instId));
+    dataOut->writeByte(static_cast<int8_t>(instId));
   }
 }

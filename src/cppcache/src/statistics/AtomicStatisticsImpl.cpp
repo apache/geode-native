@@ -32,9 +32,9 @@ using namespace apache::geode::statistics;
  */
 //////////////////////  Static Methods  //////////////////////
 
-int64 AtomicStatisticsImpl::calcNumericId(StatisticsFactory* system,
-                                          int64 userValue) {
-  int64 result;
+int64_t AtomicStatisticsImpl::calcNumericId(StatisticsFactory* system,
+                                          int64_t userValue) {
+  int64_t result;
   if (userValue != 0) {
     result = userValue;
   } else {
@@ -75,8 +75,8 @@ const char* AtomicStatisticsImpl::calcTextId(StatisticsFactory* system,
  */
 AtomicStatisticsImpl::AtomicStatisticsImpl(StatisticsType* typeArg,
                                            const char* textIdArg,
-                                           int64 numericIdArg,
-                                           int64 uniqueIdArg,
+                                           int64_t numericIdArg,
+                                           int64_t uniqueIdArg,
                                            StatisticsFactory* system)
 
 {
@@ -89,14 +89,14 @@ AtomicStatisticsImpl::AtomicStatisticsImpl(StatisticsType* typeArg,
     this->closed = false;
     this->statsType = dynamic_cast<StatisticsTypeImpl*>(typeArg);
     GF_D_ASSERT(this->statsType != NULL);
-    int32 intCount = statsType->getIntStatCount();
-    int32 longCount = statsType->getLongStatCount();
-    int32 doubleCount = statsType->getDoubleStatCount();
+    int32_t intCount = statsType->getIntStatCount();
+    int32_t longCount = statsType->getLongStatCount();
+    int32_t doubleCount = statsType->getDoubleStatCount();
 
     if (intCount > 0) {
       intStorage =
-          new ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, int32>[ intCount ];
-      for (int32 i = 0; i < intCount; i++) {
+          new ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, int32_t>[ intCount ];
+      for (int32_t i = 0; i < intCount; i++) {
         intStorage[i] = 0;  // Un-initialized state
       }
 
@@ -105,8 +105,8 @@ AtomicStatisticsImpl::AtomicStatisticsImpl(StatisticsType* typeArg,
     }
     if (longCount > 0) {
       longStorage =
-          new ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, int64>[ longCount ];
-      for (int32 i = 0; i < longCount; i++) {
+          new ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, int64_t>[ longCount ];
+      for (int32_t i = 0; i < longCount; i++) {
         longStorage[i] = 0;  // Un-initialized state
       }
 
@@ -116,7 +116,7 @@ AtomicStatisticsImpl::AtomicStatisticsImpl(StatisticsType* typeArg,
     if (doubleCount > 0) {
       doubleStorage =
           new ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, double>[ doubleCount ];
-      for (int32 i = 0; i < doubleCount; i++) {
+      for (int32_t i = 0; i < doubleCount; i++) {
         doubleStorage[i] = 0;  // Un-initialized state
       }
     } else {
@@ -162,7 +162,7 @@ void AtomicStatisticsImpl::close() {
 
 ////////////////////////  store() Methods  ///////////////////////
 
-void AtomicStatisticsImpl::_setInt(int32 offset, int32 value) {
+void AtomicStatisticsImpl::_setInt(int32_t offset, int32_t value) {
   if (offset >= statsType->getIntStatCount()) {
     char s[128] = {'\0'};
     ACE_OS::snprintf(
@@ -173,7 +173,7 @@ void AtomicStatisticsImpl::_setInt(int32 offset, int32 value) {
   intStorage[offset] = value;
 }
 
-void AtomicStatisticsImpl::_setLong(int32 offset, int64 value) {
+void AtomicStatisticsImpl::_setLong(int32_t offset, int64_t value) {
   if (offset >= statsType->getLongStatCount()) {
     char s[128] = {'\0'};
     /* adongre  - Coverity II
@@ -197,7 +197,7 @@ void AtomicStatisticsImpl::_setLong(int32 offset, int64 value) {
   longStorage[offset] = value;
 }
 
-void AtomicStatisticsImpl::_setDouble(int32 offset, double value) {
+void AtomicStatisticsImpl::_setDouble(int32_t offset, double value) {
   if (offset >= statsType->getDoubleStatCount()) {
     char s[128] = {'\0'};
     ACE_OS::snprintf(
@@ -212,7 +212,7 @@ void AtomicStatisticsImpl::_setDouble(int32 offset, double value) {
 
 ///////////////////////  get() Methods  ///////////////////////
 
-int32 AtomicStatisticsImpl::_getInt(int32 offset) {
+int32_t AtomicStatisticsImpl::_getInt(int32_t offset) {
   if (offset >= statsType->getIntStatCount()) {
     char s[128] = {'\0'};
     ACE_OS::snprintf(
@@ -224,7 +224,7 @@ int32 AtomicStatisticsImpl::_getInt(int32 offset) {
   return intStorage[offset].value();
 }
 
-int64 AtomicStatisticsImpl::_getLong(int32 offset) {
+int64_t AtomicStatisticsImpl::_getLong(int32_t offset) {
   if (offset >= statsType->getLongStatCount()) {
     char s[128] = {'\0'};
     ACE_OS::snprintf(
@@ -235,7 +235,7 @@ int64 AtomicStatisticsImpl::_getLong(int32 offset) {
   return longStorage[offset].value();
 }
 
-double AtomicStatisticsImpl::_getDouble(int32 offset) {
+double AtomicStatisticsImpl::_getDouble(int32_t offset) {
   if (offset >= statsType->getDoubleStatCount()) {
     char s[128] = {'\0'};
     ACE_OS::snprintf(
@@ -247,7 +247,7 @@ double AtomicStatisticsImpl::_getDouble(int32 offset) {
   return doubleStorage[offset].value();
 }
 
-int64 AtomicStatisticsImpl::_getRawBits(StatisticDescriptor* statDscp) {
+int64_t AtomicStatisticsImpl::_getRawBits(StatisticDescriptor* statDscp) {
   StatisticDescriptorImpl* stat =
       dynamic_cast<StatisticDescriptorImpl*>(statDscp);
   switch (stat->getTypeCode()) {
@@ -259,7 +259,7 @@ int64 AtomicStatisticsImpl::_getRawBits(StatisticDescriptor* statDscp) {
 
     case DOUBLE_TYPE: {
       double value = _getDouble(stat->getId());
-      int64* temp = reinterpret_cast<int64*>(&value);
+      int64_t* temp = reinterpret_cast<int64_t*>(&value);
       return *temp;
     }
     default:
@@ -269,11 +269,11 @@ int64 AtomicStatisticsImpl::_getRawBits(StatisticDescriptor* statDscp) {
   }
 }
 
-int64 AtomicStatisticsImpl::getRawBits(char* name) {
+int64_t AtomicStatisticsImpl::getRawBits(char* name) {
   return getRawBits(nameToDescriptor(name));
 }
 
-int64 AtomicStatisticsImpl::getRawBits(StatisticDescriptor* descriptor) {
+int64_t AtomicStatisticsImpl::getRawBits(StatisticDescriptor* descriptor) {
   if (isOpen()) {
     return _getRawBits(descriptor);
   } else {
@@ -283,7 +283,7 @@ int64 AtomicStatisticsImpl::getRawBits(StatisticDescriptor* descriptor) {
 
 ////////////////////////  inc() Methods  ////////////////////////
 
-int32 AtomicStatisticsImpl::_incInt(int32 offset, int32 delta) {
+int32_t AtomicStatisticsImpl::_incInt(int32_t offset, int32_t delta) {
   if (offset >= statsType->getIntStatCount()) {
     char s[128] = {'\0'};
     ACE_OS::snprintf(
@@ -295,7 +295,7 @@ int32 AtomicStatisticsImpl::_incInt(int32 offset, int32 delta) {
   return (intStorage[offset] += delta);
 }
 
-int64 AtomicStatisticsImpl::_incLong(int32 offset, int64 delta) {
+int64_t AtomicStatisticsImpl::_incLong(int32_t offset, int64_t delta) {
   if (offset >= statsType->getLongStatCount()) {
     char s[128] = {'\0'};
     /* adongre  - Coverity II
@@ -320,7 +320,7 @@ int64 AtomicStatisticsImpl::_incLong(int32 offset, int64 delta) {
   return (longStorage[offset] += delta);
 }
 
-double AtomicStatisticsImpl::_incDouble(int32 offset, double delta) {
+double AtomicStatisticsImpl::_incDouble(int32_t offset, double delta) {
   if (offset >= statsType->getDoubleStatCount()) {
     char s[128] = {'\0'};
     ACE_OS::snprintf(
@@ -337,7 +337,7 @@ double AtomicStatisticsImpl::_incDouble(int32 offset, double delta) {
 
 //////////////////////  Instance Methods  //////////////////////
 
-int32 AtomicStatisticsImpl::nameToId(const char* name) {
+int32_t AtomicStatisticsImpl::nameToId(const char* name) {
   return statsType->nameToId(name);
 }
 
@@ -355,43 +355,43 @@ StatisticsType* AtomicStatisticsImpl::getType() { return statsType; }
 
 const char* AtomicStatisticsImpl::getTextId() { return textIdStr.c_str(); }
 
-int64 AtomicStatisticsImpl::getNumericId() { return numericId; }
+int64_t AtomicStatisticsImpl::getNumericId() { return numericId; }
 
 /**
  * Gets the unique id for this resource
  */
-int64 AtomicStatisticsImpl::getUniqueId() { return uniqueId; }
+int64_t AtomicStatisticsImpl::getUniqueId() { return uniqueId; }
 
 ////////////////////////  set() Methods  ///////////////////////
 
-void AtomicStatisticsImpl::setInt(char* name, int32 value) {
-  int32 id = getIntId(nameToDescriptor(name));
+void AtomicStatisticsImpl::setInt(char* name, int32_t value) {
+  int32_t id = getIntId(nameToDescriptor(name));
   setInt(id, value);
 }
 
 void AtomicStatisticsImpl::setInt(StatisticDescriptor* descriptor,
-                                  int32 value) {
-  int32 id = getIntId(descriptor);
+                                  int32_t value) {
+  int32_t id = getIntId(descriptor);
   setInt(id, value);
 }
 
-void AtomicStatisticsImpl::setInt(int32 id, int32 value) {
+void AtomicStatisticsImpl::setInt(int32_t id, int32_t value) {
   if (isOpen()) {
     _setInt(id, value);
   }
 }
 ////////////////////////////////LONG METHODS/////////////////////////////
 
-void AtomicStatisticsImpl::setLong(char* name, int64 value) {
+void AtomicStatisticsImpl::setLong(char* name, int64_t value) {
   setLong(nameToDescriptor(name), value);
 }
 
 void AtomicStatisticsImpl::setLong(StatisticDescriptor* descriptor,
-                                   int64 value) {
+                                   int64_t value) {
   setLong(getLongId(descriptor), value);
 }
 
-void AtomicStatisticsImpl::setLong(int32 id, int64 value) {
+void AtomicStatisticsImpl::setLong(int32_t id, int64_t value) {
   if (isOpen()) {
     _setLong(id, value);
   }
@@ -407,23 +407,23 @@ void AtomicStatisticsImpl::setDouble(StatisticDescriptor* descriptor,
   setDouble(getDoubleId(descriptor), value);
 }
 
-void AtomicStatisticsImpl::setDouble(int32 id, double value) {
+void AtomicStatisticsImpl::setDouble(int32_t id, double value) {
   if (isOpen()) {
     _setDouble(id, value);
   }
 }
 
-int32 AtomicStatisticsImpl::getInt(char* name) {
-  int32 id = getIntId(nameToDescriptor(name));
+int32_t AtomicStatisticsImpl::getInt(char* name) {
+  int32_t id = getIntId(nameToDescriptor(name));
   return getInt(id);
 }
 
-int32 AtomicStatisticsImpl::getInt(StatisticDescriptor* descriptor) {
-  int32 id = getIntId(descriptor);
+int32_t AtomicStatisticsImpl::getInt(StatisticDescriptor* descriptor) {
+  int32_t id = getIntId(descriptor);
   return getInt(id);
 }
 
-int32 AtomicStatisticsImpl::getInt(int32 id) {
+int32_t AtomicStatisticsImpl::getInt(int32_t id) {
   if (isOpen()) {
     return _getInt(id);
   } else {
@@ -431,15 +431,15 @@ int32 AtomicStatisticsImpl::getInt(int32 id) {
   }
 }
 
-int64 AtomicStatisticsImpl::getLong(char* name) {
+int64_t AtomicStatisticsImpl::getLong(char* name) {
   return getLong(nameToDescriptor(name));
 }
 
-int64 AtomicStatisticsImpl::getLong(StatisticDescriptor* descriptor) {
+int64_t AtomicStatisticsImpl::getLong(StatisticDescriptor* descriptor) {
   return getLong(getLongId(descriptor));
 }
 
-int64 AtomicStatisticsImpl::getLong(int32 id) {
+int64_t AtomicStatisticsImpl::getLong(int32_t id) {
   if (isOpen()) {
     return _getLong(id);
   } else {
@@ -455,7 +455,7 @@ double AtomicStatisticsImpl::getDouble(StatisticDescriptor* descriptor) {
   return getDouble(getDoubleId(descriptor));
 }
 
-double AtomicStatisticsImpl::getDouble(int32 id) {
+double AtomicStatisticsImpl::getDouble(int32_t id) {
   if (isOpen()) {
     return _getDouble(id);
   } else {
@@ -464,20 +464,20 @@ double AtomicStatisticsImpl::getDouble(int32 id) {
 }
 
 /*
- *Increment the value of the int32 decriptor by delta
+ *Increment the value of the int32_t decriptor by delta
  */
-int32 AtomicStatisticsImpl::incInt(char* name, int32 delta) {
-  int32 id = getIntId(nameToDescriptor(name));
+int32_t AtomicStatisticsImpl::incInt(char* name, int32_t delta) {
+  int32_t id = getIntId(nameToDescriptor(name));
   return incInt(id, delta);
 }
 
-int32 AtomicStatisticsImpl::incInt(StatisticDescriptor* descriptor,
-                                   int32 delta) {
-  int32 id = getIntId(descriptor);
+int32_t AtomicStatisticsImpl::incInt(StatisticDescriptor* descriptor,
+                                   int32_t delta) {
+  int32_t id = getIntId(descriptor);
   return incInt(id, delta);
 }
 
-int32 AtomicStatisticsImpl::incInt(int32 id, int32 delta) {
+int32_t AtomicStatisticsImpl::incInt(int32_t id, int32_t delta) {
   if (isOpen()) {
     return _incInt(id, delta);
   } else {
@@ -486,19 +486,19 @@ int32 AtomicStatisticsImpl::incInt(int32 id, int32 delta) {
 }
 
 /*
- *Increment the value of the int64 decriptor by delta
+ *Increment the value of the int64_t decriptor by delta
  */
 
-int64 AtomicStatisticsImpl::incLong(char* name, int64 delta) {
+int64_t AtomicStatisticsImpl::incLong(char* name, int64_t delta) {
   return incLong(nameToDescriptor(name), delta);
 }
 
-int64 AtomicStatisticsImpl::incLong(StatisticDescriptor* descriptor,
-                                    int64 delta) {
+int64_t AtomicStatisticsImpl::incLong(StatisticDescriptor* descriptor,
+                                    int64_t delta) {
   return incLong(getLongId(descriptor), delta);
 }
 
-int64 AtomicStatisticsImpl::incLong(int32 id, int64 delta) {
+int64_t AtomicStatisticsImpl::incLong(int32_t id, int64_t delta) {
   if (isOpen()) {
     return _incLong(id, delta);
   } else {
@@ -519,7 +519,7 @@ double AtomicStatisticsImpl::incDouble(StatisticDescriptor* descriptor,
   return incDouble(getDoubleId(descriptor), delta);
 }
 
-double AtomicStatisticsImpl::incDouble(int32 id, double delta) {
+double AtomicStatisticsImpl::incDouble(int32_t id, double delta) {
   if (isOpen()) {
     return _incDouble(id, delta);
   } else {
@@ -527,19 +527,19 @@ double AtomicStatisticsImpl::incDouble(int32 id, double delta) {
   }
 }
 
-int32 AtomicStatisticsImpl::getIntId(StatisticDescriptor* descriptor) {
+int32_t AtomicStatisticsImpl::getIntId(StatisticDescriptor* descriptor) {
   StatisticDescriptorImpl* realDescriptor =
       dynamic_cast<StatisticDescriptorImpl*>(descriptor);
   return realDescriptor->checkInt();
 }
 
-int32 AtomicStatisticsImpl::getLongId(StatisticDescriptor* descriptor) {
+int32_t AtomicStatisticsImpl::getLongId(StatisticDescriptor* descriptor) {
   StatisticDescriptorImpl* realDescriptor =
       dynamic_cast<StatisticDescriptorImpl*>(descriptor);
   return realDescriptor->checkLong();
 }
 
-int32 AtomicStatisticsImpl::getDoubleId(StatisticDescriptor* descriptor) {
+int32_t AtomicStatisticsImpl::getDoubleId(StatisticDescriptor* descriptor) {
   StatisticDescriptorImpl* realDescriptor =
       dynamic_cast<StatisticDescriptorImpl*>(descriptor);
   return realDescriptor->checkDouble();

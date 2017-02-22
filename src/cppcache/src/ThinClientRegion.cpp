@@ -3436,7 +3436,7 @@ bool ThinClientRegion::executeFunctionSH(
 }
 
 GfErrType ThinClientRegion::getFuncAttributes(const char* func,
-                                              std::vector<int8>** attr) {
+                                              std::vector<int8_t>** attr) {
   GfErrType err = GF_NOERR;
 
   // do TCR GET_FUNCTION_ATTRIBUTES
@@ -3503,7 +3503,7 @@ void ThinClientRegion::txPut(const CacheableKeyPtr& key,
                              const UserDataPtr& aCallbackArgument,
                              VersionTagPtr versionTag) {
   CacheablePtr oldValue;
-  int64 sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = Utils::startStatOpTime();
   GfErrType err = putNoThrowTX(key, value, aCallbackArgument, oldValue, -1,
                                CacheEventFlags::NORMAL, versionTag);
   Utils::updateStatOpTime(m_regionStats->getStat(),

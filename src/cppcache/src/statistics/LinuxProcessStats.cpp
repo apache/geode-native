@@ -28,7 +28,7 @@ using namespace apache::geode::statistics;
  *
  */
 
-LinuxProcessStats::LinuxProcessStats(int64 pid, const char* name) {
+LinuxProcessStats::LinuxProcessStats(int64_t pid, const char* name) {
   GeodeStatisticsFactory* statFactory =
       GeodeStatisticsFactory::getExistingInstance();
 
@@ -99,16 +99,16 @@ void LinuxProcessStats::createType(StatisticsFactory* statFactory) {
   }
 }
 
-int64 LinuxProcessStats::getProcessSize() {
-  return static_cast<int64>(stats->getInt(rssSizeINT));
+int64_t LinuxProcessStats::getProcessSize() {
+  return static_cast<int64_t>(stats->getInt(rssSizeINT));
 }
 
-int32 LinuxProcessStats::getCpuUsage() {
+int32_t LinuxProcessStats::getCpuUsage() {
   return stats->getInt(hostCpuUsageINT);
 }
-int64 LinuxProcessStats::getCPUTime() { return stats->getInt(userTimeINT); }
-int32 LinuxProcessStats::getNumThreads() { return stats->getInt(threadsINT); }
-int64 LinuxProcessStats::getAllCpuTime() {
+int64_t LinuxProcessStats::getCPUTime() { return stats->getInt(userTimeINT); }
+int32_t LinuxProcessStats::getNumThreads() { return stats->getInt(threadsINT); }
+int64_t LinuxProcessStats::getAllCpuTime() {
   return ((stats->getInt(userTimeINT)) + (stats->getInt(systemTimeINT)));
 }
 

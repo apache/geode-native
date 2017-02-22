@@ -125,7 +125,7 @@ HostAsmUnlock:
  *
  * Name - HostAsmTryLock
  *
- * bool HostAsmTryLock(SpinLockField *lockPtr, int32 count, uint32 lockVal);
+ * bool HostAsmTryLock(SpinLockField *lockPtr, int32_t count, uint32_t lockVal);
  * Purpose -
  *      Try to get access to the specified lock.  If it succeeds in getting
  *      the lock in the number of tries specified in by count,

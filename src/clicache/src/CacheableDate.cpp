@@ -90,7 +90,7 @@ namespace Apache
           TimeSpan epochSpan = m_dateTime - EpochTime;
           int64_t millitime =
             epochSpan.Ticks / TimeSpan::TicksPerMillisecond;
-          m_hashcode = (int)millitime ^ (int)((int64)millitime >> 32);
+          m_hashcode = (int)millitime ^ (int)((int64_t)millitime >> 32);
         }
         return m_hashcode;
       }

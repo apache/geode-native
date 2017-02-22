@@ -55,7 +55,7 @@ class GeodeStatisticsFactory : public StatisticsFactory {
 
   const char* m_name;
 
-  int64 m_id;
+  int64_t m_id;
 
   StatisticsManager* m_statMngr;
 
@@ -65,7 +65,7 @@ class GeodeStatisticsFactory : public StatisticsFactory {
 
   GeodeStatisticsFactory(StatisticsManager* statMngr);
 
-  int64 m_statsListUniqueId;  // Creates a unique id for each stats object in
+  int64_t m_statsListUniqueId;  // Creates a unique id for each stats object in
                               // the list
 
   ACE_Recursive_Thread_Mutex m_statsListUniqueIdLock;
@@ -85,7 +85,7 @@ class GeodeStatisticsFactory : public StatisticsFactory {
 
   const char* getName();
 
-  int64 getId();
+  int64_t getId();
 
   static GeodeStatisticsFactory* initInstance(StatisticsManager* statMngr);
 
@@ -98,22 +98,22 @@ class GeodeStatisticsFactory : public StatisticsFactory {
   Statistics* createStatistics(StatisticsType* type, const char* textId);
 
   Statistics* createStatistics(StatisticsType* type, const char* textId,
-                               int64 numericId);
+                               int64_t numericId);
 
   Statistics* createOsStatistics(StatisticsType* type, const char* textId,
-                                 int64 numericId);
+                                 int64_t numericId);
 
   Statistics* createAtomicStatistics(StatisticsType* type);
 
   Statistics* createAtomicStatistics(StatisticsType* type, const char* textId);
 
   Statistics* createAtomicStatistics(StatisticsType* type, const char* textId,
-                                     int64 numericId);
+                                     int64_t numericId);
 
   //------------ StatisticsFactory methods: Statistics Type
   //------------------------------
   StatisticsType* createType(const char* name, const char* description,
-                             StatisticDescriptor** stats, int32 statsLength);
+                             StatisticDescriptor** stats, int32_t statsLength);
 
   StatisticsType* findType(const char* name);
 
@@ -121,27 +121,27 @@ class GeodeStatisticsFactory : public StatisticsFactory {
   //---------------------
   StatisticDescriptor* createIntCounter(const char* name,
                                         const char* description,
-                                        const char* units, int8 largerBetter);
+                                        const char* units, bool largerBetter);
 
   StatisticDescriptor* createLongCounter(const char* name,
                                          const char* description,
-                                         const char* units, int8 largerBetter);
+                                         const char* units, bool largerBetter);
 
   StatisticDescriptor* createDoubleCounter(const char* name,
                                            const char* description,
                                            const char* units,
-                                           int8 largerBetter);
+                                           bool largerBetter);
 
   StatisticDescriptor* createIntGauge(const char* name, const char* description,
-                                      const char* units, int8 largerBetter);
+                                      const char* units, bool largerBetter);
 
   StatisticDescriptor* createLongGauge(const char* name,
                                        const char* description,
-                                       const char* units, int8 largerBetter);
+                                       const char* units, bool largerBetter);
 
   StatisticDescriptor* createDoubleGauge(const char* name,
                                          const char* description,
-                                         const char* units, int8 largerBetter);
+                                         const char* units, bool largerBetter);
 
   /** Return the first instance that matches the type, or NULL */
   Statistics* findFirstStatisticsByType(StatisticsType* type);

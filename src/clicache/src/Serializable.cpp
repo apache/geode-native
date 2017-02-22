@@ -218,13 +218,13 @@ namespace Apache
         return (Apache::Geode::Client::Serializable^)CacheableStringArray::Create(value);
       }
 
-      int32 Serializable::GetPDXIdForType(const char* poolName, IGeodeSerializable^ pdxType)
+      int32_t Serializable::GetPDXIdForType(const char* poolName, IGeodeSerializable^ pdxType)
       {
         apache::geode::client::CacheablePtr kPtr(SafeMSerializableConvertGeneric(pdxType));
         return apache::geode::client::SerializationRegistry::GetPDXIdForType(poolName, kPtr);
       }
 
-      IGeodeSerializable^ Serializable::GetPDXTypeById(const char* poolName, int32 typeId)
+      IGeodeSerializable^ Serializable::GetPDXTypeById(const char* poolName, int32_t typeId)
       {
         SerializablePtr sPtr = apache::geode::client::SerializationRegistry::GetPDXTypeById(poolName, typeId);
         return SafeUMSerializableConvertGeneric(sPtr.ptr());
@@ -1345,7 +1345,7 @@ namespace Apache
                 }
 
                 //int16
-                int16 Serializable::getInt16(apache::geode::client::SerializablePtr nativeptr)
+                int16_t Serializable::getInt16(apache::geode::client::SerializablePtr nativeptr)
                 {
                   apache::geode::client::CacheableInt16* ci = static_cast<apache::geode::client::CacheableInt16*>(nativeptr.ptr());
                   return ci->value();
@@ -1357,25 +1357,25 @@ namespace Apache
                 }
 
                 //int32
-                int32 Serializable::getInt32(apache::geode::client::SerializablePtr nativeptr)
+                int32_t Serializable::getInt32(apache::geode::client::SerializablePtr nativeptr)
                 {
                   apache::geode::client::CacheableInt32* ci = static_cast<apache::geode::client::CacheableInt32*>(nativeptr.ptr());
                   return ci->value();
                 }
 
-                apache::geode::client::CacheableKeyPtr Serializable::getCacheableInt32(int32 val)
+                apache::geode::client::CacheableKeyPtr Serializable::getCacheableInt32(int32_t val)
                 {
                   return apache::geode::client::CacheableInt32::create(val);
                 }
 
                 //int64
-                int64 Serializable::getInt64(apache::geode::client::SerializablePtr nativeptr)
+                int64_t Serializable::getInt64(apache::geode::client::SerializablePtr nativeptr)
                 {
                   apache::geode::client::CacheableInt64* ci = static_cast<apache::geode::client::CacheableInt64*>(nativeptr.ptr());
                   return ci->value();
                 }
 
-                apache::geode::client::CacheableKeyPtr Serializable::getCacheableInt64(int64 val)
+                apache::geode::client::CacheableKeyPtr Serializable::getCacheableInt64(int64_t val)
                 {
                   return apache::geode::client::CacheableInt64::create(val);
                 }

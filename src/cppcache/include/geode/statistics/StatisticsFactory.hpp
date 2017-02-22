@@ -74,7 +74,7 @@ class CPPCACHE_EXPORT StatisticsFactory {
   virtual StatisticDescriptor* createIntCounter(const char* name,
                                                 const char* description,
                                                 const char* units,
-                                                int8 largerBetter = true) = 0;
+                                                bool largerBetter = true) = 0;
 
   /**
    * Creates and returns a double counter {@link StatisticDescriptor}
@@ -85,7 +85,7 @@ class CPPCACHE_EXPORT StatisticsFactory {
   virtual StatisticDescriptor* createLongCounter(const char* name,
                                                  const char* description,
                                                  const char* units,
-                                                 int8 largerBetter = true) = 0;
+                                                 bool largerBetter = true) = 0;
 
   /**
     * Creates and returns an int gauge {@link StatisticDescriptor}
@@ -96,7 +96,7 @@ class CPPCACHE_EXPORT StatisticsFactory {
 
   virtual StatisticDescriptor* createDoubleCounter(
       const char* name, const char* description, const char* units,
-      int8 largerBetter = true) = 0;
+      bool largerBetter = true) = 0;
 
   /**
    * Creates and returns an int gauge {@link StatisticDescriptor}
@@ -106,7 +106,7 @@ class CPPCACHE_EXPORT StatisticsFactory {
   virtual StatisticDescriptor* createIntGauge(const char* name,
                                               const char* description,
                                               const char* units,
-                                              int8 largerBetter = false) = 0;
+                                              bool largerBetter = false) = 0;
 
   /**
    * Creates and returns an long gauge {@link StatisticDescriptor}
@@ -116,7 +116,7 @@ class CPPCACHE_EXPORT StatisticsFactory {
   virtual StatisticDescriptor* createLongGauge(const char* name,
                                                const char* description,
                                                const char* units,
-                                               int8 largerBetter = false) = 0;
+                                               bool largerBetter = false) = 0;
 
   /**
    * Creates and returns an double gauge {@link StatisticDescriptor}
@@ -126,7 +126,7 @@ class CPPCACHE_EXPORT StatisticsFactory {
   virtual StatisticDescriptor* createDoubleGauge(const char* name,
                                                  const char* description,
                                                  const char* units,
-                                                 int8 largerBetter = false) = 0;
+                                                 bool largerBetter = false) = 0;
 
   /**
    * Creates  and returns a {@link StatisticsType}
@@ -137,7 +137,7 @@ class CPPCACHE_EXPORT StatisticsFactory {
    */
   virtual StatisticsType* createType(const char* name, const char* description,
                                      StatisticDescriptor** stats,
-                                     int32 statsLength) = 0;
+                                     int32_t statsLength) = 0;
 
   /**
    * Finds and returns an already created {@link StatisticsType}
@@ -170,7 +170,7 @@ class CPPCACHE_EXPORT StatisticsFactory {
    * The created instance may not be {@link Statistics#isAtomic atomic}.
    */
   virtual Statistics* createStatistics(StatisticsType* type, const char* textId,
-                                       int64 numericId) = 0;
+                                       int64_t numericId) = 0;
 
   /**
    * Creates and returns a {@link Statistics} instance of the given {@link
@@ -197,7 +197,7 @@ class CPPCACHE_EXPORT StatisticsFactory {
    */
   virtual Statistics* createAtomicStatistics(StatisticsType* type,
                                              const char* textId,
-                                             int64 numericId) = 0;
+                                             int64_t numericId) = 0;
 
   /** Return the first instance that matches the type, or NULL */
   virtual Statistics* findFirstStatisticsByType(StatisticsType* type) = 0;
@@ -210,7 +210,7 @@ class CPPCACHE_EXPORT StatisticsFactory {
   /**
    * Returns a numeric id that can be used to identify the manager
    */
-  virtual int64 getId() = 0;
+  virtual int64_t getId() = 0;
 
  private:
   const StatisticsFactory& operator=(const StatisticsFactory&);

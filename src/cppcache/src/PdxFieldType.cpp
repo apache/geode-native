@@ -47,9 +47,9 @@ PdxFieldType::PdxFieldType() : Serializable() {
 }
 
 PdxFieldType::PdxFieldType(const char* fieldName, const char* className,
-                           uint8_t typeId, int32 sequenceId,
-                           bool isVariableLengthType, int32 fixedSize,
-                           int32 varLenFieldIdx)
+                           uint8_t typeId, int32_t sequenceId,
+                           bool isVariableLengthType, int32_t fixedSize,
+                           int32_t varLenFieldIdx)
     : Serializable() {
   m_fieldName = fieldName;
   m_className = className;

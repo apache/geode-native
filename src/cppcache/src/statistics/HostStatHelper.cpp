@@ -29,8 +29,8 @@ using namespace apache::geode::statistics;
  *
  */
 
-int32 HostStatHelper::PROCESS_STAT_FLAG = 1;
-int32 HostStatHelper::SYSTEM_STAT_FLAG = 2;
+int32_t HostStatHelper::PROCESS_STAT_FLAG = 1;
+int32_t HostStatHelper::SYSTEM_STAT_FLAG = 2;
 GFS_OSTYPES HostStatHelper::osCode =
     static_cast<GFS_OSTYPES>(0);  // Default OS is Linux
 ProcessStats* HostStatHelper::processStats = NULL;
@@ -83,7 +83,7 @@ void HostStatHelper::refresh() {
  * Creates and returns a {@link Statistics} with
  * the given pid and name.
  */
-void HostStatHelper::newProcessStats(int64 pid, const char* name) {
+void HostStatHelper::newProcessStats(int64_t pid, const char* name) {
   // Init OsCode
   initOSCode();
 
@@ -127,20 +127,20 @@ void HostStatHelper::cleanup() {
   }
 }
 
-int32 HostStatHelper::getCpuUsage() {
+int32_t HostStatHelper::getCpuUsage() {
   if (HostStatHelper::processStats != NULL) {
     return HostStatHelper::processStats->getCpuUsage();
   }
   return 0;
 }
 
-int64 HostStatHelper::getCpuTime() {
+int64_t HostStatHelper::getCpuTime() {
   if (HostStatHelper::processStats != NULL) {
     return HostStatHelper::processStats->getAllCpuTime();
   }
   return 0;
 }
-int32 HostStatHelper::getNumThreads() {
+int32_t HostStatHelper::getNumThreads() {
   if (HostStatHelper::processStats != NULL) {
     return HostStatHelper::processStats->getNumThreads();
   }

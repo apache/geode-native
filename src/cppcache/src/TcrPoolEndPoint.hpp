@@ -49,7 +49,7 @@ class TcrPoolEndPoint : public TcrEndpoint {
   using TcrEndpoint::handleIOException;
   virtual bool handleIOException(const std::string& message,
                                  TcrConnection*& conn, bool isBgThread = false);
-  void handleNotificationStats(int64 byteLength);
+  void handleNotificationStats(int64_t byteLength);
   virtual ~TcrPoolEndPoint() { m_dm = NULL; }
   virtual bool isMultiUserMode();
 

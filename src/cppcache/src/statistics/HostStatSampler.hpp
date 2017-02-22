@@ -78,9 +78,9 @@ class CPPCACHE_EXPORT HostStatSampler : public ACE_Task_Base,
   /*
    * Constructor:
    */
-  HostStatSampler(const char* filePath, int64 sampleIntervalMs,
-                  StatisticsManager* statMngr, int64 statFileLimit = 0,
-                  int64 statDiskSpaceLimit = 0);
+  HostStatSampler(const char* filePath, int64_t sampleIntervalMs,
+                  StatisticsManager* statMngr, int64_t statFileLimit = 0,
+                  int64_t statDiskSpaceLimit = 0);
 
   /**
    * Adds the pid to the archive file passed to it.
@@ -93,15 +93,15 @@ class CPPCACHE_EXPORT HostStatSampler : public ACE_Task_Base,
   /**
    * Gets the archive size limit in bytes.
    */
-  int64 getArchiveFileSizeLimit();
+  int64_t getArchiveFileSizeLimit();
   /**
    * Gets the archive disk space limit in bytes.
    */
-  int64 getArchiveDiskSpaceLimit();
+  int64_t getArchiveDiskSpaceLimit();
   /**
    * Gets the sample rate in milliseconds
    */
-  int64 getSampleRate();
+  int64_t getSampleRate();
   /**
    * Returns true if sampling is enabled.
    */
@@ -110,21 +110,21 @@ class CPPCACHE_EXPORT HostStatSampler : public ACE_Task_Base,
    * Called when this sampler has spent some time working and wants
    * it to be accounted for.
    */
-  void accountForTimeSpentWorking(int64 nanosSpentWorking);
+  void accountForTimeSpentWorking(int64_t nanosSpentWorking);
 
   /**
    * Returns true if the specified statistic resource still exists.
    */
-  bool statisticsExists(int64 id);
+  bool statisticsExists(int64_t id);
   /**
    * Returns the statistics resource instance given its id.
    */
-  Statistics* findStatistics(int64 id);
+  Statistics* findStatistics(int64_t id);
 
   /**
    * Returns the number of statistics object the manager has.
    */
-  int32 getStatisticsModCount();
+  int32_t getStatisticsModCount();
   /**
    * Gets list mutex for synchronization
    */
@@ -141,11 +141,11 @@ class CPPCACHE_EXPORT HostStatSampler : public ACE_Task_Base,
   /**
    * Returns a unique id for the sampler's system.
    */
-  int64 getSystemId();
+  int64_t getSystemId();
   /**
    * Returns the time this sampler's system was started.
    */
-  int64 getSystemStartTime();
+  int64_t getSystemStartTime();
   /**
    * Returns the path to this sampler's system directory; if it has one.
    */
@@ -186,7 +186,7 @@ class CPPCACHE_EXPORT HostStatSampler : public ACE_Task_Base,
   /**
    * The function executed by the thread
    */
-  int32 svc(void);
+  int32_t svc(void);
 
   /**
   * Method to know whether the sampling thread is running or not.
@@ -206,12 +206,12 @@ class CPPCACHE_EXPORT HostStatSampler : public ACE_Task_Base,
   StatSamplerStats* m_samplerStats;
 
   std::string m_archiveFileName;
-  int64 m_archiveFileSizeLimit;
-  int64 m_archiveDiskSpaceLimit;
-  int64 m_sampleRate;
+  int64_t m_archiveFileSizeLimit;
+  int64_t m_archiveDiskSpaceLimit;
+  int64_t m_sampleRate;
   StatisticsManager* m_statMngr;
 
-  int64 m_pid;
+  int64_t m_pid;
   int64_t m_startTime;
   std::string initStatFileWithExt();
   /**
@@ -219,11 +219,11 @@ class CPPCACHE_EXPORT HostStatSampler : public ACE_Task_Base,
    * to a new file name. This integer rollIndex will be used to format the
    * file name into which the current archiveFile will be renamed.
    */
-  int32 rollIndex;
+  int32_t rollIndex;
   /**
    * This function rolls the existing archive file
    */
-  int32 rollArchive(std::string filename);
+  int32_t rollArchive(std::string filename);
   /**
    * This function check whether the filename has gfs ext or not
    * If it is not there it adds and then returns the new filename.

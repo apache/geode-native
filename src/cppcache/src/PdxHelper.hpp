@@ -57,23 +57,23 @@ class PdxHelper {
                                            bool forceDeserialize,
                                            int32_t typeId, int32_t length);
 
-  static int32 readInt16(uint8_t* offsetPosition);
+  static int32_t readInt16(uint8_t* offsetPosition);
 
-  static int32 readUInt16(uint8_t* offsetPosition);
+  static int32_t readUInt16(uint8_t* offsetPosition);
 
-  static int32 readByte(uint8_t* offsetPosition);
+  static int32_t readByte(uint8_t* offsetPosition);
 
-  static int32 readInt32(uint8_t* offsetPosition);
+  static int32_t readInt32(uint8_t* offsetPosition);
 
-  static void writeInt32(uint8_t* offsetPosition, int32 value);
+  static void writeInt32(uint8_t* offsetPosition, int32_t value);
 
-  static void writeInt16(uint8_t* offsetPosition, int32 value);
+  static void writeInt16(uint8_t* offsetPosition, int32_t value);
 
-  static void writeByte(uint8_t* offsetPosition, int32 value);
+  static void writeByte(uint8_t* offsetPosition, int32_t value);
 
-  static int32 readInt(uint8_t* offsetPosition, int size);
+  static int32_t readInt(uint8_t* offsetPosition, int size);
 
-  static int32 getEnumValue(const char* enumClassName, const char* enumName,
+  static int32_t getEnumValue(const char* enumClassName, const char* enumName,
                             int hashcode);
 
   static EnumInfoPtr getEnum(int enumId);

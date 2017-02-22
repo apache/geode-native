@@ -108,7 +108,7 @@ class CPPCACHE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
 
 class CqServiceStatType {
  private:
-  static int8 instanceFlag;
+  static int8_t instanceFlag;
   static CqServiceStatType* single;
   static SpinLock m_singletonLock;
   static SpinLock m_statTypeLock;

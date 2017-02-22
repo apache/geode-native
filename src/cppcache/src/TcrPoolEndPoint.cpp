@@ -141,7 +141,7 @@ bool TcrPoolEndPoint::handleIOException(const std::string& message,
   return TcrEndpoint::handleIOException(message, conn);
 }
 
-void TcrPoolEndPoint::handleNotificationStats(int64 byteLength) {
+void TcrPoolEndPoint::handleNotificationStats(int64_t byteLength) {
   m_dm->getStats().incReceivedBytes(byteLength);
   m_dm->getStats().incMessageBeingReceived();
 }

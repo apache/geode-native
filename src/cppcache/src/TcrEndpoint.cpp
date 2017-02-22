@@ -615,7 +615,7 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
         msg->setData(data, static_cast<int32_t>(dataLen),
                      this->getDistributedMemberID());
         data = NULL;  // memory is released by TcrMessage setData().
-        handleNotificationStats(static_cast<int64>(dataLen));
+        handleNotificationStats(static_cast<int64_t>(dataLen));
         LOGDEBUG("receive notification %d", msg->getMessageType());
 
         if (!isRunning) {

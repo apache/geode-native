@@ -46,21 +46,21 @@ class CPPCACHE_EXPORT WindowsProcessStats : public ProcessStats {
   StatisticsType* m_statsType;
 
   /** Ids of All Stats Desciptors for seting new values */
-  int32 handlesINT;
-  int32 priorityBaseINT;
-  int32 threadsINT;
-  int32 activeTimeLONG;
-  int32 pageFaultsLONG;
-  int32 pageFileSizeLONG;
-  int32 pageFileSizePeakLONG;
-  int32 privateSizeLONG;
-  int32 systemTimeLONG;
-  int32 userTimeLONG;
-  int32 virtualSizeLONG;
-  int32 virtualSizePeakLONG;
-  int32 workingSetSizeLONG;
-  int32 workingSetSizePeakLONG;
-  int32 cpuUsageINT;
+  int32_t handlesINT;
+  int32_t priorityBaseINT;
+  int32_t threadsINT;
+  int32_t activeTimeLONG;
+  int32_t pageFaultsLONG;
+  int32_t pageFileSizeLONG;
+  int32_t pageFileSizePeakLONG;
+  int32_t privateSizeLONG;
+  int32_t systemTimeLONG;
+  int32_t userTimeLONG;
+  int32_t virtualSizeLONG;
+  int32_t virtualSizePeakLONG;
+  int32_t workingSetSizeLONG;
+  int32_t workingSetSizePeakLONG;
+  int32_t cpuUsageINT;
 
   /** The underlying statistics */
   Statistics* stats;
@@ -68,14 +68,14 @@ class CPPCACHE_EXPORT WindowsProcessStats : public ProcessStats {
   void createType(StatisticsFactory* statFactory);
 
  public:
-  WindowsProcessStats(int64 pid, const char* name);
+  WindowsProcessStats(int64_t pid, const char* name);
   ~WindowsProcessStats();
 
-  int64 getProcessSize();
-  int32 getCpuUsage();
-  int64 getCPUTime();
-  int32 getNumThreads();
-  int64 getAllCpuTime();
+  int64_t getProcessSize();
+  int32_t getCpuUsage();
+  int64_t getCPUTime();
+  int32_t getNumThreads();
+  int64_t getAllCpuTime();
   /**
    * Close Underline Statistics
    */

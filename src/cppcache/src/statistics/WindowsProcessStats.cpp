@@ -24,7 +24,7 @@
 
 using namespace apache::geode::statistics;
 
-WindowsProcessStats::WindowsProcessStats(int64 pid, const char* name) {
+WindowsProcessStats::WindowsProcessStats(int64_t pid, const char* name) {
   GeodeStatisticsFactory* statFactory =
       GeodeStatisticsFactory::getExistingInstance();
 
@@ -203,21 +203,21 @@ void WindowsProcessStats::createType(StatisticsFactory* statFactory) {
   cpuUsageINT = m_statsType->nameToId("cpuUsage");
 }
 
-int64 WindowsProcessStats::getProcessSize() {
+int64_t WindowsProcessStats::getProcessSize() {
   return stats->getLong(cpuUsageINT);
 }
 
-int32 WindowsProcessStats::getCpuUsage() {
+int32_t WindowsProcessStats::getCpuUsage() {
   // throw UnsupportedOperationException( "getCpuUsage is unsupported on
   // Windows." );
   return stats->getInt(activeTimeLONG);
 }
 
-int64 WindowsProcessStats::getCPUTime() {
+int64_t WindowsProcessStats::getCPUTime() {
   return stats->getLong(activeTimeLONG);
 }
-int32 WindowsProcessStats::getNumThreads() { return stats->getInt(threadsINT); }
-int64 WindowsProcessStats::getAllCpuTime() {
+int32_t WindowsProcessStats::getNumThreads() { return stats->getInt(threadsINT); }
+int64_t WindowsProcessStats::getAllCpuTime() {
   return ((stats->getLong(userTimeLONG)) + (stats->getLong(systemTimeLONG)));
 }
 

@@ -81,7 +81,7 @@ namespace Apache
         {
           DataInput^ dataInput = gcnew DataInput(m_buffer, m_bufferLength);
           dataInput->setRootObjectPdx(true);
-          int64 sampleStartNanos = Utils::startStatOpTime();
+          int64_t sampleStartNanos = Utils::startStatOpTime();
           Object^ ret = Internal::PdxHelper::DeserializePdx(dataInput, true, m_typeId, m_bufferLength);
           //dataInput->ResetPdx(0);
 

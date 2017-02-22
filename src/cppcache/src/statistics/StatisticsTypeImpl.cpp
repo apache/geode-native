@@ -50,7 +50,7 @@ using namespace apache::geode::statistics;
 StatisticsTypeImpl::StatisticsTypeImpl(const char* nameArg,
                                        const char* descriptionArg,
                                        StatisticDescriptor** statsArg,
-                                       int32 statsLengthArg) {
+                                       int32_t statsLengthArg) {
   if (strcmp(nameArg, "") == 0) {
     const char* s = "Cannot have a null statistics type name";
     throw NullPointerException(s);
@@ -74,10 +74,10 @@ StatisticsTypeImpl::StatisticsTypeImpl(const char* nameArg,
   this->description = descriptionArg;
   this->stats = statsArg;
   this->statsLength = statsLengthArg;
-  int32 intCount = 0;
-  int32 longCount = 0;
-  int32 doubleCount = 0;
-  for (int32 i = 0; i < this->statsLength; i++) {
+  int32_t intCount = 0;
+  int32_t longCount = 0;
+  int32_t doubleCount = 0;
+  for (int32_t i = 0; i < this->statsLength; i++) {
     // Concrete class required to set the ids only.
     StatisticDescriptorImpl* sd =
         dynamic_cast<StatisticDescriptorImpl*>(stats[i]);
@@ -123,7 +123,7 @@ StatisticsTypeImpl::StatisticsTypeImpl(const char* nameArg,
 StatisticsTypeImpl::~StatisticsTypeImpl() {
   try {
     // Delete the descriptor pointers from the array
-    for (int32 i = 0; i < statsLength; i++) {
+    for (int32_t i = 0; i < statsLength; i++) {
       delete stats[i];
       stats[i] = NULL;
     }
@@ -146,7 +146,7 @@ const char* StatisticsTypeImpl::getDescription() { return description.c_str(); }
 
 StatisticDescriptor** StatisticsTypeImpl::getStatistics() { return stats; }
 
-int32 StatisticsTypeImpl::nameToId(const char* nameArg) {
+int32_t StatisticsTypeImpl::nameToId(const char* nameArg) {
   return nameToDescriptor(nameArg)->getId();
 }
 
@@ -168,19 +168,19 @@ StatisticDescriptor* StatisticsTypeImpl::nameToDescriptor(const char* nameArg) {
 /**
 * Gets the number of statistics in this type that are ints.
 */
-int32 StatisticsTypeImpl::getIntStatCount() { return intStatCount; }
+int32_t StatisticsTypeImpl::getIntStatCount() { return intStatCount; }
 
 /**
 * Gets the number of statistics in this type that are longs.
 */
-int32 StatisticsTypeImpl::getLongStatCount() { return longStatCount; }
+int32_t StatisticsTypeImpl::getLongStatCount() { return longStatCount; }
 
 /**
 * Gets the number of statistics that are doubles.
 */
-int32 StatisticsTypeImpl::getDoubleStatCount() { return doubleStatCount; }
+int32_t StatisticsTypeImpl::getDoubleStatCount() { return doubleStatCount; }
 
 /**
 * Gets the total number of statistic descriptors.
 */
-int32 StatisticsTypeImpl::getDescriptorsCount() { return statsLength; }
+int32_t StatisticsTypeImpl::getDescriptorsCount() { return statsLength; }

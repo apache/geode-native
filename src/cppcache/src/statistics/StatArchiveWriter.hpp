@@ -39,22 +39,22 @@ using namespace apache::geode::client;
 /**
  * some constants to be used while archiving
  */
-const int8 ARCHIVE_VERSION = 4;
-const int8 SAMPLE_TOKEN = 0;
-const int8 RESOURCE_TYPE_TOKEN = 1;
-const int8 RESOURCE_INSTANCE_CREATE_TOKEN = 2;
-const int8 RESOURCE_INSTANCE_DELETE_TOKEN = 3;
-const int8 RESOURCE_INSTANCE_INITIALIZE_TOKEN = 4;
-const int8 HEADER_TOKEN = 77;
-const int8 ILLEGAL_RESOURCE_INST_ID = -1;
-const int16 MAX_BYTE_RESOURCE_INST_ID = 252;
-const int16 SHORT_RESOURCE_INST_ID_TOKEN = 253;
-const int32 INT_RESOURCE_INST_ID_TOKEN = 254;
-const int16 ILLEGAL_RESOURCE_INST_ID_TOKEN = -1;
-const int32 MAX_SHORT_RESOURCE_INST_ID = 65535;
-const int32 MAX_SHORT_TIMESTAMP = 65534;
-const int32 INT_TIMESTAMP_TOKEN = 65535;
-const int64 NANOS_PER_MILLI = 1000000;
+const int8_t ARCHIVE_VERSION = 4;
+const int8_t SAMPLE_TOKEN = 0;
+const int8_t RESOURCE_TYPE_TOKEN = 1;
+const int8_t RESOURCE_INSTANCE_CREATE_TOKEN = 2;
+const int8_t RESOURCE_INSTANCE_DELETE_TOKEN = 3;
+const int8_t RESOURCE_INSTANCE_INITIALIZE_TOKEN = 4;
+const int8_t HEADER_TOKEN = 77;
+const int8_t ILLEGAL_RESOURCE_INST_ID = -1;
+const int16_t MAX_BYTE_RESOURCE_INST_ID = 252;
+const int16_t SHORT_RESOURCE_INST_ID_TOKEN = 253;
+const int32_t INT_RESOURCE_INST_ID_TOKEN = 254;
+const int16_t ILLEGAL_RESOURCE_INST_ID_TOKEN = -1;
+const int32_t MAX_SHORT_RESOURCE_INST_ID = 65535;
+const int32_t MAX_SHORT_TIMESTAMP = 65534;
+const int32_t INT_TIMESTAMP_TOKEN = 65535;
+const int64_t NANOS_PER_MILLI = 1000000;
 
 /** @file
 */
@@ -81,7 +81,7 @@ class CPPCACHE_EXPORT StatDataOutput {
    * Returns the number of bytes written into the buffer so far.
    * This does not takes the compression into account.
    */
-  int64 getBytesWritten();
+  int64_t getBytesWritten();
   /**
    * Writes the buffer into the outfile.
    */
@@ -93,24 +93,24 @@ class CPPCACHE_EXPORT StatDataOutput {
   /**
    * Writes 8 bit integer value in the buffer.
    */
-  void writeByte(int8 v);
+  void writeByte(int8_t v);
   /**
    * Writes boolean value in the buffer.
    * Nothing but an int8.
    */
-  void writeBoolean(int8 v);
+  void writeBoolean(int8_t v);
   /**
    * Writes 16 bit integer value in the buffer.
    */
-  void writeShort(int16 v);
+  void writeShort(int16_t v);
   /**
    * Writes Long value 32 bit in the buffer.
    */
-  void writeInt(int32 v);
+  void writeInt(int32_t v);
   /**
    * Writes Double value 64 bit in the buffer.
    */
-  void writeLong(int64 v);
+  void writeLong(int64_t v);
   /**
    * Writes string value in the buffer.
    */
@@ -125,10 +125,10 @@ class CPPCACHE_EXPORT StatDataOutput {
   const uint8_t *getBuffer() { return dataBuffer.getBuffer(); }
   void close();
 
-  void openFile(std::string, int64);
+  void openFile(std::string, int64_t);
 
  private:
-  int64 bytesWritten;
+  int64_t bytesWritten;
   DataOutput dataBuffer;
   std::string outFile;
   FILE *m_fp;
@@ -139,15 +139,15 @@ class CPPCACHE_EXPORT StatDataOutput {
 class CPPCACHE_EXPORT ResourceType : private NonCopyable,
                                      private NonAssignable {
  public:
-  ResourceType(int32 id, StatisticsType *type);
-  int32 getId();
+  ResourceType(int32_t id, StatisticsType *type);
+  int32_t getId();
   StatisticDescriptor **getStats();
-  int32 getNumOfDescriptors();
+  int32_t getNumOfDescriptors();
 
  private:
-  int32 id;
+  int32_t id;
   StatisticDescriptor **stats;
-  int32 numOfDescriptors;
+  int32_t numOfDescriptors;
 };
 
 /* adongre
@@ -167,26 +167,26 @@ class CPPCACHE_EXPORT ResourceType : private NonCopyable,
 class CPPCACHE_EXPORT ResourceInst : private NonCopyable,
                                      private NonAssignable {
  public:
-  ResourceInst(int32 id, Statistics *, ResourceType *, StatDataOutput *);
+  ResourceInst(int32_t id, Statistics *, ResourceType *, StatDataOutput *);
   ~ResourceInst();
-  int32 getId();
+  int32_t getId();
   Statistics *getResource();
   ResourceType *getType();
-  int64 getStatValue(StatisticDescriptor *f);
+  int64_t getStatValue(StatisticDescriptor *f);
   void writeSample();
-  void writeStatValue(StatisticDescriptor *s, int64 v);
-  void writeCompactValue(int64 v);
-  void writeResourceInst(StatDataOutput *, int32);
+  void writeStatValue(StatisticDescriptor *s, int64_t v);
+  void writeCompactValue(int64_t v);
+  void writeResourceInst(StatDataOutput *, int32_t);
 
  private:
-  int32 id;
+  int32_t id;
   Statistics *resource;
   ResourceType *type;
   /* This will contain the previous values of the descriptors */
-  int64 *archivedStatValues;
+  int64_t *archivedStatValues;
   StatDataOutput *dataOut;
   /* Number of descriptors this resource instnace has */
-  int32 numOfDescps;
+  int32_t numOfDescps;
   /* To know whether the instance has come for the first time */
   bool firstTime;
 };
@@ -200,12 +200,12 @@ class CPPCACHE_EXPORT StatArchiveWriter {
  private:
   HostStatSampler *sampler;
   StatDataOutput *dataBuffer;
-  int64 previousTimeStamp;
-  int32 resourceTypeId;
-  int32 resourceInstId;
-  int32 statResourcesModCount;
-  int64 bytesWrittenToFile;
-  int64 m_samplesize;
+  int64_t previousTimeStamp;
+  int32_t resourceTypeId;
+  int32_t resourceInstId;
+  int32_t statResourcesModCount;
+  int64_t bytesWrittenToFile;
+  int64_t m_samplesize;
   std::string archiveFile;
   std::map<Statistics *, ResourceInst *> resourceInstMap;
   std::map<StatisticsType *, ResourceType *> resourceTypeMap;
@@ -214,9 +214,9 @@ class CPPCACHE_EXPORT StatArchiveWriter {
   void allocateResourceInst(Statistics *r);
   void sampleResources();
   void resampleResources();
-  void writeResourceInst(StatDataOutput *, int32);
-  void writeTimeStamp(int64 timeStamp);
-  void writeStatValue(StatisticDescriptor *f, int64 v, DataOutput dataOut);
+  void writeResourceInst(StatDataOutput *, int32_t);
+  void writeTimeStamp(int64_t timeStamp);
+  void writeStatValue(StatisticDescriptor *f, int64_t v, DataOutput dataOut);
   ResourceType *getResourceType(Statistics *);
   bool resourceInstMapHas(Statistics *sp);
 
@@ -227,12 +227,12 @@ class CPPCACHE_EXPORT StatArchiveWriter {
    * Returns the number of bytes written so far to this archive.
    * This does not take compression into account.
    */
-  int64 bytesWritten();
+  int64_t bytesWritten();
   /**
    * Archives a sample snapshot at the given timeStamp.
    * @param timeStamp a value obtained using NanoTimer::now.
    */
-  void sample(int64 timeStamp);
+  void sample(int64_t timeStamp);
   /**
    * Archives a sample snapshot at the current time.
    */
@@ -257,7 +257,7 @@ class CPPCACHE_EXPORT StatArchiveWriter {
   /**
    * Returns the size of number of bytes written so far to this archive.
    */
-  int64 getSampleSize();
+  int64_t getSampleSize();
 
   /**
    * Flushes the contents of the dataBuffer to the archiveFile

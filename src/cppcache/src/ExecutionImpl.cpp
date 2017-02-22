@@ -63,8 +63,8 @@ ExecutionPtr ExecutionImpl::withCollector(ResultCollectorPtr rs) {
   return ptr;
 }
 
-std::vector<int8>* ExecutionImpl::getFunctionAttributes(const char* func) {
-  std::map<std::string, std::vector<int8>*>::iterator itr =
+std::vector<int8_t>* ExecutionImpl::getFunctionAttributes(const char* func) {
+  std::map<std::string, std::vector<int8_t>*>::iterator itr =
       m_func_attrs.find(func);
   if (itr != m_func_attrs.end()) {
     return itr->second;
@@ -101,7 +101,7 @@ ResultCollectorPtr ExecutionImpl::execute(const char* fn, uint32_t timeout,
   bool serverOptimizeForWrite = false;
 
   if (verifyFuncArgs) {
-    std::vector<int8>* attr = getFunctionAttributes(fn);
+    std::vector<int8_t>* attr = getFunctionAttributes(fn);
     {
       if (attr == NULL) {
         ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_func_attrs_lock);
@@ -360,7 +360,7 @@ ResultCollectorPtr ExecutionImpl::execute(const char* fn, uint32_t timeout,
 }
 
 GfErrType ExecutionImpl::getFuncAttributes(const char* func,
-                                           std::vector<int8>** attr) {
+                                           std::vector<int8_t>** attr) {
   ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.ptr());
   if (tcrdm == NULL) {
     throw IllegalArgumentException(

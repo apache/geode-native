@@ -397,7 +397,7 @@ class ThinClientPoolDM
 
   volatile ThinClientLocatorHelper* m_locHelper;
 
-  volatile int32 m_poolSize;  // Actual Size of Pool
+  volatile int32_t m_poolSize;  // Actual Size of Pool
   int m_numRegions;
 
   // for selectEndpoint
@@ -419,7 +419,7 @@ class ThinClientPoolDM
   int manageConnectionsInternal(volatile bool& isRunning);
   void cleanStaleConnections(volatile bool& isRunning);
   void restoreMinConnections(volatile bool& isRunning);
-  volatile int32 m_clientOps;  // Actual Size of Pool
+  volatile int32_t m_clientOps;  // Actual Size of Pool
   statistics::PoolStatsSampler* m_PoolStatsSampler;
   ClientMetadataService* m_clientMetadataService;
   friend class CacheImpl;

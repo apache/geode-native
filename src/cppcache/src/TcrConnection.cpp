@@ -662,7 +662,7 @@ inline ConnErrType TcrConnection::receiveData(char* buffer, int32_t length,
              length, defaultWaitSecs);
     if (m_poolDM != NULL) {
       LOGDEBUG("TcrConnection::receiveData readBytes = %d", readBytes);
-      m_poolDM->getStats().incReceivedBytes(static_cast<int64>(readBytes));
+      m_poolDM->getStats().incReceivedBytes(static_cast<int64_t>(readBytes));
     }
     receiveTimeoutSec -= defaultWaitSecs;
     if ((length == startLen) && isNotificationMessage) {  // no data read
@@ -756,7 +756,7 @@ inline ConnErrType TcrConnection::sendData(uint32_t& timeSpent,
 
 char* TcrConnection::sendRequest(const char* buffer, int32_t len,
                                  size_t* recvLen, uint32_t sendTimeoutSec,
-                                 uint32_t receiveTimeoutSec, int32 request) {
+                                 uint32_t receiveTimeoutSec, int32_t request) {
   LOGDEBUG("TcrConnection::sendRequest");
   uint32_t timeSpent = 0;
 
@@ -899,7 +899,7 @@ char* TcrConnection::receive(size_t* recvLen, ConnErrType* opErr,
 char* TcrConnection::readMessage(size_t* recvLen, uint32_t receiveTimeoutSec,
                                  bool doHeaderTimeoutRetries,
                                  ConnErrType* opErr, bool isNotificationMessage,
-                                 int32 request) {
+                                 int32_t request) {
   char msg_header[HEADER_LENGTH];
   int32_t msgType, msgLen;
   ConnErrType error;

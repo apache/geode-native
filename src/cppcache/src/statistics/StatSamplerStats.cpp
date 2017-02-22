@@ -57,7 +57,7 @@ void StatSamplerStats::setInitialValues() {
  * This function is called to refresh the values
  * of the individual Stats descriptors.
  */
-void StatSamplerStats::tookSample(int64 nanosSpentWorking) {
+void StatSamplerStats::tookSample(int64_t nanosSpentWorking) {
   if (samplerStats) {
     samplerStats->incInt(sampleCountId, 1);
     samplerStats->incLong(sampleTimeId, nanosSpentWorking / 1000000);
@@ -85,7 +85,7 @@ void StatSamplerStats::close() {
  */
 StatSamplerStats::~StatSamplerStats() {
   samplerType = NULL;
-  for (int32 i = 0; i < 2; i++) {
+  for (int32_t i = 0; i < 2; i++) {
     statDescriptorArr[i] = NULL;
   }
   samplerStats = NULL;

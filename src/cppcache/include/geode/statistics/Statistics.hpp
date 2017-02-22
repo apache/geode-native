@@ -59,7 +59,7 @@ class CPPCACHE_EXPORT Statistics {
    *
    * @see StatisticsType#nameToDescriptor
    */
-  virtual int32 nameToId(const char* name) = 0;
+  virtual int32_t nameToId(const char* name) = 0;
 
   /**
    * Returns the descriptor of the statistic with the given name in this
@@ -77,7 +77,7 @@ class CPPCACHE_EXPORT Statistics {
   /**
    * Gets a value that uniquely identifies this statistics.
    */
-  virtual int64 getUniqueId() = 0;
+  virtual int64_t getUniqueId() = 0;
 
   /**
    * Gets the {@link StatisticsType} of this instance.
@@ -91,7 +91,7 @@ class CPPCACHE_EXPORT Statistics {
    * Gets the number associated with this instance that helps identify it.
    */
 
-  virtual int64 getNumericId() = 0;
+  virtual int64_t getNumericId() = 0;
   /**
    * Returns true if modifications are atomic. This means that multiple threads
    * can safely modify this instance without additional synchronization.
@@ -127,7 +127,7 @@ class CPPCACHE_EXPORT Statistics {
    * @throws IllegalArgumentException
    *         If the id is invalid.
    */
-  virtual void setInt(int32 id, int32 value) = 0;
+  virtual void setInt(int32_t id, int32_t value) = 0;
 
   /**
    * Sets the value of a named statistic of type <code>int</code>
@@ -139,7 +139,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the statistic with name <code>name</code> is not of
    *         type <code>int</code>.
    */
-  virtual void setInt(char* name, int32 value) = 0;
+  virtual void setInt(char* name, int32_t value) = 0;
 
   /**
    * Sets the value of a described statistic of type <code>int</code>
@@ -153,7 +153,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>int</code>.
    */
-  virtual void setInt(StatisticDescriptor* descriptor, int32 value) = 0;
+  virtual void setInt(StatisticDescriptor* descriptor, int32_t value) = 0;
 
   /**
    * Sets the value of a statistic with the given <code>id</code>
@@ -166,7 +166,7 @@ class CPPCACHE_EXPORT Statistics {
    *         If the id is invalid.
    */
 
-  virtual void setLong(int32 id, int64 value) = 0;
+  virtual void setLong(int32_t id, int64_t value) = 0;
   /**
    * Sets the value of a described statistic of type <code>long</code>
    *
@@ -179,7 +179,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>long</code>.
    */
-  virtual void setLong(StatisticDescriptor* descriptor, int64 value) = 0;
+  virtual void setLong(StatisticDescriptor* descriptor, int64_t value) = 0;
 
   /**
    * Sets the value of a named statistic of type <code>long</code>.
@@ -191,7 +191,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the statistic with name <code>name</code> is not of
    *         type <code>long</code>.
    */
-  virtual void setLong(char* name, int64 value) = 0;
+  virtual void setLong(char* name, int64_t value) = 0;
 
   /**
    * Sets the value of a statistic with the given <code>id</code>
@@ -203,7 +203,7 @@ class CPPCACHE_EXPORT Statistics {
    * @throws IllegalArgumentException
    *         If the id is invalid.
    */
-  virtual void setDouble(int32 id, double value) = 0;
+  virtual void setDouble(int32_t id, double value) = 0;
 
   /**
    * Sets the value of a described statistic of type <code>double</code>
@@ -242,7 +242,7 @@ class CPPCACHE_EXPORT Statistics {
    * @throws IllegalArgumentException
    *         If the id is invalid.
    */
-  virtual int32 getInt(int32 id) = 0;
+  virtual int32_t getInt(int32_t id) = 0;
 
   /**
    * Returns the value of the described statistic of type <code>int</code>.
@@ -256,7 +256,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>int</code>.
    */
-  virtual int32 getInt(
+  virtual int32_t getInt(
       apache::geode::statistics::StatisticDescriptor* descriptor) = 0;
   /**
    * Returns the value of the statistic of type <code>int</code> at
@@ -268,7 +268,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the statistic named <code>name</code> is not of
    *         type <code>int</code>.
    */
-  virtual int32 getInt(char* name) = 0;
+  virtual int32_t getInt(char* name) = 0;
 
   /**
    * Returns the value of the identified statistic of type <code>long</code>.
@@ -278,7 +278,7 @@ class CPPCACHE_EXPORT Statistics {
    * @throws IllegalArgumentException
    *         If the id is invalid.
    */
-  virtual int64 getLong(int32 id) = 0;
+  virtual int64_t getLong(int32_t id) = 0;
 
   /**
    * Returns the value of the described statistic of type <code>long</code>.
@@ -292,7 +292,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>long</code>.
    */
-  virtual int64 getLong(StatisticDescriptor* descriptor) = 0;
+  virtual int64_t getLong(StatisticDescriptor* descriptor) = 0;
   /**
    * Returns the value of the statistic of type <code>long</code> at
    * the given name.
@@ -303,7 +303,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the statistic named <code>name</code> is not of
    *         type <code>long</code>.
    */
-  virtual int64 getLong(char* name) = 0;
+  virtual int64_t getLong(char* name) = 0;
 
   /**
    * Returns the value of the identified statistic of type <code>double</code>.
@@ -313,7 +313,7 @@ class CPPCACHE_EXPORT Statistics {
    * @throws IllegalArgumentException
    *         If the id is invalid.
    */
-  virtual double getDouble(int32 id) = 0;
+  virtual double getDouble(int32_t id) = 0;
 
   /**
    * Returns the value of the described statistic of type <code>double</code>.
@@ -368,7 +368,7 @@ class CPPCACHE_EXPORT Statistics {
    * @throws IllegalArgumentException
    *         If the described statistic does not exist
    */
-  virtual int64 getRawBits(StatisticDescriptor* descriptor) = 0;
+  virtual int64_t getRawBits(StatisticDescriptor* descriptor) = 0;
 
   /**
    * Returns the bits that represent the raw value of the named statistic.
@@ -393,7 +393,7 @@ class CPPCACHE_EXPORT Statistics {
    * @throws IllegalArgumentException
    *         If the id is invalid.
    */
-  virtual int32 incInt(int32 id, int32 delta) = 0;
+  virtual int32_t incInt(int32_t id, int32_t delta) = 0;
 
   /**
    * Increments the value of the described statistic of type <code>int</code>
@@ -409,7 +409,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>int</code>.
    */
-  virtual int32 incInt(StatisticDescriptor* descriptor, int32 delta) = 0;
+  virtual int32_t incInt(StatisticDescriptor* descriptor, int32_t delta) = 0;
 
   /**
    * Increments the value of the statistic of type <code>int</code> with
@@ -423,7 +423,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the statistic named <code>name</code> is not of
    *         type <code>int</code>.
    */
-  virtual int32 incInt(char* name, int32 delta) = 0;
+  virtual int32_t incInt(char* name, int32_t delta) = 0;
 
   /**
    * Increments the value of the identified statistic of type <code>long</code>
@@ -438,7 +438,7 @@ class CPPCACHE_EXPORT Statistics {
    * @throws IllegalArgumentException
    *         If the id is invalid.
    */
-  virtual int64 incLong(int32 id, int64 delta) = 0;
+  virtual int64_t incLong(int32_t id, int64_t delta) = 0;
 
   /**
    * Increments the value of the described statistic of type <code>long</code>
@@ -455,7 +455,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>long</code>.
    */
-  virtual int64 incLong(StatisticDescriptor* descriptor, int64 delta) = 0;
+  virtual int64_t incLong(StatisticDescriptor* descriptor, int64_t delta) = 0;
   /**
    * Increments the value of the statistic of type <code>long</code> with
    * the given name by a given amount.
@@ -469,7 +469,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the statistic named <code>name</code> is not of
    *         type <code>long</code>.
    */
-  virtual int64 incLong(char* name, int64 delta) = 0;
+  virtual int64_t incLong(char* name, int64_t delta) = 0;
 
   /**
    * Increments the value of the identified statistic of type
@@ -485,7 +485,7 @@ class CPPCACHE_EXPORT Statistics {
    * @throws IllegalArgumentException
    *         If the id is invalid.
    */
-  virtual double incDouble(int32 id, double delta) = 0;
+  virtual double incDouble(int32_t id, double delta) = 0;
 
   /**
    * Increments the value of the described statistic of type <code>double</code>

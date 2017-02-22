@@ -199,8 +199,8 @@ class CPPCACHE_EXPORT Log {
    */
   static void init
       // 0 => use maximum value (currently 1G)
-      (LogLevel level, const char* logFileName, int32 logFileLimit = 0,
-       int64 logDiskSpaceLimit = 0);
+      (LogLevel level, const char* logFileName, int32_t logFileLimit = 0,
+       int64_t logDiskSpaceLimit = 0);
 
   /**
    * closes logging facility (until next init).

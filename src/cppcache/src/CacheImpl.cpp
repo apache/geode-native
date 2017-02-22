@@ -48,7 +48,7 @@ CacheImpl* CacheImpl::s_instance = NULL;
 volatile bool CacheImpl::s_networkhop = false;
 volatile int CacheImpl::s_blacklistBucketTimeout = 0;
 ACE_Recursive_Thread_Mutex CacheImpl::s_nwHopLock;
-volatile int8 CacheImpl::s_serverGroupFlag = 0;
+volatile int8_t CacheImpl::s_serverGroupFlag = 0;
 MemberListForVersionStampPtr CacheImpl::s_versionStampMemIdList = NULLPTR;
 
 #define DEFAULT_LRU_MAXIMUM_ENTRIES 100000
@@ -185,8 +185,8 @@ bool CacheImpl::getAndResetNetworkHopFlag() {
   return networkhop;
 }
 
-int8 CacheImpl::getAndResetServerGroupFlag() {
-  int8 serverGroupFlag = CacheImpl::s_serverGroupFlag;
+int8_t CacheImpl::getAndResetServerGroupFlag() {
+  int8_t serverGroupFlag = CacheImpl::s_serverGroupFlag;
   CacheImpl::s_serverGroupFlag = 0;
   return serverGroupFlag;
 }

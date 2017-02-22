@@ -47,29 +47,29 @@ class CPPCACHE_EXPORT ProcessStats {
   /**
    * Returns the CPU Usage
    */
-  virtual int32 getCpuUsage() = 0;
+  virtual int32_t getCpuUsage() = 0;
 
   /**
    * Returns Number of threads
    */
-  virtual int32 getNumThreads() = 0;
+  virtual int32_t getNumThreads() = 0;
 
   /**
    * Returns the size of this process (resident set on UNIX or working
    * set on Windows) in megabytes
    */
-  virtual int64 getProcessSize() = 0;
+  virtual int64_t getProcessSize() = 0;
 
   /**
    * Close Underline Statistics
    */
   virtual void close() = 0;
-  virtual int64 getCPUTime() = 0;
+  virtual int64_t getCPUTime() = 0;
 
   /**
    * Returns the CPU time which is sum of userTime and systemTime
    */
-  virtual int64 getAllCpuTime() = 0;
+  virtual int64_t getAllCpuTime() = 0;
 
   /**
    * Destructor

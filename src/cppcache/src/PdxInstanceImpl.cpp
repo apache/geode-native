@@ -1463,7 +1463,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
 
 PdxSerializablePtr PdxInstanceImpl::getObject() {
   DataInput dataInput(m_buffer, m_bufferLength);
-  int64 sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = Utils::startStatOpTime();
   //[ToDo] do we have to call incPdxDeSerialization here?
   PdxSerializablePtr ret =
       PdxHelper::deserializePdx(dataInput, true, m_typeId, m_bufferLength);

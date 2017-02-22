@@ -51,7 +51,7 @@ void PdxWriterWithTypeCollector::endObjectWriting() {
   PdxLocalWriter::writePdxHeader();
 }
 
-void PdxWriterWithTypeCollector::writeOffsets(int32 len) {
+void PdxWriterWithTypeCollector::writeOffsets(int32_t len) {
   if (len <= 0xff) {
     for (int i = static_cast<int>(m_offsets.size()) - 1; i > 0; i--) {
       m_dataOutput->write(static_cast<uint8_t>(m_offsets[i]));
@@ -67,14 +67,14 @@ void PdxWriterWithTypeCollector::writeOffsets(int32 len) {
   }
 }
 
-int32 PdxWriterWithTypeCollector::calculateLenWithOffsets() {
+int32_t PdxWriterWithTypeCollector::calculateLenWithOffsets() {
   int bufferLen = m_dataOutput->getBufferLength() - m_startPositionOffset;
-  int32 totalOffsets = 0;
+  int32_t totalOffsets = 0;
   if (m_offsets.size() > 0) {
-    totalOffsets = static_cast<int32>(m_offsets.size()) -
+    totalOffsets = static_cast<int32_t>(m_offsets.size()) -
                    1;  // for first var len no need to append offset
   }
-  int32 totalLen = bufferLen - PdxHelper::PdxHeader + totalOffsets;
+  int32_t totalLen = bufferLen - PdxHelper::PdxHeader + totalOffsets;
 
   if (totalLen <= 0xff) {
     return totalLen;

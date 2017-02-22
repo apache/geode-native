@@ -37,7 +37,7 @@ namespace apache
       void ManagedCacheableKeyGeneric::toData(apache::geode::client::DataOutput& output) const
       {
         try {
-          uint32 pos = (int)output.getBufferLength();
+          uint32_t pos = (int)output.getBufferLength();
           //Apache::Geode::Client::Log::Debug("ManagedCacheableKeyGeneric::toData");      
           Apache::Geode::Client::DataOutput mg_output(&output, true);
           m_managedptr->ToData(%mg_output);

@@ -286,7 +286,7 @@ namespace Apache
           }
           else if (type->Equals(DotNetTypes::IntArrayType))
           {
-            return this->WriteIntArray(fieldName, (array<int32>^)fieldValue);
+            return this->WriteIntArray(fieldName, (array<int32_t>^)fieldValue);
           }
           else if (type->Equals(DotNetTypes::LongArrayType))
           {

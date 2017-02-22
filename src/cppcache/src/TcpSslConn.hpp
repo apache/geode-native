@@ -82,7 +82,7 @@ class TcpSslConn : public TcpConn {
     }
   }
 
-  uint16 getPort();
+  uint16_t getPort();
 };
 }  // namespace client
 }  // namespace geode

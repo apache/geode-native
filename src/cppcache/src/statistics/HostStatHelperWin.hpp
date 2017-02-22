@@ -54,7 +54,7 @@ class HostStatHelperWin {
   static PPERF_OBJECT_TYPE SystemObj;
   static PPERF_OBJECT_TYPE ObjectsObj;
   static DWORD BufferSize;
-  static int32 pidCtrOffset;
+  static int32_t pidCtrOffset;
 
   /* #define NTDBG 1 */
 
@@ -245,12 +245,12 @@ class HostStatHelperWin {
   static PERF_COUNTER_DEFINITION objectsCtrCache[MAX_OBJECTS_CTRS_COLLECTED];
 
   struct FetchDataSType {
-    uint32 perfTimeMs;
-    int64 usertime;
-    int64 systime;
-    int64 idletime;
-    int64 inttime;
-    uint32 interrupts;
+    uint32_t perfTimeMs;
+    int64_t usertime;
+    int64_t systime;
+    int64_t idletime;
+    int64_t inttime;
+    uint32_t interrupts;
   };
 
   static FetchDataSType lastFetchData;
@@ -259,12 +259,12 @@ class HostStatHelperWin {
  private:
   static void HostStatsFetchData();
 
-  static int32 getPid(int32 pidCtrOffset, PPERF_COUNTER_BLOCK PerfCntrBlk);
+  static int32_t getPid(int32_t pidCtrOffset, PPERF_COUNTER_BLOCK PerfCntrBlk);
 
-  static uint32 getInt32Value(PPERF_COUNTER_DEFINITION PerfCntr,
+  static uint32_t getInt32Value(PPERF_COUNTER_DEFINITION PerfCntr,
                               PPERF_COUNTER_BLOCK PerfCntrBlk);
 
-  static int64 getInt64Value(PPERF_COUNTER_DEFINITION PerfCntr,
+  static int64_t getInt64Value(PPERF_COUNTER_DEFINITION PerfCntr,
                              PPERF_COUNTER_BLOCK PerfCntrBlk,
                              bool convertMS = true);
 

@@ -341,7 +341,7 @@ void ClientMetadataService::populateDummyServers(const char* regionName,
 }
 
 void ClientMetadataService::enqueueForMetadataRefresh(
-    const char* regionFullPath, int8 serverGroupFlag) {
+    const char* regionFullPath, int8_t serverGroupFlag) {
   ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.ptr());
   if (tcrdm == NULL) {
     throw IllegalArgumentException(
@@ -436,7 +436,7 @@ ClientMetadataService::getServerToFilterMap(const VectorOfCacheableKey* keys,
         buckets.find(bucketId);
 
     if (bucketsIter == buckets.end()) {
-      int8 version = -1;
+      int8_t version = -1;
       // BucketServerLocationPtr serverLocation(new BucketServerLocation());
       BucketServerLocationPtr serverLocation = NULLPTR;
       cptr->getServerLocation(bucketId, isPrimary, serverLocation, version);

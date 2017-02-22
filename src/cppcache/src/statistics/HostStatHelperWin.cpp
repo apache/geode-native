@@ -38,7 +38,7 @@ PPERF_OBJECT_TYPE HostStatHelperWin::MemoryObj = NULL;
 PPERF_OBJECT_TYPE HostStatHelperWin::SystemObj = NULL;
 PPERF_OBJECT_TYPE HostStatHelperWin::ObjectsObj = NULL;
 DWORD HostStatHelperWin::BufferSize = 65536;
-int32 HostStatHelperWin::pidCtrOffset = -1;
+int32_t HostStatHelperWin::pidCtrOffset = -1;
 
 PERF_COUNTER_DEFINITION
 HostStatHelperWin::processCtrCache[MAX_PROCESS_CTRS_COLLECTED];
@@ -475,15 +475,15 @@ void HostStatHelperWin::HostStatsFetchData() {
   }
   lastFetchData = currentFetchData;
   currentFetchData.perfTimeMs =
-      (uint32)(((int64_t)PerfData->PerfTime100nSec.QuadPart) / 10000);
+      (uint32_t)(((int64_t)PerfData->PerfTime100nSec.QuadPart) / 10000);
   if (ProcessorObj) {
-    int32 i;
+    int32_t i;
     PPERF_INSTANCE_DEFINITION PerfInst;
 
     if (ProcessorObj->NumInstances > 0) {
       bool foundIt = FALSE;
       PerfInst = FirstInstance(ProcessorObj);
-      for (i = 0; i < (int32)ProcessorObj->NumInstances; i++) {
+      for (i = 0; i < (int32_t)ProcessorObj->NumInstances; i++) {
         PPERF_COUNTER_BLOCK PerfCntrBlk =
             (PPERF_COUNTER_BLOCK)((PBYTE)PerfInst + PerfInst->ByteLength);
         short* unicodePtr = (short*)((PBYTE)PerfInst + PerfInst->NameOffset);
@@ -518,13 +518,13 @@ void HostStatHelperWin::HostStatsFetchData() {
   }
 }
 
-int32 HostStatHelperWin::getPid(int32 pidCtrOffset,
+int32_t HostStatHelperWin::getPid(int32_t pidCtrOffset,
                                 PPERF_COUNTER_BLOCK PerfCntrBlk) {
-  int32* result = (int32*)((char*)PerfCntrBlk + pidCtrOffset);
+  int32_t* result = (int32_t*)((char*)PerfCntrBlk + pidCtrOffset);
   return *result;
 }
 
-uint32 HostStatHelperWin::getInt32Value(PPERF_COUNTER_DEFINITION PerfCntr,
+uint32_t HostStatHelperWin::getInt32Value(PPERF_COUNTER_DEFINITION PerfCntr,
                                         PPERF_COUNTER_BLOCK PerfCntrBlk) {
   if (PerfCntr->CounterOffset == 0) {
 #ifdef FLG_DEBUG
@@ -535,13 +535,14 @@ uint32 HostStatHelperWin::getInt32Value(PPERF_COUNTER_DEFINITION PerfCntr,
   }
 
   if (PerfCntr->CounterSize == 4) {
-    uint32* lptr;
-    lptr = (uint32*)((char*)PerfCntrBlk + PerfCntr->CounterOffset);
+    uint32_t* lptr;
+    lptr = static_cast<uint32_t*>(static_cast<char*>(PerfCntrBlk) +
+                                  PerfCntr->CounterOffset);
     if (PerfCntr->CounterType == PERF_RAW_FRACTION) {
       double fraction = (double)*lptr++;
       double base = (double)*lptr;
       if (base != 0) {
-        return (uint32)((fraction / base) * 100.0);
+        return (uint32_t)((fraction / base) * 100.0);
       } else {
         return 0;
       }
@@ -549,7 +550,7 @@ uint32 HostStatHelperWin::getInt32Value(PPERF_COUNTER_DEFINITION PerfCntr,
       double base = (double)*lptr--;
       double fraction = (double)*lptr;
       if (base != 0) {
-        return (uint32)((fraction / base) * 100.0);
+        return (uint32_t)((fraction / base) * 100.0);
       } else {
         return 0;
       }
@@ -565,7 +566,7 @@ uint32 HostStatHelperWin::getInt32Value(PPERF_COUNTER_DEFINITION PerfCntr,
   }
 }
 
-int64 HostStatHelperWin::getInt64Value(PPERF_COUNTER_DEFINITION PerfCntr,
+int64_t HostStatHelperWin::getInt64Value(PPERF_COUNTER_DEFINITION PerfCntr,
                                        PPERF_COUNTER_BLOCK PerfCntrBlk,
                                        bool convertMS) {
   if (PerfCntr->CounterOffset == 0) {
@@ -578,7 +579,7 @@ int64 HostStatHelperWin::getInt64Value(PPERF_COUNTER_DEFINITION PerfCntr,
   if (PerfCntr->CounterSize == 8) {
     int64_t* i64ptr;
     int64_t iValue;
-    int64 result;
+    int64_t result;
 
     i64ptr = (int64_t*)((char*)PerfCntrBlk + PerfCntr->CounterOffset);
     iValue = *i64ptr;
@@ -629,7 +630,7 @@ int64 HostStatHelperWin::getInt64Value(PPERF_COUNTER_DEFINITION PerfCntr,
 
 void HostStatHelperWin::initHostStatHelperWin() {
   /* Initialize registry data structures */
-  int32 counter;
+  int32_t counter;
   if (!PerfData) {
     PerfData = (PPERF_DATA_BLOCK)malloc(BufferSize);
   }
@@ -660,9 +661,9 @@ void HostStatHelperWin::refreshProcess(ProcessStats* processStats) {
     return;
   }
   Statistics* stats = winProcessStat->stats;
-  int32 pid = (int32)stats->getNumericId();  // int64 is converted to int
+  int32_t pid = (int32_t)stats->getNumericId();  // int64 is converted to int
 
-  int32 i;
+  int32_t i;
 
   // Fetch new data
   HostStatsFetchData();
@@ -672,11 +673,11 @@ void HostStatHelperWin::refreshProcess(ProcessStats* processStats) {
 
     if (ProcessObj->NumInstances > 0) {
 #if 0
-      static int32 done = 0;
+      static int32_t done = 0;
       if (!done) {
   done = 1;
   PerfInst = FirstInstance(ProcessObj);
-  for (i=0; i < (int32)ProcessObj->NumInstances; i++) {
+  for (i=0; i < (int32_t)ProcessObj->NumInstances; i++) {
     PPERF_COUNTER_BLOCK PerfCntrBlk;
     PerfCntrBlk = (PPERF_COUNTER_BLOCK)((PBYTE)PerfInst +
                 PerfInst->ByteLength);
@@ -686,7 +687,7 @@ void HostStatHelperWin::refreshProcess(ProcessStats* processStats) {
       }
 #endif
       PerfInst = FirstInstance(ProcessObj);
-      for (i = 0; i < (int32)ProcessObj->NumInstances; i++) {
+      for (i = 0; i < (int32_t)ProcessObj->NumInstances; i++) {
         PPERF_COUNTER_BLOCK PerfCntrBlk;
         PerfCntrBlk =
             (PPERF_COUNTER_BLOCK)((PBYTE)PerfInst + PerfInst->ByteLength);
@@ -755,21 +756,21 @@ static bool firstTime = true;
 //  X = Value of PROCESSORTIME_ID Counter ( in 100 nsec unit )
 //  Y = Value of Sampling time ( in 100n sec unit )
 int HostStatHelperWin::calculateCpuUsage(PPERF_COUNTER_BLOCK& ctrBlk) {
-  static int64 oldPerfTime100nSec = 0;
-  static int64 oldProcessorTime = 0;
-  int32 cpuUsage = 0;
+  static int64_t oldPerfTime100nSec = 0;
+  static int64_t oldProcessorTime = 0;
+  int32_t cpuUsage = 0;
 
-  int64 newProcessorTime =
+  int64_t newProcessorTime =
       getInt64Value(&processCtrCache[PROCESSORTIME_IDX], ctrBlk, false);
-  int64 newPerfTime100nSec = PerfData->PerfTime100nSec.QuadPart;
+  int64_t newPerfTime100nSec = PerfData->PerfTime100nSec.QuadPart;
 
   if (firstTime) {
     firstTime = false;
     oldProcessorTime = newProcessorTime;
     oldPerfTime100nSec = newPerfTime100nSec;
   } else {
-    int64 pTimeDelta = newProcessorTime - oldProcessorTime;
-    int64 delta100Sec = (newPerfTime100nSec - oldPerfTime100nSec);
+    int64_t pTimeDelta = newProcessorTime - oldProcessorTime;
+    int64_t delta100Sec = (newPerfTime100nSec - oldPerfTime100nSec);
 
     oldProcessorTime = newProcessorTime;
     oldPerfTime100nSec = newPerfTime100nSec;

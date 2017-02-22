@@ -191,7 +191,7 @@ class putThread : public ACE_Task_Base {
 
   int svc(void) {
     int ops = 0;
-    int32 pid = ACE_OS::getpid();
+    int32_t pid = ACE_OS::getpid();
     ACE_thread_t thr_id = ACE_OS::thr_self();
     CacheableKeyPtr key;
     CacheableStringPtr value;

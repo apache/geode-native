@@ -41,7 +41,7 @@ struct PdxTypeLessThan {
   }
 };
 
-typedef std::map<int32, PdxTypePtr> TypeIdVsPdxType;
+typedef std::map<int32_t, PdxTypePtr> TypeIdVsPdxType;
 typedef std::map</*char**/ std::string, PdxTypePtr> TypeNameVsPdxType;
 typedef HashMapT<PdxSerializablePtr, PdxRemotePreservedDataPtr>
     PreservedHashMap;
@@ -88,18 +88,18 @@ class CPPCACHE_EXPORT PdxTypeRegistry {
   // test hook
   static int testNumberOfPreservedData();
 
-  static void addPdxType(int32 typeId, PdxTypePtr pdxType);
+  static void addPdxType(int32_t typeId, PdxTypePtr pdxType);
 
-  static PdxTypePtr getPdxType(int32 typeId);
+  static PdxTypePtr getPdxType(int32_t typeId);
 
   static void addLocalPdxType(const char* localType, PdxTypePtr pdxType);
 
   // newly added
   static PdxTypePtr getLocalPdxType(const char* localType);
 
-  static void setMergedType(int32 remoteTypeId, PdxTypePtr mergedType);
+  static void setMergedType(int32_t remoteTypeId, PdxTypePtr mergedType);
 
-  static PdxTypePtr getMergedType(int32 remoteTypeId);
+  static PdxTypePtr getMergedType(int32_t remoteTypeId);
 
   static void setPreserveData(PdxSerializablePtr obj,
                               PdxRemotePreservedDataPtr preserveDataPtr);
@@ -108,7 +108,7 @@ class CPPCACHE_EXPORT PdxTypeRegistry {
 
   static void clear();
 
-  static int32 getPDXIdForType(const char* type, const char* poolname,
+  static int32_t getPDXIdForType(const char* type, const char* poolname,
                                PdxTypePtr nType, bool checkIfThere);
 
   static bool getPdxIgnoreUnreadFields() { return pdxIgnoreUnreadFields; }
@@ -127,7 +127,7 @@ class CPPCACHE_EXPORT PdxTypeRegistry {
 
   static EnumInfoPtr getEnum(int32_t enumVal);
 
-  static int32 getPDXIdForType(PdxTypePtr nType, const char* poolname);
+  static int32_t getPDXIdForType(PdxTypePtr nType, const char* poolname);
 
   static ACE_RW_Thread_Mutex& getPreservedDataLock() {
     return g_preservedDataLock;

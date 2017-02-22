@@ -111,7 +111,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
         if (networkhop) {
           failureCount++;
         }
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT1: serverGroupFlag is %d ",
@@ -174,7 +174,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
         LOGINFO("CheckPrSingleHopForIntKeysTask_CLIENT1: networkhop %d ",
                 networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT1: serverGroupFlag is %d ",
@@ -220,7 +220,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
         LOGINFO("CheckPrSingleHopForIntKeysTask_CLIENT1: networkhop %d ",
                 networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT1: serverGroupFlag is %d ",
@@ -263,7 +263,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
         LOGINFO("CheckPrSingleHopForIntKeysTask_CLIENT1: networkhop %d ",
                 networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT1: serverGroupFlag is %d ",
@@ -318,7 +318,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
         if (networkhop) {
           failureCount++;
         }
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT2: serverGroupFlag is %d ",
@@ -375,7 +375,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
         LOGINFO("CPPTEST: getting key %d with hashcode %d", i,
                 keyPtr->hashcode());
         dataReg->get(keyPtr);
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT2: serverGroupFlag is %d ",
@@ -416,7 +416,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
 
       try {
         dataReg->getAll(keys, values, exceptions, false);
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOG("after gatall ");
         LOGINFO(
@@ -457,7 +457,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
         LOGINFO("CPPTEST: destroying key %d with hashcode %d", i,
                 keyPtr->hashcode());
         dataReg->destroy(keyPtr);
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT2: serverGroupFlag is %d ",
@@ -512,7 +512,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
         if (networkhop) {
           failureCount++;
         }
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT3: serverGroupFlag is %d ",
@@ -569,7 +569,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
         LOGINFO("CPPTEST: getting key %d with hashcode %d", i,
                 keyPtr->hashcode());
         dataReg->get(keyPtr);
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT3: serverGroupFlag is %d ",
@@ -610,7 +610,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
 
       try {
         dataReg->getAll(keys, values, exceptions, false);
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT3: serverGroupFlag is %d ",
@@ -648,7 +648,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
         LOGINFO("CPPTEST: destroying key %d with hashcode %d", i,
                 keyPtr->hashcode());
         dataReg->destroy(keyPtr);
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT3: serverGroupFlag is %d ",

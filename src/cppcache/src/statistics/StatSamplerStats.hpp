@@ -43,13 +43,13 @@ class CPPCACHE_EXPORT StatSamplerStats {
  private:
   StatisticsType* samplerType;
   Statistics* samplerStats;
-  int32 sampleCountId;
-  int32 sampleTimeId;
+  int32_t sampleCountId;
+  int32_t sampleTimeId;
   StatisticDescriptor** statDescriptorArr;
 
  public:
   StatSamplerStats();
-  void tookSample(int64 nanosSpentWorking);
+  void tookSample(int64_t nanosSpentWorking);
   void close();
   void setInitialValues();
   ~StatSamplerStats();
