@@ -51,7 +51,7 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 ## All Platforms
 
 ### Required Tools
-* [CMake 4.3](https://cmake.org/) or newer
+* [CMake 3.4](https://cmake.org/) or newer
 * C++11 compiler *(see platform specific requirements)*
 * [Doxygen 8.11](http://www.stack.nl/~dimitri/doxygen/download.html) *(for building source documentation)*
 
