@@ -20,10 +20,11 @@
  * limitations under the License.
  */
 
+#include <atomic>
 #include <geode/geode_globals.hpp>
 #include "EntriesMap.hpp"
 #include "MapSegment.hpp"
-#include "AtomicInc.hpp"
+
 #include "ExpMapEntry.hpp"
 #include <geode/RegionEntry.hpp>
 
@@ -39,9 +40,9 @@ class CPPCACHE_EXPORT ConcurrentEntriesMap : public EntriesMap {
  protected:
   uint8_t m_concurrency;
   MapSegment* m_segments;
-  AtomicInc m_size;
+  std::atomic<uint32_t> m_size;
   RegionInternal* m_region;
-  volatile int m_numDestroyTrackers;
+  std::atomic<int32_t> m_numDestroyTrackers;
   bool m_concurrencyChecksEnabled;
   // TODO:  hashcode() is invoked 3-4 times -- need a better
   // implementation (STLport hash_map?) that will invoke it only once

@@ -31,7 +31,7 @@ Service::Service(int32_t threadCnt)
   flags |= THR_INHERIT_SCHED;
 #endif
 
-  m_busy.resetValue(0);
+  m_busy = 0;
   activate(flags, threadCnt, forceActive);
 }
 

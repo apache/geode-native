@@ -17,14 +17,16 @@
 
 #include <geode/geode_globals.hpp>
 
-#include <ace/Atomic_Op_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
+#include <atomic>
+
 #include <ace/OS_NS_stdio.h>
 #include "AtomicStatisticsImpl.hpp"
 #include "StatisticsTypeImpl.hpp"
 #include "StatisticDescriptorImpl.hpp"
 
-using namespace apache::geode::statistics;
+namespace apache {
+namespace geode {
+namespace statistics {
 /**
  * An implementation of {@link Statistics} that stores its statistics
  * in local  memory and supports atomic operations.
@@ -94,8 +96,7 @@ AtomicStatisticsImpl::AtomicStatisticsImpl(StatisticsType* typeArg,
     int32_t doubleCount = statsType->getDoubleStatCount();
 
     if (intCount > 0) {
-      intStorage =
-          new ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, int32_t>[intCount];
+      intStorage = new std::atomic<int32_t>[ intCount ];
       for (int32_t i = 0; i < intCount; i++) {
         intStorage[i] = 0;  // Un-initialized state
       }
@@ -104,8 +105,7 @@ AtomicStatisticsImpl::AtomicStatisticsImpl(StatisticsType* typeArg,
       intStorage = nullptr;
     }
     if (longCount > 0) {
-      longStorage =
-          new ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, int64_t>[longCount];
+      longStorage = new std::atomic<int64_t>[ longCount ];
       for (int32_t i = 0; i < longCount; i++) {
         longStorage[i] = 0;  // Un-initialized state
       }
@@ -114,8 +114,7 @@ AtomicStatisticsImpl::AtomicStatisticsImpl(StatisticsType* typeArg,
       longStorage = nullptr;
     }
     if (doubleCount > 0) {
-      doubleStorage =
-          new ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, double>[doubleCount];
+      doubleStorage = new std::atomic<double>[ doubleCount ];
       for (int32_t i = 0; i < doubleCount; i++) {
         doubleStorage[i] = 0;  // Un-initialized state
       }
@@ -210,7 +209,7 @@ int32_t AtomicStatisticsImpl::_getInt(int32_t offset) {
     throw IllegalArgumentException(s);
   }
 
-  return intStorage[offset].value();
+  return intStorage[offset];
 }
 
 int64_t AtomicStatisticsImpl::_getLong(int32_t offset) {
@@ -221,7 +220,7 @@ int64_t AtomicStatisticsImpl::_getLong(int32_t offset) {
         offset);
     throw IllegalArgumentException(s);
   }
-  return longStorage[offset].value();
+  return longStorage[offset];
 }
 
 double AtomicStatisticsImpl::_getDouble(int32_t offset) {
@@ -233,7 +232,7 @@ double AtomicStatisticsImpl::_getDouble(int32_t offset) {
         offset);
     throw IllegalArgumentException(s);
   }
-  return doubleStorage[offset].value();
+  return doubleStorage[offset];
 }
 
 int64_t AtomicStatisticsImpl::_getRawBits(StatisticDescriptor* statDscp) {
@@ -319,7 +318,13 @@ double AtomicStatisticsImpl::_incDouble(int32_t offset, double delta) {
     throw IllegalArgumentException(s);
   }
 
-  return (doubleStorage[offset] += delta);
+  double expected = doubleStorage[offset];
+  double value;
+  do {
+    value = expected + delta;
+  } while (!doubleStorage[offset].compare_exchange_weak(expected, value));
+
+  return value;
 }
 
 /**************************Base class methods ********************/
@@ -533,3 +538,7 @@ int32_t AtomicStatisticsImpl::getDoubleId(StatisticDescriptor* descriptor) {
       dynamic_cast<StatisticDescriptorImpl*>(descriptor);
   return realDescriptor->checkDouble();
 }
+
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache

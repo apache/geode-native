@@ -18,8 +18,6 @@
 
 #include <geode/geode_globals.hpp>
 
-#include <ace/Atomic_Op_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/OS.h>
 #include <ace/Thread_Mutex.h>
 #include <ace/Time_Value.h>

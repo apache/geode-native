@@ -16,7 +16,6 @@
  */
 
 #include <geode/CacheStatistics.hpp>
-#include <HostAsm.hpp>
 
 using namespace apache::geode::client;
 
@@ -28,11 +27,11 @@ CacheStatistics::CacheStatistics() {
 CacheStatistics::~CacheStatistics() {}
 
 void CacheStatistics::setLastModifiedTime(uint32_t lmt) {
-  HostAsm::atomicSet(m_lastModifiedTime, lmt);
+  m_lastModifiedTime = lmt;
 }
 
 void CacheStatistics::setLastAccessedTime(uint32_t lat) {
-  HostAsm::atomicSet(m_lastAccessTime, lat);
+  m_lastAccessTime = lat;
 }
 
 uint32_t CacheStatistics::getLastModifiedTime() const {

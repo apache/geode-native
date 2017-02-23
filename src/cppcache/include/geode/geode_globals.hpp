@@ -96,8 +96,12 @@
 #define __has_cpp_attribute(x) 0
 #endif
 
+<<<<<<< HEAD
 #if __cplusplus >= 201402L
 #if __has_cpp_attribute(deprecated)
+=======
+#if __cplusplus >= 201402L && __has_cpp_attribute(deprecated)
+>>>>>>> GEODE-2531: Replace HostAsm::atomic with std::atomic.
 // C++14 standard deprecated attribute
 #define __DEPRECATED__(msg) [[deprecated(msg)]]
 #else

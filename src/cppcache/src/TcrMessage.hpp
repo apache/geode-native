@@ -21,7 +21,7 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include "AtomicInc.hpp"
+#include <atomic>
 #include <geode/Cacheable.hpp>
 #include <geode/CacheableKey.hpp>
 #include <geode/CacheableString.hpp>
@@ -513,7 +513,7 @@ class CPPCACHE_EXPORT TcrMessage {
   SerializablePtr readCacheableBytes(DataInput& input, int lenObj);
   SerializablePtr readCacheableString(DataInput& input, int lenObj);
 
-  static AtomicInc m_transactionId;
+  static std::atomic<int32_t> m_transactionId;
   static TcrMessagePing* m_pingMsg;
   static TcrMessage* m_closeConnMsg;
   static TcrMessage* m_allEPDisconnected;

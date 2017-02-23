@@ -21,7 +21,7 @@
  */
 
 #include <geode/GeodeCppCache.hpp>
-#include <AtomicInc.hpp>
+
 #include "fwklib/FrameworkTest.hpp"
 #include "fwklib/FwkObjects.hpp"
 #include "fwklib/FwkStrCvt.hpp"

@@ -182,7 +182,7 @@ GfErrType LRUEntriesMap::evictionHelper() {
 void LRUEntriesMap::processLRU(int32_t numEntriesToEvict) {
   int32_t evicted = 0;
   for (int32_t i = 0; i < numEntriesToEvict; i++) {
-    if (m_validEntries.value() > 0 && static_cast<int32_t>(size()) > 0) {
+    if (m_validEntries > 0 && size() > 0) {
       if (evictionHelper() == GF_NOERR) {
         evicted++;
       }

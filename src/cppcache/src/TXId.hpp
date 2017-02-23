@@ -29,7 +29,7 @@
 #include <geode/geode_types.hpp>
 #include <geode/TransactionId.hpp>
 #include <geode/DataOutput.hpp>
-#include "AtomicInc.hpp"
+#include <atomic>
 
 namespace apache {
 namespace geode {
@@ -46,7 +46,7 @@ class TXId : public apache::geode::client::TransactionId {
 
  private:
   const int32_t m_TXId;
-  static AtomicInc m_transactionId;
+  static std::atomic<int32_t> m_transactionId;
   TXId& operator=(const TXId&);
   TXId(const TXId&);
 };
