@@ -24,7 +24,6 @@
 #include <geode/geode_types.hpp>
 #include <geode/Cacheable.hpp>
 #include "GeodeTypeIdsImpl.hpp"
-#include "SpinLock.hpp"
 #include <geode/DataOutput.hpp>
 
 #include <string>

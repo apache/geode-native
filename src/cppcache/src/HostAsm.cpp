@@ -25,8 +25,6 @@
 
 using namespace apache::geode::client;
 
-int32_t HostAsm::m_SpinCount = 0;
-
 // TODO refactor - why do we have our own atomic methods? why not use C++11?
 
 #if defined(_LINUX) || defined(_X86_SOLARIS)

@@ -20,28 +20,23 @@
 #include "fw_dunit.hpp"
 #include <geode/GeodeCppCache.hpp>
 
+#include <mutex>
+#include <util/concurrent/spinlock_mutex.hpp>
+
 #include <Condition.hpp>
 
 #include <ace/Task.h>
 #include <ace/Time_Value.h>
 #include <ace/Guard_T.h>
 
-namespace apache {
-namespace geode {
-namespace client {
+namespace {
 
-CPPCACHE_EXPORT void* testSpinLockCreate();
-CPPCACHE_EXPORT void testSpinLockAcquire(void* lock);
-CPPCACHE_EXPORT void testSpinLockRelease(void* lock);
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
+using apache::geode::util::concurrent::spinlock_mutex;
 
 DUNIT_TASK(s1p1, Basic)
   {
-    void* lock = apache::geode::client::testSpinLockCreate();
-    apache::geode::client::testSpinLockAcquire(lock);
-    apache::geode::client::testSpinLockRelease(lock);
+    spinlock_mutex s;
+    { std::lock_guard<spinlock_mutex> lk(s); }
   }
 END_TASK(Basic)
 
@@ -49,7 +44,7 @@ perf::Semaphore* triggerA;
 perf::Semaphore* triggerB;
 perf::Semaphore* triggerM;
 
-void* lock;
+spinlock_mutex lock;
 ACE_Time_Value* btime;
 
 class ThreadA : public ACE_Task_Base {
@@ -57,11 +52,12 @@ class ThreadA : public ACE_Task_Base {
   ThreadA() : ACE_Task_Base() {}
 
   int svc() {
-    apache::geode::client::testSpinLockAcquire(lock);
-    LOG("ThreadA: Acquired lock x.");
-    triggerM->release();
-    triggerA->acquire();
-    apache::geode::client::testSpinLockRelease(lock);
+    {
+      std::lock_guard<spinlock_mutex> lk(lock);
+      LOG("ThreadA: Acquired lock x.");
+      triggerM->release();
+      triggerA->acquire();
+    }
     LOG("ThreadA: Released lock.");
     return 0;
   }
@@ -73,11 +69,12 @@ class ThreadB : public ACE_Task_Base {
 
   int svc() {
     triggerB->acquire();
-    apache::geode::client::testSpinLockAcquire(lock);
-    btime = new ACE_Time_Value(ACE_OS::gettimeofday());
-    LOG("ThreadB: Acquired lock.");
-    triggerM->release();
-    apache::geode::client::testSpinLockRelease(lock);  // for cleanly ness.
+    {
+      std::lock_guard<spinlock_mutex> lk(lock);
+      btime = new ACE_Time_Value(ACE_OS::gettimeofday());
+      LOG("ThreadB: Acquired lock.");
+      triggerM->release();
+    }
     return 0;
   }
 };
@@ -87,8 +84,6 @@ DUNIT_TASK(s1p1, TwoThreads)
     triggerA = new perf::Semaphore(0);
     triggerB = new perf::Semaphore(0);
     triggerM = new perf::Semaphore(0);
-
-    lock = apache::geode::client::testSpinLockCreate();
 
     ThreadA* threadA = new ThreadA();
     ThreadB* threadB = new ThreadB();
@@ -159,3 +154,4 @@ DUNIT_TASK(s1p1, Cond)
     XASSERT(delta.msec() >= (delay.msec() - 50));
   }
 ENDTASK
+}  // namespace
