@@ -234,7 +234,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       string xmlLocation = CacheHelper.TestDir + Path.DirectorySeparatorChar + "valid_cache_pool.xml";
 
-      string duplicateXMLFile = CacheHelper.TestDir + Path.DirectorySeparatorChar + Util.Rand(3432898).ToString() + "valid_cache_pool.xml";
+      string duplicateXMLFile = Util.Rand(3432898).ToString() + "valid_cache_pool.xml";
       CacheHelper.createDuplicateXMLFile(xmlLocation, duplicateXMLFile);
       xmlLocation = duplicateXMLFile;
 
@@ -290,7 +290,7 @@ namespace Apache.Geode.Client.UnitTests
       {
         Util.Log("Testing invalid_cache_pool.xml");
         xmlLocation = CacheHelper.TestDir + Path.DirectorySeparatorChar + "invalid_cache_pool.xml";
-        duplicateXMLFile = CacheHelper.TestDir + Path.DirectorySeparatorChar + Util.Rand(3432898).ToString() + "invalid_cache_pool.xml";
+        duplicateXMLFile = Util.Rand(3432898).ToString() + "invalid_cache_pool.xml";
         CacheHelper.createDuplicateXMLFile(xmlLocation, duplicateXMLFile);
         xmlLocation = duplicateXMLFile;
         cache = CacheFactory.CreateCacheFactory()
@@ -307,7 +307,7 @@ namespace Apache.Geode.Client.UnitTests
       {
         Util.Log("Testing invalid_cache_pool2.xml");
         xmlLocation = CacheHelper.TestDir + Path.DirectorySeparatorChar + "invalid_cache_pool2.xml";
-        duplicateXMLFile = CacheHelper.TestDir + Path.DirectorySeparatorChar + Util.Rand(3432898).ToString() + "invalid_cache_pool2.xml";
+        duplicateXMLFile = Util.Rand(3432898).ToString() + "invalid_cache_pool2.xml";
         CacheHelper.createDuplicateXMLFile(xmlLocation, duplicateXMLFile);
         xmlLocation = duplicateXMLFile;
         cache = CacheFactory.CreateCacheFactory()
@@ -324,7 +324,7 @@ namespace Apache.Geode.Client.UnitTests
       {
         Util.Log("Testing invalid_cache_pool3.xml");
         xmlLocation = CacheHelper.TestDir + Path.DirectorySeparatorChar + "invalid_cache_pool3.xml";
-        duplicateXMLFile = CacheHelper.TestDir + Path.DirectorySeparatorChar + Util.Rand(3432898).ToString() + "invalid_cache_pool3.xml";
+        duplicateXMLFile = "invalid_cache_pool3.xml";
         CacheHelper.createDuplicateXMLFile(xmlLocation, duplicateXMLFile);
         xmlLocation = duplicateXMLFile;
         cache = CacheFactory.CreateCacheFactory()
@@ -341,7 +341,7 @@ namespace Apache.Geode.Client.UnitTests
       {
         Util.Log("Testing invalid_cache_pool4.xml");
         xmlLocation = CacheHelper.TestDir + Path.DirectorySeparatorChar + "invalid_cache_pool4.xml";
-        duplicateXMLFile = CacheHelper.TestDir + Path.DirectorySeparatorChar + Util.Rand(3432898).ToString() + "invalid_cache_pool4.xml";
+        duplicateXMLFile = Util.Rand(3432898).ToString() + "invalid_cache_pool4.xml";
         CacheHelper.createDuplicateXMLFile(xmlLocation, duplicateXMLFile);
         xmlLocation = duplicateXMLFile;
         cache = CacheFactory.CreateCacheFactory()
@@ -403,9 +403,8 @@ namespace Apache.Geode.Client.UnitTests
 
     public void testPoolAttrs(string poolName)
     {
-      string xmlFile = CacheHelper.TestDir;
-      xmlFile += "/cacheserver_pool_client.xml";
-      string duplicateXMLFile = CacheHelper.TestDir + "/" + Util.Rand(3432898).ToString() + "cacheserver_pool_client.xml";
+      string xmlFile = CacheHelper.TestDir + Path.DirectorySeparatorChar + "cacheserver_pool_client.xml";
+      string duplicateXMLFile = Util.Rand(3432898).ToString() + "cacheserver_pool_client.xml";
       CacheHelper.createDuplicateXMLFile(xmlFile, duplicateXMLFile);
       xmlFile = duplicateXMLFile;
       Properties<string, string> config = Properties<string, string>.Create<string, string>();
