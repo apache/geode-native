@@ -20,6 +20,9 @@
 #include "MapSegment.hpp"
 #include "CacheImpl.hpp"
 
+#include <mutex>
+#include "util/concurrent/spinlock_mutex.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -48,11 +51,6 @@ class CPPCACHE_EXPORT TestMapAction : public virtual LRUAction {
   virtual LRUAction::Action getType() { return LRUAction::LOCAL_DESTROY; }
   friend class LRUAction;
 };
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
-
-using namespace apache::geode::client;
 
 LRUEntriesMap::LRUEntriesMap(EntryFactory* entryFactory, RegionInternal* region,
                              const LRUAction::Action& lruAction,
@@ -297,7 +295,7 @@ GfErrType LRUEntriesMap::put(const CacheableKeyPtr& key,
       }
     }
     // SpinLock& lock = segmentRPtr->getSpinLock();
-    // SpinLockGuard mapGuard( lock );
+    // std::lock_guard<spinlock_mutex> mapGuard( lock );
 
     // TODO:  when can newValue be a token ??
     if (CacheableToken::isToken(newValue) && !isOldValueToken) {
@@ -490,7 +488,7 @@ void LRUEntriesMap::updateMapSize(int64_t size) {
   // by all the callers
   if (m_evictionControllerPtr != nullptr) {
     {
-      SpinLockGuard __guard(m_mapInfoLock);
+      std::lock_guard<spinlock_mutex> __guard(m_mapInfoLock);
       m_currentMapSize += size;
     }
     m_evictionControllerPtr->updateRegionHeapInfo(size);
@@ -511,3 +509,6 @@ CacheablePtr LRUEntriesMap::getFromDisk(const CacheableKeyPtr& key,
   }
   return tmpObj;
 }
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

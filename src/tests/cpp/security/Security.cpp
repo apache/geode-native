@@ -41,16 +41,18 @@
 
 #include "security/CredentialGenerator.hpp"
 
-namespace FwkSecurity {
+#include <mutex>
+#include <util/concurrent/spinlock_mutex.hpp>
+
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
+namespace security {
+
 std::string REGIONSBB("Regions");
 std::string CLIENTSBB("ClientsBb");
 std::string READYCLIENTS("ReadyClients");
-}  // namespace FwkSecurity
-
-using namespace FwkSecurity;
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
-using namespace apache::geode::client::testframework::security;
 
 Security *g_test = NULL;
 
@@ -156,7 +158,7 @@ void Security::getClientSecurityParams(PropertiesPtr prop,
 // ----------------------------------------------------------------------------
 
 void Security::checkTest(const char *taskId) {
-  SpinLockGuard guard(m_lck);
+  std::lock_guard<spinlock_mutex> guard(m_lck);
   setTask(taskId);
   if (m_cache == nullptr || m_cache->isClosed()) {
     PropertiesPtr pp = Properties::create();
@@ -180,7 +182,7 @@ TESTTASK doCreateRegion(const char *taskId) {
   try {
     g_test->checkTest(taskId);
     result = g_test->createRegion();
-  } catch (FwkException ex) {
+  } catch (FwkException &ex) {
     result = FWK_SEVERE;
     FWKSEVERE("doCreateRegion caught exception: " << ex.getMessage());
   }
@@ -194,7 +196,7 @@ TESTTASK doCheckValues(const char *taskId) {
   try {
     g_test->checkTest(taskId);
     result = g_test->checkValues();
-  } catch (FwkException ex) {
+  } catch (FwkException &ex) {
     result = FWK_SEVERE;
     FWKSEVERE("doCheckValues caught exception: " << ex.getMessage());
   }
@@ -239,7 +241,7 @@ TESTTASK doRegisterInterestList(const char *taskId) {
   try {
     g_test->checkTest(taskId);
     result = g_test->registerInterestList();
-  } catch (FwkException ex) {
+  } catch (FwkException &ex) {
     result = FWK_SEVERE;
     FWKSEVERE("doRegisterInterestList caught exception: " << ex.getMessage());
   }
@@ -253,7 +255,7 @@ TESTTASK doRegisterRegexList(const char *taskId) {
   try {
     g_test->checkTest(taskId);
     result = g_test->registerRegexList();
-  } catch (FwkException ex) {
+  } catch (FwkException &ex) {
     result = FWK_SEVERE;
     FWKSEVERE("doRegisterRegexList caught exception: " << ex.getMessage());
   }
@@ -266,7 +268,7 @@ TESTTASK doUnRegisterRegexList(const char *taskId) {
   try {
     g_test->checkTest(taskId);
     result = g_test->unregisterRegexList();
-  } catch (FwkException ex) {
+  } catch (FwkException &ex) {
     result = FWK_SEVERE;
     FWKSEVERE("doRegisterRegexList caught exception: " << ex.getMessage());
   }
@@ -279,7 +281,7 @@ TESTTASK doRegisterAllKeys(const char *taskId) {
   try {
     g_test->checkTest(taskId);
     result = g_test->registerAllKeys();
-  } catch (FwkException ex) {
+  } catch (FwkException &ex) {
     result = FWK_SEVERE;
     FWKSEVERE("doRegisterAllKeys caught exception: " << ex.getMessage());
   }
@@ -468,7 +470,7 @@ int32_t Security::createRegion() {
                                                      << std::endl);
     result = FWK_SUCCESS;
 
-  } catch (Exception e) {
+  } catch (Exception &e) {
     FWKSEVERE("Security::createRegion FAILED -- caught exception: "
               << e.getMessage());
   } catch (FwkException &e) {
@@ -725,7 +727,7 @@ int32_t Security::checkValues() {
             << creates << " values from creates, " << updates
             << " values from updates, and " << unknowns << " unknown values.");
     result = FWK_SUCCESS;
-  } catch (Exception e) {
+  } catch (Exception &e) {
     FWKSEVERE(
         "Security::checkValues FAILED -- caught exception: " << e.getMessage());
   } catch (FwkException &e) {
@@ -780,17 +782,17 @@ RegionPtr Security::getRegionPtr(const char *reg) {
         FWKEXCEPTION("Failed to get region: " << name);
       }
     }
-  } catch (CacheClosedException e) {
+  } catch (CacheClosedException &e) {
     FWKEXCEPTION(
         "In Security::getRegionPtr()  CacheFactory::getInstance encountered "
         "CacheClosedException: "
         << e.getMessage());
-  } catch (EntryNotFoundException e) {
+  } catch (EntryNotFoundException &e) {
     FWKEXCEPTION(
         "In Security::getRegionPtr()  CacheFactory::getInstance encountered "
         "EntryNotFoundException: "
         << e.getMessage());
-  } catch (IllegalArgumentException e) {
+  } catch (IllegalArgumentException &e) {
     FWKEXCEPTION(
         "In Security::getRegionPtr()  CacheFactory::getInstance encountered "
         "IllegalArgumentException: "
@@ -931,7 +933,7 @@ void Security::runQuery(int32_t &queryCnt) {
               << endTime.usec() << " sec");
       queryCnt++;
     }
-  } catch (Exception e) {
+  } catch (Exception &e) {
     FWKEXCEPTION(
         "CacheServerTest::runQuery Caught Exception: " << e.getMessage());
   } catch (FwkException &e) {
@@ -1076,3 +1078,8 @@ int32_t Security::doEntryOperations() {
           << " query.");
   return fwkResult;
 }
+}  // namespace security
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

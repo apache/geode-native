@@ -18,31 +18,29 @@
 #include "EventId.hpp"
 #include "GeodeTypeIdsImpl.hpp"
 #include "ClientProxyMembershipID.hpp"
-#include <ace/TSS_T.h>
 
-#include <ace/OS.h>
-#include <ace/INET_Addr.h>
+#include <cstring>
+#include <atomic>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-// to be used only with ACE_TSS<> or WinTSS<>
 class EventIdTSS {
  private:
-  static SpinLock s_eidThrIdLock;
-  static int64_t s_eidThrId;
+  static std::atomic<int64_t> s_eidThrId;
 
   int64_t m_eidThrTSS;
   int64_t m_eidSeqTSS;
 
+  ~EventIdTSS() = default;
+  EventIdTSS(const EventIdTSS&) = delete;
+  EventIdTSS& operator=(const EventIdTSS&) = delete;
+
  public:
   // this should get called just once per thread due to first access to TSS
   EventIdTSS() {
-    {
-      SpinLockGuard _guard(s_eidThrIdLock);
-      m_eidThrTSS = ++s_eidThrId;
-    }
+    m_eidThrTSS = ++s_eidThrId;
     m_eidSeqTSS = 0;
   }
 
@@ -52,13 +50,12 @@ class EventIdTSS {
 
   inline int64_t getSeqNum() { return m_eidSeqTSS - 1; }
 
-  static ACE_TSS<EventIdTSS> s_eventId;
+  static thread_local EventIdTSS s_eventId;
 
 };  // class EventIdTSS
 
-SpinLock EventIdTSS::s_eidThrIdLock;
-int64_t EventIdTSS::s_eidThrId = 0;
-ACE_TSS<EventIdTSS> EventIdTSS::s_eventId;
+std::atomic<int64_t> EventIdTSS::s_eidThrId;
+thread_local EventIdTSS EventIdTSS::s_eventId;
 
 void EventId::toData(DataOutput& output) const {
   //  This method is always expected to write out nonstatic distributed
@@ -162,18 +159,18 @@ EventId::EventId(bool doInit, uint32_t reserveSize,
   }
 
   for (uint32_t i = 0; i < reserveSize; i++) {
-    EventIdTSS::s_eventId->getAndIncEidSeq();
+    EventIdTSS::s_eventId.getAndIncEidSeq();
   }
 }
 
 void EventId::initFromTSS() {
-  m_eidThr = EventIdTSS::s_eventId->getEidThr();
-  m_eidSeq = EventIdTSS::s_eventId->getAndIncEidSeq();
+  m_eidThr = EventIdTSS::s_eventId.getEidThr();
+  m_eidSeq = EventIdTSS::s_eventId.getAndIncEidSeq();
 }
 
 void EventId::initFromTSS_SameThreadIdAndSameSequenceId() {
-  m_eidThr = EventIdTSS::s_eventId->getEidThr();
-  m_eidSeq = EventIdTSS::s_eventId->getSeqNum();
+  m_eidThr = EventIdTSS::s_eventId.getEidThr();
+  m_eidSeq = EventIdTSS::s_eventId.getSeqNum();
 }
 
 EventId::~EventId() {}

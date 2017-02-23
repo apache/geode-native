@@ -45,7 +45,6 @@
 #include "RegionInternal.hpp"
 #include "RegionStats.hpp"
 #include "EntriesMapFactory.hpp"
-#include "SpinLock.hpp"
 #include "SerializationRegistry.hpp"
 #include "MapWithLock.hpp"
 #include "CacheableToken.hpp"

@@ -23,15 +23,18 @@
 #include <geode/geode_globals.hpp>
 #include <geode/statistics/Statistics.hpp>
 #include <geode/statistics/StatisticsFactory.hpp>
-#include "SpinLock.hpp"
-
 #include <geode/CqStatistics.hpp>
+
+#include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-using namespace apache::geode::statistics;
+using statistics::StatisticDescriptor;
+using statistics::StatisticsType;
+using statistics::Statistics;
+using util::concurrent::spinlock_mutex;
 
 class CPPCACHE_EXPORT CqQueryVsdStats : public CqStatistics {
  public:
@@ -65,7 +68,7 @@ class CPPCACHE_EXPORT CqQueryVsdStats : public CqStatistics {
   }
 
  private:
-  apache::geode::statistics::Statistics* m_cqQueryVsdStats;
+  Statistics* m_cqQueryVsdStats;
 
   int32_t m_numInsertsId;
   int32_t m_numUpdatesId;
@@ -75,20 +78,19 @@ class CPPCACHE_EXPORT CqQueryVsdStats : public CqStatistics {
 
 class CqQueryStatType {
  private:
-  static int8_t instanceFlag;
-  static CqQueryStatType* single;
-  static SpinLock m_singletonLock;
-  static SpinLock m_statTypeLock;
+  static spinlock_mutex m_statTypeLock;
 
  public:
-  static CqQueryStatType* getInstance();
+  static CqQueryStatType& getInstance();
 
   StatisticsType* getStatType();
 
-  static void clean();
-
  private:
   CqQueryStatType();
+  ~CqQueryStatType() = default;
+  CqQueryStatType(const CqQueryStatType&) = delete;
+  CqQueryStatType& operator=(const CqQueryStatType&) = delete;
+
   StatisticDescriptor* m_stats[4];
 
   int32_t m_numInsertsId;

@@ -20,11 +20,14 @@
 #include "CqQueryVsdStats.hpp"
 //#include "StatisticsFactory.hpp"
 
-#include <ace/Thread_Mutex.h>
 #include <ace/Singleton.h>
 
-const char* cqStatsName = (const char*)"CqQueryStatistics";
-const char* cqStatsDesc = (const char*)"Statistics for this cq query";
+#include <mutex>
+
+#include "util/concurrent/spinlock_mutex.hpp"
+
+const char* cqStatsName = "CqQueryStatistics";
+const char* cqStatsDesc = "Statistics for this cq query";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -32,25 +35,17 @@ namespace apache {
 namespace geode {
 namespace client {
 
-using namespace apache::geode::statistics;
+using statistics::StatisticsFactory;
+using util::concurrent::spinlock_mutex;
+using std::lock_guard;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-CqQueryStatType* CqQueryStatType::single = nullptr;
-SpinLock CqQueryStatType::m_singletonLock;
-SpinLock CqQueryStatType::m_statTypeLock;
-
-void CqQueryStatType::clean() {
-  SpinLockGuard guard(m_singletonLock);
-  if (single != nullptr) {
-    delete single;
-    single = nullptr;
-  }
-}
+spinlock_mutex CqQueryStatType::m_statTypeLock;
 
 StatisticsType* CqQueryStatType::getStatType() {
   const bool largerIsBetter = true;
-  SpinLockGuard guard(m_statTypeLock);
+  lock_guard<spinlock_mutex> guard(m_statTypeLock);
   StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
   GF_D_ASSERT(!!factory);
 
@@ -81,19 +76,14 @@ StatisticsType* CqQueryStatType::getStatType() {
   return statsType;
 }
 
-CqQueryStatType* CqQueryStatType::getInstance() {
-  SpinLockGuard guard(m_singletonLock);
-  if (single == nullptr) {
-    single = new CqQueryStatType();
-  }
-  return single;
+CqQueryStatType& CqQueryStatType::getInstance() {
+  // C++11 initializes statics threads safe
+  static CqQueryStatType instance;
+  return instance;
 }
 
 CqQueryStatType::CqQueryStatType()
-    : /* adongre
-       * CID 28931: Uninitialized scalar field (UNINIT_CTOR)
-       */
-      m_numInsertsId(0),
+    : m_numInsertsId(0),
       m_numUpdatesId(0),
       m_numDeletesId(0),
       m_numEventsId(0) {
@@ -108,9 +98,9 @@ CqQueryStatType::CqQueryStatType()
 ////////////////////////////////////////////////////////////////////////////////
 
 CqQueryVsdStats::CqQueryVsdStats(const char* cqqueryName) {
-  CqQueryStatType* regStatType = CqQueryStatType::getInstance();
+  auto& regStatType = CqQueryStatType::getInstance();
 
-  StatisticsType* statsType = regStatType->getStatType();
+  StatisticsType* statsType = regStatType.getStatType();
 
   GF_D_ASSERT(statsType != nullptr);
 
@@ -119,10 +109,10 @@ CqQueryVsdStats::CqQueryVsdStats(const char* cqqueryName) {
   m_cqQueryVsdStats = factory->createAtomicStatistics(
       statsType, const_cast<char*>(cqqueryName));
 
-  m_numInsertsId = regStatType->getNumInsertsId();
-  m_numUpdatesId = regStatType->getNumUpdatesId();
-  m_numDeletesId = regStatType->getNumDeletesId();
-  m_numEventsId = regStatType->getNumEventsId();
+  m_numInsertsId = regStatType.getNumInsertsId();
+  m_numUpdatesId = regStatType.getNumUpdatesId();
+  m_numDeletesId = regStatType.getNumDeletesId();
+  m_numEventsId = regStatType.getNumEventsId();
 
   m_cqQueryVsdStats->setInt(m_numInsertsId, 0);
   m_cqQueryVsdStats->setInt(m_numUpdatesId, 0);

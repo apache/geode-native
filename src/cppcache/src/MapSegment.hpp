@@ -26,7 +26,6 @@
 #include "MapEntry.hpp"
 #include <geode/RegionEntry.hpp>
 #include <geode/VectorT.hpp>
-#include "SpinLock.hpp"
 #include "MapWithLock.hpp"
 #include "CacheableToken.hpp"
 #include <geode/Delta.hpp>
@@ -41,6 +40,9 @@
 #include <ace/Versioned_Namespace.h>
 #include "TombstoneList.hpp"
 #include <unordered_map>
+
+#include "util/concurrent/spinlock_mutex.hpp"
+
 ACE_BEGIN_VERSIONED_NAMESPACE_DECL
 
 template <>
@@ -83,7 +85,7 @@ class CPPCACHE_EXPORT MapSegment {
 
   // index of the current prime in the primes table
   uint32_t m_primeIndex;
-  SpinLock m_spinlock;
+  spinlock_mutex m_spinlock;
   ACE_Recursive_Thread_Mutex m_segmentMutex;
 
   bool m_concurrencyChecksEnabled;
@@ -185,7 +187,7 @@ class CPPCACHE_EXPORT MapSegment {
   GfErrType removeWhenConcurrencyEnabled(
       const CacheableKeyPtr& key, CacheablePtr& oldValue, MapEntryImplPtr& me,
       int updateCount, VersionTagPtr versionTag, bool afterRemote,
-      bool& isEntryFound, long expiryTaskID, TombstoneExpiryHandler* handler,
+      bool& isEntryFound, int64_t expiryTaskID, TombstoneExpiryHandler* handler,
       bool& expTaskSet);
 
  public:
@@ -297,7 +299,7 @@ class CPPCACHE_EXPORT MapSegment {
 
   bool unguardedRemoveActualEntryWithoutCancelTask(
       const CacheableKeyPtr& key, TombstoneExpiryHandler*& handler,
-      long& taskid);
+      int64_t& taskid);
 
   bool unguardedRemoveActualEntry(const CacheableKeyPtr& key,
                                   bool cancelTask = true);

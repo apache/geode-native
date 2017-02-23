@@ -20,11 +20,14 @@
 #include "CqServiceVsdStats.hpp"
 //#include "StatisticsFactory.hpp"
 
-#include <ace/Thread_Mutex.h>
 #include <ace/Singleton.h>
 
-const char* cqServiceStatsName = (const char*)"CqServiceStatistics";
-const char* cqServiceStatsDesc = (const char*)"Statistics for this cq Service";
+#include <mutex>
+
+#include "util/concurrent/spinlock_mutex.hpp"
+
+const char* cqServiceStatsName = "CqServiceStatistics";
+const char* cqServiceStatsDesc = "Statistics for this cq Service";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -32,25 +35,17 @@ namespace apache {
 namespace geode {
 namespace client {
 
-using namespace apache::geode::statistics;
+using statistics::StatisticsFactory;
+using util::concurrent::spinlock_mutex;
+using std::lock_guard;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-CqServiceStatType* CqServiceStatType::single = nullptr;
-SpinLock CqServiceStatType::m_singletonLock;
-SpinLock CqServiceStatType::m_statTypeLock;
-
-void CqServiceStatType::clean() {
-  SpinLockGuard guard(m_singletonLock);
-  if (single != nullptr) {
-    delete single;
-    single = nullptr;
-  }
-}
+spinlock_mutex CqServiceStatType::m_statTypeLock;
 
 StatisticsType* CqServiceStatType::getStatType() {
   const bool largerIsBetter = true;
-  SpinLockGuard guard(m_statTypeLock);
+  lock_guard<spinlock_mutex> guard(m_statTypeLock);
   StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
   GF_D_ASSERT(!!factory);
 
@@ -87,19 +82,13 @@ StatisticsType* CqServiceStatType::getStatType() {
   return statsType;
 }
 
-CqServiceStatType* CqServiceStatType::getInstance() {
-  SpinLockGuard guard(m_singletonLock);
-  if (single == nullptr) {
-    single = new CqServiceStatType();
-  }
-  return single;
+CqServiceStatType& CqServiceStatType::getInstance() {
+  static CqServiceStatType instance;
+  return instance;
 }
 
 CqServiceStatType::CqServiceStatType()
-    : /* adongre
-       * CID 28932: Uninitialized scalar field (UNINIT_CTOR)
-       */
-      m_numCqsActiveId(0),
+    : m_numCqsActiveId(0),
       m_numCqsCreatedId(0),
       m_numCqsOnClientId(0),
       m_numCqsClosedId(0),
@@ -115,9 +104,9 @@ CqServiceStatType::CqServiceStatType()
 ////////////////////////////////////////////////////////////////////////////////
 
 CqServiceVsdStats::CqServiceVsdStats(const char* cqServiceName) {
-  CqServiceStatType* regStatType = CqServiceStatType::getInstance();
+  auto& regStatType = CqServiceStatType::getInstance();
 
-  StatisticsType* statsType = regStatType->getStatType();
+  StatisticsType* statsType = regStatType.getStatType();
 
   GF_D_ASSERT(statsType != nullptr);
 
@@ -126,11 +115,11 @@ CqServiceVsdStats::CqServiceVsdStats(const char* cqServiceName) {
   m_cqServiceVsdStats = factory->createAtomicStatistics(
       statsType, const_cast<char*>(cqServiceName));
 
-  m_numCqsActiveId = regStatType->getNumCqsActiveId();
-  m_numCqsCreatedId = regStatType->getNumCqsCreatedId();
-  m_numCqsOnClientId = regStatType->getNumCqsOnClientId();
-  m_numCqsClosedId = regStatType->getNumCqsClosedId();
-  m_numCqsStoppedId = regStatType->getNumCqsStoppedId();
+  m_numCqsActiveId = regStatType.getNumCqsActiveId();
+  m_numCqsCreatedId = regStatType.getNumCqsCreatedId();
+  m_numCqsOnClientId = regStatType.getNumCqsOnClientId();
+  m_numCqsClosedId = regStatType.getNumCqsClosedId();
+  m_numCqsStoppedId = regStatType.getNumCqsStoppedId();
 
   m_cqServiceVsdStats->setInt(m_numCqsActiveId, 0);
   m_cqServiceVsdStats->setInt(m_numCqsCreatedId, 0);

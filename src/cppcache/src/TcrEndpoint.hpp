@@ -30,7 +30,6 @@
 #include "Set.hpp"
 #include "TcrConnection.hpp"
 #include "Task.hpp"
-#include "SpinLock.hpp"
 
 namespace apache {
 namespace geode {

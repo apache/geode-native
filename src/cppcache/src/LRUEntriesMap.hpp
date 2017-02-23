@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_LRUENTRIESMAP_H_
-#define GEODE_LRUENTRIESMAP_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_LRUENTRIESMAP_H_
+#define GEODE_LRUENTRIESMAP_H_
+
 #include <geode/geode_globals.hpp>
 #include <geode/Cache.hpp>
 #include "ConcurrentEntriesMap.hpp"
@@ -27,7 +27,8 @@
 #include "LRUList.hpp"
 #include "LRUMapEntry.hpp"
 #include "MapEntryT.hpp"
-#include "SpinLock.hpp"
+
+#include "util/concurrent/spinlock_mutex.hpp"
 
 #include "NonCopyable.hpp"
 
@@ -65,7 +66,7 @@ class CPPCACHE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
   PersistenceManagerPtr m_pmPtr;
   EvictionController* m_evictionControllerPtr;
   int64_t m_currentMapSize;
-  SpinLock m_mapInfoLock;
+  spinlock_mutex m_mapInfoLock;
   std::string m_name;
   AtomicInc m_validEntries;
   bool m_heapLRUEnabled;

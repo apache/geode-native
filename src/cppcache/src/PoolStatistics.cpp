@@ -20,8 +20,11 @@
 #include "PoolStatistics.hpp"
 //#include "StatisticsFactory.hpp"
 
-#include <ace/Thread_Mutex.h>
 #include <ace/Singleton.h>
+
+#include <mutex>
+
+#include "util/concurrent/spinlock_mutex.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -29,24 +32,26 @@ namespace apache {
 namespace geode {
 namespace client {
 
-using namespace apache::geode::statistics;
+using statistics::StatisticsFactory;
+using statistics::StatisticsManager;
+using util::concurrent::spinlock_mutex;
 
 ////////////////////////////////////////////////////////////////////////////////
 
 PoolStatType* PoolStatType::single = nullptr;
-SpinLock PoolStatType::m_singletonLock;
-SpinLock PoolStatType::m_statTypeLock;
+spinlock_mutex PoolStatType::m_singletonLock;
+spinlock_mutex PoolStatType::m_statTypeLock;
 
 void PoolStatType::clean() {
-  SpinLockGuard guard(m_singletonLock);
-  if (single != nullptr) {
+  std::lock_guard<spinlock_mutex> guard(m_singletonLock);
+  if (single) {
     delete single;
     single = nullptr;
   }
 }
 
 StatisticsType* PoolStatType::getStatType() {
-  SpinLockGuard guard(m_statTypeLock);
+  std::lock_guard<spinlock_mutex> guard(m_statTypeLock);
   StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
   GF_D_ASSERT(!!factory);
 
@@ -179,8 +184,8 @@ StatisticsType* PoolStatType::getStatType() {
 }
 
 PoolStatType* PoolStatType::getInstance() {
-  SpinLockGuard guard(m_singletonLock);
-  if (single == nullptr) {
+  std::lock_guard<spinlock_mutex> guard(m_singletonLock);
+  if (!single) {
     single = new PoolStatType();
   }
   return single;

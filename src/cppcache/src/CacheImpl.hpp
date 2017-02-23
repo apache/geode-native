@@ -27,7 +27,6 @@
 #include <geode/CacheAttributes.hpp>
 #include <geode/DistributedSystem.hpp>
 #include "MapWithLock.hpp"
-#include "SpinLock.hpp"
 #include <ace/ACE.h>
 #include <ace/Condition_Recursive_Thread_Mutex.h>
 #include <ace/Time_Value.h>

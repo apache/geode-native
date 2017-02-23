@@ -74,9 +74,10 @@
 // Not thread safe (unless auto-initialization is avoided and each thread has
 // its own MTRand object)
 
+#include <mutex>
 #include "MersenneTwister.hpp"
 
-apache::geode::client::SpinLock MTRand::lck;
+apache::geode::util::concurrent::spinlock_mutex MTRand::lck;
 
 MTRand::MTRand(const uint32_t &oneSeed) { seed(oneSeed); }
 
@@ -116,7 +117,7 @@ double MTRand::randNorm(const double &mean, const double &variance) {
 uint32_t MTRand::randInt() {
   // Pull a 32-bit integer from the generator state
   // Every other access function simply transforms the numbers extracted here
-  apache::geode::client::SpinLockGuard guard(lck);
+  std::lock_guard<apache::geode::util::concurrent::spinlock_mutex> guard(lck);
 
   if (left <= 0) reload();
   --left;
@@ -212,7 +213,7 @@ void MTRand::seed() {
   }
 
   // Was not successful, so use time() and clock() instead
-  seed(hash(time(NULL), clock()));
+  seed(hash(time(nullptr), clock()));
 }
 
 void MTRand::initialize(const uint32_t seed) {
