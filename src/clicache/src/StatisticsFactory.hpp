@@ -159,7 +159,7 @@ namespace Apache
         /// if a type with the given <c>name</c> already exists.
         /// </exception>
         virtual StatisticsType^ CreateType(String^ name, String^ description,
-                                           array<StatisticDescriptor^>^ stats, int32_t statsLength);
+                                           array<StatisticDescriptor^>^ stats, System::Int32 statsLength);
 
         /// <summary>
         /// Finds and returns an already created <see cref="StatisticsType" /> 
@@ -189,7 +189,7 @@ namespace Apache
         /// <para>
         /// The created instance may not be <see cref="Statistics#isAtomic" /> atomic.
         /// </para>
-        virtual Statistics^ CreateStatistics(StatisticsType^ type, String^ textId, int64_t numericId);
+        virtual Statistics^ CreateStatistics(StatisticsType^ type, String^ textId, System::Int64 numericId);
 
         /// <summary>
         /// Creates and returns a <see cref="Statistics" /> instance of the given <see cref="StatisticsType" /> type, <c>textId</c>, and with default ids.
@@ -213,7 +213,7 @@ namespace Apache
         /// <para>
         /// The created instance will be <see cref="Statistics#isAtomic" /> atomic.
         /// </para>
-        virtual Statistics^ CreateAtomicStatistics(StatisticsType^ type, String^ textId, int64_t numericId);
+        virtual Statistics^ CreateAtomicStatistics(StatisticsType^ type, String^ textId, System::Int64 numericId);
 
         /// <summary>
         /// Return the first instance that matches the type, or NULL
@@ -231,9 +231,9 @@ namespace Apache
         /// <summary>
         /// Returns a numeric id that can be used to identify the manager
         /// </summary>
-        virtual property int64_t ID
+        virtual property System::Int64 ID
         {
-          virtual int64_t get();
+          virtual System::Int64 get();
         }
 
       internal:

@@ -111,7 +111,7 @@ namespace Apache
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
-      bool CacheTransactionManager::TryResume(Apache::Geode::Client::TransactionId^ transactionId, int32_t waitTimeInMilliSec)
+      bool CacheTransactionManager::TryResume(Apache::Geode::Client::TransactionId^ transactionId, System::Int32 waitTimeInMilliSec)
       {
         _GF_MG_EXCEPTION_TRY2
 

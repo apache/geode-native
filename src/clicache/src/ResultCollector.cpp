@@ -55,7 +55,7 @@ namespace Apache
           apache::geode::client::CacheableVectorPtr results = NativePtr->getResult(timeout);
         array<TResult>^ rs =
           gcnew array<TResult>( results->size( ) );
-        for( int32_t index = 0; index < results->size( ); index++ )
+        for( System::Int32 index = 0; index < results->size( ); index++ )
         {
           apache::geode::client::CacheablePtr& nativeptr(results->operator[](index));
 

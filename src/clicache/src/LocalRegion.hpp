@@ -201,15 +201,15 @@ namespace Apache
           virtual ISelectResults<TResult>^ Query( String^ predicate );
 
           generic<class TResult>
-          virtual ISelectResults<TResult>^ Query( String^ predicate, uint32_t timeout );
+          virtual ISelectResults<TResult>^ Query( String^ predicate, System::UInt32 timeout );
 
           virtual bool ExistsValue( String^ predicate );
 
-          virtual bool ExistsValue( String^ predicate, uint32_t timeout );
+          virtual bool ExistsValue( String^ predicate, System::UInt32 timeout );
 
           virtual Object^ SelectValue( String^ predicate );
 
-          virtual Object^ SelectValue( String^ predicate, uint32_t timeout );
+          virtual Object^ SelectValue( String^ predicate, System::UInt32 timeout );
 
           virtual ISubscriptionService<TKey>^ GetSubscriptionService();
 

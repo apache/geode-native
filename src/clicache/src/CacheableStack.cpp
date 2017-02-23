@@ -41,7 +41,7 @@ namespace Apache
       {
         if (m_stack != nullptr)
         {
-          output->WriteArrayLen((int32_t)m_stack->Count);
+          output->WriteArrayLen((System::Int32)m_stack->Count);
           for each (Object^ obj in m_stack) {
             output->WriteObject(obj);
           }
@@ -67,15 +67,15 @@ namespace Apache
         return this;
       }
 
-      uint32_t CacheableStack::ClassId::get()
+      System::UInt32 CacheableStack::ClassId::get()
       {
         return GeodeClassIds::CacheableStack;
       }
 
-      uint32_t CacheableStack::ObjectSize::get()
+      System::UInt32 CacheableStack::ObjectSize::get()
       {
         //TODO:
-        /*uint32_t size = static_cast<uint32_t> (sizeof(CacheableStack^));
+        /*System::UInt32 size = static_cast<System::UInt32> (sizeof(CacheableStack^));
         for each (IGeodeSerializable^ val in this) {
         if (val != nullptr) {
         size += val->ObjectSize;

@@ -79,19 +79,19 @@ namespace Apache
         /// Read a 16-bit unsigned integer from the stream.
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-        virtual uint16_t ReadUInt16( String^ fieldName )override;
+        virtual System::UInt16 ReadUInt16( String^ fieldName )override;
 
         /// <summary>
         /// Read a 32-bit unsigned integer from the stream.
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-        virtual uint32_t ReadUInt32( String^ fieldName )override;
+        virtual System::UInt32 ReadUInt32( String^ fieldName )override;
         
         /// <summary>
         /// Read a 64-bit unsigned integer from the stream.
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-        virtual uint64_t ReadUInt64( String^ fieldName )override;
+        virtual System::UInt64 ReadUInt64( String^ fieldName )override;
 
         /// <summary>
         /// Read a 16-bit integer from the stream.
@@ -103,7 +103,7 @@ namespace Apache
         /// Read a 32-bit integer from the stream.
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-        virtual int32_t ReadInt( String^ fieldName )override;
+        virtual System::Int32 ReadInt( String^ fieldName )override;
 
         /// <summary>
         /// Read a 64-bit integer from the stream.

@@ -46,7 +46,7 @@ namespace Apache
     namespace Client
     {
 
-      DataInput::DataInput(uint8_t* buffer, int size)
+      DataInput::DataInput(System::Byte* buffer, int size)
       {
         m_ispdxDesrialization = false;
         m_isRootObjectPdx = false;
@@ -58,7 +58,7 @@ namespace Apache
           m_isManagedObject = false;
           m_forStringDecode = gcnew array<Char>(100);
 
-          m_buffer = const_cast<uint8_t*>(NativePtr->currentBufferPosition());
+          m_buffer = const_cast<System::Byte*>(NativePtr->currentBufferPosition());
           m_bufferLength = NativePtr->getBytesRemaining();
 
           _GF_MG_EXCEPTION_CATCH_ALL2
@@ -76,8 +76,8 @@ namespace Apache
         if (buffer != nullptr && buffer->Length > 0) {
           _GF_MG_EXCEPTION_TRY2
 
-            int32_t len = buffer->Length;
-          GF_NEW(m_buffer, uint8_t[len]);
+            System::Int32 len = buffer->Length;
+          GF_NEW(m_buffer, System::Byte[len]);
           pin_ptr<const Byte> pin_buffer = &buffer[0];
           memcpy(m_buffer, (void*)pin_buffer, len);
           SetPtr(new apache::geode::client::DataInput(m_buffer, len), true);
@@ -86,7 +86,7 @@ namespace Apache
           m_isManagedObject = false;
           m_forStringDecode = gcnew array<Char>(100);
 
-          m_buffer = const_cast<uint8_t*>(NativePtr->currentBufferPosition());
+          m_buffer = const_cast<System::Byte*>(NativePtr->currentBufferPosition());
           m_bufferLength = NativePtr->getBytesRemaining();
 
           _GF_MG_EXCEPTION_CATCH_ALL2
@@ -97,12 +97,12 @@ namespace Apache
         }
       }
 
-      DataInput::DataInput(array<Byte>^ buffer, int32_t len)
+      DataInput::DataInput(array<Byte>^ buffer, System::Int32 len)
       {
         m_ispdxDesrialization = false;
         m_isRootObjectPdx = false;
         if (buffer != nullptr) {
-          if (len == 0 || (int32_t)len > buffer->Length) {
+          if (len == 0 || (System::Int32)len > buffer->Length) {
             throw gcnew IllegalArgumentException(String::Format(
               "DataInput.ctor(): given length {0} is zero or greater than "
               "size of buffer {1}", len, buffer->Length));
@@ -111,12 +111,12 @@ namespace Apache
           //System::Array::Copy(buffer, 0, m_bytes, 0, len);
           _GF_MG_EXCEPTION_TRY2
 
-            GF_NEW(m_buffer, uint8_t[len]);
+            GF_NEW(m_buffer, System::Byte[len]);
           pin_ptr<const Byte> pin_buffer = &buffer[0];
           memcpy(m_buffer, (void*)pin_buffer, len);
           SetPtr(new apache::geode::client::DataInput(m_buffer, len), true);
 
-          m_buffer = const_cast<uint8_t*>(NativePtr->currentBufferPosition());
+          m_buffer = const_cast<System::Byte*>(NativePtr->currentBufferPosition());
           m_bufferLength = NativePtr->getBytesRemaining();
 
           _GF_MG_EXCEPTION_CATCH_ALL2
@@ -173,7 +173,7 @@ namespace Apache
 
       array<Byte>^ DataInput::ReadBytes()
       {
-        int32_t length;
+        System::Int32 length;
         length = ReadArrayLen();
 
         if (length >= 0) {
@@ -218,7 +218,7 @@ namespace Apache
 
       array<SByte>^ DataInput::ReadSBytes()
       {
-        int32_t length;
+        System::Int32 length;
         length = ReadArrayLen();
 
         if (length > -1) {
@@ -232,7 +232,7 @@ namespace Apache
         return nullptr;
       }
 
-      array<Byte>^ DataInput::ReadBytesOnly(uint32_t len)
+      array<Byte>^ DataInput::ReadBytesOnly(System::UInt32 len)
       {
         if (len > 0) {
           CheckBufferSize(len);
@@ -249,14 +249,14 @@ namespace Apache
       void DataInput::ReadBytesOnly(array<Byte> ^ buffer, int offset, int count)
       {
         if (count > 0) {
-          CheckBufferSize((uint32_t)count);
+          CheckBufferSize((System::UInt32)count);
 
           for (int i = 0; i < count; i++)
             buffer[offset + i] = m_buffer[m_cursor++];
         }
       }
 
-      array<SByte>^ DataInput::ReadSBytesOnly(uint32_t len)
+      array<SByte>^ DataInput::ReadSBytesOnly(System::UInt32 len)
       {
         if (len > 0) {
           CheckBufferSize(len);
@@ -270,18 +270,18 @@ namespace Apache
         return nullptr;
       }
 
-      uint16_t DataInput::ReadUInt16()
+      System::UInt16 DataInput::ReadUInt16()
       {
         CheckBufferSize(2);
-        uint16_t data = m_buffer[m_cursor++];
+        System::UInt16 data = m_buffer[m_cursor++];
         data = (data << 8) | m_buffer[m_cursor++];
         return data;
       }
 
-      uint32_t DataInput::ReadUInt32()
+      System::UInt32 DataInput::ReadUInt32()
       {
         CheckBufferSize(4);
-        uint32_t data = m_buffer[m_cursor++];
+        System::UInt32 data = m_buffer[m_cursor++];
         data = (data << 8) | m_buffer[m_cursor++];
         data = (data << 8) | m_buffer[m_cursor++];
         data = (data << 8) | m_buffer[m_cursor++];
@@ -289,9 +289,9 @@ namespace Apache
         return data;
       }
 
-      uint64_t DataInput::ReadUInt64()
+      System::UInt64 DataInput::ReadUInt64()
       {
-        uint64_t data;
+        System::UInt64 data;
 
         CheckBufferSize(8);
 
@@ -307,17 +307,17 @@ namespace Apache
         return data;
       }
 
-      int16_t DataInput::ReadInt16()
+      System::Int16 DataInput::ReadInt16()
       {
         return ReadUInt16();
       }
 
-      int32_t DataInput::ReadInt32()
+      System::Int32 DataInput::ReadInt32()
       {
         return ReadUInt32();
       }
 
-      int64_t DataInput::ReadInt64()
+      System::Int64 DataInput::ReadInt64()
       {
         return ReadUInt64();
       }
@@ -622,7 +622,7 @@ namespace Apache
         //Log::Debug("DataInput::ReadInternalObject m_cursor " + m_cursor);
         bool findinternal = false;
         int8_t typeId = ReadByte();
-        int64_t compId = typeId;
+        System::Int64 compId = typeId;
         TypeFactoryMethodGeneric^ createType = nullptr;
 
         if (compId == GeodeTypeIds::NullObj) {
@@ -632,7 +632,7 @@ namespace Apache
         {
           //cache current state and reset after reading pdx object
           int cacheCursor = m_cursor;
-          uint8_t* cacheBuffer = m_buffer;
+          System::Byte* cacheBuffer = m_buffer;
           unsigned int cacheBufferLength = m_bufferLength;
           Object^ ret = Internal::PdxHelper::DeserializePdx(this, false);
           int tmp = NativePtr->getBytesRemaining();
@@ -668,18 +668,18 @@ namespace Apache
         }
         else if (compId == GeodeTypeIdsImpl::CacheableUserData) {
           int8_t classId = ReadByte();
-          //compId |= ( ( (int64_t)classId ) << 32 );
-          compId = (int64_t)classId;
+          //compId |= ( ( (System::Int64)classId ) << 32 );
+          compId = (System::Int64)classId;
         }
         else if (compId == GeodeTypeIdsImpl::CacheableUserData2) {
-          int16_t classId = ReadInt16();
-          //compId |= ( ( (int64_t)classId ) << 32 );
-          compId = (int64_t)classId;
+          System::Int16 classId = ReadInt16();
+          //compId |= ( ( (System::Int64)classId ) << 32 );
+          compId = (System::Int64)classId;
         }
         else if (compId == GeodeTypeIdsImpl::CacheableUserData4) {
-          int32_t classId = ReadInt32();
-          //compId |= ( ( (int64_t)classId ) << 32 );
-          compId = (int64_t)classId;
+          System::Int32 classId = ReadInt32();
+          //compId |= ( ( (System::Int64)classId ) << 32 );
+          compId = (System::Int64)classId;
         }
         else if (compId == GeodeTypeIdsImpl::FixedIDByte) {//TODO: need to verify again
           int8_t fixedId = ReadByte();
@@ -687,18 +687,18 @@ namespace Apache
           findinternal = true;
         }
         else if (compId == GeodeTypeIdsImpl::FixedIDShort) {
-          int16_t fixedId = ReadInt16();
+          System::Int16 fixedId = ReadInt16();
           compId = fixedId;
           findinternal = true;
         }
         else if (compId == GeodeTypeIdsImpl::FixedIDInt) {
-          int32_t fixedId = ReadInt32();
+          System::Int32 fixedId = ReadInt32();
           compId = fixedId;
           findinternal = true;
         }
         if (findinternal) {
           compId += 0x80000000;
-          createType = Serializable::GetManagedDelegateGeneric((int64_t)compId);
+          createType = Serializable::GetManagedDelegateGeneric((System::Int64)compId);
         }
         else {
           createType = Serializable::GetManagedDelegateGeneric(compId);
@@ -759,7 +759,7 @@ namespace Apache
           list = (System::Collections::IList^)Serializable::GetArrayObject(ret->GetType()->FullName, len);
 
           list[0] = ret;
-          for (int32_t index = 1; index < list->Count; ++index)
+          for (System::Int32 index = 1; index < list->Count; ++index)
           {
             list[index] = ReadObject();
           }
@@ -772,7 +772,7 @@ namespace Apache
       {
         bool findinternal = false;
         int8_t typeId = ReadByte();
-        int64_t compId = typeId;
+        System::Int64 compId = typeId;
         TypeFactoryMethodGeneric^ createType = nullptr;
 
         if (compId == GeodeTypeIds::NullObj) {
@@ -789,18 +789,18 @@ namespace Apache
         }
         else if (compId == GeodeTypeIdsImpl::CacheableUserData) {
           int8_t classId = ReadByte();
-          //compId |= ( ( (int64_t)classId ) << 32 );
-          compId = (int64_t)classId;
+          //compId |= ( ( (System::Int64)classId ) << 32 );
+          compId = (System::Int64)classId;
         }
         else if (compId == GeodeTypeIdsImpl::CacheableUserData2) {
-          int16_t classId = ReadInt16();
-          //compId |= ( ( (int64_t)classId ) << 32 );
-          compId = (int64_t)classId;
+          System::Int16 classId = ReadInt16();
+          //compId |= ( ( (System::Int64)classId ) << 32 );
+          compId = (System::Int64)classId;
         }
         else if (compId == GeodeTypeIdsImpl::CacheableUserData4) {
-          int32_t classId = ReadInt32();
-          //compId |= ( ( (int64_t)classId ) << 32 );
-          compId = (int64_t)classId;
+          System::Int32 classId = ReadInt32();
+          //compId |= ( ( (System::Int64)classId ) << 32 );
+          compId = (System::Int64)classId;
         }
         else if (compId == GeodeTypeIdsImpl::FixedIDByte) {//TODO: need to verify again
           int8_t fixedId = ReadByte();
@@ -808,18 +808,18 @@ namespace Apache
           findinternal = true;
         }
         else if (compId == GeodeTypeIdsImpl::FixedIDShort) {
-          int16_t fixedId = ReadInt16();
+          System::Int16 fixedId = ReadInt16();
           compId = fixedId;
           findinternal = true;
         }
         else if (compId == GeodeTypeIdsImpl::FixedIDInt) {
-          int32_t fixedId = ReadInt32();
+          System::Int32 fixedId = ReadInt32();
           compId = fixedId;
           findinternal = true;
         }
         if (findinternal) {
           compId += 0x80000000;
-          createType = Serializable::GetManagedDelegateGeneric((int64_t)compId);
+          createType = Serializable::GetManagedDelegateGeneric((System::Int64)compId);
         }
         else {
           createType = Serializable::GetManagedDelegateGeneric(compId);
@@ -845,7 +845,7 @@ namespace Apache
         throw gcnew IllegalStateException("Unregistered typeId in deserialization, aborting.");
       }
 
-      uint32_t DataInput::BytesRead::get()
+      System::UInt32 DataInput::BytesRead::get()
       {
         AdvanceUMCursor();
         SetBuffer();
@@ -853,12 +853,12 @@ namespace Apache
         return NativePtr->getBytesRead();
       }
 
-      uint32_t DataInput::BytesReadInternally::get()
+      System::UInt32 DataInput::BytesReadInternally::get()
       {
         return m_cursor;
       }
 
-      uint32_t DataInput::BytesRemaining::get()
+      System::UInt32 DataInput::BytesRemaining::get()
       {
         AdvanceUMCursor();
         SetBuffer();
@@ -866,12 +866,12 @@ namespace Apache
         //return m_bufferLength - m_cursor;
       }
 
-      void DataInput::AdvanceCursor(int32_t offset)
+      void DataInput::AdvanceCursor(System::Int32 offset)
       {
         m_cursor += offset;
       }
 
-      void DataInput::RewindCursor(int32_t offset)
+      void DataInput::RewindCursor(System::Int32 offset)
       {
         AdvanceUMCursor();
         NativePtr->rewindCursor(offset);

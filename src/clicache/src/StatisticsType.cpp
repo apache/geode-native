@@ -58,7 +58,7 @@ namespace Apache
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
-      int32_t StatisticsType::NameToId( String^ name )
+      System::Int32 StatisticsType::NameToId( String^ name )
       {
         ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
@@ -74,7 +74,7 @@ namespace Apache
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
-      int32_t StatisticsType::DescriptorsCount::get()
+      System::Int32 StatisticsType::DescriptorsCount::get()
       {
         return NativePtr->getDescriptorsCount();
     }  // namespace Client

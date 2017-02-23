@@ -73,9 +73,9 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property uint32_t ClassId
+        virtual property System::UInt32 ClassId
         {
-          virtual uint32_t get() override
+          virtual System::UInt32 get() override
           {
             return GeodeClassIds::CacheableArrayList;
           }

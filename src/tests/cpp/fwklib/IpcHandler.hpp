@@ -25,6 +25,7 @@
 
 #include <geode/geode_base.hpp>
 
+#include <cstdint>
 #include <string>
 
 namespace apache {

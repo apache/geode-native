@@ -41,7 +41,7 @@ namespace Apache
 
       void CacheableObjectArray::ToData(DataOutput^ output)
       {
-        output->WriteArrayLen((int32_t)Count);
+        output->WriteArrayLen((System::Int32)Count);
         output->WriteByte((int8_t)apache::geode::client::GeodeTypeIdsImpl::Class);
         output->WriteByte((int8_t)apache::geode::client::GeodeTypeIds::CacheableASCIIString);
         output->WriteUTF("java.lang.Object");
@@ -54,7 +54,7 @@ namespace Apache
         /*_GF_MG_EXCEPTION_TRY
 
           apache::geode::client::DataOutput& nativeOutput = *(output->_NativePtr);
-          nativeOutput.writeArrayLen((int32_t)Count);
+          nativeOutput.writeArrayLen((System::Int32)Count);
           nativeOutput.write((int8_t)apache::geode::client::GeodeTypeIdsImpl::Class);
           nativeOutput.write((int8_t)apache::geode::client::GeodeTypeIds::CacheableASCIIString);
           nativeOutput.writeASCII("java.lang.Object");
@@ -79,25 +79,25 @@ namespace Apache
           //nativeInput.readInt(&classLen);
           //nativeInput.advanceCursor(classLen);
         }
-        for (int32_t index = 0; index < len; ++index) {
+        for (System::Int32 index = 0; index < len; ++index) {
           Add(input->ReadObject());
         }
         return this;
         /*_GF_MG_EXCEPTION_TRY
 
           apache::geode::client::DataInput& nativeInput = *(input->_NativePtr);
-          int32_t len;
+          System::Int32 len;
           nativeInput.readArrayLen(&len);
           if (len >= 0) {
             int8_t typeCode;
             nativeInput.read(&typeCode); // ignore CLASS typeid
             nativeInput.read(&typeCode); // ignore string typeid
-            uint16_t classLen;
+            System::UInt16 classLen;
             nativeInput.readInt(&classLen);
             nativeInput.advanceCursor(classLen);
           }
           apache::geode::client::CacheablePtr value;
-          for (int32_t index = 0; index < len; ++index) {
+          for (System::Int32 index = 0; index < len; ++index) {
             nativeInput.readObject(value);
             Add(SafeUMSerializableConvert(value.ptr()));
           }
@@ -106,9 +106,9 @@ namespace Apache
         return this;*/
       }
 
-      uint32_t CacheableObjectArray::ObjectSize::get()
+      System::UInt32 CacheableObjectArray::ObjectSize::get()
       { 
-       /* uint32_t size = static_cast<uint32_t> (sizeof(CacheableObjectArray^));
+       /* System::UInt32 size = static_cast<System::UInt32> (sizeof(CacheableObjectArray^));
         for each (IGeodeSerializable^ val in this) {
           if (val != nullptr) {
             size += val->ObjectSize;

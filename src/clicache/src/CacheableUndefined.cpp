@@ -43,9 +43,9 @@ namespace Apache
         return this;
       }
 
-      uint32_t CacheableUndefined::ObjectSize::get()
+      System::UInt32 CacheableUndefined::ObjectSize::get()
       {
-        return static_cast<uint32_t> (sizeof(CacheableUndefined^));
+        return static_cast<System::UInt32> (sizeof(CacheableUndefined^));
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

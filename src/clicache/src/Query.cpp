@@ -40,7 +40,7 @@ namespace Apache
       }
 
       generic<class TResult>
-      ISelectResults<TResult>^ Query<TResult>::Execute( uint32_t timeout )
+      ISelectResults<TResult>^ Query<TResult>::Execute( System::UInt32 timeout )
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
@@ -74,7 +74,7 @@ namespace Apache
       }
 
       generic<class TResult>
-      ISelectResults<TResult>^ Query<TResult>::Execute( array<Object^>^ paramList, uint32_t timeout )
+      ISelectResults<TResult>^ Query<TResult>::Execute( array<Object^>^ paramList, System::UInt32 timeout )
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 

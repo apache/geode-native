@@ -181,7 +181,7 @@ namespace Apache
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
-      /*void Properties::Insert( String^ key, const int32_t value)
+      /*void Properties::Insert( String^ key, const System::Int32 value)
       {
         //TODO::
         ManagedString mg_key( key );
@@ -413,7 +413,7 @@ namespace Apache
       }
 
       generic<class TPropKey, class TPropValue>
-      uint32_t Properties<TPropKey, TPropValue>::Size::get( )
+      System::UInt32 Properties<TPropKey, TPropValue>::Size::get( )
       {
         _GF_MG_EXCEPTION_TRY2
 
@@ -515,7 +515,7 @@ namespace Apache
       }
 
       generic<class TPropKey, class TPropValue>
-      uint32_t Properties<TPropKey, TPropValue>::ObjectSize::get( )
+      System::UInt32 Properties<TPropKey, TPropValue>::ObjectSize::get( )
       {
         //TODO::
         _GF_MG_EXCEPTION_TRY2
@@ -543,7 +543,7 @@ namespace Apache
           array<Byte>^ bytes = gcnew array<Byte>( output.getBufferLength( ) );
           {
             pin_ptr<const Byte> pin_bytes = &bytes[0];
-            memcpy( (uint8_t*)pin_bytes, output.getBuffer( ),
+            memcpy( (System::Byte*)pin_bytes, output.getBuffer( ),
               output.getBufferLength( ) );
           }
           info->AddValue( "bytes", bytes, array<Byte>::typeid );
@@ -568,7 +568,7 @@ namespace Apache
 
           _GF_MG_EXCEPTION_TRY2
 
-            apache::geode::client::DataInput input( (uint8_t*)pin_bytes, bytes->Length );
+            apache::geode::client::DataInput input( (System::Byte*)pin_bytes, bytes->Length );
             AssignPtr( static_cast<apache::geode::client::Properties*>(
               NativePtr->fromData( input ) ) );
 

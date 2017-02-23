@@ -127,9 +127,9 @@ namespace Apache
         /// Return the number of entries in the collection.
         /// </summary>
         /// <returns>the number of entries</returns>
-        property uint32_t Size
+        property System::UInt32 Size
         {
-          uint32_t get( );
+          System::UInt32 get( );
         }
 
         /*/// <summary>
@@ -177,9 +177,9 @@ namespace Apache
         /// <summary>
         /// return the size of this object in bytes
         /// </summary>
-        virtual property uint32_t ObjectSize
+        virtual property System::UInt32 ObjectSize
         {
-          virtual uint32_t get( ); 
+          virtual System::UInt32 get( ); 
         }
 
         /// <summary>
@@ -187,9 +187,9 @@ namespace Apache
         /// </summary>
         /// <returns>classId of the Properties class</returns>
         /// <seealso cref="IGeodeSerializable.ClassId" />
-        virtual property uint32_t ClassId
+        virtual property System::UInt32 ClassId
         {
-          inline virtual uint32_t get( )
+          inline virtual System::UInt32 get( )
           {
             return GeodeClassIds::Properties;
           }

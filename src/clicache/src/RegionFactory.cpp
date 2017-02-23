@@ -96,28 +96,28 @@ namespace Apache
 
       // EXPIRATION ATTRIBUTES
 
-      RegionFactory^ RegionFactory::SetEntryIdleTimeout( ExpirationAction action, uint32_t idleTimeout )
+      RegionFactory^ RegionFactory::SetEntryIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout )
       {
         NativePtr->setEntryIdleTimeout(
           static_cast<apache::geode::client::ExpirationAction::Action>( action ), idleTimeout );
         return this;
       }
 
-      RegionFactory^ RegionFactory::SetEntryTimeToLive( ExpirationAction action, uint32_t timeToLive )
+      RegionFactory^ RegionFactory::SetEntryTimeToLive( ExpirationAction action, System::UInt32 timeToLive )
       {
         NativePtr->setEntryTimeToLive(
           static_cast<apache::geode::client::ExpirationAction::Action>( action ), timeToLive );
         return this;
       }
 
-      RegionFactory^ RegionFactory::SetRegionIdleTimeout( ExpirationAction action, uint32_t idleTimeout )
+      RegionFactory^ RegionFactory::SetRegionIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout )
       {
         NativePtr->setRegionIdleTimeout(
           static_cast<apache::geode::client::ExpirationAction::Action>( action ), idleTimeout );
         return this;
       }
 
-      RegionFactory^ RegionFactory::SetRegionTimeToLive( ExpirationAction action, uint32_t timeToLive )
+      RegionFactory^ RegionFactory::SetRegionTimeToLive( ExpirationAction action, System::UInt32 timeToLive )
       {
         NativePtr->setRegionTimeToLive(
           static_cast<apache::geode::client::ExpirationAction::Action>( action ), timeToLive );
@@ -179,7 +179,7 @@ namespace Apache
 
       // MAP ATTRIBUTES
 
-      RegionFactory^ RegionFactory::SetInitialCapacity( int32_t initialCapacity )
+      RegionFactory^ RegionFactory::SetInitialCapacity( System::Int32 initialCapacity )
       {
         _GF_MG_EXCEPTION_TRY2
 
@@ -199,7 +199,7 @@ namespace Apache
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
-      RegionFactory^ RegionFactory::SetConcurrencyLevel( int32_t concurrencyLevel )
+      RegionFactory^ RegionFactory::SetConcurrencyLevel( System::Int32 concurrencyLevel )
       {
         _GF_MG_EXCEPTION_TRY2
 
@@ -209,7 +209,7 @@ namespace Apache
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
-      RegionFactory^ RegionFactory::SetLruEntriesLimit( uint32_t entriesLimit )
+      RegionFactory^ RegionFactory::SetLruEntriesLimit( System::UInt32 entriesLimit )
       {
         NativePtr->setLruEntriesLimit( entriesLimit );
         return this;

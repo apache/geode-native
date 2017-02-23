@@ -53,7 +53,7 @@ namespace apache
         try {
           Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytes::fromData: classid " + m_classId);
           Apache::Geode::Client::DataInput mg_input(&input, true);
-          const uint8_t* objStartPos = input.currentBufferPosition();
+          const System::Byte* objStartPos = input.currentBufferPosition();
 
           Apache::Geode::Client::IGeodeSerializable^ obj =
             Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId)();
@@ -62,10 +62,10 @@ namespace apache
 
           m_hashCode = obj->GetHashCode();
 
-          const uint8_t* objEndPos = input.currentBufferPosition();
+          const System::Byte* objEndPos = input.currentBufferPosition();
 
           //m_size = mg_input.BytesRead;
-          m_size = (uint32_t)(objEndPos - objStartPos);
+          m_size = (System::UInt32)(objEndPos - objStartPos);
           Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytes::fromData: objectSize = " + m_size + " m_hashCode = " + m_hashCode);
           m_bytes = input.getBufferCopyFrom(objStartPos, m_size);
         }
@@ -78,7 +78,7 @@ namespace apache
         return this;
       }
 
-      uint32_t ManagedCacheableDeltaBytesGeneric::objectSize() const
+      System::UInt32 ManagedCacheableDeltaBytesGeneric::objectSize() const
       {
         try {
           return m_size;
@@ -92,9 +92,9 @@ namespace apache
         return 0;
       }
 
-      int32_t ManagedCacheableDeltaBytesGeneric::classId() const
+      System::Int32 ManagedCacheableDeltaBytesGeneric::classId() const
       {
-        uint32_t classId;
+        System::UInt32 classId;
         try {
           classId = m_classId;
         }
@@ -110,7 +110,7 @@ namespace apache
       int8_t ManagedCacheableDeltaBytesGeneric::typeId() const
       {
         try {
-          uint32_t classId = m_classId;
+          System::UInt32 classId = m_classId;
           if (classId >= 0x80000000) {
             return (int8_t)((classId - 0x80000000) % 0x20000000);
           }
@@ -141,7 +141,7 @@ namespace apache
         // and [0xe0000000, 0xffffffff] is for FixedIDInt
         // Note: depends on fact that FixedIDByte is 1, FixedIDShort is 2
         // and FixedIDInt is 3; if this changes then correct this accordingly
-        uint32_t classId = m_classId;
+        System::UInt32 classId = m_classId;
         if (classId >= 0x80000000) {
           return (int8_t)((classId - 0x80000000) / 0x20000000);
         }
@@ -303,7 +303,7 @@ namespace apache
         return false;
       }
 
-      int32_t ManagedCacheableDeltaBytesGeneric::hashcode() const
+      System::UInt32 ManagedCacheableDeltaBytesGeneric::hashcode() const
       {
         throw gcnew System::NotSupportedException;
       }

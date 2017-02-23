@@ -140,7 +140,7 @@ namespace Apache
 
         }
 
-        Int32 PdxType::GetFieldPosition(String^ fieldName, uint8_t* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen)
+        Int32 PdxType::GetFieldPosition(String^ fieldName, System::Byte* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen)
         {
           PdxFieldType^ pft = nullptr;
           m_fieldNameVsPdxType->TryGetValue(fieldName, pft);
@@ -156,7 +156,7 @@ namespace Apache
           return -1;
         }
 
-        Int32 PdxType::GetFieldPosition(Int32 fieldIdx, uint8_t* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen)
+        Int32 PdxType::GetFieldPosition(Int32 fieldIdx, System::Byte* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen)
         {
           PdxFieldType^ pft = m_pdxFieldTypes[fieldIdx];
 
@@ -171,7 +171,7 @@ namespace Apache
           return -1;
         }
 
-        Int32 PdxType::variableLengthFieldPosition(PdxFieldType^ varLenField, uint8_t* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen)
+        Int32 PdxType::variableLengthFieldPosition(PdxFieldType^ varLenField, System::Byte* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen)
         {
           int seqId = varLenField->SequenceId;
 
@@ -187,7 +187,7 @@ namespace Apache
 
         }
 
-        Int32 PdxType::fixedLengthFieldPosition(PdxFieldType^ fixLenField, uint8_t* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen)
+        Int32 PdxType::fixedLengthFieldPosition(PdxFieldType^ fixLenField, System::Byte* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen)
         {
           int seqId = fixLenField->SequenceId;
 

@@ -41,29 +41,29 @@ namespace Apache
         ///Get the number of CQs currently active. 
         ///Active CQs are those which are executing (in running state).
         /// </summary>
-          uint32_t numCqsActive( );
+          System::UInt32 numCqsActive( );
 
         /// <summary>
         ///Get the total number of CQs created. This is a cumulative number.
         /// </summary>
-          uint32_t numCqsCreated( );
+          System::UInt32 numCqsCreated( );
 
         /// <summary>
         ///Get the total number of closed CQs. This is a cumulative number.
         /// </summary>
-          uint32_t numCqsClosed( );
+          System::UInt32 numCqsClosed( );
 
         /// <summary>
         ///Get the number of stopped CQs currently.
         /// </summary>
-          uint32_t numCqsStopped( );
+          System::UInt32 numCqsStopped( );
 
         /// <summary>
         ///Get number of CQs that are currently active or stopped. 
         ///The CQs included in this number are either running or stopped (suspended).
         ///Closed CQs are not included.
         /// </summary>
-          uint32_t numCqsOnClient( );
+          System::UInt32 numCqsOnClient( );
 
       internal:
 

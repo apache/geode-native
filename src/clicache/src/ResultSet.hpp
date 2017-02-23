@@ -58,9 +58,9 @@ namespace Apache
         /// <summary>
         /// The size of the <c>ResultSet</c>.
         /// </summary>
-        virtual property int32_t Size
+        virtual property System::Int32 Size
         {
-          virtual int32_t get();
+          virtual System::Int32 get();
         }
 
         /// <summary>

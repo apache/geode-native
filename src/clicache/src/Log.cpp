@@ -42,7 +42,7 @@ namespace Apache
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
-      void Log::Init(LogLevel level, String^ logFileName, int32_t logFileLimit)
+      void Log::Init(LogLevel level, String^ logFileName, System::Int32 logFileLimit)
       {
         _GF_MG_EXCEPTION_TRY2
 

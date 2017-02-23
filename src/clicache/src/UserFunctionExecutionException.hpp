@@ -76,9 +76,9 @@ namespace Apache
         /// </exception>
         /// <returns>classId of this class</returns>
         /// <seealso cref="IGeodeSerializable.ClassId" />
-        virtual property uint32_t ClassId
+        virtual property System::UInt32 ClassId
         {
-          inline virtual uint32_t get()
+          inline virtual System::UInt32 get()
           {
             throw gcnew IllegalStateException("UserFunctionExecutionException::ClassId is not intended for use.");
             return 0;
@@ -92,9 +92,9 @@ namespace Apache
         /// <exception cref="IllegalStateException">
         /// If this api is called from User code.
         /// </exception>
-        virtual property uint32_t ObjectSize
+        virtual property System::UInt32 ObjectSize
         {
-          virtual uint32_t get();
+          virtual System::UInt32 get();
         }
 
         // End: IGeodeSerializable members   

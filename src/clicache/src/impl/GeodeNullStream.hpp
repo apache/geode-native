@@ -39,28 +39,28 @@ namespace Apache
 
         virtual void Close() override { Stream::Close(); }
 
-        virtual property int64_t Length
+        virtual property System::Int64 Length
         {
-          int64_t get() override
+          System::Int64 get() override
           {
-            return (int64_t) m_position;
+            return (System::Int64) m_position;
           }
         }
 
-        virtual property int64_t Position
+        virtual property System::Int64 Position
         {
-          int64_t get() override
+          System::Int64 get() override
           {
-            return (int64_t) m_position;
+            return (System::Int64) m_position;
           }
 
-          void set(int64_t value) override
+          void set(System::Int64 value) override
           {
             m_position = (int) value;
           }
         }
 
-        virtual int64_t Seek(int64_t offset, SeekOrigin origin) override
+        virtual System::Int64 Seek(System::Int64 offset, SeekOrigin origin) override
         {
           throw gcnew System::NotSupportedException("Seek not supported by GeodeNullStream");
           /*
@@ -87,7 +87,7 @@ namespace Apache
           */
         }
 
-        virtual void SetLength(int64_t value) override { /* do nothing */ }
+        virtual void SetLength(System::Int64 value) override { /* do nothing */ }
 
         virtual void Write(array<Byte> ^ buffer, int offset, int count) override
         {

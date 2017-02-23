@@ -77,9 +77,9 @@ namespace Apache
 					/// <summary>
 					/// Utility method to get the calling thread's last system error code.
 					/// </summary>
-					static property int32_t LastError
+					static property System::Int32 LastError
 					{
-						int32_t get( );
+						System::Int32 get( );
 					}
 				};
     }  // namespace Client

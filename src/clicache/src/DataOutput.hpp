@@ -51,10 +51,10 @@ namespace Apache
 				: public Client::Internal::UMWrap<apache::geode::client::DataOutput>
       {
       private:
-        int32_t m_cursor;
+        System::Int32 m_cursor;
         bool m_isManagedObject;
-        uint8_t * m_bytes;
-        int32_t m_remainingBufferLength;
+        System::Byte * m_bytes;
+        System::Int32 m_remainingBufferLength;
         bool m_ispdxSerialization;
       public:
 
@@ -66,8 +66,8 @@ namespace Apache
         { 
           m_isManagedObject = true;
           m_cursor = 0;
-          m_bytes = const_cast<uint8_t *>(NativePtr->getCursor());
-          m_remainingBufferLength = (int32_t)NativePtr->getRemainingBufferLength();
+          m_bytes = const_cast<System::Byte *>(NativePtr->getCursor());
+          m_remainingBufferLength = (System::Int32)NativePtr->getRemainingBufferLength();
           m_ispdxSerialization = false;
         }
 
@@ -75,7 +75,7 @@ namespace Apache
         /// Write length of the array to the <c>DataOutput</c>.
         /// </summary>
         /// <param name="len">Array len to write.</param>
-        void WriteArrayLen( int32_t len );
+        void WriteArrayLen( System::Int32 len );
         
         /// <summary>
         /// Write a signed byte to the <c>DataOutput</c>.
@@ -102,7 +102,7 @@ namespace Apache
         /// <param name="len">
         /// The number of bytes from the start of array to write.
         /// </param>
-        void WriteBytes( array<Byte>^ bytes, int32_t len );
+        void WriteBytes( array<Byte>^ bytes, System::Int32 len );
 
         /// <summary>
         /// Write an array of bytes to the <c>DataOutput</c>.
@@ -120,7 +120,7 @@ namespace Apache
         /// <param name="len">
         /// The number of bytes from the start of array to write.
         /// </param>
-        void WriteSBytes( array<SByte>^ bytes, int32_t len );
+        void WriteSBytes( array<SByte>^ bytes, System::Int32 len );
 
         /// <summary>
         /// Write an array of signed bytes to the <c>DataOutput</c>.
@@ -139,9 +139,9 @@ namespace Apache
         /// <param name="len">
         /// The number of bytes from the start of array to write.
         /// </param>
-        void WriteBytesOnly( array<Byte>^ bytes, uint32_t len );
+        void WriteBytesOnly( array<Byte>^ bytes, System::UInt32 len );
 
-        void WriteBytesOnly( array<Byte>^ bytes, uint32_t len, uint32_t offset );
+        void WriteBytesOnly( array<Byte>^ bytes, System::UInt32 len, System::UInt32 offset );
 
         /// <summary>
         /// Write an array of bytes without its length to the
@@ -161,7 +161,7 @@ namespace Apache
         /// <param name="len">
         /// The number of bytes from the start of array to write.
         /// </param>
-        void WriteSBytesOnly( array<SByte>^ bytes, uint32_t len );
+        void WriteSBytesOnly( array<SByte>^ bytes, System::UInt32 len );
 
         /// <summary>
         /// Write an array of signed bytes without its length
@@ -177,19 +177,19 @@ namespace Apache
         /// Write a 16-bit integer to the <c>DataOutput</c>.
         /// </summary>
         /// <param name="value">The 16-bit integer to write.</param>
-        void WriteInt16( int16_t value );
+        void WriteInt16( System::Int16 value );
 
         /// <summary>
         /// Write a 32-bit integer to the <c>DataOutput</c>.
         /// </summary>
         /// <param name="value">The 32-bit integer to write.</param>
-        void WriteInt32( int32_t value );
+        void WriteInt32( System::Int32 value );
 
         /// <summary>
         /// Write a 64-bit integer to the <c>DataOutput</c>.
         /// </summary>
         /// <param name="value">The 64-bit integer to write.</param>
-        void WriteInt64( int64_t value );
+        void WriteInt64( System::Int64 value );
 
         /// <summary>
         /// Write a float to the DataOutput.
@@ -251,7 +251,7 @@ namespace Apache
         /// <param name="offset">
         /// The offset by which to advance the cursor.
         /// </param>
-        void AdvanceCursor( uint32_t offset );
+        void AdvanceCursor( System::UInt32 offset );
 
         /// <summary>
         /// Rewind the buffer cursor by the given offset.
@@ -259,7 +259,7 @@ namespace Apache
         /// <param name="offset">
         /// The offset by which to rewind the cursor.
         /// </param>
-        void RewindCursor( uint32_t offset );
+        void RewindCursor( System::UInt32 offset );
 
         /// <summary>
         /// Get a copy of the current buffer.
@@ -269,9 +269,9 @@ namespace Apache
         /// <summary>
         /// Get the length of current data in the buffer.
         /// </summary>
-        property uint32_t BufferLength
+        property System::UInt32 BufferLength
         {
-          uint32_t get( );
+          System::UInt32 get( );
         }
 
         /// <summary>
@@ -373,32 +373,32 @@ namespace Apache
         void WriteByte( Byte value );
 
         /// <summary>
-        /// Write an unsigned short integer (int16_t) to the <c>DataOutput</c>.
+        /// Write an unsigned short integer (System::Int16) to the <c>DataOutput</c>.
         /// </summary>
         /// <param name="value">The unsigned 16-bit integer to write.</param>
-        void WriteUInt16( uint16_t value );
+        void WriteUInt16( System::UInt16 value );
 
         /// <summary>
         /// Write an unsigned 32-bit integer to the <c>DataOutput</c>.
         /// </summary>
         /// <param name="value">The unsigned 32-bit integer to write.</param>
-        void WriteUInt32( uint32_t value );
+        void WriteUInt32( System::UInt32 value );
 
         /// <summary>
         /// Write an unsigned 64-bit integer to the <c>DataOutput</c>.
         /// </summary>
         /// <param name="value">The unsigned 64-bit integer to write.</param>
-        void WriteUInt64( uint64_t value );
+        void WriteUInt64( System::UInt64 value );
 
 
-			  int32_t GetBufferLengthPdx()
+			  System::Int32 GetBufferLengthPdx()
         {
-          return (int32_t)NativePtr->getBufferLength();
+          return (System::Int32)NativePtr->getBufferLength();
         }
 
         void WriteString(String^ value);
 
-        int32_t GetCursorPdx()
+        System::Int32 GetCursorPdx()
         {
           return m_cursor;
         }
@@ -426,7 +426,7 @@ namespace Apache
             else if ( c < 0x80 )//ASCII character
             {
               // 7-bits done in one byte.
-              m_bytes[m_cursor++] = (uint8_t)c;
+              m_bytes[m_cursor++] = (System::Byte)c;
             }
             else if ( c < 0x800 )
             {
@@ -481,9 +481,9 @@ namespace Apache
 
         void WriteStringWithType( String^ value );
 
-        static int8_t GetTypeId(uint32_t classId );
+        static int8_t GetTypeId(System::UInt32 classId );
         
-        static int8_t DSFID(uint32_t classId);        
+        static int8_t DSFID(System::UInt32 classId);        
   
         void WriteObjectInternal( IGeodeSerializable^ obj );     
 
@@ -499,11 +499,11 @@ namespace Apache
         
         void WriteObject(Single% obj);
         
-        void WriteObject(int16_t% obj);
+        void WriteObject(System::Int16% obj);
         
-        void WriteObject(int32_t% obj);
+        void WriteObject(System::Int32% obj);
         
-        void WriteObject(int64_t% obj);
+        void WriteObject(System::Int64% obj);
         
 				void WriteObject(UInt16% obj);
         
@@ -543,24 +543,24 @@ namespace Apache
         void SetBuffer()
         {
           m_cursor = 0;
-          m_bytes = const_cast<uint8_t *>(NativePtr->getCursor());
-          m_remainingBufferLength = (int32_t)NativePtr->getRemainingBufferLength();
+          m_bytes = const_cast<System::Byte *>(NativePtr->getCursor());
+          m_remainingBufferLength = (System::Int32)NativePtr->getRemainingBufferLength();
         }
 
-				uint8_t* GetStartBufferPosition()
+				System::Byte* GetStartBufferPosition()
         {
-          return const_cast<uint8_t *>( NativePtr->getBuffer());;
+          return const_cast<System::Byte *>( NativePtr->getBuffer());;
         }
 
-        inline void EnsureCapacity( int32_t size )
+        inline void EnsureCapacity( System::Int32 size )
         {
-          int32_t bytesLeft = m_remainingBufferLength - m_cursor;
+          System::Int32 bytesLeft = m_remainingBufferLength - m_cursor;
           if ( bytesLeft < size ) {
             try
             {
               NativePtr->ensureCapacity(m_cursor + size);
-              m_bytes = const_cast<uint8_t *>( NativePtr->getCursor());
-              m_remainingBufferLength = (int32_t)NativePtr->getRemainingBufferLength();
+              m_bytes = const_cast<System::Byte *>( NativePtr->getCursor());
+              m_remainingBufferLength = (System::Int32)NativePtr->getRemainingBufferLength();
             }
             catch(apache::geode::client::OutOfMemoryException ex )
             {
@@ -577,14 +577,14 @@ namespace Apache
 						this->WriteObject(obj);
         }
 
-        uint8_t* GetBytes(uint8_t* src, uint32_t size)
+        System::Byte* GetBytes(System::Byte* src, System::UInt32 size)
         {
           return NativePtr->getBufferCopyFrom(src, size);
         }
  
-        int32_t GetRemainingBufferLength()
+        System::Int32 GetRemainingBufferLength()
         {
-          return (int32_t) NativePtr->getRemainingBufferLength();
+          return (System::Int32) NativePtr->getRemainingBufferLength();
         }
 
         /// <summary>
@@ -596,8 +596,8 @@ namespace Apache
         {
           m_isManagedObject = managedObject;
           m_cursor = 0;
-          m_bytes = const_cast<uint8_t *>(nativeptr->getCursor());
-          m_remainingBufferLength = (int32_t)nativeptr->getRemainingBufferLength();
+          m_bytes = const_cast<System::Byte *>(nativeptr->getCursor());
+          m_remainingBufferLength = (System::Int32)nativeptr->getRemainingBufferLength();
           m_ispdxSerialization = false;
         }
       };

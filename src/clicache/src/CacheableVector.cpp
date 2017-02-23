@@ -60,10 +60,10 @@ namespace Apache
         return this;
       }
 
-      uint32_t CacheableVector::ObjectSize::get()
+      System::UInt32 CacheableVector::ObjectSize::get()
       { 
         //TODO::
-        /*uint32_t size = static_cast<uint32_t> (sizeof(CacheableVector^));
+        /*System::UInt32 size = static_cast<System::UInt32> (sizeof(CacheableVector^));
         for each (IGeodeSerializable^ val in this) {
           if (val != nullptr) {
             size += val->ObjectSize;

@@ -116,7 +116,7 @@ namespace Apache
 
           toArray = gcnew array<KeyValuePair<TKey,TValue>>(vc.size());
 
-        for( int32_t index = 0; index < vc.size( ); index++ )
+        for( System::Int32 index = 0; index < vc.size( ); index++ )
         {
           apache::geode::client::RegionEntryPtr nativeptr =  vc[ index ];  
           TKey key = Serializable::GetManagedValueGeneric<TKey> (nativeptr->getKey());
@@ -141,7 +141,7 @@ namespace Apache
 
           toArray = gcnew array<Object^>(vc.size());
 
-        for( int32_t index = 0; index < vc.size( ); index++ )
+        for( System::Int32 index = 0; index < vc.size( ); index++ )
         {
           apache::geode::client::RegionEntryPtr nativeptr =  vc[ index ];                       
           TKey key = Serializable::GetManagedValueGeneric<TKey> (nativeptr->getKey());
@@ -236,7 +236,7 @@ namespace Apache
         //List<TKey>^ collectionlist = gcnew List<TKey>(vc.size());
         array<TKey>^ keyarr =
           gcnew array<TKey>( vc.size( ) );
-        for( int32_t index = 0; index < vc.size( ); index++ )
+        for( System::Int32 index = 0; index < vc.size( ); index++ )
         {            
           apache::geode::client::CacheableKeyPtr& nativeptr( vc[ index ] );
           keyarr[ index ] = Serializable::GetManagedValueGeneric<TKey>(nativeptr);
@@ -258,7 +258,7 @@ namespace Apache
           //List<TValue>^ collectionlist = gcnew List<TValue>(vc.size());
           array<TValue>^ valarr =
             gcnew array<TValue>( vc.size( ) );
-          for( int32_t index = 0; index < vc.size( ); index++ )
+          for( System::Int32 index = 0; index < vc.size( ); index++ )
           {
             apache::geode::client::CacheablePtr& nativeptr( vc[ index ] );            
             valarr[ index ] = Serializable::GetManagedValueGeneric<TValue>(nativeptr);
@@ -627,7 +627,7 @@ namespace Apache
           array<IRegion<TKey, TValue>^>^ subRegions =
             gcnew array<IRegion<TKey, TValue>^>( vsr.size( ) );
 
-          for( int32_t index = 0; index < vsr.size( ); index++ )
+          for( System::Int32 index = 0; index < vsr.size( ); index++ )
           {
             apache::geode::client::RegionPtr& nativeptr( vsr[ index ] );
             subRegions[ index ] = Region<TKey, TValue>::Create( nativeptr.ptr( ) )->GetLocalView();
@@ -660,7 +660,7 @@ namespace Apache
           NativePtr->entries( vc, recursive );          
           array<RegionEntry<TKey, TValue>^>^ entryarr = gcnew array<RegionEntry<TKey, TValue>^>( vc.size( ) );
 
-          for( int32_t index = 0; index < vc.size( ); index++ )
+          for( System::Int32 index = 0; index < vc.size( ); index++ )
           {
             apache::geode::client::RegionEntryPtr& nativeptr( vc[ index ] );
             entryarr[ index ] = RegionEntry<TKey, TValue>::Create( nativeptr.ptr( ) );
@@ -752,7 +752,7 @@ namespace Apache
           throw gcnew System::ArgumentException;
         }          
 
-        for( int32_t index = 0; index < vc.size( ); index++ )
+        for( System::Int32 index = 0; index < vc.size( ); index++ )
         {
           apache::geode::client::RegionEntryPtr nativeptr =  vc[ index ];                       
           TKey key = Serializable::GetManagedValueGeneric<TKey> (nativeptr->getKey());
@@ -779,7 +779,7 @@ namespace Apache
 
       generic<class TKey, class TValue>
       generic<class TResult>
-      ISelectResults<TResult>^ LocalRegion<TKey, TValue>::Query( String^ predicate, uint32_t timeout )
+      ISelectResults<TResult>^ LocalRegion<TKey, TValue>::Query( String^ predicate, System::UInt32 timeout )
       {
         throw gcnew System::NotSupportedException;
       }
@@ -791,7 +791,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      bool LocalRegion<TKey, TValue>::ExistsValue( String^ predicate, uint32_t timeout )
+      bool LocalRegion<TKey, TValue>::ExistsValue( String^ predicate, System::UInt32 timeout )
       {
         throw gcnew System::NotSupportedException;
       }
@@ -803,7 +803,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      Object^ LocalRegion<TKey, TValue>::SelectValue( String^ predicate, uint32_t timeout )
+      Object^ LocalRegion<TKey, TValue>::SelectValue( String^ predicate, System::UInt32 timeout )
       {
         throw gcnew System::NotSupportedException;
       }

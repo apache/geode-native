@@ -61,9 +61,9 @@ namespace Apache
         /// <returns>
         /// the number of items in the <c>StructSet</c>.
         /// </returns>
-        virtual property int32_t Size
+        virtual property System::Int32 Size
         {
-          virtual int32_t get( );
+          virtual System::Int32 get( );
         }
 
         /// <summary>

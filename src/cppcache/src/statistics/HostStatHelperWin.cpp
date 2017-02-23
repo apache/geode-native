@@ -536,8 +536,8 @@ uint32_t HostStatHelperWin::getInt32Value(PPERF_COUNTER_DEFINITION PerfCntr,
 
   if (PerfCntr->CounterSize == 4) {
     uint32_t* lptr;
-    lptr = static_cast<uint32_t*>(static_cast<char*>(PerfCntrBlk) +
-                                  PerfCntr->CounterOffset);
+    lptr = reinterpret_cast<uint32_t*>(reinterpret_cast<char*>(PerfCntrBlk) +
+                                       PerfCntr->CounterOffset);
     if (PerfCntr->CounterType == PERF_RAW_FRACTION) {
       double fraction = (double)*lptr++;
       double base = (double)*lptr;

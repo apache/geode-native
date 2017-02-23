@@ -94,12 +94,12 @@ namespace Apache
         return this;
       }
 
-      uint32_t Apache::Geode::Client::Serializable::ObjectSize::get()
+      System::UInt32 Apache::Geode::Client::Serializable::ObjectSize::get()
       {
         return NativePtr->objectSize();
       }
 
-      uint32_t Apache::Geode::Client::Serializable::ClassId::get()
+      System::UInt32 Apache::Geode::Client::Serializable::ClassId::get()
       {
         int8_t typeId = NativePtr->typeId();
         if (typeId == apache::geode::client::GeodeTypeIdsImpl::CacheableUserData ||
@@ -178,32 +178,32 @@ namespace Apache
         return (Apache::Geode::Client::Serializable^)CacheableFloatArray::Create(value);
       }
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (int16_t value)
+      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (System::Int16 value)
       {
         return (Apache::Geode::Client::Serializable^)CacheableInt16::Create(value);
       }
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<int16_t>^ value)
+      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<System::Int16>^ value)
       {
         return (Apache::Geode::Client::Serializable^)CacheableInt16Array::Create(value);
       }
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (int32_t value)
+      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (System::Int32 value)
       {
         return (Apache::Geode::Client::Serializable^)CacheableInt32::Create(value);
       }
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<int32_t>^ value)
+      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<System::Int32>^ value)
       {
         return (Apache::Geode::Client::Serializable^)CacheableInt32Array::Create(value);
       }
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (int64_t value)
+      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (System::Int64 value)
       {
         return (Apache::Geode::Client::Serializable^)CacheableInt64::Create(value);
       }
 
-      /*Apache::Geode::Client::*/Serializable::operator /*Apache::Geode::Client::*/Serializable ^ (array<int64_t>^ value)
+      /*Apache::Geode::Client::*/Serializable::operator /*Apache::Geode::Client::*/Serializable ^ (array<System::Int64>^ value)
       {
         return (Apache::Geode::Client::Serializable^)Apache::Geode::Client::CacheableInt64Array::Create(value);
       }
@@ -218,13 +218,13 @@ namespace Apache
         return (Apache::Geode::Client::Serializable^)CacheableStringArray::Create(value);
       }
 
-      int32_t Serializable::GetPDXIdForType(const char* poolName, IGeodeSerializable^ pdxType)
+      System::Int32 Serializable::GetPDXIdForType(const char* poolName, IGeodeSerializable^ pdxType)
       {
         apache::geode::client::CacheablePtr kPtr(SafeMSerializableConvertGeneric(pdxType));
         return apache::geode::client::SerializationRegistry::GetPDXIdForType(poolName, kPtr);
       }
 
-      IGeodeSerializable^ Serializable::GetPDXTypeById(const char* poolName, int32_t typeId)
+      IGeodeSerializable^ Serializable::GetPDXTypeById(const char* poolName, System::Int32 typeId)
       {
         SerializablePtr sPtr = apache::geode::client::SerializationRegistry::GetPDXTypeById(poolName, typeId);
         return SafeUMSerializableConvertGeneric(sPtr.ptr());
@@ -498,7 +498,7 @@ namespace Apache
         //--------------------------------------------------------------
 
         //adding user type as well in global builtin hashmap
-        int64_t classId = ((int64_t)creationMethod()->ClassId);
+        System::Int64 classId = ((System::Int64)creationMethod()->ClassId);
         if (!ManagedDelegatesGeneric->ContainsKey(classId))
           ManagedDelegatesGeneric->Add(classId, creationMethod);
 
@@ -627,7 +627,7 @@ namespace Apache
                return (TValue)(int8_t)safe_cast<int8_t>(Serializable::getByte(val));
                }
                else {
-               return (TValue)(uint8_t)safe_cast<int8_t>(Serializable::getByte(val));
+               return (TValue)(System::Byte)safe_cast<int8_t>(Serializable::getByte(val));
                }
                return safe_cast<TValue>(Serializable::getByte(val));*/
           }
@@ -658,30 +658,30 @@ namespace Apache
           case apache::geode::client::GeodeTypeIds::CacheableInt16:
           {
             /* if (TValue::typeid == System::Int16::typeid) {
-               return (TValue)(int16_t)safe_cast<int16_t>(Serializable::getInt16(val));
+               return (TValue)(System::Int16)safe_cast<System::Int16>(Serializable::getInt16(val));
                }
                else {
-               return (TValue)(uint16_t)safe_cast<int16_t>(Serializable::getInt16(val));
+               return (TValue)(System::UInt16)safe_cast<System::Int16>(Serializable::getInt16(val));
                }*/
             return safe_cast<TValue>(Serializable::getInt16(val));
           }
           case apache::geode::client::GeodeTypeIds::CacheableInt32:
           {
             /* if (TValue::typeid == System::Int32::typeid) {
-               return (TValue)(int32_t)safe_cast<int32_t>(Serializable::getInt32(val));
+               return (TValue)(System::Int32)safe_cast<System::Int32>(Serializable::getInt32(val));
                }
                else {
-               return (TValue)(uint32_t)safe_cast<int32_t>(Serializable::getInt32(val));
+               return (TValue)(System::UInt32)safe_cast<System::Int32>(Serializable::getInt32(val));
                }  */
             return safe_cast<TValue>(Serializable::getInt32(val));
           }
           case apache::geode::client::GeodeTypeIds::CacheableInt64:
           {
             /*if (TValue::typeid == System::Int64::typeid) {
-              return (TValue)(int64_t)safe_cast<int64_t>(Serializable::getInt64(val));
+              return (TValue)(System::Int64)safe_cast<System::Int64>(Serializable::getInt64(val));
               }
               else {
-              return (TValue)(uint64_t)safe_cast<int64_t>(Serializable::getInt64(val));
+              return (TValue)(System::UInt64)safe_cast<System::Int64>(Serializable::getInt64(val));
               }*/
             return safe_cast<TValue>(Serializable::getInt64(val));
           }
@@ -1078,35 +1078,35 @@ namespace Apache
                   case apache::geode::client::GeodeTypeIds::CacheableInt16: {
                     /*if( managedType == System::Int16::typeid )
                       {
-                      return Serializable::getCacheableInt16((int16_t)key);
+                      return Serializable::getCacheableInt16((System::Int16)key);
                       }
                       else
                       {
-                      return Serializable::getCacheableInt16((uint16_t)key);
+                      return Serializable::getCacheableInt16((System::UInt16)key);
                       }*/
-                    return Serializable::getCacheableInt16((int16_t)key);
+                    return Serializable::getCacheableInt16((System::Int16)key);
                   }
                   case apache::geode::client::GeodeTypeIds::CacheableInt32: {
                     /* if( managedType == System::Int32::typeid )
                       {
-                      return Serializable::getCacheableInt32((int32_t)key);
+                      return Serializable::getCacheableInt32((System::Int32)key);
                       }
                       else
                       {
-                      return Serializable::getCacheableInt32((int32_t)key);
+                      return Serializable::getCacheableInt32((System::Int32)key);
                       }*/
-                    return Serializable::getCacheableInt32((int32_t)key);
+                    return Serializable::getCacheableInt32((System::Int32)key);
                   }
                   case apache::geode::client::GeodeTypeIds::CacheableInt64: {
                     /*if( managedType == System::Int64::typeid )
                       {
-                      return Serializable::getCacheableInt64((int64_t)key);
+                      return Serializable::getCacheableInt64((System::Int64)key);
                       }
                       else
                       {
-                      return Serializable::getCacheableInt64((uint64_t)key);
+                      return Serializable::getCacheableInt64((System::UInt64)key);
                       }*/
-                    return Serializable::getCacheableInt64((int64_t)key);
+                    return Serializable::getCacheableInt64((System::Int64)key);
                   }
                   case apache::geode::client::GeodeTypeIds::CacheableBytes:
                   {
@@ -1140,7 +1140,7 @@ namespace Apache
                        return kPtr;
                        }
                        else {
-                       apache::geode::client::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableInt16Array::Create(getInt16Array((array<uint16_t>^)key))));
+                       apache::geode::client::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableInt16Array::Create(getInt16Array((array<System::UInt16>^)key))));
                        return kPtr;
                        }  */
                   }
@@ -1153,7 +1153,7 @@ namespace Apache
                         return kPtr;
                         }
                         else {
-                        apache::geode::client::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableInt32Array::Create(getInt32Array((array<uint32_t>^)key))));
+                        apache::geode::client::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableInt32Array::Create(getInt32Array((array<System::UInt32>^)key))));
                         return kPtr;
                         }       */
                   }
@@ -1166,7 +1166,7 @@ namespace Apache
                       return kPtr;
                       }
                       else {
-                      apache::geode::client::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableInt64Array::Create(getInt64Array((array<uint64_t>^)key))));
+                      apache::geode::client::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableInt64Array::Create(getInt64Array((array<System::UInt64>^)key))));
                       return kPtr;
                       }     */
                   }
@@ -1345,7 +1345,7 @@ namespace Apache
                 }
 
                 //int16
-                int16_t Serializable::getInt16(apache::geode::client::SerializablePtr nativeptr)
+                System::Int16 Serializable::getInt16(apache::geode::client::SerializablePtr nativeptr)
                 {
                   apache::geode::client::CacheableInt16* ci = static_cast<apache::geode::client::CacheableInt16*>(nativeptr.ptr());
                   return ci->value();
@@ -1357,25 +1357,25 @@ namespace Apache
                 }
 
                 //int32
-                int32_t Serializable::getInt32(apache::geode::client::SerializablePtr nativeptr)
+                System::Int32 Serializable::getInt32(apache::geode::client::SerializablePtr nativeptr)
                 {
                   apache::geode::client::CacheableInt32* ci = static_cast<apache::geode::client::CacheableInt32*>(nativeptr.ptr());
                   return ci->value();
                 }
 
-                apache::geode::client::CacheableKeyPtr Serializable::getCacheableInt32(int32_t val)
+                apache::geode::client::CacheableKeyPtr Serializable::getCacheableInt32(System::Int32 val)
                 {
                   return apache::geode::client::CacheableInt32::create(val);
                 }
 
                 //int64
-                int64_t Serializable::getInt64(apache::geode::client::SerializablePtr nativeptr)
+                System::Int64 Serializable::getInt64(apache::geode::client::SerializablePtr nativeptr)
                 {
                   apache::geode::client::CacheableInt64* ci = static_cast<apache::geode::client::CacheableInt64*>(nativeptr.ptr());
                   return ci->value();
                 }
 
-                apache::geode::client::CacheableKeyPtr Serializable::getCacheableInt64(int64_t val)
+                apache::geode::client::CacheableKeyPtr Serializable::getCacheableInt64(System::Int64 val)
                 {
                   return apache::geode::client::CacheableInt64::create(val);
                 }
@@ -1444,7 +1444,7 @@ namespace Apache
                   if (value != nullptr) {
                     len = value->Length;
                     pin_ptr<const wchar_t> pin_value = PtrToStringChars(value);
-                    cStr = apache::geode::client::CacheableString::create(pin_value, static_cast<int32_t> (len));
+                    cStr = apache::geode::client::CacheableString::create(pin_value, Convert::ToInt32(len));
                   }
                   else {
                     cStr = (apache::geode::client::CacheableString*)
@@ -1462,7 +1462,7 @@ namespace Apache
                     len = value->Length;
                     const char* chars =
                       (const char*)(Marshal::StringToHGlobalAnsi(value)).ToPointer();
-                    cStr = apache::geode::client::CacheableString::create(chars, static_cast<int32_t> (len));
+                    cStr = apache::geode::client::CacheableString::create(chars, Convert::ToInt32(len));
                     Marshal::FreeHGlobal(IntPtr((void*)chars));
                   }
                   else {
@@ -1498,9 +1498,9 @@ namespace Apache
                   return dArray;
                 }
 
-                array<int16_t>^ Serializable::getInt16Array(array<uint16_t>^ sArray)
+                array<System::Int16>^ Serializable::getInt16Array(array<System::UInt16>^ sArray)
                 {
-                  array<int16_t>^ dArray = gcnew array<int16_t>(sArray->Length);
+                  array<System::Int16>^ dArray = gcnew array<System::Int16>(sArray->Length);
                   for (int index = 0; index < dArray->Length; index++)
                   {
                     dArray[index] = sArray[index];
@@ -1508,9 +1508,9 @@ namespace Apache
                   return dArray;
                 }
 
-                array<int32_t>^ Serializable::getInt32Array(array<uint32_t>^ sArray)
+                array<System::Int32>^ Serializable::getInt32Array(array<System::UInt32>^ sArray)
                 {
-                  array<int32_t>^ dArray = gcnew array<int32_t>(sArray->Length);
+                  array<System::Int32>^ dArray = gcnew array<System::Int32>(sArray->Length);
                   for (int index = 0; index < dArray->Length; index++)
                   {
                     dArray[index] = sArray[index];
@@ -1518,9 +1518,9 @@ namespace Apache
                   return dArray;
                 }
 
-                array<int64_t>^ Serializable::getInt64Array(array<uint64_t>^ sArray)
+                array<System::Int64>^ Serializable::getInt64Array(array<System::UInt64>^ sArray)
                 {
-                  array<int64_t>^ dArray = gcnew array<int64_t>(sArray->Length);
+                  array<System::Int64>^ dArray = gcnew array<System::Int64>(sArray->Length);
                   for (int index = 0; index < dArray->Length; index++)
                   {
                     dArray[index] = sArray[index];

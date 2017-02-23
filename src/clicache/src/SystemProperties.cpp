@@ -57,7 +57,7 @@ namespace Apache
         NativePtr->logSettings( );
       }
 
-      int32_t SystemProperties::StatisticsSampleInterval::get( )
+      System::Int32 SystemProperties::StatisticsSampleInterval::get( )
       {
         return NativePtr->statisticsSampleInterval( );
       }
@@ -92,32 +92,32 @@ namespace Apache
         return NativePtr->heapLRULimit( );
       }
       
-      int32_t SystemProperties::HeapLRUDelta::get( )
+      System::Int32 SystemProperties::HeapLRUDelta::get( )
       {
         return NativePtr->heapLRUDelta( );
       }
       
-      int32_t SystemProperties::MaxSocketBufferSize::get( )
+      System::Int32 SystemProperties::MaxSocketBufferSize::get( )
       {
         return NativePtr->maxSocketBufferSize( );
       }
       
-      int32_t SystemProperties::PingInterval::get( )
+      System::Int32 SystemProperties::PingInterval::get( )
       {
         return NativePtr->pingInterval( );
       }
       
-      int32_t SystemProperties::RedundancyMonitorInterval::get( )
+      System::Int32 SystemProperties::RedundancyMonitorInterval::get( )
       {
         return NativePtr->redundancyMonitorInterval( );
       }
       
-      int32_t SystemProperties::NotifyAckInterval::get( )
+      System::Int32 SystemProperties::NotifyAckInterval::get( )
       {
         return NativePtr->notifyAckInterval( );
       }
       
-      int32_t SystemProperties::NotifyDupCheckLife::get( )
+      System::Int32 SystemProperties::NotifyDupCheckLife::get( )
       {
         return NativePtr->notifyDupCheckLife( );
       }
@@ -147,27 +147,27 @@ namespace Apache
         return ManagedString::Get( NativePtr->cacheXMLFile( ) );
       }
 
-      int32_t SystemProperties::LogFileSizeLimit::get( )
+      System::Int32 SystemProperties::LogFileSizeLimit::get( )
       {
         return NativePtr->logFileSizeLimit( );
       }
 
-	  int32_t SystemProperties::LogDiskSpaceLimit::get( )
+	  System::Int32 SystemProperties::LogDiskSpaceLimit::get( )
       {
 		  return NativePtr->logDiskSpaceLimit( );
       }
 
-      int32_t SystemProperties::StatsFileSizeLimit::get( )
+      System::Int32 SystemProperties::StatsFileSizeLimit::get( )
       {
         return NativePtr->statsFileSizeLimit( );
       }
 
-	  int32_t SystemProperties::StatsDiskSpaceLimit::get( )
+	  System::Int32 SystemProperties::StatsDiskSpaceLimit::get( )
       {
 		  return NativePtr->statsDiskSpaceLimit( );
       }
 
-      uint32_t SystemProperties::MaxQueueSize::get( )
+      System::UInt32 SystemProperties::MaxQueueSize::get( )
       {
         return NativePtr->maxQueueSize( );
       }
@@ -209,12 +209,12 @@ namespace Apache
         return ManagedString::Get( NativePtr->durableClientId( ) );
       }
 
-      uint32_t SystemProperties::DurableTimeout::get( )
+      System::UInt32 SystemProperties::DurableTimeout::get( )
       {
         return NativePtr->durableTimeout( );
       }
 
-      uint32_t SystemProperties::ConnectTimeout::get( )
+      System::UInt32 SystemProperties::ConnectTimeout::get( )
       {
         return NativePtr->connectTimeout( );
       }
@@ -224,7 +224,7 @@ namespace Apache
         return ManagedString::Get( NativePtr->conflateEvents( ) );
       }
 
-      uint32_t SystemProperties::SuspendedTxTimeout::get( )
+      System::UInt32 SystemProperties::SuspendedTxTimeout::get( )
       {
         return NativePtr->suspendedTxTimeout( );
       }

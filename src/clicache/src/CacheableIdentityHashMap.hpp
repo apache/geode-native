@@ -66,7 +66,7 @@ namespace Apache
         /// <param name="capacity">
         /// The initial capacity of the HashMap.
         /// </param>
-        inline CacheableIdentityHashMap(int32_t capacity)
+        inline CacheableIdentityHashMap(System::Int32 capacity)
           : CacheableHashMap(capacity)
         { }
 
@@ -91,7 +91,7 @@ namespace Apache
         /// <summary>
         /// Static function to create a new instance with given initial size.
         /// </summary>
-        inline static CacheableIdentityHashMap^ Create(int32_t capacity)
+        inline static CacheableIdentityHashMap^ Create(System::Int32 capacity)
         {
           return gcnew CacheableIdentityHashMap(capacity);
         }
@@ -104,9 +104,9 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property uint32_t ClassId
+        virtual property System::UInt32 ClassId
         {
-          virtual uint32_t get() override
+          virtual System::UInt32 get() override
           {
             return GeodeClassIds::CacheableIdentityHashMap;
           }

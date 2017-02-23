@@ -39,7 +39,7 @@ namespace Apache
       {
 
         // Round off dateTime to the nearest millisecond.
-        int64_t ticksToAdd = m_dateTime.Ticks % TimeSpan::TicksPerMillisecond;
+        System::Int64 ticksToAdd = m_dateTime.Ticks % TimeSpan::TicksPerMillisecond;
         ticksToAdd = (ticksToAdd >= (TimeSpan::TicksPerMillisecond / 2) ?
                       (TimeSpan::TicksPerMillisecond - ticksToAdd) : -ticksToAdd);
         m_dateTime = m_dateTime.AddTicks(ticksToAdd);
@@ -50,7 +50,7 @@ namespace Apache
       {
         //put as universal time
         TimeSpan epochSpan = m_dateTime.ToUniversalTime() - EpochTime;
-        int64_t millisSinceEpoch =
+        System::Int64 millisSinceEpoch =
           epochSpan.Ticks / TimeSpan::TicksPerMillisecond;
         output->WriteInt64(millisSinceEpoch);
 
@@ -60,7 +60,7 @@ namespace Apache
       IGeodeSerializable^ CacheableDate::FromData(DataInput^ input)
       {
         DateTime epochTime = EpochTime;
-        int64_t millisSinceEpoch = input->ReadInt64();
+        System::Int64 millisSinceEpoch = input->ReadInt64();
         m_dateTime = epochTime.AddTicks(
           millisSinceEpoch * TimeSpan::TicksPerMillisecond);
         m_dateTime = m_dateTime.ToLocalTime();
@@ -68,12 +68,12 @@ namespace Apache
         return this;
       }
 
-      uint32_t CacheableDate::ObjectSize::get()
+      System::UInt32 CacheableDate::ObjectSize::get()
       {
-        return (uint32_t)sizeof(DateTime);
+        return (System::UInt32)sizeof(DateTime);
       }
 
-      uint32_t CacheableDate::ClassId::get()
+      System::UInt32 CacheableDate::ClassId::get()
       {
         return GeodeClassIds::CacheableDate;
       }
@@ -84,13 +84,13 @@ namespace Apache
           System::Globalization::CultureInfo::CurrentCulture);
       }
 
-      int32_t CacheableDate::GetHashCode()
+      System::Int32 CacheableDate::GetHashCode()
       {
         if (m_hashcode == 0) {
           TimeSpan epochSpan = m_dateTime - EpochTime;
-          int64_t millitime =
+          System::Int64 millitime =
             epochSpan.Ticks / TimeSpan::TicksPerMillisecond;
-          m_hashcode = (int)millitime ^ (int)((int64_t)millitime >> 32);
+          m_hashcode = (int)millitime ^ (int)((System::Int64)millitime >> 32);
         }
         return m_hashcode;
       }

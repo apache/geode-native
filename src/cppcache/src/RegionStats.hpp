@@ -129,7 +129,6 @@ class CPPCACHE_EXPORT RegionStats {
 
 class RegionStatType {
  private:
-  static int8_t instanceFlag;
   static RegionStatType* single;
   static SpinLock m_singletonLock;
   static SpinLock m_statTypeLock;

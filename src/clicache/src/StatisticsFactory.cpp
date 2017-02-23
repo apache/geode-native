@@ -148,14 +148,14 @@ namespace Apache
       }
 
       StatisticsType^ StatisticsFactory::CreateType( String^ name, String^ description,
-                                   array<StatisticDescriptor^>^ stats, int32_t statsLength)
+                                   array<StatisticDescriptor^>^ stats, System::Int32 statsLength)
       {
         ManagedString mg_name( name );
         ManagedString mg_description( description );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
                 
           apache::geode::statistics::StatisticDescriptor ** nativedescriptors = new apache::geode::statistics::StatisticDescriptor*[statsLength];
-          for (int32_t index = 0; index < statsLength; index++)
+          for (System::Int32 index = 0; index < statsLength; index++)
           {
             nativedescriptors[index] = GetNativePtr<apache::geode::statistics::StatisticDescriptor>(stats[index]);
           }
@@ -193,7 +193,7 @@ namespace Apache
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
-      Statistics^ StatisticsFactory::CreateStatistics(StatisticsType^ type, String^ textId, int64_t numericId)
+      Statistics^ StatisticsFactory::CreateStatistics(StatisticsType^ type, String^ textId, System::Int64 numericId)
       {
         ManagedString mg_text( textId );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
@@ -222,7 +222,7 @@ namespace Apache
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
-      Statistics^ StatisticsFactory::CreateAtomicStatistics(StatisticsType^ type, String^ textId, int64_t numericId)
+      Statistics^ StatisticsFactory::CreateAtomicStatistics(StatisticsType^ type, String^ textId, System::Int64 numericId)
       {
         ManagedString mg_text( textId );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
@@ -245,7 +245,7 @@ namespace Apache
         return ManagedString::Get( NativePtr->getName() );
       }
 
-      int64_t StatisticsFactory::ID::get( )
+      System::Int64 StatisticsFactory::ID::get( )
       {
         return  NativePtr->getId();
     }  // namespace Client

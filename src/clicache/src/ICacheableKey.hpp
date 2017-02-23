@@ -55,7 +55,7 @@ namespace Apache
         /// <returns>
         /// The hashcode for this object.
         /// </returns>
-        int32_t GetHashCode( );
+        System::Int32 GetHashCode( );
 
         /// <summary>
         /// Returns true if this <c>ICacheableKey</c> matches the other.
