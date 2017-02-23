@@ -123,7 +123,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutThroughPartitionResolver)
       RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
       CacheableKeyPtr keyPtr =
           dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
-      dataReg->put(keyPtr, static_cast<int32_t>(keyPtr->hashcode()));
+      dataReg->put(keyPtr, keyPtr->hashcode());
     }
     SLEEP(5000);
     ASSERT(cpr->called, "Partition resolver not called");

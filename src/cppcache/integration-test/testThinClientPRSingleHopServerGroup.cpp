@@ -102,8 +102,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
 
       try {
         LOGINFO("CPPTEST: Putting key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
-        dataReg->put(keyPtr, static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
+        dataReg->put(keyPtr, keyPtr->hashcode());
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGINFO("CheckPrSingleHopForIntKeysTask_CLIENT1: networkhop %d ",
@@ -167,7 +167,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
 
       try {
         LOGINFO("CPPTEST: getting key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
         dataReg->get(keyPtr);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
@@ -256,7 +256,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
 
       try {
         LOGINFO("CPPTEST: destroying key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
         dataReg->destroy(keyPtr);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
@@ -309,8 +309,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
 
       try {
         LOGINFO("CPPTEST: Putting key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
-        dataReg->put(keyPtr, static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
+        dataReg->put(keyPtr, keyPtr->hashcode());
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGINFO("CheckPrSingleHopForIntKeysTask_CLIENT2: networkhop %d ",
@@ -373,7 +373,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
 
       try {
         LOGINFO("CPPTEST: getting key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
         dataReg->get(keyPtr);
         int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
@@ -455,7 +455,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
 
       try {
         LOGINFO("CPPTEST: destroying key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
         dataReg->destroy(keyPtr);
         int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
@@ -503,8 +503,8 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
 
       try {
         LOGINFO("CPPTEST: Putting key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
-        dataReg->put(keyPtr, static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
+        dataReg->put(keyPtr, keyPtr->hashcode());
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGINFO("CheckPrSingleHopForIntKeysTask_CLIENT3: networkhop %d ",
@@ -567,7 +567,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
 
       try {
         LOGINFO("CPPTEST: getting key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
         dataReg->get(keyPtr);
         int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
@@ -646,7 +646,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
 
       try {
         LOGINFO("CPPTEST: destroying key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
         dataReg->destroy(keyPtr);
         int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
