@@ -193,7 +193,7 @@ namespace apache
         UInt32 m_classId;
         uint8_t * m_bytes;
         uint32_t m_size;
-        uint32_t m_hashCode;
+        int32_t m_hashCode;
         // Disable the copy and assignment constructors
         ManagedCacheableKeyBytesGeneric(const ManagedCacheableKeyBytesGeneric&);
         ManagedCacheableKeyBytesGeneric& operator = (const ManagedCacheableKeyBytesGeneric&);
