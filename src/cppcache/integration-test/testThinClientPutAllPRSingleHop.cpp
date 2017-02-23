@@ -130,7 +130,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
           dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
       try {
         LOGINFO("CPPTEST: put item %d", i);
-        dataReg->put(keyPtr, static_cast<int32_t>(keyPtr->hashcode()));
+        dataReg->put(keyPtr, keyPtr->hashcode());
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGINFO("WarmUpTask: networkhop is %d ", networkhop);
@@ -216,7 +216,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
           CacheablePtr valPtr =
               dynCast<CacheablePtr>(CacheableInt32::create(keyPtr->hashcode()));
           LOGINFO("CPPTEST: putALL CASE:: getting key %d with hashcode %d", j,
-                  static_cast<int32_t>(keyPtr->hashcode()));
+                  keyPtr->hashcode());
           valMap.insert(keyPtr, valPtr);
         }
         LOGINFO("TEST-1");
@@ -278,7 +278,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopRemoveAllForIntKeysTask)
           CacheablePtr valPtr =
               dynCast<CacheablePtr>(CacheableInt32::create(keyPtr->hashcode()));
           LOGINFO("CPPTEST: removeall CASE:: getting key %d with hashcode %d",
-                  j, static_cast<int32_t>(keyPtr->hashcode()));
+                  j, keyPtr->hashcode());
           valMap.insert(keyPtr, valPtr);
           keys.push_back(keyPtr);
         }

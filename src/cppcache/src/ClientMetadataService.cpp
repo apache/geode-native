@@ -278,7 +278,7 @@ void ClientMetadataService::getBucketServerLocation(
       }
     } else {
       if (cptr->getTotalNumBuckets() > 0) {
-        bucketId = std::abs(static_cast<int>(resolvekey->hashcode()) %
+        bucketId = std::abs(resolvekey->hashcode() %
                             cptr->getTotalNumBuckets());
       }
     }
@@ -429,7 +429,7 @@ ClientMetadataService::getServerToFilterMap(const VectorOfCacheableKey* keys,
       resolveKey = resolver->getRoutingObject(event);
     }
 
-    int bucketId = std::abs(static_cast<int>(resolveKey->hashcode()) %
+    int bucketId = std::abs(resolveKey->hashcode() %
                             cptr->getTotalNumBuckets());
     VectorOfCacheableKeyPtr keyList = NULLPTR;
     std::map<int, BucketServerLocationPtr>::iterator bucketsIter =
@@ -564,7 +564,7 @@ ClientMetadataService::groupByBucketOnClientSide(const RegionPtr& region,
       }
     } else {
       if (metadata->getTotalNumBuckets() > 0) {
-        bucketId = std::abs(static_cast<int>(resolvekey->hashcode()) %
+        bucketId = std::abs(resolvekey->hashcode() %
                             metadata->getTotalNumBuckets());
       }
     }

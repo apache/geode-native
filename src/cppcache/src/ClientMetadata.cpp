@@ -344,7 +344,7 @@ int ClientMetadata::assignFixedBucketId(const char* partitionName,
   FixedMapType::iterator iter = m_fpaMap.find(partitionName);
   if (iter != m_fpaMap.end()) {
     std::vector<int> attList = iter->second;
-    int hc = static_cast<int>(resolvekey->hashcode());
+    int32_t hc = resolvekey->hashcode();
     int bucketId = std::abs(hc % (attList.at(0)));
     int partitionBucketID = bucketId + attList.at(1);
     return partitionBucketID;

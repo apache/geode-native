@@ -236,8 +236,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
 
       try {
         LOGDEBUG("CPPTEST: Putting key %d with hashcode %d", i,
-                 static_cast<int32_t>(keyPtr->hashcode()));
-        dataReg->put(keyPtr, static_cast<int32_t>(keyPtr->hashcode()));
+                 keyPtr->hashcode());
+        dataReg->put(keyPtr, keyPtr->hashcode());
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGDEBUG("CheckPrSingleHopForIntKeysTask_REGION: networkhop %d ",
@@ -283,7 +283,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
 
       try {
         LOGDEBUG("CPPTEST: getting key %d with hashcode %d", i,
-                 static_cast<int32_t>(keyPtr->hashcode()));
+                 keyPtr->hashcode());
         dataReg->get(keyPtr);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
@@ -410,7 +410,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
 
       try {
         LOGDEBUG("CPPTEST: destroying key %d with hashcode %d", i,
-                 static_cast<int32_t>(keyPtr->hashcode()));
+                 keyPtr->hashcode());
         dataReg->destroy(keyPtr);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();

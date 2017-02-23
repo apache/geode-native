@@ -293,7 +293,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
           dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
       try {
         LOGDEBUG("CPPTEST: put item %d", i);
-        dataReg->put(keyPtr, static_cast<int32_t>(keyPtr->hashcode()));
+        dataReg->put(keyPtr, keyPtr->hashcode());
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGINFO("WarmUpTask: networkhop is %d ", networkhop);
@@ -379,7 +379,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask3)
           dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
       try {
         LOGDEBUG("CPPTEST: put item %d", i);
-        dataReg->put(keyPtr, static_cast<int32_t>(keyPtr->hashcode()));
+        dataReg->put(keyPtr, keyPtr->hashcode());
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGINFO("WarmUpTask3: networkhop is %d ", networkhop);
@@ -524,9 +524,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForAllKeysTask)
 
       try {
         LOGDEBUG("CPPTEST: Putting key %s with hashcode %d", logmsg,
-                 static_cast<int32_t>(keyPtr->hashcode()));
+                 keyPtr->hashcode());
 
-        dataReg->put(keyPtr, static_cast<int32_t>(keyPtr->hashcode()));
+        dataReg->put(keyPtr, keyPtr->hashcode());
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         ASSERT(!networkhop, "It is networkhop operation");
@@ -555,7 +555,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForAllKeysTask)
 
       try {
         LOGDEBUG("CPPTEST: Destroying key %s with hashcode %d", logmsg,
-                 static_cast<int32_t>(keyPtr->hashcode()));
+                 keyPtr->hashcode());
 
         dataReg->destroy(keyPtr);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
@@ -639,8 +639,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
 
       try {
         LOGDEBUG("CPPTEST: Putting key %d with hashcode %d", i,
-                 static_cast<int32_t>(keyPtr->hashcode()));
-        dataReg->put(keyPtr, static_cast<int32_t>(keyPtr->hashcode()));
+                 keyPtr->hashcode());
+        dataReg->put(keyPtr, keyPtr->hashcode());
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         int poolconn = TestUtils::getCacheImpl(getHelper()->cachePtr)
@@ -663,7 +663,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         LOGINFO(
             "CPPTEST: SINGLEHOP SUCCEEDED while putting key %d with hashcode "
             "%d",
-            i, static_cast<int32_t>(keyPtr->hashcode()));
+            i, keyPtr->hashcode());
       } catch (CacheWriterException&) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
@@ -676,7 +676,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         LOGINFO(
             "CPPTEST: SINGLEHOP SUCCEEDED while putting key %d with hashcode "
             "%d",
-            i, static_cast<int32_t>(keyPtr->hashcode()));
+            i, keyPtr->hashcode());
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName(),
                  ex.getMessage());
@@ -692,7 +692,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
 
       try {
         LOGINFO("CPPTEST: Destroying key %i with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
         dataReg->destroy(keyPtr);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
@@ -720,7 +720,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
             "CPPTEST: SINGLEHOP SUCCEEDED while destroying key %d with "
             "hashcode "
             "%d",
-            i, static_cast<int32_t>(keyPtr->hashcode()));
+            i, keyPtr->hashcode());
       } catch (CacheWriterException&) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
@@ -734,7 +734,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
             "CPPTEST: SINGLEHOP SUCCEEDED while destroying key %d with "
             "hashcode "
             "%d",
-            i, static_cast<int32_t>(keyPtr->hashcode()));
+            i, keyPtr->hashcode());
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: Destroy caused unexpected %s: %s", ex.getName(),
                  ex.getMessage());
@@ -756,7 +756,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
 
       try {
         LOGDEBUG("CPPTEST: getting key %d with hashcode %d", i,
-                 static_cast<int32_t>(keyPtr->hashcode()));
+                 keyPtr->hashcode());
         dataReg->get(keyPtr /*,(int32_t)keyPtr->hashcode()*/);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
@@ -783,7 +783,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         LOGINFO(
             "CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with hashcode "
             "%d",
-            i, static_cast<int32_t>(keyPtr->hashcode()));
+            i, keyPtr->hashcode());
       } catch (CacheWriterException&) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
@@ -796,7 +796,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         LOGINFO(
             "CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with hashcode "
             "%d",
-            i, static_cast<int32_t>(keyPtr->hashcode()));
+            i, keyPtr->hashcode());
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName(),
                  ex.getMessage());
@@ -878,7 +878,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForGetAllTask)
     for (int i = 0; i < 100; i++) {
       CacheableKeyPtr keyPtr =
           dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
-      dataReg->put(keyPtr, static_cast<int32_t>(keyPtr->hashcode()));
+      dataReg->put(keyPtr, keyPtr->hashcode());
       keys.push_back(keyPtr);
     }
 
@@ -906,8 +906,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
 
       try {
         LOGDEBUG("CPPTEST: Putting key %d with hashcode %d", i,
-                 static_cast<int32_t>(keyPtr->hashcode()));
-        dataReg->put(keyPtr, static_cast<int32_t>(keyPtr->hashcode()));
+                 keyPtr->hashcode());
+        dataReg->put(keyPtr, keyPtr->hashcode());
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGINFO("CheckPrSingleHopForIntKeysTask: networkhop %d ", networkhop);
@@ -925,7 +925,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         LOGINFO(
             "CPPTEST: SINGLEHOP SUCCEEDED while putting key %d with hashcode "
             "%d",
-            i, static_cast<int32_t>(keyPtr->hashcode()));
+            i, keyPtr->hashcode());
       } catch (CacheWriterException&) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
@@ -938,7 +938,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         LOGINFO(
             "CPPTEST: SINGLEHOP SUCCEEDED while putting key %d with hashcode "
             "%d",
-            i, static_cast<int32_t>(keyPtr->hashcode()));
+            i, keyPtr->hashcode());
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName(),
                  ex.getMessage());
@@ -954,7 +954,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
 
       try {
         LOGDEBUG("CPPTEST: Destroying key %i with hashcode %d", i,
-                 static_cast<int32_t>(keyPtr->hashcode()));
+                 keyPtr->hashcode());
         dataReg->destroy(keyPtr);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
@@ -974,7 +974,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
             "CPPTEST: SINGLEHOP SUCCEEDED while destroying key %d with "
             "hashcode "
             "%d",
-            i, static_cast<int32_t>(keyPtr->hashcode()));
+            i, keyPtr->hashcode());
       } catch (CacheWriterException&) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
@@ -988,7 +988,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
             "CPPTEST: SINGLEHOP SUCCEEDED while destroying key %d with "
             "hashcode "
             "%d",
-            i, static_cast<int32_t>(keyPtr->hashcode()));
+            i, keyPtr->hashcode());
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: Destroy caused unexpected %s: %s", ex.getName(),
                  ex.getMessage());
@@ -1010,7 +1010,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
 
       try {
         LOGDEBUG("CPPTEST: getting key %d with hashcode %d", i,
-                 static_cast<int32_t>(keyPtr->hashcode()));
+                 keyPtr->hashcode());
         dataReg->get(keyPtr /*,(int32_t)keyPtr->hashcode()*/);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
@@ -1029,7 +1029,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         LOGINFO(
             "CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with hashcode "
             "%d",
-            i, static_cast<int32_t>(keyPtr->hashcode()));
+            i, keyPtr->hashcode());
       } catch (CacheWriterException&) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
@@ -1042,7 +1042,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         LOGINFO(
             "CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with hashcode "
             "%d",
-            i, static_cast<int32_t>(keyPtr->hashcode()));
+            i, keyPtr->hashcode());
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName(),
                  ex.getMessage());
@@ -1255,7 +1255,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckGetAllTask)
     for (int i = 0; i < 100000; i++) {
       CacheableKeyPtr keyPtr =
           dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
-      dataReg->put(keyPtr, static_cast<int32_t>(keyPtr->hashcode()));
+      dataReg->put(keyPtr, keyPtr->hashcode());
       keys.push_back(keyPtr);
     }
 
