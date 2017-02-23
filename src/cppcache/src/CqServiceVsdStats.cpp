@@ -20,7 +20,6 @@
 #include "CqServiceVsdStats.hpp"
 //#include "StatisticsFactory.hpp"
 
-#include <ace/Thread_Mutex.h>
 #include <ace/Singleton.h>
 
 #include <mutex>
