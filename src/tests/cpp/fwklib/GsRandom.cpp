@@ -17,13 +17,20 @@
 
 #include "GsRandom.hpp"
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
+#include <mutex>
+#include <util/concurrent/spinlock_mutex.hpp>
+
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
+
+using util::concurrent::spinlock_mutex;
 
 GsRandom *GsRandom::singleton = 0;
 MTRand GsRandom::gen;
 int32_t GsRandom::seedUsed = -101;
-SpinLock GsRandom::lck;
+spinlock_mutex GsRandom::lck;
 
 /**
   * Creates a new random number generator using a single
@@ -36,14 +43,14 @@ GsRandom *GsRandom::getInstance(int32_t seed) {
   if (singleton == 0) {
     setInstance(seed);
   } else {
-    SpinLockGuard guard(lck);
+    std::lock_guard<spinlock_mutex> guard(lck);
     setSeed(seed);
   }
   return singleton;
 }
 
 void GsRandom::setInstance(int32_t seed) {
-  SpinLockGuard guard(lck);
+  std::lock_guard<spinlock_mutex> guard(lck);
   if (singleton == 0) {
     singleton = new GsRandom();
     if (seed != -1) {
@@ -116,3 +123,7 @@ char *GsRandom::randomAlphanumericString(int32_t max, int32_t min,
   buf[len] = 0;
   return buf;
 }
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
