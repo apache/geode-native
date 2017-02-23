@@ -39,7 +39,7 @@ namespace Apache
         NativePtr->getCqListeners( vrr );
         array<ICqListener<TKey, TResult>^>^ listners = gcnew array<ICqListener<TKey, TResult>^>( vrr.size( ) );
 
-        for( int32_t index = 0; index < vrr.size( ); index++ )
+        for( System::Int32 index = 0; index < vrr.size( ); index++ )
         {
           apache::geode::client::CqListenerPtr& nativeptr( vrr[ index ] );
           apache::geode::client::ManagedCqListenerGeneric* mg_listener =

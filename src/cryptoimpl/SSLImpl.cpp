@@ -22,6 +22,7 @@
 #include <ace/SSL/SSL_SOCK_Connector.h>
 #include <ace/SSL/SSL_SOCK_Acceptor.h>
 #include <ace/OS.h>
+#include <cstdint>
 
 ACE_Recursive_Thread_Mutex SSLImpl::s_mutex;
 volatile bool SSLImpl::s_initialized = false;

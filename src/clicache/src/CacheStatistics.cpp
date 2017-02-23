@@ -26,12 +26,12 @@ namespace Apache
     namespace Client
     {
 
-      uint32_t CacheStatistics::LastModifiedTime::get( )
+      System::UInt32 CacheStatistics::LastModifiedTime::get( )
       {
         return NativePtr->getLastModifiedTime( );
       }
 
-      uint32_t CacheStatistics::LastAccessedTime::get( )
+      System::UInt32 CacheStatistics::LastAccessedTime::get( )
       {
         return NativePtr->getLastAccessedTime( );
     }  // namespace Client

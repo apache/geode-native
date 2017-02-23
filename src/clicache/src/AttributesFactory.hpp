@@ -289,7 +289,7 @@ namespace Apache
         /// <param name="idleTimeout">
         /// the idleTimeout in seconds for entries in this region.
         /// </param>
-        void SetEntryIdleTimeout( ExpirationAction action, uint32_t idleTimeout );
+        void SetEntryIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout );
 
         /// <summary>
         /// Sets the timeToLive expiration attributes for region entries for the next
@@ -301,7 +301,7 @@ namespace Apache
         /// <param name="timeToLive">
         /// the timeToLive in seconds for entries in this region.
         /// </param>
-        void SetEntryTimeToLive( ExpirationAction action, uint32_t timeToLive );
+        void SetEntryTimeToLive( ExpirationAction action, System::UInt32 timeToLive );
 
         /// <summary>
         /// Sets the idleTimeout expiration attributes for the region itself for the
@@ -313,7 +313,7 @@ namespace Apache
         /// <param name="idleTimeout">
         /// the idleTimeout in seconds for the region as a whole.
         /// </param>
-        void SetRegionIdleTimeout( ExpirationAction action, uint32_t idleTimeout );
+        void SetRegionIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout );
 
         /// <summary>
         /// Sets the timeToLive expiration attributes for the region itself for the
@@ -325,7 +325,7 @@ namespace Apache
         /// <param name="timeToLive">
         /// the timeToLive in seconds for the region as a whole.
         /// </param>
-        void SetRegionTimeToLive( ExpirationAction action, uint32_t timeToLive );
+        void SetRegionTimeToLive( ExpirationAction action, System::UInt32 timeToLive );
 
 
         // PERSISTENCE
@@ -403,7 +403,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if initialCapacity is nonpositive
         /// </exception>
-        void SetInitialCapacity( int32_t initialCapacity );
+        void SetInitialCapacity( System::Int32 initialCapacity );
 
         /// <summary>
         /// Sets the entry load factor for the next <c>RegionAttributes</c>
@@ -426,7 +426,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if concurrencyLevel is nonpositive
         /// </exception>
-        void SetConcurrencyLevel( int32_t concurrencyLevel );
+        void SetConcurrencyLevel( System::Int32 concurrencyLevel );
 
         /// <summary>
         /// Sets a limit on the number of entries that will be held in the cache.
@@ -437,7 +437,7 @@ namespace Apache
         /// The limit of the number of entries before eviction starts.
         /// Defaults to 0, meaning no LRU actions will used.
         /// </param>
-        void SetLruEntriesLimit( uint32_t entriesLimit );
+        void SetLruEntriesLimit( System::UInt32 entriesLimit );
 
         /// <summary>
         /// Sets the disk policy type for the next <c>RegionAttributes</c> created.

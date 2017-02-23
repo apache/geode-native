@@ -44,7 +44,7 @@ namespace apache
           String^ mg_factoryFunctionName =
             Apache::Geode::Client::ManagedString::Get(factoryFunctionName);
           String^ mg_typeName = nullptr;
-          int32_t dotIndx = -1;
+          System::Int32 dotIndx = -1;
 
           if (mg_factoryFunctionName == nullptr ||
               (dotIndx = mg_factoryFunctionName->LastIndexOf('.')) < 0)

@@ -177,7 +177,7 @@ namespace Apache
         /// <param name="logFileName">the log file name</param>
         /// <param name="logFileLimit">maximum allowable size of the log file, in bytes, 
         ///        or 0 for the default (1 Gbyte)</param>
-        static void Init(LogLevel level, String^ logFileName, int32_t logFileLimit);
+        static void Init(LogLevel level, String^ logFileName, System::Int32 logFileLimit);
 
         /// <summary>
         /// Closes logging facility (until next init).

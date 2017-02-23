@@ -41,7 +41,7 @@ namespace Apache
           return this;
         } 
 
-        uint32_t UserFunctionExecutionException::ObjectSize::get( )
+        System::UInt32 UserFunctionExecutionException::ObjectSize::get( )
         {        
           _GF_MG_EXCEPTION_TRY2
             throw gcnew IllegalStateException("UserFunctionExecutionException::ObjectSize is not intended for use.");

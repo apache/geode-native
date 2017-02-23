@@ -133,17 +133,17 @@ namespace Apache
           return m_dataInput->ReadChar();
         }
         
-        uint16_t PdxLocalReader::ReadUInt16( String^ fieldName )
+        System::UInt16 PdxLocalReader::ReadUInt16( String^ fieldName )
         {
           return m_dataInput->ReadUInt16();
         }
 
-        uint32_t PdxLocalReader::ReadUInt32( String^ fieldName )
+        System::UInt32 PdxLocalReader::ReadUInt32( String^ fieldName )
         {
           return m_dataInput->ReadUInt32();
         }
         
-        uint64_t PdxLocalReader::ReadUInt64( String^ fieldName )
+        System::UInt64 PdxLocalReader::ReadUInt64( String^ fieldName )
         {
           return m_dataInput->ReadUInt64();
         }

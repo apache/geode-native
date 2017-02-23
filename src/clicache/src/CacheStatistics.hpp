@@ -73,7 +73,7 @@ namespace Apache
         /// <seealso cref="Region.Get" />
         /// <seealso cref="Region.Create" />
         /// <seealso cref="Region.CreateSubRegion" />
-        property uint32_t LastModifiedTime
+        property System::UInt32 LastModifiedTime
         {
           /// <summary>
           /// Get the last modified time of an entry or a region.
@@ -82,7 +82,7 @@ namespace Apache
           /// the last accessed time expressed as the number of milliseconds since
           /// January 1, 1970.
           /// </returns>
-          uint32_t get( );
+          System::UInt32 get( );
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Apache
         /// </returns>
         /// <seealso cref="Region.Get" />
         /// <seealso cref="LastModifiedTime" />
-        property uint32_t LastAccessedTime
+        property System::UInt32 LastAccessedTime
         {
           /// <summary>
           /// Get the last accessed time of an entry or a region.
@@ -117,7 +117,7 @@ namespace Apache
           /// the last accessed time expressed as the number of milliseconds since
           /// January 1, 1970.
           /// </returns>
-          uint32_t get( );
+          System::UInt32 get( );
         }
 
 

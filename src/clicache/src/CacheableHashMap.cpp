@@ -44,7 +44,7 @@ namespace Apache
         return this;
       }
 
-      uint32_t Client::CacheableHashMap::ObjectSize::get()
+      System::UInt32 Client::CacheableHashMap::ObjectSize::get()
       {
         return ((System::Collections::IDictionary^)m_dictionary)->Count;
     }  // namespace Client

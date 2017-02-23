@@ -38,7 +38,7 @@ namespace Apache
       }
 
       generic<class TResult>
-      int32_t ResultSet<TResult>::Size::get( )
+      System::Int32 ResultSet<TResult>::Size::get( )
       {
         return NativePtr->size( );
       }
@@ -46,8 +46,8 @@ namespace Apache
       generic<class TResult>
       /*IGeodeSerializable^*/TResult ResultSet<TResult>::default::get( size_t index )
       {
-          //return SafeUMSerializableConvertGeneric(NativePtr->operator[](static_cast<int32_t>(index)).ptr());
-           return (Serializable::GetManagedValueGeneric<TResult>(NativePtr->operator[](static_cast<int32_t>(index))));
+          //return SafeUMSerializableConvertGeneric(NativePtr->operator[](static_cast<System::Int32>(index)).ptr());
+           return (Serializable::GetManagedValueGeneric<TResult>(NativePtr->operator[](static_cast<System::Int32>(index))));
       }
 
       generic<class TResult>

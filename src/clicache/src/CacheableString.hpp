@@ -101,9 +101,9 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property uint32_t ClassId
+        virtual property System::UInt32 ClassId
         {
-          virtual uint32_t get() override
+          virtual System::UInt32 get() override
           {
             return m_type;
           }
@@ -113,9 +113,9 @@ namespace Apache
         /// <summary>
         /// return the size of this object in bytes
         /// </summary>
-        virtual property uint32_t ObjectSize
+        virtual property System::UInt32 ObjectSize
         {
-          virtual uint32_t get() override;
+          virtual System::UInt32 get() override;
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace Apache
         /// <summary>
         /// Return the hashcode for this key.
         /// </summary>
-        virtual int32_t GetHashCode() override;
+        virtual System::Int32 GetHashCode() override;
 
         /// <summary>
         /// Gets the string value.
@@ -197,9 +197,9 @@ namespace Apache
         /// <summary>
         /// Gets the length of the underlying C string.
         /// </summary>
-        property uint32_t Length
+        property System::UInt32 Length
         {
-          inline uint32_t get()
+          inline System::UInt32 get()
           {
             return m_value->Length;
           }
@@ -281,14 +281,14 @@ namespace Apache
           return cStr->Value;
         }
 
-        CacheableString(uint32_t type) : CacheableKey()
+        CacheableString(System::UInt32 type) : CacheableKey()
         {
           m_type = type;
         }
 
       private:
         String^ m_value;
-        uint32_t m_type;
+        System::UInt32 m_type;
         int m_hashcode;
 
         CacheableString() : CacheableKey()

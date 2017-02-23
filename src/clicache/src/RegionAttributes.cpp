@@ -142,7 +142,7 @@ namespace Apache
       }
 
       generic <class TKey, class TValue>
-      int32_t Client::RegionAttributes<TKey, TValue>::RegionTimeToLive::get()
+      System::Int32 Client::RegionAttributes<TKey, TValue>::RegionTimeToLive::get()
       {
         return NativePtr->getRegionTimeToLive( );
       }
@@ -154,7 +154,7 @@ namespace Apache
       }
 
       generic <class TKey, class TValue>
-      int32_t Client::RegionAttributes<TKey, TValue>::RegionIdleTimeout::get()
+      System::Int32 Client::RegionAttributes<TKey, TValue>::RegionIdleTimeout::get()
       {
         return NativePtr->getRegionIdleTimeout( );
       }
@@ -166,7 +166,7 @@ namespace Apache
       }
 
       generic <class TKey, class TValue>
-      int32_t Client::RegionAttributes<TKey, TValue>::EntryTimeToLive::get()
+      System::Int32 Client::RegionAttributes<TKey, TValue>::EntryTimeToLive::get()
       {
         return NativePtr->getEntryTimeToLive( );
       }
@@ -178,7 +178,7 @@ namespace Apache
       }
 
       generic <class TKey, class TValue>
-      int32_t Client::RegionAttributes<TKey, TValue>::EntryIdleTimeout::get()
+      System::Int32 Client::RegionAttributes<TKey, TValue>::EntryIdleTimeout::get()
       {
         return NativePtr->getEntryIdleTimeout( );
       }
@@ -202,7 +202,7 @@ namespace Apache
       }
 
       generic <class TKey, class TValue>
-      int32_t Client::RegionAttributes<TKey, TValue>::InitialCapacity::get()
+      System::Int32 Client::RegionAttributes<TKey, TValue>::InitialCapacity::get()
       {
         return NativePtr->getInitialCapacity( );
       }
@@ -214,13 +214,13 @@ namespace Apache
       }
 
       generic <class TKey, class TValue>
-        int32_t Client::RegionAttributes<TKey, TValue>::ConcurrencyLevel::get()
+        System::Int32 Client::RegionAttributes<TKey, TValue>::ConcurrencyLevel::get()
       {
         return NativePtr->getConcurrencyLevel( );
       }
 
       generic <class TKey, class TValue>
-      uint32_t Client::RegionAttributes<TKey, TValue>::LruEntriesLimit::get()
+      System::UInt32 Client::RegionAttributes<TKey, TValue>::LruEntriesLimit::get()
       {
         return NativePtr->getLruEntriesLimit( );
       }

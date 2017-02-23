@@ -81,7 +81,7 @@ namespace Apache
         {
           DataInput^ dataInput = gcnew DataInput(m_buffer, m_bufferLength);
           dataInput->setRootObjectPdx(true);
-          int64_t sampleStartNanos = Utils::startStatOpTime();
+          System::Int64 sampleStartNanos = Utils::startStatOpTime();
           Object^ ret = Internal::PdxHelper::DeserializePdx(dataInput, true, m_typeId, m_bufferLength);
           //dataInput->ResetPdx(0);
 
@@ -188,7 +188,7 @@ namespace Apache
           else
             serializedLength = pdxSerializedLength;
 
-          uint8_t* offsetsBuffer = dataInput->GetCursor() + serializedLength;
+          System::Byte* offsetsBuffer = dataInput->GetCursor() + serializedLength;
 
           return pt->GetFieldPosition(sequenceId, offsetsBuffer, offsetSize, serializedLength);
         }
@@ -991,7 +991,7 @@ namespace Apache
 
             if (m_buffer != NULL)
             {
-              uint8_t* copy = m_buffer;
+              System::Byte* copy = m_buffer;
 
               if (!m_own)
                 copy = apache::geode::client::DataInput::getBufferCopy(m_buffer, m_bufferLength);
@@ -1056,7 +1056,7 @@ namespace Apache
             }
           }
 
-          void PdxInstanceImpl::updatePdxStream(uint8_t* newPdxStream, int len)
+          void PdxInstanceImpl::updatePdxStream(System::Byte* newPdxStream, int len)
           {
             m_buffer = newPdxStream;
             m_own = true;

@@ -54,9 +54,9 @@ namespace Apache
         /// <summary>
         /// The size of the <c>ISelectResults</c>.
         /// </summary>
-        property int32_t Size
+        property System::Int32 Size
         {
-          int32_t get( );
+          System::Int32 get( );
         }
 
         /// <summary>

@@ -43,7 +43,7 @@ namespace Apache
         return m_value;
       }
 
-      String^ CacheableStringArray::default::get(int32_t index)
+      String^ CacheableStringArray::default::get(System::Int32 index)
       {
         return m_value[index];
       }

@@ -42,7 +42,7 @@ namespace Apache
       }
 
       generic<class TKey, class TResult>
-      ICqResults<TResult>^ CqQuery<TKey, TResult>::ExecuteWithInitialResults(uint32_t timeout)
+      ICqResults<TResult>^ CqQuery<TKey, TResult>::ExecuteWithInitialResults(System::UInt32 timeout)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 

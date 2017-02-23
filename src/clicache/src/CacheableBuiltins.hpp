@@ -44,7 +44,7 @@ namespace Apache
       /// An immutable template wrapper for C++ <c>CacheableKey</c>s that can
       /// serve as a distributable key object for caching.
       /// </summary>
-      template <typename TNative, typename TManaged, uint32_t TYPEID>
+      template <typename TNative, typename TManaged, System::UInt32 TYPEID>
       ref class CacheableBuiltinKey
         : public CacheableKey
       {
@@ -76,9 +76,9 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property uint32_t ClassId
+        virtual property System::UInt32 ClassId
         {
-          virtual uint32_t get() override
+          virtual System::UInt32 get() override
           {
             return TYPEID;
           }
@@ -160,7 +160,7 @@ namespace Apache
       /// distributable object for caching.
       /// </summary>
       template <typename TNative, typename TNativePtr, typename TManaged,
-        uint32_t TYPEID>
+        System::UInt32 TYPEID>
       ref class CacheableBuiltinArray
         : public Serializable
       {
@@ -172,9 +172,9 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property uint32_t ClassId
+        virtual property System::UInt32 ClassId
         {
-          virtual uint32_t get() override
+          virtual System::UInt32 get() override
           {
             return TYPEID;
           }
@@ -191,11 +191,11 @@ namespace Apache
           return this;
         }
 
-        virtual property uint32_t ObjectSize
+        virtual property System::UInt32 ObjectSize
         {
-          virtual uint32_t get() override
+          virtual System::UInt32 get() override
           {
-            return (uint32_t)(m_value->Length) * sizeof(TManaged);
+            return (System::UInt32)(m_value->Length) * sizeof(TManaged);
           }
         }
         /// <summary>
@@ -212,9 +212,9 @@ namespace Apache
         /// <summary>
         /// Returns the size of this array.
         /// </summary>
-        property int32_t Length
+        property System::Int32 Length
         {
-          inline int32_t get()
+          inline System::Int32 get()
           {
             return m_value->Length;
           }
@@ -228,9 +228,9 @@ namespace Apache
         /// <summary>
         /// Returns the value at the given index.
         /// </summary>
-        property TManaged GFINDEXER(int32_t)
+        property TManaged GFINDEXER(System::Int32)
         {
-          inline TManaged get(int32_t index)
+          inline TManaged get(System::Int32 index)
           {
             return m_value[index];
           }
@@ -261,7 +261,7 @@ namespace Apache
           // ManagedPtrWrap< apache::geode::client::Serializable,
           // Internal::SBWrap<apache::geode::client::Serializable> > nptr = nativeptr;
           TNative* nativeptr = static_cast<TNative*>(nptr);
-          int32_t len = nativeptr->length();
+          System::Int32 len = nativeptr->length();
           if (len > 0)
           {
             array<TManaged>^ buffer = gcnew array<TManaged>(len);
@@ -299,7 +299,7 @@ namespace Apache
         /// </remarks>
         /// <param name="buffer">the array to copy from</param>
         /// <param name="length">length of array from start to copy</param>
-        CacheableBuiltinArray(array<TManaged>^ buffer, int32_t length)
+        CacheableBuiltinArray(array<TManaged>^ buffer, System::Int32 length)
         {
           //TODO:
           if (length > buffer->Length) {
@@ -403,7 +403,7 @@ namespace Apache
        *  </remarks>
        *  <param name="value">the array to create the new instance</param>
        */                                                                   \
-       inline static m^ Create(array<mt>^ value, int32_t length)               \
+       inline static m^ Create(array<mt>^ value, System::Int32 length)               \
       {                                                                     \
       return (value != nullptr && value->Length > 0 ? \
       gcnew m(value, length) : nullptr);                                \
@@ -458,7 +458,7 @@ namespace Apache
                *  </remarks>
                *  <param name="value">the array to create the new instance</param>
                */                                                                   \
-               inline m(array<mt>^ value, int32_t length)                              \
+               inline m(array<mt>^ value, System::Int32 length)                              \
                : CacheableBuiltinArray(value, length) { }                          \
                inline m(apache::geode::client::Serializable* nativeptr)                            \
                : CacheableBuiltinArray(nativeptr) { }                              \
@@ -507,21 +507,21 @@ namespace Apache
       /// as a distributable key object for caching.
       /// </summary>
       _GFCLI_CACHEABLE_KEY_DEF_NEW(apache::geode::client::CacheableInt16,
-                                   CacheableInt16, int16_t);
+                                   CacheableInt16, System::Int16);
 
       /// <summary>
       /// An immutable wrapper for 32-bit integers that can serve
       /// as a distributable key object for caching.
       /// </summary>
       _GFCLI_CACHEABLE_KEY_DEF_NEW(apache::geode::client::CacheableInt32,
-                                   CacheableInt32, int32_t);
+                                   CacheableInt32, System::Int32);
 
       /// <summary>
       /// An immutable wrapper for 64-bit integers that can serve
       /// as a distributable key object for caching.
       /// </summary>
       _GFCLI_CACHEABLE_KEY_DEF_NEW(apache::geode::client::CacheableInt64,
-                                   CacheableInt64, int64_t);
+                                   CacheableInt64, System::Int64);
 
 
       // Built-in Cacheable array types
@@ -548,19 +548,19 @@ namespace Apache
       /// An immutable wrapper for array of 16-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_ARRAY_DEF_NEW(CacheableInt16Array, int16_t);
+      _GFCLI_CACHEABLE_ARRAY_DEF_NEW(CacheableInt16Array, System::Int16);
 
       /// <summary>
       /// An immutable wrapper for array of 32-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_ARRAY_DEF_NEW(CacheableInt32Array, int32_t);
+      _GFCLI_CACHEABLE_ARRAY_DEF_NEW(CacheableInt32Array, System::Int32);
 
       /// <summary>
       /// An immutable wrapper for array of 64-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_ARRAY_DEF_NEW(CacheableInt64Array, int64_t);
+      _GFCLI_CACHEABLE_ARRAY_DEF_NEW(CacheableInt64Array, System::Int64);
 
       /// <summary>
       /// An immutable wrapper for array of booleans that can serve

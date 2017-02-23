@@ -146,7 +146,7 @@ namespace Apache
 
           toArray = gcnew array<KeyValuePair<TKey, TValue>>(vc.size());
 
-        for (int32_t index = 0; index < vc.size(); index++)
+        for (System::Int32 index = 0; index < vc.size(); index++)
         {
           apache::geode::client::RegionEntryPtr nativeptr = vc[index];
           TKey key = Serializable::GetManagedValueGeneric<TKey>(nativeptr->getKey());
@@ -171,7 +171,7 @@ namespace Apache
 
           toArray = gcnew array<Object^>(vc.size());
 
-        for (int32_t index = 0; index < vc.size(); index++)
+        for (System::Int32 index = 0; index < vc.size(); index++)
         {
           apache::geode::client::RegionEntryPtr nativeptr = vc[index];
           TKey key = Serializable::GetManagedValueGeneric<TKey>(nativeptr->getKey());
@@ -268,7 +268,7 @@ namespace Apache
         //List<TKey>^ collectionlist = gcnew List<TKey>(vc.size());
         array<TKey>^ keyarr =
           gcnew array<TKey>(vc.size());
-        for (int32_t index = 0; index < vc.size(); index++)
+        for (System::Int32 index = 0; index < vc.size(); index++)
         {
           apache::geode::client::CacheableKeyPtr& nativeptr(vc[index]);
           keyarr[index] = Serializable::GetManagedValueGeneric<TKey>(nativeptr);
@@ -291,7 +291,7 @@ namespace Apache
         //List<TValue>^ collectionlist = gcnew List<TValue>(vc.size());
         array<TValue>^ valarr =
           gcnew array<TValue>(vc.size());
-        for (int32_t index = 0; index < vc.size(); index++)
+        for (System::Int32 index = 0; index < vc.size(); index++)
         {
           apache::geode::client::CacheablePtr& nativeptr(vc[index]);
           valarr[index] = Serializable::GetManagedValueGeneric<TValue>(nativeptr);
@@ -760,7 +760,7 @@ namespace Apache
         array<IRegion<TKey, TValue>^>^ subRegions =
           gcnew array<IRegion<TKey, TValue>^>(vsr.size());
 
-        for (int32_t index = 0; index < vsr.size(); index++)
+        for (System::Int32 index = 0; index < vsr.size(); index++)
         {
           apache::geode::client::RegionPtr& nativeptr(vsr[index]);
           subRegions[index] = Region<TKey, TValue>::Create(nativeptr.ptr());
@@ -793,7 +793,7 @@ namespace Apache
         NativePtr->entries(vc, recursive);
         array<RegionEntry<TKey, TValue>^>^ entryarr = gcnew array<RegionEntry<TKey, TValue>^>(vc.size());
 
-        for (int32_t index = 0; index < vc.size(); index++)
+        for (System::Int32 index = 0; index < vc.size(); index++)
         {
           apache::geode::client::RegionEntryPtr& nativeptr(vc[index]);
           entryarr[index] = RegionEntry<TKey, TValue>::Create(nativeptr.ptr());
@@ -886,7 +886,7 @@ namespace Apache
           throw gcnew System::ArgumentException;
         }
 
-        for (int32_t index = 0; index < vc.size(); index++)
+        for (System::Int32 index = 0; index < vc.size(); index++)
         {
           apache::geode::client::RegionEntryPtr nativeptr = vc[index];
           TKey key = Serializable::GetManagedValueGeneric<TKey>(nativeptr->getKey());
@@ -994,7 +994,7 @@ namespace Apache
 
             NativePtr->registerAllKeys(isDurable, mg_keys, getInitialValues, receiveValues);
 
-            for (int32_t index = 0; index < mg_keys->size(); ++index) {
+            for (System::Int32 index = 0; index < mg_keys->size(); ++index) {
               resultKeys->Add(Serializable::GetManagedValueGeneric<TKey>(
                 mg_keys->operator[](index)));
             }
@@ -1016,7 +1016,7 @@ namespace Apache
         //List<TValue>^ collectionlist = gcnew List<TValue>(vc.size());
         array<TKey>^ keyarr =
           gcnew array<TKey>(vc.size());
-        for (int32_t index = 0; index < vc.size(); index++)
+        for (System::Int32 index = 0; index < vc.size(); index++)
         {
           apache::geode::client::CacheableKeyPtr& nativeptr(vc[index]);
           keyarr[index] = Serializable::GetManagedValueGeneric<TKey>(nativeptr);
@@ -1040,7 +1040,7 @@ namespace Apache
         array<String^>^ strarr =
           gcnew array<String^>(vc.size());
         //List<String>^ collectionlist = gcnew List<String>(vc.size());
-        for (int32_t index = 0; index < vc.size(); index++)
+        for (System::Int32 index = 0; index < vc.size(); index++)
         {
           strarr[index] = ManagedString::Get(vc[index]->asChar());
           //collectionlist[ index ] = Serializable::GetManagedValue<TValue>(nativeptr);
@@ -1102,7 +1102,7 @@ namespace Apache
           NativePtr->registerRegex(mg_regex.CharPtr, isDurable,
                                     mg_keys, getInitialValues, receiveValues);
 
-          for (int32_t index = 0; index < mg_keys->size(); ++index) {
+          for (System::Int32 index = 0; index < mg_keys->size(); ++index) {
             resultKeys->Add(Serializable::GetManagedValueGeneric<TKey>(
               mg_keys->operator[](index)));
           }
@@ -1162,7 +1162,7 @@ namespace Apache
 
       generic<class TKey, class TValue>
       generic<class TResult>
-      ISelectResults<TResult>^ Region<TKey, TValue>::Query(String^ predicate, uint32_t timeout)
+      ISelectResults<TResult>^ Region<TKey, TValue>::Query(String^ predicate, System::UInt32 timeout)
       {
         ManagedString mg_predicate(predicate);
 
@@ -1198,7 +1198,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      bool Region<TKey, TValue>::ExistsValue(String^ predicate, uint32_t timeout)
+      bool Region<TKey, TValue>::ExistsValue(String^ predicate, System::UInt32 timeout)
       {
         ManagedString mg_predicate(predicate);
 
@@ -1217,7 +1217,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      Object^ Region<TKey, TValue>::SelectValue(String^ predicate, uint32_t timeout)
+      Object^ Region<TKey, TValue>::SelectValue(String^ predicate, System::UInt32 timeout)
       {
         ManagedString mg_predicate(predicate);
 

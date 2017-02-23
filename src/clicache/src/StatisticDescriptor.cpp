@@ -29,7 +29,7 @@ namespace Apache
     namespace Client
     {
 
-      int32_t StatisticDescriptor::ID::get( )
+      System::Int32 StatisticDescriptor::ID::get( )
       {
         return  NativePtr->getId();
       }

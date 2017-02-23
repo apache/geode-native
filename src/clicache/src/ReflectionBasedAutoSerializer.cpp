@@ -193,7 +193,7 @@ namespace Apache
                   w->WriteIntArray(m_fieldName, (array<Int32>^)value);
                 break;
 			          case FieldType::LONG_ARRAY:
-                  w->WriteLongArray(m_fieldName, (array<int64_t>^)value);
+                  w->WriteLongArray(m_fieldName, (array<System::Int64>^)value);
                 break;
 			          case FieldType::FLOAT_ARRAY:
                   w->WriteFloatArray(m_fieldName, (array<float>^)value);

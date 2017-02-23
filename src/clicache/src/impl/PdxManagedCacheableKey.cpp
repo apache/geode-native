@@ -37,7 +37,7 @@ namespace apache
       void PdxManagedCacheableKey::toData(apache::geode::client::DataOutput& output) const
       {
         try {
-          uint32_t pos = (int)output.getBufferLength();
+          System::UInt32 pos = (int)output.getBufferLength();
           Apache::Geode::Client::DataOutput mg_output(&output, true);
           Apache::Geode::Client::Internal::PdxHelper::SerializePdx(%mg_output, m_managedptr);
           //m_managedptr->ToData( %mg_output );
@@ -78,7 +78,7 @@ namespace apache
         return this;
       }
 
-      uint32_t PdxManagedCacheableKey::objectSize() const
+      System::UInt32 PdxManagedCacheableKey::objectSize() const
       {
         try {
           return m_objectSize;
@@ -92,9 +92,9 @@ namespace apache
         return 0;
       }
 
-      int32_t PdxManagedCacheableKey::classId() const
+      System::Int32 PdxManagedCacheableKey::classId() const
       {
-        /*uint32_t classId;
+        /*System::UInt32 classId;
         try {
         classId = m_managedptr->ClassId;
         }
@@ -191,7 +191,7 @@ namespace apache
         return false;
       }
 
-      int32_t PdxManagedCacheableKey::hashcode() const
+      System::UInt32 PdxManagedCacheableKey::hashcode() const
       {
         if (m_hashcode != 0)
           return m_hashcode;

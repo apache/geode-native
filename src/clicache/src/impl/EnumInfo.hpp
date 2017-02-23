@@ -56,13 +56,13 @@ namespace Apache
           }
           virtual void ToData(DataOutput^ output);
           virtual IGeodeSerializable^ FromData(DataInput^ input);
-          virtual property uint32_t ObjectSize
+          virtual property System::UInt32 ObjectSize
           {
-            uint32_t get(){ return 0; }
+            System::UInt32 get(){ return 0; }
           }
-          virtual property uint32_t ClassId
+          virtual property System::UInt32 ClassId
           {
-            uint32_t get(){ return GeodeClassIds::EnumInfo; }
+            System::UInt32 get(){ return GeodeClassIds::EnumInfo; }
           }
           virtual String^ ToString() override
           {

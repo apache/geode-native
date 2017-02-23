@@ -1867,7 +1867,7 @@ namespace Apache
           /// The SelectResults which can either be a ResultSet or a StructSet.
           /// </returns>
           generic<class TResult>
-          ISelectResults<TResult>^ Query( String^ predicate, uint32_t timeout );
+          ISelectResults<TResult>^ Query( String^ predicate, System::UInt32 timeout );
 
           /// <summary>
           /// Executes the query on the server based on the predicate
@@ -1964,7 +1964,7 @@ namespace Apache
           /// <returns>
           /// true if the result size is non-zero, false otherwise.
           /// </returns>
-          bool ExistsValue( String^ predicate, uint32_t timeout );
+          bool ExistsValue( String^ predicate, System::UInt32 timeout );
 
           /// <summary>
           /// Executes the query on the server based on the predicate
@@ -2065,7 +2065,7 @@ namespace Apache
           /// The single ResultSet or StructSet item,
           /// or NULL of no results are available.
           /// </returns>
-          Object^ SelectValue( String^ predicate, uint32_t timeout );
+          Object^ SelectValue( String^ predicate, System::UInt32 timeout );
 
       };
     }  // namespace Client

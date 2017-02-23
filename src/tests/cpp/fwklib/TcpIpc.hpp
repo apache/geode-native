@@ -23,6 +23,7 @@
 #include <geode/geode_base.hpp>
 #include <ace/SOCK_Stream.h>
 #include <ace/SOCK_Acceptor.h>
+#include <cstdint>
 #include <string>
 
 namespace apache {

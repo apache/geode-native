@@ -85,7 +85,7 @@ namespace Apache
         /// if no statistic named <c>name</c> exists in this
         /// statistic instance.
         /// </exception>
-        virtual int32_t NameToId(String^ name);
+        virtual System::Int32 NameToId(String^ name);
 
         /// <summary>
         /// Returns the descriptor of the statistic with the given name in this
@@ -102,9 +102,9 @@ namespace Apache
         /// <summary>
         /// Returns the total number of statistics descriptors in the type.
         /// </summary>
-        virtual property int32_t DescriptorsCount
+        virtual property System::Int32 DescriptorsCount
         {
-          virtual int32_t get( );
+          virtual System::Int32 get( );
         }
 
       internal:

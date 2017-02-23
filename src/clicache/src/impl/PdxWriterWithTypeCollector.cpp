@@ -127,35 +127,35 @@ namespace Apache
           return this;
         }
 
-        IPdxWriter^ PdxWriterWithTypeCollector::WriteUInt16(String^ fieldName, uint16_t value)
+        IPdxWriter^ PdxWriterWithTypeCollector::WriteUInt16(String^ fieldName, System::UInt16 value)
         {
           m_pdxType->AddFixedLengthTypeField(fieldName, "short", PdxTypes::SHORT, GeodeClassIds::SHORT_SIZE);
           PdxLocalWriter::WriteUInt16(fieldName, value);
           return this;
         }
 
-        IPdxWriter^ PdxWriterWithTypeCollector::WriteUInt32(String^ fieldName, uint32_t value)
+        IPdxWriter^ PdxWriterWithTypeCollector::WriteUInt32(String^ fieldName, System::UInt32 value)
         {
           m_pdxType->AddFixedLengthTypeField(fieldName, "int", PdxTypes::INT, GeodeClassIds::INTEGER_SIZE);
           PdxLocalWriter::WriteUInt32(fieldName, value);
           return this;
         }
 
-        IPdxWriter^ PdxWriterWithTypeCollector::WriteUInt64(String^ fieldName, uint64_t value)
+        IPdxWriter^ PdxWriterWithTypeCollector::WriteUInt64(String^ fieldName, System::UInt64 value)
         {
           m_pdxType->AddFixedLengthTypeField(fieldName, "long", PdxTypes::LONG, GeodeClassIds::LONG_SIZE);
           PdxLocalWriter::WriteUInt64(fieldName, value);
           return this;
         }
 
-        IPdxWriter^ PdxWriterWithTypeCollector::WriteShort(String^ fieldName, int16_t value)
+        IPdxWriter^ PdxWriterWithTypeCollector::WriteShort(String^ fieldName, System::Int16 value)
         {
           m_pdxType->AddFixedLengthTypeField(fieldName, "short", PdxTypes::SHORT, GeodeClassIds::SHORT_SIZE);
           PdxLocalWriter::WriteShort(fieldName, value);
           return this;
         }
 
-        IPdxWriter^ PdxWriterWithTypeCollector::WriteInt(String^ fieldName, int32_t value)
+        IPdxWriter^ PdxWriterWithTypeCollector::WriteInt(String^ fieldName, System::Int32 value)
         {
           m_pdxType->AddFixedLengthTypeField(fieldName, "int", PdxTypes::INT, GeodeClassIds::INTEGER_SIZE);
           PdxLocalWriter::WriteInt(fieldName, value);

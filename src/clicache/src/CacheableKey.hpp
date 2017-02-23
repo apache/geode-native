@@ -46,7 +46,7 @@ namespace Apache
         /// It gets the hash code by calling the <c>hashcode()</c> function
         /// of the underlying <c>apache::geode::client::CacheableKey</c> object.
         /// </summary>
-        virtual int32_t GetHashCode() override;
+        virtual System::Int32 GetHashCode() override;
 
         /// <summary>
         /// Return true if this key matches other object. It invokes the '=='
@@ -92,7 +92,7 @@ namespace Apache
         /// Implicit conversion operator from a 16-bit integer
         /// to a <c>CacheableKey</c>.
         /// </summary>
-        static operator CacheableKey^ (int16_t value);
+        static operator CacheableKey^ (System::Int16 value);
 
         /// <summary>
         /// Implicit conversion operator from a character
@@ -104,13 +104,13 @@ namespace Apache
         /// Implicit conversion operator from a 32-bit integer
         /// to a <c>CacheableKey</c>.
         /// </summary>
-        static operator CacheableKey^ (int32_t value);
+        static operator CacheableKey^ (System::Int32 value);
 
         /// <summary>
         /// Implicit conversion operator from a 64-bit integer
         /// to a <c>CacheableKey</c>.
         /// </summary>
-        static operator CacheableKey^ (int64_t value);
+        static operator CacheableKey^ (System::Int64 value);
 
         /// <summary>
         /// Implicit conversion operator from a string

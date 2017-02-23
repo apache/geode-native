@@ -88,7 +88,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if timeout parameter is greater than 2^31/1000.
         /// </exception>
-        ICqResults<TResult>^ ExecuteWithInitialResults(uint32_t timeout);
+        ICqResults<TResult>^ ExecuteWithInitialResults(System::UInt32 timeout);
 
         /// <summary>
         /// Get the string for this cq query.

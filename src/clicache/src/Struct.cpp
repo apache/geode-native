@@ -34,9 +34,9 @@ namespace Apache
       Object^ Struct::default::get( size_t index )
       {
        /*   return SafeUMSerializableConvertGeneric(static_cast<apache::geode::client::Struct*>(
-            NativePtr())->operator[](static_cast<int32_t>(index)).ptr());*/
+            NativePtr())->operator[](static_cast<System::Int32>(index)).ptr());*/
           return (Serializable::GetManagedValueGeneric<Object^>(static_cast<apache::geode::client::Struct*>(
-            NativePtr())->operator[](static_cast<int32_t>(index))));
+            NativePtr())->operator[](static_cast<System::Int32>(index))));
       }
 
       Object^ Struct::default::get( String^ fieldName )

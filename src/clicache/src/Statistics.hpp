@@ -68,7 +68,7 @@ namespace Apache
          /// statistics instance.
          /// </exception>
          /// <see cref="StatisticsType#nameToDescriptor" />        
-         virtual int32_t NameToId(String^ name);
+         virtual System::Int32 NameToId(String^ name);
 
          /// <summary>
          /// Returns the descriptor of the statistic with the given name in this
@@ -86,9 +86,9 @@ namespace Apache
          /// <summary>
          /// Gets a value that uniquely identifies this statistics.
          /// </summary>
-         virtual property int64_t UniqueId
+         virtual property System::Int64 UniqueId
          {
-           virtual int64_t get( );
+           virtual System::Int64 get( );
          }
 
          /// <summary>
@@ -110,9 +110,9 @@ namespace Apache
          /// <summary>
          /// Gets the number associated with this instance that helps identify it.
          /// </summary>
-         virtual property int64_t NumericId 
+         virtual property System::Int64 NumericId 
          {
-           virtual int64_t get( );
+           virtual System::Int64 get( );
          }
 
          /// <summary>
@@ -161,7 +161,7 @@ namespace Apache
          /// <exception cref="IllegalArgumentException">
          /// If the id is invalid.
          /// </exception>
-         virtual void SetInt(int32_t id, int32_t value);
+         virtual void SetInt(System::Int32 id, System::Int32 value);
 
          /// <summary>
          /// Sets the value of a named statistic of type <c>int</c>
@@ -173,7 +173,7 @@ namespace Apache
          /// if the statistic with name <c>name</c> is not of
          /// type <c>int</c>.
          /// </exception>
-         virtual void SetInt(String^ name, int32_t value);
+         virtual void SetInt(String^ name, System::Int32 value);
 
          /// <summary>
          /// Sets the value of a described statistic of type <c>int</c>
@@ -186,7 +186,7 @@ namespace Apache
          /// if the described statistic is not of
          /// type <c>int</c>.
          /// </exception>
-         virtual void SetInt(StatisticDescriptor^ descriptor, int32_t value);
+         virtual void SetInt(StatisticDescriptor^ descriptor, System::Int32 value);
 
          /// <summary>
          /// Sets the value of a statistic with the given <c>id</c>
@@ -198,7 +198,7 @@ namespace Apache
          /// <exception cref="IllegalArgumentException">
          /// If the id is invalid.
          /// </exception>
-         virtual void SetLong(int32_t id, int64_t value); 
+         virtual void SetLong(System::Int32 id, System::Int64 value); 
 
          /// <summary>
          /// Sets the value of a described statistic of type <c>long</c>
@@ -211,7 +211,7 @@ namespace Apache
          /// if the described statistic is not of
          /// type <c>long</c>.
          /// </exception>
-         virtual void SetLong(StatisticDescriptor^ descriptor, int64_t value);
+         virtual void SetLong(StatisticDescriptor^ descriptor, System::Int64 value);
 
          /// <summary>
          /// Sets the value of a named statistic of type <c>long</c>.
@@ -223,7 +223,7 @@ namespace Apache
          /// if the statistic with name <c>name</c> is not of
          /// type <c>long</c>.
          /// </exception>
-         virtual void SetLong(String^ name, int64_t value);
+         virtual void SetLong(String^ name, System::Int64 value);
 
 
          /// <summary>
@@ -236,7 +236,7 @@ namespace Apache
          /// <exception cref="IllegalArgumentException">
          /// If the id is invalid.
          /// </exception>
-         virtual void SetDouble(int32_t id, double value);
+         virtual void SetDouble(System::Int32 id, double value);
 
          /// <summary>
          /// Sets the value of a named statistic of type <c>double</c>
@@ -272,7 +272,7 @@ namespace Apache
          /// <exception cref="IllegalArgumentException">
          /// If the id is invalid.
          /// </exception>
-         virtual int32_t GetInt(int32_t id);
+         virtual System::Int32 GetInt(System::Int32 id);
 
          /// <summary>
          /// Returns the value of the described statistic of type <code>int</code>.
@@ -284,7 +284,7 @@ namespace Apache
          /// if the described statistic is not of
          /// type <c>int</c>.
          /// </exception>
-         virtual int32_t GetInt(StatisticDescriptor^ descriptor);
+         virtual System::Int32 GetInt(StatisticDescriptor^ descriptor);
 
 
          /// <summary>
@@ -297,7 +297,7 @@ namespace Apache
          /// if the statistic with name <c>name</c> is not of
          /// type <c>int</c>.
          /// </exception>
-         virtual int32_t GetInt(String^ name);
+         virtual System::Int32 GetInt(String^ name);
 
          /// <summary>
          /// Returns the value of the identified statistic of type <c>long</c>.
@@ -307,7 +307,7 @@ namespace Apache
          /// <exception cref="IllegalArgumentException">
          /// If the id is invalid.
          /// </exception>
-         virtual int64_t GetLong(int32_t id);
+         virtual System::Int64 GetLong(System::Int32 id);
 
          
          /// <summary>
@@ -320,7 +320,7 @@ namespace Apache
          /// if the described statistic is not of
          /// type <c>long</c>.
          /// </exception>
-         virtual int64_t GetLong(StatisticDescriptor^ descriptor);
+         virtual System::Int64 GetLong(StatisticDescriptor^ descriptor);
 
          
          /// <summary>
@@ -333,7 +333,7 @@ namespace Apache
          /// if the statistic with name <c>name</c> is not of
          /// type <c>long</c>.
          /// </exception>
-         virtual int64_t GetLong(String^ name);
+         virtual System::Int64 GetLong(String^ name);
 
 
          /// <summary>
@@ -344,7 +344,7 @@ namespace Apache
          /// <exception cref="IllegalArgumentException">
          /// If the id is invalid.
          /// </exception>
-         virtual double GetDouble(int32_t id);
+         virtual double GetDouble(System::Int32 id);
                   
          /// <summary>
          /// Returns the value of the described statistic of type <c>double</c>.
@@ -378,7 +378,7 @@ namespace Apache
          /// <exception cref="IllegalArgumentException">
          /// If the described statistic does not exist
          /// </exception>
-         virtual int64_t GetRawBits(StatisticDescriptor^ descriptor);
+         virtual System::Int64 GetRawBits(StatisticDescriptor^ descriptor);
 
          /// <summary>
          /// Increments the value of the identified statistic of type <c>int</c>
@@ -391,7 +391,7 @@ namespace Apache
          /// <exception cref="IllegalArgumentException">
          /// If the id is invalid.
          /// </exception>
-         virtual int32_t IncInt(int32_t id, int32_t delta);
+         virtual System::Int32 IncInt(System::Int32 id, System::Int32 delta);
 
          /// <summary>
          /// Increments the value of the described statistic of type <c>int</c>
@@ -406,7 +406,7 @@ namespace Apache
          /// if the described statistic is not of
          /// type <c>int</c>.
          /// </exception>
-         virtual int32_t IncInt(StatisticDescriptor^ descriptor, int32_t delta);
+         virtual System::Int32 IncInt(StatisticDescriptor^ descriptor, System::Int32 delta);
 
          /// <summary>
          /// Increments the value of the statistic of type <c>int</c> with
@@ -420,7 +420,7 @@ namespace Apache
          /// if the statistic with name <c>name</c> is not of
          /// type <c>int</c>.
          /// </exception>
-         virtual int32_t IncInt(String^ name, int32_t delta);
+         virtual System::Int32 IncInt(String^ name, System::Int32 delta);
 
          /// <summary>
          /// Increments the value of the identified statistic of type <c>long</c>
@@ -433,7 +433,7 @@ namespace Apache
          /// <exception cref="IllegalArgumentException">
          /// If the id is invalid.
          /// </exception>
-         virtual int64_t IncLong(int32_t id, int64_t delta);
+         virtual System::Int64 IncLong(System::Int32 id, System::Int64 delta);
 
 
          /// <summary>
@@ -449,7 +449,7 @@ namespace Apache
          /// if the described statistic is not of
          /// type <c>long</c>.
          /// </exception>
-         virtual int64_t IncLong(StatisticDescriptor^ descriptor, int64_t delta);
+         virtual System::Int64 IncLong(StatisticDescriptor^ descriptor, System::Int64 delta);
 
          /// <summary>
          /// Increments the value of the statistic of type <c>long</c> with
@@ -463,7 +463,7 @@ namespace Apache
          /// if the statistic with name <c>name</c> is not of
          /// type <c>long</c>.
          /// </exception>
-         virtual int64_t IncLong(String^ name, int64_t delta);
+         virtual System::Int64 IncLong(String^ name, System::Int64 delta);
 
 
          /// <summary>
@@ -477,7 +477,7 @@ namespace Apache
          /// <exception cref="IllegalArgumentException">
          /// If the id is invalid.
          /// </exception>
-         virtual double IncDouble(int32_t id, double delta);
+         virtual double IncDouble(System::Int32 id, double delta);
 
          /// <summary>
          /// Increments the value of the described statistic of type <c>double</c>

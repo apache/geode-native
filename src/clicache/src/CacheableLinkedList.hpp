@@ -75,9 +75,9 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property uint32_t ClassId
+        virtual property System::UInt32 ClassId
         {
-          virtual uint32_t get()
+          virtual System::UInt32 get()
           {
             return GeodeClassIds::CacheableLinkedList;
           }
@@ -109,10 +109,10 @@ namespace Apache
           return this;
         }
 
-        /*uint32_t ObjectSize::get()
+        /*System::UInt32 ObjectSize::get()
         {
         //TODO::
-        uint32_t size = static_cast<uint32_t> (sizeof(CacheableVector^));
+        System::UInt32 size = static_cast<System::UInt32> (sizeof(CacheableVector^));
         for each (IGeodeSerializable^ val in this) {
         if (val != nullptr) {
         size += val->ObjectSize;
@@ -121,9 +121,9 @@ namespace Apache
         return m_linkedList->Count;
         }*/
 
-        virtual property uint32_t ObjectSize
+        virtual property System::UInt32 ObjectSize
         {
-          virtual uint32_t get()
+          virtual System::UInt32 get()
           {
             return m_linkedList->Count;
           }

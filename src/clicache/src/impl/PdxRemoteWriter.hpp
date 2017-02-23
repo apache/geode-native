@@ -106,25 +106,25 @@ namespace Apache
           virtual IPdxWriter^ WriteChar( String^ fieldName, Char value ) override;
 
           /// <summary>
-          /// Write an unsigned short integer (int16_t) to the <c>IPdxWriter</c>.
+          /// Write an unsigned short integer (System::Int16) to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The unsigned 16-bit integer to write.</param>
-          virtual IPdxWriter^ WriteUInt16( String^ fieldName, uint16_t value ) override;
+          virtual IPdxWriter^ WriteUInt16( String^ fieldName, System::UInt16 value ) override;
 
           /// <summary>
           /// Write an unsigned 32-bit integer to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The unsigned 32-bit integer to write.</param>
-          virtual IPdxWriter^ WriteUInt32( String^ fieldName, uint32_t value ) override;
+          virtual IPdxWriter^ WriteUInt32( String^ fieldName, System::UInt32 value ) override;
 
           /// <summary>
           /// Write an unsigned 64-bit integer to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The unsigned 64-bit integer to write.</param>
-          virtual IPdxWriter^ WriteUInt64( String^ fieldName, uint64_t value ) override;
+          virtual IPdxWriter^ WriteUInt64( String^ fieldName, System::UInt64 value ) override;
 
           /// <summary>
           /// Write a 16-bit integer to the <c>IPdxWriter</c>.
@@ -138,7 +138,7 @@ namespace Apache
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The 32-bit integer to write.</param>
-          virtual IPdxWriter^ WriteInt( String^ fieldName, int32_t value ) override;
+          virtual IPdxWriter^ WriteInt( String^ fieldName, System::Int32 value ) override;
 
           /// <summary>
           /// Write a 64-bit integer to the <c>IPdxWriter</c>.

@@ -81,7 +81,7 @@ namespace Apache
         array<IRegion<TKey, TValue>^>^ rootRegions =
           gcnew array<IRegion<TKey, TValue>^>( vrr.size( ) );
 
-        for( int32_t index = 0; index < vrr.size( ); index++ )
+        for( System::Int32 index = 0; index < vrr.size( ); index++ )
         {
           apache::geode::client::RegionPtr& nativeptr( vrr[ index ] );
           rootRegions[ index ] = Client::Region<TKey, TValue>::Create( nativeptr.ptr( ) );

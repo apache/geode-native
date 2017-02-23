@@ -64,7 +64,7 @@ namespace Apache
 
 
           //DataInput^ m_dataInput;
-          uint8_t* m_buffer;
+          System::Byte* m_buffer;
           int m_bufferLength;
           int m_typeId;
           bool m_own;
@@ -116,10 +116,10 @@ namespace Apache
 
           static bool deepArrayEquals(Object^ obj, Object^ otherObj);
 
-          void updatePdxStream(uint8_t* newPdxStream, int len);
+          void updatePdxStream(System::Byte* newPdxStream, int len);
 
         public:
-          PdxInstanceImpl(uint8_t* buffer, int length, int typeId, bool own)
+          PdxInstanceImpl(System::Byte* buffer, int length, int typeId, bool own)
           {
             //m_dataInput = dataInput;
             m_buffer = buffer;

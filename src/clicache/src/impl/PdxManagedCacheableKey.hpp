@@ -104,14 +104,14 @@ namespace apache
         /// <summary>
         /// return the size of this object in bytes
         /// </summary>
-        virtual uint32_t objectSize() const;
+        virtual System::UInt32 objectSize() const;
 
         /// <summary>
         /// return the classId of the instance being serialized.
         /// This is used by deserialization to determine what instance
         /// type to create and deserialize into.
         /// </summary>
-        virtual int32_t classId() const;
+        virtual System::Int32 classId() const;
 
         /// <summary>
         /// return the typeId of the instance being serialized.
@@ -148,7 +148,7 @@ namespace apache
         /// <summary>
         /// return the hashcode for this key.
         /// </summary>
-        virtual int32_t hashcode() const;
+        virtual System::UInt32 hashcode() const;
 
         /// <summary>
         /// Copy the string form of a key into a char* buffer for logging purposes.

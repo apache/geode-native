@@ -29,6 +29,7 @@
 #include <openssl/rsa.h>
 #include <cstring>
 #include <cctype>
+#include <cstdint>
 
 static DH *m_dh = NULL;
 static std::string m_skAlgo;

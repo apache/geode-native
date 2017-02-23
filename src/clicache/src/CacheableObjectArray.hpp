@@ -65,7 +65,7 @@ namespace Apache
         /// <param name="capacity">
         /// The initial capacity of the vector.
         /// </param>
-        inline CacheableObjectArray(int32_t capacity)
+        inline CacheableObjectArray(System::Int32 capacity)
           : List<Object^>(capacity)
         { }
 
@@ -90,7 +90,7 @@ namespace Apache
         /// <summary>
         /// Static function to create a new instance with given initial size.
         /// </summary>
-        inline static CacheableObjectArray^ Create(int32_t capacity)
+        inline static CacheableObjectArray^ Create(System::Int32 capacity)
         {
           return gcnew CacheableObjectArray(capacity);
         }
@@ -118,9 +118,9 @@ namespace Apache
         /// <summary>
         /// return the size of this object in bytes
         /// </summary>
-        virtual property uint32_t ObjectSize
+        virtual property System::UInt32 ObjectSize
         {
-          virtual uint32_t get();
+          virtual System::UInt32 get();
         }
 
         /// <summary>
@@ -129,9 +129,9 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property uint32_t ClassId
+        virtual property System::UInt32 ClassId
         {
-          virtual uint32_t get()
+          virtual System::UInt32 get()
           {
             return GeodeClassIds::CacheableObjectArray;
           }

@@ -51,9 +51,9 @@ namespace Apache
         /// The id is initialized when its statistics
         /// type is created.
         /// </summary>
-        virtual property int32_t ID
+        virtual property System::Int32 ID
         {
-          virtual int32_t get();
+          virtual System::Int32 get();
         }
 
         /// <summary>

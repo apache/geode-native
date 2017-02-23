@@ -55,34 +55,34 @@ namespace Apache
 
         virtual void Close() override { Stream::Close(); }
 
-        virtual property int64_t Length
+        virtual property System::Int64 Length
         {
-          int64_t get() override
+          System::Int64 get() override
           {
-            //return (int64_t) m_buffer->BytesRead + m_buffer->BytesRemaining;
-            return (int64_t) m_maxSize;
+            //return (System::Int64) m_buffer->BytesRead + m_buffer->BytesRemaining;
+            return (System::Int64) m_maxSize;
           }
         }
 
-        virtual property int64_t Position
+        virtual property System::Int64 Position
         {
-          int64_t get() override
+          System::Int64 get() override
           {
-            return (int64_t) m_position;
+            return (System::Int64) m_position;
           }
 
-          void set(int64_t value) override
+          void set(System::Int64 value) override
           {
             m_position = (int) value;
           }
         }
 
-        virtual int64_t Seek(int64_t offset, SeekOrigin origin) override
+        virtual System::Int64 Seek(System::Int64 offset, SeekOrigin origin) override
         {
           throw gcnew System::NotSupportedException("Seek not supported by GeodeDataInputStream");
         }
 
-        virtual void SetLength(int64_t value) override { /* do nothing */ }
+        virtual void SetLength(System::Int64 value) override { /* do nothing */ }
 
         virtual void Write(array<Byte> ^ buffer, int offset, int count) override
         {
@@ -108,7 +108,7 @@ namespace Apache
               buffer, offset, actual);
               */
             //pin_ptr<Byte> pin_buffer = &buffer[offset];
-            //m_buffer->NativePtr->readBytesOnly((uint8_t*)pin_buffer, actual);
+            //m_buffer->NativePtr->readBytesOnly((System::Byte*)pin_buffer, actual);
             m_buffer->ReadBytesOnly(buffer, offset, actual);
             m_position += actual;
           }
@@ -118,9 +118,9 @@ namespace Apache
 
         virtual void Flush() override { /* do nothing */ }
 
-        property uint32_t BytesRead
+        property System::UInt32 BytesRead
         {
-          uint32_t get()
+          System::UInt32 get()
           {
             return m_buffer->BytesReadInternally;
           }

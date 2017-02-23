@@ -28,7 +28,7 @@ namespace Apache
     namespace Client
     {
 
-      int64_t g_prevUnmanagedSize = 0;
+      System::Int64 g_prevUnmanagedSize = 0;
 
       int MemoryPressureHandler::handle_timeout( const ACE_Time_Value&
           current_time, const void* arg )
@@ -38,14 +38,14 @@ namespace Apache
         PROCESS_MEMORY_COUNTERS pmc;
 
         if ( GetProcessMemoryInfo( hProcess, &pmc, sizeof(pmc)) ) {
-          int64_t totalmem  = (int64_t)pmc.WorkingSetSize;
-          int64_t curr_managed_size = GC::GetTotalMemory( false );
-          int64_t curr_unmanagedMemory = totalmem - curr_managed_size;
+          System::Int64 totalmem  = (System::Int64)pmc.WorkingSetSize;
+          System::Int64 curr_managed_size = GC::GetTotalMemory( false );
+          System::Int64 curr_unmanagedMemory = totalmem - curr_managed_size;
           Log::Finest( "Current total memory usage: {0}, managed memory: {1}, "
               "unmanaged memory: {2}", totalmem, curr_managed_size,
               curr_unmanagedMemory );
           if ( curr_unmanagedMemory > 0 ) {
-            int64_t increase = curr_unmanagedMemory - g_prevUnmanagedSize;
+            System::Int64 increase = curr_unmanagedMemory - g_prevUnmanagedSize;
             if ( Math::Abs( increase ) > 20*1024*1024 ) {
               if ( increase > 0 ) {
                 Log::Fine( "Adding memory pressure information to assist .NET GC: {0} bytes", increase );

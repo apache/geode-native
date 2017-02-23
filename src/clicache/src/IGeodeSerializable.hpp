@@ -69,9 +69,9 @@ namespace Apache
         /// Note that you can simply return zero if you are not using the HeapLRU feature.
         /// </remarks>
         /// <returns>the size of this object in bytes.</returns>
-        property uint32_t ObjectSize
+        property System::UInt32 ObjectSize
         {
-          uint32_t get( );
+          System::UInt32 get( );
         }
 
         /// <summary>
@@ -87,9 +87,9 @@ namespace Apache
         /// behaviour.
         /// </remarks>
         /// <returns>the classId</returns>
-        property uint32_t ClassId
+        property System::UInt32 ClassId
         {
-          uint32_t get( );
+          System::UInt32 get( );
         }
 
         /// <summary>

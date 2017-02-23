@@ -45,21 +45,21 @@ namespace Apache
 
           literal Byte PdxHeader = 8;
 
-          static Int32 ReadInt32(uint8_t* offsetPosition);
+          static Int32 ReadInt32(System::Byte* offsetPosition);
 
-          static Int32 ReadInt16(uint8_t* offsetPosition);
+          static Int32 ReadInt16(System::Byte* offsetPosition);
 
-					static Int32 PdxHelper::ReadUInt16(uint8_t* offsetPosition);
+					static Int32 PdxHelper::ReadUInt16(System::Byte* offsetPosition);
 
-          static Int32 ReadByte(uint8_t* offsetPosition);
+          static Int32 ReadByte(System::Byte* offsetPosition);
 
-          static void WriteInt32(uint8_t* offsetPosition, Int32 value);
+          static void WriteInt32(System::Byte* offsetPosition, Int32 value);
 
-          static void WriteInt16(uint8_t* offsetPosition, Int32 value);
+          static void WriteInt16(System::Byte* offsetPosition, Int32 value);
 
-          static void WriteByte(uint8_t* offsetPosition, Int32 value);
+          static void WriteByte(System::Byte* offsetPosition, Int32 value);
 
-          static Int32 ReadInt(uint8_t* offsetPosition, int size);
+          static Int32 ReadInt(System::Byte* offsetPosition, int size);
 
           static Int32 GetEnumValue(String^ enumClassName, String^ enumName, int hashcode);
 
