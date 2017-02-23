@@ -92,7 +92,7 @@ class CPPCACHE_EXPORT MapSegment {
   // number of operations that are tracking destroys
   // the m_destroyedKeys contains the set for which destroys
   // have been received as long as this number is greater than zero
-  volatile int* m_numDestroyTrackers;
+  std::atomic<int32_t>* m_numDestroyTrackers;
   MapOfUpdateCounters m_destroyedKeys;
 
   uint32_t m_rehashCount;
@@ -217,7 +217,7 @@ class CPPCACHE_EXPORT MapSegment {
    * Used when allocated in arrays by EntriesMap implementations.
    */
   void open(RegionInternal* region, const EntryFactory* entryFactory,
-            uint32_t size, volatile int* destroyTrackers,
+            uint32_t size, std::atomic<int32_t>* destroyTrackers,
             bool concurrencyChecksEnabled);
 
   void close();

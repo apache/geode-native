@@ -20,12 +20,14 @@
  * limitations under the License.
  */
 
+#include <atomic>
+
 #include <geode/geode_globals.hpp>
 #include <geode/Cacheable.hpp>
 #include <geode/CacheableKey.hpp>
 #include <geode/SharedPtr.hpp>
 #include <geode/ExceptionTypes.hpp>
-#include "HostAsm.hpp"
+
 #include "CacheImpl.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "RegionInternal.hpp"
@@ -65,16 +67,16 @@ class CPPCACHE_EXPORT ExpEntryProperties {
   // the costly gettimeofday call in MapSegment spinlock
   inline void initStartTime() {
     uint32_t currTime = static_cast<uint32_t>(ACE_OS::gettimeofday().sec());
-    HostAsm::atomicSet(m_lastModifiedTime, currTime);
-    HostAsm::atomicSet(m_lastAccessTime, currTime);
+    m_lastModifiedTime = currTime;
+    m_lastAccessTime = currTime;
   }
 
   inline void updateLastAccessTime(uint32_t currTime) {
-    HostAsm::atomicSet(m_lastAccessTime, currTime);
+    m_lastAccessTime = currTime;
   }
 
   inline void updateLastModifiedTime(uint32_t currTime) {
-    HostAsm::atomicSet(m_lastModifiedTime, currTime);
+    m_lastModifiedTime = currTime;
   }
 
   inline void setExpiryTaskId(long id) { m_expiryTaskId = id; }
@@ -93,9 +95,9 @@ class CPPCACHE_EXPORT ExpEntryProperties {
 
  private:
   /** last access time in secs, 32bit.. */
-  volatile uint32_t m_lastAccessTime;
+  std::atomic<uint32_t> m_lastAccessTime;
   /** last modified time in secs, 32bit.. */
-  volatile uint32_t m_lastModifiedTime;
+  std::atomic<uint32_t> m_lastModifiedTime;
   /** The expiry task id for this particular entry.. **/
   long m_expiryTaskId;
 };

@@ -42,7 +42,7 @@ MapSegment::~MapSegment() {
 }
 
 void MapSegment::open(RegionInternal* region, const EntryFactory* entryFactory,
-                      uint32_t size, volatile int* destroyTrackers,
+                      uint32_t size, std::atomic<int32_t>* destroyTrackers,
                       bool concurrencyChecksEnabled) {
   m_map = new CacheableKeyHashMap();
   uint32_t mapSize = TableOfPrimes::nextLargerPrime(size, m_primeIndex);

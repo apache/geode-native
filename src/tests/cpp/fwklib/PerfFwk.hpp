@@ -25,7 +25,6 @@
 #include <string>
 #include <map>
 
-#include "AtomicInc.hpp"
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 #include "FwkException.hpp"

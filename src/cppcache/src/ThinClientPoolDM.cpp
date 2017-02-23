@@ -477,7 +477,7 @@ void ThinClientPoolDM::cleanStaleConnections(volatile bool& isRunning) {
               _nextIdle.sec() + 1);
   }
 
-  LOGDEBUG("Pool size is %d, pool counter is %d", size(), m_poolSize);
+  LOGDEBUG("Pool size is %d, pool counter is %d", size(), m_poolSize.load());
 }
 void ThinClientPoolDM::cleanStickyConnections(volatile bool& isRunning) {}
 
@@ -510,7 +510,7 @@ void ThinClientPoolDM::restoreMinConnections(volatile bool& isRunning) {
   }
 
   LOGDEBUG("Restored %d connections", restored);
-  LOGDEBUG("Pool size is %d, pool counter is %d", size(), m_poolSize);
+  LOGDEBUG("Pool size is %d, pool counter is %d", size(), m_poolSize.load());
 }
 
 int ThinClientPoolDM::manageConnectionsInternal(volatile bool& isRunning) {
@@ -606,8 +606,7 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
     ResultCollectorPtr& rs, CacheableStringPtr& exceptionPtr) {
   GfErrType err = GF_NOERR;
 
-  HostAsm::atomicAdd(m_clientOps, 1);
-  getStats().setCurClientOps(m_clientOps);
+  getStats().setCurClientOps(++m_clientOps);
 
   ACE_Recursive_Thread_Mutex resultCollectorLock;
 
@@ -679,8 +678,7 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
     rs->endResults();
   }
 
-  HostAsm::atomicAdd(m_clientOps, -1);
-  getStats().setCurClientOps(m_clientOps);
+  getStats().setCurClientOps(--m_clientOps);
   getStats().incSucceedClientOps();
 
   delete[] fePtrList;
@@ -813,7 +811,7 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
     }
     // closing all the thread local connections ( sticky).
     LOGDEBUG("ThinClientPoolDM::destroy( ): closing FairQueue, pool size = %d",
-             m_poolSize);
+             m_poolSize.load());
     close();
     LOGDEBUG("ThinClientPoolDM::destroy( ): after close ");
 
@@ -843,7 +841,7 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
              m_isDestroyed);
   }
   if (m_poolSize != 0) {
-    LOGFINE("Pool connection size is not zero %d", m_poolSize);
+    LOGFINE("Pool connection size is not zero %d", m_poolSize.load());
   }
 }
 
@@ -1321,8 +1319,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
   LOGDEBUG("ThinClientPoolDM::sendSyncRequest: ....%d %s",
            request.getMessageType(), m_poolName.c_str());
   // Increment clientOps
-  HostAsm::atomicAdd(m_clientOps, 1);
-  getStats().setCurClientOps(m_clientOps);
+  getStats().setCurClientOps(++m_clientOps);
 
   GfErrType error = GF_NOTCON;
 
@@ -1444,8 +1441,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
       // lets assume all connection are in use will happen
       if (queueErr == GF_NOERR) {
         queueErr = GF_ALL_CONNECTIONS_IN_USE_EXCEPTION;
-        HostAsm::atomicAdd(m_clientOps, -1);
-        getStats().setCurClientOps(m_clientOps);
+        getStats().setCurClientOps(--m_clientOps);
         getStats().incFailedClientOps();
         return queueErr;
       } else if (queueErr == GF_IOERR) {
@@ -1572,8 +1568,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
     }
 
     if (!attemptFailover || error == GF_NOERR) {
-      HostAsm::atomicAdd(m_clientOps, -1);
-      getStats().setCurClientOps(m_clientOps);
+      getStats().setCurClientOps(--m_clientOps);
       if (error == GF_NOERR) {
         getStats().incSucceedClientOps(); /*inc Id for clientOs stat*/
       } else if (error == GF_TIMOUT) {
@@ -1592,8 +1587,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
     firstTry = false;
   }  // While
 
-  HostAsm::atomicAdd(m_clientOps, -1);
-  getStats().setCurClientOps(m_clientOps);
+  getStats().setCurClientOps(--m_clientOps);
 
   if (error == GF_NOERR) {
     getStats().incSucceedClientOps();
@@ -1724,7 +1718,7 @@ GfErrType ThinClientPoolDM::createPoolConnectionToAEndPoint(
       LOGFINER(
           "ThinClientPoolDM::createPoolConnectionToAEndPoint( ): current pool "
           "size has reached limit %d, %d",
-          m_poolSize, max);
+          m_poolSize.load(), max);
       return error;
     }
   }
@@ -1757,9 +1751,9 @@ GfErrType ThinClientPoolDM::createPoolConnectionToAEndPoint(
 }
 
 void ThinClientPoolDM::reducePoolSize(int num) {
-  LOGFINE("removing connection %d ,  pool-size =%d", num, m_poolSize);
-  HostAsm::atomicAdd(m_poolSize, -1 * num);
-  if (m_poolSize == 0) {
+  LOGFINE("removing connection %d ,  pool-size =%d", num, m_poolSize.load());
+  m_poolSize -= num;
+  if (m_poolSize <= 0) {
     if (m_cliCallbackTask != NULL) m_cliCallbackSema.release();
   }
 }
@@ -1777,7 +1771,7 @@ GfErrType ThinClientPoolDM::createPoolConnection(
   LOGDEBUG(
       "ThinClientPoolDM::createPoolConnection( ): current pool size has "
       "reached limit %d, %d, %d",
-      m_poolSize, max, min);
+      m_poolSize.load(), max, min);
 
   conn = NULL;
   {
@@ -1785,7 +1779,7 @@ GfErrType ThinClientPoolDM::createPoolConnection(
       LOGDEBUG(
           "ThinClientPoolDM::createPoolConnection( ): current pool size has "
           "reached limit %d, %d",
-          m_poolSize, max);
+          m_poolSize.load(), max);
       maxConnLimit = true;
       return error;
     }
@@ -1840,8 +1834,7 @@ GfErrType ThinClientPoolDM::createPoolConnection(
       }
     } else {
       ep->setConnected();
-      ++m_poolSize;  // already increased
-      if (m_poolSize > min) {
+      if (++m_poolSize > min) {
         getStats().incLoadCondConnects();
       }
       // Update Stats

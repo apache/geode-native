@@ -20,6 +20,7 @@
 #ifndef GEODE_LRUENTRIESMAP_H_
 #define GEODE_LRUENTRIESMAP_H_
 
+#include <atomic>
 #include <geode/geode_globals.hpp>
 #include <geode/Cache.hpp>
 #include "ConcurrentEntriesMap.hpp"
@@ -68,7 +69,7 @@ class CPPCACHE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
   int64_t m_currentMapSize;
   spinlock_mutex m_mapInfoLock;
   std::string m_name;
-  AtomicInc m_validEntries;
+  std::atomic<uint32_t> m_validEntries;
   bool m_heapLRUEnabled;
 
  public:
@@ -127,7 +128,7 @@ class CPPCACHE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
     }
   }
 
-  inline uint32_t validEntriesSize() const { return m_validEntries.value(); }
+  inline uint32_t validEntriesSize() const { return m_validEntries; }
 
   inline void adjustLimit(uint32_t limit) { m_limit = limit; }
 

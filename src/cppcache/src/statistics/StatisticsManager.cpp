@@ -18,8 +18,6 @@
 
 #include <geode/geode_globals.hpp>
 
-#include <ace/Atomic_Op_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/OS.h>
 #include <ace/Thread_Mutex.h>
 #include <ace/Time_Value.h>
@@ -40,8 +38,9 @@ using namespace apache::geode::statistics;
  */
 StatisticsManager* StatisticsManager::s_singleton = NULL;
 
-StatisticsManager::StatisticsManager(const char* filePath, int64_t sampleInterval,
-                                     bool enabled, int64_t statFileLimit,
+StatisticsManager::StatisticsManager(const char* filePath,
+                                     int64_t sampleInterval, bool enabled,
+                                     int64_t statFileLimit,
                                      int64_t statDiskSpaceLimit)
     : m_sampler(NULL), m_adminRegion(NULLPTR) {
   m_sampleIntervalMs =
@@ -61,11 +60,9 @@ StatisticsManager::StatisticsManager(const char* filePath, int64_t sampleInterva
   }
 }
 
-StatisticsManager* StatisticsManager::initInstance(const char* filePath,
-                                                   int64_t sampleIntervalMs,
-                                                   bool enabled,
-                                                   int64_t statsFileLimit,
-                                                   int64_t statsDiskSpaceLimit) {
+StatisticsManager* StatisticsManager::initInstance(
+    const char* filePath, int64_t sampleIntervalMs, bool enabled,
+    int64_t statsFileLimit, int64_t statsDiskSpaceLimit) {
   if (!s_singleton) {
     s_singleton = new StatisticsManager(filePath, sampleIntervalMs, enabled,
                                         statsFileLimit, statsDiskSpaceLimit);
