@@ -15,10 +15,7 @@
  * limitations under the License.
  */
 
-extern "C" {
-#include <string.h>
-#include <stdlib.h>
-}
+#include <cstdlib>
 #include <ace/OS.h>
 
 #include <geode/Exception.hpp>

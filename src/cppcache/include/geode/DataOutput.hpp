@@ -26,10 +26,9 @@
 #include "Serializable.hpp"
 #include "CacheableString.hpp"
 
-extern "C" {
-#include <string.h>
-#include <stdlib.h>
-}
+#include <cstring>
+#include <string>
+#include <cstdlib>
 
 /**
  * @file
@@ -114,7 +113,7 @@ class CPPCACHE_EXPORT DataOutput {
       ensureCapacity(len + 5);
       writeArrayLen(bytes == NULL ? 0 : len);  // length of bytes...
       if (len > 0 && bytes != NULL) {
-        memcpy(m_buf, bytes, len);
+        std::memcpy(m_buf, bytes, len);
         m_buf += len;
       }
     } else {
@@ -145,7 +144,7 @@ class CPPCACHE_EXPORT DataOutput {
    */
   inline void writeBytesOnly(const uint8_t* bytes, uint32_t len) {
     ensureCapacity(len);
-    memcpy(m_buf, bytes, len);
+    std::memcpy(m_buf, bytes, len);
     m_buf += len;
   }
 
@@ -659,7 +658,7 @@ class CPPCACHE_EXPORT DataOutput {
     uint32_t size = static_cast<uint32_t>(m_buf - m_bytes);
     uint8_t* result;
     GF_ALLOC(result, uint8_t, size);
-    memcpy(result, m_bytes, size);
+    std::memcpy(result, m_bytes, size);
     return result;
   }
 
@@ -719,7 +718,7 @@ class CPPCACHE_EXPORT DataOutput {
   uint8_t* getBufferCopyFrom(const uint8_t* from, uint32_t length) {
     uint8_t* result;
     GF_NEW(result, uint8_t[length]);
-    memcpy(result, from, length);
+    std::memcpy(result, from, length);
 
     return result;
   }

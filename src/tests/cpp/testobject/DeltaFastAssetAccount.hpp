@@ -25,7 +25,7 @@
  */
 
 #include <geode/GeodeCppCache.hpp>
-#include <string.h>
+#include <string>
 #include "fwklib/FrameworkTest.hpp"
 #include <ace/ACE.h>
 #include <ace/OS.h>

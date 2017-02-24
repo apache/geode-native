@@ -81,8 +81,8 @@
 
 #include <iostream>
 #include <limits.h>
-#include <stdio.h>
-#include <time.h>
+#include <cstdio>
+#include <ctime>
 #include <math.h>
 
 #include "SpinLock.hpp"
@@ -188,7 +188,7 @@ class MTRand {
 // v0.7 - Fixed operator precedence ambiguity in reload()
 //      - Added access for real numbers in (0,1) and (0,n)
 //
-// v0.8 - Included time.h header to properly support time_t and clock_t
+// v0.8 - Included ctime header to properly support time_t and clock_t
 //
 // v1.0 - Revised seeding to match 26 Jan 2002 update of Nishimura and Matsumoto
 //      - Allowed for seeding with arrays of any length

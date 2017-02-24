@@ -25,6 +25,8 @@
  *         and instantiations for built-in types.
  */
 
+#include <cstring>
+
 #include "Cacheable.hpp"
 #include "CacheableKey.hpp"
 #include "Serializer.hpp"
@@ -144,7 +146,7 @@ class SharedArrayPtr;
 /** Function to copy an array from source to destination. */
 template <typename TObj>
 inline void copyArray(TObj* dest, const TObj* src, int32_t length) {
-  memcpy(dest, src, length * sizeof(TObj));
+  std::memcpy(dest, src, length * sizeof(TObj));
 }
 
 /**

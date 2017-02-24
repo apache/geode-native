@@ -38,7 +38,7 @@ END_MAIN
 #include <LRUMapEntry.hpp>
 #include <LRUExpMapEntry.hpp>
 #include <VersionTag.hpp>
-#include <stdlib.h>
+#include <cstdlib>
 #include <ClientProxyMembershipID.hpp>
 #include <ace/OS.h>
 #include <string>

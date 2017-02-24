@@ -18,9 +18,7 @@
 #include <geode/CacheableBuiltins.hpp>
 
 #include <ace/OS.h>
-extern "C" {
-#include <stdarg.h>
-}
+#include <cstdarg>
 
 namespace apache {
 namespace geode {

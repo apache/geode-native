@@ -16,7 +16,7 @@
  */
 
 #include "ClientProxyMembershipID.hpp"
-#include <time.h>
+#include <ctime>
 #include <ace/OS.h>
 #include <geode/DistributedSystem.hpp>
 #include <geode/GeodeTypeIds.hpp>

@@ -23,14 +23,14 @@
 #include <geode/geode_base.hpp>
 #include "fwklib/FwkLog.hpp"
 
+#include <ctime>
+#include <cstdio>
 #include <ace/Time_Value.h>
 #include <ace/High_Res_Timer.h>
 
 #ifdef _WIN32
 
-#include <time.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <windows.h>
 #include <winbase.h>
 
@@ -38,8 +38,6 @@
 
 #ifdef _SOLARIS
 
-#include <time.h>
-#include <stdio.h>
 #include <strings.h>
 
 #endif

@@ -25,7 +25,8 @@
 #include <openssl/x509.h>
 #include <string>
 #include <vector>
-#include <string.h>
+#include <cstring>
+#include <string>
 
 #include <geode/geode_base.hpp>
 
@@ -89,7 +90,7 @@ class DHImpl {
     /* adongre
      * CID 28924: Uninitialized scalar field (UNINIT_CTOR)
      */
-    memset(m_key, 0, sizeof(m_key));
+    std::memset(m_key, 0, sizeof(m_key));
   }
   static bool m_init;
 };

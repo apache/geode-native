@@ -21,7 +21,7 @@
  */
 
 #include <geode/GeodeCppCache.hpp>
-#include <string.h>
+#include <string>
 #include "fwklib/FwkLog.hpp"
 #include "fwklib/FrameworkTest.hpp"
 #include <ace/Time_Value.h>

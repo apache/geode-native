@@ -17,7 +17,7 @@
 
 //#include "geode_includes.hpp"
 #include "ExceptionTypes.hpp"
-#include <stdlib.h>
+#include <cstdlib>
 
 using namespace System;
 

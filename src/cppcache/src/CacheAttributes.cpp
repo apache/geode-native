@@ -16,8 +16,8 @@
  */
 
 #include <Utils.hpp>
-#include <string.h>
-#include <stdlib.h>
+#include <string>
+#include <cstdlib>
 #include <geode/GeodeTypeIds.hpp>
 #include <geode/CacheAttributes.hpp>
 

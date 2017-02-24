@@ -28,7 +28,7 @@
 #include <geode/PdxSerializable.hpp>
 #include <geode/PdxWriter.hpp>
 #include <geode/PdxReader.hpp>
-#include <string.h>
+#include <string>
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT

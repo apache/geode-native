@@ -18,8 +18,8 @@
 #ifndef __PKCSAUTHINIT__
 #define __PKCSAUTHINIT__
 #include "geode/AuthInitialize.hpp"
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <openssl/pem.h>
 #include <openssl/err.h>
 #include <openssl/pkcs12.h>

@@ -37,7 +37,7 @@
 #include <xercesc/dom/DOMNamedNodeMap.hpp>
 #include <xercesc/dom/DOMAttr.hpp>
 
-#include <ctype.h>
+#include <cctype>
 
 using namespace apache::geode::client;
 using namespace apache::geode::client::testframework;

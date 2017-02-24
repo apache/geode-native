@@ -26,8 +26,8 @@
 #include "typedefs.hpp"
 
 #include <algorithm>
-#include <time.h>
-#include <stdlib.h>
+#include <ctime>
+#include <cstdlib>
 
 namespace apache {
 namespace geode {

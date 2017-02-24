@@ -27,8 +27,8 @@
 #ifdef WIN32
 #include <windows.h>
 #else
-#include <sys/time.h>
-#include <sys/types.h>
+#include <ctime>
+#include <cctype>
 #include <unistd.h>
 #endif
 

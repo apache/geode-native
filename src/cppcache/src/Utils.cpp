@@ -20,10 +20,7 @@
 #include "NanoTimer.hpp"
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/INET_Addr.h>
-
-extern "C" {
-#include <stdio.h>
-}
+#include <cstdio>
 
 using namespace apache::geode::client;
 

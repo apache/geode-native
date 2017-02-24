@@ -224,7 +224,7 @@ namespace apache
     System::Byte * m_bytes;
     System::UInt32 m_size;
     bool m_hasDelta;
-    System::UInt32 m_hashCode;
+    System::Int32 m_hashCode;
     // Disable the copy and assignment constructors
     PdxManagedCacheableKeyBytes( const PdxManagedCacheableKeyBytes& );
     PdxManagedCacheableKeyBytes& operator = ( const PdxManagedCacheableKeyBytes& );

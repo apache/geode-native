@@ -19,11 +19,7 @@
 
 #include "config.h"
 
-#ifdef _MACOSX
-#include <stdlib.h>  // For wcstombs()
-#endif
-#include <wchar.h>
-
+#include <cstdlib>  // For wcstombs()
 #include <cstring>
 
 namespace {
