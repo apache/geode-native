@@ -25,8 +25,8 @@ Delta propagation uses configuration properties and a simple API to send and rec
 
 Your application class must implement:
 
--   `GemStone::GemFire::Cache::IGFDelta `
--   `GemStone::GemFire::Cache::IGFSerializable `
+-   `Apache::Geode::Client::IGFDelta `
+-   `Apache::Geode::Client::IGFSerializable `
 
 `IGFDelta` provides the methods, `HasDelta`, `ToDelta`, and `FromDelta`, which you program to report on, send, and receive deltas for your class.
 
@@ -36,8 +36,7 @@ Additionally, for cloning, your class must implement the standard .NET `IClonabl
 
 Your application must publicly derive from:
 
--   `gemfire::Delta `
--   `gemfire::Cacheable `
+-   `apache::geode::client::Delta `
 
 `Delta` provides the methods, `hasDelta`, `toDelta`, `fromDelta`, which you program to report on, send, and receive deltas for your class.
 
