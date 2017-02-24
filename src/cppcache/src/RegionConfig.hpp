@@ -31,7 +31,7 @@
 
 #include <string>
 #include <geode/Properties.hpp>
-#include <stdlib.h>
+#include <cstdlib>
 
 namespace apache {
 namespace geode {

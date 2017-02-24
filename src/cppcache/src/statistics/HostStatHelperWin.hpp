@@ -27,10 +27,9 @@
 #include <Windows.h>
 #include <WinPerf.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <malloc.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <string>
 #include "ProcessStats.hpp"
 
 /** @file

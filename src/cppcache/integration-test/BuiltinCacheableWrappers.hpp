@@ -21,11 +21,9 @@
  */
 
 #include "CacheableWrapper.hpp"
-extern "C" {
 #include <limits.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <wchar.h>
-}
 
 #include <ace/Date_Time.h>
 

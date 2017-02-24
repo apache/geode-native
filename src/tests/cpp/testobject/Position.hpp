@@ -25,7 +25,7 @@
  */
 
 #include <geode/GeodeCppCache.hpp>
-#include <string.h>
+#include <string>
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT

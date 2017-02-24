@@ -16,7 +16,7 @@
  */
 #include "fw_dunit.hpp"
 #include <string>
-#include <stdlib.h>
+#include <cstdlib>
 #include <geode/GeodeCppCache.hpp>
 #include <geode/FunctionService.hpp>
 #include <geode/Execution.hpp>

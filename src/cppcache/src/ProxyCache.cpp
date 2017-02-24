@@ -29,7 +29,7 @@
 #include "ProxyRemoteQueryService.hpp"
 #include "FunctionServiceImpl.hpp"
 #include "ProxyCache.hpp"
-#include <string.h>
+#include <string>
 #include <geode/PoolManager.hpp>
 #include "ThinClientPoolDM.hpp"
 #include "PdxInstanceFactoryImpl.hpp"

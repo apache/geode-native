@@ -32,7 +32,7 @@ END_TEST(NotOnWindows)
 #include <LRUEntriesMap.hpp>
 #include <LRUMapEntry.hpp>
 #include <VersionTag.hpp>
-#include <stdlib.h>
+#include <cstdlib>
 
 using namespace apache::geode::client;
 using namespace std;

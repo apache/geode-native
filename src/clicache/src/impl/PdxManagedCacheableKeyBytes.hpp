@@ -175,7 +175,7 @@ namespace apache
     /// <summary>
     /// return the hashcode for this key.
     /// </summary>
-    virtual System::UInt32 hashcode( ) const;
+    virtual System::Int32 hashcode( ) const;
 
     /// <summary>
     /// Copy the string form of a key into a char* buffer for logging purposes.
@@ -224,7 +224,7 @@ namespace apache
     System::Byte * m_bytes;
     System::UInt32 m_size;
     bool m_hasDelta;
-    System::UInt32 m_hashCode;
+    System::Int32 m_hashCode;
     // Disable the copy and assignment constructors
     PdxManagedCacheableKeyBytes( const PdxManagedCacheableKeyBytes& );
     PdxManagedCacheableKeyBytes& operator = ( const PdxManagedCacheableKeyBytes& );

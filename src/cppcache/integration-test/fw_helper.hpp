@@ -93,7 +93,7 @@ BEGIN_TEST.
 #include <list>
 #include <string>
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "TimeBomb.hpp"
 

@@ -25,7 +25,7 @@
  */
 
 #include <geode/GeodeCppCache.hpp>
-#include <string.h>
+#include <string>
 #include "fwklib/Timer.hpp"
 #include "fwklib/FrameworkTest.hpp"
 #include "TimestampedObject.hpp"

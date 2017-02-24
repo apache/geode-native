@@ -42,7 +42,7 @@
 #include "PdxTypeRegistry.hpp"
 #include "MemberListForVersionStamp.hpp"
 
-#include <string.h>
+#include <string>
 #include <string>
 #include <map>
 

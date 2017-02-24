@@ -24,7 +24,7 @@
 // move them there.
 // This will avoid pulling in a lot of framework headers to cause compilation
 // grieve, especially with the stl stuff.
-#include <stdlib.h>
+#include <cstdlib>
 #include <string>
 class BBNamingContextClientImpl;
 class BBNamingContextClient {

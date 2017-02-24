@@ -27,8 +27,8 @@
  */
 
 #include "geode_globals.hpp"
-#include <stdio.h>
-#include <stdarg.h>
+#include <cstdio>
+#include <cstdarg>
 
 /******************************************************************************/
 

@@ -18,8 +18,8 @@
 #include <geode/Cache.hpp>
 #include <Utils.hpp>
 #include <geode/DataOutput.hpp>
-#include <string.h>
-#include <stdlib.h>
+#include <string>
+#include <cstdlib>
 #include <geode/GeodeTypeIds.hpp>
 #include <CacheXmlParser.hpp>
 #include <ace/DLL.h>

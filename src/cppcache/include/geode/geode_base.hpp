@@ -146,16 +146,10 @@
 #endif
 /* end inttypes.h */
 
-#ifndef _INC_WCHAR
-#include <wchar.h>
-#endif
-
 #else
 /* Unix, including both Sparc Solaris and Linux */
 #define __STDC_FORMAT_MACROS
-#ifndef _WCHAR_H
-#include <wchar.h>
-#endif
+
 #endif /* _WIN32*/
 
 /**@namespace geode This namespace contains all the Geode

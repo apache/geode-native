@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <string.h>  // for ::memset()
+#include <string>  // for ::memset()
 
 #include <stdint.h>
 #define NOMINMAX

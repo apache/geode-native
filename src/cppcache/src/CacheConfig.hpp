@@ -32,7 +32,7 @@
 #endif  // _MSC_VER > 1000
 
 #include <geode/geode_globals.hpp>
-#include <string.h>
+#include <string>
 #include <map>
 #include "RegionConfig.hpp"
 #include <geode/ExceptionTypes.hpp>

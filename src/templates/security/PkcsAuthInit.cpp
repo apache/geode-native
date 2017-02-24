@@ -19,7 +19,7 @@
 #include "geode/Properties.hpp"
 #include "geode/CacheableBuiltins.hpp"
 #include "geode/ExceptionTypes.hpp"
-#include "stdio.h"
+#include <cstdio>
 
 namespace apache {
 namespace geode {

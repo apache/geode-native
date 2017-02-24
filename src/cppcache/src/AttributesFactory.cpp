@@ -27,8 +27,8 @@ class Region;
 #include <geode/ExpirationAttributes.hpp>
 #include <Utils.hpp>
 #include <geode/DistributedSystem.hpp>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <string>
 #include <geode/Pool.hpp>
 #include <geode/PoolManager.hpp>
 using namespace apache::geode::client;

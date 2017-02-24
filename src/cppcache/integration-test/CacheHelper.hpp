@@ -21,7 +21,7 @@
  */
 
 #include <geode/GeodeCppCache.hpp>
-#include <stdlib.h>
+#include <cstdlib>
 #include <geode/SystemProperties.hpp>
 #include <ace/OS.h>
 #include <ace/INET_Addr.h>

@@ -18,8 +18,8 @@
  */
 
 #include "CppCacheLibrary.hpp"
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <string>
 #include "Utils.hpp"
 #include <geode/Exception.hpp>

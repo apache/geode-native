@@ -22,7 +22,8 @@
 
 #include "geode_globals.hpp"
 #include "ExceptionTypes.hpp"
-#include <string.h>
+#include <cstring>
+#include <string>
 #include "geode_types.hpp"
 #include "Serializable.hpp"
 #include "CacheableString.hpp"
@@ -98,7 +99,7 @@ class CPPCACHE_EXPORT DataInput {
   inline void readBytesOnly(uint8_t* buffer, uint32_t len) {
     if (len > 0) {
       checkBufferSize(len);
-      memcpy(buffer, m_buf, len);
+      std::memcpy(buffer, m_buf, len);
       m_buf += len;
     }
   }
@@ -116,7 +117,7 @@ class CPPCACHE_EXPORT DataInput {
   inline void readBytesOnly(int8_t* buffer, uint32_t len) {
     if (len > 0) {
       checkBufferSize(len);
-      memcpy(buffer, m_buf, len);
+      std::memcpy(buffer, m_buf, len);
       m_buf += len;
     }
   }
@@ -139,7 +140,7 @@ class CPPCACHE_EXPORT DataInput {
     if (length > 0) {
       checkBufferSize(length);
       GF_NEW(buffer, uint8_t[length]);
-      memcpy(buffer, m_buf, length);
+      std::memcpy(buffer, m_buf, length);
       m_buf += length;
     }
     *bytes = buffer;
@@ -163,7 +164,7 @@ class CPPCACHE_EXPORT DataInput {
     if (length > 0) {
       checkBufferSize(length);
       GF_NEW(buffer, int8_t[length]);
-      memcpy(buffer, m_buf, length);
+      std::memcpy(buffer, m_buf, length);
       m_buf += length;
     }
     *bytes = buffer;
@@ -938,7 +939,7 @@ class CPPCACHE_EXPORT DataInput {
   static uint8_t* getBufferCopy(const uint8_t* from, uint32_t length) {
     uint8_t* result;
     GF_NEW(result, uint8_t[length]);
-    memcpy(result, from, length);
+    std::memcpy(result, from, length);
 
     return result;
   }
@@ -948,7 +949,7 @@ class CPPCACHE_EXPORT DataInput {
   uint8_t* getBufferCopyFrom(const uint8_t* from, uint32_t length) {
     uint8_t* result;
     GF_NEW(result, uint8_t[length]);
-    memcpy(result, from, length);
+    std::memcpy(result, from, length);
 
     return result;
   }

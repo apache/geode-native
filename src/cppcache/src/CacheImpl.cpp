@@ -16,7 +16,7 @@
  */
 
 #include "CacheImpl.hpp"
-#include <string.h>
+#include <string>
 #include <geode/CacheStatistics.hpp>
 #include "Utils.hpp"
 #include "LocalRegion.hpp"

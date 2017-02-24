@@ -18,8 +18,8 @@
 #include <geode/geode_globals.hpp>
 
 #include <string>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <string>
 
 #include <geode/SystemProperties.hpp>
 #include <CppCacheLibrary.hpp>

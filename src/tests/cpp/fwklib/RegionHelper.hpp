@@ -26,7 +26,7 @@
 #include "fwklib/FwkObjects.hpp"
 #include "fwklib/FwkStrCvt.hpp"
 #include "fwklib/FwkLog.hpp"
-#include <stdlib.h>
+#include <cstdlib>
 
 #include <string>
 #include <map>
