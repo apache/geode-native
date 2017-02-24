@@ -21,7 +21,8 @@ limitations under the License.
 
 By default, delta propagation is enabled in your distributed system and is used for objects that implement the delta interface. You program the client-side methods to extract delta information for your entries and to apply received delta information.
 
-For more information, see [Delta Propagation API](delta-propagation-api.html#delta-propagation-api).
+Documentation for a complete delta propagation example is at
+[QuickStart Examples](../introduction/quickstart.html).
 
 **Prerequisites**
 
@@ -41,7 +42,7 @@ For every class in which you want delta propagation, implement the delta interfa
 
 2.  In the application code that puts entries, put the fully populated object into the local cache. This usually means doing a `get` on the entry, unless you are sure it does not already exist anywhere in the distributed region.
 
-    Even though you are planning to send only deltas, errors on the receiving end could cause Geode to request the full object, so you must provide it to the originating put method. Do this even in empty producers, with regions configured for no local data storage.
+    Even though you are planning to send only deltas, errors on the receiving end could cause a request of the full object, so you must provide the full object to the originating put method. Do this even in empty producers, with regions configured for no local data storage.
 
 3.  Change each field’s update method to record information about the update.
 
