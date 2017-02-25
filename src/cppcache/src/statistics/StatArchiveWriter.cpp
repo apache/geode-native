@@ -26,10 +26,16 @@
 
 #include "StatArchiveWriter.hpp"
 #include "GeodeStatisticsFactory.hpp"
-#include <NanoTimer.hpp>
 
-using namespace apache::geode::client;
-using namespace apache::geode::statistics;
+namespace apache {
+namespace geode {
+namespace statistics {
+
+using std::chrono::steady_clock;
+using std::chrono::system_clock;
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+using std::chrono::nanoseconds;
 
 // Constructor and Member functions of StatDataOutput class
 
@@ -320,20 +326,19 @@ StatArchiveWriter::StatArchiveWriter(std::string outfile,
   this->sampler = samplerArg;
 
   // write the time, system property etc.
-  this->previousTimeStamp = NanoTimer::now();
-  this->previousTimeStamp += NANOS_PER_MILLI / 2;
-  this->previousTimeStamp /= NANOS_PER_MILLI;
-  ACE_Time_Value now = ACE_OS::gettimeofday();
-  int64_t epochsec = now.sec();
-  int64_t initialDate = epochsec * 1000;
+  this->previousTimeStamp = steady_clock::now();
 
   this->dataBuffer->writeByte(HEADER_TOKEN);
   this->dataBuffer->writeByte(ARCHIVE_VERSION);
-  this->dataBuffer->writeLong(initialDate);
+  this->dataBuffer->writeLong(
+      duration_cast<milliseconds>(system_clock::now().time_since_epoch())
+          .count());
   int64_t sysId = sampler->getSystemId();
   this->dataBuffer->writeLong(sysId);
-  int64_t sysStartTime = sampler->getSystemStartTime();
-  this->dataBuffer->writeLong(sysStartTime);
+  this->dataBuffer->writeLong(
+      duration_cast<milliseconds>(
+          sampler->getSystemStartTime().time_since_epoch())
+          .count());
   int32_t tzOffset = ACE_OS::timezone();
   // offset in milli seconds
   tzOffset = tzOffset * -1 * 1000;
@@ -341,7 +346,7 @@ StatArchiveWriter::StatArchiveWriter(std::string outfile,
 
   struct tm *tm_val;
   time_t clock = ACE_OS::time();
-  tm_val = localtime(&clock);
+  tm_val = ACE_OS::localtime(&clock);
   char buf[512] = {0};
   ACE_OS::strftime(buf, sizeof(buf), "%Z", tm_val);
   std::string tzId(buf);
@@ -388,7 +393,7 @@ int64_t StatArchiveWriter::bytesWritten() { return bytesWrittenToFile; }
 
 int64_t StatArchiveWriter::getSampleSize() { return m_samplesize; }
 
-void StatArchiveWriter::sample(int64_t timeStamp) {
+void StatArchiveWriter::sample(const steady_clock::time_point &timeStamp) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(sampler->getStatListMutex());
   m_samplesize = dataBuffer->getBytesWritten();
 
@@ -407,10 +412,7 @@ void StatArchiveWriter::sample(int64_t timeStamp) {
   m_samplesize = dataBuffer->getBytesWritten() - m_samplesize;
 }
 
-void StatArchiveWriter::sample() {
-  int64_t timestamp = NanoTimer::now();
-  sample(timestamp);
-}
+void StatArchiveWriter::sample() { sample(steady_clock::now()); }
 
 void StatArchiveWriter::close() {
   sample();
@@ -511,13 +513,13 @@ void StatArchiveWriter::resampleResources() {
   }
 }
 
-void StatArchiveWriter::writeTimeStamp(int64_t timeStamp) {
-  timeStamp += NANOS_PER_MILLI / 2;
-  timeStamp /= NANOS_PER_MILLI;
-  int64_t delta = timeStamp - this->previousTimeStamp;
+void StatArchiveWriter::writeTimeStamp(
+    const steady_clock::time_point &timeStamp) {
+  int32_t delta =
+      duration_cast<milliseconds>(timeStamp - this->previousTimeStamp).count();
   if (delta > MAX_SHORT_TIMESTAMP) {
     dataBuffer->writeShort(static_cast<int16_t>(INT_TIMESTAMP_TOKEN));
-    dataBuffer->writeInt(static_cast<int32_t>(delta));
+    dataBuffer->writeInt(delta);
   } else {
     dataBuffer->writeShort(static_cast<uint16_t>(delta));
   }
@@ -614,3 +616,6 @@ void StatArchiveWriter::writeResourceInst(StatDataOutput *dataOut,
     dataOut->writeByte(static_cast<int8_t>(instId));
   }
 }
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache

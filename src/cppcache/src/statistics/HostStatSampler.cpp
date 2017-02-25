@@ -134,8 +134,7 @@ HostStatSampler::HostStatSampler(const char* filePath, int64_t sampleIntervalMs,
   m_archiver = NULL;
   m_samplerStats = new StatSamplerStats();
 
-  ACE_Time_Value startTimeValue = ACE_OS::gettimeofday();
-  m_startTime = startTimeValue.msec();
+  m_startTime = system_clock::now();
 
   m_pid = ACE_OS::getpid();
   m_statMngr = statMngr;
@@ -343,7 +342,9 @@ std::vector<Statistics*>& HostStatSampler::getNewStatistics() {
 
 int64_t HostStatSampler::getSystemId() { return m_pid; }
 
-int64_t HostStatSampler::getSystemStartTime() { return m_startTime; }
+system_clock::time_point HostStatSampler::getSystemStartTime() {
+  return m_startTime;
+}
 
 std::string HostStatSampler::getSystemDirectoryPath() {
   ACE_utsname u;
