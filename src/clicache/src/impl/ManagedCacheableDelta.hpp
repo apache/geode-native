@@ -136,7 +136,7 @@ namespace apache
         /// <summary>
         /// return the hashcode for this key.
         /// </summary>
-        virtual System::UInt32 hashcode() const;
+        virtual System::Int32 hashcode() const;
 
         /// <summary>
         /// return true if this key matches other CacheableKey

@@ -150,7 +150,7 @@ namespace apache
         /// <summary>
         /// return the hashcode for this key.
         /// </summary>
-        virtual System::UInt32 hashcode() const;
+        virtual System::Int32 hashcode() const;
 
         /// <summary>
         /// Copy the string form of a key into a char* buffer for logging purposes.

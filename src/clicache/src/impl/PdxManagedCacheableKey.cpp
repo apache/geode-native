@@ -191,7 +191,7 @@ namespace apache
         return false;
       }
 
-      System::UInt32 PdxManagedCacheableKey::hashcode() const
+      System::Int32 PdxManagedCacheableKey::hashcode() const
       {
         if (m_hashcode != 0)
           return m_hashcode;
