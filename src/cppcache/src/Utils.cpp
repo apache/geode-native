@@ -16,20 +16,21 @@
  */
 
 #include <cstdio>
+#include <chrono>
 
 #include <ace/OS.h>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/INET_Addr.h>
 
 #include "Utils.hpp"
-#include "NanoTimer.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
 int RandGen::operator()(size_t max) {
-  unsigned int seed = static_cast<unsigned int>(NanoTimer::now());
+  unsigned int seed = static_cast<unsigned int>(
+      std::chrono::system_clock::now().time_since_epoch().count());
   return ACE_OS::rand_r(&seed) % max;
 }
 

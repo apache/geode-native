@@ -21,10 +21,19 @@
 #include <ThinClientPoolDM.hpp>
 #include "GeodeStatisticsFactory.hpp"
 #include <ClientHealthStats.hpp>
-#include <NanoTimer.hpp>
 #include "HostStatHelper.hpp"
-using namespace apache::geode::statistics;
-using namespace apache::geode::client;
+#include <chrono>
+#include <thread>
+
+namespace apache {
+namespace geode {
+namespace statistics {
+
+using std::chrono::high_resolution_clock;
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+using std::chrono::nanoseconds;
+
 const char* PoolStatsSampler::NC_PSS_Thread = "NC PSS Thread";
 
 PoolStatsSampler::PoolStatsSampler(int64_t sampleRate, CacheImpl* cache,
@@ -41,24 +50,20 @@ PoolStatsSampler::~PoolStatsSampler() {
 
 int32_t PoolStatsSampler::svc() {
   DistributedSystemImpl::setThreadName(NC_PSS_Thread);
-  int32_t msSpentWorking = 0;
-  int32_t msRate = static_cast<int32_t>(m_sampleRate);
+  auto msSpentWorking = milliseconds::zero();
+  auto samplingRate = milliseconds(m_sampleRate);
   // ACE_Guard < ACE_Recursive_Thread_Mutex > _guard( m_lock );
   while (!m_stopRequested) {
-    int64_t sampleStartNanos = NanoTimer::now();
+    auto sampleStart = high_resolution_clock::now();
     putStatsInAdminRegion();
-    int64_t sampleEndNanos = NanoTimer::now();
-    int64_t nanosSpentWorking = sampleEndNanos - sampleStartNanos;
-    msSpentWorking = static_cast<int32_t>(nanosSpentWorking / 1000000);
-    int32_t msToWait = msRate - msSpentWorking;
-    while (msToWait > 0) {
-      ACE_Time_Value sleepTime;
-      sleepTime.msec(msToWait > 100 ? 100 : msToWait);
-      ACE_OS::sleep(sleepTime);
-      msToWait -= 100;
-      if (m_stopRequested) {
-        break;
-      }
+    nanoseconds spentWorking = high_resolution_clock::now() - sampleStart;
+    auto sleepDuration =
+        samplingRate - duration_cast<milliseconds>(spentWorking);
+    static const auto wakeInterval = milliseconds(100);
+    while (!m_stopRequested && sleepDuration > milliseconds::zero()) {
+      std::this_thread::sleep_for(sleepDuration > wakeInterval ? wakeInterval
+                                                               : sleepDuration);
+      sleepDuration -= wakeInterval;
     }
   }
   return 0;
@@ -127,3 +132,6 @@ void PoolStatsSampler::putStatsInAdminRegion() {
     LOGDEBUG("Exception occurred, trying again.");
   }
 }
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache

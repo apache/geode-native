@@ -96,12 +96,8 @@
 #define __has_cpp_attribute(x) 0
 #endif
 
-<<<<<<< HEAD
 #if __cplusplus >= 201402L
 #if __has_cpp_attribute(deprecated)
-=======
-#if __cplusplus >= 201402L && __has_cpp_attribute(deprecated)
->>>>>>> GEODE-2531: Replace HostAsm::atomic with std::atomic.
 // C++14 standard deprecated attribute
 #define __DEPRECATED__(msg) [[deprecated(msg)]]
 #else
@@ -125,16 +121,6 @@
 #include "geode_base.hpp"
 
 #include <cstdint>
-
-namespace apache {
-namespace geode {
-namespace client {
-
-extern void CPPCACHE_EXPORT millisleep(uint32_t millis);
-
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
 
 #include "Log.hpp"
 #include "Assert.hpp"

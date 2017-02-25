@@ -20,6 +20,8 @@
 
 #include <ace/OS.h>
 #include <string>
+#include <thread>
+#include <chrono>
 
 #define ROOT_NAME "testThinClientHAPeriodicAck"
 #define ROOT_SCOPE DISTRIBUTED_ACK
@@ -488,21 +490,21 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateEntries)
   {
     for (int value = 1; value <= 100; value++) {
       createIntEntry(regionNames[0], keys[0], value);
-      apache::geode::client::millisleep(50);
+      std::this_thread::sleep_for(std::chrono::milliseconds(50));
       createIntEntry(regionNames[0], keys[1], value);
-      apache::geode::client::millisleep(50);
+      std::this_thread::sleep_for(std::chrono::milliseconds(50));
       createIntEntry(regionNames[0], keys[2], value);
-      apache::geode::client::millisleep(50);
+      std::this_thread::sleep_for(std::chrono::milliseconds(50));
       createIntEntry(regionNames[0], keys[3], value);
-      apache::geode::client::millisleep(50);
+      std::this_thread::sleep_for(std::chrono::milliseconds(50));
       createIntEntry(regionNames[1], keys[0], value);
-      apache::geode::client::millisleep(50);
+      std::this_thread::sleep_for(std::chrono::milliseconds(50));
       createIntEntry(regionNames[1], keys[1], value);
-      apache::geode::client::millisleep(50);
+      std::this_thread::sleep_for(std::chrono::milliseconds(50));
       createIntEntry(regionNames[1], keys[2], value);
-      apache::geode::client::millisleep(50);
+      std::this_thread::sleep_for(std::chrono::milliseconds(50));
       createIntEntry(regionNames[1], keys[3], value);
-      apache::geode::client::millisleep(50);
+      std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
   }
 END_TASK_DEFINITION
