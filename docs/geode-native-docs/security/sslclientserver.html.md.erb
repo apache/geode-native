@@ -97,7 +97,7 @@ where _jdk-or-jre-path_ is the directory in which Java is installed.
 
 Configure SSL properties.
 
-1.  In your client properties file (usually `geode.properties`), set `ssl-enabled` to true and set `ssl-keystore` and `ssl-truststore` to point to your keystore files. See [Security-Related System Properties (geode.properties)](security-systemprops.html#security) for a description of these properties.
+1.  In your client properties file (usually `geode.properties`), set `ssl-enabled-components` to appropriate values (for example, `server,locator`) and set `ssl-keystore` and `ssl-truststore` to point to your keystore files. See [Security-Related System Properties (geode.properties)](security-systemprops.html#security) for a description of these properties.
 2.  On each locator, enable SSL and set the following SSL properties in the locator’s properties file (usually `geode.properties`, but on the locator's host):
 
     ```
