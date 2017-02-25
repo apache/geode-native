@@ -234,7 +234,7 @@ namespace apache
         return false;
       }
 
-      System::UInt32 PdxManagedCacheableKeyBytes::hashcode() const
+      System::Int32 PdxManagedCacheableKeyBytes::hashcode() const
       {
         return m_hashCode;
       }
