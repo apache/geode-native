@@ -27,19 +27,18 @@
 #include <ace/OS_NS_sys_stat.h>
 #include <utility>
 #include <vector>
+#include <chrono>
+#include <thread>
 
 #include "HostStatSampler.hpp"
 #include "HostStatHelper.hpp"
 #include "StatArchiveWriter.hpp"
-#include <NanoTimer.hpp>
 #include <geode/DistributedSystem.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/Log.hpp>
 #include "GeodeStatisticsFactory.hpp"
 #include <ClientHealthStats.hpp>
 #include <ClientProxyMembershipID.hpp>
-using namespace apache::geode::statistics;
-using namespace apache::geode::client;
 
 namespace apache {
 namespace geode {
@@ -58,8 +57,6 @@ typedef std::vector<std::pair<std::string, int64_t> > g_fileInfo;
 }  // namespace statistics
 }  // namespace geode
 }  // namespace apache
-
-using namespace apache::geode::statistics::globals;
 
 extern "C" {
 
@@ -115,6 +112,15 @@ int comparator(const dirent** d1, const dirent** d2) {
 }
 }
 
+namespace apache {
+namespace geode {
+namespace statistics {
+
+using std::chrono::high_resolution_clock;
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+using std::chrono::nanoseconds;
+
 const char* HostStatSampler::NC_HSS_Thread = "NC HSS Thread";
 
 HostStatSampler::HostStatSampler(const char* filePath, int64_t sampleIntervalMs,
@@ -134,11 +140,11 @@ HostStatSampler::HostStatSampler(const char* filePath, int64_t sampleIntervalMs,
   m_pid = ACE_OS::getpid();
   m_statMngr = statMngr;
   m_archiveFileName = filePath;
-  g_statFile = filePath;
+  globals::g_statFile = filePath;
   m_sampleRate = sampleIntervalMs;
   rollIndex = 0;
   m_archiveDiskSpaceLimit = statDiskSpaceLimit;
-  g_spaceUsed = 0;
+  globals::g_spaceUsed = 0;
 
   if (statDiskSpaceLimit != 0) {
     m_isStatDiskSpaceEnabled = true;
@@ -171,24 +177,24 @@ HostStatSampler::HostStatSampler(const char* filePath, int64_t sampleIntervalMs,
       m_archiveFileSizeLimit = m_archiveDiskSpaceLimit;
     }
 
-    g_statFileWithExt = initStatFileWithExt();
+    globals::g_statFileWithExt = initStatFileWithExt();
 
 #ifdef _WIN32
     // replace all '\' with '/' to make everything easier..
-    size_t len = g_statFile.length() + 1;
+    size_t len = globals::g_statFile.length() + 1;
     char* slashtmp = new char[len];
-    ACE_OS::strncpy(slashtmp, g_statFile.c_str(), len);
-    for (size_t i = 0; i < g_statFile.length(); i++) {
+    ACE_OS::strncpy(slashtmp, globals::g_statFile.c_str(), len);
+    for (size_t i = 0; i < globals::g_statFile.length(); i++) {
       if (slashtmp[i] == '/') {
         slashtmp[i] = '\\';
       }
     }
-    g_statFile = slashtmp;
+    globals::g_statFile = slashtmp;
     delete[] slashtmp;
     slashtmp = NULL;
 #endif
 
-    std::string dirname = ACE::dirname(g_statFile.c_str());
+    std::string dirname = ACE::dirname(globals::g_statFile.c_str());
     // struct dirent **resultArray;
     // int entries_count = ACE_OS::scandir(dirname.c_str(), &resultArray,
     // selector, comparator);
@@ -219,14 +225,14 @@ HostStatSampler::HostStatSampler(const char* filePath, int64_t sampleIntervalMs,
       resultArray = NULL;
     }*/
 
-    FILE* existingFile = fopen(g_statFileWithExt.c_str(), "r");
+    FILE* existingFile = fopen(globals::g_statFileWithExt.c_str(), "r");
     if (existingFile != NULL && statFileLimit > 0) {
       fclose(existingFile);
       /* adongre
        * CID 28820: Resource leak (RESOURCE_LEAK)
        */
       existingFile = NULL;
-      changeArchive(g_statFileWithExt);
+      changeArchive(globals::g_statFileWithExt);
     } else {
       writeGfs();
     }
@@ -358,7 +364,7 @@ void HostStatSampler::changeArchive(std::string filename) {
   }
   filename = chkForGFSExt(filename);
   if (m_archiver != NULL) {
-    g_previoussamplesize = m_archiver->getSampleSize();
+    globals::g_previoussamplesize = m_archiver->getSampleSize();
     m_archiver->closeFile();
   }
   // create new file only when tis file has some data; otherwise reuse it
@@ -621,16 +627,17 @@ void HostStatSampler::doSample(std::string& archivefilename) {
 
   if (m_archiveFileSizeLimit != 0) {
     int64_t size = m_archiver->getSampleSize();
-    int64_t bytesWritten = m_archiver->bytesWritten();  // + g_previoussamplesize;
+    int64_t bytesWritten =
+        m_archiver->bytesWritten();  // + globals::g_previoussamplesize;
     if (bytesWritten > (m_archiveFileSizeLimit - size)) {
       // roll the archive
       changeArchive(archivefilename);
     }
   }
-  g_spaceUsed += m_archiver->bytesWritten();
+  globals::g_spaceUsed += m_archiver->bytesWritten();
   // delete older stat files if disk limit is about to be exceeded.
   if ((m_archiveDiskSpaceLimit != 0) &&
-      (g_spaceUsed >=
+      (globals::g_spaceUsed >=
        (m_archiveDiskSpaceLimit - m_archiver->getSampleSize()))) {
     checkDiskLimit();
   }
@@ -642,10 +649,10 @@ void HostStatSampler::doSample(std::string& archivefilename) {
 }
 
 void HostStatSampler::checkDiskLimit() {
-  g_fileInfo fileInfo;
-  g_spaceUsed = 0;
+  globals::g_fileInfo fileInfo;
+  globals::g_spaceUsed = 0;
   char fullpath[512] = {0};
-  std::string dirname = ACE::dirname(g_statFile.c_str());
+  std::string dirname = ACE::dirname(globals::g_statFile.c_str());
   // struct dirent **resultArray;
   // int entries_count = ACE_OS::scandir(dirname.c_str(), &resultArray,
   // selector, comparator);
@@ -657,11 +664,11 @@ void HostStatSampler::checkDiskLimit() {
       ACE_OS::snprintf(fullpath, 512, "%s%c%s", dirname.c_str(),
                        ACE_DIRECTORY_SEPARATOR_CHAR, sds[i]->d_name);
       ACE_OS::stat(fullpath, &statBuf);
-      g_fileInfoPair = std::make_pair(fullpath, statBuf.st_size);
-      fileInfo.push_back(g_fileInfoPair);
-      g_spaceUsed += fileInfo[i - 1].second;
+      globals::g_fileInfoPair = std::make_pair(fullpath, statBuf.st_size);
+      fileInfo.push_back(globals::g_fileInfoPair);
+      globals::g_spaceUsed += fileInfo[i - 1].second;
     }
-    g_spaceUsed += m_archiver->bytesWritten();
+    globals::g_spaceUsed += m_archiver->bytesWritten();
     /*for(int i = 0; i < entries_count; i++) {
     ACE_OS::free ( resultArray[i] );
     }
@@ -672,11 +679,11 @@ void HostStatSampler::checkDiskLimit() {
     sds.close();
   }
   int fileIndex = 0;
-  while ((g_spaceUsed >
+  while ((globals::g_spaceUsed >
           m_archiveDiskSpaceLimit) /*&& (fileIndex < entries_count)*/) {
     int64_t fileSize = fileInfo[fileIndex].second;
     if (ACE_OS::unlink(fileInfo[fileIndex].first.c_str()) == 0) {
-      g_spaceUsed -= fileSize;
+      globals::g_spaceUsed -= fileSize;
     } else {
       LOGWARN("%s\t%s\n", "Could not delete",
               fileInfo[fileIndex].first.c_str());
@@ -696,8 +703,8 @@ int32_t HostStatSampler::svc(void) {
     if (!m_isStatDiskSpaceEnabled) {
       changeArchive(archivefilename);
     }
-    int32_t msSpentWorking = 0;
-    int32_t msRate = static_cast<int32_t>(getSampleRate());
+    auto msSpentWorking = milliseconds::zero();
+    auto samplingRate = milliseconds(getSampleRate());
     bool gotexception = false;
     int waitTime = 0;
     while (!m_stopRequested) {
@@ -713,26 +720,23 @@ int32_t HostStatSampler::svc(void) {
           gotexception = false;
           changeArchive(archivefilename);
         }
-        int64_t sampleStartNanos = NanoTimer::now();
+
+        auto sampleStart = high_resolution_clock::now();
 
         doSample(archivefilename);
 
-        int64_t sampleEndNanos = NanoTimer::now();
-        int64_t nanosSpentWorking = sampleEndNanos - sampleStartNanos;
+        nanoseconds spentWorking = high_resolution_clock::now() - sampleStart;
         // updating the sampler statistics
-        accountForTimeSpentWorking(nanosSpentWorking);
-        msSpentWorking = static_cast<int32_t>(nanosSpentWorking / 1000000);
+        accountForTimeSpentWorking(spentWorking.count());
 
-        // Continous check for m_stopRequested to sped up stop time.
-        int32_t msToWait = msRate - msSpentWorking;
-        while (msToWait > 0) {
-          ACE_Time_Value sleepTime;
-          sleepTime.msec(msToWait > 100 ? 100 : msToWait);
-          ACE_OS::sleep(sleepTime);
-          msToWait -= 100;
-          if (m_stopRequested) {
-            break;
-          }
+        // TODO: replace with condition on m_stopRequested
+        auto sleepDuration =
+            samplingRate - duration_cast<milliseconds>(spentWorking);
+        static const auto wakeInterval = milliseconds(100);
+        while (!m_stopRequested && sleepDuration > milliseconds::zero()) {
+          std::this_thread::sleep_for(
+              sleepDuration > wakeInterval ? wakeInterval : sleepDuration);
+          sleepDuration -= wakeInterval;
         }
       } catch (Exception& e) {
         // log the exception and let the thread exit.
@@ -763,3 +767,6 @@ int32_t HostStatSampler::svc(void) {
   m_running = false;
   return 0;
 }
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache
