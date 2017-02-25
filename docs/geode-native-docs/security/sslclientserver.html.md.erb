@@ -68,7 +68,7 @@ where <code>_path-to-installed-openssl_</code> is typically `C:\OpenSSL>`.
 
 Configure SSL properties.
 
-1.  In `gfcpp.properties`, set `ssl-enabled` to true and set `ssl-keystore` and `ssl-truststore` to point to your keystore files. See [Security-Related System Properties (gfcpp.properties)](security-systemprops.html#security) for a description of these properties.
+1.  In `gfcpp.properties`, set `ssl-enabled-components` to appropreate values (for example, `server,locator` ) and set `ssl-keystore` and `ssl-truststore` to point to your keystore files. See [Security-Related System Properties (gfcpp.properties)](security-systemprops.html#security) for a description of these properties.
 2.  On each locator, enable SSL and set the following SSL properties in the locator’s `gemfire.properties` file:
 
     ``` pre
