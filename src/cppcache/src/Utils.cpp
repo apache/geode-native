@@ -17,13 +17,14 @@
 
 #include "Utils.hpp"
 #include "ace/OS.h"
-#include "NanoTimer.hpp"
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/INET_Addr.h>
 #include <cstdio>
 #include <chrono>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 #ifdef _WIN32
 
@@ -289,3 +290,7 @@ int32_t Utils::logWideString(char* buf, size_t maxLen, const wchar_t* wStr) {
     return ACE_OS::snprintf(buf, maxLen, "null");
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

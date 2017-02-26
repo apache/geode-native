@@ -122,8 +122,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-extern void CPPCACHE_EXPORT millisleep(uint32_t millis);
-
 #ifdef _WIN32
 extern void CPPCACHE_EXPORT setNewAndDelete(pNew, pDelete);
 #endif

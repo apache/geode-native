@@ -18,6 +18,9 @@
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 
+#include <thread>
+#include <chrono>
+
 /* Testing Parameters              Param's Value
 Server Conflation:                   on / off
 Client side conflation setting   on/ off / server / not set
@@ -176,7 +179,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ValidateClient1Conflation)
   {
     // Client Already Initiated , Send Client Ready and wait
     getHelper()->cachePtr->readyForEvents();
-    apache::geode::client::millisleep(5000);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     mon1C1->validate(true);
     LOG("Client 1 region 1 verified for conflation = true");
@@ -191,7 +194,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, ValidateClient2Conflation)
   {
     // Client Already Initiated , Send Client Ready and wait
     getHelper()->cachePtr->readyForEvents();
-    apache::geode::client::millisleep(5000);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     mon1C2->validate(false);
     LOG("Client 2 region 1 verified for conflation = false");
@@ -227,7 +230,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ValidateClient1Server)
   {
     // Client Already Initiated , Send Client Ready and wait
     getHelper()->cachePtr->readyForEvents();
-    apache::geode::client::millisleep(5000);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     mon1C1->validate(true);
     LOG("Client 1 region 1 verified for conflation = server");
@@ -242,7 +245,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, ValidateClient2None)
   {
     // Client Already Initiated , Send Client Ready and wait
     getHelper()->cachePtr->readyForEvents();
-    apache::geode::client::millisleep(5000);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     mon1C2->validate(true);
     LOG("Client 2 region 1 verified for no conflation setting");

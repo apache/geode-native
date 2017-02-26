@@ -24,7 +24,13 @@
 #include "Utils.hpp"
 #include "DistributedSystemImpl.hpp"
 
-using namespace apache::geode::client;
+#include <thread>
+#include <chrono>
+
+namespace apache {
+namespace geode {
+namespace client {
+
 #define throwException(ex)                              \
   {                                                     \
     LOGFINEST("%s: %s", ex.getName(), ex.getMessage()); \
@@ -236,7 +242,7 @@ GfErrType TcrEndpoint::createNewConnection(
       LOGINFO("Timeout in handshake with endpoint[%s]", m_name.c_str());
       err = GF_TIMOUT;
       m_needToConnectInLock = true;  // while creating the connection
-      apache::geode::client::millisleep(50);
+      std::this_thread::sleep_for(std::chrono::milliseconds(50));
     } catch (const GeodeIOException& ex) {
       LOGINFO("IO error[%d] in handshake with endpoint[%s]: %s",
               ACE_OS::last_error(), m_name.c_str(), ex.getMessage());
@@ -774,7 +780,7 @@ inline bool TcrEndpoint::handleIOException(const std::string& message,
     m_needToConnectInLock = true;
     return false;
   }
-  apache::geode::client::millisleep(10);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
   return true;
 }
 
@@ -987,7 +993,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
         connection only when not a sticky connection.
           closeConnection( conn );
         }*/
-        apache::geode::client::millisleep(10);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
         int32_t type = request.getMessageType();
         epFailure = (type != TcrMessage::QUERY && type != TcrMessage::PUTALL &&
                      type != TcrMessage::PUT_ALL_WITH_CALLBACK &&
@@ -1334,3 +1340,7 @@ void TcrEndpoint::sendRequestForChunkedResponse(const TcrMessage& request,
 void TcrEndpoint::closeFailedConnection(TcrConnection*& conn) {
   closeConnection(conn);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

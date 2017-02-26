@@ -21,6 +21,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <thread>
+#include <chrono>
 
 #include <ace/ACE.h>
 #include <ace/Guard_T.h>
@@ -370,7 +372,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
           break;
         }
         // continue after some sleep
-        apache::geode::client::millisleep(200);
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
       }
       /* (don't throw exception; try appending to existing file instead)
       if (renameResult < 0) {
@@ -435,7 +437,7 @@ void Log::writeBanner() {
       break;
     }
     // continue after some sleep
-    apache::geode::client::millisleep(200);
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
   }
   if (!g_log) {
     g_isLogFileOpened = false;
