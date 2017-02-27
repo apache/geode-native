@@ -26,8 +26,13 @@ ENV GEODE_VERSION 1.1.0
 RUN \
     wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tar.gz" -O - | tar xzf -
 
+ENV RAT_VERSION 0.12
+RUN \
+    wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=creadur/apache-rat-${RAT_VERSION}/apache-rat-${RAT_VERSION}-bin.tar.gz2" -O - | tar xzf -
+
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ENV GEODE_HOME /apache-geode-${GEODE_VERSION}
+ENV RAT_HOME /apache-rat-${RAT_VERSION}
 ENV PATH $PATH:$GEODE_HOME/bin
 
 CMD ["bash"]
