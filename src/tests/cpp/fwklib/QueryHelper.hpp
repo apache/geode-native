@@ -32,8 +32,6 @@
 #include "../testobject/PdxType.hpp"
 #include "../testobject/PortfolioPdx.hpp"
 #include "../testobject/PositionPdx.hpp"
-#include "../pdxautoserializerclass/PortfolioPdx.hpp"
-#include "../pdxautoserializerclass/PositionPdx.hpp"
 #include "fwklib/FwkLog.hpp"
 
 #include <geode/ResultSet.hpp>
@@ -45,7 +43,6 @@
 
 using namespace apache::geode::client;
 using namespace PdxTests;
-using namespace AutoPdxTests;
 
 namespace testData {
 
@@ -683,11 +680,6 @@ class QueryHelper {
                                         char** nm = NULL);
   virtual void populatePositionPdxData(RegionPtr& pregion, int setSize,
                                        int numSets);
-  virtual void populateAutoPortfolioPdxData(RegionPtr& pregion, int setSize,
-                                            int numSets, int32_t objSize = 1,
-                                            char** nm = NULL);
-  virtual void populateAutoPositionPdxData(RegionPtr& pregion, int setSize,
-                                           int numSets);
   virtual void destroyPortfolioOrPositionData(RegionPtr& pregion, int setSize,
                                               int numSets,
                                               const char* dataType);
@@ -908,12 +900,10 @@ void QueryHelper::destroyPortfolioOrPositionData(RegionPtr& rptr, int setSize,
       for (int current = 1; current <= setSize; current++) {
         char portname[100] = {0};
         if (strcmp(dataType, "Portfolio") == 0 ||
-            strcmp(dataType, "PortfolioPdx") == 0 ||
-            strcmp(dataType, "AutoPortfolioPdx") == 0) {
+            strcmp(dataType, "PortfolioPdx") == 0) {
           ACE_OS::sprintf(portname, "port%d-%d", set, current);
         } else if (strcmp(dataType, "Position") == 0 ||
-                   strcmp(dataType, "PositionPdx") == 0 ||
-                   strcmp(dataType, "AutoPositionPdx") == 0) {
+                   strcmp(dataType, "PositionPdx") == 0) {
           ACE_OS::sprintf(portname, "pos%d-%d", set, current);
         } else {
           throw apache::geode::client::IllegalArgumentException(
@@ -1019,54 +1009,6 @@ void QueryHelper::populatePositionPdxData(RegionPtr& rptr, int setSize,
       rptr->put(keypos, pos);
       LOGINFO("populatePositionPdxData:: Put for iteration current = %d done",
               current);
-    }
-  }
-  // positionSetSize = setSize; positionNumSets = numSets;
-}
-void QueryHelper::populateAutoPortfolioPdxData(RegionPtr& rptr, int setSize,
-                                               int numSets, int32_t objSize,
-                                               char** nm) {
-  // lets reset the counter for uniform population of position objects
-  AutoPdxTests::PositionPdx::resetCounter();
-
-  for (int set = 1; set <= numSets; set++) {
-    for (int current = 1; current <= setSize; current++) {
-      CacheablePtr port(new AutoPdxTests::PortfolioPdx(current, objSize));
-
-      char portname[100] = {0};
-      ACE_OS::sprintf(portname, "port%d-%d", set, current);
-
-      CacheableKeyPtr keyport = CacheableKey::create(portname);
-
-      rptr->put(keyport, port);
-      LOGINFO(
-          "populateAutoPortfolioPdxData:: Put for iteration current = %d done",
-          current);
-    }
-  }
-  // portfolioSetSize = setSize; portfolioNumSets = numSets; objectSize =
-  // objSize;
-
-  printf("all puts done \n");
-}
-
-void QueryHelper::populateAutoPositionPdxData(RegionPtr& rptr, int setSize,
-                                              int numSets) {
-  int numSecIds = sizeof(secIds) / sizeof(char*);
-
-  for (int set = 1; set <= numSets; set++) {
-    for (int current = 1; current <= setSize; current++) {
-      CacheablePtr pos(new AutoPdxTests::PositionPdx(
-          secIds[current % numSecIds], current * 100));
-
-      char posname[100] = {0};
-      ACE_OS::sprintf(posname, "pos%d-%d", set, current);
-
-      CacheableKeyPtr keypos = CacheableKey::create(posname);
-      rptr->put(keypos, pos);
-      LOGINFO(
-          "populateAutoPositionPdxData:: Put for iteration current = %d done",
-          current);
     }
   }
   // positionSetSize = setSize; positionNumSets = numSets;

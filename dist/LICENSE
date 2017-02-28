@@ -317,14 +317,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-
----------------------------------------------------------------------------
-Public Domain
----------------------------------------------------------------------------
-
-Apache Geode bundles the following files, which are available in the public
-domain:
-
-  - ANTLRv2 (http://www.antlr2.org/)
-  - PUBLIC DOMAIN PCCTS-BASED C++ GRAMMAR (http://www.antlr2.org/)

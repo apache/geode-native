@@ -25,9 +25,6 @@ elseif(UNIX)
     set(DYNAMIC_LIBRARY_PATH LD_LIBRARY_PATH=$<TARGET_LINKER_FILE_DIR:apache-geode>)
 endif()
 
-macro(add_pdxautoserializer SOURCES_VAR NAMESPACE CLASS HEADER SUFFIX CLASSNAMESTR)
-    set(${SOURCES_VAR} ${${SOURCES_VAR}} ${CMAKE_CURRENT_SOURCE_DIR}/${NAMESPACE}_${CLASS}${SUFFIX}.cpp)
-endmacro()
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library(testobject SHARED ${SOURCES})
@@ -37,7 +34,6 @@ target_link_libraries(testobject
   PUBLIC 
     apache-geode
     fwk
-    pdxobject
     c++11
   PRIVATE
     ACE

@@ -69,8 +69,7 @@ else
     echo 22.PdxRemoteQuery
     echo 23.PdxSerializer
     echo 24.PdxInstance
-    echo 25.PdxAutoSerializer
-    echo 26.Quit
+    echo 25.Quit
     echo
   fi
 
@@ -151,9 +150,6 @@ else
         exname='PdxInstance'
       ;;
       "25")
-        exname='PdxAutoSerializer'
-      ;;
-      "26")
         exname='Quit'
     exit
       ;;

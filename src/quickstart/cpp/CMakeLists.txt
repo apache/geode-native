@@ -26,16 +26,6 @@ elseif(UNIX)
     set(DYNAMIC_LIBRARY_PATH LD_LIBRARY_PATH=${NATIVECLIENT_DIR}/lib)
 endif()
 
-macro(add_pdxautoserializer NAMESPACE CLASS HEADER SUFFIX CLASSNAMESTR)
-    set(_OUTPUT ${CMAKE_SOURCE_DIR}/queryobjects/${NAMESPACE}_${CLASS}${SUFFIX}.cpp)
-    set(_INPUT ${HEADER})
-
-    add_custom_command(OUTPUT ${_OUTPUT}
-        COMMAND ${DYNAMIC_LIBRARY_PATH} ${NATIVECLIENT_BINARIES_DIR}/pdxautoserializer --outDir=${CMAKE_SOURCE_DIR}/queryobjects ${CMAKE_SOURCE_DIR}/queryobjects/${HEADER}
-        DEPENDS ${CMAKE_SOURCE_DIR}/queryobjects/${_INPUT}
-    )
-endmacro()
-
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -61,9 +51,6 @@ endif()
 if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -std=c++11 -lstdc++ -lgcc_s -lCrunG3 -lc")
 endif()
-
-add_pdxautoserializer(testobject PortfolioPdxAuto PortfolioPdxAuto.hpp Serializable "")
-add_pdxautoserializer(testobject PositionPdxAuto PositionPdxAuto.hpp Serializable "")
 
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}")
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}")
@@ -177,15 +164,6 @@ add_executable(PdxRemoteQuery
   queryobjects/PortfolioPdx.cpp
   queryobjects/PositionPdx.cpp)
 target_link_libraries(PdxRemoteQuery PUBLIC ${GFCPPCACHE})
-
-add_executable(PdxAutoSerializer
-  PdxAutoSerializer.cpp
-  queryobjects/PortfolioPdxAuto.cpp
-  queryobjects/PositionPdxAuto.cpp
-  queryobjects/testobject_PortfolioPdxAutoSerializable.cpp
-  queryobjects/testobject_PositionPdxAutoSerializable.cpp
-  )
-target_link_libraries(PdxAutoSerializer PUBLIC ${GFCPPCACHE})
 
 file(COPY ../XMLs DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ../keystore DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
