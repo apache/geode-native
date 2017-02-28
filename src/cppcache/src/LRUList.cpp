@@ -25,9 +25,6 @@ namespace client {
 
 using util::concurrent::spinlock_mutex;
 
-//#define LOCK_HEAD SpinLockGuard headLockGuard(m_headLock)
-//#define LOCK_TAIL SpinLockGuard tailLockGuard(m_tailLock)
-
 template <typename TEntry, typename TCreateEntry>
 LRUList<TEntry, TCreateEntry>::LRUList() : m_headLock(), m_tailLock() {
   LRUListEntryPtr headEntry(TCreateEntry::create(NULLPTR));

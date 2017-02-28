@@ -320,7 +320,6 @@ GfErrType MapSegment::remove(const CacheableKeyPtr& key, CacheablePtr& oldValue,
                              MapEntryImplPtr& me, int updateCount,
                              VersionTagPtr versionTag, bool afterRemote,
                              bool& isEntryFound) {
-  //  std::lock_guard<spinlock_mutex> lk(m_spinlock);
   int status;
   MapEntryPtr entry;
   if (m_concurrencyChecksEnabled) {
@@ -330,13 +329,11 @@ GfErrType MapSegment::remove(const CacheableKeyPtr& key, CacheablePtr& oldValue,
     GfErrType err;
     {
       std::lock_guard<spinlock_mutex> lk(m_spinlock);
-      // if (m_concurrencyChecksEnabled)
       err = removeWhenConcurrencyEnabled(key, oldValue, me, updateCount,
                                          versionTag, afterRemote, isEntryFound,
                                          id, handler, expTaskSet);
     }
 
-    // if (m_concurrencyChecksEnabled){
     if (!expTaskSet) {
       CacheImpl::expiryTaskManager->cancelTask(id);
       delete handler;
@@ -461,8 +458,6 @@ void MapSegment::keys(VectorOfCacheableKey& result) {
  */
 void MapSegment::entries(VectorOfRegionEntry& result) {
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
-  // printf("total_size)=%u, current_size=%u\n",
-  //  m_map->total_size(), m_map->current_size());
   for (CacheableKeyHashMap::iterator iter = m_map->begin();
        iter != m_map->end(); iter++) {
     CacheableKeyPtr keyPtr;
