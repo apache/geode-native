@@ -239,8 +239,7 @@ echo 21.TransactionsXA
 echo 22.PdxRemoteQuery
 echo 23.PdxSerializer
 echo 24.PdxInstance
-echo 25.PdxAutoSerializer
-echo 26.Quit
+echo 25.Quit
 echo.
 
 :getoption
@@ -275,8 +274,7 @@ if '%option%' equ '21' set exname=TransactionsXA
 if '%option%' equ '22' set exname=PdxRemoteQuery
 if '%option%' equ '23' set exname=PdxSerializer
 if '%option%' equ '24' set exname=PdxInstance
-if '%option%' equ '25' set exname=PdxAutoSerializer
-if '%option%' equ '26' goto finished
+if '%option%' equ '25' goto finished
 
 if '%exname%' equ 'invalidoption' goto invalidoption
 
