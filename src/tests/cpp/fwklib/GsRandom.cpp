@@ -17,6 +17,7 @@
 
 #include "GsRandom.hpp"
 
+#include <cstring>
 #include <mutex>
 #include <util/concurrent/spinlock_mutex.hpp>
 
