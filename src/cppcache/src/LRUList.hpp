@@ -31,11 +31,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-// Bit mask for recently used
-#define RECENTLY_USED_BITS 1u
-// Bit mask for evicted
-#define EVICTED_BITS 2u
-
 /**
  * @brief This class encapsulates LRU specific properties for a LRUList node.
  */
@@ -72,6 +67,10 @@ class CPPCACHE_EXPORT LRUEntryProperties {
  private:
   std::atomic<uint32_t> m_bits;
   void* m_persistenceInfo;
+  // Bit mask for recently used
+  static constexpr uint32_t RECENTLY_USED_BITS = 1u;
+  // Bit mask for evicted
+  static constexpr uint32_t EVICTED_BITS = 2u;
 };
 
 using util::concurrent::spinlock_mutex;

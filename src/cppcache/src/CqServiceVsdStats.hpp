@@ -113,6 +113,8 @@ class CPPCACHE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
 class CqServiceStatType {
  private:
   static spinlock_mutex m_statTypeLock;
+  static constexpr const char* statsName = "CqServiceStatistics";
+  static constexpr const char* statsDesc = "Statistics for this cq Service";
 
  public:
   static CqServiceStatType& getInstance();

@@ -27,9 +27,6 @@
 
 #include "util/concurrent/spinlock_mutex.hpp"
 
-const char* statsName = "RegionStatistics";
-const char* statsDesc = "Statistics for this region";
-
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace apache {

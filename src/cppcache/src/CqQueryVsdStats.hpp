@@ -79,6 +79,8 @@ class CPPCACHE_EXPORT CqQueryVsdStats : public CqStatistics {
 class CqQueryStatType {
  private:
   static spinlock_mutex m_statTypeLock;
+  static constexpr const char* statsName = "CqQueryStatistics";
+  static constexpr const char* statsDesc = "Statistics for this cq query";
 
  public:
   static CqQueryStatType& getInstance();

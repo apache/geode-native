@@ -132,6 +132,8 @@ class RegionStatType {
   static RegionStatType* single;
   static spinlock_mutex m_singletonLock;
   static spinlock_mutex m_statTypeLock;
+  static constexpr const char* statsName = "RegionStatistics";
+  static constexpr const char* statsDesc = "Statistics for this region";
 
  public:
   static RegionStatType* getInstance();
