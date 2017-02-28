@@ -72,7 +72,7 @@ void LRUList<TEntry, TCreateEntry>::getLRUEntry(LRUListEntryPtr& result) {
   bool isLast = false;
   LRUListNode* aNode;
   while (true) {
-    aNode = getHeadNode(&isLast);
+    aNode = getHeadNode(isLast);
     if (aNode == nullptr) {
       result = NULLPTR;
       break;
@@ -102,7 +102,7 @@ void LRUList<TEntry, TCreateEntry>::getLRUEntry(LRUListEntryPtr& result) {
 
 template <typename TEntry, typename TCreateEntry>
 typename LRUList<TEntry, TCreateEntry>::LRUListNode*
-LRUList<TEntry, TCreateEntry>::getHeadNode(bool* isLast) {
+LRUList<TEntry, TCreateEntry>::getHeadNode(bool& isLast) {
   std::lock_guard<spinlock_mutex> lk(m_headLock);
 
   LRUListNode* result = m_headNode;
@@ -114,7 +114,7 @@ LRUList<TEntry, TCreateEntry>::getHeadNode(bool* isLast) {
     nextNode = m_headNode->getNextLRUListNode();
     if (nextNode == nullptr) {
       // last one in the list...
-      *isLast = true;
+      isLast = true;
       LRUListEntryPtr entry;
       result->getEntry(entry);
       if (entry->getLRUProperties().testEvicted()) {
@@ -127,7 +127,7 @@ LRUList<TEntry, TCreateEntry>::getHeadNode(bool* isLast) {
     }
   }
 
-  *isLast = false;
+  isLast = false;
   // advance head node, and return old value.
   m_headNode = nextNode;
 

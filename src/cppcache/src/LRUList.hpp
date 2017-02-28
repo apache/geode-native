@@ -141,7 +141,7 @@ class LRUList {
    * @brief return the head entry in the list,
    * and removing it from the list.
    */
-  LRUListNode* getHeadNode(bool* isLast);
+  LRUListNode* getHeadNode(bool& isLast);
 
   spinlock_mutex m_headLock;
   spinlock_mutex m_tailLock;
