@@ -555,7 +555,7 @@ class CPPCACHE_EXPORT TcrMessage {
                        const VectorOfCacheableKey* getAllKeyList = NULL);
   void writeHeader(uint32_t msgType, uint32_t numOfParts);
   void writeRegionPart(const std::string& regionName);
-  void writeStringPart(const std::string& regionName);
+  void writeStringPart(const std::string& str);
   void writeEventIdPart(int reserveSize = 0,
                         bool fullValueAfterDeltaFail = false);
   void writeMessageLength();
