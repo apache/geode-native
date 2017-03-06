@@ -305,15 +305,9 @@ TEST_F(DataOutputTest, TestCursorAdvance) {
       "001B596F7520686164206D65206174206D65617420746F726E61646F2E",
       dataOutput.getByteArray());
 
-  EXPECT_EQ((2 + 27), dataOutput.getBufferLength());
-
-  // buffers are pre-allocated 8k and have 2 bytes to hold the data length
-  EXPECT_EQ(((8 * 1024) - (2 + 27)), dataOutput.getRemainingBufferLength());
-
+  const uint32_t originalLength = dataOutput.getBufferLength();
   dataOutput.advanceCursor(2);
-  EXPECT_EQ((2 + 27 + 2), dataOutput.getBufferLength());
-
-  EXPECT_EQ(((8 * 1024) - (2 + 27 + 2)), dataOutput.getRemainingBufferLength());
+  EXPECT_EQ((originalLength + 2), dataOutput.getBufferLength()) << "Correct length after advance";
 }
 
 TEST_F(DataOutputTest, TestCursorNegativeAdvance) {
@@ -323,13 +317,7 @@ TEST_F(DataOutputTest, TestCursorNegativeAdvance) {
       "001B596F7520686164206D65206174206D65617420746F726E61646F2E",
       dataOutput.getByteArray());
 
-  EXPECT_EQ((2 + 27), dataOutput.getBufferLength());
-
-  // buffers are pre-allocated 8k and have 2 bytes to hold the data length
-  EXPECT_EQ(((8 * 1024) - (2 + 27)), dataOutput.getRemainingBufferLength());
-
+  const uint32_t originalLength = dataOutput.getBufferLength();
   dataOutput.advanceCursor(-2);
-  EXPECT_EQ((2 + 27 - 2), dataOutput.getBufferLength());
-
-  EXPECT_EQ(((8 * 1024) - (2 + 27 - 2)), dataOutput.getRemainingBufferLength());
+  EXPECT_EQ((originalLength - 2), dataOutput.getBufferLength()) << "Correct length after negative advance";
 }
