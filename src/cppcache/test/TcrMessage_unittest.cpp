@@ -19,6 +19,7 @@
 
 #include "gtest/gtest.h"
 
+#include <geode/CqState.hpp>
 #include <TcrMessage.hpp>
 #include "ByteArrayFixture.hpp"
 
@@ -561,3 +562,66 @@ TEST_F(TcrMessageTest, testConstructorEXECUTE_FUNCTION) {
       "75746546756E6374696F6E0000000301570000",
       testMessage);
 }
+
+TEST_F(TcrMessageTest, testConstructorEXECUTECQ_MSG_TYPE) {
+  CacheablePtr myCacheablePtr(CacheableString::createDeserializable());
+
+  TcrMessageExecuteCq testMessage("ExecuteCQ", "select * from /somewhere",
+                                  CqState::RUNNING, false,
+                                  static_cast<ThinClientBaseDM *>(NULL));
+
+  EXPECT_EQ(TcrMessage::EXECUTECQ_MSG_TYPE, testMessage.getMessageType());
+
+  EXPECT_MESSAGE_EQ(
+      "0000002A0000004000000005FFFFFFFF0000000009004578656375746543510000001800"
+      "73656C656374202A2066726F6D202F736F6D657768657265000000040000000001000000"
+      "010000000000010001",
+      testMessage);
+}
+
+TEST_F(TcrMessageTest, testConstructorWithGinormousQueryEXECUTECQ_MSG_TYPE) {
+  CacheablePtr myCacheablePtr(CacheableString::createDeserializable());
+
+  std::ostringstream oss;
+  oss << "select * from /somewhere s where s.data.id in SET(";
+  // Ensure over 64KiB of query string.
+  const int n = (((64 * 1024) + 11) / 12);
+  for (int i = 0; i < n; ++i) {
+    if (0 < i) {
+      oss << ',';
+    }
+    oss << '\'';
+    oss.fill('0');
+    oss.width(9);
+    oss << i;
+    oss << '\'';
+  }
+  oss << ") and s.type in SET('AAA','BBB','CCC','DDD') limit 60000";
+  TcrMessageExecuteCq testMessage("ExecuteCQ", oss.str(), CqState::RUNNING,
+                                  false, static_cast<ThinClientBaseDM *>(NULL));
+
+  EXPECT_EQ(TcrMessage::EXECUTECQ_MSG_TYPE, testMessage.getMessageType());
+
+  EXPECT_MESSAGE_EQ(
+      "0000002A0001009900000005FFFFFFFF0000000009004578656375746543510001007100"
+      "\\h{131298}000000040000000001000000010000000000010001",
+      testMessage);
+}
+
+TEST_F(TcrMessageTest, testConstructorEXECUTECQ_WITH_IR_MSG_TYPE) {
+  CacheablePtr myCacheablePtr(CacheableString::createDeserializable());
+
+  TcrMessageExecuteCqWithIr testMessage(
+      "ExecuteCQWithIr", "select * from /somewhere", CqState::RUNNING, false,
+      static_cast<ThinClientBaseDM *>(NULL));
+
+  EXPECT_EQ(TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE,
+            testMessage.getMessageType());
+
+  EXPECT_MESSAGE_EQ(
+      "0000002B0000004600000005FFFFFFFF000000000F004578656375746543515769746849"
+      "72000000180073656C656374202A2066726F6D202F736F6D657768657265000000040000"
+      "000001000000010000000000010001",
+      testMessage);
+}
+

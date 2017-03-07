@@ -756,8 +756,8 @@ void TcrMessage::writeRegionPart(const std::string& regionName) {
   m_request->writeBytesOnly((int8_t*)regionName.c_str(), len);
 }
 
-void TcrMessage::writeStringPart(const std::string& regionName) {
-  m_request->writeFullUTF(regionName.c_str());
+void TcrMessage::writeStringPart(const std::string& str) {
+  m_request->writeFullUTF(str.c_str());
 }
 
 void TcrMessage::writeEventIdPart(int reserveSize,
