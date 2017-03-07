@@ -18,60 +18,15 @@
 #include "GsRandom.hpp"
 
 #include <cstring>
-#include <mutex>
-#include <util/concurrent/spinlock_mutex.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 namespace testframework {
 
-using util::concurrent::spinlock_mutex;
-
-GsRandom *GsRandom::singleton = 0;
-MTRand GsRandom::gen;
-int32_t GsRandom::seedUsed = -101;
-spinlock_mutex GsRandom::lck;
-
-/**
-  * Creates a new random number generator using a single
-  * <code>int32_t</code> seed.
-  *
-  * @param   seed   the initial seed.
-  * @see     java.util.Random#Random(int32_t)
-  */
-GsRandom *GsRandom::getInstance(int32_t seed) {
-  if (singleton == 0) {
-    setInstance(seed);
-  } else {
-    std::lock_guard<spinlock_mutex> guard(lck);
-    setSeed(seed);
-  }
-  return singleton;
-}
-
-void GsRandom::setInstance(int32_t seed) {
-  std::lock_guard<spinlock_mutex> guard(lck);
-  if (singleton == 0) {
-    singleton = new GsRandom();
-    if (seed != -1) {
-      singleton->gen.seed(seed);
-    } else {
-      singleton->gen.seed();
-    }
-    seedUsed = seed;
-  }
-}
-
-void GsRandom::setSeed(int32_t seed) {
-  if (seed != seedUsed) {
-    if (seed != -1) {
-      singleton->gen.seed(seed);
-    } else {
-      singleton->gen.seed();
-    }
-    seedUsed = seed;
-  }
+GsRandom &GsRandom::getInstance() {
+  static GsRandom instance;
+  return instance;
 }
 
 /**

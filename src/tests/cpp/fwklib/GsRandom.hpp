@@ -23,78 +23,63 @@
 #include <geode/geode_base.hpp>
 
 #include <string>
-
-#include <util/concurrent/spinlock_mutex.hpp>
-#include "MersenneTwister.hpp"
+#include <random>
 
 namespace apache {
 namespace geode {
 namespace client {
 namespace testframework {
 
-using util::concurrent::spinlock_mutex;
-
 class GsRandom {
  private:
-  static MTRand gen;
-  static GsRandom* singleton;
-  static int32_t seedUsed;
-  static spinlock_mutex lck;
-  static void setInstance(int32_t seed);
+  std::default_random_engine engine;
 
-  GsRandom() {}
-  static void setSeed(int32_t seed);
+  std::uniform_int_distribution<> distBoolean;
+  std::uniform_int_distribution<uint8_t> distUint8;
+  std::uniform_int_distribution<uint16_t> distUint16;
+  std::uniform_int_distribution<int32_t> distInt32;
+  std::uniform_int_distribution<uint32_t> distUint32;
+  std::uniform_real_distribution<double> distDouble;
+
+  GsRandom()
+      : distBoolean(0, 1),
+        distUint8(),
+        distUint16(),
+        distInt32(),
+        distUint32(),
+        distDouble() {
+    std::random_device seed;
+    engine = std::default_random_engine(seed());
+  }
+  ~GsRandom() = default;
+  GsRandom(const GsRandom&) = delete;
+  GsRandom& operator=(const GsRandom&) = delete;
 
  public:
-  ~GsRandom() {
-    if (singleton != NULL) {
-      delete singleton;
-      singleton = NULL;
-    }
-  }
-
   /**
     * Creates a new random number generator. Its seed is initialized to
-    * a value based on the /dev/urandom or current time.
+    * a value based on the random device.
     *
-    * @see     java.lang.System#currentTimeMillis()
-    * @see     java.util.Random#Random()
     */
-  inline static GsRandom* getInstance() {
-    if (singleton == 0) setInstance(-1);
-    return singleton;
-  }
-
-  /**
-    * Creates a new random number generator using a single
-    * <code>int32_t</code> seed.
-    *
-    * @param   seed   the initial seed.
-    * @see     java.util.Random#Random(int32_t)
-    */
-  static GsRandom* getInstance(int32_t seed);
+  static GsRandom& getInstance();
 
   /**
     * @return the next pseudorandom, uniformly distributed <code>boolean</code>
     *         value from this random number generator's sequence.
     */
-  inline bool nextBoolean() { return (singleton->gen.randInt(1) == 0); }
+  inline bool nextBoolean() { return 1 == distBoolean(engine); }
 
   /**
     * @return the next pseudorandom, uniformly distributed <code>uint16_t</code>
     *         value from this random number generator's sequence.
     */
-  inline uint16_t nextInt16() {
-    return static_cast<uint16_t>(singleton->gen.randInt(0xffff));
-  }
+  inline uint16_t nextInt16() { return distUint16(engine); }
 
   /**
     * @return the next pseudorandom, uniformly distributed <code>byte</code>
     *         value from this random number generator's sequence.
     */
-  inline uint8_t nextByte() {
-    return static_cast<uint8_t>(singleton->gen.randInt(0xff));
-  }
+  inline uint8_t nextByte() { return distUint8(engine); }
 
   /**
     * @param   min the minimum range (inclusive) for the pseudorandom.
@@ -103,9 +88,9 @@ class GsRandom {
     *          value from this random number generator's sequence.
     *       If max < min, returns 0 .
     */
-  inline uint8_t nextByte(int32_t min, int32_t max) {
-    if (max < min) return 0;
-    return static_cast<uint8_t>(singleton->gen.randInt(max - min) + min);
+  inline uint8_t nextByte(uint8_t min, uint8_t max) {
+    return distUint8(
+        engine, std::uniform_int_distribution<uint8_t>::param_type(min, max));
   }
 
   /**
@@ -123,7 +108,8 @@ class GsRandom {
     *      from min to max.
     */
   inline double nextDouble(double min, double max) {
-    return (singleton->gen.rand(max - min) + min);
+    return distDouble(
+        engine, std::uniform_real_distribution<double>::param_type(min, max));
   }
 
   /**
@@ -141,24 +127,23 @@ class GsRandom {
     *       If max < min, returns 0 .
     */
   inline int32_t nextInt(int32_t min, int32_t max) {
-    if (max < min) return 0;
-    return singleton->gen.randInt(max - min) + min;
+    return distInt32(
+        engine, std::uniform_int_distribution<int32_t>::param_type(min, max));
   }
 
   /** @brief return random number where: min <= retValue < max */
   static uint32_t random(uint32_t min, uint32_t max) {
-    return static_cast<uint32_t>(
-        GsRandom::getInstance()->nextInt(min, max - 1));
+    return getInstance().distUint32(
+        getInstance().engine,
+        std::uniform_int_distribution<uint32_t>::param_type(min, max - 1));
   }
 
   /** @brief return random number where: 0 <= retValue < max */
-  static uint32_t random(uint32_t max) {
-    return static_cast<uint32_t>(GsRandom::getInstance()->nextInt(0, max - 1));
-  }
+  static uint32_t random(uint32_t max) { return random(0, max - 1); }
 
   /** @brief return random double where: min <= retValue <= max */
   static double random(double min, double max) {
-    return GsRandom::getInstance()->nextDouble(min, max);
+    return getInstance().nextDouble(min, max);
   }
 
   /** @brief return bounded random string,
@@ -197,14 +182,6 @@ class GsRandom {
       buffer[idx] = chooseFrom[random(chooseSize)];
     }
   }
-
-  //  /**
-  //  * Returns a randomly-selected element of Vector vec.
-  //  */
-  //  inline void * randomElement(Vector vec)
-  //  {
-  //    return (void *)(vec.at(nextInt(vec.size())));
-  //  }
 
   /**
     * @param max the maximum length of the random string to generate.

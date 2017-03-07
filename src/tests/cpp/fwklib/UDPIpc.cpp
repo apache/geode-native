@@ -150,9 +150,7 @@ UDPMessageClient::UDPMessageClient(std::string server)
   int32_t tries = 100;
   ACE_INET_Addr* client = new ACE_INET_Addr();
   while ((result < 0) && (tries > 0)) {
-    uint32_t port = GsRandom::random(static_cast<uint32_t>(1111),
-                                     static_cast<uint32_t>(31111)) +
-                    tries;
+    uint32_t port = GsRandom::random(1111u, 31111u) + tries;
     client->set(port, "localhost");
     result = m_io.open(*client);
   }
