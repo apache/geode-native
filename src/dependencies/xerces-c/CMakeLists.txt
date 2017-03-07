@@ -45,7 +45,7 @@ if (WIN32)
                  #TODO cleanup includes?
                  COMMAND ${CMAKE_COMMAND} -E copy_directory src <INSTALL_DIR>/include )
 else()
-  set ( _CONFIGURE_COMMAND ${CONFIGURE} $<$<CONFIG:Debug>:--with-debug> --with-pic "CFLAGS=${${PROJECT_NAME}_CFLAGS}" "CXXFLAGS=${${PROJECT_NAME}_CXXFLAGS}" "MAKE=$(MAKE)" )
+  set ( _CONFIGURE_COMMAND ${CONFIGURE} $<$<CONFIG:Debug>:--with-debug> --libdir=<INSTALL_DIR>/lib --with-pic "CFLAGS=${${PROJECT_NAME}_CFLAGS}" "CXXFLAGS=${${PROJECT_NAME}_CXXFLAGS}" "MAKE=$(MAKE)" )
   set ( _BUILD_COMMAND $(MAKE) all )
   set ( _INSTALL_COMMAND $(MAKE) install )
 endif()
