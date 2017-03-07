@@ -378,9 +378,8 @@ class CPPCACHE_EXPORT DataOutput {
      */
   inline void writeFullUTF(const char* value, uint32_t length = 0) {
     if (value != NULL) {
-      int32_t len = getEncodedLength(value, length);
-      uint16_t encodedLen = static_cast<uint16_t>(len > 0xFFFF ? 0xFFFF : len);
-      writeInt(static_cast<int32_t>(encodedLen));
+      int32_t encodedLen = getEncodedLength(value, length);
+      writeInt(encodedLen);
       ensureCapacity(encodedLen);
       write(static_cast<int8_t>(0));  // isObject = 0 BYTE_CODE
       uint8_t* end = m_buf + encodedLen;
