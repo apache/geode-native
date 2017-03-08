@@ -29,25 +29,36 @@ Follow these instructions to download and install OpenSSL for your specific oper
 
 The native client requires OpenSSL 1.0.1t or later. For Windows platforms, you can use either the regular or the OpenSSL 1.0.1t "Light" version.
 
-**Note:**
-If you use Cygwin, it is recommended that you do not use the OpenSSL library that comes with Cygwin because it is built with `cygwin.dll` as a dependency.
+**Note for Windows users:** If you use Cygwin, do not use the OpenSSL library that comes with
+Cygwin, which is built with `cygwin.dll` as a dependency. Instead, download a fresh copy from
+OpenSSL as described in the following section.
 
 ## Step 1. Download and install OpenSSL
 
-### <a id="security__section_5C95C2E4D9244B27BF8FD178E402D993" class="no-quick-link"></a>Linux
+To install OpenSSL:
 
-Download the OpenSSL tarball archive from the OpenSSL web site at [http://www.openssl.org/source/](http://www.openssl.org/source/). Copy the downloaded tarball file into `NativeClient_xxxx/templates/security/openssl/Linux` and run `buildit.sh`.
+1. Download the OpenSSL archive from the [OpenSSL web site](http://www.openssl.org/source/). 
 
-### <a id="security__section_93651F296C1A4EA5A3FA045EC15FB506" class="no-quick-link"></a>Solaris
+2. Extract the archive in a directory of your choice. For example:
 
-Download the OpenSSL tarball archive from the OpenSSL web site at [http://www.openssl.org/source/](http://www.openssl.org/source/). Copy the downloaded tarball file into `NativeClient_xxxx/templates/security/openssl/SunOS` and run `buildit.sh`.
+    ```
+    $ tar xvzf openssl-1.0.1u.tar.gz
+    x openssl-1.0.1u/ACKNOWLEDGMENTS
+    x openssl-1.0.1u/apps/
+    x openssl-1.0.1u/apps/app_rand.c
+    ...
+    ```
 
-### <a id="security__section_68961A8829D44BFB8F542F3317464E5E" class="no-quick-link"></a>Windows
+3. Look in the top-level directory of the source distribution to identify the installation instructions for your operating system:
 
-Download the installer for OpenSSL from [http://www.openssl.org/related/binaries.html](http://www.openssl.org/related/binaries.html). You can also use the OpenSSL "Light" version.
+    ```
+    $ cd openssl-1.0.1u
+    $ ls INSTALL*
+    INSTALL        INSTALL.DJGPP      INSTALL.MacOS      INSTALL.NW        INSTALL.OS2
+    INSTALL.VMS    INSTALL.W32        INSTALL.W64        INSTALL.WCE
+    ```
 
-Use the downloaded OpenSSL installer to install it on Windows. You can usually accept the default installation path (`C:\OpenSSL`).
-
+4. Build the OpenSSL library by following the instructions for your operating system.
 
 ## Step 2. Create keystores
 
@@ -75,7 +86,7 @@ Configure your system environment to build and run OpenSSL. Follow the environme
 <code>
 \> set GFCPP=_product-dir_<br />
 \> set OPENSSL=_path-to-installed-openssl_<br />
-\> set PATH=_path-to-jdk-or-jre_\bin;%GFCPP%\bin;%GFCPP%\ssl\_libs;%OPENSSL%\bin;%PATH%<br />
+\> set PATH=_jdk-or-jre-path_\bin;%GFCPP%\bin;%GFCPP%\ssl\_libs;%OPENSSL%\bin;%PATH%<br />
 \> set CLASSPATH=_path-to-gemfire-installation_\lib\gfSecurityImpl.jar;%CLASSPATH%
 </code>
 
@@ -88,16 +99,17 @@ Configure SSL properties.
 1.  In `gfcpp.properties`, set `ssl-enabled` to true and set `ssl-keystore` and `ssl-truststore` to point to your keystore files. See [Security-Related System Properties (gfcpp.properties)](security-systemprops.html#security) for a description of these properties.
 2.  On each locator, enable SSL and set the following SSL properties in the locator’s `gemfire.properties` file:
 
-    ``` pre
+    ```
     ssl-enabled-components=server,locator
     ssl-protocols=any
     ssl-ciphers=SSL_RSA_WITH_NULL_SHA
     ```
+    Make sure your choice of cipher matches a cipher supported on the server.
 
+# Starting and stopping the client and server with SSL in place
 
-## Step 5. Start and stop the client and server
-
-Before you start and stop the client and server, make sure you configure the native client with the SSL properties as described and with the servers or locators specified as usual.
+Before you start and stop the client and server, make sure you configure the native client with the
+SSL properties as described and with the servers or locators specified as usual.
 
 Specifically, ensure that:
 
