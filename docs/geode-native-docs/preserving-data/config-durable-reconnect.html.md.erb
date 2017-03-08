@@ -19,9 +19,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-You can configure the durable native client to obtain an approximate count of pending events upon durable client reconnection. Based on the returned number, you can determine whether to proceed and receive the pending events or to close the cache.
+You can configure a durable client to obtain an approximate count of pending events upon durable client reconnection. Based on the returned number, you can determine whether to proceed and receive the pending events or to close the cache.
 
-Use the `getPendingEventCount` (C++ API) and the `PendingEventCount` (C\# .NET API) property to detect whether the previously registered subscription queue is available upon durable client reconnection and the count of pending events in the queue. Based on the returned results, you can then decide whether to receive the remaining events or close the cache if the number is too large.
+Use the `getPendingEventCount` (C++ API) and the `PendingEventCount` (.NET API) property to detect whether the previously registered subscription queue is available upon durable client reconnection and the count of pending events in the queue. Based on the returned results, you can then decide whether to receive the remaining events or close the cache if the number is too large.
 
 For example, consider this code fragment for a client with only the default pool created:
 

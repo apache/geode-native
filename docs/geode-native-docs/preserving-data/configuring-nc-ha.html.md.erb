@@ -1,5 +1,5 @@
 ---
-title:  Configuring Native Clients for High Availability
+title:  Configuring Clients for High Availability
 ---
 
 <!--
@@ -19,12 +19,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-Configure high availability by setting the pool attribute `subscription-redundancy` to the number of copies you want maintained.
+Configure high availability by setting the pool attribute `subscription-redundancy` to the number of copies to be maintained.
 
 A client maintains its queue redundancy level at the time of a primary server failure by connecting to additional secondary servers.
 
-<a id="concept_7CEFF513CED14397A385ED88F3287AF1__section_BC1693F33FA1448296C00220962EDDEE"></a>
-Native clients can specify the number of secondary servers where the client registers interest and maintains subscription channels, in addition to the subscription channel with the primary server. The secondary servers maintain redundant update queues for the client. If the primary server fails, a secondary becomes a primary to provide uninterrupted messaging to the client. If possible, another secondary is then initialized so the total number of secondaries is not reduced by the failover.
+Clients can specify the number of secondary servers where the client registers interest and maintains subscription channels, in addition to the subscription channel with the primary server. The secondary servers maintain redundant update queues for the client. If the primary server fails, a secondary becomes a primary to provide uninterrupted messaging to the client. If possible, another secondary is then initialized so the total number of secondaries is not reduced by the failover.
 
 ## Setting the Server Redundancy Level in cache.xml
 
