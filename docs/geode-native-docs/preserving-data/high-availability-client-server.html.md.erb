@@ -19,16 +19,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The Geode native client provides reliable event messaging from cache server to client to prevent data loss during server failover operations. High availability is implemented in the cache server and is configured in the native client.
+The client provides reliable event messaging from cache server to client to prevent data loss during server failover operations. High availability is implemented in the cache server and is configured in the client.
 
-See [Configuring Highly Available Servers](geodeman/developing/events/configuring_highly_available_servers.html) for details about configuring a Java cache server for high availability.
+See server documentation at [Configuring Highly Available Servers](geodeman/developing/events/configuring_highly_available_servers.html) for details about configuring a server for high availability.
 
-**Note:**
-High availability functions the same whether the region is partitioned or not. See [Partitioned Regions](geodeman/developing/partitioned_regions/chapter_overview.html) for information about partitioned regions.
+-   **[Configuring Clients for High Availability](configuring-nc-ha.html)**
 
--   **[Configuring Native Clients for High Availability](configuring-nc-ha.html)**
-
-    Configure high availability by setting the pool attribute `subscription-redundancy` to the number of copies you want maintained.
+    Configure high availability by setting the pool attribute `subscription-redundancy` to the number of copies maintained.
 
 -   **[Sending Periodic Acknowledgment](sending-periodic-ack.html)**
 

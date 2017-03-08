@@ -25,8 +25,6 @@ For this purpose, use the version of `Cache::close` with the boolean `keepalive`
 
 Only the resources and data related to the session are removed, such as port numbers and non-durable subscriptions. If the setting is false, the servers do the same cleanup that they would do for a nondurable client.
 
-## Durable Client Disconnect With Queues Maintained
-
 ``` pre
 // Close the Cache and disconnect with keepalive=true.
 // Server will queue events for durable registrations and CQs

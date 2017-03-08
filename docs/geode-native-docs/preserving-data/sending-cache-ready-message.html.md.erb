@@ -26,8 +26,8 @@ After a durable client connects and initializes its cache, regions, cache listen
 The following example shows how to call `readyForEvents`.
 
 ``` pre
-//Send ready for event message to server(only for durable clients).
-//Server will send queued events to client after receiving this.
+// Send ready for event message to server (only for durable clients).
+// Server will send queued events to client after receiving this.
 cachePtr->readyForEvents();
 ```
 

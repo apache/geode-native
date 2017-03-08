@@ -19,7 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-Conflation of entry update messages can reduce the number of update messages a native client receives, thereby increasing performance. The native client receives only the most recent update for a particular entry key.
+Conflation of entry update messages can reduce the number of update messages a client receives, thereby increasing performance. The client receives only the most recent update for a particular entry key.
 
 Conflation is enabled for a cache server region, so all clients receiving updates for a particular region benefit from the conflation. To enable conflation, set the cache server’s `enable-subscription-conflation` region attribute to `true`. This region attribute is `false` by default.
 
@@ -27,11 +27,11 @@ The queue managment code conflates entry updates as part of the enqueue operatio
 
 Only entry `update` messages in a cache server region with `distributed-no-ack` scope are conflated. Region operations and entry operations other than updates are not conflated.
 
-For more information, see [Conflate the Server Subscription Queue](geodeman/developing/events/conflate_server_subscription_queue.html).
+For more information, see the server documentation at [Conflate the Server Subscription Queue](geodeman/developing/events/conflate_server_subscription_queue.html).
 
 ## <a id="concept_AEFA04AF9ABD42C0A37ED31806596D24__section_BE506A32A8E44073B197B03AC5232C01" class="no-quick-link"></a>Overriding Queue Conflation Per-Client
 
-Override conflation on a per-client basis by setting the conflate-events property in the native client’s `gfcpp.properties` file.
+Override conflation on a per-client basis by setting the conflate-events property in the client’s `gfcpp.properties` file.
 
 Valid settings are:
 
