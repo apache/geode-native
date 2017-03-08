@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 #include "LRUList.hpp"
-#include "SpinLock.hpp"
+#include "util/concurrent/spinlock_mutex.hpp"
 
-using namespace apache::geode::client;
+#include <mutex>
 
-#define LOCK_HEAD SpinLockGuard headLockGuard(m_headLock)
-#define LOCK_TAIL SpinLockGuard tailLockGuard(m_tailLock)
+namespace apache {
+namespace geode {
+namespace client {
+
+using util::concurrent::spinlock_mutex;
 
 template <typename TEntry, typename TCreateEntry>
 LRUList<TEntry, TCreateEntry>::LRUList() : m_headLock(), m_tailLock() {
@@ -32,9 +35,9 @@ LRUList<TEntry, TCreateEntry>::LRUList() : m_headLock(), m_tailLock() {
 
 template <typename TEntry, typename TCreateEntry>
 LRUList<TEntry, TCreateEntry>::~LRUList() {
-  m_tailNode = NULL;
+  m_tailNode = nullptr;
   LRUListNode* next;
-  while (m_headNode != NULL) {
+  while (m_headNode != nullptr) {
     next = m_headNode->getNextLRUListNode();
     delete m_headNode;
     m_headNode = next;
@@ -43,7 +46,7 @@ LRUList<TEntry, TCreateEntry>::~LRUList() {
 
 template <typename TEntry, typename TCreateEntry>
 void LRUList<TEntry, TCreateEntry>::appendEntry(const LRUListEntryPtr& entry) {
-  LOCK_TAIL;
+  std::lock_guard<spinlock_mutex> lk(m_tailLock);
 
   LRUListNode* aNode = new LRUListNode(entry);
   m_tailNode->setNextLRUListNode(aNode);
@@ -52,9 +55,9 @@ void LRUList<TEntry, TCreateEntry>::appendEntry(const LRUListEntryPtr& entry) {
 
 template <typename TEntry, typename TCreateEntry>
 void LRUList<TEntry, TCreateEntry>::appendNode(LRUListNode* aNode) {
-  LOCK_TAIL;
+  std::lock_guard<spinlock_mutex> lk(m_tailLock);
 
-  GF_D_ASSERT(aNode != NULL);
+  GF_D_ASSERT(aNode != nullptr);
 
   aNode->clearNextLRUListNode();
   m_tailNode->setNextLRUListNode(aNode);
@@ -67,7 +70,7 @@ void LRUList<TEntry, TCreateEntry>::getLRUEntry(LRUListEntryPtr& result) {
   LRUListNode* aNode;
   while (true) {
     aNode = getHeadNode(isLast);
-    if (aNode == NULL) {
+    if (aNode == nullptr) {
       result = NULLPTR;
       break;
     }
@@ -97,22 +100,23 @@ void LRUList<TEntry, TCreateEntry>::getLRUEntry(LRUListEntryPtr& result) {
 template <typename TEntry, typename TCreateEntry>
 typename LRUList<TEntry, TCreateEntry>::LRUListNode*
 LRUList<TEntry, TCreateEntry>::getHeadNode(bool& isLast) {
-  LOCK_HEAD;
+  std::lock_guard<spinlock_mutex> lk(m_headLock);
 
   LRUListNode* result = m_headNode;
   LRUListNode* nextNode;
 
   {
-    LOCK_TAIL;
+    std::lock_guard<spinlock_mutex> lk(m_tailLock);
+
     nextNode = m_headNode->getNextLRUListNode();
-    if (nextNode == NULL) {
+    if (nextNode == nullptr) {
       // last one in the list...
       isLast = true;
       LRUListEntryPtr entry;
       result->getEntry(entry);
       if (entry->getLRUProperties().testEvicted()) {
         // list is empty.
-        return NULL;
+        return nullptr;
       } else {
         entry->getLRUProperties().setEvicted();
         return result;
@@ -126,3 +130,7 @@ LRUList<TEntry, TCreateEntry>::getHeadNode(bool& isLast) {
 
   return result;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

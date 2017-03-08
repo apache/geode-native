@@ -83,7 +83,7 @@ void RunDurableClient() {
   LOGINFO("Sent ReadyForEvents message to server");
 
   // wait for some time to recieve events
-  apache::geode::client::millisleep(1000);
+  std::this_thread::sleep_for(std::chrono::seconds(1));
 
   // Close the Geode Cache with keepalive = true.  Server will queue events
   // for

@@ -29,13 +29,14 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/DataOutput.hpp>
-#include "NanoTimer.hpp"
 #include <geode/statistics/Statistics.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/DistributedSystem.hpp>
 #include <typeinfo>
 #include <string>
 #include <unordered_set>
+#include <chrono>
+
 #ifdef __GNUC__
 extern "C" {
 #include <cxxabi.h>
@@ -152,7 +153,9 @@ class CPPCACHE_EXPORT Utils {
     if (DistributedSystem::getSystemProperties() != NULL) {
       return (DistributedSystem::getSystemProperties()
                   ->getEnableTimeStatistics())
-                 ? NanoTimer::now()
+                 ? std::chrono::duration_cast<std::chrono::nanoseconds>(
+                       std::chrono::steady_clock::now().time_since_epoch())
+                       .count()
                  : 0;
     } else {
       return 0;

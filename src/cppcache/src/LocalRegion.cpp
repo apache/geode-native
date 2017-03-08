@@ -21,7 +21,6 @@
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheableToken.hpp"
-#include "NanoTimer.hpp"
 #include "Utils.hpp"
 
 #include "EntryExpiryHandler.hpp"
@@ -34,7 +33,9 @@
 #include <vector>
 #include <geode/PoolManager.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 LocalRegion::LocalRegion(const std::string& name, CacheImpl* cache,
                          RegionInternal* rPtr,
@@ -648,7 +649,7 @@ void LocalRegion::setRegionExpiryTask() {
     uint32_t duration = getRegionExpiryDuration();
     RegionExpiryHandler* handler =
         new RegionExpiryHandler(rptr, getRegionExpiryAction(), duration);
-    long expiryTaskId =
+    int64_t expiryTaskId =
         CacheImpl::expiryTaskManager->scheduleExpiryTask(handler, duration, 0);
     handler->setExpiryTaskId(expiryTaskId);
     LOGFINE(
@@ -667,7 +668,7 @@ void LocalRegion::registerEntryExpiryTask(MapEntryImplPtr& entry) {
   uint32_t duration = getEntryExpiryDuration();
   EntryExpiryHandler* handler =
       new EntryExpiryHandler(rptr, entry, getEntryExpirationAction(), duration);
-  long id =
+  int64_t id =
       CacheImpl::expiryTaskManager->scheduleExpiryTask(handler, duration, 0);
   if (Log::finestEnabled()) {
     CacheableKeyPtr key;
@@ -1034,9 +1035,6 @@ GfErrType LocalRegion::getAllNoThrow(const VectorOfCacheableKey& keys,
   return err;
 }
 
-namespace apache {
-namespace geode {
-namespace client {
 // encapsulates actions that need to be taken for a put() operation
 class PutActions {
  public:
@@ -1603,9 +1601,6 @@ class InvalidateActions {
  private:
   LocalRegion& m_region;
 };
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
 
 template <typename TAction>
 GfErrType LocalRegion::updateNoThrow(const CacheableKeyPtr& key,
@@ -3107,7 +3102,7 @@ void LocalRegion::evict(int32_t percentage) {
   if (m_released || m_destroyPending) return;
   if (m_entries != NULL) {
     int32_t size = m_entries->size();
-    int32_t entriesToEvict = (int32_t)(percentage * size) / 100;
+    int32_t entriesToEvict = (percentage * size) / 100;
     // only invoked from EvictionController so static_cast is always safe
     LRUEntriesMap* lruMap = static_cast<LRUEntriesMap*>(m_entries);
     LOGINFO("Evicting %d entries. Current entry count is %d", entriesToEvict,
@@ -3160,3 +3155,7 @@ CacheablePtr LocalRegion::handleReplay(GfErrType& err,
 }
 
 TombstoneListPtr LocalRegion::getTombstoneList() { return m_tombstoneList; }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

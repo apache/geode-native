@@ -32,6 +32,7 @@
 #include <ace/SOCK_Dgram.h>
 #include <ace/TSS_T.h>
 
+#include <atomic>
 #include <string>
 #include <list>
 
@@ -150,9 +151,9 @@ class UDPMessageClient {
 
 class UDPMessageQueues : public SharedTaskObject {
  private:
-  AtomicInc m_cntInbound;
-  AtomicInc m_cntOutbound;
-  AtomicInc m_cntProcessed;
+  std::atomic<int32_t> m_cntInbound;
+  std::atomic<int32_t> m_cntOutbound;
+  std::atomic<int32_t> m_cntProcessed;
 
   SafeQueue<UDPMessage> m_inbound;
   SafeQueue<UDPMessage> m_outbound;
@@ -162,12 +163,9 @@ class UDPMessageQueues : public SharedTaskObject {
  public:
   UDPMessageQueues(std::string label) : m_label(label) {}
   ~UDPMessageQueues() {
-    FWKINFO(m_label << "MessageQueues::Inbound   count: "
-                    << m_cntInbound.value());
-    FWKINFO(m_label << "MessageQueues::Processed count: "
-                    << m_cntProcessed.value());
-    FWKINFO(m_label << "MessageQueues::Outbound  count: "
-                    << m_cntOutbound.value());
+    FWKINFO(m_label << "MessageQueues::Inbound   count: " << m_cntInbound);
+    FWKINFO(m_label << "MessageQueues::Processed count: " << m_cntProcessed);
+    FWKINFO(m_label << "MessageQueues::Outbound  count: " << m_cntOutbound);
     FWKINFO(m_label << "MessageQueues::Inbound  still queued: "
                     << m_inbound.size());
     FWKINFO(m_label << "MessageQueues::Outbound still queued: "
@@ -201,7 +199,7 @@ class Receiver : public ServiceTask {
   ACE_TSS<ACE_SOCK_Dgram> m_io;
   int32_t m_basePort;
   ACE_thread_t m_listener;
-  AtomicInc m_offset;
+  std::atomic<int32_t> m_offset;
   std::list<std::string> m_addrs;
   UDPMessageQueues* m_queues;
   ACE_Thread_Mutex m_mutex;
@@ -275,7 +273,7 @@ class Responder : public ServiceTask {
  private:
   ACE_TSS<ACE_SOCK_Dgram> m_io;
   int32_t m_basePort;
-  AtomicInc m_offset;
+  std::atomic<int32_t> m_offset;
   UDPMessageQueues* m_queues;
 
  public:

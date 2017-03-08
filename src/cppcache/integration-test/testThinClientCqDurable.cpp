@@ -24,6 +24,8 @@
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include <string>
+#include <thread>
+#include <chrono>
 
 #define ROOT_SCOPE DISTRIBUTED_ACK
 
@@ -216,7 +218,7 @@ void RunDurableCqClient() {
 
   // execute Cq Query
   qry->execute();
-  apache::geode::client::millisleep(10000);
+  std::this_thread::sleep_for(std::chrono::seconds(10));
 
   LOGINFO("Executed new CqQuery");
 
@@ -227,7 +229,7 @@ void RunDurableCqClient() {
   LOGINFO("Sent ReadyForEvents message to server");
 
   // wait for some time to recieve events
-  apache::geode::client::millisleep(10000);
+  std::this_thread::sleep_for(std::chrono::seconds(10));
 
   // Close the Geode Cache with keepalive = true.  Server will queue events
   // for
@@ -263,7 +265,7 @@ void RunFeederClient() {
 
     regionPtr->put(keyPtr, valPtr);
   }
-  apache::geode::client::millisleep(10000);
+  std::this_thread::sleep_for(std::chrono::seconds(10));
   LOGINFO("put on 0-10 keys done.");
 
   // Close the Geode Cache
@@ -296,7 +298,7 @@ void RunFeederClient1() {
 
     regionPtr->put(keyPtr, valPtr);
   }
-  apache::geode::client::millisleep(10000);
+  std::this_thread::sleep_for(std::chrono::seconds(10));
   LOGINFO("put on 0-10 keys done.");
 
   // Close the Geode Cache

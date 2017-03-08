@@ -20,45 +20,7 @@
 #include "fw_dunit.hpp"
 #include <geode/GeodeCppCache.hpp>
 
-#include <HostAsm.hpp>
-
 using namespace apache::geode::client;
-
-// Test some HostAsm code first..
-DUNIT_TASK(s1p1, HostAsm)
-  {
-    volatile int32_t counter = 0;
-    XASSERT(counter == 0);
-    HostAsm::atomicAdd(counter, 1);
-    XASSERT(counter == 1);
-    HostAsm::atomicAdd(counter, 3);
-    XASSERT(counter == 4);
-
-    HostAsm::atomicAdd(counter, -1);
-    XASSERT(counter == 3);
-  }
-END_TASK(HostAsm)
-
-// Test Or and And.
-DUNIT_TASK(s1p1, AndOr)
-  {
-    volatile uint32_t bits = 0;
-    uint32_t mask1 = 0x00000001ul;
-    uint32_t mask2 = 0x00000002ul;
-
-    HostAsm::atomicOr(bits, mask1);
-    XASSERT(bits == 1);
-    HostAsm::atomicAnd(bits, ~mask1);
-    XASSERT(bits == 0);
-    HostAsm::atomicOr(bits, mask1);
-    HostAsm::atomicOr(bits, mask2);
-    XASSERT(bits == 3);
-    HostAsm::atomicAnd(bits, ~mask1);
-    XASSERT(bits == 2);
-    HostAsm::atomicAnd(bits, ~mask2);
-    XASSERT(bits == 0);
-  }
-END_TASK(AndOr)
 
 bool deleted = false;
 

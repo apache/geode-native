@@ -24,7 +24,7 @@
 
 #include <string>
 
-#include "SpinLock.hpp"
+#include <util/concurrent/spinlock_mutex.hpp>
 #include "MersenneTwister.hpp"
 
 namespace apache {
@@ -32,12 +32,14 @@ namespace geode {
 namespace client {
 namespace testframework {
 
+using util::concurrent::spinlock_mutex;
+
 class GsRandom {
  private:
   static MTRand gen;
   static GsRandom* singleton;
   static int32_t seedUsed;
-  static SpinLock lck;
+  static spinlock_mutex lck;
   static void setInstance(int32_t seed);
 
   GsRandom() {}

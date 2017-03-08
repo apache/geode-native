@@ -33,6 +33,7 @@
 #include <geode/Log.hpp>
 #include <geode/DataOutput.hpp>
 #include <NonCopyable.hpp>
+#include <chrono>
 
 using namespace apache::geode::client;
 
@@ -54,7 +55,6 @@ const int16_t ILLEGAL_RESOURCE_INST_ID_TOKEN = -1;
 const int32_t MAX_SHORT_RESOURCE_INST_ID = 65535;
 const int32_t MAX_SHORT_TIMESTAMP = 65534;
 const int32_t INT_TIMESTAMP_TOKEN = 65535;
-const int64_t NANOS_PER_MILLI = 1000000;
 
 /** @file
 */
@@ -62,6 +62,10 @@ const int64_t NANOS_PER_MILLI = 1000000;
 namespace apache {
 namespace geode {
 namespace statistics {
+
+using std::chrono::system_clock;
+using std::chrono::steady_clock;
+
 /**
  * Some of the classes which are used by the StatArchiveWriter Class
  * 1. StatDataOutput // Just a wrapper around DataOutput so that the number of
@@ -200,7 +204,7 @@ class CPPCACHE_EXPORT StatArchiveWriter {
  private:
   HostStatSampler *sampler;
   StatDataOutput *dataBuffer;
-  int64_t previousTimeStamp;
+  steady_clock::time_point previousTimeStamp;
   int32_t resourceTypeId;
   int32_t resourceInstId;
   int32_t statResourcesModCount;
@@ -215,7 +219,7 @@ class CPPCACHE_EXPORT StatArchiveWriter {
   void sampleResources();
   void resampleResources();
   void writeResourceInst(StatDataOutput *, int32_t);
-  void writeTimeStamp(int64_t timeStamp);
+  void writeTimeStamp(const steady_clock::time_point &timeStamp);
   void writeStatValue(StatisticDescriptor *f, int64_t v, DataOutput dataOut);
   ResourceType *getResourceType(Statistics *);
   bool resourceInstMapHas(Statistics *sp);
@@ -232,7 +236,7 @@ class CPPCACHE_EXPORT StatArchiveWriter {
    * Archives a sample snapshot at the given timeStamp.
    * @param timeStamp a value obtained using NanoTimer::now.
    */
-  void sample(int64_t timeStamp);
+  void sample(const steady_clock::time_point &timeStamp);
   /**
    * Archives a sample snapshot at the current time.
    */

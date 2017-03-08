@@ -21,9 +21,9 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include <ace/Atomic_Op_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <HostAsm.hpp>
+
+#include <atomic>
+
 #include <geode/statistics/Statistics.hpp>
 #include "StatisticsTypeImpl.hpp"
 #include <geode/statistics/StatisticsFactory.hpp>
@@ -82,13 +82,13 @@ class AtomicStatisticsImpl : public Statistics, private NonCopyable {
 
   /****************************************************************************/
   /** An array containing the values of the int32_t statistics */
-  ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, int32_t>* intStorage;
+  std::atomic<int32_t>* intStorage;
 
   /** An array containing the values of the int64_t statistics */
-  ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, int64_t>* longStorage;
+  std::atomic<int64_t>* longStorage;
 
   /** An array containing the values of the double statistics */
-  ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, double>* doubleStorage;
+  std::atomic<double>* doubleStorage;
 
   ///////////////////////Private Methods//////////////////////////
   bool isOpen();
@@ -245,7 +245,7 @@ class AtomicStatisticsImpl : public Statistics, private NonCopyable {
 
 };  // class
 
-}  // namespace client
+}  // namespace statistics
 }  // namespace geode
 }  // namespace apache
 

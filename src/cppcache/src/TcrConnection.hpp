@@ -20,6 +20,7 @@
  * limitations under the License.
  */
 
+#include <atomic>
 #include <ace/Semaphore.h>
 #include <geode/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
@@ -399,7 +400,7 @@ class CPPCACHE_EXPORT TcrConnection {
   TcrConnection(const TcrConnection&);
   TcrConnection& operator=(const TcrConnection&);
   volatile bool m_isBeingUsed;
-  volatile uint32_t m_isUsed;
+  std::atomic<uint32_t> m_isUsed;
   ThinClientPoolDM* m_poolDM;
 };
 }  // namespace client

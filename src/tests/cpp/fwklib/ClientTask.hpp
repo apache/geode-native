@@ -21,7 +21,7 @@
  */
 
 #include <geode/GeodeCppCache.hpp>
-#include <AtomicInc.hpp>
+#include <atomic>
 #include "fwklib/PerfFwk.hpp"
 #include "fwklib/FwkObjects.hpp"
 
@@ -34,9 +34,9 @@ namespace testframework {
 
 class ClientTask {
  private:
-  AtomicInc m_TotalIters;
-  AtomicInc m_passCount;
-  AtomicInc m_failCount;
+  std::atomic<int32_t> m_TotalIters;
+  std::atomic<int32_t> m_passCount;
+  std::atomic<int32_t> m_failCount;
 
  protected:
   bool m_Exit;
@@ -55,13 +55,13 @@ class ClientTask {
     m_Run = true;
     m_Iterations = 0;
     m_Loop = -1;
-    m_TotalIters.resetValue(0);
+    m_TotalIters = 0;
   }
 
   void passed() { m_passCount++; }
   void failed() { m_failCount++; }
-  int32_t getPassCount() { return m_passCount.value(); }
-  int32_t getFailCount() { return m_failCount.value(); }
+  int32_t getPassCount() { return m_passCount; }
+  int32_t getFailCount() { return m_failCount; }
 
   // Defined by subclasses to implement the task functionality.
   // The id parameter is intended to be the thread id,
@@ -92,12 +92,12 @@ class ClientTask {
   void addIters(int32_t iters) { m_TotalIters += iters; }
 
   // Get total iterations.
-  int32_t getIters() { return m_TotalIters.value(); }
+  int32_t getIters() { return m_TotalIters; }
 
   // Set the number of iterations the test should do.
   void setIterations(int32_t iterations) {
     m_Iterations = iterations;
-    m_TotalIters = AtomicInc();
+    m_TotalIters = 0;
   }
 
   // Used to terminate tasks being run by threads

@@ -1574,8 +1574,7 @@ bool TcrConnection::setAndGetBeingUsed(volatile bool isBeingUsed,
   if (!forTransaction) {
     if (isBeingUsed) {
       if (m_isUsed == 1 || m_isUsed == 2) return false;
-      retVal = HostAsm::atomicCompareAndExchange(m_isUsed, 1, currentValue);
-      if (retVal == currentValue) return true;
+      if (m_isUsed.compare_exchange_strong(currentValue, 1)) return true;
       return false;
     } else {
       m_isUsed = 0;
@@ -1589,9 +1588,8 @@ bool TcrConnection::setAndGetBeingUsed(volatile bool isBeingUsed,
       if (m_isUsed == 2) {  // transaction thread has set, reused it
         return true;
       }
-      retVal = HostAsm::atomicCompareAndExchange(
-          m_isUsed, 2 /*for transaction*/, currentValue);
-      if (retVal == currentValue) return true;
+      if (m_isUsed.compare_exchange_strong(currentValue, 2 /*for transaction*/))
+        return true;
       return false;
     } else {
       // m_isUsed = 0;//this will done by releasing the connection by

@@ -96,7 +96,7 @@
 #define __has_cpp_attribute(x) 0
 #endif
 
-#if __has_cpp_attribute(deprecated)
+#if __cplusplus >= 201402L && __has_cpp_attribute(deprecated)
 // C++14 standard deprecated attribute
 #define __DEPRECATED__(msg) [[deprecated(msg)]]
 #elif defined(__GNUC__)
@@ -121,8 +121,6 @@
 namespace apache {
 namespace geode {
 namespace client {
-
-extern void CPPCACHE_EXPORT millisleep(uint32_t millis);
 
 #ifdef _WIN32
 extern void CPPCACHE_EXPORT setNewAndDelete(pNew, pDelete);
