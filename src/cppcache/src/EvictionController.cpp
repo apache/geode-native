@@ -23,7 +23,9 @@
 #include "ReadWriteLock.hpp"
 #include <string>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 const char* EvictionController::NC_EC_Thread = "NC EC Thread";
 EvictionController::EvictionController(size_t maxHeapSize,
@@ -54,7 +56,7 @@ int EvictionController::svc() {
   int64_t pendingEvictions = 0;
   while (m_run) {
     int64_t readInfo = 0;
-    readInfo = (int64_t)m_queue.get(1500);
+    readInfo = m_queue.get(1500);
     if (readInfo == 0) continue;
 
     processHeapInfo(readInfo, pendingEvictions);
@@ -62,7 +64,7 @@ int EvictionController::svc() {
   int32_t size = m_queue.size();
   for (int i = 0; i < size; i++) {
     int64_t readInfo = 0;
-    readInfo = (int64_t)m_queue.get();
+    readInfo = m_queue.get();
     if (readInfo == 0) continue;
     processHeapInfo(readInfo, pendingEvictions);
   }
@@ -104,8 +106,6 @@ void EvictionController::processHeapInfo(int64_t& readInfo,
     pendingEvictions += bytesToEvict;
     if (evictionPercentage > 100) evictionPercentage = 100;
     orderEvictions(evictionPercentage);
-    // Sleep for 10 seconds to allow the evictions to catch up
-    //   apache::geode::client::millisleep(10);  //taken this out for now
   }
 }
 
@@ -120,7 +120,7 @@ void EvictionController::deregisterRegion(std::string& name) {
   // Iterate over regions vector and remove the one that we need to remove
   WriteGuard guard(m_regionLock);
   for (size_t i = 0; i < m_regions.size(); i++) {
-    std::string str = (std::string)m_regions.at(i);
+    std::string str = m_regions.at(i);
     if (str == name) {
       std::vector<std::string>::iterator iter = m_regions.begin();
       m_regions.erase(iter + i);
@@ -149,12 +149,12 @@ void EvictionController::evict(int32_t percentage) {
   {
     ReadGuard guard(m_regionLock);
     for (size_t i = 0; i < m_regions.size(); i++) {
-      regionTmpVector.push_back((std::string)m_regions.at(i));
+      regionTmpVector.push_back(m_regions.at(i));
     }
   }
 
   for (size_t i = 0; i < regionTmpVector.size(); i++) {
-    std::string str = (std::string)regionTmpVector.at(i);
+    std::string str = regionTmpVector.at(i);
     RegionPtr rptr;
     m_cacheImpl->getRegion(str.c_str(), rptr);
     if (rptr != NULLPTR) {
@@ -165,3 +165,6 @@ void EvictionController::evict(int32_t percentage) {
     }
   }
 }
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

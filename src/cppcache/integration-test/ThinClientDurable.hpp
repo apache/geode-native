@@ -29,6 +29,9 @@
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 
+#include <thread>
+#include <chrono>
+
 /* Testing Parameters              Param's Value
 Termination :                   Keepalive = true/ false, Client crash / Netdown
 Restart Time:                   Before Timeout / After Timeout
@@ -61,7 +64,7 @@ class OperMonitor : public CacheListener {
     CacheableInt32Ptr value = NULLPTR;
     try {
       value = dynCast<CacheableInt32Ptr>(event.getNewValue());
-    } catch (Exception) {
+    } catch (Exception&) {
       //  do nothing.
     }
 
@@ -203,22 +206,22 @@ void feederUpdate(int value, int ignoreR2 = false) {
       continue;
     }
     createIntEntry(regionNames[regIdx], mixKeys[0], value);
-    apache::geode::client::millisleep(10);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     createIntEntry(regionNames[regIdx], mixKeys[1], value);
-    apache::geode::client::millisleep(10);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     createIntEntry(regionNames[regIdx], mixKeys[2], value);
-    apache::geode::client::millisleep(10);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     createIntEntry(regionNames[regIdx], mixKeys[3], value);
-    apache::geode::client::millisleep(10);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     destroyEntry(regionNames[regIdx], mixKeys[0]);
-    apache::geode::client::millisleep(10);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     destroyEntry(regionNames[regIdx], mixKeys[1]);
-    apache::geode::client::millisleep(10);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     destroyEntry(regionNames[regIdx], mixKeys[2]);
-    apache::geode::client::millisleep(10);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     destroyEntry(regionNames[regIdx], mixKeys[3]);
-    apache::geode::client::millisleep(10);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
 }
 
@@ -320,7 +323,7 @@ DUNIT_TASK_DEFINITION(FEEDER, FeederUpdate1)
     feederUpdate(1);
 
     //  Wait 5 seconds for events to be removed from ha queues.
-    apache::geode::client::millisleep(5000);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     LOG("FeederUpdate1 complete.");
   }

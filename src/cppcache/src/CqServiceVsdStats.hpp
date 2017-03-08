@@ -23,14 +23,18 @@
 #include <geode/geode_globals.hpp>
 #include <geode/statistics/Statistics.hpp>
 #include <geode/statistics/StatisticsFactory.hpp>
-#include "SpinLock.hpp"
 #include <geode/CqServiceStatistics.hpp>
+
+#include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-using namespace apache::geode::statistics;
+using statistics::StatisticDescriptor;
+using statistics::StatisticsType;
+using statistics::Statistics;
+using util::concurrent::spinlock_mutex;
 
 class CPPCACHE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
  public:
@@ -108,20 +112,21 @@ class CPPCACHE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
 
 class CqServiceStatType {
  private:
-  static int8_t instanceFlag;
-  static CqServiceStatType* single;
-  static SpinLock m_singletonLock;
-  static SpinLock m_statTypeLock;
+  static spinlock_mutex m_statTypeLock;
+  static constexpr const char* statsName = "CqServiceStatistics";
+  static constexpr const char* statsDesc = "Statistics for this cq Service";
 
  public:
-  static CqServiceStatType* getInstance();
+  static CqServiceStatType& getInstance();
 
   StatisticsType* getStatType();
 
-  static void clean();
-
  private:
   CqServiceStatType();
+  ~CqServiceStatType() = default;
+  CqServiceStatType(const CqServiceStatType&) = delete;
+  CqServiceStatType& operator=(const CqServiceStatType&) = delete;
+
   StatisticDescriptor* m_stats[5];
 
   int32_t m_numCqsActiveId;

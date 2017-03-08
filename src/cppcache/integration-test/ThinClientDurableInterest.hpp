@@ -29,6 +29,9 @@
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 
+#include <thread>
+#include <chrono>
+
 /* This is to test
 1- If client doesn't do explicit registration on reconnect, durable events shud
 be recieved.
@@ -186,21 +189,21 @@ void initClientRemoveIntrest(int ClientIdx, OperMonitorPtr mon) {
 
 void feederUpdate(int value) {
   createIntEntry(regionNames[0], mixKeys[0], value);
-  apache::geode::client::millisleep(10);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
   createIntEntry(regionNames[0], mixKeys[1], value);
-  apache::geode::client::millisleep(10);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
 void feederUpdate1(int value) {
   createIntEntry(regionNames[0], mixKeys[0], value);
-  apache::geode::client::millisleep(10);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
   createIntEntry(regionNames[0], mixKeys[1], value);
-  apache::geode::client::millisleep(10);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
   createIntEntry(regionNames[1], mixKeys[2], value);
-  apache::geode::client::millisleep(10);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
   createIntEntry(regionNames[1], mixKeys[3], value);
-  apache::geode::client::millisleep(10);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
 DUNIT_TASK_DEFINITION(FEEDER, FeederInit)

@@ -16,7 +16,6 @@
  */
 
 #include <geode/SharedBase.hpp>
-#include <HostAsm.hpp>
 
 #include <typeinfo>
 
@@ -24,10 +23,12 @@ namespace apache {
 namespace geode {
 namespace client {
 
-void SharedBase::preserveSB() const { HostAsm::atomicAdd(m_refCount, 1); }
+void SharedBase::preserveSB() const {
+  ++const_cast<SharedBase*>(this)->m_refCount;
+}
 
 void SharedBase::releaseSB() const {
-  if (HostAsm::atomicAdd(m_refCount, -1) == 0) {
+  if (--const_cast<SharedBase*>(this)->m_refCount == 0) {
     delete this;
   }
 }

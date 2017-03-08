@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_REGIONSTATS_H_
-#define GEODE_REGIONSTATS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,19 +15,24 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_REGIONSTATS_H_
+#define GEODE_REGIONSTATS_H_
+
 #include <geode/geode_globals.hpp>
 #include <geode/statistics/Statistics.hpp>
 #include <geode/statistics/StatisticsFactory.hpp>
-#include "SpinLock.hpp"
-//#include "NanoTimer.hpp"
-//#include <SystemProperties.hpp>
-//#include <../DistributedSystem.hpp>
+#include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-using namespace apache::geode::statistics;
+using statistics::StatisticDescriptor;
+using statistics::StatisticsType;
+using statistics::Statistics;
+using util::concurrent::spinlock_mutex;
 
 class CPPCACHE_EXPORT RegionStats {
  public:
@@ -130,8 +130,10 @@ class CPPCACHE_EXPORT RegionStats {
 class RegionStatType {
  private:
   static RegionStatType* single;
-  static SpinLock m_singletonLock;
-  static SpinLock m_statTypeLock;
+  static spinlock_mutex m_singletonLock;
+  static spinlock_mutex m_statTypeLock;
+  static constexpr const char* statsName = "RegionStatistics";
+  static constexpr const char* statsDesc = "Statistics for this region";
 
  public:
   static RegionStatType* getInstance();

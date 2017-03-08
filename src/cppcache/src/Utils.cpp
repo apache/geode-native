@@ -17,12 +17,14 @@
 
 #include "Utils.hpp"
 #include "ace/OS.h"
-#include "NanoTimer.hpp"
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/INET_Addr.h>
 #include <cstdio>
+#include <chrono>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 #ifdef _WIN32
 
@@ -51,7 +53,8 @@ void operator delete[](void* p) { operator delete(p); }
 #endif  // _WIN32
 
 int RandGen::operator()(size_t max) {
-  unsigned int seed = static_cast<unsigned int>(NanoTimer::now());
+  unsigned int seed = static_cast<unsigned int>(
+      std::chrono::system_clock::now().time_since_epoch().count());
   return ACE_OS::rand_r(&seed) % max;
 }
 
@@ -287,3 +290,7 @@ int32_t Utils::logWideString(char* buf, size_t maxLen, const wchar_t* wStr) {
     return ACE_OS::snprintf(buf, maxLen, "null");
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

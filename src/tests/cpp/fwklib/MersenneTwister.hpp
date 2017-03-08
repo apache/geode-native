@@ -85,7 +85,7 @@
 #include <ctime>
 #include <math.h>
 
-#include "SpinLock.hpp"
+#include <util/concurrent/spinlock_mutex.hpp>
 #include <geode/geode_base.hpp>
 
 class MTRand {
@@ -102,7 +102,7 @@ class MTRand {
   int32_t left;       // number of values left before reload needed
 
  private:
-  static apache::geode::client::SpinLock lck;
+  static apache::geode::util::concurrent::spinlock_mutex lck;
 
   // Methods
  public:

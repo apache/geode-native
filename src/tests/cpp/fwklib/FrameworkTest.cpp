@@ -23,12 +23,18 @@
 #include <geode/PoolFactory.hpp>
 #include "PoolAttributes.hpp"
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
+#include <util/concurrent/spinlock_mutex.hpp>
+
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
+
+using util::concurrent::spinlock_mutex;
 
 // ========================================================================
 
-SpinLock FrameworkTest::m_lck;
+spinlock_mutex FrameworkTest::m_lck;
 
 // ----------------------------------------------------------------------------
 
@@ -47,7 +53,9 @@ FrameworkTest::FrameworkTest(const char* initArgs) {
   }
   m_bbc = new FwkBBClient(addr);
   m_deltaMicros = 0;
-  m_timeSync = new TimeSync(port, (int32_t*)&m_deltaMicros);
+  m_timeSync = new TimeSync(
+      port, const_cast<int32_t*>(
+                reinterpret_cast<volatile int32_t*>(&m_deltaMicros)));
   m_coll = new TestDriver(xml);
   TestClient::createTestClient(50, m_id);
   incClientCount();
@@ -253,7 +261,7 @@ void FrameworkTest::cacheInitialize(PropertiesPtr& props,
     if (isPdxSerialized) {
       cacheFactory->setPdxReadSerialized(isPdxSerialized);
     }
-  } catch (Exception e) {
+  } catch (Exception& e) {
     FWKEXCEPTION(
         "DistributedSystem::connect encountered Exception: " << e.getMessage());
   }
@@ -264,9 +272,9 @@ void FrameworkTest::cacheInitialize(PropertiesPtr& props,
     if (m_istransaction) {
       txManager = m_cache->getCacheTransactionManager();
     }
-  } catch (CacheExistsException ignore) {
+  } catch (CacheExistsException& ignore) {
     m_cache = NULLPTR;
-  } catch (Exception e) {
+  } catch (Exception& e) {
     FWKEXCEPTION(
         "CacheFactory::create encountered Exception: " << e.getMessage());
   }
@@ -283,7 +291,7 @@ void FrameworkTest::cacheFinalize() {
     try {
       destroyAllRegions();
       m_cache->close();
-    } catch (CacheClosedException ignore) {
+    } catch (CacheClosedException& ignore) {
     } catch (Exception& e) {
       FWKSEVERE("Caught an unexpected Exception during cache close: "
                 << e.getMessage());
@@ -544,3 +552,7 @@ std::string FrameworkTest::poolAttributesToString(PoolPtr& pool) {
   sString += "\n";
   return sString;
 }
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -20,7 +20,7 @@
  */
 
 #include "PooledBase.hpp"
-#include "HostAsm.hpp"
+
 #include "PooledBasePool.hpp"
 
 #include <typeinfo>
@@ -37,12 +37,12 @@ PooledBase::~PooledBase() { m_pool = NULL; }
 
 void PooledBase::preserveSB() const {
   PooledBase* self = const_cast<PooledBase*>(this);
-  HostAsm::atomicAdd(self->m_refCount, 1);
+  ++(self->m_refCount);
 }
 
 void PooledBase::releaseSB() const {
   PooledBase* self = const_cast<PooledBase*>(this);
-  if (HostAsm::atomicAdd(self->m_refCount, -1) == 0) {
+  if (--(self->m_refCount) == 0) {
     m_pool->returnToPool(self);
   }
 }

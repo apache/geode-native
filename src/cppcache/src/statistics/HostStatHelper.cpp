@@ -16,7 +16,7 @@
  */
 
 #include <geode/geode_globals.hpp>
-
+#include "config.h"
 #include <ace/OS_NS_sys_utsname.h>
 #include "HostStatHelper.hpp"
 #include "GeodeStatisticsFactory.hpp"

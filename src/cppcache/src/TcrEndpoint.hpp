@@ -23,6 +23,7 @@
 #include <geode/geode_globals.hpp>
 #include <string>
 #include <list>
+#include <atomic>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
 #include <geode/geode_base.hpp>
@@ -30,7 +31,6 @@
 #include "Set.hpp"
 #include "TcrConnection.hpp"
 #include "Task.hpp"
-#include "SpinLock.hpp"
 
 namespace apache {
 namespace geode {
@@ -174,9 +174,7 @@ class CPPCACHE_EXPORT TcrEndpoint {
 
   int32_t numberOfTimesFailed() { return m_numberOfTimesFailed; }
 
-  void addConnRefCounter(int count) {
-    HostAsm::atomicAdd(m_noOfConnRefs, count);
-  }
+  void addConnRefCounter(int count) { m_noOfConnRefs += count; }
 
   int getConnRefCounter() { return m_noOfConnRefs; }
   virtual uint16_t getDistributedMemberID() { return m_distributedMemId; }
@@ -257,7 +255,7 @@ class CPPCACHE_EXPORT TcrEndpoint {
   TcrEndpoint(const TcrEndpoint&);
   TcrEndpoint& operator=(const TcrEndpoint&);
   // number of connections to this endpoint
-  volatile int32_t m_noOfConnRefs;
+  std::atomic<int32_t> m_noOfConnRefs;
   uint16_t m_distributedMemId;
 
  protected:

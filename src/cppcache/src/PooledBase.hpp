@@ -20,6 +20,7 @@
  * limitations under the License.
  */
 
+#include <atomic>
 #include <geode/geode_globals.hpp>
 
 namespace apache {
@@ -52,7 +53,7 @@ class CPPCACHE_EXPORT PooledBase {
   virtual void postPool();
 
  private:
-  volatile int32_t m_refCount;
+  std::atomic<int32_t> m_refCount;
   PooledBasePool* m_pool;
 
   void operator=(const PooledBase& rhs);

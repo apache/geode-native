@@ -29,6 +29,9 @@
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 
+#include <thread>
+#include <chrono>
+
 /* Testing Parameters              Param's Value
 Termination :                   Keepalive = true/ false, Client crash
 Restart Time:                   Before Timeout / After Timeout
@@ -59,7 +62,7 @@ class OperMonitor : public CacheListener {
     CacheableInt32Ptr value = NULLPTR;
     try {
       value = dynCast<CacheableInt32Ptr>(event.getNewValue());
-    } catch (Exception) {
+    } catch (Exception&) {
       //  do nothing.
     }
 
@@ -177,21 +180,21 @@ void initClientCache(int redundancy, int durableTimeout, OperMonitorPtr& mon,
   // for R =1 it will get a redundancy error
   try {
     regPtr0->registerRegex(testRegex[0], true);
-  } catch (Exception) {
+  } catch (Exception&) {
     //  do nothing.
   }
   try {
     regPtr0->registerRegex(testRegex[1], false);
-  } catch (Exception) {
+  } catch (Exception&) {
     //  do nothing.
   }
 }
 
 void feederUpdate(int value) {
   createIntEntry(regionNames[0], mixKeys[0], value);
-  apache::geode::client::millisleep(10);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
   createIntEntry(regionNames[0], mixKeys[1], value);
-  apache::geode::client::millisleep(10);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
 /* Close Client 1 with option keep alive = true*/
@@ -226,7 +229,7 @@ DUNIT_TASK_DEFINITION(SERVER1, StartServer2)
     }
 
     //  sleep for 3 seconds to allow redundancy monitor to detect new server.
-    apache::geode::client::millisleep(3000);
+    std::this_thread::sleep_for(std::chrono::seconds(3));
     LOG("SERVER started");
   }
 END_TASK_DEFINITION
@@ -254,7 +257,7 @@ DUNIT_TASK_DEFINITION(FEEDER, FeederUpdate1)
     feederUpdate(1);
 
     //  Wait 5 seconds for events to be removed from ha queues.
-    apache::geode::client::millisleep(5000);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     LOG("FeederUpdate1 complete.");
   }
@@ -265,7 +268,7 @@ DUNIT_TASK_DEFINITION(FEEDER, FeederUpdate2)
     feederUpdate(2);
 
     //  Wait 5 seconds for events to be removed from ha queues.
-    apache::geode::client::millisleep(5000);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     LOG("FeederUpdate2 complete.");
   }
@@ -314,7 +317,7 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseServer1)
   {
     CacheHelper::closeServer(1);
     //  Wait 2 seconds to allow client failover.
-    apache::geode::client::millisleep(2000);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     LOG("SERVER closed");
   }
 END_TASK_DEFINITION

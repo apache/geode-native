@@ -22,6 +22,7 @@
  * limitations under the License.
  */
 
+#include <atomic>
 #include "geode_globals.hpp"
 
 /** @file
@@ -56,11 +57,12 @@ class CPPCACHE_EXPORT SharedBase {
 
  protected:
   inline SharedBase(bool noInit) {}
+  inline SharedBase(const SharedBase&) {}
 
   virtual ~SharedBase() {}
 
  private:
-  mutable volatile int32_t m_refCount;
+  std::atomic<int32_t> m_refCount;
 
   void operator=(const SharedBase& rhs);
 };
