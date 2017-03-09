@@ -26,6 +26,9 @@ elseif(UNIX)
     set(DYNAMIC_LIBRARY_PATH LD_LIBRARY_PATH=${NATIVECLIENT_DIR}/lib)
 endif()
 
+set(PRODUCT_LIB_NAME "apache-geode" CACHE STRING "Binary name")
+set(PRODUCT_DLL_NAME "Apache.Geode" CACHE STRING ".Net Binary name")
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
