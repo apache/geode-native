@@ -22,7 +22,7 @@ limitations under the License.
    <assemblyBinding
       xmlns="urn:schemas-microsoft-com:asm.v1">
      <dependentAssembly>
-       <assemblyIdentity name="${PRODUCT_DLL_NAME}.Client"
+       <assemblyIdentity name="Apache.Geode.Client"
           publicKeyToken="126e6338d9f55e0c"
           culture="neutral" />
        <codeBase version="9.0.0.0"
