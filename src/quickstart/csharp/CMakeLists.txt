@@ -23,6 +23,9 @@ set (GFCPP CACHE ${NATIVECLIENT_DIR} PATH REQUIRED)
 # Set the .NET Target Framework (Note: This should match the build for Apache.Geode.)
 set (DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2")
 
+set(PRODUCT_LIB_NAME "apache-geode" CACHE STRING "Binary name")
+set(PRODUCT_DLL_NAME "Apache.Geode" CACHE STRING ".Net Binary name")
+
 file(GLOB_RECURSE CSPROJECTS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.csproj.in")
 
 foreach(FILE ${CSPROJECTS})
