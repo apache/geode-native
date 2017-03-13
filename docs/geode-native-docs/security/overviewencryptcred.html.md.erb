@@ -23,7 +23,7 @@ For secure transmission of sensitive credentials like passwords, encrypt credent
 
 ## <a id="security__section_1BB8F13C7ACB44668FF337F59A3BA5AE" class="no-quick-link"></a>Enabling Diffe-Hellman
 
-Set the `security-client-dhalgo` system property in the `gfcpp.properties` file to the password for the public key file store on the client (the name of a valid symmetric key cipher supported by the JDK).
+Set the `security-client-dhalgo` system property in the `geode.properties` file to the password for the public key file store on the client (the name of a valid symmetric key cipher supported by the JDK).
 
 Valid `security-client-dhalgo` property values are `DESede`, `AES`, and `Blowfish`, which enable the Diffie-Hellman algorithm with the specified cipher to encrypt the credentials.
 
@@ -51,7 +51,7 @@ With Diffie-Hellman enabled, you can have your client authenticate its servers.
 
     2.  Concatenate the generated .pem files into a single .pem file. You will use this file name in the next step.
 
-2.  In the `gfcpp.properties` file:
+2.  In the `geode.properties` file:
 
     1.  Set `security-client-kspath` to the file name of the `.pem` file password for the public key file store on the client.
     2.  Set `security-client-kspasswd` to the password for the public key file store on the client.

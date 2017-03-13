@@ -92,11 +92,11 @@ Configure your system environment to build and run OpenSSL. Follow the environme
 
 where <code>_path-to-installed-openssl_</code> is typically `C:\OpenSSL>`.
 
-## Step 4. Configure SSL properties in gfcpp.properties and gemfire.properties
+## Step 4. Configure SSL properties in geode.properties and gemfire.properties
 
 Configure SSL properties.
 
-1.  In `gfcpp.properties`, set `ssl-enabled` to true and set `ssl-keystore` and `ssl-truststore` to point to your keystore files. See [Security-Related System Properties (gfcpp.properties)](security-systemprops.html#security) for a description of these properties.
+1.  In `geode.properties`, set `ssl-enabled` to true and set `ssl-keystore` and `ssl-truststore` to point to your keystore files. See [Security-Related System Properties (geode.properties)](security-systemprops.html#security) for a description of these properties.
 2.  On each locator, enable SSL and set the following SSL properties in the locator’s `gemfire.properties` file:
 
     ```

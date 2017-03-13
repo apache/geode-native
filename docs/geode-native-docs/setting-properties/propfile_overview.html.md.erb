@@ -1,5 +1,5 @@
 ---
-title:  Search Path for Multiple gfcpp.properties Files
+title:  Properties File Example
 ---
 
 <!--
@@ -19,10 +19,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The client and cache server processes first look for their properties file in the <code>_product-dir_/defaultSystem</code> directory, then in the working directory.
+Use the `geode.properties` file to configure distributed system connections for the client.
 
-Any properties set in the working directory override settings in the `defaultSystem/gfcpp.properties` file.
+The following example shows the format of a geode.properties file. The first two attributes in this example should be set by programmers during application development, while other attributes are set on-site during system integration. The properties and their default settings that can be set in this file are described in detail in [Attributes in the Properites File](../setting-properties/propfile_attributes.html#attributes-gfcpp).
 
-If you are running multiple processes on one machine, you can configure the `gfcpp.properties` file in the `defaultSystem` directory as a shared file that all processes can find. If a few processes need a slightly different configuration, you can put individual `gfcpp.properties` files in their home directories to override specific properties.
+## geode.properties File Format
 
+``` pre
+#Tue Feb 14 17:24:02 PDT 2006
+log-level=info
+cache-xml-file=./cache.xml
+stacktrace-enabled=true
+```
 

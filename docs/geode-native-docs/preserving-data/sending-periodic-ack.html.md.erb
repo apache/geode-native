@@ -24,7 +24,7 @@ Servers use periodic acknowledgment to reduce the likelihood of duplicate notifi
 <a id="concept_868B8082463846DE9F35BBEA56105C82__section_D4375BCCF8A2426BA58073B9549B6F04"></a>
 When redundancy is enabled for high availability and `redundancy-level` is set to 1 or higher, clients send (and servers expect) periodic acknowledgment messages at configurable intervals for notifications they have received. A periodic ack is not sent by the client if there are no unacknowledged notifications at the time.
 
-Use the following system properties in the `gfcpp.properties` file to configure periodic ack.
+Use the following system properties in the `geode.properties` file to configure periodic ack.
 
 <table>
 <colgroup>

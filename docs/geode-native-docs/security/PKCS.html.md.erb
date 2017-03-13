@@ -30,7 +30,7 @@ When clients require authentication to connect to a cache server, they use the `
 
 **Building the securityImpl Library**
 
-To use the PKCS sample implementation, you need to build OpenSSL and then build the securityImpl library. In the `gfcpp.properties `file for the client, specify the `PKCSAuthInit` callback, the keystore path, the security alias, and the keystore password, like this:
+To use the PKCS sample implementation, you need to build OpenSSL and then build the securityImpl library. In the `geode.properties `file for the client, specify the `PKCSAuthInit` callback, the keystore path, the security alias, and the keystore password, like this:
 
 ``` pre
 security-client-auth-library=securityImpl
