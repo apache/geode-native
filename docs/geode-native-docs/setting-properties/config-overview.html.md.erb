@@ -23,7 +23,7 @@ You can configure clients through files and API calls. The servers are configure
 
 -   **[Client Configuration](native-client-config.html)**
 
-    You configure the client in two files: `gfcpp.properties` for system-level configuration and `cache.xml` for cache-level configuration.
+    You configure the client in two files: `geode.properties` for system-level configuration and `cache.xml` for cache-level configuration.
 
 -   **[Cache Server Configuration](cache-server-config.html)**
 
@@ -33,16 +33,16 @@ You can configure clients through files and API calls. The servers are configure
 
     You can specify attributes in different ways, which can cause conflicting definitions. Applications can be configured programmatically, and that has priority over other settings.
 
--   **[Search Path for Multiple gfcpp.properties Files](../gfcpp.properties/gfcpp.properties_search_path.html)**
+-   **[Search Path for Multiple Properties Files](propfile_search_path.html)**
 
     The client and server processes first look for their properties file in the <code>_product-dir_/defaultSystem</code> directory, then in the working directory.
 
--   **[Overriding gfcpp.properties Settings](../gfcpp.properties/overriding_gfcpp.properties.html)**
+-   **[Overriding Properties File Settings](propfile_overriding.html)**
 
-    Application developers have the option of configuring system attributes programmatically, rather than using the `gfcpp.properties` file.
+    Application developers have the option of configuring system attributes programmatically, rather than using the `geode.properties` file.
 
 -   **[Defining Properties Programmatically](define-programmatically.html)**
 
-    You can pass in specific gfcpp properties programmatically by using a `Properties` object to define the non-default properties.
+    You can pass in specific properties programmatically by using a `Properties` object to define the non-default properties.
 
 

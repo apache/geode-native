@@ -19,7 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The durable client can be configured in the `gfcpp.properties` file, or in the `CacheFactory::set(name,             value)` call.
+The durable client can be configured in the `geode.properties` file, or in the `CacheFactory::set(name,             value)` call.
 
 -   **Durable client ID**—Indicate that the client is durable by giving it a `durable-client-ID`. The servers use this ID to identify the client. For a non-durable client, the `durable-client-ID` is an empty string. The ID can be any number that is unique among the clients attached to servers in the same distributed system.
 
@@ -31,9 +31,9 @@ To assist with tuning, Geode statistics track message queues for durable clients
 
 When the queue is full, it blocks further operations that add messages until the queue size drops to an acceptable level. Server configuration sets the action to take. See details on server configuration of the queue in the server documentation section [Implementing Durable Client/Server Messaging](geodeman/developing/events/implementing_durable_client_server_messaging.html).
 
-## Configuring a Durable Client Using gfcpp.properties
+## Configuring a Durable Client Using geode.properties
 
-The following example shows `gfcpp.properties` settings to make the client durable and set the durable timeout to 200seconds.
+The following example shows `geode.properties` settings to make the client durable and set the durable timeout to 200seconds.
 
 ``` pre
 durable-client-id=31

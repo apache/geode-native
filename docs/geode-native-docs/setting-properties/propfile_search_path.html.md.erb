@@ -1,5 +1,5 @@
 ---
-title:  Overriding gfcpp.properties Settings
+title:  Search Path for Multiple Properties Files
 ---
 
 <!--
@@ -19,8 +19,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-Application developers have the option of configuring system attributes programmatically, rather than using the `gfcpp.properties` file.
+The client and cache server processes first look for their properties file in the <code>_product-dir_/defaultSystem</code> directory, then in the working directory.
 
-Attributes set programmatically override any matching attribute settings in the `gfcpp.properties` file, but additional attributes not set programmatically will be configured using the settings in `gfcpp.properties`.
+Any properties set in the working directory override settings in the `defaultSystem/geode.properties` file.
+
+If you are running multiple processes on one machine, you can configure the `geode.properties` file in the `defaultSystem` directory as a shared file that all processes can find. If a few processes need a slightly different configuration, you can put individual `geode.properties` files in their home directories to override specific properties.
 
 

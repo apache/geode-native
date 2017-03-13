@@ -19,7 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-You create a cache using the Geode `CacheFactory.Create` call. Cache creation initializes the distributed system and creates the cache using your `gfcpp.properties` and `cache.xml` file settings and any additional properties you provide to the call.
+You create a cache using the Geode `CacheFactory.Create` call. Cache creation initializes the distributed system and creates the cache using your `geode.properties` and `cache.xml` file settings and any additional properties you provide to the call.
 
 See [Setting System and Cache Properties](../setting-properties/chapter-overview.html#system_and_cache_properties) and see [Cache Initialization File](../cache-init-file/chapter-overview.html#chapter-overview).
 
@@ -36,7 +36,7 @@ Cache cache = cacheFactory.Create();
 
 ## Providing Properties to the Cache Creation
 
-You can also create a cache by referencing a `cache.xml` file, as shown in the following example. You can use the `Properties` object to change any of the `gfcpp.properties` settings.
+You can also create a cache by referencing a `cache.xml` file, as shown in the following example. You can use the `Properties` object to change any of the `geode.properties` settings.
 
 ``` pre
 Properties prop = Properties.Create();

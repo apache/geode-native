@@ -1,5 +1,5 @@
 ---
-title:  Attributes in gfcpp.properties
+title:  Attributes in the Properties File
 ---
 
 <!--
@@ -19,26 +19,26 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-A variety of `gfcpp.properties` settings can be used when a client connects to a distributed system.
+A variety of `geode.properties` settings can be used when a client connects to a distributed system.
 
 The following settings can be configured:
 
--   **[General Properties](attributes-gfcpp.html#attributes-gfcpp__table_21004C9E93294F03BE3469C13EA33262)** Basic information for the process, such as cache creation parameters.
--   **[Logging Properties](attributes-gfcpp.html#attributes-gfcpp__table_D42627049FD6432494BDE5170AF1BCCF)** How and where to log system messages.
--   **[Statistics Archiving Properties](attributes-gfcpp.html#attributes-gfcpp__table_E1A0EDBA67CD41319E1E5FD0A0BB2723)** How to collect and archive statistics information.
--   **[Durable Client Properties](attributes-gfcpp.html#attributes-gfcpp__table_BA6DAF27947B4A9488787E6BDCFC15B9)** Information about the durable clients connected to the system.
--   **[Security Properties](attributes-gfcpp.html#attributes-gfcpp__table_B3A8E9EB44A94557A97BB700E2BA1EF1)** Information about various security parameters.
+-   **[General Properties](#attributes-gfcpp__table_21004C9E93294F03BE3469C13EA33262)** Basic information for the process, such as cache creation parameters.
+-   **[Logging Properties](#attributes-gfcpp__table_D42627049FD6432494BDE5170AF1BCCF)** How and where to log system messages.
+-   **[Statistics Archiving Properties](#attributes-gfcpp__table_E1A0EDBA67CD41319E1E5FD0A0BB2723)** How to collect and archive statistics information.
+-   **[Durable Client Properties](#attributes-gfcpp__table_BA6DAF27947B4A9488787E6BDCFC15B9)** Information about the durable clients connected to the system.
+-   **[Security Properties](#attributes-gfcpp__table_B3A8E9EB44A94557A97BB700E2BA1EF1)** Information about various security parameters.
 
 ## <a id="attributes-gfcpp__section_655789BCC46642789F91CDA8AE03CD9B" class="no-quick-link"></a>Attribute Definitions
 
-The following tables list attributes that can be stored in the `gfcpp.properties` file to be read by a client.
+The following tables list attributes that can be stored in the `geode.properties` file to be read by a client.
 
 For the system properties that relate to high availability, see [Sending Periodic Acknowledgement](../preserving-data/sending-periodic-ack.html#concept_868B8082463846DE9F35BBEA56105C82). For a list of security-related system properties and their descriptions, see the table [System Properties for Client Authentication and Authorization](../security/security-systemprops.html#security__table_92A6A66523764199A19BCD66BA189921).
 
-<a id="attributes-gfcpp__table_21004C9E93294F03BE3469C13EA33262"></a>
+<a id="attributes-gfcpp__table_21004C9E93294F03BE3469C13EA33262" class="no-quick-link"></a>
 
 <table>
-<caption><span class="tablecap">Table 1. Attributes in gfcpp.properties—General Properties</span></caption>
+<caption><span class="tablecap">Table 1. Attributes in geode.properties—General Properties</span></caption>
 <colgroup>
 <col width="33%" />
 <col width="33%" />
@@ -46,7 +46,7 @@ For the system properties that relate to high availability, see [Sending Periodi
 </colgroup>
 <thead>
 <tr class="header">
-<th>gfcpp.properties Attribute</th>
+<th>geode.properties Attribute</th>
 <th>Description</th>
 <th>Default</th>
 </tr>
@@ -153,10 +153,10 @@ For the system properties that relate to high availability, see [Sending Periodi
 </table>
 
 
-<a id="attributes-gfcpp__table_D42627049FD6432494BDE5170AF1BCCF"></a>
+<a id="attributes-gfcpp__table_D42627049FD6432494BDE5170AF1BCCF" class="no-quick-link"></a>
 
 <table>
-<caption><span class="tablecap">Table 2. Attributes in gfcpp.properties—Logging Properties</span></caption>
+<caption><span class="tablecap">Table 2. Attributes in geode.properties—Logging Properties</span></caption>
 <colgroup>
 <col width="34%" />
 <col width="33%" />
@@ -164,7 +164,7 @@ For the system properties that relate to high availability, see [Sending Periodi
 </colgroup>
 <thead>
 <tr class="header">
-<th>gfcpp.properties Attribute</th>
+<th>geode.properties Attribute</th>
 <th>Description</th>
 <th>Default</th>
 </tr>
@@ -202,10 +202,10 @@ For the system properties that relate to high availability, see [Sending Periodi
 </table>
 
 
-<a id="attributes-gfcpp__table_E1A0EDBA67CD41319E1E5FD0A0BB2723"></a>
+<a id="attributes-gfcpp__table_E1A0EDBA67CD41319E1E5FD0A0BB2723" class="no-quick-link"></a>
 
 <table>
-<caption><span class="tablecap">Table 3. Attributes in gfcpp.properties—Statistics Archiving Properties</span></caption>
+<caption><span class="tablecap">Table 3. Attributes in geode.properties—Statistics Archiving Properties</span></caption>
 <colgroup>
 <col width="33%" />
 <col width="33%" />
@@ -213,7 +213,7 @@ For the system properties that relate to high availability, see [Sending Periodi
 </colgroup>
 <thead>
 <tr class="header">
-<th>gfcpp.properties Attribute</th>
+<th>geode.properties Attribute</th>
 <th>Description</th>
 <th>Default</th>
 </tr>
@@ -255,18 +255,18 @@ For the system properties that relate to high availability, see [Sending Periodi
 </table>
 
 
-### <a id="attributes-gfcpp__table_BA6DAF27947B4A9488787E6BDCFC15B9" class="no-quick-link"></a>Table 4. Attributes in gfcpp.properties—Durable Client Properties
+### <a id="attributes-gfcpp__table_BA6DAF27947B4A9488787E6BDCFC15B9" class="no-quick-link"></a>Table 4. Attributes in geode.properties—Durable Client Properties
 
-| gfcpp.properties Attribute | Description                                                                                                                                                                                                                                                                    | Default |
+| geode.properties Attribute | Description                                                                                                                                                                                                                                                                    | Default |
 |----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
 | auto-ready-for-events      | Whether client subscriptions automatically receive events when declaratively configured via XML. If set to `false`, event startup is not automatic and you need to call the `Cache.ReadyForEvents()` method API after subscriptions for the server to start delivering events. | true    |
 | durable-client-id          | Identifier to specify if you want the client to be durable.                                                                                                                                                                                                                    | empty   |
 | durable-timeout            | Time, in seconds, a durable client's subscription is maintained when it is not connected to the server before being dropped.                                                                                                                                                   | 300     |
 
 
-### <a id="attributes-gfcpp__table_B3A8E9EB44A94557A97BB700E2BA1EF1" class="no-quick-link"></a>Table 5. Attributes in gfcpp.properties—Security Properties
+### <a id="attributes-gfcpp__table_B3A8E9EB44A94557A97BB700E2BA1EF1" class="no-quick-link"></a>Table 5. Attributes in geode.properties—Security Properties
 
-| gfcpp.properties Attribute   | Description                                                          | Default |
+| geode.properties Attribute   | Description                                                          | Default |
 |------------------------------|----------------------------------------------------------------------|---------|
 | security-client-dhalgo       | Diffie-Hellman secret key algorithm.                                 | null    |
 | security-client-kspath       | keystore (.pem file ) path.                                          | null    |

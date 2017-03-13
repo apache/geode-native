@@ -1,5 +1,5 @@
 ---
-title:  gfcpp.properties Example File
+title:  Overriding Properties File Settings
 ---
 
 <!--
@@ -19,16 +19,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-Use the gfcpp.properties file to configure distributed system connections for the client.
+Application developers have the option of configuring system attributes programmatically, rather than using the `geode.properties` file.
 
-The following example shows the format of a gfcpp.properties file. The first two attributes in this example should be set by programmers during application development, while other attributes are set on-site during system integration. The properties and their default settings that can be set in this file are described in detail in [Attributes in gfcpp.properties](../setting-properties/attributes-gfcpp.html#attributes-gfcpp).
+Attributes set programmatically override any matching attribute settings in the `geode.properties` file, but additional attributes not set programmatically will be configured using the settings in `geode.properties`.
 
-## gfcpp.properties File Format
-
-``` pre
-#Tue Feb 14 17:24:02 PDT 2006
-log-level=info
-cache-xml-file=./cache.xml
-stacktrace-enabled=true
-```
 
