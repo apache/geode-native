@@ -541,6 +541,8 @@ TEST_F(TcrMessageTest, testConstructorEXECUTE_REGION_FUNCTION) {
       "030157000000000001012900000001000A00000004000000000000000004000000000000"
       "000002014200",
       testMessage);
+
+  EXPECT_TRUE(testMessage.hasResult());
 }
 
 TEST_F(TcrMessageTest, testConstructorEXECUTE_FUNCTION) {
