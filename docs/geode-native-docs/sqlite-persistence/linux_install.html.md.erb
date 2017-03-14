@@ -19,20 +19,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-This topic describes how to install the SQLite Persistence Manager on Linux for use with the Geode native client.
+This topic describes how to install the SQLite Persistence Manager on Linux.
 
-The <code>_product-dir_</code> directory refers to the path to the native client product directory.
+The <code>_product-dir_</code> directory refers to the path to the directory
+that contains the built library.
 
 The following libraries must be present in the runtime linking path:
 
 -   `libSqLiteImpl.so` is provided in <code>_product-dir_/lib</code>, so it is already present in the runtime linking path.
 -   `libsqlite3.so` is the SQLite Library. You need to create this library and make available in the runtime linking path, or copied to <code>_product-dir_/lib</code>, as described below.
 
-The Geode Native Client has been tested with SQLite v3.7.14.1.
+The library has been tested with SQLite v3.7.14.1.
 
 ## <a id="concept_CC9BD47B46DE4281BBB789FABE6ABEA9__section_FAB703D706D54311963399A714D466F9" class="no-quick-link"></a>Downloading, Building and Installing the Library
 
-You create the SQLite database library by downloading the latest .zip file and compiling the source code.
+Create the SQLite database library by downloading the latest .zip file and compiling the source code.
 
 1.  Download the source code `sqlite-autoconf-NNNNNNN.tar.gz` file (where *NNNNNNN* corresponds to the version) for SQLite v3.7.14.1 or later from [http://www.sqlite.org/download.html](http://www.sqlite.org/download.html).
 2.  Extract the source code from the .tar.gz file. For example:
@@ -54,6 +55,6 @@ You create the SQLite database library by downloading the latest .zip file and c
             ./configure --prefix=/_desired-binary-location_/sqlite-binaries
             </code>
 
-    2.  Run `gmake install` as described in the build instructions. The libraries will be available in the `sqlite-binaries` directory that you specified.
+    2.  Run `gmake install` as described in the build instructions. The libraries will be available in the `sqlite-binaries` directory specified.
 
 4.  Copy <code>/_desired-binary-location_/sqlite-binaries/lib/libsqlite3.so</code> file to <code>_product-dir_/lib</code>.
