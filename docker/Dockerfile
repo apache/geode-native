@@ -19,7 +19,7 @@ LABEL maintainer Apache Geode <dev@geode.apache.org>
 
 RUN \
     apt-get update \
-    && apt-get install -y build-essential cmake doxygen git openjdk-8-jdk wget zlib1g-dev \
+    && apt-get install -y build-essential cmake doxygen git graphviz openjdk-8-jdk wget zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
 ENV GEODE_VERSION 1.1.0
