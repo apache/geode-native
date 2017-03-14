@@ -2447,6 +2447,7 @@ TcrMessageExecuteRegionFunction::TcrMessageExecuteRegionFunction(
   m_tcdm = connectionDM;
   m_regionName = region == NULL ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
+  m_hasResult = getResult;
 
   if (routingObj != NULLPTR && routingObj->size() == 1) {
     LOGDEBUG("setting up key");
