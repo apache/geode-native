@@ -1,5 +1,5 @@
 ---
-title:  Declaring a Native Client Region
+title:  Declaring a Client Region
 ---
 
 <!--
@@ -19,7 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The following example shows how to declare a native client region in a `cache.xml` file.
+This example shows how to declare a client region in a `cache.xml` file.
 
 ``` pre
 <cache>
@@ -38,9 +38,9 @@ The following example shows how to declare a native client region in a `cache.xm
 </cache>
 ```
 
--   The pool defines a list of cache servers that the native client region can communicate with.
+-   The pool defines a list of cache servers that the client region can communicate with.
 -   The *CACHING\_PROXY* setting causes the client region to cache data and to communicate with the servers. The *PROXY* setting causes the client region to communicate with the servers, but cache no data.
 -   The region *subscription-enabled* property, if `true` , indicates that the client should receive data updates when server data changes.
--   Native clients do not specify cache loaders or writers, which are provided by the server.
+-   Clients do not specify cache loaders or writers, which are provided by the server.
 
 
