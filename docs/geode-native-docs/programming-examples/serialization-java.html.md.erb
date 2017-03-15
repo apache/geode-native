@@ -29,12 +29,12 @@ public class User implements DataSerializable
     private ExampleObject eo;
     static {
         Instantiator.register(
-                       new Instantiator(User.class, (byte)45)
-                       {
-                            public DataSerializable newInstance() {
-                                return new User();
-                            }
-                        } );
+            new Instantiator(User.class, (byte)45)
+                {
+                    public DataSerializable newInstance() {
+                        return new User();
+                    }
+                } );
     }
     /**
      * Creates an "empty" User whose contents are filled in by
