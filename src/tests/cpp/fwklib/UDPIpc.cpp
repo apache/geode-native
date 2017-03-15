@@ -254,7 +254,7 @@ int32_t Receiver::doTask() {
 
 void Receiver::initialize() {
   int32_t tries = 100;
-  int32_t port = m_basePort;
+  uint16_t port = m_basePort;
   int32_t lockResult = m_mutex.tryacquire();
   int32_t result = -1;
   if (lockResult != -1) {  // The listener thread
@@ -358,7 +358,7 @@ void Responder::initialize() {
   int32_t result = -1;
   int32_t tries = 100;
   while ((result < 0) && (--tries > 0)) {
-    int32_t port = ++m_offset + 111 + m_basePort;
+    uint16_t port = ++m_offset + 111 + m_basePort;
     result = m_io->open(ACE_INET_Addr(port, "localhost"));
     if (result < 0) {
       FWKWARN("Server failed to open io, " << errno << ", on port " << port);

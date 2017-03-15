@@ -215,7 +215,6 @@ RegionStatType::RegionStatType()
       m_entriesId(0),
       m_overflowsId(0),
       m_retrievesId(0),
-      m_nonSingleHopId(0),
       m_metaDataRefreshId(0),
       m_LoaderCallsCompletedId(0),
       m_LoaderCallTimeId(0),

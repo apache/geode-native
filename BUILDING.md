@@ -54,12 +54,13 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 ## All Platforms
 
 ### Required Tools
-* [CMake 3.4](https://cmake.org/) or newer
+* [CMake 3.8](https://cmake.org/) or newer
 * C++11 compiler *(see platform specific requirements)*
 * [Doxygen 8.11](http://www.stack.nl/~dimitri/doxygen/download.html) *(for building source documentation)*
 
 ## Mac OS X
-* Mac OS X 10.12 (Sierra)
+* Mac OS X 10.12 (Sierra) or newer
+* XCode 8.2 or newer
 
 ### Required Tools
 * [XCode](https://developer.apple.com/xcode/download/)
@@ -68,18 +69,18 @@ Due to limitations in CMake, the documentation must be built as a separate step 
     `$ xcode-select --install` 
 
 ### Optional Tools
-* [CMake GUI](https://cmake.org/files/v3.4/cmake-3.4.3-Darwin-x86_64.dmg)
+* [CMake GUI](https://cmake.org/)
 * [Doxygen GUI](http://ftp.stack.nl/pub/users/dimitri/Doxygen-1.8.11.dmg)
 * [Eclipse CDT 8.8](https://eclipse.org/cdt/) or newer
 
 ## Windows
 * Windows 8.1 64-bit
 * Windows 10 64-bit
-* Windows Server 2012 64-bit
 * Windows Server 2012 R2 64-bit
+* Windows Server 2016 64-bit
 
 ### Required Tools
-* [Visual Studio 2013](https://www.visualstudio.com) or newer
+* [Visual Studio 2015](https://www.visualstudio.com) or newer
 * .NET 4.5.2 or later
 * patch.exe (available as part of GnuWin or Cygwin)
 
@@ -96,12 +97,10 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 * [Eclipse CDT 8.8](https://eclipse.org/cdt/) or newer
 
 ## Solaris
-* Solaris 10 SPARC
-* Solaris 10 x86
 * Solaris 11 SPARC
 * Solaris 11 x86
 
 ### Required Tools
-* [Solaris Studio 12.4](http://www.oracle.com/technetwork/server-storage/solarisstudio/downloads/index-jsp-141149.html) or newer
+* [Solaris Studio 12.5](http://www.oracle.com/technetwork/server-storage/solarisstudio/downloads/index-jsp-141149.html) or newer
 
 	

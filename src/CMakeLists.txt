@@ -166,7 +166,7 @@ add_library(c++11 INTERFACE)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
   # Force linker to error on undefined symbols in shared libraries
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -z defs")
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -z defs -xatomic=none")
   # TODO cmake find a better way to set runtime libraries
   # C++11 requires these libraries, treat -std=c++11 as library
   #TODO look into CMAKE_CXX_STANDARD_LIBRARIES

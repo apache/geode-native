@@ -22,6 +22,8 @@
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
+#include <atomic>
+
 /**
  * @file
  */
