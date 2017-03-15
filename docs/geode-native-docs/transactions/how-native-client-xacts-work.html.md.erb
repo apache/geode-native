@@ -1,5 +1,5 @@
 ---
-title:  How Native Client Transactions Work
+title:  How Client Transactions Work
 ---
 
 <!--
@@ -23,12 +23,15 @@ The syntax for writing client transactions is the same as with server or peer tr
 
 ## <a id="how-native-client-xacts-work__section_C804F1FE5BDF49CEA037AA589BBF284E" class="no-quick-link"></a>Role of Server Delegates in Transactions
 
-The Geode native client can run transactions on the Java cache server, using a server delegate to actually run the transaction code.
+The client can run transactions on the Java cache server, using a server delegate to actually run the transaction code.
 
-For information on transaction requirements and activities on the server side, see [Transactions](geodeman/developing/transactions/chapter_overview.html).
+For information on transaction requirements and activities on the
+server side, see the server documentation at
+[Transactions](geodeman/developing/transactions/chapter_overview.html).
 
 **Note:**
-The client cache blocks until the transaction is successfully committed. However, the client cache block is removed if the transaction is suspended.
+The client cache blocks until the transaction is successfully committed.
+However, the block is removed if the transaction is suspended.
 
 Depending on where the data resides, the server transaction delegate may or not be the same member that hosts the transaction. This is the same as for transactions run by the servers, but for server-run transactions, there is no delegate. There is just the member that is directly running its own transaction code.
 
@@ -43,13 +46,11 @@ To maintain cache consistency, the local client cache is not accessible during a
 
 In addition to the failure conditions common to all transactions, client transactions can also fail if the transaction delegate fails. If the delegate performing the transaction fails, the transaction code throws a `TransactionException`.
 
-## <a id="how-native-client-xacts-work__section_434BA87403C1449FADC3E7796E30F3C7" class="no-quick-link"></a>Native Client Transaction APIs
+## <a id="how-native-client-xacts-work__section_434BA87403C1449FADC3E7796E30F3C7" class="no-quick-link"></a>Client Transaction APIs
 
-The Geode API for distributed transactions has the familiar relational database methods, `begin`, `commit`, and `rollback`. There are also APIs available to suspend and resume transactions.
+The API for distributed transactions has the familiar relational database methods, `begin`, `commit`, and `rollback`. There are also APIs available to suspend and resume transactions.
 
 The .NET classes for executing transactions are:
 
-**GemStone::GemFire::Cache::Generic**
-
--   CacheTransactionManager
--   TransactionId
+-   Apache.Geode.Client.CacheTransactionManager
+-   Apache.Geode.Client.TransactionId

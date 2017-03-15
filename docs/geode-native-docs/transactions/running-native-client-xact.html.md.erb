@@ -1,5 +1,5 @@
 ---
-title:  Running a Native Client Transaction
+title:  Running a Transaction
 ---
 
 <!--
@@ -19,9 +19,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-Before you can run a native client transaction, you must configure your clients and servers; define your server regions for your transactions; and define your client regions.
+Before you can run a transaction, you must configure your clients and servers, define your server regions for your transactions, and define your client regions.
 
-1.  Retrieve the Geode cache transaction manager.
+1.  Retrieve the transaction manager.
 
     **C++ example**
 
@@ -37,7 +37,7 @@ Before you can run a native client transaction, you must configure your clients 
           cache.CacheTransactionManager;
     ```
 
-2.  Run your transaction. (Detailed steps follow the examples.)
+2.  Run the transaction. (Detailed steps follow the examples.)
 
     **C++ example**
 
@@ -73,9 +73,9 @@ Before you can run a native client transaction, you must configure your clients 
     } catch (CommitConflictException e)
     ```
     -   Start each transaction with a `begin` operation.
-    -   If your transaction runs on server regions that are a mix of partitioned and replicated regions, perform your first transaction operation on a partitioned region. This sets the server data host for the entire transaction. If you are using PR single-hop, single-hop will be applied as usual to this first operation.
-    -   Run the Geode operations and other operations that you want included in the transaction.
-    -   End each transaction with a `commit` or a `rollback`.
+    -   If the transaction runs on server regions that are a mix of partitioned and replicated regions, perform the first transaction operation on a partitioned region. This sets the server data host for the entire transaction. If you are using PR single-hop, single-hop will be applied as usual to this first operation.
+    -   Run the operations that you want included in the transaction.
+    -   End the transaction with a `commit` or a `rollback`.
         **Note:**
         Do not leave any transaction in an uncommitted and unrolled back state unless you have suspended the transaction. Transactions that have not been explicitly suspended do not time out, so will remain in the system for the life of your application.
 
