@@ -959,7 +959,7 @@ namespace Apache.Geode.Client.UnitTests
         region[i] = "VALUE--" + i;
       }
 
-      object args = 5000 * 1000;
+      object args = 5000;
 
       for (int k = 0; k < 210; k++)
       {
