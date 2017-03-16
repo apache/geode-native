@@ -77,7 +77,7 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 
 ### Required Tools
 * [Visual Studio 2013](https://www.visualstudio.com) or newer
-* [Cygwin](https://www.cygwin.com/)
+* [Cygwin](https://www.cygwin.com/) (for the patch tool)
 
 ## Linux
 * RHEL/CentOS 6
@@ -86,7 +86,7 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 * SLES 12
 
 ### Required Tools
-* [GCC 4.6](https://gcc.gnu.org) or newer
+* [GCC 4.9](https://gcc.gnu.org) or newer
 
 ### Optional Tools
 * [Eclipse CDT 8.8](https://eclipse.org/cdt/) or newer
