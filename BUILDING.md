@@ -77,7 +77,8 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 
 ### Required Tools
 * [Visual Studio 2013](https://www.visualstudio.com) or newer
-* [Cygwin](https://www.cygwin.com/) (for the patch tool)
+* .NET 4.5.2 or later
+* patch.exe (available as part of GnuWin or Cygwin)
 
 ## Linux
 * RHEL/CentOS 6
