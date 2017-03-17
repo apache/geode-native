@@ -1144,7 +1144,7 @@ void CacheHelper::cleanupServerInstances() {
 void CacheHelper::initServer(int instance, const char* xml,
                              const char* locHostport, const char* authParam,
                              bool ssl, bool enableDelta, bool multiDS,
-                             bool testServerGC) {
+                             bool testServerGC, bool untrustedCert) {
   if (!isServerCleanupCallbackRegistered &&
       gClientCleanup.registerCallback(&CacheHelper::cleanupServerInstances)) {
     isServerCleanupCallbackRegistered = true;
@@ -1309,7 +1309,7 @@ void CacheHelper::initServer(int instance, const char* xml,
   }
 
   if (locHostport != NULL) {  // check number of locator host port.
-    std::string geodeProperties = generateGeodeProperties(currDir, ssl);
+    std::string geodeProperties = generateGeodeProperties(currDir, ssl, -1, 0,untrustedCert);
 
     sprintf(
         cmd,
@@ -1614,7 +1614,7 @@ void CacheHelper::cleanupLocatorInstances() {
 
 // starting locator
 void CacheHelper::initLocator(int instance, bool ssl, bool multiDS, int dsId,
-                              int remoteLocator) {
+                              int remoteLocator, bool untrustedCert) {
   if (!isLocatorCleanupCallbackRegistered &&
       gClientCleanup.registerCallback(&CacheHelper::cleanupLocatorInstances)) {
     isLocatorCleanupCallbackRegistered = true;
@@ -1669,7 +1669,7 @@ void CacheHelper::initLocator(int instance, bool ssl, bool multiDS, int dsId,
   ACE_OS::mkdir(locDirname.c_str());
 
   std::string geodeFile =
-      generateGeodeProperties(currDir, ssl, dsId, remoteLocator);
+      generateGeodeProperties(currDir, ssl, dsId, remoteLocator, untrustedCert);
 
   sprintf(cmd, "%s/bin/%s stop locator --dir=%s --properties-file=%s ",
           gfjavaenv, GFSH, currDir.c_str(), geodeFile.c_str());
@@ -1788,7 +1788,7 @@ int CacheHelper::getNumLocatorListUpdates(const char* s) {
 
 std::string CacheHelper::generateGeodeProperties(const std::string& path,
                                                  const bool ssl, const int dsId,
-                                                 const int remoteLocator) {
+                                                 const int remoteLocator, const bool untrustedCert) {
   char cmd[2048];
   std::string keystore = std::string(ACE_OS::getenv("TESTSRC")) + "/keystore";
 
@@ -1812,17 +1812,32 @@ std::string CacheHelper::generateGeodeProperties(const std::string& path,
   msg += "enable-network-partition-detection=false\n";
 
   if (ssl) {
-    msg += "jmx-manager-ssl-enabled=false\n";
-    msg += "cluster-ssl-enabled=true\n";
-    msg += "cluster-ssl-require-authentication=true\n";
-    msg += "cluster-ssl-ciphers=TLS_RSA_WITH_AES_128_CBC_SHA\n";
-    msg += "cluster-ssl-keystore-type=jks\n";
-    msg += "cluster-ssl-keystore=" + keystore + "/server_keystore.jks\n";
-    msg += "cluster-ssl-keystore-password=gemstone\n";
-    msg += "cluster-ssl-truststore=" + keystore + "/server_truststore.jks\n";
-    msg += "cluster-ssl-truststore-password=gemstone\n";
-    msg += "security-username=xxxx\n";
-    msg += "security-userPassword=yyyy \n";
+    if (untrustedCert){
+        msg += "jmx-manager-ssl-enabled=false\n";
+        msg += "cluster-ssl-enabled=true\n";
+        msg += "cluster-ssl-require-authentication=true\n";
+        msg += "cluster-ssl-ciphers=TLS_RSA_WITH_AES_128_CBC_SHA\n";
+        msg += "cluster-ssl-keystore-type=jks\n";
+        msg += "cluster-ssl-keystore=" + keystore + "/untrusted_server_keystore.jks\n";
+        msg += "cluster-ssl-keystore-password=secret\n";
+        msg += "cluster-ssl-truststore=" + keystore + "/untrusted_server_truststore.jks\n";
+        msg += "cluster-ssl-truststore-password=secret\n";
+        msg += "security-username=xxxx\n";
+        msg += "security-userPassword=yyyy \n";
+      }
+    else {
+        msg += "jmx-manager-ssl-enabled=false\n";
+        msg += "cluster-ssl-enabled=true\n";
+        msg += "cluster-ssl-require-authentication=true\n";
+        msg += "cluster-ssl-ciphers=TLS_RSA_WITH_AES_128_CBC_SHA\n";
+        msg += "cluster-ssl-keystore-type=jks\n";
+        msg += "cluster-ssl-keystore=" + keystore + "/server_keystore.jks\n";
+        msg += "cluster-ssl-keystore-password=gemstone\n";
+        msg += "cluster-ssl-truststore=" + keystore + "/server_truststore.jks\n";
+        msg += "cluster-ssl-truststore-password=gemstone\n";
+        msg += "security-username=xxxx\n";
+        msg += "security-userPassword=yyyy \n";
+    }
   }
   if (remoteLocator != 0) {
     sprintf(gemStr, "distributed-system-id=%d\n remote-locators=localhost[%d]",

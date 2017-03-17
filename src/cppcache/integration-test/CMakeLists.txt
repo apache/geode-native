@@ -133,6 +133,7 @@ set_property(TEST testDunit PROPERTY LABELS STABLE QUICK)
 set_property(TEST testAttributesMutator PROPERTY LABELS STABLE QUICK)
 set_property(TEST testEntriesMapForVersioning PROPERTY LABELS STABLE QUICK)
 set_property(TEST testSpinLock PROPERTY LABELS STABLE QUICK)
+set_property(TEST testThinClientSSLAuthFail PROPERTY LABELS STABLE QUICK)
 
 set_property(TEST testOverflowPutGetSqLite PROPERTY LABELS FLAKY)
 set_property(TEST testThinClientAfterRegionLive PROPERTY LABELS FLAKY)

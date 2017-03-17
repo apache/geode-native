@@ -258,7 +258,7 @@ class CacheHelper {
                          const char* locHostport = NULL,
                          const char* authParam = NULL, bool ssl = false,
                          bool enableDelta = true, bool multiDS = false,
-                         bool testServerGC = false);
+                         bool testServerGC = false, bool untrustedCert = false);
 
   static void createDuplicateXMLFile(std::string& originalFile, int hostport1,
                                      int hostport2, int locport1, int locport2);
@@ -290,7 +290,7 @@ class CacheHelper {
 
   // starting locator
   static void initLocator(int instance, bool ssl = false, bool multiDS = false,
-                          int dsId = -1, int remoteLocator = 0);
+                          int dsId = -1, int remoteLocator = 0, bool untrustedCert = false);
 
   static void clearSecProp();
 
@@ -312,7 +312,8 @@ class CacheHelper {
   static std::string generateGeodeProperties(const std::string& path,
                                              const bool ssl = false,
                                              const int dsId = -1,
-                                             const int remoteLocator = 0);
+                                             const int remoteLocator = 0,
+                                             const bool untrustedCert = false);
 };
 
 #ifndef test_cppcache_utils_static
