@@ -19,7 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-There is a default result collector. If you need special results handling, code a custom `ResultsCollector` implementation to replace the provided default. Use the `Execution::withCollector` method to define your custom collector.
+The client may use the default result collector. If the client needs special results handling, code a custom `ResultsCollector` implementation to replace the default. Use the `Execution::withCollector` method to define the custom collector.
 
 **Note:**
 This section applies only to functions that return results.
@@ -37,15 +37,13 @@ CacheableVectorPtr functionResult = rc.getResult();
 
 The `getResult` methods of the default result collector block until all results are received, then return the full result set.
 
-You can handle the results in a custom manner if you wish. To do this:
+To handle the results in a custom manner:
 
-1.  Write a class that extends `ResultCollector` and code the methods to handle the results as you need. The methods are of two types: one handles data and information from Geode and populates the results set, while the other returns the compiled results to the calling application:
-
-    1.  `addResult` is called when results arrive from the `Function` methods. Use `addResult` to add a single result to the ResultCollector.
-    2.  `endResults` is called to signal the end of all results from the function execution.
-    3.  `getResult` is available to your executing application (the one that calls `Execution.execute`) to retrieve the results. This may block until all results are available.
-    4.  `clearResults` is called to clear partial results from the results collector. This is used only for highly available `onRegion` functions where the calling application waits for the results. If the call fails, before Geode retries the execution, it calls `clearResults` to ready the instance for a clean set of results.
-
+1.  Write a class that implements the `ResultCollector` interface to handle the results in a custom manner. The methods are of two types: one handles data and information from Geode and populates the results set, while the other returns the compiled results to the calling application:
+    -  `addResult` is called when results arrive from the `Function` methods. Use `addResult` to add a single result to the ResultCollector.
+    -  `endResults` is called to signal the end of all results from the function execution.
+    -  `getResult` is available to your executing application (the one that calls `Execution.execute`) to retrieve the results. This may block until all results are available.
+    -  `clearResults` is called to clear partial results from the results collector. This is used only for highly available `onRegion` functions where the calling application waits for the results. If the call fails, before Geode retries the execution, it calls `clearResults` to ready the instance for a clean set of results.
 2.  Use the `Execution` object in your executing member to call `withCollector`, passing your custom collector, as shown in the example above.
 
 
