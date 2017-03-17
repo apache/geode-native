@@ -891,8 +891,8 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
       }
       // fall-through for other cases
     }
-    case EXECUTE_REGION_FUNCTION_RESULT:
-    case EXECUTE_FUNCTION_RESULT:
+    case TcrMessage::EXECUTE_REGION_FUNCTION_RESULT:
+    case TcrMessage::EXECUTE_FUNCTION_RESULT:
     case TcrMessage::CQDATAERROR_MSG_TYPE:  // one part
     case TcrMessage::CQ_EXCEPTION_TYPE:     // one part
     case TcrMessage::RESPONSE_FROM_PRIMARY: {
@@ -2502,6 +2502,7 @@ TcrMessageExecuteRegionFunctionSingleHop::
   m_tcdm = connectionDM;
   m_regionName = region == NULL ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
+  m_hasResult = getResult;
 
   uint32_t numOfParts = 6 + (routingObj == NULLPTR ? 0 : routingObj->size());
   numOfParts +=

@@ -563,7 +563,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
       LOGINFO("FETimeOut begin onRegion");
       ExecutionPtr RexecutionPtr = FunctionService::onRegion(regPtr0);
       CacheableVectorPtr fe =
-          RexecutionPtr->withArgs(CacheableInt32::create(5000))
+          RexecutionPtr->withArgs(CacheableInt32::create(5000 * 1000))
               ->execute(FETimeOut, 5000)
               ->getResult();
       if (fe == NULLPTR) {

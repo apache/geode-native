@@ -157,6 +157,8 @@ class MyResultCollector : public ResultCollector {
   uint32_t m_addResultCount;
   uint32_t m_getResultCount;
 };
+_GF_PTR_DEF_(MyResultCollector, MyResultCollectorPtr)
+
 DUNIT_TASK_DEFINITION(LOCATOR1, StartLocator1)
   {
     // starting locator
@@ -361,10 +363,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         }
       }
       //     test get function with customer collector
-      MyResultCollector* myRC = new MyResultCollector();
+      MyResultCollectorPtr myRC(new MyResultCollector());
       executeFunctionResult = exc->withFilter(routingObj)
                                   ->withArgs(args)
-                                  ->withCollector(ResultCollectorPtr(myRC))
+                                  ->withCollector(myRC)
                                   ->execute(getFuncName, getResult)
                                   ->getResult();
       sprintf(buf, "add result count = %d", myRC->getAddResultCount());
@@ -616,10 +618,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
           "test exFuncNameSendException function with customer collector with "
           "bool as arguement using onRegion.");
 
-      MyResultCollector* myRC1 = new MyResultCollector();
+      MyResultCollectorPtr myRC1(new MyResultCollector());
       result = funcExec->withArgs(args)
                    ->withFilter(filter)
-                   ->withCollector(ResultCollectorPtr(myRC1))
+                   ->withCollector(myRC1)
                    ->execute(exFuncNameSendException, getResult)
                    ->getResult();
       LOGINFO("add result count = %d", myRC1->getAddResultCount());
@@ -1084,9 +1086,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
           "test exFuncNameSendException function with customer collector with "
           "bool as arguement using onServers.");
 
-      MyResultCollector* myRC2 = new MyResultCollector();
+      MyResultCollectorPtr myRC2(new MyResultCollector());
       result = funcExec->withArgs(args)
-                   ->withCollector(ResultCollectorPtr(myRC2))
+                   ->withCollector(myRC2)
                    ->execute(exFuncNameSendException, getResult)
                    ->getResult();
       ASSERT(3 == myRC2->getAddResultCount(), "add result count is not 3");
@@ -1140,7 +1142,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client2OpTest)
       LOGINFO("FETimeOut begin onRegion");
       ExecutionPtr RexecutionPtr = FunctionService::onRegion(regPtr0);
       CacheableVectorPtr fe =
-          RexecutionPtr->withArgs(CacheableInt32::create(5000))
+          RexecutionPtr->withArgs(CacheableInt32::create(5000 * 1000))
               ->execute(FETimeOut, 5000)
               ->getResult();
       if (fe == NULLPTR) {
@@ -1158,9 +1160,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client2OpTest)
 
       LOGINFO("FETimeOut begin onServer");
       ExecutionPtr serverExc = FunctionService::onServer(getHelper()->cachePtr);
-      CacheableVectorPtr vec = serverExc->withArgs(CacheableInt32::create(5000))
-                                   ->execute(FETimeOut, 5000)
-                                   ->getResult();
+      CacheableVectorPtr vec =
+          serverExc->withArgs(CacheableInt32::create(5000 * 1000))
+              ->execute(FETimeOut, 5000)
+              ->getResult();
       if (vec == NULLPTR) {
         ASSERT(false, "functionResult is NULL");
       } else {
@@ -1178,7 +1181,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client2OpTest)
       ExecutionPtr serversExc =
           FunctionService::onServers(getHelper()->cachePtr);
       CacheableVectorPtr vecs =
-          serversExc->withArgs(CacheableInt32::create(5000))
+          serversExc->withArgs(CacheableInt32::create(5000 * 1000))
               ->execute(FETimeOut, 5000)
               ->getResult();
       if (vecs == NULLPTR) {
@@ -1232,65 +1235,6 @@ DUNIT_TASK_DEFINITION(LOCATOR1, CloseLocator1)
       CacheHelper::closeLocator(1);
       LOG("Locator1 stopped");
     }
-  }
-END_TASK_DEFINITION
-
-DUNIT_TASK_DEFINITION(CLIENT1, StartTestClient)
-  {
-    LOG("in before starting StartTestClient");
-    PropertiesPtr config = Properties::create();
-    config->insert("disable-chunk-handler-thread", "true");
-    config->insert("read-timeout-unit-in-millis", "true");
-    config->insert("ping-interval", "-1");
-    config->insert("bucket-wait-timeout", "2000");
-    config->insert("connect-wait-timeout", "10");
-
-    initClientWithPool(true, NULL, locHostPort, serverGroup, config, 0, true,
-                       -1, -1, -1, true, false);
-    // createPool(poolName, locHostPort,serverGroup, NULL, 0, true );
-
-    RegionPtr regPtr0 =
-        createRegionAndAttachPool(poolRegNames[0], USE_ACK, NULL);
-    ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
-
-    LOG("StartTestClient complete.");
-  }
-END_TASK_DEFINITION
-
-DUNIT_TASK_DEFINITION(CLIENT2, StartTestClient2)
-  {
-    LOG("in before starting StartTestClient");
-    PropertiesPtr config = Properties::create();
-    config->insert("disable-chunk-handler-thread", "true");
-    config->insert("read-timeout-unit-in-millis", "true");
-    config->insert("ping-interval", "-1");
-    config->insert("bucket-wait-timeout", "2000");
-    config->insert("connect-wait-timeout", "10");
-
-    initClientWithPool(true, NULL, locHostPort, serverGroup, config, 0, true,
-                       -1, -1, -1, true, false);
-    // createPool(poolName, locHostPort,serverGroup, NULL, 0, true );
-
-    RegionPtr regPtr0 =
-        createRegionAndAttachPool(poolRegNames[0], USE_ACK, NULL);
-    ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
-
-    LOG("StartTestClient complete.");
-  }
-END_TASK_DEFINITION
-
-DUNIT_TASK_DEFINITION(CLIENT2, clientPuts)
-  {
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
-    char buf[128];
-    for (int i = 1; i <= 500; i++) {
-      CacheablePtr value(CacheableInt32::create(i));
-
-      sprintf(buf, "am-%d", i);
-      CacheableKeyPtr key = CacheableKey::create(buf);
-      regPtr0->put(key, value);
-    }
-    LOG("clientPuts complete.");
   }
 END_TASK_DEFINITION
 
@@ -1380,26 +1324,6 @@ void executeFunction() {
   ASSERT(failureCount <= 10 && failureCount > 0, "failureCount should be zero");
 }
 
-const int nThreads = 10;
-putThread* threads[nThreads];
-
-DUNIT_TASK_DEFINITION(CLIENT1, dofuncOps)
-  {
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
-    // check nextwork hop for single key
-    executeFunction();
-
-#ifdef __linux
-
-    for (int thdIdx = 0; thdIdx < nThreads; thdIdx++) {
-      threads[thdIdx] = new putThread(regPtr0, 0, 500, false);
-      threads[thdIdx]->start();
-    }
-#endif
-    LOG("dofuncOps complete.");
-  }
-END_TASK_DEFINITION
-
 DUNIT_TASK_DEFINITION(CLIENT1, closeServer2)
   {
     // stop servers
@@ -1407,82 +1331,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, closeServer2)
       CacheHelper::closeServer(2);
       LOG("SERVER2 stopped");
     }
-  }
-END_TASK_DEFINITION
-
-void waitForNoTimeout() {
-  LOGINFO("entering into waitForNoTimeout");
-  SLEEP(10);
-  int maxTry = 1000;  // 10 seconds
-  int thdIdx = 0;
-  while (maxTry-- > 0) {
-    for (thdIdx = 0; thdIdx < nThreads; thdIdx++) {
-      int currentTimeout = threads[thdIdx]->getTimeoutCount();
-      SLEEP(10);
-      if (currentTimeout != threads[thdIdx]->getTimeoutCount()) break;
-    }
-    if (thdIdx == nThreads) break;
-  }
-
-  LOGINFO("waitForNoTimeout nThreads: %d,  thdIdx: %d", nThreads, thdIdx);
-  if (thdIdx < nThreads) {
-    LOGINFO(
-        "waitForNoTimeout failed still getting timeouts nThreads: %d,  thdIdx: "
-        "%d",
-        nThreads, thdIdx);
-    ASSERT(thdIdx < nThreads, "waitForNoTimeout failed still getting timeouts");
-  }
-  SLEEP(20000);
-}
-
-void verifyTimeoutFirst() {
-  int totalTimeoutCount = 0;
-  for (int thdIdx = 0; thdIdx < nThreads; thdIdx++) {
-    totalTimeoutCount += threads[thdIdx]->getTimeoutCount();
-  }
-
-  LOGINFO("Total timeout %d", totalTimeoutCount);
-
-  int blackListBucketTimeouts =
-      TestUtils::getCacheImpl(getHelper()->cachePtr)->blackListBucketTimeouts();
-
-  LOGINFO("blackListBucketTimeouts %d", blackListBucketTimeouts);
-
-  ASSERT(totalTimeoutCount > 0,
-         "totalTimeoutCount should be greater than zero");
-
-  ASSERT(blackListBucketTimeouts > 0,
-         "blackListBucketTimeouts should be greater than zero");
-}
-
-DUNIT_TASK_DEFINITION(CLIENT1, stopClientThreads)
-  {
-#ifdef __linux
-    for (int thdIdx = 0; thdIdx < nThreads; thdIdx++) {
-      threads[thdIdx]->stop();
-    }
-
-    LOG("Linux is defined");
-#endif
-    LOG("completed stopClientThreads");
-  }
-END_TASK_DEFINITION
-
-DUNIT_TASK_DEFINITION(CLIENT1, verifyClientResults)
-  {
-#ifdef __linux
-    /*for(int thdIdx = 0; thdIdx < nThreads; thdIdx++)
-    {
-      threads[thdIdx]->stop();
-    }*/
-
-    verifyTimeoutFirst();
-
-    waitForNoTimeout();
-
-    LOG("Linux is defined");
-#endif
-    LOG("completed verifyClientResults");
   }
 END_TASK_DEFINITION
 
@@ -1496,8 +1344,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, closeServer1)
   }
 END_TASK_DEFINITION
 
-void runFunctionExecution(bool isEndpoint) {
-  // with locator
+void runFunctionExecution() {
   CALL_TASK(StartLocator1);
   CALL_TASK(StartS12);
   CALL_TASK(StartC1);
@@ -1505,49 +1352,11 @@ void runFunctionExecution(bool isEndpoint) {
   CALL_TASK(Client2OpTest);
   CALL_TASK(StopC1);
   CALL_TASK(CloseServers);
-  CALL_TASK(CloseLocator1);
-
-  // with endpoints
-  CALL_TASK(StartS12);
-  CALL_TASK(StartC1);
-  CALL_TASK(Client1OpTest);
-  CALL_TASK(Client2OpTest);
-  CALL_TASK(StopC1);
-  CALL_TASK(CloseServers);
-}
-
-void runFunctionExecutionTestAPI() {
-  // with locator
-  CALL_TASK(StartLocator1);
-  // start two servers
-  CALL_TASK(StartS12);
-  CALL_TASK(StartTestClient);
-  CALL_TASK(StartTestClient2);
-  // to create pr meta data
-  CALL_TASK(clientPuts);
-  // need to spawn thread which will do continuous FE
-  CALL_TASK(dofuncOps);
-  CALL_TASK(closeServer2);
-  // check whether you get timeouts
-  CALL_TASK(verifyClientResults);
-
-  // starting server2
-  CALL_TASK(startServer2);         // starting server again
-  CALL_TASK(verifyClientResults);  // verifying timeouts again
-
-  // stopping server1
-  CALL_TASK(closeServer1);
-  CALL_TASK(verifyClientResults);
-
-  CALL_TASK(stopClientThreads);  // verifying timeouts again
-  CALL_TASK(StopC1);
-  CALL_TASK(closeServer2);
   CALL_TASK(CloseLocator1);
 }
 
 DUNIT_MAIN
   {
-    runFunctionExecutionTestAPI();
-    runFunctionExecution(false);
+    runFunctionExecution();
   }
 END_MAIN
