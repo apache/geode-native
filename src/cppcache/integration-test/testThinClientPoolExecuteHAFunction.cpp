@@ -474,8 +474,7 @@ DUNIT_TASK_DEFINITION(LOCATOR1, CloseLocator1)
   }
 END_TASK_DEFINITION
 
-void runFunctionExecution(bool isEndpoint) {
-  // with locator
+void runFunctionExecution() {
   CALL_TASK(StartLocator1);
   CALL_TASK(StartS12);
   CALL_TASK(StartC1);
@@ -483,30 +482,8 @@ void runFunctionExecution(bool isEndpoint) {
   CALL_TASK(StopC1);
   CALL_TASK(CloseServers12);
   CALL_TASK(CloseLocator1);
-
-  // with endpoints
-  CALL_TASK(StartS12);
-  CALL_TASK(StartC1);
-  CALL_TASK(Client1OpTest);  // This tests isHA with onRegion
-  CALL_TASK(StopC1);
-  CALL_TASK(CloseServers12);
-
-  CALL_TASK(StartLocator1);
-  CALL_TASK(StartS13);
-  CALL_TASK(StartC11);
-  CALL_TASK(Client1OnServerHATest);  // This tests isHA with onServer
-  CALL_TASK(StopC1);
-  CALL_TASK(CloseServers13);
-  CALL_TASK(CloseLocator1);
-
-  // with endpoints
-  CALL_TASK(StartS13);
-  CALL_TASK(StartC11);
-  CALL_TASK(Client1OnServerHATest);  // This tests isHA with onServer
-  CALL_TASK(StopC1);
-  CALL_TASK(CloseServers13);
 }
 
 DUNIT_MAIN
-  { runFunctionExecution(false); }
+  { runFunctionExecution(); }
 END_MAIN

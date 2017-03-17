@@ -506,7 +506,7 @@ TEST_F(TcrMessageTest, testConstructorEXECUTE_REGION_FUNCTION_SINGLE_HOP) {
 
   CacheablePtr myPtr(CacheableString::createDeserializable());
   TcrMessageExecuteRegionFunctionSingleHop message(
-      "myFuncName", region, myPtr, myHashCachePtr, 0, myHashCachePtr,
+      "myFuncName", region, myPtr, myHashCachePtr, 2, myHashCachePtr,
       false,  // allBuckets
       1, static_cast<ThinClientBaseDM *>(NULL));
 
@@ -514,11 +514,13 @@ TEST_F(TcrMessageTest, testConstructorEXECUTE_REGION_FUNCTION_SINGLE_HOP) {
             message.getMessageType());
 
   EXPECT_MESSAGE_EQ(
-      "0000004F0000005E00000009FFFFFFFF00000000050000000003E80000001300494E5641"
+      "0000004F0000005E00000009FFFFFFFF00000000050002000003E80000001300494E5641"
       "4C49445F524547494F4E5F4E414D450000000A006D7946756E634E616D65000000030157"
       "000000000001012900000001000000000004000000000000000004000000000000000002"
       "014200",
       message);
+
+  EXPECT_TRUE(message.hasResult());
 }
 
 TEST_F(TcrMessageTest, testConstructorEXECUTE_REGION_FUNCTION) {
@@ -529,7 +531,7 @@ TEST_F(TcrMessageTest, testConstructorEXECUTE_REGION_FUNCTION) {
   CacheableVectorPtr myVectPtr = CacheableVector::create();
 
   TcrMessageExecuteRegionFunction testMessage(
-      "ExecuteRegion", region, myCacheablePtr, myVectPtr, 1, myHashCachePtr, 10,
+      "ExecuteRegion", region, myCacheablePtr, myVectPtr, 2, myHashCachePtr, 10,
       static_cast<ThinClientBaseDM *>(NULL), 10);
 
   EXPECT_EQ(TcrMessage::EXECUTE_REGION_FUNCTION, testMessage.getMessageType());
@@ -537,7 +539,7 @@ TEST_F(TcrMessageTest, testConstructorEXECUTE_REGION_FUNCTION) {
   // changes
 
   EXPECT_MESSAGE_EQ(
-      "0000003B0000006100000009FFFFFFFF00000000050001000027100000001300494E5641"
+      "0000003B0000006100000009FFFFFFFF00000000050002000027100000001300494E5641"
       "4C49445F524547494F4E5F4E414D450000000D0045786563757465526567696F6E000000"
       "030157000000000001012900000001000A00000004000000000000000004000000000000"
       "000002014200",
