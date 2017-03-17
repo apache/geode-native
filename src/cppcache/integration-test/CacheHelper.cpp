@@ -1811,33 +1811,32 @@ std::string CacheHelper::generateGeodeProperties(const std::string& path,
   msg += "mcast-port=0\n";
   msg += "enable-network-partition-detection=false\n";
 
+  std::string serverKeystore;
+  std::string serverTruststore;
+  std::string password;
+
   if (ssl) {
     if (untrustedCert){
-        msg += "jmx-manager-ssl-enabled=false\n";
-        msg += "cluster-ssl-enabled=true\n";
-        msg += "cluster-ssl-require-authentication=true\n";
-        msg += "cluster-ssl-ciphers=TLS_RSA_WITH_AES_128_CBC_SHA\n";
-        msg += "cluster-ssl-keystore-type=jks\n";
-        msg += "cluster-ssl-keystore=" + keystore + "/untrusted_server_keystore.jks\n";
-        msg += "cluster-ssl-keystore-password=secret\n";
-        msg += "cluster-ssl-truststore=" + keystore + "/untrusted_server_truststore.jks\n";
-        msg += "cluster-ssl-truststore-password=secret\n";
-        msg += "security-username=xxxx\n";
-        msg += "security-userPassword=yyyy \n";
-      }
-    else {
-        msg += "jmx-manager-ssl-enabled=false\n";
-        msg += "cluster-ssl-enabled=true\n";
-        msg += "cluster-ssl-require-authentication=true\n";
-        msg += "cluster-ssl-ciphers=TLS_RSA_WITH_AES_128_CBC_SHA\n";
-        msg += "cluster-ssl-keystore-type=jks\n";
-        msg += "cluster-ssl-keystore=" + keystore + "/server_keystore.jks\n";
-        msg += "cluster-ssl-keystore-password=gemstone\n";
-        msg += "cluster-ssl-truststore=" + keystore + "/server_truststore.jks\n";
-        msg += "cluster-ssl-truststore-password=gemstone\n";
-        msg += "security-username=xxxx\n";
-        msg += "security-userPassword=yyyy \n";
+      serverKeystore += "untrusted_server_keystore.jks";
+      serverTruststore += "untrusted_server_truststore.jks"; 
+      password += "secret";
     }
+    else {
+      serverKeystore += "server_keystore.jks";
+      serverTruststore += "server_truststore.jks"; 
+      password += "gemstone";
+    }
+    msg += "jmx-manager-ssl-enabled=false\n";
+    msg += "cluster-ssl-enabled=true\n";
+    msg += "cluster-ssl-require-authentication=true\n";
+    msg += "cluster-ssl-ciphers=TLS_RSA_WITH_AES_128_CBC_SHA\n";
+    msg += "cluster-ssl-keystore-type=jks\n";
+    msg += "cluster-ssl-keystore=" + keystore + "/" + serverKeystore.c_str() + "\n";
+    msg += "cluster-ssl-keystore-password=" + password + "\n";
+    msg += "cluster-ssl-truststore=" + keystore + "/" + serverTruststore.c_str() + "\n";
+    msg += "cluster-ssl-truststore-password=" + password + "\n";
+    msg += "security-username=xxxx\n";
+    msg += "security-userPassword=yyyy \n";
   }
   if (remoteLocator != 0) {
     sprintf(gemStr, "distributed-system-id=%d\n remote-locators=localhost[%d]",
