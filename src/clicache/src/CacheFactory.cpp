@@ -28,6 +28,7 @@
 //#pragma warning(disable:4091)
 //#include <msclr/lock.h>
 //#pragma warning(disable:4091)
+#include "impl/AppDomainContext.hpp"
 
 using namespace System;
 
@@ -83,6 +84,12 @@ namespace Apache
           Log::SetLogLevel(static_cast<LogLevel>(apache::geode::client::Log::logLevel( )));
 					//TODO::split
           SafeConvertClassGeneric::SetAppDomainEnabled(appDomainEnable);
+
+          if (appDomainEnable)
+          {
+            // Register managed AppDomain context with unmanaged.
+            apache::geode::client::createAppDomainContext = &Apache::Geode::Client::createAppDomainContext;
+          }
 
             Serializable::RegisterTypeGeneric(
               apache::geode::client::GeodeTypeIds::PdxType,

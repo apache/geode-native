@@ -53,7 +53,6 @@
 #include "impl/PdxType.hpp"
 #include "impl/EnumInfo.hpp"
 #include "impl/ManagedPersistenceManager.hpp"
-#include "impl/AppDomainContext.hpp"
 
 // disable spurious warning
 #pragma warning(disable:4091)
@@ -752,9 +751,6 @@ namespace Apache
       {
         //to create .net memory pressure handler 
         Create(apache::geode::client::DistributedSystem::getInstance().ptr());
-
-        // Register managed AppDomain context with unmanaged.
-        apache::geode::client::createAppDomainContext = &Apache::Geode::Client::createAppDomainContext;
       }
 
       void DistributedSystem::UnregisterBuiltinManagedTypes()

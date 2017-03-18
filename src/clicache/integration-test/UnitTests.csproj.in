@@ -183,6 +183,7 @@
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientSecurityAuthzTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientQueryTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientAppDomainQueryTests.cs" />
+    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientAppDomainFunctionExecutionTests.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\BuiltinCacheableWrappersN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\CacheableWrapperN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\DupListenerN.cs" />
