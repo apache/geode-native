@@ -34,4 +34,4 @@ template_variables:
   domain_name: apache.org
   book_title_short: Geode Native Docs
 
-broken_link_exclusions: iefix|using_custom_classes|arrowhead|cppdocs|DotNetDocs|#
+broken_link_exclusions: iefix|using_custom_classes|arrowhead|cppdocs|dotnetdocs|#
