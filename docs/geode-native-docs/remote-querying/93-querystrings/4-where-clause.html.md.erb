@@ -23,7 +23,7 @@ The optional WHERE clause defines the search criteria for the selection, filteri
 
 Without a WHERE clause, the SELECT projection list receives the entire collection or set of collections as specified in the FROM clause.
 
-The query processor searches the collection for elements that match the conditions specified in the WHERE clause conditions. If there is an index on an expression matched by the WHERE clause, then the query processor may use the index to optimize the search and avoid iterating over the entire collection. For more information on indexes, see [Advanced Querying](geodeman/developing/query_additional/advanced_querying.html).
+The query processor searches the collection for elements that match the conditions specified in the WHERE clause conditions. If there is an index on an expression matched by the WHERE clause, then the query processor may use the index to optimize the search and avoid iterating over the entire collection. 
 
 A WHERE clause expression is a boolean condition that is evaluated for each element in the collection. If the expression evaluates to true for an element, the query processor passes that element on to the SELECT projection list. This example uses the WHERE clause to return the portfolio objects in the region that have a type xyz .
 

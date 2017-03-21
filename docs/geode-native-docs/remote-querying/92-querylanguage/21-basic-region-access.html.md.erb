@@ -19,7 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-In the context of a query, you specify the name of a region by its full path, starting with a forward slash (/ ).
+In the context of a query, specify the name of a region by its full path, starting with a forward slash (/ ).
 
 ## <a id="security__section_789E081192A74B00B0E726EDC1C574C4" class="no-quick-link"></a>Object Attributes
 
@@ -41,8 +41,10 @@ You can also access entry keys and entry data through the region:
 -   `/portfolios.keySet` returns the `Set` of entry keys in the region
 -   `/portfolios.entrySet` returns the `Set` of `Region.Entry` objects
 -   `/portfolios.values` returns the Collection of entry values
--   `/portfolios` return the Collection of entry values
-    **Note:**
-    These collections are immutable. Invoking modifier methods on them, such as `add` and `remove`, result in an `UnsupportedOperationException`.
+-   `/portfolios` return the Collection of entry values.
 
-For the last two bullets, the FROM clause `/portfolios.values` and `/portfolios` return the same thing.
+The FROM clause `/portfolios.values` and `/portfolios` return the same 
+thing.
+Note that these collections are immutable.
+Invoking modifier methods on them, such as `add` and `remove`,
+result in an `UnsupportedOperationException`.
