@@ -23,11 +23,11 @@ Note the particular requirements for using region endpoints; setting server regi
 
 ## <a id="security__section_AB5CC1F7CA1949FEA8A35687BC486F10" class="no-quick-link"></a>Using Region Endpoints
 
-When you are using region endpoints, at least one region must exist on the native client before a query can be executed through the client. All objects in the region belong to the same class hierarchy (homogenous types).
+When you are using region endpoints, at least one region must exist on the client before a query can be executed through the client. All objects in the region belong to the same class hierarchy (homogenous types).
 
 ## <a id="security__section_A619799378B14214AF922D819907FF38" class="no-quick-link"></a>Setting Server Region Data Policy and Scope
 
-Native client remote querying only accesses the data that is available in the remote cache server region, so no local cache loading operations are performed. Depending on the cache server region's scope and data-policy attribute settings, this could mean that your queries and indexes only see a part of the data available for the server region in the distributed cache.
+Remote querying only accesses the data that is available in the remote cache server region, so no local cache loading operations are performed. Depending on the cache server region's scope and data-policy attribute settings, this could mean that your queries and indexes only see a part of the data available for the server region in the distributed cache.
 
 To ensure a complete data set for your queries and indexes, your cache server region must use one of the REPLICATE region shortcut settings in the region attribute refid or it must explicitly have its data policy set to replicate or persistent-replicate .
 
@@ -35,7 +35,7 @@ For a cache server region, setting its data policy to replicate or `persistent-r
 
 Depending on your use of the server cache, the non-global distributed scopes `distributed-ack` and `distributed-no-ack `may encounter race conditions during entry distribution that cause the data set to be out of sync with the distributed region. The global scope guarantees data consistency across the distributed system, but at the cost of reduced performance.
 
-The following table summarizes the effects of cache server region scope and data policy settings on the data available to your querying and indexing operations. For more information, see [Distributed and Replicated Regions](geodeman/developing/distributed_regions/chapter_overview.html).
+The following table summarizes the effects of cache server region scope and data policy settings on the data available to your querying and indexing operations. For more information, see the server's documentation on [Distributed and Replicated Regions](geodeman/developing/distributed_regions/chapter_overview.html).
 
 <a id="security__table_92A6A66523764199A19BCD66BA189921"></a>
 
@@ -47,9 +47,7 @@ The following table summarizes the effects of cache server region scope and data
 
 ## <a id="security__section_18C174BB0B2A4F23B9A78F872FA220C4" class="no-quick-link"></a>Implementing the equals and hashcode Methods
 
-The `Portfolio` and `Position` query objects for the cache server must have the `equals` and `hashCode` methods implemented, and those methods must provide the properties and behavior mentioned in the online documentation for `Object.equals` and `Object.hashCode`. Inconsistent query results can occur if these methods are absent.
-
-See the `Object` class description in the Java API documentation for more information about the equals and hashCode methods.
+The `Portfolio` and `Position` query objects for the cache server must have the `equals` and `hashCode` methods implemented, and those methods must provide the properties and behavior for Java `Object.equals` and `Object.hashCode`. Inconsistent query results can occur if these methods are absent.
 
 ## <a id="security__section_407A315F22014CD8A0BC622454789888" class="no-quick-link"></a>Setting Object Type Constraints
 

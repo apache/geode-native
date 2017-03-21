@@ -1,5 +1,5 @@
 ---
-title:  Executing a Query from the Native Client
+title:  Executing a Query from the Client
 ---
 
 <!--
@@ -19,15 +19,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-C\#/.NET and C++ examples show how to execute a query from the native client.
+This
+.NET and C++ example uses the example `portfolios` region to show how to execute a query from the client.
 
 **Note:**
 In all queries that use the example data, it is assumed that the `portfolios` region has `javaobject.Portfolio` objects on the cache server.
 
-1.  If you are using the C++ native client, get a pointer to the `QueryService` method.
-2.  Create a `QueryPtr` to a query (C++) or create a query instance (C\# .NET) that is compatible with the OQL specification.
-3.  Use the `execute` method for the `Query` interface to submit the query string to the cache server. The server remotely evaluates the query string and returns the results to the client.
-4.  You can iterate through the returned objects as part of the query process.
+-  If you are using the C++ client, get a pointer to the `QueryService` method.
+-  Create a `QueryPtr` to a query (C++) or create a query instance (.NET) that is compatible with the OQL specification.
+-  Use the `execute` method for the `Query` interface to submit the query string to the cache server. The server remotely evaluates the query string and returns the results to the client.
+-  You can iterate through the returned objects as part of the query process.
 
 ## <a id="security__section_15C6689C363B469B947B177E1DE73208" class="no-quick-link"></a>C\#/.NET Example
 
