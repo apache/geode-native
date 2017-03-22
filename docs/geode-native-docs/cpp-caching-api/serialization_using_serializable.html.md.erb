@@ -19,7 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The native client C++ API provides a `Serializable` interface that you can use for fast and compact data serialization. This section discusses the Geode serializable interface, and presents implementation examples.
+The C++ client API provides a `Serializable` interface that you can use for fast and compact data serialization. This section discusses the Geode serializable interface, and presents implementation examples.
 
 ## <a id="concept_696AB5206C3E45898CC1A24CDD93D003__section_8143F965A8C6495E8AB104FD36DA366A" class="no-quick-link"></a>How Serialization Works
 
@@ -48,11 +48,7 @@ To store your own data types in the cache, you need to derive a new subclass fro
 
     The `toData` function is responsible for copying all of the object’s data fields to the object stream.
 
-    The `DataOutput` class represents the output stream and provides methods for writing the primitives in a network byte order. For more about this, see the API documentation for `DataOutput` .
-
-    The `toData` function is responsible for copying all of the object’s data fields to the object stream.
-
-    The `DataOutput` class represents the output stream and provides methods for writing the primitives in a network byte order. For more about this, see the API documentation for `DataOutput` .
+    The `DataOutput` class represents the output stream and provides methods for writing the primitives in a network byte order.
 
 2.  Write a `fromData` function that consumes a data input stream and repopulates the object’s data fields.
 
@@ -60,11 +56,11 @@ To store your own data types in the cache, you need to derive a new subclass fro
     void fromData (DataInput& input)
     ```
 
-    The `DataInput` class represents the input stream and provides methods for reading input elements. The `fromData` function must read the elements of the input stream in the same order that they were written by `toData` . For more about this, see the API documentation for `DataInput`.
+    The `DataInput` class represents the input stream and provides methods for reading input elements. The `fromData` function must read the elements of the input stream in the same order that they were written by `toData`.
 
 ## Example 1. The Simple Class BankAccount
 
-This example demonstrates a simple `BankAccount` class that encapsulates two `ints`: `ownerId` and `accountId`:
+This example demonstrates a simple `BankAccount` class that encapsulates two `ints`, `ownerId` and `accountId`:
 
 ``` pre
 class BankAccount
@@ -157,7 +153,7 @@ Serializable* fromData( DataInput& input )
 
 ## <a id="concept_696AB5206C3E45898CC1A24CDD93D003__section_108942E549CE4DE68FF3956712DEC7AF" class="no-quick-link"></a>Registering the Type
 
-To be able to use the `BankAccount` type, you must register it with the type system so that when an incoming stream contains a `BankAccount` , it can be manufactured from the associated `TypeFactoryMethod`.
+To be able to use the `BankAccount` type, you must register it with the type system so that when an incoming stream contains a `BankAccount`, it can be manufactured from the associated `TypeFactoryMethod`.
 
 ``` pre
 Serializable::registerType( BankAccount::createInstance );
@@ -172,15 +168,13 @@ Type IDs must be unique to only one class.
 
 If your application uses key types that are too complex to easily force into `CacheableString`, you can likely improve performance by deriving a new class from `CacheableKey`. If you have hybrid data types you can implement your own derivation of `CacheableKey` that encapsulates the data type.
 
-See [Serialization in Native Client Mode with a Java Server](serialization_using_serializable.html#concept_696AB5206C3E45898CC1A24CDD93D003__section_AFB685227E4048BF9FB4FD7C55AED274) for information about implementing key types for a native client that is used with a Java cache server.
+See below for information about implementing key types for a client that is used with a Java cache server.
 
 To extend a `Serializable` class to be a `CacheableKey`, you need to modify the class definition as follows:
 
 -   Change the class so that it derives from `CacheableKey` rather than `Serializable`.
 
 -   Implement `operator==` and `hashcode` functions.
-
-The next example demonstrates how to extend a `serializable` class to be a cacheable key.
 
 ## Example 3. Extending a Serializable Class To Be a CacheableKey
 
@@ -258,6 +252,5 @@ virtual uint32_t objectSize() const
 
 ## <a id="concept_696AB5206C3E45898CC1A24CDD93D003__section_AFB685227E4048BF9FB4FD7C55AED274" class="no-quick-link"></a>Serialization in Native Client Mode with a Java Server
 
-Primitive object types supported in all languages (`CacheableInt32`, `CacheableString`, `CacheableBytes`) function without requiring custom definitions with the Java cache server. For the keys, the Java cache server has to deserialize them and locate the hashcode to be able to insert the internal maps. Because of this, key types for C++ and .NET native clients used with a Java server are required to be registered on the Java server, but the value types do not need to be registered. This needs to be done even if there are no Java clients. The Java serializable type should have the same `classId` as the .NET class, and it should serialize and deserialize the type in the same manner as the .NET implementation.
+Primitive object types supported in all languages (`CacheableInt32`, `CacheableString`, `CacheableBytes`) function without requiring custom definitions with the Java cache server. For the keys, the Java cache server has to deserialize them and locate the hashcode to be able to insert the internal maps. Because of this, key types for C++ clients used with a Java server are required to be registered on the Java server, but the value types do not need to be registered. This needs to be done even if there are no Java clients.
 
-See [Data Serialization](../dotnet-caching-api/dotnet-data-serialization.html#concept_28A7797A0342447ABF6A5014E0DCB05F) for more information about .NET data serialization.

@@ -112,7 +112,7 @@ LOG( "pdxPut 3 completed " );
 try {
     Serializable::registerPdxType(PdxEnumTestClass::createDeserializable);
     LOG("PdxEnumTestClass Registered Successfully....");
-} catch (gemfire::IllegalStateException&/* ex*/) {
+} catch (geode::IllegalStateException&/* ex*/) {
     LOG("PdxEnumTestClass IllegalStateException");
 }
 

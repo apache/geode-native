@@ -19,17 +19,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-You can allow your native client C++ applications to automatically PDX serialize and deserialize domain objects without having to add any extra code by using the `pdxautoserializer` command line tool provided with the native client.
+You can allow your C++ client applications to automatically PDX serialize and deserialize domain objects without having to add any extra code by using the provided `pdxautoserializer` command line tool.
 
-When using the native client C++ API, you can automatically serialize and deserialize domain objects without making any code changes to those objects or having to implement a `PdxSerializer` or `PdxSerializable` interface and their related `fromData` and `toData` methods. The Geode native client includes a command-line utility, `pdxautoserializer`, that allows you to generate C++ code that will serialize your domain objects in the PDX format for you.
+When using the C++ client API, you can automatically serialize and deserialize domain objects without making any code changes to those objects or having to implement a `PdxSerializer` or `PdxSerializable` interface and their related `fromData` and `toData` methods. The `pdxautoserializer` command-line utility allows you to generate C++ code that will serialize your domain objects in the PDX format for you.
 
 ## <a id="task_czj_wnw_dl" class="no-quick-link"></a>How to Use Automatic PDX Serialization
-
-**Prerequisites:**
-
--   Understand generally how to configure the Geode cache.
-
--   Understand how PDX serialization works and how to configure your application to use PdxSerializer.
 
 The procedure below uses the following sample class:
 
@@ -55,7 +49,7 @@ class PortfolioPdx
 
 For each domain class you provide, all fields are considered for serialization except those defined as static or transient and those you explicitly exclude using macros.
 
-1.  Inherit your class from `gemfire::PdxSerializable`.
+1.  Inherit your class from `apache::geode::client::PdxSerializable`.
 
     ``` pre
     class PortfolioPdx : public PdxSerializable
@@ -65,8 +59,8 @@ For each domain class you provide, all fields are considered for serialization e
 
     ``` pre
     const char* getClassName() const;
-    virtual void toData(gemfire::PdxWriterPtr pw);
-    virtual void fromData(gemfire::PdxReaderPtr pr);
+    virtual void toData(apache::geode::client::PdxWriterPtr pw);
+    virtual void fromData(apache::geode::client::PdxReaderPtr pr);
     static PdxSerializable* createDeserializable();
     ```
 
@@ -82,31 +76,31 @@ The following is an example of a generated file:
 
 ``` pre
 #include "PortfolioPdx.hpp"
-#include <gfcpp/PdxWriter.hpp>
-#include <gfcpp/PdxReader.hpp>
-#include <gfcpp/PdxAutoSerializer.hpp>
+#include <geode/PdxWriter.hpp>
+#include <geode/PdxReader.hpp>
+#include <geode/PdxAutoSerializer.hpp>
 namespace testobject
 {
-  void PortfolioPdx::toData(gemfire::PdxWriterPtr var)
+  void PortfolioPdx::toData(apache::geode::client::PdxWriterPtr var)
   {
-    gemfire::PdxAutoSerializable::writePdxObject(var, "id", id);
-    gemfire::PdxAutoSerializable::writePdxObject(var, "pkid", pkid);
-    gemfire::PdxAutoSerializable::writePdxObject(var, "position1", position1);
-    gemfire::PdxAutoSerializable::writePdxObject(var, "position2", position2);
-    gemfire::PdxAutoSerializable::writePdxObject(var, "positions", positions);
-    gemfire::PdxAutoSerializable::writePdxObject(var, "status", status);
-    gemfire::PdxAutoSerializable::writePdxObject(var, "creationDate", creationDate);
+    apache::geode::client::PdxAutoSerializable::writePdxObject(var, "id", id);
+    apache::geode::client::PdxAutoSerializable::writePdxObject(var, "pkid", pkid);
+    apache::geode::client::PdxAutoSerializable::writePdxObject(var, "position1", position1);
+    apache::geode::client::PdxAutoSerializable::writePdxObject(var, "position2", position2);
+    apache::geode::client::PdxAutoSerializable::writePdxObject(var, "positions", positions);
+    apache::geode::client::PdxAutoSerializable::writePdxObject(var, "status", status);
+    apache::geode::client::PdxAutoSerializable::writePdxObject(var, "creationDate", creationDate);
   }
 
   void PortfolioPdx::fromData(PdxReaderPtr var)
   {
-    gemfire::PdxAutoSerializable::readPdxObject(var, "id", id);
-    gemfire::PdxAutoSerializable::readPdxObject(var, "pkid", pkid);
-    gemfire::PdxAutoSerializable::readPdxObject(var, "position1", position1);
-    gemfire::PdxAutoSerializable::readPdxObject(var, "position2", position2);
-    gemfire::PdxAutoSerializable::readPdxObject(var, "positions", positions);
-    gemfire::PdxAutoSerializable::readPdxObject(var, "status", status);
-    gemfire::PdxAutoSerializable::readPdxObject(var, "creationDate", creationDate);
+    apache::geode::client::PdxAutoSerializable::readPdxObject(var, "id", id);
+    apache::geode::client::PdxAutoSerializable::readPdxObject(var, "pkid", pkid);
+    apache::geode::client::PdxAutoSerializable::readPdxObject(var, "position1", position1);
+    apache::geode::client::PdxAutoSerializable::readPdxObject(var, "position2", position2);
+    apache::geode::client::PdxAutoSerializable::readPdxObject(var, "positions", positions);
+    apache::geode::client::PdxAutoSerializable::readPdxObject(var, "status", status);
+    apache::geode::client::PdxAutoSerializable::readPdxObject(var, "creationDate", creationDate);
   }
   
   const char* PortfolioPdx::getClassName()  const
@@ -240,7 +234,7 @@ Currently, the `pdxautoserializer` tool will fail to recognize `TESTOBJECT_EXPOR
 #define TESTOBJECT_EXPORT
 #endif
 
-using namespace gemfire;
+using namespace apache::geode::client;
 
 #define GFIGNORE(X) X
 #define GFID
@@ -253,7 +247,7 @@ namespace PdxAutoTests {
 
 The `pdxautoserializer` tool takes classes as input and generates code that will serialize the class into the PDX format for you.
 
-The `pdxautoserializer` tool is located in `$GFCPP/bin` where `$GFCPP` corresponds to the installation location of the native client.
+The `pdxautoserializer` tool is located in `$GEODE/bin` where `$GEODE` corresponds to the installation location of the client.
 
 Some additional notes about using the `pdxautoserializer` tool:
 
@@ -337,7 +331,7 @@ pdxautoserializer --outDir=<outDir> --className=CharTypes --suffix="generated"
 
 ``` pre
 CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
-    // Create a GemFire Cache with the "clientPdxRemoteQuery.xml" Cache XML file.
+    // Create a cache with the "clientPdxRemoteQuery.xml" Cache XML file.
     CachePtr cachePtr = cacheFactory->set("cache-xml-file", "XMLs\\clientPdxRemoteQuery.xml")
                         ->create();
 
