@@ -1,5 +1,5 @@
 ---
-title:  Pivotal GemFire Native Client C++ API
+title:  C++ Client API
 ---
 
 <!--
@@ -19,15 +19,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-This section describes the primary classes and usage conventions for the native client C++ API. It demonstrates how to use the API to create caches and perform data serialization.
+This section describes the primary classes and usage conventions for the C++ client API. It demonstrates how to use the API to create caches and perform data serialization.
 
-The C++ API documentation is available at [http://gemfire-apis.docs.pivotal.io](http://gemfire-apis.docs.pivotal.io). It provides extensive implementation details for the C++ structures and functions.
+The C++ API documentation is available at [C++ API](/releases/latest/api/cppdocs). It provides extensive implementation details for the C++ structures and functions.
 
 Several example API programs are included in the `SampleCode` directory. See [QuickStart Examples and Guide](../introduction/examples-quickstart.html#examples-quickstart).
 
--   **[About the Native Client C++ API](gfe-cpp-api.html)**
+-   **[About the C++ Client API](gfe-cpp-api.html)**
 
-    The native client C++ API allows C++ and .NET developers to programmatically create, populate, and manage a Geode distributed system. The C++ library is thread-safe, except where specified otherwise in the API documentation at [http://gemfire-apis.docs.pivotal.io](http://gemfire-apis.docs.pivotal.io).
+    The C++ client API allows C++ developers to programmatically create, populate, and manage a distributed system. The C++ library is thread-safe, except where specified otherwise in the API documentation.
 
 -   **[Creating a Cache](creating-cache.html)**
 
@@ -39,7 +39,7 @@ Several example API programs are included in the `SampleCode` directory. See [Qu
 
 -   **[Adding an Entry to the Cache](add-entry-to-cache.html)**
 
-    You can populate a native client region with cache entries using the `Region::put` or the `Region::create` API functions. Code examples demonstrate these actions.
+    You can populate a client region with cache entries using the `Region::put` or the `Region::create` API functions. Code examples demonstrate these actions.
 
 -   **[Accessing an Entry](accessing-entry.html)**
 
@@ -51,7 +51,7 @@ Several example API programs are included in the `SampleCode` directory. See [Qu
 
 -   **[Serializing Data](serialization_overview.html)**
 
-    All data that Geode moves out of the local cache must be serializable.
+    All data moved out of the local cache must be serializable.
 
 -   **[Implementing User-Defined Objects in Java Clients](user-defined-objects.html)**
 

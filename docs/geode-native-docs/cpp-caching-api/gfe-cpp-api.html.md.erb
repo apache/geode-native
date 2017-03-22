@@ -1,5 +1,5 @@
 ---
-title:  About the Native Client C++ API
+title:  About the C++ Client API
 ---
 
 <!--
@@ -19,20 +19,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The native client C++ API allows C++ and .NET developers to programmatically create, populate, and manage a Geode distributed system. The C++ library is thread-safe, except where specified otherwise.
+The C++ client API allows C++ developers to programmatically create, populate, and manage a distributed system. The C++ library is thread-safe, except where specified otherwise.
 
-This chapter gives a general overview of the classes in the `gemfire`, `gemfire_statistics`, and `gemfire_admin` namespaces. For complete and current information on the classes listed here, see the C++ API documentation at [http://gemfire-apis.docs.pivotal.io](http://gemfire-apis.docs.pivotal.io).
+This chapter gives a general overview of the classes in the `apache::geode::client` namespace. For complete and current information on the classes listed here, see the [C++ API](/releases/latest/api/cppdocs).
 
 ## <a id="concept_AB12290E89CA4724AC9F51EFF7B8B8EA__section_14B45E09CA014951AD38D0E051DF8727" class="no-quick-link"></a>Cache Classes
 
-The native client C++ API has the following cache classes:
+The C++ client API has the following cache classes:
 
 -   **CacheFactory**. Use this class to create and configure a `Cache` instance. If `cache.xml` is specified, the cache is created based on the declarations loaded from that file.
 -   **Cache**. Entry point to the client caching API. The cache is created by calling the `create` function of the factory class, `CacheFactory`. Regions are configured and obtained using the `Cache::createRegionFactory()` API.
 
 ## <a id="concept_AB12290E89CA4724AC9F51EFF7B8B8EA__section_9F27929D85CC4EBFB29925974776C985" class="no-quick-link"></a>Region Classes
 
-The native client C++ API has the following region classes:
+The C++ client API has the following region classes:
 
 -   **Region**. Provides functions for managing regions and cached data. Use these functions to perform the following actions:
     -   Retrieve information about the region, such as its parent region and region attribute objects.
@@ -52,7 +52,7 @@ The native client C++ API has the following region attribute classes:
 
 ## <a id="concept_AB12290E89CA4724AC9F51EFF7B8B8EA__section_658D04298E13459382D48544AF36A2FA" class="no-quick-link"></a>Application Plug-In Classes
 
-The native client C++ API has the following application plug-in classes:
+The C++ client API has the following application plug-in classes:
 
 -   **CacheLoader**. Loads data into a region on a cache miss.
 -   **CacheWriter**. Synchronously handles region and entry events before the events occur. Entry events are `create`, `update`, `invalidate`, and `destroy`. Region events are invalidate and destroy. This class has the ability to abort events.
@@ -60,14 +60,14 @@ The native client C++ API has the following application plug-in classes:
 
 ## <a id="concept_AB12290E89CA4724AC9F51EFF7B8B8EA__section_B3479F5739B048C0BD3EDA89BE0266E0" class="no-quick-link"></a>Event Handling Classes
 
-The native client C++ API has the following event handling classes:
+The C++ client API has the following event handling classes:
 
 -   **RegionEvent**. Provides information about the event, such as in what region the event originated, whether the event originated in a cache remote to the event handler, and whether the event resulted from a distributed operation.
 -   **EntryEvent**. Provides all available information for the `RegionEvent`, and provides entry-specific information such as the old and new entry values and whether the event resulted from a `load` operation.
 
 ## <a id="concept_AB12290E89CA4724AC9F51EFF7B8B8EA__section_42764C6327944514AE4A26684D7EBCB0" class="no-quick-link"></a>Statistics API
 
-The `StatisticsType` API represents a blueprint for the same type of `Statistics`. The `StatisticsType` API is a collection of `StatisticDescriptor`. Internally, each `StatisticDescriptor` describes data of each individual statistic. `StatisticsFactory` provides functionality for creating `StatisticDescriptor`, `StatisticsType`, and `Statistics`.
+The `StatisticsType` API represents a blueprint for the same type of `Statistics`. The `StatisticsType` API is a collection of `StatisticDescriptor`. Internally, each `StatisticDescriptor` describes data of each individual statistic. `StatisticsFactory` provides functionality for creating `StatisticDescriptor`, `StatisticsType`, and `Statistics` objects.
 
 -   **CacheStatistics** --This class defines common statistics functions. `Region` and `RegionEntry` both have functions that return a `CacheStatistics` object for accessing and resetting their statistics counts.
 -   **StatisticDescriptor**. An instance of this class describes a statistic whose value is updated by an application and may be archived by the native client. Each statistic has a type of either `int`, `long`, or `double`, and either a gauge or a counter. The value of a gauge can increase and decrease, and the value of a counter strictly increases. Create an instance of `StatisticDescriptor` by calling one of these `StatisticsFactory` functions: `createDoubleCounter`, `createDoubleGauge`, `createIntCounter`, `createIntGauge`, `createLongCounter`, `createLongGauge`.

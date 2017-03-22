@@ -19,7 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-All data that Geode moves out of the local cache must be serializable.
+All data moving out of the client cache must be serializable.
 
 -   **[Region Data Requiring Serialization](region_data_requiring_serialization.html)**
 
@@ -27,15 +27,15 @@ All data that Geode moves out of the local cache must be serializable.
 
 -   **[Data Serialization Options](serialization_options.html)**
 
-    The native client C++ API gives you two serialization options: the `GemFire::Serializable` interface and GemFire PDX serialization.
+    The C++ client API provides two serialization options: the `apache::geode::client::Serializable` interface and Geode PDX serialization.
 
 -   **[Serializing Data with PDX Serialization](pdx_serialization.html)**
 
-    PDX is a cross-language data format that can reduce the cost of distributing and serializing your objects. PDX stores data in named fields that you can access individually to avoid the cost of deserializing the entire data object. When you use PDX serialization with the native client C++ API, you can register a PdxSerializer for the entire cache, implement PDX serialization for each domain object or use automatic PDX serialization by running the `pdxautoserializer` tool.
+    PDX is a cross-language data format that can reduce the cost of distributing and serializing your objects. PDX stores data in named fields that you can access individually to avoid the cost of deserializing the entire data object. When you use PDX serialization with a C++ client, you can register a PdxSerializer for the entire cache, implement PDX serialization for each domain object or use automatic PDX serialization by running the `pdxautoserializer` tool.
 
 -   **[Serializing Data with the Serializable Interface](serialization_using_serializable.html)**
 
-    The native client C++ API provides a `Serializable` interface that you can use for fast and compact data serialization. This section discusses the Geode serializable interface, and presents implementation examples.
+    The C++ client API provides a `Serializable` interface that you can use for fast and compact data serialization. This section discusses the Geode serializable interface, and presents implementation examples.
 
 -   **[Serializing Object Graphs](object-graphs.html)**
 
