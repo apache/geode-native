@@ -284,6 +284,11 @@ class CacheHelper {
                                  const std::string& inFile,
                                  const std::string& outFile);
 
+#ifdef _SOLARIS
+  static void replaceStringInPlace(std::string& subject, const std::string& search,
+                                   const std::string& replace);
+#endif
+
   static std::list<int> staticLocatorInstanceList;
   static bool isLocatorCleanupCallbackRegistered;
   static void cleanupLocatorInstances();
