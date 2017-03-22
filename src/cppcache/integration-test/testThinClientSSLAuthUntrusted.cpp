@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTSSL_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTSSL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -26,7 +21,7 @@
 #include <ace/High_Res_Timer.h>
 #include <string>
 
-#define ROOT_NAME "ThinClientSSLAuthFail"
+#define ROOT_NAME "ThinClientSSLAuthUntrusted"
 #define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include "CacheHelper.hpp"
@@ -50,8 +45,9 @@ void initClient(const bool isthinClient) {
     props->insert("ssl-enabled", "true");
     std::string keystore = std::string(ACE_OS::getenv("TESTSRC")) + "/keystore";
     std::string pubkey = keystore + "/client_truststore.pem";
-    std::string privkey = keystore + "/client_keystore.pem";
+    std::string privkey = keystore + "/client_keystore_untrusted.pem";
     props->insert("ssl-keystore", privkey.c_str());
+    props->insert("ssl-keystore-password", "secret");
     props->insert("ssl-truststore", pubkey.c_str());
     cacheHelper = new CacheHelper(isthinClient, props);
   }
@@ -124,7 +120,7 @@ const bool NO_ACK = false;
 DUNIT_TASK_DEFINITION(SERVER1, CreateLocator1_With_SSL_untrustedCert)
   {
     // starting locator
-    if (isLocator) CacheHelper::initLocator(1, true, false, -1, 0, true);
+    if (isLocator) CacheHelper::initLocator(1, true, false, -1, 0, false);
     LOG("Locator1 started with SSL");
   }
 END_TASK_DEFINITION
@@ -134,7 +130,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1_With_Locator_And_SSL_untrustedCert)
   {
     // starting servers
-    if (isLocalServer) CacheHelper::initServer(1, NULL, locatorsG, NULL, true, true, false, false, true);
+    if (isLocalServer) CacheHelper::initServer(1, NULL, locatorsG, NULL, true, true, false, false, false);
   }
 END_TASK_DEFINITION
 
@@ -150,6 +146,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateRegions1_PoolLocators)
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
     try {
       regPtr->registerAllKeys(false, NULLPTR, false, false);
+      FAIL("Should have got NotConnectedException during registerAllKeys");
     }
     catch (NotConnectedException exp) {
       LOG("Connection Failed as expected via NotConnectedException");
@@ -181,18 +178,18 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseLocator_With_SSL)
   }
 END_TASK_DEFINITION
 
-void doThinClientSSL(bool poolConfig = true, bool poolLocators = true) {
-  CALL_TASK(CreateLocator1_With_SSL_untrustedCert);
-  CALL_TASK(CreateServer1_With_Locator_And_SSL_untrustedCert)
+DUNIT_MAIN
+  {
+    CALL_TASK(CreateLocator1_With_SSL_untrustedCert);
+    CALL_TASK(CreateServer1_With_Locator_And_SSL_untrustedCert)
 
-  CALL_TASK(CreateClient1);
+    CALL_TASK(CreateClient1);
 
-  CALL_TASK(CreateRegions1_PoolLocators);
+    CALL_TASK(CreateRegions1_PoolLocators);
 
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseServer1);
+    CALL_TASK(CloseCache1);
+    CALL_TASK(CloseServer1);
 
-  CALL_TASK(CloseLocator_With_SSL);
-}
-
-#endif  // GEODE_INTEGRATION_TEST_THINCLIENTSSL_H_
+    CALL_TASK(CloseLocator_With_SSL);
+  }
+END_MAIN

@@ -21,7 +21,7 @@
 #include <ace/High_Res_Timer.h>
 #include <string>
 
-#define ROOT_NAME "ThinClientSSLAuthFail"
+#define ROOT_NAME "ThinClientSSLAuthCorrupt"
 #define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include "CacheHelper.hpp"
@@ -45,7 +45,7 @@ void initClient(const bool isthinClient) {
     props->insert("ssl-enabled", "true");
     std::string keystore = std::string(ACE_OS::getenv("TESTSRC")) + "/keystore";
     std::string pubkey = keystore + "/client_truststore.pem";
-    std::string privkey = keystore + "/client_keystore.pem";
+    std::string privkey = keystore + "/client_keystore_corrupt.pem";
     props->insert("ssl-keystore", privkey.c_str());
     props->insert("ssl-truststore", pubkey.c_str());
     cacheHelper = new CacheHelper(isthinClient, props);
@@ -119,7 +119,7 @@ const bool NO_ACK = false;
 DUNIT_TASK_DEFINITION(SERVER1, CreateLocator1_With_SSL_untrustedCert)
   {
     // starting locator
-    if (isLocator) CacheHelper::initLocator(1, true, false, -1, 0, true);
+    if (isLocator) CacheHelper::initLocator(1, true, false, -1, 0, false);
     LOG("Locator1 started with SSL");
   }
 END_TASK_DEFINITION
@@ -129,7 +129,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1_With_Locator_And_SSL_untrustedCert)
   {
     // starting servers
-    if (isLocalServer) CacheHelper::initServer(1, NULL, locatorsG, NULL, true, true, false, false, true);
+    if (isLocalServer) CacheHelper::initServer(1, NULL, locatorsG, NULL, true, true, false, false, false);
   }
 END_TASK_DEFINITION
 
