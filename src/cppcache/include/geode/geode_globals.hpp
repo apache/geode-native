@@ -96,9 +96,13 @@
 #define __has_cpp_attribute(x) 0
 #endif
 
+#if __cplusplus >= 201402L
 #if __has_cpp_attribute(deprecated)
 // C++14 standard deprecated attribute
 #define __DEPRECATED__(msg) [[deprecated(msg)]]
+#else
+#error "__has_cpp_attribute(deprecated)"
+#endif
 #elif defined(__GNUC__)
 // GCC style deprecated attribute
 #define __DEPRECATED__(msg) __attribute__((deprecated(msg)))
