@@ -1376,6 +1376,41 @@ void CacheHelper::createDuplicateXMLFile(std::string& originalFile,
          CacheHelper::staticConfigFileList.size());
 }
 
+// Need to avoid regex usage in Solaris Studio 12.4.
+#ifdef _SOLARIS
+// @Solaris 12.4 compiler is missing support for C++11 regex
+void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
+                                     int hostPort3, int hostPort4, int locPort1,
+                                     int locPort2, const std::string& inFile,
+                                     const std::string& outFile) {
+  std::ifstream in(inFile, std::ios::in | std::ios::binary);
+  if (in) {
+    std::string contents;
+    contents.assign(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
+    in.close();
+
+    replaceInPlace(contents, "HOST_PORT1", std::to_string(hostPort1));
+    replaceInPlace(contents, "HOST_PORT2", std::to_string(hostPort2));
+    replaceInPlace(contents, "HOST_PORT3", std::to_string(hostPort3));
+    replaceInPlace(contents, "HOST_PORT4", std::to_string(hostPort4));
+    replaceInPlace(contents, "LOC_PORT1", std::to_string(locPort1));
+    replaceInPlace(contents, "LOC_PORT2", std::to_string(locPort2));
+
+    std::ofstream out(outFile, std::ios::out);
+    out << contents;
+    out.close();
+  }
+}
+
+void CacheHelper::replaceInPlace(std::string& searchStr, const std::string& matchStr,
+                                 const std::string& replaceStr) {
+    size_t pos = 0;
+    while ((pos = searchStr.find(matchStr, pos)) != std::string::npos) {
+      searchStr.replace(pos, matchStr.length(), replaceStr);
+      pos += replaceStr.length();
+    }
+}
+#else
 void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
                                      int hostPort3, int hostPort4, int locPort1,
                                      int locPort2, const std::string& inFile,
@@ -1398,6 +1433,7 @@ void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
     out.close();
   }
 }
+#endif
 
 void CacheHelper::createDuplicateXMLFile(std::string& duplicateFile,
                                          std::string& originalFile) {
