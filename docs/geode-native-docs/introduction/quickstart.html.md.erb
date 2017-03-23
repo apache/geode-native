@@ -19,14 +19,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The QuickStart examples demonstrate the capabilities of the native client, and they provide source
+The QuickStart examples demonstrate the capabilities of the client, and they provide source
 code so you can examine how each example is designed. C++ and C\# examples demonstrate how the
-native client performs as a C++ or C\# client.
+client performs as a C++ or C\# client.
 
 The examples can be invoked individually from the command line or by using the QuickStart menu.
 
-The examples and their source files are located in the <code>_nc-dir_/SampleCode/quickstart</code> directory, 
-where *nc-dir* is the location in which you installed the native client.
+The examples and their source files are located in the <code>_client-installdir_/SampleCode/quickstart</code> directory, 
+where *client-installdir* is the location in which you installed the client.
 
 The C++ examples are in the `cpp` directory, and the C# examples are in the `csharp` directory.
 Note that the C# examples are available only for Windows.
@@ -44,13 +44,13 @@ The following components must be in place to run the QuickStart examples on any 
 
 **For all systems:**
 
-- **GemFire**: Install and configure GemFire. See the GemFire User's Guide for instructions.
+- **Geode**: Install and configure Geode. See the Geode User's Guide for instructions.
 
 - **Cmake** is required to build the quickstart examples. If you have not already done so, download and install cmake, following the instructions on [cmake.org] (https://cmake.org).
 
 - **Java**: You must have a compatible JRE or JDK installed. See the [Sun Java website](http://java.sun.com)
 for the latest Java version for your operating system. See the installation information in the
-GemFire User's Guide for the versions of Java that are compatible with GemFire. 
+Geode User's Guide for the versions of Java that are compatible with Geode. 
 
 - **Security Toolkit** (optional): The QuickStart security examples rely on a security plugin, `securityImpl`, which is based on the OpenSSL toolkit.
 If you plan to run the security examples, download the latest version of release 1.0.1 (must be 1.0.1) from the [OpenSSL website] (http://www.openssl.org/source/).
@@ -60,14 +60,14 @@ Follow the instructions in the README and INSTALL files to install OpenSSL on yo
 
 Follow these steps to prepare your Linux or Solaris environment to run the QuickStart examples.
 
-1. Start a terminal session. Set the `GEMFIRE` environment variable to point to your GemFire product
-installation directory. Add the GemFire libraries shown here to your `CLASSPATH`:
+1. Start a terminal session. Set the `GEODE_ROOT` environment variable to point to your Geode product
+installation directory. Add the Geode libraries shown here to your `CLASSPATH`:
 
     <code>
-    % GEMFIRE=_gemfire-install-dir_; export GEMFIRE <br />
-    %&nbsp;CLASSPATH=$GEMFIRE/lib/gemfire.jar:$GEMFIRE/lib/antlr.jar:$GEMFIRE/lib/gfSecurityImpl.jar:$CLASSPATH<br />
+    % GEODE\_ROOT=_geode-install-dir_; export GEODE\_ROOT <br />
+    %&nbsp;CLASSPATH=$GEODE\_ROOT/lib/geode.jar:$GEODE\_ROOT/lib/antlr.jar:$GEODE\_ROOT/lib/gfSecurityImpl.jar:$CLASSPATH<br />
     %  export CLASSPATH <br />
-    %&nbsp;CLASSPATH=$GEMFIRE/lib/geode-dependencies.jar:$GEMFIRE/lib/antlr-2.7.7.jar:$CLASSPATH<br />
+    %&nbsp;CLASSPATH=$GEODE\_ROOT/lib/geode-dependencies.jar:$GEODE\_ROOT/lib/antlr-2.7.7.jar:$CLASSPATH<br />
     %  export CLASSPATH <br />
     </code>
 
@@ -76,13 +76,13 @@ JDK. Add `$JAVA_HOME/bin` to the start of your `PATH`.
 
     <code>
     % JAVA\_HOME=_installed-jre-path_; export JAVA\_HOME<br />
-    % PATH=$JAVA\_HOME/bin:$GEMFIRE/bin:$PATH; export PATH<br />
+    % PATH=$JAVA\_HOME/bin:$GEODE_ROOT/bin:$PATH; export PATH<br />
     </code>
 
-3. Set the `GFCPP` environment variable to point to the directory in which you installed the native client, denoted here by  _nc-dir_. Add `$GFCPP/lib` to `LD_LIBRARY_PATH`.
+3. Set the `GEODE` environment variable to point to the directory in which you installed the client, denoted here by  _client-installdir_. Add `$GEODE/lib` to `LD_LIBRARY_PATH`.
     <code>
-    % GFCPP=_nc-dir_; export GFCPP<br />
-    % LD\_LIBRARY\_PATH=$GFCPP/lib:${LD\_LIBRARY\_PATH}<br />
+    % GEODE=_client-installdir_; export GEODE<br />
+    % LD\_LIBRARY\_PATH=$GEODE/lib:${LD\_LIBRARY\_PATH}<br />
     % export LD\_LIBRARY\_PATH<br />
     </code>
 
@@ -95,7 +95,7 @@ JDK. Add `$JAVA_HOME/bin` to the start of your `PATH`.
     </code>
 
 5. Create a directory in which to build the `securityImpl` plug-in. This directory (shown here as
-`/home/user/build-sec`) should be created outside the native client directory
+`/home/user/build-sec`) should be created outside the client directory
 hierarchy. After creating the directory, set it as your current working directory:
 
     <code>
@@ -104,22 +104,22 @@ hierarchy. After creating the directory, set it as your current working director
     </code>
 
 6. Run `cmake` three times, once to configure the build, specifying the path to the `cmake`
-instructions in the native client security template directory, a second time to perform the build,
-and a third time to install the resulting library into the native client installation directory
+instructions in the client security template directory, a second time to perform the build,
+and a third time to install the resulting library into the client installation directory
 tree:
 
     <code>
-    % cmake ~/nc/templates/security -DGFCPP=~/nc<br />
+    % cmake _client-installdir_/templates/security -DGEODE=_client-installdir_<br />
     ... creates a makefile and other supporting files<br />
     % cmake --build .<br />
     ... builds  securityImpl plug-in<br />
     % cmake --build . --target install<br />
-    ... installs securityImpl in the nc installation directory tree ($GFCPP)
+    ... installs securityImpl in the client installation directory tree ($GEODE)
     </code>
 
 
 7. Create a directory to hold the quickstart examples. This directory (shown here as
-`/home/user/quickstart-examples`) should be created outside the native client directory
+`/home/user/quickstart-examples`) should be created outside the client directory
 hierarchy. After creating the directory, set it as your current working directory:
 
     <code>
@@ -131,7 +131,7 @@ hierarchy. After creating the directory, set it as your current working director
 path to the `cmake` instructions located in the quickstart example directory (in this case, we're building the the `cpp` examples):
 
     <code>
-    % cmake $GFCPP/SampleCode/quickstart/cpp<br />
+    % cmake $GEODE/SampleCode/quickstart/cpp<br />
     ... creates a makefile and other supporting files<br />
     % cmake --build .<br />
     ... builds the examples
@@ -146,13 +146,13 @@ See <a href="#AboutQSE">About the QuickStart Examples</a> for instructions on ru
 Follow these steps to prepare your Windows environment to run the QuickStart examples.
 
 1. Run the Visual Studio Command Prompt to create a session with preset compiler environment
-configurations. Set the GEMFIRE environment variable to your GemFire installation directory. 
-Add the %GEMFIRE%\bin directory to your `PATH`. Add the GemFire libraries shown here to your `CLASSPATH`:
+configurations. Set the `GEODE_ROOT` environment variable to your Geode installation directory. 
+Add the `%GEODE_ROOT%\bin` directory to your `PATH`. Add the Geode libraries shown here to your `CLASSPATH`:
 
     <code>
-    \>&nbsp;GEMFIRE=_gemfire-install-dir_<br />
-    \> set PATH=%GEMFIRE%\bin;%PATH%<br />
-    \>&nbsp;set&nbsp;CLASSPATH=%GEMFIRE%\lib\gemfire.jar;%GEMFIRE%\lib\antlr.jar;%GEMFIRE%\lib\gfSecurityImpl.jar;%CLASSPATH%<br />
+    \>&nbsp;GEODE\_ROOT=_geode-install-dir_<br />
+    \> set PATH=%GEODE\_ROOT%\bin;%PATH%<br />
+    \>&nbsp;set&nbsp;CLASSPATH=%GEODE\_ROOT%\lib\geode.jar;%GEODE\_ROOT%\lib\antlr.jar;%GEODE\_ROOT%\lib\gfSecurityImpl.jar;%CLASSPATH%<br />
     </code>
 
 2. Set the `JAVA_HOME` environment variable to point to your installed JRE or
@@ -163,14 +163,14 @@ JDK. Add `%JAVA_HOME%\bin` to the start of your `PATH`.
     \> set PATH=%JAVA\_HOME%\bin;%PATH%
     </code>
 
-3. Set the `GFCPP` environment variable to point to the directory in which you installed the native
-client, denoted here by _nc-dir_. 
-Add `%GFCPP%\bin` to `PATH`. Add `%GFCPP%\lib` to `LD_LIBRARY_PATH`.
+3. Set the `GEODE` environment variable to point to the directory in which you installed the native
+client, denoted here by _client-installdir_. 
+Add `%GEODE%\bin` to `PATH`. Add `%GEODE%\lib` to `LD_LIBRARY_PATH`.
 
     <code>
-    \> set GFCPP=_nc-dir_<br />
-    \> set PATH=%GFCPP%\bin;%PATH%<br />
-    \> set LD\_LIBRARY\_PATH=%GFCPP%\lib;%LD\_LIBRARY\_PATH%
+    \> set GEODE=_client-installdir_<br />
+    \> set PATH=%GEODE%\bin;%PATH%<br />
+    \> set LD\_LIBRARY\_PATH=%GEODE%\lib;%LD\_LIBRARY\_PATH%
     </code>
 
 4. Set the `OPENSSL_ROOT_DIR` environment variable, pointing it to the parent folder for the OpenSSL
@@ -183,7 +183,7 @@ binaries created from the tarball. Add  `%OPENSSL_ROOT_DIR%\bin` to `PATH` and `
     </code>
 
 5. Create a directory in which to build the `securityImpl` plug-in. This directory (shown here as
-`c:\build-sec`) should be created outside the native client directory
+`c:\build-sec`) should be created outside the client directory
 hierarchy. After creating the directory, set it as your current working directory:
 
     <code>
@@ -192,22 +192,22 @@ hierarchy. After creating the directory, set it as your current working director
     </code>
 
 6. Run `cmake` three times, once to configure the build, specifying the path to the `cmake`
-instructions in the native client security template directory, a second time to perform the build,
-and a third time to install the resulting library into the native client installation directory
+instructions in the client security template directory, a second time to perform the build,
+and a third time to install the resulting library into the client installation directory
 tree:
 
     <code>
-    \> cmake c:\nc\templates\security -DGFCPP=c:\nc<br />
+    \> cmake c:\nc\templates\security -DGEODE=c:\nc<br />
     ... creates a makefile and other supporting files<br />
     \> cmake --build .<br />
     ... builds  securityImpl plug-in<br />
     \> cmake --build . --target install<br />
-    ... installs securityImpl in the nc installation directory tree ($GFCPP)
+    ... installs securityImpl in the client installation directory tree ($GEODE)
     </code>
 
 
 7. Create a directory to hold the quickstart examples. This directory (shown here as
-`c:\quickstart-examples-csharp`) should be created outside the native client directory
+`c:\quickstart-examples-csharp`) should be created outside the client directory
 hierarchy. After creating the directory, set it as your current working directory:
 
     <code>
@@ -219,7 +219,7 @@ hierarchy. After creating the directory, set it as your current working director
 path to the `cmake` instructions located in the quickstart example directory (in this case, we're building the the `csharp` examples):
 
     <code>
-    \> cmake %GFCPP%\SampleCode\quickstart\csharp<br />
+    \> cmake %GEODE%\SampleCode\quickstart\csharp<br />
     ... creates a makefile and other supporting files<br />
     \> cmake --build .<br />
     ... builds the examples
@@ -233,11 +233,11 @@ The examples are briefly described in this section. Each example performs the fo
 
 1. Starts the cache server with the example's server XML.
 
-2. Creates a GemFire cache.
+2. Creates a Geode cache.
 
 3. Performs operations specific to the example.
 
-4. Closes the GemFire cache.
+4. Closes the Geode cache.
 
 5. Shuts down the cache server.
 
@@ -271,7 +271,7 @@ following table:
 
 You can also provide your own serializable objects. Examples of custom serializable objects are
 `Position` and `Portfolio` in the RemoteQuery example. For more information regarding serialization,
-refer to [Serializing Data](../cpp-caching-api/serialization_overview.html) and the online API documentation for the native client.
+refer to [Serializing Data](../cpp-caching-api/serialization_overview.html) and the online API documentation for the client.
  
 ## Data Expiration
 
@@ -332,7 +332,7 @@ The HA Cache example uses client and server XMLs configured to provide high avai
  
 ## Exceptions
 
-The Exceptions example performs some operations in incorrect ways, then logs the exceptions thrown by GemFire to demonstrate error handling.
+The Exceptions example performs some operations in incorrect ways, then logs the exceptions thrown by Geode to demonstrate error handling.
 
  
 ## Durable Client
@@ -347,7 +347,7 @@ The DurableClient example demonstrates durable client messaging. If the client l
 
 ## Security
 
-The Security example demonstrates how native client credentials are authenticated when the client connects to a cache server. Authorization for client cache operations is also shown.
+The Security example demonstrates how client credentials are authenticated when the client connects to a cache server. Authorization for client cache operations is also shown.
 
  
 ## PutAll And GetAll Operations
@@ -412,7 +412,7 @@ The Transactions example shows the use of the client-server transactions API.
  
 ## PdxRemoteQuery
 
-The PdxRemoteQuery example shows the use of PDX serialized objects with GemFire querying.
+The PdxRemoteQuery example shows the use of PDX serialized objects with Geode querying.
 
  
 ## PdxSerializer
@@ -454,7 +454,7 @@ Start the C++ menu.
 
 ``` pre
 > runcpp
-Please select a GemFire C++ QuickStart example to run.
+Please select a Geode C++ QuickStart example to run.
 
 1. BasicOperations
 2. DataExpiration
@@ -475,7 +475,7 @@ Start the C++ menu.
 
 ``` pre
 $ ./runcpp.sh
-Please select a GemFire C++ QuickStart example to run.
+Please select a Geode C++ QuickStart example to run.
 
 1. BasicOperations
 2. DataExpiration
@@ -496,7 +496,7 @@ Start the C# menu.
 
 ``` pre
 > runcs
-Please select a GemFire C# QuickStart example to run.
+Please select a Geode C# QuickStart example to run.
 
 1. BasicOperations
 2. DataExpiration
@@ -519,7 +519,7 @@ This section discusses problems you might encounter when you run the examples, a
  
 ## Error Messages
 
-`Exception ... Region:put not connected to GemFire`
+`Exception ... Region:put not connected to Geode`
 
 Verify that the cache server has successfully started by reviewing the cacheserver.log file in the gfecs directory. The log may indicate why the cache server failed to start.
 
@@ -540,7 +540,7 @@ script so the example can find its XML files.
  
 ## Connection Problems
 
-GemFire is a network-centric distributed system, so if you have a firewall running it could cause
+Geode is a network-centric distributed system, so if you have a firewall running it could cause
 connection problems. For example, your connections may fail if your firewall places restrictions on
 inbound or outbound permissions for sockets. You may need to modify your firewall configuration to
 permit traffic to applications running on your machine. The specific configuration depends on the
@@ -549,7 +549,7 @@ firewall you're using.
 If you experience port conflicts with other distributed systems, change the `localhost` and
 `bridge-server` port numbers for each of the XML files in the `quickstart/XMLs` directory. If you need
 to specify a non-default multicast port setting for the Java cache server, place a copy of the
-GemFire `gemfire.properties` file in the `quickstart/gfecs` directory, then change the `mcast-port=`
+Geode `geode.properties` file in the `quickstart/gfecs` directory, then change the `mcast-port=`
 setting to a unique value for your network.
 
 
@@ -561,10 +561,10 @@ If you want to build the QuickStart examples yourself from the source files prov
 2. In the command shell, enter the following environment configurations:
 
 <code>
-set GEMFIRE=_full-path-to-gemfire-directory_<br />
-set GFCPP=_nc-dir_<br />
+set GEODE_ROOT=_full-path-to-geode-directory_<br />
+set GEODE=_client-installdir_<br />
 set JAVA\_HOME=_installed-jdk-path_<br />
-set PATH=%PATH%;%JAVA\_HOME%/bin;%GFCPP%\bin<br />
+set PATH=%PATH%;%JAVA\_HOME%/bin;%GEODE%\bin<br />
 </code>
 
 3. In the command shell, change to the quickstart directory:
