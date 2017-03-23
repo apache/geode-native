@@ -1,0 +1,164 @@
+---
+title:  Apache Geode Client Configurations
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+The Apache Geode client provides access for C++ and Microsoft® .NET™ clients to the Geode distributed system. 
+As an open source project, the client (at least theoretically) can be built on nearly any system.
+In practical terms, the client is known to have been successfully built and used on platforms running Microsoft Windows, Linux (Intel), and Sun Solaris.
+
+For your convenience, this table shows configuration guidelines for some familiar operating systems.
+
+
+<table style="width:100%;">
+<colgroup>
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Operating System</th>
+<th>Processor and Architecture</th>
+<th>RAM</th>
+<th>Swap Space</th>
+<th>64-Bit Disk Space Required</th>
+</tr>
+</thead>
+<tbody>
+<tr class="even">
+<td>Solaris 11</td>
+<td>x86-64
+</td>
+<td>2GB</td>
+<td>256MB</td>
+<td>90MB</td>
+</tr>
+<tr class="odd">
+<td>RHEL 7</td>
+<td>x86-64</td>
+<td>2GB</td>
+<td>256MB</td>
+<td>120MB</td>
+</tr>
+<tr class="even">
+<td>SLES 12</td>
+<td>x86-64</td>
+<td>2GB</td>
+<td>256MB</td>
+<td>120MB</td>
+</tr>
+<tr class="odd">
+<td>Windows 2012 Server R2</td>
+<td>x86-64</td>
+<td>2GB</td>
+<td>256MB</td>
+<td>125MB</td>
+</tr>
+<tr class="odd">
+<td>Windows 10</td>
+<td>x86-64</td>
+<td>2GB</td>
+<td>256MB</td>
+<td>125MB</td>
+</tr>
+<tr class="odd">
+<td>macOS 10.12 (Sierra)</td>
+<td>x86-64</td>
+<td>2GB</td>
+<td>256MB</td>
+<td>125MB</td>
+</tr>
+</tbody>
+</table>
+
+## Host Machine Configuration Guidelines
+
+Each machine that runs a Geode client should meet the following guidelines:
+
+-   A system clock set to the correct time and a time synchronization
+service such as Network Time Protocol (NTP).
+Correct time stamps permit the following activities:
+    - Logs that are useful for troubleshooting. Synchronized time stamps ensure that log messages from different hosts can be merged to reproduce an accurate chronological history of a distributed run.
+    - Aggregate product-level and application-level time statistics.
+    - Accurate monitoring of the system with scripts and other tools that read the system statistics and log files.
+-   The host name and host files are properly configured for the machine.
+-   Many default Linux installations use SYN cookies to protect the
+system against malicious attacks that flood TCP SYN packets.
+The use of SYN cookies dramatically reduces network bandwidth,
+and can be triggered by a running GemFire distributed system.
+
+    To disable SYN cookies permanently:
+    1. Edit the `/etc/sysctl.conf` file to include the following line:
+
+        ``` pre
+        net.ipv4.tcp_syncookies = 0
+        ```
+        Setting this value to zero disables SYN cookies.
+    2. Reload `sysctl.conf`:
+
+        ``` pre
+        sysctl -p
+        ```
+
+## <a id="concept_7AE0C1CB11244095A50CCB52A09A09A1__section_3A8A0684D68E467EBA498D939E91C5AA" class="no-quick-link"></a>Windows Guidelines
+
+**Runtime Library**
+
+The Geode client requires the [Microsoft Visual C++ 2013 Redistributable Package](https://www.microsoft.com/en-us/download/details.aspx?id=40784). 
+This package contains runtime libraries needed by the client; install it for your platform architecture on all machines that will run the client.
+
+**.NET Framework Version Support**
+
+The Geode client is supported with Microsoft .NET Framework 4.5.2.
+
+A Microsoft .NET Framework must be installed to support the C++/CLI (Common Language Infrastructure) library for the client.
+
+The Geode supports .NET 4.5.2 and Visual Studio 2013 (for compiling C++ applications on Windows). 
+For more information on the features of .NET and Visual Studio Community Edition 2013 Update 5, see the [Visual Studio 2013 web page](https://msdn.microsoft.com/en-us/library/dd831853(v=vs.120).aspx).
+
+## <a id="concept_7AE0C1CB11244095A50CCB52A09A09A1__section_C5848F353C504844BAFFD3EB2BE7DA23" class="no-quick-link"></a>Linux
+
+For Linux, you can verify that you meet the client dependencies at the library level by using the `ldd` tool and entering this command:
+
+``` pre
+prompt> ldd $client-installdir/lib/libgfcppcache.so
+```
+where _client-installdir_ is the location in which you have installed the Geode client.
+
+The following libraries are external dependencies of the client library, `libgfcppcache.so`. Verify that the ldd tool output includes all of these:
+
+-   libdl.so.2
+-   libm.so.6
+-   libpthread.so.0
+-   libc.so.6
+-   libz.so.1
+
+
+## <a id="concept_7AE0C1CB11244095A50CCB52A09A09A1__ssl_requirements" class="no-quick-link"></a>Software Requirements for Using SSL
+
+If you plan on using SSL in your Geode client and server deployment, you will need to download and install OpenSSL.
+
+The client requires OpenSSL 1.0.1t or later. For Windows platforms, you can use either the regular or the OpenSSL "Light" version.
+
+In addition, make sure that your system environment variables have been configured to include OpenSSL.
+
+See [SSL Client/Server Communication](../security/sslclientserver.html) for instructions.

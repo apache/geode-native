@@ -1,5 +1,5 @@
 ---
-title:  Installing the Native Client
+title:  Installing the Client
 ---
 
 <!--
@@ -19,7 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-To install the Geode Native Client, you build the client libraries from a source distribution.
+To install the Geode Client, you build the client libraries from a source distribution.
 To build the client libraries:
 
   1. Download the source distribution.
@@ -28,13 +28,13 @@ To build the client libraries:
 
 # Download the Source Distribution
 
-Download Geode Native Client sources from the [Releases page of the Apache Geode
+Download Geode Client sources from the [Releases page of the Apache Geode
 website](http://geode.apache.org/releases/) and unpack the archive in a location of your choice.
 For example, if your downloaded archive is named `apache-geode-src-1.1.0.tar.gz` and your target
-directory is represented by _geode-native-installdir_:
+directory is represented by _geode-client-installdir_:
 
   ```
-  $ cd geode-native-installdir
+  $ cd geode-client-installdir
   $ tar xvzf ~/Downloads/apache-geode-src-1.1.0.tar.gz
   x ./
   x ./geode-native
@@ -49,7 +49,7 @@ information and `README.md` for general information.
 
 # Prerequisites
 
-In order to build the Geode Native Client libraries, your system must provide certain prerequisites:
+In order to build the Geode Client libraries, your system must provide certain prerequisites:
 
   - Compatible operating system
   - Apache Geode
@@ -62,23 +62,18 @@ See the following sections for details.
 
 ## Operating Systems
 
-The following operating systems are known to be compatible with the Apache Geode Native Client. 
+The following operating systems are known to be compatible with the Apache Geode Client. 
 The list is not exhaustive, others may also work.
 
 | Operating System | Version |
 |------------------|---------|
-| Linux            | RHEL/CentOS 6 |
-|                  | RHEL/CentOS 7 |
-|                  | SLES 11 |
+| Linux            | RHEL/CentOS 7 |
 |                  | SLES 12 |
-| Windows          | Windows 8.1 64-bit |
 |                  | Windows 10 64-bit |
 |                  | Windows Server 2012 64-bit |
 |                  | Windows Server 2012 R2 64-bit |
 | macOS            | MacOS 10.12 (Sierra) |
-| Solaris          | Solaris 10 SPARC |
-|                  | Solaris 10 x86 |
-|                  | Solaris 11 SPARC |
+| Solaris          | Solaris 11 SPARC |
 |                  | Solaris 11 x86 |
 
 
@@ -93,7 +88,7 @@ is installed, define `GEODE_ROOT=/path/to/geode` in your initial `cmake` configu
 
 ## CMake
 
-CMake version 3.4 or newer is required to build the native client and its QuickStart examples. To download and install
+CMake version 3.4 or newer is required to build the Geode client and its QuickStart examples. To download and install
 CMake, follow the instructions on [cmake.org] (https://cmake.org).
 
 CMake uses a "generator" to produce configuration files for use by a variety of build tools, such as
@@ -144,12 +139,12 @@ You may find some optional tools to be helpful in certain environments. Here are
 
 # Build and Install
 
-The Geode Native source distribution comes with CMake files for building and installing the client libraries.
+The Geode source distribution comes with CMake files for building and installing the client libraries.
 
 CMake uses a default system-specific location as the destination of the `install` target, for
 example, `/usr/local` on Unix systems. (On Unix systems, you may need to execute your `cmake`
 commands using `sudo` to allow CMake to write output files to protected locations, such as
-`/usr/local`.) To explicitly specify the location in which the Native Client will be installed,
+`/usr/local`.) To explicitly specify the location in which the Geode Client will be installed,
 define `CMAKE_INSTALL_PREFIX=/install-destination` in the initial `cmake` configuration command.
 
 To build and install the client libraries:
@@ -157,7 +152,7 @@ To build and install the client libraries:
   1. Create a build directory and set it as the current working directory.
 
     ```
-    $ cd geode-native-installdir
+    $ cd geode-client-installdir
     $ mkdir build
     $ cd build
     ```
