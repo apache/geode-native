@@ -25,14 +25,11 @@ If the value is not available locally, it is requested from the server. If the s
 
 ## Using the Region API to Retrieve Values From the Cache
 
-Here, the program retrieves two entries from the region.
+Here, the code fragment accomplishes entry retrieval in two ways.
 
 ``` pre
 string value1 = region1["Key1"];
 string value2 = region1["Key2"];
- 
-int valueA = region2["KeyA"];
-int valueB = region2["KeyB"];
  
 string valueQ = region.Get(111, null);
 string valueR = region.Get(222, null);

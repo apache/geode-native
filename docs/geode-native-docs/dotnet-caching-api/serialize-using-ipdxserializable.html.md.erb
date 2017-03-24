@@ -1,5 +1,5 @@
 ---
-title:  Serialize Using the GemFire IPdxSerializable Interface
+title:  Serialize Using the IPdxSerializable Interface
 ---
 
 <!--
@@ -23,10 +23,10 @@ Use this procedure to program your domain object for PDX serialization using the
 
 **Procedure**
 
-1.  In your domain class, implement `GemStone::GemFire::Cache::Generic::IPdxSerializable`. Example:
+1.  In your domain class, implement `Apache.Geode.Client.IPdxSerializable`. Example:
 
     ``` pre
-    using GemStone.GemFire.Cache.Generic;
+    using Apache.Geode.Client;
            ...
            public class PortfolioPdx : IPdxSerializable
     ```
@@ -36,8 +36,8 @@ Use this procedure to program your domain object for PDX serialization using the
     If you also use PDX serialization in Java for the object, serialize the object in the same way for each language. Serialize the same fields in the same order and mark the same identify fields.
 
 3.  Program the `IPdxSerializable ToData` function to serialize your object as required by your application.
-    1.  Write your domain class's standard .NET data fields using the `IPdxWriter` write methods. GemFire automatically provides `IPdxWriter` to the `ToData` function for `IPdxSerializable` objects.
-    2.  Call the `ToData markIdentifyField` function for each field GemFire should use to identify your object. This is used to compare objects for operations like `DISTINCT` queries. The `markIdentifyField` call must come after the associated field write methods.
+    1.  Write your domain class's standard .NET data fields using the `IPdxWriter` write methods. Geode automatically provides `IPdxWriter` to the `ToData` function for `IPdxSerializable` objects.
+    2.  Call the `ToData markIdentifyField` function for each field Geode should use to identify your object. This is used to compare objects for operations like `DISTINCT` queries. The `markIdentifyField` call must come after the associated field write methods.
 
         Example:
 
@@ -75,7 +75,7 @@ Use this procedure to program your domain object for PDX serialization using the
         }
         ```
 
-4.  Program `IPdxSerializable FromData` to read your data fields from the serialized form into the object's fields using the `IPdxReader` read methods. GemFire automatically provides `IPdxReader` to the `FromData` function for `IPdxSerializable` objects.
+4.  Program `IPdxSerializable FromData` to read your data fields from the serialized form into the object's fields using the `IPdxReader` read methods. Geode automatically provides `IPdxReader` to the `FromData` function for `IPdxSerializable` objects.
 
     Use the same names as you did in `ToData` and call the read operations in the same order as you called the write operations in your `ToData` implementation.
 

@@ -1,5 +1,5 @@
 ---
-title:  About the Native Client .NET API
+title:  About the .NET Client API
 ---
 
 <!--
@@ -19,13 +19,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The Microsoft .NET Framework interface for the Apache Geode native client provides complete access to the native client C++ functionality from any .NET Framework language (C\#, C++/CLI, VB.NET, and J\#). This enables clients using C\# and other .NET languages to use the capabilities provided by the Geode C++ API.
 
-The Geode native client uses a set of assemblies managed by the C++ Common Language Infrastructure (C++ CLI). C++ CLI includes the libraries and objects necessary for common language types, and it is the framework for .NET applications.
+The Microsoft .NET Framework interface for the client provides complete access to the C++ client functionality from any .NET Framework language (C\#, C++/CLI, VB.NET, and J\#). This enables clients using C\# and other .NET languages to use the capabilities provided by the C++ API.
 
-The .NET API for the native client adds .NET Framework CLI language binding for the Geode native client product.
+The .NET client uses a set of assemblies managed by the C++ Common Language Infrastructure (C++ CLI). C++ CLI includes the libraries and objects necessary for common language types, and it is the framework for .NET applications.
 
-Using C\#, you can write callbacks and define user objects in the cache. The following figure shows an overview of how a C\# application accesses the native client C++ API functionality through C++/CLI .
+The .NET API adds .NET Framework CLI language binding for the native client product.
+
+Using C\#, you can write callbacks and define user objects in the cache. The following figure shows an overview of how a C\# application accesses the C++ client API functionality through C++/CLI .
 
 <a id="concept_A97823CFEA20400BBB135AC964746850__fig_D025097BFCEA4D7ABDB173AD6ABE099D"></a>
 <span class="figtitleprefix">Figure: </span>C\# .NET Application Accessing the C++ API
@@ -35,12 +36,9 @@ Using C\#, you can write callbacks and define user objects in the cache. The fol
 **Note:**
 This chapter uses C\# as the reference language, but other .NET languages work the same way.
 
-The Geode .NET API is provided in the `GemStone::GemFire::Cache::Generic` namespace. This namespace allows you to manage your cache, regions, and data using the .NET Generics APIs.
-
-Use the Geode .NET API to programmatically create, populate, and manage a Geode distributed system.
+The .NET API is provided in the `Apache.Geode.Client` namespace. This namespace allows you to manage your cache, regions, and data.
+Use the Geode .NET API to programmatically create, populate, and manage a distributed system.
 
 **Note:**
 The .NET library is thread-safe except where otherwise indicated in the API documentation.
-
-For complete information on the APIs, see the .NET API documentation at [http://gemfire-apis.docs.pivotal.io](http://gemfire-apis.docs.pivotal.io). For general information on .NET, see the Microsoft developer’s network website.
 
