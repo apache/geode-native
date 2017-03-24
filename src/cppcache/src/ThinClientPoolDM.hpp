@@ -463,7 +463,8 @@ class FunctionExecution : public PooledWork<GfErrType> {
 
   void setParameters(const char* func, uint8_t getResult, uint32_t timeout,
                      CacheablePtr args, TcrEndpoint* ep,
-                     ThinClientPoolDM* poolDM, std::shared_ptr<ACE_Recursive_Thread_Mutex> rCL,
+                     ThinClientPoolDM* poolDM,
+                     std::shared_ptr<ACE_Recursive_Thread_Mutex> rCL,
                      ResultCollectorPtr* rs, UserAttributesPtr userAttr) {
     exceptionPtr = NULLPTR;
     m_resultCollectorLock = rCL;

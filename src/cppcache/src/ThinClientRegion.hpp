@@ -415,22 +415,19 @@ class ChunkedFunctionExecutionResponse : public TcrChunkedResult {
       const ChunkedFunctionExecutionResponse&);
 
  public:
+  inline ChunkedFunctionExecutionResponse(TcrMessage& msg, bool getResult,
+                                          ResultCollectorPtr rc)
+      : TcrChunkedResult(), m_msg(msg), m_getResult(getResult), m_rc(rc) {}
+
   inline ChunkedFunctionExecutionResponse(
-      TcrMessage& msg, bool getResult, ResultCollectorPtr rc)
+      TcrMessage& msg, bool getResult, ResultCollectorPtr rc,
+      std::shared_ptr<ACE_Recursive_Thread_Mutex> resultCollectorLock)
       : TcrChunkedResult(),
         m_msg(msg),
         m_getResult(getResult),
-        m_rc(rc) {}
+        m_rc(rc),
+        m_resultCollectorLock(resultCollectorLock) {}
 
-    inline ChunkedFunctionExecutionResponse(
-                                            TcrMessage& msg, bool getResult, ResultCollectorPtr rc,
-                                            std::shared_ptr<ACE_Recursive_Thread_Mutex> resultCollectorLock)
-    : TcrChunkedResult(),
-    m_msg(msg),
-    m_getResult(getResult),
-    m_rc(rc),
-    m_resultCollectorLock(resultCollectorLock) {}
-    
   /* inline const CacheableVectorPtr& getFunctionExecutionResults() const
    {
      return m_functionExecutionResults;

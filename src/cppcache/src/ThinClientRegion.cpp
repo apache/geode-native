@@ -3350,7 +3350,8 @@ bool ThinClientRegion::executeFunctionSH(
     HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>* locationMap,
     CacheableHashSetPtr& failedNodes, uint32_t timeout, bool allBuckets) {
   bool reExecute = false;
-  std::shared_ptr<ACE_Recursive_Thread_Mutex> resultCollectorLock(new ACE_Recursive_Thread_Mutex());
+  std::shared_ptr<ACE_Recursive_Thread_Mutex> resultCollectorLock(
+      new ACE_Recursive_Thread_Mutex());
   UserAttributesPtr userAttr =
       TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
   std::vector<OnRegionFunctionExecution*> feWorkers;
