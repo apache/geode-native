@@ -23,20 +23,5 @@ The .NET Framework does not find managed DLLs using the conventional `PATH` envi
 
 The GAC utility must be run on every machine that runs the .NET code.
 
-If an assembly attempts to load the `GemStone.GemFire.Cache.dll` without meeting this requirement, you receive this `System.IO.FileNotFoundException`:
-
-``` pre
-{{
-
-Unhandled Exception: System.IO.FileNotFoundException: Could not load file
-or assembly 'GemStone.GemFire.Cache, Version=8.0.0.0, Culture=neutral,
-PublicKeyToken= 126e6338d9f55e0c' or one of its dependencies. The system
-cannot find the file specified.
-File name: 'GemStone.GemFire.Cache, Version=8.0.0.0, Culture=neutral,
-PublicKeyT oken=126e6338d9f55e0c'
-at HierarchicalClient.Main()
-
-}}
-```
-
+If an assembly attempts to load the `Apache.Geode.Client.dll` without meeting this requirement, a `System.IO.FileNotFoundException` will be thrown.
 

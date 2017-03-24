@@ -21,16 +21,16 @@ limitations under the License.
 
 Follow these steps to install the shared assembly into the Global Assembly Cache (GAC).
 
-1.  Go to the `NativeClient_xxxx` directory.
+1.  Set the directory:
 
     ``` pre
     cd %GFCPP%
     ```
 
-2.  Run the GAC utility to install `GemStone.GemFire.Cache.dll` into the GAC.
+2.  Run the GAC utility to install `Apache.Geode.Client.dll` into the GAC.
 
     ``` pre
-    gacutil.exe /if GemStone.GemFire.Cache.dll
+    gacutil.exe /if Apache.Geode.Client.dll
     ```
 
 When you are ready to uninstall, use the `/u` switch. More information on the GAC utility can be found at [http://www.msdn.com](https://msdn.microsoft.com), or by using `gacutil.exe                 /?`.

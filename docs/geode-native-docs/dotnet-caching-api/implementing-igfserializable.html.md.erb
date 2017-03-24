@@ -31,7 +31,7 @@ Examples follow the procedure.
     void ToData(DataOutput output)
     ```
 
-    The `ToData` function is responsible for copying all of the data fields for the object to the object stream. The `DataOutput` class represents the output stream and provides methods for writing the primitives in a network byte order. For details, see the API documentation for `DataOutput` at [http://gemfire-apis.docs.pivotal.io](http://gemfire-apis.docs.pivotal.io).
+    The `ToData` function is responsible for copying all of the data fields for the object to the object stream. The `DataOutput` class represents the output stream and provides methods for writing the primitives in a network byte order.
 
 2.  Implement the `FromData` function that consumes a data input stream and repopulates the data fields for the object:
 
@@ -39,13 +39,13 @@ Examples follow the procedure.
     void fromData (DataInput& input)
     ```
 
-    The `DataInput` class represents the input stream and provides methods for reading input elements. The `FromData` function must read the elements of the input stream in the same order that they were written by `ToData`. For more about this, see the API documentation for `DataInput` at [http://gemfire-apis.docs.pivotal.io](http://gemfire-apis.docs.pivotal.io).
+    The `DataInput` class represents the input stream and provides methods for reading input elements. The `FromData` function must read the elements of the input stream in the same order that they were written by `ToData`.
 
 3.  Implement the `ClassId` function to return an integer which is unique for your class (in the set of all of your user-defined classes).
 
 ## Simple BankAccount Class
 
-This example shows a simple class, `BankAccount`, that encapsulates two `ints`: `customerId` and `accountId`:
+This example shows a simple class, `BankAccount`, that encapsulates the two `ints` `customerId` and `accountId`:
 
 ``` pre
 public class BankAccount
