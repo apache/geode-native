@@ -25,7 +25,7 @@ The options give good performance and flexibility for data storage, transfers, a
 
 The simplest option is to use perform automatic serialization by registering the Geode .NET PDX reflection-based autoserializer in your application. When you have this registered, Geode uses it for all domain objects that are not custom serialized.
 
-You can also custom serialize your objects by implementing one of the Geode .NET interfaces, `GemStone::GemFire::Cache::Generic::IPdxSerializable` or `GemStone::GemFire::Cache::IGFSerializable`.
+You can also custom serialize your objects by implementing one of the Geode .NET interfaces, `Apache.Geode.Client.IPdxSerializable` or `Apache.Geode.Client.IGFSerializable`.
 
 You also have the option of using default .NET serialization, but you cannot use it unless you also use helper classes. The helper classes you must use are `CacheableObject` and `CacheableObjectXml`.
 
@@ -75,7 +75,5 @@ Geode .NET PDX serialization has more bytes in overhead than Geode .NET Data ser
 \*You can mix domain object versions where the differences between versions are the addition and removal of object fields.
 
 By default, you can use Geode delta propagation with PDX serialization. However, delta propagation will not work if you have set the Geode property read-serialized to "true". In terms of deserialization, to apply a change delta propagation requires a domain class instance and the `fromDelta` method. If you have set read-serialized to true, you will receive an `IPdxInstance` instead of a domain class instance and `IPdxInstance` does not have the `fromDelta` method required for delta propagation. You will also require the Java domain class on the server similar to the you would need the .NET PDX Delta domain class.
-
-For detailed information on the interfaces, see the API documentation at [http://gemfire-apis.docs.pivotal.io](http://gemfire-apis.docs.pivotal.io).
 
 

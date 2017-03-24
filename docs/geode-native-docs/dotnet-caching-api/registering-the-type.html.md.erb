@@ -39,6 +39,6 @@ A `DSFID` is an integer that returns the data serialization fixed ID type. `DSFI
 
 If your application uses its own key types that are too complex to easily force into string, you can probably improve performance by using a custom type and implementing `HashCode` and `Equals` functions. For example, if you have hybrid data types such as floating point numbers, you can implement your own type that encapsulates the floating point number. Comparing floating point numbers in this way provides greater performance than comparing a string representation of the floating point numbers, with such noticeable improvements as faster cache access and smaller payloads.
 
-See [Serialization in Native Client Mode with a Java Server](../cpp-caching-api/serialization_using_serializable.html#concept_696AB5206C3E45898CC1A24CDD93D003__section_AFB685227E4048BF9FB4FD7C55AED274) for information about implementing key types for a native client that is used with a Java cache server.
+See [Serialization in Native Client Mode with a Java Server](../cpp-caching-api/serialization_using_serializable.html#concept_696AB5206C3E45898CC1A24CDD93D003__section_AFB685227E4048BF9FB4FD7C55AED274) for information about implementing key types for a client that is used with a Java cache server.
 
 To extend a type that implements `IPdxSerializable` or `IGFSerializable` for your key, override and implement the `HashCode` and `Equals` methods in the key as needed.
