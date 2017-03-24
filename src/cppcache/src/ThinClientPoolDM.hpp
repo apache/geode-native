@@ -26,6 +26,7 @@
 #include "PoolAttributes.hpp"
 #include "ThinClientLocatorHelper.hpp"
 #include "RemoteQueryService.hpp"
+#include <memory>
 #include <set>
 #include <vector>
 #include "Task.hpp"
@@ -440,7 +441,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
   CacheablePtr m_args;
   GfErrType m_error;
   ResultCollectorPtr* m_rc;
-  ACE_Recursive_Thread_Mutex* m_resultCollectorLock;
+  std::shared_ptr<ACE_Recursive_Thread_Mutex> m_resultCollectorLock;
   CacheableStringPtr exceptionPtr;
   UserAttributesPtr m_userAttr;
 
@@ -453,7 +454,6 @@ class FunctionExecution : public PooledWork<GfErrType> {
     m_timeout = 0;
     m_error = GF_NOERR;
     m_rc = NULL;
-    m_resultCollectorLock = NULL;
     m_userAttr = NULLPTR;
   }
 
@@ -463,7 +463,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
 
   void setParameters(const char* func, uint8_t getResult, uint32_t timeout,
                      CacheablePtr args, TcrEndpoint* ep,
-                     ThinClientPoolDM* poolDM, ACE_Recursive_Thread_Mutex* rCL,
+                     ThinClientPoolDM* poolDM, std::shared_ptr<ACE_Recursive_Thread_Mutex> rCL,
                      ResultCollectorPtr* rs, UserAttributesPtr userAttr) {
     exceptionPtr = NULLPTR;
     m_resultCollectorLock = rCL;
@@ -616,7 +616,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
   CacheableHashSetPtr m_routingObj;
   ResultCollectorPtr m_rc;
   TcrChunkedResult* m_resultCollector;
-  ACE_Recursive_Thread_Mutex* m_resultCollectorLock;
+  std::shared_ptr<ACE_Recursive_Thread_Mutex> m_resultCollectorLock;
   UserAttributesPtr m_userAttr;
   const Region* m_region;
   bool m_allBuckets;
@@ -625,7 +625,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
   OnRegionFunctionExecution(
       const char* func, const Region* region, CacheablePtr args,
       CacheableHashSetPtr routingObj, uint8_t getResult, uint32_t timeout,
-      ThinClientPoolDM* poolDM, ACE_Recursive_Thread_Mutex* rCL,
+      ThinClientPoolDM* poolDM, std::shared_ptr<ACE_Recursive_Thread_Mutex> rCL,
       ResultCollectorPtr rs, UserAttributesPtr userAttr, bool isBGThread,
       BucketServerLocationPtr serverLocation, bool allBuckets)
       : m_serverLocation(serverLocation),
