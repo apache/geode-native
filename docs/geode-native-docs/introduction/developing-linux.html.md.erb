@@ -19,25 +19,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-This section describes how to build and run a native client application on Linux.
+This section describes how to build and run a client application on Linux.
 
-**Note:** When compiling external projects or applications that are used or referenced by the Geode native client, make sure that you compile them for the same target architecture as your native client installation. For example, if you installed the 64-bit (x86) version of the native client, compile your external projects for 64-bit (x86) architecture.
+**Note:** When compiling external projects or applications that are used or referenced by the Geode client, make sure that you compile them for the same target architecture as your client installation. For example, if you installed the 64-bit (x86) version of the client, compile your external projects for 64-bit (x86) architecture.
 
 ## <a id="developing-linux__section_4AD6E18611AE42E9942C77DF91347768" class="no-quick-link"></a>Step 1. Set Environment Variables
 
-Set the native client environment variables on each Linux host. For each case, *product-dir* is the path to the native client product directory.
+Set the client environment variables on each Linux host. For each case, *product-dir* is the path to the client product directory.
 
 **For Bourne and Korn shells (sh, ksh, bash)**
 
 <code>
-GFCPP=_product-dir_;export GFCPP<br />
-PATH=$GFCPP/bin:$PATH;export PATH<br />
-LD\_LIBRARY\_PATH=$GFCPP/lib:$LD\_LIBRARY\_PATH;export LD\_LIBRARY\_PATH
+GEODE=_product-dir_;export GEODE<br />
+PATH=$GEODE/bin:$PATH;export PATH<br />
+LD\_LIBRARY\_PATH=$GEODE/lib:$LD\_LIBRARY\_PATH;export LD\_LIBRARY\_PATH
 </code>
 
-## <a id="developing-linux__section_EFE9D42B05B44F2F958054224BCC5F76" class="no-quick-link"></a>Step 2. Compile C++ Clients and Dynamically Link Them to the GemFire Library
+## <a id="developing-linux__section_EFE9D42B05B44F2F958054224BCC5F76" class="no-quick-link"></a>Step 2. Compile C++ Clients and Dynamically Link Them to the Geode Library
 
-On Linux, the `g++` compiler is supported. To build and link a C++ client to GemFire on Linux, the compilation command line must include the arguments listed in the following table.
+On Linux, the `g++` compiler is supported. To build and link a C++ client to Geode on Linux, the compilation command line must include the arguments listed in the following table.
 
 <a id="developing-linux__compiler-arguments-linux"></a>
 
@@ -45,22 +45,22 @@ On Linux, the `g++` compiler is supported. To build and link a C++ client to Gem
 |--------------------|----------------------------------------------------------|
 | `-D_REENTRANT`     | Required to compile Linux programs in a thread-safe way. |
 | `-m32` or `-m64`   | Enables 32-bit or 64-bit compilation.                    |
-| `-I$GFCPP/include` | Specifies the native client `include` directory.         |
+| `-I$GEODE/include` | Specifies the client `include` directory.         |
 
 
-The following table lists the linker switches that must be present on the command line when dynamically linking to the GemFire library.
+The following table lists the linker switches that must be present on the command line when dynamically linking to the Geode library.
 
 <a id="developing-linux__table_216E9E87FBB44E39BE26388317F3ACE4"></a>
 
 | Argument            | Explanation                                                                                        |
 |---------------------|----------------------------------------------------------------------------------------------------|
-| `-rpath $GFCPP/lib` | Tells the linker to look in `$GFCPP/lib` for libraries on which the native client library depends. |
-| `-L$GFCPP/lib`      | Tells the linker where to find the named libraries.                                                |
+| `-rpath $GEODE/lib` | Tells the linker to look in `$GEODE/lib` for libraries on which the client library depends. |
+| `-L$GEODE/lib`      | Tells the linker where to find the named libraries.                                                |
 | `-o durableclient`  | Tells the linker to output an object file named 'durableclient'.                                   |
-| `-lgfcppcache`      | Links the native client C++ cache library to the compiled executable.                              |
+| `-lgfcppcache`      | Links the client C++ cache library to the compiled executable.                              |
 
 
-The following examples compile and link the `$GFCPP/SampleCode/quickstart/cpp/DurableClient.cpp` client to the `durableclient` output file.
+The following examples compile and link the `$GEODE/SampleCode/quickstart/cpp/DurableClient.cpp` client to the `durableclient` output file.
 
 **Compiling and Dynamically Linking on Linux for 32-bit**
 
@@ -70,12 +70,12 @@ g++ \
 -03 \
 -Wall \
 -m32 \
--I$GFCPP/include \
+-I$GEODE/include \
 cpp/DurableClient.cpp \
 cpp/plugins/DurableCacheListener.cpp \
 -o cpp/DurableClient \
--L$GFCPP/lib \
--Wl,-rpath,$GFCPP/lib \
+-L$GEODE/lib \
+-Wl,-rpath,$GEODE/lib \
 -lgfcppcache
 ```
 
@@ -87,17 +87,17 @@ g++ \
 -03 \
 -Wall \
 -m64 \
--I$GFCPP/include \
+-I$GEODE/include \
 cpp/DurableClient.cpp \
 cpp/plugins/DurableCacheListener.cpp \
 -o cpp/DurableClient \
--L$GFCPP/lib \
--Wl,-rpath,$GFCPP/lib \
+-L$GEODE/lib \
+-Wl,-rpath,$GEODE/lib \
 -lgfcppcache
 ```
 
-## <a id="developing-linux__section_60711FB51F0546D48C0BE84C1EB1D379" class="no-quick-link"></a>Step 3. Make Sure the Native Client Library Can Be Loaded
+## <a id="developing-linux__section_60711FB51F0546D48C0BE84C1EB1D379" class="no-quick-link"></a>Step 3. Make Sure the Client Library Can Be Loaded
 
-When the C++ application is dynamically linked to the native client library, the library must be dynamically loadable.
+When the C++ application is dynamically linked to the client library, the library must be dynamically loadable.
 
-To ensure that the native client library is available for loading, make sure you have added the path *product-dir*`/lib` to the LD\_LIBRARY\_PATH environment variable, where *product-dir* is the path to the Geode product directory.
+To ensure that the client library is available for loading, make sure you have added the path *product-dir*`/lib` to the LD\_LIBRARY\_PATH environment variable, where *product-dir* is the path to the Geode product directory.

@@ -1,5 +1,5 @@
 ---
-title:  GemFire Native Client Supported Configurations
+title:  Geode Client Requirements
 ---
 
 <!--
@@ -19,9 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The Pivotal GemFire native client provides access for C++ and Microsoft¬Æ .NET‚Ñ¢ clients to the GemFire distributed system. It operates on platforms running Microsoft Windows, Linux (Intel), and Sun Solaris.
-
-Native Client version 9.0 works with Pivotal GemFire versions 8.2.1 and later.
+The Apache Geode client provides access for C++ and MicrosoftÅÆ .NETúÙı‚ clients to the Geode distributed system. It is known to operate on platforms running Microsoft Windows, Linux (Intel), and Sun Solaris.
 
 Operating system requirements are listed in the chart below:
 
