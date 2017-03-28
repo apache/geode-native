@@ -28,7 +28,7 @@ With PKCS, clients send encrypted authentication credentials in the form of stan
 
 When clients require authentication to connect to a cache server, they use the `PKCSAuthInit` class implementing the `AuthInitialize` interface to obtain their credentials. For the PKCS sample provided by Geode, the credentials consist of an alias and an encrypted byte array. The private key is obtained from the PKCS\#12 keystore file. To accomplish this,` PKCSAuthInit` gets the alias retrieved from the `security-alias `property, and the keystore path from the `security-keystorepath` property. `PKCSAuthInit` also gets the password for the password-protected keystore file from the `security-keystorepass` property so the keystore can be opened.
 
-**Building the securityImpl Library**
+**The securityImpl Library**
 
 To use the PKCS sample implementation, you need to build OpenSSL and then build the securityImpl library. In the `geode.properties `file for the client, specify the `PKCSAuthInit` callback, the keystore path, the security alias, and the keystore password, like this:
 
@@ -40,6 +40,4 @@ security-alias=<alias>
 security-keystorepass=<keystore password>
 ```
 
-For server side settings, see the description of PKCS sample in [Security](../../managing/security/chapter_overview.html#security).
-
-
+For server side settings and PKCS configuration, see the server's security documentation.
