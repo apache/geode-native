@@ -1,5 +1,5 @@
 ---
-title:  Using Apache.Geode.Client.dll As a Private Assembly
+title:  Using Apache.Geode.dll As a Private Assembly
 ---
 
 <!--
@@ -19,7 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-To access `Apache.Geode.Client.dll` as a private assembly, you need to specify a `.config` file for your application.
+To access `Apache.Geode.dll` as a private assembly, you need to specify a `.config` file for your application.
 
 The file needs to be the same name as your application, with a `.config` suffix. For example, the `.config` file for `main.exe` would be `main.exe.config`. The two files must reside in the same directory.
 
@@ -27,7 +27,7 @@ Follow these steps to create a `.config` file:
 
 1.  Copy `%GFCPP%/docs/default.exe.config` to the appropriate location.
 2.  Rename `default.exe.config` to the name of your application.
-3.  Change the `href` attribute of the `CodeBase` element to point to your `Apache.Geode.Client.dll` file. Any of three path types – http, relative, or absolute – will work.
+3.  Change the `href` attribute of the `CodeBase` element to point to your `Apache.Geode.dll` file. Any of three path types – http, relative, or absolute – will work.
 
 ## A Sample .config File
 
@@ -39,11 +39,11 @@ The following example shows an excerpt of a `.config` file. The `PublicKeyToken`
       <assemblyBinding
          xmlns="urn:schemas-microsoft-com:asm.v1">
          <dependentAssembly>
-            <assemblyIdentity name="Apache.Geode.Client"
+            <assemblyIdentity name="Apache.Geode"
                publicKeyToken="126e6338d9f55e0c"
                culture="neutral" />
             <codeBase version="0.0.0.0"
-               href="../../bin/Apache.Geode.Client.dll"/>
+               href="../../bin/Apache.Geode.dll"/>
          </dependentAssembly>
       </assemblyBinding>
    </runtime>

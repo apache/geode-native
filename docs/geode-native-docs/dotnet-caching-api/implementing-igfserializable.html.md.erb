@@ -1,5 +1,5 @@
 ---
-title:  Implement the IGFSerializable Interface
+title:  Implement the IGeodeSerializable Interface
 ---
 
 <!--
@@ -19,7 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-To store your own data types in the cache, you implement the Geode `IGFSerializable` interface.
+To store your own data types in the cache, you implement the Geode `IGeodeSerializable` interface.
 
 Examples follow the procedure.
 
@@ -45,7 +45,7 @@ Examples follow the procedure.
 
 ## Simple BankAccount Class
 
-This example shows a simple class, `BankAccount`, that encapsulates the two `ints` `customerId` and `accountId`:
+This example shows a simple class, `BankAccount`, that encapsulates the two `ints`, `customerId` and `accountId`:
 
 ``` pre
 public class BankAccount
@@ -76,10 +76,10 @@ public class BankAccount
 
 ## Implementing a Serializable Class
 
-To make `BankAccount` serializable, you implement the `IGFSerializable` interface as shown in this example:
+To make `BankAccount` serializable, you implement the `IGeodeSerializable` interface as shown in this example:
 
 ``` pre
-public class BankAccount : IGFSerializable
+public class BankAccount : IGeodeSerializable
    {
    private int m_customerId;
    private int m_accountId;
@@ -103,17 +103,17 @@ public class BankAccount : IGFSerializable
       m_accountId = account;
    }
    // Our TypeFactoryMethod
-   public static IGFSerializable CreateInstance()
+   public static IGeodeSerializable CreateInstance()
    {
       return new BankAccount(0, 0);
    }
-   #region IGFSerializable Members
+   #region IGeodeSerializable Members
    public void ToData(DataOutput output)
    {
       output.WriteInt32(m_customerId);
       output.WriteInt32(m_accountId);
    }
-   public IGFSerializable FromData(DataInput input)
+   public IGeodeSerializable FromData(DataInput input)
    {
       m_customerId = input.ReadInt32();
       m_accountId = input.ReadInt32();
