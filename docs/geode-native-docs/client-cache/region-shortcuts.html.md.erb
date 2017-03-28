@@ -20,7 +20,7 @@ limitations under the License.
 -->
 
 <a id="region-shortcuts__section_62D2AB580EDB4165970E4FC42A35C80B"></a>
-Geode provides a number of predefined, shortcut region attributes settings for your use, in `RegionShortcut`.
+Geode provides predefined, shortcut region attributes settings for your use, in `RegionShortcut`.
 
 Shortcut attributes are a convenience only. They are named attributes that Geode has already stored for you. You can override their settings by storing new attributes with the same `id` as the predefined attributes.
 
@@ -69,7 +69,8 @@ This section provides an overview of the options available in the region shortcu
 
 **Data Eviction**
 
-For the non-`PROXY` regions--the regions that store data in the client cache--you can add data eviction:
+Non-`PROXY` regions are those that store data in the client cache.
+You can add data eviction for non-`PROXY` regions:
 
 -   `ENTRY_LRU` causes least recently used data to be evicted from memory when the region reaches the entry count limit.
 
