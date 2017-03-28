@@ -69,35 +69,36 @@ There are public third party free tools and source code available to download su
 
 ## Step 3. Configure environment variables
 
-Configure your system environment to build and run OpenSSL. Follow the environment setup that applies to your operating system.
-
-### <a id="security__section_6C173D0D8C8343EA92961C954032E2CA" class="no-quick-link"></a>Bourne and Korn shells (sh, ksh, bash)
-
+Configure your system environment to build and run OpenSSL by adding the appropriate executable and library directories to your paths.
+For example, for Bourne and Korn shells (sh, ksh, bash), environment setup would look something like this:
 <code>
-% OPENSSL=_parent-folder-for-openssl-binaries_; export OPENSSL<br />
-% GFCPP=_product-dir_; export GFCPP<br />
-% LD\_LIBRARY\_PATH=$LD\_LIBRARY\_PATH:$GFCPP/lib:$GFCPP/ssl\_libs:$OPENSSL/lib<br />
+% LD\_LIBRARY\_PATH=$LD\_LIBRARY\_PATH:_client-install-dir_/lib:_client-install-dir_/ssl\_libs:_openssl-install-dir_/lib<br />
 % export LD\_LIBRARY\_PATH<br />
-% CLASSPATH=$GEMFIRE/lib/gfSecurityImpl.jar:$CLASSPATH
+% CLASSPATH=_server-install-dir_/lib/securityImpl.jar:$CLASSPATH
 </code>
 
-### <a id="security__section_76CF86EDC2234BA6BF7DA6E253C71F61" class="no-quick-link"></a>Windows
+where:
 
+  _client-install-dir_ is the directory in which you installed your client.
+
+  _openssl-install-dir_ is the directory in which you installed OpenSSL.
+
+  _server-install-dir_ is the directory in which you installed your server.
+
+For Windows, environment setup might resemble this:
 <code>
-\> set GFCPP=_product-dir_<br />
-\> set OPENSSL=_path-to-installed-openssl_<br />
-\> set PATH=_jdk-or-jre-path_\bin;%GFCPP%\bin;%GFCPP%\ssl\_libs;%OPENSSL%\bin;%PATH%<br />
-\> set CLASSPATH=_path-to-gemfire-installation_\lib\gfSecurityImpl.jar;%CLASSPATH%
+\> set PATH=_jdk-or-jre-path_\bin;_client-install-dir_\bin;_client-install-dir_\ssl\_libs;_openssl-install-dir_\bin;%PATH%<br />
+\> set CLASSPATH=_server-installdir_\lib\securityImpl.jar;%CLASSPATH%
 </code>
 
-where <code>_path-to-installed-openssl_</code> is typically `C:\OpenSSL>`.
+where _jdk-or-jre-path_ is the directory in which Java is installed.
 
-## Step 4. Configure SSL properties in geode.properties and gemfire.properties
+## Step 4. Configure SSL properties in client and server properties files
 
 Configure SSL properties.
 
-1.  In `geode.properties`, set `ssl-enabled` to true and set `ssl-keystore` and `ssl-truststore` to point to your keystore files. See [Security-Related System Properties (geode.properties)](security-systemprops.html#security) for a description of these properties.
-2.  On each locator, enable SSL and set the following SSL properties in the locator’s `gemfire.properties` file:
+1.  In your client properties file (usually `geode.properties`), set `ssl-enabled` to true and set `ssl-keystore` and `ssl-truststore` to point to your keystore files. See [Security-Related System Properties (geode.properties)](security-systemprops.html#security) for a description of these properties.
+2.  On each locator, enable SSL and set the following SSL properties in the locator’s properties file (usually `geode.properties`, but on the locator's host):
 
     ```
     ssl-enabled-components=server,locator
@@ -121,28 +122,28 @@ For details on stopping and starting locators and cache servers with SSL, see [S
 
 **Example locator start command**
 
-Ensure that all required SSL properties are configured in your server's `gfsecurity.properties` file. Then start your locator as follows:
+Ensure that all required SSL properties are configured in your server's `geode.properties` file. Then start your locator as follows:
 
 ``` pre
 gfsh>start locator --name=my_locator --port=12345 --dir=. \
---security-properties-file=/path/to/your/gfsecurity.properties
+--security-properties-file=/path/to/your/geode.properties
 ```
 
 **Example locator stop command**
 
 ``` pre
 gfsh>stop locator --port=12345 \
---security-properties-file=/path/to/your/gfsecurity.properties
+--security-properties-file=/path/to/your/geode.properties
 ```
 
 **Example server start command**
 
-Again, ensure that all required SSL properties are configured in `gfsecurity.properties`. Then start the server with:
+Again, ensure that all required SSL properties are configured in `geode.properties`. Then start the server with:
 
 ``` pre
 gfsh>start server --name=my_server --locators=hostname[12345] \
 --cache-xml-file=server.xml --log-level=fine \
---security-properties-file=/path/to/your/gfsecurity.properties
+--security-properties-file=/path/to/your/geode.properties
 ```
 
 **Example server stop command**
