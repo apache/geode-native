@@ -19,7 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-For native client regions, you can programmatically register interest in entry keys stored on a cache server region. A client region receives update notifications from the cache server for the keys of interest.
+For client regions, you can programmatically register interest in entry keys stored on a cache server region. A client region receives update notifications from the cache server for the keys of interest.
 
 You can register interest for specific entry keys or for all keys. Regular expressions can be used to register interest for keys whose strings match the expression. You can also unregister interest for specific keys, groups of keys based on regular expressions, or for all keys.
 
@@ -37,11 +37,11 @@ The `registerKeys`, `registerRegex` and `registerAllKeys` methods have the optio
 In addition to the programmatic function calls, to register interest for a server region and receive updated entries you need to configure the region with the `PROXY` or `CACHING_PROXY RegionShortcut` setting. The region's pool should have `subscription-enabled=true` set either in the client XML or programmatically via a `CacheFactory::setSubscriptionEnabled(true)` API call. Otherwise, when you register interest, you will get an `UnsupportedOperationException`.
 
 ``` pre
-<region name = "listenerWriterLoader" refid="CACHING_PROXY">
+<region name="listenerWriterLoader" refid="CACHING_PROXY">
    ... 
 ```
 
-Both native clients and Java clients that have subscriptions enabled track and drop (ignore) any duplicate notifications received. To reduce resource usage, a client expires tracked sources for which new notifications have not been received for a configurable amount of time.
+All clients that have subscriptions enabled track and drop (ignore) any duplicate notifications received. To reduce resource usage, a client expires tracked sources for which new notifications have not been received for a configurable amount of time.
 
 **Notification Sequence**
 
@@ -107,4 +107,4 @@ In this register interest scenario, a cache listener is used with a cacheless re
 
 When a value changes in another client, it sends the event to the server. The server will not send the event to the cacheless client, even though `client-notification` is set to `true`.
 
-To activate the cache listener so the cacheless region receives updates, the client should explicitly register interest in some or all keys by using one of the API calls for registering interest. This way, the client receives all events for the keys to which it has registered interest. This applies to Java-based clients as well as native clients.
+To activate the cache listener so the cacheless region receives updates, the client should explicitly register interest in some or all keys by using one of the API calls for registering interest. This way, the client receives all events for the keys to which it has registered interest. This applies to Java-based clients as well as non-Java clients.

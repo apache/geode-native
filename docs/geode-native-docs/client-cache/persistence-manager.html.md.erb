@@ -40,11 +40,11 @@ The optional properties set parameters for the plug-in.
 
 ## <a id="persistence-manager__section_9FC7089FDF8044868F17A2659397402A" class="no-quick-link"></a>Using SQLite as a Persistence Manager
 
-The Geode native client distribution includes a persistence manager that uses the open-source SQLite library.
+The client distribution includes a persistence manager that uses the open-source SQLite library.
 
 SQLite is a software library that implements a self-contained transactional SQL database. SQLite does not require its own server or separate configuration, and the source code for SQLite is in the public domain. For more information on SQLite, see [http://www.sqlite.org](http://www.sqlite.org).
 
-Each SQLite persistence manager persists its region data in a SQLite database that is stored in disk files. In a given native client application process, each region must have a unique persistence (overflow) directory.
+Each SQLite persistence manager persists its region data in a SQLite database that is stored in disk files. In a given client application process, each region must have a unique persistence (overflow) directory.
 
 <a id="persistence-manager__fig_6A0C9F1A29134ACBA0FDD8236CD836B6"></a>
 <span class="figtitleprefix">Figure: </span>SQLite Database Persistence Manager Directory Structure
@@ -63,7 +63,7 @@ The following table describes the region attributes that can be configured for t
 
 ## <a id="persistence-manager__section_A9583FBEB5D74B92AD61CB6158AE2B4C" class="no-quick-link"></a>Configuring the SQLite Persistence Manager Plug-In for C++ Applications
 
-To load the SQLite persistence manager plug-in for C++ applications, you can configure it either in your client's `cache.xml` or programmatically using the native client C++ API.
+To load the SQLite persistence manager plug-in for C++ applications, you can configure it either in your client's `cache.xml` or programmatically using the C++ client API.
 
 The following is an example of how to specify the following region attributes in your client's cache.xml:
 
@@ -81,7 +81,7 @@ The following is an example of how to specify the following region attributes in
 
 ## C++ API Example
 
-To use the native client C++ API, set SQLite persistence manager attributes programmatically as follows:
+To use the C++ client API, set SQLite persistence manager attributes programmatically as follows:
 
 ``` pre
 PropertiesPtr sqliteProperties = Properties::create();
@@ -97,8 +97,8 @@ regionFactory->setPersistenceManager("SqLiteImpl","createSqLiteInstance",
 To load the SQLite persistence manager plug-in for .NET applications, you can configure it either in your client's cache.xml or programmatically using the .NET API:
 
 ``` pre
-<persistence-manager library-name="Gemstone.Gemfire.Plugins.SqLite" 
-   library-function-name="GemStone.GemFire.Plugins.SqLite.SqLiteImpl&lt;System.Object, System.Object&gt;.Create"> 
+<persistence-manager library-name="Apache.Geode.Plugins.SqLite" 
+   library-function-name="Apache.Geode.Plugins.SqLite.SqLiteImpl&lt;System.Object, System.Object&gt;.Create"> 
     <properties>
        <property name="PersistenceDirectory" value="SqLite"/>
        <property name="MaxPageCount" value="1073741823"/>
@@ -109,15 +109,15 @@ To load the SQLite persistence manager plug-in for .NET applications, you can co
 
 ## .NET API Example
 
-To use the native client .NET API, set the SQLite persistence manager attributes programmatically as follows:
+To use the .NET client API, set the SQLite persistence manager attributes programmatically as follows:
 
 ``` pre
 Properties<string, string> sqliteProperties = new Properties<string, string>();
 sqliteProperties.Insert("PageSize", "65536");
 sqliteProperties.Insert("MaxFileSize", "51200000");
 sqliteProperties.Insert("PersistenceDirectory", SqLiteDir);
-rf.SetPersistenceManager("Gemstone.Gemfire.Plugins.SqLite", 
-"Gemstone.Gemfire.Plugins.SqLiteSqLiteImpl<System.Object,System.Object>.Create",
+rf.SetPersistenceManager("Apache.Geode.Plugins.SqLite", 
+"Apache.Geode.Plugins.SqLite.SqLiteImpl<System.Object,System.Object>.Create",
 sqliteProperties);
 ```
 

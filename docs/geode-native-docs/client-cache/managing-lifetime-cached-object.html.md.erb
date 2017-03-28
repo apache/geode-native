@@ -24,7 +24,7 @@ All cacheable objects derive from `SharedBase` , which provides reference counti
 <a id="managing-lifetime-cached-object__section_5F8E6FE4F9AB4C658516DB0D31DD4FF8"></a>
 When `SharedPtr` retrieves a cached object, the object remains alive as long as that pointer or the cache itself references the object.
 
-A native client may have many pointers that reference an object. Regardless of how many pointers to the object are deleted, the object remains alive until the last remaining pointer is deleted. At that point the object is deleted.
+A client may have many pointers that reference an object. Regardless of how many pointers to the object are deleted, the object remains alive until the last remaining pointer is deleted. At that point the object is deleted.
 
 This is a very simple example:
 
@@ -36,7 +36,7 @@ region.put("key", p) ;
 In the example:
 
 -   The act of object creation allocates memory and initializes the object.
--   When you assign the object to a `SharedPtr` , you relinquish control of the lifetime of that object to the reference counting mechanism for the cache.
+-   When you assign the object to a `SharedPtr`, you relinquish control of the lifetime of that object to the reference counting mechanism for the cache.
 -   The put operation does not actually copy the object into the cache. Rather, it copies a `SharedPtr` into the cache's hashmap. Consequently, the object remains alive in the cache when the original `SharedPtr` goes away.
 
 The client can make use of an object after you have initialized the object. For example, another `SharedPtr` might issue a `get` to retrieve the object from the cache:
