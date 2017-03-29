@@ -71,9 +71,9 @@ Unlike cache loaders and cache writers, cache listeners only receive events for 
 When the listener is attached to a region with caching disabled, the old value is always `NULL`.
 
 **Note:**
-Do not perform region operations inside the cache listener. Once you have configured a cache listener, the event supplies the new entry values to the application. Performing a get with a key from the `EntryEvent` can result in distributed deadlock. For more about this, see the API documentation for `EntryEvent` at [http://gemfire-apis.docs.pivotal.io](http://gemfire-apis.docs.pivotal.io).
+Do not perform region operations inside the cache listener. Once you have configured a cache listener, the event supplies the new entry values to the application. Performing a get with a key from the `EntryEvent` can result in distributed deadlock. For more about this, see the API documentation for `EntryEvent`.
 
-When a region disconnects from a cache listener, you can implement the `afterRegionDisconnected` callback event. This callback event is only be invoked when using the `pool` API and `subscription` is enabled on the pool. For example:
+When a region disconnects from a cache listener, you can implement the `afterRegionDisconnected` callback. This callback is only be invoked when using the `pool` API and `subscription` is enabled on the pool. For example:
 
 ``` pre
 class DisconnectCacheListener : public CacheListener
@@ -101,13 +101,13 @@ Single hop is used for the following operations: `put`, `get`, `destroy`, `putAl
 
 Disable single hop behavior for a region by setting its pool attribute `pr-single-hop-enabled` to `false`.
 
-See [&lt;client-cache&gt; Element Reference](geodeman/reference/topics/client-cache.html) for information on setting `pr-single-hop-enabled`.
+See [&lt;client-cache&gt; Element Reference](geodeman/reference/topics/client-cache.html) in the server's documentation for information on setting `pr-single-hop-enabled`.
 
-See [Partitioned Regions](geodeman/developing/partitioned_regions/chapter_overview.html) for more information, including colocating like data within a partitioned region and how to get the best performance with PR single hop.
+See the server documentation on [Partitioned Regions](geodeman/developing/partitioned_regions/chapter_overview.html) for more information, including colocating like data within a partitioned region and how to get the best performance with PR single hop.
 
 **Implementing a PartitionResolver**
 
-See [Custom-Partitioning and Colocating Data](geodeman/developing/partitioned_regions/overview_custom_partitioning_and_data_colocation.html) for information on custom-partitioning the server partitioned regions.
+See the server documentation on [Custom-Partitioning and Colocating Data](geodeman/developing/partitioned_regions/overview_custom_partitioning_and_data_colocation.html) for information on custom-partitioning the server partitioned regions.
 
 1.  Implement `PartitionResolver` in the same place that you did in the server--custom class, key, or cache callback argument.
 2.  Program the resolver's functions the same way you programmed them in the Java implementation. Your implementation must match the server's.
@@ -148,8 +148,7 @@ See [Custom-Partitioning and Colocating Data](geodeman/developing/partitioned_re
     ``` pre
     using System;
     using System.Threading;
-    // Use the GemFire namespace
-    using GemStone.GemFire.Cache;
+    using Apache.Geode.Client;
     class TradeKeyResolver : IPartitionResolver
     {
         private int m_month = 0;
@@ -262,7 +261,7 @@ void removeListener(RegionPtr& region)
 
 ## <a id="application-plugins__section_428DCC57B6344603AA19DCAFCE483A10" class="no-quick-link"></a>Considerations for Implementing Callbacks
 
-Keep your callback implementations lightweight and prevent situations that might cause them to hang. For example, do not perform distribution operations or disconnects inside events.
+Keep your callback implementations lightweight and prevent situations that might cause them to hang. For example, do not perform distribution operations or disconnects inside event handlers.
 
 Your code should handle any exceptions that it generates. If not, Geode handles them as well as possible. Because C++ has no standard for exceptions, in many cases Geode can only print an `unknown error` message.
 
