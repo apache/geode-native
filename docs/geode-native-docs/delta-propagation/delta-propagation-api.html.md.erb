@@ -26,7 +26,7 @@ Delta propagation uses configuration properties and a simple API to send and rec
 Your application class must implement:
 
 -   `Apache::Geode::Client::IGFDelta `
--   `Apache::Geode::Client::IGFSerializable `
+-   `Apache::Geode::Client::IGeodeSerializable `
 
 `IGFDelta` provides the methods, `HasDelta`, `ToDelta`, and `FromDelta`, which you program to report on, send, and receive deltas for your class.
 

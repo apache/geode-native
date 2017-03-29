@@ -115,8 +115,8 @@ Boolean getResult = true;
 Execution<object> exc =
     Generic.FunctionService.OnRegion<string, string, object>(fregion);
 Generic.IResultCollector rc =
-    exc.WithArgs((IGFSerializable)args0).WithFilter(
-        (IGFSerializable[])routingObj).Execute(getFuncName);
+    exc.WithArgs((IGeodeSerializable)args0).WithFilter(
+        (IGeodeSerializable[])routingObj).Execute(getFuncName);
 object[] executeFunctionResult = rc.GetResult();
 ```
 
@@ -130,7 +130,7 @@ for (int i = 0; i < routingObj.Length; i++)
   Console.WriteLine("routingObj[{0}]={1}.", i, (routingObj[i] as string));
   args1.Add(routingObj[i]);
 }
-rc = exc.WithArgs((IGFSerializable)args1).Execute(getFuncIName);
+rc = exc.WithArgs((IGeodeSerializable)args1).Execute(getFuncIName);
 executeFunctionResult = rc.GetResult();
 Console.WriteLine("on one server: result count= {0}.",
     executeFunctionResult.Length);
