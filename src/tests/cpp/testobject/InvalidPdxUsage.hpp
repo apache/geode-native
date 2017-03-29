@@ -280,7 +280,7 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
   int8_t* m_byte253;
   int8_t* m_byte65535;
   int8_t* m_byte65536;
-  CacheablePtr m_pdxEnum;
+  CacheableEnumPtr m_pdxEnum;
   CacheableObjectArrayPtr m_objectArray;
 
   int32_t boolArrayLen;
@@ -454,19 +454,19 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
       keys.push_back(CacheableKey::create(key));
     }*/
 
-    m_objectArray = NULLPTR;
+    m_objectArray = nullptr;
     /*AddressWithInvalidAPIUsagePtr objectArray[3];
     objectArray[0] = new AddressWithInvalidAPIUsage(1, "strt-1", "city-1");
     objectArray[1] = new AddressWithInvalidAPIUsage(2, "strt-2", "city-2");
     objectArray[2] = new AddressWithInvalidAPIUsage(3, "strt-3", "city-3");*/
 
     /*
-    AddressWithInvalidAPIUsagePtr addObj1(new AddressWithInvalidAPIUsage(1,
-    "abc", "ABC"));
-    AddressWithInvalidAPIUsagePtr addObj2(new AddressWithInvalidAPIUsage(2,
-    "def", "DEF"));
-    AddressWithInvalidAPIUsagePtr addObj3(new AddressWithInvalidAPIUsage(3,
-    "ghi", "GHI"));*/
+    auto addObj1 = std::make_shared<AddressWithInvalidAPIUsage>(1,
+    "abc", "ABC");
+    auto addObj2 = std::make_shared<AddressWithInvalidAPIUsage>(2,
+    "def", "DEF");
+    auto addObj3 = std::make_shared<AddressWithInvalidAPIUsage>(3,
+    "ghi", "GHI");*/
 
     m_objectArray = CacheableObjectArray::create();
     m_objectArray->push_back(AddressWithInvalidAPIUsagePtr(

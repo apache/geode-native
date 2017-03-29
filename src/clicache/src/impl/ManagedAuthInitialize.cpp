@@ -175,7 +175,7 @@ namespace apache
       {
         try {
           Apache::Geode::Client::Properties<String^, String^>^ mprops =
-            Apache::Geode::Client::Properties<String^, String^>::Create<String^, String^>(securityprops.ptr());
+            Apache::Geode::Client::Properties<String^, String^>::Create<String^, String^>(securityprops.get());
           String^ mg_server = Apache::Geode::Client::ManagedString::Get(server);
 
           return PropertiesPtr(m_getCredentials->Invoke(mprops, mg_server)->NativePtr());
@@ -186,7 +186,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULLPTR;
+        return nullptr;
       }
 
       void ManagedAuthInitializeGeneric::close()

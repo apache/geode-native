@@ -43,7 +43,7 @@ void PdxEnumInstantiator::toData(DataOutput& output) const {
 Serializable* PdxEnumInstantiator::fromData(DataInput& input) {
   m_enumObject = CacheableEnum::create(" ", " ", 0);
   m_enumObject->fromData(input);
-  return m_enumObject.ptr();
+  return m_enumObject.get();
 }
 
 CacheableStringPtr PdxEnumInstantiator::toString() const {

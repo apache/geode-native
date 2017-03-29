@@ -73,7 +73,7 @@ void initCredentialGenerator() {
     }
   }
 
-  if (credentialGeneratorHandler == NULLPTR) {
+  if (credentialGeneratorHandler == nullptr) {
     FAIL("credentialGeneratorHandler is NULL");
   }
 
@@ -110,7 +110,7 @@ void initClientAuth() {
   credentialGeneratorHandler->getAuthInit(config);
   credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config, NULL);
   printf("User is %s Pass is %s ", config->find("security-username")->asChar(),
-         (config->find("security-password") != NULLPTR
+         (config->find("security-password") != nullptr
               ? config->find("security-password")->asChar()
               : " not set"));
   try {
@@ -160,9 +160,9 @@ void startClient() {
   int i = 102;
   LOG("Creating region in READER_CLIENT , no-ack, no-cache, with-listener and "
       "writer");
-  regListener = new TallyListener();
+  regListener = std::make_shared<TallyListener>();
   createRegionForSecurity(regionNamesAuth[0], false, true, regListener);
-  regWriter = new TallyWriter();
+  regWriter = std::make_shared<TallyWriter>();
   setCacheWriter(regionNamesAuth[0], regWriter);
   rptr = getHelper()->getRegion(regionNamesAuth[0]);
   rptr->registerAllKeys();

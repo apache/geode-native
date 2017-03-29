@@ -153,7 +153,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULLPTR;
+        return nullptr;
       }
 
       bool PdxManagedCacheableKey::operator ==(const apache::geode::client::CacheableKey& other) const
@@ -180,7 +180,7 @@ namespace apache
       bool PdxManagedCacheableKey::operator ==(const PdxManagedCacheableKey& other) const
       {
         try {
-          return ((Apache::Geode::Client::IPdxSerializable^)m_managedptr)->Equals((other.ptr()));
+          return ((Apache::Geode::Client::IPdxSerializable^)m_managedptr)->Equals((other.get()));
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();
@@ -295,7 +295,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULLPTR;
+        return nullptr;
       }
     }  // namespace client
   }  // namespace geode

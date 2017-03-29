@@ -102,7 +102,7 @@ int main(int argc, char** argv) {
     SelectResultsIterator iter = resultsPtr->getIterator();
     while (iter.hasNext()) {
       rowCount++;
-      Struct* psi = dynamic_cast<Struct*>(iter.next().ptr());
+      Struct* psi = dynamic_cast<Struct*>(iter.next().get());
       LOGINFO("Row %d Column 1 is named %s, value is %s", rowCount,
               psi->getFieldName(0), (*psi)[0]->toString()->asChar());
       LOGINFO("Row %d Column 2 is named %s, value is %s", rowCount,
@@ -116,7 +116,7 @@ int main(int argc, char** argv) {
 
     // Execute the Region selectValue() API.
     SerializablePtr resultPtr = regionPtr->selectValue("ID = 3");
-    PortfolioPtr portPtr = dynCast<PortfolioPtr>(resultPtr);
+    auto portPtr = std::dynamic_pointer_cast<Portfolio>(resultPtr);
 
     LOGINFO("Region selectValue() returned an item:\n %s",
             portPtr->toString()->asChar());
@@ -145,7 +145,7 @@ int main(int argc, char** argv) {
     SelectResultsIterator itr = pqresultsPtr->getIterator();
     while (itr.hasNext()) {
       rowCount++;
-      Struct* pst = dynamic_cast<Struct*>(itr.next().ptr());
+      Struct* pst = dynamic_cast<Struct*>(itr.next().get());
       LOGINFO("Row %d Column 1 is named %s, value is %s", rowCount,
               pst->getFieldName(0), (*pst)[0]->toString()->asChar());
       LOGINFO("Row %d Column 2 is named %s, value is %s", rowCount,

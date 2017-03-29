@@ -153,7 +153,7 @@ namespace Apache
           array<String^>^ result = gcnew array<String^>(length);
           for (int item = 0; item < length; item++)
           {
-            result[item] = CacheableString::GetString(locators[item].ptr());
+            result[item] = CacheableString::GetString(locators[item].get());
           }
           return result;
         }
@@ -173,7 +173,7 @@ namespace Apache
           array<String^>^ result = gcnew array<String^>(length);
           for (int item = 0; item < length; item++)
           {
-            result[item] = CacheableString::GetString(servers[item].ptr());
+            result[item] = CacheableString::GetString(servers[item].get());
           }
           return result;
         }

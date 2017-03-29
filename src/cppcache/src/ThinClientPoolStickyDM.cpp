@@ -32,9 +32,9 @@ TcrConnection* ThinClientPoolStickyDM::getConnectionFromQueueW(
         serverLocation);
     return conn;
   }
-  BucketServerLocationPtr slTmp = NULLPTR;
+  BucketServerLocationPtr slTmp = nullptr;
   if (m_attrs->getPRSingleHopEnabled() && !request.forTransaction()) {
-    if (serverLocation != NULLPTR) {
+    if (serverLocation != nullptr) {
       ep = getEndPoint(serverLocation, version, excludeServers);
     } else if (request.forSingleHop()) {
       ep = getSingleHopServer(request, version, slTmp, excludeServers);

@@ -42,6 +42,7 @@ namespace client {
 class CacheFactory;
 class CacheRegionHelper;
 class Pool;
+class CacheImpl;
 
 /**
  * @class Cache Cache.hpp
@@ -56,7 +57,8 @@ class Pool;
  * <p>A cache can have multiple root regions, each with a different name.
  *
  */
-class CPPCACHE_EXPORT Cache : public GeodeCache {
+class CPPCACHE_EXPORT Cache : public GeodeCache,
+                              public std::enable_shared_from_this<Cache> {
   /**
    * @brief public methods
    */
@@ -131,7 +133,7 @@ class CPPCACHE_EXPORT Cache : public GeodeCache {
    * Cache#createAuthenticatedView(PropertiesPtr).
    *
    * @param path the region's name, such as <code>AuthRegion</code>.
-   * @returns region, or NULLPTR if no such region exists.
+   * @returns region, or nullptr if no such region exists.
    */
   virtual RegionPtr getRegion(const char* path);
 
@@ -228,14 +230,12 @@ class CPPCACHE_EXPORT Cache : public GeodeCache {
   /**
    * @brief constructors
    */
-  Cache(const char* name, DistributedSystemPtr sys, bool ignorePdxUnreadFields,
-        bool readPdxSerialized);
   Cache(const char* name, DistributedSystemPtr sys, const char* id_data,
         bool ignorePdxUnreadFields, bool readPdxSerialized);
-  CacheImpl* m_cacheImpl;
+  std::unique_ptr<CacheImpl> m_cacheImpl;
 
  protected:
-  Cache() { m_cacheImpl = NULL; }
+  Cache();
 
   static bool isPoolInMultiuserMode(RegionPtr regionPtr);
 
@@ -245,6 +245,8 @@ class CPPCACHE_EXPORT Cache : public GeodeCache {
   friend class FunctionService;
   friend class CacheXmlCreation;
   friend class RegionXmlCreation;
+
+  FRIEND_STD_SHARED_PTR(Cache)
 };
 }  // namespace client
 }  // namespace geode

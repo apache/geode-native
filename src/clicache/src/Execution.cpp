@@ -48,7 +48,7 @@ namespace Apache
             rsptr->push_back(Serializable::GetUnmanagedValueGeneric<TFilter>( item ));
           }
           
-          return Execution<TResult>::Create(NativePtr->withFilter(rsptr).ptr(), this->m_rc);
+          return Execution<TResult>::Create(NativePtr->withFilter(rsptr).get(), this->m_rc);
           _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
         }
         else {
@@ -63,7 +63,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
           
           apache::geode::client::CacheablePtr argsptr( Serializable::GetUnmanagedValueGeneric<TArgs>( args ) );
-        return Execution<TResult>::Create(NativePtr->withArgs(argsptr).ptr(), this->m_rc);
+        return Execution<TResult>::Create(NativePtr->withArgs(argsptr).get(), this->m_rc);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -77,9 +77,9 @@ namespace Apache
           rcg->SetResultCollector(rc);
           
           rcptr = new apache::geode::client::ManagedResultCollectorGeneric(  rcg );
-          //((apache::geode::client::ManagedResultCollectorGeneric*)rcptr.ptr())->setptr(rcg);
+          //((apache::geode::client::ManagedResultCollectorGeneric*)rcptr.get())->setptr(rcg);
         }
-        return Execution<TResult>::Create( NativePtr->withCollector(rcptr).ptr(), rc);
+        return Execution<TResult>::Create( NativePtr->withCollector(rcptr).get(), rc);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -90,7 +90,7 @@ namespace Apache
           ManagedString mg_function( func );
         apache::geode::client::ResultCollectorPtr rc = NativePtr->execute(mg_function.CharPtr, timeout);
         if(m_rc == nullptr)
-          return gcnew ResultCollector<TResult>(rc.ptr());
+          return gcnew ResultCollector<TResult>(rc.get());
         else
           return m_rc;
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */

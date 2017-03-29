@@ -44,7 +44,7 @@ PdxType::~PdxType() {
 }
 
 PdxType::PdxType() : Serializable() {
-  // m_lockObj = NULLPTR;
+  // m_lockObj = nullptr;
   m_className = NULL;
   m_isLocal = false;
   m_numberOfVarLenFields = 0;
@@ -69,7 +69,7 @@ PdxType::PdxType() : Serializable() {
 
 PdxType::PdxType(const char* pdxDomainClassName, bool isLocal)
     : Serializable() {
-  // m_lockObj = NULLPTR;
+  // m_lockObj = nullptr;
   m_className = Utils::copyString(pdxDomainClassName);
   m_isLocal = isLocal;
   m_numberOfVarLenFields = 0;
@@ -146,7 +146,7 @@ Serializable* PdxType::fromData(DataInput& input) {
   bool foundVarLenType = false;
 
   for (int i = 0; i < len; i++) {
-    PdxFieldTypePtr pft(new PdxFieldType());
+    auto  pft = std::make_shared<PdxFieldType>();
     pft->fromData(input);
 
     m_pdxFieldTypes->push_back(pft);
@@ -190,9 +190,9 @@ void PdxType::addFixedLengthTypeField(const char* fieldName,
         fieldName);
     throw IllegalStateException(excpStr);
   }
-  PdxFieldTypePtr pfxPtr(new PdxFieldType(
+  auto pfxPtr = std::make_shared<PdxFieldType>(
       fieldName, className, typeId, static_cast<int32_t>(m_pdxFieldTypes->size()),
-      false, size, 0));
+      false, size, 0);
   m_pdxFieldTypes->push_back(pfxPtr);
   m_fieldNameVsPdxType[fieldName] = pfxPtr;
 }
@@ -217,9 +217,9 @@ void PdxType::addVariableLengthTypeField(const char* fieldName,
   }
   m_numberOfVarLenFields++;
   m_isVarLenFieldAdded = true;
-  PdxFieldTypePtr pfxPtr(new PdxFieldType(
+  auto pfxPtr = std::make_shared<PdxFieldType>(
       fieldName, className, typeId, static_cast<int32_t>(m_pdxFieldTypes->size()),
-      true, -1, m_varLenFieldIdx));
+      true, -1, m_varLenFieldIdx);
   m_pdxFieldTypes->push_back(pfxPtr);
   m_fieldNameVsPdxType[fieldName] = pfxPtr;
 }
@@ -239,12 +239,12 @@ void PdxType::initRemoteToLocal() {
   //  -1 = local type don't have this VariableLengthType field
   //  -2 = local type don't have this FixedLengthType field
 
-  PdxTypePtr localPdxType = NULLPTR;
+  PdxTypePtr localPdxType = nullptr;
   //[TODO - open this up once PdxTypeRegistry is done]
   localPdxType = PdxTypeRegistry::getLocalPdxType(m_className);
   m_numberOfFieldsExtra = 0;
 
-  if (localPdxType != NULLPTR) {
+  if (localPdxType != nullptr) {
     std::vector<PdxFieldTypePtr>* localPdxFields =
         localPdxType->getPdxFieldTypes();
     int32_t fieldIdx = 0;
@@ -262,8 +262,8 @@ void PdxType::initRemoteToLocal() {
       for (std::vector<PdxFieldTypePtr>::iterator localPdxfield =
                localPdxFields->begin();
            localPdxfield != localPdxFields->end(); ++localPdxfield) {
-        // PdxFieldType* remotePdx = (*(remotePdxField)).ptr();
-        // PdxFieldType* localPdx = (*(localPdxfield)).ptr();
+        // PdxFieldType* remotePdx = (*(remotePdxField)).get();
+        // PdxFieldType* localPdx = (*(localPdxfield)).get();
         if ((*localPdxfield)->equals(*remotePdxField)) {
           found = true;
           m_remoteToLocalFieldMap[fieldIdx++] = 1;  // field there in remote
@@ -275,7 +275,7 @@ void PdxType::initRemoteToLocal() {
       if (!found) {
         // while writing take this from weakhashmap
         // local field is not in remote type
-        // if((*(remotePdxField)).ptr()->IsVariableLengthType()) {
+        // if((*(remotePdxField)).get()->IsVariableLengthType()) {
         if ((*remotePdxField)->IsVariableLengthType()) {
           m_remoteToLocalFieldMap[fieldIdx++] =
               -1;  // local type don't have this fields
@@ -300,10 +300,10 @@ void PdxType::initLocalToRemote() {
   // then mark m_localToRemoteFieldMap with remotePdxField sequenceId
   // 5. else if local field is not in remote type then -1
 
-  PdxTypePtr localPdxType = NULLPTR;
+  PdxTypePtr localPdxType = nullptr;
   localPdxType = PdxTypeRegistry::getLocalPdxType(m_className);
 
-  if (localPdxType != NULLPTR) {
+  if (localPdxType != nullptr) {
     std::vector<PdxFieldTypePtr>* localPdxFields =
         localPdxType->getPdxFieldTypes();
 
@@ -316,8 +316,8 @@ void PdxType::initLocalToRemote() {
     for (int32_t i = 0; i < localToRemoteFieldMapSize &&
                         i < static_cast<int32_t>(m_pdxFieldTypes->size());
          i++) {
-      // PdxFieldType* localPdx = localPdxFields->at(fieldIdx).ptr();
-      // PdxFieldType* remotePdx = m_pdxFieldTypes->at(i).ptr();
+      // PdxFieldType* localPdx = localPdxFields->at(fieldIdx).get();
+      // PdxFieldType* remotePdx = m_pdxFieldTypes->at(i).get();
       if (localPdxFields->at(fieldIdx)->equals(m_pdxFieldTypes->at(i))) {
         // fields are in same order, we can read as it is
         m_localToRemoteFieldMap[fieldIdx++] = -2;
@@ -336,8 +336,8 @@ void PdxType::initLocalToRemote() {
            remotePdxfield != m_pdxFieldTypes->end(); ++remotePdxfield)
       // for each(PdxFieldType^ remotePdxfield in m_pdxFieldTypes)
       {
-        // PdxFieldType* localPdx = localPdxField.ptr();
-        PdxFieldType* remotePdx = (*(remotePdxfield)).ptr();
+        // PdxFieldType* localPdx = localPdxField.get();
+        PdxFieldType* remotePdx = (*(remotePdxfield)).get();
         if (localPdxField->equals(*remotePdxfield)) {
           found = true;
           // store pdxfield type position to get the offset quickly
@@ -364,7 +364,7 @@ int32_t PdxType::getFieldPosition(const char* fieldName,
                                   uint8_t* offsetPosition, int32_t offsetSize,
                                   int32_t pdxStreamlen) {
   PdxFieldTypePtr pft = this->getPdxField(fieldName);
-  if (pft != NULLPTR) {
+  if (pft != nullptr) {
     if (pft->IsVariableLengthType()) {
       return variableLengthFieldPosition(pft, offsetPosition, offsetSize,
                                          pdxStreamlen);
@@ -379,7 +379,7 @@ int32_t PdxType::getFieldPosition(const char* fieldName,
 int32_t PdxType::getFieldPosition(int32_t fieldIdx, uint8_t* offsetPosition,
                                   int32_t offsetSize, int32_t pdxStreamlen) {
   PdxFieldTypePtr pft = m_pdxFieldTypes->at(fieldIdx);
-  if (pft != NULLPTR) {
+  if (pft != nullptr) {
     if (pft->IsVariableLengthType()) {
       return variableLengthFieldPosition(pft, offsetPosition, offsetSize,
                                          pdxStreamlen);
@@ -464,20 +464,20 @@ PdxTypePtr PdxType::isContains(PdxTypePtr first, PdxTypePtr second) {
     bool matched = false;
     for (; j < static_cast<int>(first->m_pdxFieldTypes->size()); j++) {
       PdxFieldTypePtr firstPdt = first->m_pdxFieldTypes->at(j);
-      // PdxFieldType* firstType = firstPdt.ptr();
-      // PdxFieldType* secondType = secondPdt.ptr();
+      // PdxFieldType* firstType = firstPdt.get();
+      // PdxFieldType* secondType = secondPdt.get();
       if (firstPdt->equals(secondPdt)) {
         matched = true;
         break;
       }
     }
-    if (!matched) return NULLPTR;
+    if (!matched) return nullptr;
   }
   return first;
 }
 
 PdxTypePtr PdxType::clone() {
-  PdxTypePtr clone(new PdxType(m_className, false));
+  auto clone = std::make_shared<PdxType>(m_className, false);
   clone->m_geodeTypeId = 0;
   clone->m_numberOfVarLenFields = m_numberOfVarLenFields;
 
@@ -491,25 +491,25 @@ PdxTypePtr PdxType::clone() {
 
 PdxTypePtr PdxType::isLocalTypeContains(PdxTypePtr otherType) {
   if (m_pdxFieldTypes->size() >= otherType->m_pdxFieldTypes->size()) {
-    return isContains(PdxTypePtr(this), otherType);
+    return isContains(shared_from_this(), otherType);
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 PdxTypePtr PdxType::isRemoteTypeContains(PdxTypePtr remoteType) {
   if (m_pdxFieldTypes->size() <= remoteType->m_pdxFieldTypes->size()) {
-    return isContains(remoteType, PdxTypePtr(this));
+    return isContains(remoteType, shared_from_this());
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 PdxTypePtr PdxType::mergeVersion(PdxTypePtr otherVersion) {
   // int nTotalFields = otherVersion->m_pdxFieldTypes->size();
-  PdxTypePtr contains = NULLPTR;
+  PdxTypePtr contains = nullptr;
 
-  if (isLocalTypeContains(otherVersion) != NULLPTR) return PdxTypePtr(this);
+  if (isLocalTypeContains(otherVersion) != nullptr) return shared_from_this();
 
-  if (isRemoteTypeContains(otherVersion) != NULLPTR) return otherVersion;
+  if (isRemoteTypeContains(otherVersion) != nullptr) return otherVersion;
 
   // need to create new one, clone of local
   PdxTypePtr newone = clone();
@@ -529,13 +529,13 @@ PdxTypePtr PdxType::mergeVersion(PdxTypePtr otherVersion) {
       }
     }
     if (!found) {
-      PdxFieldTypePtr newFt(new PdxFieldType(
+      auto newFt = std::make_shared< PdxFieldType>(
           (*it)->getFieldName(), (*it)->getClassName(), (*it)->getTypeId(),
           static_cast<int32_t>(newone->m_pdxFieldTypes->size()),  // sequence id
           (*it)->IsVariableLengthType(), (*it)->getFixedSize(),
           ((*it)->IsVariableLengthType()
                ? varLenFields++ /*it increase after that*/
-               : 0)));
+               : 0));
       newone->m_pdxFieldTypes->push_back(
           newFt);  // fieldnameVsPFT will happen after that
     }
@@ -554,7 +554,7 @@ void PdxType::generatePositionMap() {
   int lastVarLenSeqId = 0;
   int prevFixedSizeOffsets = 0;
   // set offsets from back first
-  PdxFieldTypePtr previousField = NULLPTR;
+  PdxFieldTypePtr previousField = nullptr;
 
   for (int i = static_cast<int>(m_pdxFieldTypes->size()) - 1; i >= 0; i--) {
     PdxFieldTypePtr tmpft = m_pdxFieldTypes->at(i);
@@ -577,7 +577,7 @@ void PdxType::generatePositionMap() {
         tmpft->setVarLenOffsetIndex(-1);  // Pdx header length
         // relative offset is subtracted from var len offsets
         tmpft->setRelativeOffset(-tmpft->getFixedSize());
-        if (previousField != NULLPTR) {  // boundary condition
+        if (previousField != nullptr) {  // boundary condition
           tmpft->setRelativeOffset(-tmpft->getFixedSize() +
                                    previousField->getRelativeOffset());
         }
@@ -606,9 +606,9 @@ void PdxType::generatePositionMap() {
 }
 
 bool PdxType::Equals(PdxTypePtr otherObj) {
-  if (otherObj == NULLPTR) return false;
+  if (otherObj == nullptr) return false;
 
-  PdxType* ot = dynamic_cast<PdxType*>(otherObj.ptr());
+  PdxType* ot = dynamic_cast<PdxType*>(otherObj.get());
 
   if (ot == NULL) return false;
 

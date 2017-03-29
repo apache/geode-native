@@ -84,7 +84,7 @@ void TcrConnectionManager::init(bool isPool) {
   const char *endpoints;
   m_redundancyManager->m_HAenabled = false;
 
-  if (cacheAttributes != NULLPTR &&
+  if (cacheAttributes != nullptr &&
       (cacheAttributes->getRedundancyLevel() > 0 || m_isDurable) &&
       (endpoints = cacheAttributes->getEndpoints()) != NULL &&
       strcmp(endpoints, "none") != 0) {
@@ -158,7 +158,7 @@ void TcrConnectionManager::close() {
   }
 
   CacheAttributesPtr cacheAttributes = m_cache->getAttributes();
-  if (cacheAttributes != NULLPTR &&
+  if (cacheAttributes != nullptr &&
       (cacheAttributes->getRedundancyLevel() > 0 || m_isDurable)) {
     if (m_servermonitorTaskId > 0) {
       CacheImpl::expiryTaskManager->cancelTask(m_servermonitorTaskId);

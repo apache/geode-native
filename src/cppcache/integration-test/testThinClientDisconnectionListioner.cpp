@@ -39,7 +39,7 @@ class DisconnectCacheListioner : public CacheListener {
     isDisconnected = true;
   }
 };
-CacheListenerPtr cptr(new DisconnectCacheListioner());
+auto cptr = std::make_shared<DisconnectCacheListioner>();
 #include "LocatorHelper.hpp"
 DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1_Pool_Locator)
   {

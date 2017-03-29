@@ -60,7 +60,7 @@ const char* _regionNames[] = {"DistRegionAck"};
 #include "LocatorHelper.hpp"
 
 void verifyGetAll(RegionPtr region, bool addToLocalCache, const char** _vals,
-                  int startIndex, CacheablePtr callBack = NULLPTR) {
+                  int startIndex, CacheablePtr callBack = nullptr) {
   CacheableKeyPtr keyPtr0 = CacheableKey::create(_keys[0]);
   CacheableKeyPtr keyPtr1 = CacheableKey::create(_keys[1]);
   CacheableKeyPtr keyPtr2 = CacheableKey::create("keyNotThere");
@@ -74,17 +74,17 @@ void verifyGetAll(RegionPtr region, bool addToLocalCache, const char** _vals,
   expected[_keys[0]] = _vals[startIndex + 0];
   expected[_keys[1]] = _vals[startIndex + 1];
 
-  HashMapOfCacheablePtr valuesMap(new HashMapOfCacheable());
+  auto valuesMap = std::make_shared<HashMapOfCacheable>();
   valuesMap->clear();
-  region->getAll(keys1, valuesMap, NULLPTR, addToLocalCache, callBack);
+  region->getAll(keys1, valuesMap, nullptr, addToLocalCache, callBack);
   if (valuesMap->size() == keys1.size()) {
     char buf[2048];
     for (HashMapOfCacheable::Iterator iter = valuesMap->begin();
          iter != valuesMap->end(); iter++) {
-      CacheableKeyPtr key = dynCast<CacheableKeyPtr>(iter.first());
+      auto key = std::dynamic_pointer_cast<CacheableKey>(iter.first());
       const char* actualKey = key->toString()->asChar();
       CacheablePtr mVal = iter.second();
-      if (mVal != NULLPTR) {
+      if (mVal != nullptr) {
         const char* expectedVal = expected[actualKey].c_str();
         const char* actualVal = mVal->toString()->asChar();
         sprintf(buf, "value from map %s , expected value %s ", actualVal,
@@ -115,7 +115,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   RegionPtr regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }
 
@@ -131,9 +131,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_Locator)
   {
+    // waitForDebugger();
     // start 1st client with caching enable true and client notification true
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     createPooledRegion(_regionNames[0], USE_ACK, locatorsG, poolName, true,
                        true);
     LOG("StepOne_Pooled_Locator complete.");
@@ -144,7 +145,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pooled_Locator)
   {
     // start 1st client with caching enable true and client notification true
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     createPooledRegion(_regionNames[0], USE_ACK, locatorsG, poolName, true,
                        true);
     LOG("StepTwo_Pooled_Locator complete.");
@@ -207,7 +208,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetAllAfterLocalDestroyRegionOnClientTwo)
     // of region.
     RegionPtr reg0 = getHelper()->getRegion(_regionNames[0]);
     reg0->localDestroyRegion();
-    reg0 = NULLPTR;
+    reg0 = nullptr;
     getHelper()->createPooledRegion(regionNames[0], USE_ACK, 0,
                                     "__TEST_POOL1__", true, true);
     reg0 = getHelper()->getRegion(_regionNames[0]);
@@ -223,7 +224,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetAllAfterLocalDestroyRegionOnClientTwo_Pool)
     // of region.
     RegionPtr reg0 = getHelper()->getRegion(_regionNames[0]);
     reg0->localDestroyRegion();
-    reg0 = NULLPTR;
+    reg0 = nullptr;
     createPooledRegion(_regionNames[0], USE_ACK, locatorsG, poolName, true,
                        true);
     reg0 = getHelper()->getRegion(_regionNames[0]);
@@ -294,16 +295,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, putallAndGetallPdxWithCallBackArg)
       // ignore exception
     }
 
-    PdxTypes1Ptr p1(new PdxTypes1());
-    PdxTypes2Ptr p2(new PdxTypes2());
-    PdxTypes3Ptr p3(new PdxTypes3());
-    PdxTypes4Ptr p4(new PdxTypes4());
-    PdxTypes5Ptr p5(new PdxTypes5());
-    PdxTypes6Ptr p6(new PdxTypes6());
-    PdxTypes7Ptr p7(new PdxTypes7());
-    PdxTypes8Ptr p8(new PdxTypes8());
-    PdxTypes9Ptr p9(new PdxTypes9());
-    PdxTypes10Ptr p10(new PdxTypes10());
+    auto p1 = std::make_shared<PdxTypes1>();
+    auto p2 = std::make_shared<PdxTypes2>();
+    auto p3 = std::make_shared<PdxTypes3>();
+    auto p4 = std::make_shared<PdxTypes4>();
+    auto p5 = std::make_shared<PdxTypes5>();
+    auto p6 = std::make_shared<PdxTypes6>();
+    auto p7 = std::make_shared<PdxTypes7>();
+    auto p8 = std::make_shared<PdxTypes8>();
+    auto p9 = std::make_shared<PdxTypes9>();
+    auto p10 = std::make_shared<PdxTypes10>();
 
     // putAll from client 1
     HashMapOfCacheable map0;
@@ -348,51 +349,61 @@ DUNIT_TASK_DEFINITION(CLIENT1, putallAndGetallPdxWithCallBackArg)
     keys1.push_back(CacheableInt32::create(28));
     keys1.push_back(CacheableInt32::create(29));
     keys1.push_back(CacheableInt32::create(30));
-    HashMapOfCacheablePtr valuesMap(new HashMapOfCacheable());
+    auto valuesMap = std::make_shared<HashMapOfCacheable>();
     valuesMap->clear();
-    regPtr0->getAll(keys1, valuesMap, NULLPTR, true,
+    regPtr0->getAll(keys1, valuesMap, nullptr, true,
                     CacheableInt32::create(1000));
     LOG("GetallPdxWithCallBackArg on Pdx objects completed.");
 
     ASSERT(valuesMap->size() == keys1.size(), "getAll size did not match");
 
-    PdxTypes10Ptr pRet10 = valuesMap->operator[](CacheableInt32::create(30));
+    auto pRet10 = std::dynamic_pointer_cast<PdxTypes10>(
+        valuesMap->operator[](CacheableInt32::create(30)));
     ASSERT(p10->equals(pRet10) == true,
            "Objects of type PdxTypes10 should be equal");
 
-    PdxTypes9Ptr pRet9 = valuesMap->operator[](CacheableInt32::create(29));
+    auto pRet9 = std::dynamic_pointer_cast<PdxTypes9>(
+        valuesMap->operator[](CacheableInt32::create(29)));
     ASSERT(p9->equals(pRet9) == true,
            "Objects of type PdxTypes9 should be equal");
 
-    PdxTypes8Ptr pRet8 = valuesMap->operator[](CacheableInt32::create(28));
+    auto pRet8 = std::dynamic_pointer_cast<PdxTypes8>(
+        valuesMap->operator[](CacheableInt32::create(28)));
     ASSERT(p8->equals(pRet8) == true,
            "Objects of type PdxTypes8 should be equal");
 
-    PdxTypes7Ptr pRet7 = valuesMap->operator[](CacheableInt32::create(27));
+    auto pRet7 = std::dynamic_pointer_cast<PdxTypes7>(
+        valuesMap->operator[](CacheableInt32::create(27)));
     ASSERT(p7->equals(pRet7) == true,
            "Objects of type PdxTypes7 should be equal");
 
-    PdxTypes6Ptr pRet6 = valuesMap->operator[](CacheableInt32::create(26));
+    auto pRet6 = std::dynamic_pointer_cast<PdxTypes6>(
+        valuesMap->operator[](CacheableInt32::create(26)));
     ASSERT(p6->equals(pRet6) == true,
            "Objects of type PdxTypes6 should be equal");
 
-    PdxTypes5Ptr pRet5 = valuesMap->operator[](CacheableInt32::create(25));
+    auto pRet5 = std::dynamic_pointer_cast<PdxTypes5>(
+        valuesMap->operator[](CacheableInt32::create(25)));
     ASSERT(p5->equals(pRet5) == true,
            "Objects of type PdxTypes5 should be equal");
 
-    PdxTypes4Ptr pRet4 = valuesMap->operator[](CacheableInt32::create(24));
+    auto pRet4 = std::dynamic_pointer_cast<PdxTypes4>(
+        valuesMap->operator[](CacheableInt32::create(24)));
     ASSERT(p4->equals(pRet4) == true,
            "Objects of type PdxTypes4 should be equal");
 
-    PdxTypes3Ptr pRet3 = valuesMap->operator[](CacheableInt32::create(23));
+    auto pRet3 = std::dynamic_pointer_cast<PdxTypes3>(
+        valuesMap->operator[](CacheableInt32::create(23)));
     ASSERT(p3->equals(pRet3) == true,
            "Objects of type PdxTypes3 should be equal");
 
-    PdxTypes2Ptr pRet2 = valuesMap->operator[](CacheableInt32::create(22));
+    auto pRet2 = std::dynamic_pointer_cast<PdxTypes2>(
+        valuesMap->operator[](CacheableInt32::create(22)));
     ASSERT(p2->equals(pRet2) == true,
            "Objects of type PdxTypes2 should be equal");
 
-    PdxTypes1Ptr pRet1 = valuesMap->operator[](CacheableInt32::create(21));
+    auto pRet1 = std::dynamic_pointer_cast<PdxTypes1>(
+        valuesMap->operator[](CacheableInt32::create(21)));
     ASSERT(p1->equals(pRet1) == true,
            "Objects of type PdxTypes1 should be equal");
 
@@ -461,16 +472,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, putallAndGetallPdx)
       // ignore exception
     }
 
-    PdxTypes1Ptr p1(new PdxTypes1());
-    PdxTypes2Ptr p2(new PdxTypes2());
-    PdxTypes3Ptr p3(new PdxTypes3());
-    PdxTypes4Ptr p4(new PdxTypes4());
-    PdxTypes5Ptr p5(new PdxTypes5());
-    PdxTypes6Ptr p6(new PdxTypes6());
-    PdxTypes7Ptr p7(new PdxTypes7());
-    PdxTypes8Ptr p8(new PdxTypes8());
-    PdxTypes9Ptr p9(new PdxTypes9());
-    PdxTypes10Ptr p10(new PdxTypes10());
+    auto p1 = std::make_shared<PdxTypes1>();
+    auto p2 = std::make_shared<PdxTypes2>();
+    auto p3 = std::make_shared<PdxTypes3>();
+    auto p4 = std::make_shared<PdxTypes4>();
+    auto p5 = std::make_shared<PdxTypes5>();
+    auto p6 = std::make_shared<PdxTypes6>();
+    auto p7 = std::make_shared<PdxTypes7>();
+    auto p8 = std::make_shared<PdxTypes8>();
+    auto p9 = std::make_shared<PdxTypes9>();
+    auto p10 = std::make_shared<PdxTypes10>();
 
     // putAll from client 1
     HashMapOfCacheable map0;
@@ -513,50 +524,60 @@ DUNIT_TASK_DEFINITION(CLIENT1, putallAndGetallPdx)
     keys1.push_back(CacheableInt32::create(28));
     keys1.push_back(CacheableInt32::create(29));
     keys1.push_back(CacheableInt32::create(30));
-    HashMapOfCacheablePtr valuesMap(new HashMapOfCacheable());
+    auto valuesMap = std::make_shared<HashMapOfCacheable>();
     valuesMap->clear();
-    regPtr0->getAll(keys1, valuesMap, NULLPTR, true);
+    regPtr0->getAll(keys1, valuesMap, nullptr, true);
     LOG("getAll on Pdx objects completed.");
 
     ASSERT(valuesMap->size() == keys1.size(), "getAll size did not match");
 
-    PdxTypes10Ptr pRet10 = valuesMap->operator[](CacheableInt32::create(30));
+    auto pRet10 = std::dynamic_pointer_cast<PdxTypes10>(
+        valuesMap->operator[](CacheableInt32::create(30)));
     ASSERT(p10->equals(pRet10) == true,
            "Objects of type PdxTypes10 should be equal");
 
-    PdxTypes9Ptr pRet9 = valuesMap->operator[](CacheableInt32::create(29));
+    auto pRet9 = std::dynamic_pointer_cast<PdxTypes9>(
+        valuesMap->operator[](CacheableInt32::create(29)));
     ASSERT(p9->equals(pRet9) == true,
            "Objects of type PdxTypes9 should be equal");
 
-    PdxTypes8Ptr pRet8 = valuesMap->operator[](CacheableInt32::create(28));
+    auto pRet8 = std::dynamic_pointer_cast<PdxTypes8>(
+        valuesMap->operator[](CacheableInt32::create(28)));
     ASSERT(p8->equals(pRet8) == true,
            "Objects of type PdxTypes8 should be equal");
 
-    PdxTypes7Ptr pRet7 = valuesMap->operator[](CacheableInt32::create(27));
+    auto pRet7 = std::dynamic_pointer_cast<PdxTypes7>(
+        valuesMap->operator[](CacheableInt32::create(27)));
     ASSERT(p7->equals(pRet7) == true,
            "Objects of type PdxTypes7 should be equal");
 
-    PdxTypes6Ptr pRet6 = valuesMap->operator[](CacheableInt32::create(26));
+    auto pRet6 = std::dynamic_pointer_cast<PdxTypes6>(
+        valuesMap->operator[](CacheableInt32::create(26)));
     ASSERT(p6->equals(pRet6) == true,
            "Objects of type PdxTypes6 should be equal");
 
-    PdxTypes5Ptr pRet5 = valuesMap->operator[](CacheableInt32::create(25));
+    auto pRet5 = std::dynamic_pointer_cast<PdxTypes5>(
+        valuesMap->operator[](CacheableInt32::create(25)));
     ASSERT(p5->equals(pRet5) == true,
            "Objects of type PdxTypes5 should be equal");
 
-    PdxTypes4Ptr pRet4 = valuesMap->operator[](CacheableInt32::create(24));
+    auto pRet4 = std::dynamic_pointer_cast<PdxTypes4>(
+        valuesMap->operator[](CacheableInt32::create(24)));
     ASSERT(p4->equals(pRet4) == true,
            "Objects of type PdxTypes4 should be equal");
 
-    PdxTypes3Ptr pRet3 = valuesMap->operator[](CacheableInt32::create(23));
+    auto pRet3 = std::dynamic_pointer_cast<PdxTypes3>(
+        valuesMap->operator[](CacheableInt32::create(23)));
     ASSERT(p3->equals(pRet3) == true,
            "Objects of type PdxTypes3 should be equal");
 
-    PdxTypes2Ptr pRet2 = valuesMap->operator[](CacheableInt32::create(22));
+    auto pRet2 = std::dynamic_pointer_cast<PdxTypes2>(
+        valuesMap->operator[](CacheableInt32::create(22)));
     ASSERT(p2->equals(pRet2) == true,
            "Objects of type PdxTypes2 should be equal");
 
-    PdxTypes1Ptr pRet1 = valuesMap->operator[](CacheableInt32::create(21));
+    auto pRet1 = std::dynamic_pointer_cast<PdxTypes1>(
+        valuesMap->operator[](CacheableInt32::create(21)));
     ASSERT(p1->equals(pRet1) == true,
            "Objects of type PdxTypes1 should be equal");
 

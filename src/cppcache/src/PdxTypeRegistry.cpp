@@ -39,9 +39,9 @@ TypeNameVsPdxType* PdxTypeRegistry::localTypeToPdxType = NULL;
 // *PdxTypeRegistry::preserveData = NULL;
 PreservedHashMap PdxTypeRegistry::preserveData;
 
-CacheableHashMapPtr PdxTypeRegistry::enumToInt = NULLPTR;
+CacheableHashMapPtr PdxTypeRegistry::enumToInt = nullptr;
 
-CacheableHashMapPtr PdxTypeRegistry::intToEnum = NULLPTR;
+CacheableHashMapPtr PdxTypeRegistry::intToEnum = nullptr;
 
 ACE_RW_Thread_Mutex PdxTypeRegistry::g_readerWriterLock;
 
@@ -94,7 +94,7 @@ int32_t PdxTypeRegistry::getPDXIdForType(const char* type, const char* poolname,
   // WriteGuard guard(g_readerWriterLock);
   if (checkIfThere) {
     PdxTypePtr lpdx = getLocalPdxType(type);
-    if (lpdx != NULLPTR) {
+    if (lpdx != nullptr) {
       int id = lpdx->getTypeId();
       if (id != 0) {
         return id;
@@ -147,9 +147,9 @@ void PdxTypeRegistry::clear() {
 
     if (localTypeToPdxType != NULL) localTypeToPdxType->clear();
 
-    if (intToEnum != NULLPTR) intToEnum->clear();
+    if (intToEnum != nullptr) intToEnum->clear();
 
-    if (enumToInt != NULLPTR) enumToInt->clear();
+    if (enumToInt != nullptr) enumToInt->clear();
 
     if (pdxTypeToTypeIdMap != NULL) pdxTypeToTypeIdMap->clear();
   }
@@ -167,14 +167,14 @@ void PdxTypeRegistry::addPdxType(int32_t typeId, PdxTypePtr pdxType) {
 
 PdxTypePtr PdxTypeRegistry::getPdxType(int32_t typeId) {
   ReadGuard guard(g_readerWriterLock);
-  PdxTypePtr retValue = NULLPTR;
+  PdxTypePtr retValue = nullptr;
   TypeIdVsPdxType::iterator iter;
   iter = typeIdToPdxType->find(typeId);
   if (iter != typeIdToPdxType->end()) {
     retValue = (*iter).second;
     return retValue;
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 void PdxTypeRegistry::addLocalPdxType(const char* localType,
@@ -186,14 +186,14 @@ void PdxTypeRegistry::addLocalPdxType(const char* localType,
 
 PdxTypePtr PdxTypeRegistry::getLocalPdxType(const char* localType) {
   ReadGuard guard(g_readerWriterLock);
-  PdxTypePtr localTypePtr = NULLPTR;
+  PdxTypePtr localTypePtr = nullptr;
   TypeNameVsPdxType::iterator it;
   it = localTypeToPdxType->find(localType);
   if (it != localTypeToPdxType->end()) {
     localTypePtr = (*it).second;
     return localTypePtr;
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 void PdxTypeRegistry::setMergedType(int32_t remoteTypeId, PdxTypePtr mergedType) {
@@ -203,7 +203,7 @@ void PdxTypeRegistry::setMergedType(int32_t remoteTypeId, PdxTypePtr mergedType)
 }
 
 PdxTypePtr PdxTypeRegistry::getMergedType(int32_t remoteTypeId) {
-  PdxTypePtr retVal = NULLPTR;
+  PdxTypePtr retVal = nullptr;
   TypeIdVsPdxType::iterator it;
   it = remoteTypeIdToMergedPdxType->find(remoteTypeId);
   if (it != remoteTypeIdToMergedPdxType->end()) {
@@ -251,20 +251,21 @@ PdxRemotePreservedDataPtr PdxTypeRegistry::getPreserveData(
     PdxRemotePreservedDataPtr retValPtr = iter.second();
     return retValPtr;
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 int32_t PdxTypeRegistry::getEnumValue(EnumInfoPtr ei) {
+  // TODO locking - naive concurrent optimization?
   CacheableHashMapPtr tmp;
   tmp = enumToInt;
   if (tmp->contains(ei)) {
-    CacheableInt32Ptr val = tmp->operator[](ei);
+    auto val = std::static_pointer_cast<CacheableInt32>(tmp->operator[](ei));
     return val->value();
   }
   WriteGuard guard(g_readerWriterLock);
   tmp = enumToInt;
   if (tmp->contains(ei)) {
-    CacheableInt32Ptr val = tmp->operator[](ei);
+    auto val = std::static_pointer_cast<CacheableInt32>(tmp->operator[](ei));
     return val->value();
   }
   int val = SerializationRegistry::GetEnumValue(ei);
@@ -275,30 +276,33 @@ int32_t PdxTypeRegistry::getEnumValue(EnumInfoPtr ei) {
 }
 
 EnumInfoPtr PdxTypeRegistry::getEnum(int32_t enumVal) {
+  // TODO locking - naive concurrent optimization?
   EnumInfoPtr ret;
   CacheableHashMapPtr tmp;
+  auto enumValPtr = CacheableInt32::create(enumVal);
   tmp = intToEnum;
-  if (tmp->contains(CacheableInt32::create(enumVal))) {
-    ret = tmp->operator[](CacheableInt32::create(enumVal));
+  if (tmp->contains(enumValPtr)) {
+    ret = std::static_pointer_cast<EnumInfo>(tmp->operator[](enumValPtr));
   }
 
-  if (ret != NULLPTR) {
+  if (ret != nullptr) {
     return ret;
   }
 
   WriteGuard guard(g_readerWriterLock);
   tmp = intToEnum;
-  if (tmp->contains(CacheableInt32::create(enumVal))) {
-    ret = tmp->operator[](CacheableInt32::create(enumVal));
+  if (tmp->contains(enumValPtr)) {
+    ret = std::static_pointer_cast<EnumInfo>(tmp->operator[](enumValPtr));
   }
 
-  if (ret != NULLPTR) {
+  if (ret != nullptr) {
     return ret;
   }
 
-  ret = SerializationRegistry::GetEnum(enumVal);
+  ret = std::static_pointer_cast<EnumInfo>(
+      SerializationRegistry::GetEnum(enumVal));
   tmp = intToEnum;
-  tmp->update(CacheableInt32::create(enumVal), ret);
+  tmp->update(enumValPtr, ret);
   intToEnum = tmp;
   return ret;
 }

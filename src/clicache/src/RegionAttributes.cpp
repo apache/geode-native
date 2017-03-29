@@ -353,7 +353,7 @@ namespace Apache
       {
         apache::geode::client::PropertiesPtr& nativeptr(
           NativePtr->getPersistenceProperties());
-        return Properties<String^, String^>::Create<String^, String^>(nativeptr.ptr());
+        return Properties<String^, String^>::Create<String^, String^>(nativeptr.get());
       }
     }  // namespace Client
   }  // namespace Geode

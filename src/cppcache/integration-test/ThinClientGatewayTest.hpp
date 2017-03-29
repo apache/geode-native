@@ -102,12 +102,12 @@ DUNIT_TASK_DEFINITION(SERVER2, StartServer2)
   }
 END_TASK_DEFINITION
 
-MyListenerPtr reg1Listener1 = NULLPTR;
+MyListenerPtr reg1Listener1 = nullptr;
 
 DUNIT_TASK_DEFINITION(SERVER2, SetupClient2)
   {
     // CacheHelper ch = getHelper();
-    reg1Listener1 = new MyListener();
+    reg1Listener1 = std::make_shared<MyListener>();
     RegionPtr regPtr = createPooledRegion("exampleRegion", false, locHostPort2,
                                           "poolName", true, reg1Listener1);
     regPtr->registerAllKeys();

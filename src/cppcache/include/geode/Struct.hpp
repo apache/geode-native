@@ -61,7 +61,7 @@ class CPPCACHE_EXPORT Struct : public Serializable {
    * Get the field value for the given index number.
    *
    * @param index the index number of the field value to get.
-   * @returns A smart pointer to the field value or NULLPTR if index out of
+   * @returns A smart pointer to the field value or nullptr if index out of
    * bounds.
    */
   const SerializablePtr operator[](int32_t index) const;
@@ -100,7 +100,7 @@ class CPPCACHE_EXPORT Struct : public Serializable {
   /**
    * Get the next field value item available in this Struct.
    *
-   * @returns A smart pointer to the next item in the Struct or NULLPTR if no
+   * @returns A smart pointer to the next item in the Struct or nullptr if no
    * more available.
    */
   const SerializablePtr next();

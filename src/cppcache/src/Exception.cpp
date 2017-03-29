@@ -59,7 +59,7 @@ Exception::Exception(const char* msg1, const char* msg2, bool forceTrace,
   msg[len] = '\0';
 
   if (s_exceptionStackTraceEnabled || forceTrace) {
-    GF_NEW(m_stack, StackTrace());
+    m_stack = std::make_shared<StackTrace>();
   }
   m_message = CacheableString::createNoCopy(msg, static_cast<int32_t>(len));
 }
@@ -78,12 +78,12 @@ void Exception::showMessage() const {
 
 void Exception::printStackTrace() const {
   showMessage();
-  if (m_stack == NULLPTR) {
+  if (m_stack == nullptr) {
     fprintf(stdout, "  No stack available.\n");
   } else {
     m_stack->print();
   }
-  if (m_cause != NULLPTR) {
+  if (m_cause != nullptr) {
     fprintf(stdout, "Cause by exception: ");
     m_cause->printStackTrace();
   }
@@ -95,12 +95,12 @@ size_t Exception::getStackTrace(char* buffer, size_t maxLength) const {
   size_t len = 0;
   if (maxLength > 0) {
     std::string traceString;
-    if (m_stack == NULLPTR) {
+    if (m_stack == nullptr) {
       traceString = "  No stack available.\n";
     } else {
       m_stack->getString(traceString);
     }
-    if (m_cause != NULLPTR) {
+    if (m_cause != nullptr) {
       traceString += "Cause by exception: ";
       m_cause->m_stack->getString(traceString);
     }

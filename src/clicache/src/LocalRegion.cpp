@@ -40,7 +40,7 @@ namespace Apache
       {
         apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( key ) );
         apache::geode::client::CacheablePtr nativeptr(this->getRegionEntryValue(keyptr));
-        if (nativeptr == NULLPTR)
+        if (nativeptr == nullptr)
         {
           throw gcnew KeyNotFoundException("The given key was not present in the region");
         }
@@ -53,11 +53,11 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
           apache::geode::client::RegionEntryPtr entryPtr =  NativePtr->getEntry( keyptr );
-          if (entryPtr != NULLPTR) {
+          if (entryPtr != nullptr) {
             return entryPtr->getValue() ;
           }
           else {
-            return NULLPTR;
+            return nullptr;
           }
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -81,7 +81,7 @@ namespace Apache
       { 
         apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( key ) );
         apache::geode::client::CacheablePtr nativeptr(this->getRegionEntryValue(keyptr));
-        if (nativeptr == NULLPTR)
+        if (nativeptr == nullptr)
         {
           throw gcnew KeyNotFoundException("The given key was not present in the region");
         }
@@ -155,15 +155,15 @@ namespace Apache
       generic<class TKey, class TValue>
       bool LocalRegion<TKey, TValue>::AreValuesEqual(apache::geode::client::CacheablePtr& val1, apache::geode::client::CacheablePtr& val2)
       {
-        if ( val1 == NULLPTR && val2 == NULLPTR )
+        if ( val1 == nullptr && val2 == nullptr )
         {
           return true;
         }
-        else if ((val1 == NULLPTR && val2 != NULLPTR) || (val1 != NULLPTR && val2 == NULLPTR))
+        else if ((val1 == nullptr && val2 != nullptr) || (val1 != nullptr && val2 == nullptr))
         {
           return false;
         }
-        else if( val1 != NULLPTR && val2 != NULLPTR )
+        else if( val1 != nullptr && val2 != nullptr )
         {
           if (val1->classId() != val2->classId() || val1->typeId() != val2->typeId())
           {
@@ -192,7 +192,7 @@ namespace Apache
         apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( keyValuePair.Key ) ); 
         apache::geode::client::CacheablePtr nativeptr(this->getRegionEntryValue(keyptr));
         //This means that key is not present.
-        if (nativeptr == NULLPTR) {
+        if (nativeptr == nullptr) {
           return false;
         }        
         TValue value = Serializable::GetManagedValueGeneric<TValue>(nativeptr);
@@ -216,7 +216,7 @@ namespace Apache
       {        
         apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( key ) );
         apache::geode::client::CacheablePtr nativeptr(this->getRegionEntryValue(keyptr));
-        if (nativeptr == NULLPTR) {            
+        if (nativeptr == nullptr) {            
           val = TValue();
           return false;
         }
@@ -552,7 +552,7 @@ namespace Apache
 
         apache::geode::client::RegionAttributesPtr& nativeptr( NativePtr->getAttributes( ) );
 
-        return Apache::Geode::Client::RegionAttributes<TKey, TValue>::Create(nativeptr.ptr());
+        return Apache::Geode::Client::RegionAttributes<TKey, TValue>::Create(nativeptr.get());
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       } 
@@ -610,7 +610,7 @@ namespace Apache
             GetNativePtrFromSBWrap<apache::geode::client::RegionAttributes>( attributes ) );*/
 
           apache::geode::client::RegionPtr& nativeptr( NativePtr->createSubregion(
-            mg_subregionName.CharPtr, /*p_attrs*/NULLPTR ) );
+            mg_subregionName.CharPtr, /*p_attrs*/nullptr ) );
           return Region<TKey, TValue>::Create( nativeptr.ptr( ) )->GetLocalView();
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
@@ -681,7 +681,7 @@ namespace Apache
 
           apache::geode::client::RegionServicePtr& nativeptr( NativePtr->getRegionService( ) );
 
-          apache::geode::client::Cache* realCache = dynamic_cast<apache::geode::client::Cache*>(nativeptr.ptr());
+          apache::geode::client::Cache* realCache = dynamic_cast<apache::geode::client::Cache*>(nativeptr.get());
 
           if(realCache != NULL)
           {

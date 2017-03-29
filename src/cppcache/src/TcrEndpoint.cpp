@@ -291,7 +291,7 @@ void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
     GfErrType err = GF_NOERR;
     PropertiesPtr creds = this->getCredentials();
 
-    if (creds != NULLPTR) {
+    if (creds != nullptr) {
       LOGDEBUG("TcrEndpoint::authenticateEndpoint got creds from app = %d",
                creds->getSize());
     } else {
@@ -338,7 +338,7 @@ PropertiesPtr TcrEndpoint::getCredentials() {
 
   AuthInitializePtr authInitialize = DistributedSystem::m_impl->getAuthLoader();
 
-  if (authInitialize != NULLPTR) {
+  if (authInitialize != nullptr) {
     LOGFINER(
         "Acquired handle to AuthInitialize plugin, "
         "getting credentials for %s",
@@ -357,7 +357,7 @@ PropertiesPtr TcrEndpoint::getCredentials() {
     LOGFINER("Done getting credentials");
     return tmpAuthIniSecurityProperties;
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 ServerQueueStatus TcrEndpoint::getFreshServerQueueStatus(
@@ -639,8 +639,8 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
             const std::string& regionFullPath1 = msg->getRegionName();
             RegionPtr region1;
             m_cache->getRegion(regionFullPath1.c_str(), region1);
-            if (region1 != NULLPTR &&
-                !static_cast<ThinClientRegion*>(region1.ptr())
+            if (region1 != nullptr &&
+                !static_cast<ThinClientRegion*>(region1.get())
                      ->getDistMgr()
                      ->isEndpointAttached(this)) {
               // drop event before even processing the eventid for duplicate
@@ -673,8 +673,8 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
             const std::string& regionFullPath = msg->getRegionName();
             RegionPtr region;
             m_cache->getRegion(regionFullPath.c_str(), region);
-            if (region != NULLPTR) {
-              static_cast<ThinClientRegion*>(region.ptr())
+            if (region != nullptr) {
+              static_cast<ThinClientRegion*>(region.get())
                   ->receiveNotification(msg);
             } else {
               LOGWARN(
@@ -685,8 +685,8 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
           } else {
             LOGDEBUG("receive cq notification %d", msg->getMessageType());
             QueryServicePtr queryService = getQueryService();
-            if (queryService != NULLPTR) {
-              static_cast<RemoteQueryService*>(queryService.ptr())
+            if (queryService != nullptr) {
+              static_cast<RemoteQueryService*>(queryService.get())
                   ->receiveNotification(msg);
             }
           }

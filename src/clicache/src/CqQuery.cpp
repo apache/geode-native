@@ -48,7 +48,7 @@ namespace Apache
 
           apache::geode::client::CqResultsPtr& nativeptr =
             NativePtr->executeWithInitialResults(timeout);
-          if (nativeptr.ptr() == NULL) return nullptr;
+          if (nativeptr.get() == NULL) return nullptr;
 
           apache::geode::client::ResultSet* resultptr = dynamic_cast<apache::geode::client::ResultSet*>(
             nativeptr.ptr( ) );
@@ -97,25 +97,25 @@ namespace Apache
       generic<class TKey, class TResult>
       Query<TResult>^ CqQuery<TKey, TResult>::GetQuery( )
       {
-        return Query<TResult>::Create(NativePtr->getQuery().ptr());
+        return Query<TResult>::Create(NativePtr->getQuery().get());
       }
 
       generic<class TKey, class TResult>
       CqAttributes<TKey, TResult>^ CqQuery<TKey, TResult>::GetCqAttributes( )
       {
-        return CqAttributes<TKey, TResult>::Create(NativePtr->getCqAttributes( ).ptr());
+        return CqAttributes<TKey, TResult>::Create(NativePtr->getCqAttributes( ).get());
       }
 
       generic<class TKey, class TResult>
       CqAttributesMutator<TKey, TResult>^ CqQuery<TKey, TResult>::GetCqAttributesMutator( )
       {
-        return CqAttributesMutator<TKey, TResult>::Create(NativePtr->getCqAttributesMutator().ptr());
+        return CqAttributesMutator<TKey, TResult>::Create(NativePtr->getCqAttributesMutator().get());
       }
 
       generic<class TKey, class TResult>
       CqStatistics^ CqQuery<TKey, TResult>::GetStatistics( )
       {
-        return CqStatistics::Create(NativePtr->getStatistics().ptr());
+        return CqStatistics::Create(NativePtr->getStatistics().get());
       }
 
       generic<class TKey, class TResult>

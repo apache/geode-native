@@ -37,12 +37,12 @@ class DupChecker : public CacheListener {
     m_ops++;
 
     CacheableKeyPtr key = event.getKey();
-    CacheableInt32Ptr value = dynCast<CacheableInt32Ptr>(event.getNewValue());
+    auto value = std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
 
     HashMapOfCacheable::Iterator item = m_map.find(key);
 
     if (item != m_map.end()) {
-      CacheableInt32Ptr check = dynCast<CacheableInt32Ptr>(item.second());
+      auto check = std::dynamic_pointer_cast<CacheableInt32>(item.second());
       ASSERT(check->value() + 1 == value->value(),
              "Duplicate or older value received");
       m_map.update(key, value);
@@ -62,7 +62,7 @@ class DupChecker : public CacheListener {
 
     for (HashMapOfCacheable::Iterator item = m_map.begin(); item != m_map.end();
          item++) {
-      CacheableInt32Ptr check = dynCast<CacheableInt32Ptr>(item.second());
+      auto check = std::dynamic_pointer_cast<CacheableInt32>(item.second());
       ASSERT(check->value() == 100, "Expected final value to be 100");
     }
   }
@@ -151,7 +151,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   free(buf);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   CacheableKeyPtr keyPtr = createKey(key);
 
@@ -201,10 +201,9 @@ void _verifyEntry(const char* name, const char* key, const char* val,
       }
 
       if (val != NULL) {
-        CacheableStringPtr checkPtr =
-            dynCast<CacheableStringPtr>(regPtr->get(keyPtr));
+        auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
-        ASSERT(checkPtr != NULLPTR, "Value Ptr should not be null.");
+        ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
         char buf[1024];
         sprintf(buf, "In verify loop, get returned %s for key %s",
                 checkPtr->asChar(), key);
@@ -242,7 +241,7 @@ void _verifyIntEntry(const char* name, const char* key, const int val,
   free(buf);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   CacheableKeyPtr keyPtr = createKey(key);
 
@@ -292,10 +291,9 @@ void _verifyIntEntry(const char* name, const char* key, const int val,
       }
 
       if (val != 0) {
-        CacheableInt32Ptr checkPtr =
-            dynCast<CacheableInt32Ptr>(regPtr->get(keyPtr));
+        auto checkPtr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(keyPtr));
 
-        ASSERT(checkPtr != NULLPTR, "Value Ptr should not be null.");
+        ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
         char buf[1024];
         sprintf(buf, "In verify loop, get returned %d for key %s",
                 checkPtr->value(), key);
@@ -353,8 +351,8 @@ void createRegion(const char* name, bool ackMode,
   char* endpoints = NULL;
   // ack, caching
   RegionPtr regPtr = getHelper()->createRegion(
-      name, ackMode, true, NULLPTR, endpoints, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+      name, ackMode, true, nullptr, endpoints, clientNotificationEnabled);
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 
@@ -368,7 +366,7 @@ void createEntry(const char* name, const char* key, const char* value) {
   CacheableStringPtr valPtr = CacheableString::create(value);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
          "Key should not have been found in region.");
@@ -393,7 +391,7 @@ void createIntEntry(const char* name, const char* key, const int value) {
   CacheableInt32Ptr valPtr = CacheableInt32::create(value);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   // ASSERT( !regPtr->containsKey( keyPtr ), "Key should not have been found in
   // region." );
@@ -472,8 +470,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, InitClient2_R1)
     initClientAndRegion(1);
     LOG("Initialized client with redundancy level 1.");
 
-    checker1 = new DupChecker();
-    checker2 = new DupChecker();
+    checker1 = std::make_shared<DupChecker>();
+    checker2 = std::make_shared<DupChecker>();
 
     setCacheListener(regionNames[0], checker1);
     setCacheListener(regionNames[1], checker2);

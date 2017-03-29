@@ -205,7 +205,7 @@ int main(int argc, char** argv) {
     SelectResultsIterator iter = resultsPtr->getIterator();
     while (iter.hasNext()) {
       rowCount++;
-      Struct* psi = dynamic_cast<Struct*>(iter.next().ptr());
+      Struct* psi = dynamic_cast<Struct*>(iter.next().get());
       LOGINFO("Row %d Column 1 is named %s, value is %S", rowCount,
               psi->getFieldName(0), (*psi)[0]->toString()->asWChar());
       LOGINFO("Row %d Column 2 is named %s, value is %s", rowCount,

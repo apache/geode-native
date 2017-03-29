@@ -50,7 +50,9 @@ typedef PdxSerializable* (*TypeFactoryMethodPdx)();
  * in the cache that can be serialized.
  */
 
-class CPPCACHE_EXPORT Serializable : public SharedBase {
+class CPPCACHE_EXPORT Serializable
+    : public SharedBase,
+      public std::enable_shared_from_this<Serializable> {
  public:
   /**
    *@brief serialize this object

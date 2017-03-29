@@ -32,6 +32,7 @@
 #include <CppCacheLibrary.hpp>
 
 #include "CacheHelper.hpp"
+#include <memory>
 
 using namespace apache::geode::client;
 
@@ -51,7 +52,7 @@ SharedPtr<T> duplicate(const SharedPtr<T>& orig) {
   uint32_t length = 0;
   const uint8_t* buffer = dout.getBuffer(&length);
   DataInput din(buffer, length);
-  result = static_cast<T*>(SerializationRegistry::deserialize(din).ptr());
+  result = std::static_pointer_cast<T>(SerializationRegistry::deserialize(din));
   // din.readObject(result);
 
   return result;
@@ -129,8 +130,8 @@ class OtherType : public Serializable {
     char logmsg[1000];
     sprintf(logmsg, "validateCT for %d", i);
     LOG(logmsg);
-    XASSERT(otPtr != NULLPTR);
-    OtherType* ot = static_cast<OtherType*>(otPtr.ptr());
+    XASSERT(otPtr != nullptr);
+    OtherType* ot = static_cast<OtherType*>(otPtr.get());
     XASSERT(ot != NULL);
 
     printf("Validating OtherType: %d, %s, %c, %e\n", ot->m_struct.a,
@@ -163,7 +164,7 @@ DUNIT_TASK(NoDist, SerializeInMemory)
 
     str = CacheableString::create("");
     copy = duplicate(str);
-    ASSERT(copy != NULLPTR, "error null copy.");
+    ASSERT(copy != nullptr, "error null copy.");
     ASSERT(copy->length() == 0, "expected 0 length.");
 
     CacheableInt32Ptr intkey = CacheableInt32::create(1);
@@ -241,7 +242,7 @@ DUNIT_TASK(Sender, SetupAndPutInts)
     Serializable::registerType(OtherType::createDeserializable2);
     Serializable::registerType(OtherType::createDeserializable4);
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion("DistRegionAck", USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
     LOG("SenderInit complete.");
@@ -286,7 +287,7 @@ ENDTASK
 
 DUNIT_TASK(Sender, CloseCacheS)
   {
-    regionPtr = NULLPTR;
+    regionPtr = nullptr;
     cleanProc();
   }
 ENDTASK

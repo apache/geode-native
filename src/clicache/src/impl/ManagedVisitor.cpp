@@ -34,8 +34,8 @@ namespace apache
       {
         using namespace Apache::Geode::Client;
         try {
-          ICacheableKey^ mg_key(SafeGenericUMKeyConvert<ICacheableKey^>(key.ptr()));
-          IGeodeSerializable^ mg_value(SafeUMSerializableConvertGeneric(value.ptr()));
+          ICacheableKey^ mg_key(SafeGenericUMKeyConvert<ICacheableKey^>(key.get()));
+          IGeodeSerializable^ mg_value(SafeUMSerializableConvertGeneric(value.get()));
 
           m_visitor->Invoke(mg_key, (Apache::Geode::Client::IGeodeSerializable^)mg_value);
         }

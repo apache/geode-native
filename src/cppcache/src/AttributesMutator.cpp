@@ -25,7 +25,7 @@ namespace client {
 AttributesMutator::AttributesMutator(const RegionPtr& region)
     : m_region(region) {}
 
-AttributesMutator::~AttributesMutator() { m_region = NULLPTR; }
+AttributesMutator::~AttributesMutator() { m_region = nullptr; }
 
 /** Sets the idleTimeout duration for region entries.
  * @param idleTimeout the idleTimeout in seconds for entries in this region.
@@ -35,7 +35,7 @@ AttributesMutator::~AttributesMutator() { m_region = NULLPTR; }
  *   disabled to enabled or enabled to disabled.
  */
 int32_t AttributesMutator::setEntryIdleTimeout(int32_t idleTimeout) {
-  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.ptr());
+  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   return rImpl->adjustEntryExpiryDuration(idleTimeout);
 }
 
@@ -46,7 +46,7 @@ int32_t AttributesMutator::setEntryIdleTimeout(int32_t idleTimeout) {
  */
 ExpirationAction::Action AttributesMutator::setEntryIdleTimeoutAction(
     ExpirationAction::Action action) {
-  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.ptr());
+  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   return rImpl->adjustEntryExpiryAction(action);
 }
 
@@ -58,7 +58,7 @@ ExpirationAction::Action AttributesMutator::setEntryIdleTimeoutAction(
  *   disabled to enabled or enabled to disabled.
  */
 int32_t AttributesMutator::setEntryTimeToLive(int32_t timeToLive) {
-  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.ptr());
+  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   return rImpl->adjustEntryExpiryDuration(timeToLive);
 }
 
@@ -69,7 +69,7 @@ int32_t AttributesMutator::setEntryTimeToLive(int32_t timeToLive) {
  */
 ExpirationAction::Action AttributesMutator::setEntryTimeToLiveAction(
     ExpirationAction::Action action) {
-  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.ptr());
+  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   return rImpl->adjustEntryExpiryAction(action);
 }
 
@@ -81,7 +81,7 @@ ExpirationAction::Action AttributesMutator::setEntryTimeToLiveAction(
  *   disabled to enabled or enabled to disabled.
  */
 int32_t AttributesMutator::setRegionIdleTimeout(int32_t idleTimeout) {
-  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.ptr());
+  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   return rImpl->adjustRegionExpiryDuration(idleTimeout);
 }
 
@@ -91,7 +91,7 @@ int32_t AttributesMutator::setRegionIdleTimeout(int32_t idleTimeout) {
  */
 ExpirationAction::Action AttributesMutator::setRegionIdleTimeoutAction(
     ExpirationAction::Action action) {
-  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.ptr());
+  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   return rImpl->adjustRegionExpiryAction(action);
 }
 
@@ -103,7 +103,7 @@ ExpirationAction::Action AttributesMutator::setRegionIdleTimeoutAction(
  *   disabled to enabled or enabled to disabled.
  */
 int32_t AttributesMutator::setRegionTimeToLive(int32_t timeToLive) {
-  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.ptr());
+  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   return rImpl->adjustRegionExpiryDuration(timeToLive);
 }
 
@@ -113,7 +113,7 @@ int32_t AttributesMutator::setRegionTimeToLive(int32_t timeToLive) {
  */
 ExpirationAction::Action AttributesMutator::setRegionTimeToLiveAction(
     ExpirationAction::Action action) {
-  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.ptr());
+  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   return rImpl->adjustRegionExpiryAction(action);
 }
 
@@ -124,40 +124,40 @@ ExpirationAction::Action AttributesMutator::setRegionTimeToLiveAction(
  *   disabled to enabled or enabled to disabled.
  */
 uint32_t AttributesMutator::setLruEntriesLimit(uint32_t entriesLimit) {
-  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.ptr());
+  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   return rImpl->adjustLruEntriesLimit(entriesLimit);
 }
 
 void AttributesMutator::setCacheListener(const CacheListenerPtr& aListener) {
-  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.ptr());
+  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   rImpl->adjustCacheListener(aListener);
 }
 
 void AttributesMutator::setCacheListener(const char* libpath,
                                          const char* factoryFuncName) {
-  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.ptr());
+  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   rImpl->adjustCacheListener(libpath, factoryFuncName);
 }
 
 void AttributesMutator::setCacheLoader(const CacheLoaderPtr& aLoader) {
-  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.ptr());
+  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   rImpl->adjustCacheLoader(aLoader);
 }
 
 void AttributesMutator::setCacheLoader(const char* libpath,
                                        const char* factoryFuncName) {
-  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.ptr());
+  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   rImpl->adjustCacheLoader(libpath, factoryFuncName);
 }
 
 void AttributesMutator::setCacheWriter(const CacheWriterPtr& aWriter) {
-  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.ptr());
+  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   rImpl->adjustCacheWriter(aWriter);
 }
 
 void AttributesMutator::setCacheWriter(const char* libpath,
                                        const char* factoryFuncName) {
-  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.ptr());
+  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   rImpl->adjustCacheWriter(libpath, factoryFuncName);
 }
 }  // namespace client

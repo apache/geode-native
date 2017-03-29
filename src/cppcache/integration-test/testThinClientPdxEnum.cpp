@@ -80,9 +80,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, putPdxWithEnum)
     LOG("putPdxWithEnum started ");
 
     // Creating objects of type PdxEnumTestClass
-    PdxEnumTestClassPtr pdxobj1(new PdxEnumTestClass(0));
-    PdxEnumTestClassPtr pdxobj2(new PdxEnumTestClass(1));
-    PdxEnumTestClassPtr pdxobj3(new PdxEnumTestClass(2));
+    auto pdxobj1 = std::make_shared<PdxEnumTestClass>(0);
+    auto pdxobj2 = std::make_shared<PdxEnumTestClass>(1);
+    auto pdxobj3 = std::make_shared<PdxEnumTestClass>(2);
 
     RegionPtr rptr = getHelper()->getRegion("DistRegionAck");
 
@@ -114,25 +114,25 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxEnumQuery)
     RegionPtr rptr = getHelper()->getRegion("DistRegionAck");
     SelectResultsPtr results = rptr->query("m_enumid.name = 'id2'");
     ASSERT(results->size() == 1, "query result should have one item");
-    ResultSetPtr rsptr = dynCast<ResultSetPtr>(results);
+    auto rsptr = std::dynamic_pointer_cast<ResultSet>(results);
     SelectResultsIterator iter = rsptr->getIterator();
     while (iter.moveNext()) {
-      PdxEnumTestClassPtr re = dynCast<PdxEnumTestClassPtr>(iter.current());
+      auto re = std::dynamic_pointer_cast<PdxEnumTestClass>(iter.current());
       ASSERT(re->getID() == 1, "query should have return id 1");
     }
 
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
-    QueryServicePtr qs = NULLPTR;
+    QueryServicePtr qs = nullptr;
     PoolPtr pool1 = findPool("__TEST_POOL1__");
     qs = pool1->getQueryService();
     QueryPtr qry = qs->newQuery(
         "select distinct * from /DistRegionAck this where m_enumid.name = "
         "'id3'");
     results = qry->execute();
-    rsptr = dynCast<ResultSetPtr>(results);
+    rsptr = std::dynamic_pointer_cast<ResultSet>(results);
     SelectResultsIterator iter1 = rsptr->getIterator();
     while (iter1.moveNext()) {
-      PdxEnumTestClassPtr re = dynCast<PdxEnumTestClassPtr>(iter1.current());
+      auto re = std::dynamic_pointer_cast<PdxEnumTestClass>(iter1.current());
       ASSERT(re->getID() == 2, "query should have return id 0");
     }
 

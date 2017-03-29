@@ -59,7 +59,7 @@ bool LRUOverFlowToDiskAction::evict(const MapEntryImplPtr& mePtr) {
   CacheablePtr valuePtr;
   mePtr->getKeyI(keyPtr);
   mePtr->getValueI(valuePtr);
-  if (valuePtr == NULLPTR) {
+  if (valuePtr == nullptr) {
     LOGERROR(
         "[internal error]:: OverflowAction: destroyed entry added to "
         "LRU list");
@@ -110,7 +110,7 @@ bool LRULocalInvalidateAction::evict(const MapEntryImplPtr& mePtr) {
   GfErrType err = GF_NOERR;
   if (!m_regionPtr->isDestroyed()) {
     err = m_regionPtr->invalidateNoThrow(
-        keyPtr, NULLPTR, -1, CacheEventFlags::EVICTION | CacheEventFlags::LOCAL,
+        keyPtr, nullptr, -1, CacheEventFlags::EVICTION | CacheEventFlags::LOCAL,
         versionTag);
   }
   return (err == GF_NOERR);

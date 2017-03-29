@@ -299,28 +299,28 @@ class CPPCACHE_EXPORT SystemProperties {
 
   /** Return the security auth library */
   inline const char* authInitLibrary() const {
-    return (m_AuthIniLoaderLibrary == NULLPTR
+    return (m_AuthIniLoaderLibrary == nullptr
                 ? ""
                 : m_AuthIniLoaderLibrary->asChar());
   }
 
   /** Return the security auth factory */
   inline const char* authInitFactory() const {
-    return (m_AuthIniLoaderFactory == NULLPTR
+    return (m_AuthIniLoaderFactory == nullptr
                 ? ""
                 : m_AuthIniLoaderFactory->asChar());
   }
 
   /** Return the security diffie hellman secret key algo */
   const char* securityClientDhAlgo() {
-    return (m_securityClientDhAlgo == NULLPTR
+    return (m_securityClientDhAlgo == nullptr
                 ? ""
                 : m_securityClientDhAlgo->asChar());
   }
 
   /** Return the keystore (.pem file ) path */
   const char* securityClientKsPath() {
-    return (m_securityClientKsPath == NULLPTR
+    return (m_securityClientKsPath == nullptr
                 ? ""
                 : m_securityClientKsPath->asChar());
   }
@@ -336,8 +336,8 @@ class CPPCACHE_EXPORT SystemProperties {
    * @return  bool value.
   */
   inline bool isSecurityOn() const {
-    return (m_AuthIniLoaderFactory != NULLPTR &&
-            m_AuthIniLoaderLibrary != NULLPTR);
+    return (m_AuthIniLoaderFactory != nullptr &&
+            m_AuthIniLoaderLibrary != nullptr);
   }
 
   /** Checks whether list of endpoint is shuffeled or not.
@@ -352,7 +352,7 @@ class CPPCACHE_EXPORT SystemProperties {
    * @return bool flag to indicate whether DH for credentials is on.
    */
   bool isDhOn() {
-    return isSecurityOn() && m_securityClientDhAlgo != NULLPTR &&
+    return isSecurityOn() && m_securityClientDhAlgo != nullptr &&
            m_securityClientDhAlgo->length() > 0;
   }
 
@@ -489,7 +489,7 @@ class CPPCACHE_EXPORT SystemProperties {
 
   /** Gets the authInitialize loader for the system.
    * @return  a pointer that points to the system's ,
-   * <code>AuthLoader</code> , NULLPTR if there is no AuthLoader for this
+   * <code>AuthLoader</code> , nullptr if there is no AuthLoader for this
    * system.
    */
   AuthInitializePtr getAuthLoader();

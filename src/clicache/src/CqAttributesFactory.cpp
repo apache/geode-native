@@ -47,15 +47,15 @@ namespace Apache
             try {
               CqListenerHelper<TKey, TResult>::g_readerWriterLock->AcquireWriterLock(-1);
               if ( CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->ContainsKey( cqListener) ) {
-                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict[cqListener] = (IntPtr)listenerptr.ptr();
+                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict[cqListener] = (IntPtr)listenerptr.get();
               }
               else {
-                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->Add(cqListener, (IntPtr)listenerptr.ptr());
+                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->Add(cqListener, (IntPtr)listenerptr.get());
               }
             } finally {
                 CqListenerHelper<TKey, TResult>::g_readerWriterLock->ReleaseWriterLock();
             }
-            ((apache::geode::client::ManagedCqStatusListenerGeneric*)listenerptr.ptr())->setptr(sLstr);
+            ((apache::geode::client::ManagedCqStatusListenerGeneric*)listenerptr.get())->setptr(sLstr);
           }
           else {
             //TODO::split
@@ -66,15 +66,15 @@ namespace Apache
             try {
               CqListenerHelper<TKey, TResult>::g_readerWriterLock->AcquireWriterLock(-1);
               if ( CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->ContainsKey( cqListener) ) {
-                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict[cqListener] = (IntPtr)listenerptr.ptr();
+                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict[cqListener] = (IntPtr)listenerptr.get();
               }
               else {
-                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->Add(cqListener, (IntPtr)listenerptr.ptr());
+                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->Add(cqListener, (IntPtr)listenerptr.get());
               }
             } finally {
                 CqListenerHelper<TKey, TResult>::g_readerWriterLock->ReleaseWriterLock();
             }
-            ((apache::geode::client::ManagedCqListenerGeneric*)listenerptr.ptr())->setptr(cqlg);
+            ((apache::geode::client::ManagedCqListenerGeneric*)listenerptr.get())->setptr(cqlg);
           }
         }
 
@@ -97,15 +97,15 @@ namespace Apache
             try {
               CqListenerHelper<TKey, TResult>::g_readerWriterLock->AcquireWriterLock(-1);
               if ( CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->ContainsKey( cqListeners[i]) ) {
-                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict[cqListeners[i]] = (IntPtr)cptr.ptr();
+                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict[cqListeners[i]] = (IntPtr)cptr.get();
               }
               else {
-                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->Add(cqListeners[i], (IntPtr)cptr.ptr());
+                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->Add(cqListeners[i], (IntPtr)cptr.get());
               }
             } finally {
                 CqListenerHelper<TKey, TResult>::g_readerWriterLock->ReleaseWriterLock();
             }
-            ((apache::geode::client::ManagedCqStatusListenerGeneric*)vrr[i].ptr())->setptr(cqlg);
+            ((apache::geode::client::ManagedCqStatusListenerGeneric*)vrr[i].get())->setptr(cqlg);
           }
           else {
             ICqListener<TKey, TResult>^ lister = cqListeners[i];
@@ -117,15 +117,15 @@ namespace Apache
             try {
               CqListenerHelper<TKey, TResult>::g_readerWriterLock->AcquireWriterLock(-1);
               if ( CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->ContainsKey( cqListeners[i]) ) {
-                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict[cqListeners[i]] = (IntPtr)cptr.ptr();
+                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict[cqListeners[i]] = (IntPtr)cptr.get();
               }
               else {
-                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->Add(cqListeners[i], (IntPtr)cptr.ptr());
+                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->Add(cqListeners[i], (IntPtr)cptr.get());
               }
             } finally {
                 CqListenerHelper<TKey, TResult>::g_readerWriterLock->ReleaseWriterLock();
             }
-            ((apache::geode::client::ManagedCqListenerGeneric*)vrr[i].ptr())->setptr(cqlg);
+            ((apache::geode::client::ManagedCqListenerGeneric*)vrr[i].get())->setptr(cqlg);
           }
         }
 
@@ -135,7 +135,7 @@ namespace Apache
       generic<class TKey, class TResult>
       Client::CqAttributes<TKey, TResult>^ CqAttributesFactory<TKey, TResult>::Create( )
       {
-        return Client::CqAttributes<TKey, TResult>::Create(NativePtr->create().ptr());
+        return Client::CqAttributes<TKey, TResult>::Create(NativePtr->create().get());
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

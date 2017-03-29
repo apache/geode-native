@@ -55,7 +55,8 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
    * @brief constructor/initializer/destructor
    */
   ThinClientRegion(const std::string& name, CacheImpl* cache,
-                   RegionInternal* rPtr, const RegionAttributesPtr& attributes,
+                   const RegionInternalPtr& rPtr,
+                   const RegionAttributesPtr& attributes,
                    const CacheStatisticsPtr& stats, bool shared = false);
   virtual void initTCR();
   virtual ~ThinClientRegion();
@@ -70,17 +71,17 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
                             bool receiveValues = true);
   virtual void unregisterKeys(const VectorOfCacheableKey& keys);
   virtual void registerAllKeys(bool isDurable = false,
-                               VectorOfCacheableKeyPtr resultKeys = NULLPTR,
+                               VectorOfCacheableKeyPtr resultKeys = nullptr,
                                bool getInitialValues = false,
                                bool receiveValues = true);
   virtual void unregisterAllKeys();
   virtual void registerRegex(const char* regex, bool isDurable = false,
-                             VectorOfCacheableKeyPtr resultKeys = NULLPTR,
+                             VectorOfCacheableKeyPtr resultKeys = nullptr,
                              bool getInitialValues = false,
                              bool receiveValues = true);
   virtual void unregisterRegex(const char* regex);
   virtual void serverKeys(VectorOfCacheableKey& v);
-  virtual void clear(const UserDataPtr& aCallbackArgument = NULLPTR);
+  virtual void clear(const UserDataPtr& aCallbackArgument = nullptr);
 
   virtual SelectResultsPtr query(
       const char* predicate, uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
@@ -96,11 +97,11 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
       const HashMapOfCacheable& map,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
       uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-      const UserDataPtr& aCallbackArgument = NULLPTR);
+      const UserDataPtr& aCallbackArgument = nullptr);
   GfErrType removeAllNoThrow_remote(
       const VectorOfCacheableKey& keys,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
-      const UserDataPtr& aCallbackArgument = NULLPTR);
+      const UserDataPtr& aCallbackArgument = nullptr);
   GfErrType registerKeys(TcrEndpoint* endpoint = NULL,
                          const TcrMessage* request = NULL,
                          TcrMessageReply* reply = NULL);
@@ -131,7 +132,7 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
 
   void localInvalidateFailover();
 
-  inline ThinClientBaseDM* getDistMgr() { return m_tcrdm; }
+  inline ThinClientBaseDM* getDistMgr() const { return m_tcrdm; }
 
   CacheableVectorPtr reExecuteFunction(
       const char* func, const CacheablePtr& args, CacheableVectorPtr routingObj,
@@ -217,7 +218,7 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
   GfErrType registerRegexNoThrow(
       const std::string& regex, bool attemptFailover = true,
       TcrEndpoint* endpoint = NULL, bool isDurable = false,
-      VectorOfCacheableKeyPtr resultKeys = NULLPTR,
+      VectorOfCacheableKeyPtr resultKeys = nullptr,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
       bool receiveValues = true, TcrMessageReply* reply = NULL);
   GfErrType unregisterRegexNoThrow(const std::string& regex,
@@ -300,21 +301,21 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
       ThinClientPoolDM* tcrdm, const HashMapOfCacheable& map,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
       uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-      const UserDataPtr& aCallbackArgument = NULLPTR);
+      const UserDataPtr& aCallbackArgument = nullptr);
   GfErrType multiHopPutAllNoThrow_remote(
       const HashMapOfCacheable& map,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
       uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-      const UserDataPtr& aCallbackArgument = NULLPTR);
+      const UserDataPtr& aCallbackArgument = nullptr);
 
   GfErrType singleHopRemoveAllNoThrow_remote(
       ThinClientPoolDM* tcrdm, const VectorOfCacheableKey& keys,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
-      const UserDataPtr& aCallbackArgument = NULLPTR);
+      const UserDataPtr& aCallbackArgument = nullptr);
   GfErrType multiHopRemoveAllNoThrow_remote(
       const VectorOfCacheableKey& keys,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
-      const UserDataPtr& aCallbackArgument = NULLPTR);
+      const UserDataPtr& aCallbackArgument = nullptr);
 
   ACE_RW_Thread_Mutex m_RegionMutex;
   bool m_isMetaDataRefreshed;

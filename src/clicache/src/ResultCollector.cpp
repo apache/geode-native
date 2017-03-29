@@ -37,7 +37,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
           apache::geode::client::Serializable * result = SafeGenericMSerializableConvert((IGeodeSerializable^)rs);
-        NativePtr->addResult( result==NULL ? (NULLPTR) : (apache::geode::client::CacheablePtr(result)) );
+        NativePtr->addResult( result==NULL ? (nullptr) : (apache::geode::client::CacheablePtr(result)) );
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }

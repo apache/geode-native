@@ -42,7 +42,7 @@ class ThinClientPoolStickyDM : public ThinClientPoolDM {
   virtual TcrConnection* getConnectionFromQueueW(
       GfErrType* error, std::set<ServerLocation>&, bool isBGThread,
       TcrMessage& request, int8_t& version, bool& match, bool& connFound,
-      const BucketServerLocationPtr& serverLocation = NULLPTR);
+      const BucketServerLocationPtr& serverLocation = nullptr);
   virtual void putInQueue(TcrConnection* conn, bool isBGThread,
                           bool isTransaction = false);
   virtual void setStickyNull(bool isBGThread);

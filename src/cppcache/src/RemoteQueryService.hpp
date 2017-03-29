@@ -35,9 +35,11 @@ namespace client {
 class CacheImpl;
 class ThinClientPoolDM;
 typedef std::map<std::string, bool> CqPoolsConnected;
-class CPPCACHE_EXPORT RemoteQueryService : public QueryService {
+class CPPCACHE_EXPORT RemoteQueryService
+    : public QueryService,
+      public std::enable_shared_from_this<RemoteQueryService> {
  public:
-  RemoteQueryService(CacheImpl* cptr, ThinClientPoolDM* poolDM = NULL);
+  RemoteQueryService(CacheImpl* cptr, ThinClientPoolDM* poolDM = nullptr);
 
   void init();
 
@@ -54,7 +56,7 @@ class CPPCACHE_EXPORT RemoteQueryService : public QueryService {
   virtual CqQueryPtr newCq(const char* name, const char* querystr,
                            CqAttributesPtr& cqAttr, bool isDurable = false);
   virtual void closeCqs();
-  virtual void getCqs(VectorOfCqQuery& vec);
+  virtual void getCqs(QueryService::query_container_type& vec);
   virtual CqQueryPtr getCq(const char* name);
   virtual void executeCqs();
   virtual void stopCqs();
@@ -69,9 +71,9 @@ class CPPCACHE_EXPORT RemoteQueryService : public QueryService {
   void invokeCqConnectedListeners(ThinClientPoolDM* pool, bool connected);
   // For Lazy Cq Start-no use, no start
   inline void initCqService() {
-    if (m_cqService == NULLPTR) {
+    if (m_cqService == nullptr) {
       LOGFINE("RemoteQueryService: starting cq service");
-      m_cqService = new CqService(m_tccdm);
+      m_cqService = std::make_shared<CqService>(m_tccdm);
       LOGFINE("RemoteQueryService: started cq service");
     }
   }

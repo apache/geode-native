@@ -86,9 +86,8 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
   uint32_t objectSize() const { return 0; }
 
   DeltaPtr clone() {
-    DeltaPtr clonePtr(this);
-    return clonePtr;
-    // return DeltaPtr( this );
+    return DeltaPtr(
+        std::dynamic_pointer_cast<DeltaTestImpl>(shared_from_this()));
   }
 
   static Serializable* create() { return new DeltaTestImpl(); }

@@ -88,7 +88,7 @@ m_processorId = -1;
   int32_t regionSize;
   input.readInt(&regionSize);
   for (int32_t i = 0; i < regionSize; i++) {
-    RegionCommitPtr rc(new RegionCommit(/*this*/));
+    auto rc = std::make_shared<RegionCommit>();
     rc->fromData(input);
     m_regions.push_back(rc);
   }
@@ -164,7 +164,7 @@ Serializable* TXCommitMessage::create() { return new TXCommitMessage(); }
 void TXCommitMessage::apply(Cache* cache) {
   for (VectorOfSharedBase::Iterator iter = m_regions.begin();
        m_regions.end() != iter; iter++) {
-    RegionCommitPtr regionCommit = staticCast<RegionCommitPtr>(*iter);
+    RegionCommitPtr regionCommit = std::static_pointer_cast<GF_UNWRAP_SP(RegionCommitPtr)>(*iter);
     regionCommit->apply(cache);
   }
 }
@@ -177,7 +177,7 @@ VectorOfEntryEvent TXCommitMessage::getEvents(Cache* cache)
 m_regions.end() != iter; iter++)
         {
                 RegionCommitPtr regionCommit =
-staticCast<RegionCommitPtr>(*iter);
+std::static_pointer_cast<GF_UNWRAP_SP(RegionCommitPtr)>(*iter);
                 regionCommit->fillEvents(cache, ops);
         }
 

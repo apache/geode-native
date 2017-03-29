@@ -27,7 +27,9 @@
 using namespace apache::geode::client;
 
 CqService::CqService(ThinClientBaseDM* tccdm)
-    : m_tccdm(tccdm), m_notificationSema(1), m_stats(new CqServiceVsdStats()) {
+    : m_tccdm(tccdm),
+      m_notificationSema(1),
+      m_stats(std::make_shared<CqServiceVsdStats>()) {
   m_cqQueryMap = new MapOfCqQueryWithLock();
   m_running = true;
   LOGDEBUG("CqService Started");
@@ -38,7 +40,7 @@ CqService::~CqService() {
 }
 
 void CqService::updateStats() {
-  CqServiceVsdStats* stats = dynamic_cast<CqServiceVsdStats*>(m_stats.ptr());
+  auto stats = std::dynamic_pointer_cast<CqServiceVsdStats>(m_stats);
 
   stats->setNumCqsActive(0);
   stats->setNumCqsStopped(0);
@@ -49,9 +51,8 @@ void CqService::updateStats() {
 
   if (m_cqQueryMap->current_size() == 0) return;
 
-  for (MapOfCqQueryWithLock::iterator q = m_cqQueryMap->begin();
-       q != m_cqQueryMap->end(); ++q) {
-    CqQueryPtr cquery = ((*q).int_id_);
+  for (auto q = m_cqQueryMap->begin(); q != m_cqQueryMap->end(); ++q) {
+    auto cquery = ((*q).int_id_);
     switch (cquery->getState()) {
       case CqState::RUNNING:
         stats->incNumCqsActive();
@@ -78,16 +79,18 @@ bool CqService::checkAndAcquireLock() {
   }
 }
 
-CqQueryPtr CqService::newCq(std::string& cqName, std::string& queryString,
-                            CqAttributesPtr& cqAttributes, bool isDurable) {
+CqQueryPtr CqService::newCq(const std::string& cqName,
+                            const std::string& queryString,
+                            const CqAttributesPtr& cqAttributes,
+                            bool isDurable) {
   if (queryString.empty()) {
     throw IllegalArgumentException("Null queryString is passed. ");
-  } else if (cqAttributes == NULLPTR) {
+  } else if (cqAttributes == nullptr) {
     throw IllegalArgumentException("Null cqAttribute is passed. ");
   }
 
   // Check if the subscription is enabled on the pool
-  ThinClientPoolDM* pool = dynamic_cast<ThinClientPoolDM*>(m_tccdm);
+  auto pool = dynamic_cast<ThinClientPoolDM*>(m_tccdm);
   if (pool != NULL && !pool->getSubscriptionEnabled()) {
     LOGERROR(
         "Cannot create CQ because subscription is not enabled on the pool.");
@@ -97,10 +100,10 @@ CqQueryPtr CqService::newCq(std::string& cqName, std::string& queryString,
 
   // check for durable client
   if (isDurable) {
-    SystemProperties* sysProps = DistributedSystem::getSystemProperties();
-    const char* durableID =
-        (sysProps != NULL) ? sysProps->durableClientId() : NULL;
-    if (durableID == NULL || strlen(durableID) == 0) {
+    auto sysProps = DistributedSystem::getSystemProperties();
+    const auto durableID =
+        (sysProps != nullptr) ? sysProps->durableClientId() : nullptr;
+    if (durableID == nullptr || strlen(durableID) == 0) {
       LOGERROR("Cannot create durable CQ because client is not durable.");
       throw IllegalStateException(
           "Cannot create durable CQ because client is not durable.");
@@ -113,25 +116,22 @@ CqQueryPtr CqService::newCq(std::string& cqName, std::string& queryString,
         ("CQ with the given name already exists. CqName : " + cqName).c_str());
   }
 
-  UserAttributesPtr ua;
-  ua = NULLPTR;
+  UserAttributesPtr ua = nullptr;
   if (m_tccdm != NULL && m_tccdm->isMultiUserMode()) {
     ua =
         TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
   }
 
-  CqServicePtr cqs(this);
-  CqQueryImpl* cQuery =
-      new CqQueryImpl(cqs, cqName, queryString, cqAttributes, isDurable, ua);
+  auto cQuery = std::make_shared<CqQueryImpl>(
+      shared_from_this(), cqName, queryString, cqAttributes, isDurable, ua);
   cQuery->initCq();
-  CqQueryPtr ptr(cQuery);
-  return ptr;
+  return cQuery;
 }
 
 /**
  * Adds the given CQ and cqQuery object into the CQ map.
  */
-void CqService::addCq(std::string& cqName, CqQueryPtr& cq) {
+void CqService::addCq(const std::string& cqName, CqQueryPtr& cq) {
   try {
     MapOfRegionGuard guard(m_cqQueryMap->mutex());
     CqQueryPtr tmp;
@@ -147,7 +147,7 @@ void CqService::addCq(std::string& cqName, CqQueryPtr& cq) {
 /**
  * Removes given CQ from the cqMap..
  */
-void CqService::removeCq(std::string& cqName) {
+void CqService::removeCq(const std::string& cqName) {
   try {
     MapOfRegionGuard guard(m_cqQueryMap->mutex());
     m_cqQueryMap->unbind(cqName);
@@ -160,7 +160,7 @@ void CqService::removeCq(std::string& cqName) {
  * Retrieve a CqQuery by name.
  * @return the CqQuery or null if not found
  */
-CqQueryPtr CqService::getCq(std::string& cqName) {
+CqQueryPtr CqService::getCq(const std::string& cqName) {
   MapOfRegionGuard guard(m_cqQueryMap->mutex());
   CqQueryPtr tmp;
   if (0 != m_cqQueryMap->find(cqName, tmp)) {
@@ -168,7 +168,7 @@ CqQueryPtr CqService::getCq(std::string& cqName) {
   } else {
     return tmp;
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 /**
@@ -187,14 +187,13 @@ void CqService::clearCqQueryMap() {
 /**
  * Retrieve  all registered CQs
  */
-void CqService::getAllCqs(VectorOfCqQuery& cqVec) {
+void CqService::getAllCqs(query_container_type& cqVec) {
   cqVec.clear();
   MapOfRegionGuard guard(m_cqQueryMap->mutex());
   if (m_cqQueryMap->current_size() == 0) return;
   cqVec.reserve(static_cast<int32_t>(m_cqQueryMap->current_size()));
-  for (MapOfCqQueryWithLock::iterator q = m_cqQueryMap->begin();
-       q != m_cqQueryMap->end(); ++q) {
-    cqVec.push_back((*q).int_id_);
+  for (auto& q : *m_cqQueryMap) {
+    cqVec.push_back(q.int_id_);
   }
 }
 
@@ -203,7 +202,7 @@ void CqService::getAllCqs(VectorOfCqQuery& cqVec) {
  */
 void CqService::executeAllClientCqs(bool afterFailover) {
   // ACE_Guard< ACE_Recursive_Thread_Mutex > _guard( m_mutex );
-  VectorOfCqQuery cqVec;
+  query_container_type cqVec;
   getAllCqs(cqVec);
   // MapOfRegionGuard guard( m_cqQueryMap->mutex() );
   executeCqs(cqVec, afterFailover);
@@ -213,7 +212,7 @@ void CqService::executeAllClientCqs(bool afterFailover) {
  * Executes all CQs on the specified endpoint after failover.
  */
 GfErrType CqService::executeAllClientCqs(TcrEndpoint* endpoint) {
-  VectorOfCqQuery cqVec;
+  query_container_type cqVec;
   getAllCqs(cqVec);
   return executeCqs(cqVec, endpoint);
 }
@@ -221,7 +220,8 @@ GfErrType CqService::executeAllClientCqs(TcrEndpoint* endpoint) {
 /**
  * Executes all the given cqs on the specified endpoint after failover.
  */
-GfErrType CqService::executeCqs(VectorOfCqQuery& cqs, TcrEndpoint* endpoint) {
+GfErrType CqService::executeCqs(query_container_type& cqs,
+                                TcrEndpoint* endpoint) {
   if (cqs.empty()) {
     return GF_NOERR;
   }
@@ -229,11 +229,9 @@ GfErrType CqService::executeCqs(VectorOfCqQuery& cqs, TcrEndpoint* endpoint) {
   GfErrType err = GF_NOERR;
   GfErrType opErr = GF_NOERR;
 
-  for (int32_t cqCnt = 0; cqCnt < cqs.length(); cqCnt++) {
-    CqQueryPtr cq = cqs[cqCnt];
-    CqQueryImpl* cQueryImpl = static_cast<CqQueryImpl*>(cq.ptr());
+  for (auto& cq : cqs) {
     if (!cq->isClosed() && cq->isRunning()) {
-      opErr = cQueryImpl->execute(endpoint);
+      opErr = std::static_pointer_cast<CqQueryImpl>(cq)->execute(endpoint);
       if (err == GF_NOERR) {
         err = opErr;
       }
@@ -245,20 +243,18 @@ GfErrType CqService::executeCqs(VectorOfCqQuery& cqs, TcrEndpoint* endpoint) {
 /**
  * Executes all the given cqs.
  */
-void CqService::executeCqs(VectorOfCqQuery& cqs, bool afterFailover) {
+void CqService::executeCqs(query_container_type& cqs, bool afterFailover) {
   if (cqs.empty()) {
     return;
   }
   std::string cqName;
-  for (int32_t cqCnt = 0; cqCnt < cqs.length(); cqCnt++) {
-    CqQueryPtr cq = cqs[cqCnt];
-    CqQueryImpl* cQueryImpl = dynamic_cast<CqQueryImpl*>(cq.ptr());
+  for (auto& cq : cqs) {
     if (!cq->isClosed() &&
         (cq->isStopped() || (cq->isRunning() && afterFailover))) {
       try {
         cqName = cq->getName();
         if (afterFailover) {
-          cQueryImpl->executeAfterFailover();
+          std::static_pointer_cast<CqQueryImpl>(cq)->executeAfterFailover();
         } else {
           cq->execute();
         }
@@ -279,7 +275,7 @@ void CqService::executeCqs(VectorOfCqQuery& cqs, bool afterFailover) {
  * Stops all the cqs
  */
 void CqService::stopAllClientCqs() {
-  VectorOfCqQuery cqVec;
+  query_container_type cqVec;
   getAllCqs(cqVec);
   // MapOfRegionGuard guard( m_cqQueryMap->mutex() );
   stopCqs(cqVec);
@@ -288,14 +284,13 @@ void CqService::stopAllClientCqs() {
 /**
  * Stops all the specified cqs.
  */
-void CqService::stopCqs(VectorOfCqQuery& cqs) {
+void CqService::stopCqs(query_container_type& cqs) {
   if (cqs.empty()) {
     return;
   }
 
   std::string cqName;
-  for (int32_t cqCnt = 0; cqCnt < cqs.length(); cqCnt++) {
-    CqQueryPtr cq = cqs[cqCnt];
+  for (auto cq : cqs) {
     if (!cq->isClosed() && cq->isRunning()) {
       try {
         cqName = cq->getName();
@@ -313,21 +308,21 @@ void CqService::stopCqs(VectorOfCqQuery& cqs) {
   }
 }
 
-void CqService::closeCqs(VectorOfCqQuery& cqs) {
+void CqService::closeCqs(query_container_type& cqs) {
   LOGDEBUG("closeCqs() TcrMessage::isKeepAlive() = %d ",
            TcrMessage::isKeepAlive());
   if (!cqs.empty()) {
     std::string cqName;
-    for (int32_t cqCnt = 0; cqCnt < cqs.length(); cqCnt++) {
+    for (auto& cq : cqs) {
       try {
-        CqQueryImpl* cq = dynamic_cast<CqQueryImpl*>(cqs[cqCnt].ptr());
-        cqName = cq->getName();
+        auto cqi = std::static_pointer_cast<CqQueryImpl>(cq);
+        cqName = cqi->getName();
         LOGDEBUG("closeCqs() cqname = %s isDurable = %d ", cqName.c_str(),
-                 cq->isDurable());
-        if (!(cq->isDurable() && TcrMessage::isKeepAlive())) {
-          cq->close(true);
+                 cqi->isDurable());
+        if (!(cqi->isDurable() && TcrMessage::isKeepAlive())) {
+          cqi->close(true);
         } else {
-          cq->close(false);
+          cqi->close(false);
         }
       } catch (QueryException& qe) {
         Log::fine(("Failed to close the CQ, CqName : " + cqName + " Error : " +
@@ -362,7 +357,7 @@ void CqService::closeCqService() {
 }
 void CqService::closeAllCqs() {
   Log::fine("closeAllCqs()");
-  VectorOfCqQuery cqVec;
+  query_container_type cqVec;
   getAllCqs(cqVec);
   Log::fine("closeAllCqs() 1");
   MapOfRegionGuard guard(m_cqQueryMap->mutex());
@@ -389,7 +384,7 @@ void CqService::cleanup() {
  * @param cqName name of the CQ.
  * @return true if exists else false.
  */
-bool CqService::isCqExists(std::string& cqName) {
+bool CqService::isCqExists(const std::string& cqName) {
   bool status = false;
   try {
     MapOfRegionGuard guard(m_cqQueryMap->mutex());
@@ -421,21 +416,18 @@ void CqService::invokeCqListeners(const std::map<std::string, int>* cqs,
                                   CacheableBytesPtr deltaValue,
                                   EventIdPtr eventId) {
   LOGDEBUG("CqService::invokeCqListeners");
-  CqQueryPtr cQuery;
-  CqQueryImpl* cQueryImpl;
-  for (std::map<std::string, int>::const_iterator iter = cqs->begin();
-       iter != cqs->end(); ++iter) {
-    std::string cqName = iter->first;
-    cQuery = getCq(cqName);
-    cQueryImpl = dynamic_cast<CqQueryImpl*>(cQuery.ptr());
-    if (cQueryImpl == NULL || !cQueryImpl->isRunning()) {
+  for (const auto& kv : *cqs) {
+    const auto cqName = kv.first;
+    auto cQuery = getCq(cqName);
+    auto cQueryImpl = std::dynamic_pointer_cast<CqQueryImpl>(cQuery);
+    if (!(cQueryImpl && cQueryImpl->isRunning())) {
       LOGFINE("Unable to invoke CqListener, %s, CqName: %s",
-              (cQueryImpl == NULL) ? "CQ not found" : "CQ is Not running",
+              cQueryImpl ? "CQ not found" : "CQ is Not running",
               cqName.c_str());
       continue;
     }
 
-    int cqOp = iter->second;
+    const auto cqOp = kv.second;
 
     // If Region destroy event, close the cq.
     if (cqOp == TcrMessage::DESTROY_REGION) {
@@ -450,7 +442,7 @@ void CqService::invokeCqListeners(const std::map<std::string, int>* cqs,
     }
 
     // Construct CqEvent.
-    CqEventImpl* cqEvent =
+    auto cqEvent =
         new CqEventImpl(cQuery, getOperation(messageType), getOperation(cqOp),
                         key, value, m_tccdm, deltaValue, eventId);
 
@@ -458,7 +450,7 @@ void CqService::invokeCqListeners(const std::map<std::string, int>* cqs,
     cQueryImpl->updateStats(*cqEvent);
 
     // invoke CQ Listeners.
-    VectorOfCqListener cqListeners;
+    CqAttributes::listener_container_type cqListeners;
     cQueryImpl->getCqAttributes()->getCqListeners(cqListeners);
     /*
     Log::fine(("Invoking CqListeners for the CQ, CqName : " + cqName +
@@ -466,15 +458,15 @@ void CqService::invokeCqListeners(const std::map<std::string, int>* cqs,
     cqEvent);
         */
 
-    for (int32_t lCnt = 0; lCnt < cqListeners.length(); lCnt++) {
+    for (auto l : cqListeners) {
       try {
         // Check if the listener is not null, it could have been changed/reset
         // by the CqAttributeMutator.
-        if (cqListeners[lCnt] != NULLPTR) {
+        if (l) {
           if (cqEvent->getError() == true) {
-            cqListeners[lCnt]->onError(*cqEvent);
+            l->onError(*cqEvent);
           } else {
-            cqListeners[lCnt]->onEvent(*cqEvent);
+            l->onEvent(*cqEvent);
           }
         }
         // Handle client side exceptions.
@@ -488,16 +480,14 @@ void CqService::invokeCqListeners(const std::map<std::string, int>* cqs,
   }
 }
 
-void CqService::invokeCqConnectedListeners(std::string poolName,
+void CqService::invokeCqConnectedListeners(const std::string& poolName,
                                            bool connected) {
-  CqQueryPtr cQuery;
-  CqQueryImpl* cQueryImpl;
-  VectorOfCqQuery vec;
+  query_container_type vec;
   getAllCqs(vec);
   for (int32_t i = 0; i < vec.size(); i++) {
     std::string cqName = vec.at(i)->getName();
-    cQuery = getCq(cqName);
-    cQueryImpl = dynamic_cast<CqQueryImpl*>(cQuery.ptr());
+    auto cQuery = getCq(cqName);
+    auto cQueryImpl = std::dynamic_pointer_cast<CqQueryImpl>(cQuery);
     if (cQueryImpl == NULL || !cQueryImpl->isRunning()) {
       LOGFINE("Unable to invoke CqStatusListener, %s, CqName: %s",
               (cQueryImpl == NULL) ? "CQ not found" : "CQ is Not running",
@@ -506,8 +496,7 @@ void CqService::invokeCqConnectedListeners(std::string poolName,
     }
 
     // Check cq pool to determine if the pool matches, if not continue.
-    ThinClientPoolDM* poolDM =
-        dynamic_cast<ThinClientPoolDM*>(cQueryImpl->getDM());
+    auto* poolDM = dynamic_cast<ThinClientPoolDM*>(cQueryImpl->getDM());
     if (poolDM != NULL) {
       std::string pName = poolDM->getName();
       if (pName.compare(poolName) != 0) {
@@ -516,19 +505,13 @@ void CqService::invokeCqConnectedListeners(std::string poolName,
     }
 
     // invoke CQ Listeners.
-    VectorOfCqListener cqListeners;
+    std::vector<CqListenerPtr> cqListeners;
     cQueryImpl->getCqAttributes()->getCqListeners(cqListeners);
-    for (int32_t lCnt = 0; lCnt < cqListeners.length(); lCnt++) {
+    for (auto l : cqListeners) {
       try {
         // Check if the listener is not null, it could have been changed/reset
         // by the CqAttributeMutator.
-        CqStatusListenerPtr statusLstr = NULLPTR;
-        try {
-          statusLstr = dynCast<CqStatusListenerPtr>(cqListeners[lCnt]);
-        } catch (const ClassCastException&) {
-          // ignore
-        }
-        if (statusLstr != NULLPTR) {
+        if (auto statusLstr = std::dynamic_pointer_cast<CqStatusListener>(l)) {
           if (connected) {
             statusLstr->onCqConnected();
           } else {

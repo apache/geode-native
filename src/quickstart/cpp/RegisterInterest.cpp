@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
     // Register Interest on Region for All Keys with getInitialValues to
     // populate the cache with values of all keys from the server.
     regionPtr->registerAllKeys(
-        false, NULLPTR, true);  // Where the 3rd argument is getInitialValues.
+        false, nullptr, true);  // Where the 3rd argument is getInitialValues.
     // Unregister Interest on Region for All Keys.
     regionPtr->unregisterAllKeys();
 
@@ -108,7 +108,7 @@ int main(int argc, char** argv) {
 
     // Register and Unregister Interest on Region for Keys matching a Regular
     // Expression with getInitialValues.
-    regionPtr->registerRegex("Keys-*", false, NULLPTR, true);
+    regionPtr->registerRegex("Keys-*", false, nullptr, true);
     regionPtr->unregisterRegex("Keys-*");
 
     LOGINFO(

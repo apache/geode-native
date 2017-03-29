@@ -52,7 +52,7 @@ const char* locatorsG =
 void initClient(const bool isthinClient) {
   if (cacheHelper == NULL) {
     cacheHelper = new CacheHelper(isthinClient, "__TEST_POOL1__", NULL,
-                                  "ServerGroup1", NULLPTR, 0, true);
+                                  "ServerGroup1", nullptr, 0, true);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }
@@ -91,7 +91,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   free(buf);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   CacheableKeyPtr keyPtr = createKey(key);
 
@@ -141,10 +141,9 @@ void _verifyEntry(const char* name, const char* key, const char* val,
       }
 
       if (val != NULL) {
-        CacheableStringPtr checkPtr =
-            dynCast<CacheableStringPtr>(regPtr->get(keyPtr));
+        auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
-        ASSERT(checkPtr != NULLPTR, "Value Ptr should not be null.");
+        ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
         char buf[1024];
         sprintf(buf, "In verify loop, get returned %s for key %s",
                 checkPtr->asChar(), key);
@@ -188,8 +187,8 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   LOGINFO("Creating region --  %s  ackMode is %d", name, ackMode);
   // ack, caching
   RegionPtr regPtr = getHelper()->createRegion(
-      name, ackMode, true, NULLPTR, endpoints, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+      name, ackMode, true, nullptr, endpoints, clientNotificationEnabled);
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 
@@ -202,7 +201,7 @@ void createEntry(const char* name, const char* key, const char* value) {
   CacheableStringPtr valPtr = CacheableString::create(value);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
          "Key should not have been found in region.");
@@ -226,7 +225,7 @@ void updateEntry(const char* name, const char* key, const char* value) {
   CacheableStringPtr valPtr = CacheableString::create(value);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
   // ASSERT(regPtr->containsValueForKey(keyPtr),
@@ -248,17 +247,16 @@ void doNetsearch(const char* name, const char* key, const char* value) {
 
   RegionPtr regPtr = getHelper()->getRegion(name);
   LOGINFO("netsearch  region %s", regPtr->getName());
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   // ASSERT(!regPtr->containsKey(keyPtr),
   //    "Key should not have been found in region.");
   // ASSERT(!regPtr->containsValueForKey(keyPtr),
   //    "Value should not have been found in region.");
 
-  CacheableStringPtr checkPtr =
-      dynCast<CacheableStringPtr>(regPtr->get(keyPtr));  // force a netsearch
+  auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));  // force a netsearch
 
-  if (checkPtr != NULLPTR) {
+  if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
     char buf[1024];
     sprintf(buf, "In net search, get returned %s for key %s",
@@ -317,18 +315,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, InitializeClient2)
 
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
     RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
-    VectorOfCacheableKeyPtr resultKeys(new VectorOfCacheableKey());
+    auto resultKeys = std::make_shared<VectorOfCacheableKey>();
     // create a local entry to check for no change after register interest
     createEntry(regionNames[0], keys[1], nvals[1]);
     regPtr0->registerAllKeys(false, resultKeys, true);
-    regPtr1->registerAllKeys(false, NULLPTR, true);
+    regPtr1->registerAllKeys(false, nullptr, true);
 
     // check that initial entries are created properly
     ASSERT(regPtr0->size() == 1, "Expected one entry in region");
     ASSERT(regPtr1->size() == 1, "Expected one entry in region");
     ASSERT(resultKeys->size() == 1, "Expected one key from registerAllKeys");
     ASSERT(
-        strcmp(dynCast<CacheableStringPtr>(resultKeys->operator[](0))->asChar(),
+        strcmp(std::dynamic_pointer_cast<CacheableString>(resultKeys->operator[](0))->asChar(),
                keys[1]) == 0,
         "Unexpected key from registerAllKeys");
 
@@ -345,18 +343,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, InitializeClient2Regex)
 
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
     RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
-    VectorOfCacheableKeyPtr resultKeys(new VectorOfCacheableKey());
+    auto resultKeys = std::make_shared<VectorOfCacheableKey>();
     // create a local entry to check for no change after register interest
     createEntry(regionNames[0], keys[1], nvals[1]);
     regPtr0->registerRegex(".*", false, resultKeys, true);
-    regPtr1->registerRegex(".*", false, NULLPTR, true);
+    regPtr1->registerRegex(".*", false, nullptr, true);
 
     // check that initial entries are created properly
     ASSERT(regPtr0->size() == 1, "Expected one entry in region");
     ASSERT(regPtr1->size() == 1, "Expected one entry in region");
     ASSERT(resultKeys->size() == 1, "Expected one key from registerAllKeys");
     ASSERT(
-        strcmp(dynCast<CacheableStringPtr>(resultKeys->operator[](0))->asChar(),
+        strcmp(std::dynamic_pointer_cast<CacheableString>(resultKeys->operator[](0))->asChar(),
                keys[1]) == 0,
         "Unexpected key from registerAllKeys");
 
@@ -373,7 +371,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyClient1)
   {
     // check the combination of (resultKeys != NULL) and
     // (getValues == false) in registerAllKeys
-    VectorOfCacheableKeyPtr resultKeys(new VectorOfCacheableKey());
+    auto resultKeys = std::make_shared<VectorOfCacheableKey>();
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
     regPtr0->registerAllKeys(false, resultKeys, false);
 
@@ -383,7 +381,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyClient1)
            "Expected region to not contain the value");
     ASSERT(resultKeys->size() == 1, "Expected one key from registerAllKeys");
     ASSERT(
-        strcmp(dynCast<CacheableStringPtr>(resultKeys->operator[](0))->asChar(),
+        strcmp(std::dynamic_pointer_cast<CacheableString>(resultKeys->operator[](0))->asChar(),
                keys[1]) == 0,
         "Unexpected key from registerAllKeys");
 
@@ -398,7 +396,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyClient1)
            "Expected region to not contain the value");
     ASSERT(resultKeys->size() == 1, "Expected one key from registerRegex");
     ASSERT(
-        strcmp(dynCast<CacheableStringPtr>(resultKeys->operator[](0))->asChar(),
+        strcmp(std::dynamic_pointer_cast<CacheableString>(resultKeys->operator[](0))->asChar(),
                keys[3]) == 0,
         "Unexpected key from registerRegex");
 

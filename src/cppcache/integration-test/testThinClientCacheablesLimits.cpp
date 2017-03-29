@@ -64,9 +64,9 @@ void createRegion(const char* name, bool ackMode,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, false, NULLPTR,
+  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, false, nullptr,
                                                clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 uint8_t* createRandByteArray(int size) {
@@ -91,7 +91,7 @@ const char* _regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(_regionNames[1], NO_ACK, locatorsG,
                                     "__TEST_POOL1__", false, false);
     LOG("StepOne complete.");
@@ -129,16 +129,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
       ASSERT(!verifyReg->containsValueForKey(KEY_EMPTY_BYTESARR),
              "Contains value key failed for empty bytes array");
 
-      CacheableBytesPtr bytePtrReturn =
-          dynCast<CacheableBytesPtr>(verifyReg->get(KEY_BYTE));
-      CacheableStringPtr stringPtrReturn =
-          dynCast<CacheableStringPtr>(verifyReg->get(KEY_STRING));
-      CacheableBytesPtr emptyBytesArrReturn =
-          dynCast<CacheableBytesPtr>(verifyReg->get(KEY_EMPTY_BYTESARR));
+      auto bytePtrReturn = std::dynamic_pointer_cast<CacheableBytes>(verifyReg->get(KEY_BYTE));
+      auto stringPtrReturn = std::dynamic_pointer_cast<CacheableString>(verifyReg->get(KEY_STRING));
+      auto emptyBytesArrReturn = std::dynamic_pointer_cast<CacheableBytes>(verifyReg->get(KEY_EMPTY_BYTESARR));
 
-      ASSERT(bytePtrReturn != NULLPTR, "Byte val is NULL");
-      ASSERT(stringPtrReturn != NULLPTR, "String val is NULL");
-      ASSERT(emptyBytesArrReturn != NULLPTR, "Empty Bytes Array ptr is NULL");
+      ASSERT(bytePtrReturn != nullptr, "Byte val is NULL");
+      ASSERT(stringPtrReturn != nullptr, "String val is NULL");
+      ASSERT(emptyBytesArrReturn != nullptr, "Empty Bytes Array ptr is NULL");
 
       bool isSameBytes = (bytePtrReturn->length() == bytePtrSent->length() &&
                           !memcmp(bytePtrReturn->value(), bytePtrSent->value(),
@@ -167,9 +164,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
       ASSERT(!verifyReg->containsValueForKey(KEY_EMPTY_BYTESARR),
              "Contains value key failed for empty bytes array");
 
-      CacheableBytesPtr emptyBytesArrReturn1 =
-          dynCast<CacheableBytesPtr>(verifyReg->get(KEY_EMPTY_BYTESARR));
-      ASSERT(emptyBytesArrReturn1 != NULLPTR, "Empty Bytes Array ptr is NULL");
+      auto emptyBytesArrReturn1 = std::dynamic_pointer_cast<CacheableBytes>(verifyReg->get(KEY_EMPTY_BYTESARR));
+      ASSERT(emptyBytesArrReturn1 != nullptr, "Empty Bytes Array ptr is NULL");
       ASSERT(emptyBytesArrReturn1->length() == 0,
              "Empty Bytes Array  length is not 0.");
     }

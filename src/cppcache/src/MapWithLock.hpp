@@ -49,7 +49,7 @@ template <>
 struct equal_to<apache::geode::client::CacheableKeyPtr> {
   size_t operator()(const apache::geode::client::CacheableKeyPtr& key1,
                     const apache::geode::client::CacheableKeyPtr& key2) const {
-    return (*key1.ptr() == *key2.ptr());
+    return (*key1.get() == *key2.get());
   }
 };
 }  // namespace std

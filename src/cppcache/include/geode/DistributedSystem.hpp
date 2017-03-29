@@ -64,7 +64,7 @@ class CPPCACHE_EXPORT DistributedSystem : public SharedBase {
    *for this process
    **/
   static DistributedSystemPtr connect(const char* name,
-                                      const PropertiesPtr& configPtr = NULLPTR);
+                                      const PropertiesPtr& configPtr = nullptr);
 
   /**
    *@brief disconnect from the distributed system

@@ -104,11 +104,11 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
       : CacheableObjectPartList(keys, keysOffset, values, exceptions,
                                 resultKeys, region, trackerMap, destroyTracker,
                                 addToLocalCache),
+        m_tempKeys(std::make_shared<VectorOfCacheableKey>()),
         m_responseLock(responseLock) {
     m_regionIsVersioned = false;
     m_serializeValues = false;
     m_endpointMemId = m_dsmemId;
-    GF_NEW(m_tempKeys, VectorOfCacheableKey);
     m_hasTags = false;
     m_hasKeys = false;
   }
@@ -116,25 +116,24 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   VersionedCacheableObjectPartList(VectorOfCacheableKey* keys,
                                    int32_t totalMapSize,
                                    ACE_Recursive_Thread_Mutex& responseLock)
-      : m_responseLock(responseLock) {
+      : m_tempKeys(keys), m_responseLock(responseLock)  {
     m_regionIsVersioned = false;
     m_serializeValues = false;
     m_hasTags = false;
     m_endpointMemId = 0;
     m_versionTags.resize(totalMapSize);
     this->m_hasKeys = false;
-    this->m_tempKeys = VectorOfCacheableKeyPtr(keys);
+    ;
   }
 
   VersionedCacheableObjectPartList(VectorOfCacheableKey* keys,
                                    ACE_Recursive_Thread_Mutex& responseLock)
-      : m_responseLock(responseLock) {
+      : m_tempKeys(keys), m_responseLock(responseLock) {
     m_regionIsVersioned = false;
     m_serializeValues = false;
     m_hasTags = false;
     m_endpointMemId = 0;
     this->m_hasKeys = false;
-    this->m_tempKeys = VectorOfCacheableKeyPtr(keys);
   }
 
   VersionedCacheableObjectPartList(ACE_Recursive_Thread_Mutex& responseLock)
@@ -170,11 +169,11 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
 
   inline VersionedCacheableObjectPartList(
       uint16_t endpointMemId, ACE_Recursive_Thread_Mutex& responseLock)
-      : m_responseLock(responseLock) {
+      : m_tempKeys(std::make_shared<VectorOfCacheableKey>()), m_responseLock(responseLock)
+         {
     m_regionIsVersioned = false;
     m_serializeValues = false;
     m_endpointMemId = endpointMemId;
-    GF_NEW(m_tempKeys, VectorOfCacheableKey);
     m_hasTags = false;
     m_hasKeys = false;
   }
@@ -182,16 +181,16 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   void addAll(VersionedCacheableObjectPartListPtr other) {
     // LOGDEBUG("DEBUG:: COPL.addAll called");
     // ACE_Guard< ACE_Recursive_Thread_Mutex > guard( this->m_responseLock );
-    if (other->m_tempKeys != NULLPTR) {
-      if (this->m_tempKeys == NULLPTR) {
-        this->m_tempKeys = new VectorOfCacheableKey();
+    if (other->m_tempKeys != nullptr) {
+      if (this->m_tempKeys == nullptr) {
+        this->m_tempKeys = std::make_shared<VectorOfCacheableKey>();
         this->m_hasKeys = true;
         int size = other->m_tempKeys->size();
         for (int i = 0; i < size; i++) {
           this->m_tempKeys->push_back(other->m_tempKeys->at(i));
         }
       } else {
-        if (this->m_tempKeys != NULLPTR) {
+        if (this->m_tempKeys != nullptr) {
           if (!this->m_hasKeys) {
             LOGDEBUG(" VCOPL::addAll m_hasKeys should be true here");
             this->m_hasKeys = true;
@@ -233,7 +232,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   void addAllKeys(VectorOfCacheableKeyPtr keySet) {
     if (!this->m_hasKeys) {
       this->m_hasKeys = true;
-      this->m_tempKeys = new VectorOfCacheableKey(*keySet);
+      this->m_tempKeys = std::make_shared<VectorOfCacheableKey>(*keySet);
     } else {
       for (int i = 0; i < keySet->size(); i++) {
         this->m_tempKeys->push_back(keySet->at(i));

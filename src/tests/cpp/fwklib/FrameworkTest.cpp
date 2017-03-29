@@ -36,7 +36,7 @@ FrameworkTest::FrameworkTest(const char* initArgs) {
 #ifdef WIN32
   setNewAndDelete();
 #endif
-  txManager = NULLPTR;
+  txManager = nullptr;
   // parse args into variables,
   char xml[4096];   // xml file name
   char addr[1024];  // ip address, host:port
@@ -70,7 +70,7 @@ FrameworkTest::~FrameworkTest() {
     m_timeSync = NULL;
   }
 
-  if (m_cache != NULLPTR) {
+  if (m_cache != nullptr) {
     cacheFinalize();
   }
 }
@@ -265,13 +265,13 @@ void FrameworkTest::cacheInitialize(PropertiesPtr& props,
       txManager = m_cache->getCacheTransactionManager();
     }
   } catch (CacheExistsException ignore) {
-    m_cache = NULLPTR;
+    m_cache = nullptr;
   } catch (Exception e) {
     FWKEXCEPTION(
         "CacheFactory::create encountered Exception: " << e.getMessage());
   }
 
-  if (m_cache == NULLPTR) {
+  if (m_cache == nullptr) {
     FWKEXCEPTION("FrameworkTest: Failed to initialize cache.");
   }
 }
@@ -279,7 +279,7 @@ void FrameworkTest::cacheInitialize(PropertiesPtr& props,
 // ----------------------------------------------------------------------------
 
 void FrameworkTest::cacheFinalize() {
-  if (m_cache != NULLPTR) {
+  if (m_cache != nullptr) {
     try {
       destroyAllRegions();
       m_cache->close();
@@ -291,7 +291,7 @@ void FrameworkTest::cacheFinalize() {
       FWKSEVERE("Caught an unexpected unknown exception during cache close.");
     }
   }
-  m_cache = NULLPTR;
+  m_cache = nullptr;
   FWKINFO("Cache closed.");
 }
 
@@ -401,23 +401,23 @@ void FrameworkTest::parseEndPoints(int32_t ep, std::string label,
   int32_t redundancyLevel = getIntValue("redundancyLevel");
   if (redundancyLevel > 0) pfPtr->setSubscriptionRedundancy(redundancyLevel);
   // create tag specific pools
-  PoolPtr pptr = NULLPTR;
+  PoolPtr pptr = nullptr;
   if (!tag.empty()) {
     poolName.append(tag);
     // check if pool already exists
     pptr = PoolManager::find(poolName.c_str());
-    if (pptr == NULLPTR) {
+    if (pptr == nullptr) {
       pptr = pfPtr->create(poolName.c_str());
     }
   }
   // create default pool
   else {
     pptr = PoolManager::find(poolName.c_str());
-    if (pptr == NULLPTR) {
+    if (pptr == nullptr) {
       pptr = pfPtr->create(poolName.c_str());
     }
   }
-  if (pptr != NULLPTR)
+  if (pptr != nullptr)
     FWKINFO(" Region Created with following Pool attributes :"
             << poolAttributesToString(pptr));
 }
@@ -525,17 +525,17 @@ std::string FrameworkTest::poolAttributesToString(PoolPtr& pool) {
   sString += "\nPRSingleHopEnabled: ";
   sString += pool->getPRSingleHopEnabled() ? "true" : "false";
   sString += "\nLocator: ";
-  CacheableStringArrayPtr str =
-      dynamic_cast<CacheableStringArray*>(pool->getLocators().ptr());
-  if (str != NULLPTR) {
+  auto str =
+      std::dynamic_pointer_cast<CacheableStringArray>(pool->getLocators());
+  if (str != nullptr) {
     for (int32_t stri = 0; stri < str->length(); stri++) {
       sString += str->operator[](stri)->asChar();
       sString += ",";
     }
   }
   sString += "\nServers: ";
-  str = dynamic_cast<CacheableStringArray*>(pool->getServers().ptr());
-  if (str != NULLPTR) {
+  str = std::dynamic_pointer_cast<CacheableStringArray>(pool->getServers());
+  if (str != nullptr) {
     for (int32_t stri = 0; stri < str->length(); stri++) {
       sString += str->operator[](stri)->asChar();
       sString += ",";

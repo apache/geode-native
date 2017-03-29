@@ -47,7 +47,7 @@ void PdxInstantiator::toData(DataOutput& output) const {
 
 Serializable* PdxInstantiator::fromData(DataInput& input) {
   m_userObject = PdxHelper::deserializePdx(input, false);
-  return m_userObject.ptr();
+  return m_userObject.get();
 }
 
 CacheableStringPtr PdxInstantiator::toString() const {

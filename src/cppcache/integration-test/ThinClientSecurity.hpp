@@ -38,7 +38,7 @@ const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 void setCacheListener(const char* regName, const CacheListenerPtr& listener) {
-  if (listener != NULLPTR) {
+  if (listener != nullptr) {
     RegionPtr reg = getHelper()->getRegion(regName);
     AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
     attrMutator->setCacheListener(listener);
@@ -47,7 +47,7 @@ void setCacheListener(const char* regName, const CacheListenerPtr& listener) {
 
 void createRegionForSecurity(const char* name, bool ackMode,
                              bool clientNotificationEnabled = false,
-                             const CacheListenerPtr& listener = NULLPTR,
+                             const CacheListenerPtr& listener = nullptr,
                              bool caching = true, int connections = -1,
                              bool isMultiuserMode = false,
                              int subscriptionRedundancy = -1) {
@@ -57,7 +57,7 @@ void createRegionForSecurity(const char* name, bool ackMode,
   char buff[128] = {'\0'};
   const char* poolName = name;
 
-  if (PoolManager::find(name) != NULLPTR) {
+  if (PoolManager::find(name) != nullptr) {
     static unsigned int index = 0;
     sprintf(buff, "%s_%d", poolName, index++);
     poolName = buff;

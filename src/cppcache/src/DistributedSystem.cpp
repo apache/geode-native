@@ -181,7 +181,7 @@ DistributedSystemPtr DistributedSystem::connect(
       CppCacheLibrary::closeLib();
       delete g_sysProps;
       g_sysProps = NULL;
-      *m_instance_ptr = NULLPTR;
+      *m_instance_ptr = nullptr;
       // delete g_disconnectLock;
       throw;
     }
@@ -252,7 +252,7 @@ DistributedSystemPtr DistributedSystem::connect(
     CppCacheLibrary::closeLib();
     delete g_sysProps;
     g_sysProps = NULL;
-    *m_instance_ptr = NULLPTR;
+    *m_instance_ptr = nullptr;
     // delete g_disconnectLock;
     throw;
   }
@@ -287,7 +287,7 @@ DistributedSystemPtr DistributedSystem::connect(
   }
 
   m_connected = true;
-  dptr = dp;
+  dptr.reset(dp);
   *m_instance_ptr = dptr;
   LOGCONFIG("Starting the Geode Native Client");
 
@@ -308,7 +308,7 @@ void DistributedSystem::disconnect() {
 
   try {
     CachePtr cache = CacheFactory::getAnyInstance();
-    if (cache != NULLPTR && !cache->isClosed()) {
+    if (cache != nullptr && !cache->isClosed()) {
       cache->close();
     }
   } catch (const apache::geode::client::Exception& e) {
@@ -367,7 +367,7 @@ void DistributedSystem::disconnect() {
 
   LOGFINEST("Cleaned PoolStatType");
 
-  *m_instance_ptr = NULLPTR;
+  *m_instance_ptr = nullptr;
 
   // Free up library resources
   CppCacheLibrary::closeLib();
@@ -393,7 +393,7 @@ bool DistributedSystem::isConnected() {
 DistributedSystemPtr DistributedSystem::getInstance() {
   CppCacheLibrary::initLib();
   if (m_instance_ptr == NULL) {
-    return NULLPTR;
+    return nullptr;
   }
   return *m_instance_ptr;
 }

@@ -67,11 +67,11 @@ class CacheTransactionManagerImpl
   //    virtual void removeListener(TransactionListenerPtr aListener);
 
   inline static int32_t hasher(const SharedBasePtr& p) {
-    return static_cast<int32_t>(reinterpret_cast<intptr_t>(p.ptr()));
+    return static_cast<int32_t>(reinterpret_cast<intptr_t>(p.get()));
   }
 
   inline static bool equal_to(const SharedBasePtr& x, const SharedBasePtr& y) {
-    return x.ptr() == y.ptr();
+    return x.get() == y.get();
   }
   TXState* getSuspendedTx(int32_t txId);
 

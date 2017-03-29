@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "VersionStamp.hpp"
 #include <string>
 #include "MemberListForVersionStamp.hpp"
@@ -22,7 +23,9 @@
 #include "ThinClientRegion.hpp"
 #include "ThinClientPoolDM.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 void VersionStamp::setVersions(VersionTagPtr versionTag) {
   int32_t eVersion = versionTag->getEntryVersion();
@@ -40,11 +43,11 @@ void VersionStamp::setVersions(VersionStamp& versionStamp) {
   m_regionVersionLowBytes = versionStamp.m_regionVersionLowBytes;
   m_memberID = versionStamp.m_memberID;
 }
-int32_t VersionStamp::getEntryVersion() {
+int32_t VersionStamp::getEntryVersion() const {
   return (m_entryVersionHighByte << 16) | m_entryVersionLowBytes;
 }
 
-int64_t VersionStamp::getRegionVersion() {
+int64_t VersionStamp::getRegionVersion() const {
   return ((static_cast<int64_t>(m_regionVersionHighBytes)) << 32) |
          m_regionVersionLowBytes;
 }
@@ -57,14 +60,15 @@ uint16_t VersionStamp::getMemberId() const { return m_memberID; }
 // This is based on the basicprocessVersionTag function of
 // AbstractRegionEntry.java
 // Any change to the java function should be reflected here as well.
-GfErrType VersionStamp::processVersionTag(RegionInternal* region,
-                                          CacheableKeyPtr keyPtr,
-                                          VersionTagPtr tag, bool deltaCheck) {
+GfErrType VersionStamp::processVersionTag(const RegionInternal* region,
+                                          const CacheableKeyPtr& keyPtr,
+                                          const VersionTagPtr& tag,
+                                          const bool deltaCheck) const {
   char key[256];
   int16_t keyLen = keyPtr->logString(key, 256);
   std::string keystr(key, keyLen);
 
-  if (tag.ptr() == NULL) {
+  if (nullptr == tag) {
     LOGERROR("Cannot process version tag as it is NULL.");
     return GF_CACHE_ILLEGAL_STATE_EXCEPTION;
   }
@@ -72,9 +76,10 @@ GfErrType VersionStamp::processVersionTag(RegionInternal* region,
   return checkForConflict(region, keystr, tag, deltaCheck);
 }
 
-GfErrType VersionStamp::checkForConflict(RegionInternal* region,
-                                         std::string keystr, VersionTagPtr tag,
-                                         bool deltaCheck) {
+GfErrType VersionStamp::checkForConflict(const RegionInternal* region,
+                                         const std::string& keystr,
+                                         const VersionTagPtr& tag,
+                                         const bool deltaCheck) const {
   if (getEntryVersion() == 0 && getRegionVersion() == 0 && getMemberId() == 0) {
     LOGDEBUG(
         "Version stamp on existing entry not found. applying change: key=%s",
@@ -90,8 +95,7 @@ GfErrType VersionStamp::checkForConflict(RegionInternal* region,
   }
   int64_t stampVersion = getEntryVersion() & 0xffffffffL;
   int64_t tagVersion = tag->getEntryVersion() & 0xffffffffL;
-  MemberListForVersionStampPtr memberList =
-      region->getCacheImpl()->getMemberListForVersionStamp();
+  auto memberList = region->getCacheImpl()->getMemberListForVersionStamp();
   bool apply = false;
   if (stampVersion != 0) {
     // check for int wraparound on the version number
@@ -109,7 +113,7 @@ GfErrType VersionStamp::checkForConflict(RegionInternal* region,
   }
 
   if (deltaCheck) {
-    GfErrType err =
+    auto err =
         checkForDeltaConflict(region, keystr, stampVersion, tagVersion, tag);
     if (err != GF_NOERR) return err;
   }
@@ -121,8 +125,8 @@ GfErrType VersionStamp::checkForConflict(RegionInternal* region,
     LOGDEBUG("disallowing change: key=%s", keystr.c_str());
   } else {
     // compare member IDs
-    DSMemberForVersionStampPtr stampID = memberList->getDSMember(getMemberId());
-    if (stampID == NULLPTR && stampID.ptr() == NULL) {
+    auto stampID = memberList->getDSMember(getMemberId());
+    if (nullptr == stampID) {
       // This scenario is not possible. But added for just in case
       LOGERROR(
           "MemberId of the version stamp could not be found. Disallowing a "
@@ -131,9 +135,8 @@ GfErrType VersionStamp::checkForConflict(RegionInternal* region,
       // throw error
       return GF_CACHE_ILLEGAL_STATE_EXCEPTION;
     }
-    DSMemberForVersionStampPtr tagID =
-        memberList->getDSMember(tag->getInternalMemID());
-    if (tagID == NULLPTR && tagID.ptr() == NULL) {
+    auto tagID = memberList->getDSMember(tag->getInternalMemID());
+    if (nullptr == tagID) {
       // This scenario is not possible. But added for just in case
       LOGERROR(
           "MemberId of the version tag could not be found. Disallowing a "
@@ -147,7 +150,7 @@ GfErrType VersionStamp::checkForConflict(RegionInternal* region,
           "comparing tagID %s with stampId %s for version comparison of key %s",
           tagID->getHashKey().c_str(), stampID->getHashKey().c_str(),
           keystr.c_str());
-      int compare = stampID->compareTo(tagID);
+      int compare = stampID->compareTo(*tagID);
       if (compare < 0) {
         LOGDEBUG("applying change: key=%s", keystr.c_str());
         apply = true;
@@ -171,15 +174,14 @@ GfErrType VersionStamp::checkForConflict(RegionInternal* region,
   return GF_NOERR;
 }
 
-GfErrType VersionStamp::checkForDeltaConflict(RegionInternal* region,
-                                              std::string keystr,
-                                              int64_t stampVersion,
-                                              int64_t tagVersion,
-                                              VersionTagPtr tag) {
-  MemberListForVersionStampPtr memberList =
-      region->getCacheImpl()->getMemberListForVersionStamp();
-  ThinClientRegion* tcRegion = dynamic_cast<ThinClientRegion*>(region);
-  ThinClientPoolDM* poolDM = NULL;
+GfErrType VersionStamp::checkForDeltaConflict(const RegionInternal* region,
+                                              const std::string& keystr,
+                                              const int64_t stampVersion,
+                                              const int64_t tagVersion,
+                                              const VersionTagPtr& tag) const {
+  auto memberList = region->getCacheImpl()->getMemberListForVersionStamp();
+  auto tcRegion = dynamic_cast<const ThinClientRegion*>(region);
+  ThinClientPoolDM* poolDM = nullptr;
   if (tcRegion) {
     poolDM = dynamic_cast<ThinClientPoolDM*>(tcRegion->getDistMgr());
   }
@@ -195,8 +197,8 @@ GfErrType VersionStamp::checkForDeltaConflict(RegionInternal* region,
   } else {
     // make sure the tag was based on the value in this entry by checking the
     // tag's previous-changer ID against this stamp's current ID
-    DSMemberForVersionStampPtr stampID = memberList->getDSMember(getMemberId());
-    if (stampID.ptr() == NULL) {
+    auto stampID = memberList->getDSMember(getMemberId());
+    if (nullptr == stampID) {
       LOGERROR(
           "MemberId of the version stamp could not be found. Requesting full "
           "delta value. key=%s",
@@ -205,9 +207,8 @@ GfErrType VersionStamp::checkForDeltaConflict(RegionInternal* region,
       return GF_INVALID_DELTA;
     }
 
-    DSMemberForVersionStampPtr tagID =
-        memberList->getDSMember(tag->getPreviousMemID());
-    if (tagID.ptr() == NULL) {
+    auto tagID = memberList->getDSMember(tag->getPreviousMemID());
+    if (nullptr == tagID) {
       LOGERROR(
           "Previous MemberId of the version tag could not be found. Requesting "
           "full delta value. key=%s",
@@ -216,7 +217,7 @@ GfErrType VersionStamp::checkForDeltaConflict(RegionInternal* region,
       return GF_INVALID_DELTA;
     }
 
-    if (tagID->compareTo(stampID) != 0) {
+    if (tagID->compareTo(*stampID) != 0) {
       LOGDEBUG(
           "delta requires full value due to version mismatch. key=%s. \
         tag.previous=%s but stamp.current=%s",
@@ -229,3 +230,6 @@ GfErrType VersionStamp::checkForDeltaConflict(RegionInternal* region,
     return GF_NOERR;
   }
 }
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

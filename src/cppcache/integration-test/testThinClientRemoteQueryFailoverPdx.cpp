@@ -127,10 +127,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, RegisterTypesAndCreatePoolAndRegion)
 
     RegionPtr rptr = getHelper()->cachePtr->getRegion(qRegionNames[0]);
 
-    CacheablePtr port1(new PortfolioPdx(1, 100));
-    CacheablePtr port2(new PortfolioPdx(2, 200));
-    CacheablePtr port3(new PortfolioPdx(3, 300));
-    CacheablePtr port4(new PortfolioPdx(4, 400));
+    auto port1 = std::make_shared<PortfolioPdx>(1, 100);
+    auto port2 = std::make_shared<PortfolioPdx>(2, 200);
+    auto port3 = std::make_shared<PortfolioPdx>(3, 300);
+    auto port4 = std::make_shared<PortfolioPdx>(4, 400);
 
     rptr->put("1", port1);
     rptr->put("2", port2);
@@ -146,7 +146,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ValidateQueryExecutionAcrossServerFailure)
     try {
       kst = new KillServerThread();
 
-      QueryServicePtr qs = NULLPTR;
+      QueryServicePtr qs = nullptr;
       if (isPoolConfig) {
         PoolPtr pool1 = findPool(poolNames[0]);
         qs = pool1->getQueryService();

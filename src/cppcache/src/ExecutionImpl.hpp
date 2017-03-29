@@ -37,21 +37,21 @@ typedef std::map<std::string, std::vector<int8_t>*> FunctionToFunctionAttributes
 
 class ExecutionImpl : public Execution {
  public:
-  ExecutionImpl(RegionPtr rptr = NULLPTR, ProxyCachePtr proxyCache = NULLPTR,
-                PoolPtr pp = NULLPTR)
-      : m_routingObj(NULLPTR),
-        m_args(NULLPTR),
-        m_rc(NULLPTR),
+  ExecutionImpl(RegionPtr rptr = nullptr, ProxyCachePtr proxyCache = nullptr,
+                PoolPtr pp = nullptr)
+      : m_routingObj(nullptr),
+        m_args(nullptr),
+        m_rc(nullptr),
         m_region(rptr),
         m_allServer(false),
         m_pool(pp),
         m_proxyCache(proxyCache) {}
   ExecutionImpl(PoolPtr pool, bool allServer = false,
-                ProxyCachePtr proxyCache = NULLPTR)
-      : m_routingObj(NULLPTR),
-        m_args(NULLPTR),
-        m_rc(NULLPTR),
-        m_region(NULLPTR),
+                ProxyCachePtr proxyCache = nullptr)
+      : m_routingObj(nullptr),
+        m_args(nullptr),
+        m_rc(nullptr),
+        m_region(nullptr),
         m_allServer(allServer),
         m_pool(pool),
         m_proxyCache(proxyCache) {}
@@ -80,7 +80,7 @@ class ExecutionImpl : public Execution {
   ExecutionImpl(const CacheableVectorPtr& routingObj, const CacheablePtr& args,
                 const ResultCollectorPtr& rc, const RegionPtr& region,
                 const bool allServer, const PoolPtr& pool,
-                ProxyCachePtr proxyCache = NULLPTR)
+                ProxyCachePtr proxyCache = nullptr)
       : m_routingObj(routingObj),
         m_args(args),
         m_rc(rc),
@@ -106,6 +106,8 @@ class ExecutionImpl : public Execution {
                            uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
   std::vector<int8_t>* getFunctionAttributes(const char* func);
   GfErrType getFuncAttributes(const char* func, std::vector<int8_t>** attr);
+
+  FRIEND_STD_SHARED_PTR(ExecutionImpl)
 };
 }  // namespace client
 }  // namespace geode

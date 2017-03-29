@@ -39,23 +39,23 @@ namespace client {
  */
 PdxLocalWriter::PdxLocalWriter()
     : m_dataOutput(NULL),
-      m_pdxType(NULLPTR),
+      m_pdxType(nullptr),
       m_startPosition(NULL),
       m_startPositionOffset(0),
       m_domainClassName(NULL),
       m_currentOffsetIndex(0),
       m_pdxClassName(NULL) {  // COVERITY --> 29282 Uninitialized pointer field
   // m_dataOutput = NULL;
-  // m_pdxType =NULLPTR;
+  // m_pdxType =nullptr;
 }
 
 PdxLocalWriter::PdxLocalWriter(DataOutput& output, PdxTypePtr pdxType) {
   m_dataOutput = &output;
   m_pdxType = pdxType;
   m_currentOffsetIndex = 0;
-  m_preserveData = NULLPTR;
+  m_preserveData = nullptr;
   m_pdxClassName = NULL;
-  if (pdxType != NULLPTR) m_pdxClassName = pdxType->getPdxClassName();
+  if (pdxType != nullptr) m_pdxClassName = pdxType->getPdxClassName();
   ;
   initialize();
   /* adongre  - Coverity II
@@ -72,7 +72,7 @@ PdxLocalWriter::PdxLocalWriter(DataOutput& dataOutput, PdxTypePtr pdxType,
   m_dataOutput = &dataOutput;
   m_pdxType = pdxType;
   m_currentOffsetIndex = 0;
-  m_preserveData = NULLPTR;
+  m_preserveData = nullptr;
   m_pdxClassName = pdxClassName;
   initialize();
   /* adongre  - Coverity II
@@ -102,7 +102,7 @@ PdxLocalWriter::~PdxLocalWriter() {
 }
 
 void PdxLocalWriter::initialize() {
-  if (m_pdxType != NULLPTR) {
+  if (m_pdxType != nullptr) {
     m_currentOffsetIndex = 0;
   }
 
@@ -166,12 +166,12 @@ PdxWriterPtr PdxLocalWriter::writeUnreadFields(PdxUnreadFieldsPtr unread) {
         "written.");
   }
 
-  if (unread != NULLPTR) {
-    m_preserveData = dynCast<PdxRemotePreservedDataPtr>(unread);
-    if (m_preserveData != NULLPTR) {
+  if (unread != nullptr) {
+    m_preserveData = std::dynamic_pointer_cast<PdxRemotePreservedData>(unread);
+    if (m_preserveData != nullptr) {
       m_pdxType =
           PdxTypeRegistry::getPdxType(m_preserveData->getMergedTypeId());
-      if (m_pdxType == NULLPTR) {
+      if (m_pdxType == nullptr) {
         // its local type
         // this needs to fix for IPdxTypemapper
         m_pdxType = PdxTypeRegistry::getLocalPdxType(m_pdxClassName);
@@ -182,7 +182,7 @@ PdxWriterPtr PdxLocalWriter::writeUnreadFields(PdxUnreadFieldsPtr unread) {
           "NULL");
     }
   }
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 int32_t PdxLocalWriter::calculateLenWithOffsets() {
@@ -207,59 +207,59 @@ bool PdxLocalWriter::isFieldWritingStarted() { return true; }
 
 PdxWriterPtr PdxLocalWriter::writeChar(const char* fieldName, char value) {
   m_dataOutput->writeChar(static_cast<uint16_t>(value));
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeWideChar(const char* fieldName,
                                            wchar_t value) {
   m_dataOutput->writeChar(static_cast<uint16_t>(value));
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeBoolean(const char* fieldName, bool value) {
   m_dataOutput->writeBoolean(value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeByte(const char* fieldName, int8_t value) {
   m_dataOutput->write(value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeShort(const char* fieldName, int16_t value) {
   m_dataOutput->writeInt(value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeInt(const char* fieldName, int32_t value) {
   m_dataOutput->writeInt(value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeLong(const char* fieldName, int64_t value) {
   m_dataOutput->writeInt(value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeFloat(const char* fieldName, float value) {
   m_dataOutput->writeFloat(value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeDouble(const char* fieldName, double value) {
   m_dataOutput->writeDouble(value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeDate(const char* fieldName,
                                        CacheableDatePtr date) {
-  // m_dataOutput->writeObject(date.ptr());
-  if (date != NULLPTR) {
+  // m_dataOutput->writeObject(date.get());
+  if (date != nullptr) {
     date->toData(*m_dataOutput);
   } else {
     m_dataOutput->writeInt(static_cast<uint64_t>(-1L));
   }
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeString(const char* fieldName,
@@ -280,7 +280,7 @@ PdxWriterPtr PdxLocalWriter::writeString(const char* fieldName,
       m_dataOutput->writeUTF(value);
     }
   }
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeWideString(const char* fieldName,
@@ -301,7 +301,7 @@ PdxWriterPtr PdxLocalWriter::writeWideString(const char* fieldName,
       m_dataOutput->writeUTF(value);
     }
   }
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeStringwithoutOffset(const char* value) {
@@ -320,7 +320,7 @@ PdxWriterPtr PdxLocalWriter::writeStringwithoutOffset(const char* value) {
       m_dataOutput->writeUTF(value);
     }
   }
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeWideStringwithoutOffset(
@@ -340,7 +340,7 @@ PdxWriterPtr PdxLocalWriter::writeWideStringwithoutOffset(
       m_dataOutput->writeUTF(value);
     }
   }
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeStringArray(const char* fieldName,
@@ -355,7 +355,7 @@ PdxWriterPtr PdxLocalWriter::writeStringArray(const char* fieldName,
       writeStringwithoutOffset(array[i]);
     }
   }
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeWideStringArray(const char* fieldName,
@@ -369,41 +369,42 @@ PdxWriterPtr PdxLocalWriter::writeWideStringArray(const char* fieldName,
       writeWideStringwithoutOffset(array[i]);
     }
   }
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeObject(const char* fieldName,
                                          SerializablePtr value) {
   addOffset();
-  CacheableEnumPtr enumValPtr = NULLPTR;
-  CacheableObjectArrayPtr objArrPtr = NULLPTR;
-  /*if (value != NULLPTR) {
+  CacheableEnumPtr enumValPtr = nullptr;
+  CacheableObjectArrayPtr objArrPtr = nullptr;
+  /*if (value != nullptr) {
     try {
-      enumValPtr = dynCast<CacheableEnumPtr>(value);
+      enumValPtr = std::dynamic_pointer_cast<CacheableEnum>(value);
     }
     catch (const ClassCastException&) {
       //ignore
     }
   }*/
 
-  if (value != NULLPTR &&
+  if (value != nullptr &&
       value->typeId() == static_cast<int8_t>(GeodeTypeIds::CacheableEnum)) {
-    enumValPtr = dynCast<CacheableEnumPtr>(value);
+    enumValPtr = std::dynamic_pointer_cast<CacheableEnum>(value);
   }
 
-  if (enumValPtr != NULLPTR) {
+  if (enumValPtr != nullptr) {
     enumValPtr->toData(*m_dataOutput);
   } else {
-    if (value != NULLPTR &&
+    if (value != nullptr &&
         value->typeId() == GeodeTypeIds::CacheableObjectArray) {
-      objArrPtr = dynCast<CacheableObjectArrayPtr>(value);
+      objArrPtr = std::dynamic_pointer_cast<CacheableObjectArray>(value);
       m_dataOutput->write(
           static_cast<int8_t>(GeodeTypeIds::CacheableObjectArray));
       m_dataOutput->writeArrayLen(objArrPtr->length());
       m_dataOutput->write(static_cast<int8_t>(GeodeTypeIdsImpl::Class));
 
       _VectorOfCacheable::Iterator iter = objArrPtr->begin();
-      PdxSerializablePtr actualObjPtr = dynCast<PdxSerializablePtr>(*iter);
+      PdxSerializablePtr actualObjPtr =
+          std::dynamic_pointer_cast<PdxSerializable>(*iter);
 
       m_dataOutput->write(
           static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
@@ -416,81 +417,81 @@ PdxWriterPtr PdxLocalWriter::writeObject(const char* fieldName,
       m_dataOutput->writeObject(value);
     }
   }
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeBooleanArray(const char* fieldName,
                                                bool* array, int length) {
   addOffset();
   writeObject(array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeCharArray(const char* fieldName, char* array,
                                             int length) {
   addOffset();
   writePdxCharArray(array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeWideCharArray(const char* fieldName,
                                                 wchar_t* array, int length) {
   addOffset();
   writeObject(array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeByteArray(const char* fieldName,
                                             int8_t* array, int length) {
   addOffset();
   writeObject(array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeShortArray(const char* fieldName,
                                              int16_t* array, int length) {
   addOffset();
   writeObject(array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeIntArray(const char* fieldName,
                                            int32_t* array, int length) {
   addOffset();
   writeObject(array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeLongArray(const char* fieldName,
                                             int64_t* array, int length) {
   addOffset();
   writeObject(array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeFloatArray(const char* fieldName,
                                              float* array, int length) {
   addOffset();
   writeObject(array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeDoubleArray(const char* fieldName,
                                               double* array, int length) {
   addOffset();
   writeObject(array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeObjectArray(const char* fieldName,
                                               CacheableObjectArrayPtr array) {
   addOffset();
-  if (array != NULLPTR) {
+  if (array != nullptr) {
     array->toData(*m_dataOutput);
   } else {
     m_dataOutput->write(static_cast<int8_t>(-1));
   }
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::writeArrayOfByteArrays(const char* fieldName,
@@ -507,11 +508,11 @@ PdxWriterPtr PdxLocalWriter::writeArrayOfByteArrays(const char* fieldName,
     m_dataOutput->write(static_cast<int8_t>(-1));
   }
 
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxLocalWriter::markIdentityField(const char* fieldName) {
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 uint8_t* PdxLocalWriter::getPdxStream(int& pdxLen) {

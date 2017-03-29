@@ -107,7 +107,7 @@ class CPPCACHE_EXPORT SerializationRegistry {
   }
 
   inline static void serialize(const SerializablePtr& obj, DataOutput& output) {
-    serialize(obj.ptr(), output);
+    serialize(obj.get(), output);
   }
 
   /**

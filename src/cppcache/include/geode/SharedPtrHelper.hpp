@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_SHAREDPTRHELPER_H_
-#define GEODE_SHAREDPTRHELPER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,17 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_SHAREDPTRHELPER_H_
+#define GEODE_SHAREDPTRHELPER_H_
+
+// TODO shared_ptr - remove this file.
+
+#include <typeinfo>
+
 #include "geode_globals.hpp"
 #include "TypeHelper.hpp"
-#include <typeinfo>
 
 namespace apache {
 namespace geode {

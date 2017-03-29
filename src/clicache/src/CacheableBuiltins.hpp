@@ -56,7 +56,7 @@ namespace Apache
         {
           apache::geode::client::SharedPtr<TNative>& nativeptr = TNative::create();
 
-          SetSP(nativeptr.ptr());
+          SetSP(nativeptr.get());
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Apache
         {
           apache::geode::client::SharedPtr<TNative>& nativeptr = TNative::create(value);
 
-          SetSP(nativeptr.ptr());
+          SetSP(nativeptr.get());
         }
 
         /// <summary>

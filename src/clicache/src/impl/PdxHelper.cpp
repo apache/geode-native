@@ -45,7 +45,7 @@ namespace Apache
         CacheImpl* getCacheImpl()
         {
           CachePtr cache = CacheFactory::getAnyInstance();
-          if (cache == NULLPTR)
+          if (cache == nullptr)
           {
             throw gcnew IllegalStateException("cache has not been created yet.");;
           }
@@ -53,7 +53,7 @@ namespace Apache
           {
             throw gcnew IllegalStateException("cache has been closed. ");
           }      
-          return CacheRegionHelper::getCacheImpl(cache.ptr());
+          return CacheRegionHelper::getCacheImpl(cache.get());
         }
         
         void PdxHelper::SerializePdx(DataOutput^ dataOutput, IPdxSerializable^ pdxObject)

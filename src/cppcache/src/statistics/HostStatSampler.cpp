@@ -529,7 +529,7 @@ void HostStatSampler::putStatsInAdminRegion() {
     static bool initDone = false;
     static std::string clientId = "";
     AdminRegionPtr adminRgn = m_statMngr->getAdminRegion();
-    if (adminRgn == NULLPTR) return;
+    if (adminRgn == nullptr) return;
     TryReadGuard _guard(adminRgn->getRWLock(), adminRgn->isDestroyed());
     if (!adminRgn->isDestroyed()) {
       TcrConnectionManager* m_conn_man = adminRgn->getConnectionManager();

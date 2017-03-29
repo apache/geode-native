@@ -43,13 +43,13 @@ PortfolioPdx::PortfolioPdx(int32_t i, int32_t size, char** nm) : names(nm) {
   memcpy(type, buf, strSize2);
 
   int numSecIds = sizeof(secIds) / sizeof(char*);
-  position1 = new PositionPdx(secIds[PositionPdx::cnt % numSecIds],
-                              PositionPdx::cnt * 1000);
+  position1 = std::make_shared<PositionPdx>(
+      secIds[PositionPdx::cnt % numSecIds], PositionPdx::cnt * 1000);
   if (i % 2 != 0) {
-    position2 = new PositionPdx(secIds[PositionPdx::cnt % numSecIds],
-                                PositionPdx::cnt * 1000);
+    position2 = std::make_shared<PositionPdx>(
+        secIds[PositionPdx::cnt % numSecIds], PositionPdx::cnt * 1000);
   } else {
-    position2 = NULLPTR;
+    position2 = nullptr;
   }
   positions = CacheableHashMap::create();
   positions->insert(
@@ -133,9 +133,12 @@ void PortfolioPdx::fromData(PdxReaderPtr pr) {
   id = pr->readInt("ID");
   pkid = pr->readString("pkid");
 
-  position1 = dynCast<PositionPdxPtr>(pr->readObject("position1"));
-  position2 = dynCast<PositionPdxPtr>(pr->readObject("position2"));
-  positions = dynCast<CacheableHashMapPtr>(pr->readObject("positions"));
+  position1 =
+      std::static_pointer_cast<PositionPdx>(pr->readObject("position1"));
+  position2 =
+      std::static_pointer_cast<PositionPdx>(pr->readObject("position2"));
+  positions =
+      std::static_pointer_cast<CacheableHashMap>(pr->readObject("positions"));
   type = pr->readString("type");
   status = pr->readString("status");
 
@@ -164,19 +167,19 @@ CacheableStringPtr PortfolioPdx::toString() const {
             this->pkid);
   }
   char position1buf[2048];
-  if (position1 != NULLPTR) {
+  if (position1 != nullptr) {
     sprintf(position1buf, "\t\t\t  P1: %s", position1->toString()->asChar());
   } else {
     sprintf(position1buf, "\t\t\t  P1: %s", "NULL");
   }
   char position2buf[2048];
-  if (position2 != NULLPTR) {
+  if (position2 != nullptr) {
     sprintf(position2buf, " P2: %s", position2->toString()->asChar());
   } else {
     sprintf(position2buf, " P2: %s ]", "NULL");
   }
   char creationdatebuf[2048];
-  if (creationDate != NULLPTR) {
+  if (creationDate != nullptr) {
     sprintf(creationdatebuf, "creation Date %s",
             creationDate->toString()->asChar());
   } else {

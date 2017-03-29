@@ -87,7 +87,7 @@ class CPPCACHE_EXPORT CacheListener : public SharedBase {
 
   /** Handles the event of a new key being added to a region. The entry
    * did not previously exist in this region in the local cache (even with a
-   * NULLPTR value).
+   * nullptr value).
    *
    * @param event denotes the event object associated with the entry creation
    * This function does not throw any exception.
@@ -101,7 +101,7 @@ class CPPCACHE_EXPORT CacheListener : public SharedBase {
    * entry
    * previously existed in this region in the local cache, but its previous
    * value
-   * may have been NULLPTR.
+   * may have been nullptr.
    *
    * @param event EntryEvent denotes the event object associated with updating
    * the entry

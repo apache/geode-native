@@ -59,16 +59,16 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
   bool getBeforeUpdate;
 
   inline uint32_t getObjectSize(const SerializablePtr& obj) const {
-    return (obj == NULLPTR ? 0 : obj->objectSize());
+    return (obj == nullptr ? 0 : obj->objectSize());
   }
 
  public:
   DeltaFastAssetAccount()
       : encodeTimestamp(0),
         acctId(0),
-        customerName(NULLPTR),
+        customerName(nullptr),
         netWorth(0.0),
-        assets(NULLPTR),
+        assets(nullptr),
         timestamp(0),
         getBeforeUpdate(false) {}
   DeltaFastAssetAccount(int index, bool encodeTimestp, int maxVal,
@@ -134,12 +134,12 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
   }
 
   virtual DeltaPtr clone() {
-    DeltaFastAssetAccountPtr clonePtr(new DeltaFastAssetAccount());
+    auto clonePtr = std::make_shared<DeltaFastAssetAccount>();
     clonePtr->assets = CacheableHashMap::create();
     for (HashMapOfCacheable::Iterator item = this->assets->begin();
          item != this->assets->end(); item++) {
-      CacheableInt32Ptr key = dynCast<CacheableInt32Ptr>(item.first());
-      FastAssetPtr asset = dynCast<FastAssetPtr>(item.second());
+      auto key = std::dynamic_pointer_cast<CacheableInt32>(item.first());
+      auto asset = std::dynamic_pointer_cast<FastAsset>(item.second());
       clonePtr->assets->insert(key, asset->copy());
     }
     return clonePtr;

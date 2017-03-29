@@ -71,9 +71,9 @@ void createRegion(const char* name, bool ackMode,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, true, NULLPTR,
+  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
                                                clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 
@@ -87,16 +87,16 @@ void checkGets(int maxKeys, int8_t keyTypeId, int8_t valTypeId,
         CacheableWrapperFactory::createInstance(valTypeId);
     ASSERT(tmpval != NULL, "tmpval is NULL");
     tmpkey->initKey(i, KEYSIZE);
-    CacheableKeyPtr key = dynCast<CacheableKeyPtr>(tmpkey->getCacheable());
+    auto key = std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable());
     CacheablePtr val = dataReg->get(key);
     // also check that value is in local cache
     RegionEntryPtr entry = dataReg->getEntry(key);
-    ASSERT(entry != NULLPTR, "entry is NULL");
+    ASSERT(entry != nullptr, "entry is NULL");
     CacheablePtr localVal = entry->getValue();
     uint32_t keychksum = tmpkey->getCheckSum();
-    CacheableInt32Ptr int32val = dynCast<CacheableInt32Ptr>(
+    auto int32val = std::dynamic_pointer_cast<CacheableInt32>(
         verifyReg->get(static_cast<int32_t>(keychksum)));
-    if (int32val == NULLPTR) {
+    if (int32val == nullptr) {
       printf("GetsTask::keychksum: %u, key: %s\n", keychksum,
              Utils::getCacheableKeyString(key)->asChar());
       FAIL("Could not find the checksum for the given key.");
@@ -179,19 +179,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
           CacheableWrapperFactory::createInstance(valTypeId);
       tmpkey->initKey(i, KEYSIZE);
       tmpval->initRandomValue(CacheableHelper::random(VALUESIZE) + 1);
-      ASSERT(tmpkey->getCacheable() != NULLPTR,
+      ASSERT(tmpkey->getCacheable() != nullptr,
              "tmpkey->getCacheable() is NULL");
       // we can have NULL values now after fix for bug #294
-      if (tmpval->getCacheable() != NULLPTR) {
-        dataReg->put(dynCast<CacheableKeyPtr>(tmpkey->getCacheable()),
+      if (tmpval->getCacheable() != nullptr) {
+        dataReg->put(std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable()),
                      tmpval->getCacheable());
       } else {
         try {
-          dataReg->destroy(dynCast<CacheableKeyPtr>(tmpkey->getCacheable()));
+          dataReg->destroy(std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable()));
         } catch (const EntryNotFoundException&) {
           // expected
         }
-        dataReg->create(dynCast<CacheableKeyPtr>(tmpkey->getCacheable()),
+        dataReg->create(std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable()),
                         tmpval->getCacheable());
       }
       uint32_t keychksum = tmpkey->getCheckSum();
@@ -200,9 +200,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
                      static_cast<int32_t>(valchksum));
       // also check that value is in local cache
       RegionEntryPtr entry =
-          dataReg->getEntry(dynCast<CacheableKeyPtr>(tmpkey->getCacheable()));
+          dataReg->getEntry(std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable()));
       CacheablePtr localVal;
-      if (entry != NULLPTR) {
+      if (entry != nullptr) {
         localVal = entry->getValue();
       }
       uint32_t localValChkSum = tmpval->getCheckSum(localVal);

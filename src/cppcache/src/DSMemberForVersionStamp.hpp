@@ -32,7 +32,7 @@ typedef SharedPtr<DSMemberForVersionStamp> DSMemberForVersionStampPtr;
 
 class DSMemberForVersionStamp : public CacheableKey {
  public:
-  virtual int16_t compareTo(DSMemberForVersionStampPtr tagID) = 0;
+  virtual int16_t compareTo(const DSMemberForVersionStamp& tagID) const = 0;
 
   virtual std::string getHashKey() = 0;
 

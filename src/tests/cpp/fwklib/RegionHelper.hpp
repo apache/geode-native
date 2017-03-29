@@ -79,7 +79,7 @@ class RegionHelper {
     std::string sString;
 
     sString += attr->getCachingEnabled() ? "Caching" : "NoCache";
-    sString += (attr->getCacheListener() == NULLPTR) ? "Nlstnr" : "Lstnr";
+    sString += (attr->getCacheListener() == nullptr) ? "Nlstnr" : "Lstnr";
     return sString;
   }
 

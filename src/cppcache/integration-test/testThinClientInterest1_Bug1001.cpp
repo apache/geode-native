@@ -49,7 +49,7 @@ CacheableStringPtr getUAString(int index) {
 DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
   }
@@ -69,11 +69,11 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, setupClient2)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    regPtr->registerAllKeys(false, NULLPTR, true);
+    regPtr->registerAllKeys(false, nullptr, true);
   }
 END_TASK_DEFINITION
 
@@ -108,8 +108,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyUpdates)
       char buf[1024];
       sprintf(buf, "key[%s] should have been found", keys[index]);
       ASSERT(regPtr->containsKey(keyPtr), buf);
-      CacheableStringPtr val =
-          dynCast<CacheableStringPtr>(regPtr->getEntry(keyPtr)->getValue());
+      auto val = std::dynamic_pointer_cast<CacheableString>(regPtr->getEntry(keyPtr)->getValue());
       ASSERT(strcmp(val->asChar(), nvals[index]) == 0,
              "Incorrect value for key");
     }
@@ -133,8 +132,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetUnicodeStrings)
     RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
     for (int index = 0; index < 5; ++index) {
       CacheableStringPtr key = getUString(index);
-      CacheableInt32Ptr val = dynCast<CacheableInt32Ptr>(reg0->get(key));
-      ASSERT(val != NULLPTR, "expected non-null value in get");
+      auto val = std::dynamic_pointer_cast<CacheableInt32>(reg0->get(key));
+      ASSERT(val != nullptr, "expected non-null value in get");
       ASSERT(val->value() == (index + 100), "unexpected value in get");
     }
     reg0->unregisterAllKeys();
@@ -166,9 +165,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckUpdateUnicodeStrings)
     RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
     for (int index = 0; index < 5; ++index) {
       CacheableStringPtr key = getUString(index);
-      CacheableFloatPtr val =
-          dynCast<CacheableFloatPtr>(reg0->getEntry(key)->getValue());
-      ASSERT(val != NULLPTR, "expected non-null value in get");
+      auto val = std::dynamic_pointer_cast<CacheableFloat>(reg0->getEntry(key)->getValue());
+      ASSERT(val != nullptr, "expected non-null value in get");
       ASSERT(val->value() == (index + 20.0F), "unexpected value in get");
     }
     LOG("CheckUpdateUnicodeStrings complete.");
@@ -192,12 +190,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetASCIIAsWideStrings)
     RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
     for (int index = 0; index < 5; ++index) {
       CacheableStringPtr key = getUAString(index);
-      CacheableStringPtr val = dynCast<CacheableStringPtr>(reg0->get(key));
+      auto val = std::dynamic_pointer_cast<CacheableString>(reg0->get(key));
       CacheableStringPtr expectedVal = getUString(index + 20);
-      ASSERT(val != NULLPTR, "expected non-null value in get");
+      ASSERT(val != nullptr, "expected non-null value in get");
       ASSERT(wcscmp(val->asWChar(), expectedVal->asWChar()) == 0,
              "unexpected value in get");
-      ASSERT(*val.ptr() == *expectedVal.ptr(), "unexpected value in get");
+      ASSERT(*val.get() == *expectedVal.get(), "unexpected value in get");
     }
     VectorOfCacheableKey vec;
     for (int index = 0; index < 5; ++index) {
@@ -227,10 +225,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckUpdateASCIIAsWideStrings)
     RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
     for (int index = 0; index < 5; ++index) {
       CacheableStringPtr key = getUAString(index);
-      CacheableStringPtr val = dynCast<CacheableStringPtr>(reg0->get(key));
+      auto val = std::dynamic_pointer_cast<CacheableString>(reg0->get(key));
       CacheableStringPtr expectedVal = getUAString(index + 10);
-      ASSERT(val != NULLPTR, "expected non-null value in get");
-      ASSERT(*val.ptr() == *expectedVal.ptr(), "unexpected value in get");
+      ASSERT(val != nullptr, "expected non-null value in get");
+      ASSERT(*val.get() == *expectedVal.get(), "unexpected value in get");
     }
     LOG("CheckUpdateASCIIAsWideStrings complete.");
   }

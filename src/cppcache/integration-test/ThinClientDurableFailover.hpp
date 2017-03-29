@@ -56,22 +56,22 @@ class OperMonitor : public CacheListener {
     m_ops++;
 
     CacheableKeyPtr key = event.getKey();
-    CacheableInt32Ptr value = NULLPTR;
+    CacheableInt32Ptr value = nullptr;
     try {
-      value = dynCast<CacheableInt32Ptr>(event.getNewValue());
+      value = std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
     } catch (Exception) {
       //  do nothing.
     }
 
-    CacheableStringPtr keyPtr = dynCast<CacheableStringPtr>(key);
-    if (keyPtr != NULLPTR && value != NULLPTR) {
+    auto keyPtr = std::dynamic_pointer_cast<CacheableString>(key);
+    if (keyPtr != nullptr && value != nullptr) {
       char buf[256] = {'\0'};
       sprintf(buf, " Got Key: %s, Value: %d", keyPtr->toString(),
               value->value());
       LOG(buf);
     }
 
-    if (value != NULLPTR) {
+    if (value != nullptr) {
       HashMapOfCacheable::Iterator item = m_map.find(key);
 
       if (item != m_map.end()) {
@@ -102,8 +102,8 @@ class OperMonitor : public CacheListener {
 
     for (HashMapOfCacheable::Iterator item = m_map.begin(); item != m_map.end();
          item++) {
-      CacheableStringPtr keyPtr = dynCast<CacheableStringPtr>(item.first());
-      CacheableInt32Ptr valuePtr = dynCast<CacheableInt32Ptr>(item.second());
+      auto keyPtr = std::dynamic_pointer_cast<CacheableString>(item.first());
+      auto valuePtr = std::dynamic_pointer_cast<CacheableInt32>(item.second());
 
       if (strchr(keyPtr->toString(), 'D') == NULL) { /*Non Durable Key */
         sprintf(buf,
@@ -144,8 +144,8 @@ void setCacheListener(const char* regName, OperMonitorPtr monitor) {
   attrMutator->setCacheListener(monitor);
 }
 
-OperMonitorPtr mon1 = NULLPTR;
-OperMonitorPtr mon2 = NULLPTR;
+OperMonitorPtr mon1 = nullptr;
+OperMonitorPtr mon2 = nullptr;
 
 #include "ThinClientDurableInit.hpp"
 #include "ThinClientTasks_C2S2.hpp"
@@ -158,8 +158,8 @@ void initClientCache(int redundancy, int durableTimeout, OperMonitorPtr& mon,
                      int sleepDuration = 0, int durableIdx = 0) {
   if (sleepDuration) SLEEP(sleepDuration);
 
-  if (mon == NULLPTR) {
-    mon = new OperMonitor();
+  if (mon == nullptr) {
+    mon = std::make_shared<OperMonitor>();
   }
 
   //  35 sec ack interval to ensure primary clears its Q only
@@ -177,12 +177,12 @@ void initClientCache(int redundancy, int durableTimeout, OperMonitorPtr& mon,
   // for R =1 it will get a redundancy error
   try {
     regPtr0->registerRegex(testRegex[0], true);
-  } catch (Exception) {
+  } catch (Exception&) {
     //  do nothing.
   }
   try {
     regPtr0->registerRegex(testRegex[1], false);
-  } catch (Exception) {
+  } catch (Exception&) {
     //  do nothing.
   }
 }
@@ -234,7 +234,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(FEEDER, FeederInit)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regionNames[0], USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
     LOG("FeederInit complete.");
@@ -304,7 +304,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, CloseClient1)
   {
-    mon1 = NULLPTR;
+    mon1 = nullptr;
     cleanProc();
     LOG("CLIENT1 closed");
   }

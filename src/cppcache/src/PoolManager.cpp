@@ -50,8 +50,7 @@ void PoolManager::close(bool keepAlive) {
 
   for (HashMapOfPools::Iterator iter = connectionPools->begin();
        iter != connectionPools->end(); ++iter) {
-    PoolPtr currPool(iter.second());
-    poolsList.push_back(currPool);
+    poolsList.push_back(iter.second());
   }
 
   for (std::vector<PoolPtr>::iterator iter = poolsList.begin();
@@ -73,16 +72,16 @@ PoolPtr PoolManager::find(const char* name) {
     HashMapOfPools::Iterator iter =
         connectionPools->find(CacheableString::create(name));
 
-    PoolPtr poolPtr = NULLPTR;
+    PoolPtr poolPtr = nullptr;
 
     if (iter != connectionPools->end()) {
       poolPtr = iter.second();
-      GF_DEV_ASSERT(poolPtr != NULLPTR);
+      GF_DEV_ASSERT(poolPtr != nullptr);
     }
 
     return poolPtr;
   } else {
-    return NULLPTR;
+    return nullptr;
   }
 }
 

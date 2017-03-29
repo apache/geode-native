@@ -22,7 +22,7 @@ namespace apache {
 namespace geode {
 namespace client {
 void ServerLocation::makeEpString() {
-  if (m_serverName != NULLPTR) {
+  if (m_serverName != nullptr) {
     char epstring[1024] = {0};
     ACE_OS::snprintf(epstring, 1024, "%s:%d", m_serverName->asChar(), m_port);
     m_epString = epstring;

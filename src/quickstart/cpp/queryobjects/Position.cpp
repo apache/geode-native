@@ -45,19 +45,19 @@ Position::~Position() {
 
 void Position::init() {
   avg20DaysVol = 0;
-  bondRating = NULLPTR;
+  bondRating = nullptr;
   convRatio = 0.0;
-  country = NULLPTR;
+  country = nullptr;
   delta = 0.0;
   industry = 0;
   issuer = 0;
   mktValue = 0.0;
   qty = 0.0;
-  secId = NULLPTR;
-  secLinks = NULLPTR;
+  secId = nullptr;
+  secLinks = nullptr;
   secType = NULL;
   sharesOutstanding = 0;
-  underlyer = NULLPTR;
+  underlyer = nullptr;
   volatility = 0;
   pid = 0;
 }

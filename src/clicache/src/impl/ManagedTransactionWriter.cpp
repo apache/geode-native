@@ -204,7 +204,7 @@ namespace apache
       void ManagedTransactionWriterGeneric::beforeCommit(apache::geode::client::TransactionEventPtr& te)
       {
         try {
-          Apache::Geode::Client::TransactionEvent  mevent(te.ptr());
+          Apache::Geode::Client::TransactionEvent  mevent(te.get());
           m_managedptr->BeforeCommit(%mevent);
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {

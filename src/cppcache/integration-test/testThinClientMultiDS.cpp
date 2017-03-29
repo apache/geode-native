@@ -170,12 +170,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_1)
     try {
       RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
       RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
-      CacheableStringPtr checkPtr =
-          dynCast<CacheableStringPtr>(regPtr0->get(keys[2]));
-      ASSERT(checkPtr == NULLPTR, "checkPtr should be null");
-      CacheableStringPtr checkPtr1 =
-          dynCast<CacheableStringPtr>(regPtr0->get(keys[0]));
-      ASSERT(checkPtr1 != NULLPTR, "checkPtr1 should not be null");
+      auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[2]));
+      ASSERT(checkPtr == nullptr, "checkPtr should be null");
+      auto checkPtr1 = std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[0]));
+      ASSERT(checkPtr1 != nullptr, "checkPtr1 should not be null");
     } catch (Exception& excp) {
       LOG(excp.getMessage());
       ASSERT(false, "Got unexpected exception");
@@ -341,12 +339,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_secureclient1)
     try {
       RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
       RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
-      CacheableStringPtr checkPtr =
-          dynCast<CacheableStringPtr>(regPtr0->get(keys[2]));
-      ASSERT(checkPtr == NULLPTR, "checkPtr should be null");
-      CacheableStringPtr checkPtr1 =
-          dynCast<CacheableStringPtr>(regPtr0->get(keys[0]));
-      ASSERT(checkPtr1 != NULLPTR, "checkPtr1 should not be null");
+      auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[2]));
+      ASSERT(checkPtr == nullptr, "checkPtr should be null");
+      auto checkPtr1 = std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[0]));
+      ASSERT(checkPtr1 != nullptr, "checkPtr1 should not be null");
     } catch (Exception& excp) {
       LOG(excp.getMessage());
       ASSERT(false, "Got unexpected exception");

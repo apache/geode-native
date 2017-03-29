@@ -240,7 +240,7 @@ class ThinClientPoolDM
       GfErrType* error, std::set<ServerLocation>& excludeServers,
       bool isBGThread, TcrMessage& request, int8_t& version, bool& match,
       bool& connFound,
-      const BucketServerLocationPtr& serverLocation = NULLPTR) {
+      const BucketServerLocationPtr& serverLocation = nullptr) {
     TcrConnection* conn = NULL;
     TcrEndpoint* theEP = NULL;
     LOGDEBUG("prEnabled = %s, forSingleHop = %s %d",
@@ -249,7 +249,7 @@ class ThinClientPoolDM
              request.getMessageType());
 
     match = false;
-    BucketServerLocationPtr slTmp = NULLPTR;
+    BucketServerLocationPtr slTmp = nullptr;
     if (request.forTransaction()) {
       bool connFound =
           m_manager->getStickyConnection(conn, error, excludeServers, true);
@@ -266,7 +266,7 @@ class ThinClientPoolDM
       if (txState != NULL) {
         txState->setDirty();
       }
-    } else if (serverLocation != NULLPTR /*&& excludeServers.size() == 0*/) {
+    } else if (serverLocation != nullptr /*&& excludeServers.size() == 0*/) {
       theEP = getEndPoint(serverLocation, version, excludeServers);
     } else if (
         m_attrs->getPRSingleHopEnabled() /*&& excludeServers.size() == 0*/ &&
@@ -278,7 +278,7 @@ class ThinClientPoolDM
         // if all buckets are not initialized
         //  match = true;
       }
-      if (slTmp != NULLPTR && m_clientMetadataService != NULL) {
+      if (slTmp != nullptr && m_clientMetadataService != NULL) {
         if (m_clientMetadataService->isBucketMarkedForTimeout(
                 request.getRegionName().c_str(), slTmp->getBucketId()) ==
             true) {
@@ -297,14 +297,14 @@ class ThinClientPoolDM
             createPoolConnectionToAEndPoint(conn, theEP, maxConnLimit, true);
         if (*error == GF_CLIENT_WAIT_TIMEOUT ||
             *error == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA) {
-          if (m_clientMetadataService == NULL || request.getKey() == NULLPTR) {
+          if (m_clientMetadataService == NULL || request.getKey() == nullptr) {
             return NULL;
           }
           RegionPtr region;
           m_connManager.getCacheImpl()->getRegion(
               request.getRegionName().c_str(), region);
-          if (region != NULLPTR) {
-            slTmp = NULLPTR;
+          if (region != nullptr) {
+            slTmp = nullptr;
             m_clientMetadataService
                 ->markPrimaryBucketForTimeoutButLookSecondaryBucket(
                     region, request.getKey(), request.getValue(),
@@ -454,7 +454,8 @@ class FunctionExecution : public PooledWork<GfErrType> {
     m_timeout = 0;
     m_error = GF_NOERR;
     m_rc = NULL;
-    m_userAttr = NULLPTR;
+    m_resultCollectorLock = NULL;
+    m_userAttr = nullptr;
   }
 
   ~FunctionExecution() {}
@@ -466,7 +467,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
                      ThinClientPoolDM* poolDM,
                      const std::shared_ptr<ACE_Recursive_Thread_Mutex>& rCL,
                      ResultCollectorPtr* rs, UserAttributesPtr userAttr) {
-    exceptionPtr = NULLPTR;
+    exceptionPtr = nullptr;
     m_resultCollectorLock = rCL;
     m_rc = rs;
     m_error = GF_NOTCON;
@@ -486,7 +487,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
     // TSSUserAttributesWrapper::s_geodeTSSUserAttributes->setUserAttributes(m_userAttr);
     GuardUserAttribures gua;
 
-    if (m_userAttr != NULLPTR) gua.setProxyCache(m_userAttr->getProxyCache());
+    if (m_userAttr != nullptr) gua.setProxyCache(m_userAttr->getProxyCache());
 
     std::string funcName(m_func);
     TcrMessageExecuteFunction request(funcName, m_args, m_getResult, m_poolDM,
@@ -645,7 +646,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
     std::string funcName(m_func);
 
     m_request = new TcrMessageExecuteRegionFunctionSingleHop(
-        funcName, m_region, m_args, m_routingObj, m_getResult, NULLPTR,
+        funcName, m_region, m_args, m_routingObj, m_getResult, nullptr,
         m_allBuckets, timeout, m_poolDM);
     m_reply = new TcrMessageReply(true, m_poolDM);
     m_resultCollector = new ChunkedFunctionExecutionResponse(
@@ -672,7 +673,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
   GfErrType execute(void) {
     GuardUserAttribures gua;
 
-    if (m_userAttr != NULLPTR) gua.setProxyCache(m_userAttr->getProxyCache());
+    if (m_userAttr != nullptr) gua.setProxyCache(m_userAttr->getProxyCache());
 
     return m_poolDM->sendSyncRequest(*m_request, *m_reply, !(m_getResult & 1),
                                      m_isBGThread, m_serverLocation);

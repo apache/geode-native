@@ -110,8 +110,7 @@ class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
   */
   static CacheableEnumPtr create(const char* enumClassName,
                                  const char* enumName, int32_t ordinal) {
-    CacheableEnumPtr str(new CacheableEnum(enumClassName, enumName, ordinal));
-    return str;
+    return std::make_shared<CacheableEnum>(enumClassName, enumName, ordinal);
   }
 
   /**@return enum class name. */
@@ -138,6 +137,8 @@ class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
   // never implemented.
   void operator=(const CacheableEnum& other);
   CacheableEnum(const CacheableEnum& other);
+  
+  FRIEND_STD_SHARED_PTR(CacheableEnum)
 };
 }  // namespace client
 }  // namespace geode

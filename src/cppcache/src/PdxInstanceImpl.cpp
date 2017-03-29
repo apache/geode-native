@@ -38,7 +38,7 @@
 */
 
 #define VERIFY_PDX_INSTANCE_FIELD_THROW                                 \
-  if (pft == NULLPTR) {                                                 \
+  if (pft == nullptr) {                                                 \
     char excpStr[256] = {0};                                            \
     ACE_OS::snprintf(excpStr, 256, "PdxInstance doesn't has field %s ", \
                      fieldname);                                        \
@@ -91,12 +91,13 @@ PdxInstanceImpl::PdxInstanceImpl(
 
   // apache::geode::client::DataOutput* output =
   // apache::geode::client::DataOutput::getDataOutput();
-  DataOutput output;
-  PdxHelper::serializePdx(output, *this);
+  // TODO shared_ptr - what is the purpose of this?
+//  DataOutput output;
+//  PdxHelper::serializePdx(output, *this);
 }
 
 PdxInstanceImpl::PdxInstanceImpl() {
-  m_pdxType = NULLPTR;
+  m_pdxType = nullptr;
   m_buffer = NULL;
   m_bufferLength = 0;
   m_typeId = 0;
@@ -106,14 +107,14 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
                                  int typeId, CacheablePtr value) {
   switch (typeId) {
     case PdxFieldTypes::INT: {
-      CacheableInt32* val = dynamic_cast<CacheableInt32*>(value.ptr());
+      CacheableInt32* val = dynamic_cast<CacheableInt32*>(value.get());
       if (val != NULL) {
         writer->writeInt(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::STRING: {
-      CacheableString* val = dynamic_cast<CacheableString*>(value.ptr());
+      CacheableString* val = dynamic_cast<CacheableString*>(value.get());
       if (val != NULL) {
         if (val->isWideString()) {
           writer->writeWideString(fieldName, val->asWChar());
@@ -124,56 +125,56 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
       break;
     }
     case PdxFieldTypes::BOOLEAN: {
-      CacheableBoolean* val = dynamic_cast<CacheableBoolean*>(value.ptr());
+      CacheableBoolean* val = dynamic_cast<CacheableBoolean*>(value.get());
       if (val != NULL) {
         writer->writeBoolean(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::FLOAT: {
-      CacheableFloat* val = dynamic_cast<CacheableFloat*>(value.ptr());
+      CacheableFloat* val = dynamic_cast<CacheableFloat*>(value.get());
       if (val != NULL) {
         writer->writeFloat(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::DOUBLE: {
-      CacheableDouble* val = dynamic_cast<CacheableDouble*>(value.ptr());
+      CacheableDouble* val = dynamic_cast<CacheableDouble*>(value.get());
       if (val != NULL) {
         writer->writeDouble(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::CHAR: {
-      CacheableWideChar* val = dynamic_cast<CacheableWideChar*>(value.ptr());
+      CacheableWideChar* val = dynamic_cast<CacheableWideChar*>(value.get());
       if (val != NULL) {
         writer->writeChar(fieldName, static_cast<char>(val->value()));
       }
       break;
     }
     case PdxFieldTypes::BYTE: {
-      CacheableByte* val = dynamic_cast<CacheableByte*>(value.ptr());
+      CacheableByte* val = dynamic_cast<CacheableByte*>(value.get());
       if (val != NULL) {
         writer->writeByte(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::SHORT: {
-      CacheableInt16* val = dynamic_cast<CacheableInt16*>(value.ptr());
+      CacheableInt16* val = dynamic_cast<CacheableInt16*>(value.get());
       if (val != NULL) {
         writer->writeShort(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::LONG: {
-      CacheableInt64* val = dynamic_cast<CacheableInt64*>(value.ptr());
+      CacheableInt64* val = dynamic_cast<CacheableInt64*>(value.get());
       if (val != NULL) {
         writer->writeLong(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::BYTE_ARRAY: {
-      CacheableBytes* val = dynamic_cast<CacheableBytes*>(value.ptr());
+      CacheableBytes* val = dynamic_cast<CacheableBytes*>(value.get());
       if (val != NULL) {
         writer->writeByteArray(fieldName, (int8_t*)val->value(), val->length());
       }
@@ -181,7 +182,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
     }
     case PdxFieldTypes::DOUBLE_ARRAY: {
       CacheableDoubleArray* val =
-          dynamic_cast<CacheableDoubleArray*>(value.ptr());
+          dynamic_cast<CacheableDoubleArray*>(value.get());
       if (val != NULL) {
         writer->writeDoubleArray(fieldName, const_cast<double*>(val->value()),
                                  val->length());
@@ -190,7 +191,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
     }
     case PdxFieldTypes::FLOAT_ARRAY: {
       CacheableFloatArray* val =
-          dynamic_cast<CacheableFloatArray*>(value.ptr());
+          dynamic_cast<CacheableFloatArray*>(value.get());
       if (val != NULL) {
         writer->writeFloatArray(fieldName, const_cast<float*>(val->value()),
                                 val->length());
@@ -199,7 +200,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
     }
     case PdxFieldTypes::SHORT_ARRAY: {
       CacheableInt16Array* val =
-          dynamic_cast<CacheableInt16Array*>(value.ptr());
+          dynamic_cast<CacheableInt16Array*>(value.get());
       if (val != NULL) {
         writer->writeShortArray(fieldName, const_cast<int16_t*>(val->value()),
                                 val->length());
@@ -208,7 +209,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
     }
     case PdxFieldTypes::INT_ARRAY: {
       CacheableInt32Array* val =
-          dynamic_cast<CacheableInt32Array*>(value.ptr());
+          dynamic_cast<CacheableInt32Array*>(value.get());
       if (val != NULL) {
         writer->writeIntArray(fieldName, const_cast<int32_t*>(val->value()),
                               val->length());
@@ -217,7 +218,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
     }
     case PdxFieldTypes::LONG_ARRAY: {
       CacheableInt64Array* val =
-          dynamic_cast<CacheableInt64Array*>(value.ptr());
+          dynamic_cast<CacheableInt64Array*>(value.get());
       if (val != NULL) {
         writer->writeLongArray(fieldName, const_cast<int64_t*>(val->value()),
                                val->length());
@@ -225,7 +226,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
       break;
     }
     case PdxFieldTypes::BOOLEAN_ARRAY: {
-      BooleanArray* val = dynamic_cast<BooleanArray*>(value.ptr());
+      BooleanArray* val = dynamic_cast<BooleanArray*>(value.get());
       if (val != NULL) {
         writer->writeBooleanArray(fieldName, const_cast<bool*>(val->value()),
                                   val->length());
@@ -233,7 +234,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
       break;
     }
     case PdxFieldTypes::CHAR_ARRAY: {
-      CharArray* val = dynamic_cast<CharArray*>(value.ptr());
+      CharArray* val = dynamic_cast<CharArray*>(value.get());
       if (val != NULL) {
         writer->writeWideCharArray(
             fieldName, const_cast<wchar_t*>(val->value()), val->length());
@@ -242,7 +243,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
     }
     case PdxFieldTypes::STRING_ARRAY: {
       CacheableStringArray* val =
-          dynamic_cast<CacheableStringArray*>(value.ptr());
+          dynamic_cast<CacheableStringArray*>(value.get());
       if (val != NULL) {
         int size = val->length();
         if (val->operator[](0)->isCString()) {
@@ -265,14 +266,15 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
       break;
     }
     case PdxFieldTypes::DATE: {
-      CacheableDatePtr date = dynCast<CacheableDatePtr>(value);
-      if (date != NULLPTR) {
+      CacheableDatePtr date = std::dynamic_pointer_cast<CacheableDate>(value);
+      if (date != nullptr) {
         writer->writeDate(fieldName, date);
       }
       break;
     }
     case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS: {
-      CacheableVector* vector = dynamic_cast<CacheableVector*>(value.ptr());
+      CacheableVectorPtr vector =
+          std::dynamic_pointer_cast<CacheableVector>(value);
 
       if (vector != NULL) {
         int size = vector->size();
@@ -280,7 +282,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
         int* lengths = new int[size];
         for (int i = 0; i < size; i++) {
           CacheableBytes* val =
-              dynamic_cast<CacheableBytes*>(vector->at(i).ptr());
+              dynamic_cast<CacheableBytes*>(vector->at(i).get());
           if (val != NULL) {
             values[i] = (int8_t*)val->value();
             lengths[i] = val->length();
@@ -294,8 +296,8 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
     }
     case PdxFieldTypes::OBJECT_ARRAY: {
       CacheableObjectArrayPtr objArray =
-          dynCast<CacheableObjectArrayPtr>(value);
-      if (objArray != NULLPTR) {
+          std::dynamic_pointer_cast<CacheableObjectArray>(value);
+      if (objArray != nullptr) {
         writer->writeObjectArray(fieldName, objArray);
       }
       break;
@@ -307,19 +309,18 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
 WritablePdxInstancePtr PdxInstanceImpl::createWriter() {
   LOGDEBUG("PdxInstanceImpl::createWriter m_bufferLength = %d m_typeId = %d ",
            m_bufferLength, m_typeId);
-  WritablePdxInstancePtr wlr(
-      new PdxInstanceImpl(m_buffer, m_bufferLength,
-                          m_typeId));  // need to create duplicate byte stream);
-  return wlr;
+  return std::make_shared<PdxInstanceImpl>(
+      m_buffer, m_bufferLength,
+      m_typeId);  // need to create duplicate byte stream);
 }
 
 bool PdxInstanceImpl::enumerateObjectArrayEquals(
     CacheableObjectArrayPtr Obj, CacheableObjectArrayPtr OtherObj) {
-  if (Obj == NULLPTR && OtherObj == NULLPTR) {
+  if (Obj == nullptr && OtherObj == nullptr) {
     return true;
-  } else if (Obj == NULLPTR && OtherObj != NULLPTR) {
+  } else if (Obj == nullptr && OtherObj != nullptr) {
     return false;
-  } else if (Obj != NULLPTR && OtherObj == NULLPTR) {
+  } else if (Obj != nullptr && OtherObj == nullptr) {
     return false;
   }
 
@@ -337,11 +338,11 @@ bool PdxInstanceImpl::enumerateObjectArrayEquals(
 
 bool PdxInstanceImpl::enumerateVectorEquals(CacheableVectorPtr Obj,
                                             CacheableVectorPtr OtherObj) {
-  if (Obj == NULLPTR && OtherObj == NULLPTR) {
+  if (Obj == nullptr && OtherObj == nullptr) {
     return true;
-  } else if (Obj == NULLPTR && OtherObj != NULLPTR) {
+  } else if (Obj == nullptr && OtherObj != nullptr) {
     return false;
-  } else if (Obj != NULLPTR && OtherObj == NULLPTR) {
+  } else if (Obj != nullptr && OtherObj == nullptr) {
     return false;
   }
 
@@ -359,11 +360,11 @@ bool PdxInstanceImpl::enumerateVectorEquals(CacheableVectorPtr Obj,
 
 bool PdxInstanceImpl::enumerateArrayListEquals(CacheableArrayListPtr Obj,
                                                CacheableArrayListPtr OtherObj) {
-  if (Obj == NULLPTR && OtherObj == NULLPTR) {
+  if (Obj == nullptr && OtherObj == nullptr) {
     return true;
-  } else if (Obj == NULLPTR && OtherObj != NULLPTR) {
+  } else if (Obj == nullptr && OtherObj != nullptr) {
     return false;
-  } else if (Obj != NULLPTR && OtherObj == NULLPTR) {
+  } else if (Obj != nullptr && OtherObj == nullptr) {
     return false;
   }
 
@@ -381,11 +382,11 @@ bool PdxInstanceImpl::enumerateArrayListEquals(CacheableArrayListPtr Obj,
 
 bool PdxInstanceImpl::enumerateMapEquals(CacheableHashMapPtr Obj,
                                          CacheableHashMapPtr OtherObj) {
-  if (Obj == NULLPTR && OtherObj == NULLPTR) {
+  if (Obj == nullptr && OtherObj == nullptr) {
     return true;
-  } else if (Obj == NULLPTR && OtherObj != NULLPTR) {
+  } else if (Obj == nullptr && OtherObj != nullptr) {
     return false;
-  } else if (Obj != NULLPTR && OtherObj == NULLPTR) {
+  } else if (Obj != nullptr && OtherObj == nullptr) {
     return false;
   }
 
@@ -411,11 +412,11 @@ bool PdxInstanceImpl::enumerateMapEquals(CacheableHashMapPtr Obj,
 
 bool PdxInstanceImpl::enumerateHashTableEquals(CacheableHashTablePtr Obj,
                                                CacheableHashTablePtr OtherObj) {
-  if (Obj == NULLPTR && OtherObj == NULLPTR) {
+  if (Obj == nullptr && OtherObj == nullptr) {
     return true;
-  } else if (Obj == NULLPTR && OtherObj != NULLPTR) {
+  } else if (Obj == nullptr && OtherObj != nullptr) {
     return false;
-  } else if (Obj != NULLPTR && OtherObj == NULLPTR) {
+  } else if (Obj != nullptr && OtherObj == nullptr) {
     return false;
   }
 
@@ -441,11 +442,11 @@ bool PdxInstanceImpl::enumerateHashTableEquals(CacheableHashTablePtr Obj,
 
 bool PdxInstanceImpl::enumerateSetEquals(CacheableHashSetPtr Obj,
                                          CacheableHashSetPtr OtherObj) {
-  if (Obj == NULLPTR && OtherObj == NULLPTR) {
+  if (Obj == nullptr && OtherObj == nullptr) {
     return true;
-  } else if (Obj == NULLPTR && OtherObj != NULLPTR) {
+  } else if (Obj == nullptr && OtherObj != nullptr) {
     return false;
-  } else if (Obj != NULLPTR && OtherObj == NULLPTR) {
+  } else if (Obj != nullptr && OtherObj == nullptr) {
     return false;
   }
 
@@ -463,11 +464,11 @@ bool PdxInstanceImpl::enumerateSetEquals(CacheableHashSetPtr Obj,
 
 bool PdxInstanceImpl::enumerateLinkedSetEquals(
     CacheableLinkedHashSetPtr Obj, CacheableLinkedHashSetPtr OtherObj) {
-  if (Obj == NULLPTR && OtherObj == NULLPTR) {
+  if (Obj == nullptr && OtherObj == nullptr) {
     return true;
-  } else if (Obj == NULLPTR && OtherObj != NULLPTR) {
+  } else if (Obj == nullptr && OtherObj != nullptr) {
     return false;
-  } else if (Obj != NULLPTR && OtherObj == NULLPTR) {
+  } else if (Obj != nullptr && OtherObj == nullptr) {
     return false;
   }
 
@@ -484,80 +485,67 @@ bool PdxInstanceImpl::enumerateLinkedSetEquals(
 }
 
 bool PdxInstanceImpl::deepArrayEquals(CacheablePtr obj, CacheablePtr otherObj) {
-  if (obj == NULLPTR && otherObj == NULLPTR) {
+  if (obj == nullptr && otherObj == nullptr) {
     return true;
-  } else if (obj == NULLPTR && otherObj != NULLPTR) {
+  } else if (obj == nullptr && otherObj != nullptr) {
     return false;
-  } else if (obj != NULLPTR && otherObj == NULLPTR) {
+  } else if (obj != nullptr && otherObj == nullptr) {
     return false;
   }
 
   int8_t typeId = obj->typeId();
   switch (typeId) {
     case GeodeTypeIds::CacheableObjectArray: {
-      CacheableObjectArrayPtr objArrayPtr =
-          dynCast<CacheableObjectArrayPtr>(obj);
-      CacheableObjectArrayPtr otherObjArrayPtr =
-          dynCast<CacheableObjectArrayPtr>(otherObj);
+      auto objArrayPtr = std::dynamic_pointer_cast<CacheableObjectArray>(obj);
+      auto otherObjArrayPtr =
+          std::dynamic_pointer_cast<CacheableObjectArray>(otherObj);
       return enumerateObjectArrayEquals(objArrayPtr, otherObjArrayPtr);
     }
     case GeodeTypeIds::CacheableVector: {
-      CacheableVectorPtr vec = dynCast<CacheableVectorPtr>(obj);
-      CacheableVectorPtr otherVec = dynCast<CacheableVectorPtr>(otherObj);
+      auto vec = std::dynamic_pointer_cast<CacheableVector>(obj);
+      auto otherVec = std::dynamic_pointer_cast<CacheableVector>(otherObj);
       return enumerateVectorEquals(vec, otherVec);
     }
     case GeodeTypeIds::CacheableArrayList: {
-      CacheableArrayListPtr arrList = dynCast<CacheableArrayListPtr>(obj);
-      CacheableArrayListPtr otherArrList =
-          dynCast<CacheableArrayListPtr>(otherObj);
+      auto arrList = std::dynamic_pointer_cast<CacheableArrayList>(obj);
+      auto otherArrList =
+          std::dynamic_pointer_cast<CacheableArrayList>(otherObj);
       return enumerateArrayListEquals(arrList, otherArrList);
     }
     case GeodeTypeIds::CacheableHashMap: {
-      CacheableHashMapPtr map = dynCast<CacheableHashMapPtr>(obj);
-      CacheableHashMapPtr otherMap = dynCast<CacheableHashMapPtr>(otherObj);
+      auto map = std::dynamic_pointer_cast<CacheableHashMap>(obj);
+      auto otherMap = std::dynamic_pointer_cast<CacheableHashMap>(otherObj);
       return enumerateMapEquals(map, otherMap);
     }
     case GeodeTypeIds::CacheableHashSet: {
-      CacheableHashSetPtr hashset = dynCast<CacheableHashSetPtr>(obj);
-      CacheableHashSetPtr otherHashset = dynCast<CacheableHashSetPtr>(otherObj);
+      auto hashset = std::dynamic_pointer_cast<CacheableHashSet>(obj);
+      auto otherHashset = std::dynamic_pointer_cast<CacheableHashSet>(otherObj);
       return enumerateSetEquals(hashset, otherHashset);
     }
     case GeodeTypeIds::CacheableLinkedHashSet: {
-      CacheableLinkedHashSetPtr linkedHashset =
-          dynCast<CacheableLinkedHashSetPtr>(obj);
-      CacheableLinkedHashSetPtr otherLinkedHashset =
-          dynCast<CacheableLinkedHashSetPtr>(otherObj);
+      auto linkedHashset =
+          std::dynamic_pointer_cast<CacheableLinkedHashSet>(obj);
+      auto otherLinkedHashset =
+          std::dynamic_pointer_cast<CacheableLinkedHashSet>(otherObj);
       return enumerateLinkedSetEquals(linkedHashset, otherLinkedHashset);
     }
     case GeodeTypeIds::CacheableHashTable: {
-      CacheableHashTablePtr hashTable = dynCast<CacheableHashTablePtr>(obj);
-      CacheableHashTablePtr otherhashTable =
-          dynCast<CacheableHashTablePtr>(otherObj);
+      auto hashTable = std::dynamic_pointer_cast<CacheableHashTable>(obj);
+      auto otherhashTable =
+          std::dynamic_pointer_cast<CacheableHashTable>(otherObj);
       return enumerateHashTableEquals(hashTable, otherhashTable);
     }
     default: {
-      PdxInstancePtr pdxInstPtr = NULLPTR;
-      PdxInstancePtr otherPdxInstPtr = NULLPTR;
-      try {
-        pdxInstPtr = dynCast<PdxInstancePtr>(obj);
-        otherPdxInstPtr = dynCast<PdxInstancePtr>(otherObj);
-      } catch (ClassCastException& /*ex*/) {
-        // ignore
-      }
-      if (pdxInstPtr != NULLPTR && otherPdxInstPtr != NULLPTR) {
-        return (*pdxInstPtr.ptr() == *otherPdxInstPtr.ptr());
+      auto pdxInstPtr = std::dynamic_pointer_cast<PdxInstance>(obj);
+      auto otherPdxInstPtr = std::dynamic_pointer_cast<PdxInstance>(otherObj);
+      if (pdxInstPtr != nullptr && otherPdxInstPtr != nullptr) {
+        return (*pdxInstPtr.get() == *otherPdxInstPtr.get());
       }
       // Chk if it is of CacheableKeyPtr type, eg: CacheableInt32
       else {
-        CacheableKey* keyType = NULL;
-        CacheableKey* otherKeyType = NULL;
-        try {
-          keyType = dynamic_cast<CacheableKey*>(obj.ptr());
-          otherKeyType = dynamic_cast<CacheableKey*>(otherObj.ptr());
-        } catch (ClassCastException&) {
-          // ignore
-        }
-        if (keyType != NULL && otherKeyType != NULL) {
+          auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj);
+          auto otherKeyType = std::dynamic_pointer_cast<CacheableKey>(otherObj);
+        if (keyType != nullptr && otherKeyType != nullptr) {
           return keyType->operator==(*otherKeyType);
         }
       }
@@ -587,7 +575,7 @@ int PdxInstanceImpl::enumerateMapHashCode(CacheableHashMapPtr map) {
   for (CacheableHashMap::Iterator itr = map->begin(); itr != map->end();
        itr++) {
     h = h + ((deepArrayHashCode(itr.first())) ^
-             ((itr.second() != NULLPTR) ? deepArrayHashCode(itr.second()) : 0));
+             ((itr.second() != nullptr) ? deepArrayHashCode(itr.second()) : 0));
   }
   return h;
 }
@@ -615,7 +603,7 @@ int PdxInstanceImpl::enumerateHashTableCode(CacheableHashTablePtr hashTable) {
   for (CacheableHashTable::Iterator itr = hashTable->begin();
        itr != hashTable->end(); itr++) {
     h = h + ((deepArrayHashCode(itr.first())) ^
-             ((itr.second() != NULLPTR) ? deepArrayHashCode(itr.second()) : 0));
+             ((itr.second() != nullptr) ? deepArrayHashCode(itr.second()) : 0));
   }
   return h;
 }
@@ -655,65 +643,54 @@ int PdxInstanceImpl::enumerateLinkedListHashCode(
 }
 
 int PdxInstanceImpl::deepArrayHashCode(CacheablePtr obj) {
-  if (obj == NULLPTR) {
+  if (obj == nullptr) {
     return 0;
   }
 
   int8_t typeId = obj->typeId();
   switch (typeId) {
     case GeodeTypeIds::CacheableObjectArray: {
-      CacheableObjectArrayPtr objArrayPtr =
-          dynCast<CacheableObjectArrayPtr>(obj);
-      return enumerateObjectArrayHashCode(objArrayPtr);
+      return enumerateObjectArrayHashCode(
+          std::dynamic_pointer_cast<CacheableObjectArray>(obj));
     }
     case GeodeTypeIds::CacheableVector: {
-      CacheableVectorPtr vec = dynCast<CacheableVectorPtr>(obj);
-      return enumerateVectorHashCode(vec);
+      return enumerateVectorHashCode(
+          std::dynamic_pointer_cast<CacheableVector>(obj));
     }
     case GeodeTypeIds::CacheableArrayList: {
-      CacheableArrayListPtr arrList = dynCast<CacheableArrayListPtr>(obj);
-      return enumerateArrayListHashCode(arrList);
+      return enumerateArrayListHashCode(
+          std::dynamic_pointer_cast<CacheableArrayList>(obj));
     }
     case GeodeTypeIds::CacheableLinkedList: {
-      CacheableLinkedListPtr linkedList = dynCast<CacheableLinkedListPtr>(obj);
-      return enumerateLinkedListHashCode(linkedList);
+      return enumerateLinkedListHashCode(
+          std::dynamic_pointer_cast<CacheableLinkedList>(obj));
     }
     case GeodeTypeIds::CacheableHashMap: {
-      CacheableHashMapPtr map = dynCast<CacheableHashMapPtr>(obj);
-      return enumerateMapHashCode(map);
+      return enumerateMapHashCode(
+          std::dynamic_pointer_cast<CacheableHashMap>(obj));
     }
     case GeodeTypeIds::CacheableHashSet: {
-      CacheableHashSetPtr hashset = dynCast<CacheableHashSetPtr>(obj);
-      return enumerateSetHashCode(hashset);
+      return enumerateSetHashCode(
+          std::dynamic_pointer_cast<CacheableHashSet>(obj));
     }
     case GeodeTypeIds::CacheableLinkedHashSet: {
       CacheableLinkedHashSetPtr linkedHashSet =
-          dynCast<CacheableLinkedHashSetPtr>(obj);
+          std::dynamic_pointer_cast<CacheableLinkedHashSet>(obj);
       return enumerateLinkedSetHashCode(linkedHashSet);
     }
     case GeodeTypeIds::CacheableHashTable: {
-      CacheableHashTablePtr hashTable = dynCast<CacheableHashTablePtr>(obj);
-      return enumerateHashTableCode(hashTable);
+      return enumerateHashTableCode(
+          std::dynamic_pointer_cast<CacheableHashTable>(obj));
     }
     default: {
-      PdxInstancePtr pdxInstPtr = NULLPTR;
-      try {
-        pdxInstPtr = dynCast<PdxInstancePtr>(obj);
-      } catch (ClassCastException& /*ex*/) {
-        // ignore
-      }
-      if (pdxInstPtr != NULLPTR) {
+      auto pdxInstPtr = std::dynamic_pointer_cast<PdxInstance>(obj);
+      if (pdxInstPtr != nullptr) {
         return pdxInstPtr->hashcode();
       }
-      // Chk if it is of CacheableKeyPtr type, eg: CacheableInt32
       else {
-        CacheableKeyPtr keyType = NULLPTR;
-        try {
-          keyType = dynCast<CacheableKeyPtr>(obj);
-        } catch (ClassCastException&) {
-          // ignore
-        }
-        if (keyType != NULLPTR) {
+        // Chk if it is of CacheableKeyPtr type, eg: CacheableInt32
+        auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj);
+        if (keyType != nullptr) {
           return keyType->hashcode();
         }
       }
@@ -780,9 +757,9 @@ int32_t PdxInstanceImpl::hashcode() const {
       }
       case PdxFieldTypes::OBJECT: {
         setOffsetForObject(dataInput, pt, pField->getSequenceId());
-        CacheablePtr object = NULLPTR;
+        CacheablePtr object = nullptr;
         dataInput.readObject(object);
-        if (object != NULLPTR) {
+        if (object != nullptr) {
           hashCode = 31 * hashCode + deepArrayHashCode(object);
         }
         break;
@@ -793,7 +770,7 @@ int32_t PdxInstanceImpl::hashcode() const {
         objectArray->fromData(dataInput);
         hashCode =
             31 * hashCode +
-            ((objectArray != NULLPTR) ? deepArrayHashCode(objectArray) : 0);
+            ((objectArray != nullptr) ? deepArrayHashCode(objectArray) : 0);
         break;
       }
       default: {
@@ -824,7 +801,7 @@ void PdxInstanceImpl::updatePdxStream(uint8_t* newPdxStream, int len) {
 
 PdxTypePtr PdxInstanceImpl::getPdxType() const {
   if (m_typeId == 0) {
-    if (m_pdxType == NULLPTR) {
+    if (m_pdxType == nullptr) {
       throw IllegalStateException("PdxType should not be null..");
     }
     return m_pdxType;
@@ -836,7 +813,7 @@ PdxTypePtr PdxInstanceImpl::getPdxType() const {
 bool PdxInstanceImpl::isIdentityField(const char* fieldname) {
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldname);
-  if (pft != NULLPTR) {
+  if (pft != nullptr) {
     return pft->getIdentityField();
   }
   return false;
@@ -845,7 +822,7 @@ bool PdxInstanceImpl::isIdentityField(const char* fieldname) {
 bool PdxInstanceImpl::hasField(const char* fieldname) {
   PdxTypePtr pf = getPdxType();
   PdxFieldTypePtr pft = pf->getPdxField(fieldname);
-  return (pft != NULLPTR);
+  return (pft != nullptr);
 }
 
 void PdxInstanceImpl::getField(const char* fieldname, bool& value) const {
@@ -1400,9 +1377,9 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         break;
       }
       case PdxFieldTypes::DATE: {
-        CacheableDatePtr value = NULLPTR;
+        CacheableDatePtr value = nullptr;
         getField(identityFields.at(i)->getFieldName(), value);
-        if (value != NULLPTR) {
+        if (value != nullptr) {
           ACE_OS::snprintf(buf, 2048, "%s", value->toString()->asChar());
           toString += buf;
         }
@@ -1440,7 +1417,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
       case PdxFieldTypes::OBJECT_ARRAY: {
         CacheableObjectArrayPtr value;
         getField(identityFields.at(i)->getFieldName(), value);
-        if (value != NULLPTR) {
+        if (value != nullptr) {
           ACE_OS::snprintf(buf, 2048, "%s\t", value->toString()->asChar());
           toString += buf;
         }
@@ -1449,7 +1426,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
       default: {
         CacheablePtr value;
         getField(identityFields.at(i)->getFieldName(), value);
-        if (value != NULLPTR) {
+        if (value != nullptr) {
           ACE_OS::snprintf(buf, 2048, "%s\t", value->toString()->asChar());
           toString += buf;
         }
@@ -1468,14 +1445,14 @@ PdxSerializablePtr PdxInstanceImpl::getObject() {
   PdxSerializablePtr ret =
       PdxHelper::deserializePdx(dataInput, true, m_typeId, m_bufferLength);
   CachePtr cache = CacheFactory::getAnyInstance();
-  if (cache == NULLPTR) {
+  if (cache == nullptr) {
     throw IllegalStateException("cache has not been created yet.");
     ;
   }
   if (cache->isClosed()) {
     throw IllegalStateException("cache has been closed. ");
   }
-  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.ptr());
+  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
   if (cacheImpl != NULL) {
     Utils::updateStatOpTime(
         cacheImpl->m_cacheStats->getStat(),
@@ -1593,8 +1570,8 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
         break;
       }
       case PdxFieldTypes::OBJECT: {
-        CacheablePtr object = NULLPTR;
-        CacheablePtr otherObject = NULLPTR;
+        CacheablePtr object = nullptr;
+        CacheablePtr otherObject = nullptr;
         if (!myPFT->equals(m_DefaultPdxFieldType)) {
           setOffsetForObject(myDataInput, myPdxType, myPFT->getSequenceId());
           myDataInput.readObject(object);
@@ -1606,11 +1583,11 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
           otherDataInput.readObject(otherObject);
         }
 
-        if (object != NULLPTR) {
+        if (object != nullptr) {
           if (!deepArrayEquals(object, otherObject)) {
             return false;
           }
-        } else if (otherObject != NULLPTR) {
+        } else if (otherObject != nullptr) {
           return false;
         }
         break;
@@ -1723,7 +1700,7 @@ CacheableStringArrayPtr PdxInstanceImpl::getFieldNames() {
   if (size > 0) {
     return CacheableStringArray::createNoCopy(ptrArr, size);
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 PdxFieldTypes::PdxFieldType PdxInstanceImpl::getFieldType(
@@ -1760,28 +1737,28 @@ void PdxInstanceImpl::toData(PdxWriterPtr writer) /*const*/ {
       PdxFieldTypePtr currPf = pdxFieldList->at(i);
       LOGDEBUG("toData filedname = %s , isVarLengthType = %d ",
                currPf->getFieldName(), currPf->IsVariableLengthType());
-      CacheablePtr value = NULLPTR;
+      CacheablePtr value = nullptr;
 
       FieldVsValues::iterator iter =
           m_updatedFields.find(currPf->getFieldName());
       if (iter != m_updatedFields.end()) {
         value = ((*iter).second);
       } else {
-        value = NULLPTR;
+        value = nullptr;
       }
-      if (value != NULLPTR) {
+      if (value != nullptr) {
         writeField(writer, currPf->getFieldName(), currPf->getTypeId(), value);
         position = getNextFieldPosition(dataInput, static_cast<int>(i) + 1, pt);
       } else {
         if (currPf->IsVariableLengthType()) {
           // need to add offset
-          (static_cast<PdxLocalWriterPtr>(writer))->addOffset();
+          (std::static_pointer_cast<PdxLocalWriter>(writer))->addOffset();
         }
         // write raw byte array...
         nextFieldPosition =
             getNextFieldPosition(dataInput, static_cast<int>(i) + 1, pt);
         writeUnmodifieldField(dataInput, position, nextFieldPosition,
-                              static_cast<PdxLocalWriterPtr>(writer));
+                              std::static_pointer_cast<PdxLocalWriter>(writer));
         position = nextFieldPosition;  // mark next field;
       }
     }
@@ -1806,7 +1783,7 @@ void PdxInstanceImpl::fromData(PdxReaderPtr input) {
 const char* PdxInstanceImpl::getClassName() const {
   if (m_typeId != 0) {
     PdxTypePtr pdxtype = PdxTypeRegistry::getPdxType(m_typeId);
-    if (pdxtype == NULLPTR) {
+    if (pdxtype == nullptr) {
       char excpStr[256] = {0};
       ACE_OS::snprintf(excpStr, 256,
                        "PdxType is not defined for PdxInstance: %d ", m_typeId);
@@ -1821,7 +1798,7 @@ const char* PdxInstanceImpl::getClassName() const {
 void PdxInstanceImpl::setPdxId(int32_t typeId) {
   if (m_typeId == 0) {
     m_typeId = typeId;
-    m_pdxType = NULLPTR;
+    m_pdxType = nullptr;
   } else {
     throw IllegalStateException("PdxInstance's typeId is already set.");
   }
@@ -2029,7 +2006,7 @@ void PdxInstanceImpl::setField(const char* fieldName, bool value) {
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::BOOLEAN) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BOOLEAN) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29233: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2044,7 +2021,7 @@ void PdxInstanceImpl::setField(const char* fieldName, bool value) {
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject = CacheableBoolean::create(value);
@@ -2055,7 +2032,7 @@ void PdxInstanceImpl::setField(const char* fieldName, signed char value) {
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::BYTE) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BYTE) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29233: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2070,7 +2047,7 @@ void PdxInstanceImpl::setField(const char* fieldName, signed char value) {
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject = CacheableByte::create(value);
@@ -2081,7 +2058,7 @@ void PdxInstanceImpl::setField(const char* fieldName, unsigned char value) {
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::BYTE) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BYTE) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29236: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2096,7 +2073,7 @@ void PdxInstanceImpl::setField(const char* fieldName, unsigned char value) {
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject = CacheableByte::create(value);
@@ -2107,12 +2084,12 @@ void PdxInstanceImpl::setField(const char* fieldName, int16_t value) {
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::SHORT) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::SHORT) {
     char excpStr[256] = {0};
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject = CacheableInt16::create(value);
@@ -2123,7 +2100,7 @@ void PdxInstanceImpl::setField(const char* fieldName, int32_t value) {
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::INT) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::INT) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29234: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2138,7 +2115,7 @@ void PdxInstanceImpl::setField(const char* fieldName, int32_t value) {
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject = CacheableInt32::create(value);
@@ -2149,7 +2126,7 @@ void PdxInstanceImpl::setField(const char* fieldName, int64_t value) {
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::LONG) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::LONG) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29235: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2164,7 +2141,7 @@ void PdxInstanceImpl::setField(const char* fieldName, int64_t value) {
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject = CacheableInt64::create(value);
@@ -2175,7 +2152,7 @@ void PdxInstanceImpl::setField(const char* fieldName, float value) {
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::FLOAT) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::FLOAT) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29232: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2190,7 +2167,7 @@ void PdxInstanceImpl::setField(const char* fieldName, float value) {
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject = CacheableFloat::create(value);
@@ -2201,7 +2178,7 @@ void PdxInstanceImpl::setField(const char* fieldName, double value) {
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::DOUBLE) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::DOUBLE) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29231: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2216,7 +2193,7 @@ void PdxInstanceImpl::setField(const char* fieldName, double value) {
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject = CacheableDouble::create(value);
@@ -2227,7 +2204,7 @@ void PdxInstanceImpl::setField(const char* fieldName, wchar_t value) {
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::CHAR) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::CHAR) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29237: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2242,7 +2219,7 @@ void PdxInstanceImpl::setField(const char* fieldName, wchar_t value) {
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject = CacheableWideChar::create(value);
@@ -2253,7 +2230,7 @@ void PdxInstanceImpl::setField(const char* fieldName, char value) {
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::CHAR) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::CHAR) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29230: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2268,7 +2245,7 @@ void PdxInstanceImpl::setField(const char* fieldName, char value) {
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   wchar_t tempWideChar = static_cast<wchar_t>(value);
@@ -2280,12 +2257,12 @@ void PdxInstanceImpl::setField(const char* fieldName, CacheableDatePtr value) {
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::DATE) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::DATE) {
     char excpStr[256] = {0};
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject = value;
@@ -2296,7 +2273,7 @@ void PdxInstanceImpl::setField(const char* fieldName, CacheablePtr value) {
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::OBJECT) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::OBJECT) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29212: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2311,7 +2288,7 @@ void PdxInstanceImpl::setField(const char* fieldName, CacheablePtr value) {
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   m_updatedFields[fieldName] = value;
@@ -2322,12 +2299,12 @@ void PdxInstanceImpl::setField(const char* fieldName,
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::OBJECT_ARRAY) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::OBJECT_ARRAY) {
     char excpStr[256] = {0};
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   m_updatedFields[fieldName] = value;
@@ -2338,7 +2315,7 @@ void PdxInstanceImpl::setField(const char* fieldName, bool* value,
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::BOOLEAN_ARRAY) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BOOLEAN_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29218: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2353,7 +2330,7 @@ void PdxInstanceImpl::setField(const char* fieldName, bool* value,
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject = BooleanArray::create(value, length);
@@ -2365,7 +2342,7 @@ void PdxInstanceImpl::setField(const char* fieldName, signed char* value,
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::BYTE_ARRAY) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BYTE_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29217: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2380,7 +2357,7 @@ void PdxInstanceImpl::setField(const char* fieldName, signed char* value,
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject =
@@ -2393,7 +2370,7 @@ void PdxInstanceImpl::setField(const char* fieldName, unsigned char* value,
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::BYTE_ARRAY) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BYTE_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29222: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2408,7 +2385,7 @@ void PdxInstanceImpl::setField(const char* fieldName, unsigned char* value,
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject =
@@ -2421,7 +2398,7 @@ void PdxInstanceImpl::setField(const char* fieldName, int16_t* value,
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::SHORT_ARRAY) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::SHORT_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29225: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2436,7 +2413,7 @@ void PdxInstanceImpl::setField(const char* fieldName, int16_t* value,
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject = CacheableInt16Array::create(value, length);
@@ -2448,7 +2425,7 @@ void PdxInstanceImpl::setField(const char* fieldName, int32_t* value,
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::INT_ARRAY) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::INT_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29223: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2463,7 +2440,7 @@ void PdxInstanceImpl::setField(const char* fieldName, int32_t* value,
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject = CacheableInt32Array::create(value, length);
@@ -2475,7 +2452,7 @@ void PdxInstanceImpl::setField(const char* fieldName, int64_t* value,
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::LONG_ARRAY) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::LONG_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29224: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2490,7 +2467,7 @@ void PdxInstanceImpl::setField(const char* fieldName, int64_t* value,
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject = CacheableInt64Array::create(value, length);
@@ -2502,7 +2479,7 @@ void PdxInstanceImpl::setField(const char* fieldName, float* value,
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::FLOAT_ARRAY) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::FLOAT_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29221: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2517,7 +2494,7 @@ void PdxInstanceImpl::setField(const char* fieldName, float* value,
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject = CacheableFloatArray::create(value, length);
@@ -2529,7 +2506,7 @@ void PdxInstanceImpl::setField(const char* fieldName, double* value,
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::DOUBLE_ARRAY) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::DOUBLE_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29220: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2544,7 +2521,7 @@ void PdxInstanceImpl::setField(const char* fieldName, double* value,
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr cacheableObject = CacheableDoubleArray::create(value, length);
@@ -2556,7 +2533,7 @@ void PdxInstanceImpl::setField(const char* fieldName, wchar_t* value,
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::CHAR_ARRAY) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::CHAR_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29226: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2571,7 +2548,7 @@ void PdxInstanceImpl::setField(const char* fieldName, wchar_t* value,
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr ptr = CharArray::create(value, length);
@@ -2583,7 +2560,7 @@ void PdxInstanceImpl::setField(const char* fieldName, char* value,
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::CHAR_ARRAY) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::CHAR_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29219: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2598,7 +2575,7 @@ void PdxInstanceImpl::setField(const char* fieldName, char* value,
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   size_t size = strlen(value) + 1;
@@ -2613,7 +2590,7 @@ void PdxInstanceImpl::setField(const char* fieldName, const wchar_t* value) {
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::STRING) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::STRING) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29213: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2628,7 +2605,7 @@ void PdxInstanceImpl::setField(const char* fieldName, const wchar_t* value) {
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr ptr = CacheableString::create(value);
@@ -2639,7 +2616,7 @@ void PdxInstanceImpl::setField(const char* fieldName, const char* value) {
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::STRING) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::STRING) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29227: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2654,7 +2631,7 @@ void PdxInstanceImpl::setField(const char* fieldName, const char* value) {
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheablePtr ptr = CacheableString::create(value);
@@ -2666,7 +2643,7 @@ void PdxInstanceImpl::setField(const char* fieldName, int8_t** value,
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR &&
+  if (pft != nullptr &&
       pft->getTypeId() != PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
@@ -2682,7 +2659,7 @@ void PdxInstanceImpl::setField(const char* fieldName, int8_t** value,
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheableVectorPtr cacheableObject = CacheableVector::create();
@@ -2699,7 +2676,7 @@ void PdxInstanceImpl::setField(const char* fieldName, wchar_t** value,
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::STRING_ARRAY) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::STRING_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29216: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2714,7 +2691,7 @@ void PdxInstanceImpl::setField(const char* fieldName, wchar_t** value,
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheableStringPtr* ptrArr = NULL;
@@ -2742,7 +2719,7 @@ void PdxInstanceImpl::setField(const char* fieldName, char** value,
   PdxTypePtr pt = getPdxType();
   PdxFieldTypePtr pft = pt->getPdxField(fieldName);
 
-  if (pft != NULLPTR && pft->getTypeId() != PdxFieldTypes::STRING_ARRAY) {
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::STRING_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
     * CID 29215: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -2757,7 +2734,7 @@ void PdxInstanceImpl::setField(const char* fieldName, char** value,
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != NULLPTR ? pft->toString()->asChar() : ""));
+        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
   CacheableStringPtr* ptrArr = NULL;

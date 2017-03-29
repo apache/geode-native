@@ -49,7 +49,8 @@ class PoolAttributes;
  *
  *
  */
-class CPPCACHE_EXPORT Pool : public SharedBase {
+class CPPCACHE_EXPORT Pool : public SharedBase,
+                             public std::enable_shared_from_this<Pool> {
  public:
   /**
    * Gets the name of the connection pool

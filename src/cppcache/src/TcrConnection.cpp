@@ -198,7 +198,7 @@ bool TcrConnection::InitTcrConnection(
     LOGDEBUG("TcrConnection this->m_endpointObj->isMultiUserMode() = %d ",
              this->m_endpointObj->isMultiUserMode());
     if (this->m_endpointObj->isMultiUserMode()) {
-      if (dhalgo != NULLPTR && dhalgo->length() > 0) isDhOn = true;
+      if (dhalgo != nullptr && dhalgo->length() > 0) isDhOn = true;
     }
   }
 
@@ -233,7 +233,7 @@ bool TcrConnection::InitTcrConnection(
       LOGFINER("TcrConnection: about to invoke authloader");
       PropertiesPtr tmpSecurityProperties =
           tmpSystemProperties->getSecurityProperties();
-      if (tmpSecurityProperties == NULLPTR) {
+      if (tmpSecurityProperties == nullptr) {
         LOGWARN("TcrConnection: security properties not found.");
       }
       // AuthInitializePtr authInitialize =
@@ -242,7 +242,7 @@ bool TcrConnection::InitTcrConnection(
       if (isClientNotification) {
         AuthInitializePtr authInitialize =
             DistributedSystem::m_impl->getAuthLoader();
-        if (authInitialize != NULLPTR) {
+        if (authInitialize != nullptr) {
           LOGFINER(
               "TcrConnection: acquired handle to authLoader, "
               "invoking getCredentials");
@@ -266,7 +266,7 @@ bool TcrConnection::InitTcrConnection(
       if (isDhOn) {
         CacheableStringPtr ksPath =
             tmpSecurityProperties->find("security-client-kspath");
-        requireServerAuth = (ksPath != NULLPTR && ksPath->length() > 0);
+        requireServerAuth = (ksPath != nullptr && ksPath->length() > 0);
         handShakeMsg.writeBoolean(requireServerAuth);
         LOGFINE(
             "HandShake: Server authentication using RSA signature %s required",
@@ -323,9 +323,9 @@ bool TcrConnection::InitTcrConnection(
   if (error == CONN_NOERR) {
     CacheableBytesPtr acceptanceCode = readHandshakeData(1, connectTimeout);
 
-    LOGDEBUG(" Handshake: Got Accept Code %d", acceptanceCode[0]);
+    LOGDEBUG(" Handshake: Got Accept Code %d", (*acceptanceCode)[0]);
     /* adongre */
-    if (acceptanceCode[0] == REPLY_SSL_ENABLED &&
+    if ((*acceptanceCode)[0] == REPLY_SSL_ENABLED &&
         !tmpSystemProperties->sslEnabled()) {
       LOGERROR("SSL is enabled on server, enable SSL in client as well");
       AuthenticationRequiredException ex(
@@ -335,7 +335,7 @@ bool TcrConnection::InitTcrConnection(
     }
 
     // if diffie-hellman based credential encryption is enabled
-    if (isDhOn && acceptanceCode[0] == REPLY_OK) {
+    if (isDhOn && (*acceptanceCode)[0] == REPLY_OK) {
       // read the server's DH public key
       CacheableBytesPtr pubKeyBytes = readHandshakeByteArray(connectTimeout);
       LOGDEBUG(" Handshake: Got pubKeySize %d", pubKeyBytes->length());
@@ -387,7 +387,7 @@ bool TcrConnection::InitTcrConnection(
 
       if (error == CONN_NOERR) {
         acceptanceCode = readHandshakeData(1, connectTimeout);
-        LOGDEBUG("Handshake: Got acceptanceCode Finally %d", acceptanceCode[0]);
+        LOGDEBUG("Handshake: Got acceptanceCode Finally %d", (*acceptanceCode)[0]);
       } else {
         int32_t lastError = ACE_OS::last_error();
         LOGERROR("Handshake failed, errno: %d, server may not be running",
@@ -409,9 +409,9 @@ bool TcrConnection::InitTcrConnection(
 
     //  TESTING: Durable clients - set server queue status.
     // 0 - Non-Redundant , 1- Redundant , 2- Primary
-    if (serverQueueStatus[0] == 1) {
+    if ((*serverQueueStatus)[0] == 1) {
       m_hasServerQueue = REDUNDANT_SERVER;
-    } else if (serverQueueStatus[0] == 2) {
+    } else if ((*serverQueueStatus)[0] == 2) {
       m_hasServerQueue = PRIMARY_SERVER;
     } else {
       m_hasServerQueue = NON_REDUNDANT_SERVER;
@@ -443,16 +443,16 @@ bool TcrConnection::InitTcrConnection(
     if (!isClientNotification) {
       // Read and ignore the DistributedMember object
       CacheableBytesPtr arrayLenHeader = readHandshakeData(1, connectTimeout);
-      int32_t recvMsgLen = static_cast<int32_t>(arrayLenHeader[0]);
+      int32_t recvMsgLen = static_cast<int32_t>((*arrayLenHeader)[0]);
       // now check for array length headers - since GFE 5.7
-      if (static_cast<int8_t>(arrayLenHeader[0]) == -2) {
+      if (static_cast<int8_t>((*arrayLenHeader)[0]) == -2) {
         CacheableBytesPtr recvMsgLenBytes =
             readHandshakeData(2, connectTimeout);
         DataInput dI2(recvMsgLenBytes->value(), recvMsgLenBytes->length());
         int16_t recvMsgLenShort = 0;
         dI2.readInt(&recvMsgLenShort);
         recvMsgLen = recvMsgLenShort;
-      } else if (static_cast<int8_t>(arrayLenHeader[0]) == -3) {
+      } else if (static_cast<int8_t>((*arrayLenHeader)[0]) == -3) {
         CacheableBytesPtr recvMsgLenBytes =
             readHandshakeData(4, connectTimeout);
         DataInput dI2(recvMsgLenBytes->value(), recvMsgLenBytes->length());
@@ -488,11 +488,11 @@ bool TcrConnection::InitTcrConnection(
       ThinClientBaseDM::setDeltaEnabledOnServer(isDeltaEnabledOnServer);
     }
 
-    switch (acceptanceCode[0]) {
+    switch ((*acceptanceCode)[0]) {
       case REPLY_OK:
       case SUCCESSFUL_SERVER_TO_CLIENT:
-        LOGFINER("Handshake reply: %u,%u,%u", acceptanceCode[0],
-                 serverQueueStatus[0], recvMsgLen2);
+        LOGFINER("Handshake reply: %u,%u,%u", (*acceptanceCode)[0],
+                 (*serverQueueStatus)[0], recvMsgLen2);
         if (isClientNotification) readHandshakeInstantiatorMsg(connectTimeout);
         break;
       case REPLY_AUTHENTICATION_FAILED: {
@@ -532,7 +532,7 @@ bool TcrConnection::InitTcrConnection(
         LOGERROR(
             "Unknown error[%d] received from server [%s] in handshake: "
             "%s",
-            acceptanceCode[0], m_endpointObj->name().c_str(),
+            (*acceptanceCode)[0], m_endpointObj->name().c_str(),
             recvMessage->value());
         MessageException ex(
             "TcrConnection::TcrConnection: Unknown error"
@@ -1231,7 +1231,7 @@ CacheableBytesPtr TcrConnection::readHandshakeData(int32_t msgLength,
     return CacheableBytes::createNoCopy(reinterpret_cast<uint8_t*>(recvMessage),
                                         msgLength + 1);
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 // read just the bytes without the trailing null terminator
@@ -1247,7 +1247,7 @@ CacheableBytesPtr TcrConnection::readHandshakeRawData(int32_t msgLength,
     msgLength = 0;
   }
   if (msgLength == 0) {
-    return NULLPTR;
+    return nullptr;
   }
   char* recvMessage;
   GF_NEW(recvMessage, char[msgLength]);
@@ -1267,7 +1267,7 @@ CacheableBytesPtr TcrConnection::readHandshakeRawData(int32_t msgLength,
                            "Handshake failure"));
     }
     // not expected to be reached
-    return NULLPTR;
+    return nullptr;
   } else {
     return CacheableBytes::createNoCopy(reinterpret_cast<uint8_t*>(recvMessage),
                                         msgLength);
@@ -1424,7 +1424,7 @@ CacheableStringPtr TcrConnection::readHandshakeString(uint32_t connectTimeout) {
   uint32_t length = 0;
   switch (static_cast<int8_t>(cstypeid)) {
     case GeodeTypeIds::CacheableNullString: {
-      return NULLPTR;
+      return nullptr;
       break;
     }
     case GF_STRING: {
@@ -1446,7 +1446,7 @@ CacheableStringPtr TcrConnection::readHandshakeString(uint32_t connectTimeout) {
   LOGDEBUG(" Received string len %d", length);
 
   if (length == 0) {
-    return NULLPTR;
+    return nullptr;
   }
 
   char* recvMessage;
@@ -1471,7 +1471,7 @@ CacheableStringPtr TcrConnection::readHandshakeString(uint32_t connectTimeout) {
                            "Handshake failure reading string bytes"));
     }
     // not expected to be reached
-    return NULLPTR;
+    return nullptr;
   } else {
     LOGDEBUG(" Received string data [%s]", recvMessage);
     CacheableStringPtr retval =

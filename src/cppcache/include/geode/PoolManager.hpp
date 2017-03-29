@@ -65,9 +65,9 @@ class CPPCACHE_EXPORT PoolManager {
 
   /**
    * Find by name an existing connection pool returning
-   * the existing pool or <code>NULLPTR</code> if it does not exist.
+   * the existing pool or <code>nullptr</code> if it does not exist.
    * @param name is the name of the connection pool
-   * @return the existing connection pool or <code>NULLPTR</code> if it does not
+   * @return the existing connection pool or <code>nullptr</code> if it does not
    * exist.
    */
   static PoolPtr find(const char* name);
@@ -75,7 +75,7 @@ class CPPCACHE_EXPORT PoolManager {
   /**
    * Find the pool used by the given region.
    * @param region is the region that is using the pool.
-   * @return the pool used by that region or <code> NULLPTR </code> if the
+   * @return the pool used by that region or <code> nullptr </code> if the
    * region does
    * not have a pool.
    */

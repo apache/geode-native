@@ -34,7 +34,7 @@ PdxReaderWithTypeCollector::PdxReaderWithTypeCollector(DataInput& dataInput,
                                                        PdxTypePtr pdxType,
                                                        int32_t pdxlen)
     : PdxLocalReader(dataInput, pdxType, pdxlen) {
-  m_newPdxType = new PdxType(pdxType->getPdxClassName(), true);
+  m_newPdxType = std::make_shared<PdxType>(pdxType->getPdxClassName(), true);
 }
 
 PdxReaderWithTypeCollector::PdxReaderWithTypeCollector() {}
@@ -49,7 +49,7 @@ void PdxReaderWithTypeCollector::checkType(const char* fieldName, int8_t typeId,
   }
 
   PdxFieldTypePtr pft = m_pdxType->getPdxField(fieldName);
-  if (pft != NULLPTR) {
+  if (pft != nullptr) {
     if (typeId != pft->getTypeId()) {
       char excpStr[128] = {0};
       ACE_OS::snprintf(
@@ -288,7 +288,7 @@ SerializablePtr PdxReaderWithTypeCollector::readObject(const char* fieldName) {
     startLoc = NULL;
     return ptr;
   } else {
-    return NULLPTR;
+    return nullptr;
   }
 }
 
@@ -574,7 +574,7 @@ CacheableObjectArrayPtr PdxReaderWithTypeCollector::readObjectArray(
     startLoc = NULL;
     return retVal;
   } else {
-    return NULLPTR;
+    return nullptr;
   }
 }
 
@@ -615,7 +615,7 @@ CacheableDatePtr PdxReaderWithTypeCollector::readDate(const char* fieldName) {
     m_dataInput->rewindCursor(position + PdxTypes::DATE_SIZE);
     return retVal;
   } else {
-    return NULLPTR;
+    return nullptr;
   }
 }
 
@@ -635,7 +635,7 @@ void PdxReaderWithTypeCollector::readCollection(
     PdxLocalReader::readCollection(fieldName, collection);
     m_dataInput->rewindCursor(position);
   } else {
-    collection = NULLPTR;
+    collection = nullptr;
   }
 }
 }  // namespace client

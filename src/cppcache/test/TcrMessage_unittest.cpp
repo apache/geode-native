@@ -161,8 +161,8 @@ TEST_F(TcrMessageTest, testConstructorWithCONTAINS_KEY) {
   TcrMessageContainsKey message(
       static_cast<const Region *>(NULL),
       CacheableString::create(
-          "mykey"),  // static_cast<const CacheableKeyPtr>(NULLPTR),
-      static_cast<const UserDataPtr>(NULLPTR),
+          "mykey"),  // static_cast<const CacheableKeyPtr>(nullptr),
+      static_cast<const UserDataPtr>(nullptr),
       true,  // isContainsKey
       static_cast<ThinClientBaseDM *>(NULL));
   EXPECT_EQ(TcrMessage::CONTAINS_KEY, message.getMessageType());
@@ -185,8 +185,8 @@ TEST_F(TcrMessageTest, testConstructor2WithREQUEST) {
   TcrMessageRequest message(
       static_cast<const Region *>(NULL),
       CacheableString::create(
-          "mykey"),  // static_cast<const CacheableKeyPtr>(NULLPTR),
-      static_cast<const UserDataPtr>(NULLPTR),
+          "mykey"),  // static_cast<const CacheableKeyPtr>(nullptr),
+      static_cast<const UserDataPtr>(nullptr),
       static_cast<ThinClientBaseDM *>(NULL));
 
   EXPECT_EQ(TcrMessage::REQUEST, message.getMessageType());
@@ -200,8 +200,8 @@ TEST_F(TcrMessageTest, testConstructor2WithREQUEST) {
 TEST_F(TcrMessageTest, testConstructor2WithDESTROY) {
   TcrMessageDestroy message(static_cast<const Region *>(NULL),
                             CacheableString::create("mykey"),
-                            static_cast<const CacheableKeyPtr>(NULLPTR),
-                            static_cast<const UserDataPtr>(NULLPTR),
+                            static_cast<const CacheableKeyPtr>(nullptr),
+                            static_cast<const UserDataPtr>(nullptr),
                             static_cast<ThinClientBaseDM *>(NULL));
 
   EXPECT_EQ(TcrMessage::DESTROY, message.getMessageType());
@@ -217,8 +217,8 @@ TEST_F(TcrMessageTest, testConstructor2WithINVALIDATE) {
   TcrMessageInvalidate message(
       static_cast<const Region *>(NULL),
       CacheableString::create(
-          "mykey"),  // static_cast<const CacheableKeyPtr>(NULLPTR),
-      static_cast<const UserDataPtr>(NULLPTR),
+          "mykey"),  // static_cast<const CacheableKeyPtr>(nullptr),
+      static_cast<const UserDataPtr>(nullptr),
       static_cast<ThinClientBaseDM *>(NULL));
 
   EXPECT_EQ(TcrMessage::INVALIDATE, message.getMessageType());
@@ -234,7 +234,7 @@ TEST_F(TcrMessageTest, testConstructor3WithPUT) {
   TcrMessagePut message(static_cast<const Region *>(NULL),
                         CacheableString::create("mykey"),
                         CacheableString::create("myvalue"),
-                        static_cast<const UserDataPtr>(NULLPTR),
+                        static_cast<const UserDataPtr>(nullptr),
                         false,  // isDelta
                         static_cast<ThinClientBaseDM *>(NULL),
                         false,  // isMetaRegion
@@ -413,7 +413,7 @@ TEST_F(TcrMessageTest, testConstructorADD_PDX_TYPE) {
 }
 
 TEST_F(TcrMessageTest, testConstructorGET_PDX_ID_FOR_ENUM) {
-  TcrMessageGetPdxIdForEnum message(static_cast<CacheablePtr>(NULLPTR),
+  TcrMessageGetPdxIdForEnum message(static_cast<CacheablePtr>(nullptr),
                                     static_cast<ThinClientBaseDM *>(NULL), 42);
 
   EXPECT_EQ(TcrMessage::GET_PDX_ID_FOR_ENUM, message.getMessageType());
@@ -423,7 +423,7 @@ TEST_F(TcrMessageTest, testConstructorGET_PDX_ID_FOR_ENUM) {
 
 TEST_F(TcrMessageTest, testConstructorADD_PDX_ENUM) {
   CacheablePtr myPtr(CacheableString::createDeserializable());
-  TcrMessageAddPdxEnum message(static_cast<CacheablePtr>(NULLPTR),
+  TcrMessageAddPdxEnum message(static_cast<CacheablePtr>(nullptr),
                                static_cast<ThinClientBaseDM *>(NULL), 42);
 
   EXPECT_EQ(TcrMessage::ADD_PDX_ENUM, message.getMessageType());
@@ -434,7 +434,7 @@ TEST_F(TcrMessageTest, testConstructorADD_PDX_ENUM) {
 }
 
 TEST_F(TcrMessageTest, testConstructorEventId) {
-  TcrMessageRequestEventValue message(static_cast<EventIdPtr>(NULLPTR));
+  TcrMessageRequestEventValue message(static_cast<EventIdPtr>(nullptr));
 
   EXPECT_EQ(TcrMessage::REQUEST_EVENT_VALUE, message.getMessageType());
 
@@ -457,7 +457,7 @@ TEST_F(TcrMessageTest, testConstructorREMOVE_USER_AUTH) {
 }
 
 TEST_F(TcrMessageTest, testConstructorUSER_CREDENTIAL_MESSAGE) {
-  TcrMessageUserCredential message(static_cast<PropertiesPtr>(NULLPTR),
+  TcrMessageUserCredential message(static_cast<PropertiesPtr>(nullptr),
                                    static_cast<ThinClientBaseDM *>(NULL));
 
   EXPECT_EQ(TcrMessage::USER_CREDENTIAL_MESSAGE, message.getMessageType());

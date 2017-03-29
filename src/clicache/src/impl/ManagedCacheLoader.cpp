@@ -224,7 +224,7 @@ namespace apache
 
           ICacheableKey^ mkey = SafeGenericUMKeyConvert( key.ptr( ) );
 
-          IGeodeSerializable^ mcallbackArg = SafeGenericUMSerializableConvert(aCallbackArgument.ptr());
+          IGeodeSerializable^ mcallbackArg = SafeGenericUMSerializableConvert(aCallbackArgument.get());
           */
 
           /*
@@ -239,7 +239,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULLPTR;
+        return nullptr;
       }
 
       void ManagedCacheLoaderGeneric::close(const RegionPtr& region)

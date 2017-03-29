@@ -75,7 +75,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   RegionPtr regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }
 
@@ -89,7 +89,7 @@ void createEntry(const char* name, const char* key, const char* value) {
   CacheableStringPtr valPtr = CacheableString::create(value);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
          "Key should not have been found in region.");
@@ -144,7 +144,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateRegions1_PoolLocators)
     createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TESTPOOL1_", true);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
     try {
-      regPtr->registerAllKeys(false, NULLPTR, false, false);
+      regPtr->registerAllKeys(false, nullptr, false, false);
       FAIL("Should have got NotConnectedException during registerAllKeys");
     }
     catch (NotConnectedException exp) {

@@ -60,7 +60,7 @@ CacheablePtr TXState::replay(bool isRollback) {
   GfErrTypeThrowException("Replay is unsupported", GF_NOTSUP);
   int retryAttempts = 3;
 
-  CacheablePtr result = NULLPTR;
+  CacheablePtr result = nullptr;
 
   ReplayControl replayControl(this);
   m_dirty = false;
@@ -84,7 +84,7 @@ CacheablePtr TXState::replay(bool isRollback) {
       for (VectorOfSharedBase::Iterator iter = m_operations.begin();
            m_operations.end() != iter; iter++) {
         TransactionalOperationPtr operation =
-            staticCast<TransactionalOperationPtr>(*iter);
+            std::static_pointer_cast<GF_UNWRAP_SP(TransactionalOperationPtr)>(*iter);
         result = operation->replay(m_cache);
       }
 
@@ -103,7 +103,7 @@ CacheablePtr TXState::replay(bool isRollback) {
   GfErrTypeThrowException(
       "Unable to reestablish transaction context on servers", GF_EUNDEF);
 
-  return NULLPTR;
+  return nullptr;
 }
 
 void TXState::releaseStickyConnection() {

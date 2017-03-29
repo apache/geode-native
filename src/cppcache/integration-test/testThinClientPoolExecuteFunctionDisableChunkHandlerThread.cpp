@@ -80,7 +80,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
   {
     // initClient(true);
-    initClientWithPool(true, NULL, locHostPort, serverGroup, NULLPTR, 0, true);
+    initClientWithPool(true, NULL, locHostPort, serverGroup, nullptr, 0, true);
     // createPool(poolName, locHostPort,serverGroup, NULL, 0, true );
     // createRegionAndAttachPool(poolRegNames[0],USE_ACK, poolName);
 
@@ -213,8 +213,8 @@ class putThread : public ACE_Task_Base {
   int svc(void) {
     bool networkhop ATTR_UNUSED = false;
     CacheableKeyPtr keyPtr;
-    CacheablePtr args = NULLPTR;
-    ResultCollectorPtr rPtr = NULLPTR;
+    CacheablePtr args = nullptr;
+    ResultCollectorPtr rPtr = nullptr;
     RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     while (!m_stop) {
       for (int i = m_min; i < m_max; i++) {
@@ -250,8 +250,8 @@ class putThread : public ACE_Task_Base {
 void executeFunction() {
   RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
   TestUtils::getCacheImpl(getHelper()->cachePtr)->getAndResetNetworkHopFlag();
-  CacheablePtr args = NULLPTR;
-  ResultCollectorPtr rPtr = NULLPTR;
+  CacheablePtr args = nullptr;
+  ResultCollectorPtr rPtr = nullptr;
   int failureCount = 0;
   LOGINFO("executeFunction started");
   for (int i = 0; i < 300; i++) {

@@ -45,13 +45,13 @@ class ThinClientTallyLoader : public TallyLoader {
 
   CacheablePtr load(const RegionPtr& rp, const CacheableKeyPtr& key,
                     const UserDataPtr& aCallbackArgument) {
-    int32_t loadValue = dynCast<CacheableInt32Ptr>(
+    int32_t loadValue = std::dynamic_pointer_cast<CacheableInt32>(
                             TallyLoader::load(rp, key, aCallbackArgument))
                             ->value();
     char lstrvalue[32];
     sprintf(lstrvalue, "%i", loadValue);
     CacheableStringPtr lreturnValue = CacheableString::create(lstrvalue);
-    if (key != NULLPTR && (NULL != rp->getAttributes()->getEndpoints() ||
+    if (key != nullptr && (NULL != rp->getAttributes()->getEndpoints() ||
                            rp->getAttributes()->getPoolName() != NULL)) {
       LOGDEBUG("Putting the value (%s) for local region clients only ",
                lstrvalue);
@@ -62,21 +62,21 @@ class ThinClientTallyLoader : public TallyLoader {
 
   void close(const RegionPtr& region) {
     LOG(" ThinClientTallyLoader::close() called");
-    if (region != NULLPTR) {
+    if (region != nullptr) {
       LOGINFO(" Region %s is Destroyed = %d ", region->getName(),
               region->isDestroyed());
       ASSERT(region->isDestroyed() == true,
              "region.isDestroyed should return true");
       /*
-      if(region.ptr() != NULL && region.ptr()->getCache() != NULLPTR){
+      if(region.get() != NULL && region.get()->getCache() != nullptr){
         LOGINFO(" Cache Name is Closed = %d ",
-      region.ptr()->getCache()->isClosed());
+      region.get()->getCache()->isClosed());
       }else{
-        LOGINFO(" regionPtr or cachePtr is NULLPTR");
+        LOGINFO(" regionPtr or cachePtr is nullptr");
       }
       */
     } else {
-      LOGINFO(" region is NULLPTR");
+      LOGINFO(" region is nullptr");
     }
   }
 };
@@ -114,7 +114,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient)
 
     // Plugin the ThinClientTallyLoader to the Region.
     AttributesMutatorPtr attrMutatorPtr = regionPtr->getAttributesMutator();
-    reg1Loader1 = new ThinClientTallyLoader();
+    reg1Loader1 = std::make_shared<ThinClientTallyLoader>();
     attrMutatorPtr->setCacheLoader(reg1Loader1);
   }
 END_TASK_DEFINITION
@@ -122,9 +122,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, InitClientEvents)
   {
     numLoads = 0;
-    regionPtr = NULLPTR;
-    dSysPtr = NULLPTR;
-    cachePtr = NULLPTR;
+    regionPtr = nullptr;
+    dSysPtr = nullptr;
+    cachePtr = nullptr;
   }
 END_TASK_DEFINITION
 
@@ -135,7 +135,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testLoader)
     ASSERT(!regionPtr->containsKey(keyPtr),
            "Key should not have been found in region.");
     // now having the Callbacks set, lets call the loader
-    ASSERT(regionPtr->get(keyPtr) != NULLPTR, "Expected non null value");
+    ASSERT(regionPtr->get(keyPtr) != nullptr, "Expected non null value");
 
     RegionEntryPtr regEntryPtr = regionPtr->getEntry(keyPtr);
     CacheablePtr valuePtr = regEntryPtr->getValue();

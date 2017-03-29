@@ -114,7 +114,7 @@ namespace Apache
        generic<class TPropKey, class TPropValue>
        IGeodeSerializable^ Properties<TPropKey, TPropValue>::ConvertCacheableString(apache::geode::client::CacheablePtr& value)
        {
-         apache::geode::client::CacheableString * cs =  dynamic_cast<apache::geode::client::CacheableString *>( value.ptr() );
+         apache::geode::client::CacheableString * cs =  dynamic_cast<apache::geode::client::CacheableString *>( value.get() );
           if ( cs == NULL) {
             return SafeUMSerializableConvert( value.ptr( ) );
           } 
@@ -261,7 +261,7 @@ namespace Apache
         apache::geode::client::CacheableStringPtr csPtr;
         CacheableString::GetCacheableString(cStr->Value, csPtr);
 
-        return csPtr.ptr();
+        return csPtr.get();
       }
       */
 

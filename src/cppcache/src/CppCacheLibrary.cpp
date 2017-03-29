@@ -30,7 +30,6 @@
 #include "LRUExpMapEntry.hpp"
 #include <geode/CacheFactory.hpp>
 #include "SerializationRegistry.hpp"
-#include "CacheableToken.hpp"
 #include <geode/DataOutput.hpp>
 #include "TcrMessage.hpp"
 #include "Utils.hpp"
@@ -38,15 +37,18 @@
 
 #include <string>
 
-using namespace apache::geode::client;
+// called during DLL initialization
+void initLibDllEntry(void) { apache::geode::client::CppCacheLibrary::initLib(); }
+
+extern "C" {
+void DllMainGetPath(char* result, int maxLen);
+}
 
 namespace apache {
 namespace geode {
 namespace client {
-void gf_log_libinit();
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
+
+  void gf_log_libinit();
 
 CppCacheLibrary::CppCacheLibrary() {
   // TODO: This should catch any exceptions, log it, and bail out..
@@ -58,7 +60,6 @@ CppCacheLibrary::CppCacheLibrary() {
     ExpEntryFactory::init();
     LRUExpEntryFactory::init();
     CacheFactory::init();
-    CacheableToken::init();
     SerializationRegistry::init();
     // PdxTypeRegistry::init();
     // log( "Finished initializing CppCacheLibrary." );
@@ -94,13 +95,6 @@ void CppCacheLibrary::closeLib(void) {
   // ACE::fini(); This should not happen..... Things might be using ace beyond
   // the life of
   // using geode.
-}
-
-// called during DLL initialization
-void initLibDllEntry(void) { CppCacheLibrary::initLib(); }
-
-extern "C" {
-void DllMainGetPath(char* result, int maxLen);
 }
 
 // Returns pathname of product's lib directory, adds 'addon' to it if 'addon' is
@@ -200,3 +194,7 @@ std::string CppCacheLibrary::getProductDir() {
   }
 
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

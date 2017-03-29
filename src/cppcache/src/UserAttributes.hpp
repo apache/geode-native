@@ -102,7 +102,7 @@ class CPPCACHE_EXPORT UserAttributes : public SharedBase {
     return m_connectionAttr;
   }
 
-  void unSetCredentials() { m_credentials = NULLPTR; }
+  void unSetCredentials() { m_credentials = nullptr; }
 
   bool isEndpointAuthenticated(TcrEndpoint* ep);
 
@@ -134,7 +134,7 @@ class TSSUserAttributesWrapper {
   void setUserAttributes(UserAttributesPtr userAttr) {
     m_userAttribute = userAttr;
   }
-  TSSUserAttributesWrapper() : m_userAttribute(NULLPTR) {}
+  TSSUserAttributesWrapper() : m_userAttribute(nullptr) {}
   ~TSSUserAttributesWrapper() {}
 };
 

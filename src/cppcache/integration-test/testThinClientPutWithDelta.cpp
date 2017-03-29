@@ -72,7 +72,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   RegionPtr regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }
 
@@ -83,8 +83,8 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   fflush(stdout);
   // ack, caching
   RegionPtr regPtr = getHelper()->createRegion(
-      name, ackMode, true, NULLPTR, endpoints, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+      name, ackMode, true, nullptr, endpoints, clientNotificationEnabled);
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 
@@ -116,22 +116,20 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
     DeltaEx::toDataCount = 0;
 
     CacheableKeyPtr keyPtr = createKey(keys[0]);
-    DeltaEx* ptr = new DeltaEx();
-    CacheablePtr valPtr(ptr);
+    auto valPtr = std::make_shared<DeltaEx>();
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->put(keyPtr, valPtr);
-    ptr->setDelta(true);
+    valPtr->setDelta(true);
     regPtr->put(keyPtr, valPtr);
 
     // Test create with delta - toData() should be invoked instead of toDelta()
     regPtr->destroy(keyPtr);
-    ptr->setDelta(true);
+    valPtr->setDelta(true);
     regPtr->create(keyPtr, valPtr);
 
-    DeltaEx* ptr1 = new DeltaEx(0);
-    CacheablePtr valPtr1(ptr1);
+    auto valPtr1 = std::make_shared<DeltaEx>(0);
     regPtr->put(keyPtr, valPtr1);
-    ptr1->setDelta(true);
+    valPtr1->setDelta(true);
     regPtr->put(keyPtr, valPtr1);
     ASSERT(DeltaEx::toDeltaCount == 2, " Delta count should have been 2 ");
     ASSERT(DeltaEx::toDataCount == 4, " Data count should have been 3 ");
@@ -149,12 +147,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_DisableDelta)
     } catch (IllegalStateException&) {
       //  Ignore the exception caused by re-registration of DeltaEx.
     }
-    CacheableKeyPtr keyPtr = createKey(keys[0]);
-    DeltaEx* ptr = new DeltaEx();
-    CacheablePtr valPtr(ptr);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto keyPtr = createKey(keys[0]);
+    auto valPtr = std::make_shared<DeltaEx>();
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->put(keyPtr, valPtr);
-    ptr->setDelta(true);
+    valPtr->setDelta(true);
     regPtr->put(keyPtr, valPtr);
 
     ASSERT(DeltaEx::toDeltaCount == 0, " Delta count should have been 0 ");

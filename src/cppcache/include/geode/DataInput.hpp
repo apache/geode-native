@@ -600,9 +600,9 @@ class CPPCACHE_EXPORT DataInput {
     SerializablePtr sPtr;
     readObjectInternal(sPtr);
     if (throwOnError) {
-      ptr = dynCast<SharedPtr<PTR> >(sPtr);
+      ptr = std::dynamic_pointer_cast<PTR>(sPtr);
     } else {
-      ptr = staticCast<SharedPtr<PTR> >(sPtr);
+      ptr = std::static_pointer_cast<PTR>(sPtr);
     }
   }
 
@@ -629,7 +629,7 @@ class CPPCACHE_EXPORT DataInput {
     read(&typeId);
     int64_t compId = typeId;
     if (compId == GeodeTypeIds::NullObj) {
-      csPtr = NULLPTR;
+      csPtr = nullptr;
     } else if (compId == GeodeTypeIds::CacheableNullString) {
       csPtr = CacheableStringPtr(dynamic_cast<CacheableString*>(
           CacheableString::createDeserializable()));
@@ -637,25 +637,25 @@ class CPPCACHE_EXPORT DataInput {
                apache::geode::client::GeodeTypeIds::CacheableASCIIString) {
       csPtr = CacheableStringPtr(dynamic_cast<CacheableString*>(
           CacheableString::createDeserializable()));
-      csPtr.ptr()->fromData(*this);
+      csPtr->fromData(*this);
     } else if (compId ==
                apache::geode::client::GeodeTypeIds::CacheableASCIIStringHuge) {
       csPtr = CacheableStringPtr(dynamic_cast<CacheableString*>(
           CacheableString::createDeserializableHuge()));
-      csPtr.ptr()->fromData(*this);
+      csPtr->fromData(*this);
     } else if (compId == apache::geode::client::GeodeTypeIds::CacheableString) {
       csPtr = CacheableStringPtr(dynamic_cast<CacheableString*>(
           CacheableString::createUTFDeserializable()));
-      csPtr.ptr()->fromData(*this);
+      csPtr->fromData(*this);
     } else if (compId ==
                apache::geode::client::GeodeTypeIds::CacheableStringHuge) {
       csPtr = CacheableStringPtr(dynamic_cast<CacheableString*>(
           CacheableString::createUTFDeserializableHuge()));
-      csPtr.ptr()->fromData(*this);
+      csPtr->fromData(*this);
     } else {
       LOGDEBUG("In readNativeString something is wrong while expecting string");
       rewindCursor(1);
-      csPtr = NULLPTR;
+      csPtr = nullptr;
       return false;
     }
     return true;

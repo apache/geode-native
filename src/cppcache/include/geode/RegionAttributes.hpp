@@ -76,28 +76,28 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
  public:
   /** Gets the cache loader for the region.
    * @return  a pointer that points to the region's ,
-   * <code>CacheLoader</code> , NULLPTR if there is no CacheLoader for this
+   * <code>CacheLoader</code> , nullptr if there is no CacheLoader for this
    * region.
    */
   CacheLoaderPtr getCacheLoader();
 
   /** Gets the cache writer for the region.
    * @return  a pointer that points to the region's ,
-   * <code>CacheWriter</code> , NULLPTR if there is no CacheWriter for this
+   * <code>CacheWriter</code> , nullptr if there is no CacheWriter for this
    * region
    */
   CacheWriterPtr getCacheWriter();
 
   /** Gets the cache listener for the region.
    * @return  a pointer that points to the region's ,
-   * <code>CacheListener</code> , NULLPTR if there is no CacheListener defined
+   * <code>CacheListener</code> , nullptr if there is no CacheListener defined
    * for this region.
    */
   CacheListenerPtr getCacheListener();
 
   /** Gets the partition resolver for the partition region.
   * @return  a pointer that points to the region's ,
-  * <code>PartitionResolver</code> , NULLPTR if there is no PartitionResolver
+  * <code>PartitionResolver</code> , nullptr if there is no PartitionResolver
   * defined
   * for this region.
   */
@@ -292,7 +292,7 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
 
   /** Gets the persistence for the region.
    * @return  a pointer that points to the region's ,
-   * <code>PersistenceManager</code> , NULLPTR if there is no PersistenceManager
+   * <code>PersistenceManager</code> , nullptr if there is no PersistenceManager
    * for this
    * region.
    */
@@ -395,6 +395,8 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
 
  private:
   const RegionAttributes& operator=(const RegionAttributes&);
+
+  FRIEND_STD_SHARED_PTR(RegionAttributes)
 };
 }  // namespace client
 }  // namespace geode

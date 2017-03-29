@@ -60,18 +60,18 @@ namespace client {
  * <h3>Attributes</h3>
  * <h4>Callbacks</h4>
  * <dl>
- * <dt>{@link CacheLoader} [<em>default:</em> NULLPTR]</dt>
+ * <dt>{@link CacheLoader} [<em>default:</em> nullptr]</dt>
  *     <dd>User-implemented plug-in for loading data on cache misses.<br>
  *        {@link #setCacheLoader} {@link RegionAttributes#getCacheLoader}
  *        {@link AttributesMutator#setCacheLoader}</dd>
  *
- * <dt>{@link CacheWriter} [<em>default:</em> NULLPTR]</dt>
+ * <dt>{@link CacheWriter} [<em>default:</em> nullptr]</dt>
  *     <dd>User-implemented plug-in for intercepting cache modifications, e.g.
  *         for writing to an external data source.<br>
  *         {@link #setCacheWriter} {@link RegionAttributes#getCacheWriter}
  *         {@link AttributesMutator#setCacheWriter}</dd>
  *
- * <dt>{@link CacheListener} [<em>default:</em> NULLPTR]</dt>
+ * <dt>{@link CacheListener} [<em>default:</em> nullptr]</dt>
  *     <dd>User-implemented plug-in for receiving and handling cache related
  * events.<br>
  *         {@link #setCacheListener} {@link RegionAttributes#getCacheListener}
@@ -179,23 +179,23 @@ class CPPCACHE_EXPORT AttributesFactory : public SharedBase {
   // CALLBACKS
 
   /** Sets the cache loader for the next <code>RegionAttributes</code> created.
-   * @param cacheLoader the cache loader or NULLPTR if no loader
+   * @param cacheLoader the cache loader or nullptr if no loader
    */
   void setCacheLoader(const CacheLoaderPtr& cacheLoader);
 
   /** Sets the cache writer for the next <code>RegionAttributes</code> created.
-   * @param cacheWriter the cache writer or NULLPTR if no cache writer
+   * @param cacheWriter the cache writer or nullptr if no cache writer
    */
   void setCacheWriter(const CacheWriterPtr& cacheWriter);
 
   /** Sets the CacheListener for the next <code>RegionAttributes</code> created.
-   * @param aListener a user defined CacheListener, NULLPTR if no listener
+   * @param aListener a user defined CacheListener, nullptr if no listener
    */
   void setCacheListener(const CacheListenerPtr& aListener);
 
   /** Sets the PartitionResolver for the next <code>RegionAttributes</code>
    * created.
-   * @param aResolver a user defined PartitionResolver, NULLPTR if no resolver
+   * @param aResolver a user defined PartitionResolver, nullptr if no resolver
    */
   void setPartitionResolver(const PartitionResolverPtr& aResolver);
 
@@ -265,15 +265,15 @@ class CPPCACHE_EXPORT AttributesFactory : public SharedBase {
    * this must be used to set the PersistenceManager.
    */
   void setPersistenceManager(const char* libpath, const char* factoryFuncName,
-                             const PropertiesPtr& config = NULLPTR);
+                             const PropertiesPtr& config = nullptr);
 
   /** Sets the PersistenceManager for the next <code>RegionAttributes</code>
   * created.
-  * @param persistenceManager a user defined PersistenceManager, NULLPTR if no
+  * @param persistenceManager a user defined PersistenceManager, nullptr if no
   * resolver
   */
   void setPersistenceManager(const PersistenceManagerPtr& persistenceManager,
-                             const PropertiesPtr& config = NULLPTR);
+                             const PropertiesPtr& config = nullptr);
 
  public:
   // DISTRIBUTION ATTRIBUTES
@@ -369,7 +369,7 @@ class CPPCACHE_EXPORT AttributesFactory : public SharedBase {
    * @throws IllegalStateException if the current settings violate the
    * compatibility rules
    */
-  RegionAttributesPtr createRegionAttributes();
+  std::unique_ptr<RegionAttributes> createRegionAttributes();
 
  private:
   RegionAttributes m_regionAttributes;

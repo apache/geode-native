@@ -49,9 +49,9 @@ void createOnekEntries() {
         CacheableWrapperFactory::createInstance(GeodeTypeIds::CacheableBytes);
     tmpkey->initKey(i, 32);
     tmpval->initRandomValue(1024);
-    ASSERT(tmpkey->getCacheable() != NULLPTR, "tmpkey->getCacheable() is NULL");
-    ASSERT(tmpval->getCacheable() != NULLPTR, "tmpval->getCacheable() is NULL");
-    dataReg->put(dynCast<CacheableKeyPtr>(tmpkey->getCacheable()),
+    ASSERT(tmpkey->getCacheable() != nullptr, "tmpkey->getCacheable() is NULL");
+    ASSERT(tmpval->getCacheable() != nullptr, "tmpval->getCacheable() is NULL");
+    dataReg->put(std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable()),
                  tmpval->getCacheable());
     // delete tmpkey;
     //  delete tmpval;

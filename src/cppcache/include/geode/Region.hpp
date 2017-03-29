@@ -84,7 +84,8 @@ namespace client {
 *
 * @see RegionAttributes
 */
-class CPPCACHE_EXPORT Region : public SharedBase {
+class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region>,
+                               public SharedBase {
   /** @brief Public Methods
   */
  public:
@@ -97,7 +98,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   */
   virtual const char* getFullPath() const = 0;
 
-  /** Returns the parent region, or NULLPTR if a root region.
+  /** Returns the parent region, or nullptr if a root region.
   * @throws RegionDestroyedException
   */
   virtual RegionPtr getParentRegion() const = 0;
@@ -124,7 +125,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   *
   * @param aCallbackArgument a user-defined parameter to pass to callback events
   *        triggered by this method.
-  *        Can be NULLPTR. If it is sent on the wire, it has to be Serializable.
+  *        Can be nullptr. If it is sent on the wire, it has to be Serializable.
   * @throws CacheListenerException if CacheListener throws an exception; if this
   *         occurs some subregions may have already been successfully
   * invalidated
@@ -134,7 +135,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * This operation is not distributed.
   */
   virtual void invalidateRegion(
-      const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+      const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /** Invalidates this region. The invalidation will cascade to
   * all the subregions and cached entries. After
@@ -146,7 +147,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   *
   * @param aCallbackArgument a user-defined parameter to pass to callback events
   *        triggered by this method.
-  *        Can be NULLPTR. If it is sent on the wire, it has to be Serializable.
+  *        Can be nullptr. If it is sent on the wire, it has to be Serializable.
   * @throws CacheListenerException if CacheListener throws an exception; if this
   *         occurs some subregions may have already been successfully
   invalidated
@@ -156,7 +157,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
 
   */
   virtual void localInvalidateRegion(
-      const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+      const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /** Destroys the whole region and provides a user-defined parameter
   * object to any <code>CacheWriter</code> invoked in the process.
@@ -172,7 +173,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   *
   * @param aCallbackArgument a user-defined parameter to pass to callback events
   *        triggered by this call.
-  *        Can be NULLPTR. If it is sent on the wire, it has to be Serializable.
+  *        Can be nullptr. If it is sent on the wire, it has to be Serializable.
   * @throws CacheWriterException if CacheWriter aborts the operation; if this
   *         occurs some subregions may have already been successfully destroyed.
   * @throws CacheListenerException if CacheListener throws an exception; if this
@@ -196,7 +197,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @see  invalidateRegion
   */
   virtual void destroyRegion(
-      const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+      const UserDataPtr& aCallbackArgument = nullptr) = 0;
   /**
    * Removes all entries from this region and provides a user-defined parameter
    * object to any <code>CacheWriter</code> or <code>CacheListener</code>
@@ -204,7 +205,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
    * @see CacheListener#afterRegionClear
    * @see CacheWriter#beforeRegionClear
    */
-  virtual void clear(const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+  virtual void clear(const UserDataPtr& aCallbackArgument = nullptr) = 0;
   /**
    * Removes all entries from this region and provides a user-defined parameter
    * object to any <code>CacheWriter</code> or <code>CacheListener</code>
@@ -212,7 +213,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
    * @see CacheListener#afterRegionClear
    * @see CacheWriter#beforeRegionClear
    */
-  virtual void localClear(const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+  virtual void localClear(const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /** Destroys the whole region and provides a user-defined parameter
   * object to any <code>CacheWriter</code> invoked in the process.
@@ -224,7 +225,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   *
   * @param aCallbackArgument a user-defined parameter to pass to callback events
   *        triggered by this call.
-  *        Can be NULLPTR. If it is sent on the wire, it has to be Serializable.
+  *        Can be nullptr. If it is sent on the wire, it has to be Serializable.
   * @throws CacheWriterException if CacheWriter aborts the operation; if this
   *         occurs some subregions may have already been successfully destroyed.
   * @throws CacheListenerException if CacheListener throws an exception; if this
@@ -234,9 +235,9 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @see  localInvalidateRegion
   */
   virtual void localDestroyRegion(
-      const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+      const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
-  /** Returns the subregion identified by the path, NULLPTR if no such subregion
+  /** Returns the subregion identified by the path, nullptr if no such subregion
    */
   virtual RegionPtr getSubregion(const char* path) = 0;
 
@@ -285,7 +286,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @param aCallbackArgument an argument passed into the CacheLoader if
   * loader is used. If it is sent on the wire, it has to be Serializable.
   *
-  * @throws IllegalArgumentException if key is NULLPTR or aCallbackArgument is
+  * @throws IllegalArgumentException if key is nullptr or aCallbackArgument is
   *         not serializable and a remote CacheLoader needs to be invoked
   * @throws CacheLoaderException if CacheLoader throws an exception
   * @throws CacheServerException If an exception is received from the Java cache
@@ -307,12 +308,12 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   *region
   **/
   virtual CacheablePtr get(const CacheableKeyPtr& key,
-                           const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+                           const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline CacheablePtr get(const KEYTYPE& key,
-                          const UserDataPtr& callbackArg = NULLPTR) {
+                          const UserDataPtr& callbackArg = nullptr) {
     return get(createKey(key), callbackArg);
   }
 
@@ -339,7 +340,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @param value the value to be put into the cache
   * @param aCallbackArgument an argument that is passed to the callback function
   *
-  * @throws IllegalArgumentException if key or value is NULLPTR
+  * @throws IllegalArgumentException if key or value is nullptr
   * @throws CacheWriterException if CacheWriter aborts the operation
   * @throws CacheListenerException if CacheListener throws an exception
   * @throws RegionDestroyedException if region no longer valid
@@ -360,26 +361,26 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @throws OutOfMemoryException if  not enoough memory for the value
   */
   virtual void put(const CacheableKeyPtr& key, const CacheablePtr& value,
-                   const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+                   const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void put(const KEYTYPE& key, const VALUETYPE& value,
-                  const UserDataPtr& arg = NULLPTR) {
+                  const UserDataPtr& arg = nullptr) {
     put(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void put(const KEYTYPE& key, const CacheablePtr& value,
-                  const UserDataPtr& arg = NULLPTR) {
+                  const UserDataPtr& arg = nullptr) {
     put(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline void put(const CacheableKeyPtr& key, const VALUETYPE& value,
-                  const UserDataPtr& arg = NULLPTR) {
+                  const UserDataPtr& arg = nullptr) {
     put(key, createValue(value), arg);
   }
 
@@ -399,14 +400,14 @@ class CPPCACHE_EXPORT Region : public SharedBase {
    * @since 8.1
    * @param aCallbackArgument an argument that is passed to the callback
    * functions.
-   * It is ignored if NULLPTR. It must be serializable if this operation is
+   * It is ignored if nullptr. It must be serializable if this operation is
    * distributed.
    * @throws IllegalArgumentException If timeout
    *         parameter is greater than 2^31/1000, ie 2147483.
    */
   virtual void putAll(const HashMapOfCacheable& map,
                       uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-                      const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+                      const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /**
    * Places a new value into an entry in this region with the specified key
@@ -426,33 +427,33 @@ class CPPCACHE_EXPORT Region : public SharedBase {
    * @param aCallbackArgument an argument that is passed to the callback
    * functions
    *
-   * @throws IllegalArgumentException if key or value is NULLPTR
+   * @throws IllegalArgumentException if key or value is nullptr
    * @throws CacheWriterException if CacheWriter aborts the operation
    * @throws CacheListenerException if CacheListener throws an exception
    * @throws RegionDestroyedException if region no longer valid
    * @throws OutOfMemoryException if not enoough memory for the value
    */
   virtual void localPut(const CacheableKeyPtr& key, const CacheablePtr& value,
-                        const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+                        const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void localPut(const KEYTYPE& key, const VALUETYPE& value,
-                       const UserDataPtr& arg = NULLPTR) {
+                       const UserDataPtr& arg = nullptr) {
     localPut(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localPut(const KEYTYPE& key, const CacheablePtr& value,
-                       const UserDataPtr& arg = NULLPTR) {
+                       const UserDataPtr& arg = nullptr) {
     localPut(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline void localPut(const CacheableKeyPtr& key, const VALUETYPE& value,
-                       const UserDataPtr& arg = NULLPTR) {
+                       const UserDataPtr& arg = nullptr) {
     localPut(key, createValue(value), arg);
   }
 
@@ -474,12 +475,12 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   *
   * @param key the key smart pointer for which to create the entry in this
   * region.
-  * @param value the value for the new entry, which may be NULLPTR meaning
+  * @param value the value for the new entry, which may be nullptr meaning
   *              the new entry starts as if it had been locally invalidated.
   * @param aCallbackArgument a user-defined parameter to pass to callback events
-  *        triggered by this method. Can be NULLPTR. Should be serializable if
+  *        triggered by this method. Can be nullptr. Should be serializable if
   *        passed to remote callback events
-  * @throws IllegalArgumentException if key is NULLPTR or if the key, value, or
+  * @throws IllegalArgumentException if key is nullptr or if the key, value, or
   *         aCallbackArgument do not meet serializability requirements
   * @throws CacheWriterException if CacheWriter aborts the operation
   * @throws CacheListenerException if CacheListener throws an exception
@@ -503,26 +504,26 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @throws EntryExistsException if an entry with this key already exists
   */
   virtual void create(const CacheableKeyPtr& key, const CacheablePtr& value,
-                      const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+                      const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void create(const KEYTYPE& key, const VALUETYPE& value,
-                     const UserDataPtr& arg = NULLPTR) {
+                     const UserDataPtr& arg = nullptr) {
     create(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void create(const KEYTYPE& key, const CacheablePtr& value,
-                     const UserDataPtr& arg = NULLPTR) {
+                     const UserDataPtr& arg = nullptr) {
     create(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline void create(const CacheableKeyPtr& key, const VALUETYPE& value,
-                     const UserDataPtr& arg = NULLPTR) {
+                     const UserDataPtr& arg = nullptr) {
     create(key, createValue(value), arg);
   }
 
@@ -537,14 +538,14 @@ class CPPCACHE_EXPORT Region : public SharedBase {
    *
    * @param key the key smart pointer for which to create the entry in this
    * region.
-   * @param value the value for the new entry, which may be NULLPTR meaning
+   * @param value the value for the new entry, which may be nullptr meaning
    *              the new entry starts as if it had been locally invalidated.
    * @param aCallbackArgument a user-defined parameter to pass to callback
    * events
-   *        triggered by this method. Can be NULLPTR. Should be serializable if
+   *        triggered by this method. Can be nullptr. Should be serializable if
    *        passed to remote callback events
    *
-   * @throws IllegalArgumentException if key or value is NULLPTR
+   * @throws IllegalArgumentException if key or value is nullptr
    * @throws CacheWriterException if CacheWriter aborts the operation
    * @throws CacheListenerException if CacheListener throws an exception
    * @throws RegionDestroyedException if region is no longer valid
@@ -553,26 +554,26 @@ class CPPCACHE_EXPORT Region : public SharedBase {
    */
   virtual void localCreate(const CacheableKeyPtr& key,
                            const CacheablePtr& value,
-                           const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+                           const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void localCreate(const KEYTYPE& key, const VALUETYPE& value,
-                          const UserDataPtr& arg = NULLPTR) {
+                          const UserDataPtr& arg = nullptr) {
     localCreate(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localCreate(const KEYTYPE& key, const CacheablePtr& value,
-                          const UserDataPtr& arg = NULLPTR) {
+                          const UserDataPtr& arg = nullptr) {
     localCreate(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline void localCreate(const CacheableKeyPtr& key, const VALUETYPE& value,
-                          const UserDataPtr& arg = NULLPTR) {
+                          const UserDataPtr& arg = nullptr) {
     localCreate(key, createValue(value), arg);
   }
 
@@ -588,9 +589,9 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   *
   * @param key the key of the value to be invalidated
   * @param aCallbackArgument a user-defined parameter to pass to callback events
-  *        triggered by this method. Can be NULLPTR. Should be serializable if
+  *        triggered by this method. Can be nullptr. Should be serializable if
   *        passed to remote callback events
-  * @throws IllegalArgumentException if key is NULLPTR
+  * @throws IllegalArgumentException if key is nullptr
   * @throws CacheListenerException if CacheListener throws an exception
   * @throws EntryNotFoundException if this entry does not exist in this region
   * locally
@@ -599,11 +600,11 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @see CacheListener::afterInvalidate
   */
   virtual void invalidate(const CacheableKeyPtr& key,
-                          const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+                          const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline void invalidate(const KEYTYPE& key, const UserDataPtr& arg = NULLPTR) {
+  inline void invalidate(const KEYTYPE& key, const UserDataPtr& arg = nullptr) {
     invalidate(createKey(key), arg);
   }
 
@@ -617,9 +618,9 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   *
   * @param key the key of the value to be invalidated
   * @param aCallbackArgument a user-defined parameter to pass to callback events
-  *        triggered by this method. Can be NULLPTR. Should be serializable if
+  *        triggered by this method. Can be nullptr. Should be serializable if
   *        passed to remote callback events
-  * @throws IllegalArgumentException if key is NULLPTR
+  * @throws IllegalArgumentException if key is nullptr
   * @throws CacheListenerException if CacheListener throws an exception
   * @throws EntryNotFoundException if this entry does not exist in this region
   * locally
@@ -629,12 +630,12 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   */
   virtual void localInvalidate(
       const CacheableKeyPtr& key,
-      const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+      const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localInvalidate(const KEYTYPE& key,
-                              const UserDataPtr& arg = NULLPTR) {
+                              const UserDataPtr& arg = nullptr) {
     localInvalidate(createKey(key), arg);
   }
 
@@ -657,8 +658,8 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @param key the key of the entry to destroy
   * @param aCallbackArgument a user-defined parameter to pass to callback events
   *        triggered by this method.
-  *        Can be NULLPTR. If it is sent on the wire, it has to be Serializable.
-  * @throws IllegalArgumentException if key is NULLPTR
+  *        Can be nullptr. If it is sent on the wire, it has to be Serializable.
+  * @throws IllegalArgumentException if key is nullptr
   * @throws CacheWriterException if CacheWriter aborts the operation
   * @throws CacheListenerException if CacheListener throws an exception
   * @throws CacheServerException If an exception is received from the Geode
@@ -683,11 +684,11 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @see CacheWriter::beforeDestroy
   */
   virtual void destroy(const CacheableKeyPtr& key,
-                       const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+                       const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline void destroy(const KEYTYPE& key, const UserDataPtr& arg = NULLPTR) {
+  inline void destroy(const KEYTYPE& key, const UserDataPtr& arg = nullptr) {
     destroy(createKey(key), arg);
   }
 
@@ -705,8 +706,8 @@ class CPPCACHE_EXPORT Region : public SharedBase {
    *
    * @param key the key of the entry to destroy.
    * @param aCallbackArgument the callback for user to pass in, default is
-   * NULLPTR.
-   * @throws IllegalArgumentException if key is NULLPTR
+   * nullptr.
+   * @throws IllegalArgumentException if key is nullptr
    * @throws CacheWriterException if CacheWriter aborts the operation
    * @throws CacheListenerException if CacheListener throws an exception
    * @throws EntryNotFoundException if the entry does not exist in this region
@@ -716,12 +717,12 @@ class CPPCACHE_EXPORT Region : public SharedBase {
    * @see CacheWriter::beforeDestroy
    */
   virtual void localDestroy(const CacheableKeyPtr& key,
-                            const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+                            const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localDestroy(const KEYTYPE& key,
-                           const UserDataPtr& arg = NULLPTR) {
+                           const UserDataPtr& arg = nullptr) {
     localDestroy(createKey(key), arg);
   }
 
@@ -744,11 +745,11 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * <p>
   *
   * @param key the key of the entry to remove
-  * @param value the value of the key to remove, it can be NULLPTR.
+  * @param value the value of the key to remove, it can be nullptr.
   * @param aCallbackArgument a user-defined parameter to pass to callback events
   *        triggered by this method.
-  *        Can be NULLPTR. If it is sent on the wire, it has to be Serializable.
-  * @throws IllegalArgumentException if key is NULLPTR
+  *        Can be nullptr. If it is sent on the wire, it has to be Serializable.
+  * @throws IllegalArgumentException if key is nullptr
   * @throws CacheWriterException if CacheWriter aborts the operation
   * @throws CacheListenerException if CacheListener throws an exception
   * @throws CacheServerException If an exception is received from the Geode
@@ -774,26 +775,26 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @see CacheWriter::beforeDestroy
   */
   virtual bool remove(const CacheableKeyPtr& key, const CacheablePtr& value,
-                      const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+                      const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline bool remove(const KEYTYPE& key, const VALUETYPE& value,
-                     const UserDataPtr& arg = NULLPTR) {
+                     const UserDataPtr& arg = nullptr) {
     return remove(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline bool remove(const KEYTYPE& key, const CacheablePtr& value,
-                     const UserDataPtr& arg = NULLPTR) {
+                     const UserDataPtr& arg = nullptr) {
     return remove(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline bool remove(const CacheableKeyPtr& key, const VALUETYPE& value,
-                     const UserDataPtr& arg = NULLPTR) {
+                     const UserDataPtr& arg = nullptr) {
     return remove(key, createValue(value), arg);
   }
 
@@ -825,8 +826,8 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @param key the key of the entry to remove
   * @param aCallbackArgument a user-defined parameter to pass to callback events
   *        triggered by this method.
-  *        Can be NULLPTR. If it is sent on the wire, it has to be Serializable.
-  * @throws IllegalArgumentException if key is NULLPTR
+  *        Can be nullptr. If it is sent on the wire, it has to be Serializable.
+  * @throws IllegalArgumentException if key is nullptr
   * @throws CacheWriterException if CacheWriter aborts the operation
   * @throws CacheListenerException if CacheListener throws an exception
   * @throws CacheServerException If an exception is received from the Geode
@@ -852,11 +853,11 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @see CacheWriter::beforeDestroy
   */
   virtual bool removeEx(const CacheableKeyPtr& key,
-                        const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+                        const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline bool removeEx(const KEYTYPE& key, const UserDataPtr& arg = NULLPTR) {
+  inline bool removeEx(const KEYTYPE& key, const UserDataPtr& arg = nullptr) {
     return removeEx(createKey(key), arg);
   }
 
@@ -877,8 +878,8 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @param key the key of the entry to remove.
   * @param value the value of the entry to remove.
   * @param aCallbackArgument the callback for user to pass in, default is
-  * NULLPTR.
-  * @throws IllegalArgumentException if key is NULLPTR
+  * nullptr.
+  * @throws IllegalArgumentException if key is nullptr
   * @throws CacheWriterException if CacheWriter aborts the operation
   * @throws CacheListenerException if CacheListener throws an exception
   * @return the boolean true if an entry(key, value)has been removed or
@@ -889,26 +890,26 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   */
   virtual bool localRemove(const CacheableKeyPtr& key,
                            const CacheablePtr& value,
-                           const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+                           const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline bool localRemove(const KEYTYPE& key, const VALUETYPE& value,
-                          const UserDataPtr& arg = NULLPTR) {
+                          const UserDataPtr& arg = nullptr) {
     return localRemove(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline bool localRemove(const KEYTYPE& key, const CacheablePtr& value,
-                          const UserDataPtr& arg = NULLPTR) {
+                          const UserDataPtr& arg = nullptr) {
     return localRemove(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline bool localRemove(const CacheableKeyPtr& key, const VALUETYPE& value,
-                          const UserDataPtr& arg = NULLPTR) {
+                          const UserDataPtr& arg = nullptr) {
     return localRemove(key, createValue(value), arg);
   }
 
@@ -927,8 +928,8 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   *
   * @param key the key of the entry to remove.
   * @param aCallbackArgument the callback for user to pass in, default is
-  * NULLPTR.
-  * @throws IllegalArgumentException if key is NULLPTR
+  * nullptr.
+  * @throws IllegalArgumentException if key is nullptr
   * @throws CacheWriterException if CacheWriter aborts the operation
   * @throws CacheListenerException if CacheListener throws an exception
   * @return the boolean true if an entry(key, value)has been removed or
@@ -940,12 +941,12 @@ class CPPCACHE_EXPORT Region : public SharedBase {
 
   virtual bool localRemoveEx(
       const CacheableKeyPtr& key,
-      const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+      const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline bool localRemoveEx(const KEYTYPE& key,
-                            const UserDataPtr& arg = NULLPTR) {
+                            const UserDataPtr& arg = nullptr) {
     return localRemoveEx(createKey(key), arg);
   }
 
@@ -1127,7 +1128,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * ( {@link AttributesFactory::setClientNotification} ) is true.
   *
   * @param isDurable flag to indicate whether this is a durable registration
-  * @param resultKeys If non-NULLPTR then all the keys on the server that got
+  * @param resultKeys If non-nullptr then all the keys on the server that got
   *   registered are returned. The vector is cleared at the start to discard
   *   any existing keys in the vector.
   * @param getInitialValues true to populate the cache with values of all keys
@@ -1157,7 +1158,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @throws TimeoutException if operation timed out
   */
   virtual void registerAllKeys(bool isDurable = false,
-                               VectorOfCacheableKeyPtr resultKeys = NULLPTR,
+                               VectorOfCacheableKeyPtr resultKeys = nullptr,
                                bool getInitialValues = false,
                                bool receiveValues = true) = 0;
 
@@ -1193,7 +1194,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   *
   * @param regex The regular expression string.
   * @param isDurable flag to indicate whether this is a durable registration
-  * @param resultKeys If non-NULLPTR then the keys that match the regular
+  * @param resultKeys If non-nullptr then the keys that match the regular
   *   expression on the server are returned. The vector is cleared at the
   *   start to discard any existing keys in the vector.
   * @param getInitialValues true to populate the cache with values of the keys
@@ -1229,7 +1230,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @throws TimeoutException if operation timed out
   */
   virtual void registerRegex(const char* regex, bool isDurable = false,
-                             VectorOfCacheableKeyPtr resultKeys = NULLPTR,
+                             VectorOfCacheableKeyPtr resultKeys = nullptr,
                              bool getInitialValues = false,
                              bool receiveValues = true) = 0;
 
@@ -1276,21 +1277,21 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   *
   * @param keys the array of keys
   * @param values Output parameter that provides the map of keys to
-  *   respective values. It is ignored if NULLPTR, and when NULLPTR then at
+  *   respective values. It is ignored if nullptr, and when nullptr then at
   *least
   *   the <code>addToLocalCache</code> parameter should be true and caching
   *   should be enabled for the region to get values into the region
   *   otherwise an <code>IllegalArgumentException</code> is thrown.
   * @param exceptions Output parameter that provides the map of keys
-  *   to any exceptions while obtaining the key. It is ignored if NULLPTR.
+  *   to any exceptions while obtaining the key. It is ignored if nullptr.
   * @param addToLocalCache true if the obtained values have also to be added
   *   to the local cache
   * @since 8.1
   * @param aCallbackArgument an argument that is passed to the callback
   *functions.
-  * It may be NULLPTR. Must be serializable if this operation is distributed.
+  * It may be nullptr. Must be serializable if this operation is distributed.
   * @throws IllegalArgumentException If the array of keys is empty. Other
-  *   invalid case is when the <code>values</code> parameter is NULLPTR, and
+  *   invalid case is when the <code>values</code> parameter is nullptr, and
   *   either <code>addToLocalCache</code> is false or caching is disabled
   *   for this region.
   * @throws CacheServerException If an exception is received from the Java
@@ -1310,7 +1311,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
                       HashMapOfCacheablePtr values,
                       HashMapOfExceptionPtr exceptions,
                       bool addToLocalCache = false,
-                      const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+                      const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /**
   * Executes the query on the server based on the predicate.
@@ -1394,7 +1395,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @throws TimeoutException if operation timed out
   * @throws CacheClosedException if the cache has been closed
   * @returns A smart pointer to the single ResultSet or StructSet item, or
-  * NULLPTR of no results are available.
+  * nullptr of no results are available.
   */
   virtual SerializablePtr selectValue(
       const char* predicate,
@@ -1413,7 +1414,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @param keys the keys to remove from this region.
   * @param aCallbackArgument an argument that is passed to the callback
   * functions.
-  *  It is ignored if NULLPTR. It must be serializable if this operation is
+  *  It is ignored if nullptr. It must be serializable if this operation is
   * distributed.
   * @throws IllegalArgumentException If the array of keys is empty.
   * @throws CacheServerException If an exception is received from the Java
@@ -1429,7 +1430,7 @@ class CPPCACHE_EXPORT Region : public SharedBase {
   * @see destroy
   */
   virtual void removeAll(const VectorOfCacheableKey& keys,
-                         const UserDataPtr& aCallbackArgument = NULLPTR) = 0;
+                         const UserDataPtr& aCallbackArgument = nullptr) = 0;
 
   /**
    * Get the size of region. For native client regions, this will give the
@@ -1442,6 +1443,8 @@ class CPPCACHE_EXPORT Region : public SharedBase {
  protected:
   Region();
   virtual ~Region();
+
+  FRIEND_STD_SHARED_PTR(Region)
 
  private:
   // Disallow copy constructor and assignment operator.

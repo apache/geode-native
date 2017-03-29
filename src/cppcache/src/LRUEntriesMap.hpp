@@ -94,7 +94,7 @@ class CPPCACHE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
   virtual bool get(const CacheableKeyPtr& key, CacheablePtr& returnPtr,
                    MapEntryImplPtr& me);
   virtual CacheablePtr getFromDisk(const CacheableKeyPtr& key,
-                                   MapEntryImpl* me) const;
+                                   MapEntryImplPtr& me) const;
   GfErrType processLRU();
   void processLRU(int32_t numEntriesToEvict);
   GfErrType evictionHelper();

@@ -54,7 +54,7 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
         type(NULL),
         status(NULL),
         newVal(NULL),
-        creationDate(NULLPTR),
+        creationDate(nullptr),
         arrayNull(NULL),
         arrayZeroSize(NULL) {}
 

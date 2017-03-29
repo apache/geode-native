@@ -227,7 +227,7 @@ namespace Apache
       IGeodeSerializable^ Serializable::GetPDXTypeById(const char* poolName, System::Int32 typeId)
       {
         SerializablePtr sPtr = apache::geode::client::SerializationRegistry::GetPDXTypeById(poolName, typeId);
-        return SafeUMSerializableConvertGeneric(sPtr.ptr());
+        return SafeUMSerializableConvertGeneric(sPtr.get());
       }
 
       int Serializable::GetEnumValue(Internal::EnumInfo^ ei)
@@ -239,7 +239,7 @@ namespace Apache
       Internal::EnumInfo^ Serializable::GetEnum(int val)
       {
         SerializablePtr sPtr = apache::geode::client::SerializationRegistry::GetEnum(val);
-        return (Internal::EnumInfo^)SafeUMSerializableConvertGeneric(sPtr.ptr());
+        return (Internal::EnumInfo^)SafeUMSerializableConvertGeneric(sPtr.get());
       }
 
       void Serializable::RegisterPdxType(PdxTypeFactoryMethod^ creationMethod)
@@ -611,7 +611,7 @@ namespace Apache
       generic<class TValue>
         TValue Serializable::GetManagedValueGeneric(apache::geode::client::SerializablePtr val)
         {
-          if (val == NULLPTR)
+          if (val == nullptr)
           {
             return TValue();
           }
@@ -689,7 +689,7 @@ namespace Apache
           {
             //TODO::
             Apache::Geode::Client::CacheableDate^ ret = static_cast<Apache::Geode::Client::CacheableDate ^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableDate^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableDate^>(val.get()));
 
             System::DateTime dt(ret->Value.Ticks);
             return safe_cast<TValue>(dt);
@@ -699,13 +699,13 @@ namespace Apache
           case apache::geode::client::GeodeTypeIdsImpl::CacheableUserData4:
           {
             //TODO::split 
-            IGeodeSerializable^ ret = SafeUMSerializableConvertGeneric(val.ptr());
+            IGeodeSerializable^ ret = SafeUMSerializableConvertGeneric(val.get());
             return safe_cast<TValue>(ret);
             //return TValue();
           }
           case apache::geode::client::GeodeTypeIdsImpl::PDX:
           {
-            IPdxSerializable^ ret = SafeUMSerializablePDXConvert(val.ptr());
+            IPdxSerializable^ ret = SafeUMSerializablePDXConvert(val.get());
 
             PdxWrapper^ pdxWrapper = dynamic_cast<PdxWrapper^>(ret);
 
@@ -719,49 +719,49 @@ namespace Apache
           case apache::geode::client::GeodeTypeIds::CacheableBytes:
           {
             Apache::Geode::Client::CacheableBytes^ ret = safe_cast<Apache::Geode::Client::CacheableBytes ^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableBytes^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableBytes^>(val.get()));
 
             return safe_cast<TValue>(ret->Value);
           }
           case apache::geode::client::GeodeTypeIds::CacheableDoubleArray:
           {
             Apache::Geode::Client::CacheableDoubleArray^ ret = safe_cast<Apache::Geode::Client::CacheableDoubleArray ^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableDoubleArray^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableDoubleArray^>(val.get()));
 
             return safe_cast<TValue>(ret->Value);
           }
           case apache::geode::client::GeodeTypeIds::CacheableFloatArray:
           {
             Apache::Geode::Client::CacheableFloatArray^ ret = safe_cast<Apache::Geode::Client::CacheableFloatArray^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableFloatArray^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableFloatArray^>(val.get()));
 
             return safe_cast<TValue>(ret->Value);
           }
           case apache::geode::client::GeodeTypeIds::CacheableInt16Array:
           {
             Apache::Geode::Client::CacheableInt16Array^ ret = safe_cast<Apache::Geode::Client::CacheableInt16Array^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableInt16Array^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableInt16Array^>(val.get()));
 
             return safe_cast<TValue>(ret->Value);
           }
           case apache::geode::client::GeodeTypeIds::CacheableInt32Array:
           {
             Apache::Geode::Client::CacheableInt32Array^ ret = safe_cast<Apache::Geode::Client::CacheableInt32Array^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableInt32Array^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableInt32Array^>(val.get()));
 
             return safe_cast<TValue>(ret->Value);
           }
           case apache::geode::client::GeodeTypeIds::CacheableInt64Array:
           {
             Apache::Geode::Client::CacheableInt64Array^ ret = safe_cast<Apache::Geode::Client::CacheableInt64Array^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableInt64Array^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableInt64Array^>(val.get()));
 
             return safe_cast<TValue>(ret->Value);
           }
           case apache::geode::client::GeodeTypeIds::CacheableStringArray:
           {
             Apache::Geode::Client::CacheableStringArray^ ret = safe_cast<Apache::Geode::Client::CacheableStringArray^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableStringArray^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableStringArray^>(val.get()));
 
             /* array<String^>^ str = gcnew array<String^>(ret->GetValues()->Length);
              for(int i=0; i<ret->GetValues()->Length; i++ ) {
@@ -773,100 +773,100 @@ namespace Apache
           case apache::geode::client::GeodeTypeIds::CacheableArrayList://Ilist generic
           {
             Apache::Geode::Client::CacheableArrayList^ ret = safe_cast<Apache::Geode::Client::CacheableArrayList^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableArrayList^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableArrayList^>(val.get()));
 
             return safe_cast<TValue>(ret->Value);
           }
           case apache::geode::client::GeodeTypeIds::CacheableLinkedList://LinkedList generic
           {
             Apache::Geode::Client::CacheableLinkedList^ ret = safe_cast<Apache::Geode::Client::CacheableLinkedList^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableLinkedList^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableLinkedList^>(val.get()));
 
             return safe_cast<TValue>(ret->Value);
           }
           case apache::geode::client::GeodeTypeIds::CacheableHashTable://collection::hashtable
           {
             Apache::Geode::Client::CacheableHashTable^ ret = safe_cast<Apache::Geode::Client::CacheableHashTable^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableHashTable^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableHashTable^>(val.get()));
 
             return safe_cast<TValue>(ret->Value);
           }
           case apache::geode::client::GeodeTypeIds::CacheableHashMap://generic dictionary
           {
             Apache::Geode::Client::CacheableHashMap^ ret = safe_cast<Apache::Geode::Client::CacheableHashMap^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableHashMap^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableHashMap^>(val.get()));
 
             return safe_cast<TValue>(ret->Value);
           }
           case apache::geode::client::GeodeTypeIds::CacheableIdentityHashMap:
           {
             Apache::Geode::Client::CacheableIdentityHashMap^ ret = static_cast<Apache::Geode::Client::CacheableIdentityHashMap^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableIdentityHashMap^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableIdentityHashMap^>(val.get()));
             return safe_cast<TValue>(ret->Value);
           }
           case apache::geode::client::GeodeTypeIds::CacheableHashSet://no need of it, default case should work
           {
             Apache::Geode::Client::CacheableHashSet^ ret = static_cast<Apache::Geode::Client::CacheableHashSet^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableHashSet^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableHashSet^>(val.get()));
             return safe_cast<TValue>(ret);
           }
           case apache::geode::client::GeodeTypeIds::CacheableLinkedHashSet://no need of it, default case should work
           {
             Apache::Geode::Client::CacheableLinkedHashSet^ ret = static_cast<Apache::Geode::Client::CacheableLinkedHashSet^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableLinkedHashSet^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableLinkedHashSet^>(val.get()));
             return safe_cast<TValue>(ret);
           }
           case apache::geode::client::GeodeTypeIds::CacheableFileName:
           {
             Apache::Geode::Client::CacheableFileName^ ret = static_cast<Apache::Geode::Client::CacheableFileName^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableFileName^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableFileName^>(val.get()));
             return safe_cast<TValue>(ret);
           }
           case apache::geode::client::GeodeTypeIds::CacheableObjectArray:
           {
             Apache::Geode::Client::CacheableObjectArray^ ret = static_cast<Apache::Geode::Client::CacheableObjectArray^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableObjectArray^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableObjectArray^>(val.get()));
             return safe_cast<TValue>(ret);
           }
           case apache::geode::client::GeodeTypeIds::CacheableVector://collection::arraylist
           {
             Apache::Geode::Client::CacheableVector^ ret = static_cast<Apache::Geode::Client::CacheableVector^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableVector^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableVector^>(val.get()));
             return safe_cast<TValue>(ret->Value);
           }
           case apache::geode::client::GeodeTypeIds::CacheableUndefined:
           {
             Apache::Geode::Client::CacheableUndefined^ ret = static_cast<Apache::Geode::Client::CacheableUndefined^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableUndefined^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableUndefined^>(val.get()));
             return safe_cast<TValue>(ret);
           }
           case apache::geode::client::GeodeTypeIds::Struct:
           {
-            return safe_cast<TValue>(Apache::Geode::Client::Struct::Create(val.ptr()));
+            return safe_cast<TValue>(Apache::Geode::Client::Struct::Create(val.get()));
           }
           case apache::geode::client::GeodeTypeIds::CacheableStack:
           {
             Apache::Geode::Client::CacheableStack^ ret = static_cast<Apache::Geode::Client::CacheableStack^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableStack^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableStack^>(val.get()));
             return safe_cast<TValue>(ret->Value);
           }
           case 7: //GeodeClassIds::CacheableManagedObject
           {
             Apache::Geode::Client::CacheableObject^ ret = static_cast<Apache::Geode::Client::CacheableObject^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableObject^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableObject^>(val.get()));
             return safe_cast<TValue>(ret);
           }
           case 8://GeodeClassIds::CacheableManagedObjectXml
           {
             Apache::Geode::Client::CacheableObjectXml^ ret = static_cast<Apache::Geode::Client::CacheableObjectXml^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableObjectXml^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableObjectXml^>(val.get()));
             return safe_cast<TValue>(ret);
           }
           /*  TODO: replace with IDictionary<K, V>
         case apache::geode::client::GeodeTypeIds::Properties:
         {
         Apache::Geode::Client::Properties^ ret = safe_cast<Apache::Geode::Client::Properties^>
-        ( SafeGenericUMSerializableConvert<Apache::Geode::Client::Properties^>(val.ptr()));
+        ( SafeGenericUMSerializableConvert<Apache::Geode::Client::Properties^>(val.get()));
 
         return safe_cast<TValue>(ret);
         }*/
@@ -874,21 +874,21 @@ namespace Apache
           case apache::geode::client::GeodeTypeIds::BooleanArray:
           {
             Apache::Geode::Client::BooleanArray^ ret = safe_cast<Apache::Geode::Client::BooleanArray^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::BooleanArray^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::BooleanArray^>(val.get()));
 
             return safe_cast<TValue>(ret->Value);
           }
           case apache::geode::client::GeodeTypeIds::CharArray:
           {
             Apache::Geode::Client::CharArray^ ret = safe_cast<Apache::Geode::Client::CharArray^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CharArray^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::CharArray^>(val.get()));
 
             return safe_cast<TValue>(ret->Value);
           }
           case 0://UserFunctionExecutionException unregistered
           {
             Apache::Geode::Client::UserFunctionExecutionException^ ret = static_cast<Apache::Geode::Client::UserFunctionExecutionException^>
-              (SafeGenericUMSerializableConvert<Apache::Geode::Client::UserFunctionExecutionException^>(val.ptr()));
+              (SafeGenericUMSerializableConvert<Apache::Geode::Client::UserFunctionExecutionException^>(val.get()));
             return safe_cast<TValue>(ret);
           }
           default:
@@ -905,7 +905,7 @@ namespace Apache
               //System::Type^ managedType = key->GetType();
               return GetUnmanagedValueGeneric(key->GetType(), key);
             }
-            return NULLPTR;
+            return nullptr;
           }
 
           generic<class TKey>
@@ -916,7 +916,7 @@ namespace Apache
                 //System::Type^ managedType = key->GetType();
                 return GetUnmanagedValueGeneric(key->GetType(), key, isAciiChar);
               }
-              return NULLPTR;
+              return nullptr;
             }
 
             void Serializable::RegisterPdxSerializer(IPdxSerializer^ pdxSerializer)
@@ -1271,7 +1271,7 @@ namespace Apache
 
                 String^ Serializable::GetString(apache::geode::client::CacheableStringPtr cStr)//apache::geode::client::CacheableString*
                 {
-                  if (cStr == NULLPTR) {
+                  if (cStr == nullptr) {
                     return nullptr;
                   }
                   else if (cStr->isWideString()) {
@@ -1287,7 +1287,7 @@ namespace Apache
                 //byte
                 Byte Serializable::getByte(apache::geode::client::SerializablePtr nativeptr)
                 {
-                  apache::geode::client::CacheableByte* ci = static_cast<apache::geode::client::CacheableByte*>(nativeptr.ptr());
+                  apache::geode::client::CacheableByte* ci = static_cast<apache::geode::client::CacheableByte*>(nativeptr.get());
                   return ci->value();
                 }
 
@@ -1299,7 +1299,7 @@ namespace Apache
                 //boolean
                 bool Serializable::getBoolean(apache::geode::client::SerializablePtr nativeptr)
                 {
-                  apache::geode::client::CacheableBoolean* ci = static_cast<apache::geode::client::CacheableBoolean*>(nativeptr.ptr());
+                  apache::geode::client::CacheableBoolean* ci = static_cast<apache::geode::client::CacheableBoolean*>(nativeptr.get());
                   return ci->value();
                 }
 
@@ -1311,7 +1311,7 @@ namespace Apache
                 //widechar
                 Char Serializable::getChar(apache::geode::client::SerializablePtr nativeptr)
                 {
-                  apache::geode::client::CacheableWideChar* ci = static_cast<apache::geode::client::CacheableWideChar*>(nativeptr.ptr());
+                  apache::geode::client::CacheableWideChar* ci = static_cast<apache::geode::client::CacheableWideChar*>(nativeptr.get());
                   return ci->value();
                 }
 
@@ -1323,7 +1323,7 @@ namespace Apache
                 //double
                 double Serializable::getDouble(apache::geode::client::SerializablePtr nativeptr)
                 {
-                  apache::geode::client::CacheableDouble* ci = static_cast<apache::geode::client::CacheableDouble*>(nativeptr.ptr());
+                  apache::geode::client::CacheableDouble* ci = static_cast<apache::geode::client::CacheableDouble*>(nativeptr.get());
                   return ci->value();
                 }
 
@@ -1335,7 +1335,7 @@ namespace Apache
                 //float
                 float Serializable::getFloat(apache::geode::client::SerializablePtr nativeptr)
                 {
-                  apache::geode::client::CacheableFloat* ci = static_cast<apache::geode::client::CacheableFloat*>(nativeptr.ptr());
+                  apache::geode::client::CacheableFloat* ci = static_cast<apache::geode::client::CacheableFloat*>(nativeptr.get());
                   return ci->value();
                 }
 
@@ -1347,7 +1347,7 @@ namespace Apache
                 //int16
                 System::Int16 Serializable::getInt16(apache::geode::client::SerializablePtr nativeptr)
                 {
-                  apache::geode::client::CacheableInt16* ci = static_cast<apache::geode::client::CacheableInt16*>(nativeptr.ptr());
+                  apache::geode::client::CacheableInt16* ci = static_cast<apache::geode::client::CacheableInt16*>(nativeptr.get());
                   return ci->value();
                 }
 
@@ -1359,7 +1359,7 @@ namespace Apache
                 //int32
                 System::Int32 Serializable::getInt32(apache::geode::client::SerializablePtr nativeptr)
                 {
-                  apache::geode::client::CacheableInt32* ci = static_cast<apache::geode::client::CacheableInt32*>(nativeptr.ptr());
+                  apache::geode::client::CacheableInt32* ci = static_cast<apache::geode::client::CacheableInt32*>(nativeptr.get());
                   return ci->value();
                 }
 
@@ -1371,7 +1371,7 @@ namespace Apache
                 //int64
                 System::Int64 Serializable::getInt64(apache::geode::client::SerializablePtr nativeptr)
                 {
-                  apache::geode::client::CacheableInt64* ci = static_cast<apache::geode::client::CacheableInt64*>(nativeptr.ptr());
+                  apache::geode::client::CacheableInt64* ci = static_cast<apache::geode::client::CacheableInt64*>(nativeptr.get());
                   return ci->value();
                 }
 
@@ -1383,7 +1383,7 @@ namespace Apache
                 //cacheable ascii string
                 String^ Serializable::getASCIIString(apache::geode::client::SerializablePtr nativeptr)
                 {
-                  //apache::geode::client::CacheableString* ci = static_cast<apache::geode::client::CacheableString*>(nativeptr.ptr());          
+                  //apache::geode::client::CacheableString* ci = static_cast<apache::geode::client::CacheableString*>(nativeptr.get());          
                   //return GetString(ci);
                   return GetString(nativeptr->toString());
                 }
@@ -1401,7 +1401,7 @@ namespace Apache
                 //cacheable ascii string huge
                 String^ Serializable::getASCIIStringHuge(apache::geode::client::SerializablePtr nativeptr)
                 {
-                  //apache::geode::client::CacheableString* ci = static_cast<apache::geode::client::CacheableString*>(nativeptr.ptr());          
+                  //apache::geode::client::CacheableString* ci = static_cast<apache::geode::client::CacheableString*>(nativeptr.get());          
                   //return GetString(ci);
                   return GetString(nativeptr->toString());
                 }
@@ -1414,7 +1414,7 @@ namespace Apache
                 //cacheable string
                 String^ Serializable::getUTFString(apache::geode::client::SerializablePtr nativeptr)
                 {
-                  //apache::geode::client::CacheableString* ci = static_cast<apache::geode::client::CacheableString*>(nativeptr.ptr());          
+                  //apache::geode::client::CacheableString* ci = static_cast<apache::geode::client::CacheableString*>(nativeptr.get());          
                   //return GetString(ci);
                   return GetString(nativeptr->toString());
                 }
@@ -1427,7 +1427,7 @@ namespace Apache
                 //cacheable string huge
                 String^ Serializable::getUTFStringHuge(apache::geode::client::SerializablePtr nativeptr)
                 {
-                  //apache::geode::client::CacheableString* ci = static_cast<apache::geode::client::CacheableString*>(nativeptr.ptr());
+                  //apache::geode::client::CacheableString* ci = static_cast<apache::geode::client::CacheableString*>(nativeptr.get());
                   //return GetString(ci);
                   return GetString(nativeptr->toString());
                 }
@@ -1476,7 +1476,7 @@ namespace Apache
                 /*
                  static String^ GetString(apache::geode::client::CacheableStringPtr cStr)//apache::geode::client::CacheableString*
                  {
-                 if (cStr == NULLPTR) {
+                 if (cStr == nullptr) {
                  return nullptr;
                  }
                  else if (cStr->isWideString()) {

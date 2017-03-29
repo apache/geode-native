@@ -42,7 +42,7 @@ TXCleaner::~TXCleaner() {
   }
 }
 void TXCleaner::clean() {
-  if (m_txState != NULL && m_txState->getTransactionId().ptr() != NULL) {
+  if (m_txState != NULL && m_txState->getTransactionId().get() != NULL) {
     m_cacheTxMgr->removeTx(m_txState->getTransactionId()->getId());
   }
   if (m_txStateWrapper != NULL && m_txState != NULL) {

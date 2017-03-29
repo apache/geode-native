@@ -121,7 +121,7 @@ class CPPCACHE_EXPORT VectorOfSharedBase {
   /** copy constructor */
   VectorOfSharedBase(const VectorOfSharedBase& other);
 
-  /** destructor, sets all SharedPtr elements to NULLPTR */
+  /** destructor, sets all SharedPtr elements to nullptr */
   ~VectorOfSharedBase();
 
   /** assignment operator */
@@ -157,7 +157,7 @@ class CPPCACHE_EXPORT VectorOfSharedBase {
   /** inserts or erases elements at the end such that size becomes n.
    *  Not to be confused with reserve which simply allocates the space,
    *  resize fills the space with active elements. */
-  void resize(int32_t n, const SharedBasePtr& t = NULLPTR);
+  void resize(int32_t n, const SharedBasePtr& t = nullptr);
 
   /** insert object at the given index. */
   void insert(int32_t index, const SharedBasePtr& t);

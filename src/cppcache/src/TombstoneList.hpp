@@ -36,7 +36,7 @@ class MapSegment;
 class TombstoneExpiryHandler;
 class TombstoneEntry : public SharedBase {
  public:
-  TombstoneEntry(MapEntryImpl* entry, int64_t tombstoneCreationTime)
+  TombstoneEntry(const MapEntryImplPtr& entry, int64_t tombstoneCreationTime)
       : m_entry(entry),
         m_tombstoneCreationTime(tombstoneCreationTime),
         /* adongre
@@ -50,7 +50,7 @@ class TombstoneEntry : public SharedBase {
         m_expiryTaskId(0),
         m_handler(NULL) {}
   virtual ~TombstoneEntry() {}
-  MapEntryImpl* getEntry() { return m_entry; }
+  MapEntryImplPtr getEntry() { return m_entry; }
   int64_t getTombstoneCreationTime() { return m_tombstoneCreationTime; }
   int64_t getExpiryTaskId() { return m_expiryTaskId; }
   void setExpiryTaskId(int64_t expiryTaskId) { m_expiryTaskId = expiryTaskId; }
@@ -58,7 +58,7 @@ class TombstoneEntry : public SharedBase {
   void setHandler(TombstoneExpiryHandler* handler) { m_handler = handler; };
 
  private:
-  MapEntryImpl* m_entry;
+  MapEntryImplPtr m_entry;
   int64_t m_tombstoneCreationTime;
   int64_t m_expiryTaskId;
   TombstoneExpiryHandler* m_handler;
@@ -69,7 +69,7 @@ class TombstoneList : public SharedBase {
  public:
   TombstoneList(MapSegment* mapSegment) { m_mapSegment = mapSegment; }
   virtual ~TombstoneList() { cleanUp(); }
-  void add(RegionInternal* rptr, MapEntryImpl* entry,
+  void add(RegionInternal* rptr, const MapEntryImplPtr& entry,
            TombstoneExpiryHandler* handler, long taskID);
 
   // Reaps the tombstones which have been gc'ed on server.
@@ -78,12 +78,13 @@ class TombstoneList : public SharedBase {
   // value is passed as paramter
   void reapTombstones(std::map<uint16_t, int64_t>& gcVersions);
   void reapTombstones(CacheableHashSetPtr removedKeys);
-  void eraseEntryFromTombstoneList(CacheableKeyPtr key, RegionInternal* region,
+  void eraseEntryFromTombstoneList(const CacheableKeyPtr& key,
+                                   RegionInternal* region,
                                    bool cancelTask = true);
   long eraseEntryFromTombstoneListWithoutCancelTask(
-      CacheableKeyPtr key, RegionInternal* region,
+      const CacheableKeyPtr& key, RegionInternal* region,
       TombstoneExpiryHandler*& handler);
-  bool getEntryFromTombstoneList(CacheableKeyPtr key);
+  bool getEntryFromTombstoneList(const CacheableKeyPtr& key) const;
   void cleanUp();
   long getExpiryTask(TombstoneExpiryHandler** handler);
 

@@ -42,11 +42,10 @@ class OperMonitor : public CacheListener {
   void check(const EntryEvent& event) {
     char buf[256] = {'\0'};
     m_events++;
-    CacheableStringPtr keyPtr = dynCast<CacheableStringPtr>(event.getKey());
-    CacheableInt32Ptr valuePtr =
-        dynCast<CacheableInt32Ptr>(event.getNewValue());
+    auto keyPtr = std::dynamic_pointer_cast<CacheableString>(event.getKey());
+    auto valuePtr = std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
 
-    if (valuePtr != NULLPTR) {
+    if (valuePtr != nullptr) {
       m_value = valuePtr->value();
     }
     sprintf(buf, "Key = %s, Value = %d", keyPtr->toString(), valuePtr->value());
@@ -85,10 +84,10 @@ void setCacheListener(const char* regName, OperMonitorPtr monitor) {
   attrMutator->setCacheListener(monitor);
 }
 
-OperMonitorPtr mon1C1 = NULLPTR;
-OperMonitorPtr mon2C1 = NULLPTR;
-OperMonitorPtr mon1C2 = NULLPTR;
-OperMonitorPtr mon2C2 = NULLPTR;
+OperMonitorPtr mon1C1 = nullptr;
+OperMonitorPtr mon2C1 = nullptr;
+OperMonitorPtr mon1C2 = nullptr;
+OperMonitorPtr mon2C2 = nullptr;
 
 const char* regions[] = {"ConflatedRegion", "NonConflatedRegion"};
 
@@ -101,8 +100,8 @@ void initClientCache(OperMonitorPtr& mon1, OperMonitorPtr& mon2, int durableIdx,
   initClientAndTwoRegions(durableIdx, 0, 300, conflation, regions);
 
   // Recreate listener
-  mon1 = new OperMonitor();
-  mon2 = new OperMonitor();
+  mon1 = std::make_shared<OperMonitor>();
+  mon2 = std::make_shared<OperMonitor>();
 
   setCacheListener(regions[0], mon1);
   setCacheListener(regions[1], mon2);
@@ -162,7 +161,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(FEEDER, CreateRegionsAndFirstFeederUpdate)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regions[0], USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
     getHelper()->createPooledRegion(regions[1], USE_ACK, locatorsG,

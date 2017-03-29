@@ -93,8 +93,8 @@ class SimpleCacheListener : public CacheListener {
 };
 typedef SharedPtr<SimpleCacheListener> SimpleCacheListenerPtr;
 
-SimpleCacheListenerPtr eventListener1 = NULLPTR;
-SimpleCacheListenerPtr eventListener2 = NULLPTR;
+SimpleCacheListenerPtr eventListener1 = nullptr;
+SimpleCacheListenerPtr eventListener2 = nullptr;
 
 void initClient(const bool isthinClient) {
   if (cacheHelper == NULL) {
@@ -124,7 +124,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   RegionPtr regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }
 
@@ -159,12 +159,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_Locator)
     // Attache Listener
     RegionPtr regionPtr0 = getHelper()->getRegion(regionNames[0]);
     AttributesMutatorPtr attrMutatorPtr = regionPtr0->getAttributesMutator();
-    eventListener1 = new SimpleCacheListener();
+    eventListener1 = std::make_shared<SimpleCacheListener>();
     attrMutatorPtr->setCacheListener(eventListener1);
 
     AttributesMutatorPtr subregAttrMutatorPtr =
         subregPtr1->getAttributesMutator();
-    eventListener2 = new SimpleCacheListener();
+    eventListener2 = std::make_shared<SimpleCacheListener>();
     subregAttrMutatorPtr->setCacheListener(eventListener2);
 
     LOG("StepOne_Pool complete.");

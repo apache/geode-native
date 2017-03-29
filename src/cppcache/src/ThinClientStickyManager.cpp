@@ -64,15 +64,15 @@ void ThinClientStickyManager::addStickyConnection(TcrConnection* conn) {
     if (it != m_stickyConnList.end()) {
       oldConn->setAndGetBeingUsed(false, false);
       m_stickyConnList.erase(it);
-      PoolPtr p = NULLPTR;
+      PoolPtr p = nullptr;
       TssConnectionWrapper::s_geodeTSSConn->setConnection(NULL, p);
       m_dm->put(oldConn, false);
     }
   }
 
   if (conn) {
-    PoolPtr p(m_dm);
-    TssConnectionWrapper::s_geodeTSSConn->setConnection(conn, p);
+    TssConnectionWrapper::s_geodeTSSConn->setConnection(
+        conn, m_dm->shared_from_this());
     conn->setAndGetBeingUsed(true, true);  // this is done for transaction
                                            // thread when some one resume
                                            // transaction
@@ -86,16 +86,16 @@ void ThinClientStickyManager::setStickyConnection(TcrConnection* conn,
   // ACE_Guard<ACE_Recursive_Thread_Mutex> guard( m_stickyLock );
   if (!conn) {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_stickyLock);
-    PoolPtr p = NULLPTR;
-    TssConnectionWrapper::s_geodeTSSConn->setConnection(NULL, p);
+    TssConnectionWrapper::s_geodeTSSConn->setConnection(
+        NULL, m_dm->shared_from_this());
   } else {
     TcrConnection* currentConn =
         TssConnectionWrapper::s_geodeTSSConn->getConnection();
     if (currentConn != conn)  // otherwsie no need to set it again
     {
       ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_stickyLock);
-      PoolPtr p(m_dm);
-      TssConnectionWrapper::s_geodeTSSConn->setConnection(conn, p);
+      TssConnectionWrapper::s_geodeTSSConn->setConnection(
+          conn, m_dm->shared_from_this());
       conn->setAndGetBeingUsed(
           false,
           forTransaction);  // if transaction then it will keep this as used
@@ -200,11 +200,11 @@ void ThinClientStickyManager::releaseThreadLocalConnection() {
                                false);  // now this can be used by next one
       m_dm->put(conn, false);
     }
-    PoolPtr p(m_dm);
-    TssConnectionWrapper::s_geodeTSSConn->setConnection(NULL, p);
+    TssConnectionWrapper::s_geodeTSSConn->setConnection(
+        NULL, m_dm->shared_from_this());
   }
-  PoolPtr p(m_dm);
-  TssConnectionWrapper::s_geodeTSSConn->releaseSHConnections(p);
+  TssConnectionWrapper::s_geodeTSSConn->releaseSHConnections(
+      m_dm->shared_from_this());
 }
 bool ThinClientStickyManager::isNULL(TcrConnection** conn) {
   if (*conn == NULL) return true;

@@ -67,7 +67,7 @@ DUNIT_TASK(CLIENT1, StepOne)
     Serializable::registerType(Portfolio::createDeserializable);
 
     initClientWithPool(true, "__TEST_POOL1__", locHostPort, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     RegionPtr regptr = getHelper()->createPooledRegion(
         _regionNames[0], USE_ACK, locHostPort, "__TEST_POOL1__", true, true);
     RegionAttributesPtr lattribPtr = regptr->getAttributes();
@@ -106,22 +106,22 @@ DUNIT_TASK(CLIENT1, StepThree)
       while (iter.hasNext()) {
         count--;
         SerializablePtr ser = iter.next();
-        PortfolioPtr portfolio(dynamic_cast<Portfolio*>(ser.ptr()));
-        PositionPtr position(dynamic_cast<Position*>(ser.ptr()));
+        PortfolioPtr portfolio = std::dynamic_pointer_cast<Portfolio>(ser);
+        PositionPtr position = std::dynamic_pointer_cast<Position>(ser);
 
-        if (portfolio != NULLPTR) {
+        if (portfolio != nullptr) {
           printf("   query pulled portfolio object ID %d, pkid %s\n",
                  portfolio->getID(), portfolio->getPkid()->asChar());
         }
 
-        else if (position != NULLPTR) {
+        else if (position != nullptr) {
           printf("   query  pulled position object secId %s, shares %d\n",
                  position->getSecId()->asChar(),
                  position->getSharesOutstanding());
         }
 
         else {
-          if (ser != NULLPTR) {
+          if (ser != nullptr) {
             printf(" query pulled object %s\n", ser->toString()->asChar());
           } else {
             printf("   query pulled bad object\n");

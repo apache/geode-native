@@ -30,7 +30,7 @@ FastAssetAccount::FastAssetAccount(int idx, bool encodeTimestp, int maxVal,
   netWorth = 0.0;
   assets = CacheableHashMap::create();
   for (int i = 0; i < asstSize; i++) {
-    FastAssetPtr asset(new FastAsset(i, maxVal));
+    auto asset = std::make_shared<FastAsset>(i, maxVal);
     assets->insert(CacheableInt32::create(i), asset);
     netWorth += asset->getValue();
   }

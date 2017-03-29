@@ -37,7 +37,7 @@ namespace Apache
       //generic<class TKey, class TValue>
       PoolFactory/*<TKey, TValue>*/^ PoolManager/*<TKey, TValue>*/::CreateFactory()
       {
-        return PoolFactory/*<TKey, TValue>*/::Create(apache::geode::client::PoolManager::createFactory().ptr());
+        return PoolFactory/*<TKey, TValue>*/::Create(apache::geode::client::PoolManager::createFactory().get());
       }
 
       //generic<class TKey, class TValue>
@@ -47,8 +47,8 @@ namespace Apache
         Dictionary<String^, Pool/*<TKey, TValue>*/^>^ result = gcnew Dictionary<String^, Pool/*<TKey, TValue>*/^>();
         for (apache::geode::client::HashMapOfPools::Iterator iter = pools.begin(); iter != pools.end(); ++iter)
         {
-          String^ key = CacheableString::GetString(iter.first().ptr());
-          Pool/*<TKey, TValue>*/^ val = Pool/*<TKey, TValue>*/::Create(iter.second().ptr());
+          String^ key = CacheableString::GetString(iter.first().get());
+          Pool/*<TKey, TValue>*/^ val = Pool/*<TKey, TValue>*/::Create(iter.second().get());
           result->Add(key, val);
         }
         return result;
@@ -59,14 +59,14 @@ namespace Apache
       {
         ManagedString mg_name( name );
         apache::geode::client::PoolPtr pool = apache::geode::client::PoolManager::find(mg_name.CharPtr);
-        return Pool/*<TKey, TValue>*/::Create(pool.ptr());
+        return Pool/*<TKey, TValue>*/::Create(pool.get());
       }
 
       //generic <class TKey, class TValue>
       Pool/*<TKey, TValue>*/^ PoolManager/*<TKey, TValue>*/::Find(Client::Region<Object^, Object^>^ region)
       {
-        //return Pool::Create(apache::geode::client::PoolManager::find(apache::geode::client::RegionPtr(GetNativePtr<apache::geode::client::Region>(region))).ptr());
-        return Pool/*<TKey, TValue>*/::Create(apache::geode::client::PoolManager::find(apache::geode::client::RegionPtr(region->_NativePtr)).ptr());
+        //return Pool::Create(apache::geode::client::PoolManager::find(apache::geode::client::RegionPtr(GetNativePtr<apache::geode::client::Region>(region))).get());
+        return Pool/*<TKey, TValue>*/::Create(apache::geode::client::PoolManager::find(apache::geode::client::RegionPtr(region->_NativePtr)).get());
       }
 
       //generic<class TKey, class TValue>

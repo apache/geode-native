@@ -59,7 +59,7 @@ class CPPCACHE_EXPORT RegionEntry : public SharedBase {
   /** Returns the value of this entry in the local cache. Does not invoke
    * a <code>CacheLoader</code>,
    *
-   * @return the value or <code>NULLPTR</code> if this entry is invalid
+   * @return the value or <code>nullptr</code> if this entry is invalid
    */
   CacheablePtr getValue();
 
@@ -67,7 +67,7 @@ class CPPCACHE_EXPORT RegionEntry : public SharedBase {
    *
    * @return the Region that contains this entry
    */
-  void getRegion(RegionPtr& region);
+  void getRegion(Region* region);
 
   /** Returns the statistics for this entry.
    *
@@ -95,9 +95,9 @@ class CPPCACHE_EXPORT RegionEntry : public SharedBase {
     * @brief constructors
     * created by region
     */
-  RegionEntry(const RegionPtr& region, const CacheableKeyPtr& key,
+  RegionEntry(Region* region, const CacheableKeyPtr& key,
               const CacheablePtr& value);
-  RegionPtr m_region;
+  Region* m_region;
   CacheableKeyPtr m_key;
   CacheablePtr m_value;
   CacheStatisticsPtr m_statistics;

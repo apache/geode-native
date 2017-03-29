@@ -267,8 +267,8 @@ void GfErrTypeThrowException(const char* str, GfErrType err) {
       throw ex;
     }
     case GF_CACHE_LOCATOR_EXCEPTION: {
-      ExceptionPtr exCause(new NoAvailableLocatorsException(
-          str, (exMsg != NULL ? exMsg : ": No locators available")));
+      auto exCause = std::make_shared<NoAvailableLocatorsException>(
+          str, (exMsg != NULL ? exMsg : ": No locators available"));
       NotConnectedException ex(
           str, (exMsg != NULL ? exMsg : ": No locators available"), false,
           exCause);

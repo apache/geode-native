@@ -87,11 +87,11 @@ int main(int argc, char** argv) {
     ExecutionPtr exc = FunctionService::onServer((RegionServicePtr)cachePtr);
     CacheableVectorPtr executeFunctionResult =
         exc->withArgs(args)->execute(getFuncIName)->getResult();
-    if (executeFunctionResult == NULLPTR) {
+    if (executeFunctionResult == nullptr) {
       LOGINFO("get executeFunctionResult is NULL");
     } else {
       for (int32_t item = 0; item < executeFunctionResult->size(); item++) {
-        CacheableArrayListPtr arrayList = dynCast<CacheableArrayListPtr>(
+        auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
             executeFunctionResult->operator[](item));
         for (int32_t pos = 0; pos < arrayList->size(); pos++) {
           resultList->push_back(arrayList->operator[](pos));
@@ -102,7 +102,7 @@ int main(int argc, char** argv) {
       for (int32_t i = 0; i < executeFunctionResult->size(); i++) {
         sprintf(
             buf, "get result[%d]=%s", i,
-            dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar());
+            std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))->asChar());
         LOGINFO(buf);
       }
     }
@@ -116,12 +116,12 @@ int main(int argc, char** argv) {
     exc = FunctionService::onServers((RegionServicePtr)cachePtr);
     executeFunctionResult =
         exc->withArgs(args)->execute(getFuncIName)->getResult();
-    if (executeFunctionResult == NULLPTR) {
+    if (executeFunctionResult == nullptr) {
       LOGINFO("get executeFunctionResult is NULL");
     } else {
       resultList->clear();
       for (int32_t item = 0; item < executeFunctionResult->size(); item++) {
-        CacheableArrayListPtr arrayList = dynCast<CacheableArrayListPtr>(
+        auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
             executeFunctionResult->operator[](item));
         for (int32_t pos = 0; pos < arrayList->size(); pos++) {
           resultList->push_back(arrayList->operator[](pos));
@@ -132,7 +132,7 @@ int main(int argc, char** argv) {
       for (int32_t i = 0; i < executeFunctionResult->size(); i++) {
         sprintf(
             buf, "get result[%d]=%s", i,
-            dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar());
+            std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))->asChar());
         LOGINFO(buf);
       }
     }
@@ -148,14 +148,14 @@ int main(int argc, char** argv) {
                                 ->withArgs(args)
                                 ->execute(getFuncName)
                                 ->getResult();
-    if (executeFunctionResult == NULLPTR) {
+    if (executeFunctionResult == nullptr) {
       LOGINFO("execute on region: executeFunctionResult is NULL");
     } else {
       resultList->clear();
       LOGINFO("Execute on Region: result count = %d",
               executeFunctionResult->size());
       for (int32_t i = 0; i < executeFunctionResult->size(); i++) {
-        CacheableArrayListPtr arrayList = dynCast<CacheableArrayListPtr>(
+        auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
             executeFunctionResult->operator[](i));
         for (int32_t pos = 0; pos < arrayList->size(); pos++) {
           resultList->push_back(arrayList->operator[](pos));
@@ -167,7 +167,7 @@ int main(int argc, char** argv) {
       for (int32_t i = 0; i < resultList->size(); i++) {
         sprintf(
             buf, "Execute on Region: result[%d]=%s", i,
-            dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar());
+            std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))->asChar());
         LOGINFO(buf);
       }
     }

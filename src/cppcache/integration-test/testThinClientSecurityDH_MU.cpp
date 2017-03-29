@@ -96,7 +96,7 @@ void initCredentialGenerator() {
     }
   }
 
-  if (credentialGeneratorHandler == NULLPTR) {
+  if (credentialGeneratorHandler == nullptr) {
     FAIL("credentialGeneratorHandler is NULL");
   }
 
@@ -119,7 +119,7 @@ void initClientAuth(char credentialsType, const char* dhAlgo) {
   printf("KeyStore Path is: %s", testsrc.c_str());
   config->insert("security-client-kspath", testsrc.c_str());
 
-  if (credentialGeneratorHandler == NULLPTR) {
+  if (credentialGeneratorHandler == nullptr) {
     FAIL("credentialGeneratorHandler is NULL");
   }
   bool insertAuthInit = true;
@@ -163,11 +163,11 @@ void InitIncorrectClients(const char* dhAlgo) {
   }
 
   try {
-    createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, NULLPTR, false,
+    createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, nullptr, false,
                             -1, true, 0);
     PoolPtr pool = getPool(regionNamesAuth[0]);
     LOG(" 6");
-    if (pool != NULLPTR) {
+    if (pool != nullptr) {
       LOG(" 7");
       RegionServicePtr virtualCache = getVirtualCache(userCreds, pool);
       LOG(" 8");
@@ -194,7 +194,7 @@ void InitCorrectClients(const char* dhAlgo) {
     LOG(other.getMessage());
   }
   try {
-    createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, NULLPTR, false,
+    createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, nullptr, false,
                             -1, true, 0);
     PoolPtr pool = getPool(regionNamesAuth[0]);
     LOG(" 6");
@@ -214,7 +214,7 @@ void InitCorrectClients(const char* dhAlgo) {
 
 void DoNetSearch() {
   try {
-    createRegionForSecurity(regionNamesAuth[1], USE_ACK, false, NULLPTR, false,
+    createRegionForSecurity(regionNamesAuth[1], USE_ACK, false, nullptr, false,
                             -1, true, 0);
     PoolPtr pool = getPool(regionNamesAuth[1]);
     LOG(" 6");
@@ -225,9 +225,8 @@ void DoNetSearch() {
     RegionPtr regionPtr = virtualCache->getRegion(regionNamesAuth[1]);
 
     CacheableKeyPtr keyPtr = CacheableKey::create(keys[0]);
-    CacheableStringPtr checkPtr =
-        dynCast<CacheableStringPtr>(regionPtr->get(keyPtr));
-    if (checkPtr != NULLPTR && !strcmp(vals[0], checkPtr->asChar())) {
+    auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regionPtr->get(keyPtr));
+    if (checkPtr != nullptr && !strcmp(vals[0], checkPtr->asChar())) {
       LOG("checkPtr is not null");
       char buf[1024];
       sprintf(buf, "In net search, get returned %s for key %s",
@@ -245,7 +244,7 @@ void DoNetSearch() {
 
 void initSecurityServer(int instance) {
   std::string cmdServerAuthenticator;
-  if (credentialGeneratorHandler == NULLPTR) {
+  if (credentialGeneratorHandler == nullptr) {
     FAIL("credentialGeneratorHandler is NULL");
   }
 

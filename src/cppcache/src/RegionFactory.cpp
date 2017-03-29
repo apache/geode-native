@@ -37,22 +37,22 @@ namespace client {
 
 RegionFactory::RegionFactory(RegionShortcut preDefinedRegion) {
   m_preDefinedRegion = preDefinedRegion;
-  AttributesFactoryPtr afPtr(new AttributesFactory());
-  m_attributeFactory = afPtr;
+  m_attributeFactory = std::make_shared<AttributesFactory>();
+  ;
   setRegionShortcut();
 }
 
 RegionFactory::~RegionFactory() {}
 
 RegionPtr RegionFactory::create(const char* name) {
-  RegionPtr retRegionPtr = NULLPTR;
+  RegionPtr retRegionPtr = nullptr;
   RegionAttributesPtr regAttr = m_attributeFactory->createRegionAttributes();
 
   // assuming pool name is not DEFAULT_POOL_NAME
   if (regAttr->getPoolName() != NULL && strlen(regAttr->getPoolName()) > 0) {
     // poolname is set
     CachePtr cache = CacheFactory::getAnyInstance();
-    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.ptr());
+    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
     cacheImpl->createRegion(name, regAttr, retRegionPtr);
   } else {
     // need to look default Pool
@@ -60,7 +60,7 @@ RegionPtr RegionFactory::create(const char* name) {
     // if local region no need to create default pool
     if (m_preDefinedRegion != LOCAL) {
       PoolPtr pool = CacheFactory::createOrGetDefaultPool();
-      if (pool == NULLPTR) {
+      if (pool == nullptr) {
         throw IllegalStateException("Pool is not defined create region.");
       }
       m_attributeFactory->setPoolName(pool->getName());
@@ -68,7 +68,7 @@ RegionPtr RegionFactory::create(const char* name) {
 
     regAttr = m_attributeFactory->createRegionAttributes();
     CachePtr cache = CacheFactory::getAnyInstance();
-    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.ptr());
+    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
     cacheImpl->createRegion(name, regAttr, retRegionPtr);
   }
 
@@ -82,82 +82,70 @@ void RegionFactory::setRegionShortcut() {
 RegionFactoryPtr RegionFactory::setCacheLoader(
     const CacheLoaderPtr& cacheLoader) {
   m_attributeFactory->setCacheLoader(cacheLoader);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 
 RegionFactoryPtr RegionFactory::setCacheWriter(
     const CacheWriterPtr& cacheWriter) {
   m_attributeFactory->setCacheWriter(cacheWriter);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 RegionFactoryPtr RegionFactory::setCacheListener(
     const CacheListenerPtr& aListener) {
   m_attributeFactory->setCacheListener(aListener);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 RegionFactoryPtr RegionFactory::setPartitionResolver(
     const PartitionResolverPtr& aResolver) {
   m_attributeFactory->setPartitionResolver(aResolver);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 
 RegionFactoryPtr RegionFactory::setCacheLoader(const char* lib,
                                                const char* func) {
   m_attributeFactory->setCacheLoader(lib, func);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 
 RegionFactoryPtr RegionFactory::setCacheWriter(const char* lib,
                                                const char* func) {
   m_attributeFactory->setCacheWriter(lib, func);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 
 RegionFactoryPtr RegionFactory::setCacheListener(const char* lib,
                                                  const char* func) {
   m_attributeFactory->setCacheListener(lib, func);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 
 RegionFactoryPtr RegionFactory::setPartitionResolver(const char* lib,
                                                      const char* func) {
   m_attributeFactory->setPartitionResolver(lib, func);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 
 RegionFactoryPtr RegionFactory::setEntryIdleTimeout(
     ExpirationAction::Action action, int idleTimeout) {
   m_attributeFactory->setEntryIdleTimeout(action, idleTimeout);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 
 RegionFactoryPtr RegionFactory::setEntryTimeToLive(
     ExpirationAction::Action action, int timeToLive) {
   m_attributeFactory->setEntryTimeToLive(action, timeToLive);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 
 RegionFactoryPtr RegionFactory::setRegionIdleTimeout(
     ExpirationAction::Action action, int idleTimeout) {
   m_attributeFactory->setRegionIdleTimeout(action, idleTimeout);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 RegionFactoryPtr RegionFactory::setRegionTimeToLive(
     ExpirationAction::Action action, int timeToLive) {
   m_attributeFactory->setRegionTimeToLive(action, timeToLive);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 
 RegionFactoryPtr RegionFactory::setInitialCapacity(int initialCapacity) {
@@ -167,71 +155,60 @@ RegionFactoryPtr RegionFactory::setInitialCapacity(int initialCapacity) {
     throw IllegalArgumentException(excpStr);
   }
   m_attributeFactory->setInitialCapacity(initialCapacity);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 
 RegionFactoryPtr RegionFactory::setLoadFactor(float loadFactor) {
   m_attributeFactory->setLoadFactor(loadFactor);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 
 RegionFactoryPtr RegionFactory::setConcurrencyLevel(uint8_t concurrencyLevel) {
   m_attributeFactory->setConcurrencyLevel(concurrencyLevel);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 RegionFactoryPtr RegionFactory::setConcurrencyChecksEnabled(bool enable) {
   m_attributeFactory->setConcurrencyChecksEnabled(enable);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 RegionFactoryPtr RegionFactory::setLruEntriesLimit(
     const uint32_t entriesLimit) {
   m_attributeFactory->setLruEntriesLimit(entriesLimit);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 
 RegionFactoryPtr RegionFactory::setDiskPolicy(
     const DiskPolicyType::PolicyType diskPolicy) {
   m_attributeFactory->setDiskPolicy(diskPolicy);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 
 RegionFactoryPtr RegionFactory::setCachingEnabled(bool cachingEnabled) {
   m_attributeFactory->setCachingEnabled(cachingEnabled);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 
 RegionFactoryPtr RegionFactory::setPersistenceManager(
     const PersistenceManagerPtr& persistenceManager,
     const PropertiesPtr& config) {
   m_attributeFactory->setPersistenceManager(persistenceManager, config);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 
 RegionFactoryPtr RegionFactory::setPersistenceManager(
     const char* lib, const char* func, const PropertiesPtr& config) {
   m_attributeFactory->setPersistenceManager(lib, func, config);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 
 RegionFactoryPtr RegionFactory::setPoolName(const char* name) {
   m_attributeFactory->setPoolName(name);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 
 RegionFactoryPtr RegionFactory::setCloningEnabled(bool isClonable) {
   m_attributeFactory->setCloningEnabled(isClonable);
-  RegionFactoryPtr rfPtr(this);
-  return rfPtr;
+  return shared_from_this();
 }
 }  // namespace client
 }  // namespace geode

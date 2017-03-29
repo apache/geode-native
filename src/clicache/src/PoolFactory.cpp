@@ -282,7 +282,7 @@ namespace Apache
 
         ManagedString mg_name( name );
         apache::geode::client::PoolPtr & pool = NativePtr->create(mg_name.CharPtr);
-        return Pool/*<TKey, TValue>*/::Create(pool.ptr());
+        return Pool/*<TKey, TValue>*/::Create(pool.get());
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
     }  // namespace Client

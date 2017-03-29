@@ -96,7 +96,7 @@ void SimpleCacheListener::afterRegionDestroy(const RegionEvent& event) {
 
 void SimpleCacheListener::close(const RegionPtr& region) {
   LOGINFO("SimpleCacheListener: Got an close event for %s region .",
-          region.ptr()->getName());
+          region.get()->getName());
 }
 
 void SimpleCacheListener::afterRegionClear(const RegionEvent& event) {
@@ -193,7 +193,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1_Pooled_Locator)
     initClient(true);
     LOG("Creating region in CLIENT1, no-ack, no-cache, no-listener");
     createPooledRegion(regionNames[0], false, locatorsG, poolName, true,
-                       NULLPTR, false);
+                       nullptr, false);
   }
 END_TASK_DEFINITION
 
@@ -201,11 +201,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1withCachingEnabled_Pooled_Locator)
   {
     initClient(true);
     LOG("Creating region in CLIENT1, no-ack, no-cache, no-listener");
-    createPooledRegion(myRegNames[0], false, locatorsG, poolName, true, NULLPTR,
+    createPooledRegion(myRegNames[0], false, locatorsG, poolName, true, nullptr,
                        true);
-    createPooledRegion(myRegNames[1], false, locatorsG, poolName, true, NULLPTR,
+    createPooledRegion(myRegNames[1], false, locatorsG, poolName, true, nullptr,
                        true);
-    createPooledRegion(myRegNames[2], false, locatorsG, poolName, true, NULLPTR,
+    createPooledRegion(myRegNames[2], false, locatorsG, poolName, true, nullptr,
                        true);
 
     // create subregion
@@ -249,14 +249,14 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, Register2WithFalse)
   {
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    regPtr0->registerAllKeys(false, NULLPTR, false, false);
+    regPtr0->registerAllKeys(false, nullptr, false, false);
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT3, Register3WithFalse)
   {
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    regPtr0->registerAllKeys(false, NULLPTR, false, false);
+    regPtr0->registerAllKeys(false, nullptr, false, false);
   }
 END_TASK_DEFINITION
 
@@ -265,10 +265,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, SetupClient2_Pooled_Locator)
     initClient(true);
     LOG("Creating region in CLIENT2 , no-ack, no-cache, with-listener and "
         "writer");
-    regListener = new TallyListener();
+    regListener = std::make_shared<TallyListener>();
     createPooledRegion(regionNames[0], false, locatorsG, poolName, true,
                        regListener, false);
-    regWriter = new TallyWriter();
+    regWriter = std::make_shared<TallyWriter>();
     setCacheWriter(regionNames[0], regWriter);
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
     // regPtr0->registerAllKeys();
@@ -281,8 +281,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, SetupClient2withCachingEnabled_Pooled_Locator)
     initClient(true);
     LOG("Creating region in CLIENT2 , no-ack, no-cache, with-listener and "
         "writer");
-    parentRegCacheListener = new SimpleCacheListener();
-    distRegCacheListener = new SimpleCacheListener();
+    parentRegCacheListener = std::make_shared<SimpleCacheListener>();
+    distRegCacheListener = std::make_shared<SimpleCacheListener>();
 
     createPooledRegion(myRegNames[0], false, locatorsG, poolName, true,
                        distRegCacheListener, true);
@@ -291,7 +291,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, SetupClient2withCachingEnabled_Pooled_Locator)
     createPooledRegion(myRegNames[2], false, locatorsG, poolName, true,
                        parentRegCacheListener, true);
 
-    regWriter = new TallyWriter();
+    regWriter = std::make_shared<TallyWriter>();
     setCacheWriter(myRegNames[2], regWriter);
 
     // create subregion
@@ -311,7 +311,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, SetupClient2withCachingEnabled_Pooled_Locator)
 
     AttributesMutatorPtr subregAttrMutatorPtr =
         subregPtr1->getAttributesMutator();
-    subRegCacheListener = new SimpleCacheListener();
+    subRegCacheListener = std::make_shared<SimpleCacheListener>();
     subregAttrMutatorPtr->setCacheListener(subRegCacheListener);
 
     LOG("StepTwo_Pool complete.");
@@ -324,10 +324,10 @@ DUNIT_TASK_DEFINITION(CLIENT3, SetupClient3_Pooled_Locator)
     initClient(true);
     LOG("Creating region in CLIENT2 , no-ack, no-cache, with-listener and "
         "writer");
-    regListener = new TallyListener();
+    regListener = std::make_shared<TallyListener>();
     createPooledRegion(regionNames[0], false, locatorsG, poolName, true,
                        regListener, false);
-    regWriter = new TallyWriter();
+    regWriter = std::make_shared<TallyWriter>();
     setCacheWriter(regionNames[0], regWriter);
   }
 END_TASK_DEFINITION

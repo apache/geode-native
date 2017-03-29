@@ -93,7 +93,7 @@ RegionPtr Cache::getRegion(const char* path) {
   RegionPtr result;
   m_cacheImpl->getRegion(path, result);
 
-  if (result != NULLPTR) {
+  if (result != nullptr) {
     if (isPoolInMultiuserMode(result)) {
       LOGWARN(
           "Pool [%s] attached with region [%s] is in multiuser authentication "
@@ -149,18 +149,14 @@ CacheTransactionManagerPtr Cache::getCacheTransactionManager() {
   return m_cacheImpl->getCacheTransactionManager();
 }
 
-Cache::Cache(const char* name, DistributedSystemPtr sys,
-             bool ignorePdxUnreadFields, bool readPdxSerialized) {
-  m_cacheImpl =
-      new CacheImpl(this, name, sys, ignorePdxUnreadFields, readPdxSerialized);
-}
 Cache::Cache(const char* name, DistributedSystemPtr sys, const char* id_data,
              bool ignorePdxUnreadFields, bool readPdxSerialized) {
-  m_cacheImpl = new CacheImpl(this, name, sys, id_data, ignorePdxUnreadFields,
-                              readPdxSerialized);
+  m_cacheImpl = std::unique_ptr<CacheImpl>(new CacheImpl(
+      this, name, sys, id_data, ignorePdxUnreadFields, readPdxSerialized));
 }
 
-Cache::~Cache() { delete m_cacheImpl; }
+Cache::Cache() = default;
+Cache::~Cache() = default;
 
 /** Initialize the cache by the contents of an xml file
   * @param  cacheXml
@@ -192,7 +188,7 @@ bool Cache::isPoolInMultiuserMode(RegionPtr regionPtr) {
 
   if (poolName != NULL) {
     PoolPtr poolPtr = PoolManager::find(poolName);
-    if (poolPtr != NULLPTR && !poolPtr->isDestroyed()) {
+    if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
       return poolPtr->getMultiuserAuthentication();
     }
   }
@@ -208,14 +204,13 @@ bool Cache::getPdxReadSerialized() {
 }
 
 PdxInstanceFactoryPtr Cache::createPdxInstanceFactory(const char* className) {
-  PdxInstanceFactoryPtr pIFPtr(new PdxInstanceFactoryImpl(className));
-  return pIFPtr;
+  return std::make_shared<PdxInstanceFactoryImpl>(className);
 }
 
 RegionServicePtr Cache::createAuthenticatedView(
     PropertiesPtr userSecurityProperties, const char* poolName) {
   if (poolName == NULL) {
-    if (!this->isClosed() && m_cacheImpl->getDefaultPool() != NULLPTR) {
+    if (!this->isClosed() && m_cacheImpl->getDefaultPool() != nullptr) {
       return m_cacheImpl->getDefaultPool()->createSecureUserCache(
           userSecurityProperties);
     }
@@ -227,7 +222,7 @@ RegionServicePtr Cache::createAuthenticatedView(
     if (!this->isClosed()) {
       if (poolName != NULL) {
         PoolPtr poolPtr = PoolManager::find(poolName);
-        if (poolPtr != NULLPTR && !poolPtr->isDestroyed()) {
+        if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
           return poolPtr->createSecureUserCache(userSecurityProperties);
         }
         throw IllegalStateException(
@@ -238,5 +233,5 @@ RegionServicePtr Cache::createAuthenticatedView(
 
     throw IllegalStateException("Cache has been closed");
   }
-  return NULLPTR;
+  return nullptr;
 }

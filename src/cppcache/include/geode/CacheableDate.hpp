@@ -131,20 +131,18 @@ class CPPCACHE_EXPORT CacheableDate : public CacheableKey {
   /**
    * Factory method for creating an instance of CacheableDate
    */
-  static CacheableDatePtr create() {
-    return CacheableDatePtr(new CacheableDate());
-  }
+  static CacheableDatePtr create() { return std::make_shared<CacheableDate>(); }
 
   static CacheableDatePtr create(const time_t& value) {
-    return CacheableDatePtr(new CacheableDate(value));
+    return std::make_shared<CacheableDate>(value);
   }
 
   static CacheableDatePtr create(const time_point& value) {
-    return CacheableDatePtr(new CacheableDate(value));
+    return std::make_shared<CacheableDate>(value);
   }
 
   static CacheableDatePtr create(const duration& value) {
-    return CacheableDatePtr(new CacheableDate(value));
+    return std::make_shared<CacheableDate>(value);
   }
 
   virtual CacheableStringPtr toString() const;
@@ -173,14 +171,16 @@ class CPPCACHE_EXPORT CacheableDate : public CacheableKey {
   // never implemented.
   void operator=(const CacheableDate& other);
   CacheableDate(const CacheableDate& other);
+
+  FRIEND_STD_SHARED_PTR(CacheableDate)
 };
 
 inline CacheableKeyPtr createKey(const CacheableDate::time_point& value) {
-  return CacheableKeyPtr(CacheableDate::create(value));
+  return CacheableDate::create(value);
 }
 
 inline CacheablePtr createValue(const CacheableDate::time_point& value) {
-  return CacheablePtr(CacheableDate::create(value));
+  return CacheableDate::create(value);
 }
 
 }  // namespace client

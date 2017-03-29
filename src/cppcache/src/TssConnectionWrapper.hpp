@@ -61,7 +61,7 @@ class TssConnectionWrapper {
   static ACE_TSS<TssConnectionWrapper> s_geodeTSSConn;
   TcrConnection* getConnection() { return m_tcrConn; }
   TcrConnection* getSHConnection(TcrEndpoint* ep, const char* poolname);
-  void setConnection(TcrConnection* conn, PoolPtr& pool) {
+  void setConnection(TcrConnection* conn, const PoolPtr& pool) {
     m_tcrConn = conn;
     m_pool = pool;
   }

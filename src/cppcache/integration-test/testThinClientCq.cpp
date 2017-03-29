@@ -381,7 +381,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
 
     PoolPtr pool = PoolManager::find(regionNamesCq[0]);
     QueryServicePtr qs;
-    if (pool != NULLPTR) {
+    if (pool != nullptr) {
       // Using region name as pool name as in ThinClientCq.hpp
       qs = pool->getQueryService();
     } else {
@@ -389,7 +389,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     }
     CqAttributesFactory cqFac;
     for (i = 0; i < MAX_LISTNER; i++) {
-      CqListenerPtr cqLstner(new MyCqListener(i));
+      auto cqLstner = std::make_shared<MyCqListener>(i);
       cqFac.addCqListener(cqLstner);
       CqAttributesPtr cqAttr = cqFac.create();
       CqQueryPtr qry = qs->newCq(cqNames[i], queryStrings[i], cqAttr);
@@ -459,7 +459,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo2)
       qh->populatePositionPdxData(subregPtr0, 3, 2);
     }
 
-    CacheablePtr port = NULLPTR;
+    CacheablePtr port = nullptr;
     for (int i = 1; i < 3; i++) {
       if (!m_isPdx) {
         port = CacheablePtr(new Portfolio(i, 2));
@@ -483,7 +483,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
 
     PoolPtr pool = PoolManager::find(regionNamesCq[0]);
     QueryServicePtr qs;
-    if (pool != NULLPTR) {
+    if (pool != nullptr) {
       // Using region name as pool name as in ThinClientCq.hpp
       qs = pool->getQueryService();
     } else {
@@ -524,16 +524,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
         events[j] += cqStats->numEvents();
       }
       CqAttributesPtr cqAttr = cqy->getCqAttributes();
-      VectorOfCqListener vl;
+      std::vector<CqListenerPtr> vl;
       cqAttr->getCqListeners(vl);
-      sprintf(buf, "number of listeners for cq[%s] is %d", cqNames[i],
+      sprintf(buf, "number of listeners for cq[%s] is %zd", cqNames[i],
               vl.size());
       LOG(buf);
       ASSERT(vl.size() == i + 1, "incorrect number of listeners");
       if (i == (MAX_LISTNER - 1)) {
         MyCqListener* myLl[MAX_LISTNER];
         for (int k = 0; k < MAX_LISTNER; k++) {
-          MyCqListener* ml = dynamic_cast<MyCqListener*>(vl[k].ptr());
+          MyCqListener* ml = dynamic_cast<MyCqListener*>(vl[k].get());
           myLl[ml->getId()] = ml;
         }
         for (j = 0; j < MAX_LISTNER; j++) {
@@ -563,7 +563,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
         CqListenerPtr ptr = vl[0];
         cqAttrMtor->removeCqListener(ptr);
         cqAttr->getCqListeners(vl);
-        sprintf(buf, "number of listeners for cq[%s] is %d", cqNames[i],
+        sprintf(buf, "number of listeners for cq[%s] is %zd", cqNames[i],
                 vl.size());
         LOG(buf);
         ASSERT(vl.size() == i, "incorrect number of listeners");
@@ -604,7 +604,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
 
       cqy = qs->getCq(cqNames[2]);
       sprintf(buf, "cq[%s] should have been removed after close!", cqNames[2]);
-      ASSERT(cqy == NULLPTR, buf);
+      ASSERT(cqy == nullptr, buf);
     } catch (Exception& excp) {
       std::string failmsg = "";
       failmsg += excp.getName();
@@ -615,7 +615,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       excp.printStackTrace();
     }
     CqServiceStatisticsPtr serviceStats = qs->getCqServiceStatistics();
-    ASSERT(serviceStats != NULLPTR, "serviceStats is NULL");
+    ASSERT(serviceStats != nullptr, "serviceStats is NULL");
     sprintf(buf,
             "numCqsActive=%d, numCqsCreated=%d, "
             "numCqsClosed=%d,numCqsStopped=%d, numCqsOnClient=%d",
@@ -689,7 +689,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     ASSERT(serviceStats->numCqsOnClient() == 0, "cq count incorrect!");
 
     i = 0;
-    CqListenerPtr cqLstner(new MyCqListener(i));
+    auto cqLstner = std::make_shared<MyCqListener>(i);
     cqFac.addCqListener(cqLstner);
     CqAttributesPtr cqAttr = cqFac.create();
     try {
@@ -794,7 +794,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ)
     PoolPtr pool = PoolManager::find(regionName);
     QueryServicePtr qs = pool->getQueryService();
     CqAttributesFactory cqFac;
-    CqStatusListenerPtr cqLstner(new MyCqStatusListener(100));
+    auto cqLstner = std::make_shared<MyCqStatusListener>(100);
     cqFac.addCqListener(cqLstner);
     CqAttributesPtr cqAttr = cqFac.create();
     CqQueryPtr cq =
@@ -804,10 +804,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ)
     SLEEP(20000);
 
     cqAttr = cq->getCqAttributes();
-    VectorOfCqListener vl;
+    std::vector<CqListenerPtr> vl;
     cqAttr->getCqListeners(vl);
     MyCqStatusListener* myStatusCq =
-        dynamic_cast<MyCqStatusListener*>(vl[0].ptr());
+        dynamic_cast<MyCqStatusListener*>(vl[0].get());
     LOGINFO("checkCQStatusOnConnect = %d ", myStatusCq->getCqsConnectedCount());
     ASSERT(myStatusCq->getCqsConnectedCount() == 1,
            "incorrect number of CqStatus Connected count.");
@@ -820,7 +820,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
     PoolPtr pool = PoolManager::find("__TEST_POOL1__");
     QueryServicePtr qs = pool->getQueryService();
     CqAttributesFactory cqFac;
-    CqStatusListenerPtr cqLstner(new MyCqStatusListener(100));
+    auto cqLstner = std::make_shared<MyCqStatusListener>(100);
     cqFac.addCqListener(cqLstner);
     CqAttributesPtr cqAttr = cqFac.create();
 
@@ -830,10 +830,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
     SLEEP(20000);
 
     cqAttr = cq->getCqAttributes();
-    VectorOfCqListener vl;
+    std::vector<CqListenerPtr> vl;
     cqAttr->getCqListeners(vl);
     MyCqStatusListener* myStatusCq =
-        dynamic_cast<MyCqStatusListener*>(vl[0].ptr());
+        dynamic_cast<MyCqStatusListener*>(vl[0].get());
     LOGINFO("checkCQStatusOnConnect = %d ", myStatusCq->getCqsConnectedCount());
     ASSERT(myStatusCq->getCqsConnectedCount() == 1,
            "incorrect number of CqStatus Connected count.");
@@ -841,7 +841,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
     PoolPtr pool2 = PoolManager::find("__TEST_POOL2__");
     QueryServicePtr qs2 = pool2->getQueryService();
     CqAttributesFactory cqFac1;
-    CqStatusListenerPtr cqLstner1(new MyCqStatusListener(101));
+    auto cqLstner1 = std::make_shared<MyCqStatusListener>(101);
     cqFac1.addCqListener(cqLstner1);
     CqAttributesPtr cqAttr1 = cqFac1.create();
     CqQueryPtr cq2 =
@@ -850,10 +850,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
     SLEEP(20000);
 
     cqAttr1 = cq2->getCqAttributes();
-    VectorOfCqListener vl2;
+    std::vector<CqListenerPtr> vl2;
     cqAttr1->getCqListeners(vl2);
     MyCqStatusListener* myStatusCq2 =
-        dynamic_cast<MyCqStatusListener*>(vl2[0].ptr());
+        dynamic_cast<MyCqStatusListener*>(vl2[0].get());
     LOGINFO("checkCQStatusOnConnect = %d ",
             myStatusCq2->getCqsConnectedCount());
     ASSERT(myStatusCq2->getCqsConnectedCount() == 1,
@@ -861,7 +861,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
 
     RegionPtr regPtr0 = getHelper()->getRegion(regionName);
     RegionPtr regPtr1 = getHelper()->getRegion(regionName1);
-    CacheablePtr val = NULLPTR;
+    CacheablePtr val = nullptr;
     char KeyStr[256] = {0};
     char valStr[256] = {0};
     for (int i = 1; i <= 5; i++) {
@@ -890,7 +890,7 @@ END_TASK_DEFINITION
 void executeCq(const char* poolName, const char* name) {
   PoolPtr pool = PoolManager::find(poolName);
   QueryServicePtr qs;
-  if (pool != NULLPTR) {
+  if (pool != nullptr) {
     qs = pool->getQueryService();
   }
   CqQueryPtr cq = qs->getCq(const_cast<char*>(name));
@@ -910,15 +910,15 @@ void checkCQStatusOnConnect(const char* poolName, const char* name,
                             int connect) {
   PoolPtr pool = PoolManager::find(poolName);
   QueryServicePtr qs;
-  if (pool != NULLPTR) {
+  if (pool != nullptr) {
     qs = pool->getQueryService();
   }
   CqQueryPtr cq = qs->getCq(const_cast<char*>(name));
   CqAttributesPtr cqAttr = cq->getCqAttributes();
-  VectorOfCqListener vl;
+  std::vector<CqListenerPtr> vl;
   cqAttr->getCqListeners(vl);
   MyCqStatusListener* myStatusCq =
-      dynamic_cast<MyCqStatusListener*>(vl[0].ptr());
+      dynamic_cast<MyCqStatusListener*>(vl[0].get());
   LOGINFO("checkCQStatusOnConnect = %d ", myStatusCq->getCqsConnectedCount());
   ASSERT(myStatusCq->getCqsConnectedCount() == connect,
          "incorrect number of CqStatus Connected count.");
@@ -954,15 +954,15 @@ void checkCQStatusOnDisConnect(const char* poolName, const char* cqName,
                                int disconnect) {
   PoolPtr pool = PoolManager::find(poolName);
   QueryServicePtr qs;
-  if (pool != NULLPTR) {
+  if (pool != nullptr) {
     qs = pool->getQueryService();
   }
   CqQueryPtr cq = qs->getCq(const_cast<char*>(cqName));
   CqAttributesPtr cqAttr = cq->getCqAttributes();
-  VectorOfCqListener vl;
+  std::vector<CqListenerPtr> vl;
   cqAttr->getCqListeners(vl);
   MyCqStatusListener* myStatusCq =
-      dynamic_cast<MyCqStatusListener*>(vl[0].ptr());
+      dynamic_cast<MyCqStatusListener*>(vl[0].get());
   LOGINFO("checkCQStatusOnDisConnect = %d ",
           myStatusCq->getCqsDisConnectedCount());
   ASSERT(myStatusCq->getCqsDisConnectedCount() == disconnect,
@@ -1006,7 +1006,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putEntries)
   {
     RegionPtr regPtr0 = getHelper()->getRegion(regionName);
     RegionPtr regPtr1 = getHelper()->getRegion(regionName1);
-    CacheablePtr val = NULLPTR;
+    CacheablePtr val = nullptr;
     char KeyStr[256] = {0};
     char valStr[256] = {0};
     for (int i = 1; i <= 5; i++) {
@@ -1026,15 +1026,15 @@ void checkCQStatusOnPutEvent(const char* poolName, const char* cqName,
                              int count) {
   PoolPtr pool = PoolManager::find(poolName);
   QueryServicePtr qs;
-  if (pool != NULLPTR) {
+  if (pool != nullptr) {
     qs = pool->getQueryService();
   }
   CqQueryPtr cq = qs->getCq(const_cast<char*>(cqName));
   CqAttributesPtr cqAttr = cq->getCqAttributes();
-  VectorOfCqListener vl;
+  std::vector<CqListenerPtr> vl;
   cqAttr->getCqListeners(vl);
   MyCqStatusListener* myStatusCq =
-      dynamic_cast<MyCqStatusListener*>(vl[0].ptr());
+      dynamic_cast<MyCqStatusListener*>(vl[0].get());
   LOGINFO("checkCQStatusOnPutEvent = %d ", myStatusCq->getNumInserts());
   ASSERT(myStatusCq->getNumInserts() == count,
          "incorrect number of CqStatus Updates count.");
@@ -1062,8 +1062,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
     PoolPtr pool = PoolManager::find(regionName);
     QueryServicePtr qs = pool->getQueryService();
     CqAttributesFactory cqFac;
-    CqListenerPtr cqLstner(new MyCqListener(1));
-    CqStatusListenerPtr cqStatusLstner(new MyCqStatusListener(100));
+    auto cqLstner = std::make_shared<MyCqListener>(1);
+    auto cqStatusLstner = std::make_shared<MyCqStatusListener>(100);
     cqFac.addCqListener(cqLstner);
     cqFac.addCqListener(cqStatusLstner);
     CqAttributesPtr cqAttr = cqFac.create();
@@ -1075,7 +1075,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
     LOG("ProcessCQ Query executed.");
 
     RegionPtr regPtr0 = getHelper()->getRegion(regionName);
-    CacheablePtr val = NULLPTR;
+    CacheablePtr val = nullptr;
     char KeyStr[256] = {0};
     char valStr[256] = {0};
     for (int i = 1; i <= 5; i++) {
@@ -1089,11 +1089,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
     LOGINFO("putEntries complete");
 
     cqAttr = cq->getCqAttributes();
-    VectorOfCqListener vl;
+    std::vector<CqListenerPtr> vl;
     cqAttr->getCqListeners(vl);
     ASSERT(vl.size() == 2, "incorrect number of CqListeners count.");
     MyCqStatusListener* myStatusCq =
-        dynamic_cast<MyCqStatusListener*>(vl[1].ptr());
+        dynamic_cast<MyCqStatusListener*>(vl[1].get());
     LOGINFO("No of insert events = %d ", myStatusCq->getNumInserts());
     LOGINFO("No of OnCqConnected events = %d ",
             myStatusCq->getCqsConnectedCount());
@@ -1102,7 +1102,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
     ASSERT(myStatusCq->getCqsConnectedCount() == 1,
            "incorrect number of CqStatus Connected count.");
 
-    MyCqListener* myCq = dynamic_cast<MyCqListener*>(vl[0].ptr());
+    MyCqListener* myCq = dynamic_cast<MyCqListener*>(vl[0].get());
     LOGINFO("No of insert events = %d ", myCq->getNumInserts());
     ASSERT(myCq->getNumInserts() == 5,
            "incorrect number of CqStatus Updates count.");
@@ -1122,19 +1122,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
 
     ASSERT(vl.size() == 0, "incorrect number of listeners");
 
-    VectorOfCqListener v2;
+    std::vector<CqListenerPtr> v2;
     v2.push_back(cqStatusLstner);
     v2.push_back(cqLstner);
     cqAttrMtor->setCqListeners(v2);
     LOG("ProcessCQ setCqListeneres done.");
 
     cqAttr = cq->getCqAttributes();
-    VectorOfCqListener vl3;
+    std::vector<CqListenerPtr> vl3;
     cqAttr->getCqListeners(vl3);
     ASSERT(vl3.size() == 2, "incorrect number of CqListeners count.");
 
     MyCqStatusListener* myStatusCq2 =
-        dynamic_cast<MyCqStatusListener*>(vl3[0].ptr());
+        dynamic_cast<MyCqStatusListener*>(vl3[0].get());
     myStatusCq2->clear();
 
     for (int i = 1; i <= 5; i++) {
@@ -1147,17 +1147,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
     }
     LOGINFO("putEntries complete again");
 
-    VectorOfCqListener vl21;
+    std::vector<CqListenerPtr> vl21;
     vl21.push_back(cqStatusLstner);
     vl21.push_back(cqLstner);
     cqFac.initCqListeners(vl21);
     LOGINFO("initCqListeners complete.");
 
     cqAttr = cq->getCqAttributes();
-    VectorOfCqListener vl2;
+    std::vector<CqListenerPtr> vl2;
     cqAttr->getCqListeners(vl2);
     ASSERT(vl2.size() == 2, "incorrect number of CqListeners count.");
-    myStatusCq2 = dynamic_cast<MyCqStatusListener*>(vl2[0].ptr());
+    myStatusCq2 = dynamic_cast<MyCqStatusListener*>(vl2[0].get());
     LOGINFO("No of insert events = %d ", myStatusCq2->getNumUpdates());
     LOGINFO("No of OnCqConnected events = %d ",
             myStatusCq2->getCqsConnectedCount());
@@ -1166,7 +1166,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
     ASSERT(myStatusCq2->getCqsConnectedCount() == 0,
            "incorrect number of CqStatus Connected count.");
 
-    MyCqListener* myCq2 = dynamic_cast<MyCqListener*>(vl2[1].ptr());
+    MyCqListener* myCq2 = dynamic_cast<MyCqListener*>(vl2[1].get());
     LOGINFO("No of insert events = %d ", myCq2->getNumInserts());
     ASSERT(myCq2->getNumUpdates() == 5,
            "incorrect number of CqStatus Updates count.");

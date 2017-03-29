@@ -119,6 +119,8 @@ typedef std::unordered_map<CacheableKeyPtr, std::pair<CacheablePtr, int> >
 * is used to concatenate all the region names together from the root, starting
 * with the root's subregions.
 */
+typedef SharedPtr<LocalRegion> LocalRegionPtr;
+
 class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   /**
    * @brief Public Methods for Region
@@ -127,7 +129,8 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   /**
   * @brief constructor/destructor
   */
-  LocalRegion(const std::string& name, CacheImpl* cache, RegionInternal* rPtr,
+  LocalRegion(const std::string& name, CacheImpl* cache,
+              const RegionInternalPtr& rPtr,
               const RegionAttributesPtr& attributes,
               const CacheStatisticsPtr& stats, bool shared = false);
   virtual ~LocalRegion();
@@ -137,19 +140,21 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   RegionPtr getParentRegion() const;
   RegionAttributesPtr getAttributes() const { return m_regionAttributes; }
   AttributesMutatorPtr getAttributesMutator() const {
-    return AttributesMutatorPtr(new AttributesMutator(RegionPtr(this)));
+    return std::make_shared<AttributesMutator>(
+        std::const_pointer_cast<LocalRegion>(
+            std::static_pointer_cast<const LocalRegion>(shared_from_this())));
   }
   void updateAccessAndModifiedTime(bool modified);
   CacheStatisticsPtr getStatistics() const;
-  virtual void clear(const UserDataPtr& aCallbackArgument = NULLPTR);
-  virtual void localClear(const UserDataPtr& aCallbackArgument = NULLPTR);
+  virtual void clear(const UserDataPtr& aCallbackArgument = nullptr);
+  virtual void localClear(const UserDataPtr& aCallbackArgument = nullptr);
   GfErrType localClearNoThrow(
-      const UserDataPtr& aCallbackArgument = NULLPTR,
+      const UserDataPtr& aCallbackArgument = nullptr,
       const CacheEventFlags eventFlags = CacheEventFlags::NORMAL);
-  void invalidateRegion(const UserDataPtr& aCallbackArgument = NULLPTR);
-  void localInvalidateRegion(const UserDataPtr& aCallbackArgument = NULLPTR);
-  void destroyRegion(const UserDataPtr& aCallbackArgument = NULLPTR);
-  void localDestroyRegion(const UserDataPtr& aCallbackArgument = NULLPTR);
+  void invalidateRegion(const UserDataPtr& aCallbackArgument = nullptr);
+  void localInvalidateRegion(const UserDataPtr& aCallbackArgument = nullptr);
+  void destroyRegion(const UserDataPtr& aCallbackArgument = nullptr);
+  void localDestroyRegion(const UserDataPtr& aCallbackArgument = nullptr);
   RegionPtr getSubregion(const char* path);
   RegionPtr createSubregion(const char* subregionName,
                             const RegionAttributesPtr& aRegionAttributes);
@@ -159,41 +164,41 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   CacheablePtr get(const CacheableKeyPtr& key,
                    const UserDataPtr& aCallbackArgument);
   void put(const CacheableKeyPtr& key, const CacheablePtr& value,
-           const UserDataPtr& aCallbackArgument = NULLPTR);
+           const UserDataPtr& aCallbackArgument = nullptr);
   void localPut(const CacheableKeyPtr& key, const CacheablePtr& value,
-                const UserDataPtr& aCallbackArgument = NULLPTR);
+                const UserDataPtr& aCallbackArgument = nullptr);
   void create(const CacheableKeyPtr& key, const CacheablePtr& value,
-              const UserDataPtr& aCallbackArgument = NULLPTR);
+              const UserDataPtr& aCallbackArgument = nullptr);
   void localCreate(const CacheableKeyPtr& key, const CacheablePtr& value,
-                   const UserDataPtr& aCallbackArgument = NULLPTR);
+                   const UserDataPtr& aCallbackArgument = nullptr);
   void invalidate(const CacheableKeyPtr& key,
-                  const UserDataPtr& aCallbackArgument = NULLPTR);
+                  const UserDataPtr& aCallbackArgument = nullptr);
   void localInvalidate(const CacheableKeyPtr& key,
-                       const UserDataPtr& aCallbackArgument = NULLPTR);
+                       const UserDataPtr& aCallbackArgument = nullptr);
   void destroy(const CacheableKeyPtr& key,
-               const UserDataPtr& aCallbackArgument = NULLPTR);
+               const UserDataPtr& aCallbackArgument = nullptr);
   void localDestroy(const CacheableKeyPtr& key,
-                    const UserDataPtr& aCallbackArgument = NULLPTR);
+                    const UserDataPtr& aCallbackArgument = nullptr);
   bool remove(const CacheableKeyPtr& key, const CacheablePtr& value,
-              const UserDataPtr& aCallbackArgument = NULLPTR);
+              const UserDataPtr& aCallbackArgument = nullptr);
   bool removeEx(const CacheableKeyPtr& key,
-                const UserDataPtr& aCallbackArgument = NULLPTR);
+                const UserDataPtr& aCallbackArgument = nullptr);
   bool localRemove(const CacheableKeyPtr& key, const CacheablePtr& value,
-                   const UserDataPtr& aCallbackArgument = NULLPTR);
+                   const UserDataPtr& aCallbackArgument = nullptr);
   bool localRemoveEx(const CacheableKeyPtr& key,
-                     const UserDataPtr& aCallbackArgument = NULLPTR);
+                     const UserDataPtr& aCallbackArgument = nullptr);
   void keys(VectorOfCacheableKey& v);
   void serverKeys(VectorOfCacheableKey& v);
   void values(VectorOfCacheable& vc);
   void entries(VectorOfRegionEntry& me, bool recursive);
   void getAll(const VectorOfCacheableKey& keys, HashMapOfCacheablePtr values,
               HashMapOfExceptionPtr exceptions, bool addToLocalCache,
-              const UserDataPtr& aCallbackArgument = NULLPTR);
+              const UserDataPtr& aCallbackArgument = nullptr);
   void putAll(const HashMapOfCacheable& map,
               uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-              const UserDataPtr& aCallbackArgument = NULLPTR);
+              const UserDataPtr& aCallbackArgument = nullptr);
   void removeAll(const VectorOfCacheableKey& keys,
-                 const UserDataPtr& aCallbackArgument = NULLPTR);
+                 const UserDataPtr& aCallbackArgument = nullptr);
   uint32_t size();
   virtual uint32_t size_remote();
   RegionServicePtr getRegionService() const;
@@ -215,7 +220,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   virtual GfErrType getAllNoThrow(
       const VectorOfCacheableKey& keys, const HashMapOfCacheablePtr& values,
       const HashMapOfExceptionPtr& exceptions, bool addToLocalCache,
-      const UserDataPtr& aCallbackArgument = NULLPTR);
+      const UserDataPtr& aCallbackArgument = nullptr);
   virtual GfErrType putNoThrow(const CacheableKeyPtr& key,
                                const CacheablePtr& value,
                                const UserDataPtr& aCallbackArgument,
@@ -223,7 +228,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                                const CacheEventFlags eventFlags,
                                VersionTagPtr versionTag,
                                DataInput* delta = NULL,
-                               EventIdPtr eventId = NULLPTR);
+                               EventIdPtr eventId = nullptr);
   virtual GfErrType putNoThrowTX(const CacheableKeyPtr& key,
                                  const CacheablePtr& value,
                                  const UserDataPtr& aCallbackArgument,
@@ -231,7 +236,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                                  const CacheEventFlags eventFlags,
                                  VersionTagPtr versionTag,
                                  DataInput* delta = NULL,
-                                 EventIdPtr eventId = NULLPTR);
+                                 EventIdPtr eventId = nullptr);
   virtual GfErrType createNoThrow(const CacheableKeyPtr& key,
                                   const CacheablePtr& value,
                                   const UserDataPtr& aCallbackArgument,
@@ -262,10 +267,10 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   virtual GfErrType putAllNoThrow(
       const HashMapOfCacheable& map,
       uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-      const UserDataPtr& aCallbackArgument = NULLPTR);
+      const UserDataPtr& aCallbackArgument = nullptr);
   virtual GfErrType removeAllNoThrow(
       const VectorOfCacheableKey& keys,
-      const UserDataPtr& aCallbackArgument = NULLPTR);
+      const UserDataPtr& aCallbackArgument = nullptr);
   virtual GfErrType invalidateNoThrow(const CacheableKeyPtr& keyPtr,
                                       const UserDataPtr& aCallbackArgument,
                                       int updateCount,
@@ -292,7 +297,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                      const CacheablePtr& valuePtr, CacheablePtr& oldValue,
                      bool cachingEnabled, int updateCount, int destroyTracker,
                      VersionTagPtr versionTag, DataInput* delta = NULL,
-                     EventIdPtr eventId = NULLPTR);
+                     EventIdPtr eventId = nullptr);
   GfErrType invalidateLocal(const char* name, const CacheableKeyPtr& keyPtr,
                             const CacheablePtr& value,
                             const CacheEventFlags eventFlags,
@@ -315,7 +320,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   RegionStats* getRegionStats() { return m_regionStats; }
   inline bool cacheEnabled() { return m_regionAttributes->getCachingEnabled(); }
   inline bool cachelessWithListener() {
-    return !m_regionAttributes->getCachingEnabled() && (m_listener != NULLPTR);
+    return !m_regionAttributes->getCachingEnabled() && (m_listener != nullptr);
   }
   virtual bool isDestroyed() const { return m_destroyPending; }
   /* above public methods are inherited from RegionInternal */
@@ -329,7 +334,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   virtual void adjustCacheWriter(const CacheWriterPtr& aWriter);
   virtual void adjustCacheWriter(const char* libpath,
                                  const char* factoryFuncName);
-  virtual CacheImpl* getCacheImpl();
+  virtual CacheImpl* getCacheImpl() const;
   virtual void evict(int32_t percentage);
 
   virtual void acquireGlobals(bool isFailover){};
@@ -408,7 +413,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                           CacheablePtr& oldValue, int updateCount,
                           const CacheEventFlags eventFlags,
                           VersionTagPtr versionTag, DataInput* delta = NULL,
-                          EventIdPtr eventId = NULLPTR);
+                          EventIdPtr eventId = nullptr);
 
   template <typename TAction>
   GfErrType updateNoThrowTX(const CacheableKeyPtr& key,
@@ -417,7 +422,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                             CacheablePtr& oldValue, int updateCount,
                             const CacheEventFlags eventFlags,
                             VersionTagPtr versionTag, DataInput* delta = NULL,
-                            EventIdPtr eventId = NULLPTR);
+                            EventIdPtr eventId = nullptr);
 
   /* protected attributes */
   std::string m_name;

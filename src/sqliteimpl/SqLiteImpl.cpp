@@ -33,18 +33,18 @@ void SqLiteImpl::init(const RegionPtr& region, PropertiesPtr& diskProperties) {
   int pageSize = 0;
   m_persistanceDir = g_default_persistence_directory;
   std::string regionName = region->getName();
-  if (diskProperties != NULLPTR) {
+  if (diskProperties != nullptr) {
     CacheableStringPtr maxPageCountPtr = diskProperties->find(MAX_PAGE_COUNT);
     CacheableStringPtr pageSizePtr = diskProperties->find(PAGE_SIZE);
     CacheableStringPtr persDir = diskProperties->find(PERSISTENCE_DIR);
 
-    if (maxPageCountPtr != NULLPTR) {
+    if (maxPageCountPtr != nullptr) {
       maxPageCount = atoi(maxPageCountPtr->asChar());
     }
 
-    if (pageSizePtr != NULLPTR) pageSize = atoi(pageSizePtr->asChar());
+    if (pageSizePtr != nullptr) pageSize = atoi(pageSizePtr->asChar());
 
-    if (persDir != NULLPTR) m_persistanceDir = persDir->asChar();
+    if (persDir != nullptr) m_persistanceDir = persDir->asChar();
   }
 
 #ifndef _WIN32

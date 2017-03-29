@@ -325,7 +325,7 @@ inline uint32_t objectSize(const _VectorOfCacheable& value) {
   uint32_t objectSize = 0;
   for (_VectorOfCacheable::Iterator iter = value.begin(); iter != value.end();
        ++iter) {
-    if (*iter != NULLPTR) {
+    if (*iter != nullptr) {
       objectSize += (*iter)->objectSize();
     }
   }
@@ -366,7 +366,7 @@ inline uint32_t objectSize(const _HashMapOfCacheable& value) {
   for (_HashMapOfCacheable::Iterator iter = value.begin(); iter != value.end();
        ++iter) {
     objectSize += iter.first()->objectSize();
-    if (iter.second() != NULLPTR) {
+    if (iter.second() != nullptr) {
       objectSize += iter.second()->objectSize();
     }
   }
@@ -406,7 +406,7 @@ inline uint32_t objectSize(const _HashSetOfCacheableKey& value) {
   uint32_t objectSize = 0;
   for (_HashSetOfCacheableKey::Iterator iter = value.begin();
        iter != value.end(); ++iter) {
-    if (*iter != NULLPTR) {
+    if (*iter != nullptr) {
       objectSize += (*iter)->objectSize();
     }
   }

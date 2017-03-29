@@ -160,7 +160,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULLPTR;
+        return nullptr;
       }
 
       bool ManagedCacheableKeyGeneric::operator ==(const apache::geode::client::CacheableKey& other) const
@@ -191,7 +191,7 @@ namespace apache
         try {
           return static_cast<Apache::Geode::Client::ICacheableKey^>(
             (Apache::Geode::Client::IGeodeSerializable^)(Apache::Geode::Client::IGeodeSerializable^)m_managedptr)->Equals(
-            static_cast<Apache::Geode::Client::ICacheableKey^>(other.ptr()));
+            static_cast<Apache::Geode::Client::ICacheableKey^>(other.get()));
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();

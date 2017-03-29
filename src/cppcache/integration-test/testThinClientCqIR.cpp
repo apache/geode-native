@@ -137,7 +137,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, PutData)
     qh->populatePortfolioPdxData(regPtr0, 150, 40, 150);
     qh->populatePositionPdxData(subregPtr0, 150, 40);
 
-    CacheablePtr port = NULLPTR;
+    CacheablePtr port = nullptr;
     for (int i = 1; i < 150; i++) {
       port = CacheablePtr(new PortfolioPdx(i, 150));
 
@@ -153,40 +153,31 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
   {
-    QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+    auto& qh ATTR_UNUSED = QueryHelper::getHelper();
 
     // using region name as pool name
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    auto pool = PoolManager::find(regionNamesCq[0]);
     QueryServicePtr qs;
-    if (pool != NULLPTR) {
+    if (pool != nullptr) {
       qs = pool->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
 
-    CqAttributesFactory cqFac;
-    // CqListenerPtr cqLstner(new MyCqListener());
-    // cqFac.addCqListener(cqLstner);
-    CqAttributesPtr cqAttr = cqFac.create();
+    auto cqAttr = CqAttributesFactory().create();
 
     // char* qryStr = (char*)"select * from /Portfolios p where p.ID != 2";
     // qry->execute();
 
-    const char* qryStr = "select * from /Portfolios where ID != 2";
-    // const char* qryStr = "select * from /Portfolios p where p.ID < 3";
-    // this will cause exception since distinct is not supported:
-    // const char* qryStr  = "select distinct * from /Portfolios where ID != 2";
-    CqQueryPtr qry = qs->newCq(cqName, qryStr, cqAttr);
-    // QueryPtr qry = qs->newQuery(qryStr);
+    auto qryStr = "select * from /Portfolios where ID != 2";
+    auto qry = qs->newCq(cqName, qryStr, cqAttr);
 
-    CqResultsPtr results;
     try {
       LOG("before executing executeWithInitialResults.");
-      results = qry->executeWithInitialResults();
+      auto results = qry->executeWithInitialResults();
       LOG("before executing executeWithInitialResults done.");
-      // results = qry->execute();
 
-      SelectResultsIterator iter = results->getIterator();
+      auto iter = results->getIterator();
       char buf[100];
       int count = results->size();
       sprintf(buf, "results size=%d", count);
@@ -194,41 +185,27 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       ASSERT(count > 0, "count should be > 0");
       while (iter.hasNext()) {
         count--;
-        SerializablePtr ser = iter.next();
-        /*PortfolioPtr portfolio( dynamic_cast<Portfolio*> (ser.ptr() ));
-        PositionPtr  position(dynamic_cast<Position*>  (ser.ptr() ));
+        auto ser = iter.next();
 
-        if (portfolio != NULLPTR) {
-          printf("   query pulled portfolio object ID %d, pkid %s\n",
-              portfolio->getID(), portfolio->getPkid()->asChar());
-        }
-
-        else if (position != NULLPTR) {
-          printf("   query  pulled position object secId %s, shares %d\n",
-              position->getSecId()->asChar(), position->getSharesOutstanding());
-        }
-  */
-        if (ser != NULLPTR) {
+        if (ser != nullptr) {
           printf(" query pulled object %s\n", ser->toString()->asChar());
 
-          StructPtr stPtr(dynamic_cast<Struct*>(ser.ptr()));
+          auto stPtr = std::dynamic_pointer_cast<Struct>(ser);
+          ASSERT(stPtr != nullptr, "Failed to get struct in CQ result.");
 
-          ASSERT(stPtr != NULLPTR, "Failed to get struct in CQ result.");
-
-          if (stPtr != NULLPTR) {
+          if (stPtr != nullptr) {
             LOG(" got struct ptr ");
-            SerializablePtr serKey = (*(stPtr.ptr()))["key"];
-            ASSERT(serKey != NULLPTR, "Failed to get KEY in CQ result.");
-            if (serKey != NULLPTR) {
+            auto serKey = (*stPtr)["key"];
+            ASSERT(serKey != nullptr, "Failed to get KEY in CQ result.");
+            if (serKey != nullptr) {
               LOG("got struct key ");
               printf("  got struct key %s\n", serKey->toString()->asChar());
             }
 
-            SerializablePtr serVal = (*(stPtr.ptr()))["value"];
+            auto serVal = (*stPtr)["value"];
+            ASSERT(serVal != nullptr, "Failed to get VALUE in CQ result.");
 
-            ASSERT(serVal != NULLPTR, "Failed to get VALUE in CQ result.");
-
-            if (serVal != NULLPTR) {
+            if (serVal != nullptr) {
               LOG("got struct value ");
               printf("  got struct value %s\n", serVal->toString()->asChar());
             }
@@ -246,7 +223,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       results = qry->executeWithInitialResults();
       LOG("before executing executeWithInitialResults2 done.");
 
-      SelectResultsIterator iter2 = results->getIterator();
+      auto iter2 = results->getIterator();
 
       count = results->size();
       sprintf(buf, "results2 size=%d", count);
@@ -254,29 +231,27 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       ASSERT(count > 0, "count should be > 0");
       while (iter2.hasNext()) {
         count--;
-        SerializablePtr ser = iter2.next();
+        auto ser = iter2.next();
 
-        if (ser != NULLPTR) {
+        if (ser != nullptr) {
           printf(" query pulled object %s\n", ser->toString()->asChar());
 
-          StructPtr stPtr(dynamic_cast<Struct*>(ser.ptr()));
+          auto stPtr = std::dynamic_pointer_cast<Struct>(ser);
+          ASSERT(stPtr != nullptr, "Failed to get struct in CQ result.");
 
-          ASSERT(stPtr != NULLPTR, "Failed to get struct in CQ result.");
-
-          if (stPtr != NULLPTR) {
+          if (stPtr != nullptr) {
             LOG(" got struct ptr ");
-            SerializablePtr serKey = (*(stPtr.ptr()))["key"];
-            ASSERT(serKey != NULLPTR, "Failed to get KEY in CQ result.");
-            if (serKey != NULLPTR) {
+            auto serKey = (*stPtr)["key"];
+            ASSERT(serKey != nullptr, "Failed to get KEY in CQ result.");
+            if (serKey != nullptr) {
               LOG("got struct key ");
               printf("  got struct key %s\n", serKey->toString()->asChar());
             }
 
-            SerializablePtr serVal = (*(stPtr.ptr()))["value"];
+            auto serVal = (*stPtr)["value"];
+            ASSERT(serVal != nullptr, "Failed to get VALUE in CQ result.");
 
-            ASSERT(serVal != NULLPTR, "Failed to get VALUE in CQ result.");
-
-            if (serVal != NULLPTR) {
+            if (serVal != nullptr) {
               LOG("got struct value ");
               printf("  got struct value %s\n", serVal->toString()->asChar());
             }
@@ -288,12 +263,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       sprintf(buf, "results last count=%d", count);
       LOG(buf);
 
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
-      regPtr0->destroyRegion();
+      {
+        auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
+        regPtr0->destroyRegion();
+      }
       SLEEP(20000);
       qry = qs->getCq(cqName);
       sprintf(buf, "cq[%s] should have been removed after close!", cqName);
-      ASSERT(qry == NULLPTR, buf);
+      ASSERT(qry == nullptr, buf);
     } catch (const Exception& excp) {
       std::string logmsg = "";
       logmsg += excp.getName();
@@ -313,10 +290,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckRegionDestroy)
     LOG("check region destory");
     try {
       RegionPtr regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
-      if (regPtr0 == NULLPTR) {
-        LOG("regPtr0==NULLPTR");
+      if (regPtr0 == nullptr) {
+        LOG("regPtr0==nullptr");
       } else {
-        LOG("regPtr0!=NULLPTR");
+        LOG("regPtr0!=nullptr");
         ASSERT(regPtr0->isDestroyed(), "should have been distroyed");
       }
     } catch (...) {

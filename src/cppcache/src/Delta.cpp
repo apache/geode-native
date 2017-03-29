@@ -32,5 +32,5 @@ DeltaPtr Delta::clone() {
   DataInput in(out.getBuffer(), out.getBufferLength());
   CacheablePtr theClonePtr;
   in.readObject(theClonePtr);
-  return DeltaPtr(theClonePtr);
+  return std::dynamic_pointer_cast<Delta>(theClonePtr);
 }

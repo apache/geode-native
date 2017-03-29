@@ -58,7 +58,7 @@ class PortfolioPdxAuto : public apache::geode::client::PdxSerializable {
         type(NULL),
         status(NULL),
         newVal(NULL),
-        creationDate(NULLPTR),
+        creationDate(nullptr),
         arrayNull(NULL),
         arrayNullSize(0),
         arrayZeroSize(NULL),

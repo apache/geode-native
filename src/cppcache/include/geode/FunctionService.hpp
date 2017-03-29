@@ -67,7 +67,7 @@ class CPPCACHE_EXPORT FunctionService : public SharedBase {
    *
    * @return Execution
    * @throws NullPointerException
-   *                 if the region passed in is NULLPTR
+   *                 if the region passed in is nullptr
    */
   static ExecutionPtr onRegion(RegionPtr region);
 
@@ -80,7 +80,7 @@ class CPPCACHE_EXPORT FunctionService : public SharedBase {
    * @param pool from which to chose a server for execution
    * @return Execution
    * @throws NullPointerException
-   *                 if Pool instance passed in is NULLPTR
+   *                 if Pool instance passed in is nullptr
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
@@ -98,7 +98,7 @@ class CPPCACHE_EXPORT FunctionService : public SharedBase {
    *        cache from which to chose a server for execution
    * @return Execution
    * @throws NullPointerException
-   *                 if Pool instance passed in is NULLPTR
+   *                 if Pool instance passed in is nullptr
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
@@ -120,7 +120,7 @@ class CPPCACHE_EXPORT FunctionService : public SharedBase {
    * @param pool the set of servers to execute the function
    * @return Execution
    * @throws NullPointerException
-   *                 if Pool instance passed in is NULLPTR
+   *                 if Pool instance passed in is nullptr
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
@@ -138,7 +138,7 @@ class CPPCACHE_EXPORT FunctionService : public SharedBase {
   *        the {@link Cache} where function need to execute.
   * @return Execution
   * @throws NullPointerException
-  *                 if Pool instance passed in is NULLPTR
+  *                 if Pool instance passed in is nullptr
   * @throws UnsupportedOperationException
   *                 if Pool is in multiusersecure Mode
   */

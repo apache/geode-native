@@ -43,7 +43,7 @@ PdxWrapper::PdxWrapper(void *userObject, const char *className) {
 
   m_serializer = SerializationRegistry::getPdxSerializer();
 
-  if (m_serializer == NULLPTR) {
+  if (m_serializer == nullptr) {
     LOGERROR("No registered PDX serializer found for PdxWrapper");
     throw IllegalArgumentException(
         "No registered PDX serializer found for PdxWrapper");
@@ -75,7 +75,7 @@ PdxWrapper::PdxWrapper(const char *className) {
 
   m_serializer = SerializationRegistry::getPdxSerializer();
 
-  if (m_serializer == NULLPTR) {
+  if (m_serializer == nullptr) {
     LOGERROR(
         "No registered PDX serializer found for PdxWrapper deserialization");
     throw IllegalArgumentException(

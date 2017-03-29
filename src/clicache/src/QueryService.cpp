@@ -44,7 +44,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
           return Query<TResult>::Create(NativePtr->newQuery(
-          mg_queryStr.CharPtr).ptr());
+          mg_queryStr.CharPtr).get());
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -57,7 +57,7 @@ namespace Apache
         try
         {
           return CqQuery<TKey, TResult>::Create(NativePtr->newCq(
-            mg_queryStr.CharPtr, attr, isDurable).ptr());
+            mg_queryStr.CharPtr, attr, isDurable).get());
         }
         catch (const apache::geode::client::Exception& ex)
         {
@@ -74,7 +74,7 @@ namespace Apache
         try
         {
           return CqQuery<TKey, TResult>::Create(NativePtr->newCq(
-            mg_nameStr.CharPtr, mg_queryStr.CharPtr, attr, isDurable).ptr());
+            mg_nameStr.CharPtr, mg_queryStr.CharPtr, attr, isDurable).get());
         }
         catch (const apache::geode::client::Exception& ex)
         {
@@ -106,7 +106,7 @@ namespace Apache
 
           for (System::Int32 index = 0; index < vrr.size(); index++)
           {
-            cqs[index] = CqQuery<TKey, TResult>::Create(vrr[index].ptr());
+            cqs[index] = CqQuery<TKey, TResult>::Create(vrr[index].get());
           }
           return cqs;
         }
@@ -123,7 +123,7 @@ namespace Apache
         try
         {
           return CqQuery<TKey, TResult>::Create(NativePtr->getCq(
-            mg_queryStr.CharPtr).ptr());
+            mg_queryStr.CharPtr).get());
         }
         catch (const apache::geode::client::Exception& ex)
         {
@@ -162,7 +162,7 @@ namespace Apache
       {
         try
         {
-          return CqServiceStatistics::Create(NativePtr->getCqServiceStatistics().ptr());
+          return CqServiceStatistics::Create(NativePtr->getCqServiceStatistics().get());
         }
         catch (const apache::geode::client::Exception& ex)
         {
@@ -176,7 +176,7 @@ namespace Apache
         try
         {
           apache::geode::client::CacheableArrayListPtr durableCqsArrayListPtr = NativePtr->getAllDurableCqsFromServer();
-          int length = durableCqsArrayListPtr != NULLPTR ? durableCqsArrayListPtr->length() : 0;
+          int length = durableCqsArrayListPtr != nullptr ? durableCqsArrayListPtr->length() : 0;
           System::Collections::Generic::List<String^>^ durableCqsList = gcnew System::Collections::Generic::List<String^>();
           if (length > 0)
           {

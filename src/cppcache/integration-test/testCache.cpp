@@ -33,7 +33,7 @@ BEGIN_TEST(CacheFunction)
   char* subRegionName2 = (char*)"TESTCACHE_SUB_REGION2";
   char* subRegionName21 = (char*)"TESTCACHE_SUB_REGION21";
   CachePtr cptr;
-  if (cptr != NULLPTR) {
+  if (cptr != nullptr) {
     cout << "cptr is not null" << endl;
   }
   cout << "create Cache with name=" << host_name << " and unitialized system"
@@ -49,16 +49,16 @@ BEGIN_TEST(CacheFunction)
     cout << ex.getMessage() << endl;
     ASSERT(false, "attribute create failed");
   }
-  if (rAttr == NULLPTR) {
+  if (rAttr == nullptr) {
     cout << "Warnning! : AttributesFactory returned NULL" << endl;
   }
   RegionPtr rptr;
-  if (rptr != NULLPTR) {
+  if (rptr != nullptr) {
     cout << "rptr is not null" << endl;
   }
   cout << "create Region with name=" << regionName << endl;
   try {
-    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cptr.ptr());
+    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cptr.get());
     cacheImpl->createRegion(regionName, rAttr, rptr);
   } catch (Exception& ex) {
     cout << ex.getMessage() << endl;
@@ -127,7 +127,7 @@ BEGIN_TEST(CacheFunction)
     cout << ex.getMessage() << endl;
     ASSERT(false, (char*)"getRegion");
   }
-  if (region == NULLPTR) {
+  if (region == nullptr) {
     ASSERT(false, (char*)"did not find it");
   } else {
     cout << "found :" << region->getName() << endl;
@@ -139,7 +139,7 @@ BEGIN_TEST(CacheFunction)
     cout << ex.getMessage() << endl;
     ASSERT(false, (char*)"getRegion");
   }
-  if (region == NULLPTR) {
+  if (region == nullptr) {
     ASSERT(false, (char*)"did not find it");
   } else {
     cout << "found :" << region->getName() << endl;
@@ -151,7 +151,7 @@ BEGIN_TEST(CacheFunction)
     cout << ex.getMessage() << endl;
     ASSERT(false, (char*)"getRegion");
   }
-  if (region == NULLPTR) {
+  if (region == nullptr) {
     ASSERT(false, (char*)"did not find it");
   } else {
     cout << "found :" << region->getName() << endl;
@@ -164,7 +164,7 @@ BEGIN_TEST(CacheFunction)
     cout << ex.getMessage() << endl;
     ASSERT(false, (char*)"getRegion");
   }
-  if (region == NULLPTR) {
+  if (region == nullptr) {
     ASSERT(false, (char*)"did not find it");
   } else {
     cout << "found :" << region->getName() << endl;
@@ -177,7 +177,7 @@ BEGIN_TEST(CacheFunction)
     cout << ex.getMessage() << endl;
     ASSERT(false, (char*)"getRegion");
   }
-  if (region == NULLPTR) {
+  if (region == nullptr) {
     cout << "not found !" << endl;
   } else {
     ASSERT(false, (char*)"found it");

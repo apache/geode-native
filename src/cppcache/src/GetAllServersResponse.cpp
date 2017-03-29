@@ -22,8 +22,10 @@ void GetAllServersResponse::toData(DataOutput& output) const {
   int32_t length = static_cast<int32_t>(m_servers.size());
   output.writeInt(length);
   for (int32_t i = 0; i < length; i++) {
-    SerializablePtr sPtr(&m_servers.at(i));
-    output.writeObject(sPtr);
+    // TODO shared_ptr - this is suspicious, in the original all entries were
+    // wrapped in a SharedPtr resulting in their destruction at the end of this
+    // function.
+    output.writeObject(&m_servers.at(i));
   }
 }
 Serializable* GetAllServersResponse::fromData(DataInput& input) {

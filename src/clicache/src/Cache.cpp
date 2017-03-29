@@ -187,7 +187,7 @@ namespace Apache
               break;          
           }
 
-          return RegionFactory::Create(NativePtr->createRegionFactory(preDefineRegionAttr).ptr());
+          return RegionFactory::Create(NativePtr->createRegionFactory(preDefineRegionAttr).get());
           
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -206,7 +206,7 @@ namespace Apache
         
         _GF_MG_EXCEPTION_TRY2
 
-          return AuthenticatedCache::Create( (NativePtr->createAuthenticatedView(credPtr)).ptr());
+          return AuthenticatedCache::Create( (NativePtr->createAuthenticatedView(credPtr)).get());
 
         _GF_MG_EXCEPTION_CATCH_ALL2   
       }
@@ -245,7 +245,7 @@ namespace Apache
         
         _GF_MG_EXCEPTION_TRY2
 
-          return AuthenticatedCache::Create( (NativePtr->createAuthenticatedView(credPtr, mg_poolName.CharPtr)).ptr());
+          return AuthenticatedCache::Create( (NativePtr->createAuthenticatedView(credPtr, mg_poolName.CharPtr)).get());
 
         _GF_MG_EXCEPTION_CATCH_ALL2   
       }

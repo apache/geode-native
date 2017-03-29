@@ -523,42 +523,45 @@ void InvalidPdxUsage::fromData(PdxReaderPtr pr) {
   }
 
   try {
-    m_arraylist = pr->readObject("");
+    m_arraylist =
+        std::dynamic_pointer_cast<CacheableArrayList>(pr->readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readObject():: Got expected Exception :: %s ", excpt.getMessage());
   }
 
   try {
-    m_map = dynCast<CacheableHashMapPtr>(pr->readObject(""));
+    m_map = std::dynamic_pointer_cast<CacheableHashMap>(pr->readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readObject():: Got expected Exception :: %s ", excpt.getMessage());
   }
 
   try {
-    m_hashtable = pr->readObject("");
+    m_hashtable =
+        std::dynamic_pointer_cast<CacheableHashTable>(pr->readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readObject():: Got expected Exception :: %s ", excpt.getMessage());
   }
 
   try {
-    m_vector = pr->readObject("");
+    m_vector = std::dynamic_pointer_cast<CacheableVector>(pr->readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readObject():: Got expected Exception :: %s ", excpt.getMessage());
   }
 
   try {
-    m_chs = pr->readObject("");
+    m_chs = std::dynamic_pointer_cast<CacheableHashSet>(pr->readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readObject():: Got expected Exception :: %s ", excpt.getMessage());
   }
 
   try {
-    m_clhs = pr->readObject("");
+    m_clhs =
+        std::dynamic_pointer_cast<CacheableLinkedHashSet>(pr->readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readObject():: Got expected Exception :: %s ", excpt.getMessage());
@@ -572,7 +575,7 @@ void InvalidPdxUsage::fromData(PdxReaderPtr pr) {
   }
 
   try {
-    m_date = pr->readDate("");
+    m_date = std::dynamic_pointer_cast<CacheableDate>(pr->readDate(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readDate():: Got expected Exception :: %s ", excpt.getMessage());
@@ -752,7 +755,7 @@ void InvalidPdxUsage::fromData(PdxReaderPtr pr) {
   }
 
   try {
-    m_pdxEnum = pr->readObject("");
+    m_pdxEnum = std::static_pointer_cast<CacheableEnum>(pr->readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readObject():: Got expected Exception :: %s ", excpt.getMessage());
@@ -841,16 +844,16 @@ bool InvalidPdxUsage::equals(PdxTests::InvalidPdxUsage& other,
     for (int i = 0; i < m_objectArray->size(); i++) {
       AddressWithInvalidAPIUsage* otherAddr1 =
           dynamic_cast<AddressWithInvalidAPIUsage*>(
-              ot->m_objectArray->at(i).ptr());
+              ot->m_objectArray->at(i).get());
       AddressWithInvalidAPIUsage* myAddr1 =
-          dynamic_cast<AddressWithInvalidAPIUsage*>(m_objectArray->at(i).ptr());
+          dynamic_cast<AddressWithInvalidAPIUsage*>(m_objectArray->at(i).get());
       if (!otherAddr1->equals(*myAddr1)) return false;
     }
     LOGINFO("PdxObject::equals isPdxReadSerialized = %d", isPdxReadSerialized);
   }
 
-  CacheableEnumPtr myenum = dynCast<CacheableEnumPtr>(m_pdxEnum);
-  CacheableEnumPtr otenum = dynCast<CacheableEnumPtr>(ot->m_pdxEnum);
+  auto myenum = m_pdxEnum;
+  auto otenum = ot->m_pdxEnum;
   if (myenum->getEnumOrdinal() != otenum->getEnumOrdinal()) return false;
   if (strcmp(myenum->getEnumClassName(), otenum->getEnumClassName()) != 0) {
     return false;

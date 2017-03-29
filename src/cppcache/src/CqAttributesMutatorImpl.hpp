@@ -73,7 +73,7 @@ class CPPCACHE_EXPORT CqAttributesMutatorImpl : public CqAttributesMutator {
    * @throws IllegalArgumentException if the <code>newListeners</code> array
    * has a null element
    */
-  void setCqListeners(VectorOfCqListener& newListeners);
+  void setCqListeners(const std::vector<CqListenerPtr>& newListeners);
 
  private:
   CqAttributesPtr m_cqAttributes;

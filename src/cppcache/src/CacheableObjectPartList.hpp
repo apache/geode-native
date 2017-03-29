@@ -64,9 +64,9 @@ class CacheableObjectPartList : public Cacheable {
   inline CacheableObjectPartList()
       : m_keys(NULL),
         m_keysOffset(NULL),
-        m_values(NULLPTR),
-        m_exceptions(NULLPTR),
-        m_resultKeys(NULLPTR),
+        m_values(nullptr),
+        m_exceptions(nullptr),
+        m_resultKeys(nullptr),
         m_region(NULL),
         m_updateCountMap(NULL),
         m_destroyTracker(0),

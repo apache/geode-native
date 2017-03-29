@@ -106,7 +106,7 @@ class ClientMetadataService : public ACE_Task_Base,
                               private NonAssignable {
  public:
   ~ClientMetadataService();
-  ClientMetadataService(PoolPtr pool);
+  ClientMetadataService(Pool* pool);
 
   inline void start() {
     m_run = true;
@@ -198,7 +198,7 @@ class ClientMetadataService : public ACE_Task_Base,
   ACE_Semaphore m_regionQueueSema;
   RegionMetadataMapType m_regionMetaDataMap;
   volatile bool m_run;
-  PoolPtr m_pool;
+  Pool* m_pool;
   Queue<std::string>* m_regionQueue;
 
   ACE_RW_Thread_Mutex m_PRbucketStatusLock;

@@ -62,7 +62,7 @@ class CachedDeserializableHelper : public Cacheable,
     int32_t arrayLen;
     input.readArrayLen(&arrayLen);
     input.readObject(m_intermediate);
-    return m_intermediate.ptr();
+    return m_intermediate.get();
   }
 
   /**

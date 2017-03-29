@@ -51,7 +51,7 @@ class CPPCACHE_EXPORT RemoteQuery : public Query {
 
  public:
   RemoteQuery(const char* querystr, const RemoteQueryServicePtr& queryService,
-              ThinClientBaseDM* tccdmptr, ProxyCachePtr proxyCache = NULLPTR);
+              ThinClientBaseDM* tccdmptr, ProxyCachePtr proxyCache = nullptr);
 
   //@TODO check the return type, is it ok. second option could be to pass
   // SelectResults by reference as a parameter.
@@ -59,7 +59,7 @@ class CPPCACHE_EXPORT RemoteQuery : public Query {
 
   //@TODO check the return type, is it ok. second option could be to pass
   // SelectResults by reference as a parameter.
-  SelectResultsPtr execute(CacheableVectorPtr paramList = NULLPTR,
+  SelectResultsPtr execute(CacheableVectorPtr paramList = nullptr,
                            uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   // executes a query using a given distribution manager

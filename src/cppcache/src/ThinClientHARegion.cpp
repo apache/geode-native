@@ -27,7 +27,8 @@ namespace geode {
 namespace client {
 
 ThinClientHARegion::ThinClientHARegion(const std::string& name,
-                                       CacheImpl* cache, RegionInternal* rPtr,
+                                       CacheImpl* cache,
+                                       const RegionInternalPtr& rPtr,
                                        const RegionAttributesPtr& attributes,
                                        const CacheStatisticsPtr& stats,
                                        bool shared, bool enableNotification)
@@ -60,7 +61,7 @@ void ThinClientHARegion::initTCR() {
       m_tcrdm->init();
     } else {
       m_tcrdm = dynamic_cast<ThinClientPoolHADM*>(
-          PoolManager::find(m_attribute->getPoolName()).ptr());
+          PoolManager::find(m_attribute->getPoolName()).get());
       if (m_tcrdm) {
         m_poolDM = true;
         // Pool DM should only be inited once and it
@@ -106,8 +107,8 @@ void ThinClientHARegion::handleMarker() {
     return;
   }
 
-  if (m_listener != NULLPTR && !m_processedMarker) {
-    RegionEvent event(RegionPtr(this), NULLPTR, false);
+  if (m_listener != nullptr && !m_processedMarker) {
+    RegionEvent event(shared_from_this(), nullptr, false);
     int64_t sampleStartNanos = Utils::startStatOpTime();
     try {
       m_listener->afterRegionLive(event);

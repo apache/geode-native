@@ -102,7 +102,7 @@ inline void EntryExpiryHandler::DoTheExpirationAction(
           "for region %s entry with key %s",
           m_regionPtr->getFullPath(),
           Utils::getCacheableKeyString(key)->asChar());
-      m_regionPtr->invalidateNoThrow(key, NULLPTR, -1,
+      m_regionPtr->invalidateNoThrow(key, nullptr, -1,
                                      CacheEventFlags::EXPIRATION, versionTag);
       break;
     }
@@ -113,7 +113,7 @@ inline void EntryExpiryHandler::DoTheExpirationAction(
           m_regionPtr->getFullPath(),
           Utils::getCacheableKeyString(key)->asChar());
       m_regionPtr->invalidateNoThrow(
-          key, NULLPTR, -1,
+          key, nullptr, -1,
           CacheEventFlags::EXPIRATION | CacheEventFlags::LOCAL, versionTag);
       break;
     }
@@ -123,7 +123,7 @@ inline void EntryExpiryHandler::DoTheExpirationAction(
           "for region %s entry with key %s",
           m_regionPtr->getFullPath(),
           Utils::getCacheableKeyString(key)->asChar());
-      m_regionPtr->destroyNoThrow(key, NULLPTR, -1, CacheEventFlags::EXPIRATION,
+      m_regionPtr->destroyNoThrow(key, nullptr, -1, CacheEventFlags::EXPIRATION,
                                   versionTag);
       break;
     }
@@ -134,7 +134,7 @@ inline void EntryExpiryHandler::DoTheExpirationAction(
           m_regionPtr->getFullPath(),
           Utils::getCacheableKeyString(key)->asChar());
       m_regionPtr->destroyNoThrow(
-          key, NULLPTR, -1,
+          key, nullptr, -1,
           CacheEventFlags::EXPIRATION | CacheEventFlags::LOCAL, versionTag);
       break;
     }

@@ -43,17 +43,17 @@ void RegionXmlCreation::fillIn(RegionPtr regionPtr) {
 
 void RegionXmlCreation::createRoot(Cache* cache) {
   GF_D_ASSERT(this->isRoot);
-  RegionPtr rootRegPtr = NULLPTR;
+  RegionPtr rootRegPtr = nullptr;
 
   if (Cache_CreatedFromCacheFactory) {
-    //  if(cache->m_cacheImpl->getDefaultPool() == NULLPTR)
+    //  if(cache->m_cacheImpl->getDefaultPool() == nullptr)
     {
       // we may need to initialize default pool
       if (regAttrs->getEndpoints() == NULL) {
         if (regAttrs->getPoolName() == NULL) {
           PoolPtr pool = CacheFactory::createOrGetDefaultPool();
 
-          if (pool == NULLPTR) {
+          if (pool == nullptr) {
             throw IllegalStateException("Pool is not defined create region.");
           }
           regAttrs->setPoolName(pool->getName());
@@ -69,14 +69,14 @@ void RegionXmlCreation::createRoot(Cache* cache) {
 
 void RegionXmlCreation::create(RegionPtr parent) {
   GF_D_ASSERT(!(this->isRoot));
-  RegionPtr subRegPtr = NULLPTR;
+  RegionPtr subRegPtr = nullptr;
 
   subRegPtr = parent->createSubregion(regionName.c_str(), regAttrs);
   fillIn(subRegPtr);
 }
 
 RegionXmlCreation::RegionXmlCreation(char* name, bool isRootRegion)
-    : regAttrs(NULLPTR) {
+    : regAttrs(nullptr) {
   std::string tempName(name);
   regionName = tempName;
   isRoot = isRootRegion;

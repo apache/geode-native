@@ -54,7 +54,7 @@ class TallyWriter : virtual public CacheWriter {
         isWriterfailed(false),
         m_lastKey(),
         m_lastValue(),
-        m_callbackArg(NULLPTR) {
+        m_callbackArg(nullptr) {
     LOG("TallyWriter Constructor called");
   }
 
@@ -142,9 +142,9 @@ class TallyWriter : virtual public CacheWriter {
   }
   void checkcallbackArg(const EntryEvent& event) {
     if (!isWriterInvoke) isWriterInvoke = true;
-    if (m_callbackArg != NULLPTR) {
-      CacheableKeyPtr callbkArg =
-          dynCast<CacheableKeyPtr>(event.getCallbackArgument());
+    if (m_callbackArg != nullptr) {
+      auto callbkArg =
+          std::dynamic_pointer_cast<CacheableKey>(event.getCallbackArgument());
       if (strcmp(m_callbackArg->toString()->asChar(),
                  callbkArg->toString()->asChar()) == 0) {
         isCallbackCalled = true;

@@ -25,21 +25,22 @@
  */
 
 #include "geode_globals.hpp"
+#include <memory>
 
 namespace apache {
 namespace geode {
 namespace client {
-// Forward declaration of SharedPtr<T>
-template <typename Target>
-class SharedPtr;
 
-// Forward declaration of SharedArrayPtr<T, ID>
-template <typename Target, int8_t TYPEID>
-class SharedArrayPtr;
+// TODO share_ptr - remove this and replace with explicit std::shared_ptr defs.
+template <class Target>
+using SharedPtr = std::shared_ptr<Target>;
 
 // Forward declaration of CacheableArrayType<T, ID>
 template <typename Target, int8_t TYPEID>
 class CacheableArrayType;
+
+template <typename TObj, int8_t TYPEID>
+using SharedArrayPtr = SharedPtr<CacheableArrayType<TObj, TYPEID>>;
 
 /**
  * @brief Helper type traits and other structs/classes to determine type

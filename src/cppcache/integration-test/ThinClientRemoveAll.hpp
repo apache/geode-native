@@ -89,8 +89,8 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   RegionPtr regPtr = getHelper()->createRegion(
-      name, ackMode, isCacheEnabled, NULLPTR, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+      name, ackMode, isCacheEnabled, nullptr, clientNotificationEnabled);
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 
@@ -101,8 +101,8 @@ void createRegionLocal(const char* name, bool ackMode, const char* endpoints,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   RegionPtr regPtr = getHelper()->createRegion(
-      name, ackMode, isCacheEnabled, NULLPTR, clientNotificationEnabled, true);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+      name, ackMode, isCacheEnabled, nullptr, clientNotificationEnabled, true);
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 
@@ -116,7 +116,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   RegionPtr regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }
 
@@ -130,7 +130,7 @@ void createPooledRegionConcurrencyCheckDisabled(
   RegionPtr regPtr = getHelper()->createPooledRegionConcurrencyCheckDisabled(
       name, ackMode, locators, poolname, cachingEnable,
       clientNotificationEnabled, concurrencyCheckEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }
 
@@ -209,7 +209,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, removeAllValidation)
     }
 
     try {
-      regPtr0->removeAll(removeallkeys, NULLPTR);
+      regPtr0->removeAll(removeallkeys, nullptr);
       FAIL("Did not get expected IllegalArgumentException exception");
     } catch (IllegalArgumentException&) {
       LOG("Got expected IllegalArgumentException found exception");
@@ -233,7 +233,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, removeAllValidation)
     }
 
     try {
-      regPtr0->removeAll(removeallkeys, NULLPTR);
+      regPtr0->removeAll(removeallkeys, nullptr);
     } catch (EntryNotFoundException&) {
       FAIL("Got un expected entry not found exception");
     }
@@ -261,7 +261,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, removeAllValidationLocal)
     }
 
     try {
-      regPtr0->removeAll(removeallkeys, NULLPTR);
+      regPtr0->removeAll(removeallkeys, nullptr);
       FAIL("Did not get expected IllegalArgumentException exception");
     } catch (IllegalArgumentException&) {
       LOG("Got expected IllegalArgumentException found exception");
@@ -285,7 +285,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, removeAllValidationLocal)
     }
 
     try {
-      regPtr0->removeAll(removeallkeys, NULLPTR);
+      regPtr0->removeAll(removeallkeys, nullptr);
     } catch (EntryNotFoundException&) {
       FAIL("Got un expected entry not found exception");
     }
@@ -349,10 +349,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, removeAllSequence)
     regPtr0->removeAll(removeallkeys);
     LOG("removeAll complete");
 
-    ASSERT(regPtr0->get(CacheableKey::create(1)) == NULLPTR, "Key 1 exists");
-    ASSERT(regPtr0->get(CacheableKey::create(2)) == NULLPTR, "Key 2 exists");
-    ASSERT(regPtr0->get(CacheableKey::create(3)) == NULLPTR, "Key 3 exists");
-    ASSERT(regPtr0->get(CacheableKey::create(4)) == NULLPTR, "Key 4 exists");
+    ASSERT(regPtr0->get(CacheableKey::create(1)) == nullptr, "Key 1 exists");
+    ASSERT(regPtr0->get(CacheableKey::create(2)) == nullptr, "Key 2 exists");
+    ASSERT(regPtr0->get(CacheableKey::create(3)) == nullptr, "Key 3 exists");
+    ASSERT(regPtr0->get(CacheableKey::create(4)) == nullptr, "Key 4 exists");
 
     entryMap.clear();
     entryMap.insert(CacheableKey::create(5), CacheableInt32::create(5));
@@ -361,8 +361,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, removeAllSequence)
     regPtr0->putAll(entryMap);
     LOG("putAll2 complete");
 
-    ASSERT(regPtr0->get(CacheableKey::create(5)) != NULLPTR, "Key 5 missing");
-    ASSERT(regPtr0->get(CacheableKey::create(6)) != NULLPTR, "Key 6 missing");
+    ASSERT(regPtr0->get(CacheableKey::create(5)) != nullptr, "Key 5 missing");
+    ASSERT(regPtr0->get(CacheableKey::create(6)) != nullptr, "Key 6 missing");
 
     LOG("remove all complete.");
   }

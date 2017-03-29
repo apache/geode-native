@@ -55,7 +55,7 @@ class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
   double value;
 
   inline uint32_t getObjectSize(const SerializablePtr& obj) const {
-    return (obj == NULLPTR ? 0 : obj->objectSize());
+    return (obj == nullptr ? 0 : obj->objectSize());
   }
 
  public:
@@ -92,7 +92,7 @@ class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
    * Makes a copy of this asset.
    */
   FastAssetPtr copy() {
-    FastAssetPtr asset(new FastAsset());
+    auto asset = std::make_shared<FastAsset>();
     asset->setAssetId(getAssetId());
     asset->setValue(getValue());
     return asset;

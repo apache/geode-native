@@ -41,7 +41,7 @@ protected:
   virtual void cleanStickyConnections(volatile bool& isRunning);
   virtual TcrConnection* getConnectionFromQueueW( GfErrType* error,
     std::set< ServerLocation >&, bool isBGThread, TcrMessage & request, int8_t&
-version, bool & dummy, const BucketServerLocationPtr& serverLocation = NULLPTR
+version, bool & dummy, const BucketServerLocationPtr& serverLocation = nullptr
 );
   virtual void putInQueue(TcrConnection* conn,  bool isBGThread, bool
 isTransaction = false );

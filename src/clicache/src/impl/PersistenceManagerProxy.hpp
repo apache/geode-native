@@ -64,8 +64,8 @@ namespace Apache
 
             virtual void init(const RegionPtr& region, PropertiesPtr& diskProperties)
             {
-              IRegion<TKey, TValue>^ gRegion = Region<TKey, TValue>::Create(region.ptr());
-              Properties<String^, String^>^ gProps = Properties<String^, String^>::Create<String^, String^>(diskProperties.ptr());
+              IRegion<TKey, TValue>^ gRegion = Region<TKey, TValue>::Create(region.get());
+              Properties<String^, String^>^ gProps = Properties<String^, String^>::Create<String^, String^>(diskProperties.get());
               m_persistenceManager->Init(gRegion, gProps);
             }
             

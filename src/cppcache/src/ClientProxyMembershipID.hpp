@@ -85,7 +85,7 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   uint32_t getHostAddrLen() const { return m_hostAddrLen; }
   uint32_t getHostPort() const { return m_hostPort; }
   virtual std::string getHashKey();
-  virtual int16_t compareTo(DSMemberForVersionStampPtr);
+  virtual int16_t compareTo(const DSMemberForVersionStamp&) const;
   virtual int32_t hashcode() const {
     uint32_t result = 0;
     char hostInfo[255] = {0};
@@ -101,19 +101,8 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   }
 
   virtual bool operator==(const CacheableKey& other) const {
-    CacheableKey& otherCopy = const_cast<CacheableKey&>(other);
-    DSMemberForVersionStamp& temp =
-        dynamic_cast<DSMemberForVersionStamp&>(otherCopy);
-    DSMemberForVersionStampPtr obj = NULLPTR;
-    obj = DSMemberForVersionStampPtr(&temp);
-
-    DSMemberForVersionStampPtr callerPtr = NULLPTR;
-    callerPtr = DSMemberForVersionStampPtr(this);
-    if (callerPtr->compareTo(obj) == 0) {
-      return true;
-    } else {
-      return false;
-    }
+    return (this->compareTo(
+                dynamic_cast<const DSMemberForVersionStamp&>(other)) == 0);
   }
 
   Serializable* readEssentialData(DataInput& input);

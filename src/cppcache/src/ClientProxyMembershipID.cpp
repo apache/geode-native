@@ -376,7 +376,7 @@ Serializable* ClientProxyMembershipID::fromData(DataInput& input) {
   input.readInt(&dcport);              // port
   input.readInt(&vPID);                // pid
   input.read(&vmKind);                 // vmkind
-  CacheableStringArrayPtr aStringArray(CacheableStringArray::create());
+  auto aStringArray = CacheableStringArray::create();
   aStringArray->fromData(input);
   input.readObject(dsName);            // name
   input.readObject(uniqueTag);         // unique tag
@@ -386,7 +386,7 @@ Serializable* ClientProxyMembershipID::fromData(DataInput& input) {
   readVersion(splitbrain, input);
 
   if (vmKind != ClientProxyMembershipID::LONER_DM_TYPE) {
-    vmViewId = atoi(uniqueTag.ptr()->asChar());
+    vmViewId = atoi(uniqueTag.get()->asChar());
     initObjectVars(hostname->asChar(), hostAddr, len, true, hostPort,
                    durableClientId->asChar(), durableClntTimeOut, dcport, vPID,
                    vmKind, splitbrain, dsName->asChar(), NULL, vmViewId);
@@ -431,7 +431,7 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
     input.readObject(uniqueTag);  // unique tag
   } else {
     input.readObject(vmViewIdstr);
-    vmViewId = atoi(vmViewIdstr.ptr()->asChar());
+    vmViewId = atoi(vmViewIdstr.get()->asChar());
   }
 
   input.readObject(dsName);  // name
@@ -461,25 +461,22 @@ void ClientProxyMembershipID::increaseSynchCounter() { ++synch_counter; }
 // Compares two membershipIds. This is based on the compareTo function
 // of InternalDistributedMember class of Java.
 // Any change to the java function should be reflected here as well.
-int16_t ClientProxyMembershipID::compareTo(DSMemberForVersionStampPtr other) {
-  if (other.operator==(this)) {
+int16_t ClientProxyMembershipID::compareTo(
+    const DSMemberForVersionStamp& other) const {
+  if (this == &other) {
     return 0;
   }
-  if (other.ptr() == NULL) {
-    throw ClassCastException(
-        "ClientProxyMembershipID.compare(): comparing with a null value");
-  }
 
-  ClientProxyMembershipIDPtr otherMember =
-      dynCast<ClientProxyMembershipIDPtr>(other);
+  const ClientProxyMembershipID& otherMember =
+      static_cast<const ClientProxyMembershipID&>(other);
   uint32_t myPort = getHostPort();
-  uint32_t otherPort = otherMember->getHostPort();
+  uint32_t otherPort = otherMember.getHostPort();
 
   if (myPort < otherPort) return -1;
   if (myPort > otherPort) return 1;
 
   uint8_t* myAddr = getHostAddr();
-  uint8_t* otherAddr = otherMember->getHostAddr();
+  uint8_t* otherAddr = otherMember.getHostAddr();
   // Discard null cases
   if (myAddr == NULL && otherAddr == NULL) {
     if (myPort < otherPort) {
@@ -500,11 +497,11 @@ int16_t ClientProxyMembershipID::compareTo(DSMemberForVersionStampPtr other) {
   }
 
   std::string myUniqueTag = getUniqueTag();
-  std::string otherUniqueTag = otherMember->getUniqueTag();
+  std::string otherUniqueTag = otherMember.getUniqueTag();
   if (myUniqueTag.empty() && otherUniqueTag.empty()) {
-    if (m_vmViewId < otherMember->m_vmViewId) {
+    if (m_vmViewId < otherMember.m_vmViewId) {
       return -1;
-    } else if (m_vmViewId > otherMember->m_vmViewId) {
+    } else if (m_vmViewId > otherMember.m_vmViewId) {
       return 1;
     }  // else they're the same, so continue
   } else if (myUniqueTag.empty()) {

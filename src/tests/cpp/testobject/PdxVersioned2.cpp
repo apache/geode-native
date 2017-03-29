@@ -344,8 +344,9 @@ void PdxTests::PdxVersioned2::fromData(PdxReaderPtr pr) {
   m_byte = pr->readByte("m_byte");
   m_byteArray = pr->readByteArray("m_byteArray", byteArrayLen);
   m_charArray = pr->readWideCharArray("m_charArray", charArrayLen);
-  m_arraylist = dynCast<CacheableArrayListPtr>(pr->readObject("m_arraylist"));
-  m_map = dynCast<CacheableHashMapPtr>(pr->readObject("m_map"));
+  m_arraylist = std::static_pointer_cast<CacheableArrayList>(
+      pr->readObject("m_arraylist"));
+  m_map = std::static_pointer_cast<CacheableHashMap>(pr->readObject("m_map"));
   // TODO:Check for the size
   m_string = pr->readString("m_string");  // GenericValCompare
   m_date = pr->readDate("m_dateTime");    // compareData
@@ -427,8 +428,8 @@ bool PdxTests::PdxVersioned2::equals(PdxTests::PdxVersioned2& other,
   // generic2DCompare(ot->m_byteByteArray, m_byteByteArray, byteByteArrayLen,
   // lengthArr);
 
-  // CacheableEnumPtr myenum = dynCast<CacheableEnumPtr>(m_pdxEnum);
-  // CacheableEnumPtr otenum = dynCast<CacheableEnumPtr>(ot->m_pdxEnum);
+  // auto myenum = std::dynamic_pointer_cast<CacheableEnum>(m_pdxEnum);
+  // auto otenum = std::dynamic_pointer_cast<CacheableEnum>(ot->m_pdxEnum);
   // if (myenum->getEnumOrdinal() != otenum->getEnumOrdinal()) return false;
   // if (strcmp(myenum->getEnumClassName(), otenum->getEnumClassName()) != 0)
   // return false;

@@ -74,7 +74,7 @@ TESTTASK finalize() {
 void UdpIpc::checkTest(const char *taskId) {
   SpinLockGuard guard(m_lck);
   setTask(taskId);
-  if (m_cache == NULLPTR) {
+  if (m_cache == nullptr) {
     PropertiesPtr pp = Properties::create();
 
     cacheInitialize(pp);

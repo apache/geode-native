@@ -112,7 +112,7 @@ const char* Struct::getFieldName(int32_t index) {
 
 const SerializablePtr Struct::operator[](int32_t index) const {
   if (index >= m_fieldValues.size()) {
-    return NULLPTR;
+    return nullptr;
   }
 
   return m_fieldValues[index];

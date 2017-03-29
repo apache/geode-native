@@ -68,7 +68,7 @@ void DistributedSystemImpl::releaseDisconnectLock() {
 int DistributedSystemImpl::currentInstances() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
 
-  if (DistributedSystem::getInstance() != NULLPTR &&
+  if (DistributedSystem::getInstance() != nullptr &&
       DistributedSystem::getInstance()->getSystemProperties() != NULL &&
       !DistributedSystem::getInstance()
            ->getSystemProperties()

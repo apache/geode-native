@@ -168,10 +168,10 @@ void DoRegionOpsAndVerify() {
   bool flag ATTR_UNUSED = regPtr0->remove(keyptr);
 
   RegionEntryPtr remRegEntry = regPtr0->getEntry(keyptr);
-  ASSERT(remRegEntry == NULLPTR,
-         "regionEntry pointer to removed entry must be NULLPTR");
+  ASSERT(remRegEntry == nullptr,
+         "regionEntry pointer to removed entry must be nullptr");
 
-  if (remRegEntry != NULLPTR) {
+  if (remRegEntry != nullptr) {
     LOGINFO("remRegEntry->isDestroyed() = %d ", remRegEntry->isDestroyed());
     ASSERT(remRegEntry->isDestroyed() == true,
            "regionEntry is not destroyed, remRegEntry->isDestroyed must return "
@@ -180,10 +180,10 @@ void DoRegionOpsAndVerify() {
     LOGINFO("regionEntry pointer for removed key is NULL");
   }
 
-  CacheStatisticsPtr cacheStatptr(new CacheStatistics());
+  auto cacheStatptr = std::make_shared<CacheStatistics>();
   // CacheStatisticsPtr cacheStatptr;
   try {
-    CachePtr cache = dynCast<CachePtr>(
+    auto cache = std::dynamic_pointer_cast<Cache>(
         regPtr0->getRegionService());  // This depends on LocalCache
                                        // implementing RegionService...
     bool flag = cache->getDistributedSystem()
@@ -198,7 +198,7 @@ void DoRegionOpsAndVerify() {
   } catch (Exception& ex) {
     LOGINFO("Exception Caught:: %s", ex.getMessage());
   }
-  if (cacheStatptr != NULLPTR) {
+  if (cacheStatptr != nullptr) {
     LOGINFO("LastAccessedTime = %d ", cacheStatptr->getLastAccessedTime());
   } else {
     LOGINFO("cacheStatptr is NULL");

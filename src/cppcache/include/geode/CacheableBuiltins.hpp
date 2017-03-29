@@ -139,10 +139,6 @@ class CacheableKeyType : public CacheableKey {
   virtual uint32_t objectSize() const { return sizeof(CacheableKeyType); }
 };
 
-// Forward declaration for SharedArrayPtr
-template <typename TObj, int8_t TYPEID>
-class SharedArrayPtr;
-
 /** Function to copy an array from source to destination. */
 template <typename TObj>
 inline void copyArray(TObj* dest, const TObj* src, int32_t length) {
@@ -200,6 +196,8 @@ class CacheableArrayType : public Cacheable {
   }
 
   virtual ~CacheableArrayType() { GF_SAFE_DELETE_ARRAY(m_value); }
+
+  FRIEND_STD_SHARED_PTR(CacheableArrayType)
 
  private:
   // Private to disable copy constructor and assignment operator.
@@ -271,52 +269,6 @@ class CacheableArrayType : public Cacheable {
   }
 };
 
-/**
- * Template class for CacheableArrayType SharedPtr's that adds [] operator
- */
-template <typename TObj, int8_t TYPEID>
-class SharedArrayPtr : public SharedPtr<CacheableArrayType<TObj, TYPEID> > {
- private:
-  typedef CacheableArrayType<TObj, TYPEID> TArray;
-
- public:
-  /** Default constructor. */
-  inline SharedArrayPtr() : SharedPtr<CacheableArrayType<TObj, TYPEID> >() {}
-
-  /** Constructor, given a pointer to array. */
-  inline SharedArrayPtr(const TArray* ptr)
-      : SharedPtr<CacheableArrayType<TObj, TYPEID> >(ptr) {}
-
-  /** Constructor, given a null SharedBase. */
-  inline SharedArrayPtr(const NullSharedBase* ptr)
-      : SharedPtr<CacheableArrayType<TObj, TYPEID> >(ptr) {}
-
-  /** Constructor, given another SharedArrayPtr. */
-  inline SharedArrayPtr(const SharedArrayPtr& other)
-      : SharedPtr<CacheableArrayType<TObj, TYPEID> >(other) {}
-
-  /** Constructor, given another kind of SharedArrayPtr. */
-  template <typename TOther, int8_t OTHERID>
-  inline SharedArrayPtr(const SharedArrayPtr<TOther, OTHERID>& other)
-      : SharedPtr<CacheableArrayType<TObj, TYPEID> >(other) {}
-
-  /** Constructor, given another SharedPtr. */
-  template <typename TOther>
-  inline SharedArrayPtr(const SharedPtr<TOther>& other)
-      : SharedPtr<CacheableArrayType<TObj, TYPEID> >(other) {}
-
-  /** Get the element at given index. */
-  inline TObj operator[](uint32_t index) const {
-    return SharedPtr<CacheableArrayType<TObj, TYPEID> >::ptr()->operator[](
-        index);
-  }
-
-  /** Deserialize self */
-  inline Serializable* fromData(DataInput& input) {
-    return SharedPtr<CacheableArrayType<TObj, TYPEID> >::ptr()->fromData(input);
-  }
-};
-
 /** Template class for container Cacheable types. */
 template <typename TBase, int8_t TYPEID>
 class CacheableContainerType : public Cacheable, public TBase {
@@ -368,7 +320,7 @@ class CacheableContainerType : public Cacheable, public TBase {
         sizeof(CacheableContainerType) +
         apache::geode::client::serializer::objectSize(*this));
   }
-};
+  };
 
 #ifdef _SOLARIS
 #define TEMPLATE_EXPORT template class
@@ -400,15 +352,16 @@ class CacheableContainerType : public Cacheable, public TBase {
    protected:                                                                  \
     inline k() : _##k() {}                                                     \
     inline k(const p value) : _##k(value) {}                                   \
+    FRIEND_STD_SHARED_PTR(k)                                                   \
                                                                                \
    public:                                                                     \
     /** Factory function registered with serialization registry. */            \
     static Serializable* createDeserializable() { return new k(); }            \
     /** Factory function to create a new default instance. */                  \
-    inline static k##Ptr create() { return k##Ptr(new k()); }                  \
+    inline static k##Ptr create() { return std::make_shared<k>(); }            \
     /** Factory function to create an instance with the given value. */        \
     inline static k##Ptr create(const p value) {                               \
-      return k##Ptr(new k(value));                                             \
+      return std::make_shared<k>(value);                                       \
     }                                                                          \
   };                                                                           \
   inline CacheableKeyPtr createKey(const p value) { return k::create(value); } \
@@ -435,18 +388,21 @@ class CacheableContainerType : public Cacheable, public TBase {
     c(const c& other);                                                         \
     c& operator=(const c& other);                                              \
                                                                                \
+    FRIEND_STD_SHARED_PTR(c)                                                   \
+                                                                               \
    public:                                                                     \
     /** Factory function registered with serialization registry. */            \
     static Serializable* createDeserializable() { return new c(); }            \
     /** Factory function to create a new default instance. */                  \
-    inline static c##Ptr create() { return c##Ptr(new c()); }                  \
+    inline static c##Ptr create() { return std::make_shared<c>(); }            \
     /** Factory function to create a cacheable array of given size. */         \
     inline static c##Ptr create(int32_t length) {                              \
-      return c##Ptr(new c(length));                                            \
+      return std::make_shared<c>(length);                                      \
     }                                                                          \
     /** Create a cacheable array copying from the given array. */              \
     inline static c##Ptr create(const p* value, int32_t length) {              \
-      return (value != NULL ? c##Ptr(new c(value, length, true)) : NULLPTR);   \
+      return nullptr == value ? nullptr                                        \
+                              : std::make_shared<c>(value, length, true);      \
     }                                                                          \
     /**                                                                      \ \
      * \                                                                       \
@@ -471,7 +427,7 @@ class CacheableContainerType : public Cacheable, public TBase {
      * \ \                                                                     \
      */                                                                        \
     inline static c##Ptr createNoCopy(p* value, int32_t length) {              \
-      return (value != NULL ? c##Ptr(new c(value, length)) : NULLPTR);         \
+      return nullptr == value ? nullptr : std::make_shared<c>(value, length);  \
     }                                                                          \
   };
 
@@ -482,21 +438,25 @@ class CacheableContainerType : public Cacheable, public TBase {
   typedef SharedPtr<c> c##Ptr;
 
 // use a class instead of typedef for bug #283
-#define _GF_CACHEABLE_CONTAINER_TYPE_(p, c)                                   \
-  class CPPCACHE_EXPORT c : public _##c {                                     \
-   protected:                                                                 \
-    inline c() : _##c() {}                                                    \
-    inline c(const int32_t n) : _##c(n) {}                                    \
-                                                                              \
-   public:                                                                    \
-    /** Iterator for this type. */                                            \
-    typedef p::Iterator Iterator;                                             \
-    /** Factory function registered with serialization registry. */           \
-    static Serializable* createDeserializable() { return new c(); }           \
-    /** Factory function to create a default instance. */                     \
-    inline static c##Ptr create() { return c##Ptr(new c()); }                 \
-    /** Factory function to create an instance with the given size. */        \
-    inline static c##Ptr create(const int32_t n) { return c##Ptr(new c(n)); } \
+#define _GF_CACHEABLE_CONTAINER_TYPE_(p, c)                            \
+  class CPPCACHE_EXPORT c : public _##c {                              \
+   protected:                                                          \
+    inline c() : _##c() {}                                             \
+    inline c(const int32_t n) : _##c(n) {}                             \
+                                                                       \
+    FRIEND_STD_SHARED_PTR(c)                                           \
+                                                                       \
+   public:                                                             \
+    /** Iterator for this type. */                                     \
+    typedef p::Iterator Iterator;                                      \
+    /** Factory function registered with serialization registry. */    \
+    static Serializable* createDeserializable() { return new c(); }    \
+    /** Factory function to create a default instance. */              \
+    inline static c##Ptr create() { return std::make_shared<c>(); }    \
+    /** Factory function to create an instance with the given size. */ \
+    inline static c##Ptr create(const int32_t n) {                     \
+      return std::make_shared<c>(n);                                   \
+    }                                                                  \
   };
 
 // Instantiations for the built-in CacheableKeys

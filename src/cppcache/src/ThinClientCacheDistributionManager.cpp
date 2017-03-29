@@ -183,8 +183,8 @@ bool ThinClientCacheDistributionManager::postFailoverAction(
     return false;
   }
   try {
-    RemoteQueryServicePtr rqsService =
-        dynCast<RemoteQueryServicePtr>(cache->getQueryService(true));
+    auto rqsService = std::dynamic_pointer_cast<RemoteQueryService>(
+        cache->getQueryService(true));
     rqsService->executeAllCqs(true);
   } catch (const Exception& excp) {
     LOGWARN("Failed to recover CQs during failover attempt to endpoint[%s]: %s",

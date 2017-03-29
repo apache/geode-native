@@ -89,13 +89,13 @@ void DiffieHellman::initDhKeys(const PropertiesPtr& props) {
   CacheableStringPtr ksPath = props->find(SecurityClientKsPath);
 
   // Null check only for DH Algo
-  if (dhAlgo == NULLPTR) {
+  if (dhAlgo == nullptr) {
     LOGFINE("DH algo not available");
     return;
   }
 
   int error = gf_initDhKeys_Ptr(&m_dhCtx, dhAlgo->asChar(),
-                                ksPath != NULLPTR ? ksPath->asChar() : NULL);
+                                ksPath != nullptr ? ksPath->asChar() : NULL);
 
   if (error == DH_ERR_UNSUPPORTED_ALGO) {  // Unsupported Algorithm
     char msg[64] = {'\0'};

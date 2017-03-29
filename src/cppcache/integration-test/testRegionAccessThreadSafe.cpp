@@ -42,7 +42,7 @@ class GetRegionThread : public ACE_Task_Base {
       SLEEP(40);
       try {
         RegionPtr rptr = getHelper()->getRegion(m_path.c_str());
-        if (rptr != NULLPTR) {
+        if (rptr != nullptr) {
           ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_mutex);
           ASSERT(m_regionCreateDone == true, "regionCreate Not Done");
         }
@@ -58,7 +58,7 @@ class GetRegionThread : public ACE_Task_Base {
       }
       try {
         RegionPtr rptr = getHelper()->getRegion(m_subPath.c_str());
-        if (rptr != NULLPTR) {
+        if (rptr != nullptr) {
           ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_mutex);
           ASSERT(m_subRegionCreateDone == true, "subRegionCreate Not Done");
           return 0;
@@ -111,7 +111,7 @@ ENDTASK
 DUNIT_TASK(s2p2, CreateNormalRegion)
   {
     initClientWithPool(true, "__TEST_POOL1__", locHostPort, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     LOG("create normal region");
     getThread =
         new GetRegionThread("DistRegionAck", "DistRegionAck/AuthSubregion");

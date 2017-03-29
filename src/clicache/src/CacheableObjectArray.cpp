@@ -99,7 +99,7 @@ namespace Apache
           apache::geode::client::CacheablePtr value;
           for (System::Int32 index = 0; index < len; ++index) {
             nativeInput.readObject(value);
-            Add(SafeUMSerializableConvert(value.ptr()));
+            Add(SafeUMSerializableConvert(value.get()));
           }
 
         _GF_MG_EXCEPTION_CATCH_ALL

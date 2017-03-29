@@ -176,7 +176,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULLPTR;
+        return nullptr;
       }
 
       bool PdxManagedCacheableKeyBytes::operator ==(const apache::geode::client::CacheableKey& other) const
@@ -219,10 +219,10 @@ namespace apache
             Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId)();
             obj->FromData(%mg_input);*/
           Apache::Geode::Client::IPdxSerializable^ obj = getManagedObject();
-          bool ret = obj->Equals(other.ptr());
+          bool ret = obj->Equals(other.get());
           // Apache::Geode::Client::Log::Debug("PdxManagedCacheableKeyBytes::equal return VAL = " + ret);
           return ret;
-          //return obj->Equals(other.ptr());
+          //return obj->Equals(other.get());
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();
@@ -364,7 +364,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULLPTR;
+        return nullptr;
       }
 
     }  // namespace client

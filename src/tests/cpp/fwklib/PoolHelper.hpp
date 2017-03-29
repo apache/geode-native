@@ -107,16 +107,16 @@ class PoolHelper {
     sString += pool->getPRSingleHopEnabled() ? "true" : "false";
     sString += "\nLocator: ";
     CacheableStringArrayPtr str =
-        dynamic_cast<CacheableStringArray*>(pool->getLocators().ptr());
-    if (pool->getLocators() != NULLPTR && pool->getLocators()->length() > 0) {
+        dynamic_cast<CacheableStringArray*>(pool->getLocators().get());
+    if (pool->getLocators() != nullptr && pool->getLocators()->length() > 0) {
       for (int32_t stri = 0; stri < str->length(); stri++) {
         sString += str->operator[](stri)->asChar();
         sString += ",";
       }
     }
     sString += "\nServers: ";
-    str = dynamic_cast<CacheableStringArray*>(pool->getServers().ptr());
-    if (pool->getServers() != NULLPTR && pool->getServers()->length() > 0) {
+    str = dynamic_cast<CacheableStringArray*>(pool->getServers().get());
+    if (pool->getServers() != nullptr && pool->getServers()->length() > 0) {
       for (int32_t stri = 0; stri < str->length(); stri++) {
         sString += str->operator[](stri)->asChar();
         sString += ",";
@@ -129,7 +129,7 @@ class PoolHelper {
   PoolPtr createPool() {
     const char* poolName = m_pool->getName().c_str();
     PoolPtr pptr = PoolManager::find(poolName);
-    if (pptr == NULLPTR) {
+    if (pptr == nullptr) {
       pptr = m_pool->createPool();
     }
     FWKINFO(" Following are Pool attributes :" << poolAttributesToString(pptr));

@@ -230,7 +230,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULLPTR;
+        return nullptr;
       }
 
       Apache::Geode::Client::IGeodeDelta^
@@ -288,10 +288,10 @@ namespace apache
           Apache::Geode::Client::IGeodeSerializable^ obj =
             Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId)();
           obj->FromData(%mg_input);
-          bool ret = obj->Equals(other.ptr());
+          bool ret = obj->Equals(other.get());
           Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytesGeneric::equal return VAL = " + ret);
           return ret;
-          //return obj->Equals(other.ptr());
+          //return obj->Equals(other.get());
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();

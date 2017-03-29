@@ -102,9 +102,9 @@ Serializable* PdxFieldType::fromData(DataInput& input) {
 }
 
 bool PdxFieldType::equals(PdxFieldTypePtr otherObj) {
-  if (otherObj == NULLPTR) return false;
+  if (otherObj == nullptr) return false;
 
-  PdxFieldType* otherFieldType = dynamic_cast<PdxFieldType*>(otherObj.ptr());
+  PdxFieldType* otherFieldType = dynamic_cast<PdxFieldType*>(otherObj.get());
 
   if (otherFieldType == NULL) return false;
 

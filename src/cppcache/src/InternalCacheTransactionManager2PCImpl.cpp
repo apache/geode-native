@@ -173,8 +173,8 @@ void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
       switch (replyCommitAfter.getMessageType()) {
         case TcrMessage::RESPONSE: {
           TXCommitMessagePtr commit =
-              staticCast<TXCommitMessagePtr>(replyCommitAfter.getValue());
-          if (commit.ptr() !=
+              std::static_pointer_cast<GF_UNWRAP_SP(TXCommitMessagePtr)>(replyCommitAfter.getValue());
+          if (commit.get() !=
               NULL)  // e.g. when afterCompletion(STATUS_ROLLEDBACK) called
           {
             txCleaner.clean();

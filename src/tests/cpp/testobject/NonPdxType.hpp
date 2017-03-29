@@ -446,7 +446,9 @@ class TESTOBJECT_EXPORT NonPdxType {
 
   CacheableObjectArrayPtr getCacheableObjectArray() { return m_objectArray; }
 
-  CacheableEnumPtr getEnum() { return m_pdxEnum; }
+  CacheableEnumPtr getEnum() {
+    return std::static_pointer_cast<CacheableEnum>(m_pdxEnum);
+  }
 
   int32_t getByteArrayLength() { return byteArrayLen; }
 

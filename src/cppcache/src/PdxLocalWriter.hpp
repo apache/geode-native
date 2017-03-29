@@ -31,7 +31,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class PdxLocalWriter : public PdxWriter {
+class PdxLocalWriter : public PdxWriter,
+                       public std::enable_shared_from_this<PdxLocalWriter> {
  protected:
   DataOutput* m_dataOutput;
   PdxTypePtr m_pdxType;

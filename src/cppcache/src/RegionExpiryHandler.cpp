@@ -89,7 +89,7 @@ void RegionExpiryHandler::DoTheExpirationAction() {
           "RegionExpiryHandler::DoTheExpirationAction INVALIDATE "
           "region [%s]",
           m_regionPtr->getFullPath());
-      m_regionPtr->invalidateRegionNoThrow(NULLPTR,
+      m_regionPtr->invalidateRegionNoThrow(nullptr,
                                            CacheEventFlags::EXPIRATION);
       break;
     }
@@ -99,7 +99,7 @@ void RegionExpiryHandler::DoTheExpirationAction() {
           "region [%s]",
           m_regionPtr->getFullPath());
       m_regionPtr->invalidateRegionNoThrow(
-          NULLPTR, CacheEventFlags::EXPIRATION | CacheEventFlags::LOCAL);
+          nullptr, CacheEventFlags::EXPIRATION | CacheEventFlags::LOCAL);
       break;
     }
     case ExpirationAction::DESTROY: {
@@ -107,7 +107,7 @@ void RegionExpiryHandler::DoTheExpirationAction() {
           "RegionExpiryHandler::DoTheExpirationAction DESTROY "
           "region [%s]",
           m_regionPtr->getFullPath());
-      m_regionPtr->destroyRegionNoThrow(NULLPTR, true,
+      m_regionPtr->destroyRegionNoThrow(nullptr, true,
                                         CacheEventFlags::EXPIRATION);
       break;
     }
@@ -117,7 +117,7 @@ void RegionExpiryHandler::DoTheExpirationAction() {
           "region [%s]",
           m_regionPtr->getFullPath());
       m_regionPtr->destroyRegionNoThrow(
-          NULLPTR, true, CacheEventFlags::EXPIRATION | CacheEventFlags::LOCAL);
+          nullptr, true, CacheEventFlags::EXPIRATION | CacheEventFlags::LOCAL);
       break;
     }
     default: {

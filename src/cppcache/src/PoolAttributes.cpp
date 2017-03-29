@@ -44,8 +44,7 @@ PoolAttributes::PoolAttributes()
       m_serverGrp(PoolFactory::DEFAULT_SERVER_GROUP) {}
 
 PoolAttributesPtr PoolAttributes::clone() {
-  PoolAttributesPtr ptr(new PoolAttributes(*this));
-  return ptr;
+  return std::make_shared<PoolAttributes>(*this);
 }
 
 /** Return true if all the attributes are equal to those of other. */

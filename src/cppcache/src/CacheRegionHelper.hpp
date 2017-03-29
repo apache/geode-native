@@ -40,7 +40,7 @@ class CacheRegionHelper {
    */
  public:
   inline static CacheImpl* getCacheImpl(const Cache* cache) {
-    return cache->m_cacheImpl;
+    return cache->m_cacheImpl.get();
   }
 
   inline static DistributedSystemImpl* getDistributedSystemImpl() {

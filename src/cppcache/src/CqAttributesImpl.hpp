@@ -49,13 +49,7 @@ namespace client {
  */
 class CPPCACHE_EXPORT CqAttributesImpl : public CqAttributes {
  public:
-  /**
-   * Get the CqListeners set with the CQ.
-   * Returns all the Listener associated with this CQ.
-   * @see CqListener
-   * @return VectorOfCqListener of CqListnerPtr
-   */
-  void getCqListeners(VectorOfCqListener& vl);
+  void getCqListeners(listener_container_type& vl);
 
   /**
    * Get the CqListener set with the CQ.
@@ -65,13 +59,13 @@ class CPPCACHE_EXPORT CqAttributesImpl : public CqAttributes {
    * @return CqListener Object, returns null if there is no CqListener.
    */
   CqListenerPtr getCqListener();
-  void addCqListener(CqListenerPtr& cql);
-  void setCqListeners(VectorOfCqListener& addedListeners);
-  void removeCqListener(CqListenerPtr& cql);
+  void addCqListener(const CqListenerPtr& cql);
+  void setCqListeners(const listener_container_type& addedListeners);
+  void removeCqListener(const CqListenerPtr& cql);
   CqAttributesImpl* clone();
 
  private:
-  VectorOfCqListener m_cqListeners;
+  listener_container_type m_cqListeners;
   bool m_dataPolicyHasBeenSet;
   ACE_Recursive_Thread_Mutex m_mutex;
 };

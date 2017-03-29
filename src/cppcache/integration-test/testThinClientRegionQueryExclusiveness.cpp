@@ -61,7 +61,7 @@ void clientOperations() {
   initClient(true);
 
   try {
-    QueryServicePtr qs = NULLPTR;  // getHelper()->cachePtr->getQueryService();
+    QueryServicePtr qs = nullptr;  // getHelper()->cachePtr->getQueryService();
 
     qs = createPool2("_TESTFAILPOOL_", NULL, NULL)->getQueryService();
 
@@ -75,22 +75,22 @@ void clientOperations() {
     LOG(err_msg);
   }
 
-  PoolPtr pool1 = NULLPTR;
+  PoolPtr pool1 = nullptr;
   pool1 = createPool(poolNames[0], locHostPort, NULL, 0, true);
   createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
 
   RegionPtr rptr = getHelper()->cachePtr->getRegion(qRegionNames[0]);
-  PortfolioPtr p1(new Portfolio(1, 100));
-  PortfolioPtr p2(new Portfolio(2, 100));
-  PortfolioPtr p3(new Portfolio(3, 100));
-  PortfolioPtr p4(new Portfolio(4, 100));
+  auto p1 = std::make_shared<Portfolio>(1, 100);
+  auto p2 = std::make_shared<Portfolio>(2, 100);
+  auto p3 = std::make_shared<Portfolio>(3, 100);
+  auto p4 = std::make_shared<Portfolio>(4, 100);
 
   rptr->put("1", p1);
   rptr->put("2", p2);
   rptr->put("3", p3);
   rptr->put("4", p4);
 
-  QueryServicePtr qs = NULLPTR;
+  QueryServicePtr qs = nullptr;
   qs = pool1->getQueryService();
 
   QueryPtr qry1 = qs->newQuery("select distinct * from /Portfolios");

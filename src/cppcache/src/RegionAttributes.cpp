@@ -35,10 +35,10 @@ RegionAttributes::RegionAttributes()
       m_entryTimeToLiveExpirationAction(ExpirationAction::INVALIDATE),
       m_entryIdleTimeoutExpirationAction(ExpirationAction::INVALIDATE),
       m_lruEvictionAction(ExpirationAction::LOCAL_DESTROY),
-      m_cacheWriter(NULLPTR),
-      m_cacheLoader(NULLPTR),
-      m_cacheListener(NULLPTR),
-      m_partitionResolver(NULLPTR),
+      m_cacheWriter(nullptr),
+      m_cacheLoader(nullptr),
+      m_cacheListener(nullptr),
+      m_partitionResolver(nullptr),
       m_lruEntriesLimit(0),
       m_caching(true),
       m_maxValueDistLimit(100 * 1024),
@@ -62,8 +62,8 @@ RegionAttributes::RegionAttributes()
       m_clientNotificationEnabled(false),
       m_persistenceLibrary(NULL),
       m_persistenceFactory(NULL),
-      m_persistenceProperties(NULLPTR),
-      m_persistenceManager(NULLPTR),
+      m_persistenceProperties(nullptr),
+      m_persistenceManager(nullptr),
       m_poolName(NULL),
       m_isClonable(false),
       m_isConcurrencyChecksEnabled(true) {}
@@ -240,98 +240,98 @@ void* getFactoryFunc(const char* lib, const char* funcName) {
 }  // namespace apache
 
 CacheLoaderPtr RegionAttributes::getCacheLoader() {
-  if ((m_cacheLoader == NULLPTR) && (m_cacheLoaderLibrary != NULL)) {
+  if ((m_cacheLoader == nullptr) && (m_cacheLoaderLibrary != NULL)) {
     if (CacheXmlParser::managedCacheLoaderFn != NULL &&
         strchr(m_cacheLoaderFactory, '.') != NULL) {
       // this is a managed library
-      m_cacheLoader = (*CacheXmlParser::managedCacheLoaderFn)(
-          m_cacheLoaderLibrary, m_cacheLoaderFactory);
+      m_cacheLoader.reset((*CacheXmlParser::managedCacheLoaderFn)(
+          m_cacheLoaderLibrary, m_cacheLoaderFactory));
     } else {
       CacheLoader* (*funcptr)();
       funcptr = reinterpret_cast<CacheLoader* (*)()>(
           apache::geode::client::impl::getFactoryFunc(m_cacheLoaderLibrary,
                                                       m_cacheLoaderFactory));
-      m_cacheLoader = funcptr();
+      m_cacheLoader.reset(funcptr());
     }
   }
   return m_cacheLoader;
 }
 
 CacheWriterPtr RegionAttributes::getCacheWriter() {
-  if ((m_cacheWriter == NULLPTR) && (m_cacheWriterLibrary != NULL)) {
+  if ((m_cacheWriter == nullptr) && (m_cacheWriterLibrary != NULL)) {
     if (CacheXmlParser::managedCacheWriterFn != NULL &&
         strchr(m_cacheWriterFactory, '.') != NULL) {
       // this is a managed library
-      m_cacheWriter = (*CacheXmlParser::managedCacheWriterFn)(
-          m_cacheWriterLibrary, m_cacheWriterFactory);
+      m_cacheWriter.reset((*CacheXmlParser::managedCacheWriterFn)(
+          m_cacheWriterLibrary, m_cacheWriterFactory));
     } else {
       CacheWriter* (*funcptr)();
       funcptr = reinterpret_cast<CacheWriter* (*)()>(
           apache::geode::client::impl::getFactoryFunc(m_cacheWriterLibrary,
                                                       m_cacheWriterFactory));
-      m_cacheWriter = funcptr();
+      m_cacheWriter.reset(funcptr());
     }
   }
   return m_cacheWriter;
 }
 
 CacheListenerPtr RegionAttributes::getCacheListener() {
-  if ((m_cacheListener == NULLPTR) && (m_cacheListenerLibrary != NULL)) {
+  if ((m_cacheListener == nullptr) && (m_cacheListenerLibrary != NULL)) {
     if (CacheXmlParser::managedCacheListenerFn != NULL &&
         strchr(m_cacheListenerFactory, '.') != NULL) {
       // LOGDEBUG( "RegionAttributes::getCacheListener: Trying to create
       // instance from managed library." );
       // this is a managed library
-      m_cacheListener = (*CacheXmlParser::managedCacheListenerFn)(
-          m_cacheListenerLibrary, m_cacheListenerFactory);
+      m_cacheListener.reset((*CacheXmlParser::managedCacheListenerFn)(
+          m_cacheListenerLibrary, m_cacheListenerFactory));
     } else {
       CacheListener* (*funcptr)();
       funcptr = reinterpret_cast<CacheListener* (*)()>(
           apache::geode::client::impl::getFactoryFunc(m_cacheListenerLibrary,
                                                       m_cacheListenerFactory));
-      m_cacheListener = funcptr();
+      m_cacheListener.reset(funcptr());
     }
   }
   return m_cacheListener;
 }
 
 PartitionResolverPtr RegionAttributes::getPartitionResolver() {
-  if ((m_partitionResolver == NULLPTR) &&
+  if ((m_partitionResolver == nullptr) &&
       (m_partitionResolverLibrary != NULL)) {
     if (CacheXmlParser::managedPartitionResolverFn != NULL &&
         strchr(m_partitionResolverFactory, '.') != NULL) {
       // LOGDEBUG( "RegionAttributes::getCacheListener: Trying to create
       // instance from managed library." );
       // this is a managed library
-      m_partitionResolver = (*CacheXmlParser::managedPartitionResolverFn)(
-          m_partitionResolverLibrary, m_partitionResolverFactory);
+      m_partitionResolver.reset((*CacheXmlParser::managedPartitionResolverFn)(
+          m_partitionResolverLibrary, m_partitionResolverFactory));
     } else {
       PartitionResolver* (*funcptr)();
       funcptr = reinterpret_cast<PartitionResolver* (*)()>(
           apache::geode::client::impl::getFactoryFunc(
               m_partitionResolverLibrary, m_partitionResolverFactory));
-      m_partitionResolver = funcptr();
+      m_partitionResolver.reset(funcptr());
     }
   }
   return m_partitionResolver;
 }
 
 PersistenceManagerPtr RegionAttributes::getPersistenceManager() {
-  if ((m_persistenceManager == NULLPTR) && (m_persistenceLibrary != NULL)) {
+  if ((m_persistenceManager == nullptr) && (m_persistenceLibrary != NULL)) {
     if (CacheXmlParser::managedPartitionResolverFn != NULL &&
         strchr(m_persistenceFactory, '.') != NULL) {
       LOGDEBUG(
           "RegionAttributes::getPersistenceManager: Trying to create instance "
           "from managed library.");
       // this is a managed library
-      m_persistenceManager = (*CacheXmlParser::managedPersistenceManagerFn)(
-          m_persistenceLibrary, m_persistenceFactory);
+      m_persistenceManager.reset((*CacheXmlParser::managedPersistenceManagerFn)(
+          m_persistenceLibrary, m_persistenceFactory));
     } else {
       PersistenceManager* (*funcptr)();
       funcptr = reinterpret_cast<PersistenceManager* (*)()>(
           apache::geode::client::impl::getFactoryFunc(m_persistenceLibrary,
                                                       m_persistenceFactory));
-      m_persistenceManager = funcptr();
+      m_persistenceManager.reset(funcptr());
     }
   }
   return m_persistenceManager;
@@ -653,27 +653,27 @@ bool RegionAttributes::operator!=(const RegionAttributes& other) const {
 /* Throws IllegalStateException when attributes targetted for use on a server do
  * not meet requirements. */
 void RegionAttributes::validateSerializableAttributes() {
-  if (m_cacheLoader != NULLPTR) {
+  if (m_cacheLoader != nullptr) {
     throw IllegalStateException(
         "CacheLoader must be set with setCacheLoader(library, factory) in "
         "members of type SERVER");
   }
-  if (m_cacheWriter != NULLPTR) {
+  if (m_cacheWriter != nullptr) {
     throw IllegalStateException(
         "CacheWriter must be set with setCacheWriter(library, factory) in "
         "members of type SERVER");
   }
-  if (m_cacheListener != NULLPTR) {
+  if (m_cacheListener != nullptr) {
     throw IllegalStateException(
         "CacheListener must be set with setCacheListener(library, factory) in "
         "members of type SERVER");
   }
-  if (m_partitionResolver != NULLPTR) {
+  if (m_partitionResolver != nullptr) {
     throw IllegalStateException(
         "PartitionResolver must be set with setPartitionResolver(library, "
         "factory) in members of type SERVER");
   }
-  if (m_persistenceManager != NULLPTR) {
+  if (m_persistenceManager != nullptr) {
     throw IllegalStateException(
         "persistenceManager must be set with setPersistenceManager(library, "
         "factory,config) in members of type SERVER");

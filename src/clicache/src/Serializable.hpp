@@ -390,7 +390,7 @@ namespace Apache
        /*
         static String^ GetString(apache::geode::client::CacheableStringPtr cStr)//apache::geode::client::CacheableString*
         {
-          if (cStr == NULLPTR) {
+          if (cStr == nullptr) {
             return nullptr;
           }
           else if (cStr->isWideString()) {

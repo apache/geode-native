@@ -533,7 +533,7 @@ SerializablePtr PdxRemoteReader::readObject(const char* fieldName) {
       return PdxLocalReader::readObject(fieldName);  // in same order
     }
     case -1: {
-      return NULLPTR;
+      return nullptr;
     }
     default: {
       // sequence id read field and then update
@@ -547,7 +547,7 @@ SerializablePtr PdxRemoteReader::readObject(const char* fieldName) {
         PdxLocalReader::resettoPdxHead();
         return ptr;
       } else {
-        return NULLPTR;  // null value
+        return nullptr;  // null value
       }
     }
   }
@@ -867,7 +867,7 @@ CacheableObjectArrayPtr PdxRemoteReader::readObjectArray(
     case -2:
       return PdxLocalReader::readObjectArray(fieldName);  // in same order
     case -1: {
-      return NULLPTR;  // null value
+      return nullptr;  // null value
     }
     default: {
       // sequence id read field and then update
@@ -915,7 +915,7 @@ CacheableDatePtr PdxRemoteReader::readDate(const char* fieldName) {
     case -2:
       return PdxLocalReader::readDate(fieldName);  // in same order
     case -1:
-      return NULLPTR;
+      return nullptr;
     default: {
       // sequence id read field and then update
       int position = m_pdxType->getFieldPosition(
@@ -1038,7 +1038,7 @@ void PdxRemoteReader::readCollection(const char* fieldName,
       break;
     }
     case -1: {
-      collection = NULLPTR;
+      collection = nullptr;
       break;  // null value
     }
     default: {
@@ -1051,7 +1051,7 @@ void PdxRemoteReader::readCollection(const char* fieldName,
         PdxLocalReader::readCollection(fieldName, collection);
         PdxLocalReader::resettoPdxHead();
       } else {
-        collection = NULLPTR;
+        collection = nullptr;
       }
       break;
     }

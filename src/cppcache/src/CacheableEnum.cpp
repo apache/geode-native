@@ -27,8 +27,8 @@ namespace client {
 CacheableEnum::~CacheableEnum() {}
 
 CacheableEnum::CacheableEnum()
-    : m_enumClassName(NULLPTR),
-      m_enumName(NULLPTR),
+    : m_enumClassName(nullptr),
+      m_enumName(nullptr),
       m_ordinal(-1),
       m_hashcode(0) {}
 
@@ -58,7 +58,7 @@ Serializable* CacheableEnum::fromData(apache::geode::client::DataInput& input) {
   m_enumClassName = enumVal->getEnumClassName();
   m_enumName = enumVal->getEnumName();
   m_ordinal = enumVal->getEnumOrdinal();
-  return enumVal.ptr();
+  return enumVal.get();
 }
 
 int32_t CacheableEnum::hashcode() const {
@@ -67,9 +67,9 @@ int32_t CacheableEnum::hashcode() const {
     int prime = 31;
     localHash =
         prime * localHash +
-        ((m_enumClassName != NULLPTR ? m_enumClassName->hashcode() : 0));
+        ((m_enumClassName != nullptr ? m_enumClassName->hashcode() : 0));
     localHash = prime * localHash +
-                ((m_enumName != NULLPTR ? m_enumName->hashcode() : 0));
+                ((m_enumName != nullptr ? m_enumName->hashcode() : 0));
     m_hashcode = localHash;
   }
   return m_hashcode;
@@ -87,11 +87,11 @@ bool CacheableEnum::operator==(const CacheableKey& other) const {
   if (m_ordinal != otherEnum->m_ordinal) {
     return false;
   }
-  if (m_enumClassName == NULLPTR) {
-    return (otherEnum->m_enumClassName == NULLPTR);
+  if (m_enumClassName == nullptr) {
+    return (otherEnum->m_enumClassName == nullptr);
   }
-  if (m_enumName == NULLPTR) {
-    return (otherEnum->m_enumName == NULLPTR);
+  if (m_enumName == nullptr) {
+    return (otherEnum->m_enumName == nullptr);
   }
   if (strcmp(m_enumClassName->asChar(), otherEnum->m_enumClassName->asChar()) !=
       0) {

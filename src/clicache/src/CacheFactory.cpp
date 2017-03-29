@@ -52,8 +52,8 @@ namespace Apache
             GetNativePtr<apache::geode::client::Properties>(dsProps));
 
           apache::geode::client::CacheFactoryPtr& nativeptr( apache::geode::client::CacheFactory::createCacheFactory( nativepropsptr) );         
-          if (nativeptr.ptr() != nullptr)
-            return gcnew CacheFactory( nativeptr.ptr(), dsProps );
+          if (nativeptr.get() != nullptr)
+            return gcnew CacheFactory( nativeptr.get(), dsProps );
             
           return nullptr;
 

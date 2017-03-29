@@ -94,7 +94,7 @@ int testXmlCacheCreationWithOverflow() {
 
   cout << "Root regions in Cache :" << endl;
   for (int32_t i = 0; i < vrp.size(); i++) {
-    cout << "vc[" << i << "].m_reaPtr=" << vrp.at(i).ptr() << endl;
+    cout << "vc[" << i << "].m_reaPtr=" << vrp.at(i).get() << endl;
     cout << "vc[" << i << "]=" << vrp.at(i)->getName() << endl;
   }
   RegionPtr regPtr1 = vrp.at(0);
@@ -114,7 +114,7 @@ int testXmlCacheCreationWithOverflow() {
   cout << "get subregions from the root region :" << vrp.at(0)->getName()
        << endl;
   for (int32_t i = 0; i < vr.size(); i++) {
-    cout << "vc[" << i << "].m_reaPtr=" << vr.at(i).ptr() << endl;
+    cout << "vc[" << i << "].m_reaPtr=" << vr.at(i).get() << endl;
     cout << "vc[" << i << "]=" << vr.at(i)->getName() << endl;
   }
 
@@ -125,11 +125,11 @@ int testXmlCacheCreationWithOverflow() {
   VectorOfRegion vsr;
   regPtr2->subregions(true, vsr);
   for (uint32_t i = 0; i < static_cast<uint32_t>(vsr.size()); i++) {
-    Region* regPtr = vsr.at(i).ptr();
+    Region* regPtr = vsr.at(i).get();
     childName = regPtr->getName();
 
     RegionPtr x = regPtr->getParentRegion();
-    parentName = (x.ptr())->getName();
+    parentName = (x.get())->getName();
     if (strcmp(childName, "SubSubRegion221") == 0) {
       if (strcmp(parentName, "SubRegion22") != 0) {
         cout << "Incorrect parent: tree structure not formed correctly" << endl;
@@ -146,7 +146,7 @@ int testXmlCacheCreationWithOverflow() {
   cout << "Test the attributes of region" << endl;
 
   RegionAttributesPtr raPtr = regPtr1->getAttributes();
-  RegionAttributes* regAttr = raPtr.ptr();
+  RegionAttributes* regAttr = raPtr.get();
   cout << "Attributes of root region Root1 are : " << endl;
 
   bool cachingEnabled = regAttr->getCachingEnabled();
@@ -194,7 +194,7 @@ int testXmlCacheCreationWithOverflow() {
   cout << "persistence library = " << regAttr->getPersistenceLibrary() << endl;
   cout << "persistence function = " << regAttr->getPersistenceFactory() << endl;
   PropertiesPtr pconfig = regAttr->getPersistenceProperties();
-  if (pconfig != NULLPTR) {
+  if (pconfig != nullptr) {
     cout << " persistence property is not null" << endl;
     cout << " persistencedir = "
          << pconfig->find("PersistenceDirectory")->asChar() << endl;
@@ -205,16 +205,15 @@ int testXmlCacheCreationWithOverflow() {
   cout << "****Attributes of Root1 are correctly set****" << endl;
 
   RegionAttributesPtr raPtr2 = regPtr2->getAttributes();
-  RegionAttributes* regAttr2 = raPtr2.ptr();
-  const char* lib2 = regAttr2->getPersistenceLibrary();
-  const char* libFun2 = regAttr2->getPersistenceFactory();
+  const char* lib2 = raPtr2->getPersistenceLibrary();
+  const char* libFun2 = raPtr2->getPersistenceFactory();
   printf(" persistence library2 = %s\n", lib2);
   printf(" persistence function2 = %s\n", libFun2);
-  cout << "persistence library = " << regAttr2->getPersistenceLibrary() << endl;
-  cout << "persistence function = " << regAttr2->getPersistenceFactory()
+  cout << "persistence library = " << raPtr2->getPersistenceLibrary() << endl;
+  cout << "persistence function = " << raPtr2->getPersistenceFactory()
        << endl;
-  PropertiesPtr pconfig2 = regAttr2->getPersistenceProperties();
-  if (pconfig2 != NULLPTR) {
+  PropertiesPtr pconfig2 = raPtr2->getPersistenceProperties();
+  if (pconfig2 != nullptr) {
     cout << " persistence property is not null for Root2" << endl;
     cout << " persistencedir2 = "
          << pconfig2->find("PersistenceDirectory")->asChar() << endl;
@@ -232,12 +231,12 @@ int testXmlCacheCreationWithOverflow() {
     return -1;
   }
 
-  regPtr1 = NULLPTR;
-  regPtr2 = NULLPTR;
+  regPtr1 = nullptr;
+  regPtr2 = nullptr;
 
   if (!cptr->isClosed()) {
     cptr->close();
-    cptr = NULLPTR;
+    cptr = nullptr;
   }
   ////////////////////////////testing of cache.xml completed///////////////////
 
@@ -301,9 +300,9 @@ int testXmlCacheCreationWithOverflow() {
   cout << "disconnecting..." << endl;
   try {
     cout << "just before disconnecting..." << endl;
-    if (cptr != NULLPTR && !cptr->isClosed()) {
+    if (cptr != nullptr && !cptr->isClosed()) {
       cptr->close();
-      cptr = NULLPTR;
+      cptr = nullptr;
     }
   } catch (Exception& ex) {
     ex.showMessage();

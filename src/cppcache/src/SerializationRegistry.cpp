@@ -339,7 +339,7 @@ TheTypeMap::TheTypeMap() {
 
 typedef ACE_Singleton<TheTypeMap, ACE_Thread_Mutex> theTypeMap;
 
-PdxSerializerPtr SerializationRegistry::m_pdxSerializer = NULLPTR;
+PdxSerializerPtr SerializationRegistry::m_pdxSerializer = nullptr;
 
 /** This starts at reading the typeid.. assumes the length has been read. */
 SerializablePtr SerializationRegistry::deserialize(DataInput& input,
@@ -353,7 +353,7 @@ SerializablePtr SerializationRegistry::deserialize(DataInput& input,
   LOGDEBUG("SerializationRegistry::deserialize typeid = %d currentTypeId= %d ",
            typeId, currentTypeId);
   if (compId == GeodeTypeIds::NullObj) {
-    return NULLPTR;
+    return nullptr;
   } else if (compId == GeodeTypeIds::CacheableNullString) {
     return SerializablePtr(CacheableString::createDeserializable());
   } else if (compId == GeodeTypeIdsImpl::CacheableUserData) {
@@ -414,7 +414,11 @@ SerializablePtr SerializationRegistry::deserialize(DataInput& input,
   }
   SerializablePtr obj(createType());
   // This assignment allows the fromData method to return a different object.
-  return SerializablePtr(obj->fromData(input));
+  auto tmp = obj->fromData(input);
+  if (obj.get() == tmp) {
+    return obj;
+  }
+  return tmp->shared_from_this();
 }
 
 void SerializationRegistry::addType(TypeFactoryMethod func) {
@@ -453,12 +457,12 @@ void SerializationRegistry::init() {
 }
 
 PdxSerializablePtr SerializationRegistry::getPdxType(char* className) {
-  TypeFactoryMethodPdx objectType = NULL;
+  TypeFactoryMethodPdx objectType = nullptr;
   theTypeMap::instance()->findPdxType(className, objectType);
   PdxSerializablePtr pdxObj;
-  if (objectType == NULL) {
+  if (nullptr == objectType) {
     try {
-      pdxObj = new PdxWrapper((const char*)className);
+      pdxObj = std::make_shared<PdxWrapper>((const char*)className);
     } catch (const Exception&) {
       LOGERROR(
           "Unregistered class %s during PDX deserialization: Did the "
@@ -468,7 +472,7 @@ PdxSerializablePtr SerializationRegistry::getPdxType(char* className) {
           "Unregistered class or serializer in PDX deserialization");
     }
   } else {
-    pdxObj = objectType();
+    pdxObj.reset(objectType());
   }
   return pdxObj;
 }
@@ -483,7 +487,7 @@ PdxSerializerPtr SerializationRegistry::getPdxSerializer() {
 
 int32_t SerializationRegistry::GetPDXIdForType(const char* poolName,
                                                SerializablePtr pdxType) {
-  PoolPtr pool = NULLPTR;
+  PoolPtr pool = nullptr;
 
   if (poolName == NULL) {
     const HashMapOfPools& pools = PoolManager::getAll();
@@ -499,16 +503,16 @@ int32_t SerializationRegistry::GetPDXIdForType(const char* poolName,
     pool = PoolManager::find(poolName);
   }
 
-  if (pool == NULLPTR) {
+  if (pool == nullptr) {
     throw IllegalStateException("Pool not found, Pdx operation failed");
   }
 
-  return static_cast<ThinClientPoolDM*>(pool.ptr())->GetPDXIdForType(pdxType);
+  return static_cast<ThinClientPoolDM*>(pool.get())->GetPDXIdForType(pdxType);
 }
 
 SerializablePtr SerializationRegistry::GetPDXTypeById(const char* poolName,
                                                       int32_t typeId) {
-  PoolPtr pool = NULLPTR;
+  PoolPtr pool = nullptr;
 
   if (poolName == NULL) {
     const HashMapOfPools& pools = PoolManager::getAll();
@@ -521,38 +525,37 @@ SerializablePtr SerializationRegistry::GetPDXTypeById(const char* poolName,
     pool = PoolManager::find(poolName);
   }
 
-  if (pool == NULLPTR) {
+  if (pool == nullptr) {
     throw IllegalStateException("Pool not found, Pdx operation failed");
   }
 
-  return static_cast<ThinClientPoolDM*>(pool.ptr())->GetPDXTypeById(typeId);
+  return static_cast<ThinClientPoolDM*>(pool.get())->GetPDXTypeById(typeId);
 }
 
 int32_t SerializationRegistry::GetEnumValue(SerializablePtr enumInfo) {
   PoolPtr pool = getPool();
-  if (pool == NULLPTR) {
+  if (pool == nullptr) {
     throw IllegalStateException("Pool not found, Pdx operation failed");
   }
 
-  return static_cast<ThinClientPoolDM*>(pool.ptr())->GetEnumValue(enumInfo);
+  return static_cast<ThinClientPoolDM*>(pool.get())->GetEnumValue(enumInfo);
 }
 SerializablePtr SerializationRegistry::GetEnum(int32_t val) {
   PoolPtr pool = getPool();
-  if (pool == NULLPTR) {
+  if (pool == nullptr) {
     throw IllegalStateException("Pool not found, Pdx operation failed");
   }
 
-  return static_cast<ThinClientPoolDM*>(pool.ptr())->GetEnum(val);
+  return static_cast<ThinClientPoolDM*>(pool.get())->GetEnum(val);
 }
 
 PoolPtr SerializationRegistry::getPool() {
-  PoolPtr pool = NULLPTR;
+  PoolPtr pool = nullptr;
   const HashMapOfPools& pools = PoolManager::getAll();
   if (pools.size() > 0) {
     for (HashMapOfPools::Iterator iter = pools.begin(); iter != pools.end();
          ++iter) {
-      PoolPtr currPool(iter.second());
-      pool = currPool;
+      pool = iter.second();
       break;
     }
   }

@@ -198,14 +198,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     try {
       PoolPtr pool = PoolManager::find(regionNamesCq[0]);
       QueryServicePtr qs;
-      if (pool != NULLPTR) {
+      if (pool != nullptr) {
         // Using region name as pool name as in ThinClientCq.hpp
         qs = pool->getQueryService();
       } else {
         qs = getHelper()->cachePtr->getQueryService();
       }
       CqAttributesFactory cqFac;
-      CqListenerPtr cqLstner(new MyCqListener());
+      auto cqLstner = std::make_shared<MyCqListener>();
       cqFac.addCqListener(cqLstner);
       CqAttributesPtr cqAttr = cqFac.create();
 
@@ -244,7 +244,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepThree2)
     qh->populatePortfolioData(regPtr0, 150, 40, 150);
     qh->populatePositionData(subregPtr0, 150, 40);
     for (int i = 1; i < 150; i++) {
-      CacheablePtr port(new Portfolio(i, 150));
+      auto port = std::make_shared<Portfolio>(i, 150);
 
       CacheableKeyPtr keyport = CacheableKey::create((char*)"port1-1");
       regPtr0->put(keyport, port);
@@ -258,21 +258,21 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree3)
   {
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    auto pool = PoolManager::find(regionNamesCq[0]);
     QueryServicePtr qs;
-    if (pool != NULLPTR) {
+    if (pool != nullptr) {
       // Using region name as pool name as in ThinClientCq.hpp
       qs = pool->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    CqQueryPtr qry = qs->getCq(cqName);
-    ASSERT(qry != NULLPTR, "failed to get CqQuery");
-    CqAttributesPtr cqAttr = qry->getCqAttributes();
-    ASSERT(cqAttr != NULLPTR, "failed to get CqAttributes");
-    CqListenerPtr cqLstner = NULLPTR;
+    auto qry = qs->getCq(cqName);
+    ASSERT(qry != nullptr, "failed to get CqQuery");
+    auto cqAttr = qry->getCqAttributes();
+    ASSERT(cqAttr != nullptr, "failed to get CqAttributes");
+    CqListenerPtr cqLstner = nullptr;
     try {
-      VectorOfCqListener vl;
+      std::vector<CqListenerPtr> vl;
       cqAttr->getCqListeners(vl);
       cqLstner = vl[0];
     } catch (Exception& excp) {
@@ -281,8 +281,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree3)
       LOG(excpmsg);
       ASSERT(false, "get listener failed");
     }
-    ASSERT(cqLstner != NULLPTR, "listener is NULL");
-    MyCqListener* myListener = dynamic_cast<MyCqListener*>(cqLstner.ptr());
+    ASSERT(cqLstner != nullptr, "listener is NULL");
+    auto myListener = dynamic_cast<MyCqListener*>(cqLstner.get());
     ASSERT(myListener != NULL, "my listener is NULL<cast failed>");
     kst = new KillServerThread(myListener);
     char buf[1024];
@@ -302,7 +302,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree3)
     RegionPtr subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
     for(int i=1; i < 1500; i++)
     {
-        CacheablePtr port(new Portfolio(i, 15));
+        auto port = std::make_shared<Portfolio>(i, 15);
 
         CacheableKeyPtr keyport = CacheableKey::create("port1-1");
         try {
@@ -324,17 +324,17 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepThree4)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
-    RegionPtr subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
+    auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
+    auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+    auto qh = &QueryHelper::getHelper();
 
     qh->populatePortfolioData(regPtr0, 10, 40, 10);
     qh->populatePositionData(subregPtr0, 10, 4);
     for (int i = 1; i < 150; i++) {
-      CacheablePtr port(new Portfolio(i, 10));
+      auto port = std::make_shared<Portfolio>(i, 10);
 
-      CacheableKeyPtr keyport = CacheableKey::create("port1-1");
+      auto keyport = CacheableKey::create("port1-1");
       regPtr0->put(keyport, port);
       SLEEP(100);  // sleep a while to allow server query to complete
     }
@@ -345,21 +345,21 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
   {
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    auto pool = PoolManager::find(regionNamesCq[0]);
     QueryServicePtr qs;
-    if (pool != NULLPTR) {
+    if (pool != nullptr) {
       // Using region name as pool name as in ThinClientCq.hpp
       qs = pool->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    CqQueryPtr qry = qs->getCq(cqName);
-    ASSERT(qry != NULLPTR, "failed to get CqQuery");
-    CqAttributesPtr cqAttr = qry->getCqAttributes();
-    ASSERT(cqAttr != NULLPTR, "failed to get CqAttributes");
-    CqListenerPtr cqLstner = NULLPTR;
+    auto qry = qs->getCq(cqName);
+    ASSERT(qry != nullptr, "failed to get CqQuery");
+    auto cqAttr = qry->getCqAttributes();
+    ASSERT(cqAttr != nullptr, "failed to get CqAttributes");
+    CqListenerPtr cqLstner = nullptr;
     try {
-      VectorOfCqListener vl;
+      std::vector<CqListenerPtr> vl;
       cqAttr->getCqListeners(vl);
       cqLstner = vl[0];
     } catch (Exception& excp) {
@@ -368,8 +368,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
       LOG(excpmsg);
       ASSERT(false, "get listener failed");
     }
-    ASSERT(cqLstner != NULLPTR, "listener is NULL");
-    MyCqListener* myListener = dynamic_cast<MyCqListener*>(cqLstner.ptr());
+    ASSERT(cqLstner != nullptr, "listener is NULL");
+    auto myListener = dynamic_cast<MyCqListener*>(cqLstner.get());
     ASSERT(myListener != NULL, "my listener is NULL<cast failed>");
     char buf[1024];
     sprintf(buf, "after failed over: before=%d, after=%d",

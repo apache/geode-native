@@ -151,8 +151,8 @@ class CPPCACHE_EXPORT EntriesMap {
   virtual MapSegment* segmentFor(const CacheableKeyPtr& key) const = 0;
 
   virtual CacheablePtr getFromDisk(const CacheableKeyPtr& key,
-                                   MapEntryImpl* me) const {
-    return NULLPTR;
+                                   MapEntryImplPtr& me) const {
+    return nullptr;
   }
 
   virtual void reapTombstones(std::map<uint16_t, int64_t>& gcVersions) = 0;

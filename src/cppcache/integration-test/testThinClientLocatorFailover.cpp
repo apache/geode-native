@@ -214,20 +214,13 @@ DUNIT_TASK(CLIENT1, AgainAgainFailoverC1_All)
           "No locator exception should "
           "have been raised");
     } catch (const NotConnectedException& ex) {
-      try {
-        ExceptionPtr exCause =
-            dynCast<SharedPtr<NoAvailableLocatorsException> >(ex.getCause());
-        LOG("Expected "
-            "NoAvailableLocatorsExcepti"
-            "on");
-      } catch (ClassCastException&) {
-        FAIL(
-            "NotConnectedException "
-            "with cause "
-            "NoAvailableLocatorsExcepti"
-            "on should have been "
-            "raised");
-      }
+      ASSERT(std::dynamic_pointer_cast<NoAvailableLocatorsException>(
+                 ex.getCause()),
+             "NotConnectedException "
+             "with cause "
+             "NoAvailableLocatorsExcepti"
+             "on should have been "
+             "raised");
     }
   }
 END_TASK(AgainAgainFailoverC1_All)

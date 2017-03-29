@@ -44,16 +44,16 @@ int32_t PdxTypes1::getHashCode() { return 1; }
 
 bool PdxTypes1::equals(PdxSerializablePtr obj) {
   // LOGDEBUG("NIL:PdxTypes1::==::33");
-  if (obj == NULLPTR) {
+  if (obj == nullptr) {
     // LOGDEBUG("NIL:PdxTypes1::==::35");
     return false;
   }
-  PdxTypes1Ptr pap = dynCast<PdxTypes1Ptr>(obj);
-  if (pap == NULLPTR) {
+  auto pap = std::dynamic_pointer_cast<PdxTypes1>(obj);
+  if (pap == nullptr) {
     // LOGDEBUG("NIL:PdxTypes1::==::40");
     return false;
   }
-  if (pap == this) {
+  if (pap.get() == this) {
     // LOGDEBUG("NIL:PdxTypes1::==::44");
     return true;
   }
@@ -109,13 +109,13 @@ int32_t PdxTypes2::getHashCode() { return 1; }
 bool PdxTypes2::equals(PdxSerializablePtr obj) {
   // LOGDEBUG("NIL:96:this::PdxType2 = %s", this->toString());
 
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
-  PdxTypes2Ptr pap = dynCast<PdxTypes2Ptr>(obj);
+  auto pap = std::dynamic_pointer_cast<PdxTypes2>(obj);
   // LOGDEBUG("NIl:102:pap::PdxType2 = %s", pap->toString());
-  if (pap == NULLPTR) return false;
+  if (pap == nullptr) return false;
 
-  // if (pap == this)
+  // if (pap.get() == this)
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
@@ -167,12 +167,12 @@ PdxTypes3::~PdxTypes3() {
 int32_t PdxTypes3::getHashCode() { return 1; }
 
 bool PdxTypes3::equals(PdxSerializablePtr obj) {
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
-  PdxTypes3Ptr pap = dynCast<PdxTypes3Ptr>(obj);
-  if (pap == NULLPTR) return false;
+  auto pap = std::dynamic_pointer_cast<PdxTypes3>(obj);
+  if (pap == nullptr) return false;
 
-  // if (pap == this)
+  // if (pap.get() == this)
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
@@ -224,12 +224,12 @@ PdxTypes4::~PdxTypes4() {
 int32_t PdxTypes4::getHashCode() { return 1; }
 
 bool PdxTypes4::equals(PdxSerializablePtr obj) {
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
-  PdxTypes4Ptr pap = dynCast<PdxTypes4Ptr>(obj);
-  if (pap == NULLPTR) return false;
+  auto pap = std::dynamic_pointer_cast<PdxTypes4>(obj);
+  if (pap == nullptr) return false;
 
-  // if (pap == this)
+  // if (pap.get() == this)
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
@@ -282,12 +282,12 @@ PdxTypes5::~PdxTypes5() {
 int32_t PdxTypes5::getHashCode() { return 1; }
 
 bool PdxTypes5::equals(PdxSerializablePtr obj) {
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
-  PdxTypes5Ptr pap = dynCast<PdxTypes5Ptr>(obj);
-  if (pap == NULLPTR) return false;
+  auto pap = std::dynamic_pointer_cast<PdxTypes5>(obj);
+  if (pap == nullptr) return false;
 
-  // if (pap == this)
+  // if (pap.get() == this)
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
@@ -350,11 +350,11 @@ int32_t PdxTypes6::getHashCode() { return 1; }
 
 bool PdxTypes6::equals(PdxSerializablePtr obj) {
   LOGDEBUG("PdxTypes6::equals -1");
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
   LOGDEBUG("PdxTypes6::equals -2");
-  PdxTypes6Ptr pap = dynCast<PdxTypes6Ptr>(obj);
-  if (pap == NULLPTR) return false;
+  auto pap = std::dynamic_pointer_cast<PdxTypes6>(obj);
+  if (pap == nullptr) return false;
 
   LOGDEBUG("PdxTypes6::equals -3 m_i1 = %d", m_i1);
   LOGDEBUG("PdxTypes6::equals -4 m_i2 = %d", m_i2);
@@ -369,7 +369,7 @@ bool PdxTypes6::equals(PdxSerializablePtr obj) {
   LOGDEBUG("PdxTypes6::equals -12 pap->m_i4 = %d", pap->m_i4);
   LOGDEBUG("PdxTypes6::equals -13 pap->m_s1 = %s", pap->m_s1);
   LOGDEBUG("PdxTypes6::equals -14 pap->m_s2 = %s", pap->m_s2);
-  // if (pap == this)
+  // if (pap.get() == this)
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
@@ -443,12 +443,12 @@ PdxTypes7::~PdxTypes7() {
 int32_t PdxTypes7::getHashCode() { return 1; }
 
 bool PdxTypes7::equals(PdxSerializablePtr obj) {
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
-  PdxTypes7Ptr pap = dynCast<PdxTypes7Ptr>(obj);
-  if (pap == NULLPTR) return false;
+  auto pap = std::dynamic_pointer_cast<PdxTypes7>(obj);
+  if (pap == nullptr) return false;
 
-  // if (pap == this)
+  // if (pap.get() == this)
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
@@ -512,12 +512,12 @@ PdxTypes8::~PdxTypes8() { delete[] bytes300; }
 int32_t PdxTypes8::getHashCode() { return 1; }
 
 bool PdxTypes8::equals(PdxSerializablePtr obj) {
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
-  PdxTypes8Ptr pap = dynCast<PdxTypes8Ptr>(obj);
-  if (pap == NULLPTR) return false;
+  auto pap = std::dynamic_pointer_cast<PdxTypes8>(obj);
+  if (pap == nullptr) return false;
 
-  // if (pap == this)
+  // if (pap.get() == this)
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
@@ -580,12 +580,12 @@ PdxTypes9::~PdxTypes9() { delete[] m_bytes66000; }
 int32_t PdxTypes9::getHashCode() { return 1; }
 
 bool PdxTypes9::equals(PdxSerializablePtr obj) {
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
-  PdxTypes9Ptr pap = dynCast<PdxTypes9Ptr>(obj);
-  if (pap == NULLPTR) return false;
+  auto pap = std::dynamic_pointer_cast<PdxTypes9>(obj);
+  if (pap == nullptr) return false;
 
-  // if (pap == this)
+  // if (pap.get() == this)
   //	return true;
 
   if ((strcmp(m_s1, pap->m_s1) == 0) && (strcmp(m_s2, pap->m_s2) == 0) &&
@@ -642,12 +642,12 @@ PdxTypes10::~PdxTypes10() { delete[] m_bytes66000; }
 int32_t PdxTypes10::getHashCode() { return 1; }
 
 bool PdxTypes10::equals(PdxSerializablePtr obj) {
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
-  PdxTypes10Ptr pap = dynCast<PdxTypes10Ptr>(obj);
-  if (pap == NULLPTR) return false;
+  auto pap = std::dynamic_pointer_cast<PdxTypes10>(obj);
+  if (pap == nullptr) return false;
 
-  // if (pap == this)
+  // if (pap.get() == this)
   //	return true;
 
   if ((strcmp(m_s1, pap->m_s1) == 0) && (strcmp(m_s2, pap->m_s2) == 0) &&
@@ -692,8 +692,8 @@ void PdxTypes10::fromData(PdxReaderPtr pr) {
  * *********************************************************/
 
 NestedPdx::NestedPdx() {
-  m_pd1 = new PdxTypes1();
-  m_pd2 = new PdxTypes2();
+  m_pd1 = std::make_shared<PdxTypes1>();
+  m_pd2 = std::make_shared<PdxTypes2>();
   m_s1 = (char *)"one";
   m_s2 = (char *)"two";
   m_i1 = 34324;
@@ -703,8 +703,8 @@ NestedPdx::NestedPdx() {
 }
 
 NestedPdx::NestedPdx(char *key) {
-  m_pd1 = new PdxTypes1();
-  m_pd2 = new PdxTypes2();
+  m_pd1 = std::make_shared<PdxTypes1>();
+  m_pd2 = std::make_shared<PdxTypes2>();
   size_t len = strlen("NestedPdx ") + strlen(key) + 1;
   m_s1 = new char[len];
   strcpy(m_s1, "NestedPdx ");
@@ -722,12 +722,12 @@ NestedPdx::~NestedPdx() {
 int32_t NestedPdx::getHashCode() { return 1; }
 
 bool NestedPdx::equals(PdxSerializablePtr obj) {
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
-  NestedPdxPtr pap = dynCast<NestedPdxPtr>(obj);
-  if (pap == NULLPTR) return false;
+  auto pap = std::dynamic_pointer_cast<NestedPdx>(obj);
+  if (pap == nullptr) return false;
 
-  // if (pap == this)
+  // if (pap.get() == this)
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
@@ -762,11 +762,11 @@ void NestedPdx::toData(PdxWriterPtr pw) {
 
 void NestedPdx::fromData(PdxReaderPtr pr) {
   m_i1 = pr->readInt("i1");
-  m_pd1 = pr->readObject("pd1");
+  m_pd1 = std::static_pointer_cast<PdxTypes1>(pr->readObject("pd1"));
   m_i2 = pr->readInt("i2");
   m_s1 = pr->readString("s1");
   m_s2 = pr->readString("s2");
-  m_pd2 = pr->readObject("pd2");
+  m_pd2 = std::static_pointer_cast<PdxTypes2>(pr->readObject("pd2"));
   m_i3 = pr->readInt("i3");
   m_i4 = pr->readInt("i4");
 }
@@ -776,8 +776,8 @@ void NestedPdx::fromData(PdxReaderPtr pr) {
  * *********************************************************/
 
 MixedVersionNestedPdx::MixedVersionNestedPdx() {
-  m_pd1 = new PdxTypes1();
-  m_pd2 = new PdxTypes2();
+  m_pd1 = std::make_shared<PdxTypes1>();
+  m_pd2 = std::make_shared<PdxTypes2>();
   m_s1 = (char *)"one";
   m_s2 = (char *)"two";
   m_s3 = (char *)"three";
@@ -788,8 +788,8 @@ MixedVersionNestedPdx::MixedVersionNestedPdx() {
 }
 
 MixedVersionNestedPdx::MixedVersionNestedPdx(char *key) {
-  m_pd1 = new PdxTypes1();
-  m_pd2 = new PdxTypes2();
+  m_pd1 = std::make_shared<PdxTypes1>();
+  m_pd2 = std::make_shared<PdxTypes2>();
   size_t len = strlen("MixedVersionNestedPdx ") + strlen(key) + 1;
   m_s1 = new char[len];
   strcpy(m_s1, "MixedVersionNestedPdx ");
@@ -808,12 +808,12 @@ MixedVersionNestedPdx::~MixedVersionNestedPdx() {
 int32_t MixedVersionNestedPdx::getHashCode() { return 1; }
 
 bool MixedVersionNestedPdx::equals(PdxSerializablePtr obj) {
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
-  MixedVersionNestedPdxPtr pap = dynCast<MixedVersionNestedPdxPtr>(obj);
-  if (pap == NULLPTR) return false;
+  auto pap = std::dynamic_pointer_cast<MixedVersionNestedPdx>(obj);
+  if (pap == nullptr) return false;
 
-  // if (pap == this)
+  // if (pap.get() == this)
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
@@ -849,12 +849,12 @@ void MixedVersionNestedPdx::toData(PdxWriterPtr pw) {
 
 void MixedVersionNestedPdx::fromData(PdxReaderPtr pr) {
   m_i1 = pr->readInt("i1");
-  m_pd1 = pr->readObject("pd1");
+  m_pd1 = std::static_pointer_cast<PdxTypes1>(pr->readObject("pd1"));
   m_i2 = pr->readInt("i2");
   m_s1 = pr->readString("s1");
   m_s2 = pr->readString("s2");
   // Mixed version missing: m_s3=pr->readString("m_s3")
-  m_pd2 = pr->readObject("pd2");
+  m_pd2 = std::static_pointer_cast<PdxTypes2>(pr->readObject("pd2"));
   m_i3 = pr->readInt("i3");
   m_i4 = pr->readInt("i4");
 }
@@ -863,8 +863,8 @@ void MixedVersionNestedPdx::fromData(PdxReaderPtr pr) {
  *  PdxInsideIGeodeSerializable
  * *********************************************************/
 PdxInsideIGeodeSerializable::PdxInsideIGeodeSerializable() {
-  m_npdx = new NestedPdx();
-  m_pdx3 = new PdxTypes3();
+  m_npdx = std::make_shared<NestedPdx>();
+  m_pdx3 = std::make_shared<PdxTypes3>();
   m_s1 = (char *)"one";
   m_s2 = (char *)"two";
   m_i1 = 34324;
@@ -880,13 +880,12 @@ PdxInsideIGeodeSerializable::~PdxInsideIGeodeSerializable() {
 int32_t PdxInsideIGeodeSerializable::getHashCode() { return 1; }
 
 bool PdxInsideIGeodeSerializable::equals(SerializablePtr obj) {
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
-  PdxInsideIGeodeSerializablePtr pap =
-      dynCast<PdxInsideIGeodeSerializablePtr>(obj);
-  if (pap == NULLPTR) return false;
+  auto pap = std::dynamic_pointer_cast<PdxInsideIGeodeSerializable>(obj);
+  if (pap == nullptr) return false;
 
-  // if (pap == this)
+  // if (pap.get() == this)
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&

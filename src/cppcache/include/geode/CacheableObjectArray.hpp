@@ -75,7 +75,7 @@ class CPPCACHE_EXPORT CacheableObjectArray : public Cacheable,
    * Factory method for creating the default instance of CacheableObjectArray.
    */
   inline static CacheableObjectArrayPtr create() {
-    return CacheableObjectArrayPtr(new CacheableObjectArray());
+    return std::make_shared<CacheableObjectArray>();
   }
 
   /**
@@ -83,7 +83,7 @@ class CPPCACHE_EXPORT CacheableObjectArray : public Cacheable,
    * given size.
    */
   inline static CacheableObjectArrayPtr create(int32_t n) {
-    return CacheableObjectArrayPtr(new CacheableObjectArray(n));
+    return std::make_shared<CacheableObjectArray>(n);
   }
 
   virtual uint32_t objectSize() const;
@@ -98,6 +98,8 @@ class CPPCACHE_EXPORT CacheableObjectArray : public Cacheable,
   // never implemented.
   CacheableObjectArray& operator=(const CacheableObjectArray& other);
   CacheableObjectArray(const CacheableObjectArray& other);
+
+  FRIEND_STD_SHARED_PTR(CacheableObjectArray)
 };
 }  // namespace client
 }  // namespace geode

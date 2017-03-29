@@ -25,7 +25,7 @@ namespace client {
 EnumInfo::~EnumInfo() {}
 
 EnumInfo::EnumInfo()
-    : m_enumClassName(NULLPTR), m_enumName(NULLPTR), m_ordinal(-1) {}
+    : m_enumClassName(nullptr), m_enumName(nullptr), m_ordinal(-1) {}
 
 EnumInfo::EnumInfo(const char *enumClassName, const char *enumName,
                    int32_t ordinal)
@@ -35,8 +35,8 @@ EnumInfo::EnumInfo(const char *enumClassName, const char *enumName,
 }
 
 int32_t EnumInfo::hashcode() const {
-  return ((m_enumClassName != NULLPTR ? m_enumClassName->hashcode() : 0) +
-          (m_enumName != NULLPTR ? m_enumName->hashcode() : 0));
+  return ((m_enumClassName != nullptr ? m_enumClassName->hashcode() : 0) +
+          (m_enumName != nullptr ? m_enumName->hashcode() : 0));
 }
 
 bool EnumInfo::operator==(const CacheableKey &other) const {
@@ -47,11 +47,11 @@ bool EnumInfo::operator==(const CacheableKey &other) const {
   if (m_ordinal != otherEnum.m_ordinal) {
     return false;
   }
-  if (m_enumClassName == NULLPTR) {
-    return (otherEnum.m_enumClassName == NULLPTR);
+  if (m_enumClassName == nullptr) {
+    return (otherEnum.m_enumClassName == nullptr);
   }
-  if (m_enumName == NULLPTR) {
-    return (otherEnum.m_enumName == NULLPTR);
+  if (m_enumName == nullptr) {
+    return (otherEnum.m_enumName == nullptr);
   }
   if (strcmp(m_enumClassName->asChar(), otherEnum.m_enumClassName->asChar()) !=
       0) {

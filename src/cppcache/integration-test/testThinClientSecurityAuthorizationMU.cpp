@@ -65,7 +65,7 @@ void initCredentialGenerator() {
     }
   }
 
-  if (credentialGeneratorHandler == NULLPTR) {
+  if (credentialGeneratorHandler == nullptr) {
     FAIL("credentialGeneratorHandler is NULL");
   }
 
@@ -143,20 +143,20 @@ void initClientAuth(char UserType) {
       break;
   }
 
-  CacheableStringPtr alias(userCreds->find("security-alias"));
-  CacheableStringPtr uname(userCreds->find("security-username"));
-  CacheableStringPtr passwd(userCreds->find("security-password"));
+  auto alias = userCreds->find("security-alias");
+  auto uname = userCreds->find("security-username");
+  auto passwd = userCreds->find("security-password");
 
   char msgAlias[100];
   char msgUname[100];
   char msgPasswd[100];
 
   sprintf(msgAlias, "PKCS alias is %s",
-          alias == NULLPTR ? "null" : alias->asChar());
+          alias == nullptr ? "null" : alias->asChar());
   sprintf(msgUname, "username is %s",
-          uname == NULLPTR ? "null" : uname->asChar());
+          uname == nullptr ? "null" : uname->asChar());
   sprintf(msgPasswd, "password is %s",
-          passwd == NULLPTR ? "null" : passwd->asChar());
+          passwd == nullptr ? "null" : passwd->asChar());
 
   LOG(msgAlias);
   LOG(msgUname);
@@ -216,7 +216,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
     initClientAuth('A');
     try {
       LOG("Tying Region creation");
-      createRegionForSecurity(regionNamesAuth[0], USE_ACK, true, NULLPTR, false,
+      createRegionForSecurity(regionNamesAuth[0], USE_ACK, true, nullptr, false,
                               -1, true, 0);
       LOG("Region created successfully");
       LOG("Tying Entry creation");
@@ -224,7 +224,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       RegionPtr regionPtr;
       PoolPtr pool = getPool(regionNamesAuth[0]);
       LOG(" 6");
-      if (pool != NULLPTR) {
+      if (pool != nullptr) {
         LOG(" 7");
         virtualCache = getVirtualCache(userCreds, pool);
         LOG(" 8");
@@ -239,7 +239,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       regionPtr->clear();
 
       CacheablePtr getVal = regionPtr->get(1);
-      if (getVal == NULLPTR) {
+      if (getVal == nullptr) {
         LOG("Get completed after region.clear successfully");
       } else {
         FAIL("Get did not complete successfully");
@@ -274,9 +274,9 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       for (int i = 0; i < 5; i++) {
         entrykeys.push_back(CacheableKey::create(i));
       }
-      HashMapOfCacheablePtr valuesMap(new HashMapOfCacheable());
+      auto valuesMap = std::make_shared<HashMapOfCacheable>();
       valuesMap->clear();
-      regionPtr->getAll(entrykeys, valuesMap, NULLPTR, false);
+      regionPtr->getAll(entrykeys, valuesMap, nullptr, false);
       if (valuesMap->size() > 0) {
         LOG("GetAll completed successfully");
       } else {
@@ -312,13 +312,13 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
 
       sprintf(queryString, "select * from /%s", regionNamesAuth[0]);
       CqAttributesFactory cqFac;
-      CqAttributesPtr cqAttrs(cqFac.create());
+      auto cqAttrs = cqFac.create();
       CqQueryPtr cqQry = qs->newCq("cq_security", queryString, cqAttrs);
       cqQry->execute();
       cqQry->close();
       LOG("CQ completed successfully");
 
-      if (pool != NULLPTR) {
+      if (pool != nullptr) {
         // TODO:
         // FunctionService::onServer(pool)->execute("securityTest",
         // true)->getResult();
@@ -345,7 +345,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
         LOG("Function execution with sendException");
         char buf[128];
         for (int i = 1; i <= 200; i++) {
-          CacheablePtr value(CacheableInt32::create(i));
+          auto value = CacheableInt32::create(i);
 
           sprintf(buf, "execKey-%d", i);
           CacheableKeyPtr key = CacheableKey::create(buf);
@@ -357,14 +357,14 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
         CacheableArrayListPtr arrList = CacheableArrayList::create();
         for (int i = 100; i < 120; i++) {
           sprintf(buf, "execKey-%d", i);
-          CacheableKeyPtr key = CacheableKey::create(buf);
+          auto key = CacheableKey::create(buf);
           arrList->push_back(key);
         }
 
         CacheableVectorPtr filter = CacheableVector::create();
         for (int i = 100; i < 120; i++) {
           sprintf(buf, "execKey-%d", i);
-          CacheableKeyPtr key = CacheableKey::create(buf);
+          auto key = CacheableKey::create(buf);
           filter->push_back(key);
         }
         LOG("Adding filter done.");
@@ -373,24 +373,24 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
         // UNUSED bool getResult = true;
 
         ExecutionPtr funcExec = FunctionService::onRegion(regionPtr);
-        ASSERT(funcExec != NULLPTR, "onRegion Returned NULL");
+        ASSERT(funcExec != nullptr, "onRegion Returned NULL");
 
         ResultCollectorPtr collector =
             funcExec->withArgs(args)->withFilter(filter)->execute(
                 exFuncNameSendException, 15);
-        ASSERT(collector != NULLPTR, "onRegion collector NULL");
+        ASSERT(collector != nullptr, "onRegion collector NULL");
 
         CacheableVectorPtr result = collector->getResult();
 
-        if (result == NULLPTR) {
+        if (result == nullptr) {
           ASSERT(false, "echo String : result is NULL");
         } else {
           try {
             for (int i = 0; i < result->size(); i++) {
-              UserFunctionExecutionExceptionPtr uFEPtr =
-                  dynCast<UserFunctionExecutionExceptionPtr>(
+              auto uFEPtr =
+                  std::dynamic_pointer_cast<UserFunctionExecutionException>(
                       result->operator[](i));
-              ASSERT(uFEPtr != NULLPTR, "uFEPtr exception is NULL");
+              ASSERT(uFEPtr != nullptr, "uFEPtr exception is NULL");
               LOGINFO("Done casting to uFEPtr");
               LOGINFO("Read expected uFEPtr exception %s ",
                       uFEPtr->getMessage()->asChar());
@@ -416,7 +416,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
 
         collector = funcExec->withArgs(arrList)->withFilter(filter)->execute(
             exFuncNameSendException, 15);
-        ASSERT(collector != NULLPTR, "onRegion collector for arrList NULL");
+        ASSERT(collector != nullptr, "onRegion collector for arrList NULL");
 
         result = collector->getResult();
         ASSERT(result->size() == arrList->size() + 1,
@@ -425,9 +425,9 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
 
         for (int i = 0; i < result->size(); i++) {
           try {
-            CacheableInt32Ptr intValue =
-                dynCast<CacheableInt32Ptr>(result->operator[](i));
-            ASSERT(intValue != NULLPTR, "int value is NULL");
+            auto intValue = std::dynamic_pointer_cast<CacheableInt32>(
+                result->operator[](i));
+            ASSERT(intValue != nullptr, "int value is NULL");
             LOGINFO("intValue is %d ", intValue->value());
           } catch (ClassCastException& ex) {
             LOG("exFuncNameSendException casting to int for arrayList "
@@ -439,10 +439,10 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
             logmsg += ex.getMessage();
             LOG(logmsg.c_str());
             ex.printStackTrace();
-            UserFunctionExecutionExceptionPtr uFEPtr =
-                dynCast<UserFunctionExecutionExceptionPtr>(
+            auto uFEPtr =
+                std::dynamic_pointer_cast<UserFunctionExecutionException>(
                     result->operator[](i));
-            ASSERT(uFEPtr != NULLPTR, "uFEPtr exception is NULL");
+            ASSERT(uFEPtr != nullptr, "uFEPtr exception is NULL");
             LOGINFO("Done casting to uFEPtr");
             LOGINFO("Read expected uFEPtr exception %s ",
                     uFEPtr->getMessage()->asChar());
@@ -474,14 +474,14 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       destroyRegion(regionNamesAuth[0]);
       LOG("Region destroy successfully");
       LOG("Tying Region creation");
-      createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, NULLPTR,
+      createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, nullptr,
                               false, -1, true, 0);
       char buf[100] = {'\0'};
       static int indexForPool = 0;
       sprintf(buf, "%s_%d", regionNamesAuth[0], indexForPool++);
       pool = getPool(buf);
       LOG(" 6");
-      if (pool != NULLPTR) {
+      if (pool != nullptr) {
         LOG(" 7");
         virtualCache = getVirtualCache(userCreds, pool);
         LOG(" 8");
@@ -498,7 +498,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       virtualCache->close();
       LOG("Cache close successfully");
       // RegionPtr regPtr0 = getHelper()->getRegion( regionNamesAuth[0] );
-      /*if (regPtr != NULLPTR ) {
+      /*if (regPtr != nullptr ) {
         LOG("Going to do registerAllKeys");
        // regPtr->registerAllKeys();
         LOG("Going to do unregisterAllKeys");
@@ -523,14 +523,14 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
     initCredentialGenerator();
     initClientAuth('W');
     try {
-      createRegionForSecurity(regionNamesAuth[0], USE_ACK, true, NULLPTR, false,
+      createRegionForSecurity(regionNamesAuth[0], USE_ACK, true, nullptr, false,
                               -1, true, 0);
       LOG("Region created successfully");
       RegionServicePtr virtualCache;
       RegionPtr regionPtr;
       PoolPtr pool = getPool(regionNamesAuth[0]);
       LOG(" 6");
-      if (pool != NULLPTR) {
+      if (pool != nullptr) {
         LOG(" 7");
         virtualCache = getVirtualCache(userCreds, pool);
         LOG(" 8");
@@ -578,7 +578,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       RegionServicePtr virtualCache;
       RegionPtr regionPtr;
       PoolPtr pool = getPool(regionNamesAuth[0]);
-      if (pool != NULLPTR) {
+      if (pool != nullptr) {
         virtualCache = getVirtualCache(userCreds, pool);
         regionPtr = virtualCache->getRegion(regionNamesAuth[0]);
       } else {
@@ -598,7 +598,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       RegionPtr regionPtr;
       PoolPtr pool = getPool(regionNamesAuth[0]);
       LOG(" 6");
-      if (pool != NULLPTR) {
+      if (pool != nullptr) {
         LOG(" 7");
         virtualCache = getVirtualCache(userCreds, pool);
         LOG(" 8");
@@ -608,9 +608,9 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
         LOG("Pool is NULL");
       }
       CacheableKeyPtr keyPtr = CacheableKey::create(keys[2]);
-      CacheableStringPtr checkPtr =
-          dynCast<CacheableStringPtr>(regionPtr->get(keyPtr));
-      if (checkPtr != NULLPTR) {
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(regionPtr->get(keyPtr));
+      if (checkPtr != nullptr) {
         char buf[1024];
         sprintf(buf, "In net search, get returned %s for key %s",
                 checkPtr->asChar(), keys[2]);
@@ -635,7 +635,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       RegionPtr regionPtr;
       PoolPtr pool = getPool(regionNamesAuth[0]);
       LOG(" 6");
-      if (pool != NULLPTR) {
+      if (pool != nullptr) {
         LOG(" 7");
         virtualCache = getVirtualCache(userCreds, pool);
         LOG(" 8");
@@ -652,9 +652,9 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       for (int i = 0; i < 5; i++) {
         entrykeys.push_back(CacheableKey::create(i));
       }
-      HashMapOfCacheablePtr valuesMap(new HashMapOfCacheable());
+      auto valuesMap = std::make_shared<HashMapOfCacheable>();
       valuesMap->clear();
-      regionPtr->getAll(entrykeys, valuesMap, NULLPTR, false);
+      regionPtr->getAll(entrykeys, valuesMap, nullptr, false);
       if (valuesMap->size() > 0) {
         FAIL("GetAll should not have completed successfully");
       }
@@ -666,7 +666,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       RegionPtr regionPtr;
       PoolPtr pool = getPool(regionNamesAuth[0]);
       LOG(" 6");
-      if (pool != NULLPTR) {
+      if (pool != nullptr) {
         LOG(" 7");
         virtualCache = getVirtualCache(userCreds, pool);
         LOG(" 8");
@@ -691,7 +691,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       char queryString[100];
       sprintf(queryString, "select * from /%s", regionNamesAuth[0]);
       CqAttributesFactory cqFac;
-      CqAttributesPtr cqAttrs(cqFac.create());
+      auto cqAttrs = cqFac.create();
       CqQueryPtr qry = qs->newCq("cq_security", queryString, cqAttrs);
       qs->executeCqs();
       FAIL("CQ should not have completed successfully");
@@ -741,7 +741,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
           "exception");
       char buf[128];
       for (int i = 1; i <= 200; i++) {
-        CacheablePtr value(CacheableInt32::create(i));
+        auto value = CacheableInt32::create(i);
 
         sprintf(buf, "execKey-%d", i);
         CacheableKeyPtr key = CacheableKey::create(buf);
@@ -753,14 +753,14 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       CacheableArrayListPtr arrList = CacheableArrayList::create();
       for (int i = 100; i < 120; i++) {
         sprintf(buf, "execKey-%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+        auto key = CacheableKey::create(buf);
         arrList->push_back(key);
       }
 
       CacheableVectorPtr filter = CacheableVector::create();
       for (int i = 100; i < 120; i++) {
         sprintf(buf, "execKey-%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+        auto key = CacheableKey::create(buf);
         filter->push_back(key);
       }
       LOG("Adding filter done.");
@@ -808,7 +808,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
           "exception with onRegion");
       char buf[128];
       for (int i = 1; i <= 200; i++) {
-        CacheablePtr value(CacheableInt32::create(i));
+        auto value = CacheableInt32::create(i);
 
         sprintf(buf, "execKey-%d", i);
         CacheableKeyPtr key = CacheableKey::create(buf);
@@ -820,14 +820,14 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       CacheableArrayListPtr arrList = CacheableArrayList::create();
       for (int i = 100; i < 120; i++) {
         sprintf(buf, "execKey-%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+        auto key = CacheableKey::create(buf);
         arrList->push_back(key);
       }
 
       CacheableVectorPtr filter = CacheableVector::create();
       for (int i = 100; i < 120; i++) {
         sprintf(buf, "execKey-%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+        auto key = CacheableKey::create(buf);
         filter->push_back(key);
       }
       LOG("Adding filter done.");
@@ -857,7 +857,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
     RegionPtr regionPtr;
     PoolPtr pool = getPool(regionNamesAuth[0]);
     LOG(" 6");
-    if (pool != NULLPTR) {
+    if (pool != nullptr) {
       LOG(" 7");
       virtualCache = getVirtualCache(userCreds, pool);
       LOG(" 8");
@@ -882,13 +882,13 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
     char buf[100];
     int i = 102;
 
-    createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, NULLPTR, false,
+    createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, nullptr, false,
                             -1, true, 0);
     RegionServicePtr virtualCache;
     RegionPtr rptr;
     PoolPtr pool = getPool(regionNamesAuth[0]);
     LOG(" 6");
-    if (pool != NULLPTR) {
+    if (pool != nullptr) {
       LOG(" 7");
       virtualCache = getVirtualCache(userCreds, pool);
       LOG(" 8");
@@ -944,9 +944,9 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
     try {
       // RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
       CacheableKeyPtr keyPtr = CacheableKey::create(keys[2]);
-      CacheableStringPtr checkPtr =
-          dynCast<CacheableStringPtr>(rptr->get(keyPtr));
-      if (checkPtr != NULLPTR) {
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr));
+      if (checkPtr != nullptr) {
         char buf[1024];
         sprintf(buf, "In net search, get returned %s for key %s",
                 checkPtr->asChar(), keys[2]);
@@ -958,7 +958,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
     HANDLE_NO_NOT_AUTHORIZED_EXCEPTION
 
     // RegionPtr regPtr0 = getHelper()->getRegion( regionNamesAuth[0] );
-    if (rptr != NULLPTR) {
+    if (rptr != nullptr) {
       try {
         LOG("Going to do registerAllKeys");
         //  rptr->registerAllKeys();
@@ -992,9 +992,9 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
       for (int i = 0; i < 5; i++) {
         entrykeys.push_back(CacheableKey::create(i));
       }
-      HashMapOfCacheablePtr valuesMap(new HashMapOfCacheable());
+      auto valuesMap = std::make_shared<HashMapOfCacheable>();
       valuesMap->clear();
-      rptr->getAll(entrykeys, valuesMap, NULLPTR, false);
+      rptr->getAll(entrykeys, valuesMap, nullptr, false);
       if (valuesMap->size() > 0) {
         LOG("GetAll completed successfully");
       } else {
@@ -1014,7 +1014,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
 
     try {
       /*QueryServicePtr qs;
-      if (pool != NULLPTR) {
+      if (pool != nullptr) {
         // Using region name as pool name
         qs = pool->getQueryService();
       } else {

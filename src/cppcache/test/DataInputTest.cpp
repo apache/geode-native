@@ -664,7 +664,8 @@ TEST_F(DataInputTest, TestReadDirectObject) {
   dataInput.readDirectObject(objptr);
   EXPECT_STREQ(
       (const char *)"You had me at meat tornado.",
-      (const char *)(dynCast<SharedPtr<CacheableString> >(objptr))->toString())
+      (const char *)(std::dynamic_pointer_cast<CacheableString>(objptr))
+          ->toString())
       << "Correct const char *";
 }
 
@@ -675,7 +676,8 @@ TEST_F(DataInputTest, TestReadObjectSerializablePtr) {
   dataInput.readObject(objptr);
   EXPECT_STREQ(
       (const char *)"You had me at meat tornado.",
-      (const char *)(dynCast<SharedPtr<CacheableString> >(objptr))->toString())
+      (const char *)(std::dynamic_pointer_cast<CacheableString>(objptr))
+          ->toString())
       << "Correct const char *";
 }
 

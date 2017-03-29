@@ -77,7 +77,7 @@ CacheHelper& CacheHelper::getHelper() {
 CacheHelper::CacheHelper(const char* member_id, const PropertiesPtr& configPtr,
                          const bool noRootRegion) {
   PropertiesPtr pp = configPtr;
-  if (pp == NULLPTR) {
+  if (pp == nullptr) {
     pp = Properties::create();
   }
 
@@ -102,7 +102,7 @@ CacheHelper::CacheHelper(const char* member_id, const PropertiesPtr& configPtr,
 CacheHelper::CacheHelper(const char* member_id, const char* cachexml,
                          const PropertiesPtr& configPtr) {
   PropertiesPtr pp = configPtr;
-  if (pp == NULLPTR) {
+  if (pp == nullptr) {
     pp = Properties::create();
   }
   if (cachexml != NULL) {
@@ -119,7 +119,7 @@ CacheHelper::CacheHelper(const char* member_id, const char* cachexml,
 CacheHelper::CacheHelper(const PropertiesPtr& configPtr,
                          const bool noRootRegion) {
   PropertiesPtr pp = configPtr;
-  if (pp == NULLPTR) {
+  if (pp == nullptr) {
     pp = Properties::create();
   }
 
@@ -144,7 +144,7 @@ CacheHelper::CacheHelper(const bool isThinclient,
                          const PropertiesPtr& configPtr,
                          const bool noRootRegion) {
   PropertiesPtr pp = configPtr;
-  if (pp == NULLPTR) {
+  if (pp == nullptr) {
     pp = Properties::create();
   }
   try {
@@ -163,7 +163,7 @@ CacheHelper::CacheHelper(const bool isThinclient, bool pdxIgnoreUnreadFields,
                          bool pdxReadSerialized, const PropertiesPtr& configPtr,
                          const bool noRootRegion) {
   PropertiesPtr pp = configPtr;
-  if (pp == NULLPTR) {
+  if (pp == nullptr) {
     pp = Properties::create();
   }
   try {
@@ -190,7 +190,7 @@ CacheHelper::CacheHelper(const bool isthinClient, const char* poolName,
                          bool isMultiuserMode, bool prSingleHop,
                          bool threadLocal) {
   PropertiesPtr pp = configPtr;
-  if (pp == NULLPTR) {
+  if (pp == nullptr) {
     pp = Properties::create();
   }
 
@@ -233,7 +233,7 @@ CacheHelper::CacheHelper(const bool isthinClient, const char* poolName,
 CacheHelper::CacheHelper(const int redundancyLevel,
                          const PropertiesPtr& configPtr) {
   PropertiesPtr pp = configPtr;
-  if (pp == NULLPTR) {
+  if (pp == nullptr) {
     pp = Properties::create();
   }
 
@@ -253,7 +253,7 @@ void CacheHelper::closePool(const char* poolName, bool keepAlive) {
 }
 
 void CacheHelper::disconnect(bool keepalive) {
-  if (cachePtr == NULLPTR) {
+  if (cachePtr == nullptr) {
     return;
   }
 
@@ -265,11 +265,11 @@ void CacheHelper::disconnect(bool keepalive) {
   }
 
   // rootRegionPtr->localDestroyRegion();
-  rootRegionPtr = NULLPTR;
+  rootRegionPtr = nullptr;
   LOG("Destroyed root region.");
   try {
     LOG("Closing cache.");
-    if (cachePtr != NULLPTR) {
+    if (cachePtr != nullptr) {
       cachePtr->close(keepalive);
     }
     LOG("Closing cache complete.");
@@ -280,7 +280,7 @@ void CacheHelper::disconnect(bool keepalive) {
     LOG("exception throw while closing cache");
   }
 
-  cachePtr = NULLPTR;
+  cachePtr = nullptr;
   LOG("Closed cache.");
   try {
     if (m_doDisconnect) {
@@ -312,7 +312,7 @@ void CacheHelper::createPlainRegion(const char* regionName,
   showRegionAttributes(*regAttrs);
   // This is using subregions (deprecated) so not placing the new cache API here
   regionPtr = rootRegionPtr->createSubregion(regionName, regAttrs);
-  ASSERT(regionPtr != NULLPTR, "failed to create region.");
+  ASSERT(regionPtr != nullptr, "failed to create region.");
 }
 
 void CacheHelper::createLRURegion(const char* regionName,
@@ -331,7 +331,7 @@ void CacheHelper::createLRURegion(const char* regionName, RegionPtr& regionPtr,
   showRegionAttributes(*regAttrs);
   // This is using subregions (deprecated) so not placing the new cache API here
   regionPtr = rootRegionPtr->createSubregion(regionName, regAttrs);
-  ASSERT(regionPtr != NULLPTR, "failed to create region.");
+  ASSERT(regionPtr != nullptr, "failed to create region.");
 }
 
 void CacheHelper::createDistRegion(const char* regionName,
@@ -351,7 +351,7 @@ void CacheHelper::createDistRegion(const char* regionName, RegionPtr& regionPtr,
   showRegionAttributes(*regAttrs);
   // This is using subregions (deprecated) so not placing the new cache API here
   regionPtr = rootRegionPtr->createSubregion(regionName, regAttrs);
-  ASSERT(regionPtr != NULLPTR, "failed to create region.");
+  ASSERT(regionPtr != nullptr, "failed to create region.");
 }
 
 RegionPtr CacheHelper::getRegion(const char* name) {
@@ -366,7 +366,7 @@ RegionPtr CacheHelper::createRegion(const char* name, bool ack, bool caching,
                                     int32_t tombstonetimeout) {
   AttributesFactory af;
   af.setCachingEnabled(caching);
-  if (listener != NULLPTR) {
+  if (listener != nullptr) {
     af.setCacheListener(listener);
   }
   if (concurrencyCheckEnabled) {
@@ -375,7 +375,7 @@ RegionPtr CacheHelper::createRegion(const char* name, bool ack, bool caching,
 
   RegionAttributesPtr rattrsPtr = af.createRegionAttributes();
 
-  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.ptr());
+  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   RegionPtr regionPtr;
   cacheImpl->createRegion(name, rattrsPtr, regionPtr);
   return regionPtr;
@@ -396,7 +396,7 @@ RegionPtr CacheHelper::createRegion(const char* name, bool ack, bool caching,
 
   RegionAttributesPtr rattrsPtr = af.createRegionAttributes();
 
-  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.ptr());
+  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   RegionPtr regionPtr;
   cacheImpl->createRegion(name, rattrsPtr, regionPtr);
   return regionPtr;
@@ -507,7 +507,7 @@ void CacheHelper::createPoolWithLocators(const char* name, const char* locators,
       createPool(name, locators, serverGroup, subscriptionRedundancy,
                  clientNotificationEnabled, subscriptionAckInterval,
                  connections, -1, isMultiuserMode);
-  ASSERT(poolPtr != NULLPTR, "Failed to create pool.");
+  ASSERT(poolPtr != nullptr, "Failed to create pool.");
   logPoolAttributes(poolPtr);
   LOG("Pool created.");
 }
@@ -612,7 +612,7 @@ RegionPtr CacheHelper::createPooledRegion(
   }
 
   if ((PoolManager::find(poolName)) ==
-      NULLPTR) {  // Pool does not exist with the same name.
+      nullptr) {  // Pool does not exist with the same name.
     PoolPtr pptr = poolFacPtr->create(poolName);
   }
 
@@ -630,7 +630,7 @@ RegionPtr CacheHelper::createPooledRegion(
   regionFactoryPtr->setRegionIdleTimeout(action, rit);
   regionFactoryPtr->setRegionTimeToLive(action, rttl);
   regionFactoryPtr->setPoolName(poolName);
-  if (cacheListener != NULLPTR) {
+  if (cacheListener != nullptr) {
     regionFactoryPtr->setCacheListener(cacheListener);
   }
   return regionFactoryPtr->create(name);
@@ -648,7 +648,7 @@ RegionPtr CacheHelper::createPooledRegionConcurrencyCheckDisabled(
   addServerLocatorEPs(locators, poolFacPtr);
 
   if ((PoolManager::find(poolName)) ==
-      NULLPTR) {  // Pool does not exist with the same name.
+      nullptr) {  // Pool does not exist with the same name.
     PoolPtr pptr = poolFacPtr->create(poolName);
   }
 
@@ -667,7 +667,7 @@ RegionPtr CacheHelper::createPooledRegionConcurrencyCheckDisabled(
   regionFactoryPtr->setRegionTimeToLive(action, rttl);
   regionFactoryPtr->setConcurrencyChecksEnabled(concurrencyCheckEnabled);
   regionFactoryPtr->setPoolName(poolName);
-  if (cacheListener != NULLPTR) {
+  if (cacheListener != nullptr) {
     regionFactoryPtr->setCacheListener(cacheListener);
   }
   return regionFactoryPtr->create(name);
@@ -697,7 +697,7 @@ RegionPtr CacheHelper::createRegionDiscOverFlow(
   }
 
   RegionAttributesPtr rattrsPtr = af.createRegionAttributes();
-  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.ptr());
+  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   RegionPtr regionPtr;
   cacheImpl->createRegion(name, rattrsPtr, regionPtr);
   return regionPtr;
@@ -717,7 +717,7 @@ RegionPtr CacheHelper::createPooledRegionDiscOverFlow(
     addServerLocatorEPs(locators, poolFacPtr);
   }
   if ((PoolManager::find(poolName)) ==
-      NULLPTR) {  // Pool does not exist with the same name.
+      nullptr) {  // Pool does not exist with the same name.
     PoolPtr pptr = poolFacPtr->create(poolName);
   }
 
@@ -752,7 +752,7 @@ RegionPtr CacheHelper::createPooledRegionDiscOverFlow(
     regionFactoryPtr->setPersistenceManager(
         "SqLiteImpl", "createSqLiteInstance", sqLiteProps);
   }
-  if (cacheListener != NULLPTR) {
+  if (cacheListener != nullptr) {
     regionFactoryPtr->setCacheListener(cacheListener);
   }
   return regionFactoryPtr->create(name);
@@ -772,7 +772,7 @@ RegionPtr CacheHelper::createPooledRegionSticky(
   addServerLocatorEPs(locators, poolFacPtr);
 
   if ((PoolManager::find(poolName)) ==
-      NULLPTR) {  // Pool does not exist with the same name.
+      nullptr) {  // Pool does not exist with the same name.
     PoolPtr pptr = poolFacPtr->create(poolName);
     LOG("createPooledRegionSticky logPoolAttributes");
     logPoolAttributes(pptr);
@@ -792,7 +792,7 @@ RegionPtr CacheHelper::createPooledRegionSticky(
   regionFactoryPtr->setRegionIdleTimeout(action, rit);
   regionFactoryPtr->setRegionTimeToLive(action, rttl);
   regionFactoryPtr->setPoolName(poolName);
-  if (cacheListener != NULLPTR) {
+  if (cacheListener != nullptr) {
     regionFactoryPtr->setCacheListener(cacheListener);
   }
   return regionFactoryPtr->create(name);
@@ -812,7 +812,7 @@ RegionPtr CacheHelper::createPooledRegionStickySingleHop(
   addServerLocatorEPs(locators, poolFacPtr);
 
   if ((PoolManager::find(poolName)) ==
-      NULLPTR) {  // Pool does not exist with the same name.
+      nullptr) {  // Pool does not exist with the same name.
     PoolPtr pptr = poolFacPtr->create(poolName);
     LOG("createPooledRegionStickySingleHop logPoolAttributes");
     logPoolAttributes(pptr);
@@ -832,7 +832,7 @@ RegionPtr CacheHelper::createPooledRegionStickySingleHop(
   regionFactoryPtr->setRegionIdleTimeout(action, rit);
   regionFactoryPtr->setRegionTimeToLive(action, rttl);
   regionFactoryPtr->setPoolName(poolName);
-  if (cacheListener != NULLPTR) {
+  if (cacheListener != nullptr) {
     regionFactoryPtr->setCacheListener(cacheListener);
   }
   return regionFactoryPtr->create(name);
@@ -843,7 +843,7 @@ RegionPtr CacheHelper::createSubregion(RegionPtr& parent, const char* name,
                                        const CacheListenerPtr& listener) {
   AttributesFactory af;
   af.setCachingEnabled(caching);
-  if (listener != NULLPTR) {
+  if (listener != nullptr) {
     af.setCacheListener(listener);
   }
   RegionAttributesPtr rattrsPtr = af.createRegionAttributes();

@@ -122,7 +122,7 @@ bool CacheConfig::parseAttributes(const char* name, xmlNode* node) {
   std::string cachingStr =
       (caching == NULL ? "true" : reinterpret_cast<const char*>(caching));
 
-  RegionConfigPtr reg(new RegionConfig(scopeStr, initialCapacityStr));
+  auto reg = std::make_shared<RegionConfig>(scopeStr, initialCapacityStr);
 
   reg->setLru(limitStr);
   reg->setConcurrency(concStr);

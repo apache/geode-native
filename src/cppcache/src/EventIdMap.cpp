@@ -28,9 +28,9 @@ void EventIdMap::clear() {
 }
 
 EventIdMapEntry EventIdMap::make(EventIdPtr eventid) {
-  EventSourcePtr sid(new EventSource(
-      eventid->getMemId(), eventid->getMemIdLen(), eventid->getThrId()));
-  EventSequencePtr seq(new EventSequence(eventid->getSeqNum()));
+  auto sid = std::make_shared<EventSource>(
+      eventid->getMemId(), eventid->getMemIdLen(), eventid->getThrId());
+  auto seq = std::make_shared<EventSequence>(eventid->getSeqNum());
   return std::make_pair(sid, seq);
 }
 
@@ -38,7 +38,7 @@ bool EventIdMap::isDuplicate(EventSourcePtr key, EventSequencePtr value) {
   GUARD_MAP;
   EventIdMapType::Iterator entry = m_map.find(key);
 
-  if (entry != m_map.end() && ((*value.ptr()) <= (*entry.second().ptr()))) {
+  if (entry != m_map.end() && ((*value.get()) <= (*entry.second().get()))) {
     return true;
   }
   return false;
@@ -52,7 +52,7 @@ bool EventIdMap::put(EventSourcePtr key, EventSequencePtr value, bool onlynew) {
   EventIdMapType::Iterator entry = m_map.find(key);
 
   if (entry != m_map.end()) {
-    if (onlynew && ((*value.ptr()) <= (*entry.second().ptr()))) {
+    if (onlynew && ((*value.get()) <= (*entry.second().get()))) {
       return false;
     } else {
       m_map.update(key, value);

@@ -47,7 +47,7 @@ StructSetImpl::StructSetImpl(
     for (size_t i = 0; i < numOfFields; i++) {
       tmpVec.push_back(response->operator[](valStoredCnt++));
     }
-    StructPtr siPtr(new Struct(this, tmpVec));
+    auto siPtr = std::make_shared<Struct>(this, tmpVec);
     m_structVector->push_back(siPtr);
   }
 }
@@ -65,7 +65,7 @@ const SerializablePtr StructSetImpl::operator[](int32_t index) const {
 }
 
 SelectResultsIterator StructSetImpl::getIterator() {
-  return SelectResultsIterator(m_structVector, SelectResultsPtr(this));
+  return SelectResultsIterator(m_structVector, shared_from_this());
 }
 
 int32_t StructSetImpl::getFieldIndex(const char* fieldname) {

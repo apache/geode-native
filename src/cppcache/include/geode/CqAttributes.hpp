@@ -22,7 +22,7 @@
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
-#include "VectorT.hpp"
+#include <vector>
 
 #include "CqListener.hpp"
 /**
@@ -49,13 +49,15 @@ namespace client {
  */
 class CPPCACHE_EXPORT CqAttributes : virtual public SharedBase {
  public:
+  typedef std::vector<std::shared_ptr<CqListener>> listener_container_type;
+
   /**
    * Get the CqListeners set with the CQ.
    * Returns all the Listeners associated with this CQ.
    * @see CqListener
-   * @return VectorOfCqListener of CqListnerPtr
+   * @param[out] std::vector<CqListenerPtr> of CqListnerPtr
    */
-  virtual void getCqListeners(VectorOfCqListener& vl) = 0;
+  virtual void getCqListeners(listener_container_type& vl) = 0;
 };
 }  // namespace client
 }  // namespace geode

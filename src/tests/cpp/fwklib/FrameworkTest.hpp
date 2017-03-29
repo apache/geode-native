@@ -73,7 +73,7 @@ class FrameworkTest  // Base class all test classes written for xml testing
   int32_t finalize() { return FWK_SUCCESS; }
 
   void cacheInitialize(PropertiesPtr& props,
-                       const CacheAttributesPtr& cAttrs = NULLPTR);
+                       const CacheAttributesPtr& cAttrs = nullptr);
 
   void cacheFinalize();
 

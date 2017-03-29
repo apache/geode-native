@@ -394,7 +394,7 @@ namespace Apache
       inline static apache::geode::client::CacheableKey* SafeGenericMKeyConvert( TKey mg_obj )
       {
         if (mg_obj == nullptr) return NULL;
-        apache::geode::client::CacheableKey* obj = Apache::Geode::Client::Serializable::GetUnmanagedValueGeneric<TKey>( mg_obj ).ptr();
+        apache::geode::client::CacheableKey* obj = Apache::Geode::Client::Serializable::GetUnmanagedValueGeneric<TKey>( mg_obj ).get();
         if (obj != nullptr)
         {
           return obj;

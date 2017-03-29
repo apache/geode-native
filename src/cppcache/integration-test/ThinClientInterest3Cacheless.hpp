@@ -96,9 +96,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1_Pool_Locator)
     initClient(true);
     createPooledRegion(regionNames[0], false /*ack mode*/, locatorsG,
                        "__TEST_POOL1__", true /*client notification*/,
-                       NULLPTR /*cachelistener*/, false /*caching*/);
-    reg1Listener1 = new TallyListener();
-    reg1Writer1 = new TallyWriter();
+                       nullptr /*cachelistener*/, false /*caching*/);
+    reg1Listener1 = std::make_shared<TallyListener>();
+    reg1Writer1 = std::make_shared<TallyWriter>();
     setCacheListener(regionNames[0], reg1Listener1);
     setCacheWriter(regionNames[0], reg1Writer1);
   }
@@ -112,7 +112,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testCreatesAndUpdates)
     VectorOfCacheableKey keys;
     keys.push_back(keyPtr1);
     keys.push_back(keyPtr2);
-    regPtr->registerKeys(keys, NULLPTR);
+    regPtr->registerKeys(keys);
 
     regPtr->create(keyPtr1, vals[1]);
     numCreates++;

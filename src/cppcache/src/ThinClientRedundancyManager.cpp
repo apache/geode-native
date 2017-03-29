@@ -54,8 +54,8 @@ ThinClientRedundancyManager::ThinClientRedundancyManager(
       m_loggedRedundancyWarning(false),
       m_poolHADM(poolHADM),
       m_theTcrConnManager(theConnManager),
-      m_locators(NULLPTR),
-      m_servers(NULLPTR),
+      m_locators(nullptr),
+      m_servers(nullptr),
       m_periodicAckTask(NULL),
       m_processEventIdMapTaskId(-1),
       m_nextAckInc(0),
@@ -89,7 +89,7 @@ std::list<ServerLocation> ThinClientRedundancyManager::selectServers(
         m_server = 0;
       }
       ServerLocation location(
-          Utils::convertHostToCanonicalForm(m_servers[m_server++]->asChar())
+          Utils::convertHostToCanonicalForm((*m_servers)[m_server++]->asChar())
               .c_str());
       if (exclEndPts.find(location) != exclEndPts.end()) {
         // exclude this one
@@ -217,8 +217,8 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
 
     m_nonredundantEndpoints.clear();
     int howMany = -1;
-    if (m_locators != NULLPTR && m_locators->length() > 0 &&
-        m_servers != NULLPTR && m_servers->length() == 0) {
+    if (m_locators != nullptr && m_locators->length() > 0 &&
+        m_servers != nullptr && m_servers->length() == 0) {
       // if we are using locators only request the required number of servers.
       howMany = m_redundancyLevel - static_cast<int>(exclEndPts.size()) + 1;
     }
@@ -405,10 +405,10 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
   RemoteQueryServicePtr queryServicePtr;
   ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_poolHADM);
   if (poolDM) {
-    queryServicePtr =
-        dynCast<RemoteQueryServicePtr>(poolDM->getQueryServiceWithoutCheck());
+    queryServicePtr = std::dynamic_pointer_cast<RemoteQueryService>(
+        poolDM->getQueryServiceWithoutCheck());
   }
-  if (queryServicePtr != NULLPTR) {
+  if (queryServicePtr != nullptr) {
     if (isPrimaryConnected) {
       // call CqStatusListener connect
       LOGDEBUG(
@@ -550,9 +550,9 @@ GfErrType ThinClientRedundancyManager::createQueueEP(TcrEndpoint* ep,
     } else {
       // recover CQs
       CacheImpl* cache = m_theTcrConnManager->getCacheImpl();
-      RemoteQueryServicePtr rqsService =
-          dynCast<RemoteQueryServicePtr>(cache->getQueryService(true));
-      if (rqsService != NULLPTR) {
+      auto rqsService = std::dynamic_pointer_cast<RemoteQueryService>(
+          cache->getQueryService(true));
+      if (rqsService != nullptr) {
         try {
           err = rqsService->executeAllCqs(ep);
         } catch (const Exception& excp) {
@@ -590,9 +590,9 @@ GfErrType ThinClientRedundancyManager::createPoolQueueEP(
       }
     } else {
       // recover CQs
-      RemoteQueryServicePtr rqsService = dynCast<RemoteQueryServicePtr>(
+      auto rqsService = std::dynamic_pointer_cast<RemoteQueryService>(
           m_poolHADM->getQueryServiceWithoutCheck());
-      if (rqsService != NULLPTR) {
+      if (rqsService != nullptr) {
         try {
           err = rqsService->executeAllCqs(ep);
         } catch (const Exception& excp) {
@@ -676,8 +676,8 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
       std::vector<std::string> locators;
       for (int item = 0; item < m_locators->length(); item++) {
         LOGDEBUG("ThinClientRedundancyManager::initialize: adding locator %s",
-                 m_locators[item]->asChar());
-        locators.push_back(m_locators[item]->asChar());
+                 (*m_locators)[item]->asChar());
+        locators.push_back((*m_locators)[item]->asChar());
       }
 
     } else if (m_servers->length() > 0) {
@@ -869,14 +869,14 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
                  ? 5
                  : attempts;  // at least 5 attempts if ep lists are small.
 
-  ProxyCachePtr proxyCache = NULLPTR;
+  ProxyCachePtr proxyCache = nullptr;
 
   while (attempts--) {
     if (err != GF_NOERR || m_redundantEndpoints.empty()) {
       UserAttributesPtr userAttr =
           TSSUserAttributesWrapper::s_geodeTSSUserAttributes
               ->getUserAttributes();
-      if (userAttr != NULLPTR) proxyCache = userAttr->getProxyCache();
+      if (userAttr != nullptr) proxyCache = userAttr->getProxyCache();
       err = maintainRedundancyLevel();
       // we continue on fatal error because MRL only tries a handshake without
       // sending a request (no params passed) so no need to check
@@ -894,7 +894,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
           "ThinClientRedundancyManager::sendSyncRequestCq: to primary [%s]",
           primaryEndpoint->name().c_str());
       GuardUserAttribures gua;
-      if (proxyCache != NULLPTR) {
+      if (proxyCache != nullptr) {
         gua.setProxyCache(proxyCache);
       }
       err = theHADM->sendRequestToEP(request, reply, primaryEndpoint);

@@ -151,7 +151,7 @@ class CPPCACHE_EXPORT HashMapOfSharedBase {
   /** Copy constructor. */
   HashMapOfSharedBase(const HashMapOfSharedBase& other);
 
-  /** Destructor, sets all SharedPtr elements to NULLPTR. */
+  /** Destructor, sets all SharedPtr elements to nullptr. */
   ~HashMapOfSharedBase();
 };
 }  // namespace client

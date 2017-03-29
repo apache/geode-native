@@ -81,7 +81,7 @@ void CacheTransactionManagerImpl::commit() {
 
   if (err != GF_NOERR) {
     // err = rollback(txState, false);
-    //		noteCommitFailure(txState, NULLPTR);
+    //		noteCommitFailure(txState, nullptr);
     GfErrTypeThrowException("Error while committing", err);
   } else {
     switch (reply.getMessageType()) {
@@ -89,7 +89,7 @@ void CacheTransactionManagerImpl::commit() {
         break;
       }
       case TcrMessage::EXCEPTION: {
-        //			noteCommitFailure(txState, NULLPTR);
+        //			noteCommitFailure(txState, nullptr);
         const char* exceptionMsg = reply.getException();
         err = ThinClientRegion::handleServerException(
             "CacheTransactionManager::commit", exceptionMsg);
@@ -97,12 +97,12 @@ void CacheTransactionManagerImpl::commit() {
         break;
       }
       case TcrMessage::COMMIT_ERROR: {
-        //			noteCommitFailure(txState, NULLPTR);
+        //			noteCommitFailure(txState, nullptr);
         GfErrTypeThrowException("Commit Failed", GF_COMMIT_CONFLICT_EXCEPTION);
         break;
       }
       default: {
-        //			noteCommitFailure(txState, NULLPTR);
+        //			noteCommitFailure(txState, nullptr);
         LOGERROR("Unknown message type in commit reply %d",
                  reply.getMessageType());
         GfErrTypeThrowException("Commit Failed", GF_MSG);
@@ -111,12 +111,12 @@ void CacheTransactionManagerImpl::commit() {
     }
   }
 
-  TXCommitMessagePtr commit = staticCast<TXCommitMessagePtr>(reply.getValue());
+  TXCommitMessagePtr commit = std::static_pointer_cast<GF_UNWRAP_SP(TXCommitMessagePtr)>(reply.getValue());
   txCleaner.clean();
   commit->apply(m_cache);
 
   /*
-          if(m_writer != NULLPTR)
+          if(m_writer != nullptr)
           {
                   try
                   {
@@ -305,8 +305,8 @@ GfErrType CacheTransactionManagerImpl::rollback(TXState* txState,
   /*	if(err == GF_NOERR && callListener)
           {
   //		TXCommitMessagePtr commit =
-  staticCast<TXCommitMessagePtr>(reply.getValue());
-                  noteRollbackSuccess(txState, NULLPTR);
+  std::static_pointer_cast<GF_UNWRAP_SP(TXCommitMessagePtr)>(reply.getValue());
+                  noteRollbackSuccess(txState, nullptr);
           }
   */
   return err;
@@ -330,14 +330,14 @@ TransactionIdPtr CacheTransactionManagerImpl::suspend() {
   TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
   if (txState == NULL) {
     LOGFINE("Transaction not in progress. Returning NULL transaction Id.");
-    return NULLPTR;
+    return nullptr;
   }
 
   // get the current connection that this transaction is using
   TcrConnection* conn = TssConnectionWrapper::s_geodeTSSConn->getConnection();
   if (conn == NULL) {
     LOGFINE("Thread local connection is null. Returning NULL transaction Id.");
-    return NULLPTR;
+    return nullptr;
   }
 
   // get the endpoint info from the connection
@@ -380,8 +380,8 @@ void CacheTransactionManagerImpl::resume(TransactionIdPtr transactionId) {
   }
 
   // get the transaction state of the suspended transaction
-  TXState* txState =
-      removeSuspendedTx((static_cast<TXIdPtr>(transactionId))->getId());
+  TXState* txState = removeSuspendedTx(
+      (std::static_pointer_cast<TXId>(transactionId))->getId());
   if (txState == NULL) {
     GfErrTypeThrowException(
         "Could not get transaction state for the transaction id.",
@@ -392,7 +392,8 @@ void CacheTransactionManagerImpl::resume(TransactionIdPtr transactionId) {
 }
 
 bool CacheTransactionManagerImpl::isSuspended(TransactionIdPtr transactionId) {
-  return isSuspendedTx((static_cast<TXIdPtr>(transactionId))->getId());
+  return isSuspendedTx(
+      (std::static_pointer_cast<TXId>(transactionId))->getId());
 }
 bool CacheTransactionManagerImpl::tryResume(TransactionIdPtr transactionId) {
   return tryResume(transactionId, true);
@@ -406,8 +407,8 @@ bool CacheTransactionManagerImpl::tryResume(TransactionIdPtr transactionId,
   }
 
   // get the transaction state of the suspended transaction
-  TXState* txState =
-      removeSuspendedTx((static_cast<TXIdPtr>(transactionId))->getId());
+  TXState* txState = removeSuspendedTx(
+      (std::static_pointer_cast<TXId>(transactionId))->getId());
   if (txState == NULL) return false;
 
   resumeTxUsingTxState(txState, cancelExpiryTask);
@@ -426,7 +427,8 @@ bool CacheTransactionManagerImpl::tryResume(TransactionIdPtr transactionId,
 
   // get the transaction state of the suspended transaction
   TXState* txState = removeSuspendedTxUntil(
-      (static_cast<TXIdPtr>(transactionId))->getId(), waitTimeInMillisec);
+      (std::static_pointer_cast<TXId>(transactionId))->getId(),
+      waitTimeInMillisec);
   if (txState == NULL) return false;
 
   resumeTxUsingTxState(txState);
@@ -474,7 +476,7 @@ void CacheTransactionManagerImpl::resumeTxUsingTxState(TXState* txState,
 }
 
 bool CacheTransactionManagerImpl::exists(TransactionIdPtr transactionId) {
-  return findTx((static_cast<TXIdPtr>(transactionId))->getId());
+  return findTx((std::static_pointer_cast<TXId>(transactionId))->getId());
 }
 
 bool CacheTransactionManagerImpl::exists() {
@@ -566,7 +568,7 @@ bool CacheTransactionManagerImpl::isSuspendedTx(int32_t txId) {
 TransactionIdPtr CacheTransactionManagerImpl::getTransactionId() {
   TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
   if (txState == NULL) {
-    return NULLPTR;
+    return nullptr;
   } else {
     return txState->getTransactionId();
   }
@@ -585,7 +587,7 @@ TransactionWriterPtr CacheTransactionManagerImpl::getWriter()
 
 void CacheTransactionManagerImpl::addListener(TransactionListenerPtr aListener)
 {
-        if(aListener == NULLPTR)
+        if(aListener == nullptr)
         {
                 GfErrTypeThrowException("Trying to add null listener.",
 GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION);
@@ -599,7 +601,7 @@ GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION);
 void CacheTransactionManagerImpl::removeListener(TransactionListenerPtr
 aListener)
 {
-        if(aListener == NULLPTR)
+        if(aListener == nullptr)
         {
                 GfErrTypeThrowException("Trying to remove null listener.",
 GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION);
@@ -614,7 +616,7 @@ void CacheTransactionManagerImpl::noteCommitFailure(TXState* txState, const
 TXCommitMessagePtr& commitMessage)
 {
         VectorOfEntryEvent events;
-        if(commitMessage!= NULLPTR)
+        if(commitMessage!= nullptr)
         {
                 events = commitMessage->getEvents(m_cache);
         }
@@ -625,7 +627,7 @@ TransactionEvent(txState->getTransactionId(), CachePtr(m_cache), events));
 m_listeners.end() != iter; iter++)
         {
                 TransactionListenerPtr listener =
-staticCast<TransactionListenerPtr>(*iter);
+std::static_pointer_cast<GF_UNWRAP_SP(TransactionListenerPtr)>(*iter);
                 listener->afterFailedCommit(event);
         }
 }
@@ -634,7 +636,7 @@ void CacheTransactionManagerImpl::noteCommitSuccess(TXState* txState, const
 TXCommitMessagePtr& commitMessage)
 {
         VectorOfEntryEvent events;
-                if(commitMessage!= NULLPTR)
+                if(commitMessage!= nullptr)
                 {
                         events = commitMessage->getEvents(m_cache);
                 }
@@ -645,7 +647,7 @@ TransactionEvent(txState->getTransactionId(), CachePtr(m_cache), events));
 m_listeners.end() != iter; iter++)
         {
                 TransactionListenerPtr listener =
-staticCast<TransactionListenerPtr>(*iter);
+std::static_pointer_cast<GF_UNWRAP_SP(TransactionListenerPtr)>(*iter);
                 listener->afterCommit(event);
         }
 }
@@ -654,7 +656,7 @@ void CacheTransactionManagerImpl::noteRollbackSuccess(TXState* txState, const
 TXCommitMessagePtr& commitMessage)
 {
         VectorOfEntryEvent events;
-        if(commitMessage!= NULLPTR)
+        if(commitMessage!= nullptr)
         {
                 events = commitMessage->getEvents(m_cache);
         }
@@ -665,7 +667,7 @@ TransactionEvent(txState->getTransactionId(), CachePtr(m_cache), events));
 m_listeners.end() != iter; iter++)
         {
                 TransactionListenerPtr listener =
-staticCast<TransactionListenerPtr>(*iter);
+std::static_pointer_cast<GF_UNWRAP_SP(TransactionListenerPtr)>(*iter);
                 listener->afterRollback(event);
         }
 }

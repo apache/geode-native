@@ -54,11 +54,11 @@ class TESTOBJECT_EXPORT PSTObject : public TimestampedObject {
   CacheableBytesPtr valueData;
 
   inline uint32_t getObjectSize(const SerializablePtr& obj) const {
-    return (obj == NULLPTR ? 0 : obj->objectSize());
+    return (obj == nullptr ? 0 : obj->objectSize());
   }
 
  public:
-  PSTObject() : timestamp(0), valueData(NULLPTR) {}
+  PSTObject() : timestamp(0), valueData(nullptr) {}
   PSTObject(int size, bool encodeKey, bool encodeTimestamp);
   virtual ~PSTObject();
   virtual void toData(apache::geode::client::DataOutput& output) const;

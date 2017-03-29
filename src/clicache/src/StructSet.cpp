@@ -45,7 +45,7 @@ namespace Apache
       generic<class TResult>
       /*Apache::Geode::Client::IGeodeSerializable^*/ TResult StructSet<TResult>::default::get( size_t index )
       {
-        //return SafeUMSerializableConvertGeneric((NativePtr->operator[](static_cast<System::Int32>(index))).ptr());
+        //return SafeUMSerializableConvertGeneric((NativePtr->operator[](static_cast<System::Int32>(index))).get());
         return Serializable::GetManagedValueGeneric<TResult>((NativePtr->operator[](static_cast<System::Int32>(index))));
       }
 

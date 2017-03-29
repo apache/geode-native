@@ -28,7 +28,7 @@ void createAuthzRegion() {
   initCredentialGenerator();
   initClientAuth('A');
   RegionPtr regPtr = createOverflowRegion(regionNamesAuth[0], false, 1);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 DUNIT_TASK_DEFINITION(SERVER, StartServer1)

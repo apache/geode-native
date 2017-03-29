@@ -34,7 +34,7 @@ namespace Apache
       Object^ Struct::default::get( size_t index )
       {
        /*   return SafeUMSerializableConvertGeneric(static_cast<apache::geode::client::Struct*>(
-            NativePtr())->operator[](static_cast<System::Int32>(index)).ptr());*/
+            NativePtr())->operator[](static_cast<System::Int32>(index)).get());*/
           return (Serializable::GetManagedValueGeneric<Object^>(static_cast<apache::geode::client::Struct*>(
             NativePtr())->operator[](static_cast<System::Int32>(index))));
       }
@@ -43,7 +43,7 @@ namespace Apache
       {
         ManagedString mg_fieldName( fieldName );
         /*return SafeUMSerializableConvertGeneric(static_cast<apache::geode::client::Struct*>(
-            NativePtr())->operator[](mg_fieldName.CharPtr).ptr());*/
+            NativePtr())->operator[](mg_fieldName.CharPtr).get());*/
 
         return (Serializable::GetManagedValueGeneric</*TResult*/Object^>(static_cast<apache::geode::client::Struct*>(
             NativePtr())->operator[](mg_fieldName.CharPtr)));
@@ -52,7 +52,7 @@ namespace Apache
       StructSet<Object^>^ Struct::Set::get( )
       {
         return StructSet</*TResult*/Object^>::Create(static_cast<apache::geode::client::Struct*>(
-          NativePtr())->getStructSet().ptr());
+          NativePtr())->getStructSet().get());
       }
 
       
@@ -69,7 +69,7 @@ namespace Apache
       Object^ Struct/*<TResult>*/::Next( )
       {
         /*return SafeUMSerializableConvertGeneric(static_cast<apache::geode::client::Struct*>(
-          NativePtr())->next().ptr());*/
+          NativePtr())->next().get());*/
         return (Serializable::GetManagedValueGeneric</*TResult*/Object^>(static_cast<apache::geode::client::Struct*>(
           NativePtr())->next()));
     }  // namespace Client

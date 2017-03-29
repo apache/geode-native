@@ -43,7 +43,7 @@ StatisticsManager* StatisticsManager::s_singleton = NULL;
 StatisticsManager::StatisticsManager(const char* filePath, int64_t sampleInterval,
                                      bool enabled, int64_t statFileLimit,
                                      int64_t statDiskSpaceLimit)
-    : m_sampler(NULL), m_adminRegion(NULLPTR) {
+    : m_sampler(NULL), m_adminRegion(nullptr) {
   m_sampleIntervalMs =
       static_cast<int32_t>(sampleInterval) * 1000; /* convert to millis */
   m_newlyAddedStatsList.reserve(16);               // Allocate initial sizes

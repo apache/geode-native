@@ -45,7 +45,9 @@ class CppCacheLibrary;
  * For the default values for the pool attributes see {@link PoolFactory}.
  * To create additional {@link Pool}s see {@link PoolManager}
  */
-class CPPCACHE_EXPORT CacheFactory : public SharedBase {
+class CPPCACHE_EXPORT CacheFactory
+    : public SharedBase,
+      public std::enable_shared_from_this<CacheFactory> {
  public:
   /**
    * To create the instance of {@link CacheFactory}
@@ -53,7 +55,7 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
    *        Properties which are applicable at client level.
    */
   static CacheFactoryPtr createCacheFactory(
-      const PropertiesPtr& dsProps = NULLPTR);
+      const PropertiesPtr& dsProps = nullptr);
 
   /**
    * To create the instance of {@link Cache}.
@@ -466,9 +468,9 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
 
   PoolFactoryPtr getPoolFactory();
 
-  CachePtr create(const char* name, DistributedSystemPtr system = NULLPTR,
+  CachePtr create(const char* name, DistributedSystemPtr system = nullptr,
                   const char* cacheXml = 0,
-                  const CacheAttributesPtr& attrs = NULLPTR);
+                  const CacheAttributesPtr& attrs = nullptr);
 
   static void create_(const char* name, DistributedSystemPtr& system,
                       const char* id_data, CachePtr& cptr,
@@ -477,7 +479,13 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
   // no instances allowed
   CacheFactory();
   CacheFactory(const PropertiesPtr dsProps);
+
+ public:
+  // TODO shared_ptr - this should be private, fix friend
   ~CacheFactory();
+
+ private:
+  FRIEND_STD_SHARED_PTR(CacheFactory)
 
   PoolPtr determineDefaultPool(CachePtr cachePtr);
 

@@ -1054,7 +1054,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
     m_bufferLength = length;
     LOGDEBUG("PdxInstanceImpl::m_bufferLength = %d ", m_bufferLength);
     m_typeId = typeId;
-    m_pdxType = NULLPTR;
+    m_pdxType = nullptr;
   }
 
   PdxInstanceImpl(FieldVsValues fieldVsValue, PdxTypePtr pdxType);

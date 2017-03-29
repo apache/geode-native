@@ -43,8 +43,8 @@ _GF_PTR_DEF_(RegionCommit, RegionCommitPtr);
 
 class RegionCommit : public apache::geode::client::SharedBase {
  public:
-  RegionCommit();
-  virtual ~RegionCommit();
+  RegionCommit(){};
+  virtual ~RegionCommit(){};
 
   void fromData(DataInput& input);
   void apply(Cache* cache);

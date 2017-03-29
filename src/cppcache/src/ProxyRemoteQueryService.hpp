@@ -38,7 +38,7 @@ class ThinClientPoolDM;
 
 class CPPCACHE_EXPORT ProxyRemoteQueryService : public QueryService {
  public:
-  ProxyRemoteQueryService(ProxyCache* cptr);
+  ProxyRemoteQueryService(ProxyCachePtr cptr);
 
   QueryPtr newQuery(const char* querystring);
 
@@ -48,7 +48,7 @@ class CPPCACHE_EXPORT ProxyRemoteQueryService : public QueryService {
   virtual CqQueryPtr newCq(const char* name, const char* querystr,
                            CqAttributesPtr& cqAttr, bool isDurable = false);
   virtual void closeCqs();
-  virtual void getCqs(VectorOfCqQuery& vec);
+  virtual void getCqs(query_container_type& vec);
   virtual CqQueryPtr getCq(const char* name);
   virtual void executeCqs();
   virtual void stopCqs();
@@ -62,7 +62,7 @@ class CPPCACHE_EXPORT ProxyRemoteQueryService : public QueryService {
 
   QueryServicePtr m_realQueryService;
   ProxyCachePtr m_proxyCache;
-  VectorOfCqQuery m_cqQueries;
+  query_container_type m_cqQueries;
   // lock for cqQuery list;
   ACE_Recursive_Thread_Mutex m_cqQueryListLock;
   friend class ProxyCache;

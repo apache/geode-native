@@ -38,7 +38,7 @@ namespace client {
   class CPPCACHE_EXPORT x : public apache::geode::client::Exception {     \
    public:                                                                \
     x(const char* msg1, const char* msg2 = NULL, bool forceStack = false, \
-      const ExceptionPtr& cause = NULLPTR)                                \
+      const ExceptionPtr& cause = nullptr)                                \
         : Exception(msg1, msg2, forceStack, cause) {}                     \
     x(const x& other) : Exception(other) {}                               \
     virtual Exception* clone() const {                                    \

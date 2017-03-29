@@ -380,7 +380,7 @@ class CPPCACHE_EXPORT TcrMessage {
   // takes ownership of delta bytes.
   CacheableBytesPtr getDeltaBytes() {
     if (m_deltaBytes == NULL) {
-      return NULLPTR;
+      return nullptr;
     }
     CacheableBytesPtr retVal(
         CacheableBytes::createNoCopy(m_deltaBytes, m_deltaBytesLen));
@@ -449,7 +449,7 @@ class CPPCACHE_EXPORT TcrMessage {
  protected:
   TcrMessage()
       : m_feAnotherHop(false),
-        m_connectionIDBytes(NULLPTR),
+        m_connectionIDBytes(nullptr),
         isSecurityOn(false),
         m_isLastChunkAndisSecurityHeader(0),
         m_isSecurityHeaderAdded(false),
@@ -467,11 +467,11 @@ class CPPCACHE_EXPORT TcrMessage {
         m_chunkedResult(NULL),
         m_keyList(NULL),
         m_key(),
-        m_value(NULLPTR),
+        m_value(nullptr),
         m_failedNode(),
-        m_callbackArgument(NULLPTR),
+        m_callbackArgument(nullptr),
         m_versionTag(),
-        m_eventid(NULLPTR),
+        m_eventid(nullptr),
         m_regionName("INVALID_REGION_NAME"),
         m_region(NULL),
         m_regex(),
@@ -499,7 +499,7 @@ class CPPCACHE_EXPORT TcrMessage {
         m_deltaBytes(NULL),
         m_deltaBytesLen(0),
         m_isCallBackArguement(false),
-        m_bucketServerLocation(NULLPTR),
+        m_bucketServerLocation(nullptr),
         m_entryNotFound(0),
         m_fpaSet(),
         m_functionAttributes(),
@@ -1028,7 +1028,7 @@ class TcrMessageGetAll : public TcrMessage {
  public:
   TcrMessageGetAll(const Region* region, const VectorOfCacheableKey* keys,
                    ThinClientBaseDM* connectionDM = NULL,
-                   const UserDataPtr& aCallbackArgument = NULLPTR);
+                   const UserDataPtr& aCallbackArgument = nullptr);
 
   virtual ~TcrMessageGetAll() {}
 };

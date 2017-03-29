@@ -116,7 +116,7 @@ PropertiesPtr PKCSAuthInitInternal::getCredentials(PropertiesPtr& securityprops,
         "PKCSAuthInit::getCredentials: "
         "OpenSSL initialization failed.");
   }
-  if (securityprops == NULLPTR || securityprops->getSize() <= 0) {
+  if (securityprops == nullptr || securityprops->getSize() <= 0) {
     throw AuthenticationRequiredException(
         "PKCSAuthInit::getCredentials: "
         "No security-* properties are set.");

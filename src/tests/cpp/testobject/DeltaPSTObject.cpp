@@ -31,7 +31,7 @@ DeltaPSTObject::DeltaPSTObject(int size, bool encodeKey, bool encodeTimestamp) {
   field1 = 1234;
   field2 = '*';
   if (size == 0) {
-    valueData = NULLPTR;
+    valueData = nullptr;
   } else {
     encodeKey = true;
     valueData = ArrayOfByte::init(size, encodeKey, false);

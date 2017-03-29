@@ -72,7 +72,7 @@ void setCacheListener(const char* regName, OperMonitorPtr monitor) {
   attrMutator->setCacheListener(monitor);
 }
 
-OperMonitorPtr mon1 = NULLPTR;
+OperMonitorPtr mon1 = nullptr;
 
 const char* mixKeys[] = {"D-Key-1"};
 
@@ -82,8 +82,8 @@ const char* mixKeys[] = {"D-Key-1"};
 void initClientCache(int redundancy, OperMonitorPtr& mon) {
   initClientAndRegion(redundancy, 0, 60000, 1, 300);
 
-  if (mon == NULLPTR) {
-    mon = new OperMonitor();
+  if (mon == nullptr) {
+    mon = std::make_shared<OperMonitor>();
   }
 
   setCacheListener(regionNames[0], mon);
@@ -138,7 +138,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, CloseClient)
   {
-    mon1 = NULLPTR;
+    mon1 = nullptr;
     cleanProc();
     LOG("CLIENT1 closed");
   }

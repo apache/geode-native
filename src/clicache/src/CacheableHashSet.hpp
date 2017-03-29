@@ -57,7 +57,7 @@ namespace Apache
             HSTYPE* set = static_cast<HSTYPE*>(nptr());
             for (typename HSTYPE::Iterator iter = set->begin();
                  iter != set->end(); ++iter) {
-              //Generic::ICacheableKey^ key = SafeGenericUMKeyConvert<ICacheableKey^>((*iter).ptr());
+              //Generic::ICacheableKey^ key = SafeGenericUMKeyConvert<ICacheableKey^>((*iter).get());
               Object^ key = Serializable::GetManagedValueGeneric<Object^>((*iter));
               output->WriteObject(key);
             }
@@ -158,7 +158,7 @@ namespace Apache
                   throw gcnew System::InvalidOperationException(
                     "Call MoveNext first.");
                 }
-                //return SafeGenericUMKeyConvert<Client::ICacheableKey^>((*(*NativePtr())).ptr());
+                //return SafeGenericUMKeyConvert<Client::ICacheableKey^>((*(*NativePtr())).get());
                 return Serializable::GetManagedValueGeneric<Object^>((*(*NativePtr())));
               }
             }
@@ -520,7 +520,7 @@ namespace Apache
           /// </summary>
           /// <param name="size">The initial size of the HashSet.</param>
           inline CacheableHashSetType<TYPEID, HSTYPE>(System::Int32 size)
-            : Serializable(HSTYPE::create(size).ptr())
+            : Serializable(HSTYPE::create(size).get())
           { }
         };
       }

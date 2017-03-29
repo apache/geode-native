@@ -72,7 +72,7 @@ inline int32_t hashFunction(const TKEY& k) {
 
 template <typename TKEY>
 inline bool equalToFunction(const TKEY& x, const TKEY& y) {
-  return (*x.ptr() == *y.ptr());
+  return (*x.get() == *y.get());
 }
 }  // namespace client
 }  // namespace geode

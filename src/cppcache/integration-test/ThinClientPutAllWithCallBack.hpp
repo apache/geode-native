@@ -90,7 +90,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   }
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   CacheableKeyPtr keyPtr = createKey(key);
 
@@ -139,10 +139,10 @@ void _verifyEntry(const char* name, const char* key, const char* val,
       }
 
       if (val != NULL) {
-        CacheableStringPtr checkPtr =
-            dynCast<CacheableStringPtr>(regPtr->get(keyPtr));
+        auto checkPtr =
+            std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
-        ASSERT(checkPtr != NULLPTR, "Value Ptr should not be null.");
+        ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
         char buf[1024];
         sprintf(buf, "In verify loop, get returned %s for key %s",
                 checkPtr->asChar(), key);
@@ -205,8 +205,8 @@ void createRegion(const char* name, bool ackMode, bool isCacheEnabled,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   RegionPtr regPtr = getHelper()->createRegion(
-      name, ackMode, isCacheEnabled, NULLPTR, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+      name, ackMode, isCacheEnabled, nullptr, clientNotificationEnabled);
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 void createPooledRegion(const char* name, bool ackMode, const char* locators,
@@ -219,7 +219,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   RegionPtr regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }
 
@@ -233,7 +233,7 @@ void createPooledRegionConcurrencyCheckDisabled(
   RegionPtr regPtr = getHelper()->createPooledRegionConcurrencyCheckDisabled(
       name, ackMode, locators, poolname, cachingEnable,
       clientNotificationEnabled, concurrencyCheckEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }
 
@@ -250,7 +250,7 @@ void createEntry(const char* name, const char* key, const char* value = NULL) {
   CacheableStringPtr valPtr = CacheableString::create(value);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
          "Key should not have been found in region.");
@@ -275,7 +275,7 @@ void updateEntry(const char* name, const char* key, const char* value) {
   CacheableStringPtr valPtr = CacheableString::create(value);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
   ASSERT(regPtr->containsValueForKey(keyPtr),
@@ -301,17 +301,17 @@ void doNetsearch(const char* name, const char* key, const char* value) {
   RegionPtr regPtr = getHelper()->getRegion(name);
   fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
   fflush(stdout);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
          "Key should not have been found in region.");
   ASSERT(!regPtr->containsValueForKey(keyPtr),
          "Value should not have been found in region.");
 
-  CacheableStringPtr checkPtr =
-      dynCast<CacheableStringPtr>(regPtr->get(keyPtr));  // force a netsearch
+  auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
+      regPtr->get(keyPtr));  // force a netsearch
 
-  if (checkPtr != NULLPTR) {
+  if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
     char buf[1024];
     sprintf(buf, "In net search, get returned %s for key %s",
@@ -416,7 +416,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RegisterClient1Keys)
     VectorOfCacheableKey keys1;
     keys1.push_back(keyPtr0);
     keys1.push_back(keyPtr1);
-    regPtr0->registerKeys(keys1, NULLPTR);
+    regPtr0->registerKeys(keys1);
 
     CacheableKeyPtr keyPtr2 = CacheableKey::create(keys[2]);
     CacheableKeyPtr keyPtr3 = CacheableKey::create(keys[3]);
@@ -424,7 +424,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RegisterClient1Keys)
     VectorOfCacheableKey keys2;
     keys2.push_back(keyPtr2);
     keys2.push_back(keyPtr3);
-    regPtr1->registerKeys(keys2, NULLPTR);
+    regPtr1->registerKeys(keys2);
 
     LOG("RegisterClient1Keys complete.");
   }
@@ -485,9 +485,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllOps)
       getAllkeys.push_back(CacheableKey::create(key));
     }
 
-    HashMapOfCacheablePtr valuesMap(new HashMapOfCacheable());
+    auto valuesMap = std::make_shared<HashMapOfCacheable>();
     valuesMap->clear();
-    regPtr0->getAll(getAllkeys, valuesMap, NULLPTR, false);
+    regPtr0->getAll(getAllkeys, valuesMap, nullptr, false);
     ASSERT(valuesMap->size() == 500, "GetAll should return 500 entries.");
 
     LOG("PutAllOps complete.");
@@ -591,11 +591,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyRegionService)
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
     RegionServicePtr rsp = regPtr0->getRegionService();
     RegionPtr regPtr = rsp->getRegion(regionNames[0]);
-    ASSERT(regPtr != NULLPTR, "Failed to get region.");
+    ASSERT(regPtr != nullptr, "Failed to get region.");
 
     RegionServicePtr rsp1 = regPtr0->getRegionService();
     RegionPtr regPtr1 = rsp1->getRegion("NOT_CREATED_REGION");
-    ASSERT(regPtr1 == NULLPTR, "Unknown Region Returned");
+    ASSERT(regPtr1 == nullptr, "Unknown Region Returned");
 
     LOG("VerifyRegionService complete.");
   }
@@ -609,20 +609,20 @@ DUNIT_TASK_DEFINITION(CLIENT1, InvalidateKeys)
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
 
     regPtr0->put(keyPtr0, valPtr0);
-    CacheableInt64Ptr checkPtr =
-        dynCast<CacheableInt64Ptr>(regPtr0->get(keyPtr0));
-    ASSERT(checkPtr != NULLPTR, "checkPtr should not be null.");
+    auto checkPtr =
+        std::dynamic_pointer_cast<CacheableInt64>(regPtr0->get(keyPtr0));
+    ASSERT(checkPtr != nullptr, "checkPtr should not be null.");
 
     regPtr0->invalidate(keyPtr0);
-    checkPtr = dynCast<CacheableInt64Ptr>(regPtr0->get(keyPtr0));
-    ASSERT(checkPtr == NULLPTR, "checkPtr should be null.");
+    checkPtr = std::dynamic_pointer_cast<CacheableInt64>(regPtr0->get(keyPtr0));
+    ASSERT(checkPtr == nullptr, "checkPtr should be null.");
 
     try {
       CacheableKeyPtr key;
       regPtr0->invalidate(key);
-      FAIL("Invalidate on NULLPTR should throw exception");
+      FAIL("Invalidate on nullptr should throw exception");
     } catch (IllegalArgumentException e) {
-      LOG(" Got an expected exception invalidate on NULLPTR should be throwing "
+      LOG(" Got an expected exception invalidate on nullptr should be throwing "
           "exception ");
     }
 
@@ -639,8 +639,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyPutAllWithLongKeyAndStringValue)
     }
     regPtr0->putAll(map0, 15, CacheableInt32::create(1000));
     for (int i = 0; i < 2; i++) {
-      CacheableInt64Ptr checkPtr =
-          dynCast<CacheableInt64Ptr>(regPtr0->get(CacheableInt64::create(i)));
+      auto checkPtr = std::dynamic_pointer_cast<CacheableInt64>(
+          regPtr0->get(CacheableInt64::create(i)));
       ASSERT(checkPtr->value() == i,
              "putAll entry with long key and long value Mismatch.");
     }
@@ -653,8 +653,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyPutAllWithLongKeyAndStringValue)
     }
     regPtr0->putAll(map0, 15, CacheableInt32::create(1000));
     for (int i = 80; i < 82; i++) {
-      CacheableStringPtr checkPtr =
-          dynCast<CacheableStringPtr>(regPtr0->get(CacheableInt64::create(i)));
+      auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
+          regPtr0->get(CacheableInt64::create(i)));
       ASSERT(strcmp(checkPtr->asChar(), vals[i - 80]) == 0,
              "putAll entry with long key and string value  Mismatch");
     }
@@ -670,8 +670,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyPutAllWithLongKeyAndLongValue)
     try {
       map0.insert(CacheableInt64::create(345), CacheableInt64::create(3465987));
       regPtr0->putAll(map0, -1, CacheableInt32::create(1000));
-      CacheableInt64Ptr checkPtr =
-          dynCast<CacheableInt64Ptr>(regPtr0->get(CacheableInt64::create(345)));
+      auto checkPtr = std::dynamic_pointer_cast<CacheableInt64>(
+          regPtr0->get(CacheableInt64::create(345)));
       ASSERT(checkPtr->value() == 3465987,
              "putAll entry with long key and long value Mismatch.");
     } catch (Exception& excp) {
@@ -688,7 +688,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyPutAllWithLongKeyAndLongValue)
       map0.insert(CacheableInt64::create(3451),
                   CacheableInt64::create(3465987));
       regPtr0->putAll(map0, 2147500, CacheableInt32::create(1000));
-      CacheableInt64Ptr checkPtr = dynCast<CacheableInt64Ptr>(
+      auto checkPtr = std::dynamic_pointer_cast<CacheableInt64>(
           regPtr0->get(CacheableInt64::create(3451)));
       ASSERT(checkPtr->value() == 3465987,
              "putAll entry with long key and long value Mismatch.");
@@ -709,22 +709,23 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyPutAllWithObjectKey)
   {
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable map0;
-    PdxTests::PdxTypes1Ptr val111(new PdxTests::PdxTypes1());
+    auto val111 = std::make_shared<PdxTests::PdxTypes1>();
     map0.insert(CacheableInt32::create(1211), val111);
     regPtr0->putAll(map0, 15, CacheableInt32::create(1000));
-    PdxTests::PdxTypes1Ptr retObj = dynCast<PdxTests::PdxTypes1Ptr>(
+    auto retObj = std::dynamic_pointer_cast<PdxTests::PdxTypes1>(
         regPtr0->get(CacheableInt32::create(1211)));
     ASSERT(val111->equals(retObj) == true, "val111 and retObj should match.");
     map0.clear();
 
-    CacheableKeyPtr keyObject(new PdxTests::PdxType());
+    auto keyObject = std::make_shared<PdxTests::PdxType>();
     map0.insert(keyObject, CacheableInt32::create(111));
     regPtr0->putAll(map0, 15, CacheableInt32::create(1000));
-    CacheableInt32Ptr checkPtr = regPtr0->get(keyObject);
+    CacheableInt32Ptr checkPtr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr0->get(keyObject));
     ASSERT(checkPtr->value() == 111,
            "putAll with entry as object key and value as int  Mismatch");
     map0.clear();
-    CacheableKeyPtr keyObject6(new PdxTests::PdxTypes3());
+    auto keyObject6 = std::make_shared<PdxTests::PdxTypes3>();
     map0.insert(keyObject6, CacheableString::create("testString"));
     regPtr0->putAll(map0, 15, CacheableInt32::create(1000));
     CacheablePtr checkPtr1 = regPtr0->get(keyObject6);
@@ -732,15 +733,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyPutAllWithObjectKey)
            "strVal should be testString.");
     map0.clear();
 
-    CacheableKeyPtr keyObject7(new PdxTests::PdxTypes2());
-    PdxTests::PdxTypes1Ptr valObject(new PdxTests::PdxTypes1());
-    CacheableKeyPtr keyObject8(new PdxTests::PdxTypes2());
-    PdxTests::PdxTypes1Ptr valObject2(new PdxTests::PdxTypes1());
+    auto keyObject7 = std::make_shared<PdxTests::PdxTypes2>();
+    auto valObject = std::make_shared<PdxTests::PdxTypes1>();
+    auto keyObject8 = std::make_shared<PdxTests::PdxTypes2>();
+    auto valObject2 = std::make_shared<PdxTests::PdxTypes1>();
     map0.insert(keyObject7, valObject);
     map0.insert(keyObject8, valObject2);
     regPtr0->putAll(map0, 15, CacheableInt32::create(1000));
-    PdxTests::PdxTypes1Ptr objVal =
-        dynCast<PdxTests::PdxTypes1Ptr>(regPtr0->get(keyObject7));
+    auto objVal = std::dynamic_pointer_cast<PdxTests::PdxTypes1>(
+        regPtr0->get(keyObject7));
     ASSERT(valObject == objVal, "valObject and objVal should match.");
 
     regPtr0->localInvalidateRegion();
@@ -748,17 +749,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyPutAllWithObjectKey)
     VectorOfCacheableKey keys1;
     keys1.push_back(keyObject7);
     keys1.push_back(keyObject8);
-    HashMapOfCacheablePtr valuesMap(new HashMapOfCacheable());
+    auto valuesMap = std::make_shared<HashMapOfCacheable>();
     valuesMap->clear();
-    regPtr0->getAll(keys1, valuesMap, NULLPTR, true);
+    regPtr0->getAll(keys1, valuesMap, nullptr, true);
     if (valuesMap->size() == keys1.size()) {
       char buf[2048];
       for (HashMapOfCacheable::Iterator iter = valuesMap->begin();
            iter != valuesMap->end(); iter++) {
-        CacheableKeyPtr key = dynCast<CacheableKeyPtr>(iter.first());
+        auto key = std::dynamic_pointer_cast<CacheableKey>(iter.first());
         CacheablePtr mVal = iter.second();
-        if (mVal != NULLPTR) {
-          PdxTests::PdxTypes1Ptr val1 = dynCast<PdxTests::PdxTypes1Ptr>(mVal);
+        if (mVal != nullptr) {
+          auto val1 = std::dynamic_pointer_cast<PdxTests::PdxTypes1>(mVal);
           sprintf(buf, "value from map %d , expected value %d ",
                   val1->getm_i1(), 34324);
           LOG(buf);

@@ -328,7 +328,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
             region->selectValue(const_cast<char*>(regionQueries[i].query()));
 
         /*
-              if (result == NULLPTR)
+              if (result == nullptr)
               {
                 char logmsg[100] = {0};
                 ACE_OS::sprintf(logmsg, "Query # %d query selectValue result is
@@ -370,7 +370,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
     }
 
     try {
-      SelectResultsPtr results = region->selectValue("");
+      auto results =
+          std::dynamic_pointer_cast<SelectResults>(region->selectValue(""));
       FAIL("Expected IllegalArgumentException exception for empty predicate");
     } catch (apache::geode::client::IllegalArgumentException ex) {
       LOG("got expected IllegalArgumentException exception for empty "
@@ -379,8 +380,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
     }
 
     try {
-      SelectResultsPtr results = region->selectValue(
-          const_cast<char*>(regionQueries[0].query()), 2200000);
+      auto results =
+          std::dynamic_pointer_cast<SelectResults>(region->selectValue(
+              const_cast<char*>(regionQueries[0].query()), 2200000));
       FAIL("Expected IllegalArgumentException exception for invalid timeout");
     } catch (apache::geode::client::IllegalArgumentException ex) {
       LOG("got expected IllegalArgumentException exception for invalid "
@@ -389,8 +391,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
     }
 
     try {
-      SelectResultsPtr results =
-          region->selectValue(const_cast<char*>(regionQueries[0].query()), -1);
+      auto results = std::dynamic_pointer_cast<SelectResults>(
+          region->selectValue(const_cast<char*>(regionQueries[0].query()), -1));
       FAIL("Expected IllegalArgumentException exception for invalid timeout");
     } catch (apache::geode::client::IllegalArgumentException ex) {
       LOG("got expected IllegalArgumentException exception for invalid "
@@ -398,7 +400,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
       LOG(ex.getMessage());
     }
     try {
-      SelectResultsPtr results = region->selectValue("bad predicate");
+      auto results = std::dynamic_pointer_cast<SelectResults>(
+          region->selectValue("bad predicate"));
       FAIL("Expected IllegalArgumentException exception for wrong predicate");
     } catch (QueryException ex) {
       LOG("got expected QueryException for wrong predicate:");

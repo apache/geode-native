@@ -58,16 +58,16 @@ class OperMonitor : public CacheListener {
     m_ops++;
 
     CacheableKeyPtr key = event.getKey();
-    CacheableInt32Ptr value = NULLPTR;
+    CacheableInt32Ptr value = nullptr;
     try {
-      value = dynCast<CacheableInt32Ptr>(event.getNewValue());
+      value = std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
     } catch (Exception) {
       //  do nothing.
     }
 
     char buff[128] = {'\0'};
-    CacheableStringPtr keyPtr = dynCast<CacheableStringPtr>(key);
-    if (value != NULLPTR) {
+    auto keyPtr = std::dynamic_pointer_cast<CacheableString>(key);
+    if (value != nullptr) {
       sprintf(buff, "Event [%s, %d] called for %s:%s", keyPtr->toString(),
               value->value(), m_clientName.c_str(), m_regionName.c_str());
 
@@ -105,8 +105,8 @@ class OperMonitor : public CacheListener {
 
     for (HashMapOfCacheable::Iterator item = m_map.begin(); item != m_map.end();
          item++) {
-      CacheableStringPtr keyPtr = dynCast<CacheableStringPtr>(item.first());
-      CacheableInt32Ptr valuePtr = dynCast<CacheableInt32Ptr>(item.second());
+      auto keyPtr = std::dynamic_pointer_cast<CacheableString>(item.first());
+      auto valuePtr = std::dynamic_pointer_cast<CacheableInt32>(item.second());
 
       if (strchr(keyPtr->toString(), 'D') == NULL) { /*Non Durable Key */
         sprintf(buf,
@@ -147,11 +147,11 @@ void setCacheListener(const char* regName, OperMonitorPtr monitor) {
   attrMutator->setCacheListener(monitor);
 }
 
-OperMonitorPtr mon1C1 = NULLPTR;
-OperMonitorPtr mon2C1 = NULLPTR;
+OperMonitorPtr mon1C1 = nullptr;
+OperMonitorPtr mon2C1 = nullptr;
 
-OperMonitorPtr mon1C2 = NULLPTR;
-OperMonitorPtr mon2C2 = NULLPTR;
+OperMonitorPtr mon1C2 = nullptr;
+OperMonitorPtr mon2C2 = nullptr;
 
 /* Total 10 Keys , alternate durable and non-durable */
 const char* mixKeys[] = {"Key-1", "D-Key-1", "L-Key", "LD-Key"};
@@ -225,7 +225,7 @@ void feederUpdate(int value, int ignoreR2 = false) {
 DUNIT_TASK_DEFINITION(FEEDER, FeederInit)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regionNames[0], USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
     getHelper()->createPooledRegion(regionNames[1], USE_ACK, locatorsG,
@@ -236,11 +236,11 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, InitClient1Timeout300)
   {
-    if (mon1C1 == NULLPTR) {
-      mon1C1 = new OperMonitor(durableIds[0], regionNames[0]);
+    if (mon1C1 == nullptr) {
+      mon1C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[0]);
     }
-    if (mon2C1 == NULLPTR) {
-      mon2C1 = new OperMonitor(durableIds[0], regionNames[1]);
+    if (mon2C1 == nullptr) {
+      mon2C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[1]);
     }
     initClientCache(0, 0 /* Redundancy */, 300 /* D Timeout */, mon1C1, mon2C1);
   }
@@ -248,11 +248,11 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, InitClient1Timeout30)
   {
-    if (mon1C1 == NULLPTR) {
-      mon1C1 = new OperMonitor(durableIds[0], regionNames[0]);
+    if (mon1C1 == nullptr) {
+      mon1C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[0]);
     }
-    if (mon2C1 == NULLPTR) {
-      mon2C1 = new OperMonitor(durableIds[0], regionNames[1]);
+    if (mon2C1 == nullptr) {
+      mon2C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[1]);
     }
     initClientCache(0, 0 /* Redundancy */, 30 /* D Timeout */, mon1C1, mon2C1);
   }
@@ -260,11 +260,11 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, InitClient1DelayedStart)
   {
-    if (mon1C1 == NULLPTR) {
-      mon1C1 = new OperMonitor(durableIds[0], regionNames[0]);
+    if (mon1C1 == nullptr) {
+      mon1C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[0]);
     }
-    if (mon2C1 == NULLPTR) {
-      mon2C1 = new OperMonitor(durableIds[0], regionNames[1]);
+    if (mon2C1 == nullptr) {
+      mon2C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[1]);
     }
     initClientCache(0, 0 /* Redundancy */, 30 /* D Timeout */, mon1C1, mon2C1,
                     35000 /* Sleep before starting */);
@@ -273,11 +273,11 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, InitClient2Timeout300)
   {
-    if (mon1C2 == NULLPTR) {
-      mon1C2 = new OperMonitor(durableIds[1], regionNames[0]);
+    if (mon1C2 == nullptr) {
+      mon1C2 = std::make_shared<OperMonitor>(durableIds[1], regionNames[0]);
     }
-    if (mon2C2 == NULLPTR) {
-      mon2C2 = new OperMonitor(durableIds[1], regionNames[1]);
+    if (mon2C2 == nullptr) {
+      mon2C2 = std::make_shared<OperMonitor>(durableIds[1], regionNames[1]);
     }
     initClientCache(1, 1 /* Redundancy */, 300 /* D Timeout */, mon1C2, mon2C2);
   }
@@ -286,11 +286,11 @@ END_TASK_DEFINITION
 // Client 2 don't need to sleep for timeout as C1 does before it
 DUNIT_TASK_DEFINITION(CLIENT2, InitClient2Timeout30)
   {
-    if (mon1C2 == NULLPTR) {
-      mon1C2 = new OperMonitor(durableIds[1], regionNames[0]);
+    if (mon1C2 == nullptr) {
+      mon1C2 = std::make_shared<OperMonitor>(durableIds[1], regionNames[0]);
     }
-    if (mon2C2 == NULLPTR) {
-      mon2C2 = new OperMonitor(durableIds[1], regionNames[1]);
+    if (mon2C2 == nullptr) {
+      mon2C2 = std::make_shared<OperMonitor>(durableIds[1], regionNames[1]);
     }
     initClientCache(1, 1 /* Redundancy */, 30 /* D Timeout */, mon1C2, mon2C2);
   }
@@ -469,8 +469,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, CloseClient1)
   {
-    mon1C1 = NULLPTR;
-    mon2C1 = NULLPTR;
+    mon1C1 = nullptr;
+    mon2C1 = nullptr;
     cleanProc();
     LOG("CLIENT1 closed");
   }
@@ -478,8 +478,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, CloseClient2)
   {
-    mon1C2 = NULLPTR;
-    mon2C2 = NULLPTR;
+    mon1C2 = nullptr;
+    mon2C2 = nullptr;
     cleanProc();
     LOG("CLIENT2 closed");
   }

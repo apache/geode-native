@@ -45,7 +45,7 @@ class CPPCACHE_EXPORT CqAttributesMutator : virtual public SharedBase {
   /**
    * Adds a CQ listener to the end of the list of CQ listeners on this CqQuery.
    * @param aListener the user defined CQ listener to add to the CqQuery.
-   * @throws IllegalArgumentException if <code>aListener</code> is NULLPTR
+   * @throws IllegalArgumentException if <code>aListener</code> is nullptr
    */
   virtual void addCqListener(const CqListenerPtr& aListener) = 0;
 
@@ -55,7 +55,7 @@ class CPPCACHE_EXPORT CqAttributesMutator : virtual public SharedBase {
    * If the specified listener has been added then will
    * be called on it; otherwise does nothing.
    * @param aListener the CQ listener to remove from the CqQuery.
-   * @throws IllegalArgumentException if <code>aListener</code> is NULLPTR
+   * @throws IllegalArgumentException if <code>aListener</code> is nullptr
    */
   virtual void removeCqListener(const CqListenerPtr& aListener) = 0;
 
@@ -66,9 +66,10 @@ class CPPCACHE_EXPORT CqAttributesMutator : virtual public SharedBase {
    * @param newListeners a possibly empty array of listeners to add
    * to this CqQuery.
    * @throws IllegalArgumentException if the <code>newListeners</code> array
-   * has a NULLPTR element
+   * has a nullptr element
    */
-  virtual void setCqListeners(VectorOfCqListener& newListeners) = 0;
+  virtual void setCqListeners(
+      const std::vector<CqListenerPtr>& newListeners) = 0;
 };
 }  // namespace client
 }  // namespace geode

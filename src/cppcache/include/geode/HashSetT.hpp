@@ -49,7 +49,7 @@ class HashSetT {
     Iterator();
 
    public:
-    inline const TKEY operator*() const { return staticCast<TKEY>(*m_iter); }
+    inline const TKEY operator*() const { return std::static_pointer_cast<GF_UNWRAP_SP(TKEY)>(*m_iter); }
 
     inline bool isEnd() const { return m_iter.isEnd(); }
 
@@ -74,12 +74,12 @@ class HashSetT {
   };
 
   inline static int32_t hasher(const SharedBasePtr& p) {
-    return apache::geode::client::hashFunction<TKEY>(staticCast<TKEY>(p));
+    return apache::geode::client::hashFunction<TKEY>(std::static_pointer_cast<GF_UNWRAP_SP(TKEY)>(p));
   }
 
   inline static bool equal_to(const SharedBasePtr& x, const SharedBasePtr& y) {
-    return apache::geode::client::equalToFunction<TKEY>(staticCast<TKEY>(x),
-                                                        staticCast<TKEY>(y));
+    return apache::geode::client::equalToFunction<TKEY>(std::static_pointer_cast<GF_UNWRAP_SP(TKEY)>(x),
+                                                        std::static_pointer_cast<GF_UNWRAP_SP(TKEY)>(y));
   }
 
   /** Returns the size of the hash set. */

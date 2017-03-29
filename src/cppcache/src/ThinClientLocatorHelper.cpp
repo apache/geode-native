@@ -118,7 +118,7 @@ GfErrType ThinClientLocatorHelper::getAllServers(
       }
 
       DataInput di(reinterpret_cast<uint8_t*>(buff), receivedLength);
-      GetAllServersResponsePtr response(NULLPTR);
+      GetAllServersResponsePtr response(nullptr);
 
       /* adongre
        * SSL Enabled on Location and not in the client
@@ -216,7 +216,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
         continue;
       }
       DataInput di(reinterpret_cast<uint8_t*>(buff), receivedLength);
-      QueueConnectionResponsePtr response(NULLPTR);
+      QueueConnectionResponsePtr response(nullptr);
 
       /* adongre
        * ssl defect
@@ -412,7 +412,7 @@ GfErrType ThinClientLocatorHelper::updateLocators(
         continue;
       }
       DataInput di(reinterpret_cast<uint8_t*>(buff), receivedLength);
-      LocatorListResponsePtr response(new LocatorListResponse());
+      auto response = std::make_shared<LocatorListResponse>();
 
       /* adongre
        * SSL Enabled on Location and not in the client

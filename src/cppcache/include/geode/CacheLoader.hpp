@@ -44,7 +44,7 @@ namespace client {
  * Allows data to be loaded from a 3rd party data source and placed
  * into the region
  * When {@link Region::get} is called for a region
- * entry that has a <code>NULLPTR</code> value, the
+ * entry that has a <code>nullptr</code> value, the
  * {@link CacheLoader::load} method of the
  * region's cache loader is invoked.  The <code>load</code> method
  * creates the value for the desired key by performing an operation such
@@ -62,8 +62,8 @@ class CPPCACHE_EXPORT CacheLoader : public SharedBase {
    * by the invocation of {@link Region::get} that triggered this load.
    * @param rp a Region Pointer for which this is called.
    * @param key the key for the cacheable
-   * @param helper any related user data, or NULLPTR
-   * @return the value supplied for this key, or NULLPTR if no value can be
+   * @param helper any related user data, or nullptr
+   * @return the value supplied for this key, or nullptr if no value can be
    * supplied.
    *
    *@see Region::get .

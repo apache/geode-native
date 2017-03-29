@@ -75,13 +75,13 @@ class GetAllWork : public PooledWork<GfErrType>,
         m_attemptFailover(attemptFailover),
         m_isBGThread(isBGThread),
         m_addToLocalCache(addToLocalCache),
-        m_userAttribute(NULLPTR),
+        m_userAttribute(nullptr),
         m_responseHandler(responseHandler),
         m_regionName(region->getFullPath()),
         m_keys(keys),
         m_region(region),
         m_aCallbackArgument(aCallbackArgument) {
-    m_request = new TcrMessageGetAll(region.ptr(), m_keys.ptr(), m_poolDM,
+    m_request = new TcrMessageGetAll(region.get(), m_keys.get(), m_poolDM,
                                      m_aCallbackArgument);
     m_reply = new TcrMessageReply(true, m_poolDM);
     if (m_poolDM->isMultiUserMode()) {
@@ -90,7 +90,7 @@ class GetAllWork : public PooledWork<GfErrType>,
     }
 
     m_resultCollector = (new ChunkedGetAllResponse(
-        *m_reply, dynamic_cast<ThinClientRegion*>(m_region.ptr()), m_keys.ptr(),
+        *m_reply, dynamic_cast<ThinClientRegion*>(m_region.get()), m_keys.get(),
         m_responseHandler->getValues(), m_responseHandler->getExceptions(),
         m_responseHandler->getResultKeys(),
         m_responseHandler->getUpdateCounters(), 0, m_addToLocalCache,
@@ -111,7 +111,7 @@ class GetAllWork : public PooledWork<GfErrType>,
   GfErrType execute(void) {
     GuardUserAttribures gua;
 
-    if (m_userAttribute != NULLPTR) {
+    if (m_userAttribute != nullptr) {
       gua.setProxyCache(m_userAttribute->getProxyCache());
     }
     m_request->InitializeGetallMsg(
@@ -201,7 +201,7 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
     }
   }
   if (m_attrs->getPRSingleHopEnabled()) {
-    m_clientMetadataService = new ClientMetadataService(PoolPtr(this));
+    m_clientMetadataService = new ClientMetadataService(this);
   }
   m_manager = new ThinClientStickyManager(this);
 }
@@ -241,7 +241,7 @@ PropertiesPtr ThinClientPoolDM::getCredentials(TcrEndpoint* ep) {
 
   AuthInitializePtr authInitialize = DistributedSystem::m_impl->getAuthLoader();
 
-  if (authInitialize != NULLPTR) {
+  if (authInitialize != nullptr) {
     LOGFINER(
         "ThinClientPoolDM::getCredentials: acquired handle to authLoader, "
         "invoking getCredentials %s",
@@ -250,7 +250,7 @@ PropertiesPtr ThinClientPoolDM::getCredentials(TcrEndpoint* ep) {
         tmpSecurityProperties, ep->name().c_str());
     return tmpAuthIniSecurityProperties;
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 void ThinClientPoolDM::startBackgroundThreads() {
@@ -345,7 +345,7 @@ void ThinClientPoolDM::startBackgroundThreads() {
       "service");
   // Init Query Service
   m_remoteQueryServicePtr =
-      new RemoteQueryService(m_connManager.getCacheImpl(), this);
+      std::make_shared<RemoteQueryService>(m_connManager.getCacheImpl(), this);
   m_remoteQueryServicePtr->init();
 
   LOGDEBUG(
@@ -613,7 +613,7 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
 
   CacheableStringArrayPtr csArray = getServers();
 
-  if (csArray != NULLPTR && csArray->length() == 0) {
+  if (csArray != nullptr && csArray->length() == 0) {
     LOGWARN("No server found to execute the function");
     return GF_NOSERVER_FOUND;
   }
@@ -624,7 +624,7 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
   UserAttributesPtr userAttr =
       TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
   for (int i = 0; i < csArray->length(); i++) {
-    CacheableStringPtr cs = csArray[i];
+    CacheableStringPtr cs = (*csArray)[i];
     std::string endpointStr(cs->asChar());
     TcrEndpoint* ep = NULL;
     if (m_endpoints.find(endpointStr, ep)) {
@@ -645,7 +645,7 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
     FunctionExecution* funcExe = &fePtrList[i];
     err = funcExe->getResult();
     if (err != GF_NOERR) {
-      if (funcExe->getException() == NULLPTR) {
+      if (funcExe->getException() == nullptr) {
         if (err == GF_TIMOUT) {
           getStats().incTimeoutClientOps();
         } else {
@@ -781,9 +781,9 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
   if (!m_isDestroyed && (!m_destroyPending || m_destroyPendingHADM)) {
     checkRegions();
     TcrMessage::setKeepAlive(keepAlive);
-    if (m_remoteQueryServicePtr != NULLPTR) {
+    if (m_remoteQueryServicePtr != nullptr) {
       m_remoteQueryServicePtr->close();
-      m_remoteQueryServicePtr = NULLPTR;
+      m_remoteQueryServicePtr = nullptr;
     }
 
     LOGDEBUG("Closing PoolStatsSampler thread.");
@@ -867,7 +867,7 @@ QueryServicePtr ThinClientPoolDM::getQueryService() {
 }
 
 QueryServicePtr ThinClientPoolDM::getQueryServiceWithoutCheck() {
-  if (!(m_remoteQueryServicePtr == NULLPTR)) {
+  if (!(m_remoteQueryServicePtr == nullptr)) {
     return m_remoteQueryServicePtr;
   }
   SystemProperties* props = DistributedSystem::getSystemProperties();
@@ -875,8 +875,8 @@ QueryServicePtr ThinClientPoolDM::getQueryServiceWithoutCheck() {
   if (props->isGridClient()) {
     LOGWARN("Initializing query service while grid-client setting is enabled.");
     // Init Query Service
-    m_remoteQueryServicePtr =
-        new RemoteQueryService(m_connManager.getCacheImpl(), this);
+    m_remoteQueryServicePtr = std::make_shared<RemoteQueryService>(
+        m_connManager.getCacheImpl(), this);
     m_remoteQueryServicePtr->init();
   } else {
     LOGWARN("Remote query service is not initialized.");
@@ -944,7 +944,7 @@ int32_t ThinClientPoolDM::GetPDXIdForType(SerializablePtr pdxType) {
   }
 
   int32_t pdxTypeId =
-      static_cast<CacheableInt32*>(reply.getValue().ptr())->value();
+      static_cast<CacheableInt32*>(reply.getValue().get())->value();
 
   // need to broadcast this id to all other pool
   {
@@ -953,7 +953,7 @@ int32_t ThinClientPoolDM::GetPDXIdForType(SerializablePtr pdxType) {
     for (HashMapOfPools::Iterator iter = pools.begin(); iter != pools.end();
          ++iter) {
       ThinClientPoolDM* currPool =
-          static_cast<ThinClientPoolDM*>(iter.second().ptr());
+          static_cast<ThinClientPoolDM*>(iter.second().get());
 
       if (currPool != this) {
         currPool->AddPdxType(pdxType, pdxTypeId);
@@ -1026,7 +1026,7 @@ int32_t ThinClientPoolDM::GetEnumValue(SerializablePtr enumInfo) {
   }
 
   int32_t enumVal =
-      static_cast<CacheableInt32*>(reply.getValue().ptr())->value();
+      static_cast<CacheableInt32*>(reply.getValue().get())->value();
 
   // need to broadcast this id to all other pool
   {
@@ -1035,7 +1035,7 @@ int32_t ThinClientPoolDM::GetEnumValue(SerializablePtr enumInfo) {
     for (HashMapOfPools::Iterator iter = pools.begin(); iter != pools.end();
          ++iter) {
       ThinClientPoolDM* currPool =
-          static_cast<ThinClientPoolDM*>(iter.second().ptr());
+          static_cast<ThinClientPoolDM*>(iter.second().get());
 
       if (currPool != this) {
         currPool->AddEnum(enumInfo, enumVal);
@@ -1151,19 +1151,20 @@ TcrEndpoint* ThinClientPoolDM::getSingleHopServer(
     BucketServerLocationPtr& serverlocation,
     std::set<ServerLocation>& excludeServers) {
   const CacheableKeyPtr& key = request.getKeyRef();
-  if (m_clientMetadataService == NULL || key == NULLPTR) return NULL;
-  RegionPtr region(request.getRegion());
+  if (m_clientMetadataService == NULL || key == nullptr) return NULL;
+  auto r = request.getRegion();
+  auto region = nullptr == r ? nullptr : r->shared_from_this();
   TcrEndpoint* ep = NULL;
-  if (region == NULLPTR) {
+  if (region == nullptr) {
     m_connManager.getCacheImpl()->getRegion(request.getRegionName().c_str(),
                                             region);
   }
-  if (region != NULLPTR) {
+  if (region != nullptr) {
     m_clientMetadataService->getBucketServerLocation(
         region, key, request.getValueRef(), request.getCallbackArgumentRef(),
         request.forPrimary(), serverlocation, version);
 
-    if (serverlocation != NULLPTR && serverlocation->isValid()) {
+    if (serverlocation != nullptr && serverlocation->isValid()) {
       LOGFINE("Server host and port are %s:%d",
               serverlocation->getServerName().c_str(),
               serverlocation->getPort());
@@ -1196,7 +1197,7 @@ TcrEndpoint* ThinClientPoolDM::getEndPoint(
          itr != m_attrs->m_initServList.end(); ++itr) {
       if ((ACE_OS::strcmp(serverLocation->getEpString().c_str(),
                           (*itr).c_str()) == 0)) {
-        ep = addEP(*(serverLocation.ptr()));  // see if this is new endpoint
+        ep = addEP(*(serverLocation.get()));  // see if this is new endpoint
         break;
       }
     }
@@ -1208,14 +1209,14 @@ TcrEndpoint* ThinClientPoolDM::getEndPoint(
       std::string servGrp = this->getServerGroup();
       if (servGrp.length() > 0) {
         CacheableStringArrayPtr groups = serverLocation->getServerGroups();
-        if ((groups != NULLPTR) && (groups->length() > 0)) {
+        if ((groups != nullptr) && (groups->length() > 0)) {
           for (int i = 0; i < groups->length(); i++) {
-            CacheableStringPtr cs = groups[i];
+            CacheableStringPtr cs = (*groups)[i];
             if (cs->length() > 0) {
               std::string str = cs->toString();
               if ((ACE_OS::strcmp(str.c_str(), servGrp.c_str()) == 0)) {
                 ep = addEP(
-                    *(serverLocation.ptr()));  // see if this is new endpoint
+                    *(serverLocation.get()));  // see if this is new endpoint
                 break;
               }
             }
@@ -1223,7 +1224,7 @@ TcrEndpoint* ThinClientPoolDM::getEndPoint(
         }
       } else  // just add it
       {
-        ep = addEP(*(serverLocation.ptr()));  // see if this is new endpoint
+        ep = addEP(*(serverLocation.get()));  // see if this is new endpoint
       }
     }
   }
@@ -1263,7 +1264,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(TcrMessage& request,
       request.InitializeGetallMsg(
           request.getCallbackArgument());  // now initialize getall msg
       return sendSyncRequest(request, reply, attemptFailover, isBGThread,
-                             NULLPTR);
+                             nullptr);
     }
     std::vector<GetAllWork*> getAllWorkers;
     ThreadPool* threadPool = TPSingleton::instance();
@@ -1274,7 +1275,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(TcrMessage& request,
              locationIter = locationMap->begin();
          locationIter != locationMap->end(); locationIter++) {
       BucketServerLocationPtr serverLocation = locationIter.first();
-      if (serverLocation == NULLPTR) {
+      if (serverLocation == nullptr) {
       }
       VectorOfCacheableKeyPtr keys = locationIter.second();
       GetAllWork* worker =
@@ -1311,7 +1312,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(TcrMessage& request,
           request.getCallbackArgument());  // now initialize getall msg
     }
     return sendSyncRequest(request, reply, attemptFailover, isBGThread,
-                           NULLPTR);
+                           nullptr);
   }
 }
 
@@ -1326,7 +1327,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
 
   GfErrType error = GF_NOTCON;
 
-  UserAttributesPtr userAttr = NULLPTR;
+  UserAttributesPtr userAttr = nullptr;
   reply.setDM(this);
 
   int32_t type = request.getMessageType();
@@ -1390,7 +1391,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
     } else {
       userAttr = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
                      ->getUserAttributes();
-      if (userAttr == NULLPTR) {
+      if (userAttr == nullptr) {
         LOGWARN("Attempted operation type %d without credentials",
                 request.getMessageType());
         return GF_NOT_AUTHORIZED_EXCEPTION;
@@ -1419,12 +1420,12 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
       RegionPtr region;
       m_connManager.getCacheImpl()->getRegion(request.getRegionName().c_str(),
                                               region);
-      if (region != NULLPTR) {
+      if (region != nullptr) {
         LOGFINE(
             "Need to refresh pr-meta-data timeout in client only  with refresh "
             "metadata");
         ThinClientRegion* tcrRegion =
-            dynamic_cast<ThinClientRegion*>(region.ptr());
+            dynamic_cast<ThinClientRegion*>(region.get());
         tcrRegion->setMetaDataRefreshed(false);
         m_clientMetadataService->enqueueForMetadataRefresh(
             region->getFullPath(), reply.getserverGroupVersion());
@@ -1522,7 +1523,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
             TcrEndpoint* ep = conn->getEndpointObject();
             if (!this->m_isMultiUserMode) {
               ep->setAuthenticated(false);
-            } else if (userAttr != NULLPTR) {
+            } else if (userAttr != nullptr) {
               userAttr->unAuthenticateEP(ep);
             }
             LOGFINEST(
@@ -1543,19 +1544,19 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
       if (m_clientMetadataService != NULL && request.forSingleHop() &&
           (reply.getMetaDataVersion() != 0 ||
            (request.getMessageType() == TcrMessage::EXECUTE_REGION_FUNCTION &&
-            request.getKeyRef() != NULLPTR && reply.isFEAnotherHop()))) {
+            request.getKeyRef() != nullptr && reply.isFEAnotherHop()))) {
         // Need to get direct access to Region's name to avoid referencing
         // temp data and causing crashes
         RegionPtr region;
         m_connManager.getCacheImpl()->getRegion(request.getRegionName().c_str(),
                                                 region);
-        if (region != NULLPTR) {
+        if (region != nullptr) {
           if (!connFound)  // max limit case then don't refresh otherwise always
                            // refresh
           {
             LOGFINE("Need to refresh pr-meta-data");
             ThinClientRegion* tcrRegion =
-                dynamic_cast<ThinClientRegion*>(region.ptr());
+                dynamic_cast<ThinClientRegion*>(region.get());
             tcrRegion->setMetaDataRefreshed(false);
           }
           m_clientMetadataService->enqueueForMetadataRefresh(
@@ -1943,7 +1944,7 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
     }
 
     reply.setDM(this);
-    UserAttributesPtr ua = NULLPTR;
+    UserAttributesPtr ua = nullptr;
     // in multi user mode need to chk whether user is authenticated or not
     // and then follow usual process which we did in send syncrequest.
     // need to user initiative ops
@@ -1959,7 +1960,7 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
       } else if (this->m_isMultiUserMode) {
         ua = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
                  ->getUserAttributes();
-        if (ua == NULLPTR) {
+        if (ua == nullptr) {
           LOGWARN("Attempted operation type %d without credentials",
                   request.getMessageType());
           if (conn != NULL) putInQueue(conn, false, request.forTransaction());
@@ -2015,7 +2016,7 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
           if (isAuthRequireException(reply.getException())) {
             if (!this->m_isMultiUserMode) {
               currentEndpoint->setAuthenticated(false);
-            } else if (ua != NULLPTR) {
+            } else if (ua != nullptr) {
               ua->unAuthenticateEP(currentEndpoint);
             }
             LOGFINEST(

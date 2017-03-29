@@ -40,11 +40,10 @@ class MyListener : public CacheListener {
     for (int i = 0; i < 5; i++) m_gotit[i] = 0;
   }
   inline void checkEntry(const EntryEvent& event) {
-    CacheableStringPtr keyPtr = dynCast<CacheableStringPtr>(event.getKey());
+    auto keyPtr = std::dynamic_pointer_cast<CacheableString>(event.getKey());
     for (int i = 0; i < 5; i++) {
       if (!ACE_OS::strcmp(keys[i], keyPtr->asChar())) {
-        CacheableStringPtr valPtr =
-            dynCast<CacheableStringPtr>(event.getNewValue());
+        auto valPtr = std::dynamic_pointer_cast<CacheableString>(event.getNewValue());
         if (!ACE_OS::strcmp(vals[i], valPtr->asChar())) m_gotit[i] = 1;
         break;
       }
@@ -60,7 +59,7 @@ class MyListener : public CacheListener {
   }
 };
 
-MyListenerPtr mylistner = NULLPTR;
+MyListenerPtr mylistner = nullptr;
 
 void setCacheListener(const char* regName, MyListenerPtr regListener) {
   RegionPtr reg = getHelper()->getRegion(regName);
@@ -82,7 +81,7 @@ END_TASK(StartServer)
 DUNIT_TASK(CLIENT1, SetupClient1)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
   }
@@ -91,13 +90,13 @@ END_TASK(SetupClient1)
 DUNIT_TASK(CLIENT2, setupClient2)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
-    mylistner = new MyListener();
+    mylistner = std::make_shared<MyListener>();
     setCacheListener(regionNames[0], mylistner);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    regPtr->registerAllKeys(false, NULLPTR, true);
+    regPtr->registerAllKeys(false, nullptr, true);
   }
 END_TASK(setupClient2)
 

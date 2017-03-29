@@ -75,7 +75,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
        
-          return Apache::Geode::Client::TransactionId::Create( NativePtr->suspend().ptr() );
+          return Apache::Geode::Client::TransactionId::Create( NativePtr->suspend().get() );
        
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -83,7 +83,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          return Apache::Geode::Client::TransactionId::Create( NativePtr->getTransactionId().ptr() );
+          return Apache::Geode::Client::TransactionId::Create( NativePtr->getTransactionId().get() );
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -161,7 +161,7 @@ namespace Apache
             TransactionWriterGeneric<TKey, TValue>^ twg = gcnew TransactionWriterGeneric<TKey, TValue> ();
             twg->SetTransactionWriter(transactionWriter);
             writerPtr = new apache::geode::client::ManagedTransactionWriterGeneric( transactionWriter );
-            ((apache::geode::client::ManagedTransactionWriterGeneric*)writerPtr.ptr())->setptr(twg);
+            ((apache::geode::client::ManagedTransactionWriterGeneric*)writerPtr.get())->setptr(twg);
           }
           NativePtr->setWriter( writerPtr );
           
@@ -180,7 +180,7 @@ namespace Apache
             TransactionListenerGeneric<TKey, TValue>^ twg = gcnew TransactionListenerGeneric<TKey, TValue> ();
             twg->SetTransactionListener(transactionListener);
             listenerPtr = new apache::geode::client::ManagedTransactionListenerGeneric( transactionListener );
-            ((apache::geode::client::ManagedTransactionListenerGeneric*)listenerPtr.ptr())->setptr(twg);
+            ((apache::geode::client::ManagedTransactionListenerGeneric*)listenerPtr.get())->setptr(twg);
           }
           NativePtr->addListener( listenerPtr );
           
@@ -199,7 +199,7 @@ namespace Apache
             TransactionListenerGeneric<TKey, TValue>^ twg = gcnew TransactionListenerGeneric<TKey, TValue> ();
             twg->SetTransactionListener(transactionListener);
             listenerPtr = new apache::geode::client::ManagedTransactionListenerGeneric( transactionListener );
-            ((apache::geode::client::ManagedTransactionListenerGeneric*)listenerPtr.ptr())->setptr(twg);
+            ((apache::geode::client::ManagedTransactionListenerGeneric*)listenerPtr.get())->setptr(twg);
           }
           NativePtr->removeListener( listenerPtr );
 

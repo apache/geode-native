@@ -55,11 +55,11 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
     VectorOfCacheableKey keys0;
     keys0.push_back(keyPtr0);
-    regPtr0->registerKeys(keys0, NULLPTR);
+    regPtr0->registerKeys(keys0);
     CacheableKeyPtr keyPtr1 = CacheableString::create(keys[1]);
     VectorOfCacheableKey keys1;
     keys1.push_back(keyPtr1);
-    regPtr0->registerKeys(keys1, NULLPTR);
+    regPtr0->registerKeys(keys1);
     regPtr0->registerRegex(testregex[0]);
     regPtr0->registerRegex(testregex[1]);
     CacheableKeyPtr keyPtr2 = CacheableString::create(keys[2]);
@@ -68,7 +68,7 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     keyPtr2 = CacheableString::create(keys[3]);
     keys2.push_back(keyPtr2);
     // durable
-    regPtr0->registerKeys(keys2, NULLPTR, true);
+    regPtr0->registerKeys(keys2, false, true);
     regPtr0->registerRegex(testregex[2], true);
 
     VectorOfCacheableKey vkey;
@@ -77,7 +77,7 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     regPtr0->getInterestListRegex(vreg);
     for (int32_t i = 0; i < vkey.length(); i++) {
       char buf[1024];
-      const char* key = dynCast<CacheableStringPtr>(vkey[i])->asChar();
+      const char* key = std::dynamic_pointer_cast<CacheableString>(vkey[i])->asChar();
       sprintf(buf, "key[%d]=%s", i, key);
       LOG(buf);
       bool found = false;

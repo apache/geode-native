@@ -788,7 +788,7 @@ QueryHelper* QueryHelper::singleton = NULL;
 void QueryHelper::populateRangePositionData(RegionPtr& rptr, int start,
                                             int end) {
   for (int i = start; i <= end; i++) {
-    CacheablePtr pos(new Position(i));
+    auto pos = std::make_shared<Position>(i);
     char key[100];
     ACE_OS::sprintf(key, "pos%d", i);
     CacheableKeyPtr keyptr = CacheableKey::create(key);
@@ -798,8 +798,8 @@ void QueryHelper::populateRangePositionData(RegionPtr& rptr, int start,
 
 bool QueryHelper::compareTwoPositionObjects(SerializablePtr pos1,
                                             SerializablePtr pos2) {
-  Position* p1 = dynamic_cast<Position*>(pos1.ptr());
-  Position* p2 = dynamic_cast<Position*>(pos2.ptr());
+  Position* p1 = dynamic_cast<Position*>(pos1.get());
+  Position* p2 = dynamic_cast<Position*>(pos2.get());
 
   if (p1 == NULL || p2 == NULL) {
     printf("ERROR: The object(s) passed are not of Portflio type\n");
@@ -829,16 +829,15 @@ bool QueryHelper::compareTwoPositionObjects(SerializablePtr pos1,
 }
 
 SerializablePtr QueryHelper::getExactPositionObject(int iForExactPosObject) {
-  CacheablePtr pos(new Position(iForExactPosObject));
-  return pos;
+  return std::make_shared<Position>(iForExactPosObject);
 }
 
 void QueryHelper::putExactPositionObject(RegionPtr& rptr,
                                          int iForExactPosObject) {
   char key[100];
   ACE_OS::sprintf(key, "pos%d", iForExactPosObject);
-  CacheableKeyPtr keyptr = CacheableKey::create(key);
-  CacheablePtr pos(new Position(iForExactPosObject));
+  auto keyptr = CacheableKey::create(key);
+  auto pos = std::make_shared<Position>(iForExactPosObject);
   rptr->put(keyptr, pos);
 }
 
@@ -846,7 +845,7 @@ SerializablePtr QueryHelper::getCachedPositionObject(RegionPtr& rptr,
                                                      int iForExactPosObject) {
   char key[100];
   ACE_OS::sprintf(key, "pos%d", iForExactPosObject);
-  CacheableKeyPtr keyptr = CacheableKey::create(key);
+  auto keyptr = CacheableKey::create(key);
   return rptr->get(keyptr);
 }
 
@@ -860,7 +859,7 @@ void QueryHelper::populatePortfolioData(RegionPtr& rptr, int setSize,
   CacheableKeyPtr keyport;
   for (int set = 1; set <= numSets; set++) {
     for (int current = 1; current <= setSize; current++) {
-      port = new Portfolio(current, objSize);
+      port = std::make_shared<Portfolio>(current, objSize);
 
       char portname[100] = {0};
       ACE_OS::sprintf(portname, "port%d-%d", set, current);
@@ -879,7 +878,7 @@ void QueryHelper::populatePortfolio(RegionPtr& rptr, int maxKey,
   CacheablePtr port;
   CacheableKeyPtr keyport;
   for (int current = 0; current <= maxKey; current++) {
-    port = new Portfolio(current, objSize);
+    port = std::make_shared<Portfolio>(current, objSize);
 
     char portname[1024] = {0};
     ACE_OS::sprintf(portname, "port%d-%d", current, current);
@@ -956,7 +955,8 @@ void QueryHelper::populatePositionData(RegionPtr& rptr, int setSize,
   CacheablePtr pos;
   for (int set = 1; set <= numSets; set++) {
     for (int current = 1; current <= setSize; current++) {
-      pos = new Position(secIds[current % numSecIds], current * 100);
+      pos = std::make_shared<Position>(secIds[current % numSecIds],
+                                       current * 100);
 
       char posname[100] = {0};
       ACE_OS::sprintf(posname, "pos%d-%d", set, current);
@@ -975,7 +975,7 @@ void QueryHelper::populatePortfolioPdxData(RegionPtr& rptr, int setSize,
 
   for (int set = 1; set <= numSets; set++) {
     for (int current = 1; current <= setSize; current++) {
-      CacheablePtr port(new testobject::PortfolioPdx(current, objSize));
+      auto port = std::make_shared<testobject::PortfolioPdx>(current, objSize);
 
       char portname[100] = {0};
       ACE_OS::sprintf(portname, "port%d-%d", set, current);
@@ -999,8 +999,8 @@ void QueryHelper::populatePositionPdxData(RegionPtr& rptr, int setSize,
 
   for (int set = 1; set <= numSets; set++) {
     for (int current = 1; current <= setSize; current++) {
-      CacheablePtr pos(new testobject::PositionPdx(secIds[current % numSecIds],
-                                                   current * 100));
+      auto pos = std::make_shared<testobject::PositionPdx>(
+          secIds[current % numSecIds], current * 100);
 
       char posname[100] = {0};
       ACE_OS::sprintf(posname, "pos%d-%d", set, current);
@@ -1014,11 +1014,11 @@ void QueryHelper::populatePositionPdxData(RegionPtr& rptr, int setSize,
   // positionSetSize = setSize; positionNumSets = numSets;
 }
 bool QueryHelper::verifyRS(SelectResultsPtr& resultSet, int expectedRows) {
-  if (!instanceOf<ResultSetPtr>(resultSet)) {
+  if (!std::dynamic_pointer_cast<ResultSet>(resultSet)) {
     return false;
   }
 
-  ResultSetPtr rsptr = staticCast<ResultSetPtr>(resultSet);
+  ResultSetPtr rsptr = std::static_pointer_cast<GF_UNWRAP_SP(ResultSetPtr)>(resultSet);
 
   int foundRows = 0;
 
@@ -1040,7 +1040,7 @@ bool QueryHelper::verifySS(SelectResultsPtr& structSet, int expectedRows,
   FWKINFO("QueryHelper::verifySS : expectedRows = "
           << expectedRows << " ,expectedFields = " << expectedFields);
 
-  if (!instanceOf<StructSetPtr>(structSet)) {
+  if (!std::dynamic_pointer_cast<StructSet>(structSet)) {
     if (expectedRows == 0 && expectedFields == 0) {
       return true;  // quite possible we got a null set back.
     }
@@ -1048,7 +1048,7 @@ bool QueryHelper::verifySS(SelectResultsPtr& structSet, int expectedRows,
     return false;
   }
 
-  StructSetPtr ssptr = staticCast<StructSetPtr>(structSet);
+  StructSetPtr ssptr = std::static_pointer_cast<GF_UNWRAP_SP(StructSetPtr)>(structSet);
 
   int foundRows = 0;
 
@@ -1058,7 +1058,7 @@ bool QueryHelper::verifySS(SelectResultsPtr& structSet, int expectedRows,
     SerializablePtr ser = (*ssptr)[rows];  // iter.next();
     foundRows++;
 
-    Struct* siptr = dynamic_cast<Struct*>(ser.ptr());
+    Struct* siptr = dynamic_cast<Struct*>(ser.get());
 
     if (siptr == NULL) {
       LOGINFO("siptr is NULL \n\n");

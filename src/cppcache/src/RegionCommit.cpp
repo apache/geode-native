@@ -27,14 +27,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-RegionCommit::RegionCommit() {
-  // TODO Auto-generated constructor stub
-}
-
-RegionCommit::~RegionCommit() {
-  // TODO Auto-generated destructor stub
-}
-
 void RegionCommit::fromData(DataInput& input) {
   input.readObject(m_regionPath);
   input.readObject(m_parentRegionPath);
@@ -48,7 +40,7 @@ void RegionCommit::fromData(DataInput& input) {
     input.readObject(dsMember);
     uint16_t memId = CacheImpl::getMemberListForVersionStamp()->add(dsMember);
     for (int i = 0; i < size; i++) {
-      FarSideEntryOpPtr entryOp(new FarSideEntryOp(this));
+      auto entryOp = std::make_shared<FarSideEntryOp>(this);
       entryOp->fromData(input, largeModCount, memId);
       m_farSideEntryOps.push_back(entryOp);
     }
@@ -56,22 +48,19 @@ void RegionCommit::fromData(DataInput& input) {
 }
 
 void RegionCommit::apply(Cache* cache) {
-  for (VectorOfSharedBase::Iterator iter = m_farSideEntryOps.begin();
-       m_farSideEntryOps.end() != iter; iter++) {
-    FarSideEntryOpPtr entryOp = staticCast<FarSideEntryOpPtr>(*iter);
-    RegionPtr region = cache->getRegion(m_regionPath->asChar());
-    if (region == NULLPTR && m_parentRegionPath != NULLPTR) {
+  for (auto& entryOp : m_farSideEntryOps) {
+    auto region = cache->getRegion(m_regionPath->asChar());
+    if (region == nullptr && m_parentRegionPath != nullptr) {
       region = cache->getRegion(m_parentRegionPath->asChar());
     }
-    entryOp->apply(region);
+    std::static_pointer_cast<FarSideEntryOp>(entryOp)->apply(region);
   }
 }
 
 void RegionCommit::fillEvents(Cache* cache,
                               std::vector<FarSideEntryOpPtr>& ops) {
-  for (VectorOfSharedBase::Iterator iter = m_farSideEntryOps.begin();
-       m_farSideEntryOps.end() != iter; iter++) {
-    ops.push_back(*iter);
+  for (auto& entryOp : m_farSideEntryOps) {
+    ops.push_back(std::static_pointer_cast<FarSideEntryOp>(entryOp));
   }
 }
 }  // namespace client

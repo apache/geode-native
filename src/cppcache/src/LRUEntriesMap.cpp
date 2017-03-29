@@ -63,16 +63,14 @@ LRUEntriesMap::LRUEntriesMap(EntryFactory* entryFactory, RegionInternal* region,
                            concurrency),
       m_lruList(),
       m_limit(limit),
-      m_pmPtr(NULLPTR),
+      m_pmPtr(nullptr),
       m_validEntries(0),
       m_heapLRUEnabled(heapLRUEnabled) {
   m_currentMapSize = 0;
   m_action = NULL;
   m_evictionControllerPtr = NULL;
   // translate action type to an instance.
-  if (region == NULL) {
-    m_action = new TestMapAction(this);
-  } else {
+  if (region) {
     m_action = LRUAction::newLRUAction(lruAction, region, this);
     m_name = region->getName();
     CacheImpl* cImpl = region->getCacheImpl();
@@ -84,6 +82,8 @@ LRUEntriesMap::LRUEntriesMap(EntryFactory* entryFactory, RegionInternal* region,
                 m_name.c_str());
       }
     }
+  } else {
+    m_action = new TestMapAction(this);
   }
 }
 
@@ -131,7 +131,7 @@ GfErrType LRUEntriesMap::create(const CacheableKeyPtr& key,
     }
     CacheablePtr tmpValue;
     segmentRPtr->getEntry(key, mePtr, tmpValue);
-    if (mePtr == NULLPTR) {
+    if (mePtr == nullptr) {
       return err;
     }
     m_lruList.appendEntry(mePtr);
@@ -141,7 +141,7 @@ GfErrType LRUEntriesMap::create(const CacheableKeyPtr& key,
     int64_t newSize =
         static_cast<int64_t>(Utils::checkAndGetObjectSize(newValue));
     newSize += static_cast<int64_t>(Utils::checkAndGetObjectSize(key));
-    if (oldValue != NULLPTR) {
+    if (oldValue != nullptr) {
       newSize -= static_cast<int64_t>(oldValue->objectSize());
     } else {
       newSize -= static_cast<int64_t>(sizeof(void*));
@@ -165,7 +165,7 @@ GfErrType LRUEntriesMap::evictionHelper() {
   //  ACE_Guard< ACE_Recursive_Thread_Mutex > guard( m_mutex );
   MapEntryImplPtr lruEntryPtr;
   m_lruList.getLRUEntry(lruEntryPtr);
-  if (lruEntryPtr == NULLPTR) {
+  if (lruEntryPtr == nullptr) {
     err = GF_ENOENT;
     return err;
   }
@@ -225,7 +225,7 @@ GfErrType LRUEntriesMap::invalidate(const CacheableKeyPtr& key,
     // need to assess the effect of this; also assess the affect of above
     // mentioned race
     oldValue = m_pmPtr->read(key, persistenceInfo);
-    if (oldValue != NULLPTR) {
+    if (oldValue != nullptr) {
       m_pmPtr->destroy(key, persistenceInfo);
     }
   }
@@ -233,7 +233,7 @@ GfErrType LRUEntriesMap::invalidate(const CacheableKeyPtr& key,
     --m_validEntries;
     me->getLRUProperties().setEvicted();
     newSize = CacheableToken::invalid()->objectSize();
-    if (oldValue != NULLPTR) {
+    if (oldValue != nullptr) {
       newSize -= oldValue->objectSize();
     } else {
       newSize -= sizeof(void*);
@@ -292,7 +292,7 @@ GfErrType LRUEntriesMap::put(const CacheableKeyPtr& key,
       }
       void* persistenceInfo = me->getLRUProperties().getPersistenceInfo();
       oldValue = m_pmPtr->read(key, persistenceInfo);
-      if (oldValue != NULLPTR) {
+      if (oldValue != nullptr) {
         m_pmPtr->destroy(key, persistenceInfo);
       }
     }
@@ -315,7 +315,7 @@ GfErrType LRUEntriesMap::put(const CacheableKeyPtr& key,
       segmentRPtr->getEntry(key, mePtr, tmpValue);
       // mePtr cannot be null, we just put it...
       // must convert to an LRUMapEntryImplPtr...
-      GF_D_ASSERT(mePtr != NULLPTR);
+      GF_D_ASSERT(mePtr != nullptr);
       m_lruList.appendEntry(mePtr);
       me = mePtr;
     } else {
@@ -342,7 +342,7 @@ GfErrType LRUEntriesMap::put(const CacheableKeyPtr& key,
     if (isUpdate == false) {
       newSize += static_cast<int64_t>(Utils::checkAndGetObjectSize(key));
     } else {
-      if (oldValue != NULLPTR) {
+      if (oldValue != nullptr) {
         newSize -= static_cast<int64_t>(oldValue->objectSize());
       } else {
         newSize -= static_cast<int64_t>(sizeof(void*));
@@ -377,7 +377,7 @@ bool LRUEntriesMap::get(const CacheableKeyPtr& key, CacheablePtr& returnPtr,
     segmentLocked = true;
   }
   {
-    returnPtr = NULLPTR;
+    returnPtr = nullptr;
     MapEntryImplPtr mePtr;
     if (false == segmentRPtr->getEntry(key, mePtr, returnPtr)) {
       if (segmentLocked == true) segmentRPtr->release();
@@ -386,7 +386,7 @@ bool LRUEntriesMap::get(const CacheableKeyPtr& key, CacheablePtr& returnPtr,
     // segmentRPtr->get(key, returnPtr, mePtr);
     MapEntryImplPtr nodeToMark = mePtr;
     LRUEntryProperties& lruProps = nodeToMark->getLRUProperties();
-    if (returnPtr != NULLPTR && CacheableToken::isOverflowed(returnPtr)) {
+    if (returnPtr != nullptr && CacheableToken::isOverflowed(returnPtr)) {
       void* persistenceInfo = lruProps.getPersistenceInfo();
       CacheablePtr tmpObj;
       try {
@@ -396,8 +396,8 @@ bool LRUEntriesMap::get(const CacheableKeyPtr& key, CacheablePtr& returnPtr,
         if (segmentLocked == true) segmentRPtr->release();
         return false;
       }
-      (m_region->getRegionStats())->incRetrieves();
-      (m_region->getCacheImpl())->m_cacheStats->incRetrieves();
+      m_region->getRegionStats()->incRetrieves();
+      m_region->getCacheImpl()->m_cacheStats->incRetrieves();
 
       returnPtr = tmpObj;
 
@@ -415,7 +415,7 @@ bool LRUEntriesMap::get(const CacheableKeyPtr& key, CacheablePtr& returnPtr,
       doProcessLRU = true;
       if (m_evictionControllerPtr != NULL) {
         int64_t newSize = 0;
-        if (tmpObj != NULLPTR) {
+        if (tmpObj != nullptr) {
           newSize += static_cast<int64_t>(
               tmpObj->objectSize() - CacheableToken::invalid()->objectSize());
         } else {
@@ -453,7 +453,7 @@ GfErrType LRUEntriesMap::remove(const CacheableKeyPtr& key,
   if ((err = segmentRPtr->remove(key, result, me, updateCount, versionTag,
                                  afterRemote, isEntryFound)) == GF_NOERR) {
     // ACE_Guard<MapSegment> _guard(*segmentRPtr);
-    if (result != NULLPTR && me != NULLPTR) {
+    if (result != nullptr && me != nullptr) {
       LRUEntryProperties& lruProps = me->getLRUProperties();
       lruProps.setEvicted();
       if (isEntryFound) --m_size;
@@ -471,7 +471,7 @@ GfErrType LRUEntriesMap::remove(const CacheableKeyPtr& key,
         // need to assess the effect of this; also assess the affect of above
         // mentioned race
         result = m_pmPtr->read(key, persistenceInfo);
-        if (result != NULLPTR) {
+        if (result != nullptr) {
           m_pmPtr->destroy(key, persistenceInfo);
         }
       }
@@ -498,7 +498,7 @@ void LRUEntriesMap::updateMapSize(int64_t size) {
 }
 
 CacheablePtr LRUEntriesMap::getFromDisk(const CacheableKeyPtr& key,
-                                        MapEntryImpl* me) const {
+                                        MapEntryImplPtr& me) const {
   void* persistenceInfo = me->getLRUProperties().getPersistenceInfo();
   CacheablePtr tmpObj;
   try {
@@ -507,7 +507,7 @@ CacheablePtr LRUEntriesMap::getFromDisk(const CacheableKeyPtr& key,
     tmpObj = m_pmPtr->read(key, persistenceInfo);
   } catch (Exception& ex) {
     LOGERROR("read on the persistence layer failed - %s", ex.getMessage());
-    return NULLPTR;
+    return nullptr;
   }
   return tmpObj;
 }

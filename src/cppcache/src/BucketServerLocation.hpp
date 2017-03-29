@@ -42,7 +42,7 @@ class BucketServerLocation : public ServerLocation {
         m_bucketId(-1),
         m_isPrimary(false),
         m_version(0),
-        m_serverGroups(NULLPTR),
+        m_serverGroups(nullptr),
         m_numServerGroups(static_cast<int8_t>(0)) {}
 
   BucketServerLocation(std::string host)
@@ -50,7 +50,7 @@ class BucketServerLocation : public ServerLocation {
         m_bucketId(-1),
         m_isPrimary(false),
         m_version(0),
-        m_serverGroups(NULLPTR),
+        m_serverGroups(nullptr),
         m_numServerGroups(static_cast<int8_t>(0)) {}
 
   BucketServerLocation(int bucketId, int port, std::string host, bool isPrimary,
@@ -59,7 +59,7 @@ class BucketServerLocation : public ServerLocation {
         m_bucketId(bucketId),
         m_isPrimary(isPrimary),
         m_version(version),
-        m_serverGroups(NULLPTR),
+        m_serverGroups(nullptr),
         m_numServerGroups(static_cast<int8_t>(0)) {}
 
   BucketServerLocation(int bucketId, int port, std::string host, bool isPrimary,
@@ -85,7 +85,7 @@ class BucketServerLocation : public ServerLocation {
       m_serverGroups = CacheableStringArray::createNoCopy(ptrArr, size);
       m_numServerGroups = static_cast<int8_t>(size);
     } else {
-      m_serverGroups = NULLPTR;
+      m_serverGroups = nullptr;
       m_numServerGroups = static_cast<int8_t>(0);
     }
   }
@@ -104,7 +104,7 @@ class BucketServerLocation : public ServerLocation {
     output.write(static_cast<int8_t>(m_numServerGroups));
     if (m_numServerGroups > 0) {
       for (int i = 0; i < m_numServerGroups; i++) {
-        output.writeNativeString(m_serverGroups[i]->asChar());
+        output.writeNativeString((*m_serverGroups)[i]->asChar());
       }
     }
   }

@@ -102,6 +102,10 @@ class PdxType : public Serializable,
   PdxTypePtr isLocalTypeContains(PdxTypePtr otherType);
   PdxTypePtr isRemoteTypeContains(PdxTypePtr localType);
 
+  PdxTypePtr shared_from_this() {
+    return std::static_pointer_cast<PdxType>(Serializable::shared_from_this());
+  }
+
  public:
   PdxType();
 
@@ -172,7 +176,7 @@ class PdxType : public Serializable,
     if (iter != m_fieldNameVsPdxType.end()) {
       return (*iter).second;
     }
-    return NULLPTR;
+    return nullptr;
   }
 
   bool isLocal() const { return m_isLocal; }

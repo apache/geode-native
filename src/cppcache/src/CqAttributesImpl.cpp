@@ -17,17 +17,13 @@
 #include "CqAttributesImpl.hpp"
 #include <geode/ExceptionTypes.hpp>
 using namespace apache::geode::client;
-void CqAttributesImpl::getCqListeners(VectorOfCqListener& vl) {
+void CqAttributesImpl::getCqListeners(listener_container_type& vl) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
-  vl.clear();
-  //        vl.reserve(m_cqListeners.size());
   vl = m_cqListeners;
-  //	for(size_t i=0; i < m_cqListeners.size(); i++)
-  //	  vl[i]  = m_cqListeners[i];
 }
 
-void CqAttributesImpl::addCqListener(CqListenerPtr& cql) {
-  if (cql == NULLPTR) {
+void CqAttributesImpl::addCqListener(const CqListenerPtr& cql) {
+  if (cql == nullptr) {
     throw IllegalArgumentException("addCqListener parameter was null");
   }
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
@@ -35,25 +31,27 @@ void CqAttributesImpl::addCqListener(CqListenerPtr& cql) {
 }
 
 CqAttributesImpl* CqAttributesImpl::clone() {
-  CqAttributesImpl* ptr = new CqAttributesImpl();
-  ptr->setCqListeners(m_cqListeners);
-  return ptr;
+  auto clone = new CqAttributesImpl();
+  clone->setCqListeners(m_cqListeners);
+  return clone;
 }
 
-void CqAttributesImpl::setCqListeners(VectorOfCqListener& addedListeners) {
+void CqAttributesImpl::setCqListeners(
+    const listener_container_type& addedListeners) {
   if (addedListeners.empty() == true) {
     LOGWARN("setCqListeners parameter had a null element, nothing to be set");
     return;
   }
-  VectorOfCqListener oldListeners(m_cqListeners);
+
+  decltype(m_cqListeners) oldListeners(m_cqListeners);
   {
     ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
     m_cqListeners = addedListeners;
   }
   if (!oldListeners.empty()) {
-    for (int32_t i = 0; i < oldListeners.length(); i++) {
+    for (auto l : oldListeners) {
       try {
-        oldListeners[i]->close();
+        l->close();
         // Handle client side exceptions.
       } catch (Exception& ex) {
         LOGWARN("Exception occured while closing CQ Listener %s Error",
@@ -64,17 +62,16 @@ void CqAttributesImpl::setCqListeners(VectorOfCqListener& addedListeners) {
   }
 }
 
-void CqAttributesImpl::removeCqListener(CqListenerPtr& cql) {
-  if (cql == NULLPTR) {
+void CqAttributesImpl::removeCqListener(const CqListenerPtr& cql) {
+  if (cql == nullptr) {
     throw IllegalArgumentException("removeCqListener parameter was null");
   }
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
   if (!m_cqListeners.empty()) {
-    for (int32_t i = 0; i < m_cqListeners.size(); i++) {
-      if (m_cqListeners.at(i) == cql) {
-        m_cqListeners.erase(i);
-      }
-    }
+    m_cqListeners.erase(
+        std::remove_if(m_cqListeners.begin(), m_cqListeners.end(),
+                       [cql](CqListenerPtr l) -> bool { return cql == l; }),
+        m_cqListeners.end());
     try {
       cql->close();
       // Handle client side exceptions.

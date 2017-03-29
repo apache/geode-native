@@ -109,7 +109,7 @@ namespace Apache
           CacheListenerGeneric<TKey, TValue>^ clg = gcnew CacheListenerGeneric<TKey, TValue>();
           clg->SetCacheListener(cacheListener);
           listenerptr = new apache::geode::client::ManagedCacheListenerGeneric( /*clg,*/ cacheListener );
-          ((apache::geode::client::ManagedCacheListenerGeneric*)listenerptr.ptr())->setptr(clg);
+          ((apache::geode::client::ManagedCacheListenerGeneric*)listenerptr.get())->setptr(clg);
         }
         NativePtr->setCacheListener( listenerptr );
       }
@@ -135,7 +135,7 @@ namespace Apache
           CacheLoaderGeneric<TKey, TValue>^ clg = gcnew CacheLoaderGeneric<TKey, TValue>();
           clg->SetCacheLoader(cacheLoader);
           loaderptr = new apache::geode::client::ManagedCacheLoaderGeneric( /*clg,*/ cacheLoader );
-          ((apache::geode::client::ManagedCacheLoaderGeneric*)loaderptr.ptr())->setptr(clg);
+          ((apache::geode::client::ManagedCacheLoaderGeneric*)loaderptr.get())->setptr(clg);
         }
         NativePtr->setCacheLoader( loaderptr );
       }
@@ -161,7 +161,7 @@ namespace Apache
           CacheWriterGeneric<TKey, TValue>^ cwg = gcnew CacheWriterGeneric<TKey, TValue>();
           cwg->SetCacheWriter(cacheWriter);
           writerptr = new apache::geode::client::ManagedCacheWriterGeneric( /*cwg,*/ cacheWriter );
-          ((apache::geode::client::ManagedCacheWriterGeneric*)writerptr.ptr())->setptr(cwg);
+          ((apache::geode::client::ManagedCacheWriterGeneric*)writerptr.get())->setptr(cwg);
         }
         NativePtr->setCacheWriter( writerptr );
       }

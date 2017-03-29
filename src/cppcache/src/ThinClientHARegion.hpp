@@ -47,7 +47,7 @@ class CPPCACHE_EXPORT ThinClientHARegion : public ThinClientRegion {
    * @brief constructor/destructor
    */
   ThinClientHARegion(const std::string& name, CacheImpl* cache,
-                     RegionInternal* rPtr,
+                     const RegionInternalPtr& rPtr,
                      const RegionAttributesPtr& attributes,
                      const CacheStatisticsPtr& stats, bool shared = false,
                      bool enableNotification = true);

@@ -34,7 +34,7 @@ bool SelectResultsIterator::hasNext() const {
 }
 
 const SerializablePtr SelectResultsIterator::next() {
-  if (!hasNext()) return NULLPTR;
+  if (!hasNext()) return nullptr;
 
   return m_vectorSR->operator[](m_nextIndex++);
 }
@@ -49,7 +49,7 @@ bool SelectResultsIterator::moveNext() {
 }
 
 const SerializablePtr SelectResultsIterator::current() const {
-  if (m_nextIndex == 0 || m_nextIndex > m_vectorSR->size()) return NULLPTR;
+  if (m_nextIndex == 0 || m_nextIndex > m_vectorSR->size()) return nullptr;
 
   return m_vectorSR->operator[](m_nextIndex - 1);
 }

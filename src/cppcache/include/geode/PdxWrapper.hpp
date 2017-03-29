@@ -31,8 +31,7 @@ class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
   /**
    * The PdxWrapper class allows domain classes to be used in Region operations.
    * A user domain object should be wrapped in an instance of a PdxWrapper with
-* a
-* PdxSerializer registered that can handle the user domain class.
+   * a PdxSerializer registered that can handle the user domain class.
    */
 
  public:
@@ -118,6 +117,8 @@ class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
   /** hide default constructor */
   PdxWrapper();
   PdxWrapper(const char* className);
+
+  FRIEND_STD_SHARED_PTR(PdxWrapper)
 
   void* m_userObject;
   PdxSerializerPtr m_serializer;

@@ -41,10 +41,10 @@ using namespace unitTests;
 class CacheImplHelper : public CacheHelper {
  public:
   CacheImplHelper(const char* member_id,
-                  const PropertiesPtr& configPtr = NULLPTR)
+                  const PropertiesPtr& configPtr = nullptr)
       : CacheHelper(member_id, configPtr) {}
 
-  CacheImplHelper(const PropertiesPtr& configPtr = NULLPTR)
+  CacheImplHelper(const PropertiesPtr& configPtr = nullptr)
       : CacheHelper(configPtr) {}
 
   virtual void createRegion(const char* regionName, RegionPtr& regionPtr,
@@ -63,7 +63,7 @@ class CacheImplHelper : public CacheHelper {
     CacheImpl* cimpl = TestUtils::getCacheImpl(cachePtr);
     ASSERT(cimpl != NULL, "failed to get cacheImpl *.");
     cimpl->createRegion(regionName, regAttrs, regionPtr);
-    ASSERT(regionPtr != NULLPTR, "failed to create region.");
+    ASSERT(regionPtr != nullptr, "failed to create region.");
   }
 };
 

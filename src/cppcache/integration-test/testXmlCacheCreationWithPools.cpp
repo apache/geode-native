@@ -55,9 +55,9 @@ bool findString(string& item, CacheableStringArrayPtr array) {
 }
 
 bool checkStringArray(SLIST& first, CacheableStringArrayPtr second) {
-  if (second == NULLPTR && first.size() > 0) return false;
+  if (second == nullptr && first.size() > 0) return false;
 
-  if (second == NULLPTR && first.size() == 0) return true;
+  if (second == nullptr && first.size() == 0) return true;
 
   if (first.size() != second->length()) return false;
 
@@ -82,7 +82,7 @@ bool checkPoolAttribs(PoolPtr pool, SLIST& locators, SLIST& servers,
                       bool prSingleHopEnabled, int updateLocatorListInterval) {
   char logmsg[500] = {0};
 
-  if (pool == NULLPTR) {
+  if (pool == nullptr) {
     LOG("checkPoolAttribs: PoolPtr is NULL");
     return false;
   }
@@ -290,7 +290,7 @@ int testXmlCacheCreationWithPools() {
 
   test::cout << "Root regions in Cache :" << test::endl;
   for (int32_t i = 0; i < vrp.size(); i++) {
-    test::cout << "vc[" << i << "].m_regionPtr=" << vrp.at(i).ptr()
+    test::cout << "vc[" << i << "].m_regionPtr=" << vrp.at(i).get()
                << test::endl;
     test::cout << "vc[" << i << "]=" << vrp.at(i)->getName() << test::endl;
   }
@@ -310,7 +310,7 @@ int testXmlCacheCreationWithPools() {
   test::cout << "get subregions from the root region :" << vrp.at(0)->getName()
              << test::endl;
   for (int32_t i = 0; i < vr.size(); i++) {
-    test::cout << "vc[" << i << "].m_regionPtr=" << vr.at(i).ptr()
+    test::cout << "vc[" << i << "].m_regionPtr=" << vr.at(i).get()
                << test::endl;
     test::cout << "vc[" << i << "]=" << vr.at(i)->getName() << test::endl;
   }
@@ -389,7 +389,7 @@ int testXmlCacheCreationWithPools() {
 
   if (!cptr->isClosed()) {
     cptr->close();
-    cptr = NULLPTR;
+    cptr = nullptr;
   }
 
   if (!check1 || !check2 || !check3) {
@@ -453,7 +453,7 @@ int testXmlCacheCreationWithPools() {
   test::cout << "disconnecting..." << test::endl;
   try {
     test::cout << "just before disconnecting..." << test::endl;
-    if (cptr != NULLPTR) cptr->close();
+    if (cptr != nullptr) cptr->close();
   } catch (Exception& ex) {
     ex.showMessage();
     ex.printStackTrace();
@@ -506,27 +506,27 @@ int testXmlDeclarativeCacheCreation() {
 
   test::cout << "Root regions in Cache :" << test::endl;
   for (int32_t i = 0; i < vrp.size(); i++) {
-    test::cout << "vc[" << i << "].m_reaPtr=" << vrp.at(i).ptr() << test::endl;
+    test::cout << "vc[" << i << "].m_reaPtr=" << vrp.at(i).get() << test::endl;
     test::cout << "vc[" << i << "]=" << vrp.at(i)->getName() << test::endl;
   }
   RegionPtr regPtr1 = vrp.at(0);
 
   RegionAttributesPtr raPtr = regPtr1->getAttributes();
-  RegionAttributes* regAttr = raPtr.ptr();
+  RegionAttributes* regAttr = raPtr.get();
   test::cout << "Test Attributes of root region Root1 " << test::endl;
   test::cout << "Region name " << regPtr1->getName() << test::endl;
 
-  if (regAttr->getCacheLoader() == NULLPTR) {
+  if (regAttr->getCacheLoader() == nullptr) {
     test::cout << "Cache Loader not initialized." << test::endl;
     return -1;
   }
 
-  if (regAttr->getCacheListener() == NULLPTR) {
+  if (regAttr->getCacheListener() == nullptr) {
     test::cout << "Cache Listener not initialized." << test::endl;
     return -1;
   }
 
-  if (regAttr->getCacheWriter() == NULLPTR) {
+  if (regAttr->getCacheWriter() == nullptr) {
     test::cout << "Cache Writer not initialized." << test::endl;
     return -1;
   }
@@ -535,7 +535,7 @@ int testXmlDeclarativeCacheCreation() {
 
   if (!cptr->isClosed()) {
     cptr->close();
-    cptr = NULLPTR;
+    cptr = nullptr;
   }
 
   return 0;

@@ -225,7 +225,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULLPTR;
+        return nullptr;
       }
 
       const char* ManagedFixedPartitionResolverGeneric::getName()

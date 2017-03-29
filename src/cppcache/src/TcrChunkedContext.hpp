@@ -58,7 +58,7 @@ class TcrChunkedResult : public SharedBase {
  public:
   inline TcrChunkedResult()
       : m_finalizeSema(NULL),
-        m_ex(NULLPTR),
+        m_ex(nullptr),
         m_inSameThread(false),
         appDomainContext(createAppDomainContext()),
         m_dsmemId(0) {}
@@ -117,9 +117,9 @@ class TcrChunkedResult : public SharedBase {
 
   // getters/setters for the exception, if any, during chunk processing
 
-  inline bool exceptionOccurred() const { return (m_ex != NULLPTR); }
+  inline bool exceptionOccurred() const { return (m_ex != nullptr); }
 
-  inline void setException(Exception& ex) { m_ex = ex.clone(); }
+  inline void setException(Exception& ex) { m_ex.reset(ex.clone()); }
 
   inline ExceptionPtr& getException() { return m_ex; }
 };

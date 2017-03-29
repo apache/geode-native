@@ -32,7 +32,7 @@ PoolStatsSampler::PoolStatsSampler(int64_t sampleRate, CacheImpl* cache,
     : m_sampleRate(sampleRate), m_distMan(distMan) {
   m_running = false;
   m_stopRequested = false;
-  m_adminRegion = new AdminRegion(cache, distMan);
+  m_adminRegion = AdminRegion::create(cache, distMan);
 }
 
 PoolStatsSampler::~PoolStatsSampler() {
@@ -117,11 +117,10 @@ void PoolStatsSampler::putStatsInAdminRegion() {
   } catch (const AllConnectionsInUseException&) {
     LOGDEBUG("All connection are in use, trying again.");
   } catch (const NotConnectedException& ex) {
-    try {
-      ExceptionPtr exCause =
-          dynCast<SharedPtr<NoAvailableLocatorsException> >(ex.getCause());
+    if (std::dynamic_pointer_cast<NoAvailableLocatorsException>(
+            ex.getCause())) {
       LOGDEBUG("No locators available, trying again.");
-    } catch (ClassCastException&) {
+    } else {
       LOGDEBUG("Not connected to geode, trying again.");
     }
   } catch (...) {

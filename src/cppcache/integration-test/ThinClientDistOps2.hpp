@@ -94,7 +94,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1Regions_Pooled_Locator)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     createPooledRegion(_regionNames[0], USE_ACK, locatorsG, poolName);
     createPooledRegion(_regionNames[1], NO_ACK, locatorsG, poolName);
     LOG("CreateClient1Regions complete.");
@@ -104,7 +104,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2Regions_Pooled_Locator)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     createPooledRegion(_regionNames[0], USE_ACK, locatorsG, poolName);
     createPooledRegion(_regionNames[1], NO_ACK, locatorsG, poolName);
     LOG("CreateClient1Regions complete.");
@@ -160,27 +160,27 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll)
 
     // test invalid combination with caching disabled for getAll
     reg0->localDestroyRegion();
-    reg0 = NULLPTR;
+    reg0 = nullptr;
     getHelper()->createPooledRegion(regionNames[0], USE_ACK, 0,
                                     "__TEST_POOL1__", false, false);
     reg0 = getHelper()->getRegion(_regionNames[0]);
     keys0.push_back(key0);
     keys0.push_back(key1);
     try {
-      reg0->getAll(keys0, NULLPTR, NULLPTR, true);
+      reg0->getAll(keys0, nullptr, nullptr, true);
       FAIL("Expected IllegalArgumentException");
     } catch (const IllegalArgumentException&) {
       LOG("Got expected IllegalArgumentException");
     }
     // re-create region with caching enabled
     reg0->localDestroyRegion();
-    reg0 = NULLPTR;
+    reg0 = nullptr;
     getHelper()->createPooledRegion(regionNames[0], USE_ACK, 0,
                                     "__TEST_POOL1__", true, true);
     reg0 = getHelper()->getRegion(_regionNames[0]);
     // check for IllegalArgumentException for empty key list
-    HashMapOfCacheablePtr values(new HashMapOfCacheable());
-    HashMapOfExceptionPtr exceptions(new HashMapOfException());
+    auto values = std::make_shared<HashMapOfCacheable>();
+    auto exceptions = std::make_shared<HashMapOfException>();
     keys0.clear();
     try {
       reg0->getAll(keys0, values, exceptions);
@@ -191,7 +191,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll)
     keys0.push_back(key0);
     keys0.push_back(key1);
     try {
-      reg0->getAll(keys0, NULLPTR, NULLPTR, false);
+      reg0->getAll(keys0, nullptr, nullptr, false);
       FAIL("Expected IllegalArgumentException");
     } catch (const IllegalArgumentException&) {
       LOG("Got expected IllegalArgumentException");
@@ -200,10 +200,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll)
     reg0->getAll(keys0, values, exceptions);
     ASSERT(values->size() == 2, "Expected 2 values");
     ASSERT(exceptions->size() == 0, "Expected no exceptions");
-    CacheableStringPtr val0 =
-        dynCast<CacheableStringPtr>(values->operator[](key0));
-    CacheableStringPtr val1 =
-        dynCast<CacheableStringPtr>(values->operator[](key1));
+    auto val0 = std::dynamic_pointer_cast<CacheableString>(values->operator[](key0));
+    auto val1 = std::dynamic_pointer_cast<CacheableString>(values->operator[](key1));
     ASSERT(strcmp(_nvals[0], val0->asChar()) == 0, "Got unexpected value");
     ASSERT(strcmp(_nvals[1], val1->asChar()) == 0, "Got unexpected value");
 
@@ -222,10 +220,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll)
     reg1->getAll(keys1, values, exceptions, true);
     ASSERT(values->size() == 2, "Expected 2 values");
     ASSERT(exceptions->size() == 0, "Expected no exceptions");
-    CacheableStringPtr val2 =
-        dynCast<CacheableStringPtr>(values->operator[](key2));
-    CacheableStringPtr val3 =
-        dynCast<CacheableStringPtr>(values->operator[](key3));
+    auto val2 = std::dynamic_pointer_cast<CacheableString>(values->operator[](key2));
+    auto val3 = std::dynamic_pointer_cast<CacheableString>(values->operator[](key3));
     ASSERT(strcmp(_nvals[2], val2->asChar()) == 0, "Got unexpected value");
     ASSERT(strcmp(_vals[3], val3->asChar()) == 0, "Got unexpected value");
 
@@ -239,7 +235,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll)
 
     // also check with NULL values that region is properly populated
     reg1->localInvalidate(key3);
-    values = NULLPTR;
+    values = nullptr;
     exceptions->clear();
     reg1->getAll(keys1, values, exceptions, true);
     // now check that the region is properly populated
@@ -262,26 +258,26 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll_Pool)
 
     // test invalid combination with caching disabled for getAll
     reg0->localDestroyRegion();
-    reg0 = NULLPTR;
+    reg0 = nullptr;
     getHelper()->createRegionAndAttachPool(_regionNames[0], USE_ACK, poolName,
                                            false);
     reg0 = getHelper()->getRegion(_regionNames[0]);
     keys0.push_back(key0);
     keys0.push_back(key1);
     try {
-      reg0->getAll(keys0, NULLPTR, NULLPTR, true);
+      reg0->getAll(keys0, nullptr, nullptr, true);
       FAIL("Expected IllegalArgumentException");
     } catch (const IllegalArgumentException&) {
       LOG("Got expected IllegalArgumentException");
     }
     // re-create region with caching enabled
     reg0->localDestroyRegion();
-    reg0 = NULLPTR;
+    reg0 = nullptr;
     getHelper()->createRegionAndAttachPool(_regionNames[0], USE_ACK, poolName);
     reg0 = getHelper()->getRegion(_regionNames[0]);
     // check for IllegalArgumentException for empty key list
-    HashMapOfCacheablePtr values(new HashMapOfCacheable());
-    HashMapOfExceptionPtr exceptions(new HashMapOfException());
+    auto values = std::make_shared<HashMapOfCacheable>();
+    auto exceptions = std::make_shared<HashMapOfException>();
     keys0.clear();
     try {
       reg0->getAll(keys0, values, exceptions);
@@ -292,7 +288,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll_Pool)
     keys0.push_back(key0);
     keys0.push_back(key1);
     try {
-      reg0->getAll(keys0, NULLPTR, NULLPTR, false);
+      reg0->getAll(keys0, nullptr, nullptr, false);
       FAIL("Expected IllegalArgumentException");
     } catch (const IllegalArgumentException&) {
       LOG("Got expected IllegalArgumentException");
@@ -301,10 +297,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll_Pool)
     reg0->getAll(keys0, values, exceptions);
     ASSERT(values->size() == 2, "Expected 2 values");
     ASSERT(exceptions->size() == 0, "Expected no exceptions");
-    CacheableStringPtr val0 =
-        dynCast<CacheableStringPtr>(values->operator[](key0));
-    CacheableStringPtr val1 =
-        dynCast<CacheableStringPtr>(values->operator[](key1));
+    auto val0 = std::dynamic_pointer_cast<CacheableString>(values->operator[](key0));
+    auto val1 = std::dynamic_pointer_cast<CacheableString>(values->operator[](key1));
     ASSERT(strcmp(_nvals[0], val0->asChar()) == 0, "Got unexpected value");
     ASSERT(strcmp(_nvals[1], val1->asChar()) == 0, "Got unexpected value");
 
@@ -323,10 +317,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll_Pool)
     reg1->getAll(keys1, values, exceptions, true);
     ASSERT(values->size() == 2, "Expected 2 values");
     ASSERT(exceptions->size() == 0, "Expected no exceptions");
-    CacheableStringPtr val2 =
-        dynCast<CacheableStringPtr>(values->operator[](key2));
-    CacheableStringPtr val3 =
-        dynCast<CacheableStringPtr>(values->operator[](key3));
+    auto val2 = std::dynamic_pointer_cast<CacheableString>(values->operator[](key2));
+    auto val3 = std::dynamic_pointer_cast<CacheableString>(values->operator[](key3));
     ASSERT(strcmp(_nvals[2], val2->asChar()) == 0, "Got unexpected value");
     ASSERT(strcmp(_vals[3], val3->asChar()) == 0, "Got unexpected value");
 
@@ -340,7 +332,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll_Pool)
 
     // also check with NULL values that region is properly populated
     reg1->localInvalidate(key3);
-    values = NULLPTR;
+    values = nullptr;
     exceptions->clear();
     reg1->getAll(keys1, values, exceptions, true);
     // now check that the region is properly populated

@@ -88,7 +88,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   free(buf);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   CacheableKeyPtr keyPtr = createKey(key);
 
@@ -122,10 +122,9 @@ void _verifyEntry(const char* name, const char* key, const char* val,
     }
 
     if (val != NULL) {
-      CacheableStringPtr checkPtr =
-          dynCast<CacheableStringPtr>(regPtr->get(keyPtr));
+      auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
-      ASSERT(checkPtr != NULLPTR, "Value Ptr should not be null.");
+      ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
       char buf[1024];
       sprintf(buf, "In verify loop, get returned %s for key %s",
               checkPtr->asChar(), key);
@@ -179,8 +178,8 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   fflush(stdout);
   // ack, caching
   RegionPtr regPtr = getHelper()->createRegion(
-      name, ackMode, true, NULLPTR, endpoints, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+      name, ackMode, true, nullptr, endpoints, clientNotificationEnabled);
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 void createPooledRegion(const char* name, bool ackMode, const char* locators,
@@ -193,7 +192,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   RegionPtr regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }
 void createEntry(const char* name, const char* key, const char* value) {
@@ -206,7 +205,7 @@ void createEntry(const char* name, const char* key, const char* value) {
   CacheableStringPtr valPtr = CacheableString::create(value);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
          "Key should not have been found in region.");
@@ -231,7 +230,7 @@ void updateEntry(const char* name, const char* key, const char* value) {
   CacheableStringPtr valPtr = CacheableString::create(value);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
   // ASSERT( regPtr->containsValueForKey( keyPtr ), "Value should have been
@@ -257,7 +256,7 @@ void doNetsearch(const char* name, const char* key, const char* value) {
   RegionPtr regPtr = getHelper()->getRegion(name);
   fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
   fflush(stdout);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   /*NIL: Changed the asserion due to the change in invalidate.
     Now we create new entery for every invalidate event received or
@@ -267,10 +266,9 @@ void doNetsearch(const char* name, const char* key, const char* value) {
   ASSERT(!regPtr->containsValueForKey(keyPtr),
          "Value should not have been found in region.");
 
-  CacheableStringPtr checkPtr =
-      dynCast<CacheableStringPtr>(regPtr->get(keyPtr));  // force a netsearch
+  auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));  // force a netsearch
 
-  if (checkPtr != NULLPTR) {
+  if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
     char buf[1024];
     sprintf(buf, "In net search, get returned %s for key %s",
@@ -291,7 +289,7 @@ void invalidateEntry(const char* name, const char* key) {
   CacheableKeyPtr keyPtr = CacheableKey::create(key);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
   // ASSERT( regPtr->containsValueForKey( keyPtr ), "Value should have been
@@ -312,7 +310,7 @@ void destroyEntry(const char* name, const char* key) {
   CacheableKeyPtr keyPtr = CacheableKey::create(key);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
 
@@ -358,9 +356,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_Locator)
     createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TEST_POOL1__",
                        true);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    regPtr->registerAllKeys(false, NULLPTR, false, false);
+    regPtr->registerAllKeys(false, nullptr, false, false);
     regPtr = getHelper()->getRegion(regionNames[1]);
-    regPtr->registerAllKeys(false, NULLPTR, false, false);
+    regPtr->registerAllKeys(false, nullptr, false, false);
     LOG("StepOne complete.");
   }
 END_TASK_DEFINITION
@@ -376,9 +374,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_Locator)
     createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TEST_POOL1__",
                        true);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    regPtr->registerAllKeys(false, NULLPTR, false, false);
+    regPtr->registerAllKeys(false, nullptr, false, false);
     regPtr = getHelper()->getRegion(regionNames[1]);
-    regPtr->registerAllKeys(false, NULLPTR, false, false);
+    regPtr->registerAllKeys(false, nullptr, false, false);
     LOG("StepTwo complete.");
   }
 END_TASK_DEFINITION

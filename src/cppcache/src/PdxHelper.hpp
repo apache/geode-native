@@ -50,6 +50,9 @@ class PdxHelper {
   static void serializePdx(DataOutput& output,
                            const PdxSerializable& pdxObject);
 
+  static void serializePdx(DataOutput& output,
+                           const PdxSerializablePtr& pdxObject);
+
   static PdxSerializablePtr deserializePdx(DataInput& dataInput,
                                            bool forceDeserialize);
 
@@ -74,7 +77,7 @@ class PdxHelper {
   static int32_t readInt(uint8_t* offsetPosition, int size);
 
   static int32_t getEnumValue(const char* enumClassName, const char* enumName,
-                            int hashcode);
+                              int hashcode);
 
   static EnumInfoPtr getEnum(int enumId);
 

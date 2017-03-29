@@ -156,7 +156,7 @@ namespace Apache
 
         //          DistributedSystem::AppDomainInstancePostInitialization();
 
-        return Create(nativeptr.ptr());
+        return Create(nativeptr.get());
 
         _GF_MG_EXCEPTION_CATCH_ALL2
 
@@ -217,7 +217,7 @@ namespace Apache
 
         DistributedSystem::AppDomainInstancePostInitialization();
 
-        return Create(nativeptr.ptr());
+        return Create(nativeptr.get());
 
         _GF_MG_EXCEPTION_CATCH_ALL
 
@@ -750,7 +750,7 @@ namespace Apache
       void DistributedSystem::AppDomainInstancePostInitialization()
       {
         //to create .net memory pressure handler 
-        Create(apache::geode::client::DistributedSystem::getInstance().ptr());
+        Create(apache::geode::client::DistributedSystem::getInstance().get());
       }
 
       void DistributedSystem::UnregisterBuiltinManagedTypes()
@@ -826,7 +826,7 @@ namespace Apache
       {
         apache::geode::client::DistributedSystemPtr& nativeptr(
           apache::geode::client::DistributedSystem::getInstance());
-        return Create(nativeptr.ptr());
+        return Create(nativeptr.get());
       }
 
       void DistributedSystem::HandleMemoryPressure(System::Object^ state)

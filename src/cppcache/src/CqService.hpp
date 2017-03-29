@@ -72,9 +72,11 @@ namespace client {
  *
  * FIX : Make the class NonCopyable
  */
-class CPPCACHE_EXPORT CqService : public SharedBase,
-                                  private NonCopyable,
-                                  private NonAssignable {
+class CPPCACHE_EXPORT CqService
+    : public SharedBase,
+      private NonCopyable,
+      private NonAssignable,
+      public std::enable_shared_from_this<CqService> {
  private:
   ThinClientBaseDM* m_tccdm;
   ACE_Recursive_Thread_Mutex m_mutex;
@@ -92,6 +94,8 @@ class CPPCACHE_EXPORT CqService : public SharedBase,
   }
 
  public:
+  typedef std::vector<CqQueryPtr> query_container_type;
+
   /**
    * Constructor.
    */
@@ -109,7 +113,7 @@ class CPPCACHE_EXPORT CqService : public SharedBase,
   void updateStats();
 
   CqServiceVsdStats& getCqServiceVsdStats() {
-    return *dynamic_cast<CqServiceVsdStats*>(m_stats.ptr());
+    return *dynamic_cast<CqServiceVsdStats*>(m_stats.get());
   }
 
   /**
@@ -142,23 +146,24 @@ class CPPCACHE_EXPORT CqService : public SharedBase,
    * release.
    *
    */
-  CqQueryPtr newCq(std::string& cqName, std::string& queryString,
-                   CqAttributesPtr& cqAttributes, bool isDurable = false);
+  CqQueryPtr newCq(const std::string& cqName, const std::string& queryString,
+                   const CqAttributesPtr& cqAttributes,
+                   const bool isDurable = false);
 
   /**
    * Adds the given CQ and cqQuery object into the CQ map.
    */
-  void addCq(std::string& cqName, CqQueryPtr& cq);
+  void addCq(const std::string& cqName, CqQueryPtr& cq);
 
   /**
    * Removes given CQ from the cqMap..
    */
-  void removeCq(std::string& cqName);
+  void removeCq(const std::string& cqName);
   /**
    * Retrieve a CqQuery by name.
    * @return the CqQuery or null if not found
    */
-  CqQueryPtr getCq(std::string& cqName);
+  CqQueryPtr getCq(const std::string& cqName);
 
   /**
    * Clears the CQ Query Map.
@@ -167,7 +172,7 @@ class CPPCACHE_EXPORT CqService : public SharedBase,
   /**
    * Retrieve  all registered CQs
    */
-  void getAllCqs(VectorOfCqQuery& vec);
+  void getAllCqs(query_container_type& vec);
   /**
    * Executes all the cqs on this client.
    */
@@ -181,12 +186,12 @@ class CPPCACHE_EXPORT CqService : public SharedBase,
   /**
    * Executes all the given cqs.
    */
-  void executeCqs(VectorOfCqQuery& cqs, bool afterFailover = false);
+  void executeCqs(query_container_type& cqs, bool afterFailover = false);
 
   /**
    * Executes all the given cqs on the specified endpoint after failover.
    */
-  GfErrType executeCqs(VectorOfCqQuery& cqs, TcrEndpoint* endpoint);
+  GfErrType executeCqs(query_container_type& cqs, TcrEndpoint* endpoint);
 
   /**
    * Stops all the cqs
@@ -196,7 +201,7 @@ class CPPCACHE_EXPORT CqService : public SharedBase,
   /**
    * Stops all the specified cqs.
    */
-  void stopCqs(VectorOfCqQuery& cqs);
+  void stopCqs(query_container_type& cqs);
 
   /**
    * Close all CQs executing in this client, and release resources
@@ -227,7 +232,7 @@ class CPPCACHE_EXPORT CqService : public SharedBase,
    * @param cqName name of the CQ.
    * @return true if exists else false.
    */
-  bool isCqExists(std::string& cqName);
+  bool isCqExists(const std::string& cqName);
   /**
    * Invokes the CqListeners for the given CQs.
    * @param cqs list of cqs with the cq operation from the Server.
@@ -246,7 +251,7 @@ class CPPCACHE_EXPORT CqService : public SharedBase,
    */
   CqOperation::CqOperationType getOperation(int eventType);
 
-  void closeCqs(VectorOfCqQuery& cqs);
+  void closeCqs(query_container_type& cqs);
 
   /**
    * Gets all the durable CQs registered by this client.
@@ -256,7 +261,8 @@ class CPPCACHE_EXPORT CqService : public SharedBase,
    */
   CacheableArrayListPtr getAllDurableCqsFromServer();
 
-  void invokeCqConnectedListeners(std::string poolName, bool connected);
+  void invokeCqConnectedListeners(const std::string& poolName,
+                                  const bool connected);
 };
 
 typedef SharedPtr<CqService> CqServicePtr;

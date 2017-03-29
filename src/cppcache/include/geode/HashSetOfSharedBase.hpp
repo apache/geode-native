@@ -143,7 +143,7 @@ class CPPCACHE_EXPORT HashSetOfSharedBase {
   /** Copy constructor. */
   HashSetOfSharedBase(const HashSetOfSharedBase& other);
 
-  /** Destructor, sets all SharedPtr elements to NULLPTR. */
+  /** Destructor, sets all SharedPtr elements to nullptr. */
   ~HashSetOfSharedBase();
 };
 }  // namespace client

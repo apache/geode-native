@@ -121,12 +121,10 @@ END_TASK(validate)
 
 #define ASSERT(x, y)                                   \
   if (!(x)) {                                          \
-    raise(SIGABRT);                                    \
     throw dunit::TestException(y, __LINE__, __FILE__); \
   }
 #define XASSERT(x)                                      \
   if (!(x)) {                                           \
-    raise(SIGABRT);                                     \
     throw dunit::TestException(#x, __LINE__, __FILE__); \
   }
 #define FAIL(y) throw dunit::TestException(y, __LINE__, __FILE__)

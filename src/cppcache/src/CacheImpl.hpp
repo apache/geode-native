@@ -235,11 +235,11 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
 
   QueryServicePtr getQueryService(const char* poolName);
 
-  RegionInternal* createRegion_internal(const std::string& name,
-                                        RegionInternal* rootRegion,
-                                        const RegionAttributesPtr& attrs,
-                                        const CacheStatisticsPtr& csptr,
-                                        bool shared);
+  std::shared_ptr<RegionInternal> createRegion_internal(
+      const std::string& name,
+      const std::shared_ptr<RegionInternal>& rootRegion,
+      const RegionAttributesPtr& attrs, const CacheStatisticsPtr& csptr,
+      bool shared);
 
   /**
    * Send the "client ready" message to the server.
@@ -260,7 +260,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   static inline CacheImpl* getInstance() { return s_instance; };
 
   bool getCacheMode() {
-    return m_attributes == NULLPTR ? false : m_attributes->m_cacheMode;
+    return m_attributes == nullptr ? false : m_attributes->m_cacheMode;
   }
 
   bool getPdxIgnoreUnreadFields() { return m_ignorePdxUnreadFields; }

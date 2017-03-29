@@ -33,7 +33,7 @@ namespace client {
 struct DistributedMemberWithIntIdentifier {
  public:
   DistributedMemberWithIntIdentifier(
-      DSMemberForVersionStampPtr dsmember = NULLPTR, uint16_t id = 0) {
+      DSMemberForVersionStampPtr dsmember = nullptr, uint16_t id = 0) {
     this->m_member = dsmember;
     this->m_identifier = id;
   }

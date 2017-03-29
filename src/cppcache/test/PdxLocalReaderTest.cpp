@@ -69,7 +69,7 @@ TEST(PdxLocalReaderTest, x) {
   // C++ Client does not require pdxDomainClassName as it is only needed
   // for reflection purposes, which we do not support in C++. We pass in
   // getClassName() for consistency reasons only.
-  PdxTypePtr pdx_type_ptr(new PdxType(expected.getClassName(), false));
+  auto pdx_type_ptr = std::make_shared<PdxType>(expected.getClassName(), false);
 
   // TODO: Refactor static singleton patterns in PdxTypeRegistry so that
   // tests will not interfere with each other.
@@ -77,13 +77,13 @@ TEST(PdxLocalReaderTest, x) {
 
   // Here we construct a serialized stream of bytes representing MyPdxClass.
   // The stream is later deserialization and validated for consistency.
-  PdxLocalWriterPtr writer(new PdxLocalWriter(stream, pdx_type_ptr));
+  auto writer = std::make_shared<PdxLocalWriter>(stream, pdx_type_ptr);
   expected.toData(writer);
   writer->endObjectWriting();
   uint8_t *raw_stream = writer->getPdxStream(length);
 
   DataInput input(raw_stream, length);
-  PdxLocalReaderPtr reader(new PdxLocalReader(input, pdx_type_ptr, length));
+  auto reader = std::make_shared<PdxLocalReader>(input, pdx_type_ptr, length);
 
   actual.fromData(reader);
 

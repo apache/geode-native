@@ -50,8 +50,8 @@ class CPPCACHE_EXPORT VersionStamp {
   virtual ~VersionStamp() {}
   void setVersions(VersionTagPtr versionTag);
   void setVersions(VersionStamp& versionStamp);
-  int32_t getEntryVersion();
-  int64_t getRegionVersion();
+  int32_t getEntryVersion() const;
+  int64_t getRegionVersion() const;
   uint16_t getMemberId() const;
 
   VersionStamp& operator=(const VersionStamp& rhs) {
@@ -63,8 +63,10 @@ class CPPCACHE_EXPORT VersionStamp {
     this->m_regionVersionLowBytes = rhs.m_regionVersionLowBytes;
     return *this;
   }
-  GfErrType processVersionTag(RegionInternal* region, CacheableKeyPtr keyPtr,
-                              VersionTagPtr tag, bool deltaCheck);
+  GfErrType processVersionTag(const RegionInternal* region,
+                              const CacheableKeyPtr& keyPtr,
+                              const VersionTagPtr& tag,
+                              const bool deltaCheck) const;
 
  private:
   uint16_t m_memberID;
@@ -72,11 +74,15 @@ class CPPCACHE_EXPORT VersionStamp {
   uint16_t m_entryVersionLowBytes;
   uint16_t m_regionVersionHighBytes;
   uint32_t m_regionVersionLowBytes;
-  GfErrType checkForConflict(RegionInternal* region, std::string keystr,
-                             VersionTagPtr tag, bool deltaCheck);
-  GfErrType checkForDeltaConflict(RegionInternal* region, std::string keystr,
-                                  int64_t stampVersion, int64_t tagVersion,
-                                  VersionTagPtr tag);
+  GfErrType checkForConflict(const RegionInternal* region,
+                             const std::string& keystr,
+                             const VersionTagPtr& tag,
+                             const bool deltaCheck) const;
+  GfErrType checkForDeltaConflict(const RegionInternal* region,
+                                  const std::string& keystr,
+                                  const int64_t stampVersion,
+                                  const int64_t tagVersion,
+                                  const VersionTagPtr& tag) const;
 };
 typedef SharedPtr<VersionStamp> VersionStampPtr;
 }  // namespace client

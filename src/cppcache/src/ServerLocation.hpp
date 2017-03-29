@@ -45,7 +45,7 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
   }
   ServerLocation()
       : Serializable(),
-        m_serverName(NULLPTR),
+        m_serverName(nullptr),
         m_port(-1)  // Default constructor for deserialiozation.
   {}
 
@@ -62,7 +62,7 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
   }
 
   std::string getServerName() const {
-    if (m_serverName != NULLPTR) {
+    if (m_serverName != nullptr) {
       return m_serverName->asChar();
     }
     return "";
@@ -70,7 +70,7 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
   void setServername(CacheableStringPtr sn) { m_serverName = sn; }
   int getPort() const { return m_port; }
   void toData(DataOutput& output) const {
-    if (m_serverName != NULLPTR) {
+    if (m_serverName != nullptr) {
       // output.writeObject( m_serverName );
       output.writeNativeString(m_serverName->asChar());  // changed
     }
@@ -84,7 +84,7 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
     return this;
   }
   uint32_t objectSize() const {
-    if (m_serverName != NULLPTR) {
+    if (m_serverName != nullptr) {
       return static_cast<uint32_t>(sizeof(int)) +
              (m_serverName->length()) * static_cast<uint32_t>(sizeof(char));
     }
@@ -132,7 +132,7 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
     /*char server1[256];
     char server2[256];
     size_t len = 0;
-     if (m_serverName != NULLPTR && rhs.getServerName( ).c_str() != NULL) {
+     if (m_serverName != nullptr && rhs.getServerName( ).c_str() != NULL) {
       ACE_INET_Addr addr1( m_port, m_serverName->asChar() );
       len = strlen(addr1.get_host_addr());
       memcpy(server1, addr1.get_host_addr(), len);
@@ -149,7 +149,7 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
   }
 
   inline bool isValid() const {
-    if (m_serverName == NULLPTR) return false;
+    if (m_serverName == nullptr) return false;
     return m_serverName->length() > 0 && m_port >= 0;
   }
 

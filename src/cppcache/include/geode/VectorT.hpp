@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_VECTORT_H_
-#define GEODE_VECTORT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_VECTORT_H_
+#define GEODE_VECTORT_H_
+
+// TODO shared_ptr - replace with std::vector
 
 #include "geode_globals.hpp"
 #include "VectorOfSharedBase.hpp"
@@ -51,7 +53,7 @@ class VectorT {
 
    public:
     inline const PTR_TYPE operator*() const {
-      return staticCast<PTR_TYPE>(*m_iter);
+      return std::static_pointer_cast<GF_UNWRAP_SP(PTR_TYPE)>(*m_iter);
     }
 
     inline Iterator& operator++() {
@@ -95,20 +97,22 @@ class VectorT {
 
   /** Return the n'th element */
   inline PTR_TYPE operator[](int32_t n) {
-    return staticCast<PTR_TYPE>(m_vector[n]);
+    return std::static_pointer_cast<GF_UNWRAP_SP(PTR_TYPE)>(m_vector[n]);
   }
 
   /** Return the n'th element */
   inline const PTR_TYPE operator[](int32_t n) const {
-    return staticCast<PTR_TYPE>(m_vector[n]);
+    return std::static_pointer_cast<GF_UNWRAP_SP(PTR_TYPE)>(m_vector[n]);
   }
 
   /** Return the n'th element with bounds checking. */
-  inline PTR_TYPE at(int32_t n) { return staticCast<PTR_TYPE>(m_vector.at(n)); }
+  inline PTR_TYPE at(int32_t n) {
+    return std::static_pointer_cast<GF_UNWRAP_SP(PTR_TYPE)>(m_vector.at(n));
+  }
 
   /** Return the n'th element with bounds checking. */
   inline const PTR_TYPE at(int32_t n) const {
-    return staticCast<PTR_TYPE>(m_vector.at(n));
+    return std::static_pointer_cast<GF_UNWRAP_SP(PTR_TYPE)>(m_vector.at(n));
   }
 
   /** Get an iterator pointing to the start of vector. */
@@ -129,7 +133,7 @@ class VectorT {
   /** copy constructor */
   inline VectorT(const VectorT& other) : m_vector(other.m_vector) {}
 
-  /** destructor, sets all SharedPtr elements to NULLPTR */
+  /** destructor, sets all SharedPtr elements to nullptr */
   inline ~VectorT() {
     // destructor of m_vector field does all the work.
   }
@@ -144,19 +148,23 @@ class VectorT {
   inline void reserve(int32_t n) { m_vector.reserve(n); }
 
   /** returns the first element. */
-  inline PTR_TYPE front() { return staticCast<PTR_TYPE>(m_vector.front()); }
+  inline PTR_TYPE front() {
+    return std::static_pointer_cast<GF_UNWRAP_SP(PTR_TYPE)>(m_vector.front());
+  }
 
   /** returns the first element. */
   inline const PTR_TYPE front() const {
-    return staticCast<PTR_TYPE>(m_vector.front());
+    return std::static_pointer_cast<GF_UNWRAP_SP(PTR_TYPE)>(m_vector.front());
   }
 
   /** returns the last element. */
-  inline PTR_TYPE back() { return staticCast<PTR_TYPE>(m_vector.back()); }
+  inline PTR_TYPE back() {
+    return std::static_pointer_cast<GF_UNWRAP_SP(PTR_TYPE)>(m_vector.back());
+  }
 
   /** returns the last element. */
   inline const PTR_TYPE back() const {
-    return staticCast<PTR_TYPE>(m_vector.back());
+    return std::static_pointer_cast<GF_UNWRAP_SP(PTR_TYPE)>(m_vector.back());
   }
 
   /** insert a new element at the end. */
@@ -174,7 +182,7 @@ class VectorT {
   /** inserts or erases elements at the end such that size becomes n.
    *  Not to be confused with reserve which simply allocates the space,
    *  resize fills the space with active elements. */
-  inline void resize(int32_t n, const PTR_TYPE& t = NULLPTR) {
+  inline void resize(int32_t n, const PTR_TYPE& t = nullptr) {
     m_vector.resize(n, t);
   }
 
@@ -192,8 +200,6 @@ typedef VectorT<CacheableKeyPtr> _VectorOfCacheableKey;
 typedef VectorT<RegionEntryPtr> VectorOfRegionEntry;
 typedef VectorT<RegionPtr> VectorOfRegion;
 typedef VectorT<CacheableStringPtr> VectorOfCacheableString;
-typedef VectorT<CqListenerPtr> VectorOfCqListener;
-typedef VectorT<CqQueryPtr> VectorOfCqQuery;
 
 /**
  * A vector of <code>Cacheable</code> objects that also extends

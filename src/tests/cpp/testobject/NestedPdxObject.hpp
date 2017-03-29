@@ -120,7 +120,7 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
     size_t strSize = strlen(buf) + 1;
     m_parentName = new char[strSize];
     memcpy(m_parentName, buf, strSize);
-    m_childPdx = new ChildPdx(id /** 1393*/);
+    m_childPdx = std::make_shared<ChildPdx>(id /** 1393*/);
     LOGDEBUG("parentPdx buf is %s ", buf);
     m_enum = CacheableEnum::create("Gender", "male", 6);
     m_wideparentName = L"Wide Parent name";
@@ -168,7 +168,9 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
 
   wchar_t** getWideParentArrayName() { return m_wideparentArrayName; }
 
-  ChildPdxPtr getChildPdx() { return m_childPdx; }
+  ChildPdxPtr getChildPdx() {
+    return std::static_pointer_cast<ChildPdx>(m_childPdx);
+  }
 
   CacheableEnumPtr getEnum() { return m_enum; }
 
@@ -251,7 +253,8 @@ class TESTOBJECT_EXPORT PdxEnumTestClass : public PdxSerializable {
 
   void fromData(PdxReaderPtr pr) {
     m_id = pr->readInt("m_id");
-    m_enumid = pr->readObject("m_enumid");
+    m_enumid =
+        std::static_pointer_cast<CacheableEnum>(pr->readObject("m_enumid"));
   }
 
   CacheableStringPtr toString() const {

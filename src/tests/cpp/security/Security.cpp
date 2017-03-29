@@ -117,7 +117,7 @@ void Security::getClientSecurityParams(PropertiesPtr prop,
   }
   FWKINFO("security scheme : " << sc);
 
-  if (prop == NULLPTR) prop = Properties::create();
+  if (prop == nullptr) prop = Properties::create();
 
   CredentialGeneratorPtr cg = CredentialGenerator::create(sc);
   cg->getAuthInit(prop);
@@ -158,7 +158,7 @@ void Security::getClientSecurityParams(PropertiesPtr prop,
 void Security::checkTest(const char *taskId) {
   SpinLockGuard guard(m_lck);
   setTask(taskId);
-  if (m_cache == NULLPTR || m_cache->isClosed()) {
+  if (m_cache == nullptr || m_cache->isClosed()) {
     PropertiesPtr pp = Properties::create();
 
     getClientSecurityParams(pp, getStringValue("credentials"));
@@ -354,7 +354,7 @@ server reports " << keys << " keys." );
 void Security::clearKeys() {
   if (m_KeysA != NULL) {
     for (int32_t i = 0; i < m_MaxKeys; i++) {
-      m_KeysA[i] = NULLPTR;
+      m_KeysA[i] = nullptr;
     }
     delete[] m_KeysA;
     m_KeysA = NULL;
@@ -431,7 +431,7 @@ int32_t Security::initValues(int32_t numKeys, int32_t siz, bool useDefault) {
 
   if (m_CValue != NULL) {
     for (int32_t i = 0; i < m_MaxValues; i++) {
-      m_CValue[i] = NULLPTR;
+      m_CValue[i] = nullptr;
     }
     delete[] m_CValue;
   }
@@ -502,7 +502,7 @@ int32_t Security::verifyInterestList()
     for(int32_t i = 0; i < (int32_t) keys.size(); i++)
     {
       keyPtr = keys.at(i);
-      valuePtr = dynCast<CacheableBytesPtr>( region->get(keyPtr) );
+      valuePtr = std::dynamic_pointer_cast<CacheableBytes>( region->get(keyPtr) );
       valueSize = valuePtr->length();
 
       if( (int32_t)valueSize == payload )
@@ -598,7 +598,7 @@ int32_t Security::registerInterestList() {
     initStrKeys(low, high, keyBase);
 
     for (int j = low; j < high; j++) {
-      if (m_KeysA[j - low] != NULLPTR) {
+      if (m_KeysA[j - low] != nullptr) {
         registerKeyList.push_back(m_KeysA[j - low]);
       } else
         FWKINFO("Security::registerInterestList key is NULL");
@@ -709,7 +709,7 @@ int32_t Security::checkValues() {
     int32_t updates = 0;
     int32_t unknowns = 0;
     for (int32_t i = 0; i < vals.size(); i++) {
-      CacheableBytesPtr valStr = dynCast<CacheableBytesPtr>(vals.at(i));
+      auto valStr = std::dynamic_pointer_cast<CacheableBytes>(vals.at(i));
       if (strncmp("Create", reinterpret_cast<const char *>(valStr->value()),
                   6) == 0) {
         creates++;
@@ -771,12 +771,12 @@ RegionPtr Security::getRegionPtr(const char *reg) {
       region = rootRegionVector.at(GsRandom::random(size));
     } else {
       FWKINFO("Getting region: " << name);
-      if (m_cache == NULLPTR) {
+      if (m_cache == nullptr) {
         FWKEXCEPTION("Failed to get region: " << name
                                               << "  cache ptr is null.");
       }
       region = m_cache->getRegion(name.c_str());
-      if (region == NULLPTR) {
+      if (region == nullptr) {
         FWKEXCEPTION("Failed to get region: " << name);
       }
     }
@@ -816,7 +816,7 @@ bool Security::checkReady(int32_t numClients) {
 }
 //----------------------------------------------------------------------------
 CacheablePtr Security::getUserObject(const std::string &objType) {
-  CacheablePtr usrObj = NULLPTR;
+  CacheablePtr usrObj = nullptr;
   resetValue("entryCount");
   int numOfKeys =
       getIntValue("entryCount");  // number of key should be multiple of 20
@@ -828,12 +828,13 @@ CacheablePtr Security::getUserObject(const std::string &objType) {
   if (objType == "Portfolio") {
     setSize = qh->getPortfolioSetSize();
     numSet = numOfKeys / setSize;
-    usrObj = new Portfolio(GsRandom::random(setSize), objSize);
+    usrObj = std::make_shared<Portfolio>(GsRandom::random(setSize), objSize);
   } else if (objType == "Position") {
     setSize = qh->getPositionSetSize();
     numSet = numOfKeys / setSize;
     int numSecIds = sizeof(secIds) / sizeof(char *);
-    usrObj = new Position(secIds[setSize % numSecIds], setSize * 100);
+    usrObj =
+        std::make_shared<Position>(secIds[setSize % numSecIds], setSize * 100);
   }
   return usrObj;
 }
@@ -973,7 +974,7 @@ int32_t Security::doEntryOperations() {
 
   int32_t creates = 0, puts = 0, gets = 0, dests = 0, invals = 0, query = 0;
   RegionPtr regionPtr = getRegionPtr();
-  if (regionPtr == NULLPTR) {
+  if (regionPtr == nullptr) {
     fwkResult = FWK_SEVERE;
     FWKSEVERE(
         "CacheServerTest::doEntryOperations(): No region to perform operations "
@@ -1014,12 +1015,12 @@ int32_t Security::doEntryOperations() {
                 reinterpret_cast<const unsigned char *>(valBuf),
                 static_cast<int32_t>(strlen(valBuf)));
             int32_t *val =
-                (int32_t *)(dynCast<CacheableBytesPtr>(tmpValue)->value());
+                (int32_t *)(std::dynamic_pointer_cast<CacheableBytes>(tmpValue)->value());
             *val = (*val == keyVal) ? keyVal + 1
                                     : keyVal;  // alternate the value so that it
                                                // can be validated later.
             int64_t *adjNow =
-                (int64_t *)(dynCast<CacheableBytesPtr>(tmpValue)->value() + 4);
+                (int64_t *)(std::dynamic_pointer_cast<CacheableBytes>(tmpValue)->value() + 4);
             *adjNow = getAdjustedNowMicros();
           }
           regionPtr->put(keyPtr, tmpValue);
@@ -1065,8 +1066,8 @@ int32_t Security::doEntryOperations() {
     meter.checkPace();
     now = ACE_OS::gettimeofday();
   }
-  keyPtr = NULLPTR;
-  valuePtr = NULLPTR;
+  keyPtr = nullptr;
+  valuePtr = nullptr;
   delete[] valBuf;
 
   FWKINFO("doEntryOperations did "

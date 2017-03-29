@@ -42,7 +42,7 @@ void ChildPdx::fromData(PdxReaderPtr pr) {
 
   m_childId = pr->readInt("m_childId");
   LOGINFO("ChildPdx::fromData() m_childId = %d ", m_childId);
-  m_enum = pr->readObject("m_enum");
+  m_enum = std::static_pointer_cast<CacheableEnum>(pr->readObject("m_enum"));
   m_childName = pr->readString("m_childName");
 
   LOGINFO("ChildPdx::fromData() end...");
@@ -91,7 +91,7 @@ void ParentPdx::toData(PdxWriterPtr pw) {
   LOGDEBUG("ParentPdx::toData() m_wideparentName......");
   pw->writeWideStringArray("m_wideparentArrayName", m_wideparentArrayName, 3);
   LOGDEBUG("ParentPdx::toData() m_wideparentArrayName......");
-  pw->writeObject("m_childPdx", (ChildPdxPtr)m_childPdx);
+  pw->writeObject("m_childPdx", m_childPdx);
   LOGDEBUG("ParentPdx::toData() m_childPdx......");
   pw->markIdentityField("m_childPdx");
 
@@ -108,7 +108,7 @@ void ParentPdx::fromData(PdxReaderPtr pr) {
 
   m_parentId = pr->readInt("m_parentId");
   LOGINFO("ParentPdx::fromData() m_parentId = %d ", m_parentId);
-  m_enum = pr->readObject("m_enum");
+  m_enum = std::static_pointer_cast<CacheableEnum>(pr->readObject("m_enum"));
   LOGINFO("ParentPdx::fromData() read gender ");
   m_parentName = pr->readString("m_parentName");
   LOGINFO("ParentPdx::fromData() m_parentName = %s ", m_parentName);
@@ -121,7 +121,7 @@ void ParentPdx::fromData(PdxReaderPtr pr) {
             m_wideparentArrayName[i]);
   }
   LOGINFO("ParentPdx::fromData() m_wideparentArrayName done ");
-  m_childPdx = /*dynCast<SerializablePtr>*/ (pr->readObject("m_childPdx"));
+  m_childPdx = /*std::dynamic_pointer_cast<Serializable>*/ (pr->readObject("m_childPdx"));
   LOGINFO("ParentPdx::fromData() start3...");
 
   m_char = pr->readChar("m_char");
@@ -185,8 +185,8 @@ bool ParentPdx::equals(ParentPdx& other, bool isPdxReadSerialized) const {
     }
 
     if (!isPdxReadSerialized) {
-      ChildPdx* ch1 = dynamic_cast<ChildPdx*>(m_childPdx.ptr());
-      ChildPdx* ch2 = dynamic_cast<ChildPdx*>(other.m_childPdx.ptr());
+      ChildPdx* ch1 = dynamic_cast<ChildPdx*>(m_childPdx.get());
+      ChildPdx* ch2 = dynamic_cast<ChildPdx*>(other.m_childPdx.get());
 
       if (ch1->equals(*ch2)) {
         LOGINFO("ParentPdx::equals3");

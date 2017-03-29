@@ -56,7 +56,7 @@ class CPPCACHE_EXPORT Exception : public SharedBase {
    *               retrieved using <code>getCause</code>
    **/
   Exception(const char* msg1, const char* msg2 = NULL, bool forceTrace = false,
-            const ExceptionPtr& cause = NULLPTR);
+            const ExceptionPtr& cause = nullptr);
 
   /** Creates an exception as a copy of the given other exception.
    * @param  other the original exception.

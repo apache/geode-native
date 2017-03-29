@@ -49,8 +49,8 @@ class MyCqListener : public CqListener {
  public:
   void onEvent(const CqEvent& cqe) {
     char* opStr = (char*)"Default";
-    PortfolioPtr portfolio(dynamic_cast<Portfolio*>(cqe.getNewValue().ptr()));
-    CacheableStringPtr key(dynamic_cast<CacheableString*>(cqe.getKey().ptr()));
+    PortfolioPtr portfolio(dynamic_cast<Portfolio*>(cqe.getNewValue().get()));
+    CacheableStringPtr key(dynamic_cast<CacheableString*>(cqe.getKey().get()));
     switch (cqe.getQueryOperation()) {
       case CqOperation::OP_TYPE_CREATE: {
         opStr = (char*)"CREATE";
@@ -147,19 +147,19 @@ int main(int argc, char** argv) {
     SelectResultsIterator iter = resultsPtr->getIterator();
     while (iter.hasNext()) {
       SerializablePtr ser = iter.next();
-      if (ser != NULLPTR) {
+      if (ser != nullptr) {
         LOGINFO(" query pulled object %s\n", ser->toString()->asChar());
-        StructPtr stPtr(dynamic_cast<Struct*>(ser.ptr()));
-        if (stPtr != NULLPTR) {
+        StructPtr stPtr(dynamic_cast<Struct*>(ser.get()));
+        if (stPtr != nullptr) {
           LOGINFO(" got struct ptr ");
-          SerializablePtr serKey = (*(stPtr.ptr()))["key"];
-          if (serKey != NULLPTR) {
+          SerializablePtr serKey = (*(stPtr.get()))["key"];
+          if (serKey != nullptr) {
             LOGINFO("got struct key %s\n", serKey->toString()->asChar());
           }
 
-          SerializablePtr serVal = (*(stPtr.ptr()))["value"];
+          SerializablePtr serVal = (*(stPtr.get()))["value"];
 
-          if (serVal != NULLPTR) {
+          if (serVal != nullptr) {
             LOGINFO("  got struct value %s\n", serVal->toString()->asChar());
           }
         }

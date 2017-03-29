@@ -36,6 +36,8 @@
 #include <typeinfo>
 #include <string>
 #include <unordered_set>
+#include <memory>
+
 #ifdef __GNUC__
 extern "C" {
 #include <cxxabi.h>
@@ -108,7 +110,7 @@ class CPPCACHE_EXPORT Utils {
   inline static CacheableStringPtr getCacheableKeyString(
       const CacheableKeyPtr& key) {
     CacheableStringPtr result;
-    if (key != NULLPTR) {
+    if (key != nullptr) {
       char* buf;
       GF_NEW(buf, char[_GF_MSG_LIMIT + 1]);
       key->logString(buf, _GF_MSG_LIMIT);
@@ -124,13 +126,12 @@ class CPPCACHE_EXPORT Utils {
   }
 
   static CacheableStringPtr getCacheableString(const CacheablePtr& val) {
-    if (val != NULLPTR) {
-      if (instanceOf<CacheableKeyPtr>(val)) {
-        const CacheableKeyPtr& key = staticCast<CacheableKeyPtr>(val);
+    if (val != nullptr) {
+      if (const auto key = std::dynamic_pointer_cast<CacheableKey>(val)) {
         return getCacheableKeyString(key);
       } else {
         const CacheableStringPtr& cStr = val->toString();
-        if (cStr != NULLPTR) {
+        if (cStr != nullptr) {
           if (cStr->isCString()) {
             return cStr;
           } else {

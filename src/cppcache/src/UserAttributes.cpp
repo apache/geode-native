@@ -117,7 +117,7 @@ PropertiesPtr UserAttributes::getCredentials() {
   if (m_proxyCache->isClosed()) {
     throw IllegalStateException("User cache has been closed");
   }
-  if (m_credentials == NULLPTR) {
+  if (m_credentials == nullptr) {
     LOGDEBUG("getCredentials");
   } else {
     LOGDEBUG("getCredentials not null ");
@@ -137,7 +137,7 @@ GuardUserAttribures::GuardUserAttribures(ProxyCachePtr proxyCache) {
 void GuardUserAttribures::setProxyCache(ProxyCachePtr proxyCache) {
   m_proxyCache = proxyCache;
   LOGDEBUG("GuardUserAttribures::GuardUserAttribures:");
-  if (m_proxyCache != NULLPTR && !proxyCache->isClosed()) {
+  if (m_proxyCache != nullptr && !proxyCache->isClosed()) {
     TSSUserAttributesWrapper::s_geodeTSSUserAttributes->setUserAttributes(
         proxyCache->m_userAttributes);
   } else {
@@ -145,11 +145,11 @@ void GuardUserAttribures::setProxyCache(ProxyCachePtr proxyCache) {
   }
 }
 
-GuardUserAttribures::GuardUserAttribures() { m_proxyCache = NULLPTR; }
+GuardUserAttribures::GuardUserAttribures() { m_proxyCache = nullptr; }
 
 GuardUserAttribures::~GuardUserAttribures() {
-  if (m_proxyCache != NULLPTR) {
+  if (m_proxyCache != nullptr) {
     TSSUserAttributesWrapper::s_geodeTSSUserAttributes->setUserAttributes(
-        NULLPTR);
+        nullptr);
   }
 }

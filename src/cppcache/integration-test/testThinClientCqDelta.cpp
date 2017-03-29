@@ -57,7 +57,7 @@ class CqDeltaListener : public CqListener {
       m_deltaCount++;
     }
     DeltaTestImplPtr dptr =
-        staticCast<DeltaTestImplPtr>(aCqEvent.getNewValue());
+        std::static_pointer_cast<GF_UNWRAP_SP(DeltaTestImplPtr)>(aCqEvent.getNewValue());
     if (dptr->getIntVar() == 5) {
       m_valueCount++;
     }
@@ -107,7 +107,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   RegionPtr regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }
 
@@ -128,9 +128,9 @@ void createRegion(const char* name, bool ackMode,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   // ack, caching
-  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, true, NULLPTR,
+  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
                                                clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 const char* keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
@@ -169,7 +169,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2)
     QueryServicePtr qs;
     qs = pool->getQueryService();
     CqAttributesFactory cqFac;
-    g_CqListener = new CqDeltaListener();
+    g_CqListener = std::make_shared<CqDeltaListener>();
     CqListenerPtr cqListener = g_CqListener;
     cqFac.addCqListener(cqListener);
     CqAttributesPtr cqAttr = cqFac.create();
@@ -206,7 +206,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_NoPools)
     QueryServicePtr qs;
     qs = getHelper()->getQueryService();
     CqAttributesFactory cqFac;
-    g_CqListener = new CqDeltaListener();
+    g_CqListener = std::make_shared<CqDeltaListener>();
     CqListenerPtr cqListener = g_CqListener;
     cqFac.addCqListener(cqListener);
     CqAttributesPtr cqAttr = cqFac.create();
@@ -220,7 +220,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, Client1_Put)
   {
     CacheableKeyPtr keyPtr = createKey(keys[0]);
-    DeltaTestImplPtr dptr(new DeltaTestImpl());
+    auto dptr = std::make_shared<DeltaTestImpl>();
     CacheablePtr valPtr(dptr);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->put(keyPtr, valPtr);

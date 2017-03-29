@@ -50,7 +50,7 @@ class OperMonitor : public CacheListener {
     m_ops++;
 
     CacheableKeyPtr key = event.getKey();
-    CacheableInt32Ptr value = dynCast<CacheableInt32Ptr>(event.getNewValue());
+    auto value = std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
 
     char buf[256];
     sprintf(buf,
@@ -91,8 +91,8 @@ class OperMonitor : public CacheListener {
 
     for (HashMapOfCacheable::Iterator item = m_map.begin(); item != m_map.end();
          item++) {
-      CacheableStringPtr keyPtr = dynCast<CacheableStringPtr>(item.first());
-      CacheableInt32Ptr valuePtr = dynCast<CacheableInt32Ptr>(item.second());
+      auto keyPtr = std::dynamic_pointer_cast<CacheableString>(item.first());
+      auto valuePtr = std::dynamic_pointer_cast<CacheableInt32>(item.second());
 
       if (strchr(keyPtr->toString(), 'D') == NULL) { /*Non Durable Key */
         sprintf(buf,
@@ -133,8 +133,8 @@ void setCacheListener(const char* regName, OperMonitorPtr monitor) {
 }
 
 void initClientWithIntrest(int ClientIdx, OperMonitorPtr& mon) {
-  if (mon == NULLPTR) {
-    mon = new OperMonitor;
+  if (mon == nullptr) {
+    mon = std::make_shared<OperMonitor>();
   }
 
   initClientAndRegion(0, ClientIdx);
@@ -155,11 +155,11 @@ void initClientWithIntrest(int ClientIdx, OperMonitorPtr& mon) {
 void initClientWithIntrest2(int ClientIdx, OperMonitorPtr& monitor1,
                             OperMonitorPtr& monitor2) {
   initClientAndTwoRegionsAndTwoPools(0, ClientIdx, 60);
-  if (monitor1 == NULLPTR) {
-    monitor1 = new OperMonitor(1);
+  if (monitor1 == nullptr) {
+    monitor1 = std::make_shared<OperMonitor>(1);
   }
-  if (monitor2 == NULLPTR) {
-    monitor2 = new OperMonitor(2);
+  if (monitor2 == nullptr) {
+    monitor2 = std::make_shared<OperMonitor>(2);
   }
   setCacheListener(regionNames[0], monitor1);
   setCacheListener(regionNames[1], monitor2);
@@ -206,7 +206,7 @@ void feederUpdate1(int value) {
 DUNIT_TASK_DEFINITION(FEEDER, FeederInit)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regionNames[0], USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
     getHelper()->createPooledRegion(regionNames[1], NO_ACK, locatorsG,
@@ -324,7 +324,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, CloseClient1)
   {
-    mon1 = NULLPTR;
+    mon1 = nullptr;
     cleanProc();
     LOG("CLIENT1 closed");
   }
@@ -332,8 +332,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, CloseClient12)
   {
-    mon1 = NULLPTR;
-    mon2 = NULLPTR;
+    mon1 = nullptr;
+    mon2 = nullptr;
     cleanProc();
     LOG("CLIENT12 closed");
   }
@@ -341,7 +341,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, CloseClient2)
   {
-    mon2 = NULLPTR;
+    mon2 = nullptr;
     cleanProc();
     LOG("CLIENT2 closed");
   }

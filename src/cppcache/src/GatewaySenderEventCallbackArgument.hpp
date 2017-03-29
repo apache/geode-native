@@ -61,7 +61,7 @@ class GatewaySenderEventCallbackArgument : public Serializable {
     for (int32_t item = 0; item < items; item++) {
       input.readInt(&ignoreInt);
     }
-    return m_callback.ptr();
+    return m_callback.get();
   }
 
  public:

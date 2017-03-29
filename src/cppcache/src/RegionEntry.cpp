@@ -21,15 +21,15 @@
 
 using namespace apache::geode::client;
 
-RegionEntry::RegionEntry(const RegionPtr& region, const CacheableKeyPtr& key,
+RegionEntry::RegionEntry(Region* region, const CacheableKeyPtr& key,
                          const CacheablePtr& value)
     : m_region(region), m_key(key), m_value(value), m_destroyed(false) {}
 RegionEntry::~RegionEntry() {}
 CacheableKeyPtr RegionEntry::getKey() { return m_key; }
 CacheablePtr RegionEntry::getValue() {
-  return CacheableToken::isInvalid(m_value) ? NULLPTR : m_value;
+  return CacheableToken::isInvalid(m_value) ? nullptr : m_value;
 }
-void RegionEntry::getRegion(RegionPtr& region) { region = m_region; }
+void RegionEntry::getRegion(Region* region) { region = m_region; }
 void RegionEntry::getStatistics(CacheStatisticsPtr& csptr) {
   csptr = m_statistics;
 }

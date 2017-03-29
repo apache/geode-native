@@ -112,18 +112,20 @@ bool PdxTests::NonPdxType::equals(PdxTests::NonPdxType& other,
 
   if (!isPdxReadSerialized) {
     for (int i = 0; i < m_objectArray->size(); i++) {
-      PdxWrapperPtr wrapper1 = dynCast<PdxWrapperPtr>(ot->m_objectArray->at(i));
+      auto wrapper1 =
+          std::dynamic_pointer_cast<PdxWrapper>(ot->m_objectArray->at(i));
       NonPdxAddress* otherAddr1 =
           reinterpret_cast<NonPdxAddress*>(wrapper1->getObject());
-      PdxWrapperPtr wrapper2 = dynCast<PdxWrapperPtr>(m_objectArray->at(i));
+      auto wrapper2 =
+          std::dynamic_pointer_cast<PdxWrapper>(m_objectArray->at(i));
       NonPdxAddress* myAddr1 =
           reinterpret_cast<NonPdxAddress*>(wrapper2->getObject());
       if (!otherAddr1->equals(*myAddr1)) return false;
     }
   }
 
-  CacheableEnumPtr myenum = dynCast<CacheableEnumPtr>(m_pdxEnum);
-  CacheableEnumPtr otenum = dynCast<CacheableEnumPtr>(ot->m_pdxEnum);
+  auto myenum = std::dynamic_pointer_cast<CacheableEnum>(m_pdxEnum);
+  auto otenum = std::dynamic_pointer_cast<CacheableEnum>(ot->m_pdxEnum);
   if (myenum->getEnumOrdinal() != otenum->getEnumOrdinal()) return false;
   if (strcmp(myenum->getEnumClassName(), otenum->getEnumClassName()) != 0) {
     return false;

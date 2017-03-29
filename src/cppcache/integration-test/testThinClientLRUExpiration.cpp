@@ -109,7 +109,7 @@ void getRegionAttr(const char* name) {
 
 void ValidateDestroyRegion(const char* name) {
   RegionPtr rptr = getHelper()->getRegion(name);
-  if (rptr == NULLPTR) {
+  if (rptr == nullptr) {
     return;
   }
   try {
@@ -138,8 +138,8 @@ void createRegion(const char* name, bool ackMode, int ettl, int eit, int rttl,
       // );
       getHelper()->createRegionAndAttachPool(name, ackMode, "LRUPool", true,
                                              ettl, eit, rttl, rit, lel, action);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
-  if (registerKey) regPtr->registerAllKeys(false, NULLPTR, false, false);
+  ASSERT(regPtr != nullptr, "Failed to create region.");
+  if (registerKey) regPtr->registerAllKeys(false, nullptr, false, false);
   LOG("Region created.");
 }
 
@@ -151,10 +151,10 @@ void doRgnOperations(const char* name, int n, int rgnOpt = 0) {
     buf[15] = '\0';
     memcpy(buf, "Value - ", 8);
     value = CacheableString::create(buf);
-    ASSERT(value != NULLPTR, "Failed to create value.");
+    ASSERT(value != nullptr, "Failed to create value.");
   }
   RegionPtr rptr = getHelper()->getRegion(name);
-  ASSERT(rptr != NULLPTR, "Region not found.");
+  ASSERT(rptr != nullptr, "Region not found.");
   for (int i = 0; i < n; i++) {
     sprintf(buf, "KeyA - %d", i + 1);
     CacheableKeyPtr key = CacheableKey::create(buf);
@@ -184,7 +184,7 @@ void doRgnOperations(const char* name, int n, int rgnOpt = 0) {
 void dumpCounters(const char* regName) {
   RegionPtr rptr = getHelper()->getRegion(regName);
   printf("Region size: %d\n", rptr->size());
-  if (regListener != NULLPTR) {
+  if (regListener != nullptr) {
     printf("counts:: creates: %d, updates: %d, invalidates: %d, destroys: %d\n",
            regListener->getCreates(), regListener->getUpdates(),
            regListener->getInvalidates(), regListener->getDestroys());
@@ -911,8 +911,8 @@ DUNIT_TASK(CLIENT1, StepOneCase11)
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
     // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
     createThinClientRegion(regionNames[4], 4, 0, 0, 0, 5, 0, 6, false);
-    regListener = new TallyListener();
-    regWriter = new TallyWriter();
+    regListener = std::make_shared<TallyListener>();
+    regWriter = std::make_shared<TallyWriter>();
     setCacheListener(regionNames[4], regListener);
     setCacheWriter(regionNames[4], regWriter);
   }
@@ -924,8 +924,8 @@ DUNIT_TASK(CLIENT2, StepTwoCase11)
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
     // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
     createThinClientRegion(regionNames[4], 0, 0, 0, 0, 0, 0, 6, false);
-    regListener = new TallyListener();
-    regWriter = new TallyWriter();
+    regListener = std::make_shared<TallyListener>();
+    regWriter = std::make_shared<TallyWriter>();
     setCacheListener(regionNames[4], regListener);
     setCacheWriter(regionNames[4], regWriter);
   }
@@ -1046,8 +1046,8 @@ DUNIT_TASK(CLIENT1, StepOneCase12)
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
     // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
     createThinClientRegion(regionNames[5], 4, 0, 0, 0, 5, 0, 6, false);
-    regListener = new TallyListener();
-    regWriter = new TallyWriter();
+    regListener = std::make_shared<TallyListener>();
+    regWriter = std::make_shared<TallyWriter>();
     setCacheListener(regionNames[5], regListener);
     setCacheWriter(regionNames[5], regWriter);
   }
@@ -1059,8 +1059,8 @@ DUNIT_TASK(CLIENT2, StepTwoCase12)
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
     // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
     createThinClientRegion(regionNames[5], 0, 0, 0, 0, 0, 0, 6, false);
-    regListener = new TallyListener();
-    regWriter = new TallyWriter();
+    regListener = std::make_shared<TallyListener>();
+    regWriter = std::make_shared<TallyWriter>();
     setCacheListener(regionNames[5], regListener);
     setCacheWriter(regionNames[5], regWriter);
   }
@@ -1142,8 +1142,8 @@ DUNIT_TASK(CLIENT1, StepOneCase13)
     initClient(true);
     getHelper()->createPoolWithLocators("LRUPool", locatorsG, true);
     createThinClientRegion(regionNames[5], 4, 0, 0, 0, 5, 0, 6, false);
-    regListener = new TallyListener();
-    regWriter = new TallyWriter();
+    regListener = std::make_shared<TallyListener>();
+    regWriter = std::make_shared<TallyWriter>();
     setCacheListener(regionNames[5], regListener);
     setCacheWriter(regionNames[5], regWriter);
   }
@@ -1157,8 +1157,8 @@ DUNIT_TASK(CLIENT2, StepTwoCase13)
     initClient(true);
     getHelper()->createPoolWithLocators("LRUPool", locatorsG, true);
     createThinClientRegion(regionNames[5], 0, 0, 0, 0, 0, 0, 6, false);
-    regListener = new TallyListener();
-    regWriter = new TallyWriter();
+    regListener = std::make_shared<TallyListener>();
+    regWriter = std::make_shared<TallyWriter>();
     setCacheListener(regionNames[5], regListener);
     setCacheWriter(regionNames[5], regWriter);
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[5]);

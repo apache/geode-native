@@ -67,7 +67,7 @@ void initCredentialGenerator() {
     }
   }
 
-  if (credentialGeneratorHandler == NULLPTR) {
+  if (credentialGeneratorHandler == nullptr) {
     FAIL("credentialGeneratorHandler is NULL");
   }
 
@@ -356,7 +356,7 @@ DUNIT_TASK_DEFINITION(CLIENT_1, StepOne)
     initClientAuth();
     try {
       LOG("Tying Region creation");
-      createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, NULLPTR,
+      createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, nullptr,
                               false, -1, true, 0);
       LOG("Region created successfully");
       PoolPtr pool = getPool(regionNamesAuth[0]);

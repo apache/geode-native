@@ -42,7 +42,9 @@ typedef std::map<std::string, CacheablePtr> FieldVsValues;
 * multiple factories or use {@link PdxInstance#createWriter} to create
 * subsequent instances.
 */
-class CPPCACHE_EXPORT PdxInstanceFactoryImpl : public PdxInstanceFactory {
+class CPPCACHE_EXPORT PdxInstanceFactoryImpl
+    : public PdxInstanceFactory,
+      public std::enable_shared_from_this<PdxInstanceFactoryImpl> {
  public:
   /**
   * @brief destructor
@@ -56,7 +58,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl : public PdxInstanceFactory {
   * @return the created Pdxinstance
   * @throws IllegalStateException if called more than once
   */
-  virtual PdxInstancePtr create();
+  virtual std::unique_ptr<PdxInstance> create();
 
   /**
   * Writes the named field with the given value to the serialized form.

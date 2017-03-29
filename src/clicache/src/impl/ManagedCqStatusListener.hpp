@@ -82,7 +82,7 @@ namespace apache {
         /// The error can appear while applying query condition on the event.
         /// e.g if the event doesn't has attributes as specified in the CQ query.
         /// This event does contain an error. The newValue may or may not be 
-        /// available, and will be NULLPTR if not available.
+        /// available, and will be nullptr if not available.
         /// </summary>
         virtual void onError(const apache::geode::client::CqEvent& ev);
 

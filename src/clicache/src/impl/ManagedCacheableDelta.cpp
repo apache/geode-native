@@ -213,7 +213,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULLPTR;
+        return nullptr;
       }
 
       bool ManagedCacheableDeltaGeneric::operator ==(const apache::geode::client::CacheableKey& other) const
@@ -240,7 +240,7 @@ namespace apache
       bool ManagedCacheableDeltaGeneric::operator == (const ManagedCacheableDeltaGeneric& other) const
       {
         try {
-          return m_managedptr->Equals(other.ptr());
+          return m_managedptr->Equals(other.get());
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();

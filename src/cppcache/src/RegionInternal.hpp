@@ -135,13 +135,13 @@ class RegionInternal : public Region {
                             bool receiveValues = true);
   virtual void unregisterKeys(const VectorOfCacheableKey& keys);
   virtual void registerAllKeys(bool isDurable = false,
-                               VectorOfCacheableKeyPtr resultKeys = NULLPTR,
+                               VectorOfCacheableKeyPtr resultKeys = nullptr,
                                bool getInitialValues = false,
                                bool receiveValues = true);
   virtual void unregisterAllKeys();
 
   virtual void registerRegex(const char* regex, bool isDurable = false,
-                             VectorOfCacheableKeyPtr resultKeys = NULLPTR,
+                             VectorOfCacheableKeyPtr resultKeys = nullptr,
                              bool getInitialValues = false,
                              bool receiveValues = true);
   virtual void unregisterRegex(const char* regex);
@@ -172,7 +172,7 @@ class RegionInternal : public Region {
                                const CacheEventFlags eventFlags,
                                VersionTagPtr versionTag,
                                DataInput* delta = NULL,
-                               EventIdPtr eventId = NULLPTR) = 0;
+                               EventIdPtr eventId = nullptr) = 0;
   virtual GfErrType createNoThrow(const CacheableKeyPtr& key,
                                   const CacheablePtr& value,
                                   const UserDataPtr& aCallbackArgument,
@@ -227,7 +227,7 @@ class RegionInternal : public Region {
   virtual bool cacheEnabled() = 0;
   virtual bool isDestroyed() const = 0;
   virtual void evict(int32_t percentage) = 0;
-  virtual CacheImpl* getCacheImpl() = 0;
+  virtual CacheImpl* getCacheImpl() const = 0;
   virtual TombstoneListPtr getTombstoneList();
 
   // KN: added now.

@@ -95,15 +95,15 @@ class PdxRemotePreservedData : public PdxUnreadFields {
   }
 
   virtual bool equals(SerializablePtr otherObject) {
-    if (otherObject == NULLPTR) return false;
+    if (otherObject == nullptr) return false;
 
-    if (m_owner == NULLPTR) return false;
+    if (m_owner == nullptr) return false;
 
     return m_owner == otherObject;
   }
 
   virtual int GetHashCode() {
-    if (m_owner != NULLPTR) {
+    if (m_owner != nullptr) {
       // TODO
       return 1;  // m_owner->GetHashCode();
     }

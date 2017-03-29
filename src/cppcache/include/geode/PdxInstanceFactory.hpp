@@ -68,7 +68,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory : public SharedBase {
   * @return the created Pdxinstance
   * @throws IllegalStateException if called more than once
   */
-  virtual PdxInstancePtr create() = 0;
+  virtual std::unique_ptr<PdxInstance> create() = 0;
 
   /**
   * Writes the named field with the given value to the serialized form.

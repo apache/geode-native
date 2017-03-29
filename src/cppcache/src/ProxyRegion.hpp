@@ -68,7 +68,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
     return m_realRegion->getFullPath();
   }
 
-  /** Returns the parent region, or NULLPTR if a root region.
+  /** Returns the parent region, or nullptr if a root region.
   * @throws RegionDestroyedException
   */
   virtual RegionPtr getParentRegion() const {
@@ -87,7 +87,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   */
   virtual AttributesMutatorPtr getAttributesMutator() const {
     unSupportedOperation("Region.getAttributesMutator()");
-    return NULLPTR;
+    return nullptr;
   }
 
   // virtual void updateAccessOrModifiedTime() = 0;
@@ -104,7 +104,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   *
   * @param aCallbackArgument a user-defined parameter to pass to callback events
   *        triggered by this method.
-  *        Can be NULLPTR. If it is sent on the wire, it has to be Serializable.
+  *        Can be nullptr. If it is sent on the wire, it has to be Serializable.
   * @throws CacheListenerException if CacheListener throws an exception; if this
   *         occurs some subregions may have already been successfully
   * invalidated
@@ -114,7 +114,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * This operation is not distributed.
   */
   virtual void invalidateRegion(
-      const UserDataPtr& aCallbackArgument = NULLPTR) {
+      const UserDataPtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.invalidateRegion()");
   }
 
@@ -128,7 +128,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   *
   * @param aCallbackArgument a user-defined parameter to pass to callback events
   *        triggered by this method.
-  *        Can be NULLPTR. If it is sent on the wire, it has to be Serializable.
+  *        Can be nullptr. If it is sent on the wire, it has to be Serializable.
   * @throws CacheListenerException if CacheListener throws an exception; if this
   *         occurs some subregions may have already been successfully
   invalidated
@@ -138,7 +138,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
 
   */
   virtual void localInvalidateRegion(
-      const UserDataPtr& aCallbackArgument = NULLPTR) {
+      const UserDataPtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.localInvalidateRegion()");
   }
 
@@ -156,7 +156,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   *
   * @param aCallbackArgument a user-defined parameter to pass to callback events
   *        triggered by this call.
-  *        Can be NULLPTR. If it is sent on the wire, it has to be Serializable.
+  *        Can be nullptr. If it is sent on the wire, it has to be Serializable.
   * @throws CacheWriterException if CacheWriter aborts the operation; if this
   *         occurs some subregions may have already been successfully destroyed.
   * @throws CacheListenerException if CacheListener throws an exception; if this
@@ -176,7 +176,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @throws TimeoutException if operation timed out
   * @see  invalidateRegion
   */
-  virtual void destroyRegion(const UserDataPtr& aCallbackArgument = NULLPTR) {
+  virtual void destroyRegion(const UserDataPtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->destroyRegion(aCallbackArgument);
   }
@@ -189,7 +189,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @see CacheListener#afterRegionClear
   * @see CacheWriter#beforeRegionClear
   */
-  virtual void clear(const UserDataPtr& aCallbackArgument = NULLPTR) {
+  virtual void clear(const UserDataPtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->clear(aCallbackArgument);
   }
@@ -201,7 +201,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheListener#afterRegionClear
    * @see CacheWriter#beforeRegionClear
    */
-  virtual void localClear(const UserDataPtr& aCallbackArgument = NULLPTR) {
+  virtual void localClear(const UserDataPtr& aCallbackArgument = nullptr) {
     unSupportedOperation("localClear()");
   }
 
@@ -215,7 +215,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   *
   * @param aCallbackArgument a user-defined parameter to pass to callback events
   *        triggered by this call.
-  *        Can be NULLPTR. If it is sent on the wire, it has to be Serializable.
+  *        Can be nullptr. If it is sent on the wire, it has to be Serializable.
   * @throws CacheWriterException if CacheWriter aborts the operation; if this
   *         occurs some subregions may have already been successfully destroyed.
   * @throws CacheListenerException if CacheListener throws an exception; if this
@@ -225,35 +225,34 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @see  localInvalidateRegion
   */
   virtual void localDestroyRegion(
-      const UserDataPtr& aCallbackArgument = NULLPTR) {
+      const UserDataPtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.localDestroyRegion()");
   }
 
-  /** Returns the subregion identified by the path, NULLPTR if no such subregion
+  /** Returns the subregion identified by the path, nullptr if no such subregion
    */
   virtual RegionPtr getSubregion(const char* path) {
     LOGDEBUG("ProxyRegion getSubregion");
     RegionPtr rPtr = m_realRegion->getSubregion(path);
 
-    if (rPtr == NULLPTR) return rPtr;
+    if (rPtr == nullptr) return rPtr;
 
-    RegionPtr prPtr(new ProxyRegion(m_proxyCache.ptr(), rPtr));
-    return prPtr;
+    return std::make_shared<ProxyRegion>(m_proxyCache, rPtr);
   }
 
   /** Creates a subregion with the specified attributes */
   virtual RegionPtr createSubregion(
       const char* subregionName, const RegionAttributesPtr& aRegionAttributes) {
     unSupportedOperation("createSubregion()");
-    return NULLPTR;
+    return nullptr;
     /*LOGDEBUG("ProxyRegion getSubregion");
     RegionPtr rPtr = m_realRegion->createSubregion(subregionName,
     aRegionAttributes);
 
-    if(rPtr == NULLPTR)
+    if(rPtr == nullptr)
       return rPtr;
 
-    RegionPtr prPtr( new ProxyRegion(m_proxyCache.ptr(), rPtr));
+    auto prPtr = std::make_shared<ProxyRegion>(m_proxyCache.get(), rPtr);
     return prPtr;*/
   }
 
@@ -270,8 +269,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
 
     if (realVectorRegion.size() > 0) {
       for (int32_t i = 0; i < realVectorRegion.size(); i++) {
-        RegionPtr prPtr(
-            new ProxyRegion(m_proxyCache.ptr(), realVectorRegion.at(i)));
+        auto prPtr =
+            std::make_shared<ProxyRegion>(m_proxyCache, realVectorRegion.at(i));
         sr.push_back(prPtr);
       }
     }
@@ -310,7 +309,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @param aCallbackArgument an argument passed into the CacheLoader if
   * loader is used. If it is sent on the wire, it has to be Serializable.
   *
-  * @throws IllegalArgumentException if key is NULLPTR or aCallbackArgument is
+  * @throws IllegalArgumentException if key is nullptr or aCallbackArgument is
   *         not serializable and a remote CacheLoader needs to be invoked
   * @throws CacheLoaderException if CacheLoader throws an exception
   * @throws CacheServerException If an exception is received from the Java cache
@@ -329,7 +328,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   *region
   **/
   virtual CacheablePtr get(const CacheableKeyPtr& key,
-                           const UserDataPtr& aCallbackArgument = NULLPTR) {
+                           const UserDataPtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->get(key, aCallbackArgument);
   }
@@ -337,7 +336,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline CacheablePtr get(const KEYTYPE& key,
-                          const UserDataPtr& callbackArg = NULLPTR) {
+                          const UserDataPtr& callbackArg = nullptr) {
     return get(createKey(key), callbackArg);
   }
 
@@ -364,7 +363,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @param value the value to be put into the cache
   * @param aCallbackArgument an argument that is passed to the callback function
   *
-  * @throws IllegalArgumentException if key or value is NULLPTR
+  * @throws IllegalArgumentException if key or value is nullptr
   * @throws CacheWriterException if CacheWriter aborts the operation
   * @throws CacheListenerException if CacheListener throws an exception
   * @throws RegionDestroyedException if region no longer valid
@@ -382,7 +381,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @throws OutOfMemoryException if  not enoough memory for the value
   */
   virtual void put(const CacheableKeyPtr& key, const CacheablePtr& value,
-                   const UserDataPtr& aCallbackArgument = NULLPTR) {
+                   const UserDataPtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->put(key, value, aCallbackArgument);
   }
@@ -390,21 +389,21 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void put(const KEYTYPE& key, const VALUETYPE& value,
-                  const UserDataPtr& arg = NULLPTR) {
+                  const UserDataPtr& arg = nullptr) {
     put(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void put(const KEYTYPE& key, const CacheablePtr& value,
-                  const UserDataPtr& arg = NULLPTR) {
+                  const UserDataPtr& arg = nullptr) {
     put(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline void put(const CacheableKeyPtr& key, const VALUETYPE& value,
-                  const UserDataPtr& arg = NULLPTR) {
+                  const UserDataPtr& arg = nullptr) {
     put(key, createValue(value), arg);
   }
 
@@ -424,14 +423,14 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @since 8.1
    * @param aCallbackArgument an argument that is passed to the callback
    * functions.
-   * It is ignored if NULLPTR. It must be serializable if this operation is
+   * It is ignored if nullptr. It must be serializable if this operation is
    * distributed.
    * @throws IllegalArgumentException If timeout
    *         parameter is greater than 2^31/1000, ie 2147483.
    */
   virtual void putAll(const HashMapOfCacheable& map,
                       uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-                      const UserDataPtr& aCallbackArgument = NULLPTR) {
+                      const UserDataPtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->putAll(map, timeout, aCallbackArgument);
   }
@@ -454,35 +453,35 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @param aCallbackArgument an argument that is passed to the callback
    * functions
    *
-   * @throws IllegalArgumentException if key or value is NULLPTR
+   * @throws IllegalArgumentException if key or value is nullptr
    * @throws CacheWriterException if CacheWriter aborts the operation
    * @throws CacheListenerException if CacheListener throws an exception
    * @throws RegionDestroyedException if region no longer valid
    * @throws OutOfMemoryException if not enoough memory for the value
    */
   virtual void localPut(const CacheableKeyPtr& key, const CacheablePtr& value,
-                        const UserDataPtr& aCallbackArgument = NULLPTR) {
+                        const UserDataPtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.localPut()");
   }
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void localPut(const KEYTYPE& key, const VALUETYPE& value,
-                       const UserDataPtr& arg = NULLPTR) {
+                       const UserDataPtr& arg = nullptr) {
     localPut(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localPut(const KEYTYPE& key, const CacheablePtr& value,
-                       const UserDataPtr& arg = NULLPTR) {
+                       const UserDataPtr& arg = nullptr) {
     localPut(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline void localPut(const CacheableKeyPtr& key, const VALUETYPE& value,
-                       const UserDataPtr& arg = NULLPTR) {
+                       const UserDataPtr& arg = nullptr) {
     localPut(key, createValue(value), arg);
   }
 
@@ -504,12 +503,12 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   *
   * @param key the key smart pointer for which to create the entry in this
   * region.
-  * @param value the value for the new entry, which may be NULLPTR meaning
+  * @param value the value for the new entry, which may be nullptr meaning
   *              the new entry starts as if it had been locally invalidated.
   * @param aCallbackArgument a user-defined parameter to pass to callback events
-  *        triggered by this method. Can be NULLPTR. Should be serializable if
+  *        triggered by this method. Can be nullptr. Should be serializable if
   *        passed to remote callback events
-  * @throws IllegalArgumentException if key is NULLPTR or if the key, value, or
+  * @throws IllegalArgumentException if key is nullptr or if the key, value, or
   *         aCallbackArgument do not meet serializability requirements
   * @throws CacheWriterException if CacheWriter aborts the operation
   * @throws CacheListenerException if CacheListener throws an exception
@@ -530,7 +529,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @throws EntryExistsException if an entry with this key already exists
   */
   virtual void create(const CacheableKeyPtr& key, const CacheablePtr& value,
-                      const UserDataPtr& aCallbackArgument = NULLPTR) {
+                      const UserDataPtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->create(key, value, aCallbackArgument);
   }
@@ -538,21 +537,21 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void create(const KEYTYPE& key, const VALUETYPE& value,
-                     const UserDataPtr& arg = NULLPTR) {
+                     const UserDataPtr& arg = nullptr) {
     create(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void create(const KEYTYPE& key, const CacheablePtr& value,
-                     const UserDataPtr& arg = NULLPTR) {
+                     const UserDataPtr& arg = nullptr) {
     create(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline void create(const CacheableKeyPtr& key, const VALUETYPE& value,
-                     const UserDataPtr& arg = NULLPTR) {
+                     const UserDataPtr& arg = nullptr) {
     create(key, createValue(value), arg);
   }
 
@@ -567,14 +566,14 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    *
    * @param key the key smart pointer for which to create the entry in this
    * region.
-   * @param value the value for the new entry, which may be NULLPTR meaning
+   * @param value the value for the new entry, which may be nullptr meaning
    *              the new entry starts as if it had been locally invalidated.
    * @param aCallbackArgument a user-defined parameter to pass to callback
    * events
-   *        triggered by this method. Can be NULLPTR. Should be serializable if
+   *        triggered by this method. Can be nullptr. Should be serializable if
    *        passed to remote callback events
    *
-   * @throws IllegalArgumentException if key or value is NULLPTR
+   * @throws IllegalArgumentException if key or value is nullptr
    * @throws CacheWriterException if CacheWriter aborts the operation
    * @throws CacheListenerException if CacheListener throws an exception
    * @throws RegionDestroyedException if region is no longer valid
@@ -583,28 +582,28 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    */
   virtual void localCreate(const CacheableKeyPtr& key,
                            const CacheablePtr& value,
-                           const UserDataPtr& aCallbackArgument = NULLPTR) {
+                           const UserDataPtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.localCreate()");
   }
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void localCreate(const KEYTYPE& key, const VALUETYPE& value,
-                          const UserDataPtr& arg = NULLPTR) {
+                          const UserDataPtr& arg = nullptr) {
     localCreate(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localCreate(const KEYTYPE& key, const CacheablePtr& value,
-                          const UserDataPtr& arg = NULLPTR) {
+                          const UserDataPtr& arg = nullptr) {
     localCreate(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline void localCreate(const CacheableKeyPtr& key, const VALUETYPE& value,
-                          const UserDataPtr& arg = NULLPTR) {
+                          const UserDataPtr& arg = nullptr) {
     localCreate(key, createValue(value), arg);
   }
 
@@ -620,9 +619,9 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   *
   * @param key the key of the value to be invalidated
   * @param aCallbackArgument a user-defined parameter to pass to callback events
-  *        triggered by this method. Can be NULLPTR. Should be serializable if
+  *        triggered by this method. Can be nullptr. Should be serializable if
   *        passed to remote callback events
-  * @throws IllegalArgumentException if key is NULLPTR
+  * @throws IllegalArgumentException if key is nullptr
   * @throws CacheListenerException if CacheListener throws an exception
   * @throws EntryNotFoundException if this entry does not exist in this region
   * locally
@@ -631,14 +630,14 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @see CacheListener::afterInvalidate
   */
   virtual void invalidate(const CacheableKeyPtr& key,
-                          const UserDataPtr& aCallbackArgument = NULLPTR) {
+                          const UserDataPtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->invalidate(key, aCallbackArgument);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline void invalidate(const KEYTYPE& key, const UserDataPtr& arg = NULLPTR) {
+  inline void invalidate(const KEYTYPE& key, const UserDataPtr& arg = nullptr) {
     invalidate(createKey(key), arg);
   }
 
@@ -652,9 +651,9 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   *
   * @param key the key of the value to be invalidated
   * @param aCallbackArgument a user-defined parameter to pass to callback events
-  *        triggered by this method. Can be NULLPTR. Should be serializable if
+  *        triggered by this method. Can be nullptr. Should be serializable if
   *        passed to remote callback events
-  * @throws IllegalArgumentException if key is NULLPTR
+  * @throws IllegalArgumentException if key is nullptr
   * @throws CacheListenerException if CacheListener throws an exception
   * @throws EntryNotFoundException if this entry does not exist in this region
   * locally
@@ -663,14 +662,14 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @see CacheListener::afterInvalidate
   */
   virtual void localInvalidate(const CacheableKeyPtr& key,
-                               const UserDataPtr& aCallbackArgument = NULLPTR) {
+                               const UserDataPtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.localInvalidate()");
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localInvalidate(const KEYTYPE& key,
-                              const UserDataPtr& arg = NULLPTR) {
+                              const UserDataPtr& arg = nullptr) {
     localInvalidate(createKey(key), arg);
   }
 
@@ -693,8 +692,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @param key the key of the entry to destroy
   * @param aCallbackArgument a user-defined parameter to pass to callback events
   *        triggered by this method.
-  *        Can be NULLPTR. If it is sent on the wire, it has to be Serializable.
-  * @throws IllegalArgumentException if key is NULLPTR
+  *        Can be nullptr. If it is sent on the wire, it has to be Serializable.
+  * @throws IllegalArgumentException if key is nullptr
   * @throws CacheWriterException if CacheWriter aborts the operation
   * @throws CacheListenerException if CacheListener throws an exception
   * @throws CacheServerException If an exception is received from the Geode
@@ -717,14 +716,14 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @see CacheWriter::beforeDestroy
   */
   virtual void destroy(const CacheableKeyPtr& key,
-                       const UserDataPtr& aCallbackArgument = NULLPTR) {
+                       const UserDataPtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->destroy(key, aCallbackArgument);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline void destroy(const KEYTYPE& key, const UserDataPtr& arg = NULLPTR) {
+  inline void destroy(const KEYTYPE& key, const UserDataPtr& arg = nullptr) {
     destroy(createKey(key), arg);
   }
 
@@ -742,8 +741,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    *
    * @param key the key of the entry to destroy.
    * @param aCallbackArgument the callback for user to pass in, default is
-   * NULLPTR.
-   * @throws IllegalArgumentException if key is NULLPTR
+   * nullptr.
+   * @throws IllegalArgumentException if key is nullptr
    * @throws CacheWriterException if CacheWriter aborts the operation
    * @throws CacheListenerException if CacheListener throws an exception
    * @throws EntryNotFoundException if the entry does not exist in this region
@@ -753,14 +752,14 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheWriter::beforeDestroy
    */
   virtual void localDestroy(const CacheableKeyPtr& key,
-                            const UserDataPtr& aCallbackArgument = NULLPTR) {
+                            const UserDataPtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.localDestroy()");
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localDestroy(const KEYTYPE& key,
-                           const UserDataPtr& arg = NULLPTR) {
+                           const UserDataPtr& arg = nullptr) {
     localDestroy(createKey(key), arg);
   }
 
@@ -783,11 +782,11 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * <p>
   *
   * @param key the key of the entry to remove
-  * @param value the value of the key to remove, it can be NULLPTR.
+  * @param value the value of the key to remove, it can be nullptr.
   * @param aCallbackArgument a user-defined parameter to pass to callback events
   *        triggered by this method.
-  *        Can be NULLPTR. If it is sent on the wire, it has to be Serializable.
-  * @throws IllegalArgumentException if key is NULLPTR
+  *        Can be nullptr. If it is sent on the wire, it has to be Serializable.
+  * @throws IllegalArgumentException if key is nullptr
   * @throws CacheWriterException if CacheWriter aborts the operation
   * @throws CacheListenerException if CacheListener throws an exception
   * @throws CacheServerException If an exception is received from the Geode
@@ -813,7 +812,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @see CacheWriter::beforeDestroy
   */
   virtual bool remove(const CacheableKeyPtr& key, const CacheablePtr& value,
-                      const UserDataPtr& aCallbackArgument = NULLPTR) {
+                      const UserDataPtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->remove(key, value, aCallbackArgument);
   }
@@ -821,21 +820,21 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline bool remove(const KEYTYPE& key, const VALUETYPE& value,
-                     const UserDataPtr& arg = NULLPTR) {
+                     const UserDataPtr& arg = nullptr) {
     return remove(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline bool remove(const KEYTYPE& key, const CacheablePtr& value,
-                     const UserDataPtr& arg = NULLPTR) {
+                     const UserDataPtr& arg = nullptr) {
     return remove(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline bool remove(const CacheableKeyPtr& key, const VALUETYPE& value,
-                     const UserDataPtr& arg = NULLPTR) {
+                     const UserDataPtr& arg = nullptr) {
     return remove(key, createValue(value), arg);
   }
 
@@ -859,8 +858,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @param key the key of the entry to remove
   * @param aCallbackArgument a user-defined parameter to pass to callback events
   *        triggered by this method.
-  *        Can be NULLPTR. If it is sent on the wire, it has to be Serializable.
-  * @throws IllegalArgumentException if key is NULLPTR
+  *        Can be nullptr. If it is sent on the wire, it has to be Serializable.
+  * @throws IllegalArgumentException if key is nullptr
   * @throws CacheWriterException if CacheWriter aborts the operation
   * @throws CacheListenerException if CacheListener throws an exception
   * @throws CacheServerException If an exception is received from the Geode
@@ -887,14 +886,14 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   */
 
   virtual bool removeEx(const CacheableKeyPtr& key,
-                        const UserDataPtr& aCallbackArgument = NULLPTR) {
+                        const UserDataPtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->removeEx(key, aCallbackArgument);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline bool removeEx(const KEYTYPE& key, const UserDataPtr& arg = NULLPTR) {
+  inline bool removeEx(const KEYTYPE& key, const UserDataPtr& arg = nullptr) {
     return removeEx(createKey(key), arg);
   }
 
@@ -915,8 +914,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @param key the key of the entry to remove.
    * @param value the value of the entry to remove.
    * @param aCallbackArgument the callback for user to pass in, default is
-   * NULLPTR.
-   * @throws IllegalArgumentException if key is NULLPTR
+   * nullptr.
+   * @throws IllegalArgumentException if key is nullptr
    * @throws CacheWriterException if CacheWriter aborts the operation
    * @throws CacheListenerException if CacheListener throws an exception
    * @return the boolean true if an entry(key, value)has been removed or
@@ -927,7 +926,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    */
   virtual bool localRemove(const CacheableKeyPtr& key,
                            const CacheablePtr& value,
-                           const UserDataPtr& aCallbackArgument = NULLPTR) {
+                           const UserDataPtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.localRemove()");
     return false;
   }
@@ -935,21 +934,21 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline bool localRemove(const KEYTYPE& key, const VALUETYPE& value,
-                          const UserDataPtr& arg = NULLPTR) {
+                          const UserDataPtr& arg = nullptr) {
     return localRemove(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline bool localRemove(const KEYTYPE& key, const CacheablePtr& value,
-                          const UserDataPtr& arg = NULLPTR) {
+                          const UserDataPtr& arg = nullptr) {
     return localRemove(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline bool localRemove(const CacheableKeyPtr& key, const VALUETYPE& value,
-                          const UserDataPtr& arg = NULLPTR) {
+                          const UserDataPtr& arg = nullptr) {
     return localRemove(key, createValue(value), arg);
   }
 
@@ -968,8 +967,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   *
   * @param key the key of the entry to remove.
   * @param aCallbackArgument the callback for user to pass in, default is
-  * NULLPTR.
-  * @throws IllegalArgumentException if key is NULLPTR
+  * nullptr.
+  * @throws IllegalArgumentException if key is nullptr
   * @throws CacheWriterException if CacheWriter aborts the operation
   * @throws CacheListenerException if CacheListener throws an exception
   * @return the boolean true if an entry(key, value)has been removed or
@@ -979,7 +978,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @see CacheWriter::beforeDestroy
   */
   virtual bool localRemoveEx(const CacheableKeyPtr& key,
-                             const UserDataPtr& aCallbackArgument = NULLPTR) {
+                             const UserDataPtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.localRemoveEx()");
     return false;
   }
@@ -987,7 +986,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline bool localRemoveEx(const KEYTYPE& key,
-                            const UserDataPtr& arg = NULLPTR) {
+                            const UserDataPtr& arg = nullptr) {
     return localRemoveEx(createKey(key), arg);
   }
 
@@ -1186,7 +1185,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * ( {@link AttributesFactory::setClientNotification} ) is true.
   *
   * @param isDurable flag to indicate whether this is a durable registration
-  * @param resultKeys If non-NULLPTR then all the keys on the server that got
+  * @param resultKeys If non-nullptr then all the keys on the server that got
   *   registered are returned. The vector is cleared at the start to discard
   *   any existing keys in the vector.
   * @param getInitialValues true to populate the cache with values of all keys
@@ -1213,7 +1212,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @throws TimeoutException if operation timed out
   */
   virtual void registerAllKeys(bool isDurable = false,
-                               VectorOfCacheableKeyPtr resultKeys = NULLPTR,
+                               VectorOfCacheableKeyPtr resultKeys = nullptr,
                                bool getInitialValues = false,
                                bool receiveValues = true) {
     unSupportedOperation("Region.registerAllKeys()");
@@ -1250,7 +1249,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   *
   * @param regex The regular expression string.
   * @param isDurable flag to indicate whether this is a durable registration
-  * @param resultKeys If non-NULLPTR then the keys that match the regular
+  * @param resultKeys If non-nullptr then the keys that match the regular
   *   expression on the server are returned. The vector is cleared at the
   *   start to discard any existing keys in the vector.
   * @param getInitialValues true to populate the cache with values of the keys
@@ -1283,7 +1282,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @throws TimeoutException if operation timed out
   */
   virtual void registerRegex(const char* regex, bool isDurable = false,
-                             VectorOfCacheableKeyPtr resultKeys = NULLPTR,
+                             VectorOfCacheableKeyPtr resultKeys = nullptr,
                              bool getInitialValues = false,
                              bool receiveValues = true) {
     unSupportedOperation("Region.registerRegex()");
@@ -1331,21 +1330,21 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   *
   * @param keys the array of keys
   * @param values Output parameter that provides the map of keys to
-  *   respective values. It is ignored if NULLPTR, and when NULLPTR then at
+  *   respective values. It is ignored if nullptr, and when nullptr then at
   *least
   *   the <code>addToLocalCache</code> parameter should be true and caching
   *   should be enabled for the region to get values into the region
   *   otherwise an <code>IllegalArgumentException</code> is thrown.
   * @param exceptions Output parameter that provides the map of keys
-  *   to any exceptions while obtaining the key. It is ignored if NULLPTR.
+  *   to any exceptions while obtaining the key. It is ignored if nullptr.
   * @param addToLocalCache true if the obtained values have also to be added
   *   to the local cache
   * @since 8.1
   * @param aCallbackArgument an argument that is passed to the callback
   *functions.
-  * It may be NULLPTR. Must be serializable if this operation is distributed.
+  * It may be nullptr. Must be serializable if this operation is distributed.
   * @throws IllegalArgumentException If the array of keys is empty. Other
-  *   invalid case is when the <code>values</code> parameter is NULLPTR, and
+  *   invalid case is when the <code>values</code> parameter is nullptr, and
   *   either <code>addToLocalCache</code> is false or caching is disabled
   *   for this region.
   * @throws CacheServerException If an exception is received from the Java
@@ -1362,7 +1361,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
                       HashMapOfCacheablePtr values,
                       HashMapOfExceptionPtr exceptions,
                       bool addToLocalCache = false,
-                      const UserDataPtr& aCallbackArgument = NULLPTR) {
+                      const UserDataPtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->getAll(keys, values, exceptions, false /*TODO:*/,
                          aCallbackArgument);
@@ -1446,7 +1445,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @throws TimeoutException if operation timed out
   * @throws CacheClosedException if the cache has been closed
   * @returns A smart pointer to the single ResultSet or StructSet item, or
-  * NULLPTR of no results are available.
+  * nullptr of no results are available.
   */
   virtual SerializablePtr selectValue(
       const char* predicate,
@@ -1468,7 +1467,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @param keys the keys to remove from this region.
   * @param aCallbackArgument an argument that is passed to the callback
   * functions.
-  *  It is ignored if NULLPTR. It must be serializable if this operation is
+  *  It is ignored if nullptr. It must be serializable if this operation is
   * distributed.
   * @throws IllegalArgumentException If the array of keys is empty.
   * @throws CacheServerException If an exception is received from the Java
@@ -1484,7 +1483,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   * @see destroy
   */
   virtual void removeAll(const VectorOfCacheableKey& keys,
-                         const UserDataPtr& aCallbackArgument = NULLPTR) {
+                         const UserDataPtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->removeAll(keys, aCallbackArgument);
   }
@@ -1497,9 +1496,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
 
   virtual const PoolPtr& getPool() { return m_realRegion->getPool(); }
 
-  ProxyRegion(ProxyCache* proxyCache, RegionPtr realRegion) {
-    ProxyCachePtr pcp(proxyCache);
-    m_proxyCache = pcp;
+  ProxyRegion(const ProxyCachePtr& proxyCache, const RegionPtr& realRegion) {
+    m_proxyCache = proxyCache;
     m_realRegion = realRegion;
   }
 
@@ -1514,6 +1512,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   ProxyRegion(const ProxyRegion&);
   ProxyRegion& operator=(const ProxyRegion&);
   friend class FunctionService;
+
+  FRIEND_STD_SHARED_PTR(ProxyRegion)
 };
 
 typedef SharedPtr<ProxyRegion> ProxyRegionPtr;

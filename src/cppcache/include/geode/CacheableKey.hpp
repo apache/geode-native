@@ -41,6 +41,8 @@ class CPPCACHE_EXPORT CacheableKey : public Cacheable {
   /** Destructor */
   virtual ~CacheableKey() {}
 
+  FRIEND_STD_SHARED_PTR(CacheableKey)
+
  public:
   /** return true if this key matches other. */
   virtual bool operator==(const CacheableKey& other) const = 0;

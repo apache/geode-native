@@ -81,7 +81,7 @@ GfErrType ConcurrentEntriesMap::create(const CacheableKeyPtr& key,
   GfErrType err = GF_NOERR;
   if ((err = segmentFor(key)->create(key, newValue, me, oldValue, updateCount,
                                      destroyTracker, versionTag)) == GF_NOERR &&
-      oldValue == NULLPTR) {
+      oldValue == nullptr) {
     ++m_size;
   }
   return err;

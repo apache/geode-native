@@ -24,7 +24,7 @@ using namespace apache::geode::client;
 
 template <typename TEntry, typename TCreateEntry>
 LRUList<TEntry, TCreateEntry>::LRUList() : m_headLock(), m_tailLock() {
-  LRUListEntryPtr headEntry(TCreateEntry::create(NULLPTR));
+  LRUListEntryPtr headEntry(TCreateEntry::create(nullptr));
   headEntry->getLRUProperties().setEvicted();  // create empty evicted entry.
   m_headNode = new LRUListNode(headEntry);
   m_tailNode = m_headNode;
@@ -68,7 +68,7 @@ void LRUList<TEntry, TCreateEntry>::getLRUEntry(LRUListEntryPtr& result) {
   while (true) {
     aNode = getHeadNode(isLast);
     if (aNode == NULL) {
-      result = NULLPTR;
+      result = nullptr;
       break;
     }
     aNode->getEntry(result);
@@ -88,7 +88,7 @@ void LRUList<TEntry, TCreateEntry>::getLRUEntry(LRUListEntryPtr& result) {
         break;  // found unused entry
       }
     } else {
-      result = NULLPTR;  // remove the reference to entry
+      result = nullptr;  // remove the reference to entry
       delete aNode;      // drop the entry to the floor ...
     }
   }

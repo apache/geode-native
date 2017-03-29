@@ -54,11 +54,11 @@ class TESTOBJECT_EXPORT BatchObject : public TimestampedObject {
   CacheableBytesPtr byteArray;
 
   inline uint32_t getObjectSize(const SerializablePtr& obj) const {
-    return (obj == NULLPTR ? 0 : obj->objectSize());
+    return (obj == nullptr ? 0 : obj->objectSize());
   }
 
  public:
-  BatchObject() : index(0), timestamp(0), batch(0), byteArray(NULLPTR) {}
+  BatchObject() : index(0), timestamp(0), batch(0), byteArray(nullptr) {}
   BatchObject(int32_t anIndex, int32_t batchSize, int32_t size);
   virtual ~BatchObject();
   virtual void toData(apache::geode::client::DataOutput& output) const;

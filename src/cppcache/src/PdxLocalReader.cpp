@@ -50,7 +50,7 @@ PdxLocalReader::PdxLocalReader(DataInput& input, PdxTypePtr remoteType,
   m_remoteToLocalMap = remoteType->getRemoteToLocalMap();
   m_remoteToLocalMapSize = remoteType->getTotalFields();
 
-  m_pdxRemotePreserveData = new PdxRemotePreservedData();
+  m_pdxRemotePreserveData = std::make_shared<PdxRemotePreservedData>();
   m_isDataNeedToPreserve = true;
   initialize();
 }
@@ -178,10 +178,10 @@ SerializablePtr PdxLocalReader::readObject(const char* fieldName) {
   checkEmptyFieldName(fieldName);
   SerializablePtr ptr;
   m_dataInput->readObject(ptr);
-  if (ptr != NULLPTR) {
+  if (ptr != nullptr) {
     return ptr;
   } else {
-    return NULLPTR;
+    return nullptr;
   }
 }
 
@@ -276,7 +276,7 @@ CacheableObjectArrayPtr PdxLocalReader::readObjectArray(const char* fieldName) {
   coa->fromData(*m_dataInput);
   LOGDEBUG("PdxLocalReader::readObjectArray coa->size() = %d", coa->size());
   if (coa->size() <= 0) {
-    coa = NULLPTR;
+    coa = nullptr;
   }
   return coa;
 }
@@ -306,7 +306,7 @@ PdxRemotePreservedDataPtr PdxLocalReader::getPreservedData(
       nFieldExtra, PdxTypeRegistry::getPdxIgnoreUnreadFields());
   if (nFieldExtra > 0 && PdxTypeRegistry::getPdxIgnoreUnreadFields() == false) {
     m_pdxRemotePreserveData->initialize(
-        m_pdxType != NULLPTR ? m_pdxType->getTypeId() : 0,
+        m_pdxType != nullptr ? m_pdxType->getTypeId() : 0,
         mergedVersion->getTypeId(), nFieldExtra, pdxObject);
     LOGDEBUG("PdxLocalReader::getPreservedData - 1");
 
@@ -355,16 +355,16 @@ PdxRemotePreservedDataPtr PdxLocalReader::getPreservedData(
           "PdxLocalReader::GetPreservedData m_isDataNeedToPreserve is false");
     }
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 bool PdxLocalReader::hasField(const char* fieldName) {
-  return m_pdxType->getPdxField(fieldName) != NULLPTR;
+  return m_pdxType->getPdxField(fieldName) != nullptr;
 }
 
 bool PdxLocalReader::isIdentityField(const char* fieldName) {
   PdxFieldTypePtr pft = m_pdxType->getPdxField(fieldName);
-  return (pft != NULLPTR) && (pft->getIdentityField());
+  return (pft != nullptr) && (pft->getIdentityField());
 }
 
 void PdxLocalReader::readCollection(const char* fieldName,
@@ -375,7 +375,7 @@ void PdxLocalReader::readCollection(const char* fieldName,
 PdxUnreadFieldsPtr PdxLocalReader::readUnreadFields() {
   LOGDEBUG("readUnreadFields:: %d ignore property %d", m_isDataNeedToPreserve,
            PdxTypeRegistry::getPdxIgnoreUnreadFields());
-  if (PdxTypeRegistry::getPdxIgnoreUnreadFields() == true) return NULLPTR;
+  if (PdxTypeRegistry::getPdxIgnoreUnreadFields() == true) return nullptr;
   m_isDataNeedToPreserve = false;
   return m_pdxRemotePreserveData;
 }

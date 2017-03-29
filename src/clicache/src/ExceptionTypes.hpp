@@ -166,7 +166,7 @@ namespace Apache
                   mg_exStr.CharPtr, NULL, false, cause));
             }
           }
-          return NULLPTR;
+          return nullptr;
         }
 
         /// <summary>

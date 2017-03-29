@@ -93,7 +93,7 @@ void initCredentialGenerator() {
     }
   }
 
-  if (credentialGeneratorHandler == NULLPTR) {
+  if (credentialGeneratorHandler == nullptr) {
     FAIL("credentialGeneratorHandler is NULL");
   }
 
@@ -113,7 +113,7 @@ void initClientAuth(char credentialsType, const char* dhAlgo) {
   printf("KeyStore Path is: %s", testsrc.c_str());
   config->insert("security-client-kspath", testsrc.c_str());
 
-  if (credentialGeneratorHandler == NULLPTR) {
+  if (credentialGeneratorHandler == nullptr) {
     FAIL("credentialGeneratorHandler is NULL");
   }
   bool insertAuthInit = true;
@@ -193,9 +193,9 @@ void DoNetSearch() {
     createRegionForSecurity(regionNamesAuth[1], USE_ACK, true);
     RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
     CacheableKeyPtr keyPtr = CacheableKey::create(keys[0]);
-    CacheableStringPtr checkPtr =
-        dynCast<CacheableStringPtr>(regPtr0->get(keyPtr));
-    if (checkPtr != NULLPTR && !strcmp(nvals[0], checkPtr->asChar())) {
+    auto checkPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
+    if (checkPtr != nullptr && !strcmp(nvals[0], checkPtr->asChar())) {
       LOG("checkPtr is not null");
       char buf[1024];
       sprintf(buf, "In net search, get returned %s for key %s",
@@ -213,7 +213,7 @@ void DoNetSearch() {
 
 void initSecurityServer(int instance) {
   std::string cmdServerAuthenticator;
-  if (credentialGeneratorHandler == NULLPTR) {
+  if (credentialGeneratorHandler == nullptr) {
     FAIL("credentialGeneratorHandler is NULL");
   }
 

@@ -30,7 +30,7 @@ using namespace apache::geode::client;
 
 #define _GF_GUARD_SEGMENT SpinLockGuard mapGuard(m_spinlock)
 #define _VERSION_TAG_NULL_CHK \
-  (versionTag != NULLPTR && versionTag.ptr() != NULL)
+  (versionTag != nullptr && versionTag.get() != NULL)
 bool MapSegment::boolVal = false;
 MapSegment::~MapSegment() {
   delete m_map;
@@ -84,9 +84,9 @@ GfErrType MapSegment::create(const CacheableKeyPtr& key,
         return err;
       }
     } else {
-      MapEntryImpl* entryImpl = entry->getImplPtr();
+      MapEntryImplPtr entryImpl = entry->getImplPtr();
       entryImpl->getValueI(oldValue);
-      if (oldValue == NULLPTR || CacheableToken::isTombstone(oldValue)) {
+      if (oldValue == nullptr || CacheableToken::isTombstone(oldValue)) {
         // pass the version stamp
         VersionStamp versionStamp;
         if (m_concurrencyChecksEnabled) {
@@ -99,7 +99,7 @@ GfErrType MapSegment::create(const CacheableKeyPtr& key,
           }
         }
         // good case; go ahead with the create
-        if (oldValue == NULLPTR) {
+        if (oldValue == nullptr) {
           err = putForTrackedEntry(key, newValue, entry, entryImpl, updateCount,
                                    versionStamp);
         } else {
@@ -108,7 +108,7 @@ GfErrType MapSegment::create(const CacheableKeyPtr& key,
                            versionTag, &versionStamp);
         }
 
-        oldValue = NULLPTR;
+        oldValue = nullptr;
 
       } else {
         err = GF_CACHE_ENTRY_EXISTS;
@@ -154,7 +154,7 @@ GfErrType MapSegment::put(const CacheableKeyPtr& key,
       err = putNoEntry(key, newValue, me, updateCount, destroyTracker,
                        versionTag);
     } else {
-      MapEntryImpl* entryImpl = entry->getImplPtr();
+      MapEntryImplPtr entryImpl = entry->getImplPtr();
       CacheablePtr meOldValue;
       entryImpl->getValueI(meOldValue);
       // pass the version stamp
@@ -178,14 +178,14 @@ GfErrType MapSegment::put(const CacheableKeyPtr& key,
         unguardedRemoveActualEntryWithoutCancelTask(key, handler, taskid);
         err = putNoEntry(key, newValue, me, updateCount, destroyTracker,
                          versionTag, &versionStamp);
-        meOldValue = NULLPTR;
+        meOldValue = nullptr;
         isUpdate = false;
       } else if ((err = putForTrackedEntry(key, newValue, entry, entryImpl,
                                            updateCount, versionStamp, delta)) ==
                  GF_NOERR) {
         me = entryImpl;
         oldValue = meOldValue;
-        isUpdate = (meOldValue != NULLPTR);
+        isUpdate = (meOldValue != nullptr);
       }
     }
   }
@@ -214,10 +214,10 @@ GfErrType MapSegment::invalidate(const CacheableKeyPtr& key,
         versionStamp.setVersions(versionTag);
       }
     }
-    MapEntryImpl* entryImpl = entry->getImplPtr();
+    MapEntryImplPtr entryImpl = entry->getImplPtr();
     entryImpl->getValueI(oldValue);
     if (CacheableToken::isTombstone(oldValue)) {
-      oldValue = NULLPTR;
+      oldValue = nullptr;
       return GF_CACHE_ENTRY_NOT_FOUND;
     }
     entryImpl->setValueI(CacheableToken::invalid());
@@ -225,7 +225,7 @@ GfErrType MapSegment::invalidate(const CacheableKeyPtr& key,
       entryImpl->getVersionStamp().setVersions(versionStamp);
     }
     (void)incrementUpdateCount(key, entry);
-    if (oldValue != NULLPTR) {
+    if (oldValue != nullptr) {
       me = entryImpl;
     }
   } else {
@@ -267,10 +267,10 @@ GfErrType MapSegment::removeWhenConcurrencyEnabled(
       versionStamp.setVersions(versionTag);
     }
     // Get the old value for returning
-    MapEntryImpl* entryImpl = entry->getImplPtr();
+    MapEntryImplPtr entryImpl = entry->getImplPtr();
     entryImpl->getValueI(oldValue);
 
-    if (oldValue != NULLPTR) me = entryImpl;
+    if (oldValue) me = entryImpl;
 
     if ((err = putForTrackedEntry(key, CacheableToken::tombstone(), entry,
                                   entryImpl, updateCount, versionStamp)) ==
@@ -279,7 +279,7 @@ GfErrType MapSegment::removeWhenConcurrencyEnabled(
       expTaskSet = true;
     }
     if (CacheableToken::isTombstone(oldValue)) {
-      oldValue = NULLPTR;
+      oldValue = nullptr;
       if (afterRemote) {
         return GF_NOERR;  // We are here because a remote op succeeded, no need
                           // to throw an error
@@ -298,7 +298,7 @@ GfErrType MapSegment::removeWhenConcurrencyEnabled(
                            expiryTaskID);
       expTaskSet = true;
     }
-    oldValue = NULLPTR;
+    oldValue = nullptr;
     isEntryFound = false;
     if (afterRemote) {
       err = GF_NOERR;  // We are here because a remote op succeeded, no need to
@@ -344,7 +344,7 @@ GfErrType MapSegment::remove(const CacheableKeyPtr& key, CacheablePtr& oldValue,
   CacheablePtr value;
   if ((status = m_map->unbind(key, entry)) == -1) {
     // didn't unbind, probably no entry...
-    oldValue = NULLPTR;
+    oldValue = nullptr;
     volatile int destroyTrackers = *m_numDestroyTrackers;
     if (destroyTrackers > 0) {
       m_destroyedKeys[key] = destroyTrackers + 1;
@@ -356,10 +356,10 @@ GfErrType MapSegment::remove(const CacheableKeyPtr& key, CacheablePtr& oldValue,
     // this is the case when entry has been updated while being tracked
     return GF_CACHE_ENTRY_UPDATED;
   }
-  MapEntryImpl* entryImpl = entry->getImplPtr();
+  MapEntryImplPtr entryImpl = entry->getImplPtr();
   entryImpl->getValueI(oldValue);
-  if (CacheableToken::isTombstone(oldValue)) oldValue = NULLPTR;
-  if (oldValue != NULLPTR) {
+  if (CacheableToken::isTombstone(oldValue)) oldValue = nullptr;
+  if (oldValue) {
     me = entryImpl;
   }
   return GF_NOERR;
@@ -401,17 +401,17 @@ bool MapSegment::getEntry(const CacheableKeyPtr& key, MapEntryImplPtr& result,
   int status;
   MapEntryPtr entry;
   if ((status = m_map->find(key, entry)) == -1) {
-    result = NULLPTR;
-    value = NULLPTR;
+    result = nullptr;
+    value = nullptr;
     return false;
   }
 
   // If the value is a tombstone return not found
-  MapEntryImpl* mePtr = entry->getImplPtr();
+  MapEntryImplPtr mePtr = entry->getImplPtr();
   mePtr->getValueI(value);
-  if (value == NULLPTR || CacheableToken::isTombstone(value)) {
-    result = NULLPTR;
-    value = NULLPTR;
+  if (value == nullptr || CacheableToken::isTombstone(value)) {
+    result = nullptr;
+    value = nullptr;
     return false;
   }
   result = mePtr;
@@ -430,9 +430,9 @@ bool MapSegment::containsKey(const CacheableKeyPtr& key) {
   }
   // If the value is a tombstone return not found
   CacheablePtr value;
-  MapEntryImpl* mePtr1 = mePtr->getImplPtr();
+  MapEntryImplPtr mePtr1 = mePtr->getImplPtr();
   mePtr1->getValueI(value);
-  if (value != NULLPTR && CacheableToken::isTombstone(value)) return false;
+  if (value != nullptr && CacheableToken::isTombstone(value)) return false;
 
   return true;
 }
@@ -463,11 +463,11 @@ void MapSegment::entries(VectorOfRegionEntry& result) {
        iter != m_map->end(); iter++) {
     CacheableKeyPtr keyPtr;
     CacheablePtr valuePtr;
-    MapEntryImpl* me = ((*iter).int_id_)->getImplPtr();
+    MapEntryImplPtr me = ((*iter).int_id_)->getImplPtr();
     me->getValueI(valuePtr);
-    if (valuePtr != NULLPTR && !CacheableToken::isTombstone(valuePtr)) {
+    if (valuePtr != nullptr && !CacheableToken::isTombstone(valuePtr)) {
       if (CacheableToken::isInvalid(valuePtr)) {
-        valuePtr = NULLPTR;
+        valuePtr = nullptr;
       }
       me->getKeyI(keyPtr);
       RegionEntryPtr rePtr = m_region->createRegionEntry(keyPtr, valuePtr);
@@ -493,8 +493,8 @@ void MapSegment::values(VectorOfCacheable& result) {
     status = m_map->find(keyPtr, entry);
 
     if (status != -1) {
-      MapEntryImpl* entryImpl = entry->getImplPtr();
-      if (valuePtr != NULLPTR && !CacheableToken::isInvalid(valuePtr) &&
+      MapEntryImplPtr entryImpl = entry->getImplPtr();
+      if (valuePtr != nullptr && !CacheableToken::isInvalid(valuePtr) &&
           !CacheableToken::isDestroyed(valuePtr) &&
           !CacheableToken::isTombstone(valuePtr)) {
         if (CacheableToken::isOverflowed(valuePtr)) {  // get Value from disc.
@@ -519,7 +519,7 @@ int MapSegment::addTrackerForEntry(const CacheableKeyPtr& key,
   MapEntryPtr newEntry;
   int status;
   if ((status = m_map->find(key, entry)) == -1) {
-    oldValue = NULLPTR;
+    oldValue = nullptr;
     if (addIfAbsent) {
       MapEntryImplPtr entryImpl;
       // add a new entry with value as destroyed
@@ -546,7 +546,7 @@ int MapSegment::addTrackerForEntry(const CacheableKeyPtr& key,
   } else {
     updateCount = entry->addTracker(newEntry);
   }
-  if (newEntry != NULLPTR) {
+  if (newEntry != nullptr) {
     if (status == -1) {
       m_map->bind(key, newEntry);
     } else {
@@ -565,7 +565,8 @@ void MapSegment::removeTrackerForEntry(const CacheableKeyPtr& key) {
   MapEntryPtr entry;
   int status;
   if ((status = m_map->find(key, entry)) != -1) {
-    removeTrackerForEntry(key, entry, NULL);
+    auto impl = entry->getImplPtr();
+    removeTrackerForEntry(key, entry, impl);
   }
 }
 
@@ -582,7 +583,7 @@ void MapSegment::addTrackerForAllEntries(
        iter != m_map->end(); ++iter) {
     (*iter).int_id_->getKey(key);
     int updateCount = (*iter).int_id_->addTracker(newEntry);
-    if (newEntry != NULLPTR) {
+    if (newEntry != nullptr) {
       m_map->rebind(key, newEntry);
     }
     updateCounterMap.insert(std::make_pair(key, updateCount));
@@ -625,14 +626,15 @@ void MapSegment::rehash() {  // Only called from put, segment must already be
 }
 
 CacheablePtr MapSegment::getFromDisc(CacheableKeyPtr key,
-                                     MapEntryImpl* entryImpl) {
+                                     MapEntryImplPtr& entryImpl) {
   LocalRegion* lregion = static_cast<LocalRegion*>(m_region);
   EntriesMap* em = lregion->getEntryMap();
   return em->getFromDisk(key, entryImpl);
 }
+
 GfErrType MapSegment::putForTrackedEntry(
     const CacheableKeyPtr& key, const CacheablePtr& newValue,
-    MapEntryPtr& entry, MapEntryImpl* entryImpl, int updateCount,
+    MapEntryPtr& entry, MapEntryImplPtr& entryImpl, int updateCount,
     VersionStamp& versionStamp, DataInput* delta) {
   if (updateCount < 0 || m_concurrencyChecksEnabled) {
     // for a non-tracked put (e.g. from notification) go ahead with the
@@ -645,7 +647,7 @@ GfErrType MapSegment::putForTrackedEntry(
     if (delta != NULL) {
       CacheablePtr oldValue;
       entryImpl->getValueI(oldValue);
-      if (oldValue == NULLPTR || CacheableToken::isDestroyed(oldValue) ||
+      if (oldValue == nullptr || CacheableToken::isDestroyed(oldValue) ||
           CacheableToken::isInvalid(oldValue) ||
           CacheableToken::isTombstone(oldValue)) {
         if (m_poolDM) m_poolDM->updateNotificationStats(false, 0);
@@ -653,12 +655,12 @@ GfErrType MapSegment::putForTrackedEntry(
       } else if (CacheableToken::isOverflowed(
                      oldValue)) {  // get Value from disc.
         oldValue = getFromDisc(key, entryImpl);
-        if (oldValue == NULLPTR) {
+        if (oldValue == nullptr) {
           if (m_poolDM) m_poolDM->updateNotificationStats(false, 0);
           return GF_INVALID_DELTA;
         }
       }
-      DeltaPtr valueWithDelta(dynCast<DeltaPtr>(oldValue));
+      auto valueWithDelta = std::dynamic_pointer_cast<Delta>(oldValue);
       CacheablePtr& newValue1 = const_cast<CacheablePtr&>(newValue);
       try {
         if (m_region->getAttributes()->getCloningEnabled()) {
@@ -670,18 +672,19 @@ GfErrType MapSegment::putForTrackedEntry(
                 true,
                 ((ACE_OS::gettimeofday() - currTimeBefore).msec()) * 1000000);
           }
-          newValue1 = tempVal;
+          newValue1 = std::dynamic_pointer_cast<Serializable>(tempVal);
           entryImpl->setValueI(newValue1);
         } else {
           ACE_Time_Value currTimeBefore = ACE_OS::gettimeofday();
           valueWithDelta->fromDelta(*delta);
-          newValue1 = valueWithDelta;
+          newValue1 = std::dynamic_pointer_cast<Serializable>(valueWithDelta);
           if (m_poolDM) {
             m_poolDM->updateNotificationStats(
                 true,
                 ((ACE_OS::gettimeofday() - currTimeBefore).msec()) * 1000000);
           }
-          entryImpl->setValueI(valueWithDelta);
+          entryImpl->setValueI(
+              std::dynamic_pointer_cast<Serializable>(valueWithDelta));
         }
       } catch (InvalidDeltaException&) {
         return GF_INVALID_DELTA;
@@ -721,7 +724,7 @@ GfErrType MapSegment::isTombstone(CacheableKeyPtr key, MapEntryImplPtr& me,
                                   bool& result) {
   CacheablePtr value;
   MapEntryPtr entry;
-  MapEntryImpl* mePtr;
+  MapEntryImplPtr mePtr;
   if (m_map->find(key, entry) == -1) {
     result = false;
     return GF_NOERR;
@@ -734,15 +737,13 @@ GfErrType MapSegment::isTombstone(CacheableKeyPtr key, MapEntryImplPtr& me,
    * Fix : Aded a check for null ptr
    */
 
-  if (mePtr == (MapEntryImpl*)0) {
+  if (!mePtr) {
     result = false;
     return GF_NOERR;
   }
 
   mePtr->getValueI(value);
-  result = mePtr;
-
-  if (value == NULLPTR || value.ptr() == NULL) {
+  if (!value) {
     result = false;
     return GF_NOERR;
   }
@@ -751,7 +752,7 @@ GfErrType MapSegment::isTombstone(CacheableKeyPtr key, MapEntryImplPtr& me,
     if (m_tombstoneList->getEntryFromTombstoneList(key)) {
       MapEntryPtr entry;
       if (m_map->find(key, entry) != -1) {
-        MapEntryImpl* mePtr = entry->getImplPtr();
+        auto mePtr = entry->getImplPtr();
         me = mePtr;
       }
       result = true;

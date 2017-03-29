@@ -268,7 +268,7 @@ LibraryPersistenceManagerFn CacheXmlParser::managedPersistenceManagerFn = NULL;
 CacheXmlParser::CacheXmlParser()
     : m_cacheCreation(NULL),
       m_nestedRegions(0),
-      m_config(NULLPTR),
+      m_config(nullptr),
       m_parserMessage(""),
       m_flagCacheXmlException(false),
       m_flagIllegalStateException(false),
@@ -610,7 +610,7 @@ void CacheXmlParser::startPool(const xmlChar** atts) {
     if (strcmp(name, NAME) == 0) {
       poolName = value;
     } else {
-      setPoolInfo(factory.ptr(), name, value);
+      setPoolInfo(factory.get(), name, value);
     }
     ++attrsCount;
   }
@@ -625,7 +625,7 @@ void CacheXmlParser::startPool(const xmlChar** atts) {
   PoolXmlCreation* poolxml = new PoolXmlCreation(poolName, factory);
 
   _stack.push(poolxml);
-  _stack.push(factory.ptr());
+  _stack.push(factory.get());
 }
 
 void CacheXmlParser::endPool() {
@@ -1215,7 +1215,7 @@ void CacheXmlParser::startPersistenceProperties(const xmlChar** atts) {
         "XML:Incorrect number of attributes provided for <property>";
     throw CacheXmlException(s.c_str());
   } else {
-    if (m_config == NULLPTR) {
+    if (m_config == nullptr) {
       m_config = Properties::create();
     }
   }
@@ -1672,10 +1672,10 @@ void CacheXmlParser::endPersistenceManager() {
   _stack.pop();
   AttributesFactory* attrsFactory =
       reinterpret_cast<AttributesFactory*>(_stack.top());
-  if (m_config != NULLPTR) {
+  if (m_config != nullptr) {
     attrsFactory->setPersistenceManager(libraryName, libraryFunctionName,
                                         m_config);
-    m_config = NULLPTR;
+    m_config = nullptr;
   } else {
     attrsFactory->setPersistenceManager(libraryName, libraryFunctionName);
   }

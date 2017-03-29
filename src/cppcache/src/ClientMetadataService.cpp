@@ -41,7 +41,7 @@ ClientMetadataService::~ClientMetadataService() {
   }
 }
 
-ClientMetadataService::ClientMetadataService(PoolPtr pool)
+ClientMetadataService::ClientMetadataService(Pool* pool)
     /* adongre
     * CID 28928: Uninitialized scalar field (UNINIT_CTOR)
     */
@@ -59,7 +59,7 @@ int ClientMetadataService::svc() {
   LOGINFO("ClientMetadataService started for pool %s", m_pool->getName());
   while (m_run) {
     m_regionQueueSema.acquire();
-    ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.ptr());
+    ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
     CacheImpl* cache = tcrdm->getConnectionManager().getCacheImpl();
     while (true) {
       std::string* regionFullPath = m_regionQueue->get();
@@ -102,7 +102,7 @@ int ClientMetadataService::svc() {
 
 void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
   if (regionFullPath == NULL) return;
-  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.ptr());
+  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
   if (tcrdm == NULL) {
     throw IllegalArgumentException(
         "ClientMetaData: pool cast to ThinClientPoolDM failed");
@@ -113,7 +113,7 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
   // this message to server and get metadata from server.
   TcrMessageReply reply(true, NULL);
   std::string path(regionFullPath);
-  ClientMetadataPtr cptr = NULLPTR;
+  ClientMetadataPtr cptr = nullptr;
   {
     ReadGuard guard(m_regionMetadataLock);
     RegionMetadataMapType::iterator itr = m_regionMetaDataMap.find(path);
@@ -122,43 +122,43 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
     }
     // cptr = m_regionMetaDataMap[path];
   }
-  ClientMetadataPtr newCptr = NULLPTR;
+  ClientMetadataPtr newCptr = nullptr;
 
   {
     // ACE_Guard< ACE_Recursive_Thread_Mutex > guard( m_regionMetadataLock );
 
-    if (cptr == NULLPTR) {
+    if (cptr == nullptr) {
       TcrMessageGetClientPartitionAttributes request(regionFullPath);
       GfErrType err = tcrdm->sendSyncRequest(request, reply);
       if (err == GF_NOERR &&
           reply.getMessageType() ==
               TcrMessage::RESPONSE_CLIENT_PARTITION_ATTRIBUTES) {
-        cptr =
-            new ClientMetadata(reply.getNumBuckets(), reply.getColocatedWith(),
-                               tcrdm, reply.getFpaSet());
+        cptr = std::make_shared<ClientMetadata>(reply.getNumBuckets(),
+                                                reply.getColocatedWith(), tcrdm,
+                                                reply.getFpaSet());
         if (m_bucketWaitTimeout > 0 && reply.getNumBuckets() > 0) {
           WriteGuard guard(m_PRbucketStatusLock);
           m_bucketStatus[regionFullPath] = new PRbuckets(reply.getNumBuckets());
         }
         LOGDEBUG("ClientMetadata buckets %d ", reply.getNumBuckets());
-        if (cptr != NULLPTR) {
+        if (cptr != nullptr) {
           // m_regionMetaDataMap[regionFullPath] = cptr;
         }
       }
     }
   }
-  if (cptr == NULLPTR) {
+  if (cptr == nullptr) {
     return;
   }
   CacheableStringPtr colocatedWith;
-  if (cptr != NULLPTR) {
+  if (cptr != nullptr) {
     colocatedWith = cptr->getColocatedWith();
   }
-  if (colocatedWith == NULLPTR) {
+  if (colocatedWith == nullptr) {
     newCptr = SendClientPRMetadata(regionFullPath, cptr);
     // now we will get new instance so assign it again
-    if (newCptr != NULLPTR) {
-      cptr->setPreviousone(NULLPTR);
+    if (newCptr != nullptr) {
+      cptr->setPreviousone(nullptr);
       newCptr->setPreviousone(cptr);
       WriteGuard guard(m_regionMetadataLock);
       m_regionMetaDataMap[path] = newCptr;
@@ -171,8 +171,8 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
     }
     newCptr = SendClientPRMetadata(colocatedWith->asChar(), cptr);
 
-    if (newCptr != NULLPTR) {
-      cptr->setPreviousone(NULLPTR);
+    if (newCptr != nullptr) {
+      cptr->setPreviousone(nullptr);
       newCptr->setPreviousone(cptr);
       // now we will get new instance so assign it again
       WriteGuard guard(m_regionMetadataLock);
@@ -185,7 +185,7 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
 
 ClientMetadataPtr ClientMetadataService::SendClientPRMetadata(
     const char* regionPath, ClientMetadataPtr cptr) {
-  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.ptr());
+  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
   if (tcrdm == NULL) {
     throw IllegalArgumentException(
         "ClientMetaData: pool cast to ThinClientPoolDM failed");
@@ -195,22 +195,22 @@ ClientMetadataPtr ClientMetadataService::SendClientPRMetadata(
   // send this message to server and get metadata from server.
   LOGFINE("Now sending GET_CLIENT_PR_METADATA for getting from server: %s",
           regionPath);
-  RegionPtr region = NULLPTR;
+  RegionPtr region = nullptr;
   GfErrType err = tcrdm->sendSyncRequest(request, reply);
   if (err == GF_NOERR &&
       reply.getMessageType() == TcrMessage::RESPONSE_CLIENT_PR_METADATA) {
     tcrdm->getConnectionManager().getCacheImpl()->getRegion(regionPath, region);
-    if (region != NULLPTR) {
-      LocalRegion* lregion = dynamic_cast<LocalRegion*>(region.ptr());
+    if (region != nullptr) {
+      LocalRegion* lregion = dynamic_cast<LocalRegion*>(region.get());
       lregion->getRegionStats()->incMetaDataRefreshCount();
     }
     std::vector<BucketServerLocationsType>* metadata = reply.getMetadata();
-    if (metadata == NULL) return NULLPTR;
+    if (metadata == NULL) return nullptr;
     if (metadata->empty()) {
       delete metadata;
-      return NULLPTR;
+      return nullptr;
     }
-    ClientMetadata* newCptr = new ClientMetadata(*(cptr.ptr()));
+    auto newCptr = std::make_shared<ClientMetadata>(*cptr);
     for (std::vector<BucketServerLocationsType>::iterator iter =
              metadata->begin();
          iter != metadata->end(); ++iter) {
@@ -220,10 +220,9 @@ ClientMetadataPtr ClientMetadataService::SendClientPRMetadata(
       }
     }
     delete metadata;
-    ClientMetadataPtr newCMDPtr(newCptr);
-    return newCMDPtr;
+    return newCptr;
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 void ClientMetadataService::getBucketServerLocation(
@@ -231,20 +230,20 @@ void ClientMetadataService::getBucketServerLocation(
     const CacheablePtr& value, const UserDataPtr& aCallbackArgument,
     bool isPrimary, BucketServerLocationPtr& serverLocation, int8_t& version) {
   // ACE_Guard< ACE_Recursive_Thread_Mutex > guard( m_regionMetadataLock );
-  if (region != NULLPTR) {
+  if (region != nullptr) {
     ReadGuard guard(m_regionMetadataLock);
     LOGDEBUG(
         "ClientMetadataService::getBucketServerLocation m_regionMetaDataMap "
         "size is %d",
         m_regionMetaDataMap.size());
     std::string path(region->getFullPath());
-    ClientMetadataPtr cptr = NULLPTR;
+    ClientMetadataPtr cptr = nullptr;
     RegionMetadataMapType::iterator itr = m_regionMetaDataMap.find(path);
     if (itr != m_regionMetaDataMap.end()) {
       cptr = itr->second;
     }
     // ClientMetadataPtr cptr = m_regionMetaDataMap[path];
-    if (cptr == NULLPTR) {
+    if (cptr == nullptr) {
       // serverLocation = BucketServerLocation();
       return;
     }
@@ -252,20 +251,20 @@ void ClientMetadataService::getBucketServerLocation(
     const PartitionResolverPtr& resolver =
         region->getAttributes()->getPartitionResolver();
 
-    EntryEvent event(region, key, value, NULLPTR, aCallbackArgument, false);
+    EntryEvent event(region, key, value, nullptr, aCallbackArgument, false);
     int bucketId = 0;
-    if (resolver == NULLPTR) {
+    if (resolver == nullptr) {
       resolvekey = key;
     } else {
       resolvekey = resolver->getRoutingObject(event);
-      if (resolvekey == NULLPTR) {
+      if (resolvekey == nullptr) {
         throw IllegalStateException(
             "The RoutingObject returned by PartitionResolver is null.");
       }
     }
     FixedPartitionResolverPtr fpResolver(
-        dynamic_cast<FixedPartitionResolver*>(resolver.ptr()));
-    if (fpResolver != NULLPTR) {
+        dynamic_cast<FixedPartitionResolver*>(resolver.get()));
+    if (fpResolver != nullptr) {
       const char* partition = fpResolver->getPartitionName(event);
       if (partition == NULL) {
         throw IllegalStateException(
@@ -293,7 +292,7 @@ void ClientMetadataService::removeBucketServerLocation(
            m_regionMetaDataMap.begin();
        regionMetadataIter != m_regionMetaDataMap.end(); regionMetadataIter++) {
     ClientMetadataPtr cptr = (*regionMetadataIter).second;
-    if (cptr != NULLPTR) {
+    if (cptr != nullptr) {
       // Yogesh has commented out this as it was causing a SIGV
       // cptr->removeBucketServerLocation(serverLocation);
     }
@@ -308,7 +307,7 @@ ClientMetadataPtr ClientMetadataService::getClientMetadata(
   if (regionMetadataIter != m_regionMetaDataMap.end()) {
     return (*regionMetadataIter).second;
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 /*const  PartitionResolverPtr& ClientMetadataService::getResolver(const
@@ -326,7 +325,7 @@ ClientMetadataService::getServerLocation(ClientMetadataPtr cptr, int bucketId,
 bool tryPrimary)
 {
 LOGFINE("Inside getServerLocation");
-if (cptr == NULLPTR) {
+if (cptr == nullptr) {
 LOGDEBUG("MetaData does not exist");
 return BucketServerLocation();
 }
@@ -342,7 +341,7 @@ void ClientMetadataService::populateDummyServers(const char* regionName,
 
 void ClientMetadataService::enqueueForMetadataRefresh(
     const char* regionFullPath, int8_t serverGroupFlag) {
-  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.ptr());
+  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
   if (tcrdm == NULL) {
     throw IllegalArgumentException(
         "ClientMetaData: pool cast to ThinClientPoolDM failed");
@@ -350,7 +349,7 @@ void ClientMetadataService::enqueueForMetadataRefresh(
   RegionPtr region;
   tcrdm->getConnectionManager().getCacheImpl()->getRegion(regionFullPath,
                                                           region);
-  LocalRegion* lregion = dynamic_cast<LocalRegion*>(region.ptr());
+  LocalRegion* lregion = dynamic_cast<LocalRegion*>(region.get());
 
   std::string serverGroup = tcrdm->getServerGroup();
   if (serverGroup.length() != 0) {
@@ -363,8 +362,8 @@ void ClientMetadataService::enqueueForMetadataRefresh(
     }
   }
 
-  if (region != NULLPTR) {
-    ThinClientRegion* tcrRegion = dynamic_cast<ThinClientRegion*>(region.ptr());
+  if (region != nullptr) {
+    ThinClientRegion* tcrRegion = dynamic_cast<ThinClientRegion*>(region.get());
     {
       TryWriteGuard guardRegionMetaDataRefresh(
           tcrRegion->getMataDataMutex(), tcrRegion->getMetaDataRefreshed());
@@ -386,7 +385,7 @@ ClientMetadataService::getServerToFilterMap(const VectorOfCacheableKey* keys,
                                             const RegionPtr& region,
                                             bool isPrimary) {
   // const char* regionFullPath = region->getFullPath();
-  ClientMetadataPtr cptr = NULLPTR;
+  ClientMetadataPtr cptr = nullptr;
   {
     ReadGuard guard(m_regionMetadataLock);
     RegionMetadataMapType::iterator cptrIter =
@@ -396,7 +395,7 @@ ClientMetadataService::getServerToFilterMap(const VectorOfCacheableKey* keys,
       cptr = cptrIter->second;
     }
 
-    if (cptr == NULLPTR || keys == NULL) {
+    if (cptr == nullptr || keys == NULL) {
       // enqueueForMetadataRefresh(region->getFullPath());
       return NULL;
       //		//serverLocation = BucketServerLocation();
@@ -404,9 +403,9 @@ ClientMetadataService::getServerToFilterMap(const VectorOfCacheableKey* keys,
     }
   }
   // int totalNumberOfBuckets = cptr->getTotalNumBuckets();
-  HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>* result =
+  auto* result =
       new HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>();
-  VectorOfCacheableKeyPtr keysWhichLeft(new VectorOfCacheableKey());
+  auto keysWhichLeft = std::make_shared<VectorOfCacheableKey>();
 
   std::map<int, BucketServerLocationPtr> buckets;
 
@@ -418,27 +417,27 @@ ClientMetadataService::getServerToFilterMap(const VectorOfCacheableKey* keys,
         region->getAttributes()->getPartitionResolver();
     CacheableKeyPtr resolveKey;
 
-    if (resolver == NULLPTR) {
+    if (resolver == nullptr) {
       // client has not registered PartitionResolver
       // Assuming even PR at server side is not using PartitionResolver
       resolveKey = key;
     } else {
-      EntryEvent event(region, key, NULLPTR, NULLPTR, NULLPTR, false);
+      EntryEvent event(region, key, nullptr, nullptr, nullptr, false);
       resolveKey = resolver->getRoutingObject(event);
     }
 
     int bucketId = std::abs(resolveKey->hashcode() %
                             cptr->getTotalNumBuckets());
-    VectorOfCacheableKeyPtr keyList = NULLPTR;
+    VectorOfCacheableKeyPtr keyList = nullptr;
     std::map<int, BucketServerLocationPtr>::iterator bucketsIter =
         buckets.find(bucketId);
 
     if (bucketsIter == buckets.end()) {
       int8_t version = -1;
-      // BucketServerLocationPtr serverLocation(new BucketServerLocation());
-      BucketServerLocationPtr serverLocation = NULLPTR;
+      // auto serverLocation = std::make_shared<BucketServerLocation>();
+      BucketServerLocationPtr serverLocation = nullptr;
       cptr->getServerLocation(bucketId, isPrimary, serverLocation, version);
-      if (serverLocation == NULLPTR) {  //:if server not returns all buckets,
+      if (serverLocation == nullptr) {  //:if server not returns all buckets,
                                         // need to confiem with PR team about
         // this why??
         keysWhichLeft->push_back(key);
@@ -447,7 +446,7 @@ ClientMetadataService::getServerToFilterMap(const VectorOfCacheableKey* keys,
         keysWhichLeft->push_back(key);
         continue;
       }
-      // if(serverLocation == NULLPTR)
+      // if(serverLocation == nullptr)
       // continue;// need to fix
       buckets[bucketId] = serverLocation;
       HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>::Iterator
@@ -455,7 +454,7 @@ ClientMetadataService::getServerToFilterMap(const VectorOfCacheableKey* keys,
       // keyList = (*result)[serverLocation];
 
       if (itrRes == result->end()) {
-        keyList = new VectorOfCacheableKey();
+        keyList = std::make_shared<VectorOfCacheableKey>();
         result->insert(serverLocation, keyList);
       } else {
         keyList = itrRes.second();
@@ -508,7 +507,7 @@ void ClientMetadataService::markPrimaryBucketForTimeout(
                           false /*look for secondary host*/, serverLocation,
                           version);
 
-  if (serverLocation != NULLPTR && serverLocation->isValid()) {
+  if (serverLocation != nullptr && serverLocation->isValid()) {
     LOGDEBUG("Server host and port are %s:%d",
              serverLocation->getServerName().c_str(),
              serverLocation->getPort());
@@ -532,24 +531,24 @@ ClientMetadataService::groupByBucketOnClientSide(const RegionPtr& region,
       new HashMapT<CacheableInt32Ptr, CacheableHashSetPtr>();
   for (CacheableVector::Iterator itr = (*keySet)->begin();
        itr != (*keySet)->end(); ++itr) {
-    CacheableKeyPtr key = dynCast<CacheableKeyPtr>(*itr);
+    CacheableKeyPtr key = std::dynamic_pointer_cast<CacheableKey>(*itr);
     PartitionResolverPtr resolver =
         region->getAttributes()->getPartitionResolver();
     CacheableKeyPtr resolvekey;
-    EntryEvent event(region, key, NULLPTR, NULLPTR, NULLPTR, false);
+    EntryEvent event(region, key, nullptr, nullptr, nullptr, false);
     int bucketId = -1;
-    if (resolver == NULLPTR) {
+    if (resolver == nullptr) {
       resolvekey = key;
     } else {
       resolvekey = resolver->getRoutingObject(event);
-      if (resolvekey == NULLPTR) {
+      if (resolvekey == nullptr) {
         throw IllegalStateException(
             "The RoutingObject returned by PartitionResolver is null.");
       }
     }
     FixedPartitionResolverPtr fpResolver(
-        dynamic_cast<FixedPartitionResolver*>(resolver.ptr()));
-    if (fpResolver != NULLPTR) {
+        dynamic_cast<FixedPartitionResolver*>(resolver.get()));
+    if (fpResolver != nullptr) {
       const char* partition = fpResolver->getPartitionName(event);
       if (partition == NULL) {
         throw IllegalStateException(
@@ -585,7 +584,7 @@ ClientMetadataService::getServerToFilterMapFESHOP(
     CacheableVectorPtr* routingKeys, const RegionPtr& region, bool isPrimary) {
   ClientMetadataPtr cptr = getClientMetadata(region->getFullPath());
 
-  if (cptr == NULLPTR /*|| cptr->adviseRandomServerLocation() == NULLPTR*/) {
+  if (cptr == nullptr /*|| cptr->adviseRandomServerLocation() == nullptr*/) {
     enqueueForMetadataRefresh(region->getFullPath(), 0);
     return NULL;
   }
@@ -633,7 +632,8 @@ ClientMetadataService::getServerToFilterMapFESHOP(
         keys = iter.second();
       }
       HashMapT<CacheableInt32Ptr, CacheableHashSetPtr>::Iterator
-          bucketToKeysiter = bucketToKeysMap->find(*bucket);
+          bucketToKeysiter = bucketToKeysMap->find(
+              std::static_pointer_cast<CacheableInt32>(*bucket));
       if (bucketToKeysiter != bucketToKeysMap->end()) {
         CacheableHashSetPtr bkeys = bucketToKeysiter.second();
         for (CacheableHashSet::Iterator itr = bkeys->begin();
@@ -697,7 +697,7 @@ BucketServerLocationPtr ClientMetadataService::findNextServer(
     int random = randgen(nodeSize);
     return nodesOfEqualSize.at(random);
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 bool ClientMetadataService::AreBucketSetsEqual(
@@ -744,7 +744,7 @@ ClientMetadataService::pruneNodes(ClientMetadataPtr& metadata,
 
   for (CacheableHashSet::Iterator bucketId = buckets->begin();
        bucketId != buckets->end(); ++bucketId) {
-    CacheableInt32Ptr bID = *bucketId;
+    CacheableInt32Ptr bID = std::static_pointer_cast<CacheableInt32>(*bucketId);
     std::vector<BucketServerLocationPtr> locations =
         metadata->adviseServerLocations(bID->value());
     if (locations.size() == 0) {
@@ -809,7 +809,7 @@ ClientMetadataService::pruneNodes(ClientMetadataPtr& metadata,
   while (!AreBucketSetsEqual(currentBucketSet, buckets)) {
     BucketServerLocationPtr server =
         findNextServer(serverToBucketsMap, currentBucketSet);
-    if (server == NULLPTR) {
+    if (server == nullptr) {
       LOGDEBUG(
           "ClientMetadataService::pruneNodes findNextServer returned no "
           "server");
@@ -855,7 +855,7 @@ ClientMetadataService::pruneNodes(ClientMetadataPtr& metadata,
       prunedServerToBucketsMap->begin();
   for (CacheableHashSet::Iterator itr = bucketSetWithoutServer->begin();
        itr != bucketSetWithoutServer->end(); ++itr) {
-    CacheableInt32Ptr buckstId = *itr;
+    CacheableInt32Ptr buckstId = std::static_pointer_cast<CacheableInt32>(*itr);
     itrRes2.second()->insert(buckstId);
   }
 
@@ -867,7 +867,7 @@ HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>*
 ClientMetadataService::groupByServerToAllBuckets(const RegionPtr& region,
                                                  bool optimizeForWrite) {
   ClientMetadataPtr cptr = getClientMetadata(region->getFullPath());
-  if (cptr == NULLPTR) {
+  if (cptr == nullptr) {
     enqueueForMetadataRefresh(region->getFullPath(), false);
     return NULL;
   }
@@ -889,10 +889,11 @@ ClientMetadataService::groupByServerToBuckets(ClientMetadataPtr& metadata,
     CacheableHashSetPtr bucketsWithoutServer = CacheableHashSet::create();
     for (CacheableHashSet::Iterator itr = bucketSet->begin();
          itr != bucketSet->end(); ++itr) {
-      CacheableInt32Ptr bucketId = *itr;
+      CacheableInt32Ptr bucketId =
+          std::static_pointer_cast<CacheableInt32>(*itr);
       BucketServerLocationPtr serverLocation =
           metadata->advisePrimaryServerLocation(bucketId->value());
-      if (serverLocation == NULLPTR) {
+      if (serverLocation == nullptr) {
         bucketsWithoutServer->insert(bucketId);
         continue;
       } else if (!serverLocation->isValid()) {
@@ -949,7 +950,7 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
   getBucketServerLocation(region, key, value, aCallbackArgument, true,
                           serverLocation, version);
 
-  ClientMetadataPtr cptr = NULLPTR;
+  ClientMetadataPtr cptr = nullptr;
   {
     ReadGuard guard(m_regionMetadataLock);
     RegionMetadataMapType::iterator cptrIter =
@@ -959,7 +960,7 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
       cptr = cptrIter->second;
     }
 
-    if (cptr == NULLPTR) {
+    if (cptr == nullptr) {
       return;
     }
   }
@@ -994,7 +995,7 @@ bool ClientMetadataService::isBucketMarkedForTimeout(const char* regionFullPath,
   if (bs != m_bucketStatus.end()) {
     bool m = bs->second->isBucketTimedOut(bucketid, m_bucketWaitTimeout);
     if (m == true) {
-      ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.ptr());
+      ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
       CacheImpl* cache = tcrdm->getConnectionManager().getCacheImpl();
       cache->setBlackListBucketTimeouts();
     }

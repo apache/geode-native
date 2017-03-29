@@ -112,7 +112,7 @@ class CPPCACHE_EXPORT MapEntry : public SharedBase {
   virtual void getKey(CacheableKeyPtr& result) const = 0;
   virtual void getValue(CacheablePtr& result) const = 0;
   virtual void setValue(const CacheablePtr& value) = 0;
-  virtual MapEntryImpl* getImplPtr() = 0;
+  virtual MapEntryImplPtr getImplPtr() = 0;
 
   virtual LRUEntryProperties& getLRUProperties() = 0;
   virtual ExpEntryProperties& getExpProperties() = 0;
@@ -185,16 +185,17 @@ class CPPCACHE_EXPORT MapEntry : public SharedBase {
  * @brief Hold region mapped entry value. subclass will hold lru flags.
  * Another holds expiration timestamps.
  */
-class MapEntryImpl : public MapEntry {
+class MapEntryImpl : public MapEntry,
+                     public std::enable_shared_from_this<MapEntryImpl> {
  public:
   virtual ~MapEntryImpl() {}
 
   inline void getKeyI(CacheableKeyPtr& result) const { result = m_key; }
 
   inline void getValueI(CacheablePtr& result) const {
-    // If value is destroyed, then this returns NULLPTR
+    // If value is destroyed, then this returns nullptr
     if (CacheableToken::isDestroyed(m_value)) {
-      result = NULLPTR;
+      result = nullptr;
     } else {
       result = m_value;
     }
@@ -208,7 +209,7 @@ class MapEntryImpl : public MapEntry {
 
   virtual void setValue(const CacheablePtr& value) { setValueI(value); }
 
-  virtual MapEntryImpl* getImplPtr() { return this; }
+  virtual MapEntryImplPtr getImplPtr() { return shared_from_this(); }
 
   virtual LRUEntryProperties& getLRUProperties() {
     throw FatalInternalException(
@@ -231,7 +232,7 @@ class MapEntryImpl : public MapEntry {
 
  protected:
   inline explicit MapEntryImpl(bool noInit)
-      : MapEntry(true), m_value(true), m_key(true) {}
+      : MapEntry(true), m_value(nullptr), m_key(nullptr) {}
 
   inline MapEntryImpl(const CacheableKeyPtr& key) : MapEntry(), m_key(key) {}
 

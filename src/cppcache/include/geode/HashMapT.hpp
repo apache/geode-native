@@ -50,10 +50,12 @@ class HashMapT {
     Iterator();
 
    public:
-    inline const TKEY first() const { return staticCast<TKEY>(m_iter.first()); }
+    inline const TKEY first() const {
+      return std::static_pointer_cast<GF_UNWRAP_SP(TKEY)>(m_iter.first());
+    }
 
     inline const TVAL second() const {
-      return staticCast<TVAL>(m_iter.second());
+      return std::static_pointer_cast<GF_UNWRAP_SP(TVAL)>(m_iter.second());
     }
 
     inline Iterator& operator++() {
@@ -75,12 +77,14 @@ class HashMapT {
   };
 
   static int32_t hasher(const SharedBasePtr& p) {
-    return apache::geode::client::hashFunction<TKEY>(staticCast<TKEY>(p));
+    return apache::geode::client::hashFunction<TKEY>(
+        std::static_pointer_cast<GF_UNWRAP_SP(TKEY)>(p));
   }
 
   static bool equal_to(const SharedBasePtr& x, const SharedBasePtr& y) {
-    return apache::geode::client::equalToFunction<TKEY>(staticCast<TKEY>(x),
-                                                        staticCast<TKEY>(y));
+    return apache::geode::client::equalToFunction<TKEY>(
+        std::static_pointer_cast<GF_UNWRAP_SP(TKEY)>(x),
+        std::static_pointer_cast<GF_UNWRAP_SP(TKEY)>(y));
   }
 
   /** Returns the size of the hash map. */
@@ -133,7 +137,9 @@ class HashMapT {
   /** Returns a copy of the object that is associated
    * with a particular key.
    */
-  inline TVAL operator[](const TKEY& k) { return staticCast<TVAL>(m_map[k]); }
+  inline TVAL operator[](const TKEY& k) {
+    return std::static_pointer_cast<GF_UNWRAP_SP(TVAL)>(m_map[k]);
+  }
 
   /** Get an iterator pointing to the start of hash_map. */
   inline Iterator begin() const { return Iterator(m_map.begin()); }

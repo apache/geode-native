@@ -202,11 +202,11 @@ SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
       m_redundancyMonitorInterval(DefaultRedundancyMonitorInterval),
       m_notifyAckInterval(DefaultNotifyAckInterval),
       m_notifyDupCheckLife(DefaultNotifyDupCheckLife),
-      m_AuthIniLoaderLibrary(NULLPTR),
-      m_AuthIniLoaderFactory(NULLPTR),
-      m_securityClientDhAlgo(NULLPTR),
-      m_securityClientKsPath(NULLPTR),
-      m_authInitializer(NULLPTR),
+      m_AuthIniLoaderLibrary(nullptr),
+      m_AuthIniLoaderFactory(nullptr),
+      m_securityClientDhAlgo(nullptr),
+      m_securityClientKsPath(nullptr),
+      m_authInitializer(nullptr),
       m_durableClientId(NULL),
       m_durableTimeout(DefaultDurableTimeout),
       m_connectTimeout(DefaultConnectTimeout),
@@ -252,7 +252,7 @@ SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
     void visit(CacheableKeyPtr& key, CacheablePtr& value) {
       CacheableStringPtr prop = key->toString();
       CacheableStringPtr val;
-      if (value != NULLPTR) {
+      if (value != nullptr) {
         val = value->toString();
       }
       m_sysProps->processProperty(prop->asChar(), val->asChar());
@@ -283,7 +283,7 @@ SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
   givenConfigPtr->foreach (processPropsVisitor);
 
   // Now consume any properties provided by the Properties object in code.
-  if (propertiesPtr != NULLPTR) {
+  if (propertiesPtr != nullptr) {
     propertiesPtr->foreach (processPropsVisitor);
   }
 
@@ -925,25 +925,25 @@ void SystemProperties::logSettings() {
 }
 
 AuthInitializePtr SystemProperties::getAuthLoader() {
-  if ((m_authInitializer == NULLPTR) && (m_AuthIniLoaderLibrary != NULLPTR &&
-                                         m_AuthIniLoaderFactory != NULLPTR)) {
+  if ((m_authInitializer == nullptr) && (m_AuthIniLoaderLibrary != nullptr &&
+                                         m_AuthIniLoaderFactory != nullptr)) {
     if (managedAuthInitializeFn != NULL &&
         strchr(m_AuthIniLoaderFactory->asChar(), '.') != NULL) {
       // this is a managed library
-      m_authInitializer = (*managedAuthInitializeFn)(
-          m_AuthIniLoaderLibrary->asChar(), m_AuthIniLoaderFactory->asChar());
+      m_authInitializer.reset((*managedAuthInitializeFn)(
+          m_AuthIniLoaderLibrary->asChar(), m_AuthIniLoaderFactory->asChar()));
     } else {
       AuthInitialize* (*funcptr)();
       funcptr = reinterpret_cast<AuthInitialize* (*)()>(getFactoryFunc(
           m_AuthIniLoaderLibrary->asChar(), m_AuthIniLoaderFactory->asChar()));
       if (funcptr == NULL) {
         LOGERROR("Failed to acquire handle to AuthInitialize library");
-        return NULLPTR;
+        return nullptr;
       }
       AuthInitialize* p = funcptr();
-      m_authInitializer = p;
+      m_authInitializer.reset(p);
     }
-  } else if (m_authInitializer == NULLPTR) {
+  } else if (m_authInitializer == nullptr) {
     LOGFINE("No AuthInitialize library or factory configured");
   }
   return m_authInitializer;

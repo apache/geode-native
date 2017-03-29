@@ -70,7 +70,7 @@ BEGIN_TEST(TestRegionLRULastTen)
   int total = 0;
   for (int k = 10; k < 20; k++) {
     expected += k;
-    CacheableStringPtr key = dynCast<CacheableStringPtr>(vecKeys.back());
+    auto key = std::dynamic_pointer_cast<CacheableString>(vecKeys.back());
     vecKeys.pop_back();
     total += atoi(key->asChar());
   }
@@ -151,8 +151,8 @@ BEGIN_TEST(TestRecentlyUsedBit)
   sprintf(buf, "%d", 15);
   CacheableStringPtr value2Ptr;
   CacheableKeyPtr key2 = CacheableKey::create(buf);
-  value2Ptr = dynCast<CacheableStringPtr>(regionPtr->get(key2));
-  ASSERT(value2Ptr != NULLPTR, "expected to find key 15 in cache.");
+  value2Ptr = std::dynamic_pointer_cast<CacheableString>(regionPtr->get(key2));
+  ASSERT(value2Ptr != nullptr, "expected to find key 15 in cache.");
   for (i = 20; i < 35; i++) {
     sprintf(buf, "%d", i);
     CacheableKeyPtr key = CacheableKey::create(buf);
@@ -201,7 +201,7 @@ BEGIN_TEST(TestEmptiedMap)
     sprintf(buf, "%d", i);
     CacheableKeyPtr key = CacheableKey::create(buf);
     regionPtr->destroy(key);
-    cout << "removed key " << dynCast<CacheableStringPtr>(key)->asChar()
+    cout << "removed key " << std::dynamic_pointer_cast<CacheableString>(key)->asChar()
          << endl;
   }
   VectorOfCacheableKey vecKeys;

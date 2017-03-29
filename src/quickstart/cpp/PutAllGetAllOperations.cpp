@@ -75,7 +75,7 @@ int main(int argc, char** argv) {
     }
 
     HashMapOfCacheablePtr values(new HashMapOfCacheable());
-    regionPtr->getAll(keys, values, NULLPTR, true);
+    regionPtr->getAll(keys, values, nullptr, true);
 
     LOGINFO("Obtained 100 entries from the Region");
 

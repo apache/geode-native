@@ -59,33 +59,33 @@ class CacheHelper {
   static std::string unitTestOutputFile();
   static int getNumLocatorListUpdates(const char* s);
 
-  CacheHelper(const char* member_id, const PropertiesPtr& configPtr = NULLPTR,
+  CacheHelper(const char* member_id, const PropertiesPtr& configPtr = nullptr,
               const bool noRootRegion = false);
 
   /** rootRegionPtr will still be null... */
   CacheHelper(const char* member_id, const char* cachexml,
-              const PropertiesPtr& configPtr = NULLPTR);
+              const PropertiesPtr& configPtr = nullptr);
 
-  CacheHelper(const PropertiesPtr& configPtr = NULLPTR,
+  CacheHelper(const PropertiesPtr& configPtr = nullptr,
               const bool noRootRegion = false);
 
-  CacheHelper(const bool isThinclient, const PropertiesPtr& configPtr = NULLPTR,
+  CacheHelper(const bool isThinclient, const PropertiesPtr& configPtr = nullptr,
               const bool noRootRegion = false);
 
   CacheHelper(const bool isThinclient, bool pdxIgnoreUnreadFields,
-              bool pdxReadSerialized, const PropertiesPtr& configPtr = NULLPTR,
+              bool pdxReadSerialized, const PropertiesPtr& configPtr = nullptr,
               const bool noRootRegion = false);
 
   CacheHelper(const bool isthinClient, const char* poolName,
               const char* locators, const char* serverGroup,
-              const PropertiesPtr& configPtr = NULLPTR, int redundancy = 0,
+              const PropertiesPtr& configPtr = nullptr, int redundancy = 0,
               bool clientNotification = false, int subscriptionAckInterval = -1,
               int connections = -1, int loadConditioningInterval = -1,
               bool isMultiuserMode = false, bool prSingleHop = false,
               bool threadLocal = false);
 
   CacheHelper(const int redundancyLevel,
-              const PropertiesPtr& configPtr = NULLPTR);
+              const PropertiesPtr& configPtr = nullptr);
 
   virtual ~CacheHelper();
 
@@ -153,7 +153,7 @@ class CacheHelper {
 
   RegionPtr createRegionAndAttachPool2(
       const char* name, bool ack, const char* poolName,
-      const PartitionResolverPtr& aResolver = NULLPTR, bool caching = true,
+      const PartitionResolverPtr& aResolver = nullptr, bool caching = true,
       int ettl = 0, int eit = 0, int rttl = 0, int rit = 0, int lel = 0,
       ExpirationAction::Action action = ExpirationAction::DESTROY);
 
@@ -168,7 +168,7 @@ class CacheHelper {
       const char* poolName = "__TEST_POOL1__", bool caching = true,
       bool clientNotificationEnabled = false, int ettl = 0, int eit = 0,
       int rttl = 0, int rit = 0, int lel = 0,
-      const CacheListenerPtr& cacheListener = NULLPTR,
+      const CacheListenerPtr& cacheListener = nullptr,
       ExpirationAction::Action action = ExpirationAction::DESTROY);
 
   RegionPtr createPooledRegionConcurrencyCheckDisabled(
@@ -177,7 +177,7 @@ class CacheHelper {
       bool clientNotificationEnabled = false,
       bool concurrencyCheckEnabled = true, int ettl = 0, int eit = 0,
       int rttl = 0, int rit = 0, int lel = 0,
-      const CacheListenerPtr& cacheListener = NULLPTR,
+      const CacheListenerPtr& cacheListener = nullptr,
       ExpirationAction::Action action = ExpirationAction::DESTROY);
 
   RegionPtr createRegionDiscOverFlow(
@@ -191,7 +191,7 @@ class CacheHelper {
       const char* poolName = "__TEST_POOL1__", bool caching = true,
       bool clientNotificationEnabled = false, int ettl = 0, int eit = 0,
       int rttl = 0, int rit = 0, int lel = 0,
-      const CacheListenerPtr& cacheListener = NULLPTR,
+      const CacheListenerPtr& cacheListener = nullptr,
       ExpirationAction::Action action = ExpirationAction::DESTROY);
 
   RegionPtr createPooledRegionSticky(
@@ -199,7 +199,7 @@ class CacheHelper {
       const char* poolName = "__TEST_POOL1__", bool caching = true,
       bool clientNotificationEnabled = false, int ettl = 0, int eit = 0,
       int rttl = 0, int rit = 0, int lel = 0,
-      const CacheListenerPtr& cacheListener = NULLPTR,
+      const CacheListenerPtr& cacheListener = nullptr,
       ExpirationAction::Action action = ExpirationAction::DESTROY);
 
   RegionPtr createPooledRegionStickySingleHop(
@@ -207,7 +207,7 @@ class CacheHelper {
       const char* poolName = "__TEST_POOL1__", bool caching = true,
       bool clientNotificationEnabled = false, int ettl = 0, int eit = 0,
       int rttl = 0, int rit = 0, int lel = 0,
-      const CacheListenerPtr& cacheListener = NULLPTR,
+      const CacheListenerPtr& cacheListener = nullptr,
       ExpirationAction::Action action = ExpirationAction::DESTROY);
 
   RegionPtr createSubregion(RegionPtr& parent, const char* name, bool ack,

@@ -64,7 +64,7 @@ CacheableKeyPtr CqEventImpl::getKey() const { return m_key; }
  *  return null.
  */
 CacheablePtr CqEventImpl::getNewValue() const {
-  if (m_deltaValue == NULLPTR) {
+  if (m_deltaValue == nullptr) {
     return m_newValue;
   } else {
     // Get full object for delta
@@ -78,7 +78,7 @@ CacheablePtr CqEventImpl::getNewValue() const {
       err = static_cast<ThinClientCacheDistributionManager*>(m_tcrdm)
                 ->sendRequestToPrimary(fullObjectMsg, reply);
     }
-    CacheablePtr fullObject = NULLPTR;
+    CacheablePtr fullObject = nullptr;
     if (err == GF_NOERR) {
       fullObject = reply.getValue();
     }

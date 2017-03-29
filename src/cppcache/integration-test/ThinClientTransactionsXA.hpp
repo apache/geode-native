@@ -104,7 +104,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   free(buf);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   CacheableKeyPtr keyPtr = createKey(key);
 
@@ -142,10 +142,10 @@ void _verifyEntry(const char* name, const char* key, const char* val,
     }
 
     if (val != NULL) {
-      CacheableStringPtr checkPtr =
-          dynCast<CacheableStringPtr>(regPtr->get(keyPtr));
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
-      ASSERT(checkPtr != NULLPTR, "Value Ptr should not be null.");
+      ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
       char buf[1024];
       sprintf(buf, "In verify loop, get returned %s for key %s",
               checkPtr->asChar(), key);
@@ -199,9 +199,9 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   RegionPtr regPtr =
-      getHelper()->createRegion(name, ackMode, cachingEnable, NULLPTR,
+      getHelper()->createRegion(name, ackMode, cachingEnable, nullptr,
                                 endpoints, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 void createPooledRegion(const char* name, bool ackMode, const char* locators,
@@ -214,7 +214,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   RegionPtr regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }
 
@@ -228,7 +228,7 @@ void createPooledRegionSticky(const char* name, bool ackMode,
   RegionPtr regPtr = getHelper()->createPooledRegionSticky(
       name, ackMode, locators, poolname, cachingEnable,
       clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }
 
@@ -242,7 +242,7 @@ void createEntry(const char* name, const char* key, const char* value) {
   CacheableStringPtr valPtr = CacheableString::create(value);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
          "Key should not have been found in region.");
@@ -289,7 +289,7 @@ void updateEntry(const char* name, const char* key, const char* value) {
   CacheableStringPtr valPtr = CacheableString::create(value);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
   ASSERT(regPtr->containsValueForKey(keyPtr),
@@ -314,12 +314,12 @@ void doGetAgain(const char* name, const char* key, const char* value) {
   RegionPtr regPtr = getHelper()->getRegion(name);
   fprintf(stdout, "get  region name%s\n", regPtr->getName());
   fflush(stdout);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
-  CacheableStringPtr checkPtr =
-      dynCast<CacheableStringPtr>(regPtr->get(keyPtr));  // force a netsearch
+  auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
+      regPtr->get(keyPtr));  // force a netsearch
 
-  if (checkPtr != NULLPTR) {
+  if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
     char buf[1024];
     sprintf(buf, "In doGetAgain, get returned %s for key %s",
@@ -346,7 +346,7 @@ void doNetsearch(const char* name, const char* key, const char* value) {
   RegionPtr regPtr = getHelper()->getRegion(name);
   fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
   fflush(stdout);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   if (count == 0) {
     ASSERT(!regPtr->containsKey(keyPtr),
@@ -355,10 +355,10 @@ void doNetsearch(const char* name, const char* key, const char* value) {
            "Value should not have been found in region.");
     count++;
   }
-  CacheableStringPtr checkPtr =
-      dynCast<CacheableStringPtr>(regPtr->get(keyPtr));  // force a netsearch
+  auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
+      regPtr->get(keyPtr));  // force a netsearch
 
-  if (checkPtr != NULLPTR) {
+  if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
     char buf[1024];
     sprintf(buf, "In net search, get returned %s for key %s",
@@ -399,15 +399,15 @@ class SuspendTransactionThread : public ACE_Task_Base {
 
  public:
   SuspendTransactionThread(bool sleep, ACE_Auto_Event* txEvent)
-      : m_suspendedTransaction(NULLPTR), m_sleep(sleep), m_txEvent(txEvent) {}
+      : m_suspendedTransaction(nullptr), m_sleep(sleep), m_txEvent(txEvent) {}
 
   int svc(void) {
     char buf[1024];
     sprintf(buf, " In SuspendTransactionThread");
     LOG(buf);
 
-    InternalCacheTransactionManager2PCPtr txManager =
-        static_cast<InternalCacheTransactionManager2PCPtr>(
+    auto txManager =
+        std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
             getHelper()->getCache()->getCacheTransactionManager());
 
     txManager->begin();
@@ -458,7 +458,7 @@ class ResumeTransactionThread : public ACE_Task_Base {
     LOG(buf);
 
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    THREADERRORCHECK(regPtr0 != NULLPTR,
+    THREADERRORCHECK(regPtr0 != nullptr,
                      "In ResumeTransactionThread - Region not found.");
 
     CacheableKeyPtr keyPtr4 = createKey(keys[4]);
@@ -466,7 +466,7 @@ class ResumeTransactionThread : public ACE_Task_Base {
     CacheableKeyPtr keyPtr6 = createKey(keys[6]);
 
     RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
-    THREADERRORCHECK(regPtr1 != NULLPTR,
+    THREADERRORCHECK(regPtr1 != nullptr,
                      "In ResumeTransactionThread - Region not found.");
 
     THREADERRORCHECK(!regPtr0->containsKeyOnServer(keyPtr4),
@@ -477,8 +477,8 @@ class ResumeTransactionThread : public ACE_Task_Base {
                      "In ResumeTransactionThread - Key should not have been "
                      "found in region.");
 
-    InternalCacheTransactionManager2PCPtr txManager =
-        static_cast<InternalCacheTransactionManager2PCPtr>(
+    auto txManager =
+        std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
             getHelper()->getCache()->getCacheTransactionManager());
     if (m_tryResumeWithSleep) {
       THREADERRORCHECK(!txManager->isSuspended(m_suspendedTransaction),
@@ -591,13 +591,13 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeCommit)
   {
-    InternalCacheTransactionManager2PCPtr txManager =
-        static_cast<InternalCacheTransactionManager2PCPtr>(
+    auto txManager =
+        std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
             getHelper()->getCache()->getCacheTransactionManager());
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    ASSERT(regPtr0 != NULLPTR, "In SuspendResumeCommit - Region not found.");
+    ASSERT(regPtr0 != nullptr, "In SuspendResumeCommit - Region not found.");
     RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
-    ASSERT(regPtr1 != NULLPTR, "In SuspendResumeCommit - Region not found.");
+    ASSERT(regPtr1 != nullptr, "In SuspendResumeCommit - Region not found.");
     CacheableKeyPtr keyPtr4 = createKey(keys[4]);
     CacheableKeyPtr keyPtr5 = createKey(keys[5]);
     CacheableKeyPtr keyPtr6 = createKey(keys[6]);
@@ -663,21 +663,21 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeCommit)
     ASSERT(resumeExc,
            "SuspendResumeCommit: Transaction shouldnt have been resumed");
 
-    ASSERT(txManager->suspend() == NULLPTR,
+    ASSERT(txManager->suspend() == nullptr,
            "SuspendResumeCommit: Transaction shouldnt have been suspended");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, SuspendTimeOut)
   {
-    InternalCacheTransactionManager2PCPtr txManager =
-        static_cast<InternalCacheTransactionManager2PCPtr>(
+    auto txManager =
+        std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
             getHelper()->getCache()->getCacheTransactionManager());
     CacheableKeyPtr keyPtr4 = createKey(keys[4]);
     CacheableKeyPtr keyPtr5 = createKey(keys[5]);
 
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    ASSERT(regPtr0 != NULLPTR, "In SuspendTimeOut - Region not found.");
+    ASSERT(regPtr0 != nullptr, "In SuspendTimeOut - Region not found.");
 
     txManager->begin();
     createEntry(regionNames[0], keys[4], vals[4]);
@@ -713,17 +713,17 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeRollback)
   {
-    InternalCacheTransactionManager2PCPtr txManager =
-        static_cast<InternalCacheTransactionManager2PCPtr>(
+    auto txManager =
+        std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
             getHelper()->getCache()->getCacheTransactionManager());
     CacheableKeyPtr keyPtr4 = createKey(keys[4]);
     CacheableKeyPtr keyPtr5 = createKey(keys[5]);
     CacheableKeyPtr keyPtr6 = createKey(keys[6]);
 
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    ASSERT(regPtr0 != NULLPTR, "In SuspendResumeRollback - Region not found.");
+    ASSERT(regPtr0 != nullptr, "In SuspendResumeRollback - Region not found.");
     RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
-    ASSERT(regPtr1 != NULLPTR, "In SuspendResumeRollback - Region not found.");
+    ASSERT(regPtr1 != nullptr, "In SuspendResumeRollback - Region not found.");
 
     txManager->begin();
     createEntry(regionNames[0], keys[4], vals[4]);
@@ -959,8 +959,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
-    InternalCacheTransactionManager2PCPtr txManager =
-        static_cast<InternalCacheTransactionManager2PCPtr>(
+    auto txManager =
+        std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
             getHelper()->getCache()->getCacheTransactionManager());
     txManager->begin();
     createEntry(regionNames[0], keys[0], vals[0]);
@@ -975,8 +975,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
   {
     doNetsearch(regionNames[0], keys[0], vals[0]);
     doNetsearch(regionNames[1], keys[2], vals[2]);
-    InternalCacheTransactionManager2PCPtr txManager =
-        static_cast<InternalCacheTransactionManager2PCPtr>(
+    auto txManager =
+        std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
             getHelper()->getCache()->getCacheTransactionManager());
     txManager->begin();
     createEntry(regionNames[0], keys[1], vals[1]);
@@ -1025,8 +1025,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
   {
     doNetsearch(regionNames[0], keys[0], vals[0]);
     doNetsearch(regionNames[1], keys[2], vals[2]);
-    InternalCacheTransactionManager2PCPtr txManager =
-        static_cast<InternalCacheTransactionManager2PCPtr>(
+    auto txManager =
+        std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
             getHelper()->getCache()->getCacheTransactionManager());
     txManager->begin();
     updateEntry(regionNames[0], keys[1], nvals[1]);
@@ -1082,7 +1082,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight_Pool_Sticky)
     reg0->localInvalidate(createKey(keys[1]));
     reg1->localInvalidate(createKey(keys[3]));
     PoolPtr pool = PoolManager::find("__TESTPOOL1_");
-    ASSERT(pool != NULLPTR, "Pool Should have been found");
+    ASSERT(pool != nullptr, "Pool Should have been found");
     doNetsearch(regionNames[0], keys[1], nvals[1]);
     doNetsearch(regionNames[1], keys[3], nvals[3]);
     pool->releaseThreadLocalConnection();

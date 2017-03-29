@@ -121,8 +121,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutThroughPartitionResolver)
     for (int i = 0; i < 100; i++) {
       // RegionPtr dataReg = getHelper()->getRegion("LocalRegion");
       RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
-      CacheableKeyPtr keyPtr =
-          dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
+      auto keyPtr = std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
       dataReg->put(keyPtr, keyPtr->hashcode());
     }
     SLEEP(5000);

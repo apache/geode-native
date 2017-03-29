@@ -20,7 +20,7 @@
 using namespace apache::geode::client;
 ACE_TSS<TssConnectionWrapper> TssConnectionWrapper::s_geodeTSSConn;
 TssConnectionWrapper::TssConnectionWrapper() {
-  PoolPtr p = NULLPTR;
+  PoolPtr p = nullptr;
   m_pool = p;
   m_tcrConn = NULL;
 }
@@ -117,7 +117,7 @@ void PoolWrapper::releaseSHConnections(PoolPtr pool) {
        iter != m_EpnameVsConnection.end(); iter++) {
     TcrConnection* tmp = iter->second;
     tmp->setAndGetBeingUsed(false, false);  // now this can be used by next one
-    ThinClientPoolDM* dm = dynamic_cast<ThinClientPoolDM*>(pool.ptr());
+    ThinClientPoolDM* dm = dynamic_cast<ThinClientPoolDM*>(pool.get());
     if (dm != NULL) {
       dm->put(tmp, false);
     }

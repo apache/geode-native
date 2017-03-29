@@ -33,8 +33,6 @@
 
 #include <ace/ACE.h>
 
-// #include <geode/GeodeCppCache.hpp>
-
 #include <typeinfo>
 
 #include <string>

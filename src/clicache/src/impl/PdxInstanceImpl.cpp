@@ -86,7 +86,7 @@ namespace Apache
           //dataInput->ResetPdx(0);
 
           CachePtr cache = CacheFactory::getAnyInstance();
-          if (cache == NULLPTR)
+          if (cache == nullptr)
           {
             throw gcnew IllegalStateException("cache has not been created yet.");;
           }
@@ -94,7 +94,7 @@ namespace Apache
           {
             throw gcnew IllegalStateException("cache has been closed. ");
           }
-          CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.ptr());
+          CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
           if (cacheImpl != NULL) {
             Utils::updateStatOpTime(cacheImpl->m_cacheStats->getStat(),
                                     cacheImpl->m_cacheStats->getPdxInstanceDeserializationTimeId(),

@@ -55,7 +55,8 @@ class CacheImpl;
  */
 class AdminRegion : public SharedBase,
                     private NonCopyable,
-                    private NonAssignable {
+                    private NonAssignable,
+                    public std::enable_shared_from_this<AdminRegion> {
  private:
   ThinClientBaseDM* m_distMngr;
   std::string m_fullPath;
@@ -67,14 +68,25 @@ class AdminRegion : public SharedBase,
                        const CacheablePtr& valuePtr);
   TcrConnectionManager* getConnectionManager();
 
+  AdminRegion()
+      : m_distMngr(nullptr),
+        m_fullPath("/__ADMIN_CLIENT_HEALTH_MONITORING__"),
+        m_connectionMgr(nullptr),
+        m_destroyPending(false)
+       {}
+
+  ~AdminRegion();
+
+  FRIEND_STD_SHARED_PTR(AdminRegion)
+
  public:
+  static std::shared_ptr<AdminRegion> create(CacheImpl* cache,
+                                             ThinClientBaseDM* distMan = NULL);
   ACE_RW_Thread_Mutex& getRWLock();
   const bool& isDestroyed();
   void close();
   void init();
   void put(const CacheableKeyPtr& keyPtr, const CacheablePtr& valuePtr);
-  AdminRegion(CacheImpl* cache, ThinClientBaseDM* distMan = NULL);
-  ~AdminRegion();
   friend class apache::geode::statistics::HostStatSampler;
 };
 

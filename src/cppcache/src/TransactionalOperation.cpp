@@ -42,7 +42,7 @@ TransactionalOperation::TransactionalOperation(ServerRegionOperation op,
 TransactionalOperation::~TransactionalOperation() {}
 
 CacheablePtr TransactionalOperation::replay(Cache* cache) {
-  CacheablePtr result = NULLPTR;
+  CacheablePtr result = nullptr;
 
   switch (m_operation) {
     case GF_CONTAINS_KEY:
@@ -68,13 +68,18 @@ CacheablePtr TransactionalOperation::replay(Cache* cache) {
       } else {
         execution = FunctionService::onRegion(cache->getRegion(m_regionName));
       }
-      result =
+      // TODO shared_ptr no clear path between types.
+      result = std::dynamic_pointer_cast<Cacheable>(
           execution->withArgs(m_arguments->at(0))
-              ->withFilter(m_arguments->at(1))
-              ->withCollector(m_arguments->at(2))
-              ->execute(m_arguments->at(3)->toString()->asChar(),
-                        (static_cast<CacheableInt32Ptr>(m_arguments->at(4)))
-                            ->value());
+              ->withFilter(
+                  std::static_pointer_cast<CacheableVector>(m_arguments->at(1)))
+              // TODO shared_ptr - no path between types?
+              ->withCollector(std::dynamic_pointer_cast<ResultCollector>(
+                  m_arguments->at(2)))
+              ->execute(
+                  m_arguments->at(3)->toString()->asChar(),
+                  std::static_pointer_cast<CacheableInt32>(m_arguments->at(4))
+                      ->value()));
     } break;
     case GF_GET:
       result = cache->getRegion(m_regionName)->get(m_key, m_arguments->at(0));
@@ -86,9 +91,15 @@ CacheablePtr TransactionalOperation::replay(Cache* cache) {
     case GF_GET_ALL:
       cache->getRegion(m_regionName)
           ->getAll(
-              *(static_cast<VectorOfCacheableKeyPtr>(m_arguments->at(0))).ptr(),
-              m_arguments->at(1), m_arguments->at(2),
-              (static_cast<CacheableBooleanPtr>(m_arguments->at(3)))->value());
+              // TODO shared_ptr - no path between types?
+              *std::dynamic_pointer_cast<VectorOfCacheableKey>(
+                  m_arguments->at(0)),
+                  // TODO shared_ptr - no path between types?
+              std::dynamic_pointer_cast<HashMapOfCacheable>(m_arguments->at(1)),
+              // TODO shared_ptr - no path between types?
+              std::dynamic_pointer_cast<HashMapOfException>(m_arguments->at(2)),
+              std::static_pointer_cast<CacheableBoolean>(m_arguments->at(3))
+                  ->value());
       break;
     case GF_INVALIDATE:
       cache->getRegion(m_regionName)->invalidate(m_key, m_arguments->at(0));
@@ -99,9 +110,9 @@ CacheablePtr TransactionalOperation::replay(Cache* cache) {
       break;
     case GF_KEY_SET:
       cache->getRegion(m_regionName)
-          ->serverKeys(
-              *(static_cast<VectorOfCacheableKeyPtr>(m_arguments->at(0)))
-                   .ptr());
+      // TODO shared_ptr - no path between types?
+          ->serverKeys(*std::dynamic_pointer_cast<VectorOfCacheableKey>(
+              m_arguments->at(0)));
       break;
     case GF_CREATE:  // includes PUT_IF_ABSENT
       cache->getRegion(m_regionName)
@@ -113,9 +124,11 @@ CacheablePtr TransactionalOperation::replay(Cache* cache) {
       break;
     case GF_PUT_ALL:
       cache->getRegion(m_regionName)
-          ->putAll(
-              *(static_cast<HashMapOfCacheablePtr>(m_arguments->at(0))).ptr(),
-              (static_cast<CacheableInt32Ptr>(m_arguments->at(1)))->value());
+      // TODO shared_ptr - no path between types?
+          ->putAll(*std::dynamic_pointer_cast<HashMapOfCacheable>(
+                       m_arguments->at(0)),
+                   std::static_pointer_cast<CacheableInt32>(m_arguments->at(1))
+                       ->value());
       break;
     default:
       throw UnsupportedOperationException(

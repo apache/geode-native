@@ -39,7 +39,7 @@ inline CacheablePtr Cacheable::create( const PRIM value )
 template <typename TVALUE>
 inline CacheablePtr createValue( const SharedPtr< TVALUE >& value )
 {
-  return CacheablePtr( value );
+  return std::dynamic_pointer_cast<Cacheable>(value);
 }
 
 template <typename TVALUE>

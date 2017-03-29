@@ -47,14 +47,13 @@ class EventListener : public CacheListener {
     char buf[256] = {'\0'};
 
     try {
-      CacheableStringPtr keyPtr = dynCast<CacheableStringPtr>(event.getKey());
-      CacheableInt32Ptr valuePtr =
-          dynCast<CacheableInt32Ptr>(event.getNewValue());
+      auto keyPtr = std::dynamic_pointer_cast<CacheableString>(event.getKey());
+      auto valuePtr = std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
 
       sprintf(
           buf, "%s: %s: Key = %s, NewValue = %s", m_name.c_str(), eventType,
           keyPtr->asChar(),
-          (valuePtr == NULLPTR ? "NULLPTR" : valuePtr->toString()->asChar()));
+          (valuePtr == nullptr ? "nullptr" : valuePtr->toString()->asChar()));
       LOG(buf);
     } catch (const Exception& excp) {
       sprintf(buf, "%s: %s: %s: %s", m_name.c_str(), eventType, excp.getName(),
@@ -137,16 +136,16 @@ void setCacheListener(const char* regName, EventListenerPtr monitor) {
 // RegionOther means no interest registered so no events should arrive except
 // invalidates when NBS == false.
 
-EventListenerPtr clientTrueRegionTrue = NULLPTR;
-EventListenerPtr clientTrueRegionFalse = NULLPTR;
-EventListenerPtr clientTrueRegionOther = NULLPTR;
+EventListenerPtr clientTrueRegionTrue = nullptr;
+EventListenerPtr clientTrueRegionFalse = nullptr;
+EventListenerPtr clientTrueRegionOther = nullptr;
 /*
-EventListenerPtr clientFalseRegionTrue = NULLPTR;
-EventListenerPtr clientFalseRegionFalse = NULLPTR;
-EventListenerPtr clientFalseRegionOther = NULLPTR;
-EventListenerPtr clientDefaultRegionTrue = NULLPTR;
-EventListenerPtr clientDefaultRegionFalse = NULLPTR;
-EventListenerPtr clientDefaultRegionOther = NULLPTR;
+EventListenerPtr clientFalseRegionTrue = nullptr;
+EventListenerPtr clientFalseRegionFalse = nullptr;
+EventListenerPtr clientFalseRegionOther = nullptr;
+EventListenerPtr clientDefaultRegionTrue = nullptr;
+EventListenerPtr clientDefaultRegionFalse = nullptr;
+EventListenerPtr clientDefaultRegionOther = nullptr;
 */
 
 const char* regions[] = {"RegionTrue", "RegionFalse", "RegionOther"};
@@ -181,9 +180,9 @@ void initClientForInterestNotify(EventListenerPtr& mon1, EventListenerPtr& mon2,
   name3 += regions[2];
 
   // Recreate listeners
-  mon1 = new EventListener(name1.c_str());
-  mon2 = new EventListener(name2.c_str());
-  mon3 = new EventListener(name3.c_str());
+  mon1 = std::make_shared<EventListener>(name1.c_str());
+  mon2 = std::make_shared<EventListener>(name2.c_str());
+  mon3 = std::make_shared<EventListener>(name3.c_str());
 
   setCacheListener(regions[0], mon1);
   setCacheListener(regions[1], mon2);
@@ -234,7 +233,7 @@ void registerInterests(const char* region, bool durable, bool receiveValues) {
 
   regionPtr->registerKeys(keysVector, durable, true, receiveValues);
 
-  regionPtr->registerRegex("key-regex.*", durable, NULLPTR, true,
+  regionPtr->registerRegex("key-regex.*", durable, nullptr, true,
                            receiveValues);
 }
 
@@ -270,7 +269,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(SERVER_AND_FEEDER, FeederUpAndFeed)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regions[0], USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
     getHelper()->createPooledRegion(regions[1], USE_ACK, locatorsG,

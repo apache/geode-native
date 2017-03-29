@@ -162,9 +162,9 @@ void ThinClientPoolHADM::destroy(bool keepAlive) {
   if (!m_isDestroyed && !m_destroyPending) {
     checkRegions();
 
-    if (m_remoteQueryServicePtr != NULLPTR) {
+    if (m_remoteQueryServicePtr != nullptr) {
       m_remoteQueryServicePtr->close();
-      m_remoteQueryServicePtr = NULLPTR;
+      m_remoteQueryServicePtr = nullptr;
     }
 
     stopPingThread();

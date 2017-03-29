@@ -96,8 +96,8 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   RegionPtr regPtr = getHelper()->createRegion(
-      name, ackMode, true, NULLPTR, endpoints, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+      name, ackMode, true, nullptr, endpoints, clientNotificationEnabled);
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 
@@ -111,7 +111,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   RegionPtr regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }
 
@@ -125,9 +125,9 @@ void createOnekEntries() {
         CacheableWrapperFactory::createInstance(GeodeTypeIds::CacheableBytes);
     tmpkey->initKey(i, 32);
     tmpval->initRandomValue(1024);
-    ASSERT(tmpkey->getCacheable() != NULLPTR, "tmpkey->getCacheable() is NULL");
-    ASSERT(tmpval->getCacheable() != NULLPTR, "tmpval->getCacheable() is NULL");
-    dataReg->put(dynCast<CacheableKeyPtr>(tmpkey->getCacheable()),
+    ASSERT(tmpkey->getCacheable() != nullptr, "tmpkey->getCacheable() is NULL");
+    ASSERT(tmpval->getCacheable() != nullptr, "tmpval->getCacheable() is NULL");
+    dataReg->put(std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable()),
                  tmpval->getCacheable());
     // delete tmpkey;
     //  delete tmpval;
