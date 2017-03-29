@@ -55,4 +55,4 @@ Unix systems generate core files automatically for such errors, but this option 
 
 For .NET clients, when this property is set then `AccessViolation` exceptions are trapped and a crash dump is created to assist with further analysis. Applications receive a `FatalInternalException` for this case, with the `InnerException` set to the originating `AccessViolationException`.
 
-This requires the availability of `dbghelp.dll` on Windows, either in the same directory as `gfcppcache.dll` or in the system `PATH`. The file is installed by default, though for Windows 2000 a newer version may be required for minidumps. For Unix systems, the `gcore` command should be available (gdb &gt; 5.2 on Linux; available by default in Solaris).
+This requires the availability of `dbghelp.dll` on Windows, either in the same directory as `apache-geode.dll` or in the system `PATH`. The file is installed by default, though for Windows 2000 a newer version may be required for minidumps. For Unix systems, the `gcore` command should be available (gdb &gt; 5.2 on Linux; available by default in Solaris).
