@@ -39,6 +39,9 @@ Building requires access to an installation of Geode. By default the value of `G
 ## Installing
 By default a system-specific location is used by CMake as the destination of the `install` target, e.g., `/usr/local` on UNIX system. To explicitly specify the location in which the Native Client will be installed, add `-DCMAKE_INSTALL_PREFIX=/path/to/installation/destination` to the _initial_ `cmake` execution command before `../src`.
 
+**Note:** For consistent results, avoid using the "~" (tilde) abbreviation when specifying paths on the CMake command line.
+Interpretation of the symbol varies depending on the option being specified, and on the system or command shell in use.
+
 Due to limitations in CMake, the documentation must be built as a separate step before installation:
 
     $ cd <clone>
