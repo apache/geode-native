@@ -147,6 +147,9 @@ commands using `sudo` to allow CMake to write output files to protected location
 `/usr/local`.) To explicitly specify the location in which the Geode Client will be installed,
 define `CMAKE_INSTALL_PREFIX=/install-destination` in the initial `cmake` configuration command.
 
+**Note:** For consistent results, avoid using the "~" (tilde) abbreviation when specifying paths on the CMake command line.
+Interpretation of the symbol varies depending on the option being specified, and on the system or command shell in use.
+
 To build and install the client libraries:
 
   1. Create a build directory and set it as the current working directory.

@@ -65,8 +65,6 @@ installation directory. Add the Geode libraries shown here to your `CLASSPATH`:
 
     <code>
     % GEODE\_ROOT=_geode-install-dir_; export GEODE\_ROOT <br />
-    %&nbsp;CLASSPATH=$GEODE\_ROOT/lib/geode.jar:$GEODE\_ROOT/lib/antlr.jar:$GEODE\_ROOT/lib/gfSecurityImpl.jar:$CLASSPATH<br />
-    %  export CLASSPATH <br />
     %&nbsp;CLASSPATH=$GEODE\_ROOT/lib/geode-dependencies.jar:$GEODE\_ROOT/lib/antlr-2.7.7.jar:$CLASSPATH<br />
     %  export CLASSPATH <br />
     </code>
@@ -86,11 +84,12 @@ JDK. Add `$JAVA_HOME/bin` to the start of your `PATH`.
     % export LD\_LIBRARY\_PATH<br />
     </code>
 
-4. Set the `OPENSSL_ROOT_DIR` environment variable, pointing it to the parent folder for the OpenSSL binaries created from the tarball. Add `OPENSSL/lib` to `LD_LIBRARY_PATH`:
+4. Set the `OPENSSL_ROOT_DIR` environment variable, pointing it to the parent folder for the OpenSSL binaries created from the tarball. Add `OPENSSL_ROOT_DIR/lib` to `LD_LIBRARY_PATH`:
+
     <code>
     % OPENSSL\_ROOT\_DIR=_parent-folder-for-openssl-binaries_<br />
-    %  export OPENSSL<br />
-    % LD\_LIBRARY\_PATH=$OPENSSL\_ROOT\_DIR/lib:${LD\_LIBRARY\_PATH}<br />
+    %  export OPENSSL\_ROOT\_DIR<br />
+    % LD\_LIBRARY\_PATH=$OPENSSL\_ROOT\_DIR/lib:$LD\_LIBRARY\_PATH<br />
     % export LD\_LIBRARY\_PATH
     </code>
 
@@ -109,7 +108,7 @@ and a third time to install the resulting library into the client installation d
 tree:
 
     <code>
-    % cmake _client-installdir_/templates/security -DGEODE=_client-installdir_<br />
+    % cmake -DGEODE=_client-installdir_ -DCMAKE_INSTALL_PREFIX=/installation-destination _client-installdir_/templates/security <br />
     ... creates a makefile and other supporting files<br />
     % cmake --build .<br />
     ... builds  securityImpl plug-in<br />
@@ -179,7 +178,7 @@ binaries created from the tarball. Add  `%OPENSSL_ROOT_DIR%\bin` to `PATH` and `
     <code>
     \> set OPENSSL\_ROOT\_DIR=c:\OpenSSL<br />
     \> set PATH=%OPENSSL\_ROOT\_DIR%\bin;%PATH%<br />
-    \> set LD\_LIBRARY\_PATH=%OPENSSL%\bin;%LD\_LIBRARY\_PATH%<br />
+    \> set LD\_LIBRARY\_PATH=%OPENSSL\_ROOT\_DIR%\bin;%LD\_LIBRARY\_PATH%<br />
     </code>
 
 5. Create a directory in which to build the `securityImpl` plug-in. This directory (shown here as
