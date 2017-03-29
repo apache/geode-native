@@ -49,7 +49,7 @@ Wherever the native C++ class methods use pass-by-reference semantics to return 
 </tr>
 <tr class="even">
 <td><p>abstract class <code class="ph codeph">apache::geode::client::Cacheable</code></p></td>
-<td><p>Interface <code class="ph codeph">IPdxSerializable</code> or interface <code class="ph codeph">IGFSerializable</code></p></td>
+<td><p>Interface <code class="ph codeph">IPdxSerializable</code> or interface <code class="ph codeph">IGeodeSerializable</code></p></td>
 </tr>
 <tr class="odd">
 <td><p>class <code class="ph codeph">apache::geode::client::CacheableBytes</code></p></td>
@@ -86,12 +86,12 @@ Wherever the native C++ class methods use pass-by-reference semantics to return 
 <tr class="odd">
 <td><p>class <code class="ph codeph">apache::geode::client::DataInput</code></p></td>
 <td><p>With <code class="ph codeph">IPdxSerializable</code>, <code class="ph codeph">IPdxReader.</code></p>
-<p>With <code class="ph codeph">IGFSerializable</code>, sealed class <code class="ph codeph">DataInput</code>.</p></td>
+<p>With <code class="ph codeph">IGeodeSerializable</code>, sealed class <code class="ph codeph">DataInput</code>.</p></td>
 </tr>
 <tr class="even">
 <td><p>class <code class="ph codeph">apache::geode::client::DataOutput</code></p></td>
 <td><p>With <code class="ph codeph">IPdxSerializable</code>, <code class="ph codeph">IPdxWriter.</code></p>
-<p>With <code class="ph codeph">IGFSerializable</code>, sealed class <code class="ph codeph">DataOutput</code>.</p></td>
+<p>With <code class="ph codeph">IGeodeSerializable</code>, sealed class <code class="ph codeph">DataOutput</code>.</p></td>
 </tr>
 <tr class="odd">
 <td><p>class <code class="ph codeph">apache::geode::client::DiskPolicyType</code></p></td>
@@ -154,7 +154,7 @@ Wherever the native C++ class methods use pass-by-reference semantics to return 
 <td><p>Two options:</p>
 <ul>
 <li><p>Interface <code class="ph codeph">IPdxSerializable</code></p></li>
-<li><p>Interface <code class="ph codeph">IGFSerializable</code> plus wrapper <code class="ph codeph">Serializable</code> class for native <code class="ph codeph">Serializable</code> and <code class="ph codeph">UserData</code> objects. The native <code class="ph codeph">toString</code> method is not provided, since the <code class="ph codeph">ToString</code> method of the base object class provides the same functionality.</p></li>
+<li><p>Interface <code class="ph codeph">IGeodeSerializable</code> plus wrapper <code class="ph codeph">Serializable</code> class for native <code class="ph codeph">Serializable</code> and <code class="ph codeph">UserData</code> objects. The native <code class="ph codeph">toString</code> method is not provided, since the <code class="ph codeph">ToString</code> method of the base object class provides the same functionality.</p></li>
 </ul></td>
 </tr>
 <tr class="even">
@@ -166,7 +166,7 @@ Wherever the native C++ class methods use pass-by-reference semantics to return 
 <td><p>Two options:</p>
 <ul>
 <li><p>Interface <code class="ph codeph">IPdxSerializable</code></p></li>
-<li><p>Interface <code class="ph codeph">IGFSerializable</code></p></li>
+<li><p>Interface <code class="ph codeph">IGeodeSerializable</code></p></li>
 </ul></td>
 </tr>
 <tr class="even">

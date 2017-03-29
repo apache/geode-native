@@ -73,7 +73,7 @@ public class TradeEventListener : ICqListener {
      // key and new value from the event
      ICacheableKey key = cqEvent.getKey();
      CacheableString keyStr = key as CacheableString;
-     IGFSerializable val = cqEvent.getNewValue();
+     IGeodeSerializable val = cqEvent.getNewValue();
      TradeOrder tradeOrder = val as TradeOrder;
      if (queryOperation==CqOperationType.OP_TYPE_UPDATE) {
         // update data on the screen for the trade order
