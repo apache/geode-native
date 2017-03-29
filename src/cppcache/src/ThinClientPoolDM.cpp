@@ -609,8 +609,7 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
   HostAsm::atomicAdd(m_clientOps, 1);
   getStats().setCurClientOps(m_clientOps);
 
-  std::shared_ptr<ACE_Recursive_Thread_Mutex> resultCollectorLock(
-      new ACE_Recursive_Thread_Mutex());
+  auto resultCollectorLock = std::make_shared<ACE_Recursive_Thread_Mutex>();
 
   CacheableStringArrayPtr csArray = getServers();
 

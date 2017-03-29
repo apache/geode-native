@@ -464,7 +464,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
   void setParameters(const char* func, uint8_t getResult, uint32_t timeout,
                      CacheablePtr args, TcrEndpoint* ep,
                      ThinClientPoolDM* poolDM,
-                     std::shared_ptr<ACE_Recursive_Thread_Mutex> rCL,
+                     const std::shared_ptr<ACE_Recursive_Thread_Mutex>& rCL,
                      ResultCollectorPtr* rs, UserAttributesPtr userAttr) {
     exceptionPtr = NULLPTR;
     m_resultCollectorLock = rCL;
@@ -626,7 +626,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
   OnRegionFunctionExecution(
       const char* func, const Region* region, CacheablePtr args,
       CacheableHashSetPtr routingObj, uint8_t getResult, uint32_t timeout,
-      ThinClientPoolDM* poolDM, std::shared_ptr<ACE_Recursive_Thread_Mutex> rCL,
+      ThinClientPoolDM* poolDM, const std::shared_ptr<ACE_Recursive_Thread_Mutex>& rCL,
       ResultCollectorPtr rs, UserAttributesPtr userAttr, bool isBGThread,
       BucketServerLocationPtr serverLocation, bool allBuckets)
       : m_serverLocation(serverLocation),

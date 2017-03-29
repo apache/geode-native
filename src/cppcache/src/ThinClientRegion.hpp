@@ -421,7 +421,7 @@ class ChunkedFunctionExecutionResponse : public TcrChunkedResult {
 
   inline ChunkedFunctionExecutionResponse(
       TcrMessage& msg, bool getResult, ResultCollectorPtr rc,
-      std::shared_ptr<ACE_Recursive_Thread_Mutex> resultCollectorLock)
+      const std::shared_ptr<ACE_Recursive_Thread_Mutex>& resultCollectorLock)
       : TcrChunkedResult(),
         m_msg(msg),
         m_getResult(getResult),
