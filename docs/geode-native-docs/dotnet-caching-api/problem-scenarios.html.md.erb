@@ -26,11 +26,11 @@ These scenarios describe processes and implementations that should be avoided wh
 
 **Scenario:** A .NET thread loads the Geode DLL in application domain `AD1`. This thread may have access to the other domains in the application if code access security allows it. This thread can then call `AppDomain.CreateInstance` to create a callback object ( `ICacheListener`, `ICacheLoader`, or `ICacheWriter`) in another domain called `AD2`. If the callback object is marshaled by reference, the callback is executed in the domain where it is created (`AD2`). The thread that loads the Geode DLL in domain `AD1` runs the callback methods in the second domain, `AD2`. An exception is thrown when the callback method is invoked because the code that invokes the callback is not allowed to cross the `AppDomain` boundary.
 
-**Resolution:** When an application creates and unloads application domains it should ensure that the application domain where the Geode .NET DLL is loaded is the same domain where the application callback and `IGFSerializable` objects are created.
+**Resolution:** When an application creates and unloads application domains it should ensure that the application domain where the Geode .NET DLL is loaded is the same domain where the application callback and `IGeodeSerializable` objects are created.
 
 ## <a id="concept_025AAAF8896C4F4CB4530EE9CEEF4BAE__section_9FEC4666F4FD467AA57AD70943703F00" class="no-quick-link"></a>Loading an Application DLL in Multiple AppDomains
 
-**Scenario:** The application loads the Geode DLL in one application domain, then reloads the Geode DLL in another application domain (with or without unloading the previous `AppDomain` ). The callbacks, as well as other interface implementations, like `IPdxSerializable` and `IGFSerializable`, throw exceptions because the C++ code does not know about the `AppDomain` and is loaded only once in the initial `AppDomain`.
+**Scenario:** The application loads the Geode DLL in one application domain, then reloads the Geode DLL in another application domain (with or without unloading the previous `AppDomain` ). The callbacks, as well as other interface implementations, like `IPdxSerializable` and `IGeodeSerializable`, throw exceptions because the C++ code does not know about the `AppDomain` and is loaded only once in the initial `AppDomain`.
 
 **Resolution:** The application should always use the first `AppDomain` to load the Geode DLL, or it should not load the Geode DLL multiple times.
 

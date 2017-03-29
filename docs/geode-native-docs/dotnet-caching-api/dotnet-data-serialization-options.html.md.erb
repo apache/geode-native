@@ -25,7 +25,7 @@ The options give good performance and flexibility for data storage, transfers, a
 
 The simplest option is to use perform automatic serialization by registering the Geode .NET PDX reflection-based autoserializer in your application. When you have this registered, Geode uses it for all domain objects that are not custom serialized.
 
-You can also custom serialize your objects by implementing one of the Geode .NET interfaces, `Apache.Geode.Client.IPdxSerializable` or `Apache.Geode.Client.IGFSerializable`.
+You can also custom serialize your objects by implementing one of the Geode .NET interfaces, `Apache.Geode.Client.IPdxSerializable` or `Apache.Geode.Client.IGeodeSerializable`.
 
 You also have the option of using default .NET serialization, but you cannot use it unless you also use helper classes. The helper classes you must use are `CacheableObject` and `CacheableObjectXml`.
 
@@ -43,7 +43,7 @@ Geode .NET PDX serialization has more bytes in overhead than Geode .NET Data ser
 <thead>
 <tr class="header">
 <th>Capability</th>
-<th>IGFSerializable</th>
+<th>IGeodeSerializable</th>
 <th>IPdxSerializable and PDX reflection-based autoserializer</th>
 </tr>
 </thead>
