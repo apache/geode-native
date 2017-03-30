@@ -3320,10 +3320,10 @@ CacheableVectorPtr ThinClientRegion::reExecuteFunction(
             failedNodes->insert(*itr);
           }
         }
-      } else if (err == GF_NOTCON) {
+      } else if ((err == GF_NOTCON) || (err == GF_CLIENT_WAIT_TIMEOUT) || (err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA)) {
         attempt++;
         LOGDEBUG(
-            "ThinClientRegion::reExecuteFunction with GF_NOTCON retry attempt "
+            "ThinClientRegion::reExecuteFunction with GF_NOTCON OR TIMEOUT retry attempt "
             "= %d ",
             attempt);
         if (attempt > retryAttempts) {
@@ -3376,6 +3376,8 @@ bool ThinClientRegion::executeFunctionSH(
     GfErrType err = worker->getResult();
     TcrMessage* currentReply = worker->getReply();
 
+
+
     if (err == GF_NOERR &&
         (currentReply->getMessageType() == TcrMessage::EXCEPTION ||
          currentReply->getMessageType() ==
@@ -3384,11 +3386,10 @@ bool ThinClientRegion::executeFunctionSH(
           "Execute", currentReply->getException());
     }
 
-    if (ThinClientBaseDM::isFatalClientError(err)) {
-      delete worker;
-      GfErrTypeToException("ExecuteOnRegion:", err);
-    } else if (err != GF_NOERR) {
+    if (err != GF_NOERR) {
+
       if (err == GF_FUNCTION_EXCEPTION) {
+
         reExecute = true;
         ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
         if ((poolDM != NULL) && (poolDM->getClientMetaDataService() != NULL)) {
@@ -3411,9 +3412,10 @@ bool ThinClientRegion::executeFunctionSH(
             failedNodes->insert(*itr);
           }
         }
-      } else if (err == GF_NOTCON) {
+      } else if ((err == GF_NOTCON) || (err == GF_CLIENT_WAIT_TIMEOUT) || (err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA)) {
+
         reExecute = true;
-        LOGDEBUG("ThinClientRegion::executeFunctionSH with GF_NOTCON ");
+        LOGINFO("ThinClientRegion::executeFunctionSH with GF_NOTCON or GF_CLIENT_WAIT_TIMEOUT ");
         ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
         if ((poolDM != NULL) && (poolDM->getClientMetaDataService() != NULL)) {
           poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
@@ -3425,8 +3427,25 @@ bool ThinClientRegion::executeFunctionSH(
           rc->clearResults();
         }
       } else {
-        delete worker;
-        LOGDEBUG("executeFunctionSH err = %d ", err);
+
+        if (ThinClientBaseDM::isFatalClientError(err)) {
+          LOGERROR("ThinClientRegion::executeFunctionSH: Fatal Exception");
+            }
+        else
+        {
+          LOGWARN("ThinClientRegion::executeFunctionSH: Unexpected Exception");
+        }
+
+        for (std::vector<OnRegionFunctionExecution*>::iterator iter2 =
+                  feWorkers.begin();
+              iter2 != feWorkers.end(); ++iter2)
+        {
+          OnRegionFunctionExecution* worker = *iter2;
+          delete worker;
+        }
+        LOGDEBUG("ThinClientRegion::executeFunctionSH: Cleaned out the workers ");
+
+
         GfErrTypeToException("ExecuteOnRegion:", err);
       }
     }

@@ -45,6 +45,9 @@
 	<function>
   		<class-name>javaobject.MultiGetFunction2</class-name>
   	</function>
+	<function>
+  		<class-name>javaobject.ThinClientRegionExceptionTest</class-name>
+  	</function>
   	<function>
   		<class-name>javaobject.MultiPutFunction</class-name>
   	</function>
