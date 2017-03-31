@@ -72,11 +72,6 @@ std::vector<int8_t>* ExecutionImpl::getFunctionAttributes(const char* func) {
   return NULL;
 }
 
-ResultCollectorPtr ExecutionImpl::execute(const char* func, uint32_t timeout) {
-  LOGDEBUG("ExecutionImpl::execute1: ");
-  return execute(func, timeout, true);
-}
-
 ResultCollectorPtr ExecutionImpl::execute(CacheableVectorPtr& routingObj,
                                           CacheablePtr& args,
                                           ResultCollectorPtr& rs,
@@ -84,11 +79,10 @@ ResultCollectorPtr ExecutionImpl::execute(CacheableVectorPtr& routingObj,
   m_routingObj = routingObj;
   m_args = args;
   m_rc = rs;
-  return execute(func, timeout, false);
+  return execute(func, timeout);
 }
 
-ResultCollectorPtr ExecutionImpl::execute(const char* fn, uint32_t timeout,
-                                          bool verifyFuncArgs) {
+ResultCollectorPtr ExecutionImpl::execute(const char* fn, uint32_t timeout) {
   std::string func = fn;
   LOGDEBUG("ExecutionImpl::execute: ");
   GuardUserAttribures gua;
@@ -100,33 +94,31 @@ ResultCollectorPtr ExecutionImpl::execute(const char* fn, uint32_t timeout,
   bool serverIsHA = false;
   bool serverOptimizeForWrite = false;
 
-  if (verifyFuncArgs) {
-    std::vector<int8_t>* attr = getFunctionAttributes(fn);
-    {
+  std::vector<int8_t>* attr = getFunctionAttributes(fn);
+  {
+    if (attr == NULL) {
+      ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_func_attrs_lock);
+      GfErrType err = GF_NOERR;
+      attr = getFunctionAttributes(fn);
       if (attr == NULL) {
-        ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_func_attrs_lock);
-        GfErrType err = GF_NOERR;
-        attr = getFunctionAttributes(fn);
-        if (attr == NULL) {
-          if (m_region != NULLPTR) {
-            err = dynamic_cast<ThinClientRegion*>(m_region.ptr())
-                      ->getFuncAttributes(fn, &attr);
-          } else if (m_pool != NULLPTR) {
-            err = getFuncAttributes(fn, &attr);
-          }
-          if (err != GF_NOERR) {
-            GfErrTypeToException("Execute::GET_FUNCTION_ATTRIBUTES", err);
-          }
-          if (!attr->empty() && err == GF_NOERR) {
-            m_func_attrs[fn] = attr;
-          }
+        if (m_region != NULLPTR) {
+          err = dynamic_cast<ThinClientRegion*>(m_region.ptr())
+                    ->getFuncAttributes(fn, &attr);
+        } else if (m_pool != NULLPTR) {
+          err = getFuncAttributes(fn, &attr);
+        }
+        if (err != GF_NOERR) {
+          GfErrTypeToException("Execute::GET_FUNCTION_ATTRIBUTES", err);
+        }
+        if (!attr->empty() && err == GF_NOERR) {
+          m_func_attrs[fn] = attr;
         }
       }
     }
-    serverHasResult = ((attr->at(0) == 1) ? true : false);
-    serverIsHA = ((attr->at(1) == 1) ? true : false);
-    serverOptimizeForWrite = ((attr->at(2) == 1) ? true : false);
   }
+  serverHasResult = ((attr->at(0) == 1) ? true : false);
+  serverIsHA = ((attr->at(1) == 1) ? true : false);
+  serverOptimizeForWrite = ((attr->at(2) == 1) ? true : false);
 
   LOGDEBUG(
       "ExecutionImpl::execute got functionAttributes from srver for function = "

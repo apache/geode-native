@@ -69,8 +69,6 @@ class ExecutionImpl : public Execution {
                          const CacheableVectorPtr& results);
 
  private:
-  ResultCollectorPtr execute(const char* func, uint32_t timeout,
-                             bool verifyFuncArgs);
   ExecutionImpl(const ExecutionImpl& rhs)
       : m_routingObj(rhs.m_routingObj),
         m_args(rhs.m_args),
