@@ -25,28 +25,28 @@ The configuration of the caches is part of the application development process. 
 
 ## <a id="native-client-config__section_67D24B8F8C6C46CDA3474E6E42963D04" class="no-quick-link"></a>About the geode.properties Configuration File
 
-The `geode.properties` file provides local settings required to connect a client to a distributed system, along with settings for licensing, logging, and statistics. See [Attributes in the Properties File](propfile_attributes.html#attributes-gfcpp).
+The `geode.properties` file provides local settings required to connect a client to a distributed system, along with settings for licensing, logging, and statistics. See [Attributes in the Properties File](propfile-attributes.html#attributes-gfcpp).
 
 The application software may include a set of `geode.properties` files. You set any attributes needed for the application design in these files, then you can add any attributes needed for the local site.
 
-If you do not have `geode.properties` files, use any text editor to create them. See [Properties File Example](propfile_overview.html#concept_41DADD6F4E41495A89CCBB8A790ED9DF) for a sample of the file format and contents.
+If you do not have `geode.properties` files, use any text editor to create them. See [Properties File Example](propfile-overview.html#concept_41DADD6F4E41495A89CCBB8A790ED9DF) for a sample of the file format and contents.
 
 ## <a id="native-client-config__section_88780874FD6C4BBD9B1B993758A985BB" class="no-quick-link"></a>Configuration File Locations
 
 A client looks for a `geode.properties` file first in the working directory where the process runs, then in <code>_product-dir_/defaultSystem</code>.
 Use the `defaultSystem` directory to group configuration files or to share them among processes for more convenient administration. If `geode.properties` is not found, the process starts up with the default settings.
 
-For the `cache.xml` cache configuration file, a client looks for the path specified by the `cache-xml-file` attribute in `geode.properties` (see [Attributes in the Properties File](propfile_attributes.html#attributes-gfcpp)). If the `cache.xml` is not found, the process starts with an unconfigured cache.
+For the `cache.xml` cache configuration file, a client looks for the path specified by the `cache-xml-file` attribute in `geode.properties` (see [Attributes in the Properties File](propfile-attributes.html#attributes-gfcpp)). If the `cache.xml` is not found, the process starts with an unconfigured cache.
 
 ## <a id="native-client-config__section_6EBE269F15A1497BB4ABBF659F978DA1" class="no-quick-link"></a>Configuring System Properties for the Client
 
 The typical configuration procedure for a client includes the high-level steps listed below. The rest of this chapter provides the details.
 
 1.  Place the `geode.properties` file for the application in the working directory or in <code>_product-dir_/defaultSystem</code>.
-Use the configuration file that came with the application software if there is one, or create your own. See [Properties File Example](propfile_overview.html#concept_41DADD6F4E41495A89CCBB8A790ED9DF) for a sample of the file format and contents.
+Use the configuration file that came with the application software if there is one, or create your own. See [Properties File Example](propfile-overview.html#concept_41DADD6F4E41495A89CCBB8A790ED9DF) for a sample of the file format and contents.
 2.  Place the `cache.xml` file for the application in the desired location and specify its path in the `geode.properties` file.
-3.  Add other attributes to the `geode.properties` file as needed for the local system architecture. See [Attributes in the Properties File](propfile_attributes.html#attributes-gfcpp) for the configurable attributes, and [Properties File Example](propfile_overview.html#concept_41DADD6F4E41495A89CCBB8A790ED9DF) for a sample of the file format.
+3.  Add other attributes to the `geode.properties` file as needed for the local system architecture. See [Attributes in the Properties File](propfile-attributes.html#attributes-gfcpp) for the configurable attributes, and [Properties File Example](propfile-overview.html#concept_41DADD6F4E41495A89CCBB8A790ED9DF) for a sample of the file format.
 
 ## <a id="native-client-config__section_7F09E85DD0144972AAA7028D81780129" class="no-quick-link"></a>Running a Client Out of the Box
 
-If you start a client without any configuration, it uses any attributes set programmatically plus any hard-coded defaults (listed in [Attributes in the Properties File](propfile_attributes.html#attributes-gfcpp)). Running with the defaults is a convenient way to learn the operation of the distributed system and to test which attributes need to be reconfigured for your environment.
+If you start a client without any configuration, it uses any attributes set programmatically plus any hard-coded defaults (listed in [Attributes in the Properties File](propfile-attributes.html#attributes-gfcpp)). Running with the defaults is a convenient way to learn the operation of the distributed system and to test which attributes need to be reconfigured for your environment.

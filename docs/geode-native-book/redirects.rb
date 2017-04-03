@@ -24,5 +24,5 @@ r301 %r{/releases/latest/api/dotnetdocs/(.*)}, 'http://data-docs-samples.cfapps.
 r301 %r{/geodeman/(.*)}, 'http://geode.apache.org/docs/guide/11/$1'
 r301 %r{/serverman/(.*)}, 'http://geode.apache.org/docs/guide/11/$1'
 r302 '/index-10.html', 'http://geode.apache.org/docs/guide-native/10/about_native_client_users_guide.html'
-rewrite '/', '/docs/guide-native/11/about_native_client_users_guide.html'
-rewrite '/index.html', '/docs/guide-native/11/about_native_client_users_guide.html'
+rewrite '/', '/docs/guide-native/11/about-client-users-guide.html'
+rewrite '/index.html', '/docs/guide-native/11/about-client-users-guide.html'
