@@ -609,7 +609,7 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
   HostAsm::atomicAdd(m_clientOps, 1);
   getStats().setCurClientOps(m_clientOps);
 
-  ACE_Recursive_Thread_Mutex resultCollectorLock;
+  auto resultCollectorLock = std::make_shared<ACE_Recursive_Thread_Mutex>();
 
   CacheableStringArrayPtr csArray = getServers();
 
@@ -636,7 +636,7 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
     }
     FunctionExecution* funcExe = &fePtrList[feIndex++];
     funcExe->setParameters(func, getResult, timeout, args, ep, this,
-                           &resultCollectorLock, &rs, userAttr);
+                           resultCollectorLock, &rs, userAttr);
     threadPool->perform(funcExe);
   }
   GfErrType finalErrorReturn = GF_NOERR;

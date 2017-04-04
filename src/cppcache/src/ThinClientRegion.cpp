@@ -3350,7 +3350,7 @@ bool ThinClientRegion::executeFunctionSH(
     HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>* locationMap,
     CacheableHashSetPtr& failedNodes, uint32_t timeout, bool allBuckets) {
   bool reExecute = false;
-  ACE_Recursive_Thread_Mutex resultCollectorLock;
+  auto resultCollectorLock = std::make_shared<ACE_Recursive_Thread_Mutex>();
   UserAttributesPtr userAttr =
       TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
   std::vector<OnRegionFunctionExecution*> feWorkers;
@@ -3363,7 +3363,7 @@ bool ThinClientRegion::executeFunctionSH(
     CacheableHashSetPtr buckets = locationIter.second();
     OnRegionFunctionExecution* worker = new OnRegionFunctionExecution(
         func, this, args, buckets, getResult, timeout,
-        dynamic_cast<ThinClientPoolDM*>(m_tcrdm), &resultCollectorLock, rc,
+        dynamic_cast<ThinClientPoolDM*>(m_tcrdm), resultCollectorLock, rc,
         userAttr, false, serverLocation, allBuckets);
     threadPool->perform(worker);
     feWorkers.push_back(worker);
@@ -3397,7 +3397,7 @@ bool ThinClientRegion::executeFunctionSH(
         }
         worker->getResultCollector()->reset();
         {
-          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(resultCollectorLock);
+          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(*resultCollectorLock);
           rc->clearResults();
         }
         CacheableHashSetPtr failedNodeIds(currentReply->getFailedNode());
@@ -3421,7 +3421,7 @@ bool ThinClientRegion::executeFunctionSH(
         }
         worker->getResultCollector()->reset();
         {
-          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(resultCollectorLock);
+          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(*resultCollectorLock);
           rc->clearResults();
         }
       } else {
