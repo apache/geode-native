@@ -3933,7 +3933,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
     } else {
       result = dynCast<CacheablePtr>(value);
     }
-    if (m_resultCollectorLock != NULL) {
+    if (m_resultCollectorLock.get() != 0) {
       ACE_Guard<ACE_Recursive_Thread_Mutex> guard(*m_resultCollectorLock);
       m_rc->addResult(result);
     } else {
