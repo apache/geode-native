@@ -17,7 +17,7 @@ project( sqlite )
 
 set( ${PROJECT_NAME}_VERSION 3140100 )
 set( ${PROJECT_NAME}_SHA265 bc7182476900017becb81565ecea7775d46ab747a97281aa610f4f45881c47a6 )
-set( ${PROJECT_NAME}_URL "http://www.sqlite.org/2016/sqlite-autoconf-${${PROJECT_NAME}_VERSION}.tar.gz" )
+set( ${PROJECT_NAME}_URL "https://www.sqlite.org/2016/sqlite-autoconf-${${PROJECT_NAME}_VERSION}.tar.gz" )
 set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
 
 set ( ${PROJECT_NAME}_CFLAGS "${${PROJECT_NAME}_CFLAGS} ${CFLAGS_ARCH}" )
