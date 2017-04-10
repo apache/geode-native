@@ -136,6 +136,7 @@ if (${WIN32})
   set(CMAKE_STATIC_LIBRARY_SUFFIX s$<${MSVC}:$<$<CONFIG:Debug>:d>>.lib)
 endif()
 
+if ($(CMAKE_HOST_SOLARIS))
 set( PATCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/patches )
 ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} patches
     ALWAYS 0
@@ -146,6 +147,7 @@ ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} patches
     WORKING_DIRECTORY ${${PROJECT_NAME}_SOURCE_DIR}
     COMMAND ${PATCH} -u -N -p1 < ${PATCH_FILE}
 )
+endif()
 
 configure_file(config.h.in config.h)
 ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} config.h
