@@ -351,8 +351,6 @@ void ClientMetadataService::enqueueForMetadataRefresh(
   tcrdm->getConnectionManager().getCacheImpl()->getRegion(regionFullPath,
                                                           region);
   LocalRegion* lregion = dynamic_cast<LocalRegion*>(region.ptr());
-  lregion->getRegionStats()
-      ->incNonSingleHopCount();  // we are here means nonSinglehop
 
   std::string serverGroup = tcrdm->getServerGroup();
   if (serverGroup.length() != 0) {

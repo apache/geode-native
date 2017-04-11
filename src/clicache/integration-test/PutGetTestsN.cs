@@ -209,8 +209,8 @@ namespace Apache.Geode.Client.UnitTests
     public void DoPRSHPartitionResolverPuts(string rname)
     {
       IRegion<object, object> region = CacheHelper.GetRegion<object, object>(rname);
-      int nonSingleHopCount = 0, metadatarefreshCount = 0;
-      int nonSingleHopCount1 = 0, metadatarefreshCount1 = 0;
+      int metadatarefreshCount = 0;
+      int metadatarefreshCount1 = 0;
       Assert.IsNotNull(region, "DoPRSHPartitionResolverPuts: null region.");
       if (rname.CompareTo("DistRegionNoAck") == 0)
       {
@@ -247,7 +247,6 @@ namespace Apache.Geode.Client.UnitTests
           Statistics rStats = factory.FindFirstStatisticsByType(type);
           if (rStats != null)
           {
-            nonSingleHopCount = rStats.GetInt((string)"nonSingleHopCount");
             metadatarefreshCount = rStats.GetInt((string)"metaDataRefreshCount");
           }
         }
@@ -333,15 +332,13 @@ namespace Apache.Geode.Client.UnitTests
           Statistics rStats = factory.FindFirstStatisticsByType(type);
           if (rStats != null)
           {
-            nonSingleHopCount1 = rStats.GetInt((string)"nonSingleHopCount");
             metadatarefreshCount1 = rStats.GetInt((string)"metaDataRefreshCount");
-            Assert.AreEqual(nonSingleHopCount1, nonSingleHopCount, "nonSingleHopCount1 should be equal to nonSingleHopCount");
             Assert.AreEqual(metadatarefreshCount1, metadatarefreshCount, "metadatarefreshCount1 should be equal to metadatarefreshCount");
           }
         }
       }
 
-      nonSingleHopCount = metadatarefreshCount = 0;
+      metadatarefreshCount = 0;
       if (rname.CompareTo("DistRegionAck") == 0)
       {
         Util.Log("Inside DoPRSHPartitionResolverPuts region name is {0} ", region.Name.ToString());
@@ -377,11 +374,9 @@ namespace Apache.Geode.Client.UnitTests
           Statistics rStats = factory.FindFirstStatisticsByType(type);
           if (rStats != null)
           {
-            nonSingleHopCount = rStats.GetInt((string)"nonSingleHopCount");
             metadatarefreshCount = rStats.GetInt((string)"metaDataRefreshCount");
           }
         }
-        //Assert.AreEqual(1, nonSingleHopCount, "nonSingleHopCount should be equal to 1");
         //Assert.AreEqual(1, metadatarefreshCount, "metadatarefreshCount should be equal to 1");
 
         Util.Log("DoPRSHPartitionResolverPuts WarmUp Task completed.");
@@ -463,9 +458,7 @@ namespace Apache.Geode.Client.UnitTests
           Statistics rStats = factory.FindFirstStatisticsByType(type);
           if (rStats != null)
           {
-            nonSingleHopCount1 = rStats.GetInt((string)"nonSingleHopCount");
             metadatarefreshCount1 = rStats.GetInt((string)"metaDataRefreshCount");
-            Assert.AreEqual(nonSingleHopCount1, nonSingleHopCount, "nonSingleHopCount1 should be equal to nonSingleHopCount");
             Assert.AreEqual(metadatarefreshCount1, metadatarefreshCount, "metadatarefreshCount1 should be equal to metadatarefreshCount");
           }
         }
@@ -476,8 +469,8 @@ namespace Apache.Geode.Client.UnitTests
     {
       Util.Log("DoPRSHTradeResolverTasks rname = {0} ", rname);
       IRegion<TradeKey, Object> region = CacheHelper.GetRegion<TradeKey, Object>(rname);
-      int nonSingleHopCount = 0, metadatarefreshCount = 0;
-      int nonSingleHopCount1 = 0, metadatarefreshCount1 = 0;
+      int metadatarefreshCount = 0;
+      int metadatarefreshCount1 = 0;
       Assert.IsNotNull(region, "DoPRSHTradeResolverTasks: null region.");
       for (int i = 0; i < 1000; i++)
       {
@@ -509,12 +502,10 @@ namespace Apache.Geode.Client.UnitTests
         Statistics rStats = factory.FindFirstStatisticsByType(type);
         if (rStats != null)
         {
-          nonSingleHopCount = rStats.GetInt((string)"nonSingleHopCount");
           metadatarefreshCount = rStats.GetInt((string)"metaDataRefreshCount");
         }
       }
-      Util.Log("nonSingleHopCount = {0} & metadatarefreshCount = {1} ", nonSingleHopCount, metadatarefreshCount);
-      Assert.GreaterOrEqual(nonSingleHopCount, 1, "nonSingleHopCount should be GreaterOrEqual to 1");
+      Util.Log("metadatarefreshCount = {0} ", metadatarefreshCount);
       Assert.GreaterOrEqual(metadatarefreshCount, 1, "metadatarefreshCount should be equal to 1");
 
       Util.Log("DoPRSHTradeResolverTasks WarmUp Task completed.");
@@ -589,10 +580,8 @@ namespace Apache.Geode.Client.UnitTests
         Statistics rStats = factory.FindFirstStatisticsByType(type);
         if (rStats != null)
         {
-          nonSingleHopCount1 = rStats.GetInt((string)"nonSingleHopCount");
           metadatarefreshCount1 = rStats.GetInt((string)"metaDataRefreshCount");
-          Util.Log("nonSingleHopCount1 = {0} & metadatarefreshCount1 = {1} ", nonSingleHopCount1, metadatarefreshCount1);
-          //Assert.AreEqual(nonSingleHopCount1, nonSingleHopCount, "nonSingleHopCount1 should be equal to nonSingleHopCount");
+          Util.Log("metadatarefreshCount1 = {0} ", metadatarefreshCount1);
           Assert.AreEqual(metadatarefreshCount1, metadatarefreshCount, "metadatarefreshCount1 should be equal to metadatarefreshCount");
         }
       }
@@ -661,8 +650,8 @@ namespace Apache.Geode.Client.UnitTests
     public void DoPRSHFixedPartitionResolverTests(string rname)
     {
       IRegion<object, object> region = CacheHelper.GetRegion<object, object>(rname);
-      int nonSingleHopCount = 0, metadatarefreshCount = 0;
-      int nonSingleHopCount1 = 0, metadatarefreshCount1 = 0;
+      int metadatarefreshCount = 0;
+      int metadatarefreshCount1 = 0;
       Assert.IsNotNull(region, "DoPRSHPartitionResolverPuts: null region.");
       Util.Log("Inside DoPRSHFixedPartitionResolverTests region name is {0} ", region.Name.ToString());
       for (int i = 0; i < 2000; i++)
@@ -698,13 +687,11 @@ namespace Apache.Geode.Client.UnitTests
         Statistics rStats = factory.FindFirstStatisticsByType(type);
         if (rStats != null)
         {
-          nonSingleHopCount = rStats.GetInt((string)"nonSingleHopCount");
           metadatarefreshCount = rStats.GetInt((string)"metaDataRefreshCount");
         }
       }
 
-      Util.Log("DoPRSHFixedPartitionResolverTests Put Task completed nonSingleHopCount = {0} metadatarefreshCount = {1}.", nonSingleHopCount, metadatarefreshCount);
-      Assert.Greater(nonSingleHopCount, 1, "nonSingleHopCount should be Greater than 1");
+      Util.Log("DoPRSHFixedPartitionResolverTests Put Task completed metadatarefreshCount = {0}.", metadatarefreshCount);
       Assert.Greater(metadatarefreshCount, 1, "metadatarefreshCount should be Greater than 1");
 
       for (int i = 0; i < 1000; i++)
@@ -757,14 +744,12 @@ namespace Apache.Geode.Client.UnitTests
         Statistics rStats = factory.FindFirstStatisticsByType(type);
         if (rStats != null)
         {
-          nonSingleHopCount1 = rStats.GetInt((string)"nonSingleHopCount");
           metadatarefreshCount1 = rStats.GetInt((string)"metaDataRefreshCount");
         }
       }
       Util.Log("DoPRSHFixedPartitionResolverTests All Task completed ");
-      Util.Log("nonSingleHopCount = {0} metadatarefreshCount = {1} .", nonSingleHopCount, metadatarefreshCount);
-      Util.Log("nonSingleHopCount1 = {0} metadatarefreshCount1 = {1} .", nonSingleHopCount1, metadatarefreshCount1);
-      Assert.AreEqual(nonSingleHopCount, nonSingleHopCount1, "nonSingleHopCount should be equal to {0}", nonSingleHopCount);
+      Util.Log("metadatarefreshCount = {0} .", metadatarefreshCount);
+      Util.Log("metadatarefreshCount1 = {0} .", metadatarefreshCount1);
       Assert.AreEqual(metadatarefreshCount, metadatarefreshCount1, "metadatarefreshCount should be equal to {0}", metadatarefreshCount);
     }
 
