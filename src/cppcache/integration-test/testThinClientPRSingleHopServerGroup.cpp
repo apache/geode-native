@@ -92,7 +92,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
   {
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT1 started.");
     int failureCount = 0;
-    int nonSingleHopCount = 0, metadatarefreshCount = 0;
+    int metadatarefreshCount = 0;
 
     RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
 
@@ -124,15 +124,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
         if (type) {
           Statistics* rStats = factory->findFirstStatisticsByType(type);
           if (rStats) {
-            nonSingleHopCount = rStats->getInt((char*)"nonSingleHopCount");
             metadatarefreshCount =
                 rStats->getInt((char*)"metaDataRefreshCount");
           }
         }
         LOGINFO(
-            "CheckPrSingleHopForIntKeysTask_CLIENT1: nonSingleHopCount is %d & "
+            "CheckPrSingleHopForIntKeysTask_CLIENT1: "
             "metadatarefreshCount is %d failureCount = %d",
-            nonSingleHopCount, metadatarefreshCount, failureCount);
+            metadatarefreshCount, failureCount);
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
@@ -156,7 +155,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
     }
     // relaxed this limit as it takes time
     ASSERT(failureCount < 70, "Count should be less then 70");
-    ASSERT(nonSingleHopCount < 70, "nonSingleHopCount should be less than 70");
     ASSERT(metadatarefreshCount < 70,
            "metadatarefreshCount should be less than 70");
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT1 put completed.");
@@ -299,7 +297,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
   {
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT2 started.");
     int failureCount = 0;
-    int nonSingleHopCount = 0, metadatarefreshCount = 0;
+    int metadatarefreshCount = 0;
 
     RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
 
@@ -331,15 +329,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
         if (type) {
           Statistics* rStats = factory->findFirstStatisticsByType(type);
           if (rStats) {
-            nonSingleHopCount = rStats->getInt((char*)"nonSingleHopCount");
             metadatarefreshCount =
                 rStats->getInt((char*)"metaDataRefreshCount");
           }
         }
         LOGINFO(
-            "CheckPrSingleHopForIntKeysTask_CLIENT2: nonSingleHopCount is %d & "
+            "CheckPrSingleHopForIntKeysTask_CLIENT2: "
             "metadatarefreshCount is %d ",
-            nonSingleHopCount, metadatarefreshCount);
+            metadatarefreshCount);
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
@@ -362,7 +359,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
       }
     }
     ASSERT(failureCount > 0, "Count should be greater than 1");
-    ASSERT(nonSingleHopCount > 0, "nonSingleHopCount should be greater than 1");
     ASSERT(metadatarefreshCount > 0,
            "metadatarefreshCount should be greater than 1");
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT2 put completed.");
@@ -493,7 +489,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
   {
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT3 started.");
     int failureCount = 0;
-    int nonSingleHopCount = 0, metadatarefreshCount = 0;
+    int metadatarefreshCount = 0;
 
     RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
 
@@ -525,15 +521,14 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
         if (type) {
           Statistics* rStats = factory->findFirstStatisticsByType(type);
           if (rStats) {
-            nonSingleHopCount = rStats->getInt((char*)"nonSingleHopCount");
             metadatarefreshCount =
                 rStats->getInt((char*)"metaDataRefreshCount");
           }
         }
         LOGINFO(
-            "CheckPrSingleHopForIntKeysTask_CLIENT3: nonSingleHopCount is %d & "
+            "CheckPrSingleHopForIntKeysTask_CLIENT3: "
             "metadatarefreshCount is %d ",
-            nonSingleHopCount, metadatarefreshCount);
+            metadatarefreshCount);
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
@@ -556,7 +551,6 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
       }
     }
     ASSERT(failureCount > 0, "Count should be greater than 1");
-    ASSERT(nonSingleHopCount > 0, "nonSingleHopCount should be greater than 1");
     ASSERT(metadatarefreshCount > 0,
            "metadatarefreshCount should be greater than 1");
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT3 put completed.");

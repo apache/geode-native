@@ -88,75 +88,70 @@ StatisticsType* RegionStatType::getStatType() {
                                   "The total number of cache entries fetched "
                                   "from persistence backup into the cache",
                                   "entries", largerIsBetter);
-
-    m_stats[9] = factory->createIntCounter(
-        "nonSingleHopCount",
-        "The total number of times client request observed multiple hops",
-        "entries", !largerIsBetter);
-    m_stats[10] =
+    m_stats[9] =
         factory->createIntCounter("metaDataRefreshCount",
                                   "The total number of times matadata is "
                                   "refreshed due to hoping observed",
                                   "entries", !largerIsBetter);
-    m_stats[11] = factory->createIntCounter(
+    m_stats[10] = factory->createIntCounter(
         "getAll", "The total number of cache getAll for this region", "entries",
         largerIsBetter);
-    m_stats[12] = factory->createIntCounter(
+    m_stats[11] = factory->createIntCounter(
         "putAll", "The total number of cache putAll for this region", "entries",
         largerIsBetter);
-    m_stats[13] = factory->createLongCounter(
+    m_stats[12] = factory->createLongCounter(
         "getTime", "Total time spent doing get operations for this region",
         "Nanoseconds", !largerIsBetter);
-    m_stats[14] = factory->createLongCounter(
+    m_stats[13] = factory->createLongCounter(
         "putTime", "Total time spent doing puts operations for this region",
         "Nanoseconds", !largerIsBetter);
-    m_stats[15] = factory->createLongCounter(
+    m_stats[14] = factory->createLongCounter(
         "putAllTime",
         "Total time spent doing putAlls operations for this region",
         "Nanoseconds", !largerIsBetter);
-    m_stats[16] = factory->createLongCounter(
+    m_stats[15] = factory->createLongCounter(
         "getAllTime",
         "Total time spent doing the getAlls operations for this region",
         "Nanoseconds", !largerIsBetter);
 
-    m_stats[17] = factory->createIntCounter(
+    m_stats[16] = factory->createIntCounter(
         "cacheLoaderCallsCompleted",
         "Total number of times a load has completed for this region", "entries",
         largerIsBetter);
-    m_stats[18] = factory->createLongCounter(
+    m_stats[17] = factory->createLongCounter(
         "cacheLoaderCallTIme",
         "Total time spent invoking the loaders for this region", "Nanoseconds",
         !largerIsBetter);
-    m_stats[19] =
+    m_stats[18] =
         factory->createIntCounter("cacheWriterCallsCompleted",
                                   "Total number of times a cache writer call "
                                   "has completed for this region",
                                   "entries", largerIsBetter);
-    m_stats[20] = factory->createLongCounter(
+    m_stats[19] = factory->createLongCounter(
         "cacheWriterCallTime", "Total time spent doing cache writer calls",
         "Nanoseconds", !largerIsBetter);
-    m_stats[21] =
+    m_stats[20] =
         factory->createIntCounter("cacheListenerCallsCompleted",
                                   "Total number of times a cache listener call "
                                   "has completed for this region",
                                   "entries", largerIsBetter);
-    m_stats[22] = factory->createLongCounter(
+    m_stats[21] = factory->createLongCounter(
         "cacheListenerCallTime",
         "Total time spent doing cache listener calls for this region",
         "Nanoseconds", !largerIsBetter);
-    m_stats[23] =
+    m_stats[22] =
         factory->createIntCounter("clears",
                                   "The total number of times a clear has been "
                                   "done on this cache for this region",
                                   "entries", !largerIsBetter);
-    m_stats[24] = factory->createIntCounter(
+    m_stats[23] = factory->createIntCounter(
         "removeAll", "The total number of cache removeAll for this region",
         "entries", largerIsBetter);
-    m_stats[25] = factory->createLongCounter(
+    m_stats[24] = factory->createLongCounter(
         "removeAllTime",
         "Total time spent doing removeAlls operations for this region",
         "Nanoseconds", !largerIsBetter);
-    statsType = factory->createType(statsName, statsDesc, m_stats, 26);
+    statsType = factory->createType(statsName, statsDesc, m_stats, 25);
   }
 
   m_destroysId = statsType->nameToId("destroys");
@@ -176,7 +171,6 @@ StatisticsType* RegionStatType::getStatType() {
   m_entriesId = statsType->nameToId("entries");
   m_overflowsId = statsType->nameToId("overflows");
   m_retrievesId = statsType->nameToId("retrieves");
-  m_nonSingleHopId = statsType->nameToId("nonSingleHopCount");
   m_metaDataRefreshId = statsType->nameToId("metaDataRefreshCount");
   m_LoaderCallsCompletedId = statsType->nameToId("cacheLoaderCallsCompleted");
   m_LoaderCallTimeId = statsType->nameToId("cacheLoaderCallTIme");
@@ -235,7 +229,6 @@ RegionStats::RegionStats(const char* regionName) {
   m_entriesId = regStatType->getEntriesId();
   m_overflowsId = regStatType->getOverflowsId();
   m_retrievesId = regStatType->getRetrievesId();
-  m_nonSingleHopId = regStatType->getNonSingleHopCount();
   m_metaDataRefreshId = regStatType->getMetaDataRefreshCount();
   m_LoaderCallsCompletedId = regStatType->getLoaderCallsCompletedId();
   m_LoaderCallTimeId = regStatType->getLoaderCallTimeId();
@@ -262,7 +255,6 @@ RegionStats::RegionStats(const char* regionName) {
   m_regionStats->setInt(m_entriesId, 0);
   m_regionStats->setInt(m_overflowsId, 0);
   m_regionStats->setInt(m_retrievesId, 0);
-  m_regionStats->setInt(m_nonSingleHopId, 0);
   m_regionStats->setInt(m_metaDataRefreshId, 0);
   m_regionStats->setInt(m_LoaderCallsCompletedId, 0);
   m_regionStats->setInt(m_LoaderCallTimeId, 0);
