@@ -57,14 +57,12 @@ void* CacheFactory::m_cacheMap = (void*)NULL;
 
 CacheFactoryPtr CacheFactory::default_CacheFactory = NULLPTR;
 
-PoolPtr CacheFactory::createOrGetDefaultPool() {
+PoolPtr CacheFactory::createOrGetDefaultPool(CacheImpl& cacheimpl) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
 
-  CachePtr cache = CacheFactory::getAnyInstance();
-
-  if (cache != NULLPTR && cache->isClosed() == false &&
-      cache->m_cacheImpl->getDefaultPool() != NULLPTR) {
-    return cache->m_cacheImpl->getDefaultPool();
+  if (cacheimpl.isClosed() == false &&
+      cacheimpl.getDefaultPool() != NULLPTR) {
+    return cacheimpl.getDefaultPool();
   }
 
   PoolPtr pool = PoolManager::find(DEFAULT_POOL_NAME);
@@ -72,7 +70,7 @@ PoolPtr CacheFactory::createOrGetDefaultPool() {
   // if default_poolFactory is null then we are not using latest API....
   if (pool == NULLPTR && Cache_CreatedFromCacheFactory) {
     if (default_CacheFactory != NULLPTR) {
-      pool = default_CacheFactory->determineDefaultPool(cache);
+      pool = default_CacheFactory->determineDefaultPool(cacheimpl);
     }
     default_CacheFactory = NULLPTR;
   }
@@ -202,7 +200,6 @@ CacheFactory::CacheFactory() {
   pdxReadSerialized = false;
   dsProp = NULLPTR;
   pf = NULLPTR;
-  m_cache = NULLPTR;
 }
 
 CacheFactory::CacheFactory(const PropertiesPtr dsProps) {
@@ -210,7 +207,6 @@ CacheFactory::CacheFactory(const PropertiesPtr dsProps) {
   pdxReadSerialized = false;
   this->dsProp = dsProps;
   this->pf = NULLPTR;
-  m_cache = NULLPTR;
 }
 
 CachePtr CacheFactory::create() {
@@ -228,13 +224,15 @@ CachePtr CacheFactory::create() {
     LOGFINE("CacheFactory called DistributedSystem::connect");
   }
 
-  if (m_cache == NULLPTR)
+  CachePtr cache = NULLPTR;
+  basicGetInstance(dsPtr, false, cache);
+  if (cache == NULLPTR)
   {
-	  CacheFactoryPtr cacheFac(this);
-	  default_CacheFactory = cacheFac;
-	  Cache_CreatedFromCacheFactory = true;
-	  m_cache = create(DEFAULT_CACHE_NAME, dsPtr,
-		  dsPtr->getSystemProperties()->cacheXMLFile(), NULLPTR);
+	CacheFactoryPtr cacheFac(this);
+	default_CacheFactory = cacheFac;
+	Cache_CreatedFromCacheFactory = true;
+	cache = create(DEFAULT_CACHE_NAME, dsPtr,
+	               dsPtr->getSystemProperties()->cacheXMLFile(), NULLPTR);
   }
 
   /*if (cache == NULLPTR) {
@@ -265,10 +263,10 @@ CachePtr CacheFactory::create() {
                                  PdxEnumInstantiator::createDeserializable);
   SerializationRegistry::addType(GeodeTypeIds::PdxType,
                                  PdxType::CreateDeserializable);
-  PdxTypeRegistry::setPdxIgnoreUnreadFields(m_cache->getPdxIgnoreUnreadFields());
-  PdxTypeRegistry::setPdxReadSerialized(m_cache->getPdxReadSerialized());
+  PdxTypeRegistry::setPdxIgnoreUnreadFields(cache->getPdxIgnoreUnreadFields());
+  PdxTypeRegistry::setPdxReadSerialized(cache->getPdxReadSerialized());
 
-  return m_cache;
+  return cache;
 }
 
 CachePtr CacheFactory::create(const char* name,
@@ -312,7 +310,7 @@ CachePtr CacheFactory::create(const char* name,
   return cptr;
 }
 
-PoolPtr CacheFactory::determineDefaultPool(CachePtr cachePtr) {
+PoolPtr CacheFactory::determineDefaultPool(CacheImpl& cacheimpl) {
   PoolPtr pool = NULLPTR;
   HashMapOfPools allPools = PoolManager::getAll();
   size_t currPoolSize = allPools.size();
@@ -328,19 +326,19 @@ PoolPtr CacheFactory::determineDefaultPool(CachePtr cachePtr) {
       pool = this->pf->create(DEFAULT_POOL_NAME);
       // creatubg default pool so setting this as default pool
       LOGINFO("Set default pool with localhost:40404");
-      cachePtr->m_cacheImpl->setDefaultPool(pool);
+      cacheimpl.setDefaultPool(pool);
       return pool;
     } else if (currPoolSize == 1) {
       pool = allPools.begin().second();
       LOGINFO("Set default pool from existing pool.");
-      cachePtr->m_cacheImpl->setDefaultPool(pool);
+      cacheimpl.setDefaultPool(pool);
       return pool;
     } else {
       // can't set anything as deafult pool
       return NULLPTR;
     }
   } else {
-    PoolPtr defaulPool = cachePtr->m_cacheImpl->getDefaultPool();
+    PoolPtr defaulPool = cacheimpl.getDefaultPool();
 
     if (!this->pf->m_addedServerOrLocator) {
       this->pf->addServer(DEFAULT_SERVER_HOST, DEFAULT_SERVER_PORT);
@@ -374,7 +372,7 @@ PoolPtr CacheFactory::determineDefaultPool(CachePtr cachePtr) {
       pool = this->pf->create(DEFAULT_POOL_NAME);
       LOGINFO("Created default pool");
       // creating default so setting this as defaul pool
-      cachePtr->m_cacheImpl->setDefaultPool(pool);
+      cacheimpl.setDefaultPool(pool);
     }
 
     return pool;

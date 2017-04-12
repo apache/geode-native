@@ -463,7 +463,6 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
   PropertiesPtr dsProp;
   bool ignorePdxUnreadFields;
   bool pdxReadSerialized;
-  CachePtr m_cache;
 
   PoolFactoryPtr getPoolFactory();
 
@@ -480,7 +479,7 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
   CacheFactory(const PropertiesPtr dsProps);
   ~CacheFactory();
 
-  PoolPtr determineDefaultPool(CachePtr cachePtr);
+  PoolPtr determineDefaultPool(CacheImpl& cachePtr);
 
   static CachePtr getAnyInstance(bool throwException);
   static GfErrType basicGetInstance(const DistributedSystemPtr& system,
@@ -488,7 +487,7 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
 
   // Set very first time some creates cache
   static CacheFactoryPtr default_CacheFactory;
-  static PoolPtr createOrGetDefaultPool();
+  static PoolPtr createOrGetDefaultPool(CacheImpl& cache);
   static void* m_cacheMap;
   static void init();
   static void cleanup();

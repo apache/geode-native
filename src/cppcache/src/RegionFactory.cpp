@@ -59,7 +59,7 @@ RegionPtr RegionFactory::create(const char* name) {
     ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
     // if local region no need to create default pool
     if (m_preDefinedRegion != LOCAL) {
-      PoolPtr pool = CacheFactory::createOrGetDefaultPool();
+      PoolPtr pool = CacheFactory::createOrGetDefaultPool(m_cacheimpl);
       if (pool == NULLPTR) {
         throw IllegalStateException("Pool is not defined create region.");
       }
