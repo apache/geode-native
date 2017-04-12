@@ -463,6 +463,7 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
   PropertiesPtr dsProp;
   bool ignorePdxUnreadFields;
   bool pdxReadSerialized;
+  CachePtr m_cache;
 
   PoolFactoryPtr getPoolFactory();
 

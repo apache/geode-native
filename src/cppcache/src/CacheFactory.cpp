@@ -202,6 +202,7 @@ CacheFactory::CacheFactory() {
   pdxReadSerialized = false;
   dsProp = NULLPTR;
   pf = NULLPTR;
+  m_cache = NULLPTR;
 }
 
 CacheFactory::CacheFactory(const PropertiesPtr dsProps) {
@@ -209,6 +210,7 @@ CacheFactory::CacheFactory(const PropertiesPtr dsProps) {
   pdxReadSerialized = false;
   this->dsProp = dsProps;
   this->pf = NULLPTR;
+  m_cache = NULLPTR;
 }
 
 CachePtr CacheFactory::create() {
@@ -226,11 +228,16 @@ CachePtr CacheFactory::create() {
     LOGFINE("CacheFactory called DistributedSystem::connect");
   }
 
-  CachePtr cache = NULLPTR;
+  if (m_cache == NULLPTR)
+  {
+	  CacheFactoryPtr cacheFac(this);
+	  default_CacheFactory = cacheFac;
+	  Cache_CreatedFromCacheFactory = true;
+	  m_cache = create(DEFAULT_CACHE_NAME, dsPtr,
+		  dsPtr->getSystemProperties()->cacheXMLFile(), NULLPTR);
+  }
 
-  cache = getAnyInstance(false);
-
-  if (cache == NULLPTR) {
+  /*if (cache == NULLPTR) {
     CacheFactoryPtr cacheFac(this);
     default_CacheFactory = cacheFac;
     Cache_CreatedFromCacheFactory = true;
@@ -250,7 +257,7 @@ CachePtr CacheFactory::create() {
       }
       determineDefaultPool(cache);
     }
-  }
+  }*/
 
   SerializationRegistry::addType(GeodeTypeIdsImpl::PDX,
                                  PdxInstantiator::createDeserializable);
@@ -258,10 +265,10 @@ CachePtr CacheFactory::create() {
                                  PdxEnumInstantiator::createDeserializable);
   SerializationRegistry::addType(GeodeTypeIds::PdxType,
                                  PdxType::CreateDeserializable);
-  PdxTypeRegistry::setPdxIgnoreUnreadFields(cache->getPdxIgnoreUnreadFields());
-  PdxTypeRegistry::setPdxReadSerialized(cache->getPdxReadSerialized());
+  PdxTypeRegistry::setPdxIgnoreUnreadFields(m_cache->getPdxIgnoreUnreadFields());
+  PdxTypeRegistry::setPdxReadSerialized(m_cache->getPdxReadSerialized());
 
-  return cache;
+  return m_cache;
 }
 
 CachePtr CacheFactory::create(const char* name,

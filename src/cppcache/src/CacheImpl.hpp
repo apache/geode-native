@@ -278,7 +278,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   PoolPtr getDefaultPool();
 
   void setRegionShortcut(AttributesFactoryPtr attrFact,
-                                RegionShortcut preDefinedRegionAttr);
+                         RegionShortcut preDefinedRegionAttr);
 
   static std::map<std::string, RegionAttributesPtr> getRegionShortcut();
 
