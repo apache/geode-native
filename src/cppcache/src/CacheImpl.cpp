@@ -852,7 +852,7 @@ int CacheImpl::getPoolSize(const char* poolName) {
 
 RegionFactoryPtr CacheImpl::createRegionFactory(
     RegionShortcut preDefinedRegion) {
-  RegionFactoryPtr rfPtr(new RegionFactory(preDefinedRegion));
+  RegionFactoryPtr rfPtr(new RegionFactory(preDefinedRegion, *this));
   return rfPtr;
 }
 

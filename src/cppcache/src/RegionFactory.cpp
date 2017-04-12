@@ -35,7 +35,9 @@ namespace apache {
 namespace geode {
 namespace client {
 
-RegionFactory::RegionFactory(RegionShortcut preDefinedRegion) {
+RegionFactory::RegionFactory(RegionShortcut preDefinedRegion, CacheImpl& cacheimpl)
+  : m_cacheimpl(cacheimpl)
+{
   m_preDefinedRegion = preDefinedRegion;
   AttributesFactoryPtr afPtr(new AttributesFactory());
   m_attributeFactory = afPtr;
@@ -51,9 +53,7 @@ RegionPtr RegionFactory::create(const char* name) {
   // assuming pool name is not DEFAULT_POOL_NAME
   if (regAttr->getPoolName() != NULL && strlen(regAttr->getPoolName()) > 0) {
     // poolname is set
-    CachePtr cache = CacheFactory::getAnyInstance();
-    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.ptr());
-    cacheImpl->createRegion(name, regAttr, retRegionPtr);
+    m_cacheimpl.createRegion(name, regAttr, retRegionPtr);
   } else {
     // need to look default Pool
     ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
@@ -67,16 +67,14 @@ RegionPtr RegionFactory::create(const char* name) {
     }
 
     regAttr = m_attributeFactory->createRegionAttributes();
-    CachePtr cache = CacheFactory::getAnyInstance();
-    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.ptr());
-    cacheImpl->createRegion(name, regAttr, retRegionPtr);
+    m_cacheimpl.createRegion(name, regAttr, retRegionPtr);
   }
 
   return retRegionPtr;
 }
 
 void RegionFactory::setRegionShortcut() {
-  CacheImpl::setRegionShortcut(m_attributeFactory, m_preDefinedRegion);
+  m_cacheimpl.setRegionShortcut(m_attributeFactory, m_preDefinedRegion);
 }
 
 RegionFactoryPtr RegionFactory::setCacheLoader(
