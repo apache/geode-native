@@ -56,6 +56,7 @@ typedef std::map<std::string, CachePtr> StringToCachePtrMap;
 void* CacheFactory::m_cacheMap = (void*)NULL;
 
 CacheFactoryPtr CacheFactory::default_CacheFactory = NULLPTR;
+CacheFactoryPtr CacheFactory::s_factory = NULLPTR;
 
 PoolPtr CacheFactory::createOrGetDefaultPool(CacheImpl& cacheimpl) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
@@ -81,8 +82,8 @@ PoolPtr CacheFactory::createOrGetDefaultPool(CacheImpl& cacheimpl) {
 CacheFactoryPtr CacheFactory::createCacheFactory(
     const PropertiesPtr& configPtr) {
   // need to create PoolFactory instance
-  CacheFactoryPtr cf(new CacheFactory(configPtr));
-  return cf;
+  s_factory = new CacheFactory(configPtr);
+  return s_factory;
 }
 
 void CacheFactory::init() {
@@ -146,7 +147,7 @@ CachePtr CacheFactory::getInstance(const DistributedSystemPtr& system) {
     throw IllegalArgumentException(
         "CacheFactory::getInstance: system uninitialized");
   }
-  GfErrType err = basicGetInstance(system, false, cptr);
+  GfErrType err = s_factory->basicGetInstance(system, false, cptr);
   GfErrTypeToException("CacheFactory::getInstance", err);
   return cptr;
 }
@@ -158,12 +159,14 @@ CachePtr CacheFactory::getInstanceCloseOk(const DistributedSystemPtr& system) {
     throw IllegalArgumentException(
         "CacheFactory::getInstanceClosedOK: system uninitialized");
   }
-  GfErrType err = basicGetInstance(system, true, cptr);
+  GfErrType err = s_factory->basicGetInstance(system, true, cptr);
   GfErrTypeToException("CacheFactory::getInstanceCloseOk", err);
   return cptr;
 }
 
-CachePtr CacheFactory::getAnyInstance() { return getAnyInstance(true); }
+CachePtr CacheFactory::getAnyInstance() {
+  return s_factory->getAnyInstance(true);
+}
 
 CachePtr CacheFactory::getAnyInstance(bool throwException) {
   CachePtr cptr;

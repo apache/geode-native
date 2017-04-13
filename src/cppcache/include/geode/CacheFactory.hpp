@@ -470,7 +470,7 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
                   const char* cacheXml = 0,
                   const CacheAttributesPtr& attrs = NULLPTR);
 
-  static void create_(const char* name, DistributedSystemPtr& system,
+  void create_(const char* name, DistributedSystemPtr& system,
                       const char* id_data, CachePtr& cptr,
                       bool ignorePdxUnreadFields, bool readPdxSerialized);
 
@@ -481,12 +481,13 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
 
   PoolPtr determineDefaultPool(CacheImpl& cachePtr);
 
-  static CachePtr getAnyInstance(bool throwException);
-  static GfErrType basicGetInstance(const DistributedSystemPtr& system,
-                                    bool closeOk, CachePtr& cptr);
+  CachePtr getAnyInstance(bool throwException);
+  GfErrType basicGetInstance(const DistributedSystemPtr& system,
+                             bool closeOk, CachePtr& cptr);
 
   // Set very first time some creates cache
   static CacheFactoryPtr default_CacheFactory;
+  static CacheFactoryPtr s_factory;
   static PoolPtr createOrGetDefaultPool(CacheImpl& cache);
   static void* m_cacheMap;
   static void init();
