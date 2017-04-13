@@ -26,7 +26,6 @@
 #include <CacheConfig.hpp>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Guard_T.h>
-#include <map>
 #include <string>
 #include <DistributedSystemImpl.hpp>
 #include <SerializationRegistry.hpp>
@@ -52,8 +51,6 @@ namespace client {
 ACE_Recursive_Thread_Mutex g_cfLock;
 
 typedef std::map<std::string, CachePtr> StringToCachePtrMap;
-
-void* CacheFactory::m_cacheMap = (void*)NULL;
 
 CacheFactoryPtr CacheFactory::default_CacheFactory = NULLPTR;
 CacheFactoryPtr CacheFactory::s_factory = NULLPTR;
@@ -86,25 +83,12 @@ CacheFactoryPtr CacheFactory::createCacheFactory(
   return s_factory;
 }
 
-void CacheFactory::init() {
-  if (m_cacheMap == (void*)NULL) {
-    m_cacheMap = (void*)new StringToCachePtrMap();
-  }
-  if (!reinterpret_cast<StringToCachePtrMap*>(m_cacheMap)) {
-    throw OutOfMemoryException("CacheFactory::create: ");
-  }
-}
-
 void CacheFactory::create_(const char* name, DistributedSystemPtr& system,
                            const char* id_data, CachePtr& cptr,
                            bool ignorePdxUnreadFields, bool readPdxSerialized) {
   CppCacheLibrary::initLib();
 
   cptr = NULLPTR;
-  if (!reinterpret_cast<StringToCachePtrMap*>(m_cacheMap)) {
-    throw IllegalArgumentException(
-        "CacheFactory::create: cache map is not initialized");
-  }
   if (system == NULLPTR) {
     throw IllegalArgumentException(
         "CacheFactory::create: system uninitialized");
@@ -128,13 +112,11 @@ void CacheFactory::create_(const char* name, DistributedSystemPtr& system,
     std::string key(system->getName());
     if (cp != NULLPTR) {
       ACE_Guard<ACE_Recursive_Thread_Mutex> guard(g_cfLock);
-      (reinterpret_cast<StringToCachePtrMap*>(m_cacheMap))
-          ->erase(
-              (reinterpret_cast<StringToCachePtrMap*>(m_cacheMap))->find(key));
+      m_cacheMap.erase(m_cacheMap.find(key));
     }
     std::pair<std::string, CachePtr> pc(key, cptr);
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(g_cfLock);
-    (reinterpret_cast<StringToCachePtrMap*>(m_cacheMap))->insert(pc);
+    m_cacheMap.insert(pc);
     return;
   }
   throw CacheExistsException("an open cache exists with the specified system");
@@ -172,7 +154,7 @@ CachePtr CacheFactory::getAnyInstance(bool throwException) {
   CachePtr cptr;
   CppCacheLibrary::initLib();
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(g_cfLock);
-  if ((reinterpret_cast<StringToCachePtrMap*>(m_cacheMap))->empty() == true) {
+  if (m_cacheMap.empty() == true) {
     if (throwException) {
       throw EntryNotFoundException(
           "CacheFactory::getAnyInstance: not found, no cache created yet");
@@ -180,9 +162,8 @@ CachePtr CacheFactory::getAnyInstance(bool throwException) {
       return NULLPTR;
     }
   }
-  for (StringToCachePtrMap::iterator p =
-           (reinterpret_cast<StringToCachePtrMap*>(m_cacheMap))->begin();
-       p != (reinterpret_cast<StringToCachePtrMap*>(m_cacheMap))->end(); ++p) {
+  for (StringToCachePtrMap::iterator p = m_cacheMap.begin();
+       p != m_cacheMap.end(); ++p) {
     if (!(p->second->isClosed())) {
       cptr = p->second;
       return cptr;
@@ -391,13 +372,7 @@ PoolFactoryPtr CacheFactory::getPoolFactory() {
 
 CacheFactory::~CacheFactory() {}
 void CacheFactory::cleanup() {
-  if (m_cacheMap != NULL) {
-    if ((reinterpret_cast<StringToCachePtrMap*>(m_cacheMap))->empty() == true) {
-      (reinterpret_cast<StringToCachePtrMap*>(m_cacheMap))->clear();
-    }
-    delete (reinterpret_cast<StringToCachePtrMap*>(m_cacheMap));
-    m_cacheMap = NULL;
-  }
+  m_cacheMap.clear();
 }
 
 GfErrType CacheFactory::basicGetInstance(const DistributedSystemPtr& system,
@@ -408,13 +383,12 @@ GfErrType CacheFactory::basicGetInstance(const DistributedSystemPtr& system,
   }
   cptr = NULLPTR;
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(g_cfLock);
-  if ((reinterpret_cast<StringToCachePtrMap*>(m_cacheMap))->empty() == true) {
+  if (m_cacheMap.empty() == true) {
     return GF_CACHE_ENTRY_NOT_FOUND;
   }
   std::string key(system->getName());
-  StringToCachePtrMap::iterator p =
-      (reinterpret_cast<StringToCachePtrMap*>(m_cacheMap))->find(key);
-  if (p != (reinterpret_cast<StringToCachePtrMap*>(m_cacheMap))->end()) {
+  StringToCachePtrMap::iterator p = m_cacheMap.find(key);
+  if (p != m_cacheMap.end()) {
     if ((closeOk == true) || (!(p->second->isClosed()))) {
       cptr = p->second;
     } else {

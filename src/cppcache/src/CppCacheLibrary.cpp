@@ -57,7 +57,6 @@ CppCacheLibrary::CppCacheLibrary() {
     LRUEntryFactory::init();
     ExpEntryFactory::init();
     LRUExpEntryFactory::init();
-    CacheFactory::init();
     CacheableToken::init();
     SerializationRegistry::init();
     // PdxTypeRegistry::init();
@@ -70,7 +69,7 @@ CppCacheLibrary::CppCacheLibrary() {
 
 CppCacheLibrary::~CppCacheLibrary() {
   // Put any global clean up code here.
-  CacheFactory::cleanup();
+  //  CacheFactory::cleanup();
   //  PdxTypeRegistry::cleanup();
 
   ACE::fini();

@@ -26,6 +26,7 @@
 #include "Cache.hpp"
 #include "CacheAttributes.hpp"
 #include "PoolFactory.hpp"
+#include <map>
 /**
  * @file
  */
@@ -489,9 +490,8 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
   static CacheFactoryPtr default_CacheFactory;
   static CacheFactoryPtr s_factory;
   static PoolPtr createOrGetDefaultPool(CacheImpl& cache);
-  static void* m_cacheMap;
-  static void init();
-  static void cleanup();
+  std::map<std::string, CachePtr> m_cacheMap;
+  void cleanup();
   static void handleXML(CachePtr& cachePtr, const char* cachexml,
                         DistributedSystemPtr& system);
   friend class CppCacheLibrary;
