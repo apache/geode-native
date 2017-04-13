@@ -492,8 +492,6 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
   static PoolPtr createOrGetDefaultPool(CacheImpl& cache);
   std::map<std::string, CachePtr> m_cacheMap;
   void cleanup();
-  static void handleXML(CachePtr& cachePtr, const char* cachexml,
-                        DistributedSystemPtr& system);
   friend class CppCacheLibrary;
   friend class RegionFactory;
   friend class RegionXmlCreation;

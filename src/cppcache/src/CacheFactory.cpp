@@ -400,35 +400,6 @@ GfErrType CacheFactory::basicGetInstance(const DistributedSystemPtr& system,
   return err;
 }
 
-void CacheFactory::handleXML(CachePtr& cachePtr, const char* cachexml,
-                             DistributedSystemPtr& system) {
-  CacheConfig config(cachexml);
-
-  RegionConfigMapT regionMap = config.getRegionList();
-  RegionConfigMapT::const_iterator iter = regionMap.begin();
-  while (iter != regionMap.end()) {
-    std::string regionName = (*iter).first;
-    RegionConfigPtr regConfPtr = (*iter).second;
-
-    AttributesFactory af;
-    af.setLruEntriesLimit(regConfPtr->getLruEntriesLimit());
-    af.setConcurrencyLevel(regConfPtr->getConcurrency());
-    af.setInitialCapacity(regConfPtr->entries());
-    af.setCachingEnabled(regConfPtr->getCaching());
-
-    RegionAttributesPtr regAttrsPtr;
-    regAttrsPtr = af.createRegionAttributes();
-
-    const RegionShortcut regionShortcut =
-        (regAttrsPtr->getCachingEnabled() ? RegionShortcut::CACHING_PROXY
-                                          : RegionShortcut::PROXY);
-    RegionFactoryPtr regionFactoryPtr =
-        cachePtr->createRegionFactory(regionShortcut);
-    regionFactoryPtr->create(regionName.c_str());
-    ++iter;
-  }
-}
-
 CacheFactoryPtr CacheFactory::set(const char* name, const char* value) {
   if (this->dsProp == NULLPTR) this->dsProp = Properties::create();
   this->dsProp->insert(name, value);
