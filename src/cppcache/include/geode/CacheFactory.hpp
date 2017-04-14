@@ -27,6 +27,7 @@
 #include "CacheAttributes.hpp"
 #include "PoolFactory.hpp"
 #include <map>
+#include <memory>
 /**
  * @file
  */
@@ -464,6 +465,9 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
   PropertiesPtr dsProp;
   bool ignorePdxUnreadFields;
   bool pdxReadSerialized;
+
+  class CacheFactoryImpl;
+  std::unique_ptr<CacheFactoryImpl> pimpl;
 
   PoolFactoryPtr getPoolFactory();
 

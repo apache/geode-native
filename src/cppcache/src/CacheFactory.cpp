@@ -33,6 +33,7 @@
 #include <PdxEnumInstantiator.hpp>
 #include <PdxType.hpp>
 #include <PdxTypeRegistry.hpp>
+#include <CacheFactoryImpl.hpp>
 
 #include "version.h"
 
@@ -48,7 +49,6 @@ bool Cache_CreatedFromCacheFactory = false;
 namespace apache {
 namespace geode {
 namespace client {
-ACE_Recursive_Thread_Mutex g_cfLock;
 
 typedef std::map<std::string, CachePtr> StringToCachePtrMap;
 
@@ -111,11 +111,11 @@ void CacheFactory::create_(const char* name, DistributedSystemPtr& system,
     cptr = cep;
     std::string key(system->getName());
     if (cp != NULLPTR) {
-      ACE_Guard<ACE_Recursive_Thread_Mutex> guard(g_cfLock);
+      ACE_Guard<ACE_Recursive_Thread_Mutex> guard(pimpl->m_lock);
       m_cacheMap.erase(m_cacheMap.find(key));
     }
     std::pair<std::string, CachePtr> pc(key, cptr);
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(g_cfLock);
+    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(pimpl->m_lock);
     m_cacheMap.insert(pc);
     return;
   }
@@ -153,7 +153,7 @@ CachePtr CacheFactory::getAnyInstance() {
 CachePtr CacheFactory::getAnyInstance(bool throwException) {
   CachePtr cptr;
   CppCacheLibrary::initLib();
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(g_cfLock);
+  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(pimpl->m_lock);
   if (m_cacheMap.empty() == true) {
     if (throwException) {
       throw EntryNotFoundException(
@@ -184,6 +184,7 @@ CacheFactory::CacheFactory() {
   pdxReadSerialized = false;
   dsProp = NULLPTR;
   pf = NULLPTR;
+  pimpl = std::unique_ptr<CacheFactoryImpl>(new CacheFactoryImpl());
 }
 
 CacheFactory::CacheFactory(const PropertiesPtr dsProps) {
@@ -191,6 +192,7 @@ CacheFactory::CacheFactory(const PropertiesPtr dsProps) {
   pdxReadSerialized = false;
   this->dsProp = dsProps;
   this->pf = NULLPTR;
+  pimpl = std::unique_ptr<CacheFactoryImpl>(new CacheFactoryImpl());
 }
 
 CachePtr CacheFactory::create() {
@@ -382,7 +384,7 @@ GfErrType CacheFactory::basicGetInstance(const DistributedSystemPtr& system,
     return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
   }
   cptr = NULLPTR;
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(g_cfLock);
+  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(pimpl->m_lock);
   if (m_cacheMap.empty() == true) {
     return GF_CACHE_ENTRY_NOT_FOUND;
   }
