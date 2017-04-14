@@ -491,7 +491,6 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
                              bool closeOk, CachePtr& cptr);
 
   // Set very first time some creates cache
-  static CacheFactoryPtr default_CacheFactory;
   static CacheFactoryPtr s_factory;
   static PoolPtr createOrGetDefaultPool(CacheImpl& cache);
   std::map<std::string, CachePtr> m_cacheMap;

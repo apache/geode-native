@@ -44,15 +44,10 @@
 
 extern ACE_Recursive_Thread_Mutex* g_disconnectLock;
 
-bool Cache_CreatedFromCacheFactory = false;
-
 namespace apache {
 namespace geode {
 namespace client {
 
-typedef std::map<std::string, CachePtr> StringToCachePtrMap;
-
-CacheFactoryPtr CacheFactory::default_CacheFactory = NULLPTR;
 CacheFactoryPtr CacheFactory::s_factory = NULLPTR;
 
 PoolPtr CacheFactory::createOrGetDefaultPool(CacheImpl& cacheimpl) {
@@ -66,11 +61,8 @@ PoolPtr CacheFactory::createOrGetDefaultPool(CacheImpl& cacheimpl) {
   PoolPtr pool = PoolManager::find(DEFAULT_POOL_NAME);
 
   // if default_poolFactory is null then we are not using latest API....
-  if (pool == NULLPTR && Cache_CreatedFromCacheFactory) {
-    if (default_CacheFactory != NULLPTR) {
-      pool = default_CacheFactory->determineDefaultPool(cacheimpl);
-    }
-    default_CacheFactory = NULLPTR;
+  if (pool == NULLPTR && s_factory != NULLPTR) {
+    pool = s_factory->determineDefaultPool(cacheimpl);
   }
 
   return pool;
@@ -162,7 +154,7 @@ CachePtr CacheFactory::getAnyInstance(bool throwException) {
       return NULLPTR;
     }
   }
-  for (StringToCachePtrMap::iterator p = m_cacheMap.begin();
+  for (std::map<std::string, CachePtr>::iterator p = m_cacheMap.begin();
        p != m_cacheMap.end(); ++p) {
     if (!(p->second->isClosed())) {
       cptr = p->second;
@@ -196,7 +188,6 @@ CacheFactory::CacheFactory(const PropertiesPtr dsProps) {
 }
 
 CachePtr CacheFactory::create() {
-  // bool pdxIgnoreUnreadFields = false;
   // bool pdxReadSerialized = false;
 
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
@@ -214,9 +205,6 @@ CachePtr CacheFactory::create() {
   basicGetInstance(dsPtr, false, cache);
   if (cache == NULLPTR)
   {
-	CacheFactoryPtr cacheFac(this);
-	default_CacheFactory = cacheFac;
-	Cache_CreatedFromCacheFactory = true;
 	cache = create(DEFAULT_CACHE_NAME, dsPtr,
 	               dsPtr->getSystemProperties()->cacheXMLFile(), NULLPTR);
   }
@@ -389,7 +377,7 @@ GfErrType CacheFactory::basicGetInstance(const DistributedSystemPtr& system,
     return GF_CACHE_ENTRY_NOT_FOUND;
   }
   std::string key(system->getName());
-  StringToCachePtrMap::iterator p = m_cacheMap.find(key);
+  std::map<std::string, CachePtr>::iterator p = m_cacheMap.find(key);
   if (p != m_cacheMap.end()) {
     if ((closeOk == true) || (!(p->second->isClosed()))) {
       cptr = p->second;

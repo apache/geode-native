@@ -31,7 +31,6 @@
 
 using namespace apache::geode::client;
 
-extern bool Cache_CreatedFromCacheFactory;
 extern ACE_Recursive_Thread_Mutex* g_disconnectLock;
 
 /** Returns the name of this cache.
@@ -78,10 +77,7 @@ void Cache::close(bool keepalive) {
   m_cacheImpl->close(keepalive);
 
   try {
-    if (Cache_CreatedFromCacheFactory) {
-      Cache_CreatedFromCacheFactory = false;
-      DistributedSystem::disconnect();
-    }
+    DistributedSystem::disconnect();
   } catch (const apache::geode::client::NotConnectedException&) {
   } catch (const apache::geode::client::Exception&) {
   } catch (...) {
