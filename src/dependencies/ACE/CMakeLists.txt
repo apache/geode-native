@@ -136,7 +136,7 @@ if (${WIN32})
   set(CMAKE_STATIC_LIBRARY_SUFFIX s$<${MSVC}:$<$<CONFIG:Debug>:d>>.lib)
 endif()
 
-if ($(CMAKE_HOST_SOLARIS))
+if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
 set( PATCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/patches )
 ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} patches
     ALWAYS 0
