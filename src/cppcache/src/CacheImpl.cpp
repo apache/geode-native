@@ -44,6 +44,7 @@
 using namespace apache::geode::client;
 
 ExpiryTaskManager* CacheImpl::expiryTaskManager = NULL;
+CacheImpl* CacheImpl::s_instance = NULL;
 volatile bool CacheImpl::s_networkhop = false;
 volatile int CacheImpl::s_blacklistBucketTimeout = 0;
 ACE_Recursive_Thread_Mutex CacheImpl::s_nwHopLock;
@@ -51,9 +52,6 @@ volatile int8_t CacheImpl::s_serverGroupFlag = 0;
 MemberListForVersionStampPtr CacheImpl::s_versionStampMemIdList = NULLPTR;
 
 #define DEFAULT_LRU_MAXIMUM_ENTRIES 100000
-#define DEFAULT_SERVER_PORT 40404
-#define DEFAULT_SERVER_HOST "localhost"
-
 
 ExpiryTaskManager* getCacheImplExpiryTaskManager() {
   return CacheImpl::expiryTaskManager;
@@ -78,11 +76,10 @@ CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
       m_adminRegion(NULLPTR) {
   m_cacheTXManager = InternalCacheTransactionManager2PCPtr(
       new InternalCacheTransactionManager2PCImpl(c));
-  m_pm = new PoolManager();
-  m_pf = NULLPTR;
+
   m_name = Utils::copyString(name);
 
-  if (m_distributedSystem->isConnected() == false) {
+  if (!DistributedSystem::isConnected()) {
     throw IllegalArgumentException("DistributedSystem is not up");
   }
   m_regions = new MapOfRegionWithLock();
@@ -103,6 +100,7 @@ CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
 
   m_cacheStats = new CachePerfStats;
 
+  s_instance = this;
   m_initialized = true;
 }
 
@@ -125,10 +123,9 @@ CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
       m_adminRegion(NULLPTR) {
   m_cacheTXManager = InternalCacheTransactionManager2PCPtr(
       new InternalCacheTransactionManager2PCImpl(c));
-  m_pm = new PoolManager();
-  m_pf = NULLPTR;
+
   m_name = Utils::copyString(name);
-  if (m_distributedSystem->isConnected() == false) {
+  if (!DistributedSystem::isConnected()) {
     throw IllegalArgumentException("DistributedSystem is not connected");
   }
   m_regions = new MapOfRegionWithLock();
@@ -149,6 +146,7 @@ CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
 
   m_cacheStats = new CachePerfStats;
 
+  s_instance = this;
   m_initialized = true;
 }
 
@@ -175,9 +173,6 @@ void CacheImpl::initServices() {
 }
 
 int CacheImpl::blackListBucketTimeouts() { return s_blacklistBucketTimeout; }
-
-PoolManager* CacheImpl::getPoolManager() { return m_pm; }
-
 
 void CacheImpl::setBlackListBucketTimeouts() { s_blacklistBucketTimeout += 1; }
 
@@ -324,11 +319,11 @@ void CacheImpl::setAttributes(const CacheAttributesPtr& attrs) {
   }
 }
 
-DistributedSystemPtr CacheImpl::getDistributedSystem() const {
+void CacheImpl::getDistributedSystem(DistributedSystemPtr& dptr) const {
   if (m_closed || m_destroyPending) {
     throw CacheClosedException("Cache::getDistributedSystem: cache closed");
   }
-  return(m_distributedSystem);
+  dptr = m_distributedSystem;
 }
 
 void CacheImpl::sendNotificationCloseMsgs() {

@@ -69,11 +69,10 @@ bool Pool::getThreadLocalConnections() const {
 bool Pool::getMultiuserAuthentication() const {
   return m_attrs->getMultiuserSecureModeEnabled();
 }
-RegionServicePtr Pool::createSecureUserCache(PropertiesPtr credentials) {
+RegionServicePtr Pool::createSecureUserCache(PropertiesPtr credentials, CachePtr realCache) {
   if (this->getMultiuserAuthentication()) {
-    CachePtr realCache = CacheFactory::getAnyInstance();
 
-    if (!(realCache != NULLPTR && realCache->m_cacheImpl != NULL)) {
+    if ((realCache == NULLPTR) || (realCache->m_cacheImpl == NULL)) {
       throw IllegalStateException("cache has not been created yet.");
       ;
     }

@@ -247,6 +247,7 @@ class CPPCACHE_EXPORT Cache : public GeodeCache {
 
   bool isPoolInMultiuserMode(RegionPtr regionPtr);
 
+  friend class ProxyCache;
   friend class CacheFactory;
   friend class CacheRegionHelper;
   friend class Pool;

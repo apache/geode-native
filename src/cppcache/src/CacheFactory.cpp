@@ -106,31 +106,24 @@ CacheFactory::CacheFactory(const PropertiesPtr dsProps) {
   pimpl = std::unique_ptr<CacheFactoryImpl>(new CacheFactoryImpl());
 }
 
-CachePtr CacheFactory::create(DistributedSystemPtr distributedSystemPtr) {
+CachePtr CacheFactory::create() {
 
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
-  if ( distributedSystemPtr == NULLPTR)
-  {
-    GF_NEW(distributedSystemPtr, DistributedSystem(DEFAULT_DS_NAME));
-    if (distributedSystemPtr->isConnected()) {
-      ;;
-    }
-      else {
-      if (distributedSystemPtr->connect(DEFAULT_DS_NAME, dsProp ) == true) {
-      LOGFINE("CacheFactory called DistributedSystem::connected");
-      }
-    }
-
-  }
+  DistributedSystemPtr dsPtr = NULLPTR;
 
   // should we compare deafult DS properties here??
+  if (DistributedSystem::isConnected()) {
+    dsPtr = DistributedSystem::getInstance();
+  } else {
+    dsPtr = DistributedSystem::connect(DEFAULT_DS_NAME, dsProp);
+    LOGFINE("CacheFactory called DistributedSystem::connect");
+  }
 
   CachePtr cache = NULLPTR;
-  if (cache == NULLPTR)
-  {
-	cache = create(DEFAULT_CACHE_NAME, distributedSystemPtr,
-                 distributedSystemPtr->getSystemProperties()->cacheXMLFile(), NULLPTR);
-  }
+
+	cache = create(DEFAULT_CACHE_NAME, dsPtr,
+	               dsPtr->getSystemProperties()->cacheXMLFile(), NULLPTR);
+
 
 
   SerializationRegistry::addType(GeodeTypeIdsImpl::PDX,

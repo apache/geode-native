@@ -273,7 +273,7 @@ class CPPCACHE_EXPORT Pool : public SharedBase {
    * @returns Logical instance of cache to do operations on behalf of one
    * particular user.
    */
-  virtual RegionServicePtr createSecureUserCache(PropertiesPtr credentials);
+  virtual RegionServicePtr createSecureUserCache(PropertiesPtr credentials, CachePtr realCache);
 
   Pool(const Pool&);
 

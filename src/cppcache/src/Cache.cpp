@@ -57,7 +57,7 @@ bool Cache::isClosed() const { return m_cacheImpl->isClosed(); }
  */
 DistributedSystemPtr Cache::getDistributedSystem() const {
   DistributedSystemPtr result;
-  result = m_cacheImpl->getDistributedSystem();
+  m_cacheImpl->getDistributedSystem(result);
   return result;
 }
 
@@ -73,11 +73,14 @@ void Cache::close() { close(false); }
  */
 void Cache::close(bool keepalive) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
-  if (m_cacheImpl->getDistributedSystem()->currentInstances() > 0) return;
+  DistributedSystemPtr distributedSystemPtr;
+  m_cacheImpl->getDistributedSystem(distributedSystemPtr);
+  if (DistributedSystemImpl::currentInstances() > 0) return;
   m_cacheImpl->close(keepalive);
 
   try {
-    m_cacheImpl->getDistributedSystem()->disconnect();
+    CachePtr cachePtr(this);
+    distributedSystemPtr->disconnect(cachePtr);
   } catch (const apache::geode::client::NotConnectedException&) {
   } catch (const apache::geode::client::Exception&) {
   } catch (...) {
@@ -219,7 +222,7 @@ RegionServicePtr Cache::createAuthenticatedView(
   if (poolName == NULL) {
     if (!this->isClosed() && m_cacheImpl->getDefaultPool() != NULLPTR) {
       return m_cacheImpl->getDefaultPool()->createSecureUserCache(
-          userSecurityProperties);
+          userSecurityProperties, CachePtr(this));
     }
 
     throw IllegalStateException(
@@ -230,7 +233,7 @@ RegionServicePtr Cache::createAuthenticatedView(
       if (poolName != NULL) {
         PoolPtr poolPtr = m_cacheImpl->getPoolManager()->find(poolName);
         if (poolPtr != NULLPTR && !poolPtr->isDestroyed()) {
-          return poolPtr->createSecureUserCache(userSecurityProperties);
+          return poolPtr->createSecureUserCache(userSecurityProperties, CachePtr(this));
         }
         throw IllegalStateException(
             "Either pool not found or it has been destroyed");

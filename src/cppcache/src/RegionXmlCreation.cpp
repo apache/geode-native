@@ -49,7 +49,7 @@ void RegionXmlCreation::createRoot(Cache* cache) {
     // we may need to initialize default pool
     if (regAttrs->getEndpoints() == NULL) {
       if (regAttrs->getPoolName() == NULL) {
-        PoolPtr pool = CacheFactory::createOrGetDefaultPool(*cache->m_cacheImpl);
+        PoolPtr pool = cache->m_cacheImpl->createOrGetDefaultPool();
 
         if (pool == NULLPTR) {
           throw IllegalStateException("Pool is not defined create region.");

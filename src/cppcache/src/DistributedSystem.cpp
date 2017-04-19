@@ -44,7 +44,11 @@
 using namespace apache::geode::client;
 using namespace apache::geode::statistics;
 
+DistributedSystemPtr* DistributedSystem::m_instance_ptr = NULL;
+bool DistributedSystem::m_connected = false;
+DistributedSystemImpl* DistributedSystem::m_impl = NULL;
 
+ACE_Recursive_Thread_Mutex* g_disconnectLock = new ACE_Recursive_Thread_Mutex();
 
 namespace {
 
@@ -117,9 +121,9 @@ DistributedSystem::DistributedSystem(const char* name) : m_name(NULL) {
 }
 DistributedSystem::~DistributedSystem() { GF_SAFE_DELETE_ARRAY(m_name); }
 
-bool DistributedSystem::connect(
+DistributedSystemPtr DistributedSystem::connect(
     const char* name, const PropertiesPtr& configPtr) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*m_disconnectLock);
+  ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
   setLFH();
   if (m_connected == true) {
     throw AlreadyConnectedException(
@@ -127,7 +131,10 @@ bool DistributedSystem::connect(
         "get it");
   }
 
-
+  // make sure statics are initialized.
+  if (m_instance_ptr == NULL) {
+    m_instance_ptr = new DistributedSystemPtr();
+  }
   if (g_sysProps == NULL) {
     g_sysProps = new SystemProperties(configPtr, NULL);
   }
@@ -173,6 +180,8 @@ bool DistributedSystem::connect(
       CppCacheLibrary::closeLib();
       delete g_sysProps;
       g_sysProps = NULL;
+      *m_instance_ptr = NULLPTR;
+      // delete g_disconnectLock;
       throw;
     }
   } else {
@@ -243,6 +252,7 @@ bool DistributedSystem::connect(
     CppCacheLibrary::closeLib();
     delete g_sysProps;
     g_sysProps = NULL;
+    *m_instance_ptr = NULLPTR;
     // delete g_disconnectLock;
     throw;
   }
@@ -251,7 +261,11 @@ bool DistributedSystem::connect(
   CacheImpl::expiryTaskManager = new ExpiryTaskManager();
   CacheImpl::expiryTaskManager->begin();
 
-    m_impl = new DistributedSystemImpl(name, this);
+  DistributedSystem* dp = new DistributedSystem(name);
+  if (!dp) {
+    throw NullPointerException("DistributedSystem::connect: new failed");
+  }
+  m_impl = new DistributedSystemImpl(name, dp);
 
   try {
     m_impl->connect();
@@ -273,9 +287,11 @@ bool DistributedSystem::connect(
   }
 
   m_connected = true;
+  dptr = dp;
+  *m_instance_ptr = dptr;
   LOGCONFIG("Starting the Geode Native Client");
 
-  return true;
+  return dptr;
 }
 
 /**

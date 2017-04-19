@@ -63,13 +63,14 @@ class CPPCACHE_EXPORT DistributedSystem : public SharedBase {
    * @throws AlreadyConnectedException if this call has succeeded once before
    *for this process
    **/
-  bool connect(const char* name, const PropertiesPtr& configPtr);
+  static DistributedSystemPtr connect(const char* name,
+                                      const PropertiesPtr& configPtr = NULLPTR);
 
   /**
    *@brief disconnect from the distributed system
    *@throws IllegalStateException if not connected
    */
-  void disconnect();
+  static void disconnect(CachePtr cachePtr);
 
   /** Returns the SystemProperties that were used to create this instance of the
    *  DistributedSystem
@@ -86,7 +87,13 @@ class CPPCACHE_EXPORT DistributedSystem : public SharedBase {
    *
    * @return  true if connected, false otherwise
    */
-   bool isConnected();
+  static bool isConnected();
+
+  /** Returns a pointer to the DistributedSystem instance
+   *
+   * @return  instance
+   */
+  static DistributedSystemPtr getInstance();
 
   /**
    * @brief destructor
@@ -101,10 +108,12 @@ class CPPCACHE_EXPORT DistributedSystem : public SharedBase {
 
  private:
   char* m_name;
-  bool m_connected;
+  static bool m_connected;
+  static DistributedSystemPtr* m_instance_ptr;
+  // static DistributedSystemImpl *m_impl;
 
  public:
-  DistributedSystemImpl* m_impl;
+  static DistributedSystemImpl* m_impl;
 
   friend class CacheRegionHelper;
   friend class DistributedSystemImpl;

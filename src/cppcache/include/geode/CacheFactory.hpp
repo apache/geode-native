@@ -33,7 +33,8 @@
  */
 
 #define DEFAULT_POOL_NAME "default_geodeClientPool"
-
+#define DEFAULT_SERVER_PORT 40404
+#define DEFAULT_SERVER_HOST "localhost"
 namespace apache {
 namespace geode {
 namespace client {
@@ -60,7 +61,7 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
   /**
    * To create the instance of {@link Cache}.
    */
-  CachePtr create(DistributedSystemPtr distributedSystemPtr = NULLPTR);
+  CachePtr create();
 
   /**
    * Gets the instance of {@link Cache} produced by an

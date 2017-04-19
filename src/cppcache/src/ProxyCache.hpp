@@ -52,7 +52,7 @@ class FunctionServiceImpl;
  * <p>A cache can have multiple root regions, each with a different name.
  *
  */
-class CPPCACHE_EXPORT ProxyCache : public RegionService {
+class CPPCACHE_EXPORT ProxyCache : public Cache {
   /**
    * @brief public methods
    */

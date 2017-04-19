@@ -118,7 +118,8 @@ PoolPtr PoolFactory::create(const char* name) {
   {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
 
-    if (PoolManager::find(name) != NULLPTR) {
+    //if (PoolManager::find(name) != NULLPTR) {
+    if (connectionPools->find(CacheableString::create(name)) != connectionPools->end()) {
       throw IllegalStateException("Pool with the same name already exists");
     }
     // Create a clone of Attr;
