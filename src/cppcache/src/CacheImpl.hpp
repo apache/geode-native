@@ -255,7 +255,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   void processMarker();
 
   // Pool helpers for unit tests
-  static int getPoolSize(const char* poolName);
+  int getPoolSize(const char* poolName);
 
   // CachePerfStats
   CachePerfStats* m_cacheStats;

@@ -846,7 +846,7 @@ void CacheImpl::readyForEvents() {
     return;
   }
 
-  const HashMapOfPools& pools = m_pf->getAll();
+  const HashMapOfPools& pools = m_pm->getAll();
   if (pools.empty()) throw IllegalStateException("No pools found.");
   PoolPtr currPool = NULLPTR;
   for (HashMapOfPools::Iterator itr = pools.begin(); itr != pools.end();
@@ -870,7 +870,7 @@ void CacheImpl::readyForEvents() {
 }
 
 bool CacheImpl::getEndpointStatus(const std::string& endpoint) {
-  const HashMapOfPools& pools = m_pf->getAll();
+  const HashMapOfPools& pools = m_pm->getAll();
   std::string fullName;
 
   /*
@@ -935,7 +935,7 @@ void CacheImpl::processMarker() {
 }
 
 int CacheImpl::getPoolSize(const char* poolName) {
-  PoolPtr pool = m_pf->find(poolName);
+  PoolPtr pool = m_pm->find(poolName);
   if (pool == NULLPTR) {
     return -1;
   } else {
