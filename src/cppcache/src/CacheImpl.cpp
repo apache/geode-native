@@ -44,7 +44,6 @@
 using namespace apache::geode::client;
 
 ExpiryTaskManager* CacheImpl::expiryTaskManager = NULL;
-CacheImpl* CacheImpl::s_instance = NULL;
 volatile bool CacheImpl::s_networkhop = false;
 volatile int CacheImpl::s_blacklistBucketTimeout = 0;
 ACE_Recursive_Thread_Mutex CacheImpl::s_nwHopLock;
@@ -52,6 +51,9 @@ volatile int8_t CacheImpl::s_serverGroupFlag = 0;
 MemberListForVersionStampPtr CacheImpl::s_versionStampMemIdList = NULLPTR;
 
 #define DEFAULT_LRU_MAXIMUM_ENTRIES 100000
+#define DEFAULT_SERVER_PORT 40404
+#define DEFAULT_SERVER_HOST "localhost"
+
 
 ExpiryTaskManager* getCacheImplExpiryTaskManager() {
   return CacheImpl::expiryTaskManager;
@@ -76,10 +78,11 @@ CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
       m_adminRegion(NULLPTR) {
   m_cacheTXManager = InternalCacheTransactionManager2PCPtr(
       new InternalCacheTransactionManager2PCImpl(c));
-
+  m_pm = new PoolManager();
+  m_pf = NULLPTR;
   m_name = Utils::copyString(name);
 
-  if (!DistributedSystem::isConnected()) {
+  if (m_distributedSystem->isConnected() == false) {
     throw IllegalArgumentException("DistributedSystem is not up");
   }
   m_regions = new MapOfRegionWithLock();
@@ -100,7 +103,6 @@ CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
 
   m_cacheStats = new CachePerfStats;
 
-  s_instance = this;
   m_initialized = true;
 }
 
@@ -123,9 +125,10 @@ CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
       m_adminRegion(NULLPTR) {
   m_cacheTXManager = InternalCacheTransactionManager2PCPtr(
       new InternalCacheTransactionManager2PCImpl(c));
-
+  m_pm = new PoolManager();
+  m_pf = NULLPTR;
   m_name = Utils::copyString(name);
-  if (!DistributedSystem::isConnected()) {
+  if (m_distributedSystem->isConnected() == false) {
     throw IllegalArgumentException("DistributedSystem is not connected");
   }
   m_regions = new MapOfRegionWithLock();
@@ -146,7 +149,6 @@ CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
 
   m_cacheStats = new CachePerfStats;
 
-  s_instance = this;
   m_initialized = true;
 }
 
@@ -156,7 +158,7 @@ void CacheImpl::initServices() {
   CacheImpl::s_versionStampMemIdList =
       MemberListForVersionStampPtr(new MemberListForVersionStamp());
   if (!m_initDone && m_attributes != NULLPTR && m_attributes->getEndpoints()) {
-    if (PoolManager::getAll().size() > 0 && getCacheMode()) {
+    if (m_pm->getAll().size() > 0 && getCacheMode()) {
       LOGWARN(
           "At least one pool has been created so ignoring cache level "
           "redundancy setting");
@@ -173,6 +175,9 @@ void CacheImpl::initServices() {
 }
 
 int CacheImpl::blackListBucketTimeouts() { return s_blacklistBucketTimeout; }
+
+PoolManager* CacheImpl::getPoolManager() { return m_pm; }
+
 
 void CacheImpl::setBlackListBucketTimeouts() { s_blacklistBucketTimeout += 1; }
 
@@ -194,7 +199,7 @@ int8_t CacheImpl::getAndResetServerGroupFlag() {
 void CacheImpl::netDown() {
   m_tcrConnectionManager->netDown();
 
-  const HashMapOfPools& pools = PoolManager::getAll();
+  const HashMapOfPools& pools = m_pm->getAll();
   PoolPtr currPool = NULLPTR;
   for (HashMapOfPools::Iterator itr = pools.begin(); itr != pools.end();
        itr++) {
@@ -232,7 +237,7 @@ CacheImpl::RegionKind CacheImpl::getRegionKind(
       regionKind = THINCLIENT_REGION;
     }
   } else if (rattrs->getPoolName()) {
-    PoolPtr pPtr = PoolManager::find(rattrs->getPoolName());
+    PoolPtr pPtr = m_pm->find(rattrs->getPoolName());
     if ((pPtr != NULLPTR && (pPtr->getSubscriptionRedundancy() > 0 ||
                              pPtr->getSubscriptionEnabled())) ||
         m_tcrConnectionManager->isDurable()) {
@@ -278,7 +283,7 @@ QueryServicePtr CacheImpl::getQueryService(const char* poolName) {
   if (poolName == NULL || strlen(poolName) == 0) {
     throw IllegalArgumentException("PoolName is NULL or not defined..");
   }
-  PoolPtr pool = PoolManager::find(poolName);
+  PoolPtr pool = m_pm->find(poolName);
 
   if (pool != NULLPTR) {
     if (pool->isDestroyed()) {
@@ -319,15 +324,15 @@ void CacheImpl::setAttributes(const CacheAttributesPtr& attrs) {
   }
 }
 
-void CacheImpl::getDistributedSystem(DistributedSystemPtr& dptr) const {
+DistributedSystemPtr CacheImpl::getDistributedSystem() const {
   if (m_closed || m_destroyPending) {
     throw CacheClosedException("Cache::getDistributedSystem: cache closed");
   }
-  dptr = m_distributedSystem;
+  return(m_distributedSystem);
 }
 
 void CacheImpl::sendNotificationCloseMsgs() {
-  HashMapOfPools pools = PoolManager::getAll();
+  HashMapOfPools pools = m_pm->getAll();
   for (HashMapOfPools::Iterator iter = pools.begin(); iter != pools.end();
        ++iter) {
     ThinClientPoolHADM* pool =
@@ -398,7 +403,7 @@ void CacheImpl::close(bool keepalive) {
     m_cacheStats->close();
   }
 
-  PoolManager::close(keepalive);
+  m_pm->close(keepalive);
 
   LOGFINE("Closed pool manager with keepalive %s",
           keepalive ? "true" : "false");
@@ -550,7 +555,7 @@ void CacheImpl::createRegion(const char* name,
     if (!props->isGridClient()) {
       const char* poolName = aRegionAttributes->getPoolName();
       if (poolName != NULL) {
-        PoolPtr pool = PoolManager::find(poolName);
+        PoolPtr pool = m_pm->find(poolName);
         if (pool != NULLPTR && !pool->isDestroyed() &&
             pool->getPRSingleHopEnabled()) {
           ThinClientPoolDM* poolDM =
@@ -653,7 +658,7 @@ RegionInternal* CacheImpl::createRegion_internal(
   }*/
 
   if (poolName != NULL) {
-    PoolPtr pool = PoolManager::find(poolName);
+    PoolPtr pool = m_pm->find(poolName);
     if (pool != NULLPTR && !pool->isDestroyed()) {
       bool isMultiUserSecureMode = pool->getMultiuserAuthentication();
       if (isMultiUserSecureMode && (attrs->getCachingEnabled())) {
@@ -709,6 +714,99 @@ RegionInternal* CacheImpl::createRegion_internal(
   return rptr;
 }
 
+
+PoolPtr CacheImpl::createOrGetDefaultPool() {
+
+//TODO    LOCKHERE
+//  ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
+
+  if (isClosed() == false &&
+      getDefaultPool() != NULLPTR) {
+    return getDefaultPool();
+  }
+
+  PoolPtr pool = m_pm->find(DEFAULT_POOL_NAME);
+
+  // if default_poolFactory is null then we are not using latest API....
+  if (pool == NULLPTR) {
+    pool = determineDefaultPool();
+  }
+
+  return pool;
+}
+
+
+PoolPtr CacheImpl::determineDefaultPool() {
+  PoolPtr pool = NULLPTR;
+  HashMapOfPools allPools = m_pm->getAll();
+  size_t currPoolSize = allPools.size();
+
+
+  // means user has not set any pool attributes
+  if (m_pf == NULLPTR) {
+    m_pf = m_pm->createFactory();
+    if (currPoolSize == 0) {
+      if (!m_pf->hasServerOrLocator()) {
+        m_pf->addServer(DEFAULT_SERVER_HOST, DEFAULT_SERVER_PORT);
+      }
+
+      pool = m_pf->create(DEFAULT_POOL_NAME);
+      // creatubg default pool so setting this as default pool
+      LOGINFO("Set default pool with localhost:40404");
+      setDefaultPool(pool);
+      return pool;
+    } else if (currPoolSize == 1) {
+      pool = allPools.begin().second();
+      LOGINFO("Set default pool from existing pool.");
+      setDefaultPool(pool);
+      return pool;
+    } else {
+      // can't set anything as deafult pool
+      return NULLPTR;
+    }
+  } else {
+    PoolPtr defaultPool = getDefaultPool();
+
+    if (!m_pf->hasServerOrLocator()) {
+      m_pf->addServer(DEFAULT_SERVER_HOST, DEFAULT_SERVER_PORT);
+    }
+
+    if (defaultPool != NULLPTR) {
+      // once default pool is created, we will not create
+      if (*(defaultPool->m_attrs) == *(m_pf->m_attrs)) {
+        return defaultPool;
+      } else {
+        throw IllegalStateException(
+            "Existing cache's default pool was not compatible");
+      }
+    }
+
+    pool = NULLPTR;
+
+    // return any existing pool if it matches
+    for (HashMapOfPools::Iterator iter = allPools.begin();
+         iter != allPools.end(); ++iter) {
+      PoolPtr currPool(iter.second());
+      if (*(currPool->m_attrs) == *(m_pf->m_attrs)) {
+        return currPool;
+      }
+    }
+
+    // defaul pool is null
+    GF_DEV_ASSERT(defaultPool == NULLPTR);
+
+    if (defaultPool == NULLPTR) {
+      pool = m_pf->create(DEFAULT_POOL_NAME);
+      LOGINFO("Created default pool");
+      // creating default so setting this as defaul pool
+      setDefaultPool(pool);
+    }
+
+    return pool;
+  }
+
+}
+
 void CacheImpl::rootRegions(VectorOfRegion& regions) {
   regions.clear();
   MapOfRegionGuard guard(m_regions->mutex());
@@ -748,7 +846,7 @@ void CacheImpl::readyForEvents() {
     return;
   }
 
-  const HashMapOfPools& pools = PoolManager::getAll();
+  const HashMapOfPools& pools = m_pf->getAll();
   if (pools.empty()) throw IllegalStateException("No pools found.");
   PoolPtr currPool = NULLPTR;
   for (HashMapOfPools::Iterator itr = pools.begin(); itr != pools.end();
@@ -772,7 +870,7 @@ void CacheImpl::readyForEvents() {
 }
 
 bool CacheImpl::getEndpointStatus(const std::string& endpoint) {
-  const HashMapOfPools& pools = PoolManager::getAll();
+  const HashMapOfPools& pools = m_pf->getAll();
   std::string fullName;
 
   /*
@@ -837,7 +935,7 @@ void CacheImpl::processMarker() {
 }
 
 int CacheImpl::getPoolSize(const char* poolName) {
-  PoolPtr pool = PoolManager::find(poolName);
+  PoolPtr pool = m_pf->find(poolName);
   if (pool == NULLPTR) {
     return -1;
   } else {

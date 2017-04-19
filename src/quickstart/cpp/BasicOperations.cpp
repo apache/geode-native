@@ -44,11 +44,12 @@ int main(int argc, char** argv) {
     CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
 
     CachePtr cachePtr = cacheFactory->create();
-
+    PoolFactory pf = new PoolFactory();
+    PoolPtr dp = pf->createDefaultPool();
     LOGINFO("Created the Geode Cache");
 
     RegionFactoryPtr regionFactory =
-        cachePtr->createRegionFactory(CACHING_PROXY);
+        cachePtr->createRegionFactory(CACHING_PROXY, dp);
 
     LOGINFO("Created the RegionFactory");
 

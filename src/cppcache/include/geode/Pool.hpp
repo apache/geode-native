@@ -280,6 +280,7 @@ class CPPCACHE_EXPORT Pool : public SharedBase {
   friend class PoolFactory;
   friend class CacheFactory;
   friend class Cache;
+  friend class CacheImpl;
 };
 }  // namespace client
 }  // namespace geode

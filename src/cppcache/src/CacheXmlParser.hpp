@@ -68,6 +68,7 @@ class CPPCACHE_EXPORT CacheXmlParser : public CacheXml {
   bool m_flagExpirationAttribute;
   std::map<std::string, RegionAttributesPtr> namedRegions;
   PoolFactory* m_poolFactory;
+  PoolManager* m_poolManager;
 
   /** Pool helper */
   void setPoolInfo(PoolFactory* poolFactory, const char* name,

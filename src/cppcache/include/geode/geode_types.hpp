@@ -82,6 +82,7 @@ _GF_PTR_DEF_(CqStatistics, CqStatisticsPtr);
 _GF_PTR_DEF_(CqAttributesMutator, CqAttributesMutatorPtr);
 _GF_PTR_DEF_(ClientHealthStats, ClientHealthStatsPtr);
 _GF_PTR_DEF_(Pool, PoolPtr);
+_GF_PTR_DEF_(PoolManager, PoolManagerPtr);
 _GF_PTR_DEF_(PoolFactory, PoolFactoryPtr);
 _GF_PTR_DEF_(PoolAttributes, PoolAttributesPtr);
 _GF_PTR_DEF_(ResultCollector, ResultCollectorPtr);

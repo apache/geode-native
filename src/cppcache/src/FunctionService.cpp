@@ -46,7 +46,7 @@ ExecutionPtr FunctionService::onRegion(RegionPtr region) {
       // it is in multiuser mode
       proxyCache = pr->m_proxyCache;
       PoolPtr userAttachedPool = proxyCache->m_userAttributes->getPool();
-      PoolPtr pool = PoolManager::find(userAttachedPool->getName());
+      PoolPtr pool = region->getPool();
       if (!(pool != NULLPTR && pool.ptr() == userAttachedPool.ptr() &&
             !pool->isDestroyed())) {
         throw IllegalStateException(

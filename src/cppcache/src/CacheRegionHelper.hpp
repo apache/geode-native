@@ -43,9 +43,9 @@ class CacheRegionHelper {
     return cache->m_cacheImpl;
   }
 
-  inline static DistributedSystemImpl* getDistributedSystemImpl() {
-    return DistributedSystem::m_impl;
-  }
+//  inline static DistributedSystemImpl* getDistributedSystemImpl() {
+//    return DistributedSystem::m_impl;
+//  }
 };
 }  // namespace client
 }  // namespace geode

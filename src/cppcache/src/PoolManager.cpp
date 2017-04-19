@@ -21,10 +21,9 @@
 using namespace apache::geode::client;
 
 // TODO: make this a member of TcrConnectionManager.
-HashMapOfPools* connectionPools = NULL; /*new HashMapOfPools( )*/
-ACE_Recursive_Thread_Mutex connectionPoolsLock;
 
-void removePool(const char* name) {
+
+void PoolManager::removePool(const char* name) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
   connectionPools->erase(CacheableString::create(name));
 }

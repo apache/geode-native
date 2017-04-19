@@ -277,6 +277,10 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
     }
   }
 
+  virtual CacheImpl * getCacheImpl()  { return m_realRegion->getCacheImpl(); }
+
+
+
   /** Return the meta-object RegionEntry for key.
   * @throws IllegalArgumentException, RegionDestroyedException.
   */
@@ -1496,6 +1500,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   virtual uint32_t size() { return m_realRegion->size(); }
 
   virtual const PoolPtr& getPool() { return m_realRegion->getPool(); }
+
+
 
   ProxyRegion(ProxyCache* proxyCache, RegionPtr realRegion) {
     ProxyCachePtr pcp(proxyCache);

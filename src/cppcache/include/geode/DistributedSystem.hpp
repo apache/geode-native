@@ -29,7 +29,7 @@
 #include "ExceptionTypes.hpp"
 #include "Properties.hpp"
 #include "VectorT.hpp"
-
+#include <mutex>
 namespace apache {
 namespace geode {
 namespace client {
@@ -63,14 +63,13 @@ class CPPCACHE_EXPORT DistributedSystem : public SharedBase {
    * @throws AlreadyConnectedException if this call has succeeded once before
    *for this process
    **/
-  static DistributedSystemPtr connect(const char* name,
-                                      const PropertiesPtr& configPtr = NULLPTR);
+  bool connect(const char* name, const PropertiesPtr& configPtr);
 
   /**
    *@brief disconnect from the distributed system
    *@throws IllegalStateException if not connected
    */
-  static void disconnect();
+  void disconnect();
 
   /** Returns the SystemProperties that were used to create this instance of the
    *  DistributedSystem
@@ -87,40 +86,36 @@ class CPPCACHE_EXPORT DistributedSystem : public SharedBase {
    *
    * @return  true if connected, false otherwise
    */
-  static bool isConnected();
-
-  /** Returns a pointer to the DistributedSystem instance
-   *
-   * @return  instance
-   */
-  static DistributedSystemPtr getInstance();
+   bool isConnected();
 
   /**
    * @brief destructor
    */
   virtual ~DistributedSystem();
 
- protected:
   /**
    * @brief constructors
    */
   DistributedSystem(const char* name);
+ protected:
 
  private:
   char* m_name;
-  static bool m_connected;
-  static DistributedSystemPtr* m_instance_ptr;
-  // static DistributedSystemImpl *m_impl;
+  bool m_connected;
 
  public:
-  static DistributedSystemImpl* m_impl;
+  DistributedSystemImpl* m_impl;
+
   friend class CacheRegionHelper;
   friend class DistributedSystemImpl;
   friend class TcrConnection;
 
  private:
   DistributedSystem(const DistributedSystem&);
+
   const DistributedSystem& operator=(const DistributedSystem&);
+  std::mutex m_disconnectLock;
+
 };
 }  // namespace client
 }  // namespace geode

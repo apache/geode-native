@@ -111,6 +111,8 @@ void PoolFactory::setPRSingleHopEnabled(bool enabled) {
   m_attrs->setPRSingleHopEnabled(enabled);
 }
 
+bool PoolFactory::hasServerOrLocator() { return m_addedServerOrLocator; }
+
 PoolPtr PoolFactory::create(const char* name) {
   ThinClientPoolDMPtr poolDM;
   {

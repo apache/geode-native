@@ -44,16 +44,11 @@
 using namespace apache::geode::client;
 using namespace apache::geode::statistics;
 
-DistributedSystemPtr* DistributedSystem::m_instance_ptr = NULL;
-bool DistributedSystem::m_connected = false;
-DistributedSystemImpl* DistributedSystem::m_impl = NULL;
 
-ACE_Recursive_Thread_Mutex* g_disconnectLock = new ACE_Recursive_Thread_Mutex();
 
 namespace {
 
 StatisticsManager* g_statMngr = NULL;
-
 SystemProperties* g_sysProps = NULL;
 }  // namespace
 
@@ -122,9 +117,9 @@ DistributedSystem::DistributedSystem(const char* name) : m_name(NULL) {
 }
 DistributedSystem::~DistributedSystem() { GF_SAFE_DELETE_ARRAY(m_name); }
 
-DistributedSystemPtr DistributedSystem::connect(
+bool DistributedSystem::connect(
     const char* name, const PropertiesPtr& configPtr) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
+  ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*m_disconnectLock);
   setLFH();
   if (m_connected == true) {
     throw AlreadyConnectedException(
@@ -132,10 +127,7 @@ DistributedSystemPtr DistributedSystem::connect(
         "get it");
   }
 
-  // make sure statics are initialized.
-  if (m_instance_ptr == NULL) {
-    m_instance_ptr = new DistributedSystemPtr();
-  }
+
   if (g_sysProps == NULL) {
     g_sysProps = new SystemProperties(configPtr, NULL);
   }
@@ -181,8 +173,6 @@ DistributedSystemPtr DistributedSystem::connect(
       CppCacheLibrary::closeLib();
       delete g_sysProps;
       g_sysProps = NULL;
-      *m_instance_ptr = NULLPTR;
-      // delete g_disconnectLock;
       throw;
     }
   } else {
@@ -199,7 +189,8 @@ DistributedSystemPtr DistributedSystem::connect(
     throw;
   }
   // Add version information, source revision, current directory etc.
-  LOGCONFIG("Product version: %s", CacheFactory::getProductDescription());
+  LOGCONFIG("Product version: %s", PRODUCT_VENDOR " " PRODUCT_NAME " " PRODUCT_VERSION " (" PRODUCT_BITS
+        ") " PRODUCT_BUILDDATE);
   LOGCONFIG("Source revision: %s", PRODUCT_SOURCE_REVISION);
   LOGCONFIG("Source repository: %s", PRODUCT_SOURCE_REPOSITORY);
 
@@ -252,7 +243,6 @@ DistributedSystemPtr DistributedSystem::connect(
     CppCacheLibrary::closeLib();
     delete g_sysProps;
     g_sysProps = NULL;
-    *m_instance_ptr = NULLPTR;
     // delete g_disconnectLock;
     throw;
   }
@@ -261,11 +251,7 @@ DistributedSystemPtr DistributedSystem::connect(
   CacheImpl::expiryTaskManager = new ExpiryTaskManager();
   CacheImpl::expiryTaskManager->begin();
 
-  DistributedSystem* dp = new DistributedSystem(name);
-  if (!dp) {
-    throw NullPointerException("DistributedSystem::connect: new failed");
-  }
-  m_impl = new DistributedSystemImpl(name, dp);
+    m_impl = new DistributedSystemImpl(name, this);
 
   try {
     m_impl->connect();
@@ -287,17 +273,15 @@ DistributedSystemPtr DistributedSystem::connect(
   }
 
   m_connected = true;
-  dptr = dp;
-  *m_instance_ptr = dptr;
   LOGCONFIG("Starting the Geode Native Client");
 
-  return dptr;
+  return true;
 }
 
 /**
  *@brief disconnect from the distributed system
  */
-void DistributedSystem::disconnect() {
+void DistributedSystem::disconnect(CachePtr cachePtr) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
 
   if (!m_connected) {
@@ -307,9 +291,8 @@ void DistributedSystem::disconnect() {
   }
 
   try {
-    CachePtr cache = CacheFactory::getAnyInstance();
-    if (cache != NULLPTR && !cache->isClosed()) {
-      cache->close();
+    if (cachePtr != NULLPTR && !cachePtr->isClosed()) {
+      cachePtr->close();
     }
   } catch (const apache::geode::client::Exception& e) {
     LOGWARN("Exception while closing: %s: %s", e.getName(), e.getMessage());

@@ -518,6 +518,7 @@ class CPPCACHE_EXPORT PoolFactory : public SharedBase {
    */
   void setPRSingleHopEnabled(bool enabled);
 
+  bool hasServerOrLocator();
   ~PoolFactory();
 
  private:

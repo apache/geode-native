@@ -57,7 +57,7 @@ bool Cache::isClosed() const { return m_cacheImpl->isClosed(); }
  */
 DistributedSystemPtr Cache::getDistributedSystem() const {
   DistributedSystemPtr result;
-  m_cacheImpl->getDistributedSystem(result);
+  result = m_cacheImpl->getDistributedSystem();
   return result;
 }
 
@@ -73,11 +73,11 @@ void Cache::close() { close(false); }
  */
 void Cache::close(bool keepalive) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
-  if (DistributedSystemImpl::currentInstances() > 0) return;
+  if (m_cacheImpl->getDistributedSystem()->currentInstances() > 0) return;
   m_cacheImpl->close(keepalive);
 
   try {
-    DistributedSystem::disconnect();
+    m_cacheImpl->getDistributedSystem()->disconnect();
   } catch (const apache::geode::client::NotConnectedException&) {
   } catch (const apache::geode::client::Exception&) {
   } catch (...) {
@@ -156,6 +156,12 @@ Cache::Cache(const char* name, DistributedSystemPtr sys, const char* id_data,
                               readPdxSerialized);
 }
 
+PoolPtr  Cache::createOrGetDefaultPool()
+{
+ return m_cacheImpl->createOrGetDefaultPool();
+}
+
+
 Cache::~Cache() { delete m_cacheImpl; }
 
 /** Initialize the cache by the contents of an xml file
@@ -187,7 +193,7 @@ bool Cache::isPoolInMultiuserMode(RegionPtr regionPtr) {
   const char* poolName = regionPtr->getAttributes()->getPoolName();
 
   if (poolName != NULL) {
-    PoolPtr poolPtr = PoolManager::find(poolName);
+    PoolPtr poolPtr = m_cacheImpl->getPoolManager()->find(poolName);
     if (poolPtr != NULLPTR && !poolPtr->isDestroyed()) {
       return poolPtr->getMultiuserAuthentication();
     }
@@ -222,7 +228,7 @@ RegionServicePtr Cache::createAuthenticatedView(
   } else {
     if (!this->isClosed()) {
       if (poolName != NULL) {
-        PoolPtr poolPtr = PoolManager::find(poolName);
+        PoolPtr poolPtr = m_cacheImpl->getPoolManager()->find(poolName);
         if (poolPtr != NULLPTR && !poolPtr->isDestroyed()) {
           return poolPtr->createSecureUserCache(userSecurityProperties);
         }

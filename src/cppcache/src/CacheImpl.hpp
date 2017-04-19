@@ -41,11 +41,11 @@
 #include "CachePerfStats.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "MemberListForVersionStamp.hpp"
-
+#include "geode/PoolManager.hpp"
 #include <string>
 #include <string>
 #include <map>
-
+#include <geode/PoolManager.hpp>
 #include "NonCopyable.hpp"
 
 /** @todo period '.' consistency */
@@ -142,7 +142,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
    * Returns the distributed system that this cache was
    * {@link CacheFactory::create created} with.
    */
-  void getDistributedSystem(DistributedSystemPtr& dptr) const;
+  DistributedSystemPtr getDistributedSystem() const;
 
   /**
    * Terminates this object cache and releases all the local resources.
@@ -208,6 +208,9 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
 
   CacheTransactionManagerPtr getCacheTransactionManager();
 
+  PoolPtr determineDefaultPool();
+  virtual PoolPtr createOrGetDefaultPool();
+
   /**
     * @brief destructor
     */
@@ -257,7 +260,6 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   // CachePerfStats
   CachePerfStats* m_cacheStats;
 
-  static inline CacheImpl* getInstance() { return s_instance; };
 
   bool getCacheMode() {
     return m_attributes == NULLPTR ? false : m_attributes->m_cacheMode;
@@ -276,7 +278,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   void setDefaultPool(PoolPtr pool);
 
   PoolPtr getDefaultPool();
-
+  PoolManager* getPoolManager();
   void setRegionShortcut(AttributesFactoryPtr attrFact,
                          RegionShortcut preDefinedRegionAttr);
 
@@ -290,14 +292,14 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   PoolPtr m_defaultPool;
   bool m_ignorePdxUnreadFields;
   bool m_readPdxSerialized;
-
   enum RegionKind {
     CPP_REGION,
     THINCLIENT_REGION,
     THINCLIENT_HA_REGION,
     THINCLIENT_POOL_REGION
   };
-
+  PoolManager* m_pm;
+  PoolFactoryPtr m_pf;
   RegionKind getRegionKind(const RegionAttributesPtr& rattrs) const;
 
   void sendNotificationCloseMsgs();
@@ -329,7 +331,6 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   ACE_RW_Thread_Mutex m_destroyCacheMutex;
   volatile bool m_destroyPending;
   volatile bool m_initDone;
-  static CacheImpl* s_instance;
   ACE_Thread_Mutex m_initDoneLock;
   AdminRegionPtr m_adminRegion;
   CacheTransactionManagerPtr m_cacheTXManager;
