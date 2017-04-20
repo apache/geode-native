@@ -25,8 +25,8 @@ client performs as a C++ or C\# client.
 
 The examples can be invoked individually from the command line or by using the QuickStart menu.
 
-The examples and their source files are located in the <code>_client-installdir_/SampleCode/quickstart</code> directory, 
-where *client-installdir* is the location in which you installed the client.
+The examples and their source files are located in the <code>_gc-dir_/SampleCode/quickstart</code> directory, 
+where *gc-dir* is the location in which you installed the client.
 
 The C++ examples are in the `cpp` directory, and the C# examples are in the `csharp` directory.
 Note that the C# examples are available only for Windows.
@@ -77,9 +77,9 @@ JDK. Add `$JAVA_HOME/bin` to the start of your `PATH`.
     % PATH=$JAVA\_HOME/bin:$GEODE_ROOT/bin:$PATH; export PATH<br />
     </code>
 
-3. Set the `GEODE` environment variable to point to the directory in which you installed the client, denoted here by  _client-installdir_. Add `$GEODE/lib` to `LD_LIBRARY_PATH`.
+3. Set the `GEODE` environment variable to point to the directory in which you installed the client, denoted here by  _gc-dir_. Add `$GEODE/lib` to `LD_LIBRARY_PATH`.
     <code>
-    % GEODE=_client-installdir_; export GEODE<br />
+    % GEODE=_gc-dir_; export GEODE<br />
     % LD\_LIBRARY\_PATH=$GEODE/lib:${LD\_LIBRARY\_PATH}<br />
     % export LD\_LIBRARY\_PATH<br />
     </code>
@@ -108,7 +108,7 @@ and a third time to install the resulting library into the client installation d
 tree:
 
     <code>
-    % cmake -DGEODE=_client-installdir_ -DCMAKE_INSTALL_PREFIX=/installation-destination _client-installdir_/templates/security <br />
+    % cmake -DGEODE=_gc-dir_ -DCMAKE\_INSTALL\_PREFIX=/installation-destination _gc-dir_/templates/security <br />
     ... creates a makefile and other supporting files<br />
     % cmake --build .<br />
     ... builds  securityImpl plug-in<br />
@@ -151,7 +151,7 @@ Add the `%GEODE_ROOT%\bin` directory to your `PATH`. Add the Geode libraries sho
     <code>
     \>&nbsp;GEODE\_ROOT=_geode-install-dir_<br />
     \> set PATH=%GEODE\_ROOT%\bin;%PATH%<br />
-    \>&nbsp;set&nbsp;CLASSPATH=%GEODE\_ROOT%\lib\geode.jar;%GEODE\_ROOT%\lib\antlr.jar;%GEODE\_ROOT%\lib\gfSecurityImpl.jar;%CLASSPATH%<br />
+    \>&nbsp;set&nbsp;CLASSPATH=%GEODE\_ROOT%\lib\geode.jar;%GEODE\_ROOT%\lib\antlr.jar;<br />
     </code>
 
 2. Set the `JAVA_HOME` environment variable to point to your installed JRE or
@@ -162,12 +162,12 @@ JDK. Add `%JAVA_HOME%\bin` to the start of your `PATH`.
     \> set PATH=%JAVA\_HOME%\bin;%PATH%
     </code>
 
-3. Set the `GEODE` environment variable to point to the directory in which you installed the native
-client, denoted here by _client-installdir_. 
+3. Set the `GEODE` environment variable to point to the directory in which you installed the 
+client, denoted here by _gc-dir_. 
 Add `%GEODE%\bin` to `PATH`. Add `%GEODE%\lib` to `LD_LIBRARY_PATH`.
 
     <code>
-    \> set GEODE=_client-installdir_<br />
+    \> set GEODE=_gc-dir_<br />
     \> set PATH=%GEODE%\bin;%PATH%<br />
     \> set LD\_LIBRARY\_PATH=%GEODE%\lib;%LD\_LIBRARY\_PATH%
     </code>
@@ -195,12 +195,15 @@ instructions in the client security template directory, a second time to perform
 and a third time to install the resulting library into the client installation directory
 tree:
 
+    When building for Windows, specify the code generator (usually "Visual Studio 12 2013 Win64") in the configuration
+    step and the config type ("Debug" or "Release") in any build steps:
+
     <code>
-    \> cmake c:\nc\templates\security -DGEODE=c:\nc<br />
+    \> cmake -G "Visual Studio 12 2013 Win64" c:\\<i>gc-dir</i>\templates\security -DGEODE=c:\_gc-dir_<br />
     ... creates a makefile and other supporting files<br />
-    \> cmake --build .<br />
+    \> cmake --build . --config Release<br />
     ... builds  securityImpl plug-in<br />
-    \> cmake --build . --target install<br />
+    \> cmake --build . --config Release --target install<br />
     ... installs securityImpl in the client installation directory tree ($GEODE)
     </code>
 
@@ -216,11 +219,13 @@ hierarchy. After creating the directory, set it as your current working director
 
 8. Run `cmake` twice, once to configure the build, then again to build the examples, specifying the
 path to the `cmake` instructions located in the quickstart example directory (in this case, we're building the the `csharp` examples):
+Again, when building for Windows, specify the code generator (usually "Visual Studio 12 2013 Win64") in the configuration
+step and the config type ("Debug" or "Release") in any build steps:
 
     <code>
-    \> cmake %GEODE%\SampleCode\quickstart\csharp<br />
+    \> cmake -G "Visual Studio 12 2013 Win64" %GEODE%\SampleCode\quickstart\csharp<br />
     ... creates a makefile and other supporting files<br />
-    \> cmake --build .<br />
+    \> cmake --build . --config Release<br />
     ... builds the examples
     </code>
 
@@ -561,7 +566,7 @@ If you want to build the QuickStart examples yourself from the source files prov
 
 <code>
 set GEODE_ROOT=_full-path-to-geode-directory_<br />
-set GEODE=_client-installdir_<br />
+set GEODE=_gc-dir_<br />
 set JAVA\_HOME=_installed-jdk-path_<br />
 set PATH=%PATH%;%JAVA\_HOME%/bin;%GEODE%\bin<br />
 </code>

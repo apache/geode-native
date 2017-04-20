@@ -107,6 +107,23 @@ Specify the generator with the -G option. For example, on Windows:
   $ cmake -G "Visual Studio 12 2013 Win64" ../src
   ```
 
+When you specify a generator in the cmake configuration step, cmake will usually require that you
+also specify a config type of "Debug" or "Release" in subsequent build steps, using the cmake
+`--config` command-line option. For example, when building for Windows, if you specify the code
+generator (usually "Visual Studio 12 2013 Win64") in the configuration step and the config type
+("Debug" or "Release") in any build steps, the command sequence would look something like this:
+
+<code>
+\> cmake -G "Visual Studio 12 2013 Win64" %GFCPP%\SampleCode\quickstart\csharp<br />
+... configures cmake<br />
+\> cmake --build . --config Release<br />
+... builds the target
+</code>
+
+
+
+
+
 ## C++11 Compiler
 Integrated development environments (IDEs) for various systems usually include the compilers that you need.
 This table shows recommended versions for some of the most popular systems.
