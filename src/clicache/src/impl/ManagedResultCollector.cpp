@@ -149,10 +149,8 @@ namespace apache
       void ManagedResultCollectorGeneric::addResult(CacheablePtr& result)
       {
         try {
-          //Apache::Geode::Client::IGeodeSerializable^ res = SafeUMSerializableConvertGeneric(result.get());
           Object^ rs = Apache::Geode::Client::Serializable::GetManagedValueGeneric<Object^>(result);
           m_managedptr->AddResult(rs);
-          //m_managedptr->AddResult( SafeUMSerializableConvert( result.ptr( ) ) );
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();

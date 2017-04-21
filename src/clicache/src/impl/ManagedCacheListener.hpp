@@ -19,7 +19,10 @@
 
 #include "../geode_defs.hpp"
 #include <vcclr.h>
+#include "begin_native.hpp"
 #include <geode/CacheListener.hpp>
+#include "end_native.hpp"
+
 #include "../ICacheListener.hpp"
 
 namespace apache {

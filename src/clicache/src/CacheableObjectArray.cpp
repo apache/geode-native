@@ -16,9 +16,9 @@
  */
 
 
-
-//#include "geode_includes.hpp"
+#include "begin_native.hpp"
 #include <GeodeTypeIdsImpl.hpp>
+#include "end_native.hpp"
 #include "CacheableObjectArray.hpp"
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
@@ -50,20 +50,6 @@ namespace Apache
 					//TODO::split
           output->WriteObject(obj);
         }
-
-        /*_GF_MG_EXCEPTION_TRY
-
-          apache::geode::client::DataOutput& nativeOutput = *(output->_NativePtr);
-          nativeOutput.writeArrayLen((System::Int32)Count);
-          nativeOutput.write((int8_t)apache::geode::client::GeodeTypeIdsImpl::Class);
-          nativeOutput.write((int8_t)apache::geode::client::GeodeTypeIds::CacheableASCIIString);
-          nativeOutput.writeASCII("java.lang.Object");
-          for each (IGeodeSerializable^ obj in this) {
-            apache::geode::client::SerializablePtr objPtr(SafeMSerializableConvert(obj));
-            nativeOutput.writeObject(objPtr);
-          }
-
-        _GF_MG_EXCEPTION_CATCH_ALL*/
       }
 
       IGeodeSerializable^ CacheableObjectArray::FromData(DataInput^ input)

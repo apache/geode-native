@@ -18,7 +18,10 @@
 #pragma once
 #include "../geode_defs.hpp"
 #include <vcclr.h>
+#include "begin_native.hpp"
 #include <geode/ResultCollector.hpp>
+#include "end_native.hpp"
+
 //#include "../ResultCollector.hpp"
 //#include "../IResultCollector.hpp"
 //#include "../../../IResultCollector.hpp"

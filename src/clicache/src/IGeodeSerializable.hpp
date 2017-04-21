@@ -18,7 +18,9 @@
 #pragma once
 
 #include "geode_defs.hpp"
-#include "geode/geode_types.hpp"
+#include "begin_native.hpp"
+#include <geode/geode_types.hpp>
+#include "end_native.hpp"
 
 using namespace System;
 

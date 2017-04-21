@@ -18,12 +18,12 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/CacheTransactionManager.hpp>
 #include <geode/InternalCacheTransactionManager2PC.hpp>
+#include "end_native.hpp"
+#include "native_shared_ptr.hpp"
 #include "TransactionId.hpp"
-//#include "impl/NativeWrapper.hpp"
-//#include "impl/TransactionWriter.hpp"
-//#include "impl/TransactionListener.hpp"
 
 using namespace System;
 namespace Apache
@@ -32,12 +32,11 @@ namespace Apache
   {
     namespace Client
     {
-
+      namespace native = apache::geode::client;
       /// <summary>
       /// CacheTransactionManager encapsulates the transactions for a cache
       /// </summary>
       public ref class CacheTransactionManager sealed
-        : Internal::SBWrap<apache::geode::client::InternalCacheTransactionManager2PC>
       {
       public:
         /// <summary>
@@ -202,52 +201,9 @@ namespace Apache
         Apache::Geode::Client::TransactionId^ get( );
         }        
 
-#ifdef CSTX_COMMENTED
-          
- 		    /// <summary>
-        /// Returns the current transaction writer
-        /// </summary>
-        /// <returns>current transaction writer(<c>ITransactionWriter</c>)</returns>
-        generic<class TKey, class TValue>
-        ITransactionWriter<TKey, TValue>^ GetWriter ();
-        
-        /// <summary>
-        /// Set the <c>ITransactionWriter</c> for the cache
-        /// <param name="transactionWriter">transaction writer</param>
-        generic<class TKey, class TValue>
-        void SetWriter (ITransactionWriter<TKey, TValue>^ transactionWriter);
-
-        /// <summary>
-        /// Adds a transaction listener to the end of the list of transaction listeners 
-        /// on this cache.
-        /// </summary>
-        /// <param name="aListener"> 
-        /// the user defined transaction listener to add to the cache
-        /// </param>
-        /// <exception cref="IllegalArgumentException">
-        /// If the parameter is null.
-        /// </exception>
-        generic<class TKey, class TValue>
-        void AddListener(ITransactionListener<TKey, TValue>^ aListener);
-        
-        /// <summary>
-        /// Removes a transaction listener from the list of transaction listeners on this cache.
-        /// Does nothing if the specified listener has not been added.
-        /// If the specified listener has been added then the close method of the listener will
-        /// be called.
-        /// </summary>
-        /// <param name="aListener">the transaction listener to remove from the cache.</param>
-        /// <exception cref="IllegalArgumentException">
-        /// if the parameteris null
-        /// </exception>
-        generic<class TKey, class TValue>
-        void RemoveListener(ITransactionListener<TKey, TValue>^ aListener);
-        
-#endif
-
       internal:
 
-        inline static CacheTransactionManager^ Create( apache::geode::client::InternalCacheTransactionManager2PC* nativeptr )
+        inline static CacheTransactionManager^ Create( native::InternalCacheTransactionManager2PCPtr nativeptr )
         {
           return ( nativeptr != nullptr ?
             gcnew CacheTransactionManager( nativeptr ) : nullptr );
@@ -260,8 +216,12 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CacheTransactionManager( apache::geode::client::InternalCacheTransactionManager2PC* nativeptr )
-          : SBWrap( nativeptr ) { }
+        inline CacheTransactionManager( native::InternalCacheTransactionManager2PCPtr nativeptr )
+        {
+          m_nativeptr = gcnew native_shared_ptr<native::InternalCacheTransactionManager2PC>(nativeptr);
+        }
+
+        native_shared_ptr<native::InternalCacheTransactionManager2PC>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

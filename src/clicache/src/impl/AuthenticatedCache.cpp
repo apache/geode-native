@@ -36,14 +36,28 @@ namespace Apache
 
       bool AuthenticatedCache::IsClosed::get( )
       {
-        return NativePtr->isClosed( );
+        try
+        {
+          return m_nativeptr->get()->isClosed( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       void AuthenticatedCache::Close( )
       {
         _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->close(  );
+          try
+          {
+            m_nativeptr->get()->close(  );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -54,11 +68,16 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          ManagedString mg_path( path );
-          apache::geode::client::RegionPtr& nativeptr(
-            NativePtr->getRegion( mg_path.CharPtr ) );
-
-          return Client::Region<TKey, TValue>::Create( nativeptr.ptr( ) );
+          try
+          {
+            ManagedString mg_path( path );
+            auto nativeptr = m_nativeptr->get()->getRegion( mg_path.CharPtr );
+            return Client::Region<TKey, TValue>::Create( nativeptr );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -68,7 +87,14 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          return Client::QueryService<TKey, TResult>::Create( NativePtr->getQueryService( ).ptr( ) );
+          try
+          {
+            return Client::QueryService<TKey, TResult>::Create(m_nativeptr->get()->getQueryService( ));
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -77,23 +103,28 @@ namespace Apache
       array<IRegion<TKey, TValue>^>^ AuthenticatedCache::RootRegions( )
       {
         apache::geode::client::VectorOfRegion vrr;
-        NativePtr->rootRegions( vrr );
-        array<IRegion<TKey, TValue>^>^ rootRegions =
-          gcnew array<IRegion<TKey, TValue>^>( vrr.size( ) );
+        try
+        {
+          m_nativeptr->get()->rootRegions( vrr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+        auto rootRegions = gcnew array<IRegion<TKey, TValue>^>( vrr.size( ) );
 
         for( System::Int32 index = 0; index < vrr.size( ); index++ )
         {
-          apache::geode::client::RegionPtr& nativeptr( vrr[ index ] );
-          rootRegions[ index ] = Client::Region<TKey, TValue>::Create( nativeptr.ptr( ) );
+          auto& nativeptr( vrr[ index ] );
+          rootRegions[ index ] = Client::Region<TKey, TValue>::Create( nativeptr );
         }
         return rootRegions;
       }
 
-       IPdxInstanceFactory^ AuthenticatedCache::CreatePdxInstanceFactory(String^ className)
-        {
-          return gcnew Internal::PdxInstanceFactoryImpl(className);;
+      IPdxInstanceFactory^ AuthenticatedCache::CreatePdxInstanceFactory(String^ className)
+      {
+        return gcnew Internal::PdxInstanceFactoryImpl(className);
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
-}

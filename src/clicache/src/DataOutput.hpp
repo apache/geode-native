@@ -18,8 +18,11 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/DataOutput.hpp>
-//#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
+#include "native_conditional_unique_ptr.hpp"
 #include "Log.hpp"
 #include "ExceptionTypes.hpp"
 #include "Serializable.hpp"
@@ -39,6 +42,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       interface class IGeodeSerializable;
 
@@ -48,7 +52,6 @@ namespace Apache
       /// This class is intentionally not thread safe.
       /// </summary>
       public ref class DataOutput sealed
-				: public Client::Internal::UMWrap<apache::geode::client::DataOutput>
       {
       private:
         System::Int32 m_cursor;
@@ -56,18 +59,27 @@ namespace Apache
         System::Byte * m_bytes;
         System::Int32 m_remainingBufferLength;
         bool m_ispdxSerialization;
+        native_conditional_unique_ptr<native::DataOutput>^ m_nativeptr;
+
       public:
 
         /// <summary>
         /// Default constructor.
         /// </summary>
         inline DataOutput( )
-          : UMWrap( new apache::geode::client::DataOutput( ), true )
         { 
+          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataOutput>(std::make_unique<native::DataOutput>());
           m_isManagedObject = true;
           m_cursor = 0;
-          m_bytes = const_cast<System::Byte *>(NativePtr->getCursor());
-          m_remainingBufferLength = (System::Int32)NativePtr->getRemainingBufferLength();
+          try
+          {
+            m_bytes = const_cast<System::Byte *>(m_nativeptr->get()->getCursor());
+            m_remainingBufferLength = (System::Int32)m_nativeptr->get()->getRemainingBufferLength();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           m_ispdxSerialization = false;
         }
 
@@ -278,17 +290,6 @@ namespace Apache
         /// Reset the cursor to the start of the buffer.
         /// </summary>
         void Reset( );
-
-        /// <summary>
-        /// Get the underlying native unmanaged pointer.
-        /// </summary>
-        property IntPtr NativeIntPtr
-        {
-          inline IntPtr get()
-          {
-            return IntPtr(_NativePtr);
-          }
-        }
        
         /// <summary>
         /// Write a Dictionary to the DataOutput.
@@ -364,6 +365,11 @@ namespace Apache
                
       internal:
 
+        native::DataOutput* GetNative()
+        {
+          return m_nativeptr->get();
+        }
+
         void WriteDotNetObjectArray(Object^ objectArray);
 
         /// <summary>
@@ -393,7 +399,14 @@ namespace Apache
 
 			  System::Int32 GetBufferLengthPdx()
         {
-          return (System::Int32)NativePtr->getBufferLength();
+          try
+          {
+            return (System::Int32)m_nativeptr->get()->getBufferLength();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         }
 
         void WriteString(String^ value);
@@ -405,7 +418,14 @@ namespace Apache
 
         const char * GetPoolName()
         {
-          return _NativePtr->getPoolName();
+          try
+          {
+            return m_nativeptr->get()->getPoolName();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         }
 
         void WriteStringArray(array<String^>^ strArray);
@@ -543,13 +563,27 @@ namespace Apache
         void SetBuffer()
         {
           m_cursor = 0;
-          m_bytes = const_cast<System::Byte *>(NativePtr->getCursor());
-          m_remainingBufferLength = (System::Int32)NativePtr->getRemainingBufferLength();
+          try
+          {
+            m_bytes = const_cast<System::Byte *>(m_nativeptr->get()->getCursor());
+            m_remainingBufferLength = (System::Int32)m_nativeptr->get()->getRemainingBufferLength();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         }
 
 				System::Byte* GetStartBufferPosition()
         {
-          return const_cast<System::Byte *>( NativePtr->getBuffer());;
+          try
+          {
+            return const_cast<System::Byte *>( m_nativeptr->get()->getBuffer());
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          };
         }
 
         inline void EnsureCapacity( System::Int32 size )
@@ -558,14 +592,19 @@ namespace Apache
           if ( bytesLeft < size ) {
             try
             {
-              NativePtr->ensureCapacity(m_cursor + size);
-              m_bytes = const_cast<System::Byte *>( NativePtr->getCursor());
-              m_remainingBufferLength = (System::Int32)NativePtr->getRemainingBufferLength();
+              auto p = m_nativeptr->get();
+              p->ensureCapacity(m_cursor + size);
+              m_bytes = const_cast<System::Byte *>( p->getCursor());
+              m_remainingBufferLength = (System::Int32)p->getRemainingBufferLength();
             }
             catch(apache::geode::client::OutOfMemoryException ex )
             {
               throw gcnew OutOfMemoryException(ex);
             }            
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
           }
         }
 
@@ -579,12 +618,26 @@ namespace Apache
 
         System::Byte* GetBytes(System::Byte* src, System::UInt32 size)
         {
-          return NativePtr->getBufferCopyFrom(src, size);
+          try
+          {
+            return m_nativeptr->get()->getBufferCopyFrom(src, size);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         }
  
         System::Int32 GetRemainingBufferLength()
         {
-          return (System::Int32) NativePtr->getRemainingBufferLength();
+          try
+          {
+            return (System::Int32) m_nativeptr->get()->getRemainingBufferLength();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         }
 
         /// <summary>
@@ -592,8 +645,8 @@ namespace Apache
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
         inline DataOutput( apache::geode::client::DataOutput* nativeptr, bool managedObject )
-          : UMWrap( nativeptr, false )
         {
+          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataOutput>(nativeptr);
           m_isManagedObject = managedObject;
           m_cursor = 0;
           m_bytes = const_cast<System::Byte *>(nativeptr->getCursor());

@@ -19,7 +19,10 @@
 
 #include "../geode_defs.hpp"
 #include <vcclr.h>
+#include "begin_native.hpp"
 #include <geode/Delta.hpp>
+#include "end_native.hpp"
+
 #include "../IGeodeDelta.hpp"
 #include "../IGeodeSerializable.hpp"
 

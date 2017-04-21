@@ -18,7 +18,10 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/CacheLoader.hpp>
+#include "end_native.hpp"
+
 #include "IRegion.hpp"
 //#include "Region.hpp"
 //#include "ICacheableKey.hpp"

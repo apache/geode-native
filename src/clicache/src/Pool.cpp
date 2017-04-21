@@ -35,195 +35,409 @@ namespace Apache
     namespace Client
     {
 
-      //generic<class TKey, class TValue>
-      String^ Pool/*<TKey, TValue>*/::Name::get( )
-      {
-        return ManagedString::Get( NativePtr->getName( ) );
-      }
 
-      //generic<class TKey, class TValue>
-      Int32 Pool/*<TKey, TValue>*/::FreeConnectionTimeout::get()
+      String^ Pool::Name::get( )
       {
-        return NativePtr->getFreeConnectionTimeout();
-      }
-
-      //generic<class TKey, class TValue>
-      Int32 Pool/*<TKey, TValue>*/::LoadConditioningInterval::get()
-      {
-        return NativePtr->getLoadConditioningInterval();
-      }
-
-      //generic<class TKey, class TValue>
-      Int32 Pool/*<TKey, TValue>*/::SocketBufferSize::get()
-      {
-        return NativePtr->getSocketBufferSize();
-      }
-
-      //generic<class TKey, class TValue>
-      Int32 Pool/*<TKey, TValue>*/::ReadTimeout::get()
-      {
-        return NativePtr->getReadTimeout();
-      }
-
-      //generic<class TKey, class TValue>
-      Int32 Pool/*<TKey, TValue>*/::MinConnections::get()
-      {
-        return NativePtr->getMinConnections();
-      }
-
-      //generic<class TKey, class TValue>
-      Int32 Pool/*<TKey, TValue>*/::MaxConnections::get()
-      {
-        return NativePtr->getMaxConnections();
-      }
-
-      //generic<class TKey, class TValue>
-      Int32 Pool/*<TKey, TValue>*/::IdleTimeout::get()
-      {
-        return NativePtr->getIdleTimeout();
-      }
-
-      //generic<class TKey, class TValue>
-      Int32 Pool/*<TKey, TValue>*/::PingInterval::get()
-      {
-        return NativePtr->getPingInterval();
-      }
-
-      //generic<class TKey, class TValue>
-      Int32 Pool/*<TKey, TValue>*/::UpdateLocatorListInterval::get()
-      {
-        return NativePtr->getUpdateLocatorListInterval();
-      }
-
-      //generic<class TKey, class TValue>
-      Int32 Pool/*<TKey, TValue>*/::StatisticInterval::get()
-      {
-        return NativePtr->getStatisticInterval();
-      }
-
-      //generic<class TKey, class TValue>
-      Int32 Pool/*<TKey, TValue>*/::RetryAttempts::get()
-      {
-        return NativePtr->getRetryAttempts();
-      }
-
-      //generic<class TKey, class TValue>
-      Boolean Pool/*<TKey, TValue>*/::SubscriptionEnabled::get()
-      {
-        return NativePtr->getSubscriptionEnabled();
-      }
-
-      //generic<class TKey, class TValue>
-      Boolean Pool/*<TKey, TValue>*/::PRSingleHopEnabled::get()
-      {
-        return NativePtr->getPRSingleHopEnabled();
-      }
-
-      //generic<class TKey, class TValue>
-      Int32 Pool/*<TKey, TValue>*/::SubscriptionRedundancy::get()
-      {
-        return NativePtr->getSubscriptionRedundancy();
-      }
-
-      //generic<class TKey, class TValue>
-      Int32 Pool/*<TKey, TValue>*/::SubscriptionMessageTrackingTimeout::get()
-      {
-        return NativePtr->getSubscriptionMessageTrackingTimeout();
-      }
-
-      //generic<class TKey, class TValue>
-      Int32 Pool/*<TKey, TValue>*/::SubscriptionAckInterval::get()
-      {
-        return NativePtr->getSubscriptionAckInterval();
-      }
-
-      //generic<class TKey, class TValue>
-      String^ Pool/*<TKey, TValue>*/::ServerGroup::get( )
-      {
-        return ManagedString::Get( NativePtr->getServerGroup( ) );
-      }
-
-      //generic<class TKey, class TValue>
-      array<String^>^ Pool/*<TKey, TValue>*/::Locators::get()
-      {
-        apache::geode::client::CacheableStringArrayPtr locators = NativePtr->getLocators();
-        int length = locators->length();
-        if (length > 0)
+        try
         {
-          array<String^>^ result = gcnew array<String^>(length);
-          for (int item = 0; item < length; item++)
+          return ManagedString::Get( m_nativeptr->get()->getName( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      Int32 Pool::FreeConnectionTimeout::get()
+      {
+        try
+        {
+          return m_nativeptr->get()->getFreeConnectionTimeout();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      Int32 Pool::LoadConditioningInterval::get()
+      {
+        try
+        {
+          return m_nativeptr->get()->getLoadConditioningInterval();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      Int32 Pool::SocketBufferSize::get()
+      {
+        try
+        {
+          return m_nativeptr->get()->getSocketBufferSize();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      Int32 Pool::ReadTimeout::get()
+      {
+        try
+        {
+          return m_nativeptr->get()->getReadTimeout();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      Int32 Pool::MinConnections::get()
+      {
+        try
+        {
+          return m_nativeptr->get()->getMinConnections();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      Int32 Pool::MaxConnections::get()
+      {
+        try
+        {
+          return m_nativeptr->get()->getMaxConnections();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      Int32 Pool::IdleTimeout::get()
+      {
+        try
+        {
+          return m_nativeptr->get()->getIdleTimeout();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      Int32 Pool::PingInterval::get()
+      {
+        try
+        {
+          return m_nativeptr->get()->getPingInterval();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      Int32 Pool::UpdateLocatorListInterval::get()
+      {
+        try
+        {
+          return m_nativeptr->get()->getUpdateLocatorListInterval();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      Int32 Pool::StatisticInterval::get()
+      {
+        try
+        {
+          return m_nativeptr->get()->getStatisticInterval();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      Int32 Pool::RetryAttempts::get()
+      {
+        try
+        {
+          return m_nativeptr->get()->getRetryAttempts();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      Boolean Pool::SubscriptionEnabled::get()
+      {
+        try
+        {
+          return m_nativeptr->get()->getSubscriptionEnabled();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      Boolean Pool::PRSingleHopEnabled::get()
+      {
+        try
+        {
+          return m_nativeptr->get()->getPRSingleHopEnabled();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      Int32 Pool::SubscriptionRedundancy::get()
+      {
+        try
+        {
+          return m_nativeptr->get()->getSubscriptionRedundancy();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      Int32 Pool::SubscriptionMessageTrackingTimeout::get()
+      {
+        try
+        {
+          return m_nativeptr->get()->getSubscriptionMessageTrackingTimeout();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      Int32 Pool::SubscriptionAckInterval::get()
+      {
+        try
+        {
+          return m_nativeptr->get()->getSubscriptionAckInterval();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      String^ Pool::ServerGroup::get( )
+      {
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getServerGroup( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+
+      array<String^>^ Pool::Locators::get()
+      {
+        try
+        {
+          auto locators = m_nativeptr->get()->getLocators();
+          int length = locators->length();
+          if (length > 0)
           {
-            result[item] = CacheableString::GetString(locators[item].get());
+            array<String^>^ result = gcnew array<String^>(length);
+            for (int item = 0; item < length; item++)
+            {
+              result[item] = CacheableString::GetString((*locators)[item].get());
+            }
+            return result;
           }
-          return result;
+          else
+          {
+            return nullptr;
+          }
         }
-        else
+        finally
         {
-          return nullptr;
+          GC::KeepAlive(m_nativeptr);
         }
       }
 
-      //generic<class TKey, class TValue>
-      array<String^>^ Pool/*<TKey, TValue>*/::Servers::get()
+
+      array<String^>^ Pool::Servers::get()
       {
-        apache::geode::client::CacheableStringArrayPtr servers = NativePtr->getServers();
-        int length = servers->length();
-        if (length > 0)
+        try
         {
-          array<String^>^ result = gcnew array<String^>(length);
-          for (int item = 0; item < length; item++)
+          auto servers = m_nativeptr->get()->getServers();
+          int length = servers->length();
+          if (length > 0)
           {
-            result[item] = CacheableString::GetString(servers[item].get());
+            array<String^>^ result = gcnew array<String^>(length);
+            for (int item = 0; item < length; item++)
+            {
+              result[item] = CacheableString::GetString((*servers)[item].get());
+            }
+            return result;
           }
-          return result;
+          else
+          {
+            return nullptr;
+          }
         }
-        else
+        finally
         {
-          return nullptr;
+          GC::KeepAlive(m_nativeptr);
         }
       }
 
 	  //generic<class TKey, class TValue>
-      Boolean Pool/*<TKey, TValue>*/::ThreadLocalConnections::get()
+      Boolean Pool::ThreadLocalConnections::get()
       {
-        return NativePtr->getThreadLocalConnections();
+        try
+        {
+          return m_nativeptr->get()->getThreadLocalConnections();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
       }
 
-      //generic<class TKey, class TValue>
-      bool Pool/*<TKey, TValue>*/::MultiuserAuthentication::get()
+
+      bool Pool::MultiuserAuthentication::get()
       {
-        return NativePtr->getMultiuserAuthentication();    
+        try
+        {
+          return m_nativeptr->get()->getMultiuserAuthentication();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+    
       }
       
-      //generic<class TKey, class TValue>
-      void Pool/*<TKey, TValue>*/::Destroy(Boolean KeepAlive)
+
+      void Pool::Destroy(Boolean KeepAlive)
       {
-        NativePtr->destroy(KeepAlive);
+        try
+        {
+          m_nativeptr->get()->destroy(KeepAlive);
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
       }
 
       void Pool::ReleaseThreadLocalConnection()
       {
-        NativePtr->releaseThreadLocalConnection();
+        try
+        {
+          m_nativeptr->get()->releaseThreadLocalConnection();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
       }
 
-      //generic<class TKey, class TValue>
-      void Pool/*<TKey, TValue>*/::Destroy()
+
+      void Pool::Destroy()
       {
-        NativePtr->destroy();
+        try
+        {
+          m_nativeptr->get()->destroy();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
       }
 
-      //generic<class TKey, class TValue>
-      Boolean Pool/*<TKey, TValue>*/::Destroyed::get()
+
+      Boolean Pool::Destroyed::get()
       {
-        return NativePtr->isDestroyed();
+        try
+        {
+          return m_nativeptr->get()->isDestroyed();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
       }
 
       generic<class TKey, class TResult>
-      QueryService<TKey, TResult>^ Pool/*<TKey, TValue>*/::GetQueryService()
+      QueryService<TKey, TResult>^ Pool::GetQueryService()
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return QueryService<TKey, TResult>::Create( NativePtr->getQueryService( ).ptr( ) );
+          try
+          {
+            return QueryService<TKey, TResult>::Create(m_nativeptr->get()->getQueryService());
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -232,11 +446,18 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-        return NativePtr->getPendingEventCount();
+          try
+          {
+            return m_nativeptr->get()->getPendingEventCount();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+
 
         _GF_MG_EXCEPTION_CATCH_ALL2
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
- } //namespace 

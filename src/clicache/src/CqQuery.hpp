@@ -19,8 +19,10 @@
 
 #include "geode_defs.hpp"
 #include "CqState.hpp"
+#include "begin_native.hpp"
 #include <geode/CqQuery.hpp>
-//#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+#include "native_shared_ptr.hpp"
 
 
 using namespace System;
@@ -31,6 +33,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       generic<class TResult>
       interface class ICqResults;
@@ -63,7 +66,6 @@ namespace Apache
       /// </remarks>
       generic<class TKey, class TResult>
       public ref class CqQuery sealed
-        : public Internal::SBWrap<apache::geode::client::CqQuery>
       {
       public:
 
@@ -166,13 +168,10 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static CqQuery<TKey, TResult>^ Create( apache::geode::client::CqQuery* nativeptr )
+        inline static CqQuery<TKey, TResult>^ Create( native::CqQueryPtr nativeptr )
         {
-          if (nativeptr == nullptr)
-          {
-            return nullptr;
-          }
-          return gcnew CqQuery<TKey, TResult>( nativeptr );
+          return __nullptr == nativeptr ? nullptr :
+            gcnew  CqQuery<TKey, TResult>( nativeptr );
         }
 
 
@@ -182,8 +181,13 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CqQuery( apache::geode::client::CqQuery* nativeptr )
-          : SBWrap( nativeptr ) { }
+        inline CqQuery( native::CqQueryPtr nativeptr )
+        {
+          m_nativeptr = gcnew native_shared_ptr<native::CqQuery>(nativeptr);
+        }
+
+
+         native_shared_ptr<native::CqQuery>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

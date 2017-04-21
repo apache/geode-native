@@ -18,11 +18,13 @@
 #pragma once
 
 #include "geode_defs.hpp"
-#include "impl/NativeWrapper.hpp"
+#include "begin_native.hpp"
 #include <geode/CacheFactory.hpp>
+#include "end_native.hpp"
+
+#include "native_shared_ptr.hpp"
 #include "Properties.hpp"
 
-//using namespace System;
 using namespace System::Collections::Generic;
 
 namespace Apache
@@ -31,6 +33,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       ref class Cache;
       ref class CacheAttributes;
@@ -45,7 +48,7 @@ namespace Apache
       /// To get an existing unclosed cache instance, use <see cref="CacheFactory.GetInstance" />.
       /// </para>
       /// </remarks>
-      public ref class CacheFactory :public Internal::SBWrap<apache::geode::client::CacheFactory>
+      public ref class CacheFactory
       {
       public:
 
@@ -127,7 +130,7 @@ namespace Apache
         /// </summary>
         static void SetNewAndDelete()
         {
-          apache::geode::client::setNewAndDelete(&operator new, &operator delete);
+          native::setNewAndDelete(&operator new, &operator delete);
         }
 
         /// <summary>
@@ -591,15 +594,17 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CacheFactory(apache::geode::client::CacheFactory* nativeptr, Properties<String^, String^>^ dsProps)
-          : SBWrap(nativeptr)
+        inline CacheFactory(native::CacheFactoryPtr nativeptr, Properties<String^, String^>^ dsProps)
         {
+          m_nativeptr = gcnew native_shared_ptr<native::CacheFactory>(nativeptr);
           m_dsProps = dsProps;
         }
 
         Properties<String^, String^>^ m_dsProps;
 
         static System::Object^ m_singletonSync = gcnew System::Object();
+
+        native_shared_ptr<native::CacheFactory>^ m_nativeptr;
 
       internal:
         static bool m_connected = false;

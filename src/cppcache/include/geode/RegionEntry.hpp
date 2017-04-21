@@ -67,7 +67,7 @@ class CPPCACHE_EXPORT RegionEntry : public SharedBase {
    *
    * @return the Region that contains this entry
    */
-  void getRegion(Region* region);
+  RegionPtr getRegion();
 
   /** Returns the statistics for this entry.
    *
@@ -95,14 +95,16 @@ class CPPCACHE_EXPORT RegionEntry : public SharedBase {
     * @brief constructors
     * created by region
     */
-  RegionEntry(Region* region, const CacheableKeyPtr& key,
+  RegionEntry(const RegionPtr& region, const CacheableKeyPtr& key,
               const CacheablePtr& value);
-  Region* m_region;
+  RegionPtr m_region;
   CacheableKeyPtr m_key;
   CacheablePtr m_value;
   CacheStatisticsPtr m_statistics;
   bool m_destroyed;
   friend class RegionInternal;
+
+  FRIEND_STD_SHARED_PTR(RegionEntry)
 };
 }  // namespace client
 }  // namespace geode

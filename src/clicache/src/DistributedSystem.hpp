@@ -18,8 +18,11 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/DistributedSystem.hpp>
-//#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
+#include "native_shared_ptr.hpp"
 #include "SystemProperties.hpp"
 #include "Properties.hpp"
 #include "impl/CliCallbackDelgate.hpp"
@@ -33,6 +36,8 @@ namespace Apache
     namespace Client
     {
 
+      namespace native = apache::geode::client;
+
       /// <summary>
       /// DistributedSystem encapsulates this applications "connection" into the
       /// Geode Java servers.
@@ -43,7 +48,6 @@ namespace Apache
       /// DistributedSystem.
       /// </remarks>
       public ref class DistributedSystem sealed
-        : public Client::Internal::SBWrap<apache::geode::client::DistributedSystem>
       {
       public:
 
@@ -130,7 +134,7 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        static DistributedSystem^ Create(apache::geode::client::DistributedSystem* nativeptr);
+        static DistributedSystem^ Create(native::DistributedSystemPtr nativeptr);
 
         static void acquireDisconnectLock();
 
@@ -149,7 +153,7 @@ namespace Apache
         /// Stuff that needs to be done for Connect in each AppDomain.
         /// </summary>
         static void AppDomainInstanceInitialization(
-          const apache::geode::client::PropertiesPtr& nativepropsptr);
+          const native::PropertiesPtr& nativepropsptr);
 
         /// <summary>
         /// Managed registrations and other stuff to be done for the manage
@@ -168,6 +172,11 @@ namespace Apache
         /// </summary>
         static void UnregisterBuiltinManagedTypes();
 
+        std::shared_ptr<native::DistributedSystem> GetNative()
+        {
+          return m_nativeptr->get_shared_ptr();
+        }
+
       private:
 
         ///// <summary>
@@ -180,13 +189,14 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        DistributedSystem(apache::geode::client::DistributedSystem* nativeptr);
+        DistributedSystem(native::DistributedSystemPtr nativeptr);
 
         /// <summary>
         /// Finalizer for the singleton instance of this class.
         /// </summary>
         ~DistributedSystem();
 
+        native_shared_ptr<native::DistributedSystem>^ m_nativeptr;
 
 
         /// <summary>

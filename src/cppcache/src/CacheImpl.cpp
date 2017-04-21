@@ -365,6 +365,8 @@ void CacheImpl::close(bool keepalive) {
     m_adminRegion = nullptr;
   }
 
+  CacheImpl::s_versionStampMemIdList = nullptr;
+
   // The TCCM gets destroyed when CacheImpl is destroyed, but after that there
   // is still a window for the ping related registered task to get activated
   // because expiryTaskManager is closed in DS::disconnect. If this happens

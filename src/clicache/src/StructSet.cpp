@@ -33,33 +33,57 @@ namespace Apache
       generic<class TResult>
       bool StructSet<TResult>::IsModifiable::get( )
       {
-        return NativePtr->isModifiable( );
+        try
+        {
+          return m_nativeptr->get()->isModifiable( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TResult>
       System::Int32 StructSet<TResult>::Size::get( )
       {
-        return NativePtr->size( );
+        try
+        {
+          return m_nativeptr->get()->size( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TResult>
-      /*Apache::Geode::Client::IGeodeSerializable^*/ TResult StructSet<TResult>::default::get( size_t index )
+      TResult StructSet<TResult>::default::get( size_t index )
       {
-        //return SafeUMSerializableConvertGeneric((NativePtr->operator[](static_cast<System::Int32>(index))).get());
-        return Serializable::GetManagedValueGeneric<TResult>((NativePtr->operator[](static_cast<System::Int32>(index))));
+        try
+        {
+          return Serializable::GetManagedValueGeneric<TResult>((m_nativeptr->get()->operator[](static_cast<System::Int32>(index))));
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TResult>
       SelectResultsIterator<TResult>^ StructSet<TResult>::GetIterator( )
       {
-        apache::geode::client::SelectResultsIterator* nativeptr =
-          new apache::geode::client::SelectResultsIterator(NativePtr->getIterator());
-        return SelectResultsIterator<TResult>::Create( nativeptr );
+        try
+        {
+          return SelectResultsIterator<TResult>::Create(std::make_unique<apache::geode::client::SelectResultsIterator>(m_nativeptr->get()->getIterator()));
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TResult>
-      System::Collections::Generic::IEnumerator</*Apache::Geode::Client::IGeodeSerializable^*/TResult>^
-        StructSet<TResult>::GetEnumerator( )
+      System::Collections::Generic::IEnumerator<TResult>^ StructSet<TResult>::GetEnumerator( )
       {
         return GetIterator( );
       }
@@ -77,17 +101,30 @@ namespace Apache
 
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return NativePtr->getFieldIndex( mg_fieldName.CharPtr );
+          try
+          {
+            return m_nativeptr->get()->getFieldIndex( mg_fieldName.CharPtr );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       generic<class TResult>
-      String^ StructSet<TResult>::GetFieldName( size_t index )
+      String^ StructSet<TResult>::GetFieldName(size_t index)
       {
-        return ManagedString::Get( NativePtr->getFieldName( static_cast<System::Int32> (index) ) );
+        try
+        {
+          return ManagedString::Get(m_nativeptr->get()->getFieldName(static_cast<System::Int32> (index)));
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
- } //namespace 

@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
 #include "CqStatistics.hpp"
-
 
 namespace Apache
 {
@@ -25,24 +23,54 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace System;
 
-		System::UInt32 CqStatistics::numInserts( )
-	{
-	  return NativePtr->numInserts( );
-	}
-    System::UInt32 CqStatistics::numDeletes( )
-	{
-	  return NativePtr->numDeletes( );
-	}
-    System::UInt32 CqStatistics::numUpdates( )
-	{
-	  return NativePtr->numUpdates( );
-	}
-    System::UInt32 CqStatistics::numEvents( )
-	{
-	  return NativePtr->numEvents( );
+      System::UInt32 CqStatistics::numInserts()
+      {
+        try
+        {
+          return m_nativeptr->get()->numInserts();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+      }
+      System::UInt32 CqStatistics::numDeletes()
+      {
+        try
+        {
+          return m_nativeptr->get()->numDeletes();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+      }
+      System::UInt32 CqStatistics::numUpdates()
+      {
+        try
+        {
+          return m_nativeptr->get()->numUpdates();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+      }
+      System::UInt32 CqStatistics::numEvents()
+      {
+        try
+        {
+          return m_nativeptr->get()->numEvents();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+      }
+
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
 
- } //namespace 

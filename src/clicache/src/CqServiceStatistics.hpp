@@ -18,9 +18,10 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/CqServiceStatistics.hpp>
-#include "impl/NativeWrapper.hpp"
-
+#include "end_native.hpp"
+#include "native_shared_ptr.hpp"
 
 namespace Apache
 {
@@ -28,12 +29,12 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       /// <summary>
       /// Defines common statistical information for cqservice 
       /// </summary>
       public ref class CqServiceStatistics sealed
-        : public Internal::SBWrap<apache::geode::client::CqServiceStatistics>
       {
       public:
 
@@ -75,13 +76,10 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static CqServiceStatistics^ Create( apache::geode::client::CqServiceStatistics* nativeptr )
+        inline static CqServiceStatistics^ Create( apache::geode::client::CqServiceStatisticsPtr nativeptr )
         {
-          if (nativeptr == nullptr)
-          {
-            return nullptr;
-          }
-          return gcnew CqServiceStatistics( nativeptr );
+          return __nullptr == nativeptr ? nullptr :
+            gcnew CqServiceStatistics( nativeptr );
         }
 
 
@@ -91,8 +89,12 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CqServiceStatistics( apache::geode::client::CqServiceStatistics* nativeptr )
-          : SBWrap( nativeptr ) { }
+        inline CqServiceStatistics( apache::geode::client::CqServiceStatisticsPtr nativeptr )
+        {
+          m_nativeptr = gcnew native_shared_ptr<native::CqServiceStatistics>(nativeptr);
+        }
+        
+        native_shared_ptr<native::CqServiceStatistics>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

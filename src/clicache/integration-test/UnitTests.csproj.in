@@ -197,7 +197,6 @@
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ExpirationTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\OverflowTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\SerializationTestsN.cs" />
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\SystemPropertiesTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientConflationTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientCqIRTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientCqTestsN.cs" />

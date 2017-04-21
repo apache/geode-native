@@ -20,7 +20,6 @@
 #include "geode_defs.hpp"
 #include "IGeodeSerializable.hpp"
 
-
 using namespace System;
 
 namespace Apache

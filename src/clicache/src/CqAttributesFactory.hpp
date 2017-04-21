@@ -18,11 +18,13 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/CqAttributesFactory.hpp>
-//#include "impl/NativeWrapper.hpp"
-#include "impl/SafeConvert.hpp"
+#include "end_native.hpp"
 
+#include "impl/SafeConvert.hpp"
 #include "CqAttributes.hpp"
+#include "native_unique_ptr.hpp"
 
 using namespace System;
 using namespace System::Collections::Generic;
@@ -33,11 +35,8 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
-      /*
-      generic<class TKey, class TValue>
-      ref class CqAttributes;
-      */
       generic<class TKey, class TResult>
       interface class ICqListener;
 
@@ -47,7 +46,6 @@ namespace Apache
       /// <seealso cref="CqAttributes" />
       generic<class TKey, class TResult>
       public ref class CqAttributesFactory sealed
-        : public Internal::UMWrap<apache::geode::client::CqAttributesFactory>
       {
       public:
 
@@ -56,12 +54,14 @@ namespace Apache
         /// to create a <c>CqAttributes</c> with default settings.
         /// </summary>
         inline CqAttributesFactory( )
-          : UMWrap( new apache::geode::client::CqAttributesFactory( ), true )
-        { }
+        {
+          m_nativeptr = gcnew native_unique_ptr<native::CqAttributesFactory>(std::make_unique<native::CqAttributesFactory>());
+        }
 
         inline CqAttributesFactory(Client::CqAttributes<TKey, TResult>^ cqAttributes )
-          : UMWrap( new apache::geode::client::CqAttributesFactory(apache::geode::client::CqAttributesPtr(GetNativePtrFromSBWrapGeneric<apache::geode::client::CqAttributes>(cqAttributes ))), true )
-        { }
+        {
+           m_nativeptr = gcnew native_unique_ptr<native::CqAttributesFactory>(std::make_unique<native::CqAttributesFactory>(cqAttributes->GetNative()));
+        }
 
         // ATTRIBUTES
 
@@ -81,6 +81,10 @@ namespace Apache
         /// Creates a <c>CqAttributes</c> with the current settings.
         /// </summary>
         Client::CqAttributes<TKey, TResult>^ Create( );
+
+      private:
+
+        native_unique_ptr<native::CqAttributesFactory>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
 #include "CacheStatistics.hpp"
 
 
@@ -26,16 +25,31 @@ namespace Apache
     namespace Client
     {
 
+      using namespace System;
+
       System::UInt32 CacheStatistics::LastModifiedTime::get( )
       {
-        return NativePtr->getLastModifiedTime( );
+        try
+        {
+          return m_nativeptr->get()->getLastModifiedTime( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
-      System::UInt32 CacheStatistics::LastAccessedTime::get( )
+      System::UInt32 CacheStatistics::LastAccessedTime::get()
       {
-        return NativePtr->getLastAccessedTime( );
+        try
+        {
+          return m_nativeptr->get()->getLastAccessedTime();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
- } //namespace 

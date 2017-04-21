@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-//#include "../geode_includes.hpp"
+#include "begin_native.hpp"
+#include <GeodeTypeIdsImpl.hpp>
+#include "end_native.hpp"
+
 #include "ManagedCacheableDeltaBytes.hpp"
 #include "../DataInput.hpp"
 #include "../DataOutput.hpp"
 #include "../CacheableString.hpp"
-#include <GeodeTypeIdsImpl.hpp>
 #include "../ExceptionTypes.hpp"
 #include "SafeConvert.hpp"
 
@@ -36,7 +38,7 @@ namespace apache
 
       void ManagedCacheableDeltaBytesGeneric::toData(DataOutput& output) const
       {
-        Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytesGeneric::toData: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((int)this) + " with its domain ID: " + m_domainId);
+        Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytesGeneric::toData: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((uint64_t) this) + " with its domain ID: " + m_domainId);
         try {
           output.writeBytesOnly(m_bytes, m_size);
         }
@@ -158,7 +160,7 @@ namespace apache
       void ManagedCacheableDeltaBytesGeneric::toDelta(DataOutput& output) const
       {
         try {
-          Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytes::toDelta: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((int)this) + " with its domain ID: " + m_domainId);
+          Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytes::toDelta: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((uint64_t) this) + " with its domain ID: " + m_domainId);
           Apache::Geode::Client::IGeodeDelta^ deltaObj = this->getManagedObject();
           Apache::Geode::Client::DataOutput mg_output(&output, true);
           deltaObj->ToDelta(%mg_output);
@@ -184,7 +186,7 @@ namespace apache
             dynamic_cast <Apache::Geode::Client::IGeodeSerializable^> (deltaObj);
           if (managedptr != nullptr)
           {
-            Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytes::fromDelta: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((int)this) + " with its domain ID: " + m_domainId);
+            Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytes::fromDelta: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((uint64_t) this) + " with its domain ID: " + m_domainId);
             Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytes::fromDelta: classid " + managedptr->ClassId + " : " + managedptr->ToString());
             apache::geode::client::DataOutput dataOut;
             Apache::Geode::Client::DataOutput mg_output(&dataOut, true);
@@ -288,7 +290,7 @@ namespace apache
           Apache::Geode::Client::IGeodeSerializable^ obj =
             Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId)();
           obj->FromData(%mg_input);
-          bool ret = obj->Equals(other.get());
+          bool ret = obj->Equals(other.ptr());
           Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytesGeneric::equal return VAL = " + ret);
           return ret;
           //return obj->Equals(other.get());

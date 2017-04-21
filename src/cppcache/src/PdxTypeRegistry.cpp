@@ -80,6 +80,8 @@ void PdxTypeRegistry::cleanup() {
   GF_SAFE_DELETE(remoteTypeIdToMergedPdxType);
   GF_SAFE_DELETE(localTypeToPdxType);
   GF_SAFE_DELETE(pdxTypeToTypeIdMap);
+  intToEnum = nullptr;
+  enumToInt = nullptr;
   // GF_SAFE_DELETE(preserveData);
 }
 

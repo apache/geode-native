@@ -20,7 +20,10 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/CqOperation.hpp>
+#include "end_native.hpp"
+
 
 
 using namespace System;
@@ -31,6 +34,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       /// <summary>
       /// Enumerated type for CqOperationType
@@ -45,29 +49,29 @@ namespace Apache
         OP_TYPE_DESTROY = 16,
         OP_TYPE_MARKER = 32
       };
+
 	public ref class CqOperation sealed
-        : public Internal::UMWrap<apache::geode::client::CqOperation>
       {
       public:
 
       /// <summary>
       /// conenience function for convertin from c++ 
-      /// apache::geode::client::CqOperation::CqOperationType to
+      /// native::CqOperation::CqOperationType to
       /// CqOperationType here.
       /// </summary>
-	  inline static CqOperationType ConvertFromNative(apache::geode::client::CqOperation::CqOperationType tp)
+	  inline static CqOperationType ConvertFromNative(native::CqOperation::CqOperationType tp)
 	  {
-		  if(tp==apache::geode::client::CqOperation::OP_TYPE_CREATE)
+		  if(tp==native::CqOperation::OP_TYPE_CREATE)
 			  return CqOperationType::OP_TYPE_CREATE;
-  		  if(tp==apache::geode::client::CqOperation::OP_TYPE_UPDATE)
+  		  if(tp==native::CqOperation::OP_TYPE_UPDATE)
 			  return CqOperationType::OP_TYPE_UPDATE;
-		  if(tp==apache::geode::client::CqOperation::OP_TYPE_INVALIDATE)
+		  if(tp==native::CqOperation::OP_TYPE_INVALIDATE)
 			  return CqOperationType::OP_TYPE_INVALIDATE;
-		  if(tp==apache::geode::client::CqOperation::OP_TYPE_REGION_CLEAR)
+		  if(tp==native::CqOperation::OP_TYPE_REGION_CLEAR)
 			  return CqOperationType::OP_TYPE_REGION_CLEAR;
-  		  if(tp==apache::geode::client::CqOperation::OP_TYPE_DESTROY)
+  		  if(tp==native::CqOperation::OP_TYPE_DESTROY)
 			  return CqOperationType::OP_TYPE_DESTROY;
-  		  if(tp==apache::geode::client::CqOperation::OP_TYPE_MARKER)
+  		  if(tp==native::CqOperation::OP_TYPE_MARKER)
 			  return CqOperationType::OP_TYPE_MARKER;
 		  return CqOperationType::OP_TYPE_INVALID;
 	  }
@@ -77,8 +81,13 @@ namespace Apache
         /// Internal constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CqOperation( apache::geode::client::CqOperation* nativeptr )
-		            : UMWrap( nativeptr, false ) { }
+        inline CqOperation( native::CqOperation* nativeptr )
+          : m_nativeptr(nativeptr)
+		    {
+        }
+
+      private:
+        const native::CqOperation* m_nativeptr;
 	  };
     }  // namespace Client
   }  // namespace Geode

@@ -16,6 +16,13 @@
  */
 
 #pragma once
+
+#include "begin_native.hpp"
+#include <CacheRegionHelper.hpp>
+#include <geode/Cache.hpp>
+#include <CacheImpl.hpp>
+#include "end_native.hpp"
+
 #include "PdxInstanceImpl.hpp"
 #include "PdxHelper.hpp"
 #include "PdxTypeRegistry.hpp"
@@ -24,10 +31,8 @@
 #include "PdxLocalWriter.hpp"
 #include "../DataInput.hpp"
 #include "DotNetTypes.hpp"
-#include <CacheRegionHelper.hpp>
-#include <geode/Cache.hpp>
-#include <CacheImpl.hpp>
 #include "PdxType.hpp"
+
 using namespace System::Text;
 
 namespace Apache

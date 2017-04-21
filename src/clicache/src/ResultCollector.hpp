@@ -20,8 +20,11 @@
 
 #include "geode_defs.hpp"
 #include "IResultCollector.hpp"
+#include "begin_native.hpp"
 #include <geode/ResultCollector.hpp>
-#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
+#include "native_shared_ptr.hpp"
 
 
 using namespace System;
@@ -33,6 +36,7 @@ namespace Apache
   {
     namespace Client
     {
+     namespace native = apache::geode::client;
 
      generic<class TResult>
 	   interface class IResultCollector;
@@ -42,7 +46,7 @@ namespace Apache
       /// </summary>
      generic<class TResult>
      public ref class ResultCollector
-       : public Internal::SBWrap<apache::geode::client::ResultCollector>, public IResultCollector<TResult>
+       : public IResultCollector<TResult>
      {
      public:
 
@@ -74,45 +78,15 @@ namespace Apache
       internal:
 
         /// <summary>
-        /// Default constructor.
-        /// </summary>
-        inline ResultCollector( ):
-        SBWrap( ){ }
-
-        //~ResultCollector<TKey>( ) { }
-
-        /// <summary>
         /// Internal constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline ResultCollector( apache::geode::client::ResultCollector* nativeptr ):
-        SBWrap( nativeptr ){ }
-
-        /// <summary>
-        /// Used to assign the native Serializable pointer to a new object.
-        /// </summary>
-        /// <remarks>
-        /// Note the order of preserveSB() and releaseSB(). This handles the
-        /// corner case when <c>m_nativeptr</c> is same as <c>nativeptr</c>.
-        /// </remarks>
-        inline void AssignSPGeneric( apache::geode::client::ResultCollector* nativeptr )
+        inline ResultCollector( native::ResultCollectorPtr nativeptr )
         {
-          AssignPtr( nativeptr );
+           m_nativeptr = gcnew native_shared_ptr<native::ResultCollector>(nativeptr);
         }
 
-        /// <summary>
-        /// Used to assign the native CqListener pointer to a new object.
-        /// </summary>
-        inline void SetSPGeneric( apache::geode::client::ResultCollector* nativeptr )
-        {
-          if ( nativeptr != nullptr ) {
-            nativeptr->preserveSB( );
-          }
-          _SetNativePtr( nativeptr );
-        }
-
-        //void Silence_LNK2022_BUG() { };
-
+        native_shared_ptr<native::ResultCollector>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

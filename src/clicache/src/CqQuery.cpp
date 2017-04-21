@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
+
 #include "CqQuery.hpp"
 #include "Query.hpp"
 #include "CqAttributes.hpp"
@@ -34,6 +34,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       generic<class TKey, class TResult>
       ICqResults<TResult>^ CqQuery<TKey, TResult>::ExecuteWithInitialResults()
@@ -45,30 +46,21 @@ namespace Apache
       ICqResults<TResult>^ CqQuery<TKey, TResult>::ExecuteWithInitialResults(System::UInt32 timeout)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-
-          apache::geode::client::CqResultsPtr& nativeptr =
-            NativePtr->executeWithInitialResults(timeout);
-          if (nativeptr.get() == NULL) return nullptr;
-
-          apache::geode::client::ResultSet* resultptr = dynamic_cast<apache::geode::client::ResultSet*>(
-            nativeptr.ptr( ) );
-          if ( resultptr == NULL )
+          try
           {
-            apache::geode::client::StructSet* structptr = dynamic_cast<apache::geode::client::StructSet*>(
-              nativeptr.ptr( ) );
-            if ( structptr == NULL )
+            auto nativeptr = m_nativeptr->get()->executeWithInitialResults(timeout);
+ 
+            if (auto structptr = std::dynamic_pointer_cast<native::StructSet>(nativeptr))
             {
-              return nullptr;
+              return StructSet<TResult>::Create(structptr);
             }
-            return StructSet<TResult>::Create(structptr);
+
+            return nullptr;
           }
-          /*else
+          finally
           {
-            return ResultSet::Create(resultptr);
-          }*/
-
-          return nullptr;
-
+            GC::KeepAlive(m_nativeptr);
+          }
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -77,7 +69,14 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          NativePtr->execute();
+          try
+          {
+            m_nativeptr->get()->execute();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -85,59 +84,103 @@ namespace Apache
       generic<class TKey, class TResult>
       String^ CqQuery<TKey, TResult>::QueryString::get( )
       {
-        return ManagedString::Get( NativePtr->getQueryString( ) );
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getQueryString( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TResult>
       String^ CqQuery<TKey, TResult>::Name::get( )
       {
-        return ManagedString::Get( NativePtr->getName( ) );
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getName( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TResult>
       Query<TResult>^ CqQuery<TKey, TResult>::GetQuery( )
       {
-        return Query<TResult>::Create(NativePtr->getQuery().get());
+        try
+        {
+          return Query<TResult>::Create(m_nativeptr->get()->getQuery());
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TResult>
       CqAttributes<TKey, TResult>^ CqQuery<TKey, TResult>::GetCqAttributes( )
       {
-        return CqAttributes<TKey, TResult>::Create(NativePtr->getCqAttributes( ).get());
+        try
+        {
+          return CqAttributes<TKey, TResult>::Create(m_nativeptr->get()->getCqAttributes( ));
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TResult>
       CqAttributesMutator<TKey, TResult>^ CqQuery<TKey, TResult>::GetCqAttributesMutator( )
       {
-        return CqAttributesMutator<TKey, TResult>::Create(NativePtr->getCqAttributesMutator().get());
+        try
+        {
+          return CqAttributesMutator<TKey, TResult>::Create(m_nativeptr->get()->getCqAttributesMutator());
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TResult>
       CqStatistics^ CqQuery<TKey, TResult>::GetStatistics( )
       {
-        return CqStatistics::Create(NativePtr->getStatistics().get());
+        try
+        {
+          return CqStatistics::Create(m_nativeptr->get()->getStatistics());
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TResult>
       CqStateType CqQuery<TKey, TResult>::GetState( )
       {
-        apache::geode::client::CqState::StateType st =  NativePtr->getState( );
-        CqStateType state;
-        switch (st)
+        try
         {
-          case apache::geode::client::CqState::STOPPED: {
+          auto st = m_nativeptr->get()->getState();
+          CqStateType state;
+          switch (st)
+          {
+          case native::CqState::STOPPED: {
             state = CqStateType::STOPPED;
             break;
           }
-          case apache::geode::client::CqState::RUNNING: {
+          case native::CqState::RUNNING: {
             state = CqStateType::RUNNING;
             break;
           }
-          case apache::geode::client::CqState::CLOSED: {
+          case native::CqState::CLOSED: {
             state = CqStateType::CLOSED;
             break;
           }
-          case apache::geode::client::CqState::CLOSING: {
+          case native::CqState::CLOSING: {
             state = CqStateType::CLOSING;
             break;
           }
@@ -145,8 +188,13 @@ namespace Apache
             state = CqStateType::INVALID;
             break;
           }
+          }
+          return state;
         }
-        return state;
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TResult>
@@ -154,7 +202,14 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          NativePtr->stop( );
+          try
+          {
+            m_nativeptr->get()->stop( );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -164,7 +219,14 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          NativePtr->close( );
+          try
+          {
+            m_nativeptr->get()->close( );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -174,7 +236,14 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return NativePtr->isRunning( );
+          try
+          {
+            return m_nativeptr->get()->isRunning( );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -184,21 +253,34 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return NativePtr->isStopped( );
+          try
+          {
+            return m_nativeptr->get()->isStopped( );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       generic<class TKey, class TResult>
-      bool CqQuery<TKey, TResult>::IsClosed( )
-      {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        bool CqQuery<TKey, TResult>::IsClosed()
+        {
+          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return NativePtr->isClosed( );
+            try
+          {
+            return m_nativeptr->get()->isClosed();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
- } //namespace 

@@ -17,8 +17,9 @@
 
 #pragma once
 
+#include <memory>
+#include "native_shared_ptr.hpp"
 #include "PkcsAuthInit.hpp"
-#include "impl/NativeWrapper.hpp"
 
 using namespace System;
 
@@ -33,8 +34,7 @@ namespace Apache
       namespace Tests
       {
         public ref class PkcsAuthInit sealed
-          : public Internal::SBWrap<apache::geode::client::PKCSAuthInitInternal>,
-          public Apache::Geode::Client::IAuthInitialize/*<String^, Object^>*/
+          : public Apache::Geode::Client::IAuthInitialize
         {
         public:
 
@@ -50,8 +50,13 @@ namespace Apache
           virtual void Close();
 
         internal:
-          PkcsAuthInit(apache::geode::client::PKCSAuthInitInternal* nativeptr)
-            : SBWrap(nativeptr) { }
+          PkcsAuthInit(const std::shared_ptr<apache::geode::client::PKCSAuthInitInternal>& nativeptr)
+          {
+            m_nativeptr = gcnew native_shared_ptr<apache::geode::client::PKCSAuthInitInternal>(nativeptr);
+          }
+
+        private:
+          native_shared_ptr<apache::geode::client::PKCSAuthInitInternal>^ m_nativeptr;
         };
       }
     }

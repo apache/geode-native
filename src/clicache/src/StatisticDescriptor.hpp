@@ -20,8 +20,11 @@
 #pragma once
 
 #include "geode_defs.hpp"
-#include "impl/NativeWrapper.hpp"
+#include "begin_native.hpp"
 #include <geode/statistics/StatisticDescriptor.hpp>
+#include "end_native.hpp"
+
+using namespace System;
 
 namespace Apache
 {
@@ -43,7 +46,6 @@ namespace Apache
       /// StatisticDescriptors are naturally ordered by their name.
       /// </para>
       public ref class StatisticDescriptor sealed
-        : public Internal::UMWrap<apache::geode::statistics::StatisticDescriptor>
       {
       public:
         /// <summary>
@@ -110,8 +112,13 @@ namespace Apache
         inline static StatisticDescriptor^ Create(
           apache::geode::statistics::StatisticDescriptor* nativeptr)
         {
-          return (nativeptr != nullptr ?
-                  gcnew StatisticDescriptor(nativeptr) : nullptr);
+          return __nullptr == nativeptr ? nullptr :
+            gcnew StatisticDescriptor( nativeptr );
+        }
+
+        apache::geode::statistics::StatisticDescriptor* GetNative()
+        {
+          return m_nativeptr;
         }
 
       private:
@@ -120,7 +127,11 @@ namespace Apache
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
         inline StatisticDescriptor(apache::geode::statistics::StatisticDescriptor* nativeptr)
-          : UMWrap(nativeptr, false) { }
+          : m_nativeptr( nativeptr )
+        {
+        }
+
+        apache::geode::statistics::StatisticDescriptor* m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

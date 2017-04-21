@@ -18,8 +18,10 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/AttributesFactory.hpp>
-//#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
 #include "ExpirationAction.hpp"
 #include "DiskPolicyType.hpp"
 
@@ -31,6 +33,7 @@
 #include "IPersistenceManager.hpp"
 #include "RegionAttributes.hpp"
 #include "RegionAttributes.hpp"
+#include "native_unique_ptr.hpp"
 
 
 using namespace System;
@@ -42,14 +45,7 @@ namespace Apache
   {
     namespace Client
     {
-
-      //ref class RegionAttributes;
-      //interface class ICacheLoader;
-      //interface class ICacheWriter;
-      //interface class ICacheListener;
-      //interface class IPartitionResolver;
-      //interface class IFixedPartitionResolver;
-
+      namespace native = apache::geode::client;
 
       /// <summary>
       /// Factory class to create instances of <see cref="RegionAttributes" />.
@@ -156,7 +152,6 @@ namespace Apache
       /// <seealso cref="Region.CreateSubRegion" />
       generic<class TKey, class TValue>
       public ref class AttributesFactory sealed
-        : public Internal::UMWrap<apache::geode::client::AttributesFactory>
       {
       public:
 
@@ -165,7 +160,9 @@ namespace Apache
         /// a <c>RegionAttributes</c> with default settings.
         /// </summary>
         inline AttributesFactory<TKey, TValue>( )
-          : UMWrap( new apache::geode::client::AttributesFactory( ), true ) { }
+        {
+          m_nativeptr = gcnew native_unique_ptr<native::AttributesFactory>(std::make_unique<native::AttributesFactory>());
+        }
 
         /// <summary>
         /// Creates a new instance of <c>AttributesFactory</c> ready to create
@@ -506,6 +503,9 @@ namespace Apache
         /// compatibility rules.
         /// </exception>
         RegionAttributes<TKey, TValue>^ CreateRegionAttributes( );
+
+        private:
+          native_unique_ptr<native::AttributesFactory>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

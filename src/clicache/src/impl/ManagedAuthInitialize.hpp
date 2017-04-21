@@ -18,7 +18,10 @@
 #pragma once
 
 #include "../geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/AuthInitialize.hpp>
+#include "end_native.hpp"
+
 #include <vcclr.h>
 #include "../IAuthInitialize.hpp"
 

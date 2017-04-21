@@ -17,11 +17,15 @@
  */
 
 #pragma once
+
+#include "begin_native.hpp"
+#include <GeodeTypeIdsImpl.hpp>
+#include "end_native.hpp"
+
 #include "PdxManagedCacheableKey.hpp"
 #include "../DataInput.hpp"
 #include "../DataOutput.hpp"
 #include "../CacheableString.hpp"
-#include <GeodeTypeIdsImpl.hpp>
 #include "../ExceptionTypes.hpp"
 #include "ManagedString.hpp"
 #include "PdxHelper.hpp"
@@ -180,7 +184,7 @@ namespace apache
       bool PdxManagedCacheableKey::operator ==(const PdxManagedCacheableKey& other) const
       {
         try {
-          return ((Apache::Geode::Client::IPdxSerializable^)m_managedptr)->Equals((other.get()));
+          return ((Apache::Geode::Client::IPdxSerializable^)m_managedptr)->Equals((other.ptr()));
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();

@@ -16,9 +16,10 @@
  */
 
 
-//#include "geode_includes.hpp"
 #include "gfcli/Utils.hpp"
+#include "begin_native.hpp"
 #include <Utils.hpp>
+#include "end_native.hpp"
 
 namespace Apache
 {

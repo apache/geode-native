@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
+#include "begin_native.hpp"
+#include <geode/RegionService.hpp>
+#include "end_native.hpp"
+
 #include "FunctionService.hpp"
 #include "Pool.hpp"
 #include "Region.hpp"
 #include "Execution.hpp"
-#include <geode/RegionService.hpp>
+
 #include "impl/AuthenticatedCache.hpp"
-#include "impl/SafeConvert.hpp"
+
 using namespace System;
 
 namespace Apache
@@ -31,6 +34,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       generic <class TResult>
       generic <class TKey, class TValue>
@@ -38,40 +42,31 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
           
-          IRegion<TKey, TValue>^ regImpl = safe_cast<IRegion<TKey, TValue>^>( rg);
-
-        apache::geode::client::RegionPtr regionptr(GetNativePtrFromSBWrapGeneric((Client::Region<TKey, TValue>^)regImpl));
-
-          apache::geode::client::ExecutionPtr& nativeptr( apache::geode::client::FunctionService::onRegion(
-            regionptr ) );
-          return Execution<TResult>::Create( nativeptr.ptr( ), nullptr );
+          auto nativeRegion = ((Region<TKey, TValue>^)rg)->GetNative();
+          auto execution = native::FunctionService::onRegion(nativeRegion);
+          return Execution<TResult>::Create( execution, nullptr );
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       generic <class TResult>
-      Execution<TResult>^ FunctionService<TResult>::OnServer( Pool/*<TKey, TValue>*/^ pl )
+      Execution<TResult>^ FunctionService<TResult>::OnServer( Pool^ pl )
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          apache::geode::client::PoolPtr poolptr(GetNativePtrFromSBWrapGeneric<apache::geode::client::Pool>( pl ) );
-
-          apache::geode::client::ExecutionPtr& nativeptr( apache::geode::client::FunctionService::onServer(
-            poolptr ) );
-          return Execution<TResult>::Create( nativeptr.ptr( ) , nullptr);
+          auto nativeptr = native::FunctionService::onServer(pl->GetNative());
+          return Execution<TResult>::Create( nativeptr , nullptr);
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
       
       generic <class TResult>
-      Execution<TResult>^ FunctionService<TResult>::OnServers( Pool/*<TKey, TValue>*/^ pl )
+      Execution<TResult>^ FunctionService<TResult>::OnServers( Pool^ pl )
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          apache::geode::client::PoolPtr poolptr(GetNativePtrFromSBWrapGeneric<apache::geode::client::Pool>( pl ) );
-          apache::geode::client::ExecutionPtr& nativeptr( apache::geode::client::FunctionService::onServers(
-            poolptr ) );
-          return Execution<TResult>::Create( nativeptr.ptr( ) , nullptr);
+          auto nativeptr = native::FunctionService::onServers(pl->GetNative());
+          return Execution<TResult>::Create( nativeptr , nullptr);
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -81,28 +76,17 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          Apache::Geode::Client::Cache^ realCache =
-            dynamic_cast<Apache::Geode::Client::Cache^>(cache);
-
-        if(realCache != nullptr)
-        {
-            apache::geode::client::RegionServicePtr cacheptr(GetNativePtr<apache::geode::client::RegionService>( realCache ) );
-
-            apache::geode::client::ExecutionPtr& nativeptr( apache::geode::client::FunctionService::onServer(
-              cacheptr ) );
-            return Execution<TResult>::Create( nativeptr.ptr( ), nullptr );
-        }
-        else
-        {
-          Apache::Geode::Client::AuthenticatedCache^ authCache =
-            dynamic_cast<Apache::Geode::Client::AuthenticatedCache^>(cache);
-          apache::geode::client::RegionServicePtr cacheptr(GetNativePtr<apache::geode::client::RegionService>( authCache ) );
-
-            apache::geode::client::ExecutionPtr& nativeptr( apache::geode::client::FunctionService::onServer(
-              cacheptr ) );
-            return Execution<TResult>::Create( nativeptr.ptr( ), nullptr );
-        }
-
+          if(auto realCache = dynamic_cast<Cache^>(cache))
+          {
+            auto nativeptr = native::FunctionService::onServer(realCache->GetNative());
+            return Execution<TResult>::Create( nativeptr, nullptr );
+          }
+          else
+          {
+            auto authCache = dynamic_cast<AuthenticatedCache^>(cache);
+            auto nativeptr = native::FunctionService::onServer(authCache->GetNative());
+            return Execution<TResult>::Create( nativeptr, nullptr );
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -112,31 +96,20 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          Apache::Geode::Client::Cache^ realCache =
-          dynamic_cast<Apache::Geode::Client::Cache^>(cache);
-
-          if(realCache != nullptr)
+          if(auto realCache = dynamic_cast<Cache^>(cache))
           {
-            apache::geode::client::RegionServicePtr cacheptr(GetNativePtr<apache::geode::client::RegionService>( realCache ) );
-
-            apache::geode::client::ExecutionPtr& nativeptr( apache::geode::client::FunctionService::onServers(
-              cacheptr ) );
-            return Execution<TResult>::Create( nativeptr.ptr( ), nullptr );
+            auto nativeptr = native::FunctionService::onServers(realCache->GetNative());
+            return Execution<TResult>::Create( nativeptr, nullptr );
           }
           else
           {
-            Apache::Geode::Client::AuthenticatedCache^ authCache =
-              dynamic_cast<Apache::Geode::Client::AuthenticatedCache^>(cache);
-            apache::geode::client::RegionServicePtr cacheptr(GetNativePtr<apache::geode::client::RegionService>( authCache ) );
-
-            apache::geode::client::ExecutionPtr& nativeptr( apache::geode::client::FunctionService::onServers(
-              cacheptr ) );
-            return Execution<TResult>::Create( nativeptr.ptr( ) , nullptr);
+            auto authCache = dynamic_cast<AuthenticatedCache^>(cache);
+            auto nativeptr = native::FunctionService::onServers(authCache->GetNative());
+            return Execution<TResult>::Create( nativeptr, nullptr );
           }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
- } //namespace 

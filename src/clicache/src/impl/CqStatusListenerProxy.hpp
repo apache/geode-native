@@ -44,14 +44,14 @@ namespace Apache
           virtual void OnEvent(Apache::Geode::Client::CqEvent<Object^, Object^>^ ev)
           {
             //TODO:split---Done
-            CqEvent<TKey, TResult> gevent(GetNativePtr<apache::geode::client::CqEvent>(ev));
+            CqEvent<TKey, TResult> gevent(ev->GetNative());
             m_listener->OnEvent(%gevent);
           }
 
           virtual void OnError( Apache::Geode::Client::CqEvent<Object^, Object^>^ ev) 
           {
             //TODO::split--Done
-            CqEvent<TKey, TResult> gevent(GetNativePtr<apache::geode::client::CqEvent>(ev));
+            CqEvent<TKey, TResult> gevent(ev->GetNative());
             m_listener->OnError(%gevent);
           }
 

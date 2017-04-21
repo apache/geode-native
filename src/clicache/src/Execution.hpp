@@ -18,9 +18,11 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/Execution.hpp>
-#include "impl/NativeWrapper.hpp"
-//#include "impl/ResultCollectorProxy.hpp"
+#include "end_native.hpp"
+
+#include "native_shared_ptr.hpp"
 
 using namespace System;
 
@@ -30,6 +32,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       generic<class TResult>
       interface class IResultCollector;
@@ -42,7 +45,6 @@ namespace Apache
       /// </summary>
       generic<class TResult>
       public ref class Execution sealed
-        : public Internal::SBWrap<apache::geode::client::Execution>
       {
       public:
         /// <summary>
@@ -88,20 +90,25 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static Execution<TResult>^ Create( apache::geode::client::Execution* nativeptr, IResultCollector<TResult>^ rc )
+        inline static Execution<TResult>^ Create( native::ExecutionPtr nativeptr, IResultCollector<TResult>^ rc )
         {
-          return ( nativeptr != nullptr ?
-            gcnew Execution<TResult>( nativeptr, rc ) : nullptr );
-	}
+          return __nullptr == nativeptr ? nullptr :
+            gcnew Execution<TResult>( nativeptr, rc );
+	      }
 
         /// <summary>
         /// Private constructor to wrap a native object pointer.
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline Execution( apache::geode::client::Execution* nativeptr, IResultCollector<TResult>^ rc )
-          : SBWrap( nativeptr ) { m_rc = rc;}
+        inline Execution( native::ExecutionPtr nativeptr, IResultCollector<TResult>^ rc )
+        {
+          m_rc = rc;
+          m_nativeptr = gcnew native_shared_ptr<native::Execution>(nativeptr);
+        }
       private:
         IResultCollector<TResult>^ m_rc;
+
+        native_shared_ptr<native::Execution>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

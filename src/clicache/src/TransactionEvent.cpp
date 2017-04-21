@@ -43,7 +43,7 @@ namespace Apache
           NativePtr->getCache( ) );
 
 				return Apache::Geode::Client::Cache::Create(
-          nativeptr.ptr( ) );
+          nativeptr.get() );
       }
       
       generic<class TKey, class TValue>
@@ -53,7 +53,7 @@ namespace Apache
           NativePtr->getTransactionId( ) );
 
 				return Apache::Geode::Client::TransactionId::Create(
-          nativeptr.ptr( ) );
+          nativeptr.get() );
       }
     
       generic<class TKey, class TValue>
@@ -67,7 +67,7 @@ namespace Apache
         for( System::Int32 index = 0; index < vee.size( ); index++ )
         {
           apache::geode::client::EntryEventPtr& nativeptr( vee[ index ] );
-          EntryEvent<TKey, TValue> entryEvent( nativeptr.ptr( ) );
+          EntryEvent<TKey, TValue> entryEvent( nativeptr.get() );
           events[ index ] = (%entryEvent);
         }
         return events;

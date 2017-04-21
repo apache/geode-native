@@ -18,8 +18,11 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/RegionEntry.hpp>
-#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
+#include "native_shared_ptr.hpp"
 //#include "ICacheableKey.hpp"
 #include "IRegion.hpp"
 
@@ -31,6 +34,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       //ref class Region;
       ref class CacheStatistics;
@@ -51,7 +55,6 @@ namespace Apache
       /// </remarks>
       generic<class TKey, class TValue>
       public ref class RegionEntry sealed
-        : public Internal::SBWrap<apache::geode::client::RegionEntry>
       {
       public:
 
@@ -159,10 +162,10 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static Client::RegionEntry<TKey, TValue>^ Create( apache::geode::client::RegionEntry* nativeptr )
+        inline static Client::RegionEntry<TKey, TValue>^ Create( native::RegionEntryPtr nativeptr )
         {
-          return ( nativeptr != nullptr ?
-            gcnew Client::RegionEntry<TKey, TValue>( nativeptr ) : nullptr );
+         return __nullptr == nativeptr ? nullptr :
+            gcnew RegionEntry<TKey, TValue>( nativeptr );
         }
 
 
@@ -172,8 +175,12 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline RegionEntry( apache::geode::client::RegionEntry* nativeptr )
-          : SBWrap( nativeptr ) { }
+        inline RegionEntry( native::RegionEntryPtr nativeptr )
+        {
+          m_nativeptr = gcnew native_shared_ptr<native::RegionEntry>(nativeptr);
+        }
+
+        native_shared_ptr<native::RegionEntry>^ m_nativeptr; 
       };
     }  // namespace Client
   }  // namespace Geode

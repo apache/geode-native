@@ -18,10 +18,11 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/FunctionService.hpp>
-#include "Cache.hpp"
-//#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
 
+#include "Cache.hpp"
 
 using namespace System;
 
@@ -43,8 +44,7 @@ namespace Apache
       /// </summary>
       /// <remarks>
       generic<class TResult>
-      public ref class FunctionService 
-        : public Internal::SBWrap<apache::geode::client::FunctionService>
+      public ref class FunctionService
       {
       public:
 
@@ -63,8 +63,7 @@ namespace Apache
         /// <remarks>
         /// </remarks>
         /// <exception cref="UnsupportedOperationException">unsupported operation exception, when Pool is in multiusersecure mode.</exception>
-        //generic<class TKey, class TValue>
-        static Execution<TResult>^ OnServer( Pool/*<TKey, TValue>*/^ pl );
+        static Execution<TResult>^ OnServer( Pool^ pl );
 
         /// <summary>
         /// Creates a new Execution object on all servers in the pool
@@ -72,8 +71,7 @@ namespace Apache
         /// <remarks>
         /// </remarks>
         /// <exception cref="UnsupportedOperationException">unsupported operation exception, when Pool is in multiusersecure mode.</exception>
-        //generic<class TKey, class TValue>
-        static Execution<TResult>^ OnServers( Pool/*<TKey, TValue>*/^ pl );
+        static Execution<TResult>^ OnServers( Pool^ pl );
 
         /// <summary>
         /// Creates a new Execution object on one server.
@@ -81,7 +79,6 @@ namespace Apache
         /// <remarks>
         /// </remarks>
         /// <exception cref="IllegalStateException">when Pool has been closed.</exception>
-        //generic<class TResult>
         static Execution<TResult>^ OnServer( IRegionService^ cache );
 
         /// <summary>
@@ -90,18 +87,8 @@ namespace Apache
         /// <remarks>
         /// </remarks>
         /// <exception cref="IllegalStateException">when Pool has been closed.</exception>
-        //generic<class TResult>
         static Execution<TResult>^ OnServers( IRegionService^ cache );
         
-      internal:
-
-        /// <summary>
-        /// Private constructor to wrap a native object pointer
-        /// </summary>
-        /// <param name="nativeptr">The native object pointer</param>
-        inline FunctionService( apache::geode::client::FunctionService* nativeptr )
-          : SBWrap( nativeptr ) { }
-
       };
     }  // namespace Client
   }  // namespace Geode

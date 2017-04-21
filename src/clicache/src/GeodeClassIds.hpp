@@ -20,7 +20,10 @@
 
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/GeodeTypeIds.hpp>
+#include "end_native.hpp"
+
 
 
 namespace Apache

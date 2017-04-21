@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-//#include "../geode_includes.hpp"
+#include "begin_native.hpp"
+#include <GeodeTypeIdsImpl.hpp>
+#include "end_native.hpp"
+
 #include "ManagedCacheableDelta.hpp"
 #include "../DataInput.hpp"
 #include "../DataOutput.hpp"
 #include "../CacheableString.hpp"
-#include <GeodeTypeIdsImpl.hpp>
 #include "../ExceptionTypes.hpp"
 #include "SafeConvert.hpp"
 
@@ -240,7 +242,7 @@ namespace apache
       bool ManagedCacheableDeltaGeneric::operator == (const ManagedCacheableDeltaGeneric& other) const
       {
         try {
-          return m_managedptr->Equals(other.get());
+          return m_managedptr->Equals(other.ptr());
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();

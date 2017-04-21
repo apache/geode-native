@@ -18,8 +18,11 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/CqAttributes.hpp>
-#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
+#include "native_shared_ptr.hpp"
 
 
 using namespace System;
@@ -30,6 +33,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       generic<class TKey, class TResult>
       interface class ICqListener;
@@ -39,7 +43,6 @@ namespace Apache
       /// </summary>
       generic<class TKey, class TResult>
       public ref class CqAttributes sealed
-        : public Internal::SBWrap<apache::geode::client::CqAttributes>
       {
       public:
 
@@ -58,15 +61,16 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static CqAttributes<TKey, TResult>^ Create( apache::geode::client::CqAttributes* nativeptr )
+        inline static CqAttributes<TKey, TResult>^ Create( native::CqAttributesPtr nativeptr )
         {
-          if (nativeptr == nullptr)
-          {
-            return nullptr;
-          }
-          return gcnew CqAttributes( nativeptr );
+          return __nullptr == nativeptr ? nullptr :
+            gcnew CqAttributes( nativeptr );
         }
 
+        std::shared_ptr<native::CqAttributes> GetNative()
+        {
+          return m_nativeptr->get_shared_ptr();
+        }
 
       private:
 
@@ -74,8 +78,12 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CqAttributes( apache::geode::client::CqAttributes* nativeptr )
-          : SBWrap( nativeptr ) { }
+        inline CqAttributes( native::CqAttributesPtr nativeptr )
+        {
+          m_nativeptr = gcnew native_shared_ptr<native::CqAttributes>(nativeptr);
+        }
+
+        native_shared_ptr<native::CqAttributes>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

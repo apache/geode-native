@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
 #include "ExceptionTypes.hpp"
 #include <cstdlib>
 

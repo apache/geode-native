@@ -18,8 +18,11 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/StructSet.hpp>
-#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
+#include "native_shared_ptr.hpp"
 #include "ICqResults.hpp"
 
 
@@ -32,6 +35,7 @@ namespace Apache
     namespace Client
     {
 
+      namespace native = apache::geode::client;
       interface class IGeodeSerializable;
 
       generic<class TResult>
@@ -42,7 +46,7 @@ namespace Apache
       /// </summary>
       generic<class TResult>
       public ref class StructSet sealed
-        : public Internal::SBWrap<apache::geode::client::StructSet>, public ICqResults<TResult>
+        : public ICqResults<TResult>
       {
       public:
 
@@ -138,9 +142,10 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static StructSet<TResult>^ Create(apache::geode::client::StructSet* nativeptr)
+        inline static StructSet<TResult>^ Create(native::StructSetPtr nativeptr)
         {
-          return (nativeptr != nullptr ? gcnew StructSet<TResult>(nativeptr) : nullptr);
+          return __nullptr == nativeptr ? nullptr :
+            gcnew StructSet<TResult>( nativeptr );
         }
 
 
@@ -153,8 +158,12 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline StructSet(apache::geode::client::StructSet* nativeptr)
-          : SBWrap(nativeptr) { }
+        inline StructSet(native::StructSetPtr nativeptr)
+        {
+          m_nativeptr = gcnew native_shared_ptr<native::StructSet>(nativeptr);
+        }
+
+        native_shared_ptr<native::StructSet>^ m_nativeptr; 
       };
     }  // namespace Client
   }  // namespace Geode

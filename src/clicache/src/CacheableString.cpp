@@ -79,8 +79,8 @@ namespace Apache
           cStr = apache::geode::client::CacheableString::create(pin_value, (System::Int32)len);
         }
         else {
-          cStr = (apache::geode::client::CacheableString*)
-            apache::geode::client::CacheableString::createDeserializable();
+          cStr.reset(
+            static_cast<apache::geode::client::CacheableString*>(apache::geode::client::CacheableString::createDeserializable()));
         }
       }
 
@@ -94,8 +94,8 @@ namespace Apache
             (const wchar_t*)pin_value, (System::Int32)len);
         }
         else {
-          cStr = (apache::geode::client::CacheableString*)
-            apache::geode::client::CacheableString::createDeserializable();
+          cStr.reset(
+            static_cast<apache::geode::client::CacheableString*>(apache::geode::client::CacheableString::createDeserializable()));
         }
       }
 

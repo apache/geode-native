@@ -31,13 +31,22 @@ namespace Apache
     namespace Client
     {
 
+      namespace native = apache::geode::client;
+
       generic<class TResult>
       void ResultCollector<TResult>::AddResult( TResult rs )
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          apache::geode::client::Serializable * result = SafeGenericMSerializableConvert((IGeodeSerializable^)rs);
-        NativePtr->addResult( result==NULL ? (nullptr) : (apache::geode::client::CacheablePtr(result)) );
+          try
+          {
+            auto result = std::shared_ptr<native::Cacheable>(SafeGenericMSerializableConvert((IGeodeSerializable^)rs));
+            m_nativeptr->get()->addResult(result);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -52,17 +61,22 @@ namespace Apache
       System::Collections::Generic::ICollection<TResult>^  ResultCollector<TResult>::GetResult(UInt32 timeout)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          apache::geode::client::CacheableVectorPtr results = NativePtr->getResult(timeout);
-        array<TResult>^ rs =
-          gcnew array<TResult>( results->size( ) );
-        for( System::Int32 index = 0; index < results->size( ); index++ )
-        {
-          apache::geode::client::CacheablePtr& nativeptr(results->operator[](index));
-
-          rs[ index] =  Serializable::GetManagedValueGeneric<TResult>( nativeptr);
-        }
-        ICollection<TResult>^ collectionlist = (ICollection<TResult>^)rs;
-        return collectionlist;
+          try
+          {
+            auto results = m_nativeptr->get()->getResult(timeout);
+            auto rs = gcnew array<TResult>(results->size());
+            for (System::Int32 index = 0; index < results->size(); index++)
+            {
+              auto nativeptr = results->operator[](index);
+              rs[index] = Serializable::GetManagedValueGeneric<TResult>(nativeptr);
+            }
+            auto collectionlist = (ICollection<TResult>^)rs;
+            return collectionlist;
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -71,7 +85,14 @@ namespace Apache
       void ResultCollector<TResult>::EndResults()
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          NativePtr->endResults();
+          try
+          {
+            m_nativeptr->get()->endResults();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -79,10 +100,16 @@ namespace Apache
       void ResultCollector<TResult>::ClearResults(/*bool*/)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          NativePtr->clearResults();
+          try
+          {
+            m_nativeptr->get()->clearResults();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
-} //namespace 

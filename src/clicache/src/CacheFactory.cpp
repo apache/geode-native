@@ -39,6 +39,8 @@ namespace Apache
     namespace Client
     {
 
+      namespace native = apache::geode::client;
+
       CacheFactory^ CacheFactory::CreateCacheFactory()
       {
         return CacheFactory::CreateCacheFactory(Properties<String^, String^>::Create<String^, String^>());
@@ -48,16 +50,13 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-           apache::geode::client::PropertiesPtr nativepropsptr(
-            GetNativePtr<apache::geode::client::Properties>(dsProps));
-
-          apache::geode::client::CacheFactoryPtr& nativeptr( apache::geode::client::CacheFactory::createCacheFactory( nativepropsptr) );         
-          if (nativeptr.get() != nullptr)
-            return gcnew CacheFactory( nativeptr.get(), dsProps );
+          auto nativeCacheFactory = native::CacheFactory::createCacheFactory(dsProps->GetNative());         
+          if (nativeCacheFactory)
+            return gcnew CacheFactory( nativeCacheFactory, dsProps );
             
           return nullptr;
 
-        _GF_MG_EXCEPTION_CATCH_ALL2        
+        _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
       Cache^ CacheFactory::Create()
@@ -71,28 +70,26 @@ namespace Apache
     
           if(!m_connected)
           {
-             apache::geode::client::PropertiesPtr nativepropsptr(
-               GetNativePtr<apache::geode::client::Properties>(m_dsProps));
-            DistributedSystem::AppDomainInstanceInitialization(nativepropsptr);                  
+            DistributedSystem::AppDomainInstanceInitialization(m_dsProps->GetNative());                  
           }
 
-          apache::geode::client::CachePtr& nativeptr( NativePtr->create( ) );
-					pdxIgnoreUnreadFields = nativeptr->getPdxIgnoreUnreadFields();
-          pdxReadSerialized = nativeptr->getPdxReadSerialized();
+          auto nativeCache = m_nativeptr->get()->create( );
+					pdxIgnoreUnreadFields = nativeCache->getPdxIgnoreUnreadFields();
+          pdxReadSerialized = nativeCache->getPdxReadSerialized();
 
           appDomainEnable = DistributedSystem::SystemProperties->AppDomainEnabled;
-          Log::SetLogLevel(static_cast<LogLevel>(apache::geode::client::Log::logLevel( )));
+          Log::SetLogLevel(static_cast<LogLevel>(native::Log::logLevel( )));
 					//TODO::split
           SafeConvertClassGeneric::SetAppDomainEnabled(appDomainEnable);
 
           if (appDomainEnable)
           {
             // Register managed AppDomain context with unmanaged.
-            apache::geode::client::createAppDomainContext = &Apache::Geode::Client::createAppDomainContext;
+            native::createAppDomainContext = &Apache::Geode::Client::createAppDomainContext;
           }
 
             Serializable::RegisterTypeGeneric(
-              apache::geode::client::GeodeTypeIds::PdxType,
+              native::GeodeTypeIds::PdxType,
               gcnew TypeFactoryMethodGeneric(Apache::Geode::Client::Internal::PdxType::CreateDeserializable),
               nullptr);
 
@@ -106,9 +103,10 @@ namespace Apache
           
            m_connected = true;
            
-           return Cache::Create( nativeptr.ptr( ) );
+           return Cache::Create( nativeCache );
         _GF_MG_EXCEPTION_CATCH_ALL2
           finally {
+            GC::KeepAlive(m_nativeptr);
             DistributedSystem::registerCliCallback();
 						Serializable::RegisterPDXManagedCacheableKey(appDomainEnable);
 					Apache::Geode::Client::Internal::PdxTypeRegistry::PdxIgnoreUnreadFields = pdxIgnoreUnreadFields; 
@@ -121,12 +119,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          apache::geode::client::DistributedSystemPtr p_system(
-            GetNativePtr<apache::geode::client::DistributedSystem>( system ) );
-          apache::geode::client::CachePtr& nativeptr(
-            apache::geode::client::CacheFactory::getInstance( p_system ) );
-
-          return Cache::Create( nativeptr.ptr( ) );
+         return Cache::Create( native::CacheFactory::getInstance( system->GetNative() ) );
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -135,12 +128,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          apache::geode::client::DistributedSystemPtr p_system(
-            GetNativePtr<apache::geode::client::DistributedSystem>( system ) );
-          apache::geode::client::CachePtr& nativeptr(
-            apache::geode::client::CacheFactory::getInstanceCloseOk( p_system ) );
-
-          return Cache::Create( nativeptr.ptr( ) );
+          return Cache::Create( native::CacheFactory::getInstanceCloseOk( system->GetNative() ) );
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -149,22 +137,20 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          apache::geode::client::CachePtr& nativeptr(
-            apache::geode::client::CacheFactory::getAnyInstance( ) );
-          return Cache::Create( nativeptr.ptr( ) );
+          return Cache::Create( native::CacheFactory::getAnyInstance( ) );
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
       String^ CacheFactory::Version::get( )
       {
-        return ManagedString::Get( apache::geode::client::CacheFactory::getVersion( ) );
+        return ManagedString::Get( native::CacheFactory::getVersion( ) );
       }
 
       String^ CacheFactory::ProductDescription::get( )
       {
         return ManagedString::Get(
-          apache::geode::client::CacheFactory::getProductDescription( ) );
+          native::CacheFactory::getProductDescription( ) );
       }
 
 
@@ -172,7 +158,14 @@ namespace Apache
 		  {
 			  _GF_MG_EXCEPTION_TRY2
 
-			  NativePtr->setFreeConnectionTimeout( connectionTimeout );
+			  try
+			  {
+			    m_nativeptr->get()->setFreeConnectionTimeout( connectionTimeout );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
         return this;
 
@@ -183,7 +176,14 @@ namespace Apache
 		  {
 			  _GF_MG_EXCEPTION_TRY2
 
-			  NativePtr->setLoadConditioningInterval( loadConditioningInterval );
+			  try
+			  {
+			    m_nativeptr->get()->setLoadConditioningInterval( loadConditioningInterval );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
         return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -193,7 +193,14 @@ namespace Apache
       {
 			  _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setSocketBufferSize( bufferSize );
+          try
+          {
+            m_nativeptr->get()->setSocketBufferSize( bufferSize );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -203,7 +210,14 @@ namespace Apache
       {
 			  _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setReadTimeout( timeout );
+          try
+          {
+            m_nativeptr->get()->setReadTimeout( timeout );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -213,7 +227,14 @@ namespace Apache
       {
 			  _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setMinConnections( minConnections );
+          try
+          {
+            m_nativeptr->get()->setMinConnections( minConnections );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -223,7 +244,14 @@ namespace Apache
       {
 			  _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setMaxConnections( maxConnections );
+          try
+          {
+            m_nativeptr->get()->setMaxConnections( maxConnections );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -233,7 +261,14 @@ namespace Apache
       {
 			  _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setIdleTimeout( idleTimeout );
+          try
+          {
+            m_nativeptr->get()->setIdleTimeout( idleTimeout );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -243,7 +278,14 @@ namespace Apache
       {
 			  _GF_MG_EXCEPTION_TRY2
 
-			  NativePtr->setRetryAttempts( retryAttempts );
+			  try
+			  {
+			    m_nativeptr->get()->setRetryAttempts( retryAttempts );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
         return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -253,7 +295,14 @@ namespace Apache
       {
 			  _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setPingInterval( pingInterval );
+          try
+          {
+            m_nativeptr->get()->setPingInterval( pingInterval );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -263,7 +312,14 @@ namespace Apache
       {
 			  _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setUpdateLocatorListInterval( updateLocatorListInterval );
+          try
+          {
+            m_nativeptr->get()->setUpdateLocatorListInterval( updateLocatorListInterval );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -273,7 +329,14 @@ namespace Apache
       {
 			  _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setStatisticInterval( statisticInterval );
+          try
+          {
+            m_nativeptr->get()->setStatisticInterval( statisticInterval );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -284,7 +347,14 @@ namespace Apache
 			  _GF_MG_EXCEPTION_TRY2
 
         ManagedString mg_servergroup( group );
-        NativePtr->setServerGroup( mg_servergroup.CharPtr );
+        try
+        {
+          m_nativeptr->get()->setServerGroup( mg_servergroup.CharPtr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -295,7 +365,14 @@ namespace Apache
 			  _GF_MG_EXCEPTION_TRY2
 
         ManagedString mg_host( host );
-        NativePtr->addLocator( mg_host.CharPtr, port );
+        try
+        {
+          m_nativeptr->get()->addLocator( mg_host.CharPtr, port );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -306,7 +383,14 @@ namespace Apache
 			  _GF_MG_EXCEPTION_TRY2
 
 			  ManagedString mg_host( host );
-        NativePtr->addServer( mg_host.CharPtr, port );
+        try
+        {
+          m_nativeptr->get()->addServer( mg_host.CharPtr, port );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -316,7 +400,14 @@ namespace Apache
       {
 			  _GF_MG_EXCEPTION_TRY2
 
-			  NativePtr->setSubscriptionEnabled( enabled );
+			  try
+			  {
+			    m_nativeptr->get()->setSubscriptionEnabled( enabled );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
         return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -326,7 +417,14 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setPRSingleHopEnabled(enabled);
+          try
+          {
+            m_nativeptr->get()->setPRSingleHopEnabled(enabled);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
          _GF_MG_EXCEPTION_CATCH_ALL2
@@ -336,7 +434,14 @@ namespace Apache
       {
 			  _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setSubscriptionRedundancy( redundancy );
+          try
+          {
+            m_nativeptr->get()->setSubscriptionRedundancy( redundancy );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -346,7 +451,14 @@ namespace Apache
       {
 			  _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setSubscriptionMessageTrackingTimeout( messageTrackingTimeout );
+          try
+          {
+            m_nativeptr->get()->setSubscriptionMessageTrackingTimeout( messageTrackingTimeout );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -356,7 +468,14 @@ namespace Apache
       {
 			  _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setSubscriptionAckInterval( ackInterval );
+          try
+          {
+            m_nativeptr->get()->setSubscriptionAckInterval( ackInterval );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -366,7 +485,14 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-        NativePtr->setThreadLocalConnections( enabled );
+        try
+        {
+          m_nativeptr->get()->setThreadLocalConnections( enabled );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
 
         _GF_MG_EXCEPTION_CATCH_ALL2
 
@@ -377,7 +503,14 @@ namespace Apache
       {
 			  _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setMultiuserAuthentication( multiuserAuthentication );
+          try
+          {
+            m_nativeptr->get()->setMultiuserAuthentication( multiuserAuthentication );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -387,7 +520,14 @@ namespace Apache
 			{
 				_GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setPdxIgnoreUnreadFields( ignore );
+          try
+          {
+            m_nativeptr->get()->setPdxIgnoreUnreadFields( ignore );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -397,7 +537,14 @@ namespace Apache
       {
         	_GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setPdxReadSerialized( pdxReadSerialized );
+          try
+          {
+            m_nativeptr->get()->setPdxReadSerialized( pdxReadSerialized );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
@@ -408,7 +555,14 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2
           ManagedString mg_name( name );
           ManagedString mg_value( value );
-          NativePtr->set( mg_name.CharPtr, mg_value.CharPtr );
+          try
+          {
+            m_nativeptr->get()->set( mg_name.CharPtr, mg_value.CharPtr );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2

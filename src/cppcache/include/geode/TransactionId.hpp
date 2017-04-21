@@ -19,12 +19,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TransactionId.h
- *
- *  Created on: 04-Feb-2011
- *      Author: ankurs
- */
+
+#include <memory>
 
 #include "SharedBase.hpp"
 
@@ -41,6 +37,8 @@ class CPPCACHE_EXPORT TransactionId : public apache::geode::client::SharedBase {
  protected:
   TransactionId();
   virtual ~TransactionId();
+
+  FRIEND_STD_SHARED_PTR(TransactionId)
 };
 }  // namespace client
 }  // namespace geode

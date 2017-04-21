@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-//#include "../geode_includes.hpp"
+#include "begin_native.hpp"
+#include <GeodeTypeIdsImpl.hpp>
+#include "end_native.hpp"
+
 #include "../ICacheableKey.hpp"
 #include "ManagedCacheableKey.hpp"
 #include "../DataInput.hpp"
 #include "../DataOutput.hpp"
 #include "../CacheableString.hpp"
-#include <GeodeTypeIdsImpl.hpp>
 #include "../ExceptionTypes.hpp"
 #include "../Log.hpp"
 
@@ -191,7 +193,7 @@ namespace apache
         try {
           return static_cast<Apache::Geode::Client::ICacheableKey^>(
             (Apache::Geode::Client::IGeodeSerializable^)(Apache::Geode::Client::IGeodeSerializable^)m_managedptr)->Equals(
-            static_cast<Apache::Geode::Client::ICacheableKey^>(other.get()));
+            static_cast<Apache::Geode::Client::ICacheableKey^>(other.ptr()));
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();

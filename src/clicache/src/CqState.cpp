@@ -32,59 +32,59 @@ namespace Apache
 
       String^ CqState::ToString()
       {
-		  return ManagedString::Get(NativePtr->toString());
+		  return ManagedString::Get(m_nativeptr->toString());
       }
 
       bool CqState::IsRunning()
       {
-        return NativePtr->isRunning();
+        return m_nativeptr->isRunning();
       }
 
       bool CqState::IsStopped()
       {
-        return NativePtr->isStopped();
+        return m_nativeptr->isStopped();
       }
 
       bool CqState::IsClosed()
       {
-	return NativePtr->isClosed();
+        return m_nativeptr->isClosed();
       }
 
       bool CqState::IsClosing()
       {
-	return NativePtr->isClosing();
+        return m_nativeptr->isClosing();
       }
 
       void CqState::SetState( CqStateType state )
       {
-		  apache::geode::client::CqState::StateType st =apache::geode::client::CqState::INVALID;
-		  if(state == CqStateType::STOPPED)
-			  st = apache::geode::client::CqState::STOPPED;
-		  else if(state == CqStateType::RUNNING)
-			  st = apache::geode::client::CqState::RUNNING;
-		  else if(state == CqStateType::CLOSED)
-			  st = apache::geode::client::CqState::CLOSED;
-		  else if(state == CqStateType::CLOSING)
-			  st = apache::geode::client::CqState::CLOSING;
-
-		  NativePtr->setState( st );
+	      apache::geode::client::CqState::StateType st =apache::geode::client::CqState::INVALID;
+	      if(state == CqStateType::STOPPED)
+		      st = apache::geode::client::CqState::STOPPED;
+	      else if(state == CqStateType::RUNNING)
+		      st = apache::geode::client::CqState::RUNNING;
+	      else if(state == CqStateType::CLOSED)
+		      st = apache::geode::client::CqState::CLOSED;
+	      else if(state == CqStateType::CLOSING)
+		      st = apache::geode::client::CqState::CLOSING;
+      
+        m_nativeptr->setState( st );
       }
 
       CqStateType CqState::GetState( )
       {
-		apache::geode::client::CqState::StateType st =  NativePtr->getState( );
-        CqStateType state;
-		if(st==apache::geode::client::CqState::STOPPED)
-			state = CqStateType::STOPPED;
-		else if(st==apache::geode::client::CqState::RUNNING)
-			state = CqStateType::RUNNING;
-		else if(st==apache::geode::client::CqState::CLOSED)
-			state = CqStateType::CLOSED;
-		else if(st==apache::geode::client::CqState::CLOSING)
-			state = CqStateType::CLOSING;
-		else
-			state = CqStateType::INVALID;
-		return state;
+		    apache::geode::client::CqState::StateType st =  m_nativeptr->getState( );
+            CqStateType state;
+		    if(st==apache::geode::client::CqState::STOPPED)
+			    state = CqStateType::STOPPED;
+		    else if(st==apache::geode::client::CqState::RUNNING)
+			    state = CqStateType::RUNNING;
+		    else if(st==apache::geode::client::CqState::CLOSED)
+			    state = CqStateType::CLOSED;
+		    else if(st==apache::geode::client::CqState::CLOSING)
+			    state = CqStateType::CLOSING;
+		    else
+			    state = CqStateType::INVALID;
+		    return state;
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

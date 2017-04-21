@@ -17,6 +17,12 @@
 
 #pragma once
 
+#include "begin_native.hpp"
+#include <CacheImpl.hpp>
+#include <CacheRegionHelper.hpp>
+#include <geode/Cache.hpp>
+#include "end_native.hpp"
+
 #include "PdxHelper.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "PdxWriterWithTypeCollector.hpp"
@@ -27,9 +33,7 @@
 #include "PdxWrapper.hpp"
 #include "../Log.hpp"
 #include "PdxInstanceImpl.hpp"
-#include <CacheImpl.hpp>
-#include <CacheRegionHelper.hpp>
-#include <geode/Cache.hpp>
+
 using namespace System;
 
 namespace Apache

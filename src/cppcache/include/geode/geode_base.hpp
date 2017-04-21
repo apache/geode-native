@@ -325,9 +325,17 @@ void operator delete[](void *p);
 #define FRIEND_STD_SHARED_PTR(_T) \
   friend __gnu_cxx::new_allocator<_T>; 
 #elif defined(_MSC_VER)
+#if defined(_MANAGED)
 #define FRIEND_STD_SHARED_PTR(_T) \
   friend std::_Ref_count_obj<_T>; \
-  friend std::default_delete<_T>;  
+  friend std::_Ref_count<_T>;     \
+  friend std::_Ptr_base<_T>;      \
+  friend std::default_delete<_T>; \
+  friend std::shared_ptr<_T>;
+#else 
+#define FRIEND_STD_SHARED_PTR(_T) \
+  friend std::_Ref_count_obj<_T>;
+#endif
 #else
 #define FRIEND_STD_SHARED_PTR(_T)
 #endif

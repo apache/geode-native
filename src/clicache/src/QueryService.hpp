@@ -18,8 +18,11 @@
 #pragma once
 
 #include "geode_defs.hpp"
-#include "impl/NativeWrapper.hpp"
+#include "native_shared_ptr.hpp"
+#include "begin_native.hpp"
 #include <geode/QueryService.hpp>
+#include "end_native.hpp"
+
 
 
 
@@ -31,6 +34,8 @@ namespace Apache
   {
     namespace Client
     {
+
+      namespace native = apache::geode::client;
 
       generic<class TResult>
       ref class Query;
@@ -48,7 +53,6 @@ namespace Apache
       /// </summary>
       generic<class TKey, class TResult>
       public ref class QueryService sealed
-				: public Internal::SBWrap<apache::geode::client::QueryService>
       {
       public:
 
@@ -132,10 +136,10 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static Apache::Geode::Client::QueryService<TKey, TResult>^ Create( apache::geode::client::QueryService* nativeptr )
+        inline static QueryService<TKey, TResult>^ Create(native::QueryServicePtr nativeptr )
         {
-          return ( nativeptr != nullptr ?
-            gcnew Apache::Geode::Client::QueryService<TKey, TResult>( nativeptr ) : nullptr );
+          return __nullptr == nativeptr ? nullptr :
+            gcnew QueryService<TKey, TResult>( nativeptr );
         }
 
 
@@ -145,8 +149,12 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline QueryService( apache::geode::client::QueryService* nativeptr )
-          : SBWrap( nativeptr ) { }
+        inline QueryService(native::QueryServicePtr nativeptr)
+        {
+           m_nativeptr = gcnew native_shared_ptr<native::QueryService>(nativeptr);
+        }
+
+        native_shared_ptr<native::QueryService>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

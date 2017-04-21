@@ -16,8 +16,6 @@
  */
 
 
-
-//#include "geode_includes.hpp"
 #include "StatisticDescriptor.hpp"
 #include "impl/ManagedString.hpp"
 
@@ -31,34 +29,34 @@ namespace Apache
 
       System::Int32 StatisticDescriptor::ID::get( )
       {
-        return  NativePtr->getId();
+        return  m_nativeptr->getId();
       }
 
       String^ StatisticDescriptor::Name::get( )
       {
-        return ManagedString::Get( NativePtr->getName() );
+        return ManagedString::Get( m_nativeptr->getName() );
       }
 
       String^ StatisticDescriptor::Description::get( )
       {
-        return ManagedString::Get( NativePtr->getDescription() );
+        return ManagedString::Get( m_nativeptr->getDescription() );
       }
 
       int8_t StatisticDescriptor::IsCounter::get( )
       {
-        return NativePtr->isCounter();
+        return m_nativeptr->isCounter();
       }
 
       int8_t StatisticDescriptor::IsLargerBetter::get( )
       {
-        return NativePtr->isLargerBetter();
+        return m_nativeptr->isLargerBetter();
       }
 
-      String^ StatisticDescriptor::Unit::get( )
+      String^ StatisticDescriptor::Unit::get()
       {
-        return ManagedString::Get( NativePtr->getUnit() );
+        return ManagedString::Get(m_nativeptr->getUnit());
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
- } //namespace 
 

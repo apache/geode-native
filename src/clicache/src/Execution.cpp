@@ -18,7 +18,10 @@
 
 //#include "geode_includes.hpp"
 #include "Execution.hpp"
+#include "begin_native.hpp"
 #include <geode/Execution.hpp>
+#include "end_native.hpp"
+
 #include "ResultCollector.hpp"
 #include "impl/ManagedResultCollector.hpp"
 
@@ -34,6 +37,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       generic<class TResult>
       generic<class TFilter>
@@ -41,14 +45,21 @@ namespace Apache
       {
         if (routingObj != nullptr) {
           _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          apache::geode::client::CacheableVectorPtr rsptr = apache::geode::client::CacheableVector::create();
+          auto rsptr = native::CacheableVector::create();
         
           for each(TFilter item in routingObj)
           {
             rsptr->push_back(Serializable::GetUnmanagedValueGeneric<TFilter>( item ));
           }
           
-          return Execution<TResult>::Create(NativePtr->withFilter(rsptr).get(), this->m_rc);
+          try
+          {
+            return Execution<TResult>::Create(m_nativeptr->get()->withFilter(rsptr), this->m_rc);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
         }
         else {
@@ -61,9 +72,15 @@ namespace Apache
       Execution<TResult>^ Execution<TResult>::WithArgs( TArgs args )
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          
-          apache::geode::client::CacheablePtr argsptr( Serializable::GetUnmanagedValueGeneric<TArgs>( args ) );
-        return Execution<TResult>::Create(NativePtr->withArgs(argsptr).get(), this->m_rc);
+          try
+          {
+            auto argsptr = Serializable::GetUnmanagedValueGeneric<TArgs>( args );
+            return Execution<TResult>::Create(m_nativeptr->get()->withArgs(argsptr), this->m_rc);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -71,15 +88,20 @@ namespace Apache
       Execution<TResult>^ Execution<TResult>::WithCollector(Client::IResultCollector<TResult>^ rc)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          apache::geode::client::ResultCollectorPtr rcptr;
+          native::ResultCollectorPtr rcptr;
         if ( rc != nullptr ) {
-          ResultCollectorGeneric<TResult>^ rcg = gcnew ResultCollectorGeneric<TResult>();
-          rcg->SetResultCollector(rc);
-          
-          rcptr = new apache::geode::client::ManagedResultCollectorGeneric(  rcg );
-          //((apache::geode::client::ManagedResultCollectorGeneric*)rcptr.get())->setptr(rcg);
+          auto rcg = gcnew ResultCollectorGeneric<TResult>();
+          rcg->SetResultCollector(rc); 
+          rcptr = std::shared_ptr<native::ManagedResultCollectorGeneric>(new native::ManagedResultCollectorGeneric(rcg));
         }
-        return Execution<TResult>::Create( NativePtr->withCollector(rcptr).get(), rc);
+        try
+        {
+          return Execution<TResult>::Create( m_nativeptr->get()->withCollector(rcptr), rc);
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -87,12 +109,19 @@ namespace Apache
       IResultCollector<TResult>^ Execution<TResult>::Execute(String^ func, UInt32 timeout)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          ManagedString mg_function( func );
-        apache::geode::client::ResultCollectorPtr rc = NativePtr->execute(mg_function.CharPtr, timeout);
-        if(m_rc == nullptr)
-          return gcnew ResultCollector<TResult>(rc.get());
-        else
-          return m_rc;
+        try
+        {
+          ManagedString mg_function(func);
+          auto rc = m_nativeptr->get()->execute(mg_function.CharPtr, timeout);
+          if (m_rc == nullptr)
+            return gcnew ResultCollector<TResult>(rc);
+          else
+            return m_rc;
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -100,8 +129,7 @@ namespace Apache
       IResultCollector<TResult>^ Execution<TResult>::Execute(String^ func)
       {
         return Execute(func, DEFAULT_QUERY_RESPONSE_TIMEOUT);
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
-} //namespace 

@@ -17,13 +17,11 @@
 
 #pragma once
 
-//#include "geode_includes.hpp"
 #include "Region.hpp"
 #include "Pool.hpp"
 #include "PoolManager.hpp"
 #include "PoolFactory.hpp"
 #include "CacheableString.hpp"
-#include "impl/SafeConvert.hpp"
 
 using namespace System;
 
@@ -33,55 +31,47 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
-      //generic<class TKey, class TValue>
-      PoolFactory/*<TKey, TValue>*/^ PoolManager/*<TKey, TValue>*/::CreateFactory()
+      PoolFactory^ PoolManager::CreateFactory()
       {
-        return PoolFactory/*<TKey, TValue>*/::Create(apache::geode::client::PoolManager::createFactory().get());
+        return PoolFactory::Create(native::PoolManager::createFactory());
       }
 
-      //generic<class TKey, class TValue>
-      const Dictionary<String^, Pool/*<TKey, TValue>*/^>^ PoolManager/*<TKey, TValue>*/::GetAll()
+      const Dictionary<String^, Pool^>^ PoolManager::GetAll()
       {
-        apache::geode::client::HashMapOfPools pools = apache::geode::client::PoolManager::getAll();
-        Dictionary<String^, Pool/*<TKey, TValue>*/^>^ result = gcnew Dictionary<String^, Pool/*<TKey, TValue>*/^>();
-        for (apache::geode::client::HashMapOfPools::Iterator iter = pools.begin(); iter != pools.end(); ++iter)
+        auto pools = native::PoolManager::getAll();
+        auto result = gcnew Dictionary<String^, Pool^>();
+        for (native::HashMapOfPools::Iterator iter = pools.begin(); iter != pools.end(); ++iter)
         {
-          String^ key = CacheableString::GetString(iter.first().get());
-          Pool/*<TKey, TValue>*/^ val = Pool/*<TKey, TValue>*/::Create(iter.second().get());
+          auto key = CacheableString::GetString(iter.first().get());
+          auto val = Pool::Create(iter.second());
           result->Add(key, val);
         }
         return result;
       }
 
-      //generic<class TKey, class TValue>
-      Pool/*<TKey, TValue>*/^ PoolManager/*<TKey, TValue>*/::Find(String^ name)
+      Pool^ PoolManager::Find(String^ name)
       {
         ManagedString mg_name( name );
-        apache::geode::client::PoolPtr pool = apache::geode::client::PoolManager::find(mg_name.CharPtr);
-        return Pool/*<TKey, TValue>*/::Create(pool.get());
+        auto pool = native::PoolManager::find(mg_name.CharPtr);
+        return Pool::Create(pool);
       }
 
-      //generic <class TKey, class TValue>
-      Pool/*<TKey, TValue>*/^ PoolManager/*<TKey, TValue>*/::Find(Client::Region<Object^, Object^>^ region)
+      Pool^ PoolManager::Find(Client::Region<Object^, Object^>^ region)
       {
-        //return Pool::Create(apache::geode::client::PoolManager::find(apache::geode::client::RegionPtr(GetNativePtr<apache::geode::client::Region>(region))).get());
-        return Pool/*<TKey, TValue>*/::Create(apache::geode::client::PoolManager::find(apache::geode::client::RegionPtr(region->_NativePtr)).get());
+        return Pool::Create(native::PoolManager::find(region->GetNative()));
       }
 
-      //generic<class TKey, class TValue>
-      void PoolManager/*<TKey, TValue>*/::Close(Boolean KeepAlive)
+      void PoolManager::Close(Boolean KeepAlive)
       {
-        apache::geode::client::PoolManager::close(KeepAlive);
+        native::PoolManager::close(KeepAlive);
       }
 
-      //generic<class TKey, class TValue>
-      void PoolManager/*<TKey, TValue>*/::Close()
+      void PoolManager::Close()
       {
-        apache::geode::client::PoolManager::close();
+        native::PoolManager::close();
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
-
- } //namespace 

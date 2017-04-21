@@ -19,7 +19,10 @@
 #pragma once
 #include "../geode_defs.hpp"
 #include <vcclr.h>
+#include "begin_native.hpp"
 #include <geode/CqStatusListener.hpp>
+#include "end_native.hpp"
+
 #include "../ICqStatusListener.hpp"
 #include "CqStatusListenerProxy.hpp"
 

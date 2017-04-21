@@ -20,7 +20,10 @@
 
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/CacheableBuiltins.hpp>
+#include "end_native.hpp"
+
 #include "Serializable.hpp"
 #include "GeodeClassIds.hpp"
 #include "CacheableString.hpp"
@@ -152,7 +155,7 @@ namespace Apache
         /// <summary>
         /// Factory function to register wrapper
         /// </summary>
-        static IGeodeSerializable^ Create(apache::geode::client::Serializable* obj)
+        static IGeodeSerializable^ Create(apache::geode::client::SerializablePtr obj)
         {
           return (obj != nullptr ?
                   gcnew CacheableStringArray(obj) : nullptr);
@@ -180,7 +183,7 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CacheableStringArray(apache::geode::client::Serializable* nativeptr)
+        inline CacheableStringArray(apache::geode::client::SerializablePtr nativeptr)
           : Serializable(nativeptr) { }
       };
     }  // namespace Client

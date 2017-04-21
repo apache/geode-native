@@ -18,8 +18,10 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/CacheableKey.hpp>
-//#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
 #include "Serializable.hpp"
 #include "ICacheableKey.hpp"
 
@@ -129,7 +131,7 @@ namespace Apache
         /// Internal constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CacheableKey(apache::geode::client::Serializable* nativeptr)
+        inline CacheableKey(apache::geode::client::SerializablePtr nativeptr)
           : Client::Serializable(nativeptr) { }
       };
     }  // namespace Client

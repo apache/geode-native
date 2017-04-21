@@ -18,7 +18,7 @@
 #pragma once
 
 #include "../geode_defs.hpp"
-#include "NativeWrapper.hpp"
+
 #include "ManagedCacheableKey.hpp"
 #include "ManagedCacheableDelta.hpp"
 #include "ManagedCacheableKeyBytes.hpp"
@@ -39,6 +39,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
 				interface class IPdxSerializable;
       public ref class SafeConvertClassGeneric
@@ -58,67 +59,47 @@ namespace Apache
       /// to managed <see cref="IGeodeSerializable" /> object.
       /// </summary>
       inline static Apache::Geode::Client::IGeodeSerializable^
-        SafeUMSerializableConvertGeneric( apache::geode::client::Serializable* obj )
+        SafeUMSerializableConvertGeneric(native::SerializablePtr obj)
       {
-
         if (obj == nullptr) return nullptr;
-        
-        apache::geode::client::ManagedCacheableKeyGeneric* mg_obj = nullptr;          
-        apache::geode::client::ManagedCacheableKeyBytesGeneric* mg_bytesObj = nullptr;          
 
-        if(!SafeConvertClassGeneric::isAppDomainEnabled)
-          mg_obj = dynamic_cast<apache::geode::client::ManagedCacheableKeyGeneric*>( obj );
-        else
-          mg_bytesObj = dynamic_cast<apache::geode::client::ManagedCacheableKeyBytesGeneric*>( obj );
-
-        apache::geode::client::ManagedCacheableDeltaGeneric* mg_obj_delta = nullptr;
-        apache::geode::client::ManagedCacheableDeltaBytesGeneric* mg_bytesObj_delta = nullptr;
-        
-        if (mg_obj != nullptr)
+        if (SafeConvertClassGeneric::isAppDomainEnabled)
         {
-          return mg_obj->ptr( );
-        }
-        else if(mg_bytesObj != nullptr)
-        {
-          return mg_bytesObj->ptr();
-        }
-        else
-        {
-          if(!SafeConvertClassGeneric::isAppDomainEnabled)
-            mg_obj_delta = dynamic_cast<apache::geode::client::ManagedCacheableDeltaGeneric*>( obj );
-          else
-            mg_bytesObj_delta = dynamic_cast<apache::geode::client::ManagedCacheableDeltaBytesGeneric*>( obj );
-          
-          if( mg_obj_delta != nullptr )
+          if (auto mg_bytesObj = std::dynamic_pointer_cast<native::ManagedCacheableKeyBytesGeneric>(obj))
           {
-            return dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(mg_obj_delta->ptr( ));
+            return mg_bytesObj->ptr();
           }
-          else if(mg_bytesObj_delta != nullptr)
+          if (auto mg_bytesObj_delta = std::dynamic_pointer_cast<native::ManagedCacheableDeltaBytesGeneric>(obj))
           {
-            return dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(mg_bytesObj_delta->ptr( ));
-          }
-          else
-          {
-            if ( obj->typeId( ) == 0 ) {
-              //Special case for UserFunctionExecutionException which is not registered.
-              apache::geode::client::UserFunctionExecutionException* mg_UFEEobj = nullptr;
-              mg_UFEEobj = dynamic_cast<apache::geode::client::UserFunctionExecutionException*>( obj );
-              if (mg_UFEEobj != nullptr) 
-              {              
-                return gcnew UserFunctionExecutionException(mg_UFEEobj);              
-              }
-            }
-
-            WrapperDelegateGeneric^ wrapperMethod =
-              Apache::Geode::Client::Serializable::GetWrapperGeneric( obj->typeId( ) );
-            if (wrapperMethod != nullptr)
-            {
-              return wrapperMethod( obj );
-            }            
-
-            return gcnew Apache::Geode::Client::Serializable( obj );
+            return dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(mg_bytesObj_delta->ptr());
           }
         }
+        else {
+          if (auto mg_obj = std::dynamic_pointer_cast<native::ManagedCacheableKeyGeneric>(obj))
+          {
+            return mg_obj->ptr();
+          }
+          if (auto mg_obj_delta = std::dynamic_pointer_cast<native::ManagedCacheableDeltaGeneric>(obj))
+          {
+            return dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(mg_obj_delta->ptr());
+          }
+        }
+
+        if (obj->typeId() == 0)
+        {
+          if (auto mg_UFEEobj = std::dynamic_pointer_cast<native::UserFunctionExecutionException>(obj))
+          {
+            return gcnew UserFunctionExecutionException(mg_UFEEobj);
+          }
+        }
+
+        auto wrapperMethod = Apache::Geode::Client::Serializable::GetWrapperGeneric( obj->typeId( ) );             
+        if (wrapperMethod != nullptr)
+        {
+          return wrapperMethod( obj );
+        }
+
+        return gcnew Apache::Geode::Client::Serializable( obj );
       }
 
       /// <summary>
@@ -127,7 +108,7 @@ namespace Apache
       /// <remarks>
       /// <para>
       /// Consider the scenario that we have both native objects of class
-      /// <c>apache::geode::client::Serializable</c> and managed objects of class
+      /// <c>native::Serializable</c> and managed objects of class
       /// <see cref="IGeodeSerializable" /> in a Region.
       /// </para><para>
       /// The former would be passed wrapped inside the
@@ -149,8 +130,8 @@ namespace Apache
       inline static NativeType* SafeM2UMConvertGeneric( ManagedType^ mg_obj )
       {
         /*
-        *return SafeM2UMConvertGeneric<IGeodeSerializable, apache::geode::client::ManagedCacheableKey,
-          apache::geode::client::Serializable, Serializable>( mg_obj );
+        *return SafeM2UMConvertGeneric<IGeodeSerializable, native::ManagedCacheableKey,
+          native::Serializable, Serializable>( mg_obj );
         */
         //TODO: need to look this further for all types
         if (mg_obj == nullptr) return NULL;
@@ -168,15 +149,15 @@ namespace Apache
             dynamic_cast<Apache::Geode::Client::IGeodeDelta^> (mg_obj);
           if(sDelta != nullptr){
             if(!SafeConvertClassGeneric::isAppDomainEnabled)
-              return new apache::geode::client::ManagedCacheableDeltaGeneric( sDelta);
+              return new native::ManagedCacheableDeltaGeneric( sDelta);
             else
-              return new apache::geode::client::ManagedCacheableDeltaBytesGeneric( sDelta, true);
+              return new native::ManagedCacheableDeltaBytesGeneric( sDelta, true);
           }
           else{
             if(!SafeConvertClassGeneric::isAppDomainEnabled)
               return new ManagedWrapper(mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId);
             else
-              return new apache::geode::client::ManagedCacheableKeyBytesGeneric( mg_obj, true);
+              return new native::ManagedCacheableKeyBytesGeneric( mg_obj, true);
           }
         }
          //if (mg_obj == nullptr) return NULL;
@@ -190,83 +171,66 @@ namespace Apache
       }
 
       generic<class TValue>
-      inline static TValue SafeGenericUMSerializableConvert( apache::geode::client::Serializable* obj )
+      inline static TValue SafeGenericUMSerializableConvert( native::SerializablePtr obj )
       {
 
         if (obj == nullptr) return TValue();
         
-        apache::geode::client::ManagedCacheableKeyGeneric* mg_obj = nullptr;          
-        apache::geode::client::ManagedCacheableKeyBytesGeneric* mg_bytesObj = nullptr;          
-
-        if(!SafeConvertClassGeneric::isAppDomainEnabled)
-          mg_obj = dynamic_cast<apache::geode::client::ManagedCacheableKeyGeneric*>( obj );
-        else
-          mg_bytesObj = dynamic_cast<apache::geode::client::ManagedCacheableKeyBytesGeneric*>( obj );
-
-        apache::geode::client::ManagedCacheableDeltaGeneric* mg_obj_delta = nullptr;
-        apache::geode::client::ManagedCacheableDeltaBytesGeneric* mg_bytesObj_delta = nullptr;
-        
-        if (mg_obj != nullptr)
+        if (SafeConvertClassGeneric::isAppDomainEnabled)
         {
-          return (TValue)mg_obj->ptr( );
-        }
-        else if(mg_bytesObj != nullptr)
-        {
-          return (TValue)mg_bytesObj->ptr();
-        }
-        else
-        {
-          if(!SafeConvertClassGeneric::isAppDomainEnabled)
-            mg_obj_delta = dynamic_cast<apache::geode::client::ManagedCacheableDeltaGeneric*>( obj );
-          else
-            mg_bytesObj_delta = dynamic_cast<apache::geode::client::ManagedCacheableDeltaBytesGeneric*>( obj );
-          
-          if( mg_obj_delta != nullptr )
+          if (auto mg_bytesObj = std::dynamic_pointer_cast<native::ManagedCacheableKeyBytesGeneric>(obj))
           {
-            return safe_cast<TValue>(mg_obj_delta->ptr( ));
+            return (TValue)mg_bytesObj->ptr();
           }
-          else if(mg_bytesObj_delta != nullptr)
+          if (auto mg_bytesObj_delta = std::dynamic_pointer_cast<native::ManagedCacheableDeltaBytesGeneric>(obj))
           {
-            return safe_cast<TValue>(mg_bytesObj_delta->ptr( ));
+            return safe_cast<TValue>(mg_bytesObj_delta->ptr());
           }
-          else
-          {            
-            if ( obj->typeId( ) == 0 ) {
-              apache::geode::client::UserFunctionExecutionException* mg_UFEEobj = nullptr;
-              mg_UFEEobj = dynamic_cast<apache::geode::client::UserFunctionExecutionException*>( obj );              
-              if (mg_UFEEobj != nullptr) 
-              {                
-                return safe_cast<TValue> (gcnew UserFunctionExecutionException(mg_UFEEobj));              
-              }
-            }
+        } else {
+          if (auto mg_obj = std::dynamic_pointer_cast<native::ManagedCacheableKeyGeneric>(obj))
+          {
+            return (TValue)mg_obj->ptr();
+          }
 
-            WrapperDelegateGeneric^ wrapperMethod =
-              Apache::Geode::Client::Serializable::GetWrapperGeneric( obj->typeId( ) );             
-            if (wrapperMethod != nullptr)
-            {
-              return safe_cast<TValue>(wrapperMethod( obj ));
-            }
-            return safe_cast<TValue>(gcnew Apache::Geode::Client::Serializable( obj ));
+          if (auto mg_obj_delta = std::dynamic_pointer_cast<native::ManagedCacheableDeltaGeneric>(obj))
+          {
+            return safe_cast<TValue>(mg_obj_delta->ptr());
           }
         }
+
+        if (obj->typeId() == 0)
+        {
+          if (auto mg_UFEEobj = std::dynamic_pointer_cast<native::UserFunctionExecutionException>(obj))
+          {
+            return safe_cast<TValue> (gcnew UserFunctionExecutionException(mg_UFEEobj));
+          }
+        }
+
+        auto wrapperMethod = Apache::Geode::Client::Serializable::GetWrapperGeneric( obj->typeId( ) );             
+        if (wrapperMethod != nullptr)
+        {
+          return safe_cast<TValue>(wrapperMethod( obj ));
+        }
+
+        return safe_cast<TValue>(gcnew Apache::Geode::Client::Serializable( obj ));
       }
 
       /// <summary>
       /// Helper function to convert managed <see cref="IGeodeSerializable" />
-      /// object to native <c>apache::geode::client::Serializable</c> object using
+      /// object to native <c>native::Serializable</c> object using
       /// <c>SafeM2UMConvert</c>.
       /// </summary>
-      inline static apache::geode::client::Serializable* SafeMSerializableConvertGeneric(
+      inline static native::Serializable* SafeMSerializableConvertGeneric(
         Apache::Geode::Client::IGeodeSerializable^ mg_obj )
       {
         //it is called for cacheables types  only
         return SafeM2UMConvertGeneric<Apache::Geode::Client::IGeodeSerializable,
-          apache::geode::client::ManagedCacheableKeyGeneric, apache::geode::client::Serializable,
+          native::ManagedCacheableKeyGeneric, native::Serializable,
           Apache::Geode::Client::Serializable>( mg_obj );
       }
 
       generic<class TValue>
-      inline static apache::geode::client::Cacheable* SafeGenericM2UMConvert( TValue mg_val )
+      inline static native::Cacheable* SafeGenericM2UMConvert( TValue mg_val )
       {
         if (mg_val == nullptr) return NULL;
 
@@ -288,9 +252,9 @@ namespace Apache
         {
           //TODO:: probably need to do for appdomain
 					if(!SafeConvertClassGeneric::isAppDomainEnabled)
-						return new apache::geode::client::PdxManagedCacheableKey(pdxType);
+						return new native::PdxManagedCacheableKey(pdxType);
 					else
-						return new apache::geode::client::PdxManagedCacheableKeyBytes(pdxType, true);
+						return new native::PdxManagedCacheableKeyBytes(pdxType, true);
         }
       
 				Apache::Geode::Client::IGeodeDelta^ sDelta =
@@ -298,9 +262,9 @@ namespace Apache
           if(sDelta != nullptr)
 					{
             if(!SafeConvertClassGeneric::isAppDomainEnabled)
-              return new apache::geode::client::ManagedCacheableDeltaGeneric( sDelta);
+              return new native::ManagedCacheableDeltaGeneric( sDelta);
             else
-              return new apache::geode::client::ManagedCacheableDeltaBytesGeneric( sDelta, true);
+              return new native::ManagedCacheableDeltaBytesGeneric( sDelta, true);
           }
           else
 					{
@@ -310,11 +274,11 @@ namespace Apache
 						{
 							if(!SafeConvertClassGeneric::isAppDomainEnabled)
 							{
-									return new apache::geode::client::ManagedCacheableKeyGeneric( tmpIGFS );
+									return new native::ManagedCacheableKeyGeneric( tmpIGFS );
 							}
 							else
 							{
-								return new apache::geode::client::ManagedCacheableKeyBytesGeneric( tmpIGFS, true);
+								return new native::ManagedCacheableKeyBytesGeneric( tmpIGFS, true);
 							}
 						}
             
@@ -322,89 +286,76 @@ namespace Apache
             {
               //TODO:: probably need to do for appdomain
 					    if(!SafeConvertClassGeneric::isAppDomainEnabled)
-					    	return new apache::geode::client::PdxManagedCacheableKey(gcnew PdxWrapper(mg_obj));
+					    	return new native::PdxManagedCacheableKey(gcnew PdxWrapper(mg_obj));
 					    else
-						    return new apache::geode::client::PdxManagedCacheableKeyBytes(gcnew PdxWrapper(mg_obj), true);
+						    return new native::PdxManagedCacheableKeyBytes(gcnew PdxWrapper(mg_obj), true);
             }
             throw gcnew Apache::Geode::Client::IllegalStateException(String::Format("Unable to map object type {0}. Possible Object type may not be registered or PdxSerializer is not registered. ", mg_obj->GetType()));
           }	
       }
 
       generic<class TValue>
-      inline static apache::geode::client::Cacheable* SafeGenericMSerializableConvert( TValue mg_obj )
+      inline static native::Cacheable* SafeGenericMSerializableConvert( TValue mg_obj )
       {
         return SafeGenericM2UMConvert<TValue>( mg_obj );
       }
 
-			inline static IPdxSerializable^ SafeUMSerializablePDXConvert( apache::geode::client::Serializable* obj )
+			inline static IPdxSerializable^ SafeUMSerializablePDXConvert( native::SerializablePtr obj )
       {
-        apache::geode::client::PdxManagedCacheableKey* mg_obj = nullptr; 
-
-         mg_obj = dynamic_cast<apache::geode::client::PdxManagedCacheableKey*>( obj );
-
-         if(mg_obj != nullptr)
+         if(auto mg_obj = std::dynamic_pointer_cast<native::PdxManagedCacheableKey>( obj ))
            return mg_obj->ptr();
 
-				 apache::geode::client::PdxManagedCacheableKeyBytes* mg_bytes = dynamic_cast<apache::geode::client::PdxManagedCacheableKeyBytes*>( obj );
-
-				 if(mg_bytes != nullptr)
+				 if(auto mg_bytes = std::dynamic_pointer_cast<native::PdxManagedCacheableKeyBytes>( obj ))
            return mg_bytes->ptr();
 
          throw gcnew IllegalStateException("Not be able to deserialize managed type");
       }
 
       /// <summary>
-      /// Helper function to convert native <c>apache::geode::client::CacheableKey</c> object
+      /// Helper function to convert native <c>native::CacheableKey</c> object
       /// to managed <see cref="ICacheableKey" /> object.
       /// </summary>
       generic<class TKey>
-      inline static Client::ICacheableKey^ SafeGenericUMKeyConvert( apache::geode::client::CacheableKey* obj )
+      inline static Client::ICacheableKey^ SafeGenericUMKeyConvert( native::CacheableKeyPtr obj )
       {
         //All cacheables will be ManagedCacheableKey only
         if (obj == nullptr) return nullptr;
-        apache::geode::client::ManagedCacheableKeyGeneric* mg_obj = nullptr;
-        apache::geode::client::ManagedCacheableKeyBytesGeneric* mg_bytesObj = nullptr;
-
-        if (!SafeConvertClassGeneric::isAppDomainEnabled)
-          mg_obj = dynamic_cast<apache::geode::client::ManagedCacheableKeyGeneric*>( obj );
-        else
-          mg_bytesObj = dynamic_cast<apache::geode::client::ManagedCacheableKeyBytesGeneric*>( obj );
-
-        if (mg_obj != nullptr)
+ 
+        if (SafeConvertClassGeneric::isAppDomainEnabled)
         {
-          return (Client::ICacheableKey^)mg_obj->ptr( );
-        }
-        else if(mg_bytesObj != nullptr)
-        {
-          return (Client::ICacheableKey^)mg_bytesObj->ptr( );
-        }
-        else
-        {
-          WrapperDelegateGeneric^ wrapperMethod =
-            Apache::Geode::Client::Serializable::GetWrapperGeneric( obj->typeId( ) );
-          if (wrapperMethod != nullptr)
+          if (auto mg_bytesObj = std::dynamic_pointer_cast<native::ManagedCacheableKeyBytesGeneric>(obj))
           {
-            return (Client::ICacheableKey^)wrapperMethod( obj );
+            return (Client::ICacheableKey^)mg_bytesObj->ptr( );
           }
-          return gcnew Client::CacheableKey( obj );
         }
+        if (auto mg_obj = std::dynamic_pointer_cast<native::ManagedCacheableKeyGeneric>(obj))
+        {
+            return (Client::ICacheableKey^)mg_obj->ptr( );
+        }
+
+        auto wrapperMethod = Apache::Geode::Client::Serializable::GetWrapperGeneric( obj->typeId( ) );
+        if (wrapperMethod != nullptr)
+        {
+          return (Client::ICacheableKey^)wrapperMethod( obj );
+        }
+        return gcnew Client::CacheableKey( obj );
       }
 
       generic <class TKey>
-      inline static apache::geode::client::CacheableKey* SafeGenericMKeyConvert( TKey mg_obj )
+      inline static native::CacheableKey* SafeGenericMKeyConvert( TKey mg_obj )
       {
         if (mg_obj == nullptr) return NULL;
-        apache::geode::client::CacheableKey* obj = Apache::Geode::Client::Serializable::GetUnmanagedValueGeneric<TKey>( mg_obj ).get();
-        if (obj != nullptr)
+        auto obj = Apache::Geode::Client::Serializable::GetUnmanagedValueGeneric<TKey>( mg_obj );
+        if (obj.get() != nullptr)
         {
-          return obj;
+          return obj.get();
         }
         else
         {
           if(!SafeConvertClassGeneric::isAppDomainEnabled)
-            return new apache::geode::client::ManagedCacheableKeyGeneric( SafeUMSerializableConvertGeneric(obj) );
+            return new native::ManagedCacheableKeyGeneric( SafeUMSerializableConvertGeneric(obj) );
           else
-            return new apache::geode::client::ManagedCacheableKeyBytesGeneric( SafeUMSerializableConvertGeneric(obj), true );
+            return new native::ManagedCacheableKeyBytesGeneric( SafeUMSerializableConvertGeneric(obj), true );
         }
       }
 
@@ -413,41 +364,16 @@ namespace Apache
       {
         if (mg_obj == nullptr) return NULL;
         //for cacheables types
-        //return new apache::geode::client::ManagedCacheableKey(mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId);
+        //return new native::ManagedCacheableKey(mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId);
         {
           if(!SafeConvertClassGeneric::isAppDomainEnabled)
-            return new apache::geode::client::ManagedCacheableKeyGeneric( mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId );
+            return new native::ManagedCacheableKeyGeneric( mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId );
           else
-            return new apache::geode::client::ManagedCacheableKeyBytesGeneric( mg_obj, true );
+            return new native::ManagedCacheableKeyBytesGeneric( mg_obj, true );
         }
       }
 
-      template<typename NativeType> //where NativeType : apache::geode::client::SharedPtr<NativeType>
-      //generic<typename ManagedType> where ManagedType : Internal::SBWrap<apache::geode::client::RegionAttributes>
-      inline static NativeType* GetNativePtrFromSBWrap( Apache::Geode::Client::Internal::SBWrap<NativeType>^ mg_obj )
-      {
-        return (mg_obj != nullptr ? mg_obj->_NativePtr : NULL);
-      }
-
-			 template<typename NativeType> //where NativeType : apache::geode::client::SharedPtr<NativeType>
-      //generic<typename ManagedType> where ManagedType : Internal::SBWrap<apache::geode::client::RegionAttributes>
-			 inline static NativeType* GetNativePtrFromSBWrapGeneric( Apache::Geode::Client::Internal::SBWrap<NativeType>^ mg_obj )
-      {
-        return (mg_obj != nullptr ? mg_obj->_NativePtr : NULL);
-      }
-
-      template<typename NativeType>
-      inline static NativeType* GetNativePtrFromUMWrap( Apache::Geode::Client::Internal::UMWrap<NativeType>^ mg_obj )
-      {
-        return (mg_obj != nullptr ? mg_obj->_NativePtr : NULL);
-      }
-
-			template<typename NativeType>
-			inline static NativeType* GetNativePtrFromUMWrapGeneric( Apache::Geode::Client::Internal::UMWrap<NativeType>^ mg_obj )
-      {
-        return (mg_obj != nullptr ? mg_obj->_NativePtr : NULL);
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
 
-}

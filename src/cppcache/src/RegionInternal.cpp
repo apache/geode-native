@@ -105,7 +105,7 @@ TombstoneListPtr RegionInternal::getTombstoneList() {
 
 RegionEntryPtr RegionInternal::createRegionEntry(const CacheableKeyPtr& key,
                                                  const CacheablePtr& value) {
-  return RegionEntryPtr(new RegionEntry(this, key, value));
+  return std::make_shared<RegionEntry>(shared_from_this(), key, value);
 }
 
 void RegionInternal::setLruEntriesLimit(uint32_t limit) {

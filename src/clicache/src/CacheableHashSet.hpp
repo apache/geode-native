@@ -20,10 +20,15 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/CacheableBuiltins.hpp>
+#include "end_native.hpp"
+
 #include "Serializable.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/PdxInstanceImpl.hpp"
+#include "native_shared_ptr.hpp"
+#include "native_unique_ptr.hpp"
 
 using namespace System;
 using namespace System::Collections::Generic;
@@ -52,15 +57,14 @@ namespace Apache
           {
             output->WriteArrayLen(this->Count);
 
-            Internal::ManagedPtrWrap< apache::geode::client::Serializable,
-              Internal::SBWrap<apache::geode::client::Serializable> > nptr = NativePtr;
-            HSTYPE* set = static_cast<HSTYPE*>(nptr());
+            auto set = static_cast<HSTYPE*>(m_nativeptr->get());
             for (typename HSTYPE::Iterator iter = set->begin();
                  iter != set->end(); ++iter) {
-              //Generic::ICacheableKey^ key = SafeGenericUMKeyConvert<ICacheableKey^>((*iter).get());
-              Object^ key = Serializable::GetManagedValueGeneric<Object^>((*iter));
+              auto key = Serializable::GetManagedValueGeneric<Object^>((*iter));
               output->WriteObject(key);
             }
+
+            GC::KeepAlive(this);
           }
 
           virtual IGeodeSerializable^ FromData(DataInput^ input) override
@@ -70,7 +74,6 @@ namespace Apache
             {
               for (int i = 0; i < len; i++)
               {
-                //Generic::ICacheableKey^ key = dynamic_cast<Client::ICacheableKey^>(input->ReadObject());
                 Object^ key = (input->ReadObject());
                 this->Add(key);
               }
@@ -135,8 +138,7 @@ namespace Apache
           /// Enumerator for <c>CacheableHashSet</c> class.
           /// </summary>
           ref class Enumerator sealed
-            : public Internal::UMWrap<typename HSTYPE::Iterator>,
-            public IEnumerator<Object^>
+            : public IEnumerator<Object^>
           {
           public:
             // Region: IEnumerator<ICacheableKey^> Members
@@ -153,13 +155,14 @@ namespace Apache
             {
               virtual Object^ get() =
                 IEnumerator<Object^>::Current::get
-              {
-                if (!m_started) {
-                  throw gcnew System::InvalidOperationException(
-                    "Call MoveNext first.");
-                }
-                //return SafeGenericUMKeyConvert<Client::ICacheableKey^>((*(*NativePtr())).get());
-                return Serializable::GetManagedValueGeneric<Object^>((*(*NativePtr())));
+                {
+                  if (!m_started) {
+                    throw gcnew System::InvalidOperationException(
+                      "Call MoveNext first.");
+                  }
+                auto ret = Serializable::GetManagedValueGeneric<Object^>(*(*(m_nativeptr->get())));
+                GC::KeepAlive(this);
+                return ret;
               }
             }
 
@@ -177,15 +180,14 @@ namespace Apache
             /// </returns>
             virtual bool MoveNext()
             {
-              Internal::ManagedPtrWrap< typename HSTYPE::Iterator,
-                Internal::UMWrap<typename HSTYPE::Iterator> > nptr = NativePtr;
+              auto nptr = m_nativeptr->get();
               bool isEnd = nptr->isEnd();
               if (!m_started) {
                 m_started = true;
               }
               else {
                 if (!isEnd) {
-                  (*nptr())++;
+                  (*nptr)++;
                   isEnd = nptr->isEnd();
                 }
               }
@@ -199,9 +201,19 @@ namespace Apache
             /// </summary>
             virtual void Reset()
             {
-              NativePtr->reset();
+              try
+              {
+                m_nativeptr->get()->reset();
+              }
+              finally
+              {
+                GC::KeepAlive(m_nativeptr);
+              }
               m_started = false;
             }
+
+            !Enumerator() {}
+            ~Enumerator() {}
 
             // End Region: IEnumerator Members
 
@@ -210,9 +222,11 @@ namespace Apache
             /// Internal constructor to wrap a native object pointer
             /// </summary>
             /// <param name="nativeptr">The native object pointer</param>
-            inline Enumerator(typename HSTYPE::Iterator* nativeptr,
+            inline Enumerator(std::unique_ptr<typename HSTYPE::Iterator> nativeptr,
                               CacheableHashSetType<TYPEID, HSTYPE>^ set)
-                              : UMWrap(nativeptr, true), m_set(set) { }
+                              : m_set(set) { 
+              m_nativeptr = gcnew native_unique_ptr<typename HSTYPE::Iterator>(std::move(nativeptr));
+            }
 
           private:
             // Region: IEnumerator Members
@@ -241,6 +255,8 @@ namespace Apache
             bool m_started;
 
             CacheableHashSetType<TYPEID, HSTYPE>^ m_set;
+
+            native_unique_ptr<typename HSTYPE::Iterator>^ m_nativeptr;
           };
 
           /// <summary>
@@ -253,7 +269,6 @@ namespace Apache
           {
             virtual System::UInt32 get() override
             {
-              //return static_cast<HSTYPE*>(NativePtr())->classId() + 0x80000000;
               return TYPEID;
             }
           }
@@ -265,7 +280,14 @@ namespace Apache
           {
             inline System::Int32 get()
             {
-              return static_cast<HSTYPE*>(NativePtr())->max_size();
+              try
+              {
+                return static_cast<HSTYPE*>(m_nativeptr->get())->max_size();
+              }
+              finally
+              {
+                GC::KeepAlive(m_nativeptr);
+              }
             }
           }
 
@@ -276,7 +298,14 @@ namespace Apache
           {
             inline bool get()
             {
-              return static_cast<HSTYPE*>(NativePtr())->empty();
+              try
+              {
+                return static_cast<HSTYPE*>(m_nativeptr->get())->empty();
+              }
+              finally
+              {
+                GC::KeepAlive(m_nativeptr);
+              }
             }
           }
 
@@ -287,7 +316,14 @@ namespace Apache
           {
             inline System::Int32 get()
             {
-              return static_cast<HSTYPE*>(NativePtr())->bucket_count();
+              try
+              {
+                return static_cast<HSTYPE*>(m_nativeptr->get())->bucket_count();
+              }
+              finally
+              {
+                GC::KeepAlive(m_nativeptr);
+              }
             }
           }
 
@@ -297,7 +333,14 @@ namespace Apache
           /// <param name="size">The new size of the HashSet.</param>
           virtual void Resize(System::Int32 size) sealed
           {
-            static_cast<HSTYPE*>(NativePtr())->resize(size);
+            try
+            {
+              static_cast<HSTYPE*>(m_nativeptr->get())->resize(size);
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
           }
 
           /// <summary>
@@ -309,9 +352,17 @@ namespace Apache
           /// </param>
           virtual void Swap(CacheableHashSetType<TYPEID, HSTYPE>^ other) sealed
           {
-            if (other != nullptr) {
-              static_cast<HSTYPE*>(NativePtr())->swap(
-                *static_cast<HSTYPE*>(other->NativePtr()));
+            try
+            {
+              if (other != nullptr) {
+                static_cast<HSTYPE*>(m_nativeptr->get())->swap(
+                  *static_cast<HSTYPE*>(other->m_nativeptr->get()));
+              }
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+              GC::KeepAlive(other->m_nativeptr);
             }
           }
 
@@ -327,8 +378,14 @@ namespace Apache
           {
             _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-              apache::geode::client::CacheableKeyPtr nativeptr(Serializable::GetUnmanagedValueGeneric(item));
-            static_cast<HSTYPE*>(NativePtr())->insert(nativeptr);
+            try
+            {
+              static_cast<HSTYPE*>(m_nativeptr->get())->insert(Serializable::GetUnmanagedValueGeneric(item));
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
 
             _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           }
@@ -338,7 +395,14 @@ namespace Apache
           /// </summary>
           virtual void Clear()
           {
-            static_cast<HSTYPE*>(NativePtr())->clear();
+            try
+            {
+              static_cast<HSTYPE*>(m_nativeptr->get())->clear();
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
           }
 
           /// <summary>
@@ -354,8 +418,14 @@ namespace Apache
           /// </returns>
           virtual bool Contains(Object^ item)
           {
-            return static_cast<HSTYPE*>(NativePtr())->contains(
-              apache::geode::client::CacheableKeyPtr(Serializable::GetUnmanagedValueGeneric(item)));
+            try
+            {
+              return static_cast<HSTYPE*>(m_nativeptr->get())->contains(Serializable::GetUnmanagedValueGeneric(item));
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
           }
 
           /// <summary>
@@ -386,9 +456,8 @@ namespace Apache
               throw gcnew IllegalArgumentException("CacheableHashSet.CopyTo():"
                                                    " array is null or array index is less than zero");
             }
-            Internal::ManagedPtrWrap< apache::geode::client::Serializable,
-              Internal::SBWrap<apache::geode::client::Serializable> > nptr = NativePtr;
-            HSTYPE* set = static_cast<HSTYPE*>(nptr());
+
+            auto set = static_cast<HSTYPE*>(m_nativeptr->get());
             System::Int32 index = arrayIndex;
 
             if (arrayIndex >= array->Length ||
@@ -402,7 +471,8 @@ namespace Apache
                  iter != set->end(); ++iter, ++index) {
               array[index] = Serializable::GetManagedValueGeneric<Object^>((*iter));
             }
-            GC::KeepAlive(this);
+
+            GC::KeepAlive(m_nativeptr);
           }
 
           /// <summary>
@@ -413,7 +483,14 @@ namespace Apache
           {
             virtual System::Int32 get()
             {
-              return static_cast<HSTYPE*>(NativePtr())->size();
+              try
+              {
+                return static_cast<HSTYPE*>(m_nativeptr->get())->size();
+              }
+              finally
+              {
+                GC::KeepAlive(m_nativeptr);
+              }
             }
           }
 
@@ -432,8 +509,14 @@ namespace Apache
           /// </returns>
           virtual bool Remove(Object^ item)
           {
-            return (static_cast<HSTYPE*>(NativePtr())->erase(
-              apache::geode::client::CacheableKeyPtr(Serializable::GetUnmanagedValueGeneric(item))) > 0);
+            try
+            {
+              return (static_cast<HSTYPE*>(m_nativeptr->get())->erase(Serializable::GetUnmanagedValueGeneric(item)) > 0);
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
           }
 
           /// <summary>
@@ -464,10 +547,16 @@ namespace Apache
           /// </returns>
           virtual IEnumerator<Object^>^ GetEnumerator()
           {
-            typename HSTYPE::Iterator* iter = new typename HSTYPE::Iterator(
-              static_cast<HSTYPE*>(NativePtr())->begin());
-
-            return gcnew Enumerator(iter, this);
+            try
+            {
+              auto iter = std::make_unique<typename HSTYPE::Iterator>(
+                static_cast<HSTYPE*>(m_nativeptr->get())->begin());
+              return gcnew Enumerator(std::move(iter), this);
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
           }
 
           // End Region: IEnumerable<ICacheableKey^> Members
@@ -505,14 +594,14 @@ namespace Apache
           /// Private constructor to wrap a native object pointer
           /// </summary>
           /// <param name="nativeptr">The native object pointer</param>
-          inline CacheableHashSetType<TYPEID, HSTYPE>(apache::geode::client::Serializable* nativeptr)
+          inline CacheableHashSetType<TYPEID, HSTYPE>(apache::geode::client::SerializablePtr nativeptr)
             : Serializable(nativeptr) { }
 
           /// <summary>
           /// Allocates a new empty instance.
           /// </summary>
           inline CacheableHashSetType<TYPEID, HSTYPE>()
-            : Serializable(HSTYPE::createDeserializable())
+            : Serializable(std::shared_ptr<HSTYPE>(static_cast<HSTYPE*>(HSTYPE::createDeserializable())))
           { }
 
           /// <summary>
@@ -520,7 +609,7 @@ namespace Apache
           /// </summary>
           /// <param name="size">The initial size of the HashSet.</param>
           inline CacheableHashSetType<TYPEID, HSTYPE>(System::Int32 size)
-            : Serializable(HSTYPE::create(size).get())
+            : Serializable(HSTYPE::create(size))
           { }
         };
       }
@@ -572,13 +661,13 @@ namespace Apache
       }                                                                     \
       \
             internal:                                                               \
-              static IGeodeSerializable^ Create(apache::geode::client::Serializable* obj)            \
+              static IGeodeSerializable^ Create(apache::geode::client::SerializablePtr obj)            \
       {                                                                     \
       return gcnew m(obj);                                                \
       }                                                                     \
       \
             private:                                                                \
-              inline m(apache::geode::client::Serializable* nativeptr)                            \
+              inline m(apache::geode::client::SerializablePtr nativeptr)                            \
               : Internal::CacheableHashSetType<Apache::Geode::Client::GeodeClassIds::m, HSTYPE>(nativeptr) { }             \
       };
 

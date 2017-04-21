@@ -18,11 +18,13 @@
 #pragma once
 
 #include "../geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/RegionService.hpp>
-#include "NativeWrapper.hpp"
+#include "end_native.hpp"
+
+#include "../native_shared_ptr.hpp"
 #include "../RegionShortcut.hpp"
 #include "../RegionFactory.hpp"
-//#include "../geode_includes.hpp"
 #include "../IRegionService.hpp"
 #include "../Region.hpp"
 
@@ -34,12 +36,7 @@ namespace Apache
   {
     namespace Client
     {
-
-      //ref class DistributedSystem;
-      //ref class Region;
-      //ref class RegionAttributes;
-      //ref class QueryService;
-      //ref class FunctionService;
+      namespace native = apache::geode::client;
 
       /// <summary>
       /// Provides a distributed cache.
@@ -59,7 +56,7 @@ namespace Apache
       /// </para>
       /// </remarks>
       public ref class AuthenticatedCache 
-        : public IRegionService, Internal::SBWrap<apache::geode::client::RegionService>
+        : public IRegionService
       {
       public:
 
@@ -145,10 +142,15 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static AuthenticatedCache^ Create( apache::geode::client::RegionService* nativeptr )
+        inline static AuthenticatedCache^ Create( native::RegionServicePtr nativeptr )
         {
-          return ( nativeptr != nullptr ?
-            gcnew AuthenticatedCache( nativeptr ) : nullptr );
+          return __nullptr == nativeptr ? nullptr :
+            gcnew AuthenticatedCache( nativeptr );
+        }
+
+        std::shared_ptr<native::RegionService> GetNative()
+        {
+          return m_nativeptr->get_shared_ptr();
         }
 
       private:
@@ -157,8 +159,11 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline AuthenticatedCache( apache::geode::client::RegionService* nativeptr )
-          : SBWrap( nativeptr ) { }
+        inline AuthenticatedCache( native::RegionServicePtr nativeptr )
+        {
+          m_nativeptr = gcnew native_shared_ptr<native::RegionService>(nativeptr);
+        }
+        native_shared_ptr<native::RegionService>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

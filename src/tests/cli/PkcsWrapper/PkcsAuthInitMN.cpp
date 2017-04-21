@@ -16,7 +16,9 @@
  */
 
 #include "PkcsAuthInitMN.hpp"
+#include "begin_native.hpp"
 #include <geode/Properties.hpp>
+#include "end_native.hpp"
 #include "impl/ManagedString.hpp"
 
 using namespace System;
@@ -42,13 +44,14 @@ Apache::Geode::Client::Properties<String^, Object^>^
 PkcsAuthInit::GetCredentials(
   Apache::Geode::Client::Properties<String^, String^> ^props, System::String ^server)
 {
-  Apache::Geode::Client::ManagedString mg_server( server );
-  apache::geode::client::PropertiesPtr propsPtr = nullptr;
-  if (props != nullptr) {
-    propsPtr = (apache::geode::client::Properties*)props->NativeIntPtr;
-  }
-  apache::geode::client::PKCSAuthInitInternal* nativeptr = new apache::geode::client::PKCSAuthInitInternal(true); 
-  apache::geode::client::PropertiesPtr& newPropsPtr = nativeptr->getCredentials(propsPtr, mg_server.CharPtr);     
-  return Apache::Geode::Client::Properties<String^, Object^>::
-    CreateFromVoidPtr<String^, Object^>(newPropsPtr.get());
+  throw gcnew System::NotImplementedException();
+  //Apache::Geode::Client::ManagedString mg_server( server );
+  //apache::geode::client::PropertiesPtr propsPtr = __nullptr;
+  //if (props != nullptr) {
+  //  propsPtr = props->GetNative();
+  //}
+  //apache::geode::client::PKCSAuthInitInternal* nativeptr = new apache::geode::client::PKCSAuthInitInternal(true); 
+  //apache::geode::client::PropertiesPtr& newPropsPtr = nativeptr->getCredentials(propsPtr, mg_server.CharPtr);     
+  //return Apache::Geode::Client::Properties<String^, Object^>::
+  //  CreateFromVoidPtr<String^, Object^>(newPropsPtr.get());
 }

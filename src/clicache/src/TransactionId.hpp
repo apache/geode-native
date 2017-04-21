@@ -18,8 +18,11 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/TransactionId.hpp>
-#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
+
 
 using namespace System;
 
@@ -29,19 +32,24 @@ namespace Apache
   {
     namespace Client
     {
+        namespace native = apache::geode::client;
 
         /// <summary>
         /// This class encapsulates Id of a transaction.
         /// </summary>
         public ref class TransactionId sealed
-          : public Internal::SBWrap<apache::geode::client::TransactionId>
         {
         internal:
 
-          inline static TransactionId^ Create( apache::geode::client::TransactionId* nativeptr )
+          inline static TransactionId^ Create(native::TransactionIdPtr nativeptr )
           {
-            return ( nativeptr != nullptr ?
-              gcnew TransactionId( nativeptr ) : nullptr );
+          return __nullptr == nativeptr ? nullptr :
+            gcnew TransactionId( nativeptr );
+          }
+
+          std::shared_ptr<native::TransactionId> GetNative()
+          {
+            return m_nativeptr->get_shared_ptr();
           }
 
         private:
@@ -50,8 +58,12 @@ namespace Apache
           /// Private constructor to wrap a native object pointer
           /// </summary>
           /// <param name="nativeptr">The native object pointer</param>
-          inline TransactionId( apache::geode::client::TransactionId* nativeptr )
-            : SBWrap( nativeptr ) { }
+          inline TransactionId( native::TransactionIdPtr nativeptr )
+          {
+            m_nativeptr = gcnew native_shared_ptr<native::TransactionId>(nativeptr);
+          }
+
+          native_shared_ptr<native::TransactionId>^ m_nativeptr;   
         };
     }  // namespace Client
   }  // namespace Geode

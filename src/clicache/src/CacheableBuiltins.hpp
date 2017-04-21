@@ -20,7 +20,10 @@
 
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/CacheableBuiltins.hpp>
+#include "end_native.hpp"
+
 #include "CacheableKey.hpp"
 #include "Serializable.hpp"
 #include "ExceptionTypes.hpp"
@@ -37,7 +40,7 @@ namespace Apache
     namespace Client
     {
 
-      //namespace Internal
+      namespace native = apache::geode::client;
 
 
       /// <summary>
@@ -54,9 +57,8 @@ namespace Apache
         /// </summary>
         CacheableBuiltinKey()
         {
-          apache::geode::client::SharedPtr<TNative>& nativeptr = TNative::create();
-
-          SetSP(nativeptr.get());
+          auto nativeptr = TNative::create();
+          m_nativeptr = gcnew native_shared_ptr<native::Serializable>(nativeptr);
         }
 
         /// <summary>
@@ -65,9 +67,8 @@ namespace Apache
         /// <param name="value">the value of the new instance</param>
         CacheableBuiltinKey(TManaged value)
         {
-          apache::geode::client::SharedPtr<TNative>& nativeptr = TNative::create(value);
-
-          SetSP(nativeptr.get());
+          auto nativeptr = TNative::create(value);
+          m_nativeptr = gcnew native_shared_ptr<native::Serializable>(nativeptr);
         }
 
         /// <summary>
@@ -90,7 +91,15 @@ namespace Apache
         /// </summary>
         virtual String^ ToString() override
         {
-          return static_cast<TNative*>(NativePtr())->value().ToString();
+          try
+          {
+            return static_cast<TNative*>(m_nativeptr->get())->value().ToString();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+
         }
 
         /// <summary>
@@ -98,14 +107,23 @@ namespace Apache
         /// It invokes the '==' operator of the underlying
         /// native object.
         /// </summary>
-        virtual bool Equals(ICacheableKey^ other) override
+        virtual bool Equals(CacheableBuiltinKey^ other) override
         {
-          if (other == nullptr || other->ClassId != TYPEID)
+          if (other == nullptr)
           {
             return false;
           }
-          return static_cast<TNative*>(NativePtr())->operator==(
-            *static_cast<TNative*>(((CacheableKey^)other)->NativePtr()));
+
+          try
+          {
+            return static_cast<TNative*>(m_nativeptr->get())->operator==(
+              *static_cast<TNative*>(other->m_nativeptr->get()));
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+            GC::KeepAlive(other->m_nativeptr);
+          }
         }
 
         /// <summary>
@@ -115,14 +133,7 @@ namespace Apache
         /// </summary>
         virtual bool Equals(Object^ obj) override
         {
-          CacheableBuiltinKey^ otherKey =
-            dynamic_cast<CacheableBuiltinKey^>(obj);
-
-          if (otherKey != nullptr) {
-            return static_cast<TNative*>(NativePtr())->operator==(
-              *static_cast<TNative*>(otherKey->NativePtr()));
-          }
-          return false;
+          return Equals(dynamic_cast<CacheableBuiltinKey^>(obj));
         }
 
         /// <summary>
@@ -130,7 +141,15 @@ namespace Apache
         /// </summary>
         bool operator == (TManaged other)
         {
-          return (static_cast<TNative*>(NativePtr())->value() == other);
+          try
+          {
+            return (static_cast<TNative*>(m_nativeptr->get())->value() == other);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+
         }
 
         /// <summary>
@@ -140,7 +159,15 @@ namespace Apache
         {
           inline TManaged get()
           {
-            return static_cast<TNative*>(NativePtr())->value();
+            try
+            {
+              return static_cast<TNative*>(m_nativeptr->get())->value();
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
+
           }
         }
 
@@ -150,7 +177,7 @@ namespace Apache
         /// Protected constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CacheableBuiltinKey(apache::geode::client::Serializable* nativeptr)
+        inline CacheableBuiltinKey(native::SerializablePtr nativeptr)
           : CacheableKey(nativeptr) { }
       };
 
@@ -246,7 +273,7 @@ namespace Apache
         inline CacheableBuiltinArray()
         {
           //TODO:
-          //apache::geode::client::Serializable* sp = TNative::createDeserializable();
+          //native::Serializable* sp = TNative::createDeserializable();
           //SetSP(sp);
         }
 
@@ -254,13 +281,10 @@ namespace Apache
         /// Protected constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CacheableBuiltinArray(apache::geode::client::Serializable* nptr)
+        inline CacheableBuiltinArray(native::SerializablePtr nptr)
           : Serializable(nptr)
         {
-          //TODO: ??
-          // ManagedPtrWrap< apache::geode::client::Serializable,
-          // Internal::SBWrap<apache::geode::client::Serializable> > nptr = nativeptr;
-          TNative* nativeptr = static_cast<TNative*>(nptr);
+          auto nativeptr = std::static_pointer_cast<TNative>(nptr);
           System::Int32 len = nativeptr->length();
           if (len > 0)
           {
@@ -364,20 +388,20 @@ namespace Apache
            }                                                                     \
            \
            internal:                                                               \
-           static IGeodeSerializable^ Create(apache::geode::client::Serializable* obj)            \
+           static IGeodeSerializable^ Create(native::SerializablePtr obj)            \
            {                                                                     \
            return (obj != nullptr ? gcnew m(obj) : nullptr);                   \
            }                                                                     \
            \
            private:                                                                \
-             inline m(apache::geode::client::Serializable* nativeptr)                            \
+             inline m(native::SerializablePtr nativeptr)                            \
               : CacheableBuiltinKey(nativeptr) { }                                \
       };
 
 
 #define _GFCLI_CACHEABLE_ARRAY_DEF_NEW(m, mt)                                    \
       ref class m : public CacheableBuiltinArray<            \
-        apache::geode::client::m, apache::geode::client::m##Ptr, mt, GeodeClassIds::m>                  \
+        native::m, native::m##Ptr, mt, GeodeClassIds::m>                  \
             {                                                                       \
       public:                                                                 \
         /** <summary>
@@ -427,7 +451,7 @@ namespace Apache
       }                                                                     \
       \
             internal:                                                               \
-              static IGeodeSerializable^ Create(apache::geode::client::Serializable* obj)            \
+              static IGeodeSerializable^ Create(native::SerializablePtr obj)            \
       {                                                                     \
       return (obj != nullptr ? gcnew m(obj) : nullptr);                   \
       }                                                                     \
@@ -460,7 +484,7 @@ namespace Apache
                */                                                                   \
                inline m(array<mt>^ value, System::Int32 length)                              \
                : CacheableBuiltinArray(value, length) { }                          \
-               inline m(apache::geode::client::Serializable* nativeptr)                            \
+               inline m(native::SerializablePtr nativeptr)                            \
                : CacheableBuiltinArray(nativeptr) { }                              \
       };
 
@@ -471,56 +495,56 @@ namespace Apache
       /// An immutable wrapper for booleans that can serve
       /// as a distributable key object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_KEY_DEF_NEW(apache::geode::client::CacheableBoolean,
+      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableBoolean,
                                    CacheableBoolean, bool);
 
       /// <summary>
       /// An immutable wrapper for bytes that can serve
       /// as a distributable key object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_KEY_DEF_NEW(apache::geode::client::CacheableByte,
+      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableByte,
                                    CacheableByte, Byte);
 
       /// <summary>
       /// An immutable wrapper for 16-bit characters that can serve
       /// as a distributable key object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_KEY_DEF_NEW(apache::geode::client::CacheableWideChar,
+      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableWideChar,
                                    CacheableCharacter, Char);
 
       /// <summary>
       /// An immutable wrapper for doubles that can serve
       /// as a distributable key object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_KEY_DEF_NEW(apache::geode::client::CacheableDouble,
+      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableDouble,
                                    CacheableDouble, Double);
 
       /// <summary>
       /// An immutable wrapper for floats that can serve
       /// as a distributable key object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_KEY_DEF_NEW(apache::geode::client::CacheableFloat,
+      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableFloat,
                                    CacheableFloat, Single);
 
       /// <summary>
       /// An immutable wrapper for 16-bit integers that can serve
       /// as a distributable key object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_KEY_DEF_NEW(apache::geode::client::CacheableInt16,
+      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableInt16,
                                    CacheableInt16, System::Int16);
 
       /// <summary>
       /// An immutable wrapper for 32-bit integers that can serve
       /// as a distributable key object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_KEY_DEF_NEW(apache::geode::client::CacheableInt32,
+      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableInt32,
                                    CacheableInt32, System::Int32);
 
       /// <summary>
       /// An immutable wrapper for 64-bit integers that can serve
       /// as a distributable key object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_KEY_DEF_NEW(apache::geode::client::CacheableInt64,
+      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableInt64,
                                    CacheableInt64, System::Int64);
 
 

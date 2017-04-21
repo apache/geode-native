@@ -28,45 +28,46 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       generic<class TKey, class TResult>
       CqQuery<TKey, TResult>^ CqEvent<TKey, TResult>::getCq( )
       {
-        apache::geode::client::CqQueryPtr& cQueryptr( NativePtr->getCq( ) );
-        return CqQuery<TKey, TResult>::Create( cQueryptr.ptr( ) );
+        native::CqQueryPtr& cQueryptr( m_nativeptr->getCq( ) );
+        return CqQuery<TKey, TResult>::Create( cQueryptr);
       }
 
       generic<class TKey, class TResult>
       CqOperationType CqEvent<TKey, TResult>::getBaseOperation( )
       {
-		  return CqOperation::ConvertFromNative(NativePtr->getBaseOperation());
+		  return CqOperation::ConvertFromNative(m_nativeptr->getBaseOperation());
       }
 
       generic<class TKey, class TResult>
       CqOperationType CqEvent<TKey, TResult>::getQueryOperation( )
       {
-        return CqOperation::ConvertFromNative(NativePtr->getQueryOperation());
+        return CqOperation::ConvertFromNative(m_nativeptr->getQueryOperation());
       }
 
       generic<class TKey, class TResult>
       TKey CqEvent<TKey, TResult>::getKey( )
       {
-        apache::geode::client::CacheableKeyPtr& keyptr( NativePtr->getKey( ) );
+        native::CacheableKeyPtr& keyptr( m_nativeptr->getKey( ) );
         return Serializable::GetManagedValueGeneric<TKey>(keyptr);
       }
 
       generic<class TKey, class TResult>
       TResult CqEvent<TKey, TResult>::getNewValue( )
       {
-        apache::geode::client::CacheablePtr& valptr( NativePtr->getNewValue( ) );
+        native::CacheablePtr& valptr( m_nativeptr->getNewValue( ) );
         return Serializable::GetManagedValueGeneric<TResult>(valptr);
       }
 
       generic<class TKey, class TResult>
       array< Byte >^ CqEvent<TKey, TResult>::getDeltaValue( )
       {
-        apache::geode::client::CacheableBytesPtr deltaBytes = NativePtr->getDeltaValue( );
-        CacheableBytes^ managedDeltaBytes = ( CacheableBytes^ ) CacheableBytes::Create( deltaBytes.ptr( ) );
+        auto deltaBytes = m_nativeptr->getDeltaValue( );
+        auto managedDeltaBytes = ( CacheableBytes^ ) CacheableBytes::Create( deltaBytes );
         return ( array< Byte >^ ) managedDeltaBytes;
       }
     }  // namespace Client

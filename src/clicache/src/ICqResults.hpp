@@ -18,8 +18,11 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/SelectResults.hpp>
-//#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
+
 #include "ISelectResults.hpp"
 
 

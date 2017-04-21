@@ -16,7 +16,10 @@
  */
 
 #include "PdxReaderWithTypeCollector.hpp"
+#include "begin_native.hpp"
 #include <geode/GeodeTypeIds.hpp>
+#include "end_native.hpp"
+
 #include "../GeodeClassIds.hpp"
 using namespace System;
 

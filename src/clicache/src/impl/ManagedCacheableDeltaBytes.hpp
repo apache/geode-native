@@ -19,7 +19,10 @@
 
 #include "../geode_defs.hpp"
 #include <vcclr.h>
+#include "begin_native.hpp"
 #include <geode/Delta.hpp>
+#include "end_native.hpp"
+
 #include "../Log.hpp"
 #include "../DataOutput.hpp"
 
@@ -78,7 +81,7 @@ namespace apache
           if (managedptr != nullptr)
           {
             m_classId = managedptr->ClassId;
-            Apache::Geode::Client::Log::Finer("ManagedCacheableDeltaBytes::Constructor: current AppDomain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((int)this) + " with its AppDomain ID: " + m_domainId);
+            Apache::Geode::Client::Log::Finer("ManagedCacheableDeltaBytes::Constructor: current AppDomain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((uint64_t) this) + " with its AppDomain ID: " + m_domainId);
             Apache::Geode::Client::Log::Finer("ManagedCacheableDeltaBytes::Constructor: class ID " + managedptr->ClassId + " : " + managedptr->ToString() + " storeBytes:" + storeBytes);
             if (storeBytes)
             {
@@ -111,7 +114,7 @@ namespace apache
             if(managedptr != nullptr)
             {
             m_classId = managedptr->ClassId;
-            Apache::Geode::Client::Log::Fine("ManagedCacheableDeltaBytes::Constructor: current AppDomain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((int)this) + " with its AppDomain ID: " + m_domainId);
+            Apache::Geode::Client::Log::Fine("ManagedCacheableDeltaBytes::Constructor: current AppDomain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((uint64_t) this) + " with its AppDomain ID: " + m_domainId);
             Apache::Geode::Client::Log::Fine("ManagedCacheableDeltaBytes::Constructor: class ID " + managedptr->ClassId + " : " + managedptr->ToString());
             apache::geode::client::DataOutput dataOut;
             Apache::Geode::Client::DataOutput mg_output( &dataOut);
@@ -206,7 +209,7 @@ namespace apache
 
         inline ~ManagedCacheableDeltaBytesGeneric()
         {
-          Apache::Geode::Client::Log::Finer("ManagedCacheableDeltaBytes::Destructor current AppDomain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((int)this) + " with its AppDomain ID: " + m_domainId);
+          Apache::Geode::Client::Log::Finer("ManagedCacheableDeltaBytes::Destructor current AppDomain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((uint64_t) this) + " with its AppDomain ID: " + m_domainId);
           GF_SAFE_DELETE(m_bytes);
         }
 
