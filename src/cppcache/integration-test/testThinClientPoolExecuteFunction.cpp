@@ -196,11 +196,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
   {
     // initClient(true);
 
-    PoolManager PM = new PoolManager()
-    PoolPtr pp = PoolManager->poolFactory()
-
-
-
     initClientWithPool(true, NULL, locHostPort, serverGroup, NULLPTR, 0, true);
     // createPool(poolName, locHostPort,serverGroup, NULL, 0, true );
     // createRegionAndAttachPool(poolRegNames[0],USE_ACK, poolName);

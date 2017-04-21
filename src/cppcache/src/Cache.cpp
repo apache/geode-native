@@ -152,11 +152,17 @@ Cache::Cache(const char* name, DistributedSystemPtr sys,
              bool ignorePdxUnreadFields, bool readPdxSerialized) {
   m_cacheImpl =
       new CacheImpl(this, name, sys, ignorePdxUnreadFields, readPdxSerialized);
+  CacheImpl::s_instance = m_cacheImpl;
+  m_cacheImpl->initServices();
+//  m_cacheImpl->createOrGetDefaultPool();
 }
 Cache::Cache(const char* name, DistributedSystemPtr sys, const char* id_data,
              bool ignorePdxUnreadFields, bool readPdxSerialized) {
   m_cacheImpl = new CacheImpl(this, name, sys, id_data, ignorePdxUnreadFields,
                               readPdxSerialized);
+  CacheImpl::s_instance = m_cacheImpl;
+  m_cacheImpl->initServices();
+//  m_cacheImpl->createOrGetDefaultPool();
 }
 
 PoolPtr  Cache::createOrGetDefaultPool()

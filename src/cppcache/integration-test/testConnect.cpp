@@ -26,7 +26,7 @@ const char* host_name = "Suds";
 DUNIT_TASK(s1p1, CreateRegionOne)
   {
     try {
-      DistributedSystem::disconnect();
+      DistributedSystem::disconnect(NULLPTR);
       FAIL("Expected an exception.");
     } catch (const NotConnectedException& ex) {
       LOG("Got expected exception.");

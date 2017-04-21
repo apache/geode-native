@@ -15,31 +15,54 @@
  * limitations under the License.
  */
 #include <geode/PoolManager.hpp>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Guard_T.h>
-
+#include <mutex>
 using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
+std::once_flag onceFlag;
 // TODO: make this a member of TcrConnectionManager.
+PoolManager * g_PoolManager;
 
 
-void PoolManager::removePool(const char* name) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
-  connectionPools->erase(CacheableString::create(name));
+PoolManager * thePoolManager()
+{
+  std::call_once(onceFlag, []() {g_PoolManager = new PoolManager();});
+  return g_PoolManager;
 }
 
-PoolFactoryPtr PoolManager::createFactory() {
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
+
+PoolManager::PoolManager()
+{
   if (connectionPools == NULL) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
+    std::lock_guard<std::mutex> lock(connectionPoolsLock);
     if (connectionPools == NULL) {
       connectionPools = new HashMapOfPools();
     }
   }
-  return PoolFactoryPtr(new PoolFactory());
+  m_PoolFactory = PoolFactoryPtr(new PoolFactory());
+}
+
+void PoolManager::removePool(const char* name) {
+   std::lock_guard<std::mutex> lock(connectionPoolsLock);
+  connectionPools->erase(CacheableString::create(name));
+}
+
+PoolFactoryPtr PoolManager::createFactory() {
+
+  return m_PoolFactory;
+}
+PoolFactoryPtr PoolManager::getFactory() {
+
+  return m_PoolFactory;
 }
 
 void PoolManager::close(bool keepAlive) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
+   std::lock_guard<std::mutex> lock(connectionPoolsLock);
 
   if (connectionPools == NULL) {
     return;
@@ -62,7 +85,7 @@ void PoolManager::close(bool keepAlive) {
 }
 
 PoolPtr PoolManager::find(const char* name) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
+   std::lock_guard<std::mutex> lock(connectionPoolsLock);
 
   if (connectionPools == NULL) {
     connectionPools = new HashMapOfPools();
@@ -91,7 +114,7 @@ PoolPtr PoolManager::find(RegionPtr region) {
 
 const HashMapOfPools& PoolManager::getAll() {
   if (connectionPools == NULL) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
+     std::lock_guard<std::mutex> lock(connectionPoolsLock);
     if (connectionPools == NULL) {
       connectionPools = new HashMapOfPools();
     }

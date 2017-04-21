@@ -109,6 +109,7 @@ const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 TallyListenerPtr listener;
 
+#define POOL_NAME DEFAULT_POOL_NAME // "__TEST_POOL1__"
 #define REGIONNAME "DistRegionAck"
 DUNIT_TASK_DEFINITION(s1p1, Setup)
   {
@@ -121,22 +122,26 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(s1p1, CreateRegionNoCache)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locHostPort, "ServerGroup1",
+
+    initClientWithPool(true, POOL_NAME, locHostPort, "ServerGroup1",
                        NULLPTR, 0, true);
     LOG("Creating region in s1p1-pusher, no-ack, no-cache, no-listener");
+
     getHelper()->createPooledRegion(REGIONNAME, false, locHostPort,
-                                    "__TEST_POOL1__", true, true);
+                                    POOL_NAME, true, true);
+    LOG("************** CreateRegionNoCache Finished Successfully. ******************");
+
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(s1p2, CreateNoCacheWListener)
   {
     LOG("Creating region in s1p2-listener, no-ack, no-cache, with-listener");
-    initClientWithPool(true, "__TEST_POOL1__", locHostPort, "ServerGroup1",
+    initClientWithPool(true, POOL_NAME, locHostPort, "ServerGroup1",
                        NULLPTR, 0, true);
     listener = new TallyListener();
     getHelper()->createPooledRegion(REGIONNAME, false, locHostPort,
-                                    "__TEST_POOL1__", true, true, 0, 0, 0, 0, 0,
+                                    POOL_NAME, true, true, 0, 0, 0, 0, 0,
                                     listener);
   }
 END_TASK_DEFINITION
@@ -145,10 +150,10 @@ DUNIT_TASK_DEFINITION(s2p1, CreateRegionCacheMirror)
   {
     LOG("Creating region in s2p1-storage, no-ack, cache, no-interestlist, "
         "no-listener");
-    initClientWithPool(true, "__TEST_POOL1__", locHostPort, "ServerGroup1",
+    initClientWithPool(true, POOL_NAME, locHostPort, "ServerGroup1",
                        NULLPTR, 0, true);
     getHelper()->createPooledRegion(REGIONNAME, false, locHostPort,
-                                    "__TEST_POOL1__", true, true);
+                                    POOL_NAME, true, true);
   }
 END_TASK_DEFINITION
 
@@ -156,11 +161,11 @@ DUNIT_TASK_DEFINITION(s2p2, CreateRegionCache)
   {
     LOG("Creating region in s2p2-subset, no-ack, no-mirror, cache, "
         "no-interestlist, with-listener");
-    initClientWithPool(true, "__TEST_POOL1__", locHostPort, "ServerGroup1",
+    initClientWithPool(true, POOL_NAME, locHostPort, "ServerGroup1",
                        NULLPTR, 0, true);
     listener = new TallyListener();
     getHelper()->createPooledRegion(REGIONNAME, false, locHostPort,
-                                    "__TEST_POOL1__", true, true, 0, 0, 0, 0, 0,
+                                    POOL_NAME, true, true, 0, 0, 0, 0, 0,
                                     listener);
   }
 END_TASK_DEFINITION
@@ -180,6 +185,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(s1p1, SendCreate)
   {
     LOG("put(1,1) from s1p1-pusher");
+
+//    LOG("************** SendCreate Stopping!! ******************");
+//    raise(SIGSTOP);
     RegionWrapper region(REGIONNAME);
     region.put(1, 1);
   }

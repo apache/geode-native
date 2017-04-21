@@ -156,7 +156,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
     // using region name as pool name
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    PoolPtr pool = thePoolManager()->find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != NULLPTR) {
       qs = pool->getQueryService();

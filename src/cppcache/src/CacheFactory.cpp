@@ -57,7 +57,7 @@ void CacheFactory::create_(const char* name, DistributedSystemPtr& system,
                            const char* id_data, CachePtr& cptr,
                            bool ignorePdxUnreadFields, bool readPdxSerialized) {
   CppCacheLibrary::initLib();
-
+  LOGERROR("CacheFactory create_ called 1 ");
   cptr = NULLPTR;
   if (system == NULLPTR) {
     throw IllegalArgumentException(
@@ -74,6 +74,7 @@ void CacheFactory::create_(const char* name, DistributedSystemPtr& system,
 
   if ((cp == NULLPTR) || (cp->isClosed() == true)) {
     if ((cp == NULLPTR) || (cp->isClosed() == true)) {
+      LOGERROR("CacheFactory create_ creating cache 2 ");
       Cache *cep = new Cache(name, system, id_data, ignorePdxUnreadFields,
                              readPdxSerialized);
       if (!cep) {
@@ -110,6 +111,7 @@ CachePtr CacheFactory::create() {
 
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
   DistributedSystemPtr dsPtr = NULLPTR;
+  LOGERROR("CacheFactory called 1 ");
 
   // should we compare deafult DS properties here??
   if (DistributedSystem::isConnected()) {
@@ -120,6 +122,7 @@ CachePtr CacheFactory::create() {
   }
 
   CachePtr cache = NULLPTR;
+  LOGERROR("CacheFactory called 2 ");
 
 	cache = create(DEFAULT_CACHE_NAME, dsPtr,
 	               dsPtr->getSystemProperties()->cacheXMLFile(), NULLPTR);
@@ -143,10 +146,12 @@ CachePtr CacheFactory::create(const char* name,
                               const char* cacheXml /*= 0*/,
                               const CacheAttributesPtr& attrs /*= NULLPTR*/) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
+  LOGERROR("CacheFactory create called 1 ");
 
   CachePtr cptr;
   CacheFactory::create_(name, system, "", cptr, ignorePdxUnreadFields,
                         pdxReadSerialized);
+  LOGERROR("CacheFactory create called 1 ");
   cptr->m_cacheImpl->setAttributes(attrs);
   try {
     if (cacheXml != 0 && strlen(cacheXml) > 0) {
@@ -161,11 +166,14 @@ CachePtr CacheFactory::create(const char* name,
     }
   } catch (const apache::geode::client::RegionExistsException&) {
     LOGWARN("Attempt to create existing regions declaratively");
-  } catch (const apache::geode::client::Exception&) {
+  } catch (const apache::geode::client::Exception& e) {
     if (!cptr->isClosed()) {
       cptr->close();
       cptr = NULLPTR;
+
     }
+    LOGWARN("Exception e.what() = %s", e.getMessage());
+
     throw;
   } catch (...) {
     if (!cptr->isClosed()) {

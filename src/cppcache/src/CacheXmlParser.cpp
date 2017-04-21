@@ -309,7 +309,7 @@ CacheXmlParser::CacheXmlParser()
       NULL, /* endElementNs */
       NULL  /* xmlStructuredErrorFunc */
   };
-  m_poolManager = new PoolManager();
+  m_poolManager = thePoolManager();
   m_saxHandler = saxHandler;
 
   namedRegions = CacheImpl::getRegionShortcut();

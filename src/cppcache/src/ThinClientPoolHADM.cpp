@@ -193,21 +193,6 @@ void ThinClientPoolHADM::sendNotificationCloseMsgs() {
   }
 }
 
-/*
-void ThinClientPoolHADM::stopNotificationThreads()
-{
-  ACE_Guard< ACE_Recursive_Thread_Mutex > guard( m_endpointsLock );
-  for( ACE_Map_Manager< std::string, TcrEndpoint *, ACE_Recursive_Thread_Mutex
->::iterator it = m_endpoints.begin(); it != m_endpoints.end(); it++){
-    ((*it).int_id_)->stopNoBlock();
-  }
-  for( ACE_Map_Manager< std::string, TcrEndpoint *, ACE_Recursive_Thread_Mutex
->::iterator it = m_endpoints.begin(); it != m_endpoints.end(); it++){
-    ((*it).int_id_)->stopNotifyReceiverAndCleanup();
-  }
-}
-*/
-
 GfErrType ThinClientPoolHADM::registerInterestAllRegions(
     TcrEndpoint* ep, const TcrMessage* request, TcrMessageReply* reply) {
   GfErrType err = GF_NOERR;

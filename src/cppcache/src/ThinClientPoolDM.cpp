@@ -36,7 +36,6 @@ using namespace apache::geode::client;
 using namespace apache::geode::statistics;
 
 ExpiryTaskManager* getCacheImplExpiryTaskManager();
-void removePool(const char*);
 
 /* adongre
  * CID 28730: Other violation (MISSING_COPY)
@@ -834,7 +833,7 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
       GF_SAFE_DELETE(m_clientMetadataService);
     }
 
-    removePool(m_poolName.c_str());
+    thePoolManager()->removePool(m_poolName.c_str());
 
     stopChunkProcessor();
     m_manager->closeAllStickyConnections();
@@ -948,7 +947,7 @@ int32_t ThinClientPoolDM::GetPDXIdForType(SerializablePtr pdxType) {
 
   // need to broadcast this id to all other pool
   {
-    const HashMapOfPools& pools = PoolManager::getAll();
+    const HashMapOfPools& pools = thePoolManager()->getAll();
 
     for (HashMapOfPools::Iterator iter = pools.begin(); iter != pools.end();
          ++iter) {
@@ -1030,7 +1029,7 @@ int32_t ThinClientPoolDM::GetEnumValue(SerializablePtr enumInfo) {
 
   // need to broadcast this id to all other pool
   {
-    const HashMapOfPools& pools = PoolManager::getAll();
+    const HashMapOfPools& pools = thePoolManager()->getAll();
 
     for (HashMapOfPools::Iterator iter = pools.begin(); iter != pools.end();
          ++iter) {
@@ -1253,8 +1252,11 @@ GfErrType ThinClientPoolDM::sendSyncRequest(TcrMessage& request,
       m_clientMetadataService != NULL) {
     GfErrType error = GF_NOERR;
     RegionPtr region;
+    LOGERROR("ThinClientPoolDM::sendSyncRequest getting region");
     m_connManager.getCacheImpl()->getRegion(request.getRegionName().c_str(),
                                             region);
+    LOGERROR("ThinClientPoolDM::sendSyncRequest got region %s",region->getName() );
+
     HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>* locationMap =
         m_clientMetadataService->getServerToFilterMap(request.getKeys(), region,
                                                       request.forPrimary());
@@ -1262,6 +1264,8 @@ GfErrType ThinClientPoolDM::sendSyncRequest(TcrMessage& request,
     if (locationMap == NULL) {
       request.InitializeGetallMsg(
           request.getCallbackArgument());  // now initialize getall msg
+      LOGERROR("ThinClientPoolDM::sendSyncRequest 1");
+
       return sendSyncRequest(request, reply, attemptFailover, isBGThread,
                              NULLPTR);
     }
@@ -1310,6 +1314,8 @@ GfErrType ThinClientPoolDM::sendSyncRequest(TcrMessage& request,
       request.InitializeGetallMsg(
           request.getCallbackArgument());  // now initialize getall msg
     }
+    LOGERROR("ThinClientPoolDM::sendSyncRequest 2");
+
     return sendSyncRequest(request, reply, attemptFailover, isBGThread,
                            NULLPTR);
   }
@@ -1320,6 +1326,11 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
     bool isBGThread, const BucketServerLocationPtr& serverLocation) {
   LOGDEBUG("ThinClientPoolDM::sendSyncRequest: ....%d %s",
            request.getMessageType(), m_poolName.c_str());
+
+
+  LOGERROR("ThinClientPoolDM::sendSyncRequest2: ....%d %s",
+           request.getMessageType(), m_poolName.c_str());
+
   // Increment clientOps
   HostAsm::atomicAdd(m_clientOps, 1);
   getStats().setCurClientOps(m_clientOps);
@@ -1384,9 +1395,13 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
     bool connFound = false;
     if (!this->m_isMultiUserMode ||
         (!TcrMessage::isUserInitiativeOps(request))) {
+      LOGERROR("ThinClientPoolDM::sendSyncRequest2 getConnectionFromQueueW 1");
+
       conn = getConnectionFromQueueW(&queueErr, excludeServers, isBGThread,
                                      request, version, singleHopConnFound,
                                      connFound, serverLocation);
+      LOGERROR("ThinClientPoolDM::sendSyncRequest2 queError = %d", (int) queueErr);
+
     } else {
       userAttr = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
                      ->getUserAttributes();
@@ -1395,6 +1410,8 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
                 request.getMessageType());
         return GF_NOT_AUTHORIZED_EXCEPTION;
       }
+      LOGERROR("ThinClientPoolDM::sendSyncRequest2 getConnectionFromQueueW 2");
+
       // Can i assume here that we will always get connection here
       conn = getConnectionFromQueueW(&queueErr, excludeServers, isBGThread,
                                      request, version, singleHopConnFound,
@@ -1423,6 +1440,8 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
         LOGFINE(
             "Need to refresh pr-meta-data timeout in client only  with refresh "
             "metadata");
+
+        LOGERROR("ThinClientPoolDM::sendSyncRequest2 enqueueForMetadataRefresh");
         ThinClientRegion* tcrRegion =
             dynamic_cast<ThinClientRegion*>(region.ptr());
         tcrRegion->setMetaDataRefreshed(false);
@@ -1484,6 +1503,8 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
       if (!isServerException) {
         if (error == GF_NOERR) {
           LOGDEBUG("putting connection back in queue");
+          LOGERROR("ThinClientPoolDM::sendSyncRequest2 putInQueue");
+
           putInQueue(conn,
                      isBGThread ||
                          request.getMessageType() == TcrMessage::GET_ALL_70 ||

@@ -24,14 +24,14 @@
 #include "Pool.hpp"
 #include "PoolFactory.hpp"
 #include "Region.hpp"
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Guard_T.h>
-
+#include <mutex>
 namespace apache {
 namespace geode {
 namespace client {
 
 typedef HashMapT<CacheableStringPtr, PoolPtr> HashMapOfPools;
+
+
 
 /**
  * Manages creation and access to {@link Pool connection pools} for clients.
@@ -44,6 +44,9 @@ typedef HashMapT<CacheableStringPtr, PoolPtr> HashMapOfPools;
  *
  *
  */
+
+
+
 class CPPCACHE_EXPORT PoolManager {
  public:
   /**
@@ -52,7 +55,7 @@ class CPPCACHE_EXPORT PoolManager {
    * @return the new pool factory
    */
   PoolFactoryPtr createFactory();
-
+  PoolFactoryPtr getFactory();
   /**
    * Returns a map containing all the pools in this manager.
    * The keys are pool names
@@ -97,8 +100,13 @@ class CPPCACHE_EXPORT PoolManager {
   PoolManager();
  private:
   HashMapOfPools* connectionPools = NULL; /*new HashMapOfPools( )*/
-  ACE_Recursive_Thread_Mutex connectionPoolsLock;
+  std::mutex connectionPoolsLock;
+  PoolFactoryPtr m_PoolFactory;
+  friend class PoolFactory;
 };
+
+apache::geode::client::PoolManager * thePoolManager();
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -343,7 +343,7 @@ ThinClientRegion::ThinClientRegion(const std::string& name, CacheImpl* cache,
 
 void ThinClientRegion::initTCR() {
   bool subscription = false;
-  PoolPtr pool = PoolManager::find(getAttributes()->getPoolName());
+  PoolPtr pool = thePoolManager()->find(getAttributes()->getPoolName());
   if (pool != NULLPTR) {
     subscription = pool->getSubscriptionEnabled();
   }
@@ -374,7 +374,7 @@ void ThinClientRegion::initTCR() {
 void ThinClientRegion::registerKeys(const VectorOfCacheableKey& keys,
                                     bool isDurable, bool getInitialValues,
                                     bool receiveValues) {
-  PoolPtr pool = PoolManager::find(getAttributes()->getPoolName());
+  PoolPtr pool = thePoolManager()->find(getAttributes()->getPoolName());
   if (pool != NULLPTR) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
@@ -417,7 +417,7 @@ void ThinClientRegion::registerKeys(const VectorOfCacheableKey& keys,
 }
 
 void ThinClientRegion::unregisterKeys(const VectorOfCacheableKey& keys) {
-  PoolPtr pool = PoolManager::find(getAttributes()->getPoolName());
+  PoolPtr pool = thePoolManager()->find(getAttributes()->getPoolName());
   if (pool != NULLPTR) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
@@ -452,7 +452,7 @@ void ThinClientRegion::registerAllKeys(bool isDurable,
                                        VectorOfCacheableKeyPtr resultKeys,
                                        bool getInitialValues,
                                        bool receiveValues) {
-  PoolPtr pool = PoolManager::find(getAttributes()->getPoolName());
+  PoolPtr pool = thePoolManager()->find(getAttributes()->getPoolName());
   if (pool != NULLPTR) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
@@ -509,7 +509,7 @@ void ThinClientRegion::registerRegex(const char* regex, bool isDurable,
                                      VectorOfCacheableKeyPtr resultKeys,
                                      bool getInitialValues,
                                      bool receiveValues) {
-  PoolPtr pool = PoolManager::find(getAttributes()->getPoolName());
+  PoolPtr pool = thePoolManager()->find(getAttributes()->getPoolName());
   if (pool != NULLPTR) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
@@ -569,7 +569,7 @@ void ThinClientRegion::registerRegex(const char* regex, bool isDurable,
 }
 
 void ThinClientRegion::unregisterRegex(const char* regex) {
-  PoolPtr pool = PoolManager::find(getAttributes()->getPoolName());
+  PoolPtr pool = thePoolManager()->find(getAttributes()->getPoolName());
   if (pool != NULLPTR) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
@@ -594,7 +594,7 @@ void ThinClientRegion::unregisterRegex(const char* regex) {
 }
 
 void ThinClientRegion::unregisterAllKeys() {
-  PoolPtr pool = PoolManager::find(getAttributes()->getPoolName());
+  PoolPtr pool = thePoolManager()->find(getAttributes()->getPoolName());
   if (pool != NULLPTR) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
@@ -686,7 +686,7 @@ bool ThinClientRegion::existsValue(const char* predicate, uint32_t timeout) {
 }
 
 GfErrType ThinClientRegion::unregisterKeysBeforeDestroyRegion() {
-  PoolPtr pool = PoolManager::find(getAttributes()->getPoolName());
+  PoolPtr pool = thePoolManager()->find(getAttributes()->getPoolName());
   if (pool != NULLPTR) {
     if (!pool->getSubscriptionEnabled()) {
       LOGDEBUG(
@@ -4050,7 +4050,7 @@ void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
     input.read(&byte1);
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
 
-    PoolPtr pool = PoolManager::find(m_msg.getPoolName());
+    PoolPtr pool = thePoolManager()->find(m_msg.getPoolName());
     if (pool != NULLPTR && !pool->isDestroyed() &&
         pool->getPRSingleHopEnabled()) {
       ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(pool.ptr());
@@ -4114,7 +4114,7 @@ void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
     input.read(&byte1);
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
 
-    PoolPtr pool = PoolManager::find(m_msg.getPoolName());
+    PoolPtr pool = thePoolManager()->find(m_msg.getPoolName());
     if (pool != NULLPTR && !pool->isDestroyed() &&
         pool->getPRSingleHopEnabled()) {
       ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(pool.ptr());

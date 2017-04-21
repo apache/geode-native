@@ -78,7 +78,7 @@ CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
       new InternalCacheTransactionManager2PCImpl(c));
 
   m_name = Utils::copyString(name);
-
+  m_pm = thePoolManager();
   if (!DistributedSystem::isConnected()) {
     throw IllegalArgumentException("DistributedSystem is not up");
   }
@@ -123,7 +123,7 @@ CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
       m_adminRegion(NULLPTR) {
   m_cacheTXManager = InternalCacheTransactionManager2PCPtr(
       new InternalCacheTransactionManager2PCImpl(c));
-
+  m_pm = thePoolManager();
   m_name = Utils::copyString(name);
   if (!DistributedSystem::isConnected()) {
     throw IllegalArgumentException("DistributedSystem is not connected");
@@ -171,7 +171,10 @@ void CacheImpl::initServices() {
     m_initDone = true;
   }
 }
-
+PoolManager *CacheImpl::getPoolManager()
+{
+  return m_pm;
+}
 int CacheImpl::blackListBucketTimeouts() { return s_blacklistBucketTimeout; }
 
 void CacheImpl::setBlackListBucketTimeouts() { s_blacklistBucketTimeout += 1; }
@@ -732,6 +735,9 @@ PoolPtr CacheImpl::createOrGetDefaultPool() {
 
 
 PoolPtr CacheImpl::determineDefaultPool() {
+  LOGERROR("CacheImpl::determineDefaultPool called");
+
+
   PoolPtr pool = NULLPTR;
   HashMapOfPools allPools = m_pm->getAll();
   size_t currPoolSize = allPools.size();

@@ -27,7 +27,7 @@ ProxyRemoteQueryService::ProxyRemoteQueryService(ProxyCache* cptr) {
 QueryPtr ProxyRemoteQueryService::newQuery(const char* querystring) {
   if (!m_proxyCache->isClosed()) {
     PoolPtr userAttachedPool = m_proxyCache->m_userAttributes->getPool();
-    PoolPtr pool = PoolManager::find(userAttachedPool->getName());
+    PoolPtr pool = thePoolManager()->find(userAttachedPool->getName());
     if (pool != NULLPTR && pool.ptr() == userAttachedPool.ptr() &&
         !pool->isDestroyed()) {
       GuardUserAttribures gua(m_proxyCache);
@@ -55,7 +55,7 @@ CqQueryPtr ProxyRemoteQueryService::newCq(const char* querystr,
                                           bool isDurable) {
   if (!m_proxyCache->isClosed()) {
     PoolPtr userAttachedPool = m_proxyCache->m_userAttributes->getPool();
-    PoolPtr pool = PoolManager::find(userAttachedPool->getName());
+    PoolPtr pool = thePoolManager()->find(userAttachedPool->getName());
     if (pool != NULLPTR && pool.ptr() == userAttachedPool.ptr() &&
         !pool->isDestroyed()) {
       GuardUserAttribures gua(m_proxyCache);
@@ -83,7 +83,7 @@ CqQueryPtr ProxyRemoteQueryService::newCq(const char* name,
                                           bool isDurable) {
   if (!m_proxyCache->isClosed()) {
     PoolPtr userAttachedPool = m_proxyCache->m_userAttributes->getPool();
-    PoolPtr pool = PoolManager::find(userAttachedPool->getName());
+    PoolPtr pool = thePoolManager()->find(userAttachedPool->getName());
     if (pool != NULLPTR && pool.ptr() == userAttachedPool.ptr() &&
         !pool->isDestroyed()) {
       GuardUserAttribures gua(m_proxyCache);
@@ -138,7 +138,7 @@ void ProxyRemoteQueryService::getCqs(VectorOfCqQuery& vec) {
 CqQueryPtr ProxyRemoteQueryService::getCq(const char* name) {
   if (!m_proxyCache->isClosed()) {
     PoolPtr userAttachedPool = m_proxyCache->m_userAttributes->getPool();
-    PoolPtr pool = PoolManager::find(userAttachedPool->getName());
+    PoolPtr pool = thePoolManager()->find(userAttachedPool->getName());
     if (pool != NULLPTR && pool.ptr() == userAttachedPool.ptr() &&
         !pool->isDestroyed()) {
       GuardUserAttribures gua(m_proxyCache);

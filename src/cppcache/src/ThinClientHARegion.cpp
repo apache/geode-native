@@ -60,7 +60,7 @@ void ThinClientHARegion::initTCR() {
       m_tcrdm->init();
     } else {
       m_tcrdm = dynamic_cast<ThinClientPoolHADM*>(
-          PoolManager::find(m_attribute->getPoolName()).ptr());
+          thePoolManager()->find(m_attribute->getPoolName()).ptr());
       if (m_tcrdm) {
         m_poolDM = true;
         // Pool DM should only be inited once and it
@@ -68,7 +68,9 @@ void ThinClientHARegion::initTCR() {
         // m_tcrdm->init();
         ThinClientPoolHADM* poolDM = dynamic_cast<ThinClientPoolHADM*>(m_tcrdm);
         poolDM->addRegion(this);
+        LOGERROR("******************** ThinClientHARegion: added Region to poolDM *******************");
         poolDM->incRegionCount();
+
 
       } else {
         throw IllegalStateException("pool not found");

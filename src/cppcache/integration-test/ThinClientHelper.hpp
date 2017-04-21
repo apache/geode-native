@@ -431,7 +431,7 @@ RegionPtr createPooledRegion(const char* name, bool ackMode,
 
 PoolPtr findPool(const char* poolName) {
   LOG("findPool() entered.");
-  PoolPtr poolPtr = PoolManager::find(poolName);
+  PoolPtr poolPtr = thePoolManager()->find(poolName);
   ASSERT(poolPtr != NULLPTR, "Failed to find pool.");
   return poolPtr;
 }

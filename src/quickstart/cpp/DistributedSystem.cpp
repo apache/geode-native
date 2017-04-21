@@ -44,7 +44,7 @@ using namespace apache::geode::client;
 void distributedsystem(CachePtr cachePtr, char *hostname, int port,
                        char *poolName, char *regionName) {
   // create pool factory to create the pool.
-  PoolFactoryPtr poolFacPtr = PoolManager::createFactory();
+  PoolFactoryPtr poolFacPtr = thePoolManager()->createFactory();
 
   // adding host(endpoint) in pool
   poolFacPtr->addServer(hostname, port);

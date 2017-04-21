@@ -128,7 +128,7 @@ class PoolHelper {
 
   PoolPtr createPool() {
     const char* poolName = m_pool->getName().c_str();
-    PoolPtr pptr = PoolManager::find(poolName);
+    PoolPtr pptr = thePoolManager()->find(poolName);
     if (pptr == NULLPTR) {
       pptr = m_pool->createPool();
     }
