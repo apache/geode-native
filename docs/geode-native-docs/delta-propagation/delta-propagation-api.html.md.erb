@@ -25,8 +25,8 @@ Delta propagation uses configuration properties and a simple API to send and rec
 
 Your application class must implement:
 
--   `Apache::Geode::Client::IGFDelta `
--   `Apache::Geode::Client::IGeodeSerializable `
+-   `Apache.Geode.Client.IGFDelta`
+-   `Apache.Geode.Client.IGeodeSerializable`
 
 `IGFDelta` provides the methods, `HasDelta`, `ToDelta`, and `FromDelta`, which you program to report on, send, and receive deltas for your class.
 
@@ -36,7 +36,7 @@ Additionally, for cloning, your class must implement the standard .NET `IClonabl
 
 Your application must publicly derive from:
 
--   `apache::geode::client::Delta `
+-   `apache::geode::client::Delta`
 
 `Delta` provides the methods, `hasDelta`, `toDelta`, `fromDelta`, which you program to report on, send, and receive deltas for your class.
 
