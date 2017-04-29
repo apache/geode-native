@@ -22,9 +22,9 @@
 
 #include <map>
 #include <string>
-#include <gfcpp/statistics/StatisticsType.hpp>
-#include <gfcpp/statistics/StatisticsFactory.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/statistics/StatisticsType.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "StatsDef.hpp"
 
 /** @file
@@ -44,19 +44,19 @@ typedef std::map<std::string, StatisticDescriptor*> StatisticsDescMap;
 
 class StatisticsTypeImpl : public StatisticsType {
  private:
-  int32 statsLength;            // Total number of descriptors in the type
+  int32_t statsLength;            // Total number of descriptors in the type
   std::string name;             // The name of this statistics type
   std::string description;      // The description of this statistics type
   StatisticDescriptor** stats;  // The array of stat descriptors id order
   StatisticsDescMap statsDescMap;
-  int32 intStatCount;  // Contains the number of 32-bit statistics in this type.
-  int32 longStatCount;  // Contains the number of long statistics in this type.
-  int32
+  int32_t intStatCount;  // Contains the number of 32-bit statistics in this type.
+  int32_t longStatCount;  // Contains the number of long statistics in this type.
+  int32_t
       doubleStatCount;  // Contains the number of double statistics in this type
 
  public:
   StatisticsTypeImpl(const char* name, const char* description,
-                     StatisticDescriptor** stats, int32 statsLength);
+                     StatisticDescriptor** stats, int32_t statsLength);
 
   ~StatisticsTypeImpl();
 
@@ -68,7 +68,7 @@ class StatisticsTypeImpl : public StatisticsType {
 
   StatisticDescriptor** getStatistics();
 
-  int32 nameToId(const char* name);
+  int32_t nameToId(const char* name);
 
   StatisticDescriptor* nameToDescriptor(const char* name);
 
@@ -77,22 +77,22 @@ class StatisticsTypeImpl : public StatisticsType {
   /**
    *  Gets the number of statistics in this type that are ints.
    */
-  int32 getIntStatCount();
+  int32_t getIntStatCount();
 
   /*
    * Gets the number of statistics in this type that are longs.
    */
-  int32 getLongStatCount();
+  int32_t getLongStatCount();
 
   /*
    * Gets the number of statistics that are doubles.
    */
-  int32 getDoubleStatCount();
+  int32_t getDoubleStatCount();
 
   /*
    * Gets the total number of statistic descriptors in the Type
    */
-  int32 getDescriptorsCount();
+  int32_t getDescriptorsCount();
 
   // static StatisticsType[] fromXml(Reader reader,
   //                                      StatisticsTypeFactory factory);
@@ -102,4 +102,4 @@ class StatisticsTypeImpl : public StatisticsType {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STATISTICS_STATISTICSTYPEIMPL_H_
+#endif  // GEODE_STATISTICS_STATISTICSTYPEIMPL_H_

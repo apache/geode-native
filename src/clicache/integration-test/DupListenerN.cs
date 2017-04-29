@@ -32,7 +32,7 @@ namespace Apache.Geode.Client.UnitTests
 
     private int m_ops = 0;
     private Dictionary<object, object> m_map = new Dictionary<object, object>();
-    //ICacheableKey, IGFSerializable
+    //ICacheableKey, IGeodeSerializable
 
     #endregion
 

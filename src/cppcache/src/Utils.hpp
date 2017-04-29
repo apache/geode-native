@@ -24,15 +24,15 @@
  * @file
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_base.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/CacheableString.hpp>
-#include <gfcpp/DataOutput.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/geode_base.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/DataOutput.hpp>
 #include "NanoTimer.hpp"
-#include <gfcpp/statistics/Statistics.hpp>
-#include <gfcpp/SystemProperties.hpp>
-#include <gfcpp/DistributedSystem.hpp>
+#include <geode/statistics/Statistics.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/DistributedSystem.hpp>
 #include <typeinfo>
 #include <string>
 #include <unordered_set>
@@ -148,7 +148,7 @@ class CPPCACHE_EXPORT Utils {
     }
   }
 
-  inline static int64 startStatOpTime() {
+  inline static int64_t startStatOpTime() {
     if (DistributedSystem::getSystemProperties() != NULL) {
       return (DistributedSystem::getSystemProperties()
                   ->getEnableTimeStatistics())
@@ -182,7 +182,7 @@ class CPPCACHE_EXPORT Utils {
   }
 
   inline static void updateStatOpTime(statistics::Statistics* m_regionStats,
-                                      int32 statId, int64 start) {
+                                      int32_t statId, int64_t start) {
     if (DistributedSystem::getSystemProperties() != NULL) {
       if (DistributedSystem::getSystemProperties()->getEnableTimeStatistics()) {
         m_regionStats->incLong(statId, startStatOpTime() - start);
@@ -226,4 +226,4 @@ class RandGen {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_UTILS_H_
+#endif  // GEODE_UTILS_H_

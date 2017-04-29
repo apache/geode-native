@@ -26,7 +26,6 @@
  *      Author: sshcherbakov
  */
 
-
 #include "CacheTransactionManagerImpl.hpp"
 #include "TSSTXStateWrapper.hpp"
 #include "TXState.hpp"
@@ -55,5 +54,4 @@ class TXCleaner {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TXCLEANER_H_
+#endif  // GEODE_TXCLEANER_H_

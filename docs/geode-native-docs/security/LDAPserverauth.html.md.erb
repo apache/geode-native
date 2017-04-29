@@ -1,0 +1,42 @@
+---
+title:  Using an LDAP Server for Client Authentication
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+An LDAP server can be used by a Geode cache server using the sample LDAP implementation provided in the server distribution.
+
+See [Security](geodeman/managing/security/chapter_overview.html#security) in the server manual to verify authentication credentials for clients attempting to connect to the cache servers and sending user name and passwords using the sample UserPassword scheme.
+
+**Note:**
+The user name and password with this sample implementation is sent out in plaintext. For better security, either turn on credential encryption using Diffie-Hellman key exchange, or use a scheme like PKCS.
+
+When a client initiates a connection to a cache server, the client submits its credentials to the server and the server submits those credentials to the LDAP server. To be authenticated, the credentials for the client need to match one of the valid entries in the LDAP server. The credentials can consist of the entry name and the corresponding password. If the submitted credentials result in a connection to the LDAP server because the credentials match the appropriate LDAP entries, then the client is authenticated and granted a connection to the server. If the server fails to connect to the LDAP server with the supplied credentials then an `AuthenticationFailedException` is sent to the client and its connection with the cache server is closed.
+
+**Configuration Settings**
+
+In the `geode.properties` file for the client, specify the `UserPasswordAuthInit` callback, the user name, and the password, like this:
+
+``` pre
+security-client-auth-library=securityImpl
+security-client-auth-factory=createUserPasswordAuthInitInstance
+security-username=<username>
+security-password=<password>
+```
+
+For server side settings and LDAP server configuration, see the server's security documentation.

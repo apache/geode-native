@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 #include "TcrPoolEndPoint.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 #include "ThinClientPoolDM.hpp"
 using namespace apache::geode::client;
 #define DEFAULT_CALLBACK_CONNECTION_TIMEOUT_SECONDS 180
@@ -94,7 +94,7 @@ GfErrType TcrPoolEndPoint::registerDM(bool clientNotification, bool isSecondary,
               name().c_str());
       return err;
     }
-    m_notifyReceiver = new GF_TASK_T<TcrEndpoint>(
+    m_notifyReceiver = new Task<TcrEndpoint>(
         this, &TcrEndpoint::receiveNotification, NC_Notification);
     m_notifyReceiver->start();
   }
@@ -141,7 +141,7 @@ bool TcrPoolEndPoint::handleIOException(const std::string& message,
   return TcrEndpoint::handleIOException(message, conn);
 }
 
-void TcrPoolEndPoint::handleNotificationStats(int64 byteLength) {
+void TcrPoolEndPoint::handleNotificationStats(int64_t byteLength) {
   m_dm->getStats().incReceivedBytes(byteLength);
   m_dm->getStats().incMessageBeingReceived();
 }

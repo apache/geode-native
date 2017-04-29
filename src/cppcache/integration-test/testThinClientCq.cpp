@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
-#include <gfcpp/CqAttributesFactory.hpp>
-#include <gfcpp/CqAttributes.hpp>
-#include <gfcpp/CqListener.hpp>
-#include <gfcpp/CqStatusListener.hpp>
-#include <gfcpp/CqQuery.hpp>
-#include <gfcpp/CqServiceStatistics.hpp>
+#include <geode/GeodeCppCache.hpp>
+#include <geode/CqAttributesFactory.hpp>
+#include <geode/CqAttributes.hpp>
+#include <geode/CqListener.hpp>
+#include <geode/CqStatusListener.hpp>
+#include <geode/CqQuery.hpp>
+#include <geode/CqServiceStatistics.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include <string>
@@ -34,8 +34,8 @@
 #include "QueryStrings.hpp"
 #include "QueryHelper.hpp"
 
-#include <gfcpp/Query.hpp>
-#include <gfcpp/QueryService.hpp>
+#include <geode/Query.hpp>
+#include <geode/QueryService.hpp>
 
 #include "ThinClientCQ.hpp"
 

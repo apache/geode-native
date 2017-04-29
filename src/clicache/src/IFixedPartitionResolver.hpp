@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include "IPartitionResolver.hpp"
 
 //using System::Collections::Generics;
@@ -29,7 +29,7 @@ namespace Apache
     namespace Client
     {
 
-      interface class IGFSerializable;
+      interface class IGeodeSerializable;
       /// <summary>
       /// Implementers of interface <code>FixedPartitionResolver</code> helps to
       /// achieve explicit mapping of a "user defined" partition to a data member node.

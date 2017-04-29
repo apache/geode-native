@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_b6aee18fde62b9f395d7603d1d57c641
-#define APACHE_GEODE_GUARD_b6aee18fde62b9f395d7603d1d57c641
+#ifndef GEODE_SECURITY_PKCSAUTHINIT_H_
+#define GEODE_SECURITY_PKCSAUTHINIT_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/AuthInitialize.hpp>
-#include <stdio.h>
-#include <stdlib.h>
+#include <geode/AuthInitialize.hpp>
+#include <cstdio>
+#include <cstdlib>
 #include <openssl/pem.h>
 #include <openssl/err.h>
 #include <openssl/pkcs12.h>
@@ -107,5 +107,4 @@ class PKCSAuthInitInternal : public AuthInitialize {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_b6aee18fde62b9f395d7603d1d57c641
+#endif  // GEODE_SECURITY_PKCSAUTHINIT_H_

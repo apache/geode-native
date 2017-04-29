@@ -26,12 +26,11 @@
  *      Author: ankurs
  */
 
-
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/DataInput.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/geode_types.hpp>
+#include <geode/DataInput.hpp>
 #include "RegionCommit.hpp"
-#include <gfcpp/VectorOfSharedBase.hpp>
+#include <geode/VectorOfSharedBase.hpp>
 
 namespace apache {
 namespace geode {
@@ -62,4 +61,4 @@ class TXCommitMessage : public apache::geode::client::Cacheable {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_TXCOMMITMESSAGE_H_
+#endif  // GEODE_TXCOMMITMESSAGE_H_

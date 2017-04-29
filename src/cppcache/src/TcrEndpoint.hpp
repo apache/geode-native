@@ -20,16 +20,16 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include <string>
 #include <list>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
-#include <gfcpp/gf_base.hpp>
+#include <geode/geode_base.hpp>
 #include "FairQueue.hpp"
 #include "Set.hpp"
 #include "TcrConnection.hpp"
-#include "GF_TASK_T.hpp"
+#include "Task.hpp"
 #include "SpinLock.hpp"
 
 namespace apache {
@@ -197,12 +197,12 @@ class CPPCACHE_EXPORT TcrEndpoint {
                                              TcrConnection* conn);
   virtual void closeFailedConnection(TcrConnection*& conn);
   void closeConnection(TcrConnection*& conn);
-  virtual void handleNotificationStats(int64 byteLength){};
+  virtual void handleNotificationStats(int64_t byteLength){};
   virtual void closeNotification();
-  std::list<GF_TASK_T<TcrEndpoint>*> m_notifyReceiverList;
+  std::list<Task<TcrEndpoint>*> m_notifyReceiverList;
   std::list<TcrConnection*> m_notifyConnectionList;
   TcrConnection* m_notifyConnection;
-  GF_TASK_T<TcrEndpoint>* m_notifyReceiver;
+  Task<TcrEndpoint>* m_notifyReceiver;
   int m_numRegionListener;
   bool m_isQueueHosted;
   ACE_Recursive_Thread_Mutex m_notifyReceiverLock;
@@ -267,4 +267,4 @@ class CPPCACHE_EXPORT TcrEndpoint {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_TCRENDPOINT_H_
+#endif  // GEODE_TCRENDPOINT_H_

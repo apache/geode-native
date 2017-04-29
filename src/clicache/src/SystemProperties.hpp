@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include "geode_defs.hpp"
+#include <geode/SystemProperties.hpp>
 #include "impl/NativeWrapper.hpp"
 #include "Log.hpp"
 #include "Properties.hpp"
@@ -35,7 +35,7 @@ namespace Apache
       /// <summary>
       /// A class for internal use, that encapsulates the properties that can be
       /// set through <see cref="DistributedSystem.Connect" />
-      /// or a gfcpp.properties file.
+      /// or a geode.properties file.
       /// </summary>
       public ref class SystemProperties sealed
         : public Internal::UMWrap<apache::geode::client::SystemProperties>
@@ -54,9 +54,9 @@ namespace Apache
         /// Constructor.
         /// <ol>
         /// <li>Sets the default (hard-coded) values.</li>
-        /// <li>Overwrites those with any values from <c>systemDefault/gfcpp.properties</c></li>
+        /// <li>Overwrites those with any values from <c>systemDefault/geode.properties</c></li>
         /// <li>Overwrites those with any values from the given file (if it exists)
-        /// or the local <c>./gfcpp.properties</c> (if the given file does not exist).</li>
+        /// or the local <c>./geode.properties</c> (if the given file does not exist).</li>
         /// <li>Overwrites those with any values found in the given properties.</li>
         /// </ol>
         /// </summary>
@@ -75,9 +75,9 @@ namespace Apache
         /// how often the statistics thread writes to disk, in seconds.
         /// </summary>
         /// <returns>the statistics sampling interval</returns>
-        property int32_t StatisticsSampleInterval
+        property System::Int32 StatisticsSampleInterval
         {
-          int32_t get();
+          System::Int32 get();
         }
 
         /// <summary>
@@ -147,54 +147,54 @@ namespace Apache
         /// it has exceeded the HeapLRULimit. Defaults to 10%
         /// </summary>
         /// <returns>the HeapLRUDelta value</returns>
-        property int32_t HeapLRUDelta
+        property System::Int32 HeapLRUDelta
         {
-          int32_t get();
+          System::Int32 get();
         }
 
         /// <summary>
         /// Returns  the maximum socket buffer size to use
         /// </summary>
         /// <returns>the MaxSocketBufferSize value</returns>
-        property int32_t MaxSocketBufferSize
+        property System::Int32 MaxSocketBufferSize
         {
-          int32_t get();
+          System::Int32 get();
         }
 
         /// <summary>
         /// Returns  the time between two consecutive ping to servers
         /// </summary>
         /// <returns>the PingInterval value</returns>
-        property int32_t PingInterval
+        property System::Int32 PingInterval
         {
-          int32_t get();
+          System::Int32 get();
         }
 
         /// <summary>
         /// Returns  the time between two consecutive checks for redundancy for HA
         /// </summary>
         /// <returns>the RedundancyMonitorInterval value</returns>
-        property int32_t RedundancyMonitorInterval
+        property System::Int32 RedundancyMonitorInterval
         {
-          int32_t get();
+          System::Int32 get();
         }
 
         /// <summary>
         /// Returns the periodic notify ack interval
         /// </summary>
         /// <returns>the NotifyAckInterval value</returns>
-        property int32_t NotifyAckInterval
+        property System::Int32 NotifyAckInterval
         {
-          int32_t get();
+          System::Int32 get();
         }
 
         /// <summary>
         /// Returns the expiry time of an idle event id map entry for duplicate notification checking
         /// </summary>
         /// <returns>the NotifyDupCheckLife value</returns>
-        property int32_t NotifyDupCheckLife
+        property System::Int32 NotifyDupCheckLife
         {
-          int32_t get();
+          System::Int32 get();
         }
 
         /// <summary>
@@ -254,45 +254,45 @@ namespace Apache
         /// Returns the maximum log file size, in bytes, or 0 if unlimited.
         /// </summary>
         /// <returns>the maximum limit</returns>
-        property int32_t LogFileSizeLimit
+        property System::Int32 LogFileSizeLimit
         {
-          int32_t get();
+          System::Int32 get();
         }
 
         /// <summary>
         /// Returns the maximum log Disk size, in bytes, or 0 if unlimited.
         /// </summary>
         /// <returns>the maximum limit</returns>
-        property int32_t LogDiskSpaceLimit
+        property System::Int32 LogDiskSpaceLimit
         {
-          int32_t get();
+          System::Int32 get();
         }
 
         /// <summary>
         /// Returns the maximum statistics file size, in bytes, or 0 if unlimited.
         /// </summary>
         /// <returns>the maximum limit</returns>
-        property int32_t StatsFileSizeLimit
+        property System::Int32 StatsFileSizeLimit
         {
-          int32_t get();
+          System::Int32 get();
         }
 
         /// <summary>
         /// Returns the maximum statistics Disk size, in bytes, or 0 if unlimited.
         /// </summary>
         /// <returns>the maximum limit</returns>
-        property int32_t StatsDiskSpaceLimit
+        property System::Int32 StatsDiskSpaceLimit
         {
-          int32_t get();
+          System::Int32 get();
         }
 
         /// <summary>
         /// Returns the max queue size for notification messages
         /// </summary>
         /// <returns>the max queue size</returns>
-        property uint32_t MaxQueueSize
+        property System::UInt32 MaxQueueSize
         {
-          uint32_t get();
+          System::UInt32 get();
         }
 
         /// <summary>
@@ -363,18 +363,18 @@ namespace Apache
         /// Returns the durable client's timeout.
         /// </summary>
         /// <returns>the durable client timeout</returns>
-        property uint32_t DurableTimeout
+        property System::UInt32 DurableTimeout
         {
-          uint32_t get();
+          System::UInt32 get();
         }
 
         /// <summary>
         /// Returns the connect timeout used for server and locator handshakes.
         /// </summary>
         /// <returns>the connect timeout used for server and locator handshakes</returns>
-        property uint32_t ConnectTimeout
+        property System::UInt32 ConnectTimeout
         {
-          uint32_t get();
+          System::UInt32 get();
         }
 
         /// <summary>
@@ -390,9 +390,9 @@ namespace Apache
         /// Returns the timeout after which suspended transactions are rolled back.
         /// </summary>
         /// <returns>the timeout for suspended transactions</returns>
-        property uint32_t SuspendedTxTimeout
+        property System::UInt32 SuspendedTxTimeout
         {
-          uint32_t get();
+          System::UInt32 get();
         }
 
         /// <summary>

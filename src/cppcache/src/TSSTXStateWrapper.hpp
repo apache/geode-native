@@ -26,7 +26,6 @@
  *      Author: ankurs
  */
 
-
 #include <ace/TSS_T.h>
 #include "TXId.hpp"
 
@@ -53,5 +52,4 @@ class TSSTXStateWrapper {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TSSTXSTATEWRAPPER_H_
+#endif  // GEODE_TSSTXSTATEWRAPPER_H_

@@ -21,13 +21,13 @@
  */
 
 /*
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/Cacheable.hpp>
-#include <gfcpp/VectorT.hpp>
-#include <gfcpp/HashMapT.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/geode_types.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/Cacheable.hpp>
+#include <geode/VectorT.hpp>
+#include <geode/HashMapT.hpp>
 #include "MapWithLock.hpp"
 */
 #include "CacheableObjectPartList.hpp"
@@ -66,7 +66,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   bool m_hasTags;
   bool m_hasKeys;
   std::vector<VersionTagPtr> m_versionTags;
-  std::vector<uint8> m_byteArray;
+  std::vector<uint8_t> m_byteArray;
   uint16_t m_endpointMemId;
   VectorOfCacheableKeyPtr m_tempKeys;
   ACE_Recursive_Thread_Mutex& m_responseLock;
@@ -285,4 +285,4 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_VERSIONEDCACHEABLEOBJECTPARTLIST_H_
+#endif  // GEODE_VERSIONEDCACHEABLEOBJECTPARTLIST_H_

@@ -24,9 +24,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Transactions")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Transactions")]
-[assembly: AssemblyCopyright("Copyright ©  2008")]
+[assembly: AssemblyCopyright("Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

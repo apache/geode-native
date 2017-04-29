@@ -17,7 +17,7 @@
 
 #ifndef __USERPASSWORDAUTHINIT__
 #define __USERPASSWORDAUTHINIT__
-#include "gfcpp/AuthInitialize.hpp"
+#include "geode/AuthInitialize.hpp"
 
 /**
  * @file

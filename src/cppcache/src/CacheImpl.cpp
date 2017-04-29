@@ -16,27 +16,27 @@
  */
 
 #include "CacheImpl.hpp"
-#include <string.h>
-#include <gfcpp/CacheStatistics.hpp>
+#include <string>
+#include <geode/CacheStatistics.hpp>
 #include "Utils.hpp"
 #include "LocalRegion.hpp"
 #include "ExpiryTaskManager.hpp"
-#include <gfcpp/PersistenceManager.hpp>
+#include <geode/PersistenceManager.hpp>
 #include "RegionExpiryHandler.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientRegion.hpp"
 #include "ThinClientHARegion.hpp"
 #include "ThinClientPoolRegion.hpp"
 #include "ThinClientPoolDM.hpp"
-#include <gfcpp/PoolManager.hpp>
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/PoolManager.hpp>
+#include <geode/SystemProperties.hpp>
 #include "Version.hpp"
 #include "ClientProxyMembershipID.hpp"
 #include "AutoDelete.hpp"
 #include <string>
 #include "ace/OS.h"
-#include <gfcpp/PoolManager.hpp>
-#include <gfcpp/RegionAttributes.hpp>
+#include <geode/PoolManager.hpp>
+#include <geode/RegionAttributes.hpp>
 #include "ThinClientPoolHADM.hpp"
 #include "InternalCacheTransactionManager2PCImpl.hpp"
 #include "PdxTypeRegistry.hpp"
@@ -48,7 +48,7 @@ CacheImpl* CacheImpl::s_instance = NULL;
 volatile bool CacheImpl::s_networkhop = false;
 volatile int CacheImpl::s_blacklistBucketTimeout = 0;
 ACE_Recursive_Thread_Mutex CacheImpl::s_nwHopLock;
-volatile int8 CacheImpl::s_serverGroupFlag = 0;
+volatile int8_t CacheImpl::s_serverGroupFlag = 0;
 MemberListForVersionStampPtr CacheImpl::s_versionStampMemIdList = NULLPTR;
 
 #define DEFAULT_LRU_MAXIMUM_ENTRIES 100000
@@ -185,8 +185,8 @@ bool CacheImpl::getAndResetNetworkHopFlag() {
   return networkhop;
 }
 
-int8 CacheImpl::getAndResetServerGroupFlag() {
-  int8 serverGroupFlag = CacheImpl::s_serverGroupFlag;
+int8_t CacheImpl::getAndResetServerGroupFlag() {
+  int8_t serverGroupFlag = CacheImpl::s_serverGroupFlag;
   CacheImpl::s_serverGroupFlag = 0;
   return serverGroupFlag;
 }

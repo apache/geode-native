@@ -14,19 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/SharedPtr.hpp>
 
-#include <gfcpp/DistributedSystem.hpp>
+#include <geode/DistributedSystem.hpp>
 #include <DistributedSystemImpl.hpp>
 #include <CacheXmlParser.hpp>
 #include <CacheRegionHelper.hpp>
-#include <gfcpp/Cache.hpp>
+#include <geode/Cache.hpp>
 #include <CacheImpl.hpp>
 #include <UserAttributes.hpp>
 #include <ProxyRegion.hpp>
-#include <gfcpp/FunctionService.hpp>
-#include <gfcpp/PoolManager.hpp>
+#include <geode/FunctionService.hpp>
+#include <geode/PoolManager.hpp>
 #include <PdxInstanceFactoryImpl.hpp>
 
 using namespace apache::geode::client;

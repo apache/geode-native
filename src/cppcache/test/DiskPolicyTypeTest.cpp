@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 
-#include <gfcpp/DiskPolicyType.hpp>
+#include <geode/DiskPolicyType.hpp>
 
 using namespace apache::geode::client;
 

@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include "IRegionService.hpp"
 #include "DistributedSystem.hpp"
 #include "CacheTransactionManager.hpp"

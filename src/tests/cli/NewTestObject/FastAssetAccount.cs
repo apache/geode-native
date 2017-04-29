@@ -73,7 +73,7 @@ namespace Apache.Geode.Client.Tests
         return 23;
       }
     }
-    public override IGFSerializable FromData(DataInput input)
+    public override IGeodeSerializable FromData(DataInput input)
     {
       acctId = input.ReadInt32();
       customerName = (string)input.ReadObject();
@@ -92,7 +92,7 @@ namespace Apache.Geode.Client.Tests
       output.WriteInt64(timestamp);
     }
 
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new FastAssetAccount();
     }

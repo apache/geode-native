@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/ExceptionTypes.hpp>
 
 /*
 These are superseded by the connect-timeout system property for SR # 6525.
@@ -97,7 +97,7 @@ class Connector {
   /**
    * Returns local port for this TCP connection
    */
-  virtual uint16 getPort() = 0;
+  virtual uint16_t getPort() = 0;
 
  private:
   // Disallow copy constructor and assignment operator.
@@ -108,5 +108,4 @@ class Connector {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_CONNECTOR_H_
+#endif  // GEODE_CONNECTOR_H_

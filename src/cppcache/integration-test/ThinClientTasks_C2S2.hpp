@@ -26,7 +26,6 @@
  *      Author: abhaware
  */
 
-
 // define our own names for the 4 test processes
 #define PROCESS1 s1p1
 #define PROCESS2 s1p2
@@ -94,5 +93,4 @@ void startServer() { CALL_TASK(startServerWithLocator); }
 
 void closeLocator() { CALL_TASK(CloseLocator); }
 
-
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTTASKS_C2S2_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTTASKS_C2S2_H_

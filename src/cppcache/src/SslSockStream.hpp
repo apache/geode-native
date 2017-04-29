@@ -93,5 +93,4 @@ class SslSockStream {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_SSLSOCKSTREAM_H_
+#endif  // GEODE_SSLSOCKSTREAM_H_

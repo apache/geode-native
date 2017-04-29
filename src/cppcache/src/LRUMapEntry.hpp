@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/CacheableKey.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/CacheableKey.hpp>
 #include "MapEntry.hpp"
 #include "LRUList.hpp"
 #include "VersionStamp.hpp"
@@ -124,4 +124,4 @@ class CPPCACHE_EXPORT LRUEntryFactory : public EntryFactory {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_LRUMAPENTRY_H_
+#endif  // GEODE_LRUMAPENTRY_H_

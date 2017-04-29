@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "Cache.hpp"
 #include "ExceptionTypes.hpp"
 #include "DistributedSystem.hpp"
@@ -133,7 +133,7 @@ namespace Apache
         array<Client::IRegion<TKey, TValue>^>^ rootRegions =
           gcnew array<Client::IRegion<TKey, TValue>^>( vrr.size( ) );
 
-        for( int32_t index = 0; index < vrr.size( ); index++ )
+        for( System::Int32 index = 0; index < vrr.size( ); index++ )
         {
           apache::geode::client::RegionPtr& nativeptr( vrr[ index ] );
           rootRegions[ index ] = Client::Region<TKey, TValue>::Create( nativeptr.ptr( ) );

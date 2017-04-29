@@ -24,23 +24,23 @@
 * @file
 */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/CacheStatistics.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/CacheableKey.hpp>
-#include <gfcpp/Cacheable.hpp>
-#include <gfcpp/UserData.hpp>
-#include <gfcpp/Cache.hpp>
-#include <gfcpp/EntryEvent.hpp>
-#include <gfcpp/RegionEvent.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/CacheStatistics.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/CacheableKey.hpp>
+#include <geode/Cacheable.hpp>
+#include <geode/UserData.hpp>
+#include <geode/Cache.hpp>
+#include <geode/EntryEvent.hpp>
+#include <geode/RegionEvent.hpp>
 #include "EventType.hpp"
-#include <gfcpp/PersistenceManager.hpp>
-#include <gfcpp/RegionEntry.hpp>
-#include <gfcpp/CacheListener.hpp>
-#include <gfcpp/CacheWriter.hpp>
-#include <gfcpp/CacheLoader.hpp>
-#include <gfcpp/AttributesMutator.hpp>
-#include <gfcpp/AttributesFactory.hpp>
+#include <geode/PersistenceManager.hpp>
+#include <geode/RegionEntry.hpp>
+#include <geode/CacheListener.hpp>
+#include <geode/CacheWriter.hpp>
+#include <geode/CacheLoader.hpp>
+#include <geode/AttributesMutator.hpp>
+#include <geode/AttributesFactory.hpp>
 
 #include "RegionInternal.hpp"
 #include "RegionStats.hpp"
@@ -497,4 +497,4 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_LOCALREGION_H_
+#endif  // GEODE_LOCALREGION_H_

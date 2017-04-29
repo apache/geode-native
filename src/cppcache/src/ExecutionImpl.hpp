@@ -20,11 +20,11 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/Execution.hpp>
-#include <gfcpp/CacheableBuiltins.hpp>
-#include <gfcpp/ResultCollector.hpp>
-#include <gfcpp/Region.hpp>
+#include <geode/geode_types.hpp>
+#include <geode/Execution.hpp>
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/ResultCollector.hpp>
+#include <geode/Region.hpp>
 #include "ProxyCache.hpp"
 #include <ace/Condition_Recursive_Thread_Mutex.h>
 #include <ace/Guard_T.h>
@@ -33,7 +33,7 @@
 namespace apache {
 namespace geode {
 namespace client {
-typedef std::map<std::string, std::vector<int8>*> FunctionToFunctionAttributes;
+typedef std::map<std::string, std::vector<int8_t>*> FunctionToFunctionAttributes;
 
 class ExecutionImpl : public Execution {
  public:
@@ -69,8 +69,6 @@ class ExecutionImpl : public Execution {
                          const CacheableVectorPtr& results);
 
  private:
-  ResultCollectorPtr execute(const char* func, uint32_t timeout,
-                             bool verifyFuncArgs);
   ExecutionImpl(const ExecutionImpl& rhs)
       : m_routingObj(rhs.m_routingObj),
         m_args(rhs.m_args),
@@ -100,17 +98,17 @@ class ExecutionImpl : public Execution {
   ProxyCachePtr m_proxyCache;
   static ACE_Recursive_Thread_Mutex m_func_attrs_lock;
   static FunctionToFunctionAttributes m_func_attrs;
-  //  std::vector<int8> m_attributes;
+  //  std::vector<int8_t> m_attributes;
   CacheableVectorPtr executeOnPool(
       std::string& func, uint8_t getResult, int32_t retryAttempts,
       uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
   void executeOnAllServers(std::string& func, uint8_t getResult,
                            uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
-  std::vector<int8>* getFunctionAttributes(const char* func);
-  GfErrType getFuncAttributes(const char* func, std::vector<int8>** attr);
+  std::vector<int8_t>* getFunctionAttributes(const char* func);
+  GfErrType getFuncAttributes(const char* func, std::vector<int8_t>** attr);
 };
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_EXECUTIONIMPL_H_
+#endif  // GEODE_EXECUTIONIMPL_H_

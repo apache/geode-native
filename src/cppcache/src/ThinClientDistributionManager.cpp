@@ -17,7 +17,7 @@
 #include "ThinClientDistributionManager.hpp"
 #include <algorithm>
 #include "ThinClientRegion.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 #include "DistributedSystemImpl.hpp"
 
 using namespace apache::geode::client;

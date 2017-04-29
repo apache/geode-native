@@ -24,7 +24,7 @@
  */
 
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include "CacheHelper.hpp"
 #include "ThinClientHelper.hpp"
 #include <ace/Process.h>
@@ -114,7 +114,7 @@ const char* getServerSecurityParams() {
     serverSecurityParams +=
         std::string(" security-ldap-basedn=") +
         (ldapRoot != NULL ? ldapRoot
-                          : "ou=ldapTesting,dc=ldap,dc=gemstone,dc=com");
+                          : "ou=ldapTesting,dc=ldap,dc=apache,dc=org");
 
     char* ldapSSL = ACE_OS::getenv("LDAP_USESSL");
     serverSecurityParams += std::string(" security-ldap-usessl=") +

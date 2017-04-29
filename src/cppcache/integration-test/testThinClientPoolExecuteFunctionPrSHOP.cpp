@@ -58,9 +58,8 @@ char* FETimeOut = (char*)"FunctionExecutionTimeOut";
   for (int j = 0; j < 34; j++) {                                              \
     if (j % 2 == 0) continue;                                                 \
     sprintf(buf, "VALUE--%d", j);                                             \
-    if (strcmp(buf,                                                           \
-               dynCast<CacheableStringPtr>(resultList->operator[](i))         \
-                   ->asChar()) == 0) {                                        \
+    if (strcmp(buf, dynCast<CacheableStringPtr>(resultList->operator[](i))    \
+                        ->asChar()) == 0) {                                   \
       LOGINFO(                                                                \
           "buf = %s "                                                         \
           "dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar() " \
@@ -78,9 +77,8 @@ char* FETimeOut = (char*)"FunctionExecutionTimeOut";
   for (int j = 0; j < 34; j++) {                                              \
     if (j % 2 == 0) continue;                                                 \
     sprintf(buf, "KEY--%d", j);                                               \
-    if (strcmp(buf,                                                           \
-               dynCast<CacheableStringPtr>(resultList->operator[](i))         \
-                   ->asChar()) == 0) {                                        \
+    if (strcmp(buf, dynCast<CacheableStringPtr>(resultList->operator[](i))    \
+                        ->asChar()) == 0) {                                   \
       LOGINFO(                                                                \
           "buf = %s "                                                         \
           "dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar() " \
@@ -1172,7 +1170,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       LOGINFO("FETimeOut begin onRegion");
       ExecutionPtr RexecutionPtr = FunctionService::onRegion(regPtr0);
       CacheableVectorPtr fe =
-          RexecutionPtr->withArgs(CacheableInt32::create(5000))
+          RexecutionPtr->withArgs(CacheableInt32::create(5000 * 1000))
               ->execute(FETimeOut, 5000)
               ->getResult();
       if (fe == NULLPTR) {
@@ -1192,9 +1190,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
       LOGINFO("FETimeOut begin onServer");
       ExecutionPtr serverExc = FunctionService::onServer(getHelper()->cachePtr);
-      CacheableVectorPtr vec = serverExc->withArgs(CacheableInt32::create(5000))
-                                   ->execute(FETimeOut, 5000)
-                                   ->getResult();
+      CacheableVectorPtr vec =
+          serverExc->withArgs(CacheableInt32::create(5000 * 1000))
+              ->execute(FETimeOut, 5000)
+              ->getResult();
       if (vec == NULLPTR) {
         ASSERT(false, "functionResult is NULL");
       } else {
@@ -1213,7 +1212,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       ExecutionPtr serversExc =
           FunctionService::onServers(getHelper()->cachePtr);
       CacheableVectorPtr vecs =
-          serversExc->withArgs(CacheableInt32::create(5000))
+          serversExc->withArgs(CacheableInt32::create(5000 * 1000))
               ->execute(FETimeOut, 5000)
               ->getResult();
       if (vecs == NULLPTR) {
@@ -1279,8 +1278,7 @@ DUNIT_TASK_DEFINITION(LOCATOR1, CloseLocator1)
   }
 END_TASK_DEFINITION
 
-void runFunctionExecution(bool isEndpoint) {
-  // with locator
+void runFunctionExecution() {
   CALL_TASK(StartLocator1);
   CALL_TASK(StartS12);
   CALL_TASK(StartC1);
@@ -1288,15 +1286,8 @@ void runFunctionExecution(bool isEndpoint) {
   CALL_TASK(StopC1);
   CALL_TASK(CloseServers);
   CALL_TASK(CloseLocator1);
-
-  // with endpoints
-  CALL_TASK(StartS12);
-  CALL_TASK(StartC1);
-  CALL_TASK(Client1OpTest);
-  CALL_TASK(StopC1);
-  CALL_TASK(CloseServers);
 }
 
 DUNIT_MAIN
-  { runFunctionExecution(false); }
+  { runFunctionExecution(); }
 END_MAIN

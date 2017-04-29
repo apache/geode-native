@@ -58,4 +58,4 @@ typedef SharedPtr<ThinClientPoolStickyHADM> ThinClientPoolStickyHADMPtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_THINCLIENTPOOLSTICKYHADM_H_
+#endif  // GEODE_THINCLIENTPOOLSTICKYHADM_H_

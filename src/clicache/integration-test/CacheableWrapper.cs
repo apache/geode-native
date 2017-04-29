@@ -35,12 +35,12 @@ namespace Apache.Geode.Client.UnitTests
   {
     #region Protected members
 
-    protected IGFSerializable m_cacheableObject = null;
+    protected IGeodeSerializable m_cacheableObject = null;
     protected uint m_typeId;
 
     #endregion
 
-    public virtual IGFSerializable Cacheable
+    public virtual IGeodeSerializable Cacheable
     {
       get
       {
@@ -62,7 +62,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public abstract void InitRandomValue(int maxSize);
 
-    public abstract uint GetChecksum(IGFSerializable cacheableObject);
+    public abstract uint GetChecksum(IGeodeSerializable cacheableObject);
 
     public virtual uint GetChecksum()
     {
@@ -79,7 +79,7 @@ namespace Apache.Geode.Client.UnitTests
   /// </remarks>
   public abstract class CacheableKeyWrapper : CacheableWrapper
   {
-    public override IGFSerializable Cacheable
+    public override IGeodeSerializable Cacheable
     {
       get
       {

@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 #include <CacheImpl.hpp>
-#include <gfcpp/PoolFactory.hpp>
-#include <gfcpp/Pool.hpp>
+#include <geode/PoolFactory.hpp>
+#include <geode/Pool.hpp>
 #include <PoolAttributes.hpp>
 #include <ThinClientPoolDM.hpp>
 #include <ThinClientPoolHADM.hpp>
-#include <gfcpp/SystemProperties.hpp>
-#include <gfcpp/PoolManager.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/PoolManager.hpp>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/INET_Addr.h>
 #include <ThinClientPoolStickyDM.hpp>

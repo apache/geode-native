@@ -17,13 +17,13 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/AttributesFactory.hpp>
+#include "geode_defs.hpp"
+#include <geode/AttributesFactory.hpp>
 //#include "impl/NativeWrapper.hpp"
 #include "ExpirationAction.hpp"
 #include "DiskPolicyType.hpp"
 //#include "ScopeType.hpp"
-#include <gfcpp/RegionFactory.hpp>
+#include <geode/RegionFactory.hpp>
 #include "RegionShortcut.hpp"
 
 #include "ICacheLoader.hpp"
@@ -126,7 +126,7 @@ namespace Apache
         /// the idleTimeout in seconds for entries in this region.
         /// </param>
         /// <returns>the instance of RegionFactory</returns>
-        RegionFactory^ SetEntryIdleTimeout( ExpirationAction action, uint32_t idleTimeout );
+        RegionFactory^ SetEntryIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout );
 
         /// <summary>
         /// Sets the timeToLive expiration attributes for region entries for the next
@@ -139,7 +139,7 @@ namespace Apache
         /// the timeToLive in seconds for entries in this region.
         /// </param>
         /// <returns>the instance of RegionFactory</returns>
-        RegionFactory^ SetEntryTimeToLive( ExpirationAction action, uint32_t timeToLive );
+        RegionFactory^ SetEntryTimeToLive( ExpirationAction action, System::UInt32 timeToLive );
 
         /// <summary>
         /// Sets the idleTimeout expiration attributes for the region itself for the
@@ -152,7 +152,7 @@ namespace Apache
         /// the idleTimeout in seconds for the region as a whole.
         /// </param>
         /// <returns>the instance of RegionFactory</returns>
-        RegionFactory^ SetRegionIdleTimeout( ExpirationAction action, uint32_t idleTimeout );
+        RegionFactory^ SetRegionIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout );
 
         /// <summary>
         /// Sets the timeToLive expiration attributes for the region itself for the
@@ -165,7 +165,7 @@ namespace Apache
         /// the timeToLive in seconds for the region as a whole.
         /// </param>
         /// <returns>the instance of RegionFactory</returns>
-        RegionFactory^ SetRegionTimeToLive( ExpirationAction action, uint32_t timeToLive );
+        RegionFactory^ SetRegionTimeToLive( ExpirationAction action, System::UInt32 timeToLive );
 
 
         // PERSISTENCE
@@ -246,7 +246,7 @@ namespace Apache
         /// if initialCapacity is nonpositive
         /// </exception>
         /// <returns>the instance of RegionFactory</returns>
-        RegionFactory^ SetInitialCapacity( int32_t initialCapacity );
+        RegionFactory^ SetInitialCapacity( System::Int32 initialCapacity );
 
         /// <summary>
         /// Sets the entry load factor for the next <c>RegionAttributes</c>
@@ -271,7 +271,7 @@ namespace Apache
         /// if concurrencyLevel is nonpositive
         /// </exception>
         /// <returns>the instance of RegionFactory</returns>
-        RegionFactory^ SetConcurrencyLevel( int32_t concurrencyLevel );
+        RegionFactory^ SetConcurrencyLevel( System::Int32 concurrencyLevel );
 
         /// <summary>
         /// Sets a limit on the number of entries that will be held in the cache.
@@ -283,7 +283,7 @@ namespace Apache
         /// Defaults to 0, meaning no LRU actions will used.
         /// </param>
         /// <returns>the instance of RegionFactory</returns>
-        RegionFactory^ SetLruEntriesLimit( uint32_t entriesLimit );
+        RegionFactory^ SetLruEntriesLimit( System::UInt32 entriesLimit );
 
         /// <summary>
         /// Sets the disk policy type for the next <c>RegionAttributes</c> created.

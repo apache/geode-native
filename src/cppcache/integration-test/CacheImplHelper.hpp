@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/GeodeCppCache.hpp>
-#include <stdlib.h>
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/GeodeCppCache.hpp>
+#include <cstdlib>
+#include <geode/SystemProperties.hpp>
 #include <ace/OS.h>
 #include "testUtils.hpp"
 
@@ -67,4 +67,4 @@ class CacheImplHelper : public CacheHelper {
   }
 };
 
-#endif // GEODE_INTEGRATION_TEST_CACHEIMPLHELPER_H_
+#endif  // GEODE_INTEGRATION_TEST_CACHEIMPLHELPER_H_

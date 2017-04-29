@@ -65,9 +65,9 @@ namespace Apache
             WritePdxHeader();
           }
 
-          uint8_t* PdxLocalWriter::GetPdxStream(int& pdxLen)
+          System::Byte* PdxLocalWriter::GetPdxStream(int& pdxLen)
           {
-            uint8_t* stPos = m_dataOutput->GetStartBufferPosition() + m_startPositionOffset;
+            System::Byte* stPos = m_dataOutput->GetStartBufferPosition() + m_startPositionOffset;
             int len = PdxHelper::ReadInt32(stPos);
             pdxLen = len;
             //ignore len and typeid
@@ -81,7 +81,7 @@ namespace Apache
             Int32 typeId = m_pdxType->TypeId;
 
             //GetStartBufferPosition ; if unmanaged dataoutput get change
-            uint8_t* starpos = m_dataOutput->GetStartBufferPosition() + m_startPositionOffset;
+            System::Byte* starpos = m_dataOutput->GetStartBufferPosition() + m_startPositionOffset;
             PdxHelper::WriteInt32(starpos , len);
             PdxHelper::WriteInt32(starpos + 4, typeId);
 
@@ -183,31 +183,31 @@ namespace Apache
             return this;
           }
                        
-          IPdxWriter^ PdxLocalWriter::WriteUInt16( String^ fieldName, uint16_t value )
+          IPdxWriter^ PdxLocalWriter::WriteUInt16( String^ fieldName, System::UInt16 value )
           {
             m_dataOutput->WriteUInt16(value);
             return this;
           }
 
-          IPdxWriter^ PdxLocalWriter::WriteUInt32( String^ fieldName, uint32_t value )
+          IPdxWriter^ PdxLocalWriter::WriteUInt32( String^ fieldName, System::UInt32 value )
           {
             m_dataOutput->WriteUInt32(value);
             return this;
           }
 
-          IPdxWriter^ PdxLocalWriter::WriteUInt64( String^ fieldName, uint64_t value )
+          IPdxWriter^ PdxLocalWriter::WriteUInt64( String^ fieldName, System::UInt64 value )
           {
             m_dataOutput->WriteUInt64(value);
             return this;
           }
 
-          IPdxWriter^ PdxLocalWriter::WriteShort( String^ fieldName, int16_t value )
+          IPdxWriter^ PdxLocalWriter::WriteShort( String^ fieldName, System::Int16 value )
           {
             m_dataOutput->WriteInt16(value);
             return this;
           }
 
-          IPdxWriter^ PdxLocalWriter::WriteInt( String^ fieldName, int32_t value )
+          IPdxWriter^ PdxLocalWriter::WriteInt( String^ fieldName, System::Int32 value )
           {
             m_dataOutput->WriteInt32(value);
             return this;
@@ -446,7 +446,7 @@ namespace Apache
             }
             else if(type->Equals(DotNetTypes::IntArrayType))
             {
-              return this->WriteIntArray(fieldName, (array<int32>^)fieldValue);
+              return this->WriteIntArray(fieldName, (array<System::Int32>^)fieldValue);
             }
             else if(type->Equals(DotNetTypes::LongArrayType))
             {

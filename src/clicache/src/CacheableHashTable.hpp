@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include "CacheableHashMap.hpp"
 #include "DataInput.hpp"
 
@@ -33,7 +33,7 @@ namespace Apache
     {
 
       /// <summary>
-      /// A mutable <c>ICacheableKey</c> to <c>IGFSerializable</c> hash table
+      /// A mutable <c>ICacheableKey</c> to <c>IGeodeSerializable</c> hash table
       /// that can serve as a distributable object for caching. This class
       /// extends .NET generic <c>Dictionary</c> class.
       /// </summary>
@@ -65,12 +65,12 @@ namespace Apache
         /// <param name="capacity">
         /// The initial capacity of the HashTable.
         /// </param>
-        inline CacheableHashTable(int32_t capacity)
+        inline CacheableHashTable(System::Int32 capacity)
           : CacheableHashMap(capacity)
         { }
 
 
-        // Region: IGFSerializable Members
+        // Region: IGeodeSerializable Members
 
         /// <summary>
         /// Returns the classId of the instance being serialized.
@@ -78,25 +78,25 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property uint32_t ClassId
+        virtual property System::UInt32 ClassId
         {
-          virtual uint32_t get() override
+          virtual System::UInt32 get() override
           {
             return GeodeClassIds::CacheableHashTable;
           }
         }
 
-        // End Region: IGFSerializable Members
+        // End Region: IGeodeSerializable Members
 
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGFSerializable^ CreateDeserializable()
+        static IGeodeSerializable^ CreateDeserializable()
         {
           return gcnew CacheableHashTable();
         }
 
-        virtual IGFSerializable^ FromData(DataInput^ input) override
+        virtual IGeodeSerializable^ FromData(DataInput^ input) override
         {
           m_dictionary = input->ReadHashtable();
           return this;
@@ -106,7 +106,7 @@ namespace Apache
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGFSerializable^ Create(Object^ hashtable)
+        static IGeodeSerializable^ Create(Object^ hashtable)
         {
           return gcnew CacheableHashTable(hashtable);
         }

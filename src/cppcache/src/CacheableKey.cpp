@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
-#include <gfcpp/CacheableKey.hpp>
+#include <geode/CacheableKey.hpp>
 
 #include <ace/OS.h>
 #include <typeinfo>

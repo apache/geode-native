@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include "CacheableVector.hpp"
 
 
@@ -32,7 +32,7 @@ namespace Apache
     {
 
       /// <summary>
-      /// A mutable <c>IGFSerializable</c> vector wrapper that can serve as
+      /// A mutable <c>IGeodeSerializable</c> vector wrapper that can serve as
       /// a distributable object for caching. This class extends .NET generic
       /// <c>List</c> class.
       /// </summary>
@@ -65,7 +65,7 @@ namespace Apache
         }
 
 
-        // Region: IGFSerializable Members
+        // Region: IGeodeSerializable Members
 
         /// <summary>
         /// Returns the classId of the instance being serialized.
@@ -73,20 +73,20 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property uint32_t ClassId
+        virtual property System::UInt32 ClassId
         {
-          virtual uint32_t get() override
+          virtual System::UInt32 get() override
           {
             return GeodeClassIds::CacheableArrayList;
           }
         }
 
-        // End Region: IGFSerializable Members
+        // End Region: IGeodeSerializable Members
 
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGFSerializable^ CreateDeserializable()
+        static IGeodeSerializable^ CreateDeserializable()
         {
           return gcnew CacheableArrayList(gcnew System::Collections::Generic::List<Object^>());
         }

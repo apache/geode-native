@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 namespace apache {
 namespace geode {
@@ -36,4 +36,4 @@ class CPPCACHE_EXPORT NanoTimer {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_NANOTIMER_H_
+#endif  // GEODE_NANOTIMER_H_

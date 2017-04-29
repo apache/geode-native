@@ -50,10 +50,10 @@ namespace apache
           String^ mg_genericKey = nullptr;
           String^ mg_genericVal = nullptr;
 
-          int32_t dotIndx = -1;
-          int32_t genericsOpenIndx = -1;
-          int32_t genericsCloseIndx = -1;
-          int32_t commaIndx = -1;
+          System::Int32 dotIndx = -1;
+          System::Int32 genericsOpenIndx = -1;
+          System::Int32 genericsCloseIndx = -1;
+          System::Int32 commaIndx = -1;
 
           if (mg_factoryFunctionName == nullptr ||
               (dotIndx = mg_factoryFunctionName->LastIndexOf('.')) < 0)
@@ -224,7 +224,7 @@ namespace apache
 
           ICacheableKey^ mkey = SafeGenericUMKeyConvert( key.ptr( ) );
 
-          IGFSerializable^ mcallbackArg = SafeGenericUMSerializableConvert(aCallbackArgument.ptr());
+          IGeodeSerializable^ mcallbackArg = SafeGenericUMSerializableConvert(aCallbackArgument.ptr());
           */
 
           /*

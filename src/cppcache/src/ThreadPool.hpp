@@ -26,7 +26,6 @@
  *      Author: ankurs
  */
 
-
 #include <ace/Task.h>
 #include <ace/Method_Request.h>
 //#include <ace/Future.h>
@@ -161,5 +160,4 @@ typedef ACE_Singleton<ThreadPool, ACE_Recursive_Thread_Mutex> TPSingleton;
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_THREADPOOL_H_
+#endif  // GEODE_THREADPOOL_H_

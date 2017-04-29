@@ -17,7 +17,7 @@
 
 #define ROOT_NAME "testCache"
 
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <CacheRegionHelper.hpp>
 #include "fw_helper.hpp"
 

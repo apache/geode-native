@@ -17,16 +17,16 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 
 //#include "impl/NativeWrapper.hpp"
-#include "IGFSerializable.hpp"
+#include "IGeodeSerializable.hpp"
 #include "ICacheableKey.hpp"
 #include "DataInput.hpp"
 #include "DataOutput.hpp"
 #include "CacheableString.hpp"
 
-#include "gfcpp/Properties.hpp"
+#include "geode/Properties.hpp"
 #include "impl/SafeConvert.hpp"
 #include "Serializable.hpp"
 
@@ -41,7 +41,7 @@ namespace Apache
     namespace Client
     {
 
-      delegate void PropertyVisitor(Apache::Geode::Client::ICacheableKey^ key, Apache::Geode::Client::IGFSerializable^ value);
+      delegate void PropertyVisitor(Apache::Geode::Client::ICacheableKey^ key, Apache::Geode::Client::IGeodeSerializable^ value);
 
       generic <class TPropKey, class TPropValue>
       ref class PropertyVisitorProxy;
@@ -67,7 +67,7 @@ namespace Apache
       /// or an integer.
       /// </summary>
       public ref class Properties sealed
-        : public Internal::SBWrap<apache::geode::client::Properties>, public IGFSerializable,
+        : public Internal::SBWrap<apache::geode::client::Properties>, public IGeodeSerializable,
         public ISerializable
       {
       public:
@@ -127,9 +127,9 @@ namespace Apache
         /// Return the number of entries in the collection.
         /// </summary>
         /// <returns>the number of entries</returns>
-        property uint32_t Size
+        property System::UInt32 Size
         {
-          uint32_t get( );
+          System::UInt32 get( );
         }
 
         /*/// <summary>
@@ -155,7 +155,7 @@ namespace Apache
         /// </returns>
         virtual String^ ToString( ) override;
 
-        // IGFSerializable members
+        // IGeodeSerializable members
 
         /// <summary>
         /// Serializes this Properties object.
@@ -172,30 +172,30 @@ namespace Apache
         /// the DataInput stream to use for reading data
         /// </param>
         /// <returns>the deserialized Properties object</returns>
-        virtual IGFSerializable^ FromData( DataInput^ input );
+        virtual IGeodeSerializable^ FromData( DataInput^ input );
 
         /// <summary>
         /// return the size of this object in bytes
         /// </summary>
-        virtual property uint32_t ObjectSize
+        virtual property System::UInt32 ObjectSize
         {
-          virtual uint32_t get( ); 
+          virtual System::UInt32 get( ); 
         }
 
         /// <summary>
         /// Returns the classId of this class for serialization.
         /// </summary>
         /// <returns>classId of the Properties class</returns>
-        /// <seealso cref="IGFSerializable.ClassId" />
-        virtual property uint32_t ClassId
+        /// <seealso cref="IGeodeSerializable.ClassId" />
+        virtual property System::UInt32 ClassId
         {
-          inline virtual uint32_t get( )
+          inline virtual System::UInt32 get( )
           {
             return GeodeClassIds::Properties;
           }
         }
 
-        // End: IGFSerializable members
+        // End: IGeodeSerializable members
 
         // ISerializable members
 
@@ -216,7 +216,7 @@ namespace Apache
         }
 
         /*
-        inline static IGFSerializable^ ConvertCacheableString(apache::geode::client::CacheablePtr& value);
+        inline static IGeodeSerializable^ ConvertCacheableString(apache::geode::client::CacheablePtr& value);
         inline static apache::geode::client::CacheableKey *  ConvertCacheableStringKey(CacheableString^ cStr);
         */
         
@@ -261,7 +261,7 @@ namespace Apache
             gcnew Properties<TPropKey, TPropValue>( nativeptr ) : nullptr );
         }
 
-        inline static IGFSerializable^ CreateDeserializable( )
+        inline static IGeodeSerializable^ CreateDeserializable( )
         {
           return Create<String^, String^>(  );
         }
@@ -269,7 +269,7 @@ namespace Apache
         /// <summary>
         /// Factory function to register wrapper
         /// </summary>
-        inline static IGFSerializable^ CreateDeserializable(
+        inline static IGeodeSerializable^ CreateDeserializable(
           apache::geode::client::Serializable* nativeptr )
         {
           return Create<String^, String^>( nativeptr );
@@ -290,7 +290,7 @@ namespace Apache
       {
       public:
         void Visit(Apache::Geode::Client::ICacheableKey^ key,
-          Apache::Geode::Client::IGFSerializable^ value)
+          Apache::Geode::Client::IGeodeSerializable^ value)
         {
           TPropKey tpkey = Apache::Geode::Client::Serializable::
             GetManagedValueGeneric<TPropKey>(SerializablePtr(SafeMSerializableConvertGeneric(key)));

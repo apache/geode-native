@@ -57,4 +57,4 @@ typedef SharedPtr<ThinClientPoolStickyDM> ThinClientPoolStickyDMPtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_THINCLIENTPOOLSTICKYDM_H_
+#endif  // GEODE_THINCLIENTPOOLSTICKYDM_H_

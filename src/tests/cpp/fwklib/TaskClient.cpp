@@ -20,13 +20,13 @@
 #include "fwklib/FwkLog.hpp"
 #include "fwklib/PerfFwk.hpp"
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
-#include <string.h>
-#include <ctype.h>
+#include <string>
+#include <cctype>
 #ifndef WIN32
 #include <unistd.h>
 #endif

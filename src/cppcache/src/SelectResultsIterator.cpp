@@ -19,7 +19,7 @@
  * @file
  */
 
-#include <gfcpp/SelectResultsIterator.hpp>
+#include <geode/SelectResultsIterator.hpp>
 
 namespace apache {
 namespace geode {

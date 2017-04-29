@@ -14,20 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/GeodeCppCache.hpp>
-#include <stdlib.h>
-#include <gfcpp/SystemProperties.hpp>
+
+#include <cstdlib>
 #include <ace/OS.h>
 #include <ace/INET_Addr.h>
 #include <ace/SOCK_Acceptor.h>
 #include <fstream>
-
-#include "TimeBomb.hpp"
+#include <regex>
 #include <list>
-#include "DistributedSystemImpl.hpp"
-#include "Utils.hpp"
-#include <gfcpp/PoolManager.hpp>
+#include <geode/GeodeCppCache.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/PoolManager.hpp>
 #include <CacheRegionHelper.hpp>
+#include "DistributedSystemImpl.hpp"
+#include "TimeBomb.hpp"
+#include "Utils.hpp"
 
 #include "CacheHelper.hpp"
 #define __DUNIT_NO_MAIN__
@@ -1143,7 +1144,7 @@ void CacheHelper::cleanupServerInstances() {
 void CacheHelper::initServer(int instance, const char* xml,
                              const char* locHostport, const char* authParam,
                              bool ssl, bool enableDelta, bool multiDS,
-                             bool testServerGC) {
+                             bool testServerGC, bool untrustedCert) {
   if (!isServerCleanupCallbackRegistered &&
       gClientCleanup.registerCallback(&CacheHelper::cleanupServerInstances)) {
     isServerCleanupCallbackRegistered = true;
@@ -1308,7 +1309,7 @@ void CacheHelper::initServer(int instance, const char* xml,
   }
 
   if (locHostport != NULL) {  // check number of locator host port.
-    std::string geodeProperties = generateGeodeProperties(currDir, ssl);
+    std::string geodeProperties = generateGeodeProperties(currDir, ssl, -1, 0,untrustedCert);
 
     sprintf(
         cmd,
@@ -1360,18 +1361,11 @@ void CacheHelper::createDuplicateXMLFile(std::string& originalFile,
   testSrc += PATH_SEP;
   // file name will have hostport1.xml(i.e. CacheHelper::staticHostPort1) as
   // suffix
-  sprintf(cmd,
-          "sed -e s/HOST_PORT1/%d/g -e s/HOST_PORT2/%d/g -e s/HOST_PORT3/%d/g "
-          "-e s/HOST_PORT4/%d/g -e s/LOC_PORT1/%d/g -e s/LOC_PORT2/%d/g <%s%s> "
-          "%s%s%d.xml",
-          hostport1, hostport2, CacheHelper::staticHostPort3,
-          CacheHelper::staticHostPort4, locport1, locport2, testSrc.c_str(),
-          originalFile.c_str(), currDir.c_str(), originalFile.c_str(),
-          hostport1);
 
-  LOG(cmd);
-  int e = ACE_OS::system(cmd);
-  ASSERT(0 == e, "cmd failed");
+  replacePortsInFile(
+      hostport1, hostport2, CacheHelper::staticHostPort3,
+      CacheHelper::staticHostPort4, locport1, locport2, testSrc + originalFile,
+      currDir + originalFile + std::to_string(hostport1) + ".xml");
 
   // this file need to delete
   sprintf(cmd, "%s%s%d.xml", currDir.c_str(), originalFile.c_str(), hostport1);
@@ -1381,6 +1375,65 @@ void CacheHelper::createDuplicateXMLFile(std::string& originalFile,
   printf("createDuplicateXMLFile added file %s %ld", cmd,
          CacheHelper::staticConfigFileList.size());
 }
+
+// Need to avoid regex usage in Solaris Studio 12.4.
+#ifdef _SOLARIS
+// @Solaris 12.4 compiler is missing support for C++11 regex
+void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
+                                     int hostPort3, int hostPort4, int locPort1,
+                                     int locPort2, const std::string& inFile,
+                                     const std::string& outFile) {
+  std::ifstream in(inFile, std::ios::in | std::ios::binary);
+  if (in) {
+    std::string contents;
+    contents.assign(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
+    in.close();
+
+    replaceInPlace(contents, "HOST_PORT1", std::to_string(hostPort1));
+    replaceInPlace(contents, "HOST_PORT2", std::to_string(hostPort2));
+    replaceInPlace(contents, "HOST_PORT3", std::to_string(hostPort3));
+    replaceInPlace(contents, "HOST_PORT4", std::to_string(hostPort4));
+    replaceInPlace(contents, "LOC_PORT1", std::to_string(locPort1));
+    replaceInPlace(contents, "LOC_PORT2", std::to_string(locPort2));
+
+    std::ofstream out(outFile, std::ios::out);
+    out << contents;
+    out.close();
+  }
+}
+
+void CacheHelper::replaceInPlace(std::string& searchStr, const std::string& matchStr,
+                                 const std::string& replaceStr) {
+    size_t pos = 0;
+    while ((pos = searchStr.find(matchStr, pos)) != std::string::npos) {
+      searchStr.replace(pos, matchStr.length(), replaceStr);
+      pos += replaceStr.length();
+    }
+}
+#else
+void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
+                                     int hostPort3, int hostPort4, int locPort1,
+                                     int locPort2, const std::string& inFile,
+                                     const std::string& outFile) {
+  std::ifstream in(inFile, std::ios::in | std::ios::binary);
+  if (in) {
+    std::string contents;
+    contents.assign(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
+    in.close();
+
+    contents = std::regex_replace(contents, std::regex("HOST_PORT1"), std::to_string(hostPort1));
+    contents = std::regex_replace(contents, std::regex("HOST_PORT2"), std::to_string(hostPort2));
+    contents = std::regex_replace(contents, std::regex("HOST_PORT3"), std::to_string(hostPort3));
+    contents = std::regex_replace(contents, std::regex("HOST_PORT4"), std::to_string(hostPort4));
+    contents = std::regex_replace(contents, std::regex("LOC_PORT1"), std::to_string(locPort1));
+    contents = std::regex_replace(contents, std::regex("LOC_PORT2"), std::to_string(locPort2));
+
+    std::ofstream out(outFile, std::ios::out);
+    out << contents;
+    out.close();
+  }
+}
+#endif
 
 void CacheHelper::createDuplicateXMLFile(std::string& duplicateFile,
                                          std::string& originalFile) {
@@ -1597,7 +1650,7 @@ void CacheHelper::cleanupLocatorInstances() {
 
 // starting locator
 void CacheHelper::initLocator(int instance, bool ssl, bool multiDS, int dsId,
-                              int remoteLocator) {
+                              int remoteLocator, bool untrustedCert) {
   if (!isLocatorCleanupCallbackRegistered &&
       gClientCleanup.registerCallback(&CacheHelper::cleanupLocatorInstances)) {
     isLocatorCleanupCallbackRegistered = true;
@@ -1652,7 +1705,7 @@ void CacheHelper::initLocator(int instance, bool ssl, bool multiDS, int dsId,
   ACE_OS::mkdir(locDirname.c_str());
 
   std::string geodeFile =
-      generateGeodeProperties(currDir, ssl, dsId, remoteLocator);
+      generateGeodeProperties(currDir, ssl, dsId, remoteLocator, untrustedCert);
 
   sprintf(cmd, "%s/bin/%s stop locator --dir=%s --properties-file=%s ",
           gfjavaenv, GFSH, currDir.c_str(), geodeFile.c_str());
@@ -1771,7 +1824,7 @@ int CacheHelper::getNumLocatorListUpdates(const char* s) {
 
 std::string CacheHelper::generateGeodeProperties(const std::string& path,
                                                  const bool ssl, const int dsId,
-                                                 const int remoteLocator) {
+                                                 const int remoteLocator, const bool untrustedCert) {
   char cmd[2048];
   std::string keystore = std::string(ACE_OS::getenv("TESTSRC")) + "/keystore";
 
@@ -1794,16 +1847,30 @@ std::string CacheHelper::generateGeodeProperties(const std::string& path,
   msg += "mcast-port=0\n";
   msg += "enable-network-partition-detection=false\n";
 
+  std::string serverKeystore;
+  std::string serverTruststore;
+  std::string password;
+
   if (ssl) {
+    if (untrustedCert){
+      serverKeystore += "untrusted_server_keystore.jks";
+      serverTruststore += "untrusted_server_truststore.jks"; 
+      password += "secret";
+    }
+    else {
+      serverKeystore += "server_keystore.jks";
+      serverTruststore += "server_truststore.jks"; 
+      password += "gemstone";
+    }
     msg += "jmx-manager-ssl-enabled=false\n";
     msg += "cluster-ssl-enabled=true\n";
     msg += "cluster-ssl-require-authentication=true\n";
-    msg += "cluster-ssl-ciphers=SSL_RSA_WITH_NULL_MD5\n";
+    msg += "cluster-ssl-ciphers=TLS_RSA_WITH_AES_128_CBC_SHA\n";
     msg += "cluster-ssl-keystore-type=jks\n";
-    msg += "cluster-ssl-keystore=" + keystore + "/server_keystore.jks\n";
-    msg += "cluster-ssl-keystore-password=gemstone\n";
-    msg += "cluster-ssl-truststore=" + keystore + "/server_truststore.jks\n";
-    msg += "cluster-ssl-truststore-password=gemstone\n";
+    msg += "cluster-ssl-keystore=" + keystore + "/" + serverKeystore.c_str() + "\n";
+    msg += "cluster-ssl-keystore-password=" + password + "\n";
+    msg += "cluster-ssl-truststore=" + keystore + "/" + serverTruststore.c_str() + "\n";
+    msg += "cluster-ssl-truststore-password=" + password + "\n";
     msg += "security-username=xxxx\n";
     msg += "security-userPassword=yyyy \n";
   }

@@ -17,7 +17,7 @@
 
 #define ROOT_NAME "testXmlCacheCreationWithOverFlow"
 
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 #include "fw_helper.hpp"
 #include <string>

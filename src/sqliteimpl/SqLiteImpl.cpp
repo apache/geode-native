@@ -16,6 +16,9 @@
  */
 
 #include "SqLiteImpl.hpp"
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
 namespace {
 std::string g_default_persistence_directory = "GeodeRegionData";

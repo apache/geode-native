@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/RegionEntry.hpp>
+#include "geode_defs.hpp"
+#include <geode/RegionEntry.hpp>
 #include "impl/NativeWrapper.hpp"
 //#include "ICacheableKey.hpp"
 #include "IRegion.hpp"

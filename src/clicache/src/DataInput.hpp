@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/DataInput.hpp>
+#include "geode_defs.hpp"
+#include <geode/DataInput.hpp>
 #include "impl/NativeWrapper.hpp"
 #include "Log.hpp"
 #include "ExceptionTypes.hpp"
@@ -35,11 +35,11 @@ namespace Apache
     namespace Client
     {
 
-      interface class IGFSerializable;
+      interface class IGeodeSerializable;
 
       /// <summary>
       /// Provides operations for reading primitive data values, byte arrays,
-      /// strings, <c>IGFSerializable</c> objects from a byte stream.
+      /// strings, <c>IGeodeSerializable</c> objects from a byte stream.
       /// </summary>
       public ref class DataInput sealed
 				: public Client::Internal::UMWrap<apache::geode::client::DataInput>
@@ -70,7 +70,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if the buffer is null
         /// </exception>
-        DataInput( array<Byte>^ buffer, int32_t len );
+        DataInput( array<Byte>^ buffer, System::Int32 len );
 
         /// <summary>
         /// Dispose: frees the internal buffer.
@@ -113,7 +113,7 @@ namespace Apache
         /// Read the given number of bytes from the stream.
         /// </summary>
         /// <param name="len">Number of bytes to read.</param>
-        array<Byte>^ ReadBytesOnly( uint32_t len );
+        array<Byte>^ ReadBytesOnly( System::UInt32 len );
 
         void ReadBytesOnly( array<Byte> ^ buffer, int offset, int count );
 
@@ -121,7 +121,7 @@ namespace Apache
         /// Read the given number of signed bytes from the stream.
         /// </summary>
         /// <param name="len">Number of signed bytes to read.</param>
-        array<SByte>^ ReadSBytesOnly( uint32_t len );
+        array<SByte>^ ReadSBytesOnly( System::UInt32 len );
 
         /// <summary>
         /// Read a array len based on array size.
@@ -131,17 +131,17 @@ namespace Apache
         /// <summary>
         /// Read a 16-bit integer from the stream.
         /// </summary>
-        int16_t ReadInt16( );
+        System::Int16 ReadInt16( );
 
         /// <summary>
         /// Read a 32-bit integer from the stream.
         /// </summary>
-        int32_t ReadInt32( );
+        System::Int32 ReadInt32( );
 
         /// <summary>
         /// Read a 64-bit integer from the stream.
         /// </summary>
-        int64_t ReadInt64( );
+        System::Int64 ReadInt64( );
 
         /// <summary>
         /// Read a floating point number from the stream.
@@ -178,17 +178,17 @@ namespace Apache
         /// <summary>
         /// Get the count of bytes that have been read from the stream.
         /// </summary>
-        property uint32_t BytesRead
+        property System::UInt32 BytesRead
         {
-          uint32_t get( );
+          System::UInt32 get( );
         }
 
         /// <summary>
         /// Get the count of bytes that are remaining in the buffer.
         /// </summary>
-        property uint32_t BytesRemaining
+        property System::UInt32 BytesRemaining
         {
-          uint32_t get();
+          System::UInt32 get();
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace Apache
         /// <param name="offset">
         /// The offset(number of bytes) by which to advance the cursor.
         /// </param>
-        void AdvanceCursor( int32_t offset );
+        void AdvanceCursor( System::Int32 offset );
 
         /// <summary>
         /// Rewind the cursor of the buffer by the given offset.
@@ -205,7 +205,7 @@ namespace Apache
         /// <param name="offset">
         /// The offset(number of bytes) by which to rewind the cursor.
         /// </param>
-        void RewindCursor( int32_t offset );
+        void RewindCursor( System::Int32 offset );
 
         /// <summary>
         /// Reset the cursor to the start of buffer.
@@ -315,9 +315,9 @@ namespace Apache
         /// <summary>
         /// Get the count of bytes that have been read from the stream, for internal use only.
         /// </summary>
-        property uint32_t BytesReadInternally
+        property System::UInt32 BytesReadInternally
         {
-          uint32_t get( );
+          System::UInt32 get( );
         }
 
         void ReadObject(bool% obj)
@@ -410,17 +410,17 @@ namespace Apache
         /// <summary>
         /// Read a 16-bit unsigned integer from the stream.
         /// </summary>
-        uint16_t ReadUInt16( );
+        System::UInt16 ReadUInt16( );
 
         /// <summary>
         /// Read a 32-bit unsigned integer from the stream.
         /// </summary>
-        uint32_t ReadUInt32( );
+        System::UInt32 ReadUInt32( );
        
         /// <summary>
         /// Read a 64-bit unsigned integer from the stream.
         /// </summary>
-        uint64_t ReadUInt64( );
+        System::UInt64 ReadUInt64( );
 
         void ReadObject(Double% obj)
         {
@@ -432,17 +432,17 @@ namespace Apache
           obj = ReadFloat();
         }
 
-        void ReadObject(int16_t% obj)
+        void ReadObject(System::Int16% obj)
         {
           obj = ReadInt16();
         }
 
-        void ReadObject(int32_t% obj)
+        void ReadObject(System::Int32% obj)
         {
           obj = ReadInt32();
         }
 
-        void ReadObject(int64_t% obj)
+        void ReadObject(System::Int64% obj)
         {
           obj = ReadInt64();
         }
@@ -497,12 +497,12 @@ namespace Apache
           }
         }
 
-				uint8_t* GetCursor()
+				System::Byte* GetCursor()
         {
           return m_buffer + m_cursor;
         }
 
-        uint8_t* GetBytes(uint8_t* src, uint32_t size)
+        System::Byte* GetBytes(System::Byte* src, System::UInt32 size)
         {
           return NativePtr->getBufferCopyFrom(src, size);
         }
@@ -540,7 +540,7 @@ namespace Apache
 
         void SetBuffer()
         {
-          m_buffer = const_cast<uint8_t*> (NativePtr->currentBufferPosition());
+          m_buffer = const_cast<System::Byte*> (NativePtr->currentBufferPosition());
           m_cursor = 0;
           m_bufferLength = NativePtr->getBytesRemaining();   
         }
@@ -635,7 +635,7 @@ namespace Apache
           m_cursor = 0;
           m_isManagedObject = managedObject;
           m_forStringDecode = gcnew array<Char>(100);
-          m_buffer = const_cast<uint8_t*>(nativeptr->currentBufferPosition());
+          m_buffer = const_cast<System::Byte*>(nativeptr->currentBufferPosition());
           if ( m_buffer != NULL) {
             m_bufferLength = nativeptr->getBytesRemaining();     
 					}
@@ -644,14 +644,14 @@ namespace Apache
           }
         }
 
-        DataInput( uint8_t* buffer, int size );
+        DataInput( System::Byte* buffer, int size );
 
        /* inline DataInput( apache::geode::client::DataInput* nativeptr )
           : UMWrap(nativeptr, false)
         { 
           m_cursor = 0;
           m_isManagedObject = false;
-          m_buffer = const_cast<uint8_t*>(nativeptr->currentBufferPosition());
+          m_buffer = const_cast<System::Byte*>(nativeptr->currentBufferPosition());
           if ( m_buffer != NULL) {
             m_bufferLength = nativeptr->getBytesRemaining();            
           }
@@ -678,7 +678,7 @@ namespace Apache
         /// </summary>
         bool m_ispdxDesrialization;
         bool m_isRootObjectPdx;
-        uint8_t* m_buffer;
+        System::Byte* m_buffer;
         unsigned int m_bufferLength;
         int m_cursor;
         bool m_isManagedObject;

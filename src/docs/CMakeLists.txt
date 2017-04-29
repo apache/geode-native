@@ -30,8 +30,4 @@ else()
   install(FILES unix_index.html RENAME index.html DESTINATION docs)
 endif()
 
-install(FILES support.html DESTINATION docs)
-install(FILES copyright.html DESTINATION docs)
 install(FILES DocIndex.css DESTINATION docs)
-install(FILES PIVOTAL_GemFire_190x81.png DESTINATION docs)
-

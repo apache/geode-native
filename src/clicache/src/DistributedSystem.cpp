@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "version.h"
 #include "Serializable.hpp"
 #include "DistributedSystem.hpp"
@@ -40,11 +40,11 @@
 #include "Log.hpp"
 #include "Struct.hpp"
 #include "impl/MemoryPressureHandler.hpp"
-#include <gfcpp/CacheLoader.hpp>
-#include <gfcpp/CacheListener.hpp>
-#include <gfcpp/FixedPartitionResolver.hpp>
-#include <gfcpp/CacheWriter.hpp>
-#include <gfcpp/GeodeTypeIds.hpp>
+#include <geode/CacheLoader.hpp>
+#include <geode/CacheListener.hpp>
+#include <geode/FixedPartitionResolver.hpp>
+#include <geode/CacheWriter.hpp>
+#include <geode/GeodeTypeIds.hpp>
 #include <CacheImpl.hpp>
 #include <PooledBasePool.hpp>
 #include <CacheXmlParser.hpp>
@@ -53,7 +53,6 @@
 #include "impl/PdxType.hpp"
 #include "impl/EnumInfo.hpp"
 #include "impl/ManagedPersistenceManager.hpp"
-#include "impl/AppDomainContext.hpp"
 
 // disable spurious warning
 #pragma warning(disable:4091)
@@ -752,9 +751,6 @@ namespace Apache
       {
         //to create .net memory pressure handler 
         Create(apache::geode::client::DistributedSystem::getInstance().ptr());
-
-        // Register managed AppDomain context with unmanaged.
-        apache::geode::client::createAppDomainContext = &Apache::Geode::Client::createAppDomainContext;
       }
 
       void DistributedSystem::UnregisterBuiltinManagedTypes()

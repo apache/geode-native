@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include "IGFSerializable.hpp"
+#include "geode_defs.hpp"
+#include "IGeodeSerializable.hpp"
 
 
 using namespace System;
@@ -44,7 +44,7 @@ namespace Apache
       /// and will not work correctly.
       /// </remarks>
       public interface class ICacheableKey
-        : public IGFSerializable
+        : public IGeodeSerializable
       {
       public:
 
@@ -55,7 +55,7 @@ namespace Apache
         /// <returns>
         /// The hashcode for this object.
         /// </returns>
-        int32_t GetHashCode( );
+        System::Int32 GetHashCode( );
 
         /// <summary>
         /// Returns true if this <c>ICacheableKey</c> matches the other.

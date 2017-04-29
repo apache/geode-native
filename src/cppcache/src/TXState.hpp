@@ -26,7 +26,6 @@
  *      Author: ankurs
  */
 
-
 #include "TXId.hpp"
 #include "TXRegionState.hpp"
 #include "TransactionalOperation.hpp"
@@ -103,5 +102,4 @@ class TXState {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TXSTATE_H_
+#endif  // GEODE_TXSTATE_H_

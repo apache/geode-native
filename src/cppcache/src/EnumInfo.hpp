@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/GeodeTypeIds.hpp>
-#include <gfcpp/CacheableString.hpp>
-#include <gfcpp/CacheableKey.hpp>
+#include <geode/GeodeTypeIds.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/CacheableKey.hpp>
 
 namespace apache {
 namespace geode {
@@ -54,7 +54,7 @@ class CPPCACHE_EXPORT EnumInfo : public CacheableKey {
     return CacheableString::create("EnumInfo");
   }
   virtual bool operator==(const CacheableKey& other) const;
-  virtual uint32_t hashcode() const;
+  virtual int32_t hashcode() const;
 
   virtual int8_t DSFID() const;
   CacheableStringPtr getEnumClassName() const { return m_enumClassName; }
@@ -66,5 +66,4 @@ typedef SharedPtr<EnumInfo> EnumInfoPtr;
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_ENUMINFO_H_
+#endif  // GEODE_ENUMINFO_H_

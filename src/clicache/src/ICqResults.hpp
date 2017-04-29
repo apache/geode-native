@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/SelectResults.hpp>
+#include "geode_defs.hpp"
+#include <geode/SelectResults.hpp>
 //#include "impl/NativeWrapper.hpp"
 #include "ISelectResults.hpp"
 

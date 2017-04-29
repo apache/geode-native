@@ -20,7 +20,7 @@
  *
  * This example takes the following steps:
  *
- * 1. Create CacheFactory using the user specified properties or from the gfcpp.properties file by default.
+ * 1. Create CacheFactory using the user specified properties or from the geode.properties file by default.
  * 2. Create a Geode Cache.
  * 3. Get the Portfolios Region from the Pool.
  * 4. Populate some query objects on the Region.
@@ -74,7 +74,7 @@ namespace Apache.Geode.Client.QuickStart
     {
       try
       {
-        //Create CacheFactory using the user specified properties or from the gfcpp.properties file by default.
+        //Create CacheFactory using the user specified properties or from the geode.properties file by default.
         Properties<string, string> prp = Properties<string, string>.Create<string, string>();
         prp.Insert("cache-xml-file", "XMLs/clientPoolCqQuery.xml");
         CacheFactory cacheFactory = CacheFactory.CreateCacheFactory(prp);

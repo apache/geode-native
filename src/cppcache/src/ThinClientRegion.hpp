@@ -27,7 +27,7 @@
 #include "Queue.hpp"
 #include "TcrChunkedContext.hpp"
 #include "CacheableObjectPartList.hpp"
-#include <gfcpp/ResultCollector.hpp>
+#include <geode/ResultCollector.hpp>
 
 #include <ace/Task.h>
 
@@ -149,7 +149,7 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
                        CacheableVectorPtr routingObj, uint8_t getResult,
                        ResultCollectorPtr rc, int32_t retryAttempts,
                        uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
-  GfErrType getFuncAttributes(const char* func, std::vector<int8>** attr);
+  GfErrType getFuncAttributes(const char* func, std::vector<int8_t>** attr);
 
   ACE_RW_Thread_Mutex& getMataDataMutex() { return m_RegionMutex; }
 
@@ -407,7 +407,7 @@ class ChunkedFunctionExecutionResponse : public TcrChunkedResult {
   // CacheableVectorPtr  m_functionExecutionResults;
   bool m_getResult;
   ResultCollectorPtr m_rc;
-  ACE_Recursive_Thread_Mutex* m_resultCollectorLock;
+  std::shared_ptr<ACE_Recursive_Thread_Mutex> m_resultCollectorLock;
 
   // disabled
   ChunkedFunctionExecutionResponse(const ChunkedFunctionExecutionResponse&);
@@ -415,9 +415,13 @@ class ChunkedFunctionExecutionResponse : public TcrChunkedResult {
       const ChunkedFunctionExecutionResponse&);
 
  public:
+  inline ChunkedFunctionExecutionResponse(TcrMessage& msg, bool getResult,
+                                          ResultCollectorPtr rc)
+      : TcrChunkedResult(), m_msg(msg), m_getResult(getResult), m_rc(rc) {}
+
   inline ChunkedFunctionExecutionResponse(
       TcrMessage& msg, bool getResult, ResultCollectorPtr rc,
-      ACE_Recursive_Thread_Mutex* resultCollectorLock = NULL)
+      const std::shared_ptr<ACE_Recursive_Thread_Mutex>& resultCollectorLock)
       : TcrChunkedResult(),
         m_msg(msg),
         m_getResult(getResult),
@@ -622,4 +626,4 @@ typedef SharedPtr<ChunkedDurableCQListResponse> ChunkedDurableCQListResponsePtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_THINCLIENTREGION_H_
+#endif  // GEODE_THINCLIENTREGION_H_

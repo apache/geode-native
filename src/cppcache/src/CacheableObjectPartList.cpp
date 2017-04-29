@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 #include "CacheableObjectPartList.hpp"
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "GeodeTypeIdsImpl.hpp"
-#include <gfcpp/CacheableString.hpp>
+#include <geode/CacheableString.hpp>
 #include "ThinClientRegion.hpp"
 #include "CacheableToken.hpp"
 

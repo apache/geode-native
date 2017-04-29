@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/RegionEvent.hpp>
+#include <geode/RegionEvent.hpp>
 
 namespace apache {
 namespace geode {

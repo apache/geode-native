@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 
-#include <gfcpp/CacheableKeys.hpp>
+#include <geode/CacheableKeys.hpp>
 
 using namespace apache::geode::client;
 

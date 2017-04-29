@@ -24,13 +24,13 @@
 * @file
 */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/SharedPtr.hpp>
-#include <gfcpp/gf_types.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/SharedPtr.hpp>
+#include <geode/geode_types.hpp>
 #include "ace/Recursive_Thread_Mutex.h"
 #include "ace/Guard_T.h"
 #include "ace/OS.h"
-#include <gfcpp/DistributedSystem.hpp>
+#include <geode/DistributedSystem.hpp>
 #include "DiffieHellman.hpp"
 #include <string>
 #include <map>
@@ -141,5 +141,4 @@ class CPPCACHE_EXPORT DistributedSystemImpl : public SharedBase {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_DISTRIBUTEDSYSTEMIMPL_H_
+#endif  // GEODE_DISTRIBUTEDSYSTEMIMPL_H_

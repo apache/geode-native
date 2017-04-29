@@ -47,4 +47,4 @@ class ClientReplacementRequest : public ClientConnectionRequest {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CLIENTREPLACEMENTREQUEST_H_
+#endif  // GEODE_CLIENTREPLACEMENTREQUEST_H_

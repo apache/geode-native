@@ -18,8 +18,8 @@
 #define ROOT_NAME "testDataOutput"
 
 #include "fw_helper.hpp"
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/DataInput.hpp>
 
 using namespace apache::geode::client;
 using namespace test;

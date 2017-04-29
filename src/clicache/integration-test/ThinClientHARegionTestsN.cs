@@ -47,7 +47,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       get
       {
-        return "gfcpp.properties.mixed";
+        return "geode.properties.mixed";
       }
     }
 

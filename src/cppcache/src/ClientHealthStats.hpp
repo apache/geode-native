@@ -20,10 +20,10 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/Serializable.hpp>
-#include <gfcpp/Log.hpp>
-#include <gfcpp/CacheableDate.hpp>
+#include <geode/geode_types.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/Log.hpp>
+#include <geode/CacheableDate.hpp>
 
 namespace apache {
 namespace geode {
@@ -92,4 +92,4 @@ class ClientHealthStats : public Serializable {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CLIENTHEALTHSTATS_H_
+#endif  // GEODE_CLIENTHEALTHSTATS_H_

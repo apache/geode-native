@@ -1,0 +1,47 @@
+---
+title:  Regions
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+You create cache regions either programmatically or through declarative statements in the `cache.xml` file. Generally, a cache is organized and populated through a combination of the two approaches.
+
+<a id="regions__section_1BE4ABB76537488C966E452C2D89478F"></a>
+The region is the core building block of the Geode distributed system. All cached data is organized into data regions and you do all of your data puts, gets, and querying activities against them.
+
+A distributed region can be either non-partitioned or a partitioned region. See [Data Regions](geodeman/basic_config/data_regions/chapter_overview.html) for detailed descriptions of both non-partitioned and partitioned regions. Region creation is subject to attribute consistency checks. The requirements for consistency between attributes are detailed both in the API documentation and throughout the discussion of [Region Attributes](region-attributes.html#region-attributes).
+
+-   **[Declarative Region Creation](declarative-region-creation.html)**
+
+    Declarative region creation involves placing the region's XML declaration, with the appropriate attribute settings, in the `cache.xml` file that is loaded at cache creation.
+
+-   **[Programmatic Region Creation](programmatic-region-creation.html)**
+
+    You create regions programmatically with the `regionFactory` class.
+
+-   **[Invalidating and Destroying Regions](invalidating-region.html)**
+
+    Invalidation marks all entries contained in the region as invalid (with null values). Destruction removes the region and all of its contents from the cache.
+
+-   **[Region Access](region-access.html)**
+
+    You can use `Cache::getRegion` to retrieve a reference to a specified region.
+
+-   **[Getting the Region Size](getting-the-region-size.html)**
+
+    The `Region` API provides a `size` method (`Size` property for .NET) that gets the size of a region.

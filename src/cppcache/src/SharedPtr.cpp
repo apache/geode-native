@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/SharedPtr.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/SharedPtr.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include <Utils.hpp>
 
 #include <string>

@@ -17,7 +17,7 @@
 
 
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "StatisticDescriptor.hpp"
 #include "impl/ManagedString.hpp"
 
@@ -29,7 +29,7 @@ namespace Apache
     namespace Client
     {
 
-      int32_t StatisticDescriptor::ID::get( )
+      System::Int32 StatisticDescriptor::ID::get( )
       {
         return  NativePtr->getId();
       }

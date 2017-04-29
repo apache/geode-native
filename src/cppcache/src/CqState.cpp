@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/CqState.hpp>
+#include <geode/CqState.hpp>
 
 using namespace apache::geode::client;
 

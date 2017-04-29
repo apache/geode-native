@@ -88,8 +88,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
     set(CMAKE_ASM_SOURCE_FILE_EXTENSIONS asm)
     set(CMAKE_ASM_COMPILE_OBJECT "<CMAKE_ASM_COMPILER> -m64 -K PIC -L -s -P -o <OBJECT> <SOURCE>")
     enable_language(ASM)
-    add_library(gfcppasm OBJECT impl/hostsolaris.asm)
-    set(SOURCES ${SOURCES} $<TARGET_OBJECTS:gfcppasm>)
+    set(SOURCES_ALL ${SOURCES_ALL} hostsolaris.asm)
   endif()
 endif()
 if (${WIN32})
@@ -125,7 +124,9 @@ target_include_directories(apache-geode
     $<TARGET_PROPERTY:_apache-geode,INTERFACE_INCLUDE_DIRECTORIES>
 )
 add_dependencies(client-libraries apache-geode)
-set_target_properties(apache-geode PROPERTIES PUBLIC_HEADER "${PUBLIC_HEADERS}")
+set_target_properties(apache-geode PROPERTIES
+  PUBLIC_HEADER "${PUBLIC_HEADERS}"
+  OUTPUT_NAME ${PRODUCT_LIB_NAME})
 
 add_library(apache-geode-static STATIC ${SOURCES_ALL})
 target_link_libraries(apache-geode-static
@@ -138,7 +139,7 @@ install(TARGETS apache-geode
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
-  PUBLIC_HEADER DESTINATION include/gfcpp
+  PUBLIC_HEADER DESTINATION include/geode
 )
 
 # For Visual Studio organization

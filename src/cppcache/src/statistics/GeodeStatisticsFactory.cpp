@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/OS.h>
 #include <ace/Thread_Mutex.h>
 #include <ace/Guard_T.h>
-#include <gfcpp/Exception.hpp>
+#include <geode/Exception.hpp>
 #include "GeodeStatisticsFactory.hpp"
-#include <gfcpp/Log.hpp>
+#include <geode/Log.hpp>
 #include <string>
 #include "AtomicStatisticsImpl.hpp"
 #include "OsStatisticsImpl.hpp"
@@ -103,7 +103,7 @@ GeodeStatisticsFactory::~GeodeStatisticsFactory() {
 
 const char* GeodeStatisticsFactory::getName() { return m_name; }
 
-int64 GeodeStatisticsFactory::getId() { return m_id; }
+int64_t GeodeStatisticsFactory::getId() { return m_id; }
 
 Statistics* GeodeStatisticsFactory::createStatistics(StatisticsType* type) {
   return createAtomicStatistics(type, NULL, 0);
@@ -116,19 +116,19 @@ Statistics* GeodeStatisticsFactory::createStatistics(StatisticsType* type,
 
 Statistics* GeodeStatisticsFactory::createStatistics(StatisticsType* type,
                                                      const char* textId,
-                                                     int64 numericId) {
+                                                     int64_t numericId) {
   return createAtomicStatistics(type, textId, 0);
 }
 
 Statistics* GeodeStatisticsFactory::createOsStatistics(StatisticsType* type,
                                                        const char* textId,
-                                                       int64 numericId) {
+                                                       int64_t numericId) {
   // Validate input
   if (type == NULL) {
     throw IllegalArgumentException("StatisticsType* is Null");
   }
 
-  int64 myUniqueId;
+  int64_t myUniqueId;
   {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListUniqueIdLock);
     myUniqueId = m_statsListUniqueId++;
@@ -153,12 +153,12 @@ Statistics* GeodeStatisticsFactory::createAtomicStatistics(StatisticsType* type,
 
 Statistics* GeodeStatisticsFactory::createAtomicStatistics(StatisticsType* type,
                                                            const char* textId,
-                                                           int64 numericId) {
+                                                           int64_t numericId) {
   // Validate input
   if (type == NULL) {
     throw IllegalArgumentException("StatisticsType* is Null");
   }
-  int64 myUniqueId;
+  int64_t myUniqueId;
 
   {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListUniqueIdLock);
@@ -205,7 +205,7 @@ StatisticsTypeImpl* GeodeStatisticsFactory::addType(StatisticsTypeImpl* st) {
 StatisticsType* GeodeStatisticsFactory::createType(const char* name,
                                                    const char* description,
                                                    StatisticDescriptor** stats,
-                                                   int32 statsLength) {
+                                                   int32_t statsLength) {
   StatisticsTypeImpl* st =
       new StatisticsTypeImpl(name, description, stats, statsLength);
 
@@ -235,42 +235,42 @@ StatisticsType* GeodeStatisticsFactory::findType(const char* name) {
 
 StatisticDescriptor* GeodeStatisticsFactory::createIntCounter(
     const char* name, const char* description, const char* units,
-    int8 largerBetter) {
+    bool largerBetter) {
   return StatisticDescriptorImpl::createIntCounter(name, description, units,
                                                    largerBetter);
 }
 
 StatisticDescriptor* GeodeStatisticsFactory::createLongCounter(
     const char* name, const char* description, const char* units,
-    int8 largerBetter) {
+    bool largerBetter) {
   return StatisticDescriptorImpl::createLongCounter(name, description, units,
                                                     largerBetter);
 }
 
 StatisticDescriptor* GeodeStatisticsFactory::createDoubleCounter(
     const char* name, const char* description, const char* units,
-    int8 largerBetter) {
+    bool largerBetter) {
   return StatisticDescriptorImpl::createDoubleCounter(name, description, units,
                                                       largerBetter);
 }
 
 StatisticDescriptor* GeodeStatisticsFactory::createIntGauge(
     const char* name, const char* description, const char* units,
-    int8 largerBetter) {
+    bool largerBetter) {
   return StatisticDescriptorImpl::createIntGauge(name, description, units,
                                                  largerBetter);
 }
 
 StatisticDescriptor* GeodeStatisticsFactory::createLongGauge(
     const char* name, const char* description, const char* units,
-    int8 largerBetter) {
+    bool largerBetter) {
   return StatisticDescriptorImpl::createLongGauge(name, description, units,
                                                   largerBetter);
 }
 
 StatisticDescriptor* GeodeStatisticsFactory::createDoubleGauge(
     const char* name, const char* description, const char* units,
-    int8 largerBetter) {
+    bool largerBetter) {
   return StatisticDescriptorImpl::createDoubleGauge(name, description, units,
                                                     largerBetter);
 }

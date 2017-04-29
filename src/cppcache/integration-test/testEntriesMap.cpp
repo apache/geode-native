@@ -28,11 +28,11 @@ END_TEST(NotOnWindows)
 #else
 
 //#define BUILD_CPPCACHE 1
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <LRUEntriesMap.hpp>
 #include <LRUMapEntry.hpp>
 #include <VersionTag.hpp>
-#include <stdlib.h>
+#include <cstdlib>
 
 using namespace apache::geode::client;
 using namespace std;

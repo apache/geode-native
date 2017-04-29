@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include "CacheableVector.hpp"
 
 
@@ -32,12 +32,12 @@ namespace Apache
     {
 
       /// <summary>
-      /// A mutable <c>IGFSerializable</c> vector wrapper that can serve as
+      /// A mutable <c>IGeodeSerializable</c> vector wrapper that can serve as
       /// a distributable object for caching. This class extends .NET generic
       /// <c>List</c> class.
       /// </summary>
       ref class CacheableLinkedList
-        : public IGFSerializable
+        : public IGeodeSerializable
       {
         System::Collections::Generic::LinkedList<Object^>^ m_linkedList;
       public:
@@ -67,7 +67,7 @@ namespace Apache
         }
 
 
-        // Region: IGFSerializable Members
+        // Region: IGeodeSerializable Members
 
         /// <summary>
         /// Returns the classId of the instance being serialized.
@@ -75,15 +75,15 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property uint32_t ClassId
+        virtual property System::UInt32 ClassId
         {
-          virtual uint32_t get()
+          virtual System::UInt32 get()
           {
             return GeodeClassIds::CacheableLinkedList;
           }
         }
 
-        // Region: IGFSerializable Members
+        // Region: IGeodeSerializable Members
 
         virtual void ToData(DataOutput^ output)
         {
@@ -99,7 +99,7 @@ namespace Apache
             output->WriteByte(0xFF);
         }
 
-        virtual IGFSerializable^ FromData(DataInput^ input)
+        virtual IGeodeSerializable^ FromData(DataInput^ input)
         {
           int len = input->ReadArrayLen();
           for (int i = 0; i < len; i++)
@@ -109,11 +109,11 @@ namespace Apache
           return this;
         }
 
-        /*uint32_t ObjectSize::get()
+        /*System::UInt32 ObjectSize::get()
         {
         //TODO::
-        uint32_t size = static_cast<uint32_t> (sizeof(CacheableVector^));
-        for each (IGFSerializable^ val in this) {
+        System::UInt32 size = static_cast<System::UInt32> (sizeof(CacheableVector^));
+        for each (IGeodeSerializable^ val in this) {
         if (val != nullptr) {
         size += val->ObjectSize;
         }
@@ -121,9 +121,9 @@ namespace Apache
         return m_linkedList->Count;
         }*/
 
-        virtual property uint32_t ObjectSize
+        virtual property System::UInt32 ObjectSize
         {
-          virtual uint32_t get()
+          virtual System::UInt32 get()
           {
             return m_linkedList->Count;
           }
@@ -136,12 +136,12 @@ namespace Apache
             return m_linkedList;
           }
         }
-        // End Region: IGFSerializable Members
+        // End Region: IGeodeSerializable Members
 
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGFSerializable^ CreateDeserializable()
+        static IGeodeSerializable^ CreateDeserializable()
         {
           return gcnew CacheableLinkedList(gcnew System::Collections::Generic::LinkedList<Object^>());
         }

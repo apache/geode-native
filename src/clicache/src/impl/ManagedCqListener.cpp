@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "../gf_includes.hpp"
+//#include "../geode_includes.hpp"
 #include "ManagedCqListener.hpp"
 #include "../ICqListener.hpp"
 #include "../CqEvent.hpp"
@@ -49,7 +49,7 @@ namespace apache
           String^ mg_factoryFunctionName =
             Apache::Geode::Client::ManagedString::Get(factoryFunctionName);
           String^ mg_typeName = nullptr;
-          int32_t dotIndx = -1;
+          System::Int32 dotIndx = -1;
 
           if (mg_factoryFunctionName == nullptr ||
               (dotIndx = mg_factoryFunctionName->LastIndexOf('.')) < 0)

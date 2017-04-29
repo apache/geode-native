@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <ace/High_Res_Timer.h>
 
 #include <ace/OS.h>

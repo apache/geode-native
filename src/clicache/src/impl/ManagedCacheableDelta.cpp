@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "../gf_includes.hpp"
+//#include "../geode_includes.hpp"
 #include "ManagedCacheableDelta.hpp"
 #include "../DataInput.hpp"
 #include "../DataOutput.hpp"
@@ -37,7 +37,7 @@ namespace apache
       void ManagedCacheableDeltaGeneric::toData(DataOutput& output) const
       {
         try {
-          uint32 pos = (int)output.getBufferLength();
+          System::UInt32 pos = (int)output.getBufferLength();
           Apache::Geode::Client::DataOutput mg_output(&output, true);
           m_managedSerializableptr->ToData(%mg_output);
           //this will move the cursor in c++ layer
@@ -78,7 +78,7 @@ namespace apache
         return this;
       }
 
-      uint32_t ManagedCacheableDeltaGeneric::objectSize() const
+      System::UInt32 ManagedCacheableDeltaGeneric::objectSize() const
       {
         try {
           int ret = m_managedSerializableptr->ObjectSize;
@@ -96,9 +96,9 @@ namespace apache
         return 0;
       }
 
-      int32_t ManagedCacheableDeltaGeneric::classId() const
+      System::Int32 ManagedCacheableDeltaGeneric::classId() const
       {
-        uint32_t classId;
+        System::UInt32 classId;
         try {
           classId = m_managedSerializableptr->ClassId;
         }
@@ -114,7 +114,7 @@ namespace apache
       int8_t ManagedCacheableDeltaGeneric::typeId() const
       {
         try {
-          uint32_t classId = m_classId;
+          System::UInt32 classId = m_classId;
           if (classId >= 0x80000000) {
             return (int8_t)((classId - 0x80000000) % 0x20000000);
           }
@@ -145,7 +145,7 @@ namespace apache
         // and [0xe0000000, 0xffffffff] is for FixedIDInt
         // Note: depends on fact that FixedIDByte is 1, FixedIDShort is 2
         // and FixedIDInt is 3; if this changes then correct this accordingly
-        uint32_t classId = m_managedSerializableptr->ClassId;
+        System::UInt32 classId = m_managedSerializableptr->ClassId;
         if (classId >= 0x80000000) {
           return (int8_t)((classId - 0x80000000) / 0x20000000);
         }
@@ -196,10 +196,10 @@ namespace apache
       {
         try {
           ICloneable^ cloneable = dynamic_cast<ICloneable^>((
-            Apache::Geode::Client::IGFDelta^) m_managedptr);
+            Apache::Geode::Client::IGeodeDelta^) m_managedptr);
           if (cloneable) {
-            Apache::Geode::Client::IGFSerializable^ Mclone =
-              dynamic_cast<Apache::Geode::Client::IGFSerializable^>(cloneable->Clone());
+            Apache::Geode::Client::IGeodeSerializable^ Mclone =
+              dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(cloneable->Clone());
             return DeltaPtr(static_cast<ManagedCacheableDeltaGeneric*>(
               SafeMSerializableConvertGeneric(Mclone)));
           }
@@ -252,7 +252,7 @@ namespace apache
 
       }
 
-      uint32_t ManagedCacheableDeltaGeneric::hashcode() const
+      System::Int32 ManagedCacheableDeltaGeneric::hashcode() const
       {
         throw gcnew System::NotSupportedException;
       }

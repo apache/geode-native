@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/ExceptionTypes.hpp>
+#include "geode_defs.hpp"
+#include <geode/ExceptionTypes.hpp>
 #include "impl/ManagedString.hpp"
 
 

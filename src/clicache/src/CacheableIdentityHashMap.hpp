@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include "CacheableHashMap.hpp"
 
 
@@ -32,7 +32,7 @@ namespace Apache
     {
 
       /// <summary>
-      /// A mutable <c>ICacheableKey</c> to <c>IGFSerializable</c> hash map
+      /// A mutable <c>ICacheableKey</c> to <c>IGeodeSerializable</c> hash map
       /// that can serve as a distributable object for caching. This class
       /// extends .NET generic <c>Dictionary</c> class. This class is meant
       /// as a means to interoperate with java server side
@@ -66,7 +66,7 @@ namespace Apache
         /// <param name="capacity">
         /// The initial capacity of the HashMap.
         /// </param>
-        inline CacheableIdentityHashMap(int32_t capacity)
+        inline CacheableIdentityHashMap(System::Int32 capacity)
           : CacheableHashMap(capacity)
         { }
 
@@ -91,12 +91,12 @@ namespace Apache
         /// <summary>
         /// Static function to create a new instance with given initial size.
         /// </summary>
-        inline static CacheableIdentityHashMap^ Create(int32_t capacity)
+        inline static CacheableIdentityHashMap^ Create(System::Int32 capacity)
         {
           return gcnew CacheableIdentityHashMap(capacity);
         }
 
-        // Region: IGFSerializable Members
+        // Region: IGeodeSerializable Members
 
         /// <summary>
         /// Returns the classId of the instance being serialized.
@@ -104,20 +104,20 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property uint32_t ClassId
+        virtual property System::UInt32 ClassId
         {
-          virtual uint32_t get() override
+          virtual System::UInt32 get() override
           {
             return GeodeClassIds::CacheableIdentityHashMap;
           }
         }
 
-        // End Region: IGFSerializable Members
+        // End Region: IGeodeSerializable Members
 
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGFSerializable^ CreateDeserializable()
+        static IGeodeSerializable^ CreateDeserializable()
         {
           return gcnew CacheableIdentityHashMap();
         }

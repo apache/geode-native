@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/Log.hpp>
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/Log.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/SystemProperties.hpp>
 #include <SerializationRegistry.hpp>
 #include <ace/TSS_T.h>
 

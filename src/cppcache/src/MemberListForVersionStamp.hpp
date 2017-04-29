@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/SharedPtr.hpp>
 #include "DSMemberForVersionStamp.hpp"
 #include "ace/RW_Thread_Mutex.h"
 #include "ReadWriteLock.hpp"
@@ -62,5 +62,4 @@ typedef SharedPtr<MemberListForVersionStamp> MemberListForVersionStampPtr;
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_MEMBERLISTFORVERSIONSTAMP_H_
+#endif  // GEODE_MEMBERLISTFORVERSIONSTAMP_H_

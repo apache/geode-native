@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "ResultSet.hpp"
 #include "SelectResultsIterator.hpp"
 #include "impl/ManagedString.hpp"
@@ -38,16 +38,16 @@ namespace Apache
       }
 
       generic<class TResult>
-      int32_t ResultSet<TResult>::Size::get( )
+      System::Int32 ResultSet<TResult>::Size::get( )
       {
         return NativePtr->size( );
       }
 
       generic<class TResult>
-      /*IGFSerializable^*/TResult ResultSet<TResult>::default::get( size_t index )
+      /*IGeodeSerializable^*/TResult ResultSet<TResult>::default::get( size_t index )
       {
-          //return SafeUMSerializableConvertGeneric(NativePtr->operator[](static_cast<int32_t>(index)).ptr());
-           return (Serializable::GetManagedValueGeneric<TResult>(NativePtr->operator[](static_cast<int32_t>(index))));
+          //return SafeUMSerializableConvertGeneric(NativePtr->operator[](static_cast<System::Int32>(index)).ptr());
+           return (Serializable::GetManagedValueGeneric<TResult>(NativePtr->operator[](static_cast<System::Int32>(index))));
       }
 
       generic<class TResult>
@@ -60,7 +60,7 @@ namespace Apache
       }
 
       generic<class TResult>
-      System::Collections::Generic::IEnumerator</*IGFSerializable^*/TResult>^
+      System::Collections::Generic::IEnumerator</*IGeodeSerializable^*/TResult>^
         ResultSet<TResult>::GetEnumerator( )
       {
         return GetIterator( );

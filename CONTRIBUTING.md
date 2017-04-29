@@ -48,7 +48,7 @@ For C++ it is required to follow the [Google C++ Style Guide](https://google.git
 ## All Platforms
 
 ### Required Tools
-* [CMake 4.3](https://cmake.org/) or newer
+* [CMake 3.4](https://cmake.org/) or newer
 * C++11 compiler *(see platform specific requirements)*
 * [Doxygen 8.11](http://www.stack.nl/~dimitri/doxygen/download.html) *(for building source documentation)*
 

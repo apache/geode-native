@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/CacheableKey.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/CacheableKey.hpp>
 #include <string>
 
 namespace apache {
@@ -40,11 +40,10 @@ class DSMemberForVersionStamp : public CacheableKey {
   virtual bool operator==(const CacheableKey& other) const = 0;
 
   /** return the hashcode for this key. */
-  virtual uint32_t hashcode() const = 0;
+  virtual int32_t hashcode() const = 0;
 };
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_DSMEMBERFORVERSIONSTAMP_H_
+#endif  // GEODE_DSMEMBERFORVERSIONSTAMP_H_

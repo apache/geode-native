@@ -23,7 +23,7 @@
 #define GF_TRACE_LEN 25
 
 #include "StackFrame.hpp"
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/SharedPtr.hpp>
 #include <string>
 #include <list>
 
@@ -66,4 +66,4 @@ class StackTrace : public SharedBase {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STACKTRACE_H_
+#endif  // GEODE_STACKTRACE_H_

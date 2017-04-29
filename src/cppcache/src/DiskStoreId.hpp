@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/DataInput.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/DataInput.hpp>
 #include "DSMemberForVersionStamp.hpp"
 #include "GeodeTypeIdsImpl.hpp"
 
@@ -79,7 +79,7 @@ class DiskStoreId : public DSMemberForVersionStamp {
   static Serializable* createDeserializable() { return new DiskStoreId(); }
   std::string getHashKey();
 
-  virtual uint32_t hashcode() const {
+  virtual int32_t hashcode() const {
     static uint32_t prime = 31;
     uint32_t result = 1;
     result =
@@ -114,5 +114,4 @@ class DiskStoreId : public DSMemberForVersionStamp {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_DISKSTOREID_H_
+#endif  // GEODE_DISKSTOREID_H_

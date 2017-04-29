@@ -4624,7 +4624,7 @@ private void checkUpdatedValue(TKey key, TVal value)
 
       TKey key;
       TVal value;
-      //IGFSerializable val;
+      //IGeodeSerializable val;
 
       CqQuery<TKey, object> cq = null;
       string opCode = null;

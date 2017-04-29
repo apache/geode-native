@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 #include "HostAsm.hpp"
 
@@ -87,4 +87,4 @@ class CPPCACHE_EXPORT AtomicInc {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_ATOMICINC_H_
+#endif  // GEODE_ATOMICINC_H_

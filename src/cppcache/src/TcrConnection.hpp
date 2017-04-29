@@ -21,12 +21,12 @@
  */
 
 #include <ace/Semaphore.h>
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "Connector.hpp"
 #include "Set.hpp"
 #include "TcrMessage.hpp"
-#include <gfcpp/CacheableBuiltins.hpp>
+#include <geode/CacheableBuiltins.hpp>
 #include "DiffieHellman.hpp"
 
 #define DEFAULT_TIMEOUT_RETRIES 12
@@ -159,7 +159,7 @@ class CPPCACHE_EXPORT TcrConnection {
   char* sendRequest(const char* buffer, int32_t len, size_t* recvLen,
                     uint32_t sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
                     uint32_t receiveTimeoutSec = DEFAULT_READ_TIMEOUT_SECS,
-                    int32 request = -1);
+                    int32_t request = -1);
 
   /**
   * send a synchronized request to server for REGISTER_INTEREST_LIST.
@@ -194,11 +194,10 @@ class CPPCACHE_EXPORT TcrConnection {
             uint32_t sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
             bool checkConnected = true);
 
-  void send(
-      uint32_t& timeSpent, const char* buffer, int len,
-      uint32_t sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
-      bool checkConnected = true,
-      int32_t notPublicApiWithTimeout = -2 /*NOT_PUBLIC_API_WITH_TIMEOUT*/);
+  void send(uint32_t& timeSpent, const char* buffer, int len,
+            uint32_t sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
+            bool checkConnected = true, int32_t notPublicApiWithTimeout =
+                                            -2 /*NOT_PUBLIC_API_WITH_TIMEOUT*/);
 
   /**
   * This method is for receiving client notification. It will read 2 times as
@@ -227,7 +226,7 @@ class CPPCACHE_EXPORT TcrConnection {
   */
   char* readMessage(size_t* recvLen, uint32_t receiveTimeoutSec,
                     bool doHeaderTimeoutRetries, ConnErrType* opErr,
-                    bool isNotificationMessage = false, int32 request = -1);
+                    bool isNotificationMessage = false, int32_t request = -1);
 
   /**
   * This method reads an interest list response  message from the socket
@@ -253,7 +252,7 @@ class CPPCACHE_EXPORT TcrConnection {
     return m_hasServerQueue;
   }
 
-  uint16 inline getPort() { return m_port; }
+  uint16_t inline getPort() { return m_port; }
 
   TcrEndpoint* getEndpointObject() const { return m_endpointObj; }
   bool isBeingUsed() { return m_isBeingUsed; }
@@ -390,7 +389,7 @@ class CPPCACHE_EXPORT TcrConnection {
   Connector* m_conn;
   ServerQueueStatus m_hasServerQueue;
   int32_t m_queueSize;
-  uint16 m_port;
+  uint16_t m_port;
 
   // semaphore to synchronize with the chunked response processing thread
   ACE_Semaphore m_chunksProcessSema;
@@ -407,5 +406,4 @@ class CPPCACHE_EXPORT TcrConnection {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TCRCONNECTION_H_
+#endif  // GEODE_TCRCONNECTION_H_

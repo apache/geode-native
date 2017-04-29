@@ -17,11 +17,11 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/Query.hpp>
+#include "geode_defs.hpp"
+#include <geode/Query.hpp>
 #include "impl/NativeWrapper.hpp"
 
-#include "IGFSerializable.hpp"
+#include "IGeodeSerializable.hpp"
 
 using namespace System;
 
@@ -100,7 +100,7 @@ namespace Apache
         /// An <see cref="ISelectResults"/> object which can either be a
         /// <see cref="ResultSet"/> or a <see cref="StructSet"/>.
         /// </returns>
-        ISelectResults<TResult>^ Execute( uint32_t timeout );
+        ISelectResults<TResult>^ Execute( System::UInt32 timeout );
 
 		/// <summary>
         /// Executes the OQL Parameterized Query on the cache server with the specified
@@ -129,7 +129,7 @@ namespace Apache
         /// An <see cref="ISelectResults"/> object which can either be a
         /// <see cref="ResultSet"/> or a <see cref="StructSet"/>.
         /// </returns>
-        ISelectResults<TResult>^ Execute( array<Object^>^ paramList, uint32_t timeout );
+        ISelectResults<TResult>^ Execute( array<Object^>^ paramList, System::UInt32 timeout );
 
         /// <summary>
         /// Executes the OQL Parameterized Query on the cache server with the specified

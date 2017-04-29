@@ -20,15 +20,15 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/geode_types.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/SharedPtr.hpp>
 
-#include <gfcpp/Query.hpp>
-#include <gfcpp/SelectResults.hpp>
-#include <gfcpp/ResultSet.hpp>
-#include <gfcpp/StructSet.hpp>
+#include <geode/Query.hpp>
+#include <geode/SelectResults.hpp>
+#include <geode/ResultSet.hpp>
+#include <geode/StructSet.hpp>
 #include "CacheImpl.hpp"
 #include "ThinClientBaseDM.hpp"
 #include "ProxyCache.hpp"
@@ -85,4 +85,4 @@ typedef SharedPtr<RemoteQuery> RemoteQueryPtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_REMOTEQUERY_H_
+#endif  // GEODE_REMOTEQUERY_H_

@@ -119,4 +119,4 @@ CPPCACHE_EXPORT void testSpinLockRelease(void* lock);
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_SPINLOCK_H_
+#endif  // GEODE_SPINLOCK_H_

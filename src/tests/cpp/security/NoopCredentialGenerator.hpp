@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_1f7c1dec923abb55cf489a3ad8997066
-#define APACHE_GEODE_GUARD_1f7c1dec923abb55cf489a3ad8997066
+#ifndef GEODE_SECURITY_NOOPCREDENTIALGENERATOR_H_
+#define GEODE_SECURITY_NOOPCREDENTIALGENERATOR_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -63,5 +63,4 @@ class NoopCredentialGenerator : public CredentialGenerator {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_1f7c1dec923abb55cf489a3ad8997066
+#endif  // GEODE_SECURITY_NOOPCREDENTIALGENERATOR_H_

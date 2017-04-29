@@ -26,9 +26,8 @@
  *      Author: ankurs
  */
 
-
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/HashMapT.hpp>
+#include <geode/geode_types.hpp>
+#include <geode/HashMapT.hpp>
 #include "TXEntryState.hpp"
 
 using namespace apache::geode::client;
@@ -51,5 +50,4 @@ _GF_PTR_DEF_(TXRegionState, TXRegionStatePtr);
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TXREGIONSTATE_H_
+#endif  // GEODE_TXREGIONSTATE_H_

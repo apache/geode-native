@@ -20,11 +20,11 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/VectorT.hpp>
-#include <gfcpp/CqAttributesMutator.hpp>
-#include <gfcpp/CqAttributes.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/geode_types.hpp>
+#include <geode/VectorT.hpp>
+#include <geode/CqAttributesMutator.hpp>
+#include <geode/CqAttributes.hpp>
 
 /**
  * @file
@@ -82,4 +82,4 @@ class CPPCACHE_EXPORT CqAttributesMutatorImpl : public CqAttributesMutator {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CQATTRIBUTESMUTATORIMPL_H_
+#endif  // GEODE_CQATTRIBUTESMUTATORIMPL_H_

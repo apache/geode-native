@@ -18,11 +18,11 @@
 #include "PdxTypeRegistry.hpp"
 #include "PdxHelper.hpp"
 #include "PdxTypes.hpp"
-#include <gfcpp/PdxFieldTypes.hpp>
+#include <geode/PdxFieldTypes.hpp>
 #include "PdxLocalWriter.hpp"
-#include <gfcpp/PdxReader.hpp>
+#include <geode/PdxReader.hpp>
 #include "CacheRegionHelper.hpp"
-#include <gfcpp/Cache.hpp>
+#include <geode/Cache.hpp>
 #include "CacheImpl.hpp"
 #include "Utils.hpp"
 #include <algorithm>
@@ -739,7 +739,7 @@ int PdxInstanceImpl::deepArrayHashCode(CacheablePtr obj) {
   }
 }
 
-uint32_t PdxInstanceImpl::hashcode() const {
+int32_t PdxInstanceImpl::hashcode() const {
   int hashCode = 1;
 
   PdxTypePtr pt = getPdxType();
@@ -1463,7 +1463,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
 
 PdxSerializablePtr PdxInstanceImpl::getObject() {
   DataInput dataInput(m_buffer, m_bufferLength);
-  int64 sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = Utils::startStatOpTime();
   //[ToDo] do we have to call incPdxDeSerialization here?
   PdxSerializablePtr ret =
       PdxHelper::deserializePdx(dataInput, true, m_typeId, m_bufferLength);

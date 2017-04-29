@@ -1,0 +1,46 @@
+---
+title:  Cache Management
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+This section covers cache management.
+
+<a id="using-thread-safety__section_165DAD3CE6CA44D9A883FC91D4F09343"></a>
+
+-   **[Client-to-Server Connection Process](client-to-server-connection.html)**
+
+    It is important to understand the sequence of events that occur when the client connects with a server.
+
+-   **[Controlling Cache Size](controlling-cache-size.html)**
+
+    You can control cache size through region size limits, cache size limits, or a combination of the two.
+
+-   **[Managing the Lifetime of a Cached Object](managing-lifetime-cached-object.html)**
+
+    All cacheable objects derive from `SharedBase` , which provides reference counting. Cacheable objects are referenced using `SharedPtr` types.
+
+-   **[Using Thread Safety in Cache Management](using-thread-safety.html)**
+
+    When you perform structural changes on your cache, such as creating or closing a `Cache`, `Pool`, or `Region`, synchronize your operations or do them in a single thread.
+
+-   **[Troubleshooting](troubleshooting.html)**
+
+    This section provides troubleshooting information for the client.
+
+

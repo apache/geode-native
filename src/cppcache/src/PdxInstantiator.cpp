@@ -23,10 +23,10 @@
 
 #include "PdxInstantiator.hpp"
 #include "GeodeTypeIdsImpl.hpp"
-#include <gfcpp/CacheableString.hpp>
-#include <gfcpp/DataInput.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/DataInput.hpp>
 #include "PdxHelper.hpp"
-#include <gfcpp/PdxSerializable.hpp>
+#include <geode/PdxSerializable.hpp>
 
 namespace apache {
 namespace geode {

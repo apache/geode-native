@@ -29,7 +29,7 @@
 #include "PdxInstanceImpl.hpp"
 #include <CacheImpl.hpp>
 #include <CacheRegionHelper.hpp>
-#include <gfcpp/Cache.hpp>
+#include <geode/Cache.hpp>
 using namespace System;
 
 namespace Apache
@@ -89,7 +89,7 @@ namespace Apache
               plw->EndObjectWriting();//now write typeid
 
               int len = 0;
-              uint8_t* pdxStream = plw->GetPdxStream(len);
+              System::Byte* pdxStream = plw->GetPdxStream(len);
               pdxII->updatePdxStream( pdxStream, len);
 
 
@@ -123,7 +123,7 @@ namespace Apache
 			//This is for pdx Statistics
             CacheImpl* cacheImpl = getCacheImpl();
             if (cacheImpl != NULL) {
-              uint8_t* stPos = dataOutput->GetStartBufferPosition() + ptc->getStartPositionOffset();
+              System::Byte* stPos = dataOutput->GetStartBufferPosition() + ptc->getStartPositionOffset();
               int pdxLen = PdxHelper::ReadInt32(stPos);       
               cacheImpl->m_cacheStats->incPdxSerialization(pdxLen + 1 + 2*4); //pdxLen + 93 DSID + len + typeID
             }
@@ -153,7 +153,7 @@ namespace Apache
 			//This is for pdx Statistics
             CacheImpl* cacheImpl = getCacheImpl();
             if (cacheImpl != NULL) {
-              uint8_t* stPos = dataOutput->GetStartBufferPosition() + prw->getStartPositionOffset();
+              System::Byte* stPos = dataOutput->GetStartBufferPosition() + prw->getStartPositionOffset();
               int pdxLen = PdxHelper::ReadInt32(stPos);       
               cacheImpl->m_cacheStats->incPdxSerialization(pdxLen + 1 + 2*4); //pdxLen + 93 DSID + len + typeID
             }
@@ -398,7 +398,7 @@ namespace Apache
           }
         }
 
-        Int32 PdxHelper::ReadInt32(uint8_t* offsetPosition)
+        Int32 PdxHelper::ReadInt32(System::Byte* offsetPosition)
         {
           Int32 data = offsetPosition[0];
           data = (data << 8) | offsetPosition[1];
@@ -408,46 +408,46 @@ namespace Apache
           return data;
         }
 
-        Int32 PdxHelper::ReadInt16(uint8_t* offsetPosition)
+        Int32 PdxHelper::ReadInt16(System::Byte* offsetPosition)
         {
-          int16_t data = offsetPosition[0];
+          System::Int16 data = offsetPosition[0];
           data = (data << 8) | offsetPosition[1];
           return (Int32)data;
         }
 
-				Int32 PdxHelper::ReadUInt16(uint8_t* offsetPosition)
+				Int32 PdxHelper::ReadUInt16(System::Byte* offsetPosition)
         {
 					UInt16 data = offsetPosition[0];
           data = (data << 8) | offsetPosition[1];
           return (Int32)data;
         }
 
-        Int32 PdxHelper::ReadByte(uint8_t* offsetPosition)
+        Int32 PdxHelper::ReadByte(System::Byte* offsetPosition)
         {
           return (Int32)offsetPosition[0];
         }
 
-        void PdxHelper::WriteInt32(uint8_t* offsetPosition, Int32 value)
+        void PdxHelper::WriteInt32(System::Byte* offsetPosition, Int32 value)
         {
-          offsetPosition[0] = (uint8_t)(value >> 24);
-          offsetPosition[1] = (uint8_t)(value >> 16);
-          offsetPosition[2] = (uint8_t)(value >> 8);
-          offsetPosition[3] = (uint8_t)value;
+          offsetPosition[0] = (System::Byte)(value >> 24);
+          offsetPosition[1] = (System::Byte)(value >> 16);
+          offsetPosition[2] = (System::Byte)(value >> 8);
+          offsetPosition[3] = (System::Byte)value;
         }
 
-        void PdxHelper::WriteInt16(uint8_t* offsetPosition, Int32 value)
+        void PdxHelper::WriteInt16(System::Byte* offsetPosition, Int32 value)
         {
           Int16 val = (Int16)value;
-          offsetPosition[0] = (uint8_t)(val >> 8);
-          offsetPosition[1] = (uint8_t)val;
+          offsetPosition[0] = (System::Byte)(val >> 8);
+          offsetPosition[1] = (System::Byte)val;
         }
 
-        void PdxHelper::WriteByte(uint8_t* offsetPosition, Int32 value)
+        void PdxHelper::WriteByte(System::Byte* offsetPosition, Int32 value)
         {
           offsetPosition[0] = (Byte)value;
         }
 
-        Int32 PdxHelper::ReadInt(uint8_t* offsetPosition, int size)
+        Int32 PdxHelper::ReadInt(System::Byte* offsetPosition, int size)
         {
           switch(size)
           {

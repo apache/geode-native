@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "ExceptionTypes.hpp"
-#include <stdlib.h>
+#include <cstdlib>
 
 using namespace System;
 
@@ -102,7 +102,7 @@ namespace Apache
         };
 
         Native2ManagedExMap = gcnew Dictionary<String^, CreateException2^>( );
-        for (int32_t index = 0; index < exNamesDelegates->Length; index++)
+        for (System::Int32 index = 0; index < exNamesDelegates->Length; index++)
         {
           Native2ManagedExMap[ exNamesDelegates[ index ].m_name ] =
             exNamesDelegates[ index ].m_delegate;
@@ -127,7 +127,7 @@ namespace Apache
           // Get the exception type
           String^ mgExStr = exMsg->Substring(
             GeodeException::MgSysExPrefix->Length );
-          int32_t colonIndex = mgExStr->IndexOf( ':' );
+          System::Int32 colonIndex = mgExStr->IndexOf( ':' );
           if ( colonIndex > 0 ) {
             String^ mgExName = mgExStr->Substring( 0, colonIndex )->Trim( );
             // Try to load this class by reflection

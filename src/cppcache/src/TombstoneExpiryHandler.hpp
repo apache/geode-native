@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/Region.hpp>
-#include <gfcpp/ExpirationAction.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/Region.hpp>
+#include <geode/ExpirationAction.hpp>
 #include "RegionInternal.hpp"
 #include "TombstoneList.hpp"
 
@@ -74,4 +74,4 @@ class CPPCACHE_EXPORT TombstoneExpiryHandler : public ACE_Event_Handler {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_TOMBSTONEEXPIRYHANDLER_H_
+#endif  // GEODE_TOMBSTONEEXPIRYHANDLER_H_

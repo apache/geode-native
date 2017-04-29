@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/geode_types.hpp>
 #include "TcrMessage.hpp"
 #include "Queue.hpp"
 #include <ace/ACE.h>
@@ -30,11 +30,11 @@
 #include <ace/Guard_T.h>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
-#include <gfcpp/CacheableKey.hpp>
-#include <gfcpp/CqOperation.hpp>
-#include <gfcpp/CqQuery.hpp>
+#include <geode/CacheableKey.hpp>
+#include <geode/CqOperation.hpp>
+#include <geode/CqQuery.hpp>
 #include "MapWithLock.hpp"
-#include <gfcpp/DistributedSystem.hpp>
+#include <geode/DistributedSystem.hpp>
 #include <map>
 #include <string>
 #include "Queue.hpp"
@@ -264,4 +264,4 @@ typedef SharedPtr<CqService> CqServicePtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CQSERVICE_H_
+#endif  // GEODE_CQSERVICE_H_

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/AttributesMutator.hpp>
+#include <geode/AttributesMutator.hpp>
 #include <RegionInternal.hpp>
 
 namespace apache {

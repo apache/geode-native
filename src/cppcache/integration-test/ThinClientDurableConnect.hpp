@@ -26,7 +26,6 @@
  *      Author: abhaware
  */
 
-
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 #include "CacheImplHelper.hpp"
@@ -352,5 +351,4 @@ void doThinClientDurableConnect(bool poolConfig = true,
   CALL_TASK(CloseLocator);
 }
 
-
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTDURABLECONNECT_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTDURABLECONNECT_H_

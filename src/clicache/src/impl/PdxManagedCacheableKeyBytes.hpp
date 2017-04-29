@@ -17,13 +17,13 @@
 
 #pragma once
 
-#include "../gf_defs.hpp"
+#include "../geode_defs.hpp"
 #include <vcclr.h>
-#include <gfcpp/CacheableKey.hpp>
+#include <geode/CacheableKey.hpp>
 #include "../Log.hpp"
 #include "../DataOutput.hpp"
 #include "PdxHelper.hpp"
-#include <gfcpp/Delta.hpp>
+#include <geode/Delta.hpp>
 
 using namespace System;
 
@@ -48,7 +48,7 @@ namespace apache
     {
 
   /// <summary>
-  /// Wraps the managed <see cref="Apache.Geode.Client.IGFSerializable" />
+  /// Wraps the managed <see cref="Apache.Geode.Client.IGeodeSerializable" />
   /// object and implements the native <c>apache::geode::client::CacheableKey</c> interface.
   /// </summary>
   class PdxManagedCacheableKeyBytes
@@ -72,7 +72,7 @@ namespace apache
       m_hasDelta = false;
       if(storeBytes)
       {
-        Apache::Geode::Client::IGFDelta^ deltaObj = dynamic_cast<Apache::Geode::Client::IGFDelta^>(managedptr);
+        Apache::Geode::Client::IGeodeDelta^ deltaObj = dynamic_cast<Apache::Geode::Client::IGeodeDelta^>(managedptr);
 
         if(deltaObj != nullptr)
           m_hasDelta = deltaObj->HasDelta();
@@ -131,14 +131,14 @@ namespace apache
     /// <summary>
     /// return the size of this object in bytes
     /// </summary>
-    virtual uint32_t objectSize() const;
+    virtual System::UInt32 objectSize() const;
 
     /// <summary>
     /// return the classId of the instance being serialized.
     /// This is used by deserialization to determine what instance
     /// type to create and deserialize into.
     /// </summary>
-    virtual int32_t classId( ) const;
+    virtual System::Int32 classId( ) const;
 
     /// <summary>
     /// return the typeId of the instance being serialized.
@@ -175,7 +175,7 @@ namespace apache
     /// <summary>
     /// return the hashcode for this key.
     /// </summary>
-    virtual uint32_t hashcode( ) const;
+    virtual System::Int32 hashcode( ) const;
 
     /// <summary>
     /// Copy the string form of a key into a char* buffer for logging purposes.
@@ -214,17 +214,17 @@ namespace apache
     
     /// <summary>
     /// Using gcroot to hold the managed delegate pointer (since it cannot be stored directly).
-    /// Note: not using auto_gcroot since it will result in 'Dispose' of the IGFSerializable
+    /// Note: not using auto_gcroot since it will result in 'Dispose' of the IGeodeSerializable
     /// to be called which is not what is desired when this object is destroyed. Normally this
     /// managed object may be created by the user and will be handled automatically by the GC.
     /// </summary>
-//    gcroot<IGFSerializable^> m_managedptr;
+//    gcroot<IGeodeSerializable^> m_managedptr;
     int m_domainId;
     UInt32 m_classId;
-    uint8_t * m_bytes;
-    uint32_t m_size;
+    System::Byte * m_bytes;
+    System::UInt32 m_size;
     bool m_hasDelta;
-    uint32_t m_hashCode;
+    System::Int32 m_hashCode;
     // Disable the copy and assignment constructors
     PdxManagedCacheableKeyBytes( const PdxManagedCacheableKeyBytes& );
     PdxManagedCacheableKeyBytes& operator = ( const PdxManagedCacheableKeyBytes& );

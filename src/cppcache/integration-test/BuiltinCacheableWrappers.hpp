@@ -21,11 +21,9 @@
  */
 
 #include "CacheableWrapper.hpp"
-extern "C" {
 #include <limits.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <wchar.h>
-}
 
 #include <ace/Date_Time.h>
 
@@ -1314,5 +1312,4 @@ void registerBuiltins(bool isRegisterFileName = false) {
 }
 }  // namespace CacheableHelper
 
-
-#endif // GEODE_INTEGRATION_TEST_BUILTINCACHEABLEWRAPPERS_H_
+#endif  // GEODE_INTEGRATION_TEST_BUILTINCACHEABLEWRAPPERS_H_

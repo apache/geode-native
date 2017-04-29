@@ -20,10 +20,10 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/geode_types.hpp>
 #include "ProxyCache.hpp"
-#include <gfcpp/FunctionService.hpp>
+#include <geode/FunctionService.hpp>
 /**
  * @file
  */
@@ -66,4 +66,4 @@ class CPPCACHE_EXPORT FunctionServiceImpl : public FunctionService {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_FUNCTIONSERVICEIMPL_H_
+#endif  // GEODE_FUNCTIONSERVICEIMPL_H_

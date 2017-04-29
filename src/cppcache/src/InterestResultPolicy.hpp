@@ -23,7 +23,7 @@
 /**
  * @file
  */
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 namespace apache {
 namespace geode {
@@ -52,4 +52,4 @@ class CPPCACHE_EXPORT InterestResultPolicy {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_INTERESTRESULTPOLICY_H_
+#endif  // GEODE_INTERESTRESULTPOLICY_H_

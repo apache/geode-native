@@ -151,7 +151,7 @@ public class EqStruct implements Declarable,Serializable,DataSerializable {
 
     // INSTANTIATORS DISABLED due to bug 35646
     //
-    // Avoid overhead of reflection via the gemstone.gemfire.Instantiator class
+    // Avoid overhead of reflection via the org.apache.geode.Instantiator class
     //static {
     //  Instantiator.register(new Instantiator(EqStruct.class, (byte) 5) {
     //    public DataSerializable newInstance() {

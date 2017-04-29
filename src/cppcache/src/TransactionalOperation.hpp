@@ -26,11 +26,10 @@
  *      Author: ankurs
  */
 
-
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/Cacheable.hpp>
-#include <gfcpp/VectorT.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/geode_types.hpp>
+#include <geode/Cacheable.hpp>
+#include <geode/VectorT.hpp>
 
 namespace apache {
 namespace geode {
@@ -73,5 +72,4 @@ class TransactionalOperation : public apache::geode::client::SharedBase {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TRANSACTIONALOPERATION_H_
+#endif  // GEODE_TRANSACTIONALOPERATION_H_

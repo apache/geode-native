@@ -860,9 +860,9 @@ void MixedVersionNestedPdx::fromData(PdxReaderPtr pr) {
 }
 
 /************************************************************
- *  PdxInsideIGFSerializable
+ *  PdxInsideIGeodeSerializable
  * *********************************************************/
-PdxInsideIGFSerializable::PdxInsideIGFSerializable() {
+PdxInsideIGeodeSerializable::PdxInsideIGeodeSerializable() {
   m_npdx = new NestedPdx();
   m_pdx3 = new PdxTypes3();
   m_s1 = (char *)"one";
@@ -873,16 +873,17 @@ PdxInsideIGFSerializable::PdxInsideIGFSerializable() {
   m_i4 = 73567;
 }
 
-PdxInsideIGFSerializable::~PdxInsideIGFSerializable() {
+PdxInsideIGeodeSerializable::~PdxInsideIGeodeSerializable() {
   // TODO Auto-generated destructor stub
 }
 
-int32_t PdxInsideIGFSerializable::getHashCode() { return 1; }
+int32_t PdxInsideIGeodeSerializable::getHashCode() { return 1; }
 
-bool PdxInsideIGFSerializable::equals(SerializablePtr obj) {
+bool PdxInsideIGeodeSerializable::equals(SerializablePtr obj) {
   if (obj == NULLPTR) return false;
 
-  PdxInsideIGFSerializablePtr pap = dynCast<PdxInsideIGFSerializablePtr>(obj);
+  PdxInsideIGeodeSerializablePtr pap =
+      dynCast<PdxInsideIGeodeSerializablePtr>(obj);
   if (pap == NULLPTR) return false;
 
   // if (pap == this)
@@ -897,16 +898,16 @@ bool PdxInsideIGFSerializable::equals(SerializablePtr obj) {
   return false;
 }
 
-CacheableStringPtr PdxInsideIGFSerializable::toString() const {
+CacheableStringPtr PdxInsideIGeodeSerializable::toString() const {
   char idbuf[4096];
   sprintf(idbuf,
-          "PdxInsideIGFSerializable:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] "
+          "PdxInsideIGeodeSerializable:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] "
           "[m_s1=%s] [m_s2=%s]",
           m_i1, m_i2, m_i3, m_i4, m_s1, m_s2);
   return CacheableString::create(idbuf);
 }
 
-void PdxInsideIGFSerializable::toData(DataOutput &output) const {
+void PdxInsideIGeodeSerializable::toData(DataOutput &output) const {
   output.writeInt(m_i1);
   output.writeObject(m_npdx);
   output.writeInt(m_i2);
@@ -917,7 +918,7 @@ void PdxInsideIGFSerializable::toData(DataOutput &output) const {
   output.writeInt(m_i4);
 }
 
-Serializable *PdxInsideIGFSerializable::fromData(DataInput &input) {
+Serializable *PdxInsideIGeodeSerializable::fromData(DataInput &input) {
   input.readInt(&m_i1);
   input.readObject(m_npdx);
   input.readInt(&m_i2);

@@ -114,7 +114,7 @@ namespace Apache
           return this;
         }
 
-        IPdxWriter^ PdxRemoteWriter::WriteUInt16(String^ fieldName, uint16_t value)
+        IPdxWriter^ PdxRemoteWriter::WriteUInt16(String^ fieldName, System::UInt16 value)
         {
           writePreserveData();
           PdxLocalWriter::WriteUInt16(fieldName, value);
@@ -122,7 +122,7 @@ namespace Apache
 
         }
 
-        IPdxWriter^ PdxRemoteWriter::WriteUInt32(String^ fieldName, uint32_t value)
+        IPdxWriter^ PdxRemoteWriter::WriteUInt32(String^ fieldName, System::UInt32 value)
         {
           writePreserveData();
           PdxLocalWriter::WriteUInt32(fieldName, value);
@@ -130,7 +130,7 @@ namespace Apache
 
         }
 
-        IPdxWriter^ PdxRemoteWriter::WriteUInt64(String^ fieldName, uint64_t value)
+        IPdxWriter^ PdxRemoteWriter::WriteUInt64(String^ fieldName, System::UInt64 value)
         {
           writePreserveData();
           PdxLocalWriter::WriteUInt64(fieldName, value);
@@ -138,14 +138,14 @@ namespace Apache
 
         }
 
-        IPdxWriter^ PdxRemoteWriter::WriteShort(String^ fieldName, int16_t value)
+        IPdxWriter^ PdxRemoteWriter::WriteShort(String^ fieldName, System::Int16 value)
         {
           writePreserveData();
           PdxLocalWriter::WriteShort(fieldName, value);
           return this;
         }
 
-        IPdxWriter^ PdxRemoteWriter::WriteInt(String^ fieldName, int32_t value)
+        IPdxWriter^ PdxRemoteWriter::WriteInt(String^ fieldName, System::Int32 value)
         {
           writePreserveData();
           PdxLocalWriter::WriteInt(fieldName, value);

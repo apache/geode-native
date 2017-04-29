@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/CacheableKey.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/CacheableKey.hpp>
 
 #include <ace/Hash_Map_Manager.h>
 #include <ace/Recursive_Thread_Mutex.h>
@@ -82,4 +82,4 @@ typedef ACE_Guard<ACE_Recursive_Thread_Mutex> MapOfRegionGuard;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_MAPWITHLOCK_H_
+#endif  // GEODE_MAPWITHLOCK_H_

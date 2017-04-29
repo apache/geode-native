@@ -21,11 +21,11 @@
  *      Author: npatel
  */
 
-#include <gfcpp/PdxSerializable.hpp>
+#include <geode/PdxSerializable.hpp>
 #include <GeodeTypeIdsImpl.hpp>
-#include <gfcpp/CacheableString.hpp>
+#include <geode/CacheableString.hpp>
 #include <PdxHelper.hpp>
-#include <gfcpp/CacheableKeys.hpp>
+#include <geode/CacheableKeys.hpp>
 
 namespace apache {
 namespace geode {
@@ -57,7 +57,7 @@ bool PdxSerializable::operator==(const CacheableKey& other) const {
   return (this == &other);
 }
 
-uint32_t PdxSerializable::hashcode() const {
+int32_t PdxSerializable::hashcode() const {
   uint64_t hash = static_cast<uint64_t>((intptr_t)this);
   return apache::geode::client::serializer::hashcode(hash);
 }

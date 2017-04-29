@@ -26,8 +26,7 @@
  *      Author: ankurs
  */
 
-
-#include <gfcpp/gf_types.hpp>
+#include <geode/geode_types.hpp>
 
 using namespace apache::geode::client;
 
@@ -88,5 +87,4 @@ _GF_PTR_DEF_(TXEntryState, TXEntryStatePtr);
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TXENTRYSTATE_H_
+#endif  // GEODE_TXENTRYSTATE_H_

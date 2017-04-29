@@ -16,9 +16,9 @@
  */
 
 #pragma once
-#include "../gf_defs.hpp"
+#include "../geode_defs.hpp"
 #include <vcclr.h>
-#include <gfcpp/CqListener.hpp>
+#include <geode/CqListener.hpp>
 //#include "../ICqListener.hpp"
 #include "../ICqListener.hpp"
 #include "CqListenerProxy.hpp"

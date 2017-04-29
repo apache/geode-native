@@ -21,7 +21,7 @@
  */
 
 #if defined(_SOLARIS)
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include <string>
 #include <sys/sysinfo.h>
 #include "ProcessStats.hpp"
@@ -68,4 +68,4 @@ class HostStatHelperSolaris {
 
 #endif  // if def(_SOLARIS)
 
-#endif // GEODE_STATISTICS_HOSTSTATHELPERSOLARIS_H_
+#endif  // GEODE_STATISTICS_HOSTSTATHELPERSOLARIS_H_

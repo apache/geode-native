@@ -26,7 +26,7 @@ limitations under the License.
           publicKeyToken="126e6338d9f55e0c"
           culture="neutral" />
        <codeBase version="9.0.0.0"
-          href="${NATIVECLIENT_BINARIES_DIR}/Apache.Geode.dll"/>
+          href="${NATIVECLIENT_BINARIES_DIR}/${PRODUCT_DLL_NAME}.dll"/>
      </dependentAssembly> 
    </assemblyBinding>  
  </runtime>

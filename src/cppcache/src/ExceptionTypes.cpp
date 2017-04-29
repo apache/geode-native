@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include <TXState.hpp>
 #include <TSSTXStateWrapper.hpp>
 

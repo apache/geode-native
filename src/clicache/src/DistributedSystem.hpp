@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/DistributedSystem.hpp>
+#include "geode_defs.hpp"
+#include <geode/DistributedSystem.hpp>
 //#include "impl/NativeWrapper.hpp"
 #include "SystemProperties.hpp"
 #include "Properties.hpp"

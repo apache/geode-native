@@ -23,7 +23,7 @@
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
-#include <gfcpp/CacheListener.hpp>
+#include <geode/CacheListener.hpp>
 // CacheHelper* cacheHelper = NULL;
 static bool isLocator = false;
 static bool isLocalServer = true;

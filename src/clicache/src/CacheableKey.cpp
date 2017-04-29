@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "CacheableKey.hpp"
 #include "CacheableString.hpp"
 #include "CacheableBuiltins.hpp"
@@ -30,7 +30,7 @@ namespace Apache
     {
 
      // generic<class TKey>
-      int32_t CacheableKey::GetHashCode()
+      System::Int32 CacheableKey::GetHashCode()
       {
         return static_cast<apache::geode::client::CacheableKey*>(NativePtr())->hashcode();
       }
@@ -90,19 +90,19 @@ namespace Apache
       }
 
       //generic<class TKey>
-      CacheableKey::operator CacheableKey^ (int16_t value)
+      CacheableKey::operator CacheableKey^ (System::Int16 value)
       {
         return (CacheableKey^) CacheableInt16::Create(value);
       }
 
       //generic<class TKey>
-      CacheableKey::operator CacheableKey^ (int32_t value)
+      CacheableKey::operator CacheableKey^ (System::Int32 value)
       {
         return (CacheableKey^) CacheableInt32::Create(value);
       }
 
      // generic<class TKey>
-      CacheableKey::operator CacheableKey^ (int64_t value)
+      CacheableKey::operator CacheableKey^ (System::Int64 value)
       {
         return (CacheableKey^) CacheableInt64::Create(value);
       }

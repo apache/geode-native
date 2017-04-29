@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_CACHECONFIG_H_
+#define GEODE_CACHECONFIG_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -22,20 +27,16 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_CacheConfig_H__48B95D79_F676_4F8A_8522_8B172DB33F7E__INCLUDED_)
-#define AFX_CacheConfig_H__48B95D79_F676_4F8A_8522_8B172DB33F7E__INCLUDED_
-
 #if _MSC_VER > 1000
-#pragma once
 #pragma warning(disable : 4786)
 #endif  // _MSC_VER > 1000
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <string.h>
+#include <geode/geode_globals.hpp>
+#include <string>
 #include <map>
 #include "RegionConfig.hpp"
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/DistributedSystem.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/DistributedSystem.hpp>
 
 //
 // Sneaky structure forward decl;
@@ -77,4 +78,5 @@ class CPPCACHE_EXPORT CacheConfig {
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
-#endif  // !defined(AFX_CacheConfig_H__48B95D79_F676_4F8A_8522_8B172DB33F7E__INCLUDED_)
+
+#endif  // GEODE_CACHECONFIG_H_

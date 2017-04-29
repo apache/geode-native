@@ -23,10 +23,10 @@
 #include <list>
 #include <ace/Recursive_Thread_Mutex.h>
 #include "ace/Guard_T.h"
-#include <gfcpp/SharedPtr.hpp>
-#include <gfcpp/CacheableBuiltins.hpp>
-#include <gfcpp/HashMapT.hpp>
-#include <gfcpp/HashSetT.hpp>
+#include <geode/SharedPtr.hpp>
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/HashMapT.hpp>
+#include <geode/HashSetT.hpp>
 #include "MapEntry.hpp"
 
 namespace apache {
@@ -100,4 +100,4 @@ typedef SharedPtr<TombstoneList> TombstoneListPtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_TOMBSTONELIST_H_
+#endif  // GEODE_TOMBSTONELIST_H_

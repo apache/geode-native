@@ -17,7 +17,7 @@
 
 #pragma once
 #include "PdxFieldType.hpp"
-#include <gfcpp/GeodeTypeIds.hpp>
+#include <geode/GeodeTypeIds.hpp>
 
 using namespace System;
 
@@ -136,7 +136,7 @@ namespace Apache
           output->WriteBoolean(m_isIdentityField);
         }
 
-        IGFSerializable^ PdxFieldType::FromData(DataInput^ input)
+        IGeodeSerializable^ PdxFieldType::FromData(DataInput^ input)
         {
           m_fieldName = input->ReadString();
           m_sequenceId = input->ReadInt32();

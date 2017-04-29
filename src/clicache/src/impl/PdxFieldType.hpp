@@ -31,7 +31,7 @@ namespace Apache
 
       namespace Internal
       {
-        public ref class PdxFieldType : IGFSerializable
+        public ref class PdxFieldType : IGeodeSerializable
         {
         private:
           String^ m_fieldName;
@@ -129,14 +129,14 @@ namespace Apache
           virtual Int32 GetHashCode() override;
 
           virtual void ToData(DataOutput^ output);
-          virtual IGFSerializable^ FromData(DataInput^ input);
-          virtual property uint32_t ObjectSize
+          virtual IGeodeSerializable^ FromData(DataInput^ input);
+          virtual property System::UInt32 ObjectSize
           {
-            uint32_t get(){ return 0; }
+            System::UInt32 get(){ return 0; }
           }
-          virtual property uint32_t ClassId
+          virtual property System::UInt32 ClassId
           {
-            uint32_t get(){ return m_typeId; }
+            System::UInt32 get(){ return m_typeId; }
           }
           virtual String^ ToString() override
           {

@@ -40,4 +40,4 @@ class Version {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_VERSION_H_
+#endif  // GEODE_VERSION_H_

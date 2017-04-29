@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/PoolFactory.hpp>
+#include "geode_defs.hpp"
+#include <geode/PoolFactory.hpp>
 //#include "impl/NativeWrapper.hpp"
 
 using namespace System;

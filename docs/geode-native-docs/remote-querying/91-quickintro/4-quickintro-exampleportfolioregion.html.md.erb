@@ -1,0 +1,77 @@
+---
+title:  Example Data and Class Definitions
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+This extended example is used throughout the section to show C++ and corresponding Java class definitions and sample data for the example `portfolios` region. The region's keys are the portfolio ID.
+
+User-defined data types must implement the `Serializable` interface on the client side, while corresponding Java classes must implement the `DataSerializable` interface. The C++ objects for the client must correspond to the Java objects for the Geode cache server. This means that an object on one side should deserialize correctly at the other side.
+
+**Sample C++ class definition**
+
+``` pre
+class Portfolio : public Serializable {
+   int ID;
+   char * type;
+   char * status;
+   Map<Position> positions;
+}
+class Position : public Serializable {
+   char * secId;
+   double mktValue;
+   double qty;
+}
+```
+
+**Corresponding Java class definition**
+
+``` pre
+class Portfolio implements DataSerializable {
+    int ID;
+    String type;
+    String status;
+    Map positions;
+}
+class Position implements DataSerializable {
+    String secId;
+    double mktValue;
+    double qty;
+}
+```
+
+The following table lists the sample data in the portfolios region.
+
+<a id="running-native-client-xact__table_92A6A66523764199A19BCD66BA189921"></a>
+
+|        |          |               |                     |                        |                   |
+|--------|----------|---------------|---------------------|------------------------|-------------------|
+| **id** | **type** | **Statusted** | **Position: secID** | **Position: mktValue** | **Position: qty** |
+| 111    | xyz      | active        | xxx                 | 27.34                  | 1000.00           |
+|        |          |               | xxy                 | 26.31                  | 1200.00           |
+|        |          |               | xxz                 | 24.30                  | 1500.00           |
+| 222    | xyz      | active        | yyy                 | 18.29                  | 5000.00           |
+| 333    | abc      | active        | aaa                 | 24.30                  | 10.00             |
+| 333    | abc      | active        | aab                 | 23.10                  | 15.00             |
+| 444    | abc      | inactive      | bbb                 | 50.41                  | 100.00            |
+| 444    | abc      | inactive      | bbc                 | 55.00                  | 90.00             |
+
+
+Because the client cache waits during transaction execution, and client regions are not distributed, the only activities that interact with a client transaction are those that occur on the server.
+
+

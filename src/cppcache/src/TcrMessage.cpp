@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 #include "TcrMessage.hpp"
-#include <gfcpp/Assert.hpp>
-#include <gfcpp/CacheableBuiltins.hpp>
-#include <gfcpp/DistributedSystem.hpp>
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/Assert.hpp>
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/DistributedSystem.hpp>
+#include <geode/SystemProperties.hpp>
 #include "TcrConnection.hpp"
 #include "AutoDelete.hpp"
 #include "TcrChunkedContext.hpp"
-#include <gfcpp/CacheableObjectArray.hpp>
+#include <geode/CacheableObjectArray.hpp>
 #include "ThinClientRegion.hpp"
 #include "ThinClientBaseDM.hpp"
 #include "StackTrace.hpp"
@@ -756,8 +756,8 @@ void TcrMessage::writeRegionPart(const std::string& regionName) {
   m_request->writeBytesOnly((int8_t*)regionName.c_str(), len);
 }
 
-void TcrMessage::writeStringPart(const std::string& regionName) {
-  m_request->writeFullUTF(regionName.c_str());
+void TcrMessage::writeStringPart(const std::string& str) {
+  m_request->writeFullUTF(str.c_str());
 }
 
 void TcrMessage::writeEventIdPart(int reserveSize,
@@ -891,8 +891,8 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
       }
       // fall-through for other cases
     }
-    case EXECUTE_REGION_FUNCTION_RESULT:
-    case EXECUTE_FUNCTION_RESULT:
+    case TcrMessage::EXECUTE_REGION_FUNCTION_RESULT:
+    case TcrMessage::EXECUTE_FUNCTION_RESULT:
     case TcrMessage::CQDATAERROR_MSG_TYPE:  // one part
     case TcrMessage::CQ_EXCEPTION_TYPE:     // one part
     case TcrMessage::RESPONSE_FROM_PRIMARY: {
@@ -1079,7 +1079,7 @@ void TcrMessage::handleByteArrayResponse(const char* bytearray, int32_t len,
         input.read(&isHA);
         int8_t oFW;
         input.read(&oFW);
-        m_functionAttributes = new std::vector<int8>();
+        m_functionAttributes = new std::vector<int8_t>();
         m_functionAttributes->push_back(hR);
         m_functionAttributes->push_back(isHA);
         m_functionAttributes->push_back(oFW);
@@ -2447,6 +2447,7 @@ TcrMessageExecuteRegionFunction::TcrMessageExecuteRegionFunction(
   m_tcdm = connectionDM;
   m_regionName = region == NULL ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
+  m_hasResult = getResult;
 
   if (routingObj != NULLPTR && routingObj->size() == 1) {
     LOGDEBUG("setting up key");
@@ -2501,6 +2502,7 @@ TcrMessageExecuteRegionFunctionSingleHop::
   m_tcdm = connectionDM;
   m_regionName = region == NULL ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
+  m_hasResult = getResult;
 
   uint32_t numOfParts = 6 + (routingObj == NULLPTR ? 0 : routingObj->size());
   numOfParts +=

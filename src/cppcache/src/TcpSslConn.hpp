@@ -22,7 +22,7 @@
 
 #include "TcpConn.hpp"
 #include <ace/DLL.h>
-#include "../../cryptoimpl/GFSsl.hpp"
+#include "../../cryptoimpl/Ssl.hpp"
 
 namespace apache {
 namespace geode {
@@ -30,7 +30,7 @@ namespace client {
 
 class TcpSslConn : public TcpConn {
  private:
-  GFSsl* m_ssl;
+  Ssl* m_ssl;
   ACE_DLL m_dll;
   // adongre: Added for Ticket #758
   // Pass extra parameter for the password
@@ -38,8 +38,8 @@ class TcpSslConn : public TcpConn {
                                      const char*);
   typedef void (*gf_destroy_SslImpl)(void*);
 
-  GFSsl* getSSLImpl(ACE_SOCKET sock, const char* pubkeyfile,
-                    const char* privkeyfile);
+  Ssl* getSSLImpl(ACE_SOCKET sock, const char* pubkeyfile,
+                  const char* privkeyfile);
 
  protected:
   int32_t socketOp(SockOp op, char* buff, int32_t len, uint32_t waitSeconds);
@@ -82,11 +82,10 @@ class TcpSslConn : public TcpConn {
     }
   }
 
-  uint16 getPort();
+  uint16_t getPort();
 };
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TCPSSLCONN_H_
+#endif  // GEODE_TCPSSLCONN_H_

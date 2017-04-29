@@ -167,7 +167,7 @@ Serializable* PdxType::fromData(DataInput& input) {
 
 void PdxType::addFixedLengthTypeField(const char* fieldName,
                                       const char* className, int8_t typeId,
-                                      int32 size) {
+                                      int32_t size) {
   if (fieldName == NULL /*|| *fieldName == '\0'*/ ||
       m_fieldNameVsPdxType.find(fieldName) !=
           m_fieldNameVsPdxType
@@ -191,7 +191,7 @@ void PdxType::addFixedLengthTypeField(const char* fieldName,
     throw IllegalStateException(excpStr);
   }
   PdxFieldTypePtr pfxPtr(new PdxFieldType(
-      fieldName, className, typeId, static_cast<int32>(m_pdxFieldTypes->size()),
+      fieldName, className, typeId, static_cast<int32_t>(m_pdxFieldTypes->size()),
       false, size, 0));
   m_pdxFieldTypes->push_back(pfxPtr);
   m_fieldNameVsPdxType[fieldName] = pfxPtr;
@@ -218,7 +218,7 @@ void PdxType::addVariableLengthTypeField(const char* fieldName,
   m_numberOfVarLenFields++;
   m_isVarLenFieldAdded = true;
   PdxFieldTypePtr pfxPtr(new PdxFieldType(
-      fieldName, className, typeId, static_cast<int32>(m_pdxFieldTypes->size()),
+      fieldName, className, typeId, static_cast<int32_t>(m_pdxFieldTypes->size()),
       true, -1, m_varLenFieldIdx));
   m_pdxFieldTypes->push_back(pfxPtr);
   m_fieldNameVsPdxType[fieldName] = pfxPtr;
@@ -247,7 +247,7 @@ void PdxType::initRemoteToLocal() {
   if (localPdxType != NULLPTR) {
     std::vector<PdxFieldTypePtr>* localPdxFields =
         localPdxType->getPdxFieldTypes();
-    int32 fieldIdx = 0;
+    int32_t fieldIdx = 0;
 
     m_remoteToLocalFieldMap = new int32_t[m_pdxFieldTypes->size()];
     LOGDEBUG(
@@ -310,7 +310,7 @@ void PdxType::initLocalToRemote() {
     int32_t fieldIdx = 0;
     // type which need to read/write should control local type
     int32_t localToRemoteFieldMapSize =
-        static_cast<int32>(localPdxType->m_pdxFieldTypes->size());
+        static_cast<int32_t>(localPdxType->m_pdxFieldTypes->size());
     m_localToRemoteFieldMap = new int32_t[localToRemoteFieldMapSize];
 
     for (int32_t i = 0; i < localToRemoteFieldMapSize &&
@@ -531,7 +531,7 @@ PdxTypePtr PdxType::mergeVersion(PdxTypePtr otherVersion) {
     if (!found) {
       PdxFieldTypePtr newFt(new PdxFieldType(
           (*it)->getFieldName(), (*it)->getClassName(), (*it)->getTypeId(),
-          static_cast<int32>(newone->m_pdxFieldTypes->size()),  // sequence id
+          static_cast<int32_t>(newone->m_pdxFieldTypes->size()),  // sequence id
           (*it)->IsVariableLengthType(), (*it)->getFixedSize(),
           ((*it)->IsVariableLengthType()
                ? varLenFields++ /*it increase after that*/
@@ -590,7 +590,7 @@ void PdxType::generatePositionMap() {
   foundVarLen = false;
   prevFixedSizeOffsets = 0;
   // now do optimization till you don't fine var len
-  for (uint32 i = 0; (i < m_pdxFieldTypes->size()) && !foundVarLen; i++) {
+  for (uint32_t i = 0; (i < m_pdxFieldTypes->size()) && !foundVarLen; i++) {
     PdxFieldTypePtr tmpft = m_pdxFieldTypes->at(i);
 
     if (tmpft->IsVariableLengthType()) {

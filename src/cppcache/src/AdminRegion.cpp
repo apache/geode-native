@@ -16,7 +16,7 @@
  */
 #include "AdminRegion.hpp"
 #include "CacheImpl.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 #include "ThinClientRegion.hpp"
 #include <statistics/StatisticsManager.hpp>
 #include "ThinClientPoolDM.hpp"

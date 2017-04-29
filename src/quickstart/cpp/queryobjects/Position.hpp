@@ -22,8 +22,8 @@
 #ifndef __POSITION_HPP__
 #define __POSITION_HPP__
 
-#include <gfcpp/GeodeCppCache.hpp>
-#include <string.h>
+#include <geode/GeodeCppCache.hpp>
+#include <string>
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT

@@ -47,7 +47,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Apache.Gedoe.Client">
+    <Reference Include="Apache.Geode.Client">
       <HintPath>${GFCPP}\bin\Apache.Geode.dll</HintPath>
     </Reference>
     <Reference Include="System" />

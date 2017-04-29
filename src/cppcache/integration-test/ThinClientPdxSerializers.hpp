@@ -298,5 +298,4 @@ class TestPdxSerializer : public PdxSerializer {
   }
 };
 
-
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_

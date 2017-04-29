@@ -82,5 +82,4 @@ class GeodeTypeIdsImpl {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_GEODETYPEIDSIMPL_H_
+#endif  // GEODE_GEODETYPEIDSIMPL_H_

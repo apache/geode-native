@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/statistics/Statistics.hpp>
-#include <gfcpp/statistics/StatisticsFactory.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/statistics/Statistics.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
 #include "SpinLock.hpp"
 //#include "NanoTimer.hpp"
 //#include <SystemProperties.hpp>
@@ -65,10 +65,6 @@ class CPPCACHE_EXPORT RegionStats {
   inline void incOverflows() { m_regionStats->incInt(m_overflowsId, 1); }
 
   inline void incRetrieves() { m_regionStats->incInt(m_retrievesId, 1); }
-
-  inline void incNonSingleHopCount() {
-    m_regionStats->incInt(m_nonSingleHopId, 1);
-  }
 
   inline void incMetaDataRefreshCount() {
     m_regionStats->incInt(m_metaDataRefreshId, 1);
@@ -116,7 +112,6 @@ class CPPCACHE_EXPORT RegionStats {
   int32_t m_entriesId;
   int32_t m_overflowsId;
   int32_t m_retrievesId;
-  int32_t m_nonSingleHopId;
   int32_t m_metaDataRefreshId;
   int32_t m_LoaderCallsCompletedId;
   int32_t m_LoaderCallTimeId;
@@ -129,7 +124,6 @@ class CPPCACHE_EXPORT RegionStats {
 
 class RegionStatType {
  private:
-  static int8 instanceFlag;
   static RegionStatType* single;
   static SpinLock m_singletonLock;
   static SpinLock m_statTypeLock;
@@ -143,7 +137,7 @@ class RegionStatType {
 
  private:
   RegionStatType();
-  statistics::StatisticDescriptor* m_stats[26];
+  statistics::StatisticDescriptor* m_stats[25];
 
   int32_t m_destroysId;
   int32_t m_createsId;
@@ -162,7 +156,6 @@ class RegionStatType {
   int32_t m_entriesId;
   int32_t m_overflowsId;
   int32_t m_retrievesId;
-  int32_t m_nonSingleHopId;
   int32_t m_metaDataRefreshId;
   int32_t m_LoaderCallsCompletedId;
   int32_t m_LoaderCallTimeId;
@@ -207,8 +200,6 @@ class RegionStatType {
 
   inline int32_t getRetrievesId() { return m_retrievesId; }
 
-  inline int32_t getNonSingleHopCount() { return m_nonSingleHopId; }
-
   inline int32_t getMetaDataRefreshCount() { return m_metaDataRefreshId; }
 
   inline int32_t getLoaderCallsCompletedId() {
@@ -235,4 +226,4 @@ class RegionStatType {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_REGIONSTATS_H_
+#endif  // GEODE_REGIONSTATS_H_

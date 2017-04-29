@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <string>
 
 #include <ace/OS.h>
 
@@ -144,4 +144,4 @@ class StackFrame {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STACKFRAME_H_
+#endif  // GEODE_STACKFRAME_H_

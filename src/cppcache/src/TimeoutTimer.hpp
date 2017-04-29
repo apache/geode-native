@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 #include <ace/Condition_Recursive_Thread_Mutex.h>
 #include <ace/Condition_T.h>
@@ -70,4 +70,4 @@ class CPPCACHE_EXPORT TimeoutTimer {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_TIMEOUTTIMER_H_
+#endif  // GEODE_TIMEOUTTIMER_H_

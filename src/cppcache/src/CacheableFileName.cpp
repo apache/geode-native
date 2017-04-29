@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/CacheableFileName.hpp>
-#include <gfcpp/GeodeTypeIds.hpp>
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/DataInput.hpp>
+#include <geode/CacheableFileName.hpp>
+#include <geode/GeodeTypeIds.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/DataInput.hpp>
 
 #include <ace/ACE.h>
 #include <ace/OS.h>
@@ -43,7 +43,7 @@ int8_t CacheableFileName::typeId() const {
   return GeodeTypeIds::CacheableFileName;
 }
 
-uint32_t CacheableFileName::hashcode() const {
+int32_t CacheableFileName::hashcode() const {
 #ifndef _WIN32
   if (m_hashcode == 0) {
     m_hashcode = CacheableString::hashcode() ^ 1234321;

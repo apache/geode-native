@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "../gf_defs.hpp"
+#include "../geode_defs.hpp"
 #include "NativeWrapper.hpp"
 #include "ManagedCacheableKey.hpp"
 #include "ManagedCacheableDelta.hpp"
@@ -55,9 +55,9 @@ namespace Apache
 
       /// <summary>
       /// Helper function to convert native <c>apache::geode::client::Serializable</c> object
-      /// to managed <see cref="IGFSerializable" /> object.
+      /// to managed <see cref="IGeodeSerializable" /> object.
       /// </summary>
-      inline static Apache::Geode::Client::IGFSerializable^
+      inline static Apache::Geode::Client::IGeodeSerializable^
         SafeUMSerializableConvertGeneric( apache::geode::client::Serializable* obj )
       {
 
@@ -91,11 +91,11 @@ namespace Apache
           
           if( mg_obj_delta != nullptr )
           {
-            return dynamic_cast<Apache::Geode::Client::IGFSerializable^>(mg_obj_delta->ptr( ));
+            return dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(mg_obj_delta->ptr( ));
           }
           else if(mg_bytesObj_delta != nullptr)
           {
-            return dynamic_cast<Apache::Geode::Client::IGFSerializable^>(mg_bytesObj_delta->ptr( ));
+            return dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(mg_bytesObj_delta->ptr( ));
           }
           else
           {
@@ -128,7 +128,7 @@ namespace Apache
       /// <para>
       /// Consider the scenario that we have both native objects of class
       /// <c>apache::geode::client::Serializable</c> and managed objects of class
-      /// <see cref="IGFSerializable" /> in a Region.
+      /// <see cref="IGeodeSerializable" /> in a Region.
       /// </para><para>
       /// The former would be passed wrapped inside the
       /// <see cref="Serializable" /> class.
@@ -149,7 +149,7 @@ namespace Apache
       inline static NativeType* SafeM2UMConvertGeneric( ManagedType^ mg_obj )
       {
         /*
-        *return SafeM2UMConvertGeneric<IGFSerializable, apache::geode::client::ManagedCacheableKey,
+        *return SafeM2UMConvertGeneric<IGeodeSerializable, apache::geode::client::ManagedCacheableKey,
           apache::geode::client::Serializable, Serializable>( mg_obj );
         */
         //TODO: need to look this further for all types
@@ -164,8 +164,8 @@ namespace Apache
         //}
         //else 
         {
-          Apache::Geode::Client::IGFDelta^ sDelta =
-            dynamic_cast<Apache::Geode::Client::IGFDelta^> (mg_obj);
+          Apache::Geode::Client::IGeodeDelta^ sDelta =
+            dynamic_cast<Apache::Geode::Client::IGeodeDelta^> (mg_obj);
           if(sDelta != nullptr){
             if(!SafeConvertClassGeneric::isAppDomainEnabled)
               return new apache::geode::client::ManagedCacheableDeltaGeneric( sDelta);
@@ -252,15 +252,15 @@ namespace Apache
       }
 
       /// <summary>
-      /// Helper function to convert managed <see cref="IGFSerializable" />
+      /// Helper function to convert managed <see cref="IGeodeSerializable" />
       /// object to native <c>apache::geode::client::Serializable</c> object using
       /// <c>SafeM2UMConvert</c>.
       /// </summary>
       inline static apache::geode::client::Serializable* SafeMSerializableConvertGeneric(
-        Apache::Geode::Client::IGFSerializable^ mg_obj )
+        Apache::Geode::Client::IGeodeSerializable^ mg_obj )
       {
         //it is called for cacheables types  only
-        return SafeM2UMConvertGeneric<Apache::Geode::Client::IGFSerializable,
+        return SafeM2UMConvertGeneric<Apache::Geode::Client::IGeodeSerializable,
           apache::geode::client::ManagedCacheableKeyGeneric, apache::geode::client::Serializable,
           Apache::Geode::Client::Serializable>( mg_obj );
       }
@@ -293,8 +293,8 @@ namespace Apache
 						return new apache::geode::client::PdxManagedCacheableKeyBytes(pdxType, true);
         }
       
-				Apache::Geode::Client::IGFDelta^ sDelta =
-            dynamic_cast<Apache::Geode::Client::IGFDelta^> (mg_obj);
+				Apache::Geode::Client::IGeodeDelta^ sDelta =
+            dynamic_cast<Apache::Geode::Client::IGeodeDelta^> (mg_obj);
           if(sDelta != nullptr)
 					{
             if(!SafeConvertClassGeneric::isAppDomainEnabled)
@@ -304,8 +304,8 @@ namespace Apache
           }
           else
 					{
-						Apache::Geode::Client::IGFSerializable^ tmpIGFS = 
-							dynamic_cast<Apache::Geode::Client::IGFSerializable^>(mg_obj);
+						Apache::Geode::Client::IGeodeSerializable^ tmpIGFS = 
+							dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(mg_obj);
 						if(tmpIGFS != nullptr)
 						{
 							if(!SafeConvertClassGeneric::isAppDomainEnabled)

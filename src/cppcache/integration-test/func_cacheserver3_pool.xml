@@ -72,6 +72,9 @@
   	  <class-name>javaobject.FEOnRegionPrSHOP_OptimizeForWrite</class-name>
   	</function>
 	<function>
+  	  <class-name>javaobject.ThinClientRegionExceptionTest</class-name>
+  	</function>
+	<function>
   	  <class-name>javaobject.RegionOperationsHAFunctionPrSHOP</class-name>
   	</function>
 	  <function>

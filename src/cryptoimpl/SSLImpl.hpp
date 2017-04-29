@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_d7c8a71cb25b1a2fdc896009aee7509f
-#define APACHE_GEODE_GUARD_d7c8a71cb25b1a2fdc896009aee7509f
+#ifndef GEODE_CRYPTOIMPL_SSLIMPL_H_
+#define GEODE_CRYPTOIMPL_SSLIMPL_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gf_base.hpp>
+#include <geode/geode_base.hpp>
 #include "ace/ACE.h"
 #include "ace/OS.h"
 #include <ace/INET_Addr.h>
@@ -30,9 +30,9 @@
 #include <ace/OS.h>
 #include <ace/Recursive_Thread_Mutex.h>
 #include "ace/Time_Value.h"
-#include "GFSsl.hpp"
+#include "Ssl.hpp"
 
-class SSLImpl : public GFSsl {
+class SSLImpl : public apache::geode::client::Ssl {
  private:
   ACE_SSL_SOCK_Stream* m_io;
   static ACE_Recursive_Thread_Mutex s_mutex;
@@ -59,5 +59,4 @@ CPPCACHE_EXPORT void* gf_create_SslImpl(ACE_SOCKET sock, const char* pubkeyfile,
 CPPCACHE_EXPORT void gf_destroy_SslImpl(void* impl);
 }
 
-
-#endif // APACHE_GEODE_GUARD_d7c8a71cb25b1a2fdc896009aee7509f
+#endif  // GEODE_CRYPTOIMPL_SSLIMPL_H_

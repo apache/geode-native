@@ -25,12 +25,11 @@
  *
  */
 
-
 #include <memory>
 
 #include <ace/Semaphore.h>
 #include <string>
-#include <gfcpp/gf_types.hpp>
+#include <geode/geode_types.hpp>
 #include "Utils.hpp"
 #include "AppDomainContext.hpp"
 
@@ -187,5 +186,4 @@ class TcrChunkedContext {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TCRCHUNKEDCONTEXT_H_
+#endif  // GEODE_TCRCHUNKEDCONTEXT_H_

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "RegionEvent.hpp"
 #include "Region.hpp"
-#include "IGFSerializable.hpp"
+#include "IGeodeSerializable.hpp"
 #include "impl/SafeConvert.hpp"
 using namespace System;
 

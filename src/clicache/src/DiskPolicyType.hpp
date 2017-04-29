@@ -19,8 +19,8 @@
 
 
 
-#include "gf_defs.hpp"
-#include <gfcpp/DiskPolicyType.hpp>
+#include "geode_defs.hpp"
+#include <geode/DiskPolicyType.hpp>
 
 
 using namespace System;

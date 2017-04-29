@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Cache.hpp>
+#include <geode/Cache.hpp>
 #include <Utils.hpp>
-#include <gfcpp/DataOutput.hpp>
-#include <string.h>
-#include <stdlib.h>
-#include <gfcpp/GeodeTypeIds.hpp>
+#include <geode/DataOutput.hpp>
+#include <string>
+#include <cstdlib>
+#include <geode/GeodeTypeIds.hpp>
 #include <CacheXmlParser.hpp>
 #include <ace/DLL.h>
 #include <ace/OS.h>
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/Properties.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/Properties.hpp>
 
 using namespace apache::geode::client;
 RegionAttributes::RegionAttributes()

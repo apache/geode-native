@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include <gfcpp/gf_base.hpp>
-#include "gf_defs.hpp"
+#include <geode/geode_base.hpp>
+#include "geode_defs.hpp"
 //#include "SystemProperties.hpp"
 //#include "../../impl/NativeWrapper.hpp"
 //#include "../../Log.hpp"
@@ -77,9 +77,9 @@ namespace Apache
 					/// <summary>
 					/// Utility method to get the calling thread's last system error code.
 					/// </summary>
-					static property int32_t LastError
+					static property System::Int32 LastError
 					{
-						int32_t get( );
+						System::Int32 get( );
 					}
 				};
     }  // namespace Client

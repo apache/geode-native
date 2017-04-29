@@ -20,14 +20,14 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/CqEvent.hpp>
-#include <gfcpp/CqOperation.hpp>
-#include <gfcpp/CqQuery.hpp>
-#include <gfcpp/CacheableKey.hpp>
-#include <gfcpp/Cacheable.hpp>
-#include <gfcpp/Exception.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/geode_types.hpp>
+#include <geode/CqEvent.hpp>
+#include <geode/CqOperation.hpp>
+#include <geode/CqQuery.hpp>
+#include <geode/CacheableKey.hpp>
+#include <geode/Cacheable.hpp>
+#include <geode/Exception.hpp>
 #include <string>
 
 /**
@@ -105,4 +105,4 @@ class CqEventImpl : public CqEvent {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CQEVENTIMPL_H_
+#endif  // GEODE_CQEVENTIMPL_H_

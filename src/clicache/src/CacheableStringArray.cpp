@@ -43,7 +43,7 @@ namespace Apache
         return m_value;
       }
 
-      String^ CacheableStringArray::default::get(int32_t index)
+      String^ CacheableStringArray::default::get(System::Int32 index)
       {
         return m_value[index];
       }
@@ -69,7 +69,7 @@ namespace Apache
       }
         
     
-      IGFSerializable^ CacheableStringArray::FromData(DataInput^ input)
+      IGeodeSerializable^ CacheableStringArray::FromData(DataInput^ input)
       {
         int len = input->ReadArrayLen();
         if ( len == -1)

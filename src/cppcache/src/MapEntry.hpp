@@ -20,11 +20,11 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/Cacheable.hpp>
-#include <gfcpp/CacheableKey.hpp>
-#include <gfcpp/SharedPtr.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/Cacheable.hpp>
+#include <geode/CacheableKey.hpp>
+#include <geode/SharedPtr.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "HostAsm.hpp"
 #include "CacheImpl.hpp"
 #include "ExpiryTaskManager.hpp"
@@ -288,4 +288,4 @@ class CPPCACHE_EXPORT EntryFactory {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_MAPENTRY_H_
+#endif  // GEODE_MAPENTRY_H_

@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/CqStatistics.hpp>
+#include "geode_defs.hpp"
+#include <geode/CqStatistics.hpp>
 #include "impl/NativeWrapper.hpp"
 
 
@@ -40,22 +40,22 @@ namespace Apache
         /// <summary>
         /// get number of inserts qualified by this Cq
         /// </summary>
-          uint32_t numInserts( );
+          System::UInt32 numInserts( );
 
         /// <summary>
         /// get number of deletes qualified by this Cq
         /// </summary>
-          uint32_t numDeletes( );
+          System::UInt32 numDeletes( );
 
         /// <summary>
         /// get number of updates qualified by this Cq
         /// </summary>
-          uint32_t numUpdates( );
+          System::UInt32 numUpdates( );
 
         /// <summary>
         /// get number of events qualified by this Cq
         /// </summary>
-          uint32_t numEvents( );
+          System::UInt32 numEvents( );
 
       internal:
 

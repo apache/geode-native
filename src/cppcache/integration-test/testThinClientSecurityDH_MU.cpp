@@ -19,7 +19,7 @@
 
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 
@@ -256,14 +256,14 @@ void initSecurityServer(int instance) {
 
       std::string testsrc = ACE_OS::getenv("TESTSRC");
       if (instance == 1) {
-        testsrc += "/keystore/gemfire1.keystore";
+        testsrc += "/keystore/geode1.keystore";
         cmdServerAuthenticator += " security-server-kspath=";
         cmdServerAuthenticator += testsrc;
         cmdServerAuthenticator +=
             " security-server-ksalias=geode1 "
             "security-server-kspasswd=geode";
       } else if (instance == 2) {
-        testsrc += "/keystore/gemfire2.keystore";
+        testsrc += "/keystore/geode2.keystore";
         cmdServerAuthenticator += " security-server-kspath=";
         cmdServerAuthenticator += testsrc;
         cmdServerAuthenticator +=

@@ -16,8 +16,8 @@
  */
 #include "QueueConnectionRequest.hpp"
 #include "GeodeTypeIdsImpl.hpp"
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/DataOutput.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
 using namespace apache::geode::client;
 
 void QueueConnectionRequest::toData(DataOutput& output) const {

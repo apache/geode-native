@@ -16,9 +16,9 @@
  */
 
 #include "NoopAuthInit.hpp"
-#include "gfcpp/Properties.hpp"
-#include "gfcpp/Log.hpp"
-#include "gfcpp/ExceptionTypes.hpp"
+#include "geode/Properties.hpp"
+#include "geode/Log.hpp"
+#include "geode/ExceptionTypes.hpp"
 
 namespace apache {
 namespace geode {

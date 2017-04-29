@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "QueryService.hpp"
 #include "Query.hpp"
 #include "Log.hpp"
@@ -104,7 +104,7 @@ namespace Apache
           NativePtr->getCqs(vrr);
           array<CqQuery<TKey, TResult>^>^ cqs = gcnew array<CqQuery<TKey, TResult>^>(vrr.size());
 
-          for (int32_t index = 0; index < vrr.size(); index++)
+          for (System::Int32 index = 0; index < vrr.size(); index++)
           {
             cqs[index] = CqQuery<TKey, TResult>::Create(vrr[index].ptr());
           }

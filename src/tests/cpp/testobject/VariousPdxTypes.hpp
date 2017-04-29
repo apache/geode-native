@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_e8d4e6f6728b309933eb81791b61fc90
-#define APACHE_GEODE_GUARD_e8d4e6f6728b309933eb81791b61fc90
+#ifndef GEODE_TESTOBJECT_VARIOUSPDXTYPES_H_
+#define GEODE_TESTOBJECT_VARIOUSPDXTYPES_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -26,11 +26,10 @@
  *      Author: npatel
  */
 
-
-#include <gfcpp/PdxSerializable.hpp>
-#include <gfcpp/GeodeCppCache.hpp>
-#include <gfcpp/PdxWriter.hpp>
-#include <gfcpp/PdxReader.hpp>
+#include <geode/PdxSerializable.hpp>
+#include <geode/GeodeCppCache.hpp>
+#include <geode/PdxWriter.hpp>
+#include <geode/PdxReader.hpp>
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
@@ -495,10 +494,10 @@ class TESTOBJECT_EXPORT MixedVersionNestedPdx : public PdxSerializable {
 typedef SharedPtr<MixedVersionNestedPdx> MixedVersionNestedPdxPtr;
 
 /************************************************************
- *  PdxInsideIGFSerializable
+ *  PdxInsideIGeodeSerializable
  * *********************************************************/
 
-class TESTOBJECT_EXPORT PdxInsideIGFSerializable : public Serializable {
+class TESTOBJECT_EXPORT PdxInsideIGeodeSerializable : public Serializable {
  private:
   NestedPdxPtr m_npdx;
   PdxTypes3Ptr m_pdx3;
@@ -511,9 +510,9 @@ class TESTOBJECT_EXPORT PdxInsideIGFSerializable : public Serializable {
   int32_t m_i4;
 
  public:
-  PdxInsideIGFSerializable();
+  PdxInsideIGeodeSerializable();
 
-  virtual ~PdxInsideIGFSerializable();
+  virtual ~PdxInsideIGeodeSerializable();
 
   int32_t getHashCode();
 
@@ -528,15 +527,15 @@ class TESTOBJECT_EXPORT PdxInsideIGFSerializable : public Serializable {
   virtual int32_t classId() const { return 0x10; }
 
   const char* getClassName() const {
-    return "PdxTests::PdxInsideIGFSerializable";
+    return "PdxTests::PdxInsideIGeodeSerializable";
   }
 
   static Serializable* createDeserializable() {
-    return new PdxInsideIGFSerializable();
+    return new PdxInsideIGeodeSerializable();
   }
 };
-typedef SharedPtr<PdxInsideIGFSerializable> PdxInsideIGFSerializablePtr;
+typedef SharedPtr<PdxInsideIGeodeSerializable> PdxInsideIGeodeSerializablePtr;
 
 } /* namespace PdxTests */
 
-#endif // APACHE_GEODE_GUARD_e8d4e6f6728b309933eb81791b61fc90
+#endif  // GEODE_TESTOBJECT_VARIOUSPDXTYPES_H_

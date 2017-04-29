@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Cacheable.hpp>
+#include <geode/Cacheable.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 #include "MemberListForVersionStamp.hpp"
 namespace apache {
@@ -89,5 +89,4 @@ class VersionTag : public Cacheable {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_VERSIONTAG_H_
+#endif  // GEODE_VERSIONTAG_H_

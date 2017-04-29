@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 /* use CacheHelper to gain the impl pointer from cache or region object
  */
@@ -189,4 +189,4 @@ class TestUtils {
 };
 }  // namespace unitTests
 
-#endif // GEODE_INTEGRATION_TEST_TESTUTILS_H_
+#endif  // GEODE_INTEGRATION_TEST_TESTUTILS_H_

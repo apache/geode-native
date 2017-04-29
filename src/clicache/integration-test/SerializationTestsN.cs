@@ -70,9 +70,9 @@ namespace Apache.Geode.Client.UnitTests
       base.EndTest();
     }
 
-    private IGFSerializable CreateOtherType(int i, int otherType)
+    private IGeodeSerializable CreateOtherType(int i, int otherType)
     {
-      IGFSerializable ot;
+      IGeodeSerializable ot;
       switch (otherType)
       {
         case OTHER_TYPE1: ot = new OtherType(i, i + 20000); break;
@@ -147,7 +147,7 @@ namespace Apache.Geode.Client.UnitTests
       IRegion<object, object> region = CacheHelper.GetVerifyRegion<object, object>(RegionNames[0]);
       for (int i = 0; i < n; i++)
       {
-        IGFSerializable ot = CreateOtherType(i, otherType);
+        IGeodeSerializable ot = CreateOtherType(i, otherType);
         region[i + 10] = ot;
       }
     }
@@ -158,7 +158,7 @@ namespace Apache.Geode.Client.UnitTests
       for (int i = 0; i < n; i++)
       {
         object val = region[i + 10];
-        IGFSerializable ot = CreateOtherType(i, otherType);
+        IGeodeSerializable ot = CreateOtherType(i, otherType);
         Assert.IsTrue(ot.Equals(val), "Found unexpected value");
       }
     }
@@ -385,7 +385,7 @@ namespace Apache.Geode.Client.UnitTests
 
   };
 
-  public class OtherType : IGFSerializable
+  public class OtherType : IGeodeSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -427,19 +427,19 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public static IGFSerializable Duplicate(IGFSerializable orig)
+    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
     {
       DataOutput dout = new DataOutput();
       orig.ToData(dout);
 
       DataInput din = new DataInput(dout.GetBuffer());
-      IGFSerializable dup = (IGFSerializable)din.ReadObject();
+      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
       return dup;
     }
 
-    #region IGFSerializable Members
+    #region IGeodeSerializable Members
 
-    public IGFSerializable FromData(DataInput input)
+    public IGeodeSerializable FromData(DataInput input)
     {
       m_struct.First = input.ReadInt32();
       m_struct.Second = input.ReadInt64();
@@ -512,7 +512,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new OtherType();
     }
@@ -533,7 +533,7 @@ namespace Apache.Geode.Client.UnitTests
     }
   }
 
-  public class OtherType2 : IGFSerializable
+  public class OtherType2 : IGeodeSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -575,19 +575,19 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public static IGFSerializable Duplicate(IGFSerializable orig)
+    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
     {
       DataOutput dout = new DataOutput();
       orig.ToData(dout);
 
       DataInput din = new DataInput(dout.GetBuffer());
-      IGFSerializable dup = (IGFSerializable)din.ReadObject();
+      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
       return dup;
     }
 
-    #region IGFSerializable Members
+    #region IGeodeSerializable Members
 
-    public IGFSerializable FromData(DataInput input)
+    public IGeodeSerializable FromData(DataInput input)
     {
       m_struct.First = input.ReadInt32();
       m_struct.Second = input.ReadInt64();
@@ -660,7 +660,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new OtherType2();
     }
@@ -682,7 +682,7 @@ namespace Apache.Geode.Client.UnitTests
 
   }
 
-  public class OtherType22 : IGFSerializable
+  public class OtherType22 : IGeodeSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -724,19 +724,19 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public static IGFSerializable Duplicate(IGFSerializable orig)
+    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
     {
       DataOutput dout = new DataOutput();
       orig.ToData(dout);
 
       DataInput din = new DataInput(dout.GetBuffer());
-      IGFSerializable dup = (IGFSerializable)din.ReadObject();
+      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
       return dup;
     }
 
-    #region IGFSerializable Members
+    #region IGeodeSerializable Members
 
-    public IGFSerializable FromData(DataInput input)
+    public IGeodeSerializable FromData(DataInput input)
     {
       m_struct.First = input.ReadInt32();
       m_struct.Second = input.ReadInt64();
@@ -809,7 +809,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new OtherType22();
     }
@@ -830,7 +830,7 @@ namespace Apache.Geode.Client.UnitTests
     }
   }
 
-  public class OtherType4 : IGFSerializable
+  public class OtherType4 : IGeodeSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -872,19 +872,19 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public static IGFSerializable Duplicate(IGFSerializable orig)
+    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
     {
       DataOutput dout = new DataOutput();
       orig.ToData(dout);
 
       DataInput din = new DataInput(dout.GetBuffer());
-      IGFSerializable dup = (IGFSerializable)din.ReadObject();
+      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
       return dup;
     }
 
-    #region IGFSerializable Members
+    #region IGeodeSerializable Members
 
-    public IGFSerializable FromData(DataInput input)
+    public IGeodeSerializable FromData(DataInput input)
     {
       m_struct.First = input.ReadInt32();
       m_struct.Second = input.ReadInt64();
@@ -957,7 +957,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new OtherType4();
     }
@@ -979,7 +979,7 @@ namespace Apache.Geode.Client.UnitTests
 
   }
 
-  public class OtherType42 : IGFSerializable
+  public class OtherType42 : IGeodeSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -1021,19 +1021,19 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public static IGFSerializable Duplicate(IGFSerializable orig)
+    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
     {
       DataOutput dout = new DataOutput();
       orig.ToData(dout);
 
       DataInput din = new DataInput(dout.GetBuffer());
-      IGFSerializable dup = (IGFSerializable)din.ReadObject();
+      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
       return dup;
     }
 
-    #region IGFSerializable Members
+    #region IGeodeSerializable Members
 
-    public IGFSerializable FromData(DataInput input)
+    public IGeodeSerializable FromData(DataInput input)
     {
       m_struct.First = input.ReadInt32();
       m_struct.Second = input.ReadInt64();
@@ -1106,7 +1106,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new OtherType42();
     }
@@ -1128,7 +1128,7 @@ namespace Apache.Geode.Client.UnitTests
 
   }
 
-  public class OtherType43 : IGFSerializable
+  public class OtherType43 : IGeodeSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -1170,19 +1170,19 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public static IGFSerializable Duplicate(IGFSerializable orig)
+    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
     {
       DataOutput dout = new DataOutput();
       orig.ToData(dout);
 
       DataInput din = new DataInput(dout.GetBuffer());
-      IGFSerializable dup = (IGFSerializable)din.ReadObject();
+      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
       return dup;
     }
 
-    #region IGFSerializable Members
+    #region IGeodeSerializable Members
 
-    public IGFSerializable FromData(DataInput input)
+    public IGeodeSerializable FromData(DataInput input)
     {
       m_struct.First = input.ReadInt32();
       m_struct.Second = input.ReadInt64();
@@ -1255,7 +1255,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new OtherType43();
     }

@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/AttributesMutator.hpp>
+#include "geode_defs.hpp"
+#include <geode/AttributesMutator.hpp>
 //#include "impl/NativeWrapper.hpp"
 #include "ExpirationAction.hpp"
 #include "ICacheListener.hpp"
@@ -69,7 +69,7 @@ namespace Apache
         /// if the new idleTimeout changes entry expiration from
         /// disabled to enabled or enabled to disabled.
         /// </exception>
-        int32_t SetEntryIdleTimeout( int32_t idleTimeout );
+        System::Int32 SetEntryIdleTimeout( System::Int32 idleTimeout );
 
         /// <summary>
         /// Sets the idleTimeout action for region entries.
@@ -91,7 +91,7 @@ namespace Apache
         /// if the new timeToLive changes entry expiration from
         /// disabled to enabled or enabled to disabled
         /// </exception>
-        int32_t SetEntryTimeToLive( int32_t timeToLive );
+        System::Int32 SetEntryTimeToLive( System::Int32 timeToLive );
 
         /// <summary>
         /// Set the timeToLive action for region entries.
@@ -113,7 +113,7 @@ namespace Apache
         /// if the new idleTimeout changes region expiration from
         /// disabled to enabled or enabled to disabled.
         /// </exception>
-        int32_t SetRegionIdleTimeout( int32_t idleTimeout );
+        System::Int32 SetRegionIdleTimeout( System::Int32 idleTimeout );
 
         /// <summary>
         /// Sets the idleTimeout action for the region itself.
@@ -135,7 +135,7 @@ namespace Apache
         /// if the new timeToLive changes region expiration from
         /// disabled to enabled or enabled to disabled.
         /// </exception>
-        int32_t SetRegionTimeToLive( int32_t timeToLive );
+        System::Int32 SetRegionTimeToLive( System::Int32 timeToLive );
 
         /// <summary>
         /// Sets the timeToLive action for the region itself.
@@ -155,7 +155,7 @@ namespace Apache
         /// if the new entriesLimit changes LRU from
         /// disabled to enabled or enabled to disabled.
         /// </exception>
-        uint32_t SetLruEntriesLimit( uint32_t entriesLimit );
+        System::UInt32 SetLruEntriesLimit( System::UInt32 entriesLimit );
 
         /// <summary>
         /// Sets the CacheListener for the region.

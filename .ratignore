@@ -23,10 +23,12 @@
 
 # expect script
 .*changepasswd$
+.*winrm.cloud-init$
 
 # doxygen
 .*package-list$
 .*testframeworkdox.txt$
+docs
 
 # patches
 .*patches$

@@ -16,10 +16,10 @@
  */
 
 #include <Utils.hpp>
-#include <string.h>
-#include <stdlib.h>
-#include <gfcpp/GeodeTypeIds.hpp>
-#include <gfcpp/CacheAttributes.hpp>
+#include <string>
+#include <cstdlib>
+#include <geode/GeodeTypeIds.hpp>
+#include <geode/CacheAttributes.hpp>
 
 using namespace apache::geode::client;
 CacheAttributes::CacheAttributes()

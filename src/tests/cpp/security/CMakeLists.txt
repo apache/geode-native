@@ -24,7 +24,6 @@ target_link_libraries(security
     ACE
   PUBLIC
     fwk
-    pdxobject
     testobject
     crypto
     ssl

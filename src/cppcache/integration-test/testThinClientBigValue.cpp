@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gf_base.hpp>
+#include <geode/geode_base.hpp>
 
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"

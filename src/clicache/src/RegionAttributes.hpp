@@ -17,10 +17,10 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/RegionAttributes.hpp>
+#include "geode_defs.hpp"
+#include <geode/RegionAttributes.hpp>
 //#include "impl/NativeWrapper.hpp"
-#include "IGFSerializable.hpp"
+#include "IGeodeSerializable.hpp"
 #include "ExpirationAction.hpp"
 #include "DiskPolicyType.hpp"
 #include "GeodeClassIds.hpp"
@@ -68,7 +68,7 @@ namespace Apache
       /// <seealso cref="Region.Attributes" />
       generic <class TKey, class TValue>
       public ref class RegionAttributes sealed
-        : public Client::Internal::SBWrap<apache::geode::client::RegionAttributes>, public IGFSerializable
+        : public Client::Internal::SBWrap<apache::geode::client::RegionAttributes>, public IGeodeSerializable
       {
       public:
 
@@ -120,9 +120,9 @@ namespace Apache
         /// Gets the <c>timeToLive</c> value for the region as a whole.
         /// </summary>
         /// <returns>the timeToLive duration for this region, in seconds</returns>
-        property int32_t RegionTimeToLive
+        property System::Int32 RegionTimeToLive
         {
-          int32_t get();
+          System::Int32 get();
         }
 
         /// <summary>
@@ -138,9 +138,9 @@ namespace Apache
         /// Gets the <c>idleTimeout</c> value for the region as a whole.
         /// </summary>
         /// <returns>the IdleTimeout duration for this region, in seconds</returns>
-        property int32_t RegionIdleTimeout
+        property System::Int32 RegionIdleTimeout
         {
-          int32_t get();
+          System::Int32 get();
         }
 
         /// <summary>
@@ -156,9 +156,9 @@ namespace Apache
         /// Gets the <c>timeToLive</c> value for entries in this region.
         /// </summary>
         /// <returns>the timeToLive duration for entries in this region, in seconds</returns>
-        property int32_t EntryTimeToLive
+        property System::Int32 EntryTimeToLive
         {
-          int32_t get();
+          System::Int32 get();
         }
 
         /// <summary>
@@ -174,9 +174,9 @@ namespace Apache
         /// Gets the <c>idleTimeout</c> value for entries in this region.
         /// </summary>
         /// <returns>the idleTimeout duration for entries in this region, in seconds</returns>
-        property int32_t EntryIdleTimeout
+        property System::Int32 EntryIdleTimeout
         {
-          int32_t get();
+          System::Int32 get();
         }
 
         /// <summary>
@@ -204,9 +204,9 @@ namespace Apache
         /// Returns the initial capacity of the entry's local cache.
         /// </summary>
         /// <returns>the initial capacity</returns>
-        property int32_t InitialCapacity
+        property System::Int32 InitialCapacity
         {
-          int32_t get();
+          System::Int32 get();
         }
 
         /// <summary>
@@ -223,9 +223,9 @@ namespace Apache
         /// </summary>
         /// <returns>the concurrency level</returns>
         /// <seealso cref="AttributesFactory" />
-        property int32_t ConcurrencyLevel
+        property System::Int32 ConcurrencyLevel
         {
-          int32_t get();
+          System::Int32 get();
         }
 
         /// <summary>
@@ -233,9 +233,9 @@ namespace Apache
         /// using LRU eviction. 
         /// </summary>
         /// <returns>the maximum LRU size, or 0 for no limit</returns>
-        property uint32_t LruEntriesLimit
+        property System::UInt32 LruEntriesLimit
         {
-          uint32_t get();
+          System::UInt32 get();
         }
 
         /// <summary>
@@ -444,14 +444,14 @@ namespace Apache
         /// </summary>
         /// <param name="input">the DataInput stream to use for reading data</param>
         /// <returns>the deserialized Properties object</returns>
-        virtual IGFSerializable^ FromData(DataInput^ input);
+        virtual IGeodeSerializable^ FromData(DataInput^ input);
 
         /// <summary>
         /// return the size of this object in bytes
         /// </summary>
-        virtual property uint32_t ObjectSize
+        virtual property System::UInt32 ObjectSize
         {
-          virtual uint32_t get()
+          virtual System::UInt32 get()
           {
             return 0;  //don't care
           }
@@ -461,10 +461,10 @@ namespace Apache
         /// Returns the classId of this class for serialization.
         /// </summary>
         /// <returns>classId of the Properties class</returns>
-        /// <seealso cref="../../IGFSerializable.ClassId" />
-        virtual property uint32_t ClassId
+        /// <seealso cref="../../IGeodeSerializable.ClassId" />
+        virtual property System::UInt32 ClassId
         {
-          inline virtual uint32_t get()
+          inline virtual System::UInt32 get()
           {
             return GeodeClassIds::RegionAttributes;
           }

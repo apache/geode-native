@@ -20,9 +20,8 @@
  * limitations under the License.
  */
 
-
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/Log.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/Log.hpp>
 #include "Connector.hpp"
 
 #include <ace/SOCK_Stream.h>
@@ -136,11 +135,10 @@ class CPPCACHE_EXPORT TcpConn : public Connector {
     setOption(level, option, (void*)&val, sizeof(bool));
   }
 
-  virtual uint16 getPort();
+  virtual uint16_t getPort();
 };
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TCPCONN_H_
+#endif  // GEODE_TCPCONN_H_

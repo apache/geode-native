@@ -21,7 +21,7 @@
  */
 
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include <string>
@@ -506,4 +506,4 @@ void doThinClientSSL(bool poolConfig = true, bool poolLocators = true) {
   CALL_TASK(CloseLocator1_With_SSL);
 }
 
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTSSL_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTSSL_H_

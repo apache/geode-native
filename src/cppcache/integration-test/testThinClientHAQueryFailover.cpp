@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include <ace/Task.h>
@@ -28,11 +28,11 @@
 
 //#include "QueryHelper.hpp"
 
-#include <gfcpp/Query.hpp>
-#include <gfcpp/QueryService.hpp>
-#include <gfcpp/ResultSet.hpp>
-#include <gfcpp/StructSet.hpp>
-#include <gfcpp/SelectResultsIterator.hpp>
+#include <geode/Query.hpp>
+#include <geode/QueryService.hpp>
+#include <geode/ResultSet.hpp>
+#include <geode/StructSet.hpp>
+#include <geode/SelectResultsIterator.hpp>
 
 #include "testobject/Portfolio.hpp"
 

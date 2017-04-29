@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include <ace/Thread_Mutex.h>
 #include <ace/Singleton.h>
 #include "NullProcessStats.hpp"
@@ -28,14 +28,14 @@ using namespace apache::geode::statistics;
  *
  */
 
-NullProcessStats::NullProcessStats(int64 pid, const char* name) {}
+NullProcessStats::NullProcessStats(int64_t pid, const char* name) {}
 
-int64 NullProcessStats::getProcessSize() { return 0; }
+int64_t NullProcessStats::getProcessSize() { return 0; }
 
-int32 NullProcessStats::getCpuUsage() { return 0; }
-int64 NullProcessStats::getCPUTime() { return 0; }
-int32 NullProcessStats::getNumThreads() { return 0; }
-int64 NullProcessStats::getAllCpuTime() { return 0; }
+int32_t NullProcessStats::getCpuUsage() { return 0; }
+int64_t NullProcessStats::getCPUTime() { return 0; }
+int32_t NullProcessStats::getNumThreads() { return 0; }
+int64_t NullProcessStats::getAllCpuTime() { return 0; }
 
 void NullProcessStats::close() {}
 

@@ -35,7 +35,7 @@ namespace Apache
       ref class DataInput;
       namespace Internal
       {
-        public ref class PdxType : public IGFSerializable
+        public ref class PdxType : public IGeodeSerializable
         {
         private:
           Object^                 m_lockObj;
@@ -69,8 +69,8 @@ namespace Apache
           PdxType^ clone();
 
           void generatePositionMap();
-          Int32 variableLengthFieldPosition(PdxFieldType^ varLenField, uint8_t* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen);
-          Int32 fixedLengthFieldPosition(PdxFieldType^ fixLenField, uint8_t* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen);
+          Int32 variableLengthFieldPosition(PdxFieldType^ varLenField, System::Byte* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen);
+          Int32 fixedLengthFieldPosition(PdxFieldType^ fixLenField, System::Byte* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen);
 
           PdxType^ isLocalTypeContains(PdxType^ otherType);
           PdxType^ isRemoteTypeContains(PdxType^ localType);
@@ -110,7 +110,7 @@ namespace Apache
             m_geodeTypeId = 0;
           }
 
-          static IGFSerializable^ CreateDeserializable()
+          static IGeodeSerializable^ CreateDeserializable()
           {
             return gcnew PdxType();
           }
@@ -171,14 +171,14 @@ namespace Apache
             void set(bool val) { m_isLocal = val; }
           }
           virtual void ToData(DataOutput^ output);
-          virtual IGFSerializable^ FromData(DataInput^ input);
-          virtual property uint32_t ObjectSize
+          virtual IGeodeSerializable^ FromData(DataInput^ input);
+          virtual property System::UInt32 ObjectSize
           {
-            uint32_t get(){ return 0; }
+            System::UInt32 get(){ return 0; }
           }
-          virtual property uint32_t ClassId
+          virtual property System::UInt32 ClassId
           {
-            uint32_t get(){ return GeodeClassIds::PdxType; }
+            System::UInt32 get(){ return GeodeClassIds::PdxType; }
           }
           virtual String^ ToString() override
           {
@@ -188,8 +188,8 @@ namespace Apache
           void AddVariableLengthTypeField(String^ fieldName, String^ className, Byte typeId);
           void InitializeType();
           PdxType^ MergeVersion(PdxType^ otherVersion);
-          Int32 GetFieldPosition(String^ fieldName, uint8_t* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen);
-          Int32 GetFieldPosition(Int32 fieldIdx, uint8_t* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen);
+          Int32 GetFieldPosition(String^ fieldName, System::Byte* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen);
+          Int32 GetFieldPosition(Int32 fieldIdx, System::Byte* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen);
 
           virtual bool Equals(Object^ otherType) override;
           virtual Int32 GetHashCode() override;

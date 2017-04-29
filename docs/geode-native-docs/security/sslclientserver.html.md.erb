@@ -1,0 +1,159 @@
+---
+title:  SSL Client/Server Communication
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+This section describes how to configure OpenSSL, implement SSL-based communication between your clients and servers, and run clients and servers with SSL enabled.
+
+# Set Up OpenSSL
+
+The open-source OpenSSL toolkit provides a full-strength general purpose cryptography library to operate along with the PKCS sample implementation for encrypted authentication of native client credentials.
+
+Follow these instructions to download and install OpenSSL for your specific operating system.
+
+The native client requires OpenSSL 1.0.1t or later. For Windows platforms, you can use either the regular or the OpenSSL 1.0.1t "Light" version.
+
+**Note for Windows users:** If you use Cygwin, do not use the OpenSSL library that comes with
+Cygwin, which is built with `cygwin.dll` as a dependency. Instead, download a fresh copy from
+OpenSSL as described in the following section.
+
+## Step 1. Download and install OpenSSL
+
+To install OpenSSL:
+
+1. Download the OpenSSL archive from the [OpenSSL web site](http://www.openssl.org/source/). 
+
+2. Extract the archive in a directory of your choice. For example:
+
+    ```
+    $ tar xvzf openssl-1.0.1u.tar.gz
+    x openssl-1.0.1u/ACKNOWLEDGMENTS
+    x openssl-1.0.1u/apps/
+    x openssl-1.0.1u/apps/app_rand.c
+    ...
+    ```
+
+3. Look in the top-level directory of the source distribution to identify the installation instructions for your operating system:
+
+    ```
+    $ cd openssl-1.0.1u
+    $ ls INSTALL*
+    INSTALL        INSTALL.DJGPP      INSTALL.MacOS      INSTALL.NW        INSTALL.OS2
+    INSTALL.VMS    INSTALL.W32        INSTALL.W64        INSTALL.WCE
+    ```
+
+4. Build the OpenSSL library by following the instructions for your operating system.
+
+## Step 2. Create keystores
+
+The Geode server requires keys and keystores in the Java Key Store (JKS) format while the native client requires them in the clear PEM format. Thus you need to be able to generate private/public keypairs in either format and convert between the two using the `keytool` utility and the `openssl` command.
+
+There are public third party free tools and source code available to download such as the "KeyTool IUI" tool.
+
+
+## Step 3. Configure environment variables
+
+Configure your system environment to build and run OpenSSL by adding the appropriate executable and library directories to your paths.
+For example, for Bourne and Korn shells (sh, ksh, bash), environment setup would look something like this:
+<code>
+% LD\_LIBRARY\_PATH=$LD\_LIBRARY\_PATH:_client-install-dir_/lib:_client-install-dir_/ssl\_libs:_openssl-install-dir_/lib<br />
+% export LD\_LIBRARY\_PATH<br />
+% CLASSPATH=_server-install-dir_/lib/securityImpl.jar:$CLASSPATH
+</code>
+
+where:
+
+  _client-install-dir_ is the directory in which you installed your client.
+
+  _openssl-install-dir_ is the directory in which you installed OpenSSL.
+
+  _server-install-dir_ is the directory in which you installed your server.
+
+For Windows, environment setup might resemble this:
+<code>
+\> set PATH=_jdk-or-jre-path_\bin;_client-install-dir_\bin;_client-install-dir_\ssl\_libs;_openssl-install-dir_\bin;%PATH%<br />
+\> set CLASSPATH=_server-installdir_\lib\securityImpl.jar;%CLASSPATH%
+</code>
+
+where _jdk-or-jre-path_ is the directory in which Java is installed.
+
+## Step 4. Configure SSL properties in client and server properties files
+
+Configure SSL properties. For details on the SSL properties available, see "Managing > Security >
+SSL > Configuring SSL" in the server User Guide.  
+
+On the client, the list of enabled components reflects the server’s configuration so the client
+knows how it is expected to communicate with (for example) servers and locators. Paths to keystore
+and truststore are local to the client.
+
+1.  In your client properties file (usually `gemfire.properties`), set `ssl-enabled-components` to appropriate values (for example, `server,locator`) and set `ssl-keystore` and `ssl-truststore` to point to your keystore files. See [Security-Related System Properties (gemfire.properties)](security-systemprops.html#security) for a description of these properties.
+2.  On each locator, enable SSL and set the following SSL properties in the locator’s properties file (usually `gemfire.properties`, but on the locator's host):
+
+    ```
+    ssl-enabled-components=server,locator
+    ssl-protocols=any
+    ssl-ciphers=SSL_RSA_WITH_NULL_SHA
+    ```
+    Make sure your choice of cipher matches a cipher supported on the server.
+
+# Starting and stopping the client and server with SSL in place
+
+Before you start and stop the client and server, make sure you configure the native client with the
+SSL properties as described and with the servers or locators specified as usual.
+
+Specifically, ensure that:
+
+-   OpenSSL and ACE\_SSL `DLL`s locations are in the right environment variables for your system: `PATH` for Windows, and `LD_LIBRARY_PATH` for Unix.
+-   You have generated the keys and keystores.
+-   You have set the system properties.
+
+For details on stopping and starting locators and cache servers with SSL, see [Starting Up and Shutting Down Your System](geodeman/configuring/running/starting_up_shutting_down.html).
+
+**Example locator start command**
+
+Ensure that all required SSL properties are configured in your server's `gemfire.properties` file. Then start your locator as follows:
+
+``` pre
+gfsh>start locator --name=my_locator --port=12345 --dir=. \
+--security-properties-file=/path/to/your/gemfire.properties
+```
+
+**Example locator stop command**
+
+``` pre
+gfsh>stop locator --port=12345 \
+--security-properties-file=/path/to/your/gemfire.properties
+```
+
+**Example server start command**
+
+Again, ensure that all required SSL properties are configured in `gemfire.properties`. Then start the server with:
+
+``` pre
+gfsh>start server --name=my_server --locators=hostname[12345] \
+--cache-xml-file=server.xml --log-level=fine \
+--security-properties-file=/path/to/your/gemfire.properties
+```
+
+**Example server stop command**
+
+``` pre
+gfsh>stop server --name=my_server
+```
+

@@ -26,10 +26,9 @@
  *      Author: ankurs
  */
 
-
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/TransactionId.hpp>
-#include <gfcpp/DataOutput.hpp>
+#include <geode/geode_types.hpp>
+#include <geode/TransactionId.hpp>
+#include <geode/DataOutput.hpp>
 #include "AtomicInc.hpp"
 
 namespace apache {
@@ -55,5 +54,4 @@ class TXId : public apache::geode::client::TransactionId {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TXID_H_
+#endif  // GEODE_TXID_H_

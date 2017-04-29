@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Cache.hpp>
+#include <geode/Cache.hpp>
 #include "CacheXmlCreation.hpp"
 #include "CacheImpl.hpp"
 #include "PoolAttributes.hpp"

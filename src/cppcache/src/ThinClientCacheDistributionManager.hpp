@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/SharedPtr.hpp>
 #include "ThinClientDistributionManager.hpp"
 
 namespace apache {
@@ -66,4 +66,4 @@ typedef SharedPtr<ThinClientCacheDistributionManager>
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_THINCLIENTCACHEDISTRIBUTIONMANAGER_H_
+#endif  // GEODE_THINCLIENTCACHEDISTRIBUTIONMANAGER_H_

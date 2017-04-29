@@ -16,9 +16,9 @@
  */
 
 #pragma once
-#include "../gf_defs.hpp"
+#include "../geode_defs.hpp"
 #include <vcclr.h>
-#include <gfcpp/ResultCollector.hpp>
+#include <geode/ResultCollector.hpp>
 //#include "../ResultCollector.hpp"
 //#include "../IResultCollector.hpp"
 //#include "../../../IResultCollector.hpp"
@@ -75,7 +75,7 @@ namespace apache {
         /// </summary>
         virtual ~ManagedResultCollectorGeneric() { }
 
-        CacheableVectorPtr getResult(uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+        CacheableVectorPtr getResult(System::UInt32 timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
         void addResult(CacheablePtr& result);
         void endResults();
         void clearResults();

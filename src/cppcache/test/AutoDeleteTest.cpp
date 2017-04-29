@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 
-#include <gfcpp/SharedBase.hpp>
+#include <geode/SharedBase.hpp>
 #include <AutoDelete.hpp>
 
 using namespace apache::geode::client;

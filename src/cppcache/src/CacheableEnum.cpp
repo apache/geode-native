@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/CacheableEnum.hpp>
+#include <geode/CacheableEnum.hpp>
 #include <Utils.hpp>
 #include <PdxHelper.hpp>
 #include <GeodeTypeIdsImpl.hpp>
@@ -61,7 +61,7 @@ Serializable* CacheableEnum::fromData(apache::geode::client::DataInput& input) {
   return enumVal.ptr();
 }
 
-uint32_t CacheableEnum::hashcode() const {
+int32_t CacheableEnum::hashcode() const {
   int localHash = 1;
   if (m_hashcode == 0) {
     int prime = 31;

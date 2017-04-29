@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "CqStatistics.hpp"
 
 
@@ -26,19 +26,19 @@ namespace Apache
     namespace Client
     {
 
-		uint32_t CqStatistics::numInserts( )
+		System::UInt32 CqStatistics::numInserts( )
 	{
 	  return NativePtr->numInserts( );
 	}
-    uint32_t CqStatistics::numDeletes( )
+    System::UInt32 CqStatistics::numDeletes( )
 	{
 	  return NativePtr->numDeletes( );
 	}
-    uint32_t CqStatistics::numUpdates( )
+    System::UInt32 CqStatistics::numUpdates( )
 	{
 	  return NativePtr->numUpdates( );
 	}
-    uint32_t CqStatistics::numEvents( )
+    System::UInt32 CqStatistics::numEvents( )
 	{
 	  return NativePtr->numEvents( );
     }  // namespace Client

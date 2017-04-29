@@ -24,11 +24,11 @@
 #include "ClientMetadata.hpp"
 #include "ServerLocation.hpp"
 #include "BucketServerLocation.hpp"
-#include <gfcpp/HashMapT.hpp>
-#include <gfcpp/SharedPtr.hpp>
-#include <gfcpp/CacheableKey.hpp>
-#include <gfcpp/Cacheable.hpp>
-#include <gfcpp/Region.hpp>
+#include <geode/HashMapT.hpp>
+#include <geode/SharedPtr.hpp>
+#include <geode/CacheableKey.hpp>
+#include <geode/Cacheable.hpp>
+#include <geode/Region.hpp>
 #include "Queue.hpp"
 #include <string>
 #include "DistributedSystemImpl.hpp"
@@ -136,7 +136,7 @@ class ClientMetadataService : public ACE_Task_Base,
                             ClientMetadataPtr clientmetadata);
 
   void enqueueForMetadataRefresh(const char* regionFullPath,
-                                 int8 serverGroupFlag);
+                                 int8_t serverGroupFlag);
 
   HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>*
   getServerToFilterMap(const VectorOfCacheableKey* keys,
@@ -210,5 +210,4 @@ class ClientMetadataService : public ACE_Task_Base,
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_CLIENTMETADATASERVICE_H_
+#endif  // GEODE_CLIENTMETADATASERVICE_H_

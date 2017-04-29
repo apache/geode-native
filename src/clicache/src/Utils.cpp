@@ -16,7 +16,7 @@
  */
 
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "gfcli/Utils.hpp"
 #include <Utils.hpp>
 
@@ -66,7 +66,7 @@ namespace Apache
       return nullptr;
     }
 
-    int32_t Utils::LastError::get( )
+    System::Int32 Utils::LastError::get( )
     {
        return apache::geode::client::Utils::getLastError( );
     }  // namespace Client

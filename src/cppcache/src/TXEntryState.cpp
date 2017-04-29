@@ -22,7 +22,7 @@
  */
 
 #include "TXEntryState.hpp"
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/ExceptionTypes.hpp>
 
 namespace apache {
 namespace geode {

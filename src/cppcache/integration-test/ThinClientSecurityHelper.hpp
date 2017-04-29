@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include "ThinClientHelper.hpp"
 #include "ace/Process.h"
 
@@ -191,7 +191,7 @@ class putThread : public ACE_Task_Base {
 
   int svc(void) {
     int ops = 0;
-    int32 pid = ACE_OS::getpid();
+    int32_t pid = ACE_OS::getpid();
     ACE_thread_t thr_id = ACE_OS::thr_self();
     CacheableKeyPtr key;
     CacheableStringPtr value;
@@ -259,4 +259,4 @@ class putThread : public ACE_Task_Base {
   int m_waitTime;
 };
 
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTSECURITYHELPER_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTSECURITYHELPER_H_

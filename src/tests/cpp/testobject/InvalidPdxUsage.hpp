@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_a4f4888599d6fc0d8dc148908db41bfb
-#define APACHE_GEODE_GUARD_a4f4888599d6fc0d8dc148908db41bfb
+#ifndef GEODE_TESTOBJECT_INVALIDPDXUSAGE_H_
+#define GEODE_TESTOBJECT_INVALIDPDXUSAGE_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -26,11 +26,10 @@
  *      Author: npatel
  */
 
-
-#include <gfcpp/PdxSerializable.hpp>
-#include <gfcpp/GeodeCppCache.hpp>
-#include <gfcpp/PdxWriter.hpp>
-#include <gfcpp/PdxReader.hpp>
+#include <geode/PdxSerializable.hpp>
+#include <geode/GeodeCppCache.hpp>
+#include <geode/PdxWriter.hpp>
+#include <geode/PdxReader.hpp>
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
@@ -340,12 +339,8 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
     m_charArray[0] = L'c';
     m_charArray[1] = L'v';
 
-    // time_t offset = 1310447869154L;
-    // m_date = CacheableDate::create(offset);
-    struct timeval now;
-    now.tv_sec = 1310447869;
-    now.tv_usec = 154000;
-    m_date = CacheableDate::create(now);
+    int64_t d = 1310447869154L;
+    m_date = CacheableDate::create(CacheableDate::duration(d));
 
     m_int16Array = new int16_t[2];
     m_int16Array[0] = 0x2332;
@@ -694,4 +689,4 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
 typedef SharedPtr<PdxTests::InvalidPdxUsage> InvalidPdxUsagePtr;
 }  // namespace PdxTests
 
-#endif // APACHE_GEODE_GUARD_a4f4888599d6fc0d8dc148908db41bfb
+#endif  // GEODE_TESTOBJECT_INVALIDPDXUSAGE_H_

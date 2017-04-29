@@ -20,11 +20,11 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/statistics/Statistics.hpp>
-#include <gfcpp/statistics/StatisticsFactory.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/statistics/Statistics.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
 #include "SpinLock.hpp"
-#include <gfcpp/CqServiceStatistics.hpp>
+#include <geode/CqServiceStatistics.hpp>
 
 namespace apache {
 namespace geode {
@@ -108,7 +108,7 @@ class CPPCACHE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
 
 class CqServiceStatType {
  private:
-  static int8 instanceFlag;
+  static int8_t instanceFlag;
   static CqServiceStatType* single;
   static SpinLock m_singletonLock;
   static SpinLock m_statTypeLock;
@@ -145,4 +145,4 @@ class CqServiceStatType {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CQSERVICEVSDSTATS_H_
+#endif  // GEODE_CQSERVICEVSDSTATS_H_

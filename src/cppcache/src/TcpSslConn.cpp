@@ -16,14 +16,14 @@
  */
 #include "TcpSslConn.hpp"
 
-#include <gfcpp/SystemProperties.hpp>
-#include <gfcpp/DistributedSystem.hpp>
-#include "../../cryptoimpl/GFSsl.hpp"
+#include <geode/SystemProperties.hpp>
+#include <geode/DistributedSystem.hpp>
+#include "../../cryptoimpl/Ssl.hpp"
 
 using namespace apache::geode::client;
 
-GFSsl* TcpSslConn::getSSLImpl(ACE_SOCKET sock, const char* pubkeyfile,
-                              const char* privkeyfile) {
+Ssl* TcpSslConn::getSSLImpl(ACE_SOCKET sock, const char* pubkeyfile,
+                            const char* privkeyfile) {
   const char* libName = "cryptoImpl";
   if (m_dll.open(libName, RTLD_NOW | RTLD_GLOBAL, 0) == -1) {
     char msg[1000] = {0};
@@ -46,7 +46,7 @@ GFSsl* TcpSslConn::getSSLImpl(ACE_SOCKET sock, const char* pubkeyfile,
   const char* pemPassword =
       DistributedSystem::getSystemProperties()->sslKeystorePassword();
 
-  return reinterpret_cast<GFSsl*>(
+  return reinterpret_cast<Ssl*>(
       func(sock, pubkeyfile, privkeyfile, pemPassword));
 }
 

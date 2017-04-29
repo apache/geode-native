@@ -17,7 +17,7 @@
 #include "TcrMessage.hpp"
 #include "ClientMetadataService.hpp"
 #include "ThinClientPoolDM.hpp"
-#include <gfcpp/FixedPartitionResolver.hpp>
+#include <geode/FixedPartitionResolver.hpp>
 #include <iterator>
 #include <cstdlib>
 #include <climits>
@@ -278,7 +278,7 @@ void ClientMetadataService::getBucketServerLocation(
       }
     } else {
       if (cptr->getTotalNumBuckets() > 0) {
-        bucketId = std::abs(static_cast<int>(resolvekey->hashcode()) %
+        bucketId = std::abs(resolvekey->hashcode() %
                             cptr->getTotalNumBuckets());
       }
     }
@@ -341,7 +341,7 @@ void ClientMetadataService::populateDummyServers(const char* regionName,
 }
 
 void ClientMetadataService::enqueueForMetadataRefresh(
-    const char* regionFullPath, int8 serverGroupFlag) {
+    const char* regionFullPath, int8_t serverGroupFlag) {
   ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.ptr());
   if (tcrdm == NULL) {
     throw IllegalArgumentException(
@@ -351,8 +351,6 @@ void ClientMetadataService::enqueueForMetadataRefresh(
   tcrdm->getConnectionManager().getCacheImpl()->getRegion(regionFullPath,
                                                           region);
   LocalRegion* lregion = dynamic_cast<LocalRegion*>(region.ptr());
-  lregion->getRegionStats()
-      ->incNonSingleHopCount();  // we are here means nonSinglehop
 
   std::string serverGroup = tcrdm->getServerGroup();
   if (serverGroup.length() != 0) {
@@ -429,14 +427,14 @@ ClientMetadataService::getServerToFilterMap(const VectorOfCacheableKey* keys,
       resolveKey = resolver->getRoutingObject(event);
     }
 
-    int bucketId = std::abs(static_cast<int>(resolveKey->hashcode()) %
+    int bucketId = std::abs(resolveKey->hashcode() %
                             cptr->getTotalNumBuckets());
     VectorOfCacheableKeyPtr keyList = NULLPTR;
     std::map<int, BucketServerLocationPtr>::iterator bucketsIter =
         buckets.find(bucketId);
 
     if (bucketsIter == buckets.end()) {
-      int8 version = -1;
+      int8_t version = -1;
       // BucketServerLocationPtr serverLocation(new BucketServerLocation());
       BucketServerLocationPtr serverLocation = NULLPTR;
       cptr->getServerLocation(bucketId, isPrimary, serverLocation, version);
@@ -564,7 +562,7 @@ ClientMetadataService::groupByBucketOnClientSide(const RegionPtr& region,
       }
     } else {
       if (metadata->getTotalNumBuckets() > 0) {
-        bucketId = std::abs(static_cast<int>(resolvekey->hashcode()) %
+        bucketId = std::abs(resolvekey->hashcode() %
                             metadata->getTotalNumBuckets());
       }
     }

@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/Cache.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/Cache.hpp>
 #include "ConcurrentEntriesMap.hpp"
 #include "LRUAction.hpp"
 #include "LRUList.hpp"
@@ -137,4 +137,4 @@ class CPPCACHE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_LRUENTRIESMAP_H_
+#endif  // GEODE_LRUENTRIESMAP_H_

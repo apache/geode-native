@@ -20,12 +20,12 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/Cacheable.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/geode_types.hpp>
+#include <geode/Cacheable.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 #include "SpinLock.hpp"
-#include <gfcpp/DataOutput.hpp>
+#include <geode/DataOutput.hpp>
 
 #include <string>
 
@@ -154,4 +154,4 @@ class CPPCACHE_EXPORT EventId : public Cacheable {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_EVENTID_H_
+#endif  // GEODE_EVENTID_H_

@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_ec3211e9438cbef839aaab90eac09a4b
-#define APACHE_GEODE_GUARD_ec3211e9438cbef839aaab90eac09a4b
+#ifndef GEODE_TESTOBJECT_ARRAYOFBYTE_H_
+#define GEODE_TESTOBJECT_ARRAYOFBYTE_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/GeodeCppCache.hpp>
-#include <string.h>
+#include <geode/GeodeCppCache.hpp>
+#include <string>
 #include "fwklib/FwkLog.hpp"
 #include "fwklib/FrameworkTest.hpp"
 #include <ace/Time_Value.h>
@@ -61,10 +61,10 @@ class TESTOBJECT_EXPORT ArrayOfByte {
       } catch (Exception &e) {
         FWKEXCEPTION("Unable to write to stream " << e.getMessage());
       }
-      int32 bufSize = size;
+      int32_t bufSize = size;
       char *buf = new char[bufSize];
       memset(buf, 'V', bufSize);
-      int32 rsiz = (bufSize <= 20) ? bufSize : 20;
+      int32_t rsiz = (bufSize <= 20) ? bufSize : 20;
       GsRandom::getAlphanumericString(rsiz, buf);
       memcpy(buf, dos.getBuffer(), dos.getBufferLength());
       return CacheableBytes::createNoCopy(reinterpret_cast<uint8_t *>(buf),
@@ -125,5 +125,4 @@ class TESTOBJECT_EXPORT ArrayOfByte {
 };
 }  // namespace testobject
 
-
-#endif // APACHE_GEODE_GUARD_ec3211e9438cbef839aaab90eac09a4b
+#endif  // GEODE_TESTOBJECT_ARRAYOFBYTE_H_

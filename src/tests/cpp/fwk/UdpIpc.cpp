@@ -25,8 +25,8 @@
 
 // ----------------------------------------------------------------------------
 
-#include <gfcpp/GeodeCppCache.hpp>
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/GeodeCppCache.hpp>
+#include <geode/geode_globals.hpp>
 
 #include "fwklib/UDPIpc.hpp"
 #include "fwk/UdpIpc.hpp"

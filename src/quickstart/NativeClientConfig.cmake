@@ -42,8 +42,6 @@ else()
     endif()
 endif()
 
-# run gfcpp.exe and make sure we get a version back
-
 #set( NATIVECLIENT_VERSION_STRING "9.0" )
 #set( NATIVECLIENT_FOUND "YES" )
 set( NATIVECLIENT_DIR ${NCProductDir} )

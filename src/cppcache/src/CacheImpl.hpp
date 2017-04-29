@@ -20,12 +20,12 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/SharedPtr.hpp>
 
-#include <gfcpp/Cache.hpp>
-#include <gfcpp/CacheAttributes.hpp>
-#include <gfcpp/DistributedSystem.hpp>
+#include <geode/Cache.hpp>
+#include <geode/CacheAttributes.hpp>
+#include <geode/DistributedSystem.hpp>
 #include "MapWithLock.hpp"
 #include "SpinLock.hpp"
 #include <ace/ACE.h>
@@ -42,7 +42,7 @@
 #include "PdxTypeRegistry.hpp"
 #include "MemberListForVersionStamp.hpp"
 
-#include <string.h>
+#include <string>
 #include <string>
 #include <map>
 
@@ -111,10 +111,10 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   static int blackListBucketTimeouts();
   static void setBlackListBucketTimeouts();
 
-  static void setServerGroupFlag(int8 serverGroupFlag) {
+  static void setServerGroupFlag(int8_t serverGroupFlag) {
     CacheImpl::s_serverGroupFlag = serverGroupFlag;
   }
-  static int8 getAndResetServerGroupFlag();
+  static int8_t getAndResetServerGroupFlag();
   static MemberListForVersionStampPtr getMemberListForVersionStamp();
 
   /** Returns the name of this cache.
@@ -285,7 +285,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
  private:
   static volatile bool s_networkhop;
   static volatile int s_blacklistBucketTimeout;
-  static volatile int8 s_serverGroupFlag;
+  static volatile int8_t s_serverGroupFlag;
   static MemberListForVersionStampPtr s_versionStampMemIdList;
   PoolPtr m_defaultPool;
   bool m_ignorePdxUnreadFields;
@@ -341,4 +341,4 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CACHEIMPL_H_
+#endif  // GEODE_CACHEIMPL_H_

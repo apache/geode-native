@@ -16,13 +16,13 @@
  */
 
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "CacheableObject.hpp"
 #include "DataInput.hpp"
 #include "DataOutput.hpp"
-#include "impl/GFNullStream.hpp"
-#include "impl/GFDataInputStream.hpp"
-#include "impl/GFDataOutputStream.hpp"
+#include "impl/GeodeNullStream.hpp"
+#include "impl/GeodeDataInputStream.hpp"
+#include "impl/GeodeDataOutputStream.hpp"
 
 using namespace System;
 using namespace System::IO;
@@ -41,11 +41,11 @@ namespace Apache
         {
           output->AdvanceCursor(4); // placeholder for object size bytes needed while reading back.
 
-          GFDataOutputStream dos(output);
+          GeodeDataOutputStream dos(output);
           BinaryFormatter bf;
-          int64_t checkpoint = dos.Length;
+          System::Int64 checkpoint = dos.Length;
           bf.Serialize(%dos, m_obj);
-          m_objectSize = (uint32_t) (dos.Length - checkpoint);
+          m_objectSize = (System::UInt32) (dos.Length - checkpoint);
 
           output->RewindCursor(m_objectSize + 4);
           output->WriteInt32(m_objectSize);
@@ -53,25 +53,25 @@ namespace Apache
         }
       }
 
-      IGFSerializable^ CacheableObject::FromData(DataInput^ input)
+      IGeodeSerializable^ CacheableObject::FromData(DataInput^ input)
       {
         int maxSize = input->ReadInt32();
-        GFDataInputStream dis(input, maxSize);
-        uint32_t checkpoint = dis.BytesRead;
+        GeodeDataInputStream dis(input, maxSize);
+        System::UInt32 checkpoint = dis.BytesRead;
         BinaryFormatter bf;
         m_obj = bf.Deserialize(%dis);
         m_objectSize = dis.BytesRead - checkpoint;
         return this;
       }
 
-      uint32_t CacheableObject::ObjectSize::get()
+      System::UInt32 CacheableObject::ObjectSize::get()
       { 
         if (m_objectSize == 0) {
-          GFNullStream ns;
+          GeodeNullStream ns;
           BinaryFormatter bf;
           bf.Serialize(%ns, m_obj);
 
-          m_objectSize = (uint32_t)sizeof(CacheableObject^) + (uint32_t)ns.Length;
+          m_objectSize = (System::UInt32)sizeof(CacheableObject^) + (System::UInt32)ns.Length;
         }
         return m_objectSize;
     }  // namespace Client

@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/ResultCollector.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/ResultCollector.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include <TimeoutTimer.hpp>
 
 using namespace apache::geode::client;

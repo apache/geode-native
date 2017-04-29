@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gf_base.hpp>
+#include <geode/geode_base.hpp>
 
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 
 #define ROOT_SCOPE DISTRIBUTED_ACK
 
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <SerializationRegistry.hpp>
-#include <gfcpp/CacheableString.hpp>
-#include <gfcpp/GeodeTypeIds.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/GeodeTypeIds.hpp>
 #include <GeodeTypeIdsImpl.hpp>
 
 // Use to init lib when testing components.

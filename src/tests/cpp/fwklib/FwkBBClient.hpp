@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_8443d3966c0b05a9e05eafa7ca28e4c7
-#define APACHE_GEODE_GUARD_8443d3966c0b05a9e05eafa7ca28e4c7
+#ifndef GEODE_FWKLIB_FWKBBCLIENT_H_
+#define GEODE_FWKLIB_FWKBBCLIENT_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -26,7 +26,6 @@
   * @version 1.0
   * @see
   */
-
 
 #include "FwkBB.hpp"
 #include "UDPIpc.hpp"
@@ -190,5 +189,4 @@ class FwkBBClient {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_8443d3966c0b05a9e05eafa7ca28e4c7
+#endif  // GEODE_FWKLIB_FWKBBCLIENT_H_

@@ -20,12 +20,12 @@
  * limitations under the License.
  */
 
-#include <gfcpp/PdxWriter.hpp>
+#include <geode/PdxWriter.hpp>
 #include "PdxType.hpp"
-#include <gfcpp/DataOutput.hpp>
+#include <geode/DataOutput.hpp>
 #include <vector>
 #include "PdxRemotePreservedData.hpp"
-#include <gfcpp/CacheableObjectArray.hpp>
+#include <geode/CacheableObjectArray.hpp>
 
 namespace apache {
 namespace geode {
@@ -36,10 +36,10 @@ class PdxLocalWriter : public PdxWriter {
   DataOutput* m_dataOutput;
   PdxTypePtr m_pdxType;
   const uint8_t* m_startPosition;
-  int32 m_startPositionOffset;
+  int32_t m_startPositionOffset;
   const char* m_domainClassName;
-  std::vector<int32> m_offsets;
-  int32 m_currentOffsetIndex;
+  std::vector<int32_t> m_offsets;
+  int32_t m_currentOffsetIndex;
 
   PdxRemotePreservedDataPtr m_preserveData;
   const char* m_pdxClassName;
@@ -66,9 +66,9 @@ class PdxLocalWriter : public PdxWriter {
 
   void writePdxHeader();
 
-  virtual void writeOffsets(int32 len);
+  virtual void writeOffsets(int32_t len);
 
-  virtual int32 calculateLenWithOffsets();
+  virtual int32_t calculateLenWithOffsets();
 
   virtual bool isFieldWritingStarted();
 
@@ -339,4 +339,4 @@ typedef SharedPtr<PdxLocalWriter> PdxLocalWriterPtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PDXLOCALWRITER_H_
+#endif  // GEODE_PDXLOCALWRITER_H_

@@ -131,7 +131,7 @@ namespace Apache
           }
         }
         
-        uint16_t PdxRemoteReader::ReadUInt16( String^ fieldName )
+        System::UInt16 PdxRemoteReader::ReadUInt16( String^ fieldName )
         {
           int choice = m_localToRemoteMap[m_currentIndex++];
 
@@ -155,7 +155,7 @@ namespace Apache
           }
         }
 
-        uint32_t PdxRemoteReader::ReadUInt32( String^ fieldName )
+        System::UInt32 PdxRemoteReader::ReadUInt32( String^ fieldName )
         {
           int choice = m_localToRemoteMap[m_currentIndex++];
 
@@ -179,7 +179,7 @@ namespace Apache
           }
         }
         
-        uint64_t PdxRemoteReader::ReadUInt64( String^ fieldName )
+        System::UInt64 PdxRemoteReader::ReadUInt64( String^ fieldName )
         {
           int choice = m_localToRemoteMap[m_currentIndex++];
 

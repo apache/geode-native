@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_8d07450f18b766edac2c13c91b9680d4
-#define APACHE_GEODE_GUARD_8d07450f18b766edac2c13c91b9680d4
+#ifndef GEODE_FWKLIB_TIMER_H_
+#define GEODE_FWKLIB_TIMER_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,18 +20,17 @@
  * limitations under the License.
  */
 
-
-#include <gfcpp/gf_base.hpp>
+#include <geode/geode_base.hpp>
 #include "fwklib/FwkLog.hpp"
 
+#include <ctime>
+#include <cstdio>
 #include <ace/Time_Value.h>
 #include <ace/High_Res_Timer.h>
 
 #ifdef _WIN32
 
-#include <time.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <windows.h>
 #include <winbase.h>
 
@@ -39,8 +38,6 @@
 
 #ifdef _SOLARIS
 
-#include <time.h>
-#include <stdio.h>
 #include <strings.h>
 
 #endif
@@ -180,5 +177,4 @@ class HRTimer {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_8d07450f18b766edac2c13c91b9680d4
+#endif  // GEODE_FWKLIB_TIMER_H_

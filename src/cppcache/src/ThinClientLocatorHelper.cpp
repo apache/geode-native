@@ -17,12 +17,12 @@
 
 #include "ThinClientLocatorHelper.hpp"
 #include "TcpSslConn.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 #include "ClientConnectionRequest.hpp"
 #include "ClientReplacementRequest.hpp"
 #include "ClientConnectionResponse.hpp"
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/DataInput.hpp>
 #include "QueueConnectionRequest.hpp"
 #include "QueueConnectionResponse.hpp"
 #include "ThinClientPoolDM.hpp"

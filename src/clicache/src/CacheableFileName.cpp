@@ -18,7 +18,7 @@
 
 
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "CacheableFileName.hpp"
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
@@ -44,7 +44,7 @@ namespace Apache
         }
       }
 
-      IGFSerializable^ CacheableFileName::FromData(DataInput^ input)
+      IGeodeSerializable^ CacheableFileName::FromData(DataInput^ input)
       {
         unsigned char filetype = input->ReadByte();
         if (filetype == apache::geode::client::GeodeTypeIds::CacheableString) {
@@ -56,27 +56,27 @@ namespace Apache
         return this;
       }
 
-      uint32_t CacheableFileName::ClassId::get()
+      System::UInt32 CacheableFileName::ClassId::get()
       {
         return GeodeClassIds::CacheableFileName;
       }
 
-      uint32_t CacheableFileName::ObjectSize::get()
+      System::UInt32 CacheableFileName::ObjectSize::get()
       {
-        return (uint32_t)(m_str->Length * sizeof(char));
+        return (System::UInt32)(m_str->Length * sizeof(char));
       }
 
-      int32_t CacheableFileName::GetHashCode()
+      System::Int32 CacheableFileName::GetHashCode()
       {
         if (m_str->IsNullOrEmpty(m_str)) {
           return 0;
         }
         if (m_hashcode == 0) {
           int localHashcode = 0;
-          uint32_t prime = 31;
+          System::UInt32 prime = 31;
 
           pin_ptr<const wchar_t> pin_value = PtrToStringChars(m_str);
-          for (int32_t i = 0; i < m_str->Length; i++) {
+          for (System::Int32 i = 0; i < m_str->Length; i++) {
             localHashcode = prime*localHashcode + Char::ToLower(pin_value[i]);
           }
           m_hashcode = localHashcode ^ 1234321;

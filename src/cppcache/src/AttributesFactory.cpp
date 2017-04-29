@@ -23,14 +23,14 @@ class Region;
 }  // namespace geode
 }  // namespace apache
 
-#include <gfcpp/Cache.hpp>
-#include <gfcpp/ExpirationAttributes.hpp>
+#include <geode/Cache.hpp>
+#include <geode/ExpirationAttributes.hpp>
 #include <Utils.hpp>
-#include <gfcpp/DistributedSystem.hpp>
-#include <stdlib.h>
-#include <string.h>
-#include <gfcpp/Pool.hpp>
-#include <gfcpp/PoolManager.hpp>
+#include <geode/DistributedSystem.hpp>
+#include <cstdlib>
+#include <string>
+#include <geode/Pool.hpp>
+#include <geode/PoolManager.hpp>
 using namespace apache::geode::client;
 
 AttributesFactory::AttributesFactory() : m_regionAttributes() {}

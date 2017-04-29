@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "DataOutput.hpp"
 #include <GeodeTypeIdsImpl.hpp>
 #include <vcclr.h>
 
-#include "IGFSerializable.hpp"
+#include "IGeodeSerializable.hpp"
 #include "CacheableObjectArray.hpp"
 #include "impl/PdxHelper.hpp"
 #include "impl/PdxWrapper.hpp"
@@ -59,11 +59,11 @@ namespace Apache
       void DataOutput::WriteChar(Char value)
       {
         EnsureCapacity(2);
-        m_bytes[m_cursor++] = (uint8_t)(value >> 8);
-        m_bytes[m_cursor++] = (uint8_t)value;
+        m_bytes[m_cursor++] = (System::Byte)(value >> 8);
+        m_bytes[m_cursor++] = (System::Byte)value;
       }
 
-      void DataOutput::WriteBytes(array<Byte>^ bytes, int32_t len)
+      void DataOutput::WriteBytes(array<Byte>^ bytes, System::Int32 len)
       {
         if (bytes != nullptr && bytes->Length >= 0)
         {
@@ -85,7 +85,7 @@ namespace Apache
         }
       }
 
-      void DataOutput::WriteArrayLen(int32_t len)
+      void DataOutput::WriteArrayLen(System::Int32 len)
       {
         if (len == -1) {//0xff
           WriteByte(0xFF);
@@ -103,7 +103,7 @@ namespace Apache
         }
       }
 
-      void DataOutput::WriteSBytes(array<SByte>^ bytes, int32_t len)
+      void DataOutput::WriteSBytes(array<SByte>^ bytes, System::Int32 len)
       {
         if (bytes != nullptr && bytes->Length >= 0)
         {
@@ -125,19 +125,19 @@ namespace Apache
         }
       }
 
-      void DataOutput::WriteBytesOnly(array<Byte>^ bytes, uint32_t len)
+      void DataOutput::WriteBytesOnly(array<Byte>^ bytes, System::UInt32 len)
       {
         WriteBytesOnly(bytes, len, 0);
       }
 
-      void DataOutput::WriteBytesOnly(array<Byte>^ bytes, uint32_t len, uint32_t offset)
+      void DataOutput::WriteBytesOnly(array<Byte>^ bytes, System::UInt32 len, System::UInt32 offset)
       {
         if (bytes != nullptr)
         {
-          if (len >= 0 && len <= ((uint32_t)bytes->Length - offset))
+          if (len >= 0 && len <= ((System::UInt32)bytes->Length - offset))
           {
             EnsureCapacity(len);
-            for (uint32_t i = 0; i < len; i++)
+            for (System::UInt32 i = 0; i < len; i++)
               m_bytes[m_cursor++] = bytes[offset + i];
           }
           else
@@ -147,14 +147,14 @@ namespace Apache
         }
       }
 
-      void DataOutput::WriteSBytesOnly(array<SByte>^ bytes, uint32_t len)
+      void DataOutput::WriteSBytesOnly(array<SByte>^ bytes, System::UInt32 len)
       {
         if (bytes != nullptr)
         {
-          if (len >= 0 && len <= (uint32_t)bytes->Length)
+          if (len >= 0 && len <= (System::UInt32)bytes->Length)
           {
             EnsureCapacity(len);
-            for (uint32_t i = 0; i < len; i++)
+            for (System::UInt32 i = 0; i < len; i++)
               m_bytes[m_cursor++] = bytes[i];
           }
           else
@@ -164,46 +164,46 @@ namespace Apache
         }
       }
 
-      void DataOutput::WriteUInt16(uint16_t value)
+      void DataOutput::WriteUInt16(System::UInt16 value)
       {
         EnsureCapacity(2);
-        m_bytes[m_cursor++] = (uint8_t)(value >> 8);
-        m_bytes[m_cursor++] = (uint8_t)value;
+        m_bytes[m_cursor++] = (System::Byte)(value >> 8);
+        m_bytes[m_cursor++] = (System::Byte)value;
       }
 
-      void DataOutput::WriteUInt32(uint32_t value)
+      void DataOutput::WriteUInt32(System::UInt32 value)
       {
         EnsureCapacity(4);
-        m_bytes[m_cursor++] = (uint8_t)(value >> 24);
-        m_bytes[m_cursor++] = (uint8_t)(value >> 16);
-        m_bytes[m_cursor++] = (uint8_t)(value >> 8);
-        m_bytes[m_cursor++] = (uint8_t)value;
+        m_bytes[m_cursor++] = (System::Byte)(value >> 24);
+        m_bytes[m_cursor++] = (System::Byte)(value >> 16);
+        m_bytes[m_cursor++] = (System::Byte)(value >> 8);
+        m_bytes[m_cursor++] = (System::Byte)value;
       }
 
-      void DataOutput::WriteUInt64(uint64_t value)
+      void DataOutput::WriteUInt64(System::UInt64 value)
       {
         EnsureCapacity(8);
-        m_bytes[m_cursor++] = (uint8_t)(value >> 56);
-        m_bytes[m_cursor++] = (uint8_t)(value >> 48);
-        m_bytes[m_cursor++] = (uint8_t)(value >> 40);
-        m_bytes[m_cursor++] = (uint8_t)(value >> 32);
-        m_bytes[m_cursor++] = (uint8_t)(value >> 24);
-        m_bytes[m_cursor++] = (uint8_t)(value >> 16);
-        m_bytes[m_cursor++] = (uint8_t)(value >> 8);
-        m_bytes[m_cursor++] = (uint8_t)value;
+        m_bytes[m_cursor++] = (System::Byte)(value >> 56);
+        m_bytes[m_cursor++] = (System::Byte)(value >> 48);
+        m_bytes[m_cursor++] = (System::Byte)(value >> 40);
+        m_bytes[m_cursor++] = (System::Byte)(value >> 32);
+        m_bytes[m_cursor++] = (System::Byte)(value >> 24);
+        m_bytes[m_cursor++] = (System::Byte)(value >> 16);
+        m_bytes[m_cursor++] = (System::Byte)(value >> 8);
+        m_bytes[m_cursor++] = (System::Byte)value;
       }
 
-      void DataOutput::WriteInt16(int16_t value)
+      void DataOutput::WriteInt16(System::Int16 value)
       {
         WriteUInt16(value);
       }
 
-      void DataOutput::WriteInt32(int32_t value)
+      void DataOutput::WriteInt32(System::Int32 value)
       {
         WriteUInt32(value);
       }
 
-      void DataOutput::WriteInt64(int64_t value)
+      void DataOutput::WriteInt64(System::Int64 value)
       {
         WriteUInt64(value);
       }
@@ -373,7 +373,7 @@ namespace Apache
           WriteUInt32(strLength);
           EnsureCapacity(strLength);
           for (int i = 0; i < strLength; i++) {
-            m_bytes[m_cursor++] = (uint8_t)value[i];
+            m_bytes[m_cursor++] = (System::Byte)value[i];
           }
         }
         else {
@@ -401,15 +401,15 @@ namespace Apache
 
       /*void DataOutput::WriteObject( Object^ obj )
       {
-      WriteObjectInternal((IGFSerializable^)obj);
+      WriteObjectInternal((IGeodeSerializable^)obj);
       }*/
 
       /*void DataOutput::WriteObject( Object^ obj )
       {
-      WriteObject( (IGFSerializable^)obj );
+      WriteObject( (IGeodeSerializable^)obj );
       }*/
 
-      int8_t DataOutput::GetTypeId(uint32_t classId)
+      int8_t DataOutput::GetTypeId(System::UInt32 classId)
       {
         if (classId >= 0x80000000) {
           return (int8_t)((classId - 0x80000000) % 0x20000000);
@@ -425,7 +425,7 @@ namespace Apache
         }
       }
 
-      int8_t DataOutput::DSFID(uint32_t classId)
+      int8_t DataOutput::DSFID(System::UInt32 classId)
       {
         // convention that [0x8000000, 0xa0000000) is for FixedIDDefault,
         // [0xa000000, 0xc0000000) is for FixedIDByte,
@@ -647,7 +647,7 @@ namespace Apache
               return;
             }
 
-            IGFSerializable^ ct = dynamic_cast<IGFSerializable^>(obj);
+            IGeodeSerializable^ ct = dynamic_cast<IGeodeSerializable^>(obj);
             if (ct != nullptr) {
               WriteObjectInternal(ct);
               return;
@@ -682,7 +682,7 @@ namespace Apache
           WriteByte(-1);
       }
 
-      void DataOutput::WriteObjectInternal(IGFSerializable^ obj)
+      void DataOutput::WriteObjectInternal(IGeodeSerializable^ obj)
       {
         //CacheableKey^ key = gcnew CacheableKey();
         if (obj == nullptr) {
@@ -697,37 +697,37 @@ namespace Apache
             break;
           case GeodeTypeIdsImpl::FixedIDShort:
             WriteByte((int8_t)GeodeTypeIdsImpl::FixedIDShort);
-            WriteInt16((int16_t)typeId); // write the type ID.
+            WriteInt16((System::Int16)typeId); // write the type ID.
             break;
           case GeodeTypeIdsImpl::FixedIDInt:
             WriteByte((int8_t)GeodeTypeIdsImpl::FixedIDInt);
-            WriteInt32((int32_t)typeId); // write the type ID.
+            WriteInt32((System::Int32)typeId); // write the type ID.
             break;
           default:
             WriteByte(typeId); // write the type ID.
             break;
           }
 
-          if ((int32_t)typeId == GeodeTypeIdsImpl::CacheableUserData) {
+          if ((System::Int32)typeId == GeodeTypeIdsImpl::CacheableUserData) {
             WriteByte((int8_t)obj->ClassId);
           }
-          else if ((int32_t)typeId == GeodeTypeIdsImpl::CacheableUserData2) {
-            WriteInt16((int16_t)obj->ClassId);
+          else if ((System::Int32)typeId == GeodeTypeIdsImpl::CacheableUserData2) {
+            WriteInt16((System::Int16)obj->ClassId);
           }
-          else if ((int32_t)typeId == GeodeTypeIdsImpl::CacheableUserData4) {
-            WriteInt32((int32_t)obj->ClassId);
+          else if ((System::Int32)typeId == GeodeTypeIdsImpl::CacheableUserData4) {
+            WriteInt32((System::Int32)obj->ClassId);
           }
           obj->ToData(this); // let the obj serialize itself.
         }
       }
 
-      void DataOutput::AdvanceCursor(uint32_t offset)
+      void DataOutput::AdvanceCursor(System::UInt32 offset)
       {
         EnsureCapacity(offset);
         m_cursor += offset;
       }
 
-      void DataOutput::RewindCursor(uint32_t offset)
+      void DataOutput::RewindCursor(System::UInt32 offset)
       {
         //first set native one
         WriteBytesToUMDataOutput();
@@ -750,7 +750,7 @@ namespace Apache
         return buffer;
       }
 
-      uint32_t DataOutput::BufferLength::get()
+      System::UInt32 DataOutput::BufferLength::get()
       {
         //first set native one
         WriteBytesToUMDataOutput();
@@ -818,17 +818,17 @@ namespace Apache
         WriteFloat(obj);
       }
 
-      void DataOutput::WriteObject(int16_t% obj)
+      void DataOutput::WriteObject(System::Int16% obj)
       {
         WriteInt16(obj);
       }
 
-      void DataOutput::WriteObject(int32_t% obj)
+      void DataOutput::WriteObject(System::Int32% obj)
       {
         WriteInt32(obj);
       }
 
-      void DataOutput::WriteObject(int64_t% obj)
+      void DataOutput::WriteObject(System::Int64% obj)
       {
         WriteInt64(obj);
       }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 
 #include <cctype>
 #include <string>
@@ -34,9 +34,9 @@
 #include <ace/Dirent_Selector.h>
 #include <ace/OS_NS_sys_stat.h>
 
-#include <gfcpp/Log.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcppBanner.hpp>
+#include <geode/Log.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geodeBanner.hpp>
 
 #if defined(_WIN32)
 #include <io.h>
@@ -193,8 +193,8 @@ const char* Log::logFileName() {
   return g_logFileNameBuffer;
 }
 
-void Log::init(LogLevel level, const char* logFileName, int32 logFileLimit,
-               int64 logDiskSpaceLimit) {
+void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
+               int64_t logDiskSpaceLimit) {
   if (g_log != NULL) {
     throw IllegalStateException(
         "The Log has already been initialized. "
@@ -244,7 +244,7 @@ void Log::init(LogLevel level, const char* logFileName, int32 logFileLimit,
     // Appending a ".log" at the end if it does not exist or file has some other
     // extension.
     std::string filebasename = ACE::basename(g_logFile->c_str());
-    int32 len = static_cast<int32>(filebasename.length());
+    int32_t len = static_cast<int32_t>(filebasename.length());
     size_t fileExtPos = filebasename.find_last_of('.', len);
     // if no extension then add .log extension
     if (fileExtPos == std::string::npos) {
@@ -282,30 +282,6 @@ void Log::init(LogLevel level, const char* logFileName, int32 logFileLimit,
     g_rollIndex = 0;
 
     std::string dirname = ACE::dirname(g_logFile->c_str());
-    /*struct dirent **resultArray;
-    //int entries_count = ACE_OS::scandir(dirname.c_str(), &resultArray,
-    selector, comparator);
-
-    for(int i = 0; i < entries_count; i++) {
-      std::string strname = ACE::basename(resultArray[i]->d_name);
-      size_t fileExtPos = strname.find_last_of('.', strname.length());
-      if ( fileExtPos != std::string::npos ) {
-        std::string tempname = strname.substr(0,fileExtPos);
-        size_t fileHyphenPos = tempname.find_last_of('-', tempname.length());
-        if ( fileHyphenPos != std::string::npos ) {
-          std::string buff = tempname.substr(fileHyphenPos+1,tempname.length());
-          g_rollIndex = ACE_OS::atoi(buff.c_str())+ 1;
-        }
-      }
-    }
-    for(int i = 0; i < entries_count; i++) {
-      ACE_OS::free ( resultArray[i] );
-    }
-
-    if (entries_count >= 0) {
-      ACE_OS::free( resultArray );
-      resultArray = NULL;
-    }*/
 
     ACE_Dirent_Selector sds;
     int status = sds.open(dirname.c_str(), selector, comparator);
@@ -325,23 +301,6 @@ void Log::init(LogLevel level, const char* logFileName, int32 logFileLimit,
       }    // for loop
     }
     sds.close();
-
-    /*ACE_Dirent logDirectory;
-    logDirectory.open (ACE_TEXT (g_logFile->c_str()));
-    for (ACE_DIRENT *directory; (directory = logDirectory.read ()) != 0;) {
-            // Skip the ".." and "." files.
-            if (ACE::isdotdir(directory->d_name) != true) {
-                    ACE_stat stat_buf;
-                    ACE_OS::lstat (directory->d_name, &stat_buf);
-                    switch (stat_buf.st_mode & S_IFMT) {
-                            case S_IFREG:
-                                    stat_buf.
-                                    break;
-                            default:
-                                    break;
-                    }
-            }
-    }*/
 
     FILE* existingFile = fopen(g_logFileWithExt->c_str(), "r");
     if (existingFile != NULL && logFileLimit > 0) {
@@ -363,8 +322,8 @@ void Log::init(LogLevel level, const char* logFileName, int32 logFileLimit,
       std::string extName;
       std::string newfilestr;
 
-      int32 len = static_cast<int32>(g_logFileWithExt->length());
-      int32 lastPosOfSep = static_cast<int32>(
+      int32_t len = static_cast<int32_t>(g_logFileWithExt->length());
+      int32_t lastPosOfSep = static_cast<int32_t>(
           g_logFileWithExt->find_last_of(ACE_DIRECTORY_SEPARATOR_CHAR, len));
       if (lastPosOfSep == -1) {
         logsdirname = ".";
@@ -373,8 +332,8 @@ void Log::init(LogLevel level, const char* logFileName, int32 logFileLimit,
       }
       logsbasename = g_logFileWithExt->substr(lastPosOfSep + 1, len);
       char logFileExtAfter = '.';
-      int32 baselen = static_cast<int32>(logsbasename.length());
-      int32 posOfExt = static_cast<int32>(
+      int32_t baselen = static_cast<int32_t>(logsbasename.length());
+      int32_t posOfExt = static_cast<int32_t>(
           logsbasename.find_last_of(logFileExtAfter, baselen));
       if (posOfExt == -1) {
         // throw IllegalArgument;
@@ -479,16 +438,8 @@ void Log::writeBanner() {
     apache::geode::client::millisleep(200);
   }
   if (!g_log) {
-    // g_log = stdout;
-    // fprintf(stdout,"File %s unable to open, logging into console.",
-    // g_logFile->c_str());
-    // fflush(stdout);
-    // g_logFile = NULL;
-    // g_logFileWithExt = NULL;
     g_isLogFileOpened = false;
     return;
-    // std::string msg = "Error in opening log file: " + *g_logFile;
-    // throw GeodeIOException(msg.c_str());
   } else {
     g_isLogFileOpened = true;
   }
@@ -496,7 +447,7 @@ void Log::writeBanner() {
   if (s_logLevel == Log::None) {
     return;
   }
-  std::string bannertext = gfcppBanner::getBanner();
+  std::string bannertext = geodeBanner::getBanner();
 
   if (g_logFile == NULL) {
     fprintf(stdout, "%s", bannertext.c_str());
@@ -507,9 +458,6 @@ void Log::writeBanner() {
 
   if (fprintf(g_log, "%s", bannertext.c_str()) == 0 || ferror(g_log)) {
     // we should be continue,
-    // fclose( g_log );
-    // std::string msg = "Error in writing banner to log file: " + *g_logFile;
-    // throw GeodeIOException(msg.c_str());
     return;
   }
 
@@ -645,8 +593,6 @@ void Log::put(LogLevel level, const char* msg) {
     if (!g_isLogFileOpened) {
       g_log = fopen(g_logFileWithExt->c_str(), "a");
       if (!g_log) {
-        // fprintf(stdout,"%s%s\n", formatLogLine(buf, level), msg);
-        // fflush(stdout);
         g_isLogFileOpened = false;
         return;
       }
@@ -672,8 +618,8 @@ void Log::put(LogLevel level, const char* msg) {
       std::string extName;
       std::string newfilestr;
 
-      int32 len = static_cast<int32>(g_logFileWithExt->length());
-      int32 lastPosOfSep = static_cast<int32>(
+      int32_t len = static_cast<int32_t>(g_logFileWithExt->length());
+      int32_t lastPosOfSep = static_cast<int32_t>(
           g_logFileWithExt->find_last_of(ACE_DIRECTORY_SEPARATOR_CHAR, len));
       if (lastPosOfSep == -1) {
         logsdirname = ".";
@@ -682,8 +628,8 @@ void Log::put(LogLevel level, const char* msg) {
       }
       logsbasename = g_logFileWithExt->substr(lastPosOfSep + 1, len);
       char logFileExtAfter = '.';
-      int32 baselen = static_cast<int32>(logsbasename.length());
-      int32 posOfExt = static_cast<int32>(
+      int32_t baselen = static_cast<int32_t>(logsbasename.length());
+      int32_t posOfExt = static_cast<int32_t>(
           logsbasename.find_last_of(logFileExtAfter, baselen));
       if (posOfExt == -1) {
         // throw IllegalArgument;
@@ -711,12 +657,6 @@ void Log::put(LogLevel level, const char* msg) {
       g_log = NULL;
 
       if (ACE_OS::rename(g_logFileWithExt->c_str(), rollFile) < 0) {
-        /* printf
-               ("thid = %lu, g_bytesWritten = %d\n",
-                ACE_OS::thr_self(), g_bytesWritten);*/
-        // std::string msg =
-        // "Could not rename: " + *g_logFileWithExt + " to: " + rollFile;
-        // throw GeodeIOException(msg.c_str());
         return;  // no need to throw exception try next time
       }
 
@@ -729,28 +669,8 @@ void Log::put(LogLevel level, const char* msg) {
 
     if ((g_diskSpaceLimit > 0) && (g_spaceUsed >= g_diskSpaceLimit)) {
       std::string dirname = ACE::dirname(g_logFile->c_str());
-      // struct dirent **resultArray;
-      // int entries_count = ACE_OS::scandir(dirname.c_str(), &resultArray,
-      // selector, comparator);
-      // int64 spaceUsed = 0;
       g_spaceUsed = 0;
       ACE_stat statBuf = {0};
-      /*for(int i = 1; i < entries_count; i++) {
-        ACE_OS::snprintf(fullpath , 512 ,
-    "%s%c%s",dirname.c_str(),ACE_DIRECTORY_SEPARATOR_CHAR,resultArray[i]->d_name);
-        ACE_OS::stat(fullpath,&statBuf);
-        g_fileInfoPair = std::make_pair(fullpath,statBuf.st_size);
-        fileInfo.push_back(g_fileInfoPair);
-        g_spaceUsed += fileInfo[i-1].second;
-      }
-    g_spaceUsed += g_bytesWritten;
-        for(int i = 0; i < entries_count; i++) {
-        ACE_OS::free ( resultArray[i] );
-        }
-    if (entries_count >= 0) {
-        ACE_OS::free( resultArray );
-      resultArray = NULL;
-    }*/
 
       ACE_Dirent_Selector sds;
       int status = sds.open(dirname.c_str(), selector, comparator);
@@ -769,7 +689,7 @@ void Log::put(LogLevel level, const char* msg) {
       int fileIndex = 0;
 
       while ((g_spaceUsed > (g_diskSpaceLimit /*- g_fileSizeLimit*/))) {
-        int64 fileSize = fileInfo[fileIndex].second;
+        int64_t fileSize = fileInfo[fileIndex].second;
         if (ACE_OS::unlink(fileInfo[fileIndex].first.c_str()) == 0) {
           g_spaceUsed -= fileSize;
         } else {
@@ -797,9 +717,6 @@ void Log::put(LogLevel level, const char* msg) {
       // process to terminate
       fclose(g_log);
       g_log = NULL;
-      // g_isLogFileOpened = false;
-      // std::string msg = "Error in writing to log file: " + *g_logFile;
-      // throw GeodeIOException(msg.c_str());
     } else {
       fflush(g_log);
     }

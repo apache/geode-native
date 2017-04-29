@@ -21,7 +21,7 @@
  */
 
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include <string>
@@ -457,4 +457,4 @@ void runThinClientFailoverInterest2() {
   CALL_TASK(CloseLocator1);
 }
 
-#endif // GEODE_INTEGRATION_TEST_THINCLIENTFAILOVERINTEREST2_H_
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTFAILOVERINTEREST2_H_

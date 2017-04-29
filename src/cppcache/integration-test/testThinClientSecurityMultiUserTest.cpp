@@ -16,10 +16,10 @@
  */
 #include "fw_dunit.hpp"
 #include <string>
-#include <stdlib.h>
-#include <gfcpp/GeodeCppCache.hpp>
-#include <gfcpp/FunctionService.hpp>
-#include <gfcpp/Execution.hpp>
+#include <cstdlib>
+#include <geode/GeodeCppCache.hpp>
+#include <geode/FunctionService.hpp>
+#include <geode/Execution.hpp>
 
 #define ROOT_NAME "testThinClientSecurityMultiUserTest"
 #define ROOT_SCOPE DISTRIBUTED_ACK

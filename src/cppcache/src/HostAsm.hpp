@@ -34,7 +34,7 @@ included.
 */
 
 #include "config.h"
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include <ace/ACE.h>
 #include <ace/Time_Value.h>
 #include <ace/OS_NS_time.h>
@@ -85,7 +85,7 @@ enum { SPINLOCK_CLEAR_BYTE = 0 };
 // implemented in hostsolaris.asm
 extern "C" {
 void HostAsmUnlock(int32_t, SpinLockField*);
-bool HostAsmTryLock(SpinLockField*, int32, uint32);
+bool HostAsmTryLock(SpinLockField*, int32_t, uint32_t);
 int32_t InterlockedExchangeAdd(volatile int32_t*, int32_t);
 // int64_t InterlockedExchangeAddLong(volatile int64_t *, int64_t);
 }
@@ -446,4 +446,4 @@ return true;
 #pragma clang diagnostic pop
 #endif
 
-#endif // GEODE_HOSTASM_H_
+#endif  // GEODE_HOSTASM_H_

@@ -14,15 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "ThinClientBaseDM.hpp"
 #include "ThinClientRegion.hpp"
 #include "TcrMessage.hpp"
 #include "TcrEndpoint.hpp"
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "Utils.hpp"
 #include "CacheImpl.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 //#include "UserAttributes.hpp"
 #include "ProxyCache.hpp"
 
@@ -246,7 +246,7 @@ int ThinClientBaseDM::processChunks(volatile bool& isRunning) {
 void ThinClientBaseDM::startChunkProcessor() {
   if (m_chunkProcessor == NULL) {
     m_chunks.open();
-    m_chunkProcessor = new GF_TASK_T<ThinClientBaseDM>(
+    m_chunkProcessor = new Task<ThinClientBaseDM>(
         this, &ThinClientBaseDM::processChunks, NC_ProcessChunk);
     m_chunkProcessor->start();
   }

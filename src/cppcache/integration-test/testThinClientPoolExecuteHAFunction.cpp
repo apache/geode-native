@@ -16,9 +16,9 @@
  */
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
-#include <gfcpp/FunctionService.hpp>
-#include <gfcpp/Execution.hpp>
-#include <gfcpp/ResultCollector.hpp>
+#include <geode/FunctionService.hpp>
+#include <geode/Execution.hpp>
+#include <geode/ResultCollector.hpp>
 
 #define CLIENT1 s1p1
 #define LOCATOR1 s2p1
@@ -40,18 +40,17 @@ char* OnServerHAExceptionFunction = (char*)"OnServerHAExceptionFunction";
 char* OnServerHAShutdownFunction = (char*)"OnServerHAShutdownFunction";
 
 char* RegionOperationsHAFunction = (char*)"RegionOperationsHAFunction";
-#define verifyGetResults()                                            \
-  bool found = false;                                                 \
-  for (int j = 0; j < 34; j++) {                                      \
-    if (j % 2 == 0) continue;                                         \
-    sprintf(buf, "VALUE--%d", j);                                     \
-    if (strcmp(buf,                                                   \
-               dynCast<CacheableStringPtr>(resultList->operator[](i)) \
-                   ->asChar()) == 0) {                                \
-      found = true;                                                   \
-      break;                                                          \
-    }                                                                 \
-  }                                                                   \
+#define verifyGetResults()                                                 \
+  bool found = false;                                                      \
+  for (int j = 0; j < 34; j++) {                                           \
+    if (j % 2 == 0) continue;                                              \
+    sprintf(buf, "VALUE--%d", j);                                          \
+    if (strcmp(buf, dynCast<CacheableStringPtr>(resultList->operator[](i)) \
+                        ->asChar()) == 0) {                                \
+      found = true;                                                        \
+      break;                                                               \
+    }                                                                      \
+  }                                                                        \
   ASSERT(found, "this returned value is invalid");
 
 #define verifyPutResults()                   \
@@ -475,8 +474,7 @@ DUNIT_TASK_DEFINITION(LOCATOR1, CloseLocator1)
   }
 END_TASK_DEFINITION
 
-void runFunctionExecution(bool isEndpoint) {
-  // with locator
+void runFunctionExecution() {
   CALL_TASK(StartLocator1);
   CALL_TASK(StartS12);
   CALL_TASK(StartC1);
@@ -484,30 +482,8 @@ void runFunctionExecution(bool isEndpoint) {
   CALL_TASK(StopC1);
   CALL_TASK(CloseServers12);
   CALL_TASK(CloseLocator1);
-
-  // with endpoints
-  CALL_TASK(StartS12);
-  CALL_TASK(StartC1);
-  CALL_TASK(Client1OpTest);  // This tests isHA with onRegion
-  CALL_TASK(StopC1);
-  CALL_TASK(CloseServers12);
-
-  CALL_TASK(StartLocator1);
-  CALL_TASK(StartS13);
-  CALL_TASK(StartC11);
-  CALL_TASK(Client1OnServerHATest);  // This tests isHA with onServer
-  CALL_TASK(StopC1);
-  CALL_TASK(CloseServers13);
-  CALL_TASK(CloseLocator1);
-
-  // with endpoints
-  CALL_TASK(StartS13);
-  CALL_TASK(StartC11);
-  CALL_TASK(Client1OnServerHATest);  // This tests isHA with onServer
-  CALL_TASK(StopC1);
-  CALL_TASK(CloseServers13);
 }
 
 DUNIT_MAIN
-  { runFunctionExecution(false); }
+  { runFunctionExecution(); }
 END_MAIN

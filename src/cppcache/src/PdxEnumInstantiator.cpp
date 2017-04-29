@@ -20,8 +20,8 @@
 
 #include "PdxEnumInstantiator.hpp"
 #include "GeodeTypeIdsImpl.hpp"
-#include <gfcpp/CacheableString.hpp>
-#include <gfcpp/DataInput.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/DataInput.hpp>
 
 namespace apache {
 namespace geode {

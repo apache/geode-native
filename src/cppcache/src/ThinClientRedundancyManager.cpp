@@ -26,7 +26,7 @@
 #include "RemoteQueryService.hpp"
 #include "CacheImpl.hpp"
 #include "ThinClientRegion.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 #include "ClientProxyMembershipID.hpp"
 #include "ExpiryHandler_T.hpp"
 
@@ -448,7 +448,7 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
   // Update pool stats
   if (m_poolHADM) {
     m_poolHADM->getStats().setSubsServers(
-        static_cast<int32>(m_redundantEndpoints.size()));
+        static_cast<int32_t>(m_redundantEndpoints.size()));
   }
 
   if (isRedundancySatisfied) {
@@ -1241,7 +1241,7 @@ void ThinClientRedundancyManager::doPeriodicAck() {
 }
 
 void ThinClientRedundancyManager::startPeriodicAck() {
-  m_periodicAckTask = new GF_TASK_T<ThinClientRedundancyManager>(
+  m_periodicAckTask = new Task<ThinClientRedundancyManager>(
       this, &ThinClientRedundancyManager::periodicAck, NC_PerodicACK);
   m_periodicAckTask->start();
   SystemProperties* props = DistributedSystem::getSystemProperties();

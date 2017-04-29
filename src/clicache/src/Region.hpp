@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/Cache.hpp>
+#include "geode_defs.hpp"
+#include <geode/Cache.hpp>
 #include "impl/NativeWrapper.hpp"
 #include "IRegion.hpp"
 //#include "Log.hpp"
@@ -249,15 +249,15 @@ namespace Apache
           virtual ISelectResults<TResult>^ Query( String^ predicate );
 
           generic<class TResult>
-          virtual ISelectResults<TResult>^ Query( String^ predicate, uint32_t timeout );
+          virtual ISelectResults<TResult>^ Query( String^ predicate, System::UInt32 timeout );
 
           virtual bool ExistsValue( String^ predicate );
 
-          virtual bool ExistsValue( String^ predicate, uint32_t timeout );
+          virtual bool ExistsValue( String^ predicate, System::UInt32 timeout );
 
           virtual Object^ SelectValue( String^ predicate );
 
-          virtual Object^ SelectValue( String^ predicate, uint32_t timeout );
+          virtual Object^ SelectValue( String^ predicate, System::UInt32 timeout );
 
 
       internal:

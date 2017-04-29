@@ -20,13 +20,13 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/geode_types.hpp>
+#include <geode/ExceptionTypes.hpp>
 
-#include <gfcpp/ResultSet.hpp>
-#include <gfcpp/CacheableBuiltins.hpp>
-#include <gfcpp/SelectResultsIterator.hpp>
+#include <geode/ResultSet.hpp>
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/SelectResultsIterator.hpp>
 
 /**
  * @file
@@ -64,4 +64,4 @@ class CPPCACHE_EXPORT ResultSetImpl : public ResultSet {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_RESULTSETIMPL_H_
+#endif  // GEODE_RESULTSETIMPL_H_

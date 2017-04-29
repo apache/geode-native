@@ -20,14 +20,14 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include <string>
 #include "StatisticDescriptorImpl.hpp"
-#include <gfcpp/statistics/StatisticsType.hpp>
-#include <gfcpp/statistics/Statistics.hpp>
-#include <gfcpp/statistics/StatisticDescriptor.hpp>
+#include <geode/statistics/StatisticsType.hpp>
+#include <geode/statistics/Statistics.hpp>
+#include <geode/statistics/StatisticDescriptor.hpp>
 #include "ProcessStats.hpp"
-#include <gfcpp/statistics/StatisticsFactory.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
 #include "OsStatisticsImpl.hpp"
 #include "LinuxProcessStats.hpp"
 #include "SolarisProcessStats.hpp"
@@ -54,9 +54,9 @@ namespace statistics {
 
 class CPPCACHE_EXPORT HostStatHelper {
  private:
-  static int32 PROCESS_STAT_FLAG;
+  static int32_t PROCESS_STAT_FLAG;
 
-  static int32 SYSTEM_STAT_FLAG;
+  static int32_t SYSTEM_STAT_FLAG;
 
   static GFS_OSTYPES osCode;
 
@@ -65,14 +65,14 @@ class CPPCACHE_EXPORT HostStatHelper {
   static void initOSCode();
 
  public:
-  static int32 getCpuUsage();
-  static int64 getCpuTime();
+  static int32_t getCpuUsage();
+  static int64_t getCpuTime();
 
-  static int32 getNumThreads();
+  static int32_t getNumThreads();
 
   static void refresh();
 
-  static void newProcessStats(int64 pid, const char* name);
+  static void newProcessStats(int64_t pid, const char* name);
 
   static void close();
 
@@ -82,4 +82,4 @@ class CPPCACHE_EXPORT HostStatHelper {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STATISTICS_HOSTSTATHELPER_H_
+#endif  // GEODE_STATISTICS_HOSTSTATHELPER_H_

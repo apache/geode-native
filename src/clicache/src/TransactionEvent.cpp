@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 #ifdef CSTX_COMMENTED
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "TransactionEvent.hpp"
 #include "Log.hpp"
 #include "impl/SafeConvert.hpp"
@@ -64,7 +64,7 @@ namespace Apache
         array<EntryEvent<TKey, TValue>^>^ events =
           gcnew array<EntryEvent<TKey, TValue>^>( vee.size( ) );
         // Loop through the unmanaged event objects to convert them to the managed generic objects. 
-        for( int32_t index = 0; index < vee.size( ); index++ )
+        for( System::Int32 index = 0; index < vee.size( ); index++ )
         {
           apache::geode::client::EntryEventPtr& nativeptr( vee[ index ] );
           EntryEvent<TKey, TValue> entryEvent( nativeptr.ptr( ) );

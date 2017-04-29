@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "TcrConnectionManager.hpp"
 #include "TcrEndpoint.hpp"
 #include <vector>
@@ -191,7 +191,7 @@ class ThinClientBaseDM {
   bool m_clientNotification;
 
   Queue<TcrChunkedContext> m_chunks;
-  GF_TASK_T<ThinClientBaseDM>* m_chunkProcessor;
+  Task<ThinClientBaseDM>* m_chunkProcessor;
 
  private:
   static volatile bool s_isDeltaEnabledOnServer;
@@ -201,5 +201,4 @@ class ThinClientBaseDM {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_THINCLIENTBASEDM_H_
+#endif  // GEODE_THINCLIENTBASEDM_H_

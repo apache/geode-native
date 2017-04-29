@@ -1,0 +1,589 @@
+---
+title:  QuickStart Examples
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+The QuickStart examples demonstrate the capabilities of the client, and they provide source
+code so you can examine how each example is designed. C++ and C\# examples demonstrate how the
+client performs as a C++ or C\# client.
+
+The examples can be invoked individually from the command line or by using the QuickStart menu.
+
+The examples and their source files are located in the <code>_gc-dir_/SampleCode/quickstart</code> directory, 
+where *gc-dir* is the location in which you installed the client.
+
+The C++ examples are in the `cpp` directory, and the C# examples are in the `csharp` directory.
+Note that the C# examples are available only for Windows.
+
+In each example, client and server are configured either using a pair of companion XML files in the
+`XMLs` directory or programatically. For example, `LoaderListenerWriter` uses
+`serverLoaderListenerWriter.xml` to configure the cache server and `clientLoaderListenerWriter.xml` to
+configure the client, while `BasicOperations` uses `serverBasicOperations.xml` to configure the cache
+server and initialize the client programmatically. Additional support files are stored in the `lib`
+directory.
+
+# <a id="ConfiguringQSE" class="no-quick-link"></a> Configuring the QuickStart Environment
+
+The following components must be in place to run the QuickStart examples on any system. System-specific configurations follow.
+
+**For all systems:**
+
+- **Geode**: Install and configure Geode. See the Geode User's Guide for instructions.
+
+- **Cmake** is required to build the quickstart examples. If you have not already done so, download and install cmake, following the instructions on [cmake.org] (https://cmake.org).
+
+- **Java**: You must have a compatible JRE or JDK installed. See the [Sun Java website](http://java.sun.com)
+for the latest Java version for your operating system. See the installation information in the
+Geode User's Guide for the versions of Java that are compatible with Geode. 
+
+- **Security Toolkit** (optional): The QuickStart security examples rely on a security plugin, `securityImpl`, which is based on the OpenSSL toolkit.
+If you plan to run the security examples, download the latest version of release 1.0.1 (must be 1.0.1) from the [OpenSSL website] (http://www.openssl.org/source/).
+Follow the instructions in the README and INSTALL files to install OpenSSL on your system.
+
+## <a id="ConfiguringQSE_Linux" class="no-quick-link"></a> Configuring QuickStarts - Linux and Solaris
+
+Follow these steps to prepare your Linux or Solaris environment to run the QuickStart examples.
+
+1. Start a terminal session. Set the `GEODE_ROOT` environment variable to point to your Geode product
+installation directory. Add the Geode libraries shown here to your `CLASSPATH`:
+
+    <code>
+    % GEODE\_ROOT=_geode-install-dir_; export GEODE\_ROOT <br />
+    %&nbsp;CLASSPATH=$GEODE\_ROOT/lib/geode-dependencies.jar:$GEODE\_ROOT/lib/antlr-2.7.7.jar:$CLASSPATH<br />
+    %  export CLASSPATH <br />
+    </code>
+
+2. Set the `JAVA_HOME` environment variable to point to your installed JRE or
+JDK. Add `$JAVA_HOME/bin` to the start of your `PATH`.
+
+    <code>
+    % JAVA\_HOME=_installed-jre-path_; export JAVA\_HOME<br />
+    % PATH=$JAVA\_HOME/bin:$GEODE_ROOT/bin:$PATH; export PATH<br />
+    </code>
+
+3. Set the `GEODE` environment variable to point to the directory in which you installed the client, denoted here by  _gc-dir_. Add `$GEODE/lib` to `LD_LIBRARY_PATH`.
+    <code>
+    % GEODE=_gc-dir_; export GEODE<br />
+    % LD\_LIBRARY\_PATH=$GEODE/lib:${LD\_LIBRARY\_PATH}<br />
+    % export LD\_LIBRARY\_PATH<br />
+    </code>
+
+4. Set the `OPENSSL_ROOT_DIR` environment variable, pointing it to the parent folder for the OpenSSL binaries created from the tarball. Add `OPENSSL_ROOT_DIR/lib` to `LD_LIBRARY_PATH`:
+
+    <code>
+    % OPENSSL\_ROOT\_DIR=_parent-folder-for-openssl-binaries_<br />
+    %  export OPENSSL\_ROOT\_DIR<br />
+    % LD\_LIBRARY\_PATH=$OPENSSL\_ROOT\_DIR/lib:$LD\_LIBRARY\_PATH<br />
+    % export LD\_LIBRARY\_PATH
+    </code>
+
+5. Create a directory in which to build the `securityImpl` plug-in. This directory (shown here as
+`/home/user/build-sec`) should be created outside the client directory
+hierarchy. After creating the directory, set it as your current working directory:
+
+    <code>
+    % mkdir /home/user/build-sec<br />
+    % cd /home/user/build-sec
+    </code>
+
+6. Run `cmake` three times, once to configure the build, specifying the path to the `cmake`
+instructions in the client security template directory, a second time to perform the build,
+and a third time to install the resulting library into the client installation directory
+tree:
+
+    <code>
+    % cmake -DGEODE=_gc-dir_ -DCMAKE\_INSTALL\_PREFIX=/installation-destination _gc-dir_/templates/security <br />
+    ... creates a makefile and other supporting files<br />
+    % cmake --build .<br />
+    ... builds  securityImpl plug-in<br />
+    % cmake --build . --target install<br />
+    ... installs securityImpl in the client installation directory tree ($GEODE)
+    </code>
+
+
+7. Create a directory to hold the quickstart examples. This directory (shown here as
+`/home/user/quickstart-examples`) should be created outside the client directory
+hierarchy. After creating the directory, set it as your current working directory:
+
+    <code>
+    % mkdir /home/user/quickstart-examples-cpp<br />
+    % cd /home/user/quickstart-examples-cpp
+    </code>
+
+8. Run `cmake` twice, once to configure the build, then again to build the examples, specifying the
+path to the `cmake` instructions located in the quickstart example directory (in this case, we're building the the `cpp` examples):
+
+    <code>
+    % cmake $GEODE/SampleCode/quickstart/cpp<br />
+    ... creates a makefile and other supporting files<br />
+    % cmake --build .<br />
+    ... builds the examples
+    </code>
+
+    This creates the examples in your working directory, plus supporting files such as the `runcpp.sh` shell script.
+
+See <a href="#AboutQSE">About the QuickStart Examples</a> for instructions on running the examples.
+
+## <a id="ConfiguringQSE_Windows" class="no-quick-link"></a> Configuring QuickStarts - Windows
+
+Follow these steps to prepare your Windows environment to run the QuickStart examples.
+
+1. Run the Visual Studio Command Prompt to create a session with preset compiler environment
+configurations. Set the `GEODE_ROOT` environment variable to your Geode installation directory. 
+Add the `%GEODE_ROOT%\bin` directory to your `PATH`. Add the Geode libraries shown here to your `CLASSPATH`:
+
+    <code>
+    \>&nbsp;GEODE\_ROOT=_geode-install-dir_<br />
+    \> set PATH=%GEODE\_ROOT%\bin;%PATH%<br />
+    \>&nbsp;set&nbsp;CLASSPATH=%GEODE\_ROOT%\lib\geode.jar;%GEODE\_ROOT%\lib\antlr.jar;<br />
+    </code>
+
+2. Set the `JAVA_HOME` environment variable to point to your installed JRE or
+JDK. Add `%JAVA_HOME%\bin` to the start of your `PATH`.
+
+    <code>
+    \> set JAVA\_HOME=_installed-jre-path_<br />
+    \> set PATH=%JAVA\_HOME%\bin;%PATH%
+    </code>
+
+3. Set the `GEODE` environment variable to point to the directory in which you installed the 
+client, denoted here by _gc-dir_. 
+Add `%GEODE%\bin` to `PATH`. Add `%GEODE%\lib` to `LD_LIBRARY_PATH`.
+
+    <code>
+    \> set GEODE=_gc-dir_<br />
+    \> set PATH=%GEODE%\bin;%PATH%<br />
+    \> set LD\_LIBRARY\_PATH=%GEODE%\lib;%LD\_LIBRARY\_PATH%
+    </code>
+
+4. Set the `OPENSSL_ROOT_DIR` environment variable, pointing it to the parent folder for the OpenSSL
+binaries created from the tarball. Add  `%OPENSSL_ROOT_DIR%\bin` to `PATH` and `%OPENSSL_ROOT_DIR%\lib` to `LD_LIBRARY_PATH`:
+
+    <code>
+    \> set OPENSSL\_ROOT\_DIR=c:\OpenSSL<br />
+    \> set PATH=%OPENSSL\_ROOT\_DIR%\bin;%PATH%<br />
+    \> set LD\_LIBRARY\_PATH=%OPENSSL\_ROOT\_DIR%\bin;%LD\_LIBRARY\_PATH%<br />
+    </code>
+
+5. Create a directory in which to build the `securityImpl` plug-in. This directory (shown here as
+`c:\build-sec`) should be created outside the client directory
+hierarchy. After creating the directory, set it as your current working directory:
+
+    <code>
+    \> mkdir c:\build-sec<br />
+    \> cd c:\build-sec
+    </code>
+
+6. Run `cmake` three times, once to configure the build, specifying the path to the `cmake`
+instructions in the client security template directory, a second time to perform the build,
+and a third time to install the resulting library into the client installation directory
+tree:
+
+    When building for Windows, specify the code generator (usually "Visual Studio 12 2013 Win64") in the configuration
+    step and the config type ("Debug" or "Release") in any build steps:
+
+    <code>
+    \> cmake -G "Visual Studio 12 2013 Win64" c:\\<i>gc-dir</i>\templates\security -DGEODE=c:\_gc-dir_<br />
+    ... creates a makefile and other supporting files<br />
+    \> cmake --build . --config Release<br />
+    ... builds  securityImpl plug-in<br />
+    \> cmake --build . --config Release --target install<br />
+    ... installs securityImpl in the client installation directory tree ($GEODE)
+    </code>
+
+
+7. Create a directory to hold the quickstart examples. This directory (shown here as
+`c:\quickstart-examples-csharp`) should be created outside the client directory
+hierarchy. After creating the directory, set it as your current working directory:
+
+    <code>
+    \> mkdir c:\quickstart-examples-csharp<br />
+    \> cd c:\quickstart-examples-csharp
+    </code>
+
+8. Run `cmake` twice, once to configure the build, then again to build the examples, specifying the
+path to the `cmake` instructions located in the quickstart example directory (in this case, we're building the the `csharp` examples):
+Again, when building for Windows, specify the code generator (usually "Visual Studio 12 2013 Win64") in the configuration
+step and the config type ("Debug" or "Release") in any build steps:
+
+    <code>
+    \> cmake -G "Visual Studio 12 2013 Win64" %GEODE%\SampleCode\quickstart\csharp<br />
+    ... creates a makefile and other supporting files<br />
+    \> cmake --build . --config Release<br />
+    ... builds the examples
+    </code>
+
+    This creates the examples in your working directory, plus supporting files such as the `runcs.bat` script.
+
+# <a id="AboutQSE" class="no-quick-link"></a>About the QuickStart Examples
+
+The examples are briefly described in this section. Each example performs the following steps:
+
+1. Starts the cache server with the example's server XML.
+
+2. Creates a Geode cache.
+
+3. Performs operations specific to the example.
+
+4. Closes the Geode cache.
+
+5. Shuts down the cache server.
+
+Note the messages that appear in the example's session as it runs and performs the steps in the list.
+
+ 
+## Basic Operations
+
+The BasicOperations example puts entries (key and value pairs) into a region, gets entries from the region, invalidates an entry in the region, and destroys an entry in the region.
+
+The BasicOperations example uses the built-in serializable types `CacheableInt32` and
+`CacheableString`. There are other built-in types which can be used for an entry. Some types can be
+used as keys or values, while others can only be used as values. The types are listed in the
+following table:
+
+**Built-In Serializable Types**
+
+| Cacheable Types For Keys or Values | Cacheable Types Only For Values |
+|------------------------------------|---------------------------------|
+| CacheableInt32 | CacheableBytes |
+| CacheableString | CacheableDoubleArray |
+| CacheableBoolean | CacheableFloatArray |
+| CacheableByte | CacheableInt16Array |
+| CacheableDouble | CacheableInt32Array |
+| CacheableFloat | CacheableInt64Array |
+| CacheableInt16 | CacheableStringArray |
+| CacheableInt64 | CacheableObjectArray |
+| CacheableWideChar | CacheableVector |
+| CacheableDate | CacheableHashMap |
+| CacheableFileName | CacheableHashSet |
+
+You can also provide your own serializable objects. Examples of custom serializable objects are
+`Position` and `Portfolio` in the RemoteQuery example. For more information regarding serialization,
+refer to [Serializing Data](../cpp-caching-api/serialization-overview.html) and the online API documentation for the client.
+ 
+## Data Expiration
+
+The DataExpiration example is configured with an expiration action of destroy that has a 10-second timeout. It performs the following operations:
+
+1. Sets the `SimpleCacheListener` plugin on a region
+2. Puts three entries into the region
+3. Gets the entry idle timeout setting from the region
+4. Counts the keys in the region before the timeout duration elapses
+5. Waits for the timeout expiration action to be reported by the `SimpleCacheListener`
+6. Counts the remaining keys in the region after the timeout duration elapses
+
+Multiple eviction action options are available, including overflow. For detailed information, see [Specifying Expiration Attributes](../client-cache/expiration-attributes.html).
+
+ 
+## Loader Listener Writer
+
+The LoaderListenerWriter example sets the SimpleCacheLoader, SimpleCacheListener, and SimpleCacheWriter plugins on a region. These plugins report the events that occur during the following region operations:
+
+Put three entries into the region
+Update an entry in the region
+Destroy an entry in the region
+Invalidate an entry in the region
+Get a new entry from the region
+Get the destroyed entry from the region
+ 
+## Register Interest
+
+The RegisterInterest example calls the interest API on a region. These are the functions that are called:
+
+``` pre
+registerAllKeys
+unregisterAllKeys
+registerKeys
+unregisterKeys
+registerRegex
+unregisterRegex
+```
+ 
+## Remote Query
+
+The RemoteQuery example populates some query objects on a region, executes a query that returns a
+`ResultSet`, executes a query that returns a `StructSet`, and executes the region shortcut query
+methods.
+
+## Continuous Query
+
+The CqQuery example demonstrate the continuous query APIs.
+
+## Function Execution
+
+The ExecuteFunctions example demonstrates the function execution APIs.
+
+## HA Cache
+
+The HA Cache example uses client and server XMLs configured to provide high availability functionality for client queues. The example calls the interest API on a region and does simple puts.
+
+ 
+## Exceptions
+
+The Exceptions example performs some operations in incorrect ways, then logs the exceptions thrown by Geode to demonstrate error handling.
+
+ 
+## Durable Client
+
+The DurableClient example demonstrates durable client messaging. If the client loses its connection with a cache server, the primary server and any redundant servers maintain an event queue until the client reconnects. The queued messages are then sent to the client. This example demonstrates the following functionality:
+
+* Durable client properties (`durable-client-id`, `durable-timeout`)
+* `readyForEvents` cache API
+* Register interest APIs with the `isDurable` option
+* Cache close API with the `keepalive` option
+* `CacheListener` with the `afterRegionLive` API
+
+## Security
+
+The Security example demonstrates how client credentials are authenticated when the client connects to a cache server. Authorization for client cache operations is also shown.
+
+ 
+## PutAll And GetAll Operations
+
+The PutAllGetAllOperations example demonstrates `PutAll` and `GetAll` operations
+
+1. The Client is initialized programmatically rather than declaratively
+2. PutAll is called with 100 entries into the region
+3. GetAll is called with 100 entries from the region
+ 
+## DistributedSystem
+
+The DistributedSystem example demonstrates how client can connect to two distributed systems.
+
+1. Client creates the instance of cache.
+2. Client creates two different regions in two different distributed systems.
+3. Client creates basic put-get operations on those regions and closes the instance of cache.
+ 
+## PoolWithEndpoints
+
+This example demonstrates how client can create programatically pool with endpoints.
+
+1. Client creates the instance of cache.
+2. Client creates poolfactory with endpoints.
+3. Client creates pool using this poolfactory.
+4. Client creates region with pool and does put-get operations on this region.
+ 
+## PoolRemoteQuery
+
+This example demonstrates how client can create a pool with a locator using XML. It then
+demonstrates how it can execute a query on a region (attached with pool).
+
+1. Client creates the instance of cache using XML.
+2. Client gets region from the cache.
+3. Client puts some data in the cache.
+4. Client gets `queryService` from cache and executes some queries.
+ 
+## Pool Continuous Query
+
+The PoolCqQuery example demonstrates the continuous query with Pool APIs.
+
+ 
+## Delta Propagation
+
+The Delta example shows how a change in a value stored in a client can be propagated to the server. In the example, a single field of an existing value in a region is modified, and the delta for the value (which is the new value for the updated field) is propagated to the server in a put operation.
+
+ 
+## Multiuser Security
+
+The Multiuser Security example shows per user authenticated cache usage.
+
+ 
+## RefIDExample
+
+The RefIDExample example shows how to declaratively intialize the Region using `refid`.
+
+ 
+## Transactions
+
+The Transactions example shows the use of the client-server transactions API.
+
+ 
+## PdxRemoteQuery
+
+The PdxRemoteQuery example shows the use of PDX serialized objects with Geode querying.
+
+ 
+## PdxSerializer
+
+The PdxSerializer example shows the use of an external PDX serializer for user domain classes that aren't modified to implement the `IPdxSerializable` interface.
+
+ 
+## PdxInstance
+
+The PdxInstance example shows the ability of clients to work with PDX serialized objects without having the actual domain classes available.
+
+ 
+
+# <a id="RunningQSE" class="no-quick-link"></a>Running the Examples
+
+You can run the quickstart examples by starting each C++ or C# example individually from the command line or by starting the examples from a menu. 
+The menu provides a numbered list of the example names, so you just enter the example number to start it.
+
+The C# examples are available only for Windows.
+
+ 
+## Running an Example From the Command Line
+
+**C++ examples**
+
+**For Windows:** `runcpp ExampleName` (for example, `runcpp DataExpiration`)
+
+**For Linux or Solaris:** `./runcpp.sh ExampleName` (for example, `./runcpp.sh DataExpiration`)
+
+**C# examples**
+
+`runcs ExampleName` (for example, `runcs RemoteQuery`)
+ 
+## Running a C++ Example From the Menu
+
+**For Windows:**
+
+Start the C++ menu.
+
+``` pre
+> runcpp
+Please select a Geode C++ QuickStart example to run.
+
+1. BasicOperations
+2. DataExpiration
+3. LoaderListenerWriter
+.
+.
+.
+26.Quit
+
+Enter option: 
+```
+
+Enter a number from the list to start that example.
+
+**For Linux or Solaris:**
+
+Start the C++ menu.
+
+``` pre
+$ ./runcpp.sh
+Please select a Geode C++ QuickStart example to run.
+
+1. BasicOperations
+2. DataExpiration
+3. LoaderListenerWriter
+.
+.
+.
+26.Quit
+
+Enter option: 
+```
+
+Enter a number from the list to start that example
+ 
+**Running a C# Example From the Menu**
+
+Start the C# menu.
+
+``` pre
+> runcs
+Please select a Geode C# QuickStart example to run.
+
+1. BasicOperations
+2. DataExpiration
+3. LoaderListenerWriter
+.
+.
+.
+26.Quit
+
+Enter option: 
+```
+
+Enter a number from the list to start that example.
+ 
+
+## If you have problems running the examples
+
+This section discusses problems you might encounter when you run the examples, and suggests corrective actions. If your problems aren't covered or resolved here, please contact Pivotal Technical Support. For instructions, see the Pivotal page How to File a Support Request.
+
+ 
+## Error Messages
+
+`Exception ... Region:put not connected to Geode`
+
+Verify that the cache server has successfully started by reviewing the cacheserver.log file in the gfecs directory. The log may indicate why the cache server failed to start.
+
+`Exception ... NoClassDefFoundError`
+
+This error may appear in the `cacheserver.log` file in the `gfecs` directory. Verify that you have
+followed all the steps in the [Configuring the QuickStart Environment section](#ConfiguringQSE). You must run the
+example from the quickstart directory with the `runcpp` or `runcs` script for the `CLASSPATH` setting to
+work, and so the example can find its XML files.
+
+`Exception ... XML file/resource does not exist or not found`
+
+This error might appear in the `cacheserver.log` file in the `gfecs` directory, or in the example's
+screen output. Verify that you have followed all the steps in the [Configuring the QuickStart
+Environment section](#ConfiguringQSE). You must run the example from the quickstart directory with the `runcpp` or `runcs`
+script so the example can find its XML files.
+
+ 
+## Connection Problems
+
+Geode is a network-centric distributed system, so if you have a firewall running it could cause
+connection problems. For example, your connections may fail if your firewall places restrictions on
+inbound or outbound permissions for sockets. You may need to modify your firewall configuration to
+permit traffic to applications running on your machine. The specific configuration depends on the
+firewall you're using.
+
+If you experience port conflicts with other distributed systems, change the `localhost` and
+`bridge-server` port numbers for each of the XML files in the `quickstart/XMLs` directory. If you need
+to specify a non-default multicast port setting for the Java cache server, place a copy of the
+Geode `geode.properties` file in the `quickstart/gfecs` directory, then change the `mcast-port=`
+setting to a unique value for your network.
+
+
+# <a id="BuildingQSE" class="no-quick-link"></a>Building the Examples
+
+If you want to build the QuickStart examples yourself from the source files provided, follow these steps:
+
+1. Run the Visual Studio 2010 Command Prompt tool to open a command prompt shell.
+2. In the command shell, enter the following environment configurations:
+
+<code>
+set GEODE_ROOT=_full-path-to-geode-directory_<br />
+set GEODE=_gc-dir_<br />
+set JAVA\_HOME=_installed-jdk-path_<br />
+set PATH=%PATH%;%JAVA\_HOME%/bin;%GEODE%\bin<br />
+</code>
+
+3. In the command shell, change to the quickstart directory:
+
+``` pre
+cd SampleCode\quickstart
+```
+
+4. In the command shell, run the appropriate build script for your system. The build script uses the
+`quickstart_cpp_10.sln` and `quickstart_csharp_10.sln` Visual Studio solution files in the quickstart
+directory.
+
+**For Windows:** `. buildit_10.bat`
+
+**For Linux and Solaris:** `./buildit.sh`
+
+
+ 

@@ -54,7 +54,7 @@ class BucketServerLocation : public ServerLocation {
         m_numServerGroups(static_cast<int8_t>(0)) {}
 
   BucketServerLocation(int bucketId, int port, std::string host, bool isPrimary,
-                       int8 version)
+                       int8_t version)
       : ServerLocation(host, port),
         m_bucketId(bucketId),
         m_isPrimary(isPrimary),
@@ -63,7 +63,7 @@ class BucketServerLocation : public ServerLocation {
         m_numServerGroups(static_cast<int8_t>(0)) {}
 
   BucketServerLocation(int bucketId, int port, std::string host, bool isPrimary,
-                       int8 version, std::vector<std::string> serverGroups)
+                       int8_t version, std::vector<std::string> serverGroups)
       : ServerLocation(host, port),
         m_bucketId(bucketId),
         m_isPrimary(isPrimary),
@@ -94,7 +94,7 @@ class BucketServerLocation : public ServerLocation {
 
   inline bool isPrimary() const { return m_isPrimary; }
 
-  inline int8 getVersion() const { return m_version; }
+  inline int8_t getVersion() const { return m_version; }
 
   void toData(apache::geode::client::DataOutput& output) const {
     ServerLocation::toData(output);
@@ -130,7 +130,7 @@ class BucketServerLocation : public ServerLocation {
   }
 
   uint32_t objectSize() const {
-    return sizeof(int) + sizeof(bool) + sizeof(int8);
+    return sizeof(int32_t) + sizeof(bool) + sizeof(int8_t);
   }
 
   int8_t typeId() const {
@@ -177,5 +177,4 @@ class BucketServerLocation : public ServerLocation {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_BUCKETSERVERLOCATION_H_
+#endif  // GEODE_BUCKETSERVERLOCATION_H_

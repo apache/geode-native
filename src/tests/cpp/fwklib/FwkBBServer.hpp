@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_bb6131bfb60de61fcfc2f40301c3f02c
-#define APACHE_GEODE_GUARD_bb6131bfb60de61fcfc2f40301c3f02c
+#ifndef GEODE_FWKLIB_FWKBBSERVER_H_
+#define GEODE_FWKLIB_FWKBBSERVER_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -26,7 +26,6 @@
   * @version 1.0
   * @see
   */
-
 
 #include "FwkBB.hpp"
 #include "UDPIpc.hpp"
@@ -225,5 +224,4 @@ class BBProcessor : public ServiceTask {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_bb6131bfb60de61fcfc2f40301c3f02c
+#endif  // GEODE_FWKLIB_FWKBBSERVER_H_

@@ -16,10 +16,10 @@
  */
 
 #include "PkcsAuthInit.hpp"
-#include <gfcpp/Properties.hpp>
-#include <gfcpp/CacheableBuiltins.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include "stdio.h"
+#include <geode/Properties.hpp>
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <cstdio>
 #include <string>
 
 namespace apache {

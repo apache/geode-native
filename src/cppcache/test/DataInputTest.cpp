@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <string.h>  // for ::memset()
+#include <string>  // for ::memset()
 
 #include <stdint.h>
 #define NOMINMAX
@@ -23,9 +23,9 @@
 
 #include <gtest/gtest.h>
 
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/SharedPtr.hpp>
 #include "ByteArrayFixture.hpp"
 
 using namespace apache::geode::client;

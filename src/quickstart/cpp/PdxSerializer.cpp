@@ -34,7 +34,7 @@
 */
 
 // Include the Geode library.
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;
@@ -165,15 +165,15 @@ int main(int argc, char** argv) {
     LOGINFO("Registered Person Query Objects");
 
     // Populate the Region with some Person objects.
-    Person* p1 = new Person("John", 1 /*ID*/, 23 /*age*/);
+    Person* p1 = new Person((char *)"John", 1 /*ID*/, 23 /*age*/);
     PdxWrapperPtr pdxobj1(new PdxWrapper(p1, CLASSNAME));
     regionPtr->put("Key1", pdxobj1);
 
-    Person* p2 = new Person("Jack", 2 /*ID*/, 20 /*age*/);
+    Person* p2 = new Person((char *)"Jack", 2 /*ID*/, 20 /*age*/);
     PdxWrapperPtr pdxobj2(new PdxWrapper(p2, CLASSNAME));
     regionPtr->put("Key2", pdxobj2);
 
-    Person* p3 = new Person("Tony", 3 /*ID*/, 35 /*age*/);
+    Person* p3 = new Person((char *)"Tony", 3 /*ID*/, 35 /*age*/);
     PdxWrapperPtr pdxobj3(new PdxWrapper(p3, CLASSNAME));
     regionPtr->put("Key3", pdxobj3);
 

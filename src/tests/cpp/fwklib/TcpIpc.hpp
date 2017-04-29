@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_7dbd8fa103bfe69138e0b0571a737c9c
-#define APACHE_GEODE_GUARD_7dbd8fa103bfe69138e0b0571a737c9c
+#ifndef GEODE_FWKLIB_TCPIPC_H_
+#define GEODE_FWKLIB_TCPIPC_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,10 +20,10 @@
  * limitations under the License.
  */
 
-
-#include <gfcpp/gf_base.hpp>
+#include <geode/geode_base.hpp>
 #include <ace/SOCK_Stream.h>
 #include <ace/SOCK_Acceptor.h>
+#include <cstdint>
 #include <string>
 
 namespace apache {
@@ -76,5 +76,4 @@ class TcpIpc {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_7dbd8fa103bfe69138e0b0571a737c9c
+#endif  // GEODE_FWKLIB_TCPIPC_H_

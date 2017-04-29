@@ -35,7 +35,7 @@
  */
 
 // Include the Geode library.
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 // Include the SimpleCacheLoader, SimpleCacheListener and SimpleCacheWriter
 // plugins.

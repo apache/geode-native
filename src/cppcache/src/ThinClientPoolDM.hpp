@@ -22,19 +22,20 @@
 
 #include <string>
 #include "ThinClientBaseDM.hpp"
-#include <gfcpp/Pool.hpp>
+#include <geode/Pool.hpp>
 #include "PoolAttributes.hpp"
 #include "ThinClientLocatorHelper.hpp"
 #include "RemoteQueryService.hpp"
+#include <memory>
 #include <set>
 #include <vector>
-#include "GF_TASK_T.hpp"
+#include "Task.hpp"
 #include <ace/Semaphore.h>
 #include "PoolStatistics.hpp"
 #include "FairQueue.hpp"
 #include "TcrPoolEndPoint.hpp"
 #include "ThinClientRegion.hpp"
-#include <gfcpp/ResultCollector.hpp>
+#include <geode/ResultCollector.hpp>
 #include "ExecutionImpl.hpp"
 #include "ClientMetadataService.hpp"
 #include "ThreadPool.hpp"
@@ -397,7 +398,7 @@ class ThinClientPoolDM
 
   volatile ThinClientLocatorHelper* m_locHelper;
 
-  volatile int32 m_poolSize;  // Actual Size of Pool
+  volatile int32_t m_poolSize;  // Actual Size of Pool
   int m_numRegions;
 
   // for selectEndpoint
@@ -405,10 +406,10 @@ class ThinClientPoolDM
 
   // Manage Connection thread
   ACE_Semaphore m_connSema;
-  GF_TASK_T<ThinClientPoolDM>* m_connManageTask;
-  GF_TASK_T<ThinClientPoolDM>* m_pingTask;
-  GF_TASK_T<ThinClientPoolDM>* m_updateLocatorListTask;
-  GF_TASK_T<ThinClientPoolDM>* m_cliCallbackTask;
+  Task<ThinClientPoolDM>* m_connManageTask;
+  Task<ThinClientPoolDM>* m_pingTask;
+  Task<ThinClientPoolDM>* m_updateLocatorListTask;
+  Task<ThinClientPoolDM>* m_cliCallbackTask;
   long m_pingTaskId;
   long m_updateLocatorListTaskId;
   long m_connManageTaskId;
@@ -419,7 +420,7 @@ class ThinClientPoolDM
   int manageConnectionsInternal(volatile bool& isRunning);
   void cleanStaleConnections(volatile bool& isRunning);
   void restoreMinConnections(volatile bool& isRunning);
-  volatile int32 m_clientOps;  // Actual Size of Pool
+  volatile int32_t m_clientOps;  // Actual Size of Pool
   statistics::PoolStatsSampler* m_PoolStatsSampler;
   ClientMetadataService* m_clientMetadataService;
   friend class CacheImpl;
@@ -440,7 +441,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
   CacheablePtr m_args;
   GfErrType m_error;
   ResultCollectorPtr* m_rc;
-  ACE_Recursive_Thread_Mutex* m_resultCollectorLock;
+  std::shared_ptr<ACE_Recursive_Thread_Mutex> m_resultCollectorLock;
   CacheableStringPtr exceptionPtr;
   UserAttributesPtr m_userAttr;
 
@@ -453,7 +454,6 @@ class FunctionExecution : public PooledWork<GfErrType> {
     m_timeout = 0;
     m_error = GF_NOERR;
     m_rc = NULL;
-    m_resultCollectorLock = NULL;
     m_userAttr = NULLPTR;
   }
 
@@ -463,7 +463,8 @@ class FunctionExecution : public PooledWork<GfErrType> {
 
   void setParameters(const char* func, uint8_t getResult, uint32_t timeout,
                      CacheablePtr args, TcrEndpoint* ep,
-                     ThinClientPoolDM* poolDM, ACE_Recursive_Thread_Mutex* rCL,
+                     ThinClientPoolDM* poolDM,
+                     const std::shared_ptr<ACE_Recursive_Thread_Mutex>& rCL,
                      ResultCollectorPtr* rs, UserAttributesPtr userAttr) {
     exceptionPtr = NULLPTR;
     m_resultCollectorLock = rCL;
@@ -477,7 +478,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
     m_poolDM = poolDM;
     m_userAttr = userAttr;
 
-    // m_functionExecutionTask = new GF_TASK_T<FunctionExecution>(this,
+    // m_functionExecutionTask = new Task<FunctionExecution>(this,
     //&FunctionExecution::execute);
   }
 
@@ -616,7 +617,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
   CacheableHashSetPtr m_routingObj;
   ResultCollectorPtr m_rc;
   TcrChunkedResult* m_resultCollector;
-  ACE_Recursive_Thread_Mutex* m_resultCollectorLock;
+  std::shared_ptr<ACE_Recursive_Thread_Mutex> m_resultCollectorLock;
   UserAttributesPtr m_userAttr;
   const Region* m_region;
   bool m_allBuckets;
@@ -625,7 +626,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
   OnRegionFunctionExecution(
       const char* func, const Region* region, CacheablePtr args,
       CacheableHashSetPtr routingObj, uint8_t getResult, uint32_t timeout,
-      ThinClientPoolDM* poolDM, ACE_Recursive_Thread_Mutex* rCL,
+      ThinClientPoolDM* poolDM, const std::shared_ptr<ACE_Recursive_Thread_Mutex>& rCL,
       ResultCollectorPtr rs, UserAttributesPtr userAttr, bool isBGThread,
       BucketServerLocationPtr serverLocation, bool allBuckets)
       : m_serverLocation(serverLocation),
@@ -681,5 +682,4 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_THINCLIENTPOOLDM_H_
+#endif  // GEODE_THINCLIENTPOOLDM_H_

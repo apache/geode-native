@@ -21,7 +21,7 @@
  */
 
 #include "ThinClientRegion.hpp"
-#include <gfcpp/Pool.hpp>
+#include <geode/Pool.hpp>
 
 /**
  * @file
@@ -88,4 +88,4 @@ class CPPCACHE_EXPORT ThinClientHARegion : public ThinClientRegion {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_THINCLIENTHAREGION_H_
+#endif  // GEODE_THINCLIENTHAREGION_H_

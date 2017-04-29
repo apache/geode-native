@@ -17,11 +17,11 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/CacheableKey.hpp>
-#include <gfcpp/CacheableBuiltins.hpp>
-#include "IGFSerializable.hpp"
-#include "IGFDelta.hpp"
+#include "geode_defs.hpp"
+#include <geode/CacheableKey.hpp>
+#include <geode/CacheableBuiltins.hpp>
+#include "IGeodeSerializable.hpp"
+#include "IGeodeDelta.hpp"
 #include "impl/ManagedString.hpp"
 #include "impl/NativeWrapper.hpp"
 #include "impl/EnumInfo.hpp"
@@ -58,17 +58,17 @@ namespace Apache
       /// The delegate shall be stored in the internal <c>DelegateWrapper</c>
       /// class and an instance will be initialized in the
       /// <c>DelegateWrapper.NativeDelegate</c> method by a call to
-      /// <see cref="IGFSerializable.FromData" />.
+      /// <see cref="IGeodeSerializable.FromData" />.
       /// </summary>
-      public delegate Apache::Geode::Client::IGFSerializable^ TypeFactoryMethodGeneric();
+      public delegate Apache::Geode::Client::IGeodeSerializable^ TypeFactoryMethodGeneric();
       /// <summary>
       /// Delegate to wrap a native <c>apache::geode::client::Serializable</c> type.
       /// </summary>
       /// <remarks>
-      /// This delegate should return an object of type <c>IGFSerializable</c>
+      /// This delegate should return an object of type <c>IGeodeSerializable</c>
       /// given a native object.
       /// </remarks>
-      delegate Apache::Geode::Client::IGFSerializable^ WrapperDelegateGeneric(apache::geode::client::Serializable* obj);
+      delegate Apache::Geode::Client::IGeodeSerializable^ WrapperDelegateGeneric(apache::geode::client::Serializable* obj);
 
 			/// <summary>
       /// Signature of function delegates passed to
@@ -81,11 +81,11 @@ namespace Apache
       
       /// <summary>
       /// This class wraps the native C++ <c>apache::geode::client::Serializable</c> objects
-      /// as managed <see cref="IGFSerializable" /> objects.
+      /// as managed <see cref="IGeodeSerializable" /> objects.
       /// </summary>
       public ref class Serializable
         : public Apache::Geode::Client::Internal::SBWrap<apache::geode::client::Serializable>,
-        public Apache::Geode::Client::IGFSerializable
+        public Apache::Geode::Client::IGeodeSerializable
       {
       public:
         /// <summary>
@@ -104,15 +104,15 @@ namespace Apache
         /// the DataInput stream to use for reading the object data
         /// </param>
         /// <returns>the deserialized object</returns>
-        virtual Apache::Geode::Client::IGFSerializable^
+        virtual Apache::Geode::Client::IGeodeSerializable^
           FromData(Apache::Geode::Client::DataInput^ input);
         
         /// <summary>
         /// return the size of this object in bytes
         /// </summary>
-        virtual property uint32_t ObjectSize
+        virtual property System::UInt32 ObjectSize
         {
-          virtual uint32_t get(); 
+          virtual System::UInt32 get(); 
         }
 
         /// <summary>
@@ -121,9 +121,9 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property uint32_t ClassId
+        virtual property System::UInt32 ClassId
         {
-          virtual uint32_t get();
+          virtual System::UInt32 get();
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace Apache
         /// Implicit conversion operator from a 16-bit integer
         /// to a <c>Serializable</c>.
         /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (int16_t value);
+        static operator Apache::Geode::Client::Serializable^ (System::Int16 value);
 
         /// <summary>
         /// Implicit conversion operator from a character
@@ -206,31 +206,31 @@ namespace Apache
         /// Implicit conversion operator from a 16-bit integer array
         /// to a <c>Serializable</c>.
         /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<int16_t>^ value);
+        static operator Apache::Geode::Client::Serializable^ (array<System::Int16>^ value);
 
         /// <summary>
         /// Implicit conversion operator from a 32-bit integer
         /// to a <c>Serializable</c>.
         /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (int32_t value);
+        static operator Apache::Geode::Client::Serializable^ (System::Int32 value);
 
         /// <summary>
         /// Implicit conversion operator from a 32-bit integer array
         /// to a <c>Serializable</c>.
         /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<int32_t>^ value);
+        static operator Apache::Geode::Client::Serializable^ (array<System::Int32>^ value);
 
         /// <summary>
         /// Implicit conversion operator from a 64-bit integer
         /// to a <c>Serializable</c>.
         /// </summary>
-        static operator /*Apache::Geode::Client::*/Serializable^ (int64_t value);
+        static operator /*Apache::Geode::Client::*/Serializable^ (System::Int64 value);
 
         /// <summary>
         /// Implicit conversion operator from a 64-bit integer array
         /// to a <c>Serializable</c>.
         /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<int64_t>^ value);
+        static operator Apache::Geode::Client::Serializable^ (array<System::Int64>^ value);
 
         /// <summary>
         /// Implicit conversion operator from a string
@@ -247,7 +247,7 @@ namespace Apache
         /// <summary>
         /// Register an instance factory method for a given type.
         /// This should be used when registering types that implement
-        /// IGFSerializable.
+        /// IGeodeSerializable.
         /// </summary>
         /// <param name="creationMethod">
         /// the creation function to register
@@ -295,8 +295,8 @@ namespace Apache
 
       internal:
 
-				static int32 GetPDXIdForType(const char* poolName, IGFSerializable^ pdxType);
-				static IGFSerializable^ GetPDXTypeById(const char* poolName, int32 typeId);
+				static System::Int32 GetPDXIdForType(const char* poolName, IGeodeSerializable^ pdxType);
+				static IGeodeSerializable^ GetPDXTypeById(const char* poolName, System::Int32 typeId);
 				static IPdxSerializable^ Serializable::GetPdxType(String^ className);
 				static void RegisterPDXManagedCacheableKey(bool appDomainEnable);
         static bool IsObjectAndPdxSerializerRegistered(String^ className);
@@ -344,19 +344,19 @@ namespace Apache
         static apache::geode::client::CacheableKeyPtr getCacheableFloat(float val);
         
         //int16
-        static int16 getInt16(apache::geode::client::SerializablePtr nativeptr);
+        static System::Int16 getInt16(apache::geode::client::SerializablePtr nativeptr);
         
         static apache::geode::client::CacheableKeyPtr getCacheableInt16(int val);
         
         //int32
-        static int32 getInt32(apache::geode::client::SerializablePtr nativeptr);
+        static System::Int32 getInt32(apache::geode::client::SerializablePtr nativeptr);
         
-        static apache::geode::client::CacheableKeyPtr getCacheableInt32(int32 val);
+        static apache::geode::client::CacheableKeyPtr getCacheableInt32(System::Int32 val);
         
         //int64
-        static int64 getInt64(apache::geode::client::SerializablePtr nativeptr);
+        static System::Int64 getInt64(apache::geode::client::SerializablePtr nativeptr);
         
-        static apache::geode::client::CacheableKeyPtr getCacheableInt64(int64 val);
+        static apache::geode::client::CacheableKeyPtr getCacheableInt64(System::Int64 val);
         
         //cacheable ascii string
         static String^ getASCIIString(apache::geode::client::SerializablePtr nativeptr);        
@@ -404,11 +404,11 @@ namespace Apache
 
         static array<Byte>^ getSByteArray(array<SByte>^ sArray);
         
-        static array<int16_t>^ getInt16Array(array<uint16_t>^ sArray);
+        static array<System::Int16>^ getInt16Array(array<System::UInt16>^ sArray);
         
-        static array<int32_t>^ getInt32Array(array<uint32_t>^ sArray);        
+        static array<System::Int32>^ getInt32Array(array<System::UInt32>^ sArray);        
 
-        static array<int64_t>^ getInt64Array(array<uint64_t>^ sArray);
+        static array<System::Int64>^ getInt64Array(array<System::UInt64>^ sArray);
         
 
         /// <summary>
@@ -427,7 +427,7 @@ namespace Apache
         /// <summary>
         /// Register an instance factory method for a given type and typeId.
         /// This should be used when registering types that implement
-        /// IGFSerializable.
+        /// IGeodeSerializable.
         /// </summary>
         /// <param name="typeId">typeId of the type being registered.</param>
         /// <param name="creationMethod">
@@ -539,13 +539,13 @@ namespace Apache
         /// Static map of <c>TypeFactoryMethod</c> delegates created
         /// for managed <c>TypeFactoryMethod</c> delegates.
         /// </summary>
-        static Dictionary<int64_t, TypeFactoryMethodGeneric^>^ ManagedDelegatesGeneric =
-          gcnew Dictionary<int64_t, TypeFactoryMethodGeneric^>();
+        static Dictionary<System::Int64, TypeFactoryMethodGeneric^>^ ManagedDelegatesGeneric =
+          gcnew Dictionary<System::Int64, TypeFactoryMethodGeneric^>();
 
         /// <summary>
         /// This is to get manged delegates.
         /// </summary>
-        static TypeFactoryMethodGeneric^ GetManagedDelegateGeneric(int64_t typeId)
+        static TypeFactoryMethodGeneric^ GetManagedDelegateGeneric(System::Int64 typeId)
         {
           TypeFactoryMethodGeneric^ ret = nullptr;
           ManagedDelegatesGeneric->TryGetValue(typeId, ret);

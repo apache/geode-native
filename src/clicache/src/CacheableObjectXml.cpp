@@ -17,14 +17,14 @@
 
 
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "CacheableObjectXml.hpp"
 #include "DataInput.hpp"
 #include "DataOutput.hpp"
 #include "Log.hpp"
-#include "impl/GFNullStream.hpp"
-#include "impl/GFDataInputStream.hpp"
-#include "impl/GFDataOutputStream.hpp"
+#include "impl/GeodeNullStream.hpp"
+#include "impl/GeodeDataInputStream.hpp"
+#include "impl/GeodeDataOutputStream.hpp"
 
 using namespace System;
 using namespace System::IO;
@@ -52,10 +52,10 @@ namespace Apache
           output->AdvanceCursor(4); // placeholder for object size bytes needed while reading back.
 
           XmlSerializer xs(objType);
-          GFDataOutputStream dos(output);
-          int64_t checkpoint = dos.Length;
+          GeodeDataOutputStream dos(output);
+          System::Int64 checkpoint = dos.Length;
           xs.Serialize(%dos, m_obj);
-          m_objectSize = (uint32_t) (dos.Length - checkpoint);
+          m_objectSize = (System::UInt32) (dos.Length - checkpoint);
 
           output->RewindCursor(m_objectSize + 4);
           output->WriteInt32(m_objectSize);
@@ -63,7 +63,7 @@ namespace Apache
         }
       }
 
-      IGFSerializable^ CacheableObjectXml::FromData(DataInput^ input)
+      IGeodeSerializable^ CacheableObjectXml::FromData(DataInput^ input)
       {
         Byte isNull = input->ReadByte();
         if (isNull) {
@@ -80,9 +80,9 @@ namespace Apache
           }
           else {
             int maxSize = input->ReadInt32();
-            GFDataInputStream dis(input, maxSize);
+            GeodeDataInputStream dis(input, maxSize);
             XmlSerializer xs(objType);
-            uint32_t checkpoint = dis.BytesRead;
+            System::UInt32 checkpoint = dis.BytesRead;
             m_obj = xs.Deserialize(%dis);
             m_objectSize = dis.BytesRead - checkpoint;
           }
@@ -90,16 +90,16 @@ namespace Apache
         return this;
       }
 
-      uint32_t CacheableObjectXml::ObjectSize::get()
+      System::UInt32 CacheableObjectXml::ObjectSize::get()
       { 
         if (m_objectSize == 0) {
           if (m_obj != nullptr) {
             Type^ objType = m_obj->GetType();
             XmlSerializer xs(objType);
-            GFNullStream ns;
+            GeodeNullStream ns;
             xs.Serialize(%ns, m_obj);
 
-            m_objectSize = (uint32_t)sizeof(CacheableObjectXml^) + (uint32_t)ns.Length;
+            m_objectSize = (System::UInt32)sizeof(CacheableObjectXml^) + (System::UInt32)ns.Length;
           }
         }
         return m_objectSize;

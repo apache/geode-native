@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "AttributesFactory.hpp"
 #include "Region.hpp"
 #include "impl/ManagedCacheLoader.hpp"
@@ -169,28 +169,28 @@ namespace Apache
       // EXPIRATION ATTRIBUTES
 
       generic<class TKey, class TValue>
-      void AttributesFactory<TKey, TValue>::SetEntryIdleTimeout( ExpirationAction action, uint32_t idleTimeout )
+      void AttributesFactory<TKey, TValue>::SetEntryIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout )
       {
         NativePtr->setEntryIdleTimeout(
           static_cast<apache::geode::client::ExpirationAction::Action>( action ), idleTimeout );
       }
 
       generic<class TKey, class TValue>
-      void AttributesFactory<TKey, TValue>::SetEntryTimeToLive( ExpirationAction action, uint32_t timeToLive )
+      void AttributesFactory<TKey, TValue>::SetEntryTimeToLive( ExpirationAction action, System::UInt32 timeToLive )
       {
         NativePtr->setEntryTimeToLive(
           static_cast<apache::geode::client::ExpirationAction::Action>( action ), timeToLive );
       }
 
       generic<class TKey, class TValue>
-      void AttributesFactory<TKey, TValue>::SetRegionIdleTimeout( ExpirationAction action, uint32_t idleTimeout )
+      void AttributesFactory<TKey, TValue>::SetRegionIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout )
       {
         NativePtr->setRegionIdleTimeout(
           static_cast<apache::geode::client::ExpirationAction::Action>( action ), idleTimeout );
       }
 
       generic<class TKey, class TValue>
-      void AttributesFactory<TKey, TValue>::SetRegionTimeToLive( ExpirationAction action, uint32_t timeToLive )
+      void AttributesFactory<TKey, TValue>::SetRegionTimeToLive( ExpirationAction action, System::UInt32 timeToLive )
       {
         NativePtr->setRegionTimeToLive(
           static_cast<apache::geode::client::ExpirationAction::Action>( action ), timeToLive );
@@ -253,7 +253,7 @@ namespace Apache
       // MAP ATTRIBUTES
 
       generic<class TKey, class TValue>
-      void AttributesFactory<TKey, TValue>::SetInitialCapacity( int32_t initialCapacity )
+      void AttributesFactory<TKey, TValue>::SetInitialCapacity( System::Int32 initialCapacity )
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
@@ -273,7 +273,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      void AttributesFactory<TKey, TValue>::SetConcurrencyLevel( int32_t concurrencyLevel )
+      void AttributesFactory<TKey, TValue>::SetConcurrencyLevel( System::Int32 concurrencyLevel )
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
@@ -283,7 +283,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      void AttributesFactory<TKey, TValue>::SetLruEntriesLimit( uint32_t entriesLimit )
+      void AttributesFactory<TKey, TValue>::SetLruEntriesLimit( System::UInt32 entriesLimit )
       {
         NativePtr->setLruEntriesLimit( entriesLimit );
       }

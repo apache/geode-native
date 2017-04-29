@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 #include "LocatorListRequest.hpp"
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/DataOutput.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
 #include "GeodeTypeIdsImpl.hpp"
-#include <gfcpp/CacheableString.hpp>
+#include <geode/CacheableString.hpp>
 using namespace apache::geode::client;
 LocatorListRequest::LocatorListRequest(const std::string& servergroup)
     : m_servergroup(servergroup) {}

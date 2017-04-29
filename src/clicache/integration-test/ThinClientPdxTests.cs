@@ -1128,7 +1128,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        try
        {
-         Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGFSerializable.CreateDeserializable);
+         Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable);
          Serializable.RegisterPdxType(NestedPdx.CreateDeserializable);
          Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
          Serializable.RegisterPdxType(PdxTypes2.CreateDeserializable);
@@ -1144,10 +1144,10 @@ namespace Apache.Geode.Client.UnitTests
        }
 
        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
-       PdxInsideIGFSerializable np = new PdxInsideIGFSerializable();
+       PdxInsideIGeodeSerializable np = new PdxInsideIGeodeSerializable();
        region0[1] = np;
 
-       PdxInsideIGFSerializable pRet = (PdxInsideIGFSerializable)region0[1];
+       PdxInsideIGeodeSerializable pRet = (PdxInsideIGeodeSerializable)region0[1];
 
        Assert.AreEqual(np, pRet);
      }
@@ -1156,7 +1156,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        try
        {
-         Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGFSerializable.CreateDeserializable);
+         Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable);
          Serializable.RegisterPdxType(NestedPdx.CreateDeserializable);
          Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
          Serializable.RegisterPdxType(PdxTypes2.CreateDeserializable);
@@ -1173,8 +1173,8 @@ namespace Apache.Geode.Client.UnitTests
 
        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-       PdxInsideIGFSerializable orig = new PdxInsideIGFSerializable();
-       PdxInsideIGFSerializable pRet = (PdxInsideIGFSerializable)region0[1];
+       PdxInsideIGeodeSerializable orig = new PdxInsideIGeodeSerializable();
+       PdxInsideIGeodeSerializable pRet = (PdxInsideIGeodeSerializable)region0[1];
 
        Assert.AreEqual(orig, pRet);
      }
@@ -1371,7 +1371,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        try
        {
-         Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGFSerializable.CreateDeserializable);
+         Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable);
          Serializable.RegisterPdxType(NestedPdx.CreateDeserializable);
          Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
          Serializable.RegisterPdxType(PdxTypes2.CreateDeserializable);
@@ -1405,21 +1405,9 @@ namespace Apache.Geode.Client.UnitTests
        all.Add(26, p6);
        all.Add(27, p7);
        all.Add(28, p8);
-       //all.Add(p1, "Gemstone");
-       //all.Add(p2, p1);
        region0.PutAll(all);
        
        
-       /*
-        
-       all.Clear();
-       all.Add(p1, "Gemstone");
-       region0.PutAll(all);
-       
-       all.Clear();
-       all.Add(p2, p1);
-       region0.PutAll(all);
-         */
        ICollection<object> keys = new List<object>();
        IDictionary<object, object> getall = new Dictionary<object, object>();
 
@@ -1514,7 +1502,7 @@ namespace Apache.Geode.Client.UnitTests
      {
          try
          {
-             Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGFSerializable.CreateDeserializable);
+             Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable);
              Serializable.RegisterPdxType(NestedPdx.CreateDeserializable);
              Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
              Serializable.RegisterPdxType(PdxTypes2.CreateDeserializable);
@@ -7165,7 +7153,7 @@ namespace javaobject
 {
   using Apache.Geode.Client;
   #region Pdx Delta class
-  public class PdxDelta : IPdxSerializable, IGFDelta, ICloneable
+  public class PdxDelta : IPdxSerializable, IGeodeDelta, ICloneable
   {
     public static int GotDelta = 0;
     int _delta = 0;
@@ -7196,7 +7184,7 @@ namespace javaobject
     {
       get { return _delta; }
     }
-    #region IGFDelta Members
+    #region IGeodeDelta Members
 
     public void FromDelta(DataInput input)
     {

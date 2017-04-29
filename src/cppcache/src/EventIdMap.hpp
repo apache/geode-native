@@ -26,8 +26,8 @@
 #include <ace/Guard_T.h>
 
 #include "EventId.hpp"
-#include <gfcpp/HashMapT.hpp>
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/HashMapT.hpp>
+#include <geode/SharedPtr.hpp>
 
 #include <vector>
 #include <utility>
@@ -150,7 +150,7 @@ class CPPCACHE_EXPORT EventSource : public SharedBase {
   EventSource(const char *memId, int32_t memIdLen, int64_t thrId);
   ~EventSource();
 
-  uint32_t hashcode();
+  int32_t hashcode();
   bool operator==(const EventSource &rhs) const;
 
   // Accessors
@@ -203,5 +203,4 @@ class CPPCACHE_EXPORT EventSequence : public SharedBase {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_EVENTIDMAP_H_
+#endif  // GEODE_EVENTIDMAP_H_

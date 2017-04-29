@@ -22,7 +22,7 @@
  */
 
 #include "TXCommitMessage.hpp"
-#include <gfcpp/DataOutput.hpp>
+#include <geode/DataOutput.hpp>
 #include <algorithm>
 
 #include "ClientProxyMembershipID.hpp"

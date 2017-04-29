@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/CacheableString.hpp>
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/DataInput.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/GeodeTypeIds.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/GeodeTypeIds.hpp>
 #include <Utils.hpp>
 
 #include <cwchar>
@@ -129,7 +129,7 @@ bool CacheableString::operator==(const CacheableKey& other) const {
   }
 }
 
-uint32_t CacheableString::hashcode() const {
+int32_t CacheableString::hashcode() const {
   if (m_str == NULL) {
     return 0;
   }

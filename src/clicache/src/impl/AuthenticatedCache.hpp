@@ -17,12 +17,12 @@
 
 #pragma once
 
-#include "../gf_defs.hpp"
-#include <gfcpp/RegionService.hpp>
+#include "../geode_defs.hpp"
+#include <geode/RegionService.hpp>
 #include "NativeWrapper.hpp"
 #include "../RegionShortcut.hpp"
 #include "../RegionFactory.hpp"
-//#include "../gf_includes.hpp"
+//#include "../geode_includes.hpp"
 #include "../IRegionService.hpp"
 #include "../Region.hpp"
 

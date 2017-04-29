@@ -16,7 +16,7 @@
  */
 
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "ResultCollector.hpp"
 #include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
@@ -36,7 +36,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          apache::geode::client::Serializable * result = SafeGenericMSerializableConvert((IGFSerializable^)rs);
+          apache::geode::client::Serializable * result = SafeGenericMSerializableConvert((IGeodeSerializable^)rs);
         NativePtr->addResult( result==NULL ? (NULLPTR) : (apache::geode::client::CacheablePtr(result)) );
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
@@ -55,7 +55,7 @@ namespace Apache
           apache::geode::client::CacheableVectorPtr results = NativePtr->getResult(timeout);
         array<TResult>^ rs =
           gcnew array<TResult>( results->size( ) );
-        for( int32_t index = 0; index < results->size( ); index++ )
+        for( System::Int32 index = 0; index < results->size( ); index++ )
         {
           apache::geode::client::CacheablePtr& nativeptr(results->operator[](index));
 

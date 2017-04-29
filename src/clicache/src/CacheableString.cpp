@@ -20,7 +20,7 @@
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "CacheableString.hpp"
 #include "ExceptionTypes.hpp"
 
@@ -50,7 +50,7 @@ namespace Apache
         }
       }
 
-      IGFSerializable^ CacheableString::FromData(DataInput^ input)
+      IGeodeSerializable^ CacheableString::FromData(DataInput^ input)
       {
         if (m_type == GeodeClassIds::CacheableASCIIString ||
             m_type == GeodeClassIds::CacheableString)
@@ -76,7 +76,7 @@ namespace Apache
         size_t len;
         if (value != nullptr && (len = value->Length) > 0) {
           pin_ptr<const wchar_t> pin_value = PtrToStringChars(value);
-          cStr = apache::geode::client::CacheableString::create(pin_value, (int32_t)len);
+          cStr = apache::geode::client::CacheableString::create(pin_value, (System::Int32)len);
         }
         else {
           cStr = (apache::geode::client::CacheableString*)
@@ -91,7 +91,7 @@ namespace Apache
         if (value != nullptr && (len = value->Length) > 0) {
           pin_ptr<const Char> pin_value = &value[0];
           cStr = apache::geode::client::CacheableString::create(
-            (const wchar_t*)pin_value, (int32_t)len);
+            (const wchar_t*)pin_value, (System::Int32)len);
         }
         else {
           cStr = (apache::geode::client::CacheableString*)
@@ -137,7 +137,7 @@ namespace Apache
         this->SetStringType();
       }
 
-      uint32_t CacheableString::ObjectSize::get()
+      System::UInt32 CacheableString::ObjectSize::get()
       {
         return (m_value->Length * sizeof(char));
       }
@@ -168,7 +168,7 @@ namespace Apache
         return false;
       }
 
-      int32_t CacheableString::GetHashCode()
+      System::Int32 CacheableString::GetHashCode()
       {
         if (String::IsNullOrEmpty(m_value)) {
           return 0;
@@ -177,9 +177,9 @@ namespace Apache
         //return m_value->GetHashCode();
         if (m_hashcode == 0)
         {
-          int32_t prime = 31;
-          int32_t localHash = 0;
-          for (int32_t i = 0; i < m_value->Length; i++)
+          System::Int32 prime = 31;
+          System::Int32 localHash = 0;
+          for (System::Int32 i = 0; i < m_value->Length; i++)
             localHash = prime*localHash + m_value[i];
           m_hashcode = localHash;
         }

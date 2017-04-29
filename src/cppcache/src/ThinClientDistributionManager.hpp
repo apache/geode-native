@@ -79,5 +79,4 @@ class ThinClientDistributionManager : public ThinClientBaseDM {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_THINCLIENTDISTRIBUTIONMANAGER_H_
+#endif  // GEODE_THINCLIENTDISTRIBUTIONMANAGER_H_

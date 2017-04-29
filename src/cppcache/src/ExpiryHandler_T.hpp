@@ -25,9 +25,8 @@
  *@version 1.0
  */
 
-
 #include "ace/Event_Handler.h"
-#include <gfcpp/Log.hpp>
+#include <geode/Log.hpp>
 #include "StackTrace.hpp"
 namespace apache {
 namespace geode {
@@ -73,4 +72,4 @@ class CPPCACHE_EXPORT ExpiryHandler_T : public ACE_Event_Handler {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_EXPIRYHANDLER_T_H_
+#endif  // GEODE_EXPIRYHANDLER_T_H_

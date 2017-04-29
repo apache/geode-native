@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/Cacheable.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/Cacheable.hpp>
 
 namespace apache {
 namespace geode {
@@ -133,4 +133,4 @@ class CPPCACHE_EXPORT CacheableToken : public Cacheable {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CACHEABLETOKEN_H_
+#endif  // GEODE_CACHEABLETOKEN_H_

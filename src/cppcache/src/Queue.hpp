@@ -168,4 +168,4 @@ class CPPCACHE_EXPORT Queue {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_QUEUE_H_
+#endif  // GEODE_QUEUE_H_

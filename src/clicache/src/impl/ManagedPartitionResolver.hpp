@@ -17,9 +17,9 @@
 
 #pragma once
 
-#include "../gf_defs.hpp"
+#include "../geode_defs.hpp"
 #include <vcclr.h>
-#include <gfcpp/PartitionResolver.hpp>
+#include <geode/PartitionResolver.hpp>
 
 #include "PartitionResolver.hpp"
 

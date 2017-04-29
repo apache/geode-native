@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_4419550c0ee1c11f3f7580e8ae97f3e4
-#define APACHE_GEODE_GUARD_4419550c0ee1c11f3f7580e8ae97f3e4
+#ifndef GEODE_TESTOBJECT_DELTAFASTASSETACCOUNT_H_
+#define GEODE_TESTOBJECT_DELTAFASTASSETACCOUNT_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -24,9 +24,8 @@
  * @brief User class for testing the query functionality.
  */
 
-
-#include <gfcpp/GeodeCppCache.hpp>
-#include <string.h>
+#include <geode/GeodeCppCache.hpp>
+#include <string>
 #include "fwklib/FrameworkTest.hpp"
 #include <ace/ACE.h>
 #include <ace/OS.h>
@@ -152,4 +151,4 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
 };
 }  // namespace testobject
 
-#endif // APACHE_GEODE_GUARD_4419550c0ee1c11f3f7580e8ae97f3e4
+#endif  // GEODE_TESTOBJECT_DELTAFASTASSETACCOUNT_H_

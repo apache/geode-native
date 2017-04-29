@@ -1,0 +1,310 @@
+#pragma once
+
+#ifndef GEODE_CACHEABLESTRING_H_
+#define GEODE_CACHEABLESTRING_H_
+
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#include "geode_globals.hpp"
+#include "geode_types.hpp"
+#include "CacheableKey.hpp"
+#include "GeodeTypeIds.hpp"
+#include "ExceptionTypes.hpp"
+
+/** @file
+ */
+
+namespace apache {
+namespace geode {
+namespace client {
+
+#define GF_STRING (int8_t) GeodeTypeIds::CacheableASCIIString
+#define GF_STRING_HUGE (int8_t) GeodeTypeIds::CacheableASCIIStringHuge
+#define GF_WIDESTRING (int8_t) GeodeTypeIds::CacheableString
+#define GF_WIDESTRING_HUGE (int8_t) GeodeTypeIds::CacheableStringHuge
+
+/**
+ * Implement a immutable C string wrapper that can serve as a distributable
+ * key object for caching as well as being a string value.
+ */
+class CPPCACHE_EXPORT CacheableString : public CacheableKey {
+ protected:
+  void* m_str;
+  int8_t m_type;
+  uint32_t m_len;
+  mutable int m_hashcode;
+
+ public:
+  /**
+   *@brief serialize this object
+   **/
+  virtual void toData(DataOutput& output) const;
+
+  /**
+   *@brief deserialize this object
+   * Throw IllegalArgumentException if the packed CacheableString is not less
+   * than 64K bytes.
+   **/
+  virtual Serializable* fromData(DataInput& input);
+
+  /** creation function for strings */
+  static Serializable* createDeserializable();
+
+  /** creation function for strings > 64K length */
+  static Serializable* createDeserializableHuge();
+
+  /** creation function for wide strings */
+  static Serializable* createUTFDeserializable();
+
+  /** creation function for wide strings > 64K length in UTF8 encoding */
+  static Serializable* createUTFDeserializableHuge();
+
+  /**
+   *@brief Return the classId of the instance being serialized.
+   * This is used by deserialization to determine what instance
+   * type to create and deserialize into.
+   */
+  virtual int32_t classId() const;
+
+  /**
+   * Return the typeId byte of the instance being serialized.
+   * This is used by deserialization to determine what instance
+   * type to create and deserialize into.
+   *
+   * For a <code>CacheableString</code> this shall return
+   * <code>GeodeTypeIds::CacheableNullString</code> if the underlying
+   * string is null, <code>GeodeTypeIds::CacheableASCIIString</code>
+   * if the underlying string is a char*, and
+   * <code>GeodeTypeIds::CacheableString</code> if it is a wchar_t*.
+   * For strings larger than 64K it will return
+   * <code>GeodeTypeIds::CacheableASCIIStringHuge</code> and
+   * <code>GeodeTypeIds::CacheableStringHuge</code> for char* and wchar_t*
+   * respectively.
+   */
+  virtual int8_t typeId() const;
+
+  /** return true if this key matches other. */
+  virtual bool operator==(const CacheableKey& other) const;
+
+  /** return the hashcode for this key. */
+  virtual int32_t hashcode() const;
+
+  /**
+   * Factory method for creating an instance of CacheableString from
+   * a null terminated C string optionally giving the length.
+   *
+   * This should be used only for ASCII strings.
+   */
+  static CacheableStringPtr create(const char* value, int32_t len = 0) {
+    CacheableStringPtr str = NULLPTR;
+    if (value != NULL) {
+      str = new CacheableString();
+      str->initString(value, len);
+    }
+    return str;
+  }
+
+  /**
+   * Factory method for creating an instance of CacheableString from
+   * a C string of given length by taking ownership of the string without
+   * making a copy. The string should have been allocated using
+   * the standard C++ new operator.
+   *
+   * This should be used only for ASCII strings.
+   *
+   * CAUTION: use this only when you really know what you are doing.
+   */
+  static CacheableStringPtr createNoCopy(char* value, int32_t len = 0) {
+    CacheableStringPtr str = NULLPTR;
+    if (value != NULL) {
+      str = new CacheableString();
+      str->initStringNoCopy(value, len);
+    }
+    return str;
+  }
+
+  /**
+   * Factory method for creating an instance of CacheableString from a
+   * wide-character null terminated C string optionally giving the length.
+   *
+   * This should be used for non-ASCII strings.
+   */
+  static CacheableStringPtr create(const wchar_t* value, int32_t len = 0) {
+    CacheableStringPtr str = NULLPTR;
+    if (value != NULL) {
+      str = new CacheableString();
+      str->initString(value, len);
+    }
+    return str;
+  }
+
+  /**
+   * Factory method for creating an instance of CacheableString from a
+   * wide-character C string of given length by taking ownership of the
+   * string without making a copy. The string should have been allocated
+   * using the standard C++ new operator.
+   *
+   * This should be used for non-ASCII strings.
+   *
+   * CAUTION: use this only when you really know what you are doing.
+   */
+  static CacheableStringPtr createNoCopy(wchar_t* value, int32_t len = 0) {
+    CacheableStringPtr str = NULLPTR;
+    if (value != NULL) {
+      str = new CacheableString();
+      str->initStringNoCopy(value, len);
+    }
+    return str;
+  }
+
+  /** Returns true if the underlying string is a normal C string. */
+  inline bool isCString() const {
+    return (m_type == GF_STRING || m_type == GF_STRING_HUGE);
+  }
+
+  /** Returns true if the underlying string is a wide-character string. */
+  inline bool isWideString() const {
+    return (m_type == GF_WIDESTRING || m_type == GF_WIDESTRING_HUGE);
+  }
+
+  /**
+   * Return the string that backs this CacheableString as a char *. This
+   * shall throw an exception if the underlying string is a wchar_t* --
+   * the caller should use <code>typeId</code> to determine the actual type,
+   * or <code>isWideString</code> to find whether this is a wide-character
+   * string.
+   *
+   * @throws IllegalStateException if the underlying string is a wchar_t *
+   */
+  const char* asChar() const {
+    if (isWideString()) {
+      throw IllegalStateException(
+          "CacheableString::asChar: the string is a "
+          "wide character string; use asWChar() to obtain it.");
+    }
+    return reinterpret_cast<const char*>(m_str);
+  }
+
+  /**
+   * Return the string that backs this CacheableString as a wchar_t *. This
+   * shall throw an exception if the underlying string is a char* --
+   * the caller should use <code>typeId</code> to determine the actual type,
+   * or <code>isWideString</code> to find whether this is indeed a
+   * wide-character string.
+   *
+   * @throws IllegalStateException if the underlying string is a char *
+   */
+  const wchar_t* asWChar() const {
+    if (isCString()) {
+      throw IllegalStateException(
+          "CacheableString::asWChar: the string is "
+          "not a wide character string; use asChar() to obtain it.");
+    }
+    return reinterpret_cast<const wchar_t*>(m_str);
+  }
+
+  /** Return the length of the contained string. */
+  inline uint32_t length() const { return m_len; }
+
+  /**
+   * Display this object as c string. In this case, it returns the same
+   * value as asChar() when underlying type is a char* and returns the same
+   * value as asWChar() cast to char* when the underlying type is a wchar_t*.
+   * To handle this correctly the user should find the actual type by calling
+   * typeId() or isWideString() and cast to the correct type accordingly.
+   * Note: this is a debugging API, not intended for getting the exact value
+   * of the CacheableString. In a future release this may return a more
+   * summary representation. This is historical. It is preferred that the
+   * user call logString or asChar/asWChar, depending on the need.
+   */
+  const char* toString() { return reinterpret_cast<const char*>(m_str); }
+
+  virtual CacheableStringPtr toString() const {
+    return CacheableStringPtr(this);
+  }
+
+  /** get the name of the class of this object for logging purpose */
+  virtual const char* className() const { return "CacheableString"; }
+
+  /** Destructor */
+  virtual ~CacheableString();
+
+  /** used to render as a string for logging. */
+  virtual int32_t logString(char* buffer, int32_t maxLength) const;
+
+  virtual uint32_t objectSize() const;
+
+ protected:
+  /** Private method to populate the <code>CacheableString</code>. */
+  void copyString(const char* value, int32_t len);
+  /** Private method to populate the <code>CacheableString</code>. */
+  void copyString(const wchar_t* value, int32_t len);
+  /** initialize the string, given a value and length. */
+  void initString(const char* value, int32_t len);
+  /**
+   * Initialize the string without making a copy, given a C string
+   * and length.
+   */
+  void initStringNoCopy(char* value, int32_t len);
+  /** initialize the string, given a wide-char string and length. */
+  void initString(const wchar_t* value, int32_t len);
+  /**
+   * Initialize the string without making a copy, given a wide-char string
+   * and length.
+   */
+  void initStringNoCopy(wchar_t* value, int32_t len);
+  /** Private method to get ASCII string for wide-string if possible. */
+  char* getASCIIString(const wchar_t* value, int32_t& len, int32_t& encodedLen);
+  /** Default constructor. */
+  inline CacheableString(int8_t type = GF_STRING)
+      : m_str(NULL), m_type(type), m_len(0), m_hashcode(0) {}
+
+ private:
+  // never implemented.
+  void operator=(const CacheableString& other);
+  CacheableString(const CacheableString& other);
+};
+
+/** overload of apache::geode::client::createKeyArr to pass char* */
+inline CacheableKeyPtr createKeyArr(const char* value) {
+  return (value != NULL ? CacheableKeyPtr(CacheableString::create(value).ptr())
+                        : NULLPTR);
+}
+
+/** overload of apache::geode::client::createKeyArr to pass wchar_t* */
+inline CacheableKeyPtr createKeyArr(const wchar_t* value) {
+  return (value != NULL ? CacheableKeyPtr(CacheableString::create(value).ptr())
+                        : NULLPTR);
+}
+
+/** overload of apache::geode::client::createValueArr to pass char* */
+inline CacheablePtr createValueArr(const char* value) {
+  return (value != NULL ? CacheablePtr(CacheableString::create(value).ptr())
+                        : NULLPTR);
+}
+
+/** overload of apache::geode::client::createValueArr to pass wchar_t* */
+inline CacheablePtr createValueArr(const wchar_t* value) {
+  return (value != NULL ? CacheablePtr(CacheableString::create(value).ptr())
+                        : NULLPTR);
+}
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
+
+#endif  // GEODE_CACHEABLESTRING_H_

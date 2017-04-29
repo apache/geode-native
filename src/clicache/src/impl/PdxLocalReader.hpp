@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "../gf_defs.hpp"
+#include "../geode_defs.hpp"
 #include "../IPdxReader.hpp"
 #include "PdxType.hpp"
 //#include "../DataInput.hpp"
@@ -43,12 +43,12 @@ namespace Apache
 
           DataInput^        m_dataInput;
           PdxType^          m_pdxType;
-          uint8_t*          m_startBuffer;
+          System::Byte*          m_startBuffer;
           Int32             m_startPosition;
           Int32             m_serializedLength;
           Int32             m_serializedLengthWithOffsets;
           Int32             m_offsetSize;
-          uint8_t*          m_offsetsBuffer;
+          System::Byte*          m_offsetsBuffer;
           bool              m_isDataNeedToPreserve;
           
           PdxRemotePreservedData^ m_pdxRemotePreserveData;
@@ -104,19 +104,19 @@ namespace Apache
         /// Read a 16-bit unsigned integer from the stream.
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-        virtual uint16_t ReadUInt16( String^ fieldName );
+        virtual System::UInt16 ReadUInt16( String^ fieldName );
 
         /// <summary>
         /// Read a 32-bit unsigned integer from the stream.
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-        virtual uint32_t ReadUInt32( String^ fieldName );
+        virtual System::UInt32 ReadUInt32( String^ fieldName );
         
         /// <summary>
         /// Read a 64-bit unsigned integer from the stream.
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-        virtual uint64_t ReadUInt64( String^ fieldName );
+        virtual System::UInt64 ReadUInt64( String^ fieldName );
 
         /// <summary>
         /// Read a 16-bit integer from the stream.

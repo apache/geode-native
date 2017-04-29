@@ -1,8 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_051947d883001c8686df187fe716cbd0
-#define APACHE_GEODE_GUARD_051947d883001c8686df187fe716cbd0
-
+#ifndef GEODE_CRYPTOIMPL_DHIMPL_H_
+#define GEODE_CRYPTOIMPL_DHIMPL_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -26,9 +25,10 @@
 #include <openssl/x509.h>
 #include <string>
 #include <vector>
-#include <string.h>
+#include <cstring>
+#include <string>
 
-#include <gfcpp/gf_base.hpp>
+#include <geode/geode_base.hpp>
 
 #define DH_ERR_NO_ERROR 0
 #define DH_ERR_UNSUPPORTED_ALGO 1
@@ -90,12 +90,11 @@ class DHImpl {
     /* adongre
      * CID 28924: Uninitialized scalar field (UNINIT_CTOR)
      */
-    memset(m_key, 0, sizeof(m_key));
+    std::memset(m_key, 0, sizeof(m_key));
   }
   static bool m_init;
 };
 
 bool DHImpl::m_init = false;
 
-
-#endif // APACHE_GEODE_GUARD_051947d883001c8686df187fe716cbd0
+#endif  // GEODE_CRYPTOIMPL_DHIMPL_H_

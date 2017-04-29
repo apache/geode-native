@@ -46,7 +46,7 @@ namespace PdxTests
     private static string[] m_secIds = { "SUN", "IBM", "YHOO", "GOOG", "MSFT",
       "AOL", "APPL", "ORCL", "SAP", "DELL" };
 
-    private UInt32 GetObjectSize(IGFSerializable obj)
+    private UInt32 GetObjectSize(IGeodeSerializable obj)
     {
       return (obj == null ? 0 : obj.ObjectSize);
     }

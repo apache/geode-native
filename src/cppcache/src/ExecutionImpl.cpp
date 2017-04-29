@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/geode_types.hpp>
 #include "ExecutionImpl.hpp"
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "ThinClientRegion.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "NoResult.hpp"
@@ -63,18 +63,13 @@ ExecutionPtr ExecutionImpl::withCollector(ResultCollectorPtr rs) {
   return ptr;
 }
 
-std::vector<int8>* ExecutionImpl::getFunctionAttributes(const char* func) {
-  std::map<std::string, std::vector<int8>*>::iterator itr =
+std::vector<int8_t>* ExecutionImpl::getFunctionAttributes(const char* func) {
+  std::map<std::string, std::vector<int8_t>*>::iterator itr =
       m_func_attrs.find(func);
   if (itr != m_func_attrs.end()) {
     return itr->second;
   }
   return NULL;
-}
-
-ResultCollectorPtr ExecutionImpl::execute(const char* func, uint32_t timeout) {
-  LOGDEBUG("ExecutionImpl::execute1: ");
-  return execute(func, timeout, true);
 }
 
 ResultCollectorPtr ExecutionImpl::execute(CacheableVectorPtr& routingObj,
@@ -84,11 +79,10 @@ ResultCollectorPtr ExecutionImpl::execute(CacheableVectorPtr& routingObj,
   m_routingObj = routingObj;
   m_args = args;
   m_rc = rs;
-  return execute(func, timeout, false);
+  return execute(func, timeout);
 }
 
-ResultCollectorPtr ExecutionImpl::execute(const char* fn, uint32_t timeout,
-                                          bool verifyFuncArgs) {
+ResultCollectorPtr ExecutionImpl::execute(const char* fn, uint32_t timeout) {
   std::string func = fn;
   LOGDEBUG("ExecutionImpl::execute: ");
   GuardUserAttribures gua;
@@ -100,33 +94,31 @@ ResultCollectorPtr ExecutionImpl::execute(const char* fn, uint32_t timeout,
   bool serverIsHA = false;
   bool serverOptimizeForWrite = false;
 
-  if (verifyFuncArgs) {
-    std::vector<int8>* attr = getFunctionAttributes(fn);
-    {
+  std::vector<int8_t>* attr = getFunctionAttributes(fn);
+  {
+    if (attr == NULL) {
+      ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_func_attrs_lock);
+      GfErrType err = GF_NOERR;
+      attr = getFunctionAttributes(fn);
       if (attr == NULL) {
-        ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_func_attrs_lock);
-        GfErrType err = GF_NOERR;
-        attr = getFunctionAttributes(fn);
-        if (attr == NULL) {
-          if (m_region != NULLPTR) {
-            err = dynamic_cast<ThinClientRegion*>(m_region.ptr())
-                      ->getFuncAttributes(fn, &attr);
-          } else if (m_pool != NULLPTR) {
-            err = getFuncAttributes(fn, &attr);
-          }
-          if (err != GF_NOERR) {
-            GfErrTypeToException("Execute::GET_FUNCTION_ATTRIBUTES", err);
-          }
-          if (!attr->empty() && err == GF_NOERR) {
-            m_func_attrs[fn] = attr;
-          }
+        if (m_region != NULLPTR) {
+          err = dynamic_cast<ThinClientRegion*>(m_region.ptr())
+                    ->getFuncAttributes(fn, &attr);
+        } else if (m_pool != NULLPTR) {
+          err = getFuncAttributes(fn, &attr);
+        }
+        if (err != GF_NOERR) {
+          GfErrTypeToException("Execute::GET_FUNCTION_ATTRIBUTES", err);
+        }
+        if (!attr->empty() && err == GF_NOERR) {
+          m_func_attrs[fn] = attr;
         }
       }
     }
-    serverHasResult = ((attr->at(0) == 1) ? true : false);
-    serverIsHA = ((attr->at(1) == 1) ? true : false);
-    serverOptimizeForWrite = ((attr->at(2) == 1) ? true : false);
   }
+  serverHasResult = ((attr->at(0) == 1) ? true : false);
+  serverIsHA = ((attr->at(1) == 1) ? true : false);
+  serverOptimizeForWrite = ((attr->at(2) == 1) ? true : false);
 
   LOGDEBUG(
       "ExecutionImpl::execute got functionAttributes from srver for function = "
@@ -360,7 +352,7 @@ ResultCollectorPtr ExecutionImpl::execute(const char* fn, uint32_t timeout,
 }
 
 GfErrType ExecutionImpl::getFuncAttributes(const char* func,
-                                           std::vector<int8>** attr) {
+                                           std::vector<int8_t>** attr) {
   ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.ptr());
   if (tcrdm == NULL) {
     throw IllegalArgumentException(

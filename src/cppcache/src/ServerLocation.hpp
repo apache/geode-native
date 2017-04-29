@@ -19,15 +19,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/Serializable.hpp>
+#include <geode/Serializable.hpp>
 #include <string>
-#include <gfcpp/DataInput.hpp>
+#include <geode/DataInput.hpp>
 #include "Utils.hpp"
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/CacheableString.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/CacheableString.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 #include <ace/INET_Addr.h>
-#include <gfcpp/CacheableBuiltins.hpp>
+#include <geode/CacheableBuiltins.hpp>
 namespace apache {
 namespace geode {
 namespace client {
@@ -179,4 +179,4 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_SERVERLOCATION_H_
+#endif  // GEODE_SERVERLOCATION_H_

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Pool.hpp>
+#include <geode/Pool.hpp>
 #include <PoolAttributes.hpp>
-#include <gfcpp/Cache.hpp>
-#include <gfcpp/CacheFactory.hpp>
+#include <geode/Cache.hpp>
+#include <geode/CacheFactory.hpp>
 #include <ProxyCache.hpp>
 #include <ThinClientPoolHADM.hpp>
 /**

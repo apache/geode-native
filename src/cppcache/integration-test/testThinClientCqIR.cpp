@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include <string>
-#include <gfcpp/CqAttributesFactory.hpp>
-#include <gfcpp/CqAttributes.hpp>
-#include <gfcpp/CqListener.hpp>
-#include <gfcpp/CqQuery.hpp>
-#include <gfcpp/Struct.hpp>
-#include <gfcpp/CqResults.hpp>
+#include <geode/CqAttributesFactory.hpp>
+#include <geode/CqAttributes.hpp>
+#include <geode/CqListener.hpp>
+#include <geode/CqQuery.hpp>
+#include <geode/Struct.hpp>
+#include <geode/CqResults.hpp>
 #define ROOT_NAME "TestThinClientCqWithIR"
 #define ROOT_SCOPE DISTRIBUTED_ACK
 
@@ -33,8 +33,8 @@
 #include "QueryStrings.hpp"
 #include "QueryHelper.hpp"
 
-#include <gfcpp/Query.hpp>
-#include <gfcpp/QueryService.hpp>
+#include <geode/Query.hpp>
+#include <geode/QueryService.hpp>
 
 #include "ThinClientCQ.hpp"
 

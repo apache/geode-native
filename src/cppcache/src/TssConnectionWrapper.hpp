@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 #include <ace/TSS_T.h>
-#include <gfcpp/Pool.hpp>
+#include <geode/Pool.hpp>
 #include <map>
 #include <string>
 #include "TcrEndpoint.hpp"
@@ -76,4 +76,4 @@ class TssConnectionWrapper {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_TSSCONNECTIONWRAPPER_H_
+#endif  // GEODE_TSSCONNECTIONWRAPPER_H_

@@ -18,7 +18,7 @@
 #include "TcrMessage.hpp"
 #include "ResultSetImpl.hpp"
 #include "StructSetImpl.hpp"
-#include <gfcpp/GeodeTypeIds.hpp>
+#include <geode/GeodeTypeIds.hpp>
 #include "ReadWriteLock.hpp"
 #include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
@@ -70,7 +70,7 @@ SelectResultsPtr RemoteQuery::execute(uint32_t timeout, const char* func,
     pool->getStats().incQueryExecutionId();
   }
   /*get the start time for QueryExecutionTime stat*/
-  int64 sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = Utils::startStatOpTime();
   TcrMessageReply reply(true, tcdm);
   ChunkedQueryResponse* resultCollector = (new ChunkedQueryResponse(reply));
   reply.setChunkedResultHandler(

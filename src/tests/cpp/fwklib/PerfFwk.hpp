@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_72e4dc209ca3876b269e52c8a14f412b
-#define APACHE_GEODE_GUARD_72e4dc209ca3876b269e52c8a14f412b
+#ifndef GEODE_FWKLIB_PERFFWK_H_
+#define GEODE_FWKLIB_PERFFWK_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,15 +20,14 @@
  * limitations under the License.
  */
 
-
-#include <gfcpp/gf_base.hpp>
+#include <geode/geode_base.hpp>
 
 #include <string>
 #include <map>
 
 #include "AtomicInc.hpp"
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/DataInput.hpp>
 #include "FwkException.hpp"
 
 // kludge to compile on bar
@@ -336,5 +335,4 @@ class Counter {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_72e4dc209ca3876b269e52c8a14f412b
+#endif  // GEODE_FWKLIB_PERFFWK_H_

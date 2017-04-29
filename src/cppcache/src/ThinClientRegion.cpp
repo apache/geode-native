@@ -21,18 +21,18 @@
 #include "ThinClientPoolDM.hpp"
 #include "ThinClientBaseDM.hpp"
 #include "TcrEndpoint.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 #include "CacheImpl.hpp"
 #include "RegionGlobalLocks.hpp"
 #include "ReadWriteLock.hpp"
 #include "RemoteQuery.hpp"
-#include <gfcpp/SelectResultsIterator.hpp>
-#include <gfcpp/Struct.hpp>
+#include <geode/SelectResultsIterator.hpp>
+#include <geode/Struct.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 #include "AutoDelete.hpp"
-#include <gfcpp/PoolManager.hpp>
+#include <geode/PoolManager.hpp>
 #include "UserAttributes.hpp"
-#include <gfcpp/UserFunctionExecutionException.hpp>
+#include <geode/UserFunctionExecutionException.hpp>
 #include "PutAllPartialResultServerException.hpp"
 #include "VersionedCacheableObjectPartList.hpp"
 //#include "PutAllPartialResult.hpp"
@@ -3320,10 +3320,10 @@ CacheableVectorPtr ThinClientRegion::reExecuteFunction(
             failedNodes->insert(*itr);
           }
         }
-      } else if (err == GF_NOTCON) {
+      } else if ((err == GF_NOTCON) || (err == GF_CLIENT_WAIT_TIMEOUT) || (err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA)) {
         attempt++;
         LOGDEBUG(
-            "ThinClientRegion::reExecuteFunction with GF_NOTCON retry attempt "
+            "ThinClientRegion::reExecuteFunction with GF_NOTCON OR TIMEOUT retry attempt "
             "= %d ",
             attempt);
         if (attempt > retryAttempts) {
@@ -3350,7 +3350,7 @@ bool ThinClientRegion::executeFunctionSH(
     HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>* locationMap,
     CacheableHashSetPtr& failedNodes, uint32_t timeout, bool allBuckets) {
   bool reExecute = false;
-  ACE_Recursive_Thread_Mutex resultCollectorLock;
+  auto resultCollectorLock = std::make_shared<ACE_Recursive_Thread_Mutex>();
   UserAttributesPtr userAttr =
       TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
   std::vector<OnRegionFunctionExecution*> feWorkers;
@@ -3363,7 +3363,7 @@ bool ThinClientRegion::executeFunctionSH(
     CacheableHashSetPtr buckets = locationIter.second();
     OnRegionFunctionExecution* worker = new OnRegionFunctionExecution(
         func, this, args, buckets, getResult, timeout,
-        dynamic_cast<ThinClientPoolDM*>(m_tcrdm), &resultCollectorLock, rc,
+        dynamic_cast<ThinClientPoolDM*>(m_tcrdm), resultCollectorLock, rc,
         userAttr, false, serverLocation, allBuckets);
     threadPool->perform(worker);
     feWorkers.push_back(worker);
@@ -3376,6 +3376,8 @@ bool ThinClientRegion::executeFunctionSH(
     GfErrType err = worker->getResult();
     TcrMessage* currentReply = worker->getReply();
 
+
+
     if (err == GF_NOERR &&
         (currentReply->getMessageType() == TcrMessage::EXCEPTION ||
          currentReply->getMessageType() ==
@@ -3384,11 +3386,10 @@ bool ThinClientRegion::executeFunctionSH(
           "Execute", currentReply->getException());
     }
 
-    if (ThinClientBaseDM::isFatalClientError(err)) {
-      delete worker;
-      GfErrTypeToException("ExecuteOnRegion:", err);
-    } else if (err != GF_NOERR) {
+    if (err != GF_NOERR) {
+
       if (err == GF_FUNCTION_EXCEPTION) {
+
         reExecute = true;
         ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
         if ((poolDM != NULL) && (poolDM->getClientMetaDataService() != NULL)) {
@@ -3397,7 +3398,7 @@ bool ThinClientRegion::executeFunctionSH(
         }
         worker->getResultCollector()->reset();
         {
-          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(resultCollectorLock);
+          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(*resultCollectorLock);
           rc->clearResults();
         }
         CacheableHashSetPtr failedNodeIds(currentReply->getFailedNode());
@@ -3411,9 +3412,10 @@ bool ThinClientRegion::executeFunctionSH(
             failedNodes->insert(*itr);
           }
         }
-      } else if (err == GF_NOTCON) {
+      } else if ((err == GF_NOTCON) || (err == GF_CLIENT_WAIT_TIMEOUT) || (err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA)) {
+
         reExecute = true;
-        LOGDEBUG("ThinClientRegion::executeFunctionSH with GF_NOTCON ");
+        LOGINFO("ThinClientRegion::executeFunctionSH with GF_NOTCON or GF_CLIENT_WAIT_TIMEOUT ");
         ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
         if ((poolDM != NULL) && (poolDM->getClientMetaDataService() != NULL)) {
           poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
@@ -3421,12 +3423,29 @@ bool ThinClientRegion::executeFunctionSH(
         }
         worker->getResultCollector()->reset();
         {
-          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(resultCollectorLock);
+          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(*resultCollectorLock);
           rc->clearResults();
         }
       } else {
-        delete worker;
-        LOGDEBUG("executeFunctionSH err = %d ", err);
+
+        if (ThinClientBaseDM::isFatalClientError(err)) {
+          LOGERROR("ThinClientRegion::executeFunctionSH: Fatal Exception");
+            }
+        else
+        {
+          LOGWARN("ThinClientRegion::executeFunctionSH: Unexpected Exception");
+        }
+
+        for (std::vector<OnRegionFunctionExecution*>::iterator iter2 =
+                  feWorkers.begin();
+              iter2 != feWorkers.end(); ++iter2)
+        {
+          OnRegionFunctionExecution* worker = *iter2;
+          delete worker;
+        }
+        LOGDEBUG("ThinClientRegion::executeFunctionSH: Cleaned out the workers ");
+
+
         GfErrTypeToException("ExecuteOnRegion:", err);
       }
     }
@@ -3436,7 +3455,7 @@ bool ThinClientRegion::executeFunctionSH(
 }
 
 GfErrType ThinClientRegion::getFuncAttributes(const char* func,
-                                              std::vector<int8>** attr) {
+                                              std::vector<int8_t>** attr) {
   GfErrType err = GF_NOERR;
 
   // do TCR GET_FUNCTION_ATTRIBUTES
@@ -3503,7 +3522,7 @@ void ThinClientRegion::txPut(const CacheableKeyPtr& key,
                              const UserDataPtr& aCallbackArgument,
                              VersionTagPtr versionTag) {
   CacheablePtr oldValue;
-  int64 sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = Utils::startStatOpTime();
   GfErrType err = putNoThrowTX(key, value, aCallbackArgument, oldValue, -1,
                                CacheEventFlags::NORMAL, versionTag);
   Utils::updateStatOpTime(m_regionStats->getStat(),
@@ -3914,7 +3933,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
     } else {
       result = dynCast<CacheablePtr>(value);
     }
-    if (m_resultCollectorLock != NULL) {
+    if (m_resultCollectorLock.get() != 0) {
       ACE_Guard<ACE_Recursive_Thread_Mutex> guard(*m_resultCollectorLock);
       m_rc->addResult(result);
     } else {

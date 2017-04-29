@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_6024bf86dd8d0d4aad8f988f5ba1655a
-#define APACHE_GEODE_GUARD_6024bf86dd8d0d4aad8f988f5ba1655a
+#ifndef GEODE_FWKLIB_SERVICE_H_
+#define GEODE_FWKLIB_SERVICE_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,8 +20,7 @@
  * limitations under the License.
  */
 
-
-#include <gfcpp/gf_base.hpp>
+#include <geode/geode_base.hpp>
 #include <AtomicInc.hpp>
 #include "fwklib/FwkLog.hpp"
 
@@ -167,4 +166,4 @@ class IPCMessage {
 }  // namespace geode
 }  // namespace apache
 
-#endif // APACHE_GEODE_GUARD_6024bf86dd8d0d4aad8f988f5ba1655a
+#endif  // GEODE_FWKLIB_SERVICE_H_

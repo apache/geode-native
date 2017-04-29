@@ -69,4 +69,4 @@ class ClientConnectionRequest : public ServerLocationRequest {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_CLIENTCONNECTIONREQUEST_H_
+#endif  // GEODE_CLIENTCONNECTIONREQUEST_H_

@@ -3,7 +3,6 @@
 #ifndef GEODE_DIFFIEHELLMAN_H_
 #define GEODE_DIFFIEHELLMAN_H_
 
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -23,8 +22,8 @@
 #include <ace/DLL.h>
 #include <ace/OS.h>
 #include <string>
-#include <gfcpp/CacheableBuiltins.hpp>
-#include <gfcpp/Properties.hpp>
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/Properties.hpp>
 #include <ace/Recursive_Thread_Mutex.h>
 
 #define DH_ERR_NO_ERROR 0
@@ -112,5 +111,4 @@ class DiffieHellman {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_DIFFIEHELLMAN_H_
+#endif  // GEODE_DIFFIEHELLMAN_H_

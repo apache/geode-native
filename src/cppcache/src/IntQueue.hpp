@@ -120,4 +120,4 @@ class CPPCACHE_EXPORT IntQueue {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_INTQUEUE_H_
+#endif  // GEODE_INTQUEUE_H_

@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_13e33c8479a332a850fc4a6ded808476
-#define APACHE_GEODE_GUARD_13e33c8479a332a850fc4a6ded808476
+#ifndef GEODE_SECURITY_LDAPUSERCREDENTIALGENERATOR_H_
+#define GEODE_SECURITY_LDAPUSERCREDENTIALGENERATOR_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -58,7 +58,7 @@ class LdapUserCredentialGenerator : public CredentialGenerator {
     additionalArgs +=
         std::string(" --J=\\\"-Dgemfire.security-ldap-basedn=") +
         (ldapRoot != NULL ? ldapRoot
-                          : "ou=ldapTesting,dc=ldap,dc=gemstone,dc=com") +
+                          : "ou=ldapTesting,dc=ldap,dc=apache,dc=org") +
         "\\\"";
 
     char* ldapSSL = ACE_OS::getenv("LDAP_USESSL");
@@ -117,5 +117,4 @@ class LdapUserCredentialGenerator : public CredentialGenerator {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_13e33c8479a332a850fc4a6ded808476
+#endif  // GEODE_SECURITY_LDAPUSERCREDENTIALGENERATOR_H_

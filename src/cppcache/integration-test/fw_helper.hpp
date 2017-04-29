@@ -87,13 +87,13 @@ BEGIN_TEST.
 #include <typeinfo>
 
 #include <CppCacheLibrary.hpp>
-#include <gfcpp/Exception.hpp>
-#include <gfcpp/Log.hpp>
+#include <geode/Exception.hpp>
+#include <geode/Log.hpp>
 
 #include <list>
 #include <string>
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "TimeBomb.hpp"
 
@@ -231,5 +231,4 @@ int main(int argc, char* argv[])
   }                 \
   a_##x;
 
-
-#endif // GEODE_INTEGRATION_TEST_FW_HELPER_H_
+#endif  // GEODE_INTEGRATION_TEST_FW_HELPER_H_

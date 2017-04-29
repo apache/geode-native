@@ -18,7 +18,7 @@
 #include "ThinClientHelper.hpp"
 #include "testUtils.hpp"
 
-#include "gfcpp/GeodeCppCache.hpp"
+#include "geode/GeodeCppCache.hpp"
 
 /* This is to test
 1) If Connections are left idle ,they timed out to min connections.

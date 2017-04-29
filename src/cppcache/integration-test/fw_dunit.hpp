@@ -365,5 +365,4 @@ int ACE_TMAIN(int argc, ACE_TCHAR* argv[]) { return dunit::dmain(argc, argv); }
 
 #include "no_cout.hpp"
 
-
-#endif // GEODE_INTEGRATION_TEST_FW_DUNIT_H_
+#endif  // GEODE_INTEGRATION_TEST_FW_DUNIT_H_

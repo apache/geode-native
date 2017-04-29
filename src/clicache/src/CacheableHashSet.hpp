@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/CacheableBuiltins.hpp>
+#include "geode_defs.hpp"
+#include <geode/CacheableBuiltins.hpp>
 #include "Serializable.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/PdxInstanceImpl.hpp"
@@ -42,7 +42,7 @@ namespace Apache
         /// A mutable <c>ICacheableKey</c> hash set wrapper that can serve as
         /// a distributable object for caching.
         /// </summary>
-        template <uint32_t TYPEID, typename HSTYPE>
+        template <System::UInt32 TYPEID, typename HSTYPE>
         public ref class CacheableHashSetType
           : public Serializable, public ICollection<Object^>
         {
@@ -63,7 +63,7 @@ namespace Apache
             }
           }
 
-          virtual IGFSerializable^ FromData(DataInput^ input) override
+          virtual IGeodeSerializable^ FromData(DataInput^ input) override
           {
             int len = input->ReadArrayLen();
             if (len > 0)
@@ -78,11 +78,11 @@ namespace Apache
             return this;
           }
 
-          virtual property uint32_t ObjectSize
+          virtual property System::UInt32 ObjectSize
           {
-            virtual uint32_t get() override
+            virtual System::UInt32 get() override
             {
-              uint32_t size = 0;
+              System::UInt32 size = 0;
               for each (Object^ key in this) {
                 if (key != nullptr)
                   //size += key->ObjectSize; 
@@ -249,9 +249,9 @@ namespace Apache
           /// type to create and deserialize into.
           /// </summary>
           /// <returns>the classId</returns>
-          virtual property uint32_t ClassId
+          virtual property System::UInt32 ClassId
           {
-            virtual uint32_t get() override
+            virtual System::UInt32 get() override
             {
               //return static_cast<HSTYPE*>(NativePtr())->classId() + 0x80000000;
               return TYPEID;
@@ -261,9 +261,9 @@ namespace Apache
           /// <summary>
           /// Get the largest possible size of the <c>CacheableHashSet</c>.
           /// </summary>
-          property int32_t MaxSize
+          property System::Int32 MaxSize
           {
-            inline int32_t get()
+            inline System::Int32 get()
             {
               return static_cast<HSTYPE*>(NativePtr())->max_size();
             }
@@ -283,9 +283,9 @@ namespace Apache
           /// <summary>
           /// Get the number of buckets used by the HashSet.
           /// </summary>
-          property int32_t BucketCount
+          property System::Int32 BucketCount
           {
-            inline int32_t get()
+            inline System::Int32 get()
             {
               return static_cast<HSTYPE*>(NativePtr())->bucket_count();
             }
@@ -295,7 +295,7 @@ namespace Apache
           /// Increases the bucket count to at least <c>size</c> elements.
           /// </summary>
           /// <param name="size">The new size of the HashSet.</param>
-          virtual void Resize(int32_t size) sealed
+          virtual void Resize(System::Int32 size) sealed
           {
             static_cast<HSTYPE*>(NativePtr())->resize(size);
           }
@@ -380,7 +380,7 @@ namespace Apache
           /// is greater than the available space from arrayIndex to the end
           /// of the destination array.
           /// </exception>
-          virtual void CopyTo(array<Object^>^ array, int32_t arrayIndex)
+          virtual void CopyTo(array<Object^>^ array, System::Int32 arrayIndex)
           {
             if (array == nullptr || arrayIndex < 0) {
               throw gcnew IllegalArgumentException("CacheableHashSet.CopyTo():"
@@ -389,10 +389,10 @@ namespace Apache
             Internal::ManagedPtrWrap< apache::geode::client::Serializable,
               Internal::SBWrap<apache::geode::client::Serializable> > nptr = NativePtr;
             HSTYPE* set = static_cast<HSTYPE*>(nptr());
-            int32_t index = arrayIndex;
+            System::Int32 index = arrayIndex;
 
             if (arrayIndex >= array->Length ||
-                array->Length < (arrayIndex + (int32_t)set->size())) {
+                array->Length < (arrayIndex + (System::Int32)set->size())) {
               throw gcnew OutOfRangeException("CacheableHashSet.CopyTo():"
                                               " array index is beyond the HashSet or length of given "
                                               "array is less than that required to copy all the "
@@ -409,9 +409,9 @@ namespace Apache
           /// Gets the number of elements contained in the
           /// <c>CacheableHashSet</c>.
           /// </summary>
-          virtual property int32_t Count
+          virtual property System::Int32 Count
           {
-            virtual int32_t get()
+            virtual System::Int32 get()
             {
               return static_cast<HSTYPE*>(NativePtr())->size();
             }
@@ -476,7 +476,7 @@ namespace Apache
           /// <summary>
           /// Factory function to register wrapper
           /// </summary>
-          static IGFSerializable^ Create(apache::geode::client::Serializable* obj)
+          static IGeodeSerializable^ Create(apache::geode::client::Serializable* obj)
           {
             return (obj != NULL ?
                     gcnew CacheableHashSetType<TYPEID, HSTYPE>(obj) : nullptr);
@@ -519,7 +519,7 @@ namespace Apache
           /// Allocates a new empty instance with given initial size.
           /// </summary>
           /// <param name="size">The initial size of the HashSet.</param>
-          inline CacheableHashSetType<TYPEID, HSTYPE>(int32_t size)
+          inline CacheableHashSetType<TYPEID, HSTYPE>(System::Int32 size)
             : Serializable(HSTYPE::create(size).ptr())
           { }
         };
@@ -541,7 +541,7 @@ namespace Apache
        *  </summary>
        *  <param name="size">the intial size of the new instance</param>
        */                                                                   \
-       inline m(int32_t size)                                                 \
+       inline m(System::Int32 size)                                                 \
        : Internal::CacheableHashSetType<Apache::Geode::Client::GeodeClassIds::m, HSTYPE>(size) {}                  \
        \
        /** <summary>
@@ -557,7 +557,7 @@ namespace Apache
        *  Static function to create a new instance with the given size.
        *  </summary>
        */                                                                   \
-       inline static m^ Create(int32_t size)                                  \
+       inline static m^ Create(System::Int32 size)                                  \
       {                                                                     \
       return gcnew m(size);                                               \
       }                                                                     \
@@ -566,13 +566,13 @@ namespace Apache
        * Factory function to register this class.
        * </summary>
        */                                                                   \
-       static IGFSerializable^ CreateDeserializable()                        \
+       static IGeodeSerializable^ CreateDeserializable()                        \
       {                                                                     \
       return gcnew m();                                                   \
       }                                                                     \
       \
             internal:                                                               \
-              static IGFSerializable^ Create(apache::geode::client::Serializable* obj)            \
+              static IGeodeSerializable^ Create(apache::geode::client::Serializable* obj)            \
       {                                                                     \
       return gcnew m(obj);                                                \
       }                                                                     \

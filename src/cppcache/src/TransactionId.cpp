@@ -21,7 +21,7 @@
  *      Author: ankurs
  */
 
-#include <gfcpp/TransactionId.hpp>
+#include <geode/TransactionId.hpp>
 
 namespace apache {
 namespace geode {

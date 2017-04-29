@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 #include "PoolAttributes.hpp"
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/PoolFactory.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/PoolFactory.hpp>
 
 using namespace apache::geode::client;
 

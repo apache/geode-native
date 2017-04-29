@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_da3f13342a1583210e9ae3d60d356b5f
-#define APACHE_GEODE_GUARD_da3f13342a1583210e9ae3d60d356b5f
+#ifndef GEODE_SQLITEIMPL_SQLITEIMPL_H_
+#define GEODE_SQLITEIMPL_SQLITEIMPL_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -141,4 +141,4 @@ class SqLiteImpl : public PersistenceManager {
 }  // namespace geode
 }  // namespace apache
 
-#endif // APACHE_GEODE_GUARD_da3f13342a1583210e9ae3d60d356b5f
+#endif  // GEODE_SQLITEIMPL_SQLITEIMPL_H_

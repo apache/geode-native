@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "AttributesMutator.hpp"
 //#include "Region.hpp"
 #include "impl/ManagedCacheListener.hpp"
@@ -35,7 +35,7 @@ namespace Apache
     {
 
       generic<class TKey, class TValue>
-      int32_t AttributesMutator<TKey, TValue>::SetEntryIdleTimeout( int32_t idleTimeout )
+      System::Int32 AttributesMutator<TKey, TValue>::SetEntryIdleTimeout( System::Int32 idleTimeout )
       {
         return NativePtr->setEntryIdleTimeout( idleTimeout );
       }
@@ -50,7 +50,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      int32_t AttributesMutator<TKey, TValue>::SetEntryTimeToLive( int32_t timeToLive )
+      System::Int32 AttributesMutator<TKey, TValue>::SetEntryTimeToLive( System::Int32 timeToLive )
       {
         return NativePtr->setEntryTimeToLive( timeToLive );
       }
@@ -65,7 +65,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      int32_t AttributesMutator<TKey, TValue>::SetRegionIdleTimeout( int32_t idleTimeout )
+      System::Int32 AttributesMutator<TKey, TValue>::SetRegionIdleTimeout( System::Int32 idleTimeout )
       {
         return NativePtr->setRegionIdleTimeout( idleTimeout );
       }
@@ -80,7 +80,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      int32_t AttributesMutator<TKey, TValue>::SetRegionTimeToLive( int32_t timeToLive )
+      System::Int32 AttributesMutator<TKey, TValue>::SetRegionTimeToLive( System::Int32 timeToLive )
       {
         return NativePtr->setRegionTimeToLive( timeToLive );
       }
@@ -95,7 +95,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      uint32_t AttributesMutator<TKey, TValue>::SetLruEntriesLimit( uint32_t entriesLimit )
+      System::UInt32 AttributesMutator<TKey, TValue>::SetLruEntriesLimit( System::UInt32 entriesLimit )
       {
         return NativePtr->setLruEntriesLimit( entriesLimit );
       }

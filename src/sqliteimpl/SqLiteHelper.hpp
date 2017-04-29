@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_447d8a867ee02dec66fc5d71c2102d35
-#define APACHE_GEODE_GUARD_447d8a867ee02dec66fc5d71c2102d35
+#ifndef GEODE_SQLITEIMPL_SQLITEHELPER_H_
+#define GEODE_SQLITEIMPL_SQLITEHELPER_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -22,8 +22,8 @@
 #pragma once
 
 #include "sqlite3.h"
-#include <gfcpp/PersistenceManager.hpp>
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/PersistenceManager.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <sys/types.h>
 #ifndef WIN32
 #include <unistd.h>
@@ -59,4 +59,4 @@ class SqLiteHelper {
   int executePragma(const char* pragmaName, int pragmaValue);
 };
 
-#endif // APACHE_GEODE_GUARD_447d8a867ee02dec66fc5d71c2102d35
+#endif  // GEODE_SQLITEIMPL_SQLITEHELPER_H_

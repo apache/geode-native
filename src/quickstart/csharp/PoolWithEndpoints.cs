@@ -20,7 +20,7 @@
  *
  * This example takes the following steps:
  *
- * 1. Create CacheFactory using the settings from the gfcpp.properties file by default.
+ * 1. Create CacheFactory using the settings from the geode.properties file by default.
  * 2. Create a Geode Cache.
  * 3. Create Poolfactory with endpoint and then create pool using poolfactory.
  * 4. Create a Example Region programmatically.
@@ -47,7 +47,7 @@ namespace Apache.Geode.Client.QuickStart
     {
       try
       {
-        // Create CacheFactory using the settings from the gfcpp.properties file by default.
+        // Create CacheFactory using the settings from the geode.properties file by default.
         CacheFactory cacheFactory = CacheFactory.CreateCacheFactory();
 
         Console.WriteLine("Created CacheFactory");

@@ -25,9 +25,9 @@
 #include <ace/Singleton.h>
 #include <ace/Thread_Mutex.h>
 #include <ace/Task.h>
-#include <gfcpp/DataOutput.hpp>
-#include <gfcpp/Log.hpp>
-#include <gfcpp/SharedPtr.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/Log.hpp>
+#include <geode/SharedPtr.hpp>
 #include "IntQueue.hpp"
 #include "EvictionThread.hpp"
 #include <string>
@@ -122,4 +122,4 @@ class CPPCACHE_EXPORT EvictionController : public ACE_Task_Base,
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_EVICTIONCONTROLLER_H_
+#endif  // GEODE_EVICTIONCONTROLLER_H_

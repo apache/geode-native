@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_07889e0b6ef2b0613a9cd1037e4e3eb5
-#define APACHE_GEODE_GUARD_07889e0b6ef2b0613a9cd1037e4e3eb5
+#ifndef GEODE_TESTOBJECT_NONPDXTYPE_H_
+#define GEODE_TESTOBJECT_NONPDXTYPE_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -26,8 +26,7 @@
  *      Author: vrao
  */
 
-
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
@@ -200,12 +199,8 @@ class TESTOBJECT_EXPORT NonPdxType {
     m_charArray[0] = 'c';
     m_charArray[1] = 'v';
 
-    // time_t offset = 1310447869154L;
-    // m_date = CacheableDate::create(offset);
-    struct timeval now;
-    now.tv_sec = 1310447869;
-    now.tv_usec = 154000;
-    m_date = CacheableDate::create(now);
+    int64_t d = 1310447869154L;
+    m_date = CacheableDate::create(CacheableDate::duration(d));
 
     m_int16Array = new int16_t[2];
     m_int16Array[0] = 0x2332;
@@ -487,4 +482,4 @@ class TESTOBJECT_EXPORT NonPdxType {
 };
 }  // namespace PdxTests
 
-#endif // APACHE_GEODE_GUARD_07889e0b6ef2b0613a9cd1037e4e3eb5
+#endif  // GEODE_TESTOBJECT_NONPDXTYPE_H_

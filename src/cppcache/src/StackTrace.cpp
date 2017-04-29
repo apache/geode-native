@@ -16,7 +16,7 @@
  */
 
 #include "config.h"
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "StackTrace.hpp"
 #include <string>
 
@@ -94,8 +94,8 @@ void StackTrace::addFrame(std::list<std::string>& frames) {
 #elif defined(_LINUX)
 #include <execinfo.h>
 #include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 namespace apache {
 namespace geode {
@@ -116,8 +116,8 @@ StackTrace::StackTrace() {
 
 #elif defined(_SOLARIS)
 #include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <ucontext.h>
 
 namespace apache {

@@ -25,7 +25,7 @@ namespace Apache.Geode.Client.Tests
   /// User class for testing the put functionality for object.
   /// </summary>
   public class Portfolio
-    : IGFSerializable
+    : IGeodeSerializable
   {
     #region Private members and methods
 
@@ -45,7 +45,7 @@ namespace Apache.Geode.Client.Tests
     private static string[] m_secIds = { "SUN", "IBM", "YHOO", "GOOG", "MSFT",
       "AOL", "APPL", "ORCL", "SAP", "DELL" };
 
-    private UInt32 GetObjectSize(IGFSerializable obj)
+    private UInt32 GetObjectSize(IGeodeSerializable obj)
     {
       return (obj == null ? 0 : obj.ObjectSize);
     }
@@ -231,9 +231,9 @@ namespace Apache.Geode.Client.Tests
 
     #endregion
 
-    #region IGFSerializable Members
+    #region IGeodeSerializable Members
 
-    public IGFSerializable FromData(DataInput input)
+    public IGeodeSerializable FromData(DataInput input)
     {
       m_id = input.ReadInt32();
       m_pkid = input.ReadUTF();
@@ -264,7 +264,7 @@ namespace Apache.Geode.Client.Tests
       output.WriteUTF(m_status);
       output.WriteObject(m_names);
       output.WriteBytes(m_newVal);
-      //output.WriteObject((IGFSerializable)(object)m_creationDate); // VJR: TODO
+      //output.WriteObject((IGeodeSerializable)(object)m_creationDate); // VJR: TODO
       //output.WriteObject(CacheableDate.Create(m_creationDate));
       output.WriteDate(m_creationDate);
       output.WriteBytes(m_arrayNull);
@@ -301,7 +301,7 @@ namespace Apache.Geode.Client.Tests
 
     #endregion
 
-    public static IGFSerializable CreateDeserializable()
+    public static IGeodeSerializable CreateDeserializable()
     {
       return new Portfolio();
     }

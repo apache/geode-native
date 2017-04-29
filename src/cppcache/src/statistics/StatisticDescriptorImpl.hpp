@@ -21,8 +21,8 @@
  */
 
 #include <string>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/statistics/StatisticDescriptor.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/statistics/StatisticDescriptor.hpp>
 
 /** @file
 */
@@ -58,15 +58,15 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
   std::string unit;
 
   /** Is the statistic a counter? */
-  int8 isStatCounter;
+  bool isStatCounter;
 
   /** Do larger values of the statistic indicate better performance? */
-  int8 isStatLargerBetter;
+  bool isStatLargerBetter;
 
   /** The physical offset used to access the data that stores the
    * value for this statistic in an instance of {@link Statistics}
    */
-  int32 id;
+  int32_t id;
 
   /**
    * Creates a new description of a statistic.
@@ -95,7 +95,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    */
   StatisticDescriptorImpl(const char* statName, FieldType statDescriptorType,
                           const char* statDescription, const char* statUnit,
-                          int8 statIsCounter, int8 statIsLargerBetter);
+                          bool statIsCounter, bool statIsLargerBetter);
 
  public:
   /** GfFieldType defined in geode.h.
@@ -127,7 +127,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    * @throws IllegalArgumentException
    *         <code>code</code> is an unknown type
    */
-  static int32 getTypeCodeBits(FieldType code) throw(IllegalArgumentException);
+  static int32_t getTypeCodeBits(FieldType code) throw(IllegalArgumentException);
 
   ///////////////////////////Create methods ////////////////////////////////////
 
@@ -138,7 +138,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    */
   static StatisticDescriptor* createIntCounter(
       const char* name, const char* description, const char* units,
-      int8 isLargerBetter) throw(OutOfMemoryException);
+      bool isLargerBetter) throw(OutOfMemoryException);
   /**
    * Creates a descriptor of Long type
    * whose value behaves like a counter
@@ -147,7 +147,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
 
   static StatisticDescriptor* createLongCounter(
       const char* name, const char* description, const char* units,
-      int8 isLargerBetter) throw(OutOfMemoryException);
+      bool isLargerBetter) throw(OutOfMemoryException);
 
   /**
    * Creates a descriptor of Double type
@@ -156,7 +156,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    */
   static StatisticDescriptor* createDoubleCounter(
       const char* name, const char* description, const char* units,
-      int8 isLargerBetter) throw(OutOfMemoryException);
+      bool isLargerBetter) throw(OutOfMemoryException);
 
   /**
    * Creates a descriptor of Integer type
@@ -165,7 +165,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    */
   static StatisticDescriptor* createIntGauge(
       const char* name, const char* description, const char* units,
-      int8 isLargerBetter) throw(OutOfMemoryException);
+      bool isLargerBetter) throw(OutOfMemoryException);
 
   /**
    * Creates a descriptor of Long type
@@ -174,7 +174,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    */
   static StatisticDescriptor* createLongGauge(
       const char* name, const char* description, const char* units,
-      int8 isLargerBetter) throw(OutOfMemoryException);
+      bool isLargerBetter) throw(OutOfMemoryException);
 
   /**
    * Creates a descriptor of Double type
@@ -183,7 +183,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    */
   static StatisticDescriptor* createDoubleGauge(
       const char* name, const char* description, const char* units,
-      int8 isLargerBetter) throw(OutOfMemoryException);
+      bool isLargerBetter) throw(OutOfMemoryException);
 
   /////////////////  StatisticDescriptor(Base class) Methods
   ///////////////////////
@@ -192,15 +192,15 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
 
   const char* getDescription();
 
-  int32 getStorageBits();
+  int32_t getStorageBits();
 
-  int8 isCounter();
+  bool isCounter();
 
-  int8 isLargerBetter();
+  bool isLargerBetter();
 
   const char* getUnit();
 
-  int32 getId() throw(IllegalStateException);
+  int32_t getId() throw(IllegalStateException);
 
   ///////////////////////////// Instance Methods  ////////////////////////////
 
@@ -217,27 +217,27 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    * Sets the id of this descriptor
    * An uninitialized id will be -1
    */
-  void setId(int32 statId);
+  void setId(int32_t statId);
   ///////////////////////////// Check methods ///////////////////////////////
 
   /**
    *  Checks whether the descriptor is of type int and returns the id if it is
    *  @throws IllegalArgumentException
    */
-  int32 checkInt() throw(IllegalArgumentException);
+  int32_t checkInt() throw(IllegalArgumentException);
 
   /**
    *  Checks whether the descriptor is of type long and returns the id if it is
    *  @throws IllegalArgumentException
    */
-  int32 checkLong() throw(IllegalArgumentException);
+  int32_t checkLong() throw(IllegalArgumentException);
 
   /**
    *  Checks whether the descriptor is of type double and returns the id if it i
 s
    *  @throws IllegalArgumentException
    */
-  int32 checkDouble() throw(IllegalArgumentException);
+  int32_t checkDouble() throw(IllegalArgumentException);
 
  private:
   static const char* IntTypeName;
@@ -250,4 +250,4 @@ s
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_STATISTICS_STATISTICDESCRIPTORIMPL_H_
+#endif  // GEODE_STATISTICS_STATISTICDESCRIPTORIMPL_H_

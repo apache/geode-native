@@ -17,9 +17,9 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include "ISubscriptionService.hpp"
-#include <gfcpp/DataOutput.hpp>
+#include <geode/DataOutput.hpp>
 //#include "ExceptionTypes.hpp"
 
 using namespace System;
@@ -39,7 +39,7 @@ namespace Apache
 
       ref class Cache;
       ref class CacheStatistics;
-      //interface class IGFSerializable;
+      //interface class IGeodeSerializable;
       interface class IRegionService;
 
       generic<class TResult>
@@ -920,7 +920,7 @@ namespace Apache
           /// </param>
           /// <param name="callbackArg">
           /// An argument passed into the CacheLoader if loader is used.
-          /// Has to be Serializable (i.e. implement <c>IGFSerializable</c>);
+          /// Has to be Serializable (i.e. implement <c>IGeodeSerializable</c>);
           /// can be null.
           /// </param>
           /// <returns>
@@ -1867,7 +1867,7 @@ namespace Apache
           /// The SelectResults which can either be a ResultSet or a StructSet.
           /// </returns>
           generic<class TResult>
-          ISelectResults<TResult>^ Query( String^ predicate, uint32_t timeout );
+          ISelectResults<TResult>^ Query( String^ predicate, System::UInt32 timeout );
 
           /// <summary>
           /// Executes the query on the server based on the predicate
@@ -1964,7 +1964,7 @@ namespace Apache
           /// <returns>
           /// true if the result size is non-zero, false otherwise.
           /// </returns>
-          bool ExistsValue( String^ predicate, uint32_t timeout );
+          bool ExistsValue( String^ predicate, System::UInt32 timeout );
 
           /// <summary>
           /// Executes the query on the server based on the predicate
@@ -2065,7 +2065,7 @@ namespace Apache
           /// The single ResultSet or StructSet item,
           /// or NULL of no results are available.
           /// </returns>
-          Object^ SelectValue( String^ predicate, uint32_t timeout );
+          Object^ SelectValue( String^ predicate, System::UInt32 timeout );
 
       };
     }  // namespace Client

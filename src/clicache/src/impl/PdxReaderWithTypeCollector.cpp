@@ -16,7 +16,7 @@
  */
 
 #include "PdxReaderWithTypeCollector.hpp"
-#include <gfcpp/GeodeTypeIds.hpp>
+#include <geode/GeodeTypeIds.hpp>
 #include "../GeodeClassIds.hpp"
 using namespace System;
 
@@ -95,7 +95,7 @@ namespace Apache
           return retVal;
         }
 
-        uint16_t PdxReaderWithTypeCollector::ReadUInt16(String^ fieldName)
+        System::UInt16 PdxReaderWithTypeCollector::ReadUInt16(String^ fieldName)
         {
           checkType(fieldName, PdxTypes::SHORT, "short");
           m_newPdxType->AddFixedLengthTypeField(fieldName, "short", PdxTypes::SHORT, GeodeClassIds::SHORT_SIZE);
@@ -110,7 +110,7 @@ namespace Apache
           return 0;
         }
 
-        uint32_t PdxReaderWithTypeCollector::ReadUInt32(String^ fieldName)
+        System::UInt32 PdxReaderWithTypeCollector::ReadUInt32(String^ fieldName)
         {
           checkType(fieldName, PdxTypes::INT, "int");
           m_newPdxType->AddFixedLengthTypeField(fieldName, "int", PdxTypes::INT, GeodeClassIds::INTEGER_SIZE);
@@ -125,7 +125,7 @@ namespace Apache
           return 0;
         }
 
-        uint64_t PdxReaderWithTypeCollector::ReadUInt64(String^ fieldName)
+        System::UInt64 PdxReaderWithTypeCollector::ReadUInt64(String^ fieldName)
         {
           checkType(fieldName, PdxTypes::LONG, "long");
           m_newPdxType->AddFixedLengthTypeField(fieldName, "long", PdxTypes::LONG, GeodeClassIds::LONG_SIZE);

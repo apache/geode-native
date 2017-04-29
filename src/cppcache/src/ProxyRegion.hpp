@@ -20,29 +20,29 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/gf_types.hpp>
-#include <gfcpp/CacheableKey.hpp>
-#include <gfcpp/CacheableString.hpp>
-#include <gfcpp/CacheStatistics.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/CacheableString.hpp>
-#include <gfcpp/UserData.hpp>
-#include <gfcpp/CacheableBuiltins.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/geode_types.hpp>
+#include <geode/CacheableKey.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/CacheStatistics.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/UserData.hpp>
+#include <geode/CacheableBuiltins.hpp>
 
 /**
 * @file
 */
 
-#include <gfcpp/RegionEntry.hpp>
-#include <gfcpp/CacheListener.hpp>
-#include <gfcpp/CacheWriter.hpp>
-#include <gfcpp/CacheLoader.hpp>
-#include <gfcpp/RegionAttributes.hpp>
-#include <gfcpp/AttributesMutator.hpp>
-#include <gfcpp/AttributesFactory.hpp>
-#include <gfcpp/CacheableKey.hpp>
-#include <gfcpp/Query.hpp>
+#include <geode/RegionEntry.hpp>
+#include <geode/CacheListener.hpp>
+#include <geode/CacheWriter.hpp>
+#include <geode/CacheLoader.hpp>
+#include <geode/RegionAttributes.hpp>
+#include <geode/AttributesMutator.hpp>
+#include <geode/AttributesFactory.hpp>
+#include <geode/CacheableKey.hpp>
+#include <geode/Query.hpp>
 #include "ProxyCache.hpp"
 
 namespace apache {
@@ -1521,4 +1521,4 @@ typedef SharedPtr<ProxyRegion> ProxyRegionPtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PROXYREGION_H_
+#endif  // GEODE_PROXYREGION_H_

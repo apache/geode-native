@@ -169,7 +169,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    private bool IsOverflowed(/*IGFSerializable*/ object cVal)
+    private bool IsOverflowed(/*IGeodeSerializable*/ object cVal)
     {
       //Util.Log("IsOverflowed:: value is: {0}; type is: {1}", cVal.ToString(), cVal.GetType());
       return cVal.ToString() == "CacheableToken::OVERFLOWED";
@@ -177,7 +177,7 @@ namespace Apache.Geode.Client.UnitTests
 
     private void CheckOverflowToken(IRegion<object, object> region, int num, int lruLimit)
     {
-      //IGFSerializable cVal;
+      //IGeodeSerializable cVal;
       //ICacheableKey[] cKeys = region.GetKeys();
 
       object cVal;

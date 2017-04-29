@@ -19,7 +19,7 @@
 
 
 
-#include "gf_defs.hpp"
+#include "geode_defs.hpp"
 #include "ICacheableKey.hpp"
 
 
@@ -72,7 +72,7 @@ namespace Apache
           return gcnew CacheableDate(dateTime);
         }
 
-        // Region: IGFSerializable Members
+        // Region: IGeodeSerializable Members
 
         /// <summary>
         /// Serializes this object.
@@ -90,7 +90,7 @@ namespace Apache
         /// the DataInput stream to use for reading the object data
         /// </param>
         /// <returns>the deserialized object</returns>
-        virtual IGFSerializable^ FromData(DataInput^ input);
+        virtual IGeodeSerializable^ FromData(DataInput^ input);
 
         /// <summary>
         /// return the size of this object in bytes
@@ -98,9 +98,9 @@ namespace Apache
         /// <summary>
         /// return the size of this object in bytes
         /// </summary>
-        virtual property uint32_t ObjectSize
+        virtual property System::UInt32 ObjectSize
         {
-          virtual uint32_t get();
+          virtual System::UInt32 get();
         }
 
         /// <summary>
@@ -109,9 +109,9 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property uint32_t ClassId
+        virtual property System::UInt32 ClassId
         {
-          virtual uint32_t get();
+          virtual System::UInt32 get();
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace Apache
         /// </summary>
         virtual String^ ToString() override;
 
-        // End Region: IGFSerializable Members
+        // End Region: IGeodeSerializable Members
 
 
         // Region: ICacheableKey Members
@@ -127,7 +127,7 @@ namespace Apache
         /// <summary>
         /// Return the hashcode for this key.
         /// </summary>
-        virtual int32_t GetHashCode() override;
+        virtual System::Int32 GetHashCode() override;
 
         /// <summary>
         /// Return true if this key matches other object.
@@ -161,7 +161,7 @@ namespace Apache
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGFSerializable^ CreateDeserializable()
+        static IGeodeSerializable^ CreateDeserializable()
         {
           return gcnew CacheableDate();
         }

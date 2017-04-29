@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/ExpirationAction.hpp>
+#include <geode/ExpirationAction.hpp>
 
-#include <string.h>
+#include <string>
 #include <ace/OS.h>
 
 using namespace apache::geode::client;

@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_0b9b6fa2558c2b1a9cd9f073630e90aa
-#define APACHE_GEODE_GUARD_0b9b6fa2558c2b1a9cd9f073630e90aa
+#ifndef GEODE_FWKLIB_PACEMETER_H_
+#define GEODE_FWKLIB_PACEMETER_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 
-
 #include "fwklib/FwkLog.hpp"
 #include <ace/Time_Value.h>
 #include <ace/OS.h>
@@ -28,8 +27,8 @@
 #ifdef WIN32
 #include <windows.h>
 #else
-#include <sys/time.h>
-#include <sys/types.h>
+#include <ctime>
+#include <cctype>
 #include <unistd.h>
 #endif
 
@@ -132,5 +131,4 @@ class PaceMeter {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_0b9b6fa2558c2b1a9cd9f073630e90aa
+#endif  // GEODE_FWKLIB_PACEMETER_H_

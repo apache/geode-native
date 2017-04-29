@@ -21,17 +21,17 @@
  *      Author: ankurs
  */
 
-#include <gfcpp/gf_types.hpp>
+#include <geode/geode_types.hpp>
 #include "CacheTransactionManagerImpl.hpp"
-#include <gfcpp/TransactionId.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/TransactionId.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "TSSTXStateWrapper.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientBaseDM.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "CacheRegionHelper.hpp"
 #include "TssConnectionWrapper.hpp"
-#include <gfcpp/PoolManager.hpp>
+#include <geode/PoolManager.hpp>
 #include "TXCleaner.hpp"
 
 namespace apache {

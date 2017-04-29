@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/Cache.hpp>
-#include <gfcpp/PersistenceManager.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/Cache.hpp>
+#include <geode/PersistenceManager.hpp>
 #include "MapEntry.hpp"
 #include "CacheableToken.hpp"
 #include "RegionInternal.hpp"
@@ -182,4 +182,4 @@ class CPPCACHE_EXPORT LRUOverFlowToDiskAction : public virtual LRUAction {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_LRUACTION_H_
+#endif  // GEODE_LRUACTION_H_

@@ -151,7 +151,7 @@ namespace Apache.Geode.Client.Tests
                 return 101;
             }
         }
-        public static IGFSerializable CreateDeserializable()
+        public static IGeodeSerializable CreateDeserializable()
         {
             return new PSTObject();
         }
@@ -170,7 +170,7 @@ namespace Apache.Geode.Client.Tests
             return portStr;
         }
 
-        public override IGFSerializable FromData(DataInput input)
+        public override IGeodeSerializable FromData(DataInput input)
         { //Strings
 	      state = input.ReadUTF();
 	      demandInd =input.ReadUTF();

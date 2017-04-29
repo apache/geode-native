@@ -18,19 +18,19 @@ rem limitations under the License.
 setlocal
 
 rem GFCPP must be set
-rem GEMFIRE must be set
+rem GEODE must be set
 rem OPENSSL must be set for Security example
 
-if not "%GFCPP%"=="" goto checkGEMFIRE
+if not "%GFCPP%"=="" goto checkGEODE
 
 echo GFCPP is not set.
 goto finished
 
-:checkGEMFIRE
+:checkGEODE
 
-if not "%GEMFIRE%"=="" goto checkOPENSSL
+if not "%GEODE%"=="" goto checkOPENSSL
 
-echo GEMFIRE is not set.
+echo GEODE is not set.
 goto finished
 
 :checkOPENSSL
@@ -57,10 +57,10 @@ set exname=%1
 if not exist %LANGDIR%\%exname%.exe goto presentmenu
 
 echo.
-echo Running GemFire %LANG% QuickStart example %exname% ...
+echo Running Geode %LANG% QuickStart example %exname% ...
 
-set CLASSPATH=%CLASSPATH%;${NATIVECLIENT_DIR}/SampleCode/quickstart/lib/javaobject.jar;%GEMFIRE%\lib\gfSecurityImpl.jar
-set PATH=%GEMFIRE%\bin;%PATH%;%GEMFIRE%\bin;%GFCPP%\bin;%OPENSSL%\bin;..\bin;
+set CLASSPATH=%CLASSPATH%;${NATIVECLIENT_DIR}/SampleCode/quickstart/lib/javaobject.jar;%GEODE%\lib\gfSecurityImpl.jar
+set PATH=%GEODE%\bin;%PATH%;%GEODE%\bin;%GFCPP%\bin;%OPENSSL%\bin;..\bin;
 
 if not exist gfecs mkdir gfecs
 
@@ -201,7 +201,7 @@ goto closeup
 :presentmenu
 
 echo.
-echo Please select a GemFire %LANG% QuickStart example to run.
+echo Please select a Geode %LANG% QuickStart example to run.
 echo.
 echo 1. BasicOperations
 echo 2. DataExpiration

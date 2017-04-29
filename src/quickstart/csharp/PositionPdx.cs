@@ -68,7 +68,7 @@ namespace PdxTests
       m_pid = 0;
     }
 
-    private UInt32 GetObjectSize(IGFSerializable obj)
+    private UInt32 GetObjectSize(IGeodeSerializable obj)
     {
       return (obj == null ? 0 : obj.ObjectSize);
     }

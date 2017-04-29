@@ -17,9 +17,9 @@
 
 #pragma once
 
-#include "../gf_defs.hpp"
+#include "../geode_defs.hpp"
 #include <vcclr.h>
-#include <gfcpp/CacheLoader.hpp>
+#include <geode/CacheLoader.hpp>
 
 #include "../ICacheLoader.hpp"
 #include "CacheLoader.hpp"

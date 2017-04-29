@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/GeodeCppCache.hpp>
-#include <stdlib.h>
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/GeodeCppCache.hpp>
+#include <cstdlib>
+#include <geode/SystemProperties.hpp>
 #include <ace/OS.h>
 
 #include "DistributedSystemImpl.hpp"
@@ -32,9 +32,9 @@
 #include "testobject/PdxType.hpp"
 #include "testobject/PortfolioPdx.hpp"
 #include "testobject/PositionPdx.hpp"
-#include <gfcpp/ResultSet.hpp>
-#include <gfcpp/StructSet.hpp>
-//#include <gfcpp/Struct.hpp>
+#include <geode/ResultSet.hpp>
+#include <geode/StructSet.hpp>
+//#include <geode/Struct.hpp>
 
 //#ifndef ROOT_NAME
 // ROOT_NAME+++ DEFINE ROOT_NAME before including QueryHelper.hpp
@@ -376,5 +376,4 @@ bool QueryHelper::verifySS(SelectResultsPtr& structSet, int expectedRows,
   return false;
 }
 
-
-#endif // GEODE_INTEGRATION_TEST_QUERYHELPER_H_
+#endif  // GEODE_INTEGRATION_TEST_QUERYHELPER_H_

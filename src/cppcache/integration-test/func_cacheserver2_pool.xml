@@ -85,6 +85,9 @@
 	<function>
   	  <class-name>javaobject.FunctionExecutionTimeOut</class-name>
     </function>
+    <function>
+  	  <class-name>javaobject.ThinClientRegionExceptionTest</class-name>
+  	</function>
   </function-service>
   <serialization-registration>
       <instantiator id="5200" >

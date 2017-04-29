@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_450b17d5d954d8270b6906f1510c355c
-#define APACHE_GEODE_GUARD_450b17d5d954d8270b6906f1510c355c
+#ifndef GEODE_FWKLIB_IPCHANDLER_H_
+#define GEODE_FWKLIB_IPCHANDLER_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,12 +20,12 @@
  * limitations under the License.
  */
 
-
 #include <ace/SOCK_Stream.h>
 #include <ace/OS.h>
 
-#include <gfcpp/gf_base.hpp>
+#include <geode/geode_base.hpp>
 
+#include <cstdint>
 #include <string>
 
 namespace apache {
@@ -88,5 +88,4 @@ class IpcHandler {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_450b17d5d954d8270b6906f1510c355c
+#endif  // GEODE_FWKLIB_IPCHANDLER_H_

@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "../gf_defs.hpp"
+#include "../geode_defs.hpp"
 #include "../IPdxWriter.hpp"
 #include "PdxType.hpp"
 #include "../GeodeClassIds.hpp"
@@ -39,7 +39,7 @@ namespace Apache
         protected:
           PdxType^      m_pdxType;
           DataOutput^   m_dataOutput;
-          uint8_t*      m_startPosition;
+          System::Byte*      m_startPosition;
           Int32         m_startPositionOffset;
           String^         m_domainClassName;
           array<int>^   m_offsets;
@@ -81,7 +81,7 @@ namespace Apache
 
           //this is used to get pdx stream when WriteablePdxStream udpadates the field
           //It should be called after pdx stream has been written to output
-          uint8_t* GetPdxStream(int& pdxLen);
+          System::Byte* GetPdxStream(int& pdxLen);
 
           void WritePdxHeader();
 
@@ -125,25 +125,25 @@ namespace Apache
           virtual IPdxWriter^ WriteChar(String^ fieldName, Char value);
 
           /// <summary>
-          /// Write an unsigned short integer (int16_t) to the <c>IPdxWriter</c>.
+          /// Write an unsigned short integer (System::Int16) to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The unsigned 16-bit integer to write.</param>
-          virtual IPdxWriter^ WriteUInt16(String^ fieldName, uint16_t value);
+          virtual IPdxWriter^ WriteUInt16(String^ fieldName, System::UInt16 value);
 
           /// <summary>
           /// Write an unsigned 32-bit integer to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The unsigned 32-bit integer to write.</param>
-          virtual IPdxWriter^ WriteUInt32(String^ fieldName, uint32_t value);
+          virtual IPdxWriter^ WriteUInt32(String^ fieldName, System::UInt32 value);
 
           /// <summary>
           /// Write an unsigned 64-bit integer to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The unsigned 64-bit integer to write.</param>
-          virtual IPdxWriter^ WriteUInt64(String^ fieldName, uint64_t value);
+          virtual IPdxWriter^ WriteUInt64(String^ fieldName, System::UInt64 value);
 
           /// <summary>
           /// Write a 16-bit integer to the <c>IPdxWriter</c>.

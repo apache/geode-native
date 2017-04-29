@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/StructSet.hpp>
+#include "geode_defs.hpp"
+#include <geode/StructSet.hpp>
 #include "impl/NativeWrapper.hpp"
 #include "ICqResults.hpp"
 
@@ -32,7 +32,7 @@ namespace Apache
     namespace Client
     {
 
-      interface class IGFSerializable;
+      interface class IGeodeSerializable;
 
       generic<class TResult>
       ref class SelectResultsIterator;
@@ -61,9 +61,9 @@ namespace Apache
         /// <returns>
         /// the number of items in the <c>StructSet</c>.
         /// </returns>
-        virtual property int32_t Size
+        virtual property System::Int32 Size
         {
-          virtual int32_t get( );
+          virtual System::Int32 get( );
         }
 
         /// <summary>
@@ -73,9 +73,9 @@ namespace Apache
         /// if the index is out of bounds.
         /// </exception>
         /// <returns>Item at the given index.</returns>
-        virtual property /*Apache::Geode::Client::IGFSerializable^*/TResult GFINDEXER( size_t )
+        virtual property /*Apache::Geode::Client::IGeodeSerializable^*/TResult GFINDEXER( size_t )
         {
-          virtual /*Apache::Geode::Client::IGFSerializable^*/TResult get( size_t index );
+          virtual /*Apache::Geode::Client::IGeodeSerializable^*/TResult get( size_t index );
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace Apache
         String^ GetFieldName( size_t index );
 
 
-        // Region: IEnumerable<IGFSerializable^> Members
+        // Region: IEnumerable<IGeodeSerializable^> Members
 
         /// <summary>
         /// Returns an enumerator that iterates through the <c>StructSet</c>.
@@ -122,10 +122,10 @@ namespace Apache
         /// A <c>System.Collections.Generic.IEnumerator</c> that
         /// can be used to iterate through the <c>StructSet</c>.
         /// </returns>
-        virtual System::Collections::Generic::IEnumerator</*Apache::Geode::Client::IGFSerializable^*/TResult>^
+        virtual System::Collections::Generic::IEnumerator</*Apache::Geode::Client::IGeodeSerializable^*/TResult>^
           GetEnumerator( );
 
-        // End Region: IEnumerable<IGFSerializable^> Members
+        // End Region: IEnumerable<IGeodeSerializable^> Members
 
 
       internal:

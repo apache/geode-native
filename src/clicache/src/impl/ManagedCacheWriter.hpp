@@ -17,9 +17,9 @@
 
 #pragma once
 
-#include "../gf_defs.hpp"
+#include "../geode_defs.hpp"
 #include <vcclr.h>
-#include <gfcpp/CacheWriter.hpp>
+#include <geode/CacheWriter.hpp>
 #include "../ICacheWriter.hpp"
 
 using namespace System;

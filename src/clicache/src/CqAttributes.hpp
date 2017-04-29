@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/CqAttributes.hpp>
+#include "geode_defs.hpp"
+#include <geode/CqAttributes.hpp>
 #include "impl/NativeWrapper.hpp"
 
 

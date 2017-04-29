@@ -729,5 +729,4 @@ const int constantExpectedRowsCQRS[1] = {35};
 
 }  // namespace testData
 
-
-#endif // GEODE_INTEGRATION_TEST_QUERYSTRINGS_H_
+#endif  // GEODE_INTEGRATION_TEST_QUERYSTRINGS_H_

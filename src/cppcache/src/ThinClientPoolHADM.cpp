@@ -16,7 +16,7 @@
  */
 #include "ThinClientPoolHADM.hpp"
 #include "ExpiryHandler_T.hpp"
-#include <gfcpp/SystemProperties.hpp>
+#include <geode/SystemProperties.hpp>
 
 using namespace apache::geode::client;
 const char* ThinClientPoolHADM::NC_Redundancy = "NC Redundancy";
@@ -75,7 +75,7 @@ void ThinClientPoolHADM::startBackgroundThreads() {
   }
 
   m_redundancyManager->startPeriodicAck();
-  m_redundancyTask = new GF_TASK_T<ThinClientPoolHADM>(
+  m_redundancyTask = new Task<ThinClientPoolHADM>(
       this, &ThinClientPoolHADM::redundancy, NC_Redundancy);
   m_redundancyTask->start();
 }

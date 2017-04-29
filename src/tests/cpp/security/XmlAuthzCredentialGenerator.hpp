@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APACHE_GEODE_GUARD_a14b9dccb3fd9b3b05214dc60326e629
-#define APACHE_GEODE_GUARD_a14b9dccb3fd9b3b05214dc60326e629
+#ifndef GEODE_SECURITY_XMLAUTHZCREDENTIALGENERATOR_H_
+#define GEODE_SECURITY_XMLAUTHZCREDENTIALGENERATOR_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,14 +20,14 @@
  * limitations under the License.
  */
 
-#include <gfcpp/SharedBase.hpp>
-#include <gfcpp/Properties.hpp>
+#include <geode/SharedBase.hpp>
+#include <geode/Properties.hpp>
 
 #include "typedefs.hpp"
 
 #include <algorithm>
-#include <time.h>
-#include <stdlib.h>
+#include <ctime>
+#include <cstdlib>
 
 namespace apache {
 namespace geode {
@@ -314,5 +314,4 @@ class XmlAuthzCredentialGenerator : public SharedBase {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // APACHE_GEODE_GUARD_a14b9dccb3fd9b3b05214dc60326e629
+#endif  // GEODE_SECURITY_XMLAUTHZCREDENTIALGENERATOR_H_

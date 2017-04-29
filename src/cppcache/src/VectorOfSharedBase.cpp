@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include <gfcpp/ExceptionTypes.hpp>
-#include <gfcpp/VectorOfSharedBase.hpp>
+#include <geode/geode_globals.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/VectorOfSharedBase.hpp>
 
 #include <vector>
 #include <stdexcept>

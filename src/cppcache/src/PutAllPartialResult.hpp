@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/Serializable.hpp>
-#include <gfcpp/CacheableString.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/CacheableString.hpp>
 #include "VersionedCacheableObjectPartList.hpp"
 #include <ace/Task.h>
 
@@ -137,4 +137,4 @@ class PutAllPartialResult : public Serializable {
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_PUTALLPARTIALRESULT_H_
+#endif  // GEODE_PUTALLPARTIALRESULT_H_

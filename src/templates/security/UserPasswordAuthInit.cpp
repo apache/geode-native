@@ -16,9 +16,9 @@
  */
 
 #include "UserPasswordAuthInit.hpp"
-#include "gfcpp/Properties.hpp"
-#include "gfcpp/Log.hpp"
-#include "gfcpp/ExceptionTypes.hpp"
+#include "geode/Properties.hpp"
+#include "geode/Log.hpp"
+#include "geode/ExceptionTypes.hpp"
 
 #define SECURITY_USERNAME "security-username"
 #define SECURITY_PASSWORD "security-password"

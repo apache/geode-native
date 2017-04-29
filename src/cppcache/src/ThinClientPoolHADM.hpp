@@ -114,7 +114,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   // const char* m_name; // COVERITY -> 30305 Uninitialized pointer field
   TcrConnectionManager& m_theTcrConnManager;
   ACE_Semaphore m_redundancySema;
-  GF_TASK_T<ThinClientPoolHADM>* m_redundancyTask;
+  Task<ThinClientPoolHADM>* m_redundancyTask;
 
   int redundancy(volatile bool& isRunning);
   /*
@@ -149,4 +149,4 @@ typedef SharedPtr<ThinClientPoolHADM> ThinClientPoolHADMPtr;
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_THINCLIENTPOOLHADM_H_
+#endif  // GEODE_THINCLIENTPOOLHADM_H_

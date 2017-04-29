@@ -16,7 +16,7 @@
  */
 
 #pragma once
-#include "../IGFSerializable.hpp"
+#include "../IGeodeSerializable.hpp"
 #include "../GeodeClassIds.hpp"
 using namespace System;
 using namespace System::Collections::Generic;
@@ -30,7 +30,7 @@ namespace Apache
 
       namespace Internal
       {
-        public ref class EnumInfo : public IGFSerializable
+        public ref class EnumInfo : public IGeodeSerializable
         {
         private:
           String^ _enumClassName;
@@ -50,19 +50,19 @@ namespace Apache
             _hashcode = hashcode;
           }
 
-          static IGFSerializable^ CreateDeserializable()
+          static IGeodeSerializable^ CreateDeserializable()
           {
             return gcnew EnumInfo();
           }
           virtual void ToData(DataOutput^ output);
-          virtual IGFSerializable^ FromData(DataInput^ input);
-          virtual property uint32_t ObjectSize
+          virtual IGeodeSerializable^ FromData(DataInput^ input);
+          virtual property System::UInt32 ObjectSize
           {
-            uint32_t get(){ return 0; }
+            System::UInt32 get(){ return 0; }
           }
-          virtual property uint32_t ClassId
+          virtual property System::UInt32 ClassId
           {
-            uint32_t get(){ return GeodeClassIds::EnumInfo; }
+            System::UInt32 get(){ return GeodeClassIds::EnumInfo; }
           }
           virtual String^ ToString() override
           {

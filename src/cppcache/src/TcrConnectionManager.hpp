@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
-#include "GF_TASK_T.hpp"
+#include <geode/geode_globals.hpp>
+#include "Task.hpp"
 #include <string>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Map_Manager.h>
@@ -92,7 +92,7 @@ class CPPCACHE_EXPORT TcrConnectionManager {
                                        TcrMessageReply* reply);
   GfErrType sendSyncRequestCq(TcrMessage& request, TcrMessageReply& reply);
 
-  void addNotificationForDeletion(GF_TASK_T<TcrEndpoint>* notifyReceiver,
+  void addNotificationForDeletion(Task<TcrEndpoint>* notifyReceiver,
                                   TcrConnection* notifyConnection,
                                   ACE_Semaphore& notifyCleanupSema);
 
@@ -151,7 +151,7 @@ class CPPCACHE_EXPORT TcrConnectionManager {
   ACE_Recursive_Thread_Mutex m_distMngrsLock;
 
   ACE_Semaphore m_failoverSema;
-  GF_TASK_T<TcrConnectionManager>* m_failoverTask;
+  Task<TcrConnectionManager>* m_failoverTask;
 
   bool removeRefToEndpoint(TcrEndpoint* ep, bool keepEndpoint = false);
   TcrEndpoint* addRefToTcrEndpoint(std::string endpointName,
@@ -161,16 +161,16 @@ class CPPCACHE_EXPORT TcrConnectionManager {
   void removeHAEndpoints();
 
   ACE_Semaphore m_cleanupSema;
-  GF_TASK_T<TcrConnectionManager>* m_cleanupTask;
+  Task<TcrConnectionManager>* m_cleanupTask;
 
   long m_pingTaskId;
   long m_servermonitorTaskId;
-  Queue<GF_TASK_T<TcrEndpoint> > m_receiverReleaseList;
+  Queue<Task<TcrEndpoint> > m_receiverReleaseList;
   Queue<TcrConnection> m_connectionReleaseList;
   Queue<ACE_Semaphore> m_notifyCleanupSemaList;
 
   ACE_Semaphore m_redundancySema;
-  GF_TASK_T<TcrConnectionManager>* m_redundancyTask;
+  Task<TcrConnectionManager>* m_redundancyTask;
   ACE_Recursive_Thread_Mutex m_notificationLock;
   bool m_isDurable;
 
@@ -211,5 +211,4 @@ class DistManagersLockGuard {
 }  // namespace geode
 }  // namespace apache
 
-
-#endif // GEODE_TCRCONNECTIONMANAGER_H_
+#endif  // GEODE_TCRCONNECTIONMANAGER_H_

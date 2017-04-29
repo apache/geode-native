@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 
 using namespace apache::geode::client;
 using namespace test;
@@ -153,5 +153,4 @@ class TallyWriter : virtual public CacheWriter {
   }
 };
 
-
-#endif // GEODE_INTEGRATION_TEST_TALLYWRITER_H_
+#endif  // GEODE_INTEGRATION_TEST_TALLYWRITER_H_

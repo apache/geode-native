@@ -24,7 +24,7 @@
  */
 
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include <string>
 #include "QueryStrings.hpp"
 #include "QueryHelper.hpp"

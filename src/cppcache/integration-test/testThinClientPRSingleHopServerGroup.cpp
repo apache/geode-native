@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <gfcpp/GeodeCppCache.hpp>
+#include <geode/GeodeCppCache.hpp>
 #include "BuiltinCacheableWrappers.hpp"
 #include <Utils.hpp>
-#include <gfcpp/statistics/StatisticsFactory.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 
@@ -92,7 +92,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
   {
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT1 started.");
     int failureCount = 0;
-    int nonSingleHopCount = 0, metadatarefreshCount = 0;
+    int metadatarefreshCount = 0;
 
     RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
 
@@ -102,8 +102,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
 
       try {
         LOGINFO("CPPTEST: Putting key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
-        dataReg->put(keyPtr, static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
+        dataReg->put(keyPtr, keyPtr->hashcode());
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGINFO("CheckPrSingleHopForIntKeysTask_CLIENT1: networkhop %d ",
@@ -111,7 +111,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
         if (networkhop) {
           failureCount++;
         }
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT1: serverGroupFlag is %d ",
@@ -124,15 +124,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
         if (type) {
           Statistics* rStats = factory->findFirstStatisticsByType(type);
           if (rStats) {
-            nonSingleHopCount = rStats->getInt((char*)"nonSingleHopCount");
             metadatarefreshCount =
                 rStats->getInt((char*)"metaDataRefreshCount");
           }
         }
         LOGINFO(
-            "CheckPrSingleHopForIntKeysTask_CLIENT1: nonSingleHopCount is %d & "
+            "CheckPrSingleHopForIntKeysTask_CLIENT1: "
             "metadatarefreshCount is %d failureCount = %d",
-            nonSingleHopCount, metadatarefreshCount, failureCount);
+            metadatarefreshCount, failureCount);
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
@@ -156,7 +155,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
     }
     // relaxed this limit as it takes time
     ASSERT(failureCount < 70, "Count should be less then 70");
-    ASSERT(nonSingleHopCount < 70, "nonSingleHopCount should be less than 70");
     ASSERT(metadatarefreshCount < 70,
            "metadatarefreshCount should be less than 70");
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT1 put completed.");
@@ -167,14 +165,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
 
       try {
         LOGINFO("CPPTEST: getting key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
         dataReg->get(keyPtr);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGINFO("CheckPrSingleHopForIntKeysTask_CLIENT1: networkhop %d ",
                 networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT1: serverGroupFlag is %d ",
@@ -220,7 +218,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
         LOGINFO("CheckPrSingleHopForIntKeysTask_CLIENT1: networkhop %d ",
                 networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT1: serverGroupFlag is %d ",
@@ -256,14 +254,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
 
       try {
         LOGINFO("CPPTEST: destroying key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
         dataReg->destroy(keyPtr);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGINFO("CheckPrSingleHopForIntKeysTask_CLIENT1: networkhop %d ",
                 networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT1: serverGroupFlag is %d ",
@@ -299,7 +297,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
   {
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT2 started.");
     int failureCount = 0;
-    int nonSingleHopCount = 0, metadatarefreshCount = 0;
+    int metadatarefreshCount = 0;
 
     RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
 
@@ -309,8 +307,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
 
       try {
         LOGINFO("CPPTEST: Putting key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
-        dataReg->put(keyPtr, static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
+        dataReg->put(keyPtr, keyPtr->hashcode());
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGINFO("CheckPrSingleHopForIntKeysTask_CLIENT2: networkhop %d ",
@@ -318,7 +316,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
         if (networkhop) {
           failureCount++;
         }
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT2: serverGroupFlag is %d ",
@@ -331,15 +329,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
         if (type) {
           Statistics* rStats = factory->findFirstStatisticsByType(type);
           if (rStats) {
-            nonSingleHopCount = rStats->getInt((char*)"nonSingleHopCount");
             metadatarefreshCount =
                 rStats->getInt((char*)"metaDataRefreshCount");
           }
         }
         LOGINFO(
-            "CheckPrSingleHopForIntKeysTask_CLIENT2: nonSingleHopCount is %d & "
+            "CheckPrSingleHopForIntKeysTask_CLIENT2: "
             "metadatarefreshCount is %d ",
-            nonSingleHopCount, metadatarefreshCount);
+            metadatarefreshCount);
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
@@ -362,7 +359,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
       }
     }
     ASSERT(failureCount > 0, "Count should be greater than 1");
-    ASSERT(nonSingleHopCount > 0, "nonSingleHopCount should be greater than 1");
     ASSERT(metadatarefreshCount > 0,
            "metadatarefreshCount should be greater than 1");
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT2 put completed.");
@@ -373,9 +369,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
 
       try {
         LOGINFO("CPPTEST: getting key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
         dataReg->get(keyPtr);
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT2: serverGroupFlag is %d ",
@@ -416,7 +412,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
 
       try {
         dataReg->getAll(keys, values, exceptions, false);
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOG("after gatall ");
         LOGINFO(
@@ -455,9 +451,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
 
       try {
         LOGINFO("CPPTEST: destroying key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
         dataReg->destroy(keyPtr);
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT2: serverGroupFlag is %d ",
@@ -493,7 +489,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
   {
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT3 started.");
     int failureCount = 0;
-    int nonSingleHopCount = 0, metadatarefreshCount = 0;
+    int metadatarefreshCount = 0;
 
     RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
 
@@ -503,8 +499,8 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
 
       try {
         LOGINFO("CPPTEST: Putting key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
-        dataReg->put(keyPtr, static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
+        dataReg->put(keyPtr, keyPtr->hashcode());
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGINFO("CheckPrSingleHopForIntKeysTask_CLIENT3: networkhop %d ",
@@ -512,7 +508,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
         if (networkhop) {
           failureCount++;
         }
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT3: serverGroupFlag is %d ",
@@ -525,15 +521,14 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
         if (type) {
           Statistics* rStats = factory->findFirstStatisticsByType(type);
           if (rStats) {
-            nonSingleHopCount = rStats->getInt((char*)"nonSingleHopCount");
             metadatarefreshCount =
                 rStats->getInt((char*)"metaDataRefreshCount");
           }
         }
         LOGINFO(
-            "CheckPrSingleHopForIntKeysTask_CLIENT3: nonSingleHopCount is %d & "
+            "CheckPrSingleHopForIntKeysTask_CLIENT3: "
             "metadatarefreshCount is %d ",
-            nonSingleHopCount, metadatarefreshCount);
+            metadatarefreshCount);
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
@@ -556,7 +551,6 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
       }
     }
     ASSERT(failureCount > 0, "Count should be greater than 1");
-    ASSERT(nonSingleHopCount > 0, "nonSingleHopCount should be greater than 1");
     ASSERT(metadatarefreshCount > 0,
            "metadatarefreshCount should be greater than 1");
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT3 put completed.");
@@ -567,9 +561,9 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
 
       try {
         LOGINFO("CPPTEST: getting key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
         dataReg->get(keyPtr);
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT3: serverGroupFlag is %d ",
@@ -610,7 +604,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
 
       try {
         dataReg->getAll(keys, values, exceptions, false);
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT3: serverGroupFlag is %d ",
@@ -646,9 +640,9 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
 
       try {
         LOGINFO("CPPTEST: destroying key %d with hashcode %d", i,
-                static_cast<int32_t>(keyPtr->hashcode()));
+                keyPtr->hashcode());
         dataReg->destroy(keyPtr);
-        int8 serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
+        int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                    ->getAndResetServerGroupFlag();
         LOGINFO(
             "CheckPrSingleHopForIntKeysTask_CLIENT3: serverGroupFlag is %d ",

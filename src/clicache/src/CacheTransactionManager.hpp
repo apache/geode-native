@@ -17,9 +17,9 @@
 
 #pragma once
 
-#include "gf_defs.hpp"
-#include <gfcpp/CacheTransactionManager.hpp>
-#include <gfcpp/InternalCacheTransactionManager2PC.hpp>
+#include "geode_defs.hpp"
+#include <geode/CacheTransactionManager.hpp>
+#include <geode/InternalCacheTransactionManager2PC.hpp>
 #include "TransactionId.hpp"
 //#include "impl/NativeWrapper.hpp"
 //#include "impl/TransactionWriter.hpp"
@@ -171,7 +171,7 @@ namespace Apache
         /// <param name="transactionId">the transaction to resume</param>
         /// <param name="waitTimeInMilliSec">the maximum milliseconds to wait </param>
         /// <returns>true if the transaction was resumed, false otherwise</returns>
-        bool TryResume(Apache::Geode::Client::TransactionId^ transactionId, int32_t waitTimeInMilliSec);
+        bool TryResume(Apache::Geode::Client::TransactionId^ transactionId, System::Int32 waitTimeInMilliSec);
 
 
 

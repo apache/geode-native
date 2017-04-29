@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <gfcpp/gfcpp_globals.hpp>
+#include <geode/geode_globals.hpp>
 #include "ThinClientDistributionManager.hpp"
 
 namespace apache {
@@ -57,4 +57,4 @@ class CPPCACHE_EXPORT TcrDistributionManager
 }  // namespace geode
 }  // namespace apache
 
-#endif // GEODE_TCRDISTRIBUTIONMANAGER_H_
+#endif  // GEODE_TCRDISTRIBUTIONMANAGER_H_

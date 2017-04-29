@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gfcpp/VectorT.hpp>
+#include <geode/VectorT.hpp>
 #include "CqQueryImpl.hpp"
-#include <gfcpp/CqAttributesFactory.hpp>
+#include <geode/CqAttributesFactory.hpp>
 #include "CqAttributesMutatorImpl.hpp"
-#include <gfcpp/Log.hpp>
+#include <geode/Log.hpp>
 #include "ResultSetImpl.hpp"
 #include "StructSetImpl.hpp"
-#include <gfcpp/ExceptionTypes.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "ThinClientRegion.hpp"
 #include "ReadWriteLock.hpp"
 #include "ThinClientRegion.hpp"

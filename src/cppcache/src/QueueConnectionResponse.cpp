@@ -17,7 +17,7 @@
 
 #include "QueueConnectionResponse.hpp"
 #include "GeodeTypeIdsImpl.hpp"
-#include <gfcpp/DataInput.hpp>
+#include <geode/DataInput.hpp>
 #include "ServerLocation.hpp"
 using namespace apache::geode::client;
 QueueConnectionResponse* QueueConnectionResponse::fromData(DataInput& input) {

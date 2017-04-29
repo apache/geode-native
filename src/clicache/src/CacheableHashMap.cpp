@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-//#include "gf_includes.hpp"
+//#include "geode_includes.hpp"
 #include "CacheableHashMap.hpp"
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
@@ -31,20 +31,20 @@ namespace Apache
     namespace Client
     {
 
-      // Region: IGFSerializable Members
+      // Region: IGeodeSerializable Members
 
       void Client::CacheableHashMap::ToData(DataOutput^ output)
       {
         output->WriteDictionary((System::Collections::IDictionary^)m_dictionary);        
       }
 
-      IGFSerializable^ Client::CacheableHashMap::FromData(DataInput^ input)
+      IGeodeSerializable^ Client::CacheableHashMap::FromData(DataInput^ input)
       {
         m_dictionary = input->ReadDictionary();
         return this;
       }
 
-      uint32_t Client::CacheableHashMap::ObjectSize::get()
+      System::UInt32 Client::CacheableHashMap::ObjectSize::get()
       {
         return ((System::Collections::IDictionary^)m_dictionary)->Count;
     }  // namespace Client
