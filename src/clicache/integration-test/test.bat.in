@@ -16,18 +16,16 @@ rem See the License for the specific language governing permissions and
 rem limitations under the License.
 
 setlocal
-rem set PATH=%PATH%;$<TARGET_LINKER_FILE_DIR:apache-geode>
-rem set PATH=%PATH%;$<TARGET_LINKER_FILE_DIR:framework>
-rem set PATH=%PATH%;$<TARGET_LINKER_FILE_DIR:testobject>
-rem set PATH=%PATH%;$<TARGET_LINKER_FILE_DIR:SqLiteImpl>
-rem set PATH=%PATH%;$<TARGET_LINKER_FILE_DIR:cryptoImpl>
-rem set PATH=%PATH%;$<TARGET_LINKER_FILE_DIR:DHImpl>
-rem set PATH=%PATH%;$<TARGET_LINKER_FILE_DIR:securityImpl>
-rem set PATH=%PATH%;$<TARGET_LINKER_FILE_DIR:unit_test_callbacks>
-rem set PATH=%PATH%;${DEPENDENCIES_openssl_DIR}/bin
-rem set PATH=%PATH%;${DEPENDENCIES_sqlite_DIR}/bin
-rem set PATH=%PATH%;${DEPENDENCIES_ACE_DIR}/lib
-rem set PATH=%PATH%;${DEPENDENCIES_libxml2_DIR}/bin
+
+set PATH=$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:apache-geode>>;%PATH%
+set PATH=$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:framework>>;%PATH%
+set PATH=$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:testobject>>;%PATH%
+set PATH=$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:SqLiteImpl>>;%PATH%
+set PATH=$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:cryptoImpl>>;%PATH%
+set PATH=$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:DHImpl>>;%PATH%
+set PATH=$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:securityImpl>>;%PATH%
+set PATH=$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:PkcsWrapper>>;%PATH%
+set PATH=$<JOIN:$<SHELL_PATH:${PATH}>,;>;%PATH%
 
 set PATH=c:\Program Files (x86)\Nunit 2.6.4\bin;%PATH%
 
@@ -58,7 +56,6 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 rem In Windows, pipes to tee return tee's exit code instead of executable's
 rem exit code. As a workaround we write exit codes to files.
 
-rem ($<TARGET_FILE:${TEST}> && echo 0 >${TEST}.errorlevel || echo 1 >${TEST}.errorlevel) | tee %LOG%
 (${NUNIT_CONSOLE} /run:${NAMESPACE}.${TESTCLASS} ..\..\${CMAKE_BUILD_TYPE}\UnitTests.dll 2>&1 && echo 0 >${TEST}.errorlevel || echo 1 >${TEST}.errorlevel) | tee %LOG%
 
 set /p errorlevel= <${TEST}.errorlevel

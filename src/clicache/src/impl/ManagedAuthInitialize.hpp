@@ -47,7 +47,12 @@ namespace apache
         /// The managed object.
         /// </param>
         inline ManagedAuthInitializeGeneric(Apache::Geode::Client::IAuthInitialize^ managedptr)
-          : m_managedptr(managedptr) { }
+          : m_managedptr(managedptr) {
+          m_getCredentials = gcnew Apache::Geode::Client::IAuthInitialize::GetCredentialsDelegate(managedptr, 
+            &Apache::Geode::Client::IAuthInitialize::GetCredentials);
+          m_close = gcnew Apache::Geode::Client::IAuthInitialize::CloseDelegate(managedptr, 
+            &Apache::Geode::Client::IAuthInitialize::Close);
+        }
 
         /// <summary>
         /// Static function to create a <c>ManagedAuthInitialize</c> using given
@@ -114,6 +119,8 @@ namespace apache
         /// managed object may be created by the user and will be handled automatically by the GC.
         /// </summary>
         gcroot<Apache::Geode::Client::IAuthInitialize^> m_managedptr;
+        gcroot<Apache::Geode::Client::IAuthInitialize::GetCredentialsDelegate^> m_getCredentials;
+        gcroot<Apache::Geode::Client::IAuthInitialize::CloseDelegate^> m_close;
 
         // Disable the copy and assignment constructors
         ManagedAuthInitializeGeneric(const ManagedAuthInitializeGeneric&);

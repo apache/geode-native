@@ -178,7 +178,7 @@ namespace apache
             Apache::Geode::Client::Properties<String^, String^>::Create<String^, String^>(securityprops.ptr());
           String^ mg_server = Apache::Geode::Client::ManagedString::Get(server);
 
-          return PropertiesPtr(m_managedptr->GetCredentials(mprops, mg_server)->NativePtr());
+          return PropertiesPtr(m_getCredentials->Invoke(mprops, mg_server)->NativePtr());
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();
@@ -192,7 +192,7 @@ namespace apache
       void ManagedAuthInitializeGeneric::close()
       {
         try {
-          m_managedptr->Close();
+          m_close->Invoke();
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();

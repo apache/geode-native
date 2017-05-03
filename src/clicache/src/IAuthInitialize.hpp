@@ -76,6 +76,8 @@ namespace Apache
         /// </summary>
         void Close();
 
+        delegate Properties<String^, Object^>^ GetCredentialsDelegate(Properties<String^, String^>^ props, String^ server);
+        delegate void CloseDelegate();
       };
     }  // namespace Client
   }  // namespace Geode

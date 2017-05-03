@@ -49,6 +49,20 @@ endforeach()
 
 enable_testing()
 
+# Function to resolve both config and generate stage variables.
+macro(generate_config INPUT TEMP OUTPUT)
+    configure_file(${INPUT} ${TEMP})
+    file(GENERATE OUTPUT ${OUTPUT}
+      INPUT ${TEMP}
+      CONDITION 1
+    )
+endmacro()
+
+foreach( lib ssl xerces-c sqlite )
+  get_target_property(runtime_path ${lib} INTERFACE_RUNTIME_DIR)
+  set(PATH ${PATH} ${runtime_path})
+endforeach()
+
 set (TEST_SCRIPT_SUFFIX .bat)
 file(GLOB SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.cs")
 
@@ -72,7 +86,7 @@ foreach(FILE ${SOURCES})
 		  # Get the test class (NewAPI tests have N in the file name but not test class name)
 		  string(REGEX REPLACE "N$" "" TESTCLASS ${TEST})
 
-          configure_file(${CMAKE_CURRENT_SOURCE_DIR}/test.bat.in ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${TEST}${TEST_SCRIPT_SUFFIX})
+          generate_config(${CMAKE_CURRENT_SOURCE_DIR}/test.bat.in ${CMAKE_CURRENT_BINARY_DIR}/.${TEST}.bat.in ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${TEST}${TEST_SCRIPT_SUFFIX})
           set(TEST_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${TEST}${TEST_SCRIPT_SUFFIX})
           add_test(NAME ${TEST}
               COMMAND ${TEST_COMMAND}

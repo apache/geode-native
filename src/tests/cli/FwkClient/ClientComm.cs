@@ -144,7 +144,14 @@ namespace Apache.Geode.Client.FwkClient
           }
         }
         if (result == null) {
-          mInfo.Invoke(typeInst, paramList);
+          try
+          {
+            mInfo.Invoke(typeInst, paramList);
+          }
+          catch (TargetInvocationException tie)
+          {
+            Util.Log(Util.LogLevel.Error, tie.InnerException.StackTrace.ToString());
+          }
         }
         else {
           result = mInfo.Invoke(typeInst, paramList);
