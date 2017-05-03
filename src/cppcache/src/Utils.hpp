@@ -129,7 +129,6 @@ class CPPCACHE_EXPORT Utils {
         const CacheableKeyPtr& key = staticCast<CacheableKeyPtr>(val);
         return getCacheableKeyString(key);
       } else {
-        std::string str;
         const CacheableStringPtr& cStr = val->toString();
         if (cStr != NULLPTR) {
           if (cStr->isCString()) {
@@ -139,13 +138,11 @@ class CPPCACHE_EXPORT Utils {
             (void)logWideString(buf, _GF_MSG_LIMIT, cStr->asWChar());
             return CacheableString::create(buf);
           }
-        } else {
-          return CacheableString::create("(null)");
         }
       }
-    } else {
-      return CacheableString::create("(null)");
     }
+
+    return CacheableString::create("(null)");
   }
 
   inline static int64_t startStatOpTime() {

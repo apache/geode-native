@@ -44,6 +44,7 @@
 #include <map>
 #include <vector>
 
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -317,10 +318,10 @@ class CPPCACHE_EXPORT TcrMessage {
   const std::map<std::string, int>* getCqs() const;
   bool getBoolValue() const { return m_boolValue; };
   inline const char* getException() {
-    exceptionMessage = (m_value == NULLPTR ? CacheableString::create("(null)")
-                                           : m_value->toString());
+    exceptionMessage = Utils::getCacheableString(m_value);
     return exceptionMessage->asChar();
   }
+
   const char* getMsgData() const;
   const char* getMsgHeader() const;
   const char* getMsgBody() const;
