@@ -45,16 +45,16 @@
 #define ROOT_SCOPE LOCAL
 #endif
 
+#define PATH_SEP "/"
+
 #if defined(WIN32)
 #define GFSH "gfsh.bat"
 #define COPY_COMMAND "copy /y"
 #define DELETE_COMMAND "del /f"
-#define PATH_SEP "\\"
 #else
 #define GFSH "gfsh"
 #define COPY_COMMAND "cp -f"
 #define DELETE_COMMAND "rm -f"
-#define PATH_SEP "/"
 #endif
 
 using namespace apache::geode::client;
