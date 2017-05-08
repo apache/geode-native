@@ -48,9 +48,4 @@ for both object code and source code.
 
 The following provides more details on the included cryptographic software:
 
-* Apache Geode is designed to be used with
-  [Java Secure Socket Extension](https://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html) (JSSE) and
-  [Java Cryptography Extension](http://docs.oracle.com/javase/8/docs/technotes/guides/security/crypto/CryptoSpec.html) (JCE).
-  The [JCE Unlimited Strength Jurisdiction Policy](http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html)
-  may need to be installed separately to use keystore passwords with 7 or more characters.
 * Apache Geode links to and uses [OpenSSL](https://www.openssl.org/) ciphers.
