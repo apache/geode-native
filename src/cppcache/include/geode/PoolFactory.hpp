@@ -518,6 +518,7 @@ class CPPCACHE_EXPORT PoolFactory : public SharedBase {
    */
   void setPRSingleHopEnabled(bool enabled);
 
+  bool hasServerOrLocator();
   ~PoolFactory();
 
  private:
@@ -528,6 +529,7 @@ class CPPCACHE_EXPORT PoolFactory : public SharedBase {
   bool m_isSubscriptionRedundancy;
   bool m_addedServerOrLocator;
   friend class Cache;
+  friend class CacheImpl;
   friend class PoolManager;
   friend class CacheFactory;
   friend class CacheXmlCreation;

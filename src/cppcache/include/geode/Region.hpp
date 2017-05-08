@@ -1439,6 +1439,8 @@ class CPPCACHE_EXPORT Region : public SharedBase {
 
   virtual const PoolPtr& getPool() = 0;
 
+  virtual CacheImpl* getCacheImpl() = 0;
+
  protected:
   Region();
   virtual ~Region();

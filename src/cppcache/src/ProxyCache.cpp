@@ -69,13 +69,14 @@ void ProxyCache::close() {
     m_userAttributes->unSetCredentials();
     // send message to server
     PoolPtr userAttachedPool = m_userAttributes->getPool();
-    PoolPtr pool = PoolManager::find(userAttachedPool->getName());
-    if (pool != NULLPTR && pool.ptr() == userAttachedPool.ptr()) {
-      ThinClientPoolDMPtr poolDM(static_cast<ThinClientPoolDM*>(pool.ptr()));
+    if (userAttachedPool != NULLPTR)
+   {
+    LOGDEBUG("ProxyCache::close: dubious code removed here, it could backfire...");
+      ThinClientPoolDMPtr poolDM(static_cast<ThinClientPoolDM*>(userAttachedPool.ptr()));
       if (!poolDM->isDestroyed()) {
         poolDM->sendUserCacheCloseMessage(false);
       }
-    }
+   }
     return;
   }
   throw IllegalStateException("User cache has been closed.");
@@ -86,15 +87,14 @@ RegionPtr ProxyCache::getRegion(const char* path) {
 
   if (!m_isProxyCacheClosed) {
     RegionPtr result;
-    CachePtr realCache = CacheFactory::getAnyInstance();
 
-    if (realCache != NULLPTR && !realCache->isClosed()) {
-      CacheRegionHelper::getCacheImpl(realCache.ptr())->getRegion(path, result);
+    if (!isClosed()) {
+      CacheRegionHelper::getCacheImpl(this)->getRegion(path, result);
     }
 
     if (result != NULLPTR) {
       PoolPtr userAttachedPool = m_userAttributes->getPool();
-      PoolPtr pool = PoolManager::find(result->getAttributes()->getPoolName());
+      PoolPtr pool = m_cacheImpl->getPoolManager()->find(result->getAttributes()->getPoolName());
       if (pool != NULLPTR && pool.ptr() == userAttachedPool.ptr() &&
           !pool->isDestroyed()) {
         ProxyRegionPtr pRegion(new ProxyRegion(this, result));
@@ -134,13 +134,12 @@ void ProxyCache::rootRegions(VectorOfRegion& regions) {
 
   if (!m_isProxyCacheClosed) {
     RegionPtr result;
-    CachePtr realCache = CacheFactory::getAnyInstance();
 
-    if (realCache != NULLPTR && !realCache->isClosed()) {
+    if (!isClosed()) {
       VectorOfRegion tmp;
       // this can cause issue when pool attached with region in multiuserSecure
       // mode
-      realCache->rootRegions(tmp);
+      rootRegions(tmp);
 
       if (tmp.size() > 0) {
         for (int32_t i = 0; i < tmp.size(); i++) {

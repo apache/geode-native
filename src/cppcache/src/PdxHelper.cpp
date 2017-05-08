@@ -44,17 +44,17 @@ PdxHelper::PdxHelper() {}
 
 PdxHelper::~PdxHelper() {}
 
-CacheImpl* PdxHelper::getCacheImpl() {
-  CachePtr cache = CacheFactory::getAnyInstance();
-  if (cache == NULLPTR) {
-    throw IllegalStateException("cache has not been created yet.");
-    ;
-  }
-  if (cache->isClosed()) {
-    throw IllegalStateException("cache has been closed. ");
-  }
-  return CacheRegionHelper::getCacheImpl(cache.ptr());
-}
+//CacheImpl* PdxHelper::getCacheImpl() {
+//  CachePtr cache = CacheFactory::getAnyInstance();
+//  if (cache == NULLPTR) {
+//    throw IllegalStateException("cache has not been created yet.");
+//    ;
+//  }
+//  if (cache->isClosed()) {
+//    throw IllegalStateException("cache has been closed. ");
+//  }
+//  return CacheRegionHelper::getCacheImpl(cache.ptr());
+//}
 
 void PdxHelper::serializePdx(DataOutput& output,
                              const PdxSerializable& pdxObject) {
@@ -79,89 +79,7 @@ void PdxHelper::serializePdx(DataOutput& output,
     uint8_t* pdxStream = plw->getPdxStream(len);
     pdxII->updatePdxStream(pdxStream, len);
 
-    /*
-    ==18904== 265,458 bytes in 2 blocks are definitely lost in loss record 928
-    of 932
-    ==18904==    at 0x400791A: operator new[](unsigned int)
-    (vg_replace_malloc.c:378)
-    ==18904==    by 0x4324354:
-    apache::geode::client::PdxLocalWriter::getPdxStream(int&)
-    (DataOutput.hpp:744)
-    ==18904==    by 0x4303E6F:
-    apache::geode::client::PdxHelper::serializePdx(apache::geode::client::DataOutput&,
-    apache::geode::client::PdxSerializable const&) (PdxHelper.cpp:64)
-    ==18904==    by 0x4377028:
-    apache::geode::client::TcrMessage::writeObjectPart(apache::geode::client::SharedPtr<apache::geode::client::Serializable>
-    const&, bool, bool, apache::geode::client::VectorOfCacheableKey const*)
-    (DataOutput.hpp:580)
-    ==18904==    by 0x437BB9E:
-    apache::geode::client::TcrMessage::TcrMessage(apache::geode::client::TcrMessage::MsgType,
-    apache::geode::client::Region const*,
-    apache::geode::client::SharedPtr<apache::geode::client::CacheableKey>
-    const&,
-    apache::geode::client::SharedPtr<apache::geode::client::Serializable>
-    const&,
-    apache::geode::client::SharedPtr<apache::geode::client::Serializable>
-    const&, bool,
-    apache::geode::client::ThinClientBaseDM*, bool, bool, char const*)
-    (TcrMessage.cpp:2216)
-    ==18904==    by 0x43B9EE5:
-    apache::geode::client::ThinClientRegion::putNoThrow_remote(apache::geode::client::SharedPtr<apache::geode::client::CacheableKey>
-    const&,
-    apache::geode::client::SharedPtr<apache::geode::client::Serializable>
-    const&,
-    apache::geode::client::SharedPtr<apache::geode::client::Serializable>
-    const&,
-    apache::geode::client::SharedPtr<apache::geode::client::VersionTag>&, bool)
-    (ThinClientRegion.cpp:909)
-    ==18904==    by 0x42EFCEF: GfErrType
-    apache::geode::client::LocalRegion::updateNoThrow<apache::geode::client::PutActions>(apache::geode::client::SharedPtr<apache::geode::client::CacheableKey>
-    const&,
-    apache::geode::client::SharedPtr<apache::geode::client::Serializable>
-    const&,
-    apache::geode::client::SharedPtr<apache::geode::client::Serializable>
-    const&,
-    apache::geode::client::SharedPtr<apache::geode::client::Serializable>&, int,
-    apache::geode::client::CacheEventFlags,
-    apache::geode::client::SharedPtr<apache::geode::client::VersionTag>,
-    apache::geode::client::DataInput*,
-    apache::geode::client::SharedPtr<apache::geode::client::EventId>)
-    (LocalRegion.cpp:1097)
-    ==18904==    by 0x42E4DC6:
-    apache::geode::client::LocalRegion::putNoThrow(apache::geode::client::SharedPtr<apache::geode::client::CacheableKey>
-    const&,
-    apache::geode::client::SharedPtr<apache::geode::client::Serializable>
-    const&,
-    apache::geode::client::SharedPtr<apache::geode::client::Serializable>
-    const&,
-    apache::geode::client::SharedPtr<apache::geode::client::Serializable>&, int,
-    apache::geode::client::CacheEventFlags,
-    apache::geode::client::SharedPtr<apache::geode::client::VersionTag>,
-    apache::geode::client::DataInput*,
-    apache::geode::client::SharedPtr<apache::geode::client::EventId>)
-    (LocalRegion.cpp:1799)
-    ==18904==    by 0x42DBEB4:
-    apache::geode::client::LocalRegion::put(apache::geode::client::SharedPtr<apache::geode::client::CacheableKey>
-    const&,
-    apache::geode::client::SharedPtr<apache::geode::client::Serializable>
-    const&,
-    apache::geode::client::SharedPtr<apache::geode::client::Serializable>
-    const&) (LocalRegion.cpp:342)
-    ==18904==    by 0x8069744: void
-    apache::geode::client::Region::put<apache::geode::client::SharedPtr<apache::geode::client::WritablePdxInstance>
-    >(apache::geode::client::SharedPtr<apache::geode::client::CacheableKey>
-    const&,
-    apache::geode::client::SharedPtr<apache::geode::client::WritablePdxInstance>
-    const&,
-    apache::geode::client::SharedPtr<apache::geode::client::Serializable>
-    const&) (in
-    /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPdxInstance)
-    ==18904==    by 0x808D107: Task_modifyPdxInstance::doTask() (in
-    /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPdxInstance)
-    ==18904==    by 0x80986CA: dunit::TestSlave::begin() (in
-    /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPdxInstance)
-    ==18904==
-    */
+
     delete[] pdxStream;
 
     return;
@@ -191,15 +109,15 @@ void PdxHelper::serializePdx(DataOutput& output,
     PdxTypeRegistry::addLocalPdxType(pdxType, nType);
     PdxTypeRegistry::addPdxType(nTypeId, nType);
 
-    //[ToDo] need to write bytes for stats
-    CacheImpl* cacheImpl = PdxHelper::getCacheImpl();
-    if (cacheImpl != NULL) {
-      uint8_t* stPos = const_cast<uint8_t*>(output.getBuffer()) +
-                       ptc->getStartPositionOffset();
-      int pdxLen = PdxHelper::readInt32(stPos);
-      cacheImpl->m_cacheStats->incPdxSerialization(
-          pdxLen + 1 + 2 * 4);  // pdxLen + 93 DSID + len + typeID
-    }
+//    //[ToDo] need to write bytes for stats
+//    CacheImpl* cacheImpl = PdxHelper::getCacheImpl();
+//    if (cacheImpl != NULL) {
+//      uint8_t* stPos = const_cast<uint8_t*>(output.getBuffer()) +
+//                       ptc->getStartPositionOffset();
+//      int pdxLen = PdxHelper::readInt32(stPos);
+//      cacheImpl->m_cacheStats->incPdxSerialization(
+//          pdxLen + 1 + 2 * 4);  // pdxLen + 93 DSID + len + typeID
+//    }
 
   } else  // we know locasl type, need to see preerved data
   {
@@ -227,15 +145,16 @@ void PdxHelper::serializePdx(DataOutput& output,
     pdx.toData(pwptr);
     prw->endObjectWriting();
 
-    //[ToDo] need to write bytes for stats
-    CacheImpl* cacheImpl = PdxHelper::getCacheImpl();
-    if (cacheImpl != NULL) {
-      uint8_t* stPos = const_cast<uint8_t*>(output.getBuffer()) +
-                       prw->getStartPositionOffset();
-      int pdxLen = PdxHelper::readInt32(stPos);
-      cacheImpl->m_cacheStats->incPdxSerialization(
-          pdxLen + 1 + 2 * 4);  // pdxLen + 93 DSID + len + typeID
-    }
+    //TODO:WWSD
+//    //[ToDo] need to write bytes for stats
+//    CacheImpl* cacheImpl = PdxHelper::getCacheImpl();
+//    if (cacheImpl != NULL) {
+//      uint8_t* stPos = const_cast<uint8_t*>(output.getBuffer()) +
+//                       prw->getStartPositionOffset();
+//      int pdxLen = PdxHelper::readInt32(stPos);
+//      cacheImpl->m_cacheStats->incPdxSerialization(
+//          pdxLen + 1 + 2 * 4);  // pdxLen + 93 DSID + len + typeID
+//    }
   }
 }
 
@@ -376,11 +295,11 @@ PdxSerializablePtr PdxHelper::deserializePdx(DataInput& dataInput,
     // read typeId
     dataInput.readInt(&typeId);
 
-    CacheImpl* cacheImpl = PdxHelper::getCacheImpl();
-    if (cacheImpl != NULL) {
-      cacheImpl->m_cacheStats->incPdxDeSerialization(len +
-                                                     9);  // pdxLen + 1 + 2*4
-    }
+//    CacheImpl* cacheImpl = PdxHelper::getCacheImpl();
+//    if (cacheImpl != NULL) {
+//      cacheImpl->m_cacheStats->incPdxDeSerialization(len +
+//                                                     9);  // pdxLen + 1 + 2*4
+//    }
     return PdxHelper::deserializePdx(dataInput, forceDeserialize, (int32_t)typeId,
                                      (int32_t)len);
 
@@ -465,10 +384,10 @@ PdxSerializablePtr PdxHelper::deserializePdx(DataInput& dataInput,
 
     dataInput.advanceCursor(len);
 
-    CacheImpl* cacheImpl = PdxHelper::getCacheImpl();
-    if (cacheImpl != NULL) {
-      cacheImpl->m_cacheStats->incPdxInstanceCreations();
-    }
+//    CacheImpl* cacheImpl = PdxHelper::getCacheImpl();
+//    if (cacheImpl != NULL) {
+//      cacheImpl->m_cacheStats->incPdxInstanceCreations();
+//    }
     return pdxObject;
   }
 }

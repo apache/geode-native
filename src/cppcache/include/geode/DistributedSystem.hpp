@@ -29,7 +29,7 @@
 #include "ExceptionTypes.hpp"
 #include "Properties.hpp"
 #include "VectorT.hpp"
-
+#include <mutex>
 namespace apache {
 namespace geode {
 namespace client {
@@ -70,7 +70,7 @@ class CPPCACHE_EXPORT DistributedSystem : public SharedBase {
    *@brief disconnect from the distributed system
    *@throws IllegalStateException if not connected
    */
-  static void disconnect();
+  static void disconnect(CachePtr cachePtr);
 
   /** Returns the SystemProperties that were used to create this instance of the
    *  DistributedSystem
@@ -100,11 +100,11 @@ class CPPCACHE_EXPORT DistributedSystem : public SharedBase {
    */
   virtual ~DistributedSystem();
 
- protected:
   /**
    * @brief constructors
    */
   DistributedSystem(const char* name);
+ protected:
 
  private:
   char* m_name;
@@ -114,13 +114,17 @@ class CPPCACHE_EXPORT DistributedSystem : public SharedBase {
 
  public:
   static DistributedSystemImpl* m_impl;
+
   friend class CacheRegionHelper;
   friend class DistributedSystemImpl;
   friend class TcrConnection;
 
  private:
   DistributedSystem(const DistributedSystem&);
+
   const DistributedSystem& operator=(const DistributedSystem&);
+  std::mutex m_disconnectLock;
+
 };
 }  // namespace client
 }  // namespace geode

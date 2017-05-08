@@ -41,11 +41,11 @@
 #include "CachePerfStats.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "MemberListForVersionStamp.hpp"
-
+#include "geode/PoolManager.hpp"
 #include <string>
 #include <string>
 #include <map>
-
+#include <geode/PoolManager.hpp>
 #include "NonCopyable.hpp"
 
 /** @todo period '.' consistency */
@@ -208,6 +208,9 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
 
   CacheTransactionManagerPtr getCacheTransactionManager();
 
+  PoolPtr determineDefaultPool();
+  virtual PoolPtr createOrGetDefaultPool();
+
   /**
     * @brief destructor
     */
@@ -252,7 +255,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   void processMarker();
 
   // Pool helpers for unit tests
-  static int getPoolSize(const char* poolName);
+  int getPoolSize(const char* poolName);
 
   // CachePerfStats
   CachePerfStats* m_cacheStats;
@@ -276,9 +279,9 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   void setDefaultPool(PoolPtr pool);
 
   PoolPtr getDefaultPool();
-
-  static void setRegionShortcut(AttributesFactoryPtr attrFact,
-                                RegionShortcut preDefinedRegionAttr);
+  PoolManager* getPoolManager();
+  void setRegionShortcut(AttributesFactoryPtr attrFact,
+                         RegionShortcut preDefinedRegionAttr);
 
   static std::map<std::string, RegionAttributesPtr> getRegionShortcut();
 
@@ -297,7 +300,8 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
     THINCLIENT_HA_REGION,
     THINCLIENT_POOL_REGION
   };
-
+  PoolManager* m_pm;
+  PoolFactoryPtr m_pf;
   RegionKind getRegionKind(const RegionAttributesPtr& rattrs) const;
 
   void sendNotificationCloseMsgs();

@@ -23,7 +23,7 @@
 #include <geode/PoolManager.hpp>
 #include <CacheRegionHelper.hpp>
 #include <geode/TypeHelper.hpp>
-
+#include <cassert>
 using namespace apache::geode::client;
 
 ExecutionPtr FunctionService::onRegion(RegionPtr region) {
@@ -46,7 +46,7 @@ ExecutionPtr FunctionService::onRegion(RegionPtr region) {
       // it is in multiuser mode
       proxyCache = pr->m_proxyCache;
       PoolPtr userAttachedPool = proxyCache->m_userAttributes->getPool();
-      PoolPtr pool = PoolManager::find(userAttachedPool->getName());
+      PoolPtr pool = region->getPool();
       if (!(pool != NULLPTR && pool.ptr() == userAttachedPool.ptr() &&
             !pool->isDestroyed())) {
         throw IllegalStateException(
@@ -55,9 +55,11 @@ ExecutionPtr FunctionService::onRegion(RegionPtr region) {
       RegionPtr tmpRegion;
       tmpRegion = NULLPTR;
       // getting real region to execute function on region
-      if (!CacheFactory::getAnyInstance()->isClosed()) {
-        CacheRegionHelper::getCacheImpl(CacheFactory::getAnyInstance().ptr())
-            ->getRegion(region->getName(), tmpRegion);
+      if (!region->getCacheImpl()->isClosed()) {
+        region->getCacheImpl()->getRegion(region->getName(), tmpRegion);
+        if(tmpRegion.ptr() != region.ptr())
+          throw IllegalStateException("MHMHMHMHMHMHMHMHMH  Region pointers were not the same!!!");
+
       } else {
         throw IllegalStateException("Cache has been closed");
       }
@@ -113,7 +115,8 @@ ExecutionPtr FunctionService::onServerWithCache(const RegionServicePtr& cache) {
   LOGDEBUG("FunctionService::onServer:");
   if (pc != NULL) {
     PoolPtr userAttachedPool = pc->m_userAttributes->getPool();
-    PoolPtr pool = PoolManager::find(userAttachedPool->getName());
+    //PoolPtr pool = cache->mPoolManager::find(userAttachedPool->getName());
+    PoolPtr pool = dynamic_cast<Cache*>(cache.ptr())->m_cacheImpl->getPoolManager()->find(userAttachedPool->getName());
     if (pool != NULLPTR && pool.ptr() == userAttachedPool.ptr() &&
         !pool->isDestroyed()) {
       ExecutionPtr ptr(new ExecutionImpl(pool, false, cache));
@@ -137,15 +140,16 @@ ExecutionPtr FunctionService::onServersWithCache(
 
   LOGDEBUG("FunctionService::onServers:");
   if (pc != NULL && !cache->isClosed()) {
-    PoolPtr userAttachedPool = pc->m_userAttributes->getPool();
-    PoolPtr pool = PoolManager::find(userAttachedPool->getName());
-    if (pool != NULLPTR && pool.ptr() == userAttachedPool.ptr() &&
-        !pool->isDestroyed()) {
-      ExecutionPtr ptr(new ExecutionImpl(pool, true, cache));
-      return ptr;
-    }
-    throw IllegalStateException(
-        "Pool has been close to execute function on server");
+//    PoolPtr userAttachedPool = pc->m_userAttributes->getPool();
+//    PoolPtr pool = PoolManager::find(userAttachedPool->getName());
+//    if (pool != NULLPTR && pool.ptr() == userAttachedPool.ptr() &&
+//        !pool->isDestroyed()) {
+//      ExecutionPtr ptr(new ExecutionImpl(pool, true, cache))
+//
+    throw IllegalStateException("***********THIS CODE IS BEING USED AFTER WE PULLED IT.***********");
+//     }
+//    throw IllegalStateException(
+//        "Pool has been close to execute function on server");
   } else {
     CachePtr realcache = staticCast<CachePtr>(cache);
     return FunctionService::onServers(realcache->m_cacheImpl->getDefaultPool());

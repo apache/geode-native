@@ -219,6 +219,12 @@ class CPPCACHE_EXPORT Cache : public GeodeCache {
    */
   virtual PdxInstanceFactoryPtr createPdxInstanceFactory(const char* className);
 
+
+  virtual PoolPtr createOrGetDefaultPool();
+
+
+
+
   /**
     * @brief destructor
     */
@@ -234,11 +240,14 @@ class CPPCACHE_EXPORT Cache : public GeodeCache {
         bool ignorePdxUnreadFields, bool readPdxSerialized);
   CacheImpl* m_cacheImpl;
 
+
+
  protected:
   Cache() { m_cacheImpl = NULL; }
 
-  static bool isPoolInMultiuserMode(RegionPtr regionPtr);
+  bool isPoolInMultiuserMode(RegionPtr regionPtr);
 
+  friend class ProxyCache;
   friend class CacheFactory;
   friend class CacheRegionHelper;
   friend class Pool;

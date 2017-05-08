@@ -782,7 +782,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight_Pool_Sticky)
     RegionPtr reg1 = getHelper()->getRegion(regionNames[1]);
     reg0->localInvalidate(createKey(keys[1]));
     reg1->localInvalidate(createKey(keys[3]));
-    PoolPtr pool = PoolManager::find("__TESTPOOL1_");
+    PoolPtr pool = thePoolManager()->find("__TESTPOOL1_");
     ASSERT(pool != NULLPTR, "Pool Should have been found");
     doNetsearch(regionNames[0], keys[1], nvals[1]);
     doNetsearch(regionNames[1], keys[3], nvals[3]);

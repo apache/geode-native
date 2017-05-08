@@ -31,7 +31,6 @@
 
 using namespace apache::geode::client;
 
-extern bool Cache_CreatedFromCacheFactory;
 extern ACE_Recursive_Thread_Mutex* g_disconnectLock;
 
 /** Returns the name of this cache.
@@ -74,14 +73,14 @@ void Cache::close() { close(false); }
  */
 void Cache::close(bool keepalive) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
+  DistributedSystemPtr distributedSystemPtr;
+  m_cacheImpl->getDistributedSystem(distributedSystemPtr);
   if (DistributedSystemImpl::currentInstances() > 0) return;
   m_cacheImpl->close(keepalive);
 
   try {
-    if (Cache_CreatedFromCacheFactory) {
-      Cache_CreatedFromCacheFactory = false;
-      DistributedSystem::disconnect();
-    }
+    CachePtr cachePtr(this);
+    distributedSystemPtr->disconnect(cachePtr);
   } catch (const apache::geode::client::NotConnectedException&) {
   } catch (const apache::geode::client::Exception&) {
   } catch (...) {
@@ -153,12 +152,24 @@ Cache::Cache(const char* name, DistributedSystemPtr sys,
              bool ignorePdxUnreadFields, bool readPdxSerialized) {
   m_cacheImpl =
       new CacheImpl(this, name, sys, ignorePdxUnreadFields, readPdxSerialized);
+  CacheImpl::s_instance = m_cacheImpl;
+  m_cacheImpl->initServices();
+//  m_cacheImpl->createOrGetDefaultPool();
 }
 Cache::Cache(const char* name, DistributedSystemPtr sys, const char* id_data,
              bool ignorePdxUnreadFields, bool readPdxSerialized) {
   m_cacheImpl = new CacheImpl(this, name, sys, id_data, ignorePdxUnreadFields,
                               readPdxSerialized);
+  CacheImpl::s_instance = m_cacheImpl;
+  m_cacheImpl->initServices();
+//  m_cacheImpl->createOrGetDefaultPool();
 }
+
+PoolPtr  Cache::createOrGetDefaultPool()
+{
+ return m_cacheImpl->createOrGetDefaultPool();
+}
+
 
 Cache::~Cache() { delete m_cacheImpl; }
 
@@ -191,7 +202,7 @@ bool Cache::isPoolInMultiuserMode(RegionPtr regionPtr) {
   const char* poolName = regionPtr->getAttributes()->getPoolName();
 
   if (poolName != NULL) {
-    PoolPtr poolPtr = PoolManager::find(poolName);
+    PoolPtr poolPtr = m_cacheImpl->getPoolManager()->find(poolName);
     if (poolPtr != NULLPTR && !poolPtr->isDestroyed()) {
       return poolPtr->getMultiuserAuthentication();
     }
@@ -217,7 +228,7 @@ RegionServicePtr Cache::createAuthenticatedView(
   if (poolName == NULL) {
     if (!this->isClosed() && m_cacheImpl->getDefaultPool() != NULLPTR) {
       return m_cacheImpl->getDefaultPool()->createSecureUserCache(
-          userSecurityProperties);
+          userSecurityProperties, CachePtr(this));
     }
 
     throw IllegalStateException(
@@ -226,9 +237,9 @@ RegionServicePtr Cache::createAuthenticatedView(
   } else {
     if (!this->isClosed()) {
       if (poolName != NULL) {
-        PoolPtr poolPtr = PoolManager::find(poolName);
+        PoolPtr poolPtr = m_cacheImpl->getPoolManager()->find(poolName);
         if (poolPtr != NULLPTR && !poolPtr->isDestroyed()) {
-          return poolPtr->createSecureUserCache(userSecurityProperties);
+          return poolPtr->createSecureUserCache(userSecurityProperties, CachePtr(this));
         }
         throw IllegalStateException(
             "Either pool not found or it has been destroyed");

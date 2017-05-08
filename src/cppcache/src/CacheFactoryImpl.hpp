@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_CACHEFACTORYIMPL_H_
+#define GEODE_CACHEFACTORYIMPL_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,29 +20,26 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testConnect"
+#include <ace/Recursive_Thread_Mutex.h>
 
-#include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
+namespace apache {
+namespace geode {
+namespace client {
 
-using namespace apache::geode::client;
+/**
+ * @class CacheFactoryImpl CacheFactoryImpl.hpp
+ * Class containing internal details of cache factory that we do *not* want to
+ * expose externally.
+ */
+class CacheFactory::CacheFactoryImpl
+{
+public:
 
-const char* host_name = "Suds";
-DUNIT_TASK(s1p1, CreateRegionOne)
-  {
-    try {
-      DistributedSystem::disconnect(NULLPTR);
-      FAIL("Expected an exception.");
-    } catch (const NotConnectedException& ex) {
-      LOG("Got expected exception.");
-      LOG(ex.getMessage());
-    }
-    try {
-      DistributedSystemPtr dsys = DistributedSystem::connect(host_name);
-      if (!dsys->isConnected()) FAIL("Distributed system is not connected");
-    } catch (const Exception& ex) {
-      LOG(ex.getMessage());
-      ASSERT(false, "connect failed.");
-    }
-  }
-ENDTASK
+  ACE_Recursive_Thread_Mutex m_lock;
+};
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
+
+#endif  // GEODE_CACHEFACTORYIMPL_H_

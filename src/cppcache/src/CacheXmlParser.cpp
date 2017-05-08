@@ -309,7 +309,7 @@ CacheXmlParser::CacheXmlParser()
       NULL, /* endElementNs */
       NULL  /* xmlStructuredErrorFunc */
   };
-
+  m_poolManager = thePoolManager();
   m_saxHandler = saxHandler;
 
   namedRegions = CacheImpl::getRegionShortcut();
@@ -600,7 +600,7 @@ void CacheXmlParser::startPool(const xmlChar** atts) {
     throw CacheXmlException(s.c_str());
   }
 
-  PoolFactoryPtr factory = PoolManager::createFactory();
+  PoolFactoryPtr factory = m_poolManager->createFactory();
   const char* poolName = NULL;
 
   while (atts[attrsCount] != NULL) {

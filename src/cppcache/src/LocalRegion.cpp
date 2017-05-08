@@ -83,7 +83,7 @@ LocalRegion::LocalRegion(const std::string& name, CacheImpl* cache,
   }
 
   m_regionStats = new RegionStats(m_fullPath.c_str());
-  PoolPtr p = PoolManager::find(getAttributes()->getPoolName());
+  PoolPtr p = m_cacheImpl->getPoolManager()->find(getAttributes()->getPoolName());
   // m_attachedPool = p;
   setPool(p);
 }

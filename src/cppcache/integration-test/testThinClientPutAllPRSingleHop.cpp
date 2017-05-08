@@ -336,7 +336,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
   {
-    PoolPtr pool = PoolManager::find("__TEST_POOL1__");
+    PoolPtr pool = thePoolManager()->find("__TEST_POOL1__");
     if (pool->getThreadLocalConnections()) {
       LOG("releaseThreadLocalConnection1 doing...");
       pool->releaseThreadLocalConnection();

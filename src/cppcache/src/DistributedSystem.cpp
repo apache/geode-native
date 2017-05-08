@@ -53,7 +53,6 @@ ACE_Recursive_Thread_Mutex* g_disconnectLock = new ACE_Recursive_Thread_Mutex();
 namespace {
 
 StatisticsManager* g_statMngr = NULL;
-
 SystemProperties* g_sysProps = NULL;
 }  // namespace
 
@@ -199,7 +198,8 @@ DistributedSystemPtr DistributedSystem::connect(
     throw;
   }
   // Add version information, source revision, current directory etc.
-  LOGCONFIG("Product version: %s", CacheFactory::getProductDescription());
+  LOGCONFIG("Product version: %s", PRODUCT_VENDOR " " PRODUCT_NAME " " PRODUCT_VERSION " (" PRODUCT_BITS
+        ") " PRODUCT_BUILDDATE);
   LOGCONFIG("Source revision: %s", PRODUCT_SOURCE_REVISION);
   LOGCONFIG("Source repository: %s", PRODUCT_SOURCE_REPOSITORY);
 
@@ -297,7 +297,7 @@ DistributedSystemPtr DistributedSystem::connect(
 /**
  *@brief disconnect from the distributed system
  */
-void DistributedSystem::disconnect() {
+void DistributedSystem::disconnect(CachePtr cachePtr) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
 
   if (!m_connected) {
@@ -307,9 +307,8 @@ void DistributedSystem::disconnect() {
   }
 
   try {
-    CachePtr cache = CacheFactory::getAnyInstance();
-    if (cache != NULLPTR && !cache->isClosed()) {
-      cache->close();
+    if (cachePtr != NULLPTR && !cachePtr->isClosed()) {
+      cachePtr->close();
     }
   } catch (const apache::geode::client::Exception& e) {
     LOGWARN("Exception while closing: %s: %s", e.getName(), e.getMessage());

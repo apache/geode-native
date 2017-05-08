@@ -28,8 +28,8 @@
 #include <ThinClientPoolStickyHADM.hpp>
 using namespace apache::geode::client;
 const char* PoolFactory::DEFAULT_SERVER_GROUP = "";
-extern HashMapOfPools* connectionPools;
-extern ACE_Recursive_Thread_Mutex connectionPoolsLock;
+//extern HashMapOfPools* connectionPools;
+//extern ACE_Recursive_Thread_Mutex connectionPoolsLock;
 
 PoolFactory::PoolFactory()
     : m_attrs(new PoolAttributes),
@@ -79,11 +79,14 @@ void PoolFactory::setServerGroup(const char* group) {
 }
 void PoolFactory::addLocator(const char* host, int port) {
   addCheck(host, port);
+  LOGERROR("PoolFactory::addLocator adding %s and %d", host, port);
+
   m_attrs->addLocator(host, port);
   m_addedServerOrLocator = true;
 }
 void PoolFactory::addServer(const char* host, int port) {
   addCheck(host, port);
+  LOGERROR("PoolFactory::addServer adding %s and %d", host, port);
   m_attrs->addServer(host, port);
   m_addedServerOrLocator = true;
 }
@@ -111,12 +114,15 @@ void PoolFactory::setPRSingleHopEnabled(bool enabled) {
   m_attrs->setPRSingleHopEnabled(enabled);
 }
 
+bool PoolFactory::hasServerOrLocator() { return m_addedServerOrLocator; }
+
 PoolPtr PoolFactory::create(const char* name) {
   ThinClientPoolDMPtr poolDM;
   {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
+   std::lock_guard<std::mutex> guard(thePoolManager()->connectionPoolsLock);
 
-    if (PoolManager::find(name) != NULLPTR) {
+    //if (PoolManager::find(name) != NULLPTR) {
+    if (thePoolManager()->connectionPools->find(CacheableString::create(name)) != thePoolManager()->connectionPools->end()) {
       throw IllegalStateException("Pool with the same name already exists");
     }
     // Create a clone of Attr;
@@ -170,7 +176,7 @@ PoolPtr PoolFactory::create(const char* name) {
       }
     }
 
-    connectionPools->insert(CacheableString::create(name),
+    thePoolManager()->connectionPools->insert(CacheableString::create(name),
                             staticCast<PoolPtr>(poolDM));
   }
 

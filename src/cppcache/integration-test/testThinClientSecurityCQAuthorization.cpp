@@ -237,7 +237,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     uint8_t i = 0;
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    PoolPtr pool = thePoolManager()->find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != NULLPTR) {
       // Using region name as pool name as in ThinClientCq.hpp
@@ -298,7 +298,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    PoolPtr pool = thePoolManager()->find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != NULLPTR) {
       // Using region name as pool name as in ThinClientCq.hpp

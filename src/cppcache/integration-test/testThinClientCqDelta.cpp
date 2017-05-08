@@ -165,7 +165,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2)
     }
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
 
-    PoolPtr pool = PoolManager::find("__TESTPOOL1_");
+    PoolPtr pool = thePoolManager()->find("__TESTPOOL1_");
     QueryServicePtr qs;
     qs = pool->getQueryService();
     CqAttributesFactory cqFac;
