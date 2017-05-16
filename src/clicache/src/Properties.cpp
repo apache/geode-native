@@ -79,7 +79,7 @@ namespace Apache
       void Properties<TPropKey, TPropValue>::Insert( TPropKey key, TPropValue value )
       {
         native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key, true);
-        auto valueptr = Serializable::GetUnmanagedValueGeneric<TPropValue>(value, true);
+        native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TPropValue>(value, true);
 
         _GF_MG_EXCEPTION_TRY2
 

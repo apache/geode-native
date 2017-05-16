@@ -97,12 +97,14 @@ namespace Apache
 
           virtual void AfterRegionDisconnected(Apache::Geode::Client::IRegion<Object^, Object^>^ region) override
           {
-            m_listener->AfterRegionDisconnected((IRegion<TKey, TValue>^) region);
+            auto gregion = Region<TKey, TValue>::Create(((Region<Object^, Object^>^)region)->GetNative());
+            m_listener->AfterRegionDisconnected(gregion);
           }
 
           virtual void Close(Apache::Geode::Client::IRegion<Object^, Object^>^ region) override
           {
-            m_listener->Close((IRegion<TKey, TValue>^) region);
+            auto gregion = Region<TKey, TValue>::Create(((Region<Object^, Object^>^)region)->GetNative());
+            m_listener->Close(gregion);
           }
       };
     }  // namespace Client
