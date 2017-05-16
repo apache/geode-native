@@ -494,6 +494,7 @@ class CPPCACHE_EXPORT CacheFactory
                                     bool closeOk, CachePtr& cptr);
 
   // Set very first time some creates cache
+  static CacheFactoryPtr default_CacheFactory;
   static PoolPtr createOrGetDefaultPool();
   static void* m_cacheMap;
   static void init();

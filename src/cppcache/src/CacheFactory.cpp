@@ -55,8 +55,7 @@ typedef std::map<std::string, CachePtr> StringToCachePtrMap;
 
 void* CacheFactory::m_cacheMap = (void*)NULL;
 
-// TODO: Why can't this be a shared_ptr?
-CacheFactory* default_CacheFactory = nullptr;
+CacheFactoryPtr CacheFactory::default_CacheFactory = nullptr;
 
 PoolPtr CacheFactory::createOrGetDefaultPool() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
@@ -226,7 +225,7 @@ CachePtr CacheFactory::create() {
   cache = getAnyInstance(false);
 
   if (cache == nullptr) {
-    default_CacheFactory = this;
+    default_CacheFactory = shared_from_this();
     Cache_CreatedFromCacheFactory = true;
     cache = create(DEFAULT_CACHE_NAME, dsPtr,
                    dsPtr->getSystemProperties()->cacheXMLFile(), nullptr);
