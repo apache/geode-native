@@ -37,7 +37,9 @@
 #include "impl/SafeConvert.hpp"
 #include "ExceptionTypes.hpp"
 
+#include "begin_native.hpp"
 #include <memory>
+#include "end_native.hpp"
 
 namespace Apache
 {

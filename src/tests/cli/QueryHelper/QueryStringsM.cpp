@@ -15,6 +15,10 @@
  * limitations under the License.
  */
 
+#include "begin_native.hpp"
+#include <memory>
+#include "end_native.hpp"
+
 #include "QueryStringsM.hpp"
 #include "impl/ManagedString.hpp"
 
@@ -35,9 +39,9 @@ namespace Apache
         {
           Apache::Geode::Client::ManagedString mg_pquery( pquery );
 
-           auto nativeptr = std::make_unique<testData::QueryStrings>(
+           auto nativeptr = std::unique_ptr<testData::QueryStrings>(new testData::QueryStrings(
             static_cast<testData::queryCategory>( pcategory ),
-            mg_pquery.CharPtr, pisLargeResultset );
+            mg_pquery.CharPtr, pisLargeResultset ));
            m_nativeptr = gcnew native_conditional_unique_ptr<testData::QueryStrings>(std::move(nativeptr));
         }
 

@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-#include <memory>
-
 #include "begin_native.hpp"
+#include <memory>
 #include <geode/QueryService.hpp>
 #include "end_native.hpp"
 
