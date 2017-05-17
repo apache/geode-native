@@ -44,9 +44,9 @@ namespace Apache
       generic<class TKey, class TResult>
       private ref class CqListenerHelper sealed{
         public:
-        static IDictionary<Client::ICqListener<TKey, TResult>^, IntPtr>^
+        static Dictionary<Client::ICqListener<TKey, TResult>^, native_shared_ptr<native::CqListener>^>^
           m_ManagedVsUnManagedCqLstrDict = gcnew 
-          Dictionary<Client::ICqListener<TKey, TResult>^, IntPtr>();
+          Dictionary<Client::ICqListener<TKey, TResult>^, native_shared_ptr<native::CqListener>^>();
 
         static ReaderWriterLock^ g_readerWriterLock = gcnew ReaderWriterLock();
       };
