@@ -45,7 +45,7 @@ namespace client {
 #define GF_ALLOC(v, t, s)                                                  \
   {                                                                        \
     v = (t*)malloc((s) * sizeof(t));                                       \
-    if ((v) == NULL) {                                                     \
+    if ((v) == nullptr) {                                                  \
       throw OutOfMemoryException(                                          \
           "Out of Memory while allocating buffer for " #t " of size " #s); \
     }                                                                      \
@@ -58,7 +58,7 @@ namespace client {
 #define GF_RESIZE(v, t, s)                                \
   {                                                       \
     v = (t*)realloc(v, (s) * sizeof(t));                  \
-    if ((v) == NULL) {                                    \
+    if ((v) == nullptr) {                                 \
       throw OutOfMemoryException(                         \
           "Out of Memory while resizing buffer for " #t); \
     }                                                     \
@@ -111,8 +111,8 @@ class CPPCACHE_EXPORT DataOutput {
   inline void writeBytes(const uint8_t* bytes, int32_t len) {
     if (len >= 0) {
       ensureCapacity(len + 5);
-      writeArrayLen(bytes == NULL ? 0 : len);  // length of bytes...
-      if (len > 0 && bytes != NULL) {
+      writeArrayLen(bytes == nullptr ? 0 : len);  // length of bytes...
+      if (len > 0 && bytes != nullptr) {
         std::memcpy(m_buf, bytes, len);
         m_buf += len;
       }
@@ -322,7 +322,7 @@ class CPPCACHE_EXPORT DataOutput {
    *   written; the default value of 0 implies the complete string
    */
   inline void writeASCII(const char* value, uint32_t length = 0) {
-    if (value != NULL) {
+    if (value != nullptr) {
       if (length == 0) {
         length = static_cast<uint32_t>(strlen(value));
       }
@@ -355,7 +355,7 @@ class CPPCACHE_EXPORT DataOutput {
    *   written; the default value of 0 implies the complete string
    */
   inline void writeASCIIHuge(const char* value, uint32_t length = 0) {
-    if (value != NULL) {
+    if (value != nullptr) {
       if (length == 0) {
         length = static_cast<uint32_t>(strlen(value));
       }
@@ -367,17 +367,17 @@ class CPPCACHE_EXPORT DataOutput {
   }
 
   /**
-     * Writes the given given string using java modified UTF-8 encoding
-     * supporting maximum encoded length of 64K (i.e. unsigned 16-bit integer).
-     * @remarks The string will be truncated if greater than the maximum
-     *   permissible length of 64K. Use <code>writeUTFHuge</code> to write
-     *   strings of length larger than this.
-     *
-     * @param value the C string to be written
-     *
-     */
+   * Writes the given given string using java modified UTF-8 encoding
+   * supporting maximum encoded length of 64K (i.e. unsigned 16-bit integer).
+   * @remarks The string will be truncated if greater than the maximum
+   *   permissible length of 64K. Use <code>writeUTFHuge</code> to write
+   *   strings of length larger than this.
+   *
+   * @param value the C string to be written
+   *
+   */
   inline void writeFullUTF(const char* value, uint32_t length = 0) {
-    if (value != NULL) {
+    if (value != nullptr) {
       int32_t encodedLen = getEncodedLength(value, length);
       writeInt(encodedLen);
       ensureCapacity(encodedLen);
@@ -404,7 +404,7 @@ class CPPCACHE_EXPORT DataOutput {
    *   written; the default value of 0 implies the complete string
    */
   inline void writeUTF(const char* value, uint32_t length = 0) {
-    if (value != NULL) {
+    if (value != nullptr) {
       int32_t len = getEncodedLength(value, length);
       uint16_t encodedLen = static_cast<uint16_t>(len > 0xFFFF ? 0xFFFF : len);
       writeInt(encodedLen);
@@ -432,7 +432,7 @@ class CPPCACHE_EXPORT DataOutput {
    *   that the UTF string does not contain any null characters
    */
   inline void writeUTFHuge(const char* value, uint32_t length = 0) {
-    if (value != NULL) {
+    if (value != nullptr) {
       if (length == 0) {
         length = static_cast<uint32_t>(strlen(value));
       }
@@ -459,7 +459,7 @@ class CPPCACHE_EXPORT DataOutput {
    *   written; the default value of 0 implies the complete string
    */
   inline void writeUTF(const wchar_t* value, uint32_t length = 0) {
-    if (value != NULL) {
+    if (value != nullptr) {
       int32_t len = getEncodedLength(value, length);
       uint16_t encodedLen = static_cast<uint16_t>(len > 0xFFFF ? 0xFFFF : len);
       writeInt(encodedLen);
@@ -485,7 +485,7 @@ class CPPCACHE_EXPORT DataOutput {
    *   written; the default value of 0 implies the complete string
    */
   inline void writeUTFHuge(const wchar_t* value, uint32_t length = 0) {
-    if (value != NULL) {
+    if (value != nullptr) {
       if (length == 0) {
         length = static_cast<uint32_t>(wcslen(value));
       }
@@ -512,8 +512,8 @@ class CPPCACHE_EXPORT DataOutput {
    * @see DataInput::getDecodedLength
    */
   inline static int32_t getEncodedLength(const char* value, int32_t length = 0,
-                                         uint32_t* valLength = NULL) {
-    if (value == NULL) return 0;
+                                         uint32_t* valLength = nullptr) {
+    if (value == nullptr) return 0;
     char currentChar;
     int32_t encodedLen = 0;
     const char* start = value;
@@ -530,7 +530,7 @@ class CPPCACHE_EXPORT DataOutput {
         value++;
       }
     }
-    if (valLength != NULL) {
+    if (valLength != nullptr) {
       *valLength = static_cast<uint32_t>(value - start);
     }
     return encodedLen;
@@ -548,8 +548,8 @@ class CPPCACHE_EXPORT DataOutput {
    */
   inline static int32_t getEncodedLength(const wchar_t* value,
                                          int32_t length = 0,
-                                         uint32_t* valLength = NULL) {
-    if (value == NULL) return 0;
+                                         uint32_t* valLength = nullptr) {
+    if (value == nullptr) return 0;
     wchar_t currentChar;
     int32_t encodedLen = 0;
     const wchar_t* start = value;
@@ -566,7 +566,7 @@ class CPPCACHE_EXPORT DataOutput {
         value++;
       }
     }
-    if (valLength != NULL) {
+    if (valLength != nullptr) {
       *valLength = static_cast<uint32_t>(value - start);
     }
     return encodedLen;
@@ -645,7 +645,7 @@ class CPPCACHE_EXPORT DataOutput {
    * Get a pointer to the internal buffer of <code>DataOutput</code>.
    *
    * @param rsize the size of buffer is filled in this output parameter;
-   *   should not be NULL
+   *   should not be nullptr
    */
   inline const uint8_t* getBuffer(uint32_t* rsize) const {
     *rsize = static_cast<uint32_t>(m_buf - m_bytes);
@@ -705,8 +705,8 @@ class CPPCACHE_EXPORT DataOutput {
   }
 
   /*
-  * This is for internal use
-  */
+   * This is for internal use
+   */
   const char* getPoolName() { return m_poolName; }
 
   /*

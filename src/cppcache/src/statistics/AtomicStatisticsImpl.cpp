@@ -33,7 +33,7 @@ using namespace apache::geode::statistics;
 //////////////////////  Static Methods  //////////////////////
 
 int64_t AtomicStatisticsImpl::calcNumericId(StatisticsFactory* system,
-                                          int64_t userValue) {
+                                            int64_t userValue) {
   int64_t result;
   if (userValue != 0) {
     result = userValue;
@@ -45,10 +45,10 @@ int64_t AtomicStatisticsImpl::calcNumericId(StatisticsFactory* system,
 
 const char* AtomicStatisticsImpl::calcTextId(StatisticsFactory* system,
                                              const char* userValue) {
-  if (userValue != NULL && strcmp(userValue, "") != 0) {
+  if (userValue != nullptr && strcmp(userValue, "") != 0) {
     return userValue;
   } else {
-    if (system != NULL) {
+    if (system != nullptr) {
       return system->getName();
     } else {
       return "";
@@ -88,59 +88,59 @@ AtomicStatisticsImpl::AtomicStatisticsImpl(StatisticsType* typeArg,
     this->uniqueId = uniqueIdArg;
     this->closed = false;
     this->statsType = dynamic_cast<StatisticsTypeImpl*>(typeArg);
-    GF_D_ASSERT(this->statsType != NULL);
+    GF_D_ASSERT(this->statsType != nullptr);
     int32_t intCount = statsType->getIntStatCount();
     int32_t longCount = statsType->getLongStatCount();
     int32_t doubleCount = statsType->getDoubleStatCount();
 
     if (intCount > 0) {
       intStorage =
-          new ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, int32_t>[ intCount ];
+          new ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, int32_t>[intCount];
       for (int32_t i = 0; i < intCount; i++) {
         intStorage[i] = 0;  // Un-initialized state
       }
 
     } else {
-      intStorage = NULL;
+      intStorage = nullptr;
     }
     if (longCount > 0) {
       longStorage =
-          new ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, int64_t>[ longCount ];
+          new ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, int64_t>[longCount];
       for (int32_t i = 0; i < longCount; i++) {
         longStorage[i] = 0;  // Un-initialized state
       }
 
     } else {
-      longStorage = NULL;
+      longStorage = nullptr;
     }
     if (doubleCount > 0) {
       doubleStorage =
-          new ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, double>[ doubleCount ];
+          new ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, double>[doubleCount];
       for (int32_t i = 0; i < doubleCount; i++) {
         doubleStorage[i] = 0;  // Un-initialized state
       }
     } else {
-      doubleStorage = NULL;
+      doubleStorage = nullptr;
     }
   } catch (...) {
-    statsType = NULL;  // Will be deleted by the class who calls this ctor
+    statsType = nullptr;  // Will be deleted by the class who calls this ctor
   }
 }
 
 AtomicStatisticsImpl::~AtomicStatisticsImpl() {
   try {
-    statsType = NULL;
-    if (intStorage != NULL) {
+    statsType = nullptr;
+    if (intStorage != nullptr) {
       delete[] intStorage;
-      intStorage = NULL;
+      intStorage = nullptr;
     }
-    if (longStorage != NULL) {
+    if (longStorage != nullptr) {
       delete[] longStorage;
-      longStorage = NULL;
+      longStorage = nullptr;
     }
-    if (doubleStorage != NULL) {
+    if (doubleStorage != nullptr) {
       delete[] doubleStorage;
-      doubleStorage = NULL;
+      doubleStorage = nullptr;
     }
   } catch (...) {
   }
@@ -472,7 +472,7 @@ int32_t AtomicStatisticsImpl::incInt(char* name, int32_t delta) {
 }
 
 int32_t AtomicStatisticsImpl::incInt(StatisticDescriptor* descriptor,
-                                   int32_t delta) {
+                                     int32_t delta) {
   int32_t id = getIntId(descriptor);
   return incInt(id, delta);
 }
@@ -494,7 +494,7 @@ int64_t AtomicStatisticsImpl::incLong(char* name, int64_t delta) {
 }
 
 int64_t AtomicStatisticsImpl::incLong(StatisticDescriptor* descriptor,
-                                    int64_t delta) {
+                                      int64_t delta) {
   return incLong(getLongId(descriptor), delta);
 }
 

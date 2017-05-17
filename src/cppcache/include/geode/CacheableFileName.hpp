@@ -76,7 +76,7 @@ class CPPCACHE_EXPORT CacheableFileName : public CacheableString {
    */
   static CacheableFileNamePtr create(const char* value, int32_t len = 0) {
     CacheableFileNamePtr str = nullptr;
-    if (value != NULL) {
+    if (value != nullptr) {
       str = std::make_shared<CacheableFileName>();
       str->initString(value, len);
     }
@@ -89,7 +89,7 @@ class CPPCACHE_EXPORT CacheableFileName : public CacheableString {
    */
   static CacheableFileNamePtr create(const wchar_t* value, int32_t len = 0) {
     CacheableFileNamePtr str = nullptr;
-    if (value != NULL) {
+    if (value != nullptr) {
       str = std::make_shared<CacheableFileName>();
       str->initString(value, len);
     }

@@ -32,7 +32,7 @@ TcrHADistributionManager::TcrHADistributionManager(
     : ThinClientDistributionManager(connManager, theRegion),
       m_cacheAttributes(cacheAttributes),
       m_theTcrConnManager(connManager) {
-  GF_R_ASSERT(theRegion != NULL);
+  GF_R_ASSERT(theRegion != nullptr);
 }
 
 void TcrHADistributionManager::init() {
@@ -86,7 +86,7 @@ GfErrType TcrHADistributionManager::sendSyncRequestRegisterInterestEP(
     TcrMessage& request, TcrMessageReply& reply, bool attemptFailover,
     TcrEndpoint* endpoint) {
   return ThinClientBaseDM::sendSyncRequestRegisterInterest(
-      request, reply, attemptFailover, NULL, endpoint);
+      request, reply, attemptFailover, nullptr, endpoint);
 }
 
 GfErrType TcrHADistributionManager::sendSyncRequestRegisterInterest(

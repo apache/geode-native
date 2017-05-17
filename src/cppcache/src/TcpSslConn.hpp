@@ -47,16 +47,16 @@ class TcpSslConn : public TcpConn {
   void createSocket(ACE_SOCKET sock);
 
  public:
-  TcpSslConn() : TcpConn(), m_ssl(NULL){};
+  TcpSslConn() : TcpConn(), m_ssl(nullptr){};
 
   TcpSslConn(const char* hostname, int32_t port,
              uint32_t waitSeconds = DEFAULT_CONNECT_TIMEOUT,
              int32_t maxBuffSizePool = 0)
-      : TcpConn(hostname, port, waitSeconds, maxBuffSizePool), m_ssl(NULL){};
+      : TcpConn(hostname, port, waitSeconds, maxBuffSizePool), m_ssl(nullptr){};
 
   TcpSslConn(const char* ipaddr, uint32_t waitSeconds = DEFAULT_CONNECT_TIMEOUT,
              int32_t maxBuffSizePool = 0)
-      : TcpConn(ipaddr, waitSeconds, maxBuffSizePool), m_ssl(NULL){};
+      : TcpConn(ipaddr, waitSeconds, maxBuffSizePool), m_ssl(nullptr){};
 
   // TODO:  Watch out for virt dtor calling virt methods!
 
@@ -73,7 +73,7 @@ class TcpSslConn : public TcpConn {
   void connect();
 
   void setOption(int32_t level, int32_t option, void* val, int32_t len) {
-    GF_DEV_ASSERT(m_ssl != NULL);
+    GF_DEV_ASSERT(m_ssl != nullptr);
 
     if (m_ssl->setOption(level, option, val, len) == -1) {
       int32_t lastError = ACE_OS::last_error();

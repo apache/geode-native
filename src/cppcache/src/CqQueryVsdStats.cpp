@@ -36,15 +36,15 @@ using namespace apache::geode::statistics;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-CqQueryStatType* CqQueryStatType::single = NULL;
+CqQueryStatType* CqQueryStatType::single = nullptr;
 SpinLock CqQueryStatType::m_singletonLock;
 SpinLock CqQueryStatType::m_statTypeLock;
 
 void CqQueryStatType::clean() {
   SpinLockGuard guard(m_singletonLock);
-  if (single != NULL) {
+  if (single != nullptr) {
     delete single;
-    single = NULL;
+    single = nullptr;
   }
 }
 
@@ -56,7 +56,7 @@ StatisticsType* CqQueryStatType::getStatType() {
 
   StatisticsType* statsType = factory->findType("CqQueryStatistics");
 
-  if (statsType == NULL) {
+  if (statsType == nullptr) {
     m_stats[0] = factory->createIntCounter(
         "inserts", "The total number of inserts this cq qurey", "entries",
         largerIsBetter);
@@ -83,7 +83,7 @@ StatisticsType* CqQueryStatType::getStatType() {
 
 CqQueryStatType* CqQueryStatType::getInstance() {
   SpinLockGuard guard(m_singletonLock);
-  if (single == NULL) {
+  if (single == nullptr) {
     single = new CqQueryStatType();
   }
   return single;
@@ -112,7 +112,7 @@ CqQueryVsdStats::CqQueryVsdStats(const char* cqqueryName) {
 
   StatisticsType* statsType = regStatType->getStatType();
 
-  GF_D_ASSERT(statsType != NULL);
+  GF_D_ASSERT(statsType != nullptr);
 
   StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
 
@@ -131,10 +131,10 @@ CqQueryVsdStats::CqQueryVsdStats(const char* cqqueryName) {
 }
 
 CqQueryVsdStats::~CqQueryVsdStats() {
-  if (m_cqQueryVsdStats != NULL) {
-    // Don't Delete, Already closed, Just set NULL
+  if (m_cqQueryVsdStats != nullptr) {
+    // Don't Delete, Already closed, Just set nullptr
     // delete m_CqQueryVsdStats;
-    m_cqQueryVsdStats = NULL;
+    m_cqQueryVsdStats = nullptr;
   }
 }
 }  // namespace client

@@ -63,7 +63,7 @@ CacheablePtr TransactionalOperation::replay(Cache* cache) {
       break;
     case GF_EXECUTE_FUNCTION: {
       ExecutionPtr execution;
-      if (m_regionName == NULL) {
+      if (m_regionName == nullptr) {
         execution = FunctionService::onServer(CachePtr(cache));
       } else {
         execution = FunctionService::onRegion(cache->getRegion(m_regionName));
@@ -94,7 +94,7 @@ CacheablePtr TransactionalOperation::replay(Cache* cache) {
               // TODO shared_ptr - no path between types?
               *std::dynamic_pointer_cast<VectorOfCacheableKey>(
                   m_arguments->at(0)),
-                  // TODO shared_ptr - no path between types?
+              // TODO shared_ptr - no path between types?
               std::dynamic_pointer_cast<HashMapOfCacheable>(m_arguments->at(1)),
               // TODO shared_ptr - no path between types?
               std::dynamic_pointer_cast<HashMapOfException>(m_arguments->at(2)),
@@ -109,8 +109,9 @@ CacheablePtr TransactionalOperation::replay(Cache* cache) {
           ->remove(m_key, m_arguments->at(0), m_arguments->at(1));
       break;
     case GF_KEY_SET:
-      cache->getRegion(m_regionName)
-      // TODO shared_ptr - no path between types?
+      cache
+          ->getRegion(m_regionName)
+          // TODO shared_ptr - no path between types?
           ->serverKeys(*std::dynamic_pointer_cast<VectorOfCacheableKey>(
               m_arguments->at(0)));
       break;
@@ -123,8 +124,9 @@ CacheablePtr TransactionalOperation::replay(Cache* cache) {
           ->put(m_key, m_arguments->at(0), m_arguments->at(1));
       break;
     case GF_PUT_ALL:
-      cache->getRegion(m_regionName)
-      // TODO shared_ptr - no path between types?
+      cache
+          ->getRegion(m_regionName)
+          // TODO shared_ptr - no path between types?
           ->putAll(*std::dynamic_pointer_cast<HashMapOfCacheable>(
                        m_arguments->at(0)),
                    std::static_pointer_cast<CacheableInt32>(m_arguments->at(1))

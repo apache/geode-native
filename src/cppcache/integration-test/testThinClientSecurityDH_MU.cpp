@@ -67,7 +67,7 @@ CredentialGeneratorPtr credentialGeneratorHandler;
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
   const char* path = ACE_OS::getenv("TESTSRC");
-  ASSERT(path != NULL,
+  ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
   strcat(xmlPath, "xml/Security/");
@@ -97,7 +97,7 @@ void initCredentialGenerator() {
   }
 
   if (credentialGeneratorHandler == nullptr) {
-    FAIL("credentialGeneratorHandler is NULL");
+    FAIL("credentialGeneratorHandler is nullptr");
   }
 
   loopNum++;
@@ -120,7 +120,7 @@ void initClientAuth(char credentialsType, const char* dhAlgo) {
   config->insert("security-client-kspath", testsrc.c_str());
 
   if (credentialGeneratorHandler == nullptr) {
-    FAIL("credentialGeneratorHandler is NULL");
+    FAIL("credentialGeneratorHandler is nullptr");
   }
   bool insertAuthInit = true;
   switch (credentialsType) {
@@ -225,7 +225,8 @@ void DoNetSearch() {
     RegionPtr regionPtr = virtualCache->getRegion(regionNamesAuth[1]);
 
     CacheableKeyPtr keyPtr = CacheableKey::create(keys[0]);
-    auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regionPtr->get(keyPtr));
+    auto checkPtr =
+        std::dynamic_pointer_cast<CacheableString>(regionPtr->get(keyPtr));
     if (checkPtr != nullptr && !strcmp(vals[0], checkPtr->asChar())) {
       LOG("checkPtr is not null");
       char buf[1024];
@@ -233,7 +234,7 @@ void DoNetSearch() {
               checkPtr->asChar(), keys[0]);
       LOG(buf);
     } else {
-      LOG("checkPtr is NULL");
+      LOG("checkPtr is nullptr");
     }
   } catch (const apache::geode::client::Exception& other) {
     other.printStackTrace();
@@ -245,7 +246,7 @@ void DoNetSearch() {
 void initSecurityServer(int instance) {
   std::string cmdServerAuthenticator;
   if (credentialGeneratorHandler == nullptr) {
-    FAIL("credentialGeneratorHandler is NULL");
+    FAIL("credentialGeneratorHandler is nullptr");
   }
 
   try {
@@ -273,7 +274,7 @@ void initSecurityServer(int instance) {
       printf("Input to server cmd is -->  %s\n",
              cmdServerAuthenticator.c_str());
       CacheHelper::initServer(
-          instance, NULL, locHostPort,
+          instance, nullptr, locHostPort,
           const_cast<char*>(cmdServerAuthenticator.c_str()));
     }
   } catch (...) {

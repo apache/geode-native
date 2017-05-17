@@ -71,7 +71,7 @@ class TestPdxSerializer : public PdxSerializer {
       npa->_city = pr->readString("_city");
       return (void *)npa;
     } catch (...) {
-      return NULL;
+      return nullptr;
     }
   }
 
@@ -109,7 +109,8 @@ class TestPdxSerializer : public PdxSerializer {
       npt->m_arraylist = std::dynamic_pointer_cast<CacheableArrayList>(
           pr->readObject("m_arraylist"));
 
-      npt->m_map = std::dynamic_pointer_cast<CacheableHashMap>(pr->readObject("m_map"));
+      npt->m_map =
+          std::dynamic_pointer_cast<CacheableHashMap>(pr->readObject("m_map"));
       // TODO:Check for the size
 
       npt->m_hashtable = std::dynamic_pointer_cast<CacheableHashTable>(
@@ -171,7 +172,7 @@ class TestPdxSerializer : public PdxSerializer {
 
       LOGINFO("TestPdxSerializer: NonPdxType fromData() Done.");
     } catch (...) {
-      return NULL;
+      return nullptr;
     }
     return (void *)npt;
   }

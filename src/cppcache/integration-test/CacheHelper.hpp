@@ -132,22 +132,22 @@ class CacheHelper {
 
   // this will create pool even endpoints and locatorhost has been not defined
   PoolPtr createPool2(const char* poolName, const char* locators,
-                      const char* serverGroup, const char* servers = NULL,
+                      const char* serverGroup, const char* servers = nullptr,
                       int redundancy = 0, bool clientNotification = false,
                       int subscriptionAckInterval = -1, int connections = -1);
 
   void logPoolAttributes(PoolPtr& pool);
 
-  void createPoolWithLocators(const char* name, const char* locators = NULL,
+  void createPoolWithLocators(const char* name, const char* locators = nullptr,
                               bool clientNotificationEnabled = false,
                               int subscriptionRedundancy = -1,
                               int subscriptionAckInterval = -1,
                               int connections = -1,
                               bool isMultiuserMode = false,
-                              const char* serverGroup = NULL);
+                              const char* serverGroup = nullptr);
 
   RegionPtr createRegionAndAttachPool(
-      const char* name, bool ack, const char* poolName = NULL,
+      const char* name, bool ack, const char* poolName = nullptr,
       bool caching = true, int ettl = 0, int eit = 0, int rttl = 0, int rit = 0,
       int lel = 0, ExpirationAction::Action action = ExpirationAction::DESTROY);
 
@@ -254,9 +254,9 @@ class CacheHelper {
   static bool isServerCleanupCallbackRegistered;
   static void cleanupServerInstances();
 
-  static void initServer(int instance, const char* xml = NULL,
-                         const char* locHostport = NULL,
-                         const char* authParam = NULL, bool ssl = false,
+  static void initServer(int instance, const char* xml = nullptr,
+                         const char* locHostport = nullptr,
+                         const char* authParam = nullptr, bool ssl = false,
                          bool enableDelta = true, bool multiDS = false,
                          bool testServerGC = false, bool untrustedCert = false);
 
@@ -285,8 +285,9 @@ class CacheHelper {
                                  const std::string& outFile);
 
 #ifdef _SOLARIS
-  static void replaceInPlace(std::string& searchStr, const std::string& matchStr,
-                                   const std::string& replaceStr);
+  static void replaceInPlace(std::string& searchStr,
+                             const std::string& matchStr,
+                             const std::string& replaceStr);
 #endif
 
   static std::list<int> staticLocatorInstanceList;
@@ -295,7 +296,8 @@ class CacheHelper {
 
   // starting locator
   static void initLocator(int instance, bool ssl = false, bool multiDS = false,
-                          int dsId = -1, int remoteLocator = 0, bool untrustedCert = false);
+                          int dsId = -1, int remoteLocator = 0,
+                          bool untrustedCert = false);
 
   static void clearSecProp();
 
@@ -322,7 +324,7 @@ class CacheHelper {
 };
 
 #ifndef test_cppcache_utils_static
-CacheHelper* CacheHelper::singleton = NULL;
+CacheHelper* CacheHelper::singleton = nullptr;
 std::list<int> CacheHelper::staticServerInstanceList;
 std::list<int> CacheHelper::staticLocatorInstanceList;
 std::list<std::string> CacheHelper::staticConfigFileList;

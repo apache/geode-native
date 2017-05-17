@@ -96,7 +96,7 @@ bool isLocalServer = true;
 bool isLocator = true;
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
-GetRegionThread* getThread = NULL;
+GetRegionThread* getThread = nullptr;
 RegionPtr regionPtr;
 DUNIT_TASK(s1p1, Setup)
   {

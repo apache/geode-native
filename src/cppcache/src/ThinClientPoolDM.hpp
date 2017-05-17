@@ -140,7 +140,7 @@ class ThinClientPoolDM
   GfErrType createPoolConnection(TcrConnection*& conn,
                                  std::set<ServerLocation>& excludeServers,
                                  bool& maxConnLimit,
-                                 const TcrConnection* currentServer = NULL);
+                                 const TcrConnection* currentServer = nullptr);
   ThinClientLocatorHelper* getLocatorHelper() volatile {
     return (ThinClientLocatorHelper*)m_locHelper;
   }
@@ -151,7 +151,7 @@ class ThinClientPoolDM
   void decRegionCount();
 
   virtual void setStickyNull(bool isBGThread) {
-    if (!isBGThread) m_manager->setStickyConnection(NULL, false);
+    if (!isBGThread) m_manager->setStickyConnection(nullptr, false);
   };
   virtual bool canItBeDeletedNoImpl(TcrConnection* conn) { return false; };
   void updateNotificationStats(bool isDeltaSuccess, long timeInNanoSecond);
@@ -241,8 +241,8 @@ class ThinClientPoolDM
       bool isBGThread, TcrMessage& request, int8_t& version, bool& match,
       bool& connFound,
       const BucketServerLocationPtr& serverLocation = nullptr) {
-    TcrConnection* conn = NULL;
-    TcrEndpoint* theEP = NULL;
+    TcrConnection* conn = nullptr;
+    TcrEndpoint* theEP = nullptr;
     LOGDEBUG("prEnabled = %s, forSingleHop = %s %d",
              m_attrs->getPRSingleHopEnabled() ? "true" : "false",
              request.forSingleHop() ? "true" : "false",
@@ -255,15 +255,15 @@ class ThinClientPoolDM
           m_manager->getStickyConnection(conn, error, excludeServers, true);
       TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
       if (*error == GF_NOERR && !connFound &&
-          (txState == NULL || txState->isDirty())) {
+          (txState == nullptr || txState->isDirty())) {
         *error = doFailover(conn);
       }
 
       if (*error != GF_NOERR) {
-        return NULL;
+        return nullptr;
       }
 
-      if (txState != NULL) {
+      if (txState != nullptr) {
         txState->setDirty();
       }
     } else if (serverLocation != nullptr /*&& excludeServers.size() == 0*/) {
@@ -274,22 +274,22 @@ class ThinClientPoolDM
         (request.getMessageType() != TcrMessage::GET_ALL_70) &&
         (request.getMessageType() != TcrMessage::GET_ALL_WITH_CALLBACK)) {
       theEP = getSingleHopServer(request, version, slTmp, excludeServers);
-      if (theEP != NULL) {
+      if (theEP != nullptr) {
         // if all buckets are not initialized
         //  match = true;
       }
-      if (slTmp != nullptr && m_clientMetadataService != NULL) {
+      if (slTmp != nullptr && m_clientMetadataService != nullptr) {
         if (m_clientMetadataService->isBucketMarkedForTimeout(
                 request.getRegionName().c_str(), slTmp->getBucketId()) ==
             true) {
           *error = GF_CLIENT_WAIT_TIMEOUT;
-          return NULL;
+          return nullptr;
         }
       }
       LOGDEBUG("theEP is %p", theEP);
     }
     bool maxConnLimit = false;
-    if (theEP != NULL) {
+    if (theEP != nullptr) {
       conn = getFromEP(theEP);
       if (!conn) {
         LOGFINER("Creating connection to endpint as not found in pool ");
@@ -297,8 +297,9 @@ class ThinClientPoolDM
             createPoolConnectionToAEndPoint(conn, theEP, maxConnLimit, true);
         if (*error == GF_CLIENT_WAIT_TIMEOUT ||
             *error == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA) {
-          if (m_clientMetadataService == NULL || request.getKey() == nullptr) {
-            return NULL;
+          if (m_clientMetadataService == nullptr ||
+              request.getKey() == nullptr) {
+            return nullptr;
           }
           RegionPtr region;
           m_connManager.getCacheImpl()->getRegion(
@@ -311,11 +312,11 @@ class ThinClientPoolDM
                     request.getCallbackArgument(), request.forPrimary(), slTmp,
                     version);
           }
-          return NULL;
+          return nullptr;
         }
       }
     }
-    if (conn == NULL) {
+    if (conn == nullptr) {
       LOGDEBUG("conn not found");
       match = false;
       LOGDEBUG("looking For connection");
@@ -370,7 +371,7 @@ class ThinClientPoolDM
     TcrConnection* mp =
         getNoGetLock(isClosed, error, excludeServers, maxConnLimit);
 
-    if (mp == NULL && !isClosed) {
+    if (mp == nullptr && !isClosed) {
       mp = getUntilWithToken(sec, isClosed, &excludeServers);
     }
 
@@ -384,7 +385,7 @@ class ThinClientPoolDM
   void deleteAction() { removeEPConnections(1); }
 
   std::string selectEndpoint(std::set<ServerLocation>&,
-                             const TcrConnection* currentServer = NULL);
+                             const TcrConnection* currentServer = nullptr);
   volatile ClientProxyMembershipID* m_memId;
   virtual TcrEndpoint* createEP(const char* endpointName) {
     return new TcrPoolEndPoint(endpointName, m_connManager.getCacheImpl(),
@@ -447,14 +448,14 @@ class FunctionExecution : public PooledWork<GfErrType> {
 
  public:
   FunctionExecution() {
-    m_poolDM = NULL;
-    m_ep = NULL;
-    m_func = NULL;
+    m_poolDM = nullptr;
+    m_ep = nullptr;
+    m_func = nullptr;
     m_getResult = 0;
     m_timeout = 0;
     m_error = GF_NOERR;
-    m_rc = NULL;
-    m_resultCollectorLock = NULL;
+    m_rc = nullptr;
+    m_resultCollectorLock = nullptr;
     m_userAttr = nullptr;
   }
 
@@ -532,7 +533,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
         ==25848==    by 0x34BE1D: clone (in /lib/libc-2.12.so)
         */
         delete resultProcessor;
-        resultProcessor = NULL;
+        resultProcessor = nullptr;
         return GF_NOERR;  // if server is unavailable its not an error for
                           // functionexec OnServers() case
       }
@@ -563,7 +564,7 @@ definitely lost in loss record 241 of 244
        *
        */
       delete resultProcessor;
-      resultProcessor = NULL;
+      resultProcessor = nullptr;
       return m_error;
     } else if (reply.getMessageType() == TcrMessage::EXCEPTION ||
                reply.getMessageType() == TcrMessage::EXECUTE_FUNCTION_ERROR) {
@@ -580,27 +581,8 @@ definitely lost in loss record 241 of 244
       //          ExecutionImpl::addResults(*m_rc,values);
       //          resultProcessor->reset();
     }
-    /**
-     * ==13294== 48,342 (1,656 direct, 46,686 indirect) bytes in 46 blocks are
-definitely lost in loss record 241 of 244
-==13294==    at 0x4007D75: operator new(unsigned int) (vg_replace_malloc.c:313)
-==13294==    by 0x439BE11: apache::geode::client::FunctionExecution::execute()
-(ThinClientPoolDM.hpp:417)
-==13294==    by 0x439A671: apache::geode::client::PooledWork<GfErrType>::call()
-(ThreadPool.hpp:25)
-==13294==    by 0x43C33FF: apache::geode::client::ThreadPoolWorker::svc()
-(ThreadPool.cpp:43)
-==13294==    by 0x44052BD: ACE_6_1_0::ACE_Task_Base::svc_run(void*) (in
-/export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/product/lib/libgfcppcache.so)
-==13294==    by 0x441E20A: ACE_6_1_0::ACE_Thread_Adapter::invoke_i() (in
-/export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/product/lib/libgfcppcache.so)
-==13294==    by 0x441E3A7: ACE_6_1_0::ACE_Thread_Adapter::invoke() (in
-/export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/product/lib/libgfcppcache.so)
-==13294==    by 0x8CFA48: start_thread (in /lib/libpthread-2.12.so)
-==13294==    by 0x34BE1D: clone (in /lib/libc-2.12.so)
-     */
     delete resultProcessor;
-    resultProcessor = NULL;
+    resultProcessor = nullptr;
     return m_error;
   }
 };
@@ -627,9 +609,10 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
   OnRegionFunctionExecution(
       const char* func, const Region* region, CacheablePtr args,
       CacheableHashSetPtr routingObj, uint8_t getResult, uint32_t timeout,
-      ThinClientPoolDM* poolDM, const std::shared_ptr<ACE_Recursive_Thread_Mutex>& rCL,
+      ThinClientPoolDM* poolDM,
+      const std::shared_ptr<ACE_Recursive_Thread_Mutex>& rCL,
       ResultCollectorPtr rs, UserAttributesPtr userAttr, bool isBGThread,
-      BucketServerLocationPtr serverLocation, bool allBuckets)
+      const BucketServerLocationPtr& serverLocation, bool allBuckets)
       : m_serverLocation(serverLocation),
         m_isBGThread(isBGThread),
         m_poolDM(poolDM),

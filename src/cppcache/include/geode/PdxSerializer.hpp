@@ -82,7 +82,7 @@ class CPPCACHE_EXPORT PdxSerializer : public SharedBase {
    * @param className to help select an object sizer for the correct class
    */
   virtual UserObjectSizer getObjectSizer(const char* className) {
-    return NULL;
+    return nullptr;
   };
 };
 }  // namespace client

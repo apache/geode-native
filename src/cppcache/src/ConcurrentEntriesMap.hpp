@@ -70,8 +70,7 @@ class CPPCACHE_EXPORT ConcurrentEntriesMap : public EntriesMap {
    * @brief constructor, must call open before using map.
    */
   ConcurrentEntriesMap(EntryFactory* entryFactory,
-                       bool concurrencyChecksEnabled,
-                       RegionInternal* region,
+                       bool concurrencyChecksEnabled, RegionInternal* region,
                        uint8_t concurrency = 16);
 
   /**
@@ -90,7 +89,7 @@ class CPPCACHE_EXPORT ConcurrentEntriesMap : public EntriesMap {
                         CacheablePtr& oldValue, int updateCount,
                         int destroyTracker, VersionTagPtr versionTag,
                         bool& isUpdate = EntriesMap::boolVal,
-                        DataInput* delta = NULL);
+                        DataInput* delta = nullptr);
   virtual GfErrType invalidate(const CacheableKeyPtr& key, MapEntryImplPtr& me,
                                CacheablePtr& oldValue,
                                VersionTagPtr versionTag);

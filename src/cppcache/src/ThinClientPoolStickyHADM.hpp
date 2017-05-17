@@ -34,7 +34,7 @@ class ThinClientPoolStickyHADM : public ThinClientPoolHADM {
   }
   virtual ~ThinClientPoolStickyHADM() {
     /*m_manager->closeAllStickyConnections();
-    delete m_manager; m_manager = NULL;*/
+    delete m_manager; m_manager = nullptr;*/
   }
   /*bool canItBeDeletedNoImpl(TcrConnection* conn );
 protected:

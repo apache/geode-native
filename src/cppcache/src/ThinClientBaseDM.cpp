@@ -38,7 +38,7 @@ ThinClientBaseDM::ThinClientBaseDM(TcrConnectionManager& connManager,
       m_initDone(false),
       m_clientNotification(false),
       m_chunks(true),
-      m_chunkProcessor(NULL) {}
+      m_chunkProcessor(nullptr) {}
 
 ThinClientBaseDM::~ThinClientBaseDM() {}
 
@@ -73,7 +73,7 @@ GfErrType ThinClientBaseDM::sendSyncRequestRegisterInterest(
     ThinClientRegion* region, TcrEndpoint* endpoint) {
   GfErrType err = GF_NOERR;
 
-  if (endpoint == NULL) {
+  if (endpoint == nullptr) {
     err = sendSyncRequest(request, reply, attemptFailover);
   } else {
     reply.setDM(this);
@@ -131,7 +131,7 @@ GfErrType ThinClientBaseDM::handleEPError(TcrEndpoint* ep,
   if (error == GF_NOERR) {
     if (reply.getMessageType() == TcrMessage::EXCEPTION) {
       const char* exceptStr = reply.getException();
-      if (exceptStr != NULL) {
+      if (exceptStr != nullptr) {
         bool markServerDead = unrecoverableServerError(exceptStr);
         bool doFailover = (markServerDead || nonFatalServerError(exceptStr));
         if (doFailover) {
@@ -174,13 +174,14 @@ GfErrType ThinClientBaseDM::sendRequestToEndPoint(const TcrMessage& request,
  * This method is for exceptions when server should be marked as dead.
  */
 bool ThinClientBaseDM::unrecoverableServerError(const char* exceptStr) {
-  return ((strstr(exceptStr, "org.apache.geode.cache.CacheClosedException") !=
-           NULL) ||
-          /*(strstr(exceptStr,
-              "org.apache.geode.cache.execute.FunctionException") != NULL) ||*/
-          (strstr(exceptStr,
-                  "org.apache.geode.distributed.ShutdownException") != NULL) ||
-          (strstr(exceptStr, "java.lang.OutOfMemoryError") != NULL));
+  return (
+      (strstr(exceptStr, "org.apache.geode.cache.CacheClosedException") !=
+       nullptr) ||
+      /*(strstr(exceptStr,
+          "org.apache.geode.cache.execute.FunctionException") != nullptr) ||*/
+      (strstr(exceptStr, "org.apache.geode.distributed.ShutdownException") !=
+       nullptr) ||
+      (strstr(exceptStr, "java.lang.OutOfMemoryError") != nullptr));
 }
 
 /**
@@ -192,10 +193,10 @@ bool ThinClientBaseDM::unrecoverableServerError(const char* exceptStr) {
  */
 bool ThinClientBaseDM::nonFatalServerError(const char* exceptStr) {
   return ((strstr(exceptStr, "org.apache.geode.distributed.TimeoutException") !=
-           NULL) ||
+           nullptr) ||
           (strstr(exceptStr, "org.apache.geode.ThreadInterruptedException") !=
-           NULL) ||
-          (strstr(exceptStr, "java.lang.IllegalStateException") != NULL));
+           nullptr) ||
+          (strstr(exceptStr, "java.lang.IllegalStateException") != nullptr));
 }
 
 void ThinClientBaseDM::failover() {
@@ -205,7 +206,7 @@ void ThinClientBaseDM::failover() {
 void ThinClientBaseDM::queueChunk(TcrChunkedContext* chunk) {
   LOGDEBUG("ThinClientBaseDM::queueChunk");
   const uint32_t timeout = 1;
-  if (m_chunkProcessor == NULL) {
+  if (m_chunkProcessor == nullptr) {
     LOGDEBUG("ThinClientBaseDM::queueChunk2");
     // process in same thread if no chunk processor thread
     chunk->handleChunk(true);
@@ -228,7 +229,7 @@ void ThinClientBaseDM::queueChunk(TcrChunkedContext* chunk) {
 int ThinClientBaseDM::processChunks(volatile bool& isRunning) {
   TcrChunkedContext* chunk;
   LOGFINE("Starting chunk process thread for region %s",
-          (m_region != NULL ? m_region->getFullPath() : "(null)"));
+          (m_region != nullptr ? m_region->getFullPath() : "(null)"));
   while (isRunning) {
     chunk = m_chunks.getUntil(0, 100000);
     if (chunk) {
@@ -237,14 +238,14 @@ int ThinClientBaseDM::processChunks(volatile bool& isRunning) {
     }
   }
   LOGFINE("Ending chunk process thread for region %s",
-          (m_region != NULL ? m_region->getFullPath() : "(null)"));
+          (m_region != nullptr ? m_region->getFullPath() : "(null)"));
   GF_DEV_ASSERT(m_chunks.size() == 0);
   return 0;
 }
 
 // start the chunk processing thread
 void ThinClientBaseDM::startChunkProcessor() {
-  if (m_chunkProcessor == NULL) {
+  if (m_chunkProcessor == nullptr) {
     m_chunks.open();
     m_chunkProcessor = new Task<ThinClientBaseDM>(
         this, &ThinClientBaseDM::processChunks, NC_ProcessChunk);
@@ -254,7 +255,7 @@ void ThinClientBaseDM::startChunkProcessor() {
 
 // stop the chunk processing thread
 void ThinClientBaseDM::stopChunkProcessor() {
-  if (m_chunkProcessor != NULL) {
+  if (m_chunkProcessor != nullptr) {
     m_chunkProcessor->stop();
     m_chunks.close();
     GF_SAFE_DELETE(m_chunkProcessor);

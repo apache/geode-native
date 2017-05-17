@@ -304,14 +304,14 @@ void operator delete[](void *p);
 #define GF_SAFE_DELETE(x) \
   {                       \
     delete x;             \
-    x = NULL;             \
+    x = nullptr;          \
   }
 
 /** Deletes array x only if it exists */
 #define GF_SAFE_DELETE_ARRAY(x) \
   {                             \
     delete[] x;                 \
-    x = NULL;                   \
+    x = nullptr;                \
   }
 
 // TODO shared_ptre - make C+11 library dependent or make constructor destructor
@@ -322,8 +322,7 @@ void operator delete[](void *p);
   friend std::__shared_ptr_emplace<_T, std::allocator<_T> >;           \
   friend std::default_delete<_T>;
 #elif defined(__GNUC__) || defined(__SUNPRO_CC)
-#define FRIEND_STD_SHARED_PTR(_T) \
-  friend __gnu_cxx::new_allocator<_T>; 
+#define FRIEND_STD_SHARED_PTR(_T) friend __gnu_cxx::new_allocator<_T>;
 #elif defined(_MSC_VER)
 #if defined(_MANAGED)
 #define FRIEND_STD_SHARED_PTR(_T) \
@@ -332,9 +331,8 @@ void operator delete[](void *p);
   friend std::_Ptr_base<_T>;      \
   friend std::default_delete<_T>; \
   friend std::shared_ptr<_T>;
-#else 
-#define FRIEND_STD_SHARED_PTR(_T) \
-  friend std::_Ref_count_obj<_T>;
+#else
+#define FRIEND_STD_SHARED_PTR(_T) friend std::_Ref_count_obj<_T>;
 #endif
 #else
 #define FRIEND_STD_SHARED_PTR(_T)

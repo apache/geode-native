@@ -34,7 +34,7 @@ Ssl* TcpSslConn::getSSLImpl(ACE_SOCKET sock, const char* pubkeyfile,
 
   gf_create_SslImpl func =
       reinterpret_cast<gf_create_SslImpl>(m_dll.symbol("gf_create_SslImpl"));
-  if (func == NULL) {
+  if (func == nullptr) {
     char msg[1000];
     ACE_OS::snprintf(msg, 1000,
                      "cannot find function %s in library gf_create_SslImpl",
@@ -59,7 +59,7 @@ void TcpSslConn::createSocket(ACE_SOCKET sock) {
 }
 
 void TcpSslConn::listen(ACE_INET_Addr addr, uint32_t waitSeconds) {
-  GF_DEV_ASSERT(m_ssl != NULL);
+  GF_DEV_ASSERT(m_ssl != nullptr);
 
   int32_t retVal = m_ssl->listen(addr, waitSeconds);
 
@@ -95,7 +95,7 @@ void TcpSslConn::listen(ACE_INET_Addr addr, uint32_t waitSeconds) {
 }
 
 void TcpSslConn::connect() {
-  GF_DEV_ASSERT(m_ssl != NULL);
+  GF_DEV_ASSERT(m_ssl != nullptr);
 
   ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
 
@@ -136,20 +136,20 @@ void TcpSslConn::connect() {
 }
 
 void TcpSslConn::close() {
-  if (m_ssl != NULL) {
+  if (m_ssl != nullptr) {
     m_ssl->close();
     gf_destroy_SslImpl func = reinterpret_cast<gf_destroy_SslImpl>(
         m_dll.symbol("gf_destroy_SslImpl"));
     func((void*)m_ssl);
-    m_ssl = NULL;
+    m_ssl = nullptr;
   }
 }
 
 int32_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, int32_t len,
                              uint32_t waitSeconds) {
   {
-    GF_DEV_ASSERT(m_ssl != NULL);
-    GF_DEV_ASSERT(buff != NULL);
+    GF_DEV_ASSERT(m_ssl != nullptr);
+    GF_DEV_ASSERT(buff != nullptr);
 
 #if GF_DEVEL_ASSERTS == 1
     if (len <= 0) {
@@ -219,7 +219,7 @@ int32_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, int32_t len,
 }
 
 uint16_t TcpSslConn::getPort() {
-  GF_DEV_ASSERT(m_ssl != NULL);
+  GF_DEV_ASSERT(m_ssl != nullptr);
 
   ACE_INET_Addr localAddr;
   m_ssl->getLocalAddr(*(ACE_Addr*)&localAddr);

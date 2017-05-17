@@ -20,7 +20,7 @@
 
 using namespace apache::geode::client;
 
-const char* DiskPolicyType::names[] = {"none", "overflows", "persist", NULL};
+const char* DiskPolicyType::names[] = {"none", "overflows", "persist", nullptr};
 
 const char* DiskPolicyType::fromOrdinal(const uint8_t ordinal) {
   if (ordinal > DiskPolicyType::PERSIST) return names[DiskPolicyType::NONE];
@@ -29,7 +29,7 @@ const char* DiskPolicyType::fromOrdinal(const uint8_t ordinal) {
 
 DiskPolicyType::PolicyType DiskPolicyType::fromName(const char* name) {
   uint32_t i = 0;
-  while ((names[i] != NULL) ||
+  while ((names[i] != nullptr) ||
          (i <= static_cast<uint32_t>(DiskPolicyType::PERSIST))) {
     if (name && names[i] && ACE_OS::strcasecmp(names[i], name) == 0) {
       return static_cast<DiskPolicyType::PolicyType>(i);

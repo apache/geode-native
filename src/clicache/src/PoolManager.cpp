@@ -42,10 +42,10 @@ namespace Apache
       {
         auto pools = native::PoolManager::getAll();
         auto result = gcnew Dictionary<String^, Pool^>();
-        for (native::HashMapOfPools::Iterator iter = pools.begin(); iter != pools.end(); ++iter)
+        for (const auto& iter : pools)
         {
-          auto key = CacheableString::GetString(iter.first().get());
-          auto val = Pool::Create(iter.second());
+          auto key = gcnew String(iter.first.c_str());
+          auto val = Pool::Create(iter.second);
           result->Add(key, val);
         }
         return result;

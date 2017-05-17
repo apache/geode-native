@@ -87,7 +87,7 @@ CacheableWrapper* CacheableWrapperFactory::createInstance(int8_t typeId) {
     CacheableWrapperFunc wrapperFunc = m_registeredValueMap[typeId];
     return wrapperFunc();
   }
-  return NULL;
+  return nullptr;
 }
 
 void CacheableWrapperFactory::registerType(

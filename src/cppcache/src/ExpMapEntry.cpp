@@ -19,7 +19,7 @@
 
 using namespace apache::geode::client;
 
-ExpEntryFactory* ExpEntryFactory::singleton = NULL;
+ExpEntryFactory* ExpEntryFactory::singleton = nullptr;
 
 /**
  * @brief called when library is initialized... see CppCacheLibrary.

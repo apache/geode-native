@@ -108,7 +108,7 @@ bool CacheableString::operator==(const CacheableKey& other) const {
   if (m_len != otherStr.m_len) {
     return false;
   }
-  if (m_str == NULL) {
+  if (m_str == nullptr) {
     return true;
   } else if (thisType == GF_STRING || thisType == GF_STRING_HUGE) {
     if (otherType == GF_STRING || otherType == GF_STRING_HUGE) {
@@ -130,7 +130,7 @@ bool CacheableString::operator==(const CacheableKey& other) const {
 }
 
 int32_t CacheableString::hashcode() const {
-  if (m_str == NULL) {
+  if (m_str == nullptr) {
     return 0;
   }
   int localHash = 0;
@@ -175,7 +175,7 @@ inline char getASCIIChar(const wchar_t wc, bool& isASCII, int32_t& encodedLen) {
 char* CacheableString::getASCIIString(const wchar_t* value, int32_t& len,
                                       int32_t& encodedLen) {
   wchar_t currentChar;
-  char* buf = NULL;
+  char* buf = nullptr;
   bool isASCII = true;
   char c;
   if (len > 0) {
@@ -192,7 +192,7 @@ char* CacheableString::getASCIIString(const wchar_t* value, int32_t& len,
       buf[encodedLen] = '\0';
     } else {
       delete[] buf;
-      buf = NULL;
+      buf = nullptr;
     }
     len -= clen;
   } else {
@@ -230,7 +230,7 @@ void CacheableString::copyString(const wchar_t* value, int32_t len) {
 }
 
 void CacheableString::initString(const char* value, int32_t len) {
-  if (value != NULL) {
+  if (value != nullptr) {
     if (len <= 0) {
       len = static_cast<int32_t>(strlen(value));
     }
@@ -243,7 +243,7 @@ void CacheableString::initString(const char* value, int32_t len) {
 }
 
 void CacheableString::initStringNoCopy(char* value, int32_t len) {
-  if (value != NULL) {
+  if (value != nullptr) {
     if (len <= 0) {
       len = static_cast<int32_t>(strlen(value));
     }
@@ -256,7 +256,7 @@ void CacheableString::initStringNoCopy(char* value, int32_t len) {
 }
 
 void CacheableString::initString(const wchar_t* value, int32_t len) {
-  if (value == NULL) {
+  if (value == nullptr) {
     m_type = GF_STRING;
   } else {
     int32_t encodedLen = 0;
@@ -275,7 +275,7 @@ void CacheableString::initString(const wchar_t* value, int32_t len) {
 }
 
 void CacheableString::initStringNoCopy(wchar_t* value, int32_t len) {
-  if (value == NULL) {
+  if (value == nullptr) {
     m_type = GF_STRING;
   } else {
     int32_t encodedLen = DataOutput::getEncodedLength(value, len, &m_len);
@@ -301,7 +301,7 @@ int32_t CacheableString::logString(char* buffer, int32_t maxLength) const {
   if (isCString()) {
     return ACE_OS::snprintf(
         buffer, maxLength, "%s( %s )", className(),
-        (m_str != NULL ? reinterpret_cast<const char*>(m_str) : "null"));
+        (m_str != nullptr ? reinterpret_cast<const char*>(m_str) : "null"));
   } else {
     GF_DEV_ASSERT(isWideString());
     int32_t numChars = ACE_OS::snprintf(buffer, maxLength, "%s( ", className());

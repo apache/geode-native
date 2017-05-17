@@ -19,8 +19,8 @@
 using namespace apache::geode::statistics;
 
 /**
-  * Statistics related to the statistic sampler.
-*/
+ * Statistics related to the statistic sampler.
+ */
 
 StatSamplerStats::StatSamplerStats() {
   StatisticsFactory* statFactory = StatisticsFactory::getExistingInstance();
@@ -78,15 +78,15 @@ void StatSamplerStats::close() {
 /**
  * All objects are created by factory, and the reference is passed to this class
  * Factory takes the responsibility of deleting the objetcs.
- * Hence they can be simply set to NULL here.
+ * Hence they can be simply set to nullptr here.
  * But it is mandatory that StatSamplerStats::close() be called
  * before this destructor gets called,
  * otherwise samplerStats will not get deleted and a memory leak will occur.
  */
 StatSamplerStats::~StatSamplerStats() {
-  samplerType = NULL;
+  samplerType = nullptr;
   for (int32_t i = 0; i < 2; i++) {
-    statDescriptorArr[i] = NULL;
+    statDescriptorArr[i] = nullptr;
   }
-  samplerStats = NULL;
+  samplerStats = nullptr;
 }

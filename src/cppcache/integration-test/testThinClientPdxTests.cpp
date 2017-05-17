@@ -83,7 +83,7 @@ bool genericValCompare(T1 value1, T2 value2) /*const*/
 void initClient(const bool isthinClient, bool isPdxIgnoreUnreadFields,
                 const PropertiesPtr& configPtr = nullptr) {
   LOGINFO("isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, isPdxIgnoreUnreadFields, false,
                                   configPtr, false);
   }
@@ -96,7 +96,7 @@ void initClientN(const bool isthinClient, bool isPdxIgnoreUnreadFields,
                  bool isPdxReadSerialized = false,
                  const PropertiesPtr& configPtr = nullptr) {
   LOGINFO("isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, isPdxIgnoreUnreadFields,
                                   isPdxReadSerialized, configPtr, false);
   }
@@ -116,7 +116,7 @@ void stepOneN(bool isPdxIgnoreUnreadFields = false,
   initClientN(true, isPdxIgnoreUnreadFields, isPdxReadSerialized, config);
 
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0, true);
+  createPool(poolNames[0], locHostPort, nullptr, 0, true);
   createRegionAndAttachPool("DistRegionAck", USE_ACK, poolNames[0],
                             false /*Caching disabled*/);
 
@@ -140,7 +140,7 @@ END_TASK_DEFINITION
 
 void initClient1WithClientName(const bool isthinClient,
                                const PropertiesPtr& configPtr = nullptr) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr config = configPtr;
     if (config == nullptr) {
       config = Properties::create();
@@ -153,7 +153,7 @@ void initClient1WithClientName(const bool isthinClient,
 
 void initClient2WithClientName(const bool isthinClient,
                                const PropertiesPtr& configPtr = nullptr) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr config = configPtr;
     if (config == nullptr) {
       config = Properties::create();
@@ -169,7 +169,7 @@ void stepOneForClient1(bool isPdxIgnoreUnreadFields = false) {
   initClient1WithClientName(true);
 
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0, true);
+  createPool(poolNames[0], locHostPort, nullptr, 0, true);
   createRegionAndAttachPool("DistRegionAck", USE_ACK, poolNames[0],
                             false /*Caching disabled*/);
   LOG("StepOne complete.");
@@ -180,7 +180,7 @@ void stepOneForClient2(bool isPdxIgnoreUnreadFields = false) {
   initClient2WithClientName(true);
 
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0, true);
+  createPool(poolNames[0], locHostPort, nullptr, 0, true);
   createRegionAndAttachPool("DistRegionAck", USE_ACK, poolNames[0],
                             false /*Caching disabled*/);
   LOG("StepOne complete.");
@@ -196,7 +196,7 @@ void stepOne(bool isPdxIgnoreUnreadFields = false,
   // Create just one pool and attach all regions to that.
   initClient(true, isPdxIgnoreUnreadFields, config);
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0, true);
+  createPool(poolNames[0], locHostPort, nullptr, 0, true);
   createRegionAndAttachPool("DistRegionAck", USE_ACK, poolNames[0],
                             false /*Caching disabled*/);
   LOG("StepOne complete.");
@@ -206,7 +206,7 @@ void initClient1(bool isPdxIgnoreUnreadFields = false) {
   // Create just one pool and attach all regions to that.
   initClient(true, isPdxIgnoreUnreadFields);
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0, false);
+  createPool(poolNames[0], locHostPort, nullptr, 0, false);
   createRegionAndAttachPool("DistRegionAck", USE_ACK, poolNames[0],
                             true /*Caching enabled*/);
   LOG("StepOne complete.");
@@ -216,7 +216,7 @@ void initClient2(bool isPdxIgnoreUnreadFields = false) {
   // Create just one pool and attach all regions to that.
   initClient(true, isPdxIgnoreUnreadFields);
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0,
+  createPool(poolNames[0], locHostPort, nullptr, 0,
              true /*ClientNotification enabled*/);
   createRegionAndAttachPool("DistRegionAck", USE_ACK, poolNames[0],
                             true /*Caching enabled*/);
@@ -227,7 +227,7 @@ void initClient3(bool isPdxIgnoreUnreadFields = false) {
   // Create just one pool and attach all regions to that.
   initClient(true, isPdxIgnoreUnreadFields);
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0,
+  createPool(poolNames[0], locHostPort, nullptr, 0,
              true /*ClientNotification enabled*/);
   createRegionAndAttachPool("DistRegionAck", USE_ACK, poolNames[0],
                             true /*Caching enabled*/);
@@ -385,7 +385,8 @@ END_TASK_DEFINITION
 
 void checkPdxInstanceToStringAtServer(RegionPtr regionPtr) {
   CacheableKeyPtr keyport = CacheableKey::create("success");
-  auto boolPtr = std::dynamic_pointer_cast<CacheableBoolean>(regionPtr->get(keyport));
+  auto boolPtr =
+      std::dynamic_pointer_cast<CacheableBoolean>(regionPtr->get(keyport));
   bool val = boolPtr->value();
   // TODO::Enable asser and disable LOGINFO
   ASSERT(val == true, "checkPdxInstanceToStringAtServer: Val should be true");
@@ -501,7 +502,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, testPutWithMultilevelInheritance)
     // %d
     // %d %d ", obj2->getMember_a(), obj2->getMember_b(), obj2->getMember_c(),
     // obj2->getMember_d(), obj2->getMember_e(), obj2->getMember_f());
-    bool isEqual = (std::dynamic_pointer_cast<PdxTests::Child>(pdxobj))->equals(obj2);
+    bool isEqual =
+        (std::dynamic_pointer_cast<PdxTests::Child>(pdxobj))->equals(obj2);
     LOGINFO("testPutWithMultilevelInheritance:.. isEqual = %d", isEqual);
     ASSERT(isEqual == true, "Objects of type class Child should be equal");
 
@@ -524,7 +526,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, testGetWithMultilevelInheritance)
         std::dynamic_pointer_cast<PdxTests::Child>(regPtr0->get(keyport1));
 
     auto pdxobj = std::make_shared<PdxTests::Child>();
-    bool isEqual = (std::dynamic_pointer_cast<PdxTests::Child>(pdxobj))->equals(obj1);
+    bool isEqual =
+        (std::dynamic_pointer_cast<PdxTests::Child>(pdxobj))->equals(obj1);
     LOGINFO("testPutWithMultilevelInheritance:.. isEqual = %d", isEqual);
     ASSERT(isEqual == true, "Objects of type class Child should be equal");
     // LOGINFO("Task: testGetWithMultilevelInheritance: got members :: %d %d %d
@@ -546,9 +549,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet1)
     CacheableInt32Ptr valPtr = CacheableInt32::create(123);
     regPtr0->put(keyport, valPtr);
 
-    auto getVal = std::dynamic_pointer_cast<CacheableInt32>(regPtr0->get(keyport));
+    auto getVal =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr0->get(keyport));
 
-    auto boolPtr = std::dynamic_pointer_cast<CacheableBoolean>(regPtr0->get("success"));
+    auto boolPtr =
+        std::dynamic_pointer_cast<CacheableBoolean>(regPtr0->get("success"));
 
     bool isEqual = boolPtr.get()->value();
     ASSERT(isEqual == true,
@@ -556,17 +561,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet1)
 
     LOGINFO("Task:JavaPutGet PDX-ON read-serialized = %d",
             cacheHelper->getCache()->getPdxReadSerialized());
-    auto jsonDoc = std::dynamic_pointer_cast<PdxInstance>(regPtr0->get("jsondoc1"));
+    auto jsonDoc =
+        std::dynamic_pointer_cast<PdxInstance>(regPtr0->get("jsondoc1"));
     CacheableStringPtr toString = jsonDoc->toString();
     LOGINFO("Task:JavaPutGet: Result = %s ", toString->asChar());
     /*
     int16_t age = 0;
     jsonDoc->getField("age", age);
 
-    char* stringVal = NULL;
+    char* stringVal = nullptr;
     jsonDoc->getField("firstName", &stringVal);
 
-    char* stringVal1 = NULL;
+    char* stringVal1 = nullptr;
     jsonDoc->getField("lastName", &stringVal1);
     */
 
@@ -614,7 +620,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
     PdxTests::PdxTypePtr obj2 =
         std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr0->get(keyport));
 
-    auto boolPtr = std::dynamic_pointer_cast<CacheableBoolean>(regPtr0->get("success"));
+    auto boolPtr =
+        std::dynamic_pointer_cast<CacheableBoolean>(regPtr0->get("success"));
     bool isEqual = boolPtr.get()->value();
     LOGDEBUG("Task:JavaPutGet: isEqual = %d", isEqual);
     ASSERT(isEqual == true,
@@ -624,10 +631,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
     dynamic_cast<CacheImpl*>(cacheHelper->getCache().get())->setPdxReadSerialized(true);
     LOGINFO("NILKATH JavaPutGet PDX-ON read-serialized = %d",
     cacheHelper->getCache()->getPdxReadSerialized());
-    auto jsonDoc = std::dynamic_pointer_cast<PdxInstance>(regPtr0->get("jsondoc1"));
-    int age = 0;
-    jsonDoc->getField("age", age);
-    LOGINFO("NILKATH:: Task:JavaPutGet: age = %d", age);
+    auto jsonDoc =
+    std::dynamic_pointer_cast<PdxInstance>(regPtr0->get("jsondoc1")); int age =
+    0; jsonDoc->getField("age", age); LOGINFO("NILKATH:: Task:JavaPutGet: age =
+    %d", age);
 
     dynamic_cast<CacheImpl*>(cacheHelper->getCache().get())->setPdxReadSerialized(false);
     LOGINFO("NILKATH JavaPutGet PDX-OFF read-serialized = %d",
@@ -1099,7 +1106,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, putV2PdxUI)
     CacheableKeyPtr keyport = CacheableKey::create(1);
     regPtr0->put(keyport, np);
 
-    auto pRet = std::dynamic_pointer_cast<PdxTypesIgnoreUnreadFieldsV2>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypesIgnoreUnreadFieldsV2>(
+        regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("NIL:putV2PdxUI:.. isEqual = %d", isEqual);
@@ -1123,7 +1131,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, putV1PdxUI)
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    auto pRet = std::dynamic_pointer_cast<PdxTypesIgnoreUnreadFieldsV1>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypesIgnoreUnreadFieldsV1>(
+        regPtr0->get(keyport));
     regPtr0->put(keyport, pRet);
   }
 END_TASK_DEFINITION
@@ -1134,7 +1143,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, getV2PdxUI)
     auto np = std::make_shared<PdxTypesIgnoreUnreadFieldsV2>();
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    auto pRet = std::dynamic_pointer_cast<PdxTypesIgnoreUnreadFieldsV2>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypesIgnoreUnreadFieldsV2>(
+        regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("Task:getV2PdxUI:.. isEqual = %d", isEqual);
@@ -1567,7 +1577,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGFSInGet)
     regPtr0->put(keyport, np);
 
     // GET
-    auto pRet = std::dynamic_pointer_cast<PdxInsideIGeodeSerializable>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxInsideIGeodeSerializable>(
+        regPtr0->get(keyport));
     ASSERT(
         pRet->equals(np) == true,
         "TASK PutAndVerifyPdxInIGFSInGet: PdxInsideIGeodeSerializable objects "
@@ -1640,7 +1651,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyPdxInGFSGetOnly)
 
     // GET
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    auto pRet = std::dynamic_pointer_cast<PdxInsideIGeodeSerializable>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxInsideIGeodeSerializable>(
+        regPtr0->get(keyport));
     ASSERT(pRet->equals(orig) == true,
            "TASK:VerifyPdxInIGFSGetOnly, PdxInsideIGeodeSerializable objects "
            "should "
@@ -1678,9 +1690,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyMixedVersionNestedGetOnly)
     CacheableKeyPtr keyport2 = CacheableKey::create(2);
     CacheableKeyPtr keyport3 = CacheableKey::create(3);
 
-    auto obj1 = std::dynamic_pointer_cast<MixedVersionNestedPdx>(regPtr0->get(keyport1));
-    auto obj2 = std::dynamic_pointer_cast<MixedVersionNestedPdx>(regPtr0->get(keyport2));
-    auto obj3 = std::dynamic_pointer_cast<MixedVersionNestedPdx>(regPtr0->get(keyport3));
+    auto obj1 = std::dynamic_pointer_cast<MixedVersionNestedPdx>(
+        regPtr0->get(keyport1));
+    auto obj2 = std::dynamic_pointer_cast<MixedVersionNestedPdx>(
+        regPtr0->get(keyport2));
+    auto obj3 = std::dynamic_pointer_cast<MixedVersionNestedPdx>(
+        regPtr0->get(keyport3));
 
     ASSERT(obj1->equals(p1) == true, "Nested pdx objects should be equal");
 
@@ -2153,7 +2168,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       auto p10 = std::make_shared<PdxTypes10>();
       CacheableKeyPtr keyport10 = CacheableKey::create(20);
       regPtr0->put(keyport10, p10);
-      auto pRet10 = std::dynamic_pointer_cast<PdxTypes10>(regPtr0->get(keyport10));
+      auto pRet10 =
+          std::dynamic_pointer_cast<PdxTypes10>(regPtr0->get(keyport10));
 
       flag = p10->equals(pRet10);
       LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
@@ -2203,18 +2219,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
     ResultCollectorPtr collector = funcExec->withArgs(args)
                                        ->withFilter(routingObj)
                                        ->execute("ComparePdxTypes", true);
-    ASSERT(collector != nullptr, "onRegion collector NULL");
+    ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     CacheableVectorPtr result = collector->getResult();
     LOGINFO("NIL:: testTCPDXTests: result->size = %d ", result->size());
     if (result == nullptr) {
-      ASSERT(false, "echo String : result is NULL");
+      ASSERT(false, "echo String : result is nullptr");
     } else {
       //
       bool gotResult = false;
       for (int i = 0; i < result->size(); i++) {
         try {
-          auto boolValue = std::dynamic_pointer_cast<CacheableBoolean>(result->operator[](i));
+          auto boolValue = std::dynamic_pointer_cast<CacheableBoolean>(
+              result->operator[](i));
           LOGINFO("NIL:: boolValue is %d ", boolValue->value());
           bool resultVal = boolValue->value();
           ASSERT(resultVal == true,
@@ -2232,8 +2249,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
           LOG("exFuncNameSendException now casting to "
               "UserFunctionExecutionExceptionPtr for arrayList arguement "
               "exception.");
-          auto uFEPtr = std::dynamic_pointer_cast<UserFunctionExecutionException>(result->operator[](i));
-          ASSERT(uFEPtr != nullptr, "uFEPtr exception is NULL");
+          auto uFEPtr =
+              std::dynamic_pointer_cast<UserFunctionExecutionException>(
+                  result->operator[](i));
+          ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
           LOGINFO("Done casting to uFEPtr");
           LOGINFO("Read expected uFEPtr exception %s ",
                   uFEPtr->getMessage()->asChar());
@@ -2365,18 +2384,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
     ResultCollectorPtr collector = funcExec->withArgs(args)
                                        ->withFilter(routingObj)
                                        ->execute("ComparePdxTypes", true);
-    ASSERT(collector != nullptr, "onRegion collector NULL");
+    ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     CacheableVectorPtr result = collector->getResult();
     LOGINFO("NIL:: testTCPDXTests:verifyDotNetPdxTypes result->size = %d ",
             result->size());
     if (result == nullptr) {
-      ASSERT(false, "echo String : result is NULL");
+      ASSERT(false, "echo String : result is nullptr");
     } else {
       bool gotResult = false;
       for (int i = 0; i < result->size(); i++) {
         try {
-          auto boolValue = std::dynamic_pointer_cast<CacheableBoolean>(result->operator[](i));
+          auto boolValue = std::dynamic_pointer_cast<CacheableBoolean>(
+              result->operator[](i));
           LOGINFO("NIL::verifyDotNetPdxTypes boolValue is %d ",
                   boolValue->value());
           bool resultVal = boolValue->value();
@@ -2395,8 +2415,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
           LOG("exFuncNameSendException now casting to "
               "UserFunctionExecutionExceptionPtr for arrayList arguement "
               "exception.");
-          auto uFEPtr = std::dynamic_pointer_cast<UserFunctionExecutionException>(result->operator[](i));
-          ASSERT(uFEPtr != nullptr, "uFEPtr exception is NULL");
+          auto uFEPtr =
+              std::dynamic_pointer_cast<UserFunctionExecutionException>(
+                  result->operator[](i));
+          ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
           LOGINFO("Done casting to uFEPtr");
           LOGINFO("Read expected uFEPtr exception %s ",
                   uFEPtr->getMessage()->asChar());
@@ -2465,18 +2487,19 @@ DUNIT_TASK_DEFINITION(CLIENT3, client3GetsV2Object)
     ExecutionPtr funcExec = FunctionService::onRegion(regPtr0);
 
     ResultCollectorPtr collector = funcExec->execute("IterateRegion", true);
-    ASSERT(collector != nullptr, "onRegion collector NULL");
+    ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     CacheableVectorPtr result = collector->getResult();
     LOGINFO("NIL:: testTCPDXTests:verifyDotNetPdxTypes result->size = %d ",
             result->size());
     if (result == nullptr) {
-      ASSERT(false, "echo String : result is NULL");
+      ASSERT(false, "echo String : result is nullptr");
     } else {
       bool gotResult = false;
       for (int i = 0; i < result->size(); i++) {
         try {
-          auto boolValue = std::dynamic_pointer_cast<CacheableBoolean>(result->operator[](i));
+          auto boolValue = std::dynamic_pointer_cast<CacheableBoolean>(
+              result->operator[](i));
           LOGINFO("NIL::verifyDotNetPdxTypes boolValue is %d ",
                   boolValue->value());
           bool resultVal = boolValue->value();
@@ -2495,8 +2518,10 @@ DUNIT_TASK_DEFINITION(CLIENT3, client3GetsV2Object)
           LOG("exFuncNameSendException now casting to "
               "UserFunctionExecutionExceptionPtr for arrayList arguement "
               "exception.");
-          auto uFEPtr = std::dynamic_pointer_cast<UserFunctionExecutionException>(result->operator[](i));
-          ASSERT(uFEPtr != nullptr, "uFEPtr exception is NULL");
+          auto uFEPtr =
+              std::dynamic_pointer_cast<UserFunctionExecutionException>(
+                  result->operator[](i));
+          ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
           LOGINFO("Done casting to uFEPtr");
           LOGINFO("Read expected uFEPtr exception %s ",
                   uFEPtr->getMessage()->asChar());
@@ -2879,7 +2904,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
     {
       auto p10 = std::make_shared<PdxTypes10>();
       CacheableKeyPtr keyport10 = CacheableKey::create(20);
-      auto pRet10 = std::dynamic_pointer_cast<PdxTypes10>(regPtr0->get(keyport10));
+      auto pRet10 =
+          std::dynamic_pointer_cast<PdxTypes10>(regPtr0->get(keyport10));
 
       flag = p10->equals(pRet10);
       LOGDEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
@@ -3156,7 +3182,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
     // Get remote CacheableObjectArray on key 2
     CacheableKeyPtr keyport2 = CacheableKey::create(2);
     LOGINFO("Client-2 PdxTests::PdxType GET OP Start....");
-    auto remoteCObjArray = std::dynamic_pointer_cast<CacheableObjectArray>(regPtr0->get(keyport2));
+    auto remoteCObjArray =
+        std::dynamic_pointer_cast<CacheableObjectArray>(regPtr0->get(keyport2));
 
     LOGINFO(
         "Client-2 PdxTests::PdxType GET OP Done.. Received CObjeArray Size = "
@@ -3214,13 +3241,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
     LOGINFO("GET OP Result_1233: Array List element Value =%d",
             element->value());
 
-    CacheableInt32* remoteKey = NULL;
-    CacheableString* remoteVal = NULL;
-
-    for (CacheableHashTable::Iterator iter = remotePdx->getHashTable()->begin();
-         iter != remotePdx->getHashTable()->end(); ++iter) {
-      remoteKey = dynamic_cast<CacheableInt32*>(iter.first().get());
-      remoteVal = dynamic_cast<CacheableString*>(iter.second().get());
+    for (const auto& iter : *(remotePdx->getHashTable())) {
+      const auto remoteKey =
+          std::dynamic_pointer_cast<CacheableInt32>(iter.first);
+      const auto remoteVal =
+          std::dynamic_pointer_cast<CacheableString>(iter.second);
       LOGINFO("HashTable Key Val = %d", remoteKey->value());
       LOGINFO("HashTable Val = %s", remoteVal->asChar());
       //(*iter1).first.value();
@@ -3228,7 +3253,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
     }
 
     // Now get values for key3 and 4 to asset against stats of this client
-    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+    const auto lregPtr = std::dynamic_pointer_cast<LocalRegion>(regPtr0);
     LOGINFO("PdxSerializations = %d ",
             lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
     LOGINFO("PdxDeSerializations = %d ",
@@ -3241,8 +3266,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
 
     CacheableKeyPtr keyport3 = CacheableKey::create(3);
     CacheableKeyPtr keyport4 = CacheableKey::create(4);
-    auto int32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr0->get(keyport3));
-    auto int64Ptr = std::dynamic_pointer_cast<CacheableInt64>(regPtr0->get(keyport4));
+    auto int32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr0->get(keyport3));
+    auto int64Ptr =
+        std::dynamic_pointer_cast<CacheableInt64>(regPtr0->get(keyport4));
     ASSERT(int32Ptr->value() ==
                lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
            "Total pdxDeserializations should be equal to Total "
@@ -3927,96 +3954,95 @@ void enableWeakHashMapC1BMR2() { CALL_TASK(SetWeakHashMapToTrueC1BMR2) }
 void enableWeakHashMapC2BMR2() { CALL_TASK(SetWeakHashMapToTrueC2BMR2) }
 
 void disableWeakHashMapC1BMR2() { CALL_TASK(setWeakHashMapToFlaseC1BMR2) }
-void disableWeakHashMapC2BMR2() { CALL_TASK(SetWeakHashMapToFalseC2BMR2) }
+void disableWeakHashMapC2BMR2(){CALL_TASK(SetWeakHashMapToFalseC2BMR2)}
 
-DUNIT_MAIN
+DUNIT_MAIN {
+  { runPdxLongRunningClientTest(); }
+  // NON PDX UnitTest for Ticket#866 on NC OR SR#13306117704. Set client name
+  // via native client API
+  testBug866();
+
+  runPdxTestForCharTypes();
+
+  // PUT-GET Test with values of type CacheableObjectArray and PdxType object
+  runPdxPutGetTest();
+
+  // PdxDistOps-PdxTests::PdxType PUT/GET Test across clients
+  { runPdxDistOps(); }
+
+  // BasicMergeOps
   {
-    { runPdxLongRunningClientTest(); }
-    // NON PDX UnitTest for Ticket#866 on NC OR SR#13306117704. Set client name
-    // via native client API
-    testBug866();
-
-    runPdxTestForCharTypes();
-
-    // PUT-GET Test with values of type CacheableObjectArray and PdxType object
-    runPdxPutGetTest();
-
-    // PdxDistOps-PdxTests::PdxType PUT/GET Test across clients
-    { runPdxDistOps(); }
-
-    // BasicMergeOps
-    {
-      enableWeakHashMapC1BM();
-      enableWeakHashMapC2BM();
-      runBasicMergeOps();
-    }
-
-    // BasicMergeOps2
-    {
-      enableWeakHashMapC1BM2();
-      enableWeakHashMapC2BM2();
-      runBasicMergeOps2();
-    }
-
-    // BasicMergeOps3
-    {
-      enableWeakHashMapC1BM3();
-      enableWeakHashMapC2BM3();
-      runBasicMergeOps3();
-    }
-
-    // BasicMergeOpsR1
-    {
-      enableWeakHashMapC1BMR1();
-      enableWeakHashMapC2BMR1();
-      runBasicMergeOpsR1();
-    }
-
-    // BasicMergeOpsR2
-    {
-      enableWeakHashMapC1BMR2();
-      enableWeakHashMapC2BMR2();
-      runBasicMergeOpsR2();
-    }
-
-    // JavaInteroperableOps
-    { runJavaInteroperableOps(); }
-
-    // PDXReaderWriterInvalidUsage
-    {
-        // disable see bug 999 for more details.
-        // testReaderWriterInvalidUsage();
-    }
-
-    // Test LinkedList
-    {
-      runJavaInterOpsUsingLinkedList();
-    }
-
-    // NestedPdxOps
-    { runNestedPdxOps(); }
-
-    // MixedVersionNestedPdxOps
-    { runNestedPdxOpsWithVersioning(); }
-
-    // Pdxobject In Geode Serializable Ops
-    //{
-    //  runPdxInGFSOps();
-    //}
-
-    {
-      enableWeakHashMapC1();
-      enableWeakHashMapC2();
-      runPdxIgnoreUnreadFieldTest();
-    }
-
-    // PdxMetadataCheckTest
-    { runPdxMetadataCheckTest(); }
-
-    // PdxBankTest
-    { runPdxBankTest(); }
-
-    // Polymorphic-multilevel inheritance
-    { testPolymorphicUseCase(); }
+    enableWeakHashMapC1BM();
+    enableWeakHashMapC2BM();
+    runBasicMergeOps();
   }
+
+  // BasicMergeOps2
+  {
+    enableWeakHashMapC1BM2();
+    enableWeakHashMapC2BM2();
+    runBasicMergeOps2();
+  }
+
+  // BasicMergeOps3
+  {
+    enableWeakHashMapC1BM3();
+    enableWeakHashMapC2BM3();
+    runBasicMergeOps3();
+  }
+
+  // BasicMergeOpsR1
+  {
+    enableWeakHashMapC1BMR1();
+    enableWeakHashMapC2BMR1();
+    runBasicMergeOpsR1();
+  }
+
+  // BasicMergeOpsR2
+  {
+    enableWeakHashMapC1BMR2();
+    enableWeakHashMapC2BMR2();
+    runBasicMergeOpsR2();
+  }
+
+  // JavaInteroperableOps
+  { runJavaInteroperableOps(); }
+
+  // PDXReaderWriterInvalidUsage
+  {
+      // disable see bug 999 for more details.
+      // testReaderWriterInvalidUsage();
+  }
+
+  // Test LinkedList
+  {
+    runJavaInterOpsUsingLinkedList();
+  }
+
+  // NestedPdxOps
+  { runNestedPdxOps(); }
+
+  // MixedVersionNestedPdxOps
+  { runNestedPdxOpsWithVersioning(); }
+
+  // Pdxobject In Geode Serializable Ops
+  //{
+  //  runPdxInGFSOps();
+  //}
+
+  {
+    enableWeakHashMapC1();
+    enableWeakHashMapC2();
+    runPdxIgnoreUnreadFieldTest();
+  }
+
+  // PdxMetadataCheckTest
+  { runPdxMetadataCheckTest(); }
+
+  // PdxBankTest
+  { runPdxBankTest(); }
+
+  // Polymorphic-multilevel inheritance
+  { testPolymorphicUseCase(); }
+}
 END_MAIN

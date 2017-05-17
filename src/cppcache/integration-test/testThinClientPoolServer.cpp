@@ -83,7 +83,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StartClient2)
   {
     initClient(true);
     // Create Pool with no server group
-    getHelper()->createPool(poolName, locHostPort, NULL);
+    getHelper()->createPool(poolName, locHostPort, nullptr);
 
     getHelper()->createRegionAndAttachPool(poolRegNames[0], USE_ACK,
                                            "__TEST_POOL1__");

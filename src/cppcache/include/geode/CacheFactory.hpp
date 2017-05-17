@@ -480,12 +480,8 @@ class CPPCACHE_EXPORT CacheFactory
   CacheFactory();
   CacheFactory(const PropertiesPtr dsProps);
 
- public:
-  // TODO shared_ptr - this should be private, fix friend
-  ~CacheFactory();
-
  private:
-  FRIEND_STD_SHARED_PTR(CacheFactory)
+  ~CacheFactory();
 
   PoolPtr determineDefaultPool(CachePtr cachePtr);
 
@@ -506,6 +502,8 @@ class CPPCACHE_EXPORT CacheFactory
   friend class RegionFactory;
   friend class RegionXmlCreation;
   friend class CacheXmlCreation;
+
+  FRIEND_STD_SHARED_PTR(CacheFactory)
 };
 }  // namespace client
 }  // namespace geode

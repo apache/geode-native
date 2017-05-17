@@ -119,28 +119,28 @@ VectorOfSharedBase::Iterator VectorOfSharedBase::end() const {
 }
 
 /** Create an empty vector. */
-VectorOfSharedBase::VectorOfSharedBase() : m_stdvector(NULL) {
+VectorOfSharedBase::VectorOfSharedBase() : m_stdvector(nullptr) {
   m_stdvector = new VofSBP();
 }
 
 /** Create a vector with n elements allocated */
-VectorOfSharedBase::VectorOfSharedBase(int32_t n) : m_stdvector(NULL) {
+VectorOfSharedBase::VectorOfSharedBase(int32_t n) : m_stdvector(nullptr) {
   m_stdvector = new VofSBP(n);
 }
 
 /** Create a vector with n copies of t */
 VectorOfSharedBase::VectorOfSharedBase(int32_t n, const SharedBasePtr& t)
-    : m_stdvector(NULL) {
+    : m_stdvector(nullptr) {
   m_stdvector = new VofSBP(n, t);
 }
 
 /** copy constructor */
 VectorOfSharedBase::VectorOfSharedBase(const VectorOfSharedBase& other)
-    : m_stdvector(NULL) {
+    : m_stdvector(nullptr) {
   m_stdvector = new VofSBP(*(other.m_stdvector));
 }
 
-/** destructor, sets all SharedPtr elements to NULL */
+/** destructor, sets all SharedPtr elements to nullptr */
 VectorOfSharedBase::~VectorOfSharedBase() {
   m_stdvector->clear();
   delete m_stdvector;

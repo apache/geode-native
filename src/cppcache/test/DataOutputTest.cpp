@@ -28,13 +28,13 @@ using namespace apache::geode::client;
 
 class TestDataOutput : public DataOutput {
  public:
-  TestDataOutput() : m_byteArray(NULL) {
+  TestDataOutput() : m_byteArray(nullptr) {
     // NOP
   }
 
   virtual ~TestDataOutput() {
     delete m_byteArray;
-    m_byteArray = NULL;
+    m_byteArray = nullptr;
   }
 
   const ByteArray& getByteArray() const {
@@ -307,7 +307,8 @@ TEST_F(DataOutputTest, TestCursorAdvance) {
 
   const uint32_t originalLength = dataOutput.getBufferLength();
   dataOutput.advanceCursor(2);
-  EXPECT_EQ((originalLength + 2), dataOutput.getBufferLength()) << "Correct length after advance";
+  EXPECT_EQ((originalLength + 2), dataOutput.getBufferLength())
+      << "Correct length after advance";
 }
 
 TEST_F(DataOutputTest, TestCursorNegativeAdvance) {
@@ -319,5 +320,6 @@ TEST_F(DataOutputTest, TestCursorNegativeAdvance) {
 
   const uint32_t originalLength = dataOutput.getBufferLength();
   dataOutput.advanceCursor(-2);
-  EXPECT_EQ((originalLength - 2), dataOutput.getBufferLength()) << "Correct length after negative advance";
+  EXPECT_EQ((originalLength - 2), dataOutput.getBufferLength())
+      << "Correct length after negative advance";
 }

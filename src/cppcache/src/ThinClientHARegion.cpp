@@ -41,7 +41,7 @@ ThinClientHARegion::ThinClientHARegion(const std::string& name,
 
 void ThinClientHARegion::initTCR() {
   try {
-    bool isPool = m_attribute->getPoolName() != NULL &&
+    bool isPool = m_attribute->getPoolName() != nullptr &&
                   strlen(m_attribute->getPoolName()) > 0;
     if (DistributedSystem::getSystemProperties()->isGridClient()) {
       LOGWARN(
@@ -52,7 +52,7 @@ void ThinClientHARegion::initTCR() {
           isPool);
     }
 
-    if (m_attribute->getPoolName() == NULL ||
+    if (m_attribute->getPoolName() == nullptr ||
         strlen(m_attribute->getPoolName()) == 0) {
       m_poolDM = false;
       m_tcrdm = new TcrHADistributionManager(
@@ -165,7 +165,7 @@ GfErrType ThinClientHARegion::getNoThrow_FullObject(EventIdPtr eventId,
                                                     CacheablePtr& fullObject,
                                                     VersionTagPtr& versionTag) {
   TcrMessageRequestEventValue fullObjectMsg(eventId);
-  TcrMessageReply reply(true, NULL);
+  TcrMessageReply reply(true, nullptr);
 
   ThinClientPoolHADM* poolHADM = dynamic_cast<ThinClientPoolHADM*>(m_tcrdm);
   GfErrType err = GF_NOTCON;

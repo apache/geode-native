@@ -70,13 +70,13 @@ CacheXmlCreation::~CacheXmlCreation() {
   std::vector<RegionXmlCreation*>::iterator start = rootRegions.begin();
   while (start != rootRegions.end()) {
     delete *start;
-    *start = NULL;
+    *start = nullptr;
     ++start;
   }
   std::vector<PoolXmlCreation*>::iterator pool = pools.begin();
   while (pool != pools.end()) {
     delete *pool;
-    *pool = NULL;
+    *pool = nullptr;
     ++pool;
   }
 }

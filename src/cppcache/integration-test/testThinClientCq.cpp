@@ -50,7 +50,7 @@ using namespace testData;
 
 #define MAX_LISTNER 8
 
-// CacheHelper* cacheHelper = NULL;
+// CacheHelper* cacheHelper = nullptr;
 
 static bool m_isPdx = false;
 
@@ -88,7 +88,7 @@ void initClientCq(const bool isthinClient) {
     // ignore exception
   }
 
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
@@ -240,7 +240,8 @@ END_TASK_DEFINITION
 void createServer(bool locator = false) {
   LOG("Starting SERVER1...");
   if (isLocalServer) {
-    CacheHelper::initServer(1, "remotequery.xml", locator ? locHostPort : NULL);
+    CacheHelper::initServer(1, "remotequery.xml",
+                            locator ? locHostPort : nullptr);
   }
   LOG("SERVER1 started");
 }
@@ -249,7 +250,7 @@ void createServer2(bool locator = false) {
   LOG("Starting SERVER2...");
   if (isLocalServer) {
     CacheHelper::initServer(2, "remotequery2.xml",
-                            locator ? locHostPort : NULL);
+                            locator ? locHostPort : nullptr);
   }
   LOG("SERVER2 started");
 }
@@ -273,7 +274,7 @@ END_TASK_DEFINITION
 void createServer_group(bool locator, const char* XML) {
   LOG("Starting SERVER1...");
   if (isLocalServer) {
-    CacheHelper::initServer(1, XML, locator ? locHostPort : NULL);
+    CacheHelper::initServer(1, XML, locator ? locHostPort : nullptr);
   }
   LOG("SERVER1 started");
 }
@@ -281,7 +282,7 @@ void createServer_group(bool locator, const char* XML) {
 void createServer_group2(bool locator, const char* XML) {
   LOG("Starting SERVER2...");
   if (isLocalServer) {
-    CacheHelper::initServer(2, XML, locator ? locHostPort : NULL);
+    CacheHelper::initServer(2, XML, locator ? locHostPort : nullptr);
   }
   LOG("SERVER2 started");
 }
@@ -305,7 +306,7 @@ void stepOne() {
 }
 
 void initCqStatusClient() {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(true);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
@@ -615,7 +616,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       excp.printStackTrace();
     }
     CqServiceStatisticsPtr serviceStats = qs->getCqServiceStatistics();
-    ASSERT(serviceStats != nullptr, "serviceStats is NULL");
+    ASSERT(serviceStats != nullptr, "serviceStats is nullptr");
     sprintf(buf,
             "numCqsActive=%d, numCqsCreated=%d, "
             "numCqsClosed=%d,numCqsStopped=%d, numCqsOnClient=%d",
@@ -1238,23 +1239,22 @@ void UnsetPortfolioTypeC1() { CALL_TASK(UnsetPortfolioTypeToPdxC1) }
 //
 void setPortfolioPdxTypeC2() { CALL_TASK(SetPortfolioTypeToPdxC2) }
 
-void UnsetPortfolioTypeC2() { CALL_TASK(UnsetPortfolioTypeToPdxC2) }
+void UnsetPortfolioTypeC2(){CALL_TASK(UnsetPortfolioTypeToPdxC2)}
 
-DUNIT_MAIN
-  {
-    UnsetPortfolioTypeC1();
-    UnsetPortfolioTypeC2();
-    for (int runIdx = 1; runIdx <= 2; ++runIdx) {
-      doThinClientCq();
+DUNIT_MAIN {
+  UnsetPortfolioTypeC1();
+  UnsetPortfolioTypeC2();
+  for (int runIdx = 1; runIdx <= 2; ++runIdx) {
+    doThinClientCq();
 
-      setPortfolioPdxTypeC1();
-      setPortfolioPdxTypeC2();
-    }
-
-    { doThinClientCqStatus3(); }
-
-    { doThinClientCqStatus(); }
-
-    { doThinClientCqStatus2(); }
+    setPortfolioPdxTypeC1();
+    setPortfolioPdxTypeC2();
   }
+
+  { doThinClientCqStatus3(); }
+
+  { doThinClientCqStatus(); }
+
+  { doThinClientCqStatus2(); }
+}
 END_MAIN

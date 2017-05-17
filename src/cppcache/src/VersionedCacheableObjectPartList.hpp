@@ -116,7 +116,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   VersionedCacheableObjectPartList(VectorOfCacheableKey* keys,
                                    int32_t totalMapSize,
                                    ACE_Recursive_Thread_Mutex& responseLock)
-      : m_tempKeys(keys), m_responseLock(responseLock)  {
+      : m_tempKeys(keys), m_responseLock(responseLock) {
     m_regionIsVersioned = false;
     m_serializeValues = false;
     m_hasTags = false;
@@ -169,8 +169,8 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
 
   inline VersionedCacheableObjectPartList(
       uint16_t endpointMemId, ACE_Recursive_Thread_Mutex& responseLock)
-      : m_tempKeys(std::make_shared<VectorOfCacheableKey>()), m_responseLock(responseLock)
-         {
+      : m_tempKeys(std::make_shared<VectorOfCacheableKey>()),
+        m_responseLock(responseLock) {
     m_regionIsVersioned = false;
     m_serializeValues = false;
     m_endpointMemId = endpointMemId;
@@ -185,7 +185,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
       if (this->m_tempKeys == nullptr) {
         this->m_tempKeys = std::make_shared<VectorOfCacheableKey>();
         this->m_hasKeys = true;
-        int size = other->m_tempKeys->size();
+        const auto size = other->m_tempKeys->size();
         for (int i = 0; i < size; i++) {
           this->m_tempKeys->push_back(other->m_tempKeys->at(i));
         }
@@ -195,7 +195,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
             LOGDEBUG(" VCOPL::addAll m_hasKeys should be true here");
             this->m_hasKeys = true;
           }
-          int size = other->m_tempKeys->size();
+          const auto size = other->m_tempKeys->size();
           for (int i = 0; i < size; i++) {
             this->m_tempKeys->push_back(other->m_tempKeys->at(i));
           }
@@ -218,7 +218,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
 
   int size() {
     if (this->m_hasKeys) {
-      return this->m_tempKeys->size();
+      return static_cast<int>(this->m_tempKeys->size());
     } else if (this->m_hasTags) {
       return static_cast<int>(this->m_versionTags.size());
     } else {

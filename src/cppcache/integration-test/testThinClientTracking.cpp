@@ -25,8 +25,8 @@
 
 // This is the test for tracking work.
 
-putThread *thread1 = NULL;
-putThread *thread2 = NULL;
+putThread *thread1 = nullptr;
+putThread *thread2 = nullptr;
 
 void createAuthzRegion() {
   initCredentialGenerator();

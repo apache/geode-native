@@ -72,9 +72,9 @@ m_processorId = -1;
   int32_t m_farsideBaseMembershipIdLen;
   input.readBytes(&m_farsideBaseMembershipId, &m_farsideBaseMembershipIdLen);
 
-  if (m_farsideBaseMembershipId != NULL) {
+  if (m_farsideBaseMembershipId != nullptr) {
     GF_SAFE_DELETE_ARRAY(m_farsideBaseMembershipId);
-    m_farsideBaseMembershipId = NULL;
+    m_farsideBaseMembershipId = nullptr;
   }
 
   int64_t tid;
@@ -114,9 +114,9 @@ m_processorId = -1;
       // int8_t* bytes;
       // int32_t len;
       // input.readBytes(&bytes, &len);
-      // if ( bytes != NULL ) {
+      // if ( bytes != nullptr ) {
       // GF_SAFE_DELETE_ARRAY(bytes);
-      // bytes = NULL;
+      // bytes = nullptr;
       //}
       input.readInt(&len);
       // memId1.fromData(input);
@@ -164,7 +164,8 @@ Serializable* TXCommitMessage::create() { return new TXCommitMessage(); }
 void TXCommitMessage::apply(Cache* cache) {
   for (VectorOfSharedBase::Iterator iter = m_regions.begin();
        m_regions.end() != iter; iter++) {
-    RegionCommitPtr regionCommit = std::static_pointer_cast<GF_UNWRAP_SP(RegionCommitPtr)>(*iter);
+    RegionCommitPtr regionCommit =
+        std::static_pointer_cast<GF_UNWRAP_SP(RegionCommitPtr)>(*iter);
     regionCommit->apply(cache);
   }
 }

@@ -57,7 +57,7 @@ class TcrChunkedResult : public SharedBase {
 
  public:
   inline TcrChunkedResult()
-      : m_finalizeSema(NULL),
+      : m_finalizeSema(nullptr),
         m_ex(nullptr),
         m_inSameThread(false),
         appDomainContext(createAppDomainContext()),
@@ -94,7 +94,7 @@ class TcrChunkedResult : public SharedBase {
       m_inSameThread = true;
       return;
     }
-    if (m_finalizeSema != NULL) {
+    if (m_finalizeSema != nullptr) {
       m_finalizeSema->release();
     } else {
       throw NullPointerException("TcrChunkedResult::finalize: null semaphore");
@@ -107,7 +107,7 @@ class TcrChunkedResult : public SharedBase {
    */
   virtual void waitFinalize() const {
     if (m_inSameThread) return;
-    if (m_finalizeSema != NULL) {
+    if (m_finalizeSema != nullptr) {
       m_finalizeSema->acquire();
     } else {
       throw NullPointerException(
@@ -153,7 +153,7 @@ class TcrChunkedContext {
   inline int32_t getLen() const { return m_len; }
 
   void handleChunk(bool inSameThread) {
-    if (m_bytes == NULL) {
+    if (m_bytes == nullptr) {
       // this is the last chunk for some set of chunks
       m_result->finalize(inSameThread);
     } else if (!m_result->exceptionOccurred()) {

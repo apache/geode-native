@@ -136,7 +136,7 @@ namespace Apache
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */ 
 
-        auto toArray = gcnew array<KeyValuePair<TKey,TValue>>(vc.size());
+        auto toArray = gcnew array<KeyValuePair<TKey,TValue>>(static_cast<int>(vc.size()));
         for( System::Int32 index = 0; index < vc.size( ); index++ )
         {
           auto nativeptr = vc[ index ];  
@@ -166,7 +166,7 @@ namespace Apache
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
 
-        auto toArray = gcnew array<Object^>(vc.size());
+        auto toArray = gcnew array<Object^>(static_cast<int>(vc.size()));
         for( System::Int32 index = 0; index < vc.size( ); index++ )
         {
           auto nativeptr = vc[ index ];                       
@@ -273,7 +273,7 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        auto keyarr =  gcnew array<TKey>( vc.size( ) );
+        auto keyarr =  gcnew array<TKey>( static_cast<int>(vc.size( )) );
         for( System::Int32 index = 0; index < vc.size( ); index++ )
         {            
           auto& nativeptr = vc[ index ];
@@ -301,7 +301,7 @@ namespace Apache
           }
 
           //List<TValue>^ collectionlist = gcnew List<TValue>(vc.size());
-          auto valarr = gcnew array<TValue>( vc.size( ) );
+          auto valarr = gcnew array<TValue>( static_cast<int>(vc.size( )) );
           for( System::Int32 index = 0; index < vc.size( ); index++ )
           {
             auto& nativeptr = vc[ index ];            
@@ -754,7 +754,7 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
           array<IRegion<TKey, TValue>^>^ subRegions =
-            gcnew array<IRegion<TKey, TValue>^>( vsr.size( ) );
+            gcnew array<IRegion<TKey, TValue>^>( static_cast<int>(vsr.size( )) );
 
           for( System::Int32 index = 0; index < vsr.size( ); index++ )
           {
@@ -800,7 +800,7 @@ namespace Apache
           {
             GC::KeepAlive(m_nativeptr);
           }          
-          auto entryarr = gcnew array<RegionEntry<TKey, TValue>^>( vc.size( ) );
+          auto entryarr = gcnew array<RegionEntry<TKey, TValue>^>( static_cast<int>(vc.size( )) );
 
           for( System::Int32 index = 0; index < vc.size( ); index++ )
           {

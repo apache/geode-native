@@ -75,9 +75,7 @@ void TombstoneList::add(RegionInternal* rptr, const MapEntryImplPtr& entry,
         Utils::getCacheableKeyString(key)->asChar(), id, duration);
   }*/
   tombstoneEntryPtr->setExpiryTaskId(taskid);
-  if (!m_tombstoneMap.insert(key, tombstoneEntryPtr)) {
-    m_tombstoneMap[key] = tombstoneEntryPtr;
-  }
+  m_tombstoneMap[key] = tombstoneEntryPtr;
   rptr->getCacheImpl()->m_cacheStats->incTombstoneCount();
   int32_t tombstonesize = key->objectSize() + SIZEOF_TOMBSTONEOVERHEAD;
   rptr->getCacheImpl()->m_cacheStats->incTombstoneSize(tombstonesize);
@@ -90,23 +88,25 @@ void TombstoneList::add(RegionInternal* rptr, const MapEntryImplPtr& entry,
 void TombstoneList::reapTombstones(std::map<uint16_t, int64_t>& gcVersions) {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
-  std::unordered_set<CacheableKeyPtr> tobeDeleted;
-  for (auto queIter = m_tombstoneMap.begin(); queIter != m_tombstoneMap.end();
-       ++queIter) {
-    std::map<uint16_t, int64_t>::iterator mapIter = gcVersions.find(
-        queIter.second()->getEntry()->getVersionStamp().getMemberId());
+  std::unordered_set<CacheableKeyPtr, dereference_hash<CacheableKeyPtr>,
+                     dereference_equal_to<CacheableKeyPtr>>
+      tobeDeleted;
+  for (const auto& queIter : m_tombstoneMap) {
+    auto const& mapIter = gcVersions.find(
+        queIter.second->getEntry()->getVersionStamp().getMemberId());
 
     if (mapIter == gcVersions.end()) {
       continue;
     }
-    int64_t version = (*mapIter).second;
+
+    auto const& version = (*mapIter).second;
     if (version >=
-        queIter.second()->getEntry()->getVersionStamp().getRegionVersion()) {
-      tobeDeleted.insert(queIter.first());
+        queIter.second->getEntry()->getVersionStamp().getRegionVersion()) {
+      tobeDeleted.insert(queIter.first);
     }
   }
-  for (auto itr = tobeDeleted.begin(); itr != tobeDeleted.end(); itr++) {
-    unguardedRemoveEntryFromMapSegment(*itr);
+  for (const auto& itr : tobeDeleted) {
+    unguardedRemoveEntryFromMapSegment(itr);
   }
 }
 
@@ -129,18 +129,25 @@ void TombstoneList::unguardedRemoveEntryFromMapSegment(CacheableKeyPtr key) {
   m_mapSegment->unguardedRemoveActualEntry(key);
 }
 
+bool TombstoneList::exists(const CacheableKeyPtr& key) const {
+  if (key) {
+    return m_tombstoneMap.find(key) != m_tombstoneMap.end();
+  }
+  return false;
+}
+
 void TombstoneList::eraseEntryFromTombstoneList(const CacheableKeyPtr& key,
                                                 RegionInternal* region,
                                                 bool cancelTask) {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
-  bool exists = (key != nullptr) ? m_tombstoneMap.contains(key) : false;
-  if (cancelTask && exists) {
-    CacheImpl::expiryTaskManager->cancelTask(
-        static_cast<long>(m_tombstoneMap[key]->getExpiryTaskId()));
-    delete m_tombstoneMap[key]->getHandler();
-  }
-  if (exists) {
+  if (exists(key)) {
+    if (cancelTask) {
+      CacheImpl::expiryTaskManager->cancelTask(
+          static_cast<long>(m_tombstoneMap[key]->getExpiryTaskId()));
+      delete m_tombstoneMap[key]->getHandler();
+    }
+
     region->getCacheImpl()->m_cacheStats->decTombstoneCount();
     int32_t tombstonesize = key->objectSize() + SIZEOF_TOMBSTONEOVERHEAD;
     region->getCacheImpl()->m_cacheStats->decTombstoneSize(tombstonesize);
@@ -153,9 +160,8 @@ long TombstoneList::eraseEntryFromTombstoneListWithoutCancelTask(
     TombstoneExpiryHandler*& handler) {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
-  bool exists = (key != nullptr) ? m_tombstoneMap.contains(key) : false;
   long taskid = -1;
-  if (exists) {
+  if (exists(key)) {
     taskid = static_cast<long>(m_tombstoneMap[key]->getExpiryTaskId());
     handler = m_tombstoneMap[key]->getHandler();
     region->getCacheImpl()->m_cacheStats->decTombstoneCount();
@@ -166,21 +172,11 @@ long TombstoneList::eraseEntryFromTombstoneListWithoutCancelTask(
   return taskid;
 }
 
-bool TombstoneList::getEntryFromTombstoneList(
-    const CacheableKeyPtr& key) const {
-  // This function is not guarded as all functions of this class are called from
-  // MapSegment
-  return m_tombstoneMap.contains(key);
-}
-
 void TombstoneList::cleanUp() {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
-  for (HashMapT<CacheableKeyPtr, TombstoneEntryPtr>::Iterator queIter =
-           m_tombstoneMap.begin();
-       queIter != m_tombstoneMap.end(); ++queIter) {
-    CacheImpl::expiryTaskManager->cancelTask(
-        static_cast<long>(queIter.second()->getExpiryTaskId()));
-    delete queIter.second()->getHandler();
+  for (const auto& queIter : m_tombstoneMap) {
+    CacheImpl::expiryTaskManager->cancelTask(queIter.second->getExpiryTaskId());
+    delete queIter.second->getHandler();
   }
 }

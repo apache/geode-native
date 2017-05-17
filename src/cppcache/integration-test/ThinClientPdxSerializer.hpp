@@ -59,7 +59,7 @@ static bool m_useWeakHashMap ATTR_UNUSED = false;
 
 void initClient(const bool isthinClient, bool isPdxIgnoreUnreadFields) {
   LOGINFO("initClient: isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, isPdxIgnoreUnreadFields, false,
                                   nullptr, false);
   }
@@ -70,7 +70,7 @@ void stepOne(bool isPdxIgnoreUnreadFields = false) {
   // Create just one pool and attach all regions to that.
   initClient(true, isPdxIgnoreUnreadFields);
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0, true);
+  createPool(poolNames[0], locHostPort, nullptr, 0, true);
   createRegionAndAttachPool("DistRegionAck", USE_ACK, poolNames[0],
                             false /*Caching disabled*/);
   LOG("StepOne complete.");

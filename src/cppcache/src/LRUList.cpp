@@ -32,9 +32,9 @@ LRUList<TEntry, TCreateEntry>::LRUList() : m_headLock(), m_tailLock() {
 
 template <typename TEntry, typename TCreateEntry>
 LRUList<TEntry, TCreateEntry>::~LRUList() {
-  m_tailNode = NULL;
+  m_tailNode = nullptr;
   LRUListNode* next;
-  while (m_headNode != NULL) {
+  while (m_headNode != nullptr) {
     next = m_headNode->getNextLRUListNode();
     delete m_headNode;
     m_headNode = next;
@@ -54,7 +54,7 @@ template <typename TEntry, typename TCreateEntry>
 void LRUList<TEntry, TCreateEntry>::appendNode(LRUListNode* aNode) {
   LOCK_TAIL;
 
-  GF_D_ASSERT(aNode != NULL);
+  GF_D_ASSERT(aNode != nullptr);
 
   aNode->clearNextLRUListNode();
   m_tailNode->setNextLRUListNode(aNode);
@@ -67,7 +67,7 @@ void LRUList<TEntry, TCreateEntry>::getLRUEntry(LRUListEntryPtr& result) {
   LRUListNode* aNode;
   while (true) {
     aNode = getHeadNode(isLast);
-    if (aNode == NULL) {
+    if (aNode == nullptr) {
       result = nullptr;
       break;
     }
@@ -105,14 +105,14 @@ LRUList<TEntry, TCreateEntry>::getHeadNode(bool& isLast) {
   {
     LOCK_TAIL;
     nextNode = m_headNode->getNextLRUListNode();
-    if (nextNode == NULL) {
+    if (nextNode == nullptr) {
       // last one in the list...
       isLast = true;
       LRUListEntryPtr entry;
       result->getEntry(entry);
       if (entry->getLRUProperties().testEvicted()) {
         // list is empty.
-        return NULL;
+        return nullptr;
       } else {
         entry->getLRUProperties().setEvicted();
         return result;

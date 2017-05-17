@@ -60,7 +60,7 @@ class CPPCACHE_EXPORT CacheXmlCreation {
    *         The cache which is to be populated
    * @throws OutOfMemoryException if the memory allocation failed
    * @throws NotConnectedException if the cache is not connected
-   * @throws InvalidArgumentException if the attributePtr is NULL.
+   * @throws InvalidArgumentException if the attributePtr is nullptr.
    *         or if RegionAttributes is null or if regionName is null,
    *         the empty   string, or contains a '/'
    * @throws RegionExistsException

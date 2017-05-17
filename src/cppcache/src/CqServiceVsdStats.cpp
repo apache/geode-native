@@ -36,15 +36,15 @@ using namespace apache::geode::statistics;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-CqServiceStatType* CqServiceStatType::single = NULL;
+CqServiceStatType* CqServiceStatType::single = nullptr;
 SpinLock CqServiceStatType::m_singletonLock;
 SpinLock CqServiceStatType::m_statTypeLock;
 
 void CqServiceStatType::clean() {
   SpinLockGuard guard(m_singletonLock);
-  if (single != NULL) {
+  if (single != nullptr) {
     delete single;
-    single = NULL;
+    single = nullptr;
   }
 }
 
@@ -56,7 +56,7 @@ StatisticsType* CqServiceStatType::getStatType() {
 
   StatisticsType* statsType = factory->findType("CqServiceStatistics");
 
-  if (statsType == NULL) {
+  if (statsType == nullptr) {
     m_stats[0] = factory->createIntCounter(
         "CqsActive", "The total number of CqsActive this cq qurey", "entries",
         largerIsBetter);
@@ -89,7 +89,7 @@ StatisticsType* CqServiceStatType::getStatType() {
 
 CqServiceStatType* CqServiceStatType::getInstance() {
   SpinLockGuard guard(m_singletonLock);
-  if (single == NULL) {
+  if (single == nullptr) {
     single = new CqServiceStatType();
   }
   return single;
@@ -119,7 +119,7 @@ CqServiceVsdStats::CqServiceVsdStats(const char* cqServiceName) {
 
   StatisticsType* statsType = regStatType->getStatType();
 
-  GF_D_ASSERT(statsType != NULL);
+  GF_D_ASSERT(statsType != nullptr);
 
   StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
 
@@ -139,10 +139,10 @@ CqServiceVsdStats::CqServiceVsdStats(const char* cqServiceName) {
 }
 
 CqServiceVsdStats::~CqServiceVsdStats() {
-  if (m_cqServiceVsdStats != NULL) {
-    // Don't Delete, Already closed, Just set NULL
+  if (m_cqServiceVsdStats != nullptr) {
+    // Don't Delete, Already closed, Just set nullptr
     // delete m_CqServiceVsdStats;
-    m_cqServiceVsdStats = NULL;
+    m_cqServiceVsdStats = nullptr;
   }
 }
 }  // namespace client

@@ -39,7 +39,7 @@ ConcurrentEntriesMap::ConcurrentEntriesMap(EntryFactory* entryFactory,
        * CID 28929: Uninitialized pointer field (UNINIT_CTOR)
        */
       m_concurrencyChecksEnabled(concurrencyChecksEnabled) {
-  GF_DEV_ASSERT(entryFactory != NULL);
+  GF_DEV_ASSERT(entryFactory != nullptr);
 
   uint8_t maxConcurrency = TableOfPrimes::getMaxPrimeForConcurrency();
   if (concurrency > maxConcurrency) {

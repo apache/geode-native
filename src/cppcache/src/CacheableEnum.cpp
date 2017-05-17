@@ -81,7 +81,7 @@ bool CacheableEnum::operator==(const CacheableKey& other) const {
   }
   CacheableKey& temp = const_cast<CacheableKey&>(other);
   CacheableEnum* otherEnum = static_cast<CacheableEnum*>(&temp);
-  if (otherEnum == NULL) {
+  if (otherEnum == nullptr) {
     return false;
   }
   if (m_ordinal != otherEnum->m_ordinal) {

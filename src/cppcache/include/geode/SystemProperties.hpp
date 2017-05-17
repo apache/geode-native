@@ -25,7 +25,7 @@
 #include "AuthInitialize.hpp"
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
@@ -42,10 +42,10 @@ typedef AuthInitialize* (*LibraryAuthInitializeFn)(const char* assemblyPath,
                                                    const char* factFuncName);
 
 /**
-  * A class for internal use, that encapsulates the properties that can be
-  * set from DistributedSystem::connect.
-  *
-  */
+ * A class for internal use, that encapsulates the properties that can be
+ * set from DistributedSystem::connect.
+ *
+ */
 
 class CPPCACHE_EXPORT SystemProperties {
  public:
@@ -58,7 +58,7 @@ class CPPCACHE_EXPORT SystemProperties {
    * member type to SERVER.
    */
   SystemProperties(const PropertiesPtr& propertiesPtr,
-                   const char* configFile = NULL);
+                   const char* configFile = nullptr);
 
   /**
    * Destructor.
@@ -97,8 +97,8 @@ class CPPCACHE_EXPORT SystemProperties {
   } /*m_timestatisticsEnabled*/
 
   /**
-  * Returns the path of the private key file for SSL use.
-  */
+   * Returns the path of the private key file for SSL use.
+   */
   const char* sslKeyStore() const { return m_sslKeyStore; }
 
   /**
@@ -140,19 +140,19 @@ class CPPCACHE_EXPORT SystemProperties {
   const bool heapLRULimitEnabled() const { return (m_heapLRULimit > 0); }
 
   /**
-    * Returns  the HeapLRULimit value (in bytes), the maximum memory that values
-    * in a cache can use to store data before overflowing to disk or destroying
-    * entries to ensure that the server process never runs out of memory due to
-    * cache memory usage
-    *
-    */
+   * Returns  the HeapLRULimit value (in bytes), the maximum memory that values
+   * in a cache can use to store data before overflowing to disk or destroying
+   * entries to ensure that the server process never runs out of memory due to
+   * cache memory usage
+   *
+   */
   const size_t heapLRULimit() const { return m_heapLRULimit; }
 
   /**
-    * Returns  the HeapLRUDelta value (a percent value). This specifies the
-    * percentage of entries the system will evict each time it detects that
-    * it has exceeded the HeapLRULimit. Defaults to 10%
-    */
+   * Returns  the HeapLRUDelta value (a percent value). This specifies the
+   * percentage of entries the system will evict each time it detects that
+   * it has exceeded the HeapLRULimit. Defaults to 10%
+   */
   const int32_t heapLRUDelta() const { return m_heapLRUDelta; }
   /**
    * Returns  the maximum socket buffer size to use
@@ -176,9 +176,9 @@ class CPPCACHE_EXPORT SystemProperties {
   const int32_t notifyAckInterval() const { return m_notifyAckInterval; }
 
   /**
-  * Returns the expiry time of an idle event id map entry for duplicate
-  * notification checking
-  */
+   * Returns the expiry time of an idle event id map entry for duplicate
+   * notification checking
+   */
   const int32_t notifyDupCheckLife() const { return m_notifyDupCheckLife; }
 
   /**
@@ -197,15 +197,15 @@ class CPPCACHE_EXPORT SystemProperties {
   const uint32_t connectTimeout() const { return m_connectTimeout; }
 
   /**
-  * Returns the connect wait timeout(in millis) used for to connect to server
-  * This is only applicable for linux
-  */
+   * Returns the connect wait timeout(in millis) used for to connect to server
+   * This is only applicable for linux
+   */
   const uint32_t connectWaitTimeout() const { return m_connectWaitTimeout; }
 
   /**
-  * Returns the connect wait timeout(in millis) used for to connect to server
-  * This is only applicable for linux
-  */
+   * Returns the connect wait timeout(in millis) used for to connect to server
+   * This is only applicable for linux
+   */
   const uint32_t bucketWaitTimeout() const { return m_bucketWaitTimeout; }
 
   /**
@@ -214,8 +214,8 @@ class CPPCACHE_EXPORT SystemProperties {
   char* conflateEvents() { return m_conflateEvents; }
 
   /**
-  * Returns  true if the stack trace is enabled ,false otherwise
-  */
+   * Returns  true if the stack trace is enabled ,false otherwise
+   */
   const bool debugStackTraceEnabled() const { return m_debugStackTraceEnabled; }
 
   /**
@@ -234,23 +234,23 @@ class CPPCACHE_EXPORT SystemProperties {
   const char* cacheXMLFile() const { return m_cacheXMLFile; }
 
   /**
-  * Returns the log-file-size-limit.
-  */
+   * Returns the log-file-size-limit.
+   */
   const uint32_t logFileSizeLimit() const { return m_logFileSizeLimit; }
 
   /**
-  * Returns the log-disk-space-limit.
-  */
+   * Returns the log-disk-space-limit.
+   */
   const uint32_t logDiskSpaceLimit() const { return m_logDiskSpaceLimit; }
 
   /**
-  * Returns the stat-file-space-limit.
-  */
+   * Returns the stat-file-space-limit.
+   */
   const uint32_t statsFileSizeLimit() const { return m_statsFileSizeLimit; }
 
   /**
-  * Returns the stat-disk-size-limit.
-  */
+   * Returns the stat-disk-size-limit.
+   */
   const uint32_t statsDiskSpaceLimit() const { return m_statsDiskSpaceLimit; }
 
   const uint32_t maxQueueSize() { return m_maxQueueSize; }
@@ -282,9 +282,9 @@ class CPPCACHE_EXPORT SystemProperties {
   }
 
   /**
-  * returns true if app want to clear pdx type ids when client disconnect.
-  * deafult is false.
-  */
+   * returns true if app want to clear pdx type ids when client disconnect.
+   * deafult is false.
+   */
   bool onClientDisconnectClearPdxTypeIds() const {
     return m_onClientDisconnectClearPdxTypeIds;
   }
@@ -327,14 +327,14 @@ class CPPCACHE_EXPORT SystemProperties {
 
   /** Returns securityPropertiesPtr.
    * @return  PropertiesPtr value.
-  */
+   */
   PropertiesPtr getSecurityProperties() const {
     return m_securityPropertiesPtr;
   }
 
   /** Checks whether Security is on or off.
    * @return  bool value.
-  */
+   */
   inline bool isSecurityOn() const {
     return (m_AuthIniLoaderFactory != nullptr &&
             m_AuthIniLoaderLibrary != nullptr);
@@ -342,7 +342,7 @@ class CPPCACHE_EXPORT SystemProperties {
 
   /** Checks whether list of endpoint is shuffeled or not.
    * @return  bool value.
-  */
+   */
   inline bool isEndpointShufflingDisabled() const {
     return m_disableShufflingEndpoint;
   }
@@ -392,8 +392,8 @@ class CPPCACHE_EXPORT SystemProperties {
   inline bool autoReadyForEvents() const { return m_autoReadyForEvents; }
 
   /**
-  * Returns the timeout after which suspended transactions are rolled back.
-  */
+   * Returns the timeout after which suspended transactions are rolled back.
+   */
   const uint32_t suspendedTxTimeout() const { return m_suspendedTxTimeout; }
 
   /**

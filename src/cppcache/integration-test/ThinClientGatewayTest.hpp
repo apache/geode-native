@@ -70,8 +70,8 @@ void setCacheListener(const char* regName, TallyListenerPtr regListener) {
   attrMutator->setCacheListener(regListener);
 }
 
-const char* locHostPort1 = NULL;
-const char* locHostPort2 = NULL;
+const char* locHostPort1 = nullptr;
+const char* locHostPort2 = nullptr;
 DUNIT_TASK_DEFINITION(SERVER1, StartLocator1)
   {
     CacheHelper::initLocator(1, false, true, 1,
@@ -116,8 +116,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER1, SetupClient)
   {
-    initClientWithPool(true, "poolName", locHostPort1, NULL);
-    RegionPtr regPtr = createRegionAndAttachPool("exampleRegion", true, NULL);
+    initClientWithPool(true, "poolName", locHostPort1, nullptr);
+    RegionPtr regPtr =
+        createRegionAndAttachPool("exampleRegion", true, nullptr);
     LOG(" region is created ");
     for (int i = 0; i < 100; i++) {
       LOG(" region is created put");

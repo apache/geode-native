@@ -116,7 +116,7 @@ class PutAllPartialResult : public Serializable {
   Serializable* fromData(DataInput& input) {
     throw IllegalStateException(
         "PutAllPartialResult::fromData is not intended for use.");
-    return NULL;
+    return nullptr;
   }
 
   int32_t classId() const {

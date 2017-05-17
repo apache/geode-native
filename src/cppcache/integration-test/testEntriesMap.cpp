@@ -42,7 +42,7 @@ typedef std::vector<MapEntryImplPtr> VectorOfMapEntry;
 
 CacheableStringPtr createCacheable(const char* value) {
   CacheableStringPtr result = CacheableString::create(value);
-  ASSERT(result != nullptr, "expected result non-NULL");
+  ASSERT(result != nullptr, "expected result non-nullptr");
   return result;
 }
 
@@ -103,7 +103,7 @@ class FakeRegion : public RegionInternal {
                                CacheablePtr& oldValue, int updateCount,
                                const CacheEventFlags eventFlags,
                                VersionTagPtr versionTag,
-                               DataInput* delta = NULL,
+                               DataInput* delta = nullptr,
                                EventIdPtr eventId = nullptr) override {
     return GF_NOERR;
   }
@@ -306,17 +306,21 @@ class FakeRegion : public RegionInternal {
   }
   virtual RegionServicePtr getRegionService() const override { return nullptr; }
   virtual bool containsValueForKey(
-                                   const CacheableKeyPtr& keyPtr) const override {return false;}
+      const CacheableKeyPtr& keyPtr) const override {
+    return false;
+  }
   virtual bool containsKey(const CacheableKeyPtr& keyPtr) const override {
     return false;
   }
   virtual bool containsKeyOnServer(
-                                   const CacheableKeyPtr& keyPtr) const override {return false;}
+      const CacheableKeyPtr& keyPtr) const override {
+    return false;
+  }
   virtual void getInterestList(VectorOfCacheableKey& vlist) const override {}
   virtual void getInterestListRegex(
       VectorOfCacheableString& vregex) const override {}
 };
-}
+}  // namespace
 
 BEGIN_TEST(PutAndGet)
   {
@@ -329,14 +333,14 @@ BEGIN_TEST(PutAndGet)
         new ConcurrentEntriesMap(entryFactory, false, region.get());
     entries->open();
     CacheableKeyPtr keyPtr = CacheableKey::create((char*)"foobar");
-    ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
     MapEntryImplPtr me;
     VersionTagPtr versionTag;
     CacheablePtr oldValue;
     entries->put(keyPtr, ct, me, oldValue, -1, 0, versionTag);
     CacheablePtr myValuePtr;
     entries->get(keyPtr, myValuePtr, me);
-    ASSERT(myValuePtr != nullptr, "expected non-NULL");
+    ASSERT(myValuePtr != nullptr, "expected non-nullptr");
     auto strValue = std::dynamic_pointer_cast<CacheableString>(myValuePtr);
     ASSERT(ccstr->operator==(*strValue), "expected 100");
     delete entries;
@@ -347,9 +351,9 @@ BEGIN_TEST(CheckMapEntryImplPtr)
   {
     char error[1000] ATTR_UNUSED;
     MapEntryImplPtr mePtr;
-    ASSERT(mePtr == nullptr, "expected mePtr to be NULL");
+    ASSERT(mePtr == nullptr, "expected mePtr to be nullptr");
     CacheableKeyPtr keyPtr = CacheableKey::create(fwtest_Name);
-    ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
     EntryFactory::singleton->newMapEntry(keyPtr, mePtr);
     ASSERT(mePtr != nullptr, "expected to not be null.");
   }
@@ -366,7 +370,7 @@ BEGIN_TEST(RemoveTest)
     entries->open();
     CacheableKeyPtr keyPtr = CacheableKey::create(fwtest_Name);
     MapEntryImplPtr me;
-    ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
     CacheablePtr oldValue;
     VersionTagPtr versionTag;
     entries->put(keyPtr, ct, me, oldValue, -1, 0, versionTag);
@@ -394,7 +398,7 @@ BEGIN_TEST(GetEntryTest)
     CacheableKeyPtr keyPtr;
     MapEntryImplPtr me;
     keyPtr = CacheableKey::create(fwtest_Name);
-    ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
     CacheablePtr oldValue;
     VersionTagPtr versionTag;
     entries->put(keyPtr, ct, me, oldValue, -1, 0, versionTag);
@@ -415,7 +419,7 @@ BEGIN_TEST(MapEntryImplPtrRCTest)
   {
     // Test Reference Counting and destruction for MapEntry.
     CacheableKeyPtr keyPtr = CacheableKey::create("foobar");
-    ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
     MapEntryImplPtr mePtr;
     EntryFactory ef;
     ef.newMapEntry(keyPtr, mePtr);
@@ -463,7 +467,7 @@ BEGIN_TEST(EntriesTest)
       sprintf(keyBuf, "key_%d", i);
       sprintf(valBuf, "%d", i);
       CacheableKeyPtr keyPtr = CacheableKey::create(keyBuf);
-      ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+      ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
       CacheablePtr v = createCacheable(valBuf);
       CacheablePtr oldValue;
       entries->put(keyPtr, v, me, oldValue, -1, 0, versionTag);
@@ -512,7 +516,7 @@ BEGIN_TEST(ValuesTest)
       sprintf(keyBuf, "key_%d", i);
       sprintf(valBuf, "%d", i);
       CacheableKeyPtr keyPtr = CacheableKey::create(keyBuf);
-      ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+      ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
       CacheablePtr v = createCacheable(valBuf);
       CacheablePtr oldValue;
       entries->put(keyPtr, v, me, oldValue, -1, 0, versionTag);
@@ -553,7 +557,7 @@ BEGIN_TEST(KeysTest)
       sprintf(keyBuf, "key_%d", i);
       sprintf(valBuf, "%d", i);
       CacheableKeyPtr keyPtr = CacheableKey::create(keyBuf);
-      ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+      ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
       CacheablePtr v = createCacheable(valBuf);
       CacheablePtr oldValue;
       entries->put(keyPtr, v, me, oldValue, -1, 0, versionTag);
@@ -584,7 +588,7 @@ BEGIN_TEST(TestRehash)
   {
     EntryFactory* entryFactory = EntryFactory::singleton;
     ConcurrentEntriesMap* entries =
-        new ConcurrentEntriesMap(entryFactory, false, NULL, 1);
+        new ConcurrentEntriesMap(entryFactory, false, nullptr, 1);
     entries->open(10);
     ASSERT(entries->totalSegmentRehashes() == 0,
            "should not have rehashed yet.");
@@ -596,7 +600,7 @@ BEGIN_TEST(TestRehash)
       sprintf(keyBuf, "key_%d", i);
       sprintf(valBuf, "%d", i);
       CacheableKeyPtr keyPtr = CacheableKey::create(keyBuf);
-      ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+      ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
       CacheablePtr v = createCacheable(valBuf);
       CacheablePtr oldValue;
       VersionTagPtr versionTag;
@@ -613,7 +617,7 @@ BEGIN_TEST(TestRehash)
       sprintf(keyBuf, "key_%d", j);
       CacheableStringPtr valuePtr;
       CacheableKeyPtr keyPtr = CacheableKey::create(keyBuf);
-      ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+      ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
       CacheablePtr cvPtr;
       entries->get(keyPtr, cvPtr, me);
       valuePtr = std::dynamic_pointer_cast<CacheableString>(cvPtr);
@@ -644,10 +648,10 @@ BEGIN_TEST(LRUPutAndGet)
     ASSERT(entries->size() == 1, "expected size 1.");
     CacheableStringPtr myValuePtr;
     CacheablePtr cvPtr;
-    ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
     entries->get(keyPtr, cvPtr, me);
     myValuePtr = std::dynamic_pointer_cast<CacheableString>(cvPtr);
-    ASSERT(myValuePtr != nullptr, "expected non-NULL");
+    ASSERT(myValuePtr != nullptr, "expected non-nullptr");
     ASSERT(cst->operator==(*myValuePtr), "expected 100");
     delete entries;
   }
@@ -657,9 +661,9 @@ BEGIN_TEST(CheckLRUMapEntryImplPtr)
   {
     char error[1000] ATTR_UNUSED;
     MapEntryImplPtr mePtr;
-    ASSERT(mePtr == nullptr, "expected mePtr to be NULL");
+    ASSERT(mePtr == nullptr, "expected mePtr to be nullptr");
     CacheableKeyPtr keyPtr = CacheableKey::create(fwtest_Name);
-    ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
     LRUEntryFactory::singleton->newMapEntry(keyPtr, mePtr);
     ASSERT(mePtr != nullptr, "expected to not be null.");
     auto lmePtr = std::dynamic_pointer_cast<LRUMapEntry>(mePtr);
@@ -673,7 +677,7 @@ BEGIN_TEST(LRURemoveTest)
     CacheablePtr ct = cst;
     EntryFactory* entryFactory = LRUEntryFactory::singleton;
     EntriesMap* entries = new LRUEntriesMap(
-        entryFactory, NULL, LRUAction::LOCAL_DESTROY, 20, false);
+        entryFactory, nullptr, LRUAction::LOCAL_DESTROY, 20, false);
     entries->open();
     ASSERT(entries->size() == 0, "expected size 0.");
     CacheableKeyPtr keyPtr;
@@ -704,12 +708,12 @@ BEGIN_TEST(LRUGetEntryTest)
     CacheablePtr ct = cst;
     EntryFactory* entryFactory = LRUEntryFactory::singleton;
     EntriesMap* entries = new LRUEntriesMap(
-        entryFactory, NULL, LRUAction::LOCAL_DESTROY, 20, false);
+        entryFactory, nullptr, LRUAction::LOCAL_DESTROY, 20, false);
     entries->open();
     CacheableKeyPtr keyPtr;
     MapEntryImplPtr me;
     keyPtr = CacheableKey::create(fwtest_Name);
-    ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
     CacheablePtr oldValue;
     VersionTagPtr versionTag;
     entries->put(keyPtr, ct, me, oldValue, -1, 0, versionTag);
@@ -731,36 +735,36 @@ END_TEST(LRUGetEntryTest)
 BEGIN_TEST(LRULimitEvictTest)
   {
     EntryFactory* entryFactory = LRUEntryFactory::singleton;
-    EntriesMap* entries = new LRUEntriesMap(entryFactory, NULL,
+    EntriesMap* entries = new LRUEntriesMap(entryFactory, nullptr,
                                             LRUAction::LOCAL_DESTROY, 5, false);
     entries->open();
     MapEntryImplPtr me;
     CacheablePtr ct = createCacheable("somevalue");
     CacheablePtr oldValue;
     CacheableKeyPtr keyPtr = CacheableKey::create("1");
-    ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
     VersionTagPtr versionTag;
     entries->put(keyPtr, ct, me, oldValue, -1, 0, versionTag);
     ASSERT(entries->size() == 1, "expected size 1.");
     keyPtr = CacheableKey::create("2");
-    ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
     entries->put(keyPtr, ct, me, oldValue, -1, 0, versionTag);
     ASSERT(entries->size() == 2, "expected size 2.");
     keyPtr = CacheableKey::create("3");
-    ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
     entries->put(keyPtr, ct, me, oldValue, -1, 0, versionTag);
     ASSERT(entries->size() == 3, "expected size 3.");
     keyPtr = CacheableKey::create("4");
-    ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
     entries->put(keyPtr, ct, me, oldValue, -1, 0, versionTag);
     ASSERT(entries->size() == 4, "expected size 4.");
     keyPtr = CacheableKey::create("5");
-    ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
     entries->put(keyPtr, ct, me, oldValue, -1, 0, versionTag);
     ASSERT(entries->size() == 5, "expected size 5.");
     LOG("Map is now at the limit.");
     keyPtr = CacheableKey::create("6");
-    ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
     LOG("About to spill over.");
     entries->put(keyPtr, ct, me, oldValue, -1, 0, versionTag);
     LOG("Spilled over.");

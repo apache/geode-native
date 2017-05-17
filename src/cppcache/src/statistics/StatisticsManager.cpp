@@ -38,19 +38,20 @@ using namespace apache::geode::statistics;
 /**
  * static member initialization
  */
-StatisticsManager* StatisticsManager::s_singleton = NULL;
+StatisticsManager* StatisticsManager::s_singleton = nullptr;
 
-StatisticsManager::StatisticsManager(const char* filePath, int64_t sampleInterval,
-                                     bool enabled, int64_t statFileLimit,
+StatisticsManager::StatisticsManager(const char* filePath,
+                                     int64_t sampleInterval, bool enabled,
+                                     int64_t statFileLimit,
                                      int64_t statDiskSpaceLimit)
-    : m_sampler(NULL), m_adminRegion(nullptr) {
+    : m_sampler(nullptr), m_adminRegion(nullptr) {
   m_sampleIntervalMs =
       static_cast<int32_t>(sampleInterval) * 1000; /* convert to millis */
   m_newlyAddedStatsList.reserve(16);               // Allocate initial sizes
   GeodeStatisticsFactory::initInstance(this);
 
   try {
-    if (m_sampler == NULL && enabled) {
+    if (m_sampler == nullptr && enabled) {
       m_sampler = new HostStatSampler(filePath, m_sampleIntervalMs, this,
                                       statFileLimit, statDiskSpaceLimit);
       m_sampler->start();
@@ -61,11 +62,9 @@ StatisticsManager::StatisticsManager(const char* filePath, int64_t sampleInterva
   }
 }
 
-StatisticsManager* StatisticsManager::initInstance(const char* filePath,
-                                                   int64_t sampleIntervalMs,
-                                                   bool enabled,
-                                                   int64_t statsFileLimit,
-                                                   int64_t statsDiskSpaceLimit) {
+StatisticsManager* StatisticsManager::initInstance(
+    const char* filePath, int64_t sampleIntervalMs, bool enabled,
+    int64_t statsFileLimit, int64_t statsDiskSpaceLimit) {
   if (!s_singleton) {
     s_singleton = new StatisticsManager(filePath, sampleIntervalMs, enabled,
                                         statsFileLimit, statsDiskSpaceLimit);
@@ -79,7 +78,7 @@ StatisticsManager* StatisticsManager::getExistingInstance() {
     return s_singleton;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 void StatisticsManager::forceSample() {
@@ -101,7 +100,7 @@ StatisticsManager::~StatisticsManager() {
       LOGFINEST("~StatisticsManager has found %d leftover statistics:", count);
       std::vector<Statistics*>::iterator iterFind = m_statsList.begin();
       while (iterFind != m_statsList.end()) {
-        if (*iterFind != NULL) {
+        if (*iterFind != nullptr) {
           std::string temp((*iterFind)->getType()->getName());
           LOGFINEST("Leftover statistic: %s", temp.c_str());
           /* adongre
@@ -112,7 +111,7 @@ StatisticsManager::~StatisticsManager() {
            * FIX : Put the call into the if condition
            */
           deleteStatistics(*iterFind);
-          *iterFind = NULL;
+          *iterFind = nullptr;
         }
         ++iterFind;
       }
@@ -136,9 +135,9 @@ StatisticsManager::~StatisticsManager() {
 }
 
 void StatisticsManager::clean() {
-  if (s_singleton != NULL) {
+  if (s_singleton != nullptr) {
     delete s_singleton;
-    s_singleton = NULL;
+    s_singleton = nullptr;
   }
 }
 
@@ -149,10 +148,10 @@ ACE_Recursive_Thread_Mutex& StatisticsManager::getListMutex() {
 }
 
 void StatisticsManager::closeSampler() {
-  if (m_sampler != NULL) {
+  if (m_sampler != nullptr) {
     m_sampler->stop();
     delete m_sampler;
-    m_sampler = NULL;
+    m_sampler = nullptr;
   }
 }
 void StatisticsManager::addStatisticsToList(Statistics* stat) {
@@ -190,7 +189,7 @@ Statistics* StatisticsManager::findFirstStatisticsByType(StatisticsType* type) {
     }
     start++;
   }
-  return NULL;
+  return nullptr;
 }
 
 std::vector<Statistics*> StatisticsManager::findStatisticsByType(
@@ -252,7 +251,7 @@ Statistics* StatisticsManager::findStatisticsByUniqueId(int64_t uniqueId) {
     }
     start++;
   }
-  return NULL;
+  return nullptr;
 }
 
 void StatisticsManager::deleteStatistics(Statistics*& stat) {
@@ -263,5 +262,5 @@ void StatisticsManager::deleteStatistics(Statistics*& stat) {
     OsStatisticsImpl* ptr = dynamic_cast<OsStatisticsImpl*>(stat);
     delete ptr;
   }
-  stat = NULL;
+  stat = nullptr;
 }

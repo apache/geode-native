@@ -148,18 +148,18 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
   virtual void rootRegions(VectorOfRegion& regions);
 
   /**
-  * Gets the QueryService from which a new Query can be obtained.
-  * @returns A smart pointer to the QueryService.
-  */
+   * Gets the QueryService from which a new Query can be obtained.
+   * @returns A smart pointer to the QueryService.
+   */
   virtual QueryServicePtr getQueryService();
 
   /**
-  * Gets the QueryService from which a new Query can be obtained.
-  * @param poolName
-  *        Pass poolname if pool is created from cache.xml or {@link
-  * PoolManager}
-  * @returns A smart pointer to the QueryService.
-  */
+   * Gets the QueryService from which a new Query can be obtained.
+   * @param poolName
+   *        Pass poolname if pool is created from cache.xml or {@link
+   * PoolManager}
+   * @returns A smart pointer to the QueryService.
+   */
   virtual QueryServicePtr getQueryService(const char* poolName);
 
   /**
@@ -191,24 +191,24 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    */
 
   virtual RegionServicePtr createAuthenticatedView(
-      PropertiesPtr userSecurityProperties, const char* poolName = NULL);
+      PropertiesPtr userSecurityProperties, const char* poolName = nullptr);
 
   /**
-  * Get the CacheTransactionManager instance for this Cache.
-  * @return The CacheTransactionManager instance.
-  * @throws CacheClosedException if the cache is closed.
-  */
+   * Get the CacheTransactionManager instance for this Cache.
+   * @return The CacheTransactionManager instance.
+   * @throws CacheClosedException if the cache is closed.
+   */
   virtual CacheTransactionManagerPtr getCacheTransactionManager();
 
   /**
-    * Returns whether Cache saves unread fields for Pdx types.
-    */
+   * Returns whether Cache saves unread fields for Pdx types.
+   */
   virtual bool getPdxIgnoreUnreadFields();
 
   /**
-  * Returns whether { @link PdxInstance} is preferred for PDX types instead of
-  * C++ object.
-  */
+   * Returns whether { @link PdxInstance} is preferred for PDX types instead of
+   * C++ object.
+   */
   virtual bool getPdxReadSerialized();
 
   /**
@@ -216,14 +216,14 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * @param className the fully qualified class name that the PdxInstance will
    * become
    * when it is fully deserialized.
-   * @throws IllegalStateException if the className is NULL or invalid.
+   * @throws IllegalStateException if the className is nullptr or invalid.
    * @return the factory
    */
   virtual PdxInstanceFactoryPtr createPdxInstanceFactory(const char* className);
 
   /**
-    * @brief destructor
-    */
+   * @brief destructor
+   */
   virtual ~Cache();
 
  private:

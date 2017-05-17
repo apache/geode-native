@@ -124,7 +124,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER, StartS12)
   {
-    const char* lhp = NULL;
+    const char* lhp = nullptr;
     if (!isPoolWithEndpoint) lhp = locHostPort;
     if (isLocalServer) {
       CacheHelper::initServer(1, "func_cacheserver1_pool.xml", lhp);
@@ -137,7 +137,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER, StartS13)
   {
-    const char* lhp = NULL;
+    const char* lhp = nullptr;
     if (!isPoolWithEndpoint) lhp = locHostPort;
     if (isLocalServer) {
       CacheHelper::initServer(1, "func_cacheserver1_pool.xml", lhp);
@@ -153,13 +153,13 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
   {
-    initClientWithPool(true, NULL, locHostPort, serverGroup, nullptr, 0, true,
-                       -1, 5, 60000);
-    // createPool(poolName, locHostPort,serverGroup, NULL, 0, true );
+    initClientWithPool(true, nullptr, locHostPort, serverGroup, nullptr, 0,
+                       true, -1, 5, 60000);
+    // createPool(poolName, locHostPort,serverGroup, nullptr, 0, true );
     // createRegionAndAttachPool(poolRegNames[0],USE_ACK, poolName);
 
     RegionPtr regPtr0 =
-        createRegionAndAttachPool(poolRegNames[0], USE_ACK, NULL);
+        createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
     ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
     regPtr0->registerAllKeys();
 
@@ -204,7 +204,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       }
       // UNUSED bool getResult = true;
       auto exc = FunctionService::onRegion(regPtr0);
-      ASSERT(exc != nullptr, "onRegion Returned NULL");
+      ASSERT(exc != nullptr, "onRegion Returned nullptr");
       auto resultList = CacheableVector::create();
 
       auto executeFunctionResult = exc->withArgs(routingObj)
@@ -212,7 +212,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
                                        ->getResult();
 
       if (executeFunctionResult == nullptr) {
-        ASSERT(false, "get executeFunctionResult is NULL");
+        ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
         sprintf(buf, "echo String : result count = %d",
                 executeFunctionResult->size());
@@ -256,7 +256,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
                                   ->getResult();
 
       if (executeFunctionResult == nullptr) {
-        ASSERT(false, "get executeFunctionResult is NULL");
+        ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
         sprintf(buf, "echo String : result count = %d",
                 executeFunctionResult->size());
@@ -329,7 +329,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
       // UNUSED bool getResult = true;
       auto pool = apache::geode::client::PoolManager::find("__TEST_POOL1__");
       auto exc = FunctionService::onServer(pool);
-      ASSERT(exc != nullptr, "onServer Returned NULL");
+      ASSERT(exc != nullptr, "onServer Returned nullptr");
 
       auto resultList = CacheableVector::create();
 
@@ -340,7 +340,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
               ->getResult();
 
       if (executeFunctionResult == nullptr) {
-        ASSERT(false, "get executeFunctionResult is NULL");
+        ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
         sprintf(buf, "echo String : result count = %d",
                 executeFunctionResult->size());
@@ -379,7 +379,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
               ->getResult();
 
       if (executeFunctionResult1 == nullptr) {
-        ASSERT(false, "get executeFunctionResult1 is NULL");
+        ASSERT(false, "get executeFunctionResult1 is nullptr");
       } else {
         sprintf(buf, "echo String : result count = %d",
                 executeFunctionResult1->size());

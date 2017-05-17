@@ -62,13 +62,13 @@ class CacheableObjectPartList : public Cacheable {
   bool m_addToLocalCache;
 
   inline CacheableObjectPartList()
-      : m_keys(NULL),
-        m_keysOffset(NULL),
+      : m_keys(nullptr),
+        m_keysOffset(nullptr),
         m_values(nullptr),
         m_exceptions(nullptr),
         m_resultKeys(nullptr),
-        m_region(NULL),
-        m_updateCountMap(NULL),
+        m_region(nullptr),
+        m_updateCountMap(nullptr),
         m_destroyTracker(0),
         m_addToLocalCache(false) {}
 

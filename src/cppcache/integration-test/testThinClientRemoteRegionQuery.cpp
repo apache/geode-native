@@ -93,13 +93,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOnePoolLocator)
       // ignore exception
     }
     initClient(true);
-    createPool(poolNames[0], locHostPort, NULL, 0, true);
+    createPool(poolNames[0], locHostPort, nullptr, 0, true);
     createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
     createRegionAndAttachPool(qRegionNames[1], USE_ACK, poolNames[0]);
 
     createRegionAndAttachPool(qRegionNames[2], USE_ACK, poolNames[0]);
 
-    createPool(poolNames[1], locHostPort, NULL, 0, true);
+    createPool(poolNames[1], locHostPort, nullptr, 0, true);
     createRegionAndAttachPool(qRegionNames[3], USE_ACK, poolNames[1]);
 
     RegionPtr regptr = getHelper()->getRegion(qRegionNames[0]);
@@ -332,7 +332,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
               {
                 char logmsg[100] = {0};
                 ACE_OS::sprintf(logmsg, "Query # %d query selectValue result is
-           NULL", i);
+           nullptr", i);
                 LOG(logmsg);
               }
               else
@@ -340,7 +340,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
                 char logmsg[100] = {0};
                 ACE_OS::sprintf(logmsg, "Query # %d query selectValue result
            size
-           is not NULL", i);
+           is not nullptr", i);
                 LOG(logmsg);
               }
         */
@@ -499,17 +499,16 @@ void runRemoteRegionQueryTest() {
 
 void setPortfolioPdxType() { CALL_TASK(SetPortfolioTypeToPdx) }
 
-void UnsetPortfolioType() { CALL_TASK(UnsetPortfolioTypeToPdx) }
+void UnsetPortfolioType(){CALL_TASK(UnsetPortfolioTypeToPdx)}
 
-DUNIT_MAIN
-  {
-    // Basic Old Test
-    // runRemoteRegionQueryTest();
+DUNIT_MAIN {
+  // Basic Old Test
+  // runRemoteRegionQueryTest();
 
-    UnsetPortfolioType();
-    for (int runIdx = 1; runIdx <= 2; ++runIdx) {
-      runRemoteRegionQueryTest();
-      setPortfolioPdxType();
-    }
+  UnsetPortfolioType();
+  for (int runIdx = 1; runIdx <= 2; ++runIdx) {
+    runRemoteRegionQueryTest();
+    setPortfolioPdxType();
   }
+}
 END_MAIN

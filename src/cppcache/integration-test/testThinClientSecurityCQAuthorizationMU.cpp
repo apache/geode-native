@@ -134,7 +134,7 @@ class MyCqListener : public CqListener {
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
   const char* path = ACE_OS::getenv("TESTSRC");
-  ASSERT(path != NULL,
+  ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
   strcat(xmlPath, "xml/Security/");
@@ -145,7 +145,7 @@ void initCredentialGenerator() {
   credentialGeneratorHandler = CredentialGenerator::create("DUMMY3");
 
   if (credentialGeneratorHandler == nullptr) {
-    FAIL("credentialGeneratorHandler is NULL");
+    FAIL("credentialGeneratorHandler is nullptr");
   }
 }
 
@@ -163,7 +163,7 @@ void initClientCq(const bool isthinClient) {
   // credentialGeneratorHandler->getAuthInit(config);
   credentialGeneratorHandler->getValidCredentials(userCreds);
 
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, config);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
@@ -179,7 +179,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateServer1)
           "authenticator:authorizer:authorizerPP", getXmlPath());
       printf("string %s", cmdServerAuthenticator.c_str());
       CacheHelper::initServer(
-          1, "remotequery.xml", NULL,
+          1, "remotequery.xml", nullptr,
           const_cast<char*>(cmdServerAuthenticator.c_str()));
       LOG("Server1 started");
     }
@@ -195,7 +195,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateServer2)
           "authenticator:authorizer:authorizerPP", getXmlPath());
       printf("string %s", cmdServerAuthenticator.c_str());
       CacheHelper::initServer(
-          2, "remotequery2.xml", NULL,
+          2, "remotequery2.xml", nullptr,
           const_cast<char*>(cmdServerAuthenticator.c_str()));
       LOG("Server2 started");
     }

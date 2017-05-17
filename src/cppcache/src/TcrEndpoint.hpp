@@ -46,7 +46,7 @@ class CPPCACHE_EXPORT TcrEndpoint {
   TcrEndpoint(
       const std::string& name, CacheImpl* cache, ACE_Semaphore& failoverSema,
       ACE_Semaphore& cleanupSema, ACE_Semaphore& redundancySema,
-      ThinClientBaseDM* dm = NULL,
+      ThinClientBaseDM* dm = nullptr,
       bool isMultiUserMode = false);  // TODO: need to look for endpoint case
 
   /* adongre
@@ -57,15 +57,15 @@ class CPPCACHE_EXPORT TcrEndpoint {
   virtual GfErrType registerDM(bool clientNotification,
                                bool isSecondary = false,
                                bool isActiveEndpoint = false,
-                               ThinClientBaseDM* distMgr = NULL);
+                               ThinClientBaseDM* distMgr = nullptr);
   // GfErrType registerPoolDM( bool isSecondary, ThinClientPoolHADM* poolDM );
 
   virtual void unregisterDM(bool clientNotification,
-                            ThinClientBaseDM* distMgr = NULL,
+                            ThinClientBaseDM* distMgr = nullptr,
                             bool checkQueueHosted = false);
   // void unregisterPoolDM(  );
 
-  void pingServer(ThinClientPoolDM* poolDM = NULL);
+  void pingServer(ThinClientPoolDM* poolDM = nullptr);
   int receiveNotification(volatile bool& isRunning);
   GfErrType send(const TcrMessage& request, TcrMessageReply& reply);
   GfErrType sendRequestConn(const TcrMessage& request, TcrMessageReply& reply,
@@ -116,7 +116,7 @@ class CPPCACHE_EXPORT TcrEndpoint {
 
   virtual bool isMultiUserMode();
   /*{
-    if(m_baseDM != NULL)
+    if(m_baseDM != nullptr)
       return this->m_baseDM->isMultiUserMode();
     else
       return false;
@@ -158,7 +158,7 @@ class CPPCACHE_EXPORT TcrEndpoint {
                                   uint32_t connectTimeout);
 
   void setConnected(volatile bool connected = true) { m_connected = connected; }
-  virtual ThinClientPoolDM* getPoolHADM() { return NULL; }
+  virtual ThinClientPoolDM* getPoolHADM() { return nullptr; }
   bool isQueueHosted();
   ACE_Recursive_Thread_Mutex& getQueueHostedMutex() {
     return m_notifyReceiverLock;

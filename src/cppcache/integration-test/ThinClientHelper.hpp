@@ -45,14 +45,14 @@ using namespace apache::geode::client;
 using namespace test;
 using namespace unitTests;
 
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 
 void initGridClient(const bool isthinClient,
                     const PropertiesPtr& configPtr = nullptr) {
   static bool s_isGridClient = true;
 
   s_isGridClient = !s_isGridClient;
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr config = configPtr;
     if (config == nullptr) {
       config = Properties::create();
@@ -65,7 +65,7 @@ void initGridClient(const bool isthinClient,
 
 void initClient(const bool isthinClient,
                 const PropertiesPtr& configPtr = nullptr) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, configPtr);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
@@ -78,7 +78,7 @@ void initClientWithPool(const bool isthinClient, const char* poolName,
                         int subscriptionAckInterval = -1, int connections = -1,
                         int loadConditioningInterval = -1,
                         bool prSingleHop = false, bool threadLocal = false) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(
         isthinClient, poolName, locators, serverGroup, configPtr, redundancy,
         clientNotification, subscriptionAckInterval, connections,
@@ -89,7 +89,7 @@ void initClientWithPool(const bool isthinClient, const char* poolName,
 
 /* For HA Clients */
 void initClient(int redundancyLevel, const PropertiesPtr& configPtr = nullptr) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr config = configPtr;
     if (config == nullptr) {
       config = Properties::create();
@@ -104,7 +104,7 @@ void initGridClient(int redundancyLevel,
   static bool s_isGridClient = true;
 
   s_isGridClient = !s_isGridClient;
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr config = configPtr;
     if (config == nullptr) {
       config = Properties::create();
@@ -116,32 +116,32 @@ void initGridClient(int redundancyLevel,
 }
 
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 void netDown() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     TestUtils::getCacheImpl(cacheHelper->cachePtr)->netDown();
   }
 }
 
 void revive() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     TestUtils::getCacheImpl(cacheHelper->cachePtr)->revive();
   }
 }
 
 void crashClient() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     TestUtils::getCacheImpl(cacheHelper->cachePtr)->setClientCrashTEST();
   }
 }
 
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
@@ -185,7 +185,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   if (noKey == false) {  // need to find the key!
     ASSERT(regPtr->containsKey(keyPtr), "Key not found in region.");
   }
-  if (val != NULL && checkVal) {  // need to have a value!
+  if (val != nullptr && checkVal) {  // need to have a value!
     ASSERT(regPtr->containsValueForKey(keyPtr), "Value not found in region.");
   }
 
@@ -205,7 +205,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
       }
       ASSERT(containsKeyCnt < MAX, "Key found in region.");
     }
-    if (val == NULL) {
+    if (val == nullptr) {
       if (regPtr->containsValueForKey(keyPtr)) {
         containsValueCnt++;
       } else {
@@ -214,7 +214,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
       ASSERT(containsValueCnt < MAX, "Value found in region.");
     }
 
-    if (val != NULL) {
+    if (val != nullptr) {
       auto checkPtr =
           std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
@@ -415,8 +415,8 @@ RegionPtr createPooledRegion(const char* name, bool ackMode,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
 
-  if (cacheHelper == NULL) {
-    cacheHelper = new CacheHelper(true, poolname, locators, NULL);
+  if (cacheHelper == nullptr) {
+    cacheHelper = new CacheHelper(true, poolname, locators, nullptr);
   }
 
   // ack, caching
@@ -467,7 +467,7 @@ PoolPtr createPoolAndDestroy(const char* poolName, const char* locators,
 }
 // this will create pool even endpoints and locatorhost has been not defined
 PoolPtr createPool2(const char* poolName, const char* locators,
-                    const char* serverGroup, const char* servers = NULL,
+                    const char* serverGroup, const char* servers = nullptr,
                     int redundancy = 0, bool clientNotification = false) {
   LOG("createPool2() entered.");
 
@@ -577,7 +577,7 @@ void doNetsearch(const char* name, const char* key, const char* value,
             checkPtr->asChar(), key);
     LOG(buf);
   } else {
-    LOG("checkPtr is NULL");
+    LOG("checkPtr is nullptr");
   }
   verifyEntry(name, key, value);
   LOG("Netsearch complete.");

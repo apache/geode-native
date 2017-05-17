@@ -62,8 +62,8 @@ class ThinClientTallyLoader : public TallyLoader {
     char lstrvalue[32];
     sprintf(lstrvalue, "%i", loadValue);
     CacheableStringPtr lreturnValue = CacheableString::create(lstrvalue);
-    if (key != nullptr && (NULL != rp->getAttributes()->getEndpoints() ||
-                           rp->getAttributes()->getPoolName() != NULL)) {
+    if (key != nullptr && (nullptr != rp->getAttributes()->getEndpoints() ||
+                           rp->getAttributes()->getPoolName() != nullptr)) {
       LOGDEBUG("Putting the value (%s) for local region clients only ",
                lstrvalue);
       rp->put(key, lreturnValue);
@@ -187,7 +187,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testCreatesAndUpdates)
     see bug #252
     try {
       regPtr->create(keyPtr1, nvals[1]);
-      ASSERT(NULL, "Expected an EntryExistsException");
+      ASSERT(nullptr, "Expected an EntryExistsException");
     } catch(EntryExistsException &) {
       //Expected Behavior
     }

@@ -50,7 +50,7 @@ extern int gf_sprintf(char* buffer, const char* fmt, ...);
  * Provide operations for reading primitive data values, byte arrays,
  * strings, <code>Serializable</code> objects from a byte stream.
  * This class is intentionally not thread safe.
- * @remarks None of the output parameters in the methods below can be NULL
+ * @remarks None of the output parameters in the methods below can be nullptr
  *   unless otherwise noted.
  */
 class CPPCACHE_EXPORT DataInput {
@@ -136,7 +136,7 @@ class CPPCACHE_EXPORT DataInput {
     int32_t length;
     readArrayLen(&length);
     *len = length;
-    uint8_t* buffer = NULL;
+    uint8_t* buffer = nullptr;
     if (length > 0) {
       checkBufferSize(length);
       GF_NEW(buffer, uint8_t[length]);
@@ -160,7 +160,7 @@ class CPPCACHE_EXPORT DataInput {
     int32_t length;
     readArrayLen(&length);
     *len = length;
-    int8_t* buffer = NULL;
+    int8_t* buffer = nullptr;
     if (length > 0) {
       checkBufferSize(length);
       GF_NEW(buffer, int8_t[length]);
@@ -377,13 +377,13 @@ class CPPCACHE_EXPORT DataInput {
    * @param value output C string to hold the read characters; it is allocated
    *   by this method
    * @param len output parameter to hold the number of characters read from
-   *   stream; not set if NULL
+   *   stream; not set if nullptr
    */
-  inline void readASCII(char** value, uint16_t* len = NULL) {
+  inline void readASCII(char** value, uint16_t* len = nullptr) {
     uint16_t length;
     readInt(&length);
     checkBufferSize(length);
-    if (len != NULL) {
+    if (len != nullptr) {
       *len = length;
     }
     char* str;
@@ -405,12 +405,12 @@ class CPPCACHE_EXPORT DataInput {
    * @param value output C string to hold the read characters; it is allocated
    *   by this method
    * @param len output parameter to hold the number of characters read from
-   *   stream; not set if NULL
+   *   stream; not set if nullptr
    */
-  inline void readASCIIHuge(char** value, uint32_t* len = NULL) {
+  inline void readASCIIHuge(char** value, uint32_t* len = nullptr) {
     uint32_t length;
     readInt(&length);
-    if (len != NULL) {
+    if (len != nullptr) {
       *len = length;
     }
     char* str;
@@ -434,15 +434,15 @@ class CPPCACHE_EXPORT DataInput {
    * @param value output C string to hold the read characters; it is allocated
    *   by this method
    * @param len output parameter to hold the number of characters read from
-   *   stream; not set if NULL
+   *   stream; not set if nullptr
    */
-  inline void readUTF(char** value, uint16_t* len = NULL) {
+  inline void readUTF(char** value, uint16_t* len = nullptr) {
     uint16_t length;
     readInt(&length);
     checkBufferSize(length);
     uint16_t decodedLen =
         static_cast<uint16_t>(getDecodedLength(m_buf, length));
-    if (len != NULL) {
+    if (len != nullptr) {
       *len = decodedLen;
     }
     char* str;
@@ -461,7 +461,7 @@ class CPPCACHE_EXPORT DataInput {
    * length to hold the length of the string. Value is modified to point to the
    * new allocation. The chars are allocated as an array, so the caller must
    * use freeUTFMemory when done.
-   * If len == NULL, then the decoded string length is not set.
+   * If len == nullptr, then the decoded string length is not set.
    */
   inline void readUTFNoLen(wchar_t** value, uint16_t decodedLen) {
     wchar_t* str;
@@ -485,12 +485,12 @@ class CPPCACHE_EXPORT DataInput {
    * @param value output C string to hold the read characters; it is allocated
    *   by this method
    * @param len output parameter to hold the number of characters read from
-   *   stream; not set if NULL
+   *   stream; not set if nullptr
    */
-  inline void readUTFHuge(char** value, uint32_t* len = NULL) {
+  inline void readUTFHuge(char** value, uint32_t* len = nullptr) {
     uint32_t length;
     readInt(&length);
-    if (len != NULL) {
+    if (len != nullptr) {
       *len = length;
     }
     char* str;
@@ -520,15 +520,15 @@ class CPPCACHE_EXPORT DataInput {
    * @param value output wide-character string to hold the read characters;
    *   it is allocated by this method
    * @param len output parameter to hold the number of characters read from
-   *   stream; not set if NULL
+   *   stream; not set if nullptr
    */
-  inline void readUTF(wchar_t** value, uint16_t* len = NULL) {
+  inline void readUTF(wchar_t** value, uint16_t* len = nullptr) {
     uint16_t length;
     readInt(&length);
     checkBufferSize(length);
     uint16_t decodedLen =
         static_cast<uint16_t>(getDecodedLength(m_buf, length));
-    if (len != NULL) {
+    if (len != nullptr) {
       *len = decodedLen;
     }
     wchar_t* str;
@@ -552,12 +552,12 @@ class CPPCACHE_EXPORT DataInput {
    * @param value output wide-character string to hold the read characters;
    *   it is allocated by this method
    * @param len output parameter to hold the number of characters read from
-   *   stream; not set if NULL
+   *   stream; not set if nullptr
    */
-  inline void readUTFHuge(wchar_t** value, uint32_t* len = NULL) {
+  inline void readUTFHuge(wchar_t** value, uint32_t* len = nullptr) {
     uint32_t length;
     readInt(&length);
-    if (len != NULL) {
+    if (len != nullptr) {
       *len = length;
     }
     wchar_t* str;
@@ -695,7 +695,7 @@ class CPPCACHE_EXPORT DataInput {
     int arrayLen = 0;
     readArrayLen(&arrayLen);
     length = arrayLen;
-    char* objArray = NULL;
+    char* objArray = nullptr;
     if (arrayLen > 0) {
       objArray = new char[arrayLen];
       int i = 0;
@@ -744,9 +744,9 @@ class CPPCACHE_EXPORT DataInput {
     int8_t typeId;
     read(&typeId);
 
-    // Check for NULL String
+    // Check for nullptr String
     if (typeId == GeodeTypeIds::CacheableNullString) {
-      *value = NULL;
+      *value = nullptr;
       return;
     }
     /*
@@ -777,9 +777,9 @@ class CPPCACHE_EXPORT DataInput {
     int8_t typeId;
     read(&typeId);
 
-    // Check for NULL String
+    // Check for nullptr String
     if (typeId == GeodeTypeIds::CacheableNullString) {
-      *value = NULL;
+      *value = nullptr;
       return;
     }
 
@@ -803,7 +803,7 @@ class CPPCACHE_EXPORT DataInput {
     readArrayLen(&arrLen);
     length = arrLen;
     if (arrLen == -1) {
-      *strArray = NULL;
+      *strArray = nullptr;
       return;
     } else {
       char** tmpArray;
@@ -820,7 +820,7 @@ class CPPCACHE_EXPORT DataInput {
     readArrayLen(&arrLen);
     length = arrLen;
     if (arrLen == -1) {
-      *strArray = NULL;
+      *strArray = nullptr;
       return;
     } else {
       wchar_t** tmpArray;
@@ -840,7 +840,7 @@ class CPPCACHE_EXPORT DataInput {
     arrayLength = arrLen;
 
     if (arrLen == -1) {
-      *arrayofBytearr = NULL;
+      *arrayofBytearr = nullptr;
       return;
     } else {
       int8_t** tmpArray;
@@ -896,7 +896,7 @@ class CPPCACHE_EXPORT DataInput {
       : m_buf(m_buffer),
         m_bufHead(m_buffer),
         m_bufLength(len),
-        m_poolName(NULL) {}
+        m_poolName(nullptr) {}
 
   /** destructor */
   ~DataInput() {}

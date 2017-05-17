@@ -160,12 +160,12 @@ const char* locatorsG =
 
 std::vector<char*> storeEndPoints(const char* points) {
   std::vector<char*> endpointNames;
-  if (points != NULL) {
+  if (points != nullptr) {
     char* ep = strdup(points);
     char* token = strtok(ep, ",");
     while (token) {
       endpointNames.push_back(token);
-      token = strtok(NULL, ",");
+      token = strtok(nullptr, ",");
     }
   }
   ASSERT(endpointNames.size() == 3, "There should be 3 end points");
@@ -231,7 +231,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
     RegionPtr dataReg = getHelper()->getRegion(partitionRegionName);
 
     for (int i = 0; i < 3000; i++) {
-      auto keyPtr = std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
+      auto keyPtr =
+          std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
 
       try {
         LOGDEBUG("CPPTEST: Putting key %d with hashcode %d", i,
@@ -245,7 +246,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
           failureCount++;
         }
         int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
-                                   ->getAndResetServerGroupFlag();
+                                     ->getAndResetServerGroupFlag();
         LOGDEBUG(
             "CheckPrSingleHopForIntKeysTask_REGION: serverGroupFlag is %d "
             "failureCount = %d",
@@ -277,7 +278,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
     LOG("CheckPrSingleHopForIntKeysTask_REGION put completed.");
 
     for (int i = 0; i < 1000; i++) {
-      auto keyPtr = std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
+      auto keyPtr =
+          std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
 
       try {
         LOGDEBUG("CPPTEST: getting key %d with hashcode %d", i,
@@ -289,7 +291,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
                  networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
         int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
-                                   ->getAndResetServerGroupFlag();
+                                     ->getAndResetServerGroupFlag();
         LOGDEBUG(
             "CheckPrSingleHopForIntKeysTask_REGION: serverGroupFlag is %d ",
             serverGroupFlag);
@@ -336,7 +338,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
                  networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
         int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
-                                   ->getAndResetServerGroupFlag();
+                                     ->getAndResetServerGroupFlag();
         LOGDEBUG(
             "CheckPrSingleHopForIntKeysTask_REGION: serverGroupFlag is %d ",
             serverGroupFlag);
@@ -373,7 +375,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
                  networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
         int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
-                                   ->getAndResetServerGroupFlag();
+                                     ->getAndResetServerGroupFlag();
         LOGDEBUG(
             "CheckPrSingleHopForIntKeysTask_REGION: serverGroupFlag is %d ",
             serverGroupFlag);
@@ -403,7 +405,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
     LOG("CheckPrSingleHopForIntKeysTask_REGION getAll completed.");
 
     for (int i = 0; i < 1000; i++) {
-      auto keyPtr = std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
+      auto keyPtr =
+          std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
 
       try {
         LOGDEBUG("CPPTEST: destroying key %d with hashcode %d", i,
@@ -415,7 +418,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
                  networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
         int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
-                                   ->getAndResetServerGroupFlag();
+                                     ->getAndResetServerGroupFlag();
         LOGDEBUG(
             "CheckPrSingleHopForIntKeysTask_REGION: serverGroupFlag is %d ",
             serverGroupFlag);

@@ -29,7 +29,7 @@ bool DiffieHellman::m_inited = false;
 ACE_Recursive_Thread_Mutex DiffieHellman::s_mutex;
 
 #define INIT_DH_FUNC_PTR(OrigName) \
-  DiffieHellman::OrigName##_Type DiffieHellman::OrigName##_Ptr = NULL;
+  DiffieHellman::OrigName##_Type DiffieHellman::OrigName##_Ptr = nullptr;
 
 INIT_DH_FUNC_PTR(gf_initDhKeys)
 INIT_DH_FUNC_PTR(gf_clearDhKeys)
@@ -42,7 +42,7 @@ INIT_DH_FUNC_PTR(gf_verifyDH)
 
 void* DiffieHellman::getOpenSSLFuncPtr(const char* function_name) {
   void* func = m_dll.symbol(function_name);
-  if (func == NULL) {
+  if (func == nullptr) {
     char msg[1000];
     ACE_OS::snprintf(msg, 1000, "cannot find function %s in library %s",
                      function_name, "cryptoImpl");
@@ -83,7 +83,7 @@ void DiffieHellman::initOpenSSLFuncPtrs() {
 
 void DiffieHellman::initDhKeys(const PropertiesPtr& props) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(DiffieHellman::s_mutex);
-  m_dhCtx = NULL;
+  m_dhCtx = nullptr;
 
   CacheableStringPtr dhAlgo = props->find(SecurityClientDhAlgo);
   CacheableStringPtr ksPath = props->find(SecurityClientKsPath);
@@ -95,7 +95,7 @@ void DiffieHellman::initDhKeys(const PropertiesPtr& props) {
   }
 
   int error = gf_initDhKeys_Ptr(&m_dhCtx, dhAlgo->asChar(),
-                                ksPath != nullptr ? ksPath->asChar() : NULL);
+                                ksPath != nullptr ? ksPath->asChar() : nullptr);
 
   if (error == DH_ERR_UNSUPPORTED_ALGO) {  // Unsupported Algorithm
     char msg[64] = {'\0'};
@@ -107,7 +107,7 @@ void DiffieHellman::initDhKeys(const PropertiesPtr& props) {
     ACE_OS::snprintf(msg, 64, "Illegal key size for algorithm %s.",
                      dhAlgo->asChar());
     throw IllegalArgumentException(msg);
-  } else if (m_dhCtx == NULL) {
+  } else if (m_dhCtx == nullptr) {
     throw IllegalStateException(
         "Could not initialize the Diffie-Hellman helper");
   }
@@ -115,18 +115,18 @@ void DiffieHellman::initDhKeys(const PropertiesPtr& props) {
 
 void DiffieHellman::clearDhKeys(void) {
   // Sanity check for accidental calls
-  if (gf_clearDhKeys_Ptr == NULL) {
+  if (gf_clearDhKeys_Ptr == nullptr) {
     return;
   }
 
   gf_clearDhKeys_Ptr(m_dhCtx);
 
-  m_dhCtx = NULL;
+  m_dhCtx = nullptr;
 
   /*
   //reset all pointers
 #define CLEAR_DH_FUNC_PTR(OrigName) \
-  OrigName##_Ptr = NULL;
+  OrigName##_Ptr = nullptr;
 
   CLEAR_DH_FUNC_PTR(gf_initDhKeys)
   CLEAR_DH_FUNC_PTR(gf_clearDhKeys)

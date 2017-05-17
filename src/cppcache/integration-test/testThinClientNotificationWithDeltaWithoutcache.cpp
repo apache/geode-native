@@ -29,7 +29,7 @@
 using namespace apache::geode::client;
 using namespace test;
 
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 
 #include "locator_globals.hpp"
 
@@ -43,7 +43,7 @@ int DeltaEx::fromDeltaCount = 0;
 int DeltaEx::fromDataCount = 0;
 int DeltaEx::cloneCount = 0;
 void initClient(const bool isthinClient) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
@@ -55,14 +55,14 @@ void initClientNoPools() {
 }
 
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 

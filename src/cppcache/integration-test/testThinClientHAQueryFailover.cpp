@@ -45,7 +45,7 @@ using namespace testobject;
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
@@ -84,7 +84,7 @@ void initClient() {
   } catch (const IllegalStateException&) {
     // ignore reregistration exception
   }
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(true);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
@@ -96,7 +96,7 @@ void initClient( const bool isthinClient )
   Serializable::registerType( Portfolio::createDeserializable);
   Serializable::registerType( Position::createDeserializable);
 
-  if ( cacheHelper == NULL ) {
+  if ( cacheHelper == nullptr ) {
     cacheHelper = new CacheHelper(isthinClient);
   }
   ASSERT( cacheHelper, "Failed to create a CacheHelper client instance." );
@@ -104,14 +104,14 @@ void initClient( const bool isthinClient )
 */
 
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
@@ -120,7 +120,7 @@ void createRegion(const char* name, bool ackMode,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  char* endpoints = NULL;
+  char* endpoints = nullptr;
   RegionPtr regPtr = getHelper()->createRegion(
       name, ackMode, false, nullptr, endpoints, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -132,7 +132,7 @@ const char* regionNames[] = {"Portfolios", "Positions"};
 const bool USE_ACK = true;
 const bool NO_ACK ATTR_UNUSED = false;
 
-KillServerThread* kst = NULL;
+KillServerThread* kst = nullptr;
 
 void initClientAndRegion(int redundancy) {
   // PropertiesPtr pp  = Properties::create();

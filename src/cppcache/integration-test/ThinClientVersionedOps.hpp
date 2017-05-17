@@ -31,10 +31,10 @@
 
 // This is the test for tracking work. bug#304
 
-putThread *thread1 = NULL;
-putThread *thread2 = NULL;
-putThread *thread3 = NULL;
-putThread *thread4 = NULL;
+putThread *thread1 = nullptr;
+putThread *thread2 = nullptr;
+putThread *thread3 = nullptr;
+putThread *thread4 = nullptr;
 
 const char *regNames[] = {"DistRegionAck", "DistRegionNoAck"};
 const char *group1 = "A";
@@ -132,13 +132,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartClient1)
     // sprintf( tmp1, "%d", CacheHelper::staticHostPort1 );
     // gfendpoints1 += tmp1;
 
-    // initClientWithPool(true/*isthinClient*/, NULL/*poolName*/,
-    // NULL/*locators*/,serverGroup1, NULL/*servers*/,
+    // initClientWithPool(true/*isthinClient*/, nullptr/*poolName*/,
+    // nullptr/*locators*/,serverGroup1, nullptr/*servers*/,
     // nullptr/*PropertiesPtr&*/,
     // 0/*redundancy*/, true/*clientNotification*/,
     // -1/*subscriptionAckInterval*/,
     // 5/*connections*/, 60000/*loadConditioningInterval*/);
-    // RegionPtr regPtr0 = createRegionAndAttachPool(regNames[0],USE_ACK, NULL);
+    // RegionPtr regPtr0 = createRegionAndAttachPool(regNames[0],USE_ACK,
+    // nullptr);
 
     initClient(true);
     getHelper()->createPoolWithLocators("__TEST_POOL1__", locatorsG, true, -1,
@@ -165,11 +166,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, StartClient2)
           LOG( "Client-2 Init -3" );
           gfendpoints2 += tmp2;
           LOG( "Client-2 Init -4" );
-    initClientWithPool(true, NULL, NULL, serverGroup2, gfendpoints2.c_str(),
-    nullptr, 0, true, -1, 5, 60000);
-    LOG( "Client-2 Init -5" );
+    initClientWithPool(true, nullptr, nullptr, serverGroup2,
+    gfendpoints2.c_str(), nullptr, 0, true, -1, 5, 60000); LOG( "Client-2 Init
+    -5" );
 
-    RegionPtr regPtr0 = createRegionAndAttachPool(regNames[0],USE_ACK, NULL);
+    RegionPtr regPtr0 = createRegionAndAttachPool(regNames[0],USE_ACK, nullptr);
     LOG( "Client-2 Init -6" );
 
     */
@@ -513,13 +514,13 @@ DUNIT_TASK_DEFINITION(SERVER1, CreateServers_With_Locator)
     // starting servers
     if (isLocalServer1) {
       CacheHelper::initServer(1, "cacheserver_concurrency_enabled1.xml",
-                              locatorsG, NULL, false, true, false, true);
+                              locatorsG, nullptr, false, true, false, true);
       LOG(":SERVER1 started");
     }
     // starting servers
     if (isLocalServer1) {
       CacheHelper::initServer(2, "cacheserver_concurrency_enabled2.xml",
-                              locatorsG, NULL, false, true, false, true);
+                              locatorsG, nullptr, false, true, false, true);
       LOG(":SERVER2 started");
     }
   }
@@ -535,14 +536,14 @@ DUNIT_TASK_DEFINITION(SERVER1, CreateServers_With_Locator_Disk)
     if (isLocalServer1) {
       CacheHelper::initServer(
           1, "cacheserver_concurrency_enabled_disk_replicate1.xml", locatorsG,
-          NULL, false, true, false, true);
+          nullptr, false, true, false, true);
       LOG(":SERVER1 started");
     }
     // starting servers
     if (isLocalServer1) {
       CacheHelper::initServer(
           2, "cacheserver_concurrency_enabled_disk_replicate2.xml", locatorsG,
-          NULL, false, true, false, true);
+          nullptr, false, true, false, true);
       LOG(":SERVER2 started");
     }
   }
@@ -557,13 +558,13 @@ DUNIT_TASK_DEFINITION(SERVER1, CreateServers_With_Locator_Partition)
     // starting servers
     if (isLocalServer1) {
       CacheHelper::initServer(1, "cacheserver_concurrency_enabled_disk1.xml",
-                              locatorsG, NULL, false, true, false, true);
+                              locatorsG, nullptr, false, true, false, true);
       LOG(":SERVER1 started");
     }
     // starting servers
     if (isLocalServer1) {
       CacheHelper::initServer(2, "cacheserver_concurrency_enabled_disk2.xml",
-                              locatorsG, NULL, false, true, false, true);
+                              locatorsG, nullptr, false, true, false, true);
       LOG(":SERVER2 started");
     }
   }

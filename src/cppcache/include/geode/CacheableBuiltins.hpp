@@ -176,7 +176,7 @@ class CacheableArrayType : public Cacheable {
   TObj* m_value;
   int32_t m_length;
 
-  inline CacheableArrayType() : m_value(NULL), m_length(0) {}
+  inline CacheableArrayType() : m_value(nullptr), m_length(0) {}
 
   inline CacheableArrayType(int32_t length) : m_length(length) {
     if (length > 0) {
@@ -188,7 +188,7 @@ class CacheableArrayType : public Cacheable {
       : m_value(value), m_length(length) {}
 
   inline CacheableArrayType(const TObj* value, int32_t length, bool copy)
-      : m_value(NULL), m_length(length) {
+      : m_value(nullptr), m_length(length) {
     if (length > 0) {
       GF_NEW(m_value, TObj[length]);
       copyArray(m_value, value, length);
@@ -320,7 +320,7 @@ class CacheableContainerType : public Cacheable, public TBase {
         sizeof(CacheableContainerType) +
         apache::geode::client::serializer::objectSize(*this));
   }
-  };
+};
 
 #ifdef _SOLARIS
 #define TEMPLATE_EXPORT template class
@@ -404,27 +404,13 @@ class CacheableContainerType : public Cacheable, public TBase {
       return nullptr == value ? nullptr                                        \
                               : std::make_shared<c>(value, length, true);      \
     }                                                                          \
-    /**                                                                      \ \
-     * \                                                                       \
-     * \ \                                                                     \
-     * Create a cacheable array taking ownership of the given array          \ \
-     * \                                                                       \
-     * \ \                                                                     \
-     * without creating a copy.                                              \ \
-     * \                                                                       \
-     * \ \                                                                     \
-     *                                                                       \ \
-     * \                                                                       \
-     * \ \                                                                     \
-     * Note that the application has to ensure that the given array is       \ \
-     * \                                                                       \
-     * \ \                                                                     \
-     * not deleted (apart from this class) and is allocated on the heap      \ \
-     * \                                                                       \
-     * \ \                                                                     \
-     * using the "new" operator.                                             \ \
-     * \                                                                       \
-     * \ \                                                                     \
+    /**                                                                        \
+     * Create a cacheable array taking ownership of the given array            \
+     * without creating a copy.                                                \
+     *                                                                         \
+     * Note that the application has to ensure that the given array is         \
+     * not deleted (apart from this class) and is allocated on the heap        \
+     * using the "new" operator.                                               \
      */                                                                        \
     inline static c##Ptr createNoCopy(p* value, int32_t length) {              \
       return nullptr == value ? nullptr : std::make_shared<c>(value, length);  \
@@ -435,7 +421,7 @@ class CacheableContainerType : public Cacheable, public TBase {
   TEMPLATE_EXPORT CacheableContainerType<p, GeodeTypeIds::c>; \
   typedef CacheableContainerType<p, GeodeTypeIds::c> _##c;    \
   class CPPCACHE_EXPORT c;                                    \
-  typedef SharedPtr<c> c##Ptr;
+  typedef std::shared_ptr<c> c##Ptr;
 
 // use a class instead of typedef for bug #283
 #define _GF_CACHEABLE_CONTAINER_TYPE_(p, c)                            \
@@ -447,8 +433,6 @@ class CacheableContainerType : public Cacheable, public TBase {
     FRIEND_STD_SHARED_PTR(c)                                           \
                                                                        \
    public:                                                             \
-    /** Iterator for this type. */                                     \
-    typedef p::Iterator Iterator;                                      \
     /** Factory function registered with serialization registry. */    \
     static Serializable* createDeserializable() { return new c(); }    \
     /** Factory function to create a default instance. */              \
@@ -584,58 +568,57 @@ _GF_CACHEABLE_ARRAY_TYPE_(CacheableStringPtr, CacheableStringArray);
 
 // Instantiations for container types (Vector/HashMap/HashSet) Cacheables
 
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_VectorOfCacheable, CacheableVector);
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(VectorOfCacheable, CacheableVector);
 /**
  * A mutable <code>Cacheable</code> vector wrapper that can serve as
  * a distributable object for caching.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_VectorOfCacheable, CacheableVector);
+_GF_CACHEABLE_CONTAINER_TYPE_(VectorOfCacheable, CacheableVector);
 
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_HashMapOfCacheable, CacheableHashMap);
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable, CacheableHashMap);
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
  * hash map that can serve as a distributable object for caching.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_HashMapOfCacheable, CacheableHashMap);
+_GF_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableHashMap);
 
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_HashSetOfCacheableKey, CacheableHashSet);
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey, CacheableHashSet);
 /**
  * A mutable <code>CacheableKey</code> hash set wrapper that can serve as
  * a distributable object for caching.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_HashSetOfCacheableKey, CacheableHashSet);
+_GF_CACHEABLE_CONTAINER_TYPE_(HashSetOfCacheableKey, CacheableHashSet);
 
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_VectorOfCacheable, CacheableArrayList);
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(VectorOfCacheable, CacheableArrayList);
 /**
  * A mutable <code>Cacheable</code> array list wrapper that can serve as
  * a distributable object for caching.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_VectorOfCacheable, CacheableArrayList);
+_GF_CACHEABLE_CONTAINER_TYPE_(VectorOfCacheable, CacheableArrayList);
 
 // linketlist for JSON formattor issue
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_VectorOfCacheable, CacheableLinkedList);
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(VectorOfCacheable, CacheableLinkedList);
 /**
  * A mutable <code>Cacheable</code> array list wrapper that can serve as
  * a distributable object for caching.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_VectorOfCacheable, CacheableLinkedList);
+_GF_CACHEABLE_CONTAINER_TYPE_(VectorOfCacheable, CacheableLinkedList);
 
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_VectorOfCacheable, CacheableStack);
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(VectorOfCacheable, CacheableStack);
 /**
  * A mutable <code>Cacheable</code> stack wrapper that can serve as
  * a distributable object for caching.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_VectorOfCacheable, CacheableStack);
+_GF_CACHEABLE_CONTAINER_TYPE_(VectorOfCacheable, CacheableStack);
 
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_HashMapOfCacheable, CacheableHashTable);
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable, CacheableHashTable);
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
  * hash map that can serve as a distributable object for caching.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_HashMapOfCacheable, CacheableHashTable);
+_GF_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableHashTable);
 
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_HashMapOfCacheable,
-                                  CacheableIdentityHashMap);
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable, CacheableIdentityHashMap);
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
  * hash map that can serve as a distributable object for caching. This is
@@ -643,9 +626,9 @@ _GF_CACHEABLE_CONTAINER_TYPE_DEF_(_HashMapOfCacheable,
  * to <code>CacheableHashMap</code> i.e. does not provide the semantics of
  * java <code>IdentityHashMap</code>.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_HashMapOfCacheable, CacheableIdentityHashMap);
+_GF_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableIdentityHashMap);
 
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_HashSetOfCacheableKey,
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey,
                                   CacheableLinkedHashSet);
 /**
  * A mutable <code>CacheableKey</code> hash set wrapper that can serve as
@@ -654,7 +637,7 @@ _GF_CACHEABLE_CONTAINER_TYPE_DEF_(_HashSetOfCacheableKey,
  * <code>CacheableHashSet</code> i.e. does not provide the predictable
  * iteration semantics of java <code>LinkedHashSet</code>.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_HashSetOfCacheableKey, CacheableLinkedHashSet);
+_GF_CACHEABLE_CONTAINER_TYPE_(HashSetOfCacheableKey, CacheableLinkedHashSet);
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

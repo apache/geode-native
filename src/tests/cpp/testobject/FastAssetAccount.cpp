@@ -31,7 +31,7 @@ FastAssetAccount::FastAssetAccount(int idx, bool encodeTimestp, int maxVal,
   assets = CacheableHashMap::create();
   for (int i = 0; i < asstSize; i++) {
     auto asset = std::make_shared<FastAsset>(i, maxVal);
-    assets->insert(CacheableInt32::create(i), asset);
+    assets->emplace(CacheableInt32::create(i), asset);
     netWorth += asset->getValue();
   }
   if (encodeTimestamp) {

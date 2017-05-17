@@ -41,7 +41,7 @@ ExecutionPtr FunctionService::onRegion(RegionPtr region) {
 
   if (pool->getMultiuserAuthentication()) {
     ProxyRegion* pr = dynamic_cast<ProxyRegion*>(region.get());
-    if (pr != NULL) {
+    if (pr != nullptr) {
       LOGDEBUG("FunctionService::onRegion(RegionPtr region) proxy cache");
       // it is in multiuser mode
       proxyCache = pr->m_proxyCache;
@@ -108,7 +108,7 @@ ExecutionPtr FunctionService::onServerWithCache(const RegionServicePtr& cache) {
   auto pc = std::dynamic_pointer_cast<ProxyCache>(cache);
 
   LOGDEBUG("FunctionService::onServer:");
-  if (pc != NULL) {
+  if (pc != nullptr) {
     PoolPtr userAttachedPool = pc->m_userAttributes->getPool();
     PoolPtr pool = PoolManager::find(userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
@@ -118,7 +118,8 @@ ExecutionPtr FunctionService::onServerWithCache(const RegionServicePtr& cache) {
     throw IllegalStateException(
         "Pool has been close to execute function on server");
   } else {
-    CachePtr realcache = std::static_pointer_cast<GF_UNWRAP_SP(CachePtr)>(cache);
+    CachePtr realcache =
+        std::static_pointer_cast<GF_UNWRAP_SP(CachePtr)>(cache);
     return FunctionService::onServer(realcache->m_cacheImpl->getDefaultPool());
   }
 }
@@ -132,7 +133,7 @@ ExecutionPtr FunctionService::onServersWithCache(
   auto pc = std::dynamic_pointer_cast<ProxyCache>(cache);
 
   LOGDEBUG("FunctionService::onServers:");
-  if (pc != NULL && !cache->isClosed()) {
+  if (pc != nullptr && !cache->isClosed()) {
     PoolPtr userAttachedPool = pc->m_userAttributes->getPool();
     PoolPtr pool = PoolManager::find(userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
@@ -142,7 +143,8 @@ ExecutionPtr FunctionService::onServersWithCache(
     throw IllegalStateException(
         "Pool has been close to execute function on server");
   } else {
-    CachePtr realcache = std::static_pointer_cast<GF_UNWRAP_SP(CachePtr)>(cache);
+    CachePtr realcache =
+        std::static_pointer_cast<GF_UNWRAP_SP(CachePtr)>(cache);
     return FunctionService::onServers(realcache->m_cacheImpl->getDefaultPool());
   }
 }

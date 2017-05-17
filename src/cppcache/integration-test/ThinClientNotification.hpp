@@ -34,7 +34,7 @@
 using namespace apache::geode::client;
 using namespace test;
 
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 
 #include "locator_globals.hpp"
 
@@ -43,21 +43,21 @@ CacheHelper* cacheHelper = NULL;
 #define SERVER1 s2p1
 #include "LocatorHelper.hpp"
 void initClient(const bool isthinClient) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, "__TEST_POOL1__", locatorsG,
                                   "ServerGroup1", nullptr, 0, true);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
@@ -107,7 +107,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
       }
       ASSERT(containsKeyCnt < MAX, "Key found in region.");
     }
-    if (val == NULL) {
+    if (val == nullptr) {
       if (regPtr->containsValueForKey(keyPtr)) {
         containsValueCnt++;
       } else {
@@ -116,9 +116,10 @@ void _verifyEntry(const char* name, const char* key, const char* val,
       ASSERT(containsValueCnt < MAX, "Value found in region.");
     }
 
-    if (val != NULL) {
+    if (val != nullptr) {
       LOG(" checkin val");
-      auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
       ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
       char buf[1024];
@@ -253,7 +254,8 @@ void doNetsearch(const char* name, const char* key, const char* value) {
          "Value should not have been found in region.");
 
   CacheablePtr theValue = regPtr->get(keyPtr);
-  auto checkPtr = std::dynamic_pointer_cast<CacheableString>(theValue);  // force a netsearch
+  auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
+      theValue);  // force a netsearch
 
   if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
@@ -262,7 +264,7 @@ void doNetsearch(const char* name, const char* key, const char* value) {
             checkPtr->asChar(), key);
     LOG(buf);
   } else {
-    LOG("checkPtr is NULL");
+    LOG("checkPtr is nullptr");
   }
   verifyEntry(name, key, value);
   LOG("Netsearch complete.");

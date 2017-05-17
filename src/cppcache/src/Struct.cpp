@@ -22,14 +22,12 @@ namespace apache {
 namespace geode {
 namespace client {
 
-Struct::Struct() : m_parent(NULL), m_lastAccessIndex(0) {}
+Struct::Struct() : m_parent(nullptr), m_lastAccessIndex(0) {}
 
-Struct::Struct(StructSet* ssPtr, VectorT<SerializablePtr>& fieldValues) {
+Struct::Struct(StructSet* ssPtr, std::vector<SerializablePtr>& fieldValues) {
   m_parent = ssPtr;
-  int32_t vecsize = fieldValues.size();
-  for (int32_t i = 0; i < vecsize; i++) {
-    m_fieldValues.push_back(fieldValues[i]);
-  }
+  m_fieldValues.insert(m_fieldValues.end(), fieldValues.begin(),
+                       fieldValues.end());
   m_lastAccessIndex = 0;
 }
 
@@ -59,7 +57,9 @@ void Struct::toData(DataOutput& output) const {
   throw UnsupportedOperationException("Struct::toData: should not be called.");
 }
 
-int32_t Struct::length() const { return m_fieldValues.size(); }
+int32_t Struct::length() const {
+  return static_cast<int32_t>(m_fieldValues.size());
+}
 
 Serializable* Struct::fromData(DataInput& input) {
   int8_t classType;
@@ -70,12 +70,12 @@ Serializable* Struct::fromData(DataInput& input) {
   int32_t numOfFields;
   input.readArrayLen(&numOfFields);
 
-  m_parent = NULL;
+  m_parent = nullptr;
   for (int i = 0; i < numOfFields; i++) {
     CacheableStringPtr fieldName;
     // input.readObject(fieldName);
     input.readNativeString(fieldName);
-    m_fieldNames.insert(fieldName, CacheableInt32::create(i));
+    m_fieldNames.emplace(fieldName, CacheableInt32::create(i));
   }
   int32_t lengthForTypes;
   input.readArrayLen(&lengthForTypes);
@@ -96,18 +96,16 @@ Serializable* Struct::fromData(DataInput& input) {
   return this;
 }
 
-const char* Struct::getFieldName(int32_t index) {
-  if (m_parent != NULL) {
+const char* Struct::getFieldName(const int32_t index) const {
+  if (m_parent != nullptr) {
     return m_parent->getFieldName(index);
   } else {
-    for (HashMapT<CacheableStringPtr, CacheableInt32Ptr>::Iterator iter =
-             m_fieldNames.begin();
-         iter != m_fieldNames.end(); ++iter) {
-      if (*(iter.second()) == index) return iter.first()->asChar();
+    for (const auto& iter : m_fieldNames) {
+      if ((iter.second)->value() == index) return iter.first->asChar();
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 const SerializablePtr Struct::operator[](int32_t index) const {
@@ -120,14 +118,13 @@ const SerializablePtr Struct::operator[](int32_t index) const {
 
 const SerializablePtr Struct::operator[](const char* fieldName) const {
   int32_t index;
-  if (m_parent == NULL) {
-    CacheableStringPtr fName = CacheableString::create(fieldName);
-    HashMapT<CacheableStringPtr, CacheableInt32Ptr>::Iterator iter =
-        m_fieldNames.find(fName);
+  if (m_parent == nullptr) {
+    auto fName = CacheableString::create(fieldName);
+    const auto& iter = m_fieldNames.find(fName);
     if (iter == m_fieldNames.end()) {
       throw OutOfRangeException("Struct: fieldName not found.");
     }
-    index = iter.second()->value();
+    index = iter->second->value();
   } else {
     index = m_parent->getFieldIndex(fieldName);
   }

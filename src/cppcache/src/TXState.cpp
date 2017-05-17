@@ -44,7 +44,7 @@ TXState::TXState(Cache* cache) {
    * this constructor nor in any functions that it calls.
    */
   m_suspendedExpiryTaskId = 0;
-  m_pooldm = NULL;
+  m_pooldm = nullptr;
 }
 
 TXState::~TXState() {}
@@ -81,10 +81,7 @@ CacheablePtr TXState::replay(bool isRollback) {
     // LOGFINE("retrying transaction after loss of state in server.  Attempt #"
     // + (i+1));
     try {
-      for (VectorOfSharedBase::Iterator iter = m_operations.begin();
-           m_operations.end() != iter; iter++) {
-        TransactionalOperationPtr operation =
-            std::static_pointer_cast<GF_UNWRAP_SP(TransactionalOperationPtr)>(*iter);
+      for (const auto& operation : m_operations) {
         result = operation->replay(m_cache);
       }
 
@@ -110,10 +107,11 @@ void TXState::releaseStickyConnection() {
   // Since this is called during cleanup or through destructor, we should not
   // throw exception from here,
   // which can cause undefined cleanup.
-  TcrConnection* conn = (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
-  if (conn != NULL) {
+  TcrConnection* conn =
+      (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
+  if (conn != nullptr) {
     ThinClientPoolDM* dm = conn->getEndpointObject()->getPoolHADM();
-    if (dm != NULL) {
+    if (dm != nullptr) {
       if (!dm->isSticky()) {
         LOGFINE(
             "Release the sticky connection associated with the transaction");

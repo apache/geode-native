@@ -50,8 +50,8 @@ bool ThinClientStickyManager::getStickyConnection(
 
 void ThinClientStickyManager::getSingleHopStickyConnection(
     TcrEndpoint* theEP, TcrConnection*& conn) {
-  conn = (*TssConnectionWrapper::s_geodeTSSConn)->getSHConnection(theEP,
-                                                               m_dm->getName());
+  conn = (*TssConnectionWrapper::s_geodeTSSConn)
+             ->getSHConnection(theEP, m_dm->getName());
 }
 
 void ThinClientStickyManager::addStickyConnection(TcrConnection* conn) {
@@ -65,14 +65,14 @@ void ThinClientStickyManager::addStickyConnection(TcrConnection* conn) {
       oldConn->setAndGetBeingUsed(false, false);
       m_stickyConnList.erase(it);
       PoolPtr p = nullptr;
-      (*TssConnectionWrapper::s_geodeTSSConn)->setConnection(NULL, p);
+      (*TssConnectionWrapper::s_geodeTSSConn)->setConnection(nullptr, p);
       m_dm->put(oldConn, false);
     }
   }
 
   if (conn) {
-    (*TssConnectionWrapper::s_geodeTSSConn)->setConnection(
-        conn, m_dm->shared_from_this());
+    (*TssConnectionWrapper::s_geodeTSSConn)
+        ->setConnection(conn, m_dm->shared_from_this());
     conn->setAndGetBeingUsed(true, true);  // this is done for transaction
                                            // thread when some one resume
                                            // transaction
@@ -86,16 +86,16 @@ void ThinClientStickyManager::setStickyConnection(TcrConnection* conn,
   // ACE_Guard<ACE_Recursive_Thread_Mutex> guard( m_stickyLock );
   if (!conn) {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_stickyLock);
-    (*TssConnectionWrapper::s_geodeTSSConn)->setConnection(
-        NULL, m_dm->shared_from_this());
+    (*TssConnectionWrapper::s_geodeTSSConn)
+        ->setConnection(nullptr, m_dm->shared_from_this());
   } else {
     TcrConnection* currentConn =
         (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
     if (currentConn != conn)  // otherwsie no need to set it again
     {
       ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_stickyLock);
-      (*TssConnectionWrapper::s_geodeTSSConn)->setConnection(
-          conn, m_dm->shared_from_this());
+      (*TssConnectionWrapper::s_geodeTSSConn)
+          ->setConnection(conn, m_dm->shared_from_this());
       conn->setAndGetBeingUsed(
           false,
           forTransaction);  // if transaction then it will keep this as used
@@ -140,7 +140,7 @@ void ThinClientStickyManager::cleanStaleStickyConnection() {
         TcrConnection* temp1 = *conn;
         //*conn = temp; instead of setting in thread local put in queue, thread
         // will come and pick it from there
-        *conn = NULL;
+        *conn = nullptr;
         m_dm->put(temp, false);
         temp1->close();
         GF_SAFE_DELETE(temp1);
@@ -149,7 +149,7 @@ void ThinClientStickyManager::cleanStaleStickyConnection() {
       } else {
         (*conn)->setAndGetBeingUsed(false, false);
       }
-      temp = NULL;
+      temp = nullptr;
     }
   }
 }
@@ -188,7 +188,8 @@ bool ThinClientStickyManager::canThisConnBeDeleted(TcrConnection* conn) {
   return canBeDeleted;
 }
 void ThinClientStickyManager::releaseThreadLocalConnection() {
-  TcrConnection* conn = (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
+  TcrConnection* conn =
+      (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
   if (conn) {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_stickyLock);
     std::set<TcrConnection**>::iterator it = m_stickyConnList.find(
@@ -200,18 +201,18 @@ void ThinClientStickyManager::releaseThreadLocalConnection() {
                                false);  // now this can be used by next one
       m_dm->put(conn, false);
     }
-    (*TssConnectionWrapper::s_geodeTSSConn)->setConnection(
-        NULL, m_dm->shared_from_this());
+    (*TssConnectionWrapper::s_geodeTSSConn)
+        ->setConnection(nullptr, m_dm->shared_from_this());
   }
-  (*TssConnectionWrapper::s_geodeTSSConn)->releaseSHConnections(
-      m_dm->shared_from_this());
+  (*TssConnectionWrapper::s_geodeTSSConn)
+      ->releaseSHConnections(m_dm->shared_from_this());
 }
 bool ThinClientStickyManager::isNULL(TcrConnection** conn) {
-  if (*conn == NULL) return true;
+  if (*conn == nullptr) return true;
   return false;
 }
 
 void ThinClientStickyManager::getAnyConnection(TcrConnection*& conn) {
-  conn =
-      (*TssConnectionWrapper::s_geodeTSSConn)->getAnyConnection(m_dm->getName());
+  conn = (*TssConnectionWrapper::s_geodeTSSConn)
+             ->getAnyConnection(m_dm->getName());
 }

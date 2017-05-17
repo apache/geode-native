@@ -286,7 +286,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, SetupClient2withCachingEnabled_Pooled_Locator)
 
     createPooledRegion(myRegNames[0], false, locatorsG, poolName, true,
                        distRegCacheListener, true);
-    createPooledRegion(myRegNames[1], false, locatorsG, poolName, true, NULL,
+    createPooledRegion(myRegNames[1], false, locatorsG, poolName, true, nullptr,
                        true);
     createPooledRegion(myRegNames[2], false, locatorsG, poolName, true,
                        parentRegCacheListener, true);

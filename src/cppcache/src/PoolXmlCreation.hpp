@@ -41,7 +41,7 @@ class Cache;
 class CPPCACHE_EXPORT PoolXmlCreation {
  private:
   /** An <code>AttributesFactory</code> for creating default
-    * <code>PoolAttribute</code>s */
+   * <code>PoolAttribute</code>s */
   PoolFactoryPtr poolFactory;
 
   /** The name of this pool */
@@ -73,7 +73,7 @@ class CPPCACHE_EXPORT PoolXmlCreation {
    *
    * @throws OutOfMemoryException if the memory allocation failed
    * @throws NotConnectedException if the cache is not connected
-   * @throws InvalidArgumentException if the attributePtr is NULL.
+   * @throws InvalidArgumentException if the attributePtr is nullptr.
    * or if PoolAttributes is null or if poolName is null or
    * the empty string
    * @throws PoolExistsException

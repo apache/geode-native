@@ -37,13 +37,13 @@ const char* ExpiryTaskManager::NC_ETM_Thread = "NC ETM Thread";
 ExpiryTaskManager::ExpiryTaskManager() : m_reactorEventLoopRunning(false) {
 #if defined(_WIN32)
   m_reactor = new ACE_Reactor(
-      new ACE_WFMO_Reactor(NULL, new GF_Timer_Heap_ImmediateReset()), 1);
+      new ACE_WFMO_Reactor(nullptr, new GF_Timer_Heap_ImmediateReset()), 1);
 #elif defined(WITH_ACE_Select_Reactor)
   m_reactor = new ACE_Reactor(
-      new ACE_Select_Reactor(NULL, new GF_Timer_Heap_ImmediateReset()), 1);
+      new ACE_Select_Reactor(nullptr, new GF_Timer_Heap_ImmediateReset()), 1);
 #else
   m_reactor = new ACE_Reactor(
-      new ACE_Dev_Poll_Reactor(NULL, new GF_Timer_Heap_ImmediateReset()), 1);
+      new ACE_Dev_Poll_Reactor(nullptr, new GF_Timer_Heap_ImmediateReset()), 1);
 #endif
 }
 
@@ -73,12 +73,12 @@ long ExpiryTaskManager::scheduleExpiryTask(ACE_Event_Handler* handler,
   return m_reactor->schedule_timer(handler, 0, expTimeValue, intervalVal);
 }
 
-int ExpiryTaskManager::resetTask(long id, uint32_t sec) {
+int ExpiryTaskManager::resetTask(ExpiryTaskManager::id_type id, uint32_t sec) {
   ACE_Time_Value interval(sec);
   return m_reactor->reset_timer_interval(id, interval);
 }
 
-int ExpiryTaskManager::cancelTask(long id) {
+int ExpiryTaskManager::cancelTask(ExpiryTaskManager::id_type id) {
   return m_reactor->cancel_timer(id, 0, 0);
 }
 
@@ -113,5 +113,5 @@ void ExpiryTaskManager::begin() {
 ExpiryTaskManager::~ExpiryTaskManager() {
   stopExpiryTaskManager();
   delete m_reactor;
-  m_reactor = NULL;
+  m_reactor = nullptr;
 }

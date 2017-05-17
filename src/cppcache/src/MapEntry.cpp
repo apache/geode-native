@@ -19,7 +19,7 @@
 
 using namespace apache::geode::client;
 
-EntryFactory* EntryFactory::singleton = NULL;
+EntryFactory* EntryFactory::singleton = nullptr;
 MapEntryPtr MapEntry::MapEntry_NullPointer(nullptr);
 
 /**

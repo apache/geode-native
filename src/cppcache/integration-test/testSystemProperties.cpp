@@ -31,7 +31,7 @@ using namespace apache::geode::client;
 const bool checkSecurityProperties(PropertiesPtr securityProperties,
                                    const char* key, const char* value) {
   bool flag;
-  if (key == NULL || value == NULL) {
+  if (key == nullptr || value == nullptr) {
     return false;
   }
   CacheableStringPtr tempValue = securityProperties->find(key);
@@ -75,7 +75,7 @@ BEGIN_TEST(CONFIG)
     //  ACE_OS::fclose( propFile );
 
     // Make sure product can at least log to stdout.
-    Log::init(Log::Config, NULL, 0);
+    Log::init(Log::Config, nullptr, 0);
 
     SystemProperties* sp = new SystemProperties(nullptr, "test.properties");
     ASSERT(sp->statisticsSampleInterval() == 1, "expected 1");
@@ -97,7 +97,7 @@ BEGIN_TEST(NEW_CONFIG)
     std::string filePath = testsrc + "/system.properties";
 
     // Make sure product can at least log to stdout.
-    Log::init(Log::Config, NULL, 0);
+    Log::init(Log::Config, nullptr, 0);
 
     SystemProperties* sp = new SystemProperties(nullptr, filePath.c_str());
 

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_THINCLIENTREGION_H_
-#define GEODE_THINCLIENTREGION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,18 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_THINCLIENTREGION_H_
+#define GEODE_THINCLIENTREGION_H_
+
+#include <unordered_map>
+
+#include <ace/Task.h>
+
+#include <geode/utils.hpp>
+#include <geode/ResultCollector.hpp>
+
 #include "LocalRegion.hpp"
 #include "TcrMessage.hpp"
 #include "TcrEndpoint.hpp"
@@ -27,13 +34,11 @@
 #include "Queue.hpp"
 #include "TcrChunkedContext.hpp"
 #include "CacheableObjectPartList.hpp"
-#include <geode/ResultCollector.hpp>
-
-#include <ace/Task.h>
+#include "ClientMetadataService.hpp"
 
 /**
-* @file
-*/
+ * @file
+ */
 
 namespace apache {
 namespace geode {
@@ -42,12 +47,12 @@ namespace client {
 class ThinClientBaseDM;
 
 /**
-* @class ThinClientRegion ThinClientRegion.hpp
-*
-* This class manages all the functionalities related with thin client
-* region. It will inherit from DistributedRegion and overload some methods
-*
-*/
+ * @class ThinClientRegion ThinClientRegion.hpp
+ *
+ * This class manages all the functionalities related with thin client
+ * region. It will inherit from DistributedRegion and overload some methods
+ *
+ */
 
 class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
  public:
@@ -102,9 +107,9 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
       const VectorOfCacheableKey& keys,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
       const UserDataPtr& aCallbackArgument = nullptr);
-  GfErrType registerKeys(TcrEndpoint* endpoint = NULL,
-                         const TcrMessage* request = NULL,
-                         TcrMessageReply* reply = NULL);
+  GfErrType registerKeys(TcrEndpoint* endpoint = nullptr,
+                         const TcrMessage* request = nullptr,
+                         TcrMessageReply* reply = nullptr);
   GfErrType unregisterKeys();
   void addKeys(const VectorOfCacheableKey& keys, bool isDurable,
                bool receiveValues, InterestResultPolicy interestpolicy);
@@ -142,7 +147,7 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
   bool executeFunctionSH(
       const char* func, const CacheablePtr& args, uint8_t getResult,
       ResultCollectorPtr rc,
-      HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>* locationMap,
+      const ClientMetadataService::ServerToKeysMapPtr& locationMap,
       CacheableHashSetPtr& failedNodes,
       uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT,
       bool allBuckets = false);
@@ -208,19 +213,19 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
   GfErrType destroyRegionNoThrow_remote(const UserDataPtr& aCallbackArgument);
   GfErrType registerKeysNoThrow(
       const VectorOfCacheableKey& keys, bool attemptFailover = true,
-      TcrEndpoint* endpoint = NULL, bool isDurable = false,
+      TcrEndpoint* endpoint = nullptr, bool isDurable = false,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
-      bool receiveValues = true, TcrMessageReply* reply = NULL);
+      bool receiveValues = true, TcrMessageReply* reply = nullptr);
   GfErrType unregisterKeysNoThrow(const VectorOfCacheableKey& keys,
                                   bool attemptFailover = true);
   GfErrType unregisterKeysNoThrowLocalDestroy(const VectorOfCacheableKey& keys,
                                               bool attemptFailover = true);
   GfErrType registerRegexNoThrow(
       const std::string& regex, bool attemptFailover = true,
-      TcrEndpoint* endpoint = NULL, bool isDurable = false,
+      TcrEndpoint* endpoint = nullptr, bool isDurable = false,
       VectorOfCacheableKeyPtr resultKeys = nullptr,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
-      bool receiveValues = true, TcrMessageReply* reply = NULL);
+      bool receiveValues = true, TcrMessageReply* reply = nullptr);
   GfErrType unregisterRegexNoThrow(const std::string& regex,
                                    bool attemptFailover = true);
   GfErrType unregisterRegexNoThrowLocalDestroy(const std::string& regex,
@@ -319,6 +324,15 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
 
   ACE_RW_Thread_Mutex m_RegionMutex;
   bool m_isMetaDataRefreshed;
+
+  typedef std::unordered_map<BucketServerLocationPtr, SerializablePtr,
+                             dereference_hash<BucketServerLocationPtr>,
+                             dereference_equal_to<BucketServerLocationPtr>>
+      ResultMap;
+  typedef std::unordered_map<BucketServerLocationPtr, CacheableInt32Ptr,
+                             dereference_hash<BucketServerLocationPtr>,
+                             dereference_equal_to<BucketServerLocationPtr>>
+      FailedServersMap;
 };
 
 // Chunk processing classes
@@ -507,8 +521,8 @@ class ChunkedGetAllResponse : public TcrChunkedResult {
 typedef SharedPtr<ChunkedGetAllResponse> ChunkedGetAllResponsePtr;
 
 /**
-* Handle each chunk of the chunked putAll response.
-*/
+ * Handle each chunk of the chunked putAll response.
+ */
 class ChunkedPutAllResponse : public TcrChunkedResult {
  private:
   TcrMessage& m_msg;
@@ -539,8 +553,8 @@ class ChunkedPutAllResponse : public TcrChunkedResult {
 typedef SharedPtr<ChunkedPutAllResponse> ChunkedPutAllResponsePtr;
 
 /**
-* Handle each chunk of the chunked removeAll response.
-*/
+ * Handle each chunk of the chunked removeAll response.
+ */
 class ChunkedRemoveAllResponse : public TcrChunkedResult {
  private:
   TcrMessage& m_msg;

@@ -117,11 +117,11 @@ bool PoolAttributes::compareVectorOfStrings(
 
 int32_t PoolAttributes::compareStringAttribute(const char* attributeA,
                                                const char* attributeB) {
-  if (attributeA == NULL && attributeB == NULL) {
+  if (attributeA == nullptr && attributeB == nullptr) {
     return 0;
-  } else if (attributeA == NULL && attributeB != NULL) {
+  } else if (attributeA == nullptr && attributeB != nullptr) {
     return -1;
-  } else if (attributeA != NULL && attributeB == NULL) {
+  } else if (attributeA != nullptr && attributeB == nullptr) {
     return -1;
   }
   return (strcmp(attributeA, attributeB));

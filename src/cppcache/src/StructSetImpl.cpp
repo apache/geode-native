@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-#include "StructSetImpl.hpp"
+#include <vector>
 
-/**
- * @file
- */
+#include "StructSetImpl.hpp"
 
 using namespace apache::geode::client;
 
@@ -43,7 +41,7 @@ StructSetImpl::StructSetImpl(
   // LOGDEBUG("FieldNames = %d and Values = %d", numOfFields, numOfValues);
   m_structVector = CacheableVector::create();
   while (valStoredCnt < numOfValues) {
-    VectorT<SerializablePtr> tmpVec;
+    std::vector<SerializablePtr> tmpVec;
     for (size_t i = 0; i < numOfFields; i++) {
       tmpVec.push_back(response->operator[](valStoredCnt++));
     }
@@ -86,7 +84,7 @@ const char* StructSetImpl::getFieldName(int32_t index) {
        iter != m_fieldNameIndexMap.end(); ++iter) {
     if (iter->second == index) return iter->first.c_str();
   }
-  return NULL;
+  return nullptr;
 }
 
 SelectResults::Iterator StructSetImpl::begin() const {

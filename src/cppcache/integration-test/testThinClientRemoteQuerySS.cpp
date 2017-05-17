@@ -49,15 +49,14 @@ bool isPoolConfig = false;  // To track if pool case is running
 const char* qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
                               "Portfolios3"};
 const char* checkNullString(const char* str) {
-  return ((str == NULL) ? "(null)" : str);
+  return ((str == nullptr) ? "(null)" : str);
 }
 
 const wchar_t* checkNullString(const wchar_t* str) {
-  return ((str == NULL) ? L"(null)" : str);
+  return ((str == nullptr) ? L"(null)" : str);
 }
 
 void _printFields(CacheablePtr field, Struct* ssptr, int32_t& fields) {
-
   if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(field)) {
     printf("   pulled %s :- ID %d, pkid %s\n",
            checkNullString(ssptr->getFieldName(fields)), portfolio->getID(),
@@ -116,10 +115,10 @@ void _printFields(CacheablePtr field, Struct* ssptr, int32_t& fields) {
       } else if (auto map =
                      std::dynamic_pointer_cast<CacheableHashMap>(field)) {
         int index = 0;
-        for (auto iter = map->begin(); iter != map->end(); iter++) {
+        for (const auto& iter : *map) {
           printf("   hashMap %d of %d ... \n", ++index, map->size());
-          _printFields(iter.first(), ssptr, fields);
-          _printFields(iter.second(), ssptr, fields);
+          _printFields(iter.first, ssptr, fields);
+          _printFields(iter.second, ssptr, fields);
         }
         printf("   end of map \n");
       } else if (auto structimpl = std::dynamic_pointer_cast<Struct>(field)) {
@@ -129,7 +128,7 @@ void _printFields(CacheablePtr field, Struct* ssptr, int32_t& fields) {
              inner_fields++) {
           SerializablePtr field = (*structimpl)[inner_fields];
           if (field == nullptr) {
-            printf("we got null fields here, probably we have NULL data\n");
+            printf("we got null fields here, probably we have nullptr data\n");
             continue;
           }
 
@@ -156,8 +155,8 @@ void _verifyStructSet(StructSetPtr& ssptr, int i) {
     }
 
     Struct* siptr = dynamic_cast<Struct*>(((*ssptr)[rows]).get());
-    if (siptr == NULL) {
-      printf("siptr is NULL \n\n");
+    if (siptr == nullptr) {
+      printf("siptr is nullptr \n\n");
       continue;
     }
 
@@ -165,7 +164,7 @@ void _verifyStructSet(StructSetPtr& ssptr, int i) {
     for (int32_t fields = 0; fields < siptr->length(); fields++) {
       SerializablePtr field = (*siptr)[fields];
       if (field == nullptr) {
-        printf("we got null fields here, probably we have NULL data\n");
+        printf("we got null fields here, probably we have nullptr data\n");
         continue;
       }
 
@@ -179,15 +178,14 @@ void compareMaps(HashMapOfCacheable& map, HashMapOfCacheable& expectedMap) {
   ASSERT(expectedMap.size() == map.size(),
          "Unexpected number of entries in map");
   LOGINFO("Got expected number of %d entries in map", map.size());
-  for (HashMapOfCacheable::Iterator iter = map.begin(); iter != map.end();
-       ++iter) {
-    const CacheableKeyPtr& key = iter.first();
-    const CacheablePtr& val = iter.second();
-    HashMapOfCacheable::Iterator expectedIter = expectedMap.find(key);
+  for (const auto& iter : map) {
+    const auto& key = iter.first;
+    const auto& val = iter.second;
+    const auto& expectedIter = expectedMap.find(key);
     if (expectedIter == expectedMap.end()) {
       FAIL("Could not find expected key in map");
     }
-    const CacheablePtr& expectedVal = expectedIter.second();
+    const auto& expectedVal = expectedIter->second;
 
     if (std::dynamic_pointer_cast<PositionPdx>(expectedVal)) {
       const PositionPdxPtr& posVal =
@@ -226,7 +224,7 @@ void stepOne() {
   initGridClient(true);
 
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0, true);
+  createPool(poolNames[0], locHostPort, nullptr, 0, true);
   createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
   createRegionAndAttachPool(qRegionNames[1], USE_ACK, poolNames[0]);
   createRegionAndAttachPool(qRegionNames[2], USE_ACK, poolNames[0]);
@@ -371,11 +369,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
       if (structsetQueries[i].category != unsupported) {
         auto qry = qs->newQuery(structsetQueries[i].query());
         auto results = qry->execute();
-        if (!qh->verifySS(results, (qh->isExpectedRowsConstantSS(i)
-                                        ? structsetRowCounts[i]
-                                        : structsetRowCounts[i] *
-                                              qh->getPortfolioNumSets()),
-                          structsetFieldCounts[i])) {
+        if (!qh->verifySS(
+                results,
+                (qh->isExpectedRowsConstantSS(i)
+                     ? structsetRowCounts[i]
+                     : structsetRowCounts[i] * qh->getPortfolioNumSets()),
+                structsetFieldCounts[i])) {
           char failmsg[100] = {0};
           ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
           ASSERT(false, failmsg);
@@ -434,11 +433,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
         }
 
         auto results = qry->execute(paramList);
-        if (!qh->verifySS(results, (qh->isExpectedRowsConstantSSPQ(i)
-                                        ? structsetRowCountsPQ[i]
-                                        : structsetRowCountsPQ[i] *
-                                              qh->getPortfolioNumSets()),
-                          structsetFieldCountsPQ[i])) {
+        if (!qh->verifySS(
+                results,
+                (qh->isExpectedRowsConstantSSPQ(i)
+                     ? structsetRowCountsPQ[i]
+                     : structsetRowCountsPQ[i] * qh->getPortfolioNumSets()),
+                structsetFieldCountsPQ[i])) {
           char failmsg[100] = {0};
           ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
           ASSERT(false, failmsg);
@@ -492,7 +492,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetAll)
                                                  current * 100);
 
         posKeys.push_back(posKey);
-        expectedPosMap.insert(posKey, pos);
+        expectedPosMap.emplace(posKey, pos);
       }
     }
 
@@ -510,7 +510,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetAll)
         auto port = std::make_shared<PortfolioPdx>(current, 1);
 
         portKeys.push_back(portKey);
-        expectedPortMap.insert(portKey, port);
+        expectedPortMap.emplace(portKey, port);
       }
     }
 
@@ -608,18 +608,8 @@ DUNIT_TASK_DEFINITION(LOCATOR, CloseLocator)
 END_TASK_DEFINITION
 
 DUNIT_MAIN
-  {
-    CALL_TASK(StartLocator)
-    CALL_TASK(CreateServerWithLocator)
-    CALL_TASK(StepOnePoolLoc)
-    CALL_TASK(StepThree)
-    CALL_TASK(StepFour)
-    CALL_TASK(StepFive)
-    CALL_TASK(StepSix)
-    CALL_TASK(GetAll)
-    CALL_TASK(DoQuerySSError)
-    CALL_TASK(CloseCache1)
-    CALL_TASK(CloseServer1)
-    CALL_TASK(CloseLocator)
-  }
-END_MAIN
+{CALL_TASK(StartLocator) CALL_TASK(CreateServerWithLocator)
+     CALL_TASK(StepOnePoolLoc) CALL_TASK(StepThree) CALL_TASK(StepFour)
+         CALL_TASK(StepFive) CALL_TASK(StepSix) CALL_TASK(GetAll)
+             CALL_TASK(DoQuerySSError) CALL_TASK(CloseCache1)
+                 CALL_TASK(CloseServer1) CALL_TASK(CloseLocator)} END_MAIN

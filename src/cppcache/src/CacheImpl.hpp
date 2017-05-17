@@ -163,7 +163,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
    * @todo change return to param for regionPtr...
    * @param regionPtr the pointer object pointing to the returned region object
    * when the function returns
-   * @throws InvalidArgumentException if the attributePtr is NULL.
+   * @throws InvalidArgumentException if the attributePtr is nullptr.
    * @throws RegionExistsException if a region is already in
    * this cache
    * @throws CacheClosedException if the cache is closed
@@ -209,8 +209,8 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   CacheTransactionManagerPtr getCacheTransactionManager();
 
   /**
-    * @brief destructor
-    */
+   * @brief destructor
+   */
   virtual ~CacheImpl();
   /**
    * @brief constructors

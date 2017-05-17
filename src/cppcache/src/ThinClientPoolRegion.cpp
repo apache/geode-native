@@ -35,7 +35,7 @@ ThinClientPoolRegion::ThinClientPoolRegion(
     bool shared)
     : ThinClientRegion(name, cache, rPtr, attributes, stats, shared) {}
 
-ThinClientPoolRegion::~ThinClientPoolRegion() { m_tcrdm = NULL; }
+ThinClientPoolRegion::~ThinClientPoolRegion() { m_tcrdm = nullptr; }
 
 void ThinClientPoolRegion::initTCR() {
   try {

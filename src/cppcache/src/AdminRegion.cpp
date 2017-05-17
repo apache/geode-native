@@ -58,7 +58,7 @@ void AdminRegion::init() {
   */
   // Init distribution manager if it is not a pool
   ThinClientPoolDM* pool = dynamic_cast<ThinClientPoolDM*>(m_distMngr);
-  if (pool == NULL) {
+  if (pool == nullptr) {
     m_distMngr->init();
   }
 }
@@ -78,7 +78,7 @@ GfErrType AdminRegion::putNoThrow(const CacheableKeyPtr& keyPtr,
   // put obj to region
   GfErrType err = GF_NOERR;
 
-  TcrMessagePut request(NULL, keyPtr, valuePtr, nullptr, false, m_distMngr,
+  TcrMessagePut request(nullptr, keyPtr, valuePtr, nullptr, false, m_distMngr,
                         true, false, m_fullPath.c_str());
   request.setMetaRegion(true);
   TcrMessageReply reply(true, m_distMngr);
@@ -126,7 +126,7 @@ void AdminRegion::close() {
 
   // Close distribution manager if it is not a pool
   ThinClientPoolDM* pool = dynamic_cast<ThinClientPoolDM*>(m_distMngr);
-  if (pool == NULL) {
+  if (pool == nullptr) {
     m_distMngr->destroy();
     GF_SAFE_DELETE(m_distMngr);
   }
@@ -134,7 +134,7 @@ void AdminRegion::close() {
 
 AdminRegion::~AdminRegion() {
   // destructor should be single threaded in any case, so no need of guard
-  if (m_distMngr != NULL) {
+  if (m_distMngr != nullptr) {
     close();
   }
 }

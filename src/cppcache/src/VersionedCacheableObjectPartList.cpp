@@ -59,26 +59,26 @@ void VersionedCacheableObjectPartList::readObjectPart(int32_t index,
       const char* exMsg = exMsgPtr->asChar();
       if (strstr(exMsg,
                  "org.apache.geode.security."
-                 "NotAuthorizedException") != NULL) {
+                 "NotAuthorizedException") != nullptr) {
         ex = std::make_shared<NotAuthorizedException>(
             "Authorization exception at server:", exMsg);
       } else {
         ex = std::make_shared<CacheServerException>(
             "Exception at remote server:", exMsg);
       }
-      m_exceptions->insert(keyPtr, ex);
+      m_exceptions->emplace(keyPtr, ex);
     }
   } else if (m_serializeValues) {
     // read length
     int32_t skipLen;
     input.readArrayLen(&skipLen);
-    uint8_t* bytes = NULL;
+    uint8_t* bytes = nullptr;
     if (skipLen > 0) {
       // readObject
       bytes = new uint8_t[skipLen];
       input.readBytesOnly(bytes, skipLen);
     }
-    m_values->insert(keyPtr, CacheableBytes::create(bytes, skipLen));
+    m_values->emplace(keyPtr, CacheableBytes::create(bytes, skipLen));
 
     /* adongre
      * CID 29377: Resource leak (RESOURCE_LEAK)Calling allocation function
@@ -92,7 +92,7 @@ void VersionedCacheableObjectPartList::readObjectPart(int32_t index,
     // index
     // readObject
     input.readObject(value);
-    if (m_values != nullptr) m_values->insert(keyPtr, value);
+    if (m_values) m_values->emplace(keyPtr, value);
   }
 }
 
@@ -111,7 +111,7 @@ Serializable* VersionedCacheableObjectPartList::fromData(DataInput& input) {
   CacheableStringPtr exMsgPtr;
   int32_t len = 0;
   bool valuesNULL = false;
-  int32_t keysOffset = (m_keysOffset != NULL ? *m_keysOffset : 0);
+  int32_t keysOffset = (m_keysOffset != nullptr ? *m_keysOffset : 0);
   // bool readObjLen = false;
   // int32_t lenOfObjects = 0;
   if (m_values == nullptr) {
@@ -123,7 +123,7 @@ Serializable* VersionedCacheableObjectPartList::fromData(DataInput& input) {
     LOGDEBUG(
         "VersionedCacheableObjectPartList::fromData: Looks like message has no "
         "data. Returning,");
-    return NULL;
+    return nullptr;
   }
 
   auto localKeys = std::make_shared<VectorOfCacheableKey>();
@@ -140,8 +140,8 @@ Serializable* VersionedCacheableObjectPartList::fromData(DataInput& input) {
       m_tempKeys->push_back(key);
       localKeys->push_back(key);
     }
-  } else if (m_keys != NULL) {
-    LOGDEBUG("VersionedCacheableObjectPartList::fromData: m_keys NOT NULL");
+  } else if (m_keys != nullptr) {
+    LOGDEBUG("VersionedCacheableObjectPartList::fromData: m_keys NOT nullptr");
     /*
        if (m_hasKeys) {
        int64_t tempLen;
@@ -159,13 +159,13 @@ Serializable* VersionedCacheableObjectPartList::fromData(DataInput& input) {
        }
        }*/
   } else if (hasObjects) {
-    if (m_keys == NULL && m_resultKeys == nullptr) {
+    if (m_keys == nullptr && m_resultKeys == nullptr) {
       LOGERROR(
           "VersionedCacheableObjectPartList::fromData: Exception: hasObjects "
-          "is true and m_keys and m_resultKeys are also NULL");
+          "is true and m_keys and m_resultKeys are also nullptr");
       throw FatalInternalException(
           "VersionedCacheableObjectPartList: "
-          "hasObjects is true and m_keys is also NULL");
+          "hasObjects is true and m_keys is also nullptr");
     } else {
       LOGDEBUG(
           "VersionedCacheableObjectPartList::fromData m_keys or m_resultKeys "
@@ -174,7 +174,7 @@ Serializable* VersionedCacheableObjectPartList::fromData(DataInput& input) {
   } else {
     LOGDEBUG(
         "VersionedCacheableObjectPartList::fromData m_hasKeys, m_keys, "
-        "hasObjects all are NULL");
+        "hasObjects all are nullptr");
   }  // m_hasKeys else ends here
 
   if (hasObjects) {
@@ -183,13 +183,14 @@ Serializable* VersionedCacheableObjectPartList::fromData(DataInput& input) {
     len = static_cast<int32_t>(tempLen);
     m_byteArray.resize(len);
     for (int32_t index = 0; index < len; ++index) {
-      if (m_keys != NULL && !m_hasKeys) {
+      if (m_keys != nullptr && !m_hasKeys) {
         readObjectPart(index, input, m_keys->at(index + keysOffset));
       } else /*if (m_resultKeys != nullptr && m_resultKeys->size() > 0)*/ {
         readObjectPart(index, input, localKeys->at(index));
       } /*else{
          LOGERROR("VersionedCacheableObjectPartList::fromData: hasObjects = true
-       but m_keys is NULL and m_resultKeys== NULL or m_resultKeys->size=0" );
+       but m_keys is nullptr and m_resultKeys== nullptr or m_resultKeys->size=0"
+       );
        }*/
     }
   }  // hasObjects ends here
@@ -264,17 +265,18 @@ Serializable* VersionedCacheableObjectPartList::fromData(DataInput& input) {
     CacheablePtr value;
 
     for (int32_t index = 0; index < len; ++index) {
-      if (m_keys != NULL && !m_hasKeys) {
+      if (m_keys != nullptr && !m_hasKeys) {
         key = m_keys->at(index + keysOffset);
       } else /*if (m_resultKeys != nullptr && m_resultKeys->size() > 0)*/ {
         key = localKeys->at(index);
       } /*else{
          LOGERROR("VersionedCacheableObjectPartList::fromData: hasObjects = true
-       but m_keys is NULL AND m_resultKeys=nullptr or m_resultKeys->size=0" );
+       but m_keys is nullptr AND m_resultKeys=nullptr or m_resultKeys->size=0"
+       );
        }*/
 
-      HashMapOfCacheable::Iterator iter = m_values->find(key);
-      value = iter == m_values->end() ? nullptr : iter.second();
+      const auto& iter = m_values->find(key);
+      value = iter == m_values->end() ? nullptr : iter->second;
       if (m_byteArray[index] != 3) {  // 3 - key not found on server
         CacheablePtr oldValue;
         if (m_addToLocalCache) {
@@ -289,10 +291,8 @@ Serializable* VersionedCacheableObjectPartList::fromData(DataInput& input) {
                 "VersionedCacheableObjectPartList::fromData putLocal for key [%s] failed because the cache \
                   already contains an entry with higher version.",
                 Utils::getCacheableKeyString(key)->asChar());
-            // erase the  value
-            m_values->erase(key);
-            // add the value with higher version tag
-            m_values->insert(key, oldValue);
+            // replace the value with higher version tag
+            (*m_values)[key] = oldValue;
           }
         }       // END::m_addToLocalCache
         else {  // m_addToLocalCache = false
@@ -300,16 +300,14 @@ Serializable* VersionedCacheableObjectPartList::fromData(DataInput& input) {
           // if value has already been received via notification or put by
           // another thread, then return that
           if (oldValue != nullptr && !CacheableToken::isInvalid(oldValue)) {
-            // erase the old value
-            m_values->erase(key);
-            // add the value with new value
-            m_values->insert(key, oldValue);
+            // replace the value with new value
+            (*m_values)[key] = oldValue;
           }
         }
       }
     }
   }
-  if (m_keysOffset != NULL) *m_keysOffset += len;
+  if (m_keysOffset != nullptr) *m_keysOffset += len;
   if (valuesNULL) m_values = nullptr;
   return this;
 }

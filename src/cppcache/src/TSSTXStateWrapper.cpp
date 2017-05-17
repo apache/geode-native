@@ -29,12 +29,12 @@ namespace geode {
 namespace client {
 ACE_TSS<TSSTXStateWrapper> TSSTXStateWrapper::s_geodeTSSTXState;
 
-TSSTXStateWrapper::TSSTXStateWrapper() { m_txState = NULL; }
+TSSTXStateWrapper::TSSTXStateWrapper() { m_txState = nullptr; }
 
 TSSTXStateWrapper::~TSSTXStateWrapper() {
   if (m_txState) {
     delete m_txState;
-    m_txState = NULL;
+    m_txState = nullptr;
   }
 }
 }  // namespace client

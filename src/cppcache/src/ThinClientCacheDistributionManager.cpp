@@ -31,7 +31,7 @@ using namespace apache::geode::client;
 
 ThinClientCacheDistributionManager::ThinClientCacheDistributionManager(
     TcrConnectionManager& connManager)
-    : ThinClientDistributionManager(connManager, NULL) {}
+    : ThinClientDistributionManager(connManager, nullptr) {}
 
 void ThinClientCacheDistributionManager::init() {
   LOGDEBUG("ThinClientCacheDistributionManager::init");
@@ -178,7 +178,7 @@ bool ThinClientCacheDistributionManager::postFailoverAction(
 
   CacheImpl* cache = m_connManager.getCacheImpl();
 
-  if (cache == NULL) {
+  if (cache == nullptr) {
     LOGERROR("Client not initialized for failover");
     return false;
   }

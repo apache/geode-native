@@ -27,15 +27,14 @@
 #include "testUtils.hpp"
 
 #ifndef ROOT_NAME
-ROOT_NAME++ +
-    DEFINE ROOT_NAME before including CacheHelper.hpp
+ROOT_NAME++ + DEFINE ROOT_NAME before including CacheHelper.hpp
 #endif
 
 #ifndef ROOT_SCOPE
 #define ROOT_SCOPE LOCAL
 #endif
 
-    using namespace apache::geode::client;
+              using namespace apache::geode::client;
 using namespace unitTests;
 
 class CacheImplHelper : public CacheHelper {
@@ -61,7 +60,7 @@ class CacheImplHelper : public CacheHelper {
     regAttrs = attrFactory.createRegionAttributes();
     showRegionAttributes(*regAttrs);
     CacheImpl* cimpl = TestUtils::getCacheImpl(cachePtr);
-    ASSERT(cimpl != NULL, "failed to get cacheImpl *.");
+    ASSERT(cimpl != nullptr, "failed to get cacheImpl *.");
     cimpl->createRegion(regionName, regAttrs, regionPtr);
     ASSERT(regionPtr != nullptr, "failed to create region.");
   }

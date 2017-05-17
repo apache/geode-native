@@ -79,14 +79,13 @@ void verifyGetAll(RegionPtr region, bool addToLocalCache, const char** _vals,
   region->getAll(keys1, valuesMap, nullptr, addToLocalCache, callBack);
   if (valuesMap->size() == keys1.size()) {
     char buf[2048];
-    for (HashMapOfCacheable::Iterator iter = valuesMap->begin();
-         iter != valuesMap->end(); iter++) {
-      auto key = std::dynamic_pointer_cast<CacheableKey>(iter.first());
-      const char* actualKey = key->toString()->asChar();
-      CacheablePtr mVal = iter.second();
+    for (const auto& iter : *valuesMap) {
+      const auto key = std::dynamic_pointer_cast<CacheableKey>(iter.first);
+      const auto actualKey = key->toString()->asChar();
+      const auto& mVal = iter.second;
       if (mVal != nullptr) {
-        const char* expectedVal = expected[actualKey].c_str();
-        const char* actualVal = mVal->toString()->asChar();
+        const auto expectedVal = expected[actualKey].c_str();
+        const auto actualVal = mVal->toString()->asChar();
         sprintf(buf, "value from map %s , expected value %s ", actualVal,
                 expectedVal);
         LOG(buf);
@@ -158,8 +157,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllInitialValuesFromClientOne)
     HashMapOfCacheable map0;
     map0.clear();
     for (int i = 0; i < 2; i++) {
-      map0.insert(CacheableKey::create(_keys[i]),
-                  CacheableString::create(_vals[i]));
+      map0.emplace(CacheableKey::create(_keys[i]),
+                   CacheableString::create(_vals[i]));
     }
     RegionPtr regPtr0 = getHelper()->getRegion(_regionNames[0]);
     regPtr0->putAll(map0);
@@ -183,8 +182,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllUpdatedValuesFromClientOne)
     HashMapOfCacheable map0;
     map0.clear();
     for (int i = 0; i < 2; i++) {
-      map0.insert(CacheableKey::create(_keys[i]),
-                  CacheableString::create(_nvals[i]));
+      map0.emplace(CacheableKey::create(_keys[i]),
+                   CacheableString::create(_nvals[i]));
     }
     RegionPtr regPtr0 = getHelper()->getRegion(_regionNames[0]);
     regPtr0->putAll(map0);
@@ -310,16 +309,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, putallAndGetallPdxWithCallBackArg)
     HashMapOfCacheable map0;
     map0.clear();
 
-    map0.insert(CacheableInt32::create(21), p1);
-    map0.insert(CacheableInt32::create(22), p2);
-    map0.insert(CacheableInt32::create(23), p3);
-    map0.insert(CacheableInt32::create(24), p4);
-    map0.insert(CacheableInt32::create(25), p5);
-    map0.insert(CacheableInt32::create(26), p6);
-    map0.insert(CacheableInt32::create(27), p7);
-    map0.insert(CacheableInt32::create(28), p8);
-    map0.insert(CacheableInt32::create(29), p9);
-    map0.insert(CacheableInt32::create(30), p10);
+    map0.emplace(CacheableInt32::create(21), p1);
+    map0.emplace(CacheableInt32::create(22), p2);
+    map0.emplace(CacheableInt32::create(23), p3);
+    map0.emplace(CacheableInt32::create(24), p4);
+    map0.emplace(CacheableInt32::create(25), p5);
+    map0.emplace(CacheableInt32::create(26), p6);
+    map0.emplace(CacheableInt32::create(27), p7);
+    map0.emplace(CacheableInt32::create(28), p8);
+    map0.emplace(CacheableInt32::create(29), p9);
+    map0.emplace(CacheableInt32::create(30), p10);
 
     RegionPtr regPtr0 = getHelper()->getRegion(_regionNames[0]);
     // TODO: Investigate whether callback is used
@@ -487,16 +486,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, putallAndGetallPdx)
     HashMapOfCacheable map0;
     map0.clear();
 
-    map0.insert(CacheableInt32::create(21), p1);
-    map0.insert(CacheableInt32::create(22), p2);
-    map0.insert(CacheableInt32::create(23), p3);
-    map0.insert(CacheableInt32::create(24), p4);
-    map0.insert(CacheableInt32::create(25), p5);
-    map0.insert(CacheableInt32::create(26), p6);
-    map0.insert(CacheableInt32::create(27), p7);
-    map0.insert(CacheableInt32::create(28), p8);
-    map0.insert(CacheableInt32::create(29), p9);
-    map0.insert(CacheableInt32::create(30), p10);
+    map0.emplace(CacheableInt32::create(21), p1);
+    map0.emplace(CacheableInt32::create(22), p2);
+    map0.emplace(CacheableInt32::create(23), p3);
+    map0.emplace(CacheableInt32::create(24), p4);
+    map0.emplace(CacheableInt32::create(25), p5);
+    map0.emplace(CacheableInt32::create(26), p6);
+    map0.emplace(CacheableInt32::create(27), p7);
+    map0.emplace(CacheableInt32::create(28), p8);
+    map0.emplace(CacheableInt32::create(29), p9);
+    map0.emplace(CacheableInt32::create(30), p10);
     RegionPtr regPtr0 = getHelper()->getRegion(_regionNames[0]);
     regPtr0->putAll(map0);
     LOG("putAll on Pdx objects completed.");

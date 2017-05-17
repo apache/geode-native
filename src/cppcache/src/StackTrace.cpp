@@ -65,7 +65,7 @@ void StackTrace::addFrame(std::list<std::string>& frames) {
   HANDLE process;
 
   process = GetCurrentProcess();
-  SymInitialize(process, NULL, TRUE);
+  SymInitialize(process, nullptr, TRUE);
 
   typedef USHORT(WINAPI * CaptureStackBackTraceType)(
       __in ULONG, __in ULONG, __out PVOID*, __out_opt PULONG);
@@ -76,7 +76,7 @@ void StackTrace::addFrame(std::list<std::string>& frames) {
     return;
   }
 
-  framesCounts = func(0, 62, stack, NULL);
+  framesCounts = func(0, 62, stack, nullptr);
   symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1);
   symbol->MaxNameLen = 255;
   symbol->SizeOfStruct = sizeof(SYMBOL_INFO);

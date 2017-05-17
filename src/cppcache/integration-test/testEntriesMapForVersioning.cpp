@@ -60,13 +60,13 @@ END_MAIN
 using namespace apache::geode::client;
 using namespace test;
 
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 RegionPtr regPtr;
 
-const char* endpoints = NULL;
+const char* endpoints = nullptr;
 
 void initClient() {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr configPtr = Properties::create();
     configPtr->insert("tombstone-timeout", 5000);
     cacheHelper = new CacheHelper(true, configPtr);
@@ -74,14 +74,14 @@ void initClient() {
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
@@ -102,7 +102,7 @@ typedef std::vector<MapEntryImplPtr> VectorOfMapEntry;
 
 CacheableStringPtr createCacheable(const char* value) {
   CacheableStringPtr result = CacheableString::create(value);
-  ASSERT(result != nullptr, "expected result non-NULL");
+  ASSERT(result != nullptr, "expected result non-nullptr");
   return result;
 }
 
@@ -217,7 +217,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwo_TestPut)
         new ConcurrentEntriesMap(entryFactory, true, lregPtr.get());
     entries->open();
     auto keyPtr = CacheableKey::create("key1");
-    ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
     MapEntryImplPtr me;
     auto versionTag1 = std::make_shared<VersionTag>(5, 6, 7, host1, 0);
 
@@ -473,7 +473,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree_TestCreate)
         new ConcurrentEntriesMap(entryFactory, true, lregPtr.get());
     entries->open();
     auto keyPtr4 = CacheableKey::create("key4");
-    ASSERT(keyPtr4 != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr4 != nullptr, "expected keyPtr non-nullptr");
     MapEntryImplPtr me;
     MapEntryImplPtr result;
     CacheablePtr value;
@@ -722,7 +722,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix_TestInvalidate)
         new ConcurrentEntriesMap(entryFactory, true, lregPtr.get());
     entries->open();
     CacheableKeyPtr keyPtr = CacheableKey::create("key1");
-    ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
     MapEntryImplPtr me;
     MapEntryImplPtr result;
     CacheablePtr value;
@@ -937,7 +937,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour_TestRemove)
         new ConcurrentEntriesMap(entryFactory, true, lregPtr.get());
     entries->open();
     auto keyPtr = CacheableKey::create("key1");
-    ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
+    ASSERT(keyPtr != nullptr, "expected keyPtr non-nullptr");
     MapEntryImplPtr me;
     MapEntryImplPtr result;
     CacheablePtr value;
@@ -977,8 +977,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour_TestRemove)
     auto tombstone_size =
         lregPtr->getCacheImpl()->m_cacheStats->getTombstoneSize();
 
-    sprintf(log, "After tombstone creation, Tombstone size: %" PRId64
-                 " Tombstone count: %d",
+    sprintf(log,
+            "After tombstone creation, Tombstone size: %" PRId64
+            " Tombstone count: %d",
             tombstone_size, tombstone_count);
     LOG(log);
     ASSERT(tombstone_count == 1, "Tombstone count should be equal to 1");

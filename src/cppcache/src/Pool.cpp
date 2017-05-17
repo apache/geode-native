@@ -73,7 +73,7 @@ RegionServicePtr Pool::createSecureUserCache(PropertiesPtr credentials) {
   if (this->getMultiuserAuthentication()) {
     CachePtr realCache = CacheFactory::getAnyInstance();
 
-    if (!(realCache != nullptr && realCache->m_cacheImpl != NULL)) {
+    if (!(realCache != nullptr && realCache->m_cacheImpl != nullptr)) {
       throw IllegalStateException("cache has not been created yet.");
       ;
     }
@@ -82,7 +82,7 @@ RegionServicePtr Pool::createSecureUserCache(PropertiesPtr credentials) {
       throw IllegalStateException("cache has been closed. ");
     }
 
-    if (credentials != nullptr && credentials.get() == NULL) {
+    if (credentials != nullptr && credentials.get() == nullptr) {
       LOGDEBUG("Pool::createSecureUserCache creds are null");
       credentials = nullptr;
     }

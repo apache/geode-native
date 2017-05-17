@@ -227,11 +227,11 @@ BEGIN_TEST(NarrowStrings)
     ASSERT(buffer[13] == '.', "wrong utf encoding.");
 
     DataInput dataInput(buffer, dataOutput.getBufferLength());
-    char* str = NULL;
+    char* str = nullptr;
     uint16_t res_length;
     dataInput.readASCII(&str, &res_length);
     cout << "Read from buffer..." << endl;
-    ASSERT(str != NULL, "expected non-null str");
+    ASSERT(str != nullptr, "expected non-null str");
     ASSERT(res_length == 12, "expected length 12.");
     dumpnbytes(reinterpret_cast<uint8_t*>(str), 12);
     int res = strncmp(str, strOrig, 12);
@@ -272,10 +272,10 @@ BEGIN_TEST(WideStrings)
     ASSERT(buffer[11] == 0xbf, "wrong utf encoding.");
     cout << "sizeof wchar_t " << sizeof(wchar_t) << endl;
     DataInput dataInput(buffer, dataOutput.getBufferLength());
-    wchar_t* str = NULL;
+    wchar_t* str = nullptr;
     uint16_t res_length;
     dataInput.readUTF(&str, &res_length);
-    ASSERT(str != NULL, "expected non-null str");
+    ASSERT(str != nullptr, "expected non-null str");
     ASSERT(res_length == 5, "expected length 5.");
     cout << "Read from buffer..." << endl;
     dumpnshorts(reinterpret_cast<uint16_t*>(str), 5);

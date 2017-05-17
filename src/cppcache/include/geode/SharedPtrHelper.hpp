@@ -34,7 +34,7 @@ namespace client {
 class SharedBase;
 
 /** Helper class for SharedPtr exceptions
-*/
+ */
 class CPPCACHE_EXPORT SPEHelper {
  public:
   static void throwNullPointerException(const char* ename);
@@ -62,7 +62,7 @@ Target* getTargetHelper(Src* ptr,
   } else {
     SPEHelper::throwClassCastException("getTargetHelper: cast failed",
                                        typeid(ptr).name(), typeid(tptr).name());
-    return NULL;
+    return nullptr;
   }
 }
 

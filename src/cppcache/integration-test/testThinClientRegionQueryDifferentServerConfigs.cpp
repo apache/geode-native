@@ -56,7 +56,7 @@ void initClient() {
     // ignore exception
   }
   initClient(true);
-  ASSERT(getHelper() != NULL, "null CacheHelper");
+  ASSERT(getHelper() != nullptr, "null CacheHelper");
 }
 
 DUNIT_TASK_DEFINITION(LOCATOR, StartLocator)

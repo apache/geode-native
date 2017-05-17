@@ -173,9 +173,9 @@ namespace Apache
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
 
-          auto toArray = gcnew array<KeyValuePair<TKey, TValue>>(vc.size());
+          auto toArray = gcnew array<KeyValuePair<TKey, TValue>>(static_cast<int>(vc.size()));
 
-        for (System::Int32 index = 0; index < vc.size(); index++)
+        for (System::Int32 index = 0; index < toArray->Length; index++)
         {
           auto& nativeptr = vc[index];
           auto key = Serializable::GetManagedValueGeneric<TKey>(nativeptr->getKey());
@@ -204,9 +204,9 @@ namespace Apache
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
 
-         auto toArray = gcnew array<Object^>(vc.size());
+         auto toArray = gcnew array<Object^>(static_cast<int>(vc.size()));
 
-        for (System::Int32 index = 0; index < vc.size(); index++)
+        for (System::Int32 index = 0; index < toArray->Length; index++)
         {
           auto& nativeptr = vc[index];
           auto key = Serializable::GetManagedValueGeneric<TKey>(nativeptr->getKey());
@@ -313,8 +313,8 @@ namespace Apache
         {
           GC::KeepAlive(m_nativeptr);
         }
-        auto keyarr = gcnew array<TKey>(vc.size());
-        for (System::Int32 index = 0; index < vc.size(); index++)
+        auto keyarr = gcnew array<TKey>(static_cast<int>(vc.size()));
+        for (System::Int32 index = 0; index < keyarr->Length; index++)
         {
           auto& nativeptr = vc[index];
           keyarr[index] = Serializable::GetManagedValueGeneric<TKey>(nativeptr);
@@ -593,7 +593,7 @@ namespace Apache
         {
           native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValPair.Key);
           native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValPair.Value);
-          nativeMap.insert(keyptr, valueptr);
+          nativeMap.emplace(keyptr, valueptr);
         }
         try
         {
@@ -618,7 +618,7 @@ namespace Apache
         {
           native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValPair.Key);
           native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValPair.Value);
-          nativeMap.insert(keyptr, valueptr);
+          nativeMap.emplace(keyptr, valueptr);
         }
         native::UserDataPtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
         try
@@ -681,18 +681,16 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
           if (values != nullptr) {
-            for (native::HashMapOfCacheable::Iterator iter =
-                  valuesPtr->begin(); iter != valuesPtr->end(); ++iter) {
-              TKey key = Serializable::GetManagedValueGeneric<TKey>(iter.first());
-              TValue val = Serializable::GetManagedValueGeneric<TValue>(iter.second());
+            for (const auto& iter : *valuesPtr) {
+              TKey key = Serializable::GetManagedValueGeneric<TKey>(iter.first);
+              TValue val = Serializable::GetManagedValueGeneric<TValue>(iter.second);
               values->Add(key, val);
             }
           }
           if (exceptions != nullptr) {
-            for (native::HashMapOfException::Iterator iter =
-                  exceptionsPtr->begin(); iter != exceptionsPtr->end(); ++iter) {
-              TKey key = Serializable::GetManagedValueGeneric<TKey>(iter.first());
-              System::Exception^ ex = GeodeException::Get(*iter.second());
+            for (const auto& iter : *exceptionsPtr) {
+              TKey key = Serializable::GetManagedValueGeneric<TKey>(iter.first);
+              System::Exception^ ex = GeodeException::Get(*(iter.second));
               exceptions->Add(key, ex);
             }
           }
@@ -741,18 +739,16 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
           if (values != nullptr) {
-            for (native::HashMapOfCacheable::Iterator iter =
-                  valuesPtr->begin(); iter != valuesPtr->end(); ++iter) {
-              TKey key = Serializable::GetManagedValueGeneric<TKey>(iter.first());
-              TValue val = Serializable::GetManagedValueGeneric<TValue>(iter.second());
+            for (const auto& iter : *valuesPtr) {
+              TKey key = Serializable::GetManagedValueGeneric<TKey>(iter.first);
+              TValue val = Serializable::GetManagedValueGeneric<TValue>(iter.second);
               values->Add(key, val);
             }
           }
           if (exceptions != nullptr) {
-            for (native::HashMapOfException::Iterator iter =
-                  exceptionsPtr->begin(); iter != exceptionsPtr->end(); ++iter) {
-              TKey key = Serializable::GetManagedValueGeneric<TKey>(iter.first());
-              System::Exception^ ex = GeodeException::Get(*iter.second());
+            for (const auto& iter : *exceptionsPtr) {
+              TKey key = Serializable::GetManagedValueGeneric<TKey>(iter.first);
+              System::Exception^ ex = GeodeException::Get(*(iter.second));
               exceptions->Add(key, ex);
             }
           }
@@ -951,10 +947,10 @@ namespace Apache
         {
           GC::KeepAlive(m_nativeptr);
         }
-        array<IRegion<TKey, TValue>^>^ subRegions =
-          gcnew array<IRegion<TKey, TValue>^>(vsr.size());
+        auto subRegions =
+          gcnew array<IRegion<TKey, TValue>^>(static_cast<int>(vsr.size()));
 
-        for (System::Int32 index = 0; index < vsr.size(); index++)
+        for (System::Int32 index = 0; index < subRegions->Length; index++)
         {
           auto subRegion = vsr[index];
           subRegions[index] = Region<TKey, TValue>::Create(subRegion);
@@ -989,7 +985,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          native::VectorOfRegionEntry vc;
+        native::VectorOfRegionEntry vc;
         try
         {
           m_nativeptr->get()->entries(vc, recursive);
@@ -998,9 +994,9 @@ namespace Apache
         {
           GC::KeepAlive(m_nativeptr);
         }
-        array<RegionEntry<TKey, TValue>^>^ entryarr = gcnew array<RegionEntry<TKey, TValue>^>(vc.size());
+        auto entryarr = gcnew array<RegionEntry<TKey, TValue>^>(static_cast<int>(vc.size()));
 
-        for (System::Int32 index = 0; index < vc.size(); index++)
+        for (System::Int32 index = 0; index < entryarr->Length; index++)
         {
           auto& nativeptr = vc[index];
           entryarr[index] = RegionEntry<TKey, TValue>::Create(nativeptr);
@@ -1290,8 +1286,8 @@ namespace Apache
         {
           GC::KeepAlive(m_nativeptr);
         }
-        auto keyarr = gcnew array<TKey>(vc.size());
-        for (System::Int32 index = 0; index < vc.size(); index++)
+        auto keyarr = gcnew array<TKey>(static_cast<int>(vc.size()));
+        for (System::Int32 index = 0; index < keyarr->Length; index++)
         {
           auto& nativeptr = vc[index];
           keyarr[index] = Serializable::GetManagedValueGeneric<TKey>(nativeptr);
@@ -1317,10 +1313,8 @@ namespace Apache
         {
           GC::KeepAlive(m_nativeptr);
         }
-        array<String^>^ strarr =
-          gcnew array<String^>(vc.size());
-        //List<String>^ collectionlist = gcnew List<String>(vc.size());
-        for (System::Int32 index = 0; index < vc.size(); index++)
+        auto strarr = gcnew array<String^>(static_cast<int>(vc.size()));
+        for (System::Int32 index = 0; index < strarr->Length; index++)
         {
           strarr[index] = ManagedString::Get(vc[index]->asChar());
           //collectionlist[ index ] = Serializable::GetManagedValue<TValue>(nativeptr);

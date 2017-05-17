@@ -58,9 +58,8 @@ namespace Apache
             output->WriteArrayLen(this->Count);
 
             auto set = static_cast<HSTYPE*>(m_nativeptr->get());
-            for (typename HSTYPE::Iterator iter = set->begin();
-                 iter != set->end(); ++iter) {
-              auto key = Serializable::GetManagedValueGeneric<Object^>((*iter));
+            for (const auto& iter : *set) {
+              auto key = Serializable::GetManagedValueGeneric<Object^>(iter);
               output->WriteObject(key);
             }
 
@@ -181,14 +180,14 @@ namespace Apache
             virtual bool MoveNext()
             {
               auto nptr = m_nativeptr->get();
-              bool isEnd = nptr->isEnd();
+              bool isEnd = static_cast<HSTYPE*>(m_set->m_nativeptr->get())->end() == *nptr;
               if (!m_started) {
                 m_started = true;
               }
               else {
                 if (!isEnd) {
                   (*nptr)++;
-                  isEnd = nptr->isEnd();
+                  isEnd = static_cast<HSTYPE*>(m_set->m_nativeptr->get())->end() == *nptr;
                 }
               }
               GC::KeepAlive(this);
@@ -203,7 +202,9 @@ namespace Apache
             {
               try
               {
-                m_nativeptr->get()->reset();
+                m_nativeptr = gcnew native_unique_ptr<typename HSTYPE::iterator>(
+                    std::make_unique<typename HSTYPE::iterator>(
+                    static_cast<HSTYPE*>(m_set->m_nativeptr->get())->begin()));
               }
               finally
               {
@@ -222,10 +223,9 @@ namespace Apache
             /// Internal constructor to wrap a native object pointer
             /// </summary>
             /// <param name="nativeptr">The native object pointer</param>
-            inline Enumerator(std::unique_ptr<typename HSTYPE::Iterator> nativeptr,
-                              CacheableHashSetType<TYPEID, HSTYPE>^ set)
-                              : m_set(set) { 
-              m_nativeptr = gcnew native_unique_ptr<typename HSTYPE::Iterator>(std::move(nativeptr));
+            inline Enumerator(CacheableHashSetType<TYPEID, HSTYPE>^ set)
+                              : m_set(set) {
+              Reset();
             }
 
           private:
@@ -256,7 +256,7 @@ namespace Apache
 
             CacheableHashSetType<TYPEID, HSTYPE>^ m_set;
 
-            native_unique_ptr<typename HSTYPE::Iterator>^ m_nativeptr;
+            native_unique_ptr<typename HSTYPE::iterator>^ m_nativeptr;
           };
 
           /// <summary>
@@ -335,7 +335,7 @@ namespace Apache
           {
             try
             {
-              static_cast<HSTYPE*>(m_nativeptr->get())->resize(size);
+              static_cast<HSTYPE*>(m_nativeptr->get())->reserve(size);
             }
             finally
             {
@@ -420,7 +420,7 @@ namespace Apache
           {
             try
             {
-              return static_cast<HSTYPE*>(m_nativeptr->get())->contains(Serializable::GetUnmanagedValueGeneric(item));
+              return static_cast<HSTYPE*>(m_nativeptr->get())->find(Serializable::GetUnmanagedValueGeneric(item)) != static_cast<HSTYPE*>(m_nativeptr->get())->end();
             }
             finally
             {
@@ -467,9 +467,8 @@ namespace Apache
                                               "array is less than that required to copy all the "
                                               "elements from HashSet");
             }
-            for (typename HSTYPE::Iterator iter = set->begin();
-                 iter != set->end(); ++iter, ++index) {
-              array[index] = Serializable::GetManagedValueGeneric<Object^>((*iter));
+            for (const auto& iter : *set) {
+              array[index++] = Serializable::GetManagedValueGeneric<Object^>(iter);
             }
 
             GC::KeepAlive(m_nativeptr);
@@ -547,16 +546,7 @@ namespace Apache
           /// </returns>
           virtual IEnumerator<Object^>^ GetEnumerator()
           {
-            try
-            {
-              auto iter = std::make_unique<typename HSTYPE::Iterator>(
-                static_cast<HSTYPE*>(m_nativeptr->get())->begin());
-              return gcnew Enumerator(std::move(iter), this);
-            }
-            finally
-            {
-              GC::KeepAlive(m_nativeptr);
-            }
+            return gcnew Enumerator(this);
           }
 
           // End Region: IEnumerable<ICacheableKey^> Members

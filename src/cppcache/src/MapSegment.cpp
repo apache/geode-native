@@ -30,7 +30,7 @@ using namespace apache::geode::client;
 
 #define _GF_GUARD_SEGMENT SpinLockGuard mapGuard(m_spinlock)
 #define _VERSION_TAG_NULL_CHK \
-  (versionTag != nullptr && versionTag.get() != NULL)
+  (versionTag != nullptr && versionTag.get() != nullptr)
 bool MapSegment::boolVal = false;
 MapSegment::~MapSegment() {
   delete m_map;
@@ -67,7 +67,7 @@ GfErrType MapSegment::create(const CacheableKeyPtr& key,
                              CacheablePtr& oldValue, int updateCount,
                              int destroyTracker, VersionTagPtr versionTag) {
   long taskid = -1;
-  TombstoneExpiryHandler* handler = NULL;
+  TombstoneExpiryHandler* handler = nullptr;
   GfErrType err = GF_NOERR;
   {
     _GF_GUARD_SEGMENT;
@@ -120,7 +120,7 @@ GfErrType MapSegment::create(const CacheableKeyPtr& key,
   }
   if (taskid != -1) {
     CacheImpl::expiryTaskManager->cancelTask(taskid);
-    if (handler != NULL) delete handler;
+    if (handler != nullptr) delete handler;
   }
   return err;
 }
@@ -134,7 +134,7 @@ GfErrType MapSegment::put(const CacheableKeyPtr& key,
                           int destroyTracker, bool& isUpdate,
                           VersionTagPtr versionTag, DataInput* delta) {
   long taskid = -1;
-  TombstoneExpiryHandler* handler = NULL;
+  TombstoneExpiryHandler* handler = nullptr;
   GfErrType err = GF_NOERR;
   {
     _GF_GUARD_SEGMENT;
@@ -146,7 +146,7 @@ GfErrType MapSegment::put(const CacheableKeyPtr& key,
     MapEntryPtr entry;
     int status;
     if ((status = m_map->find(key, entry)) == -1) {
-      if (delta != NULL) {
+      if (delta != nullptr) {
         return GF_INVALID_DELTA;  // You can not apply delta when there is no
       }
       // entry hence ask for full object
@@ -162,7 +162,7 @@ GfErrType MapSegment::put(const CacheableKeyPtr& key,
       if (m_concurrencyChecksEnabled) {
         versionStamp = entry->getVersionStamp();
         if (_VERSION_TAG_NULL_CHK) {
-          if (delta == NULL) {
+          if (delta == nullptr) {
             err = versionStamp.processVersionTag(m_region, key, versionTag,
                                                  false);
           } else {
@@ -191,7 +191,7 @@ GfErrType MapSegment::put(const CacheableKeyPtr& key,
   }
   if (taskid != -1) {
     CacheImpl::expiryTaskManager->cancelTask(taskid);
-    if (handler != NULL) delete handler;
+    if (handler != nullptr) delete handler;
   }
   return err;
 }
@@ -640,11 +640,11 @@ GfErrType MapSegment::putForTrackedEntry(
     // for a non-tracked put (e.g. from notification) go ahead with the
     // create/update and increment the update counter
     ThinClientRegion* tcRegion = dynamic_cast<ThinClientRegion*>(m_region);
-    ThinClientPoolDM* m_poolDM = NULL;
+    ThinClientPoolDM* m_poolDM = nullptr;
     if (tcRegion) {
       m_poolDM = dynamic_cast<ThinClientPoolDM*>(tcRegion->getDistMgr());
     }
-    if (delta != NULL) {
+    if (delta != nullptr) {
       CacheablePtr oldValue;
       entryImpl->getValueI(oldValue);
       if (oldValue == nullptr || CacheableToken::isDestroyed(oldValue) ||
@@ -749,7 +749,7 @@ GfErrType MapSegment::isTombstone(CacheableKeyPtr key, MapEntryImplPtr& me,
   }
 
   if (CacheableToken::isTombstone(value)) {
-    if (m_tombstoneList->getEntryFromTombstoneList(key)) {
+    if (m_tombstoneList->exists(key)) {
       MapEntryPtr entry;
       if (m_map->find(key, entry) != -1) {
         auto mePtr = entry->getImplPtr();
@@ -764,7 +764,7 @@ GfErrType MapSegment::isTombstone(CacheableKeyPtr key, MapEntryImplPtr& me,
     }
 
   } else {
-    if (m_tombstoneList->getEntryFromTombstoneList(key)) {
+    if (m_tombstoneList->exists(key)) {
       LOGFINER(" 2 result= false return GF_CACHE_ILLEGAL_STATE_EXCEPTION");
       result = false;
       return GF_CACHE_ILLEGAL_STATE_EXCEPTION;

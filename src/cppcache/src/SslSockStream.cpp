@@ -26,7 +26,7 @@ namespace client {
 
 void *SslSockStream::getACESSLFuncPtr(const char *function_name) {
   void *func = m_dll.symbol(function_name);
-  if (func == NULL) {
+  if (func == nullptr) {
     char msg[1000];
     ACE_OS::snprintf(msg, 1000, "cannot find function %s in library %s",
                      function_name, "cryptoImpl");
@@ -63,18 +63,18 @@ void SslSockStream::initACESSLFuncPtrs() {
 
 SslSockStream::SslSockStream(ACE_SOCKET sock, const char *pubkey,
                              const char *privkey)
-    : m_ctx(NULL),
+    : m_ctx(nullptr),
       m_sock(sock),
       m_pubkey(pubkey),
       m_privkey(privkey),
-      gf_initSslImpl_Ptr(NULL),
-      gf_clearSslImpl_Ptr(NULL),
-      gf_set_option_Ptr(NULL),
-      gf_listen_Ptr(NULL),
-      gf_connect_Ptr(NULL),
-      gf_recv_n_Ptr(NULL),
-      gf_send_n_Ptr(NULL),
-      gf_get_local_addr_Ptr(NULL) {}
+      gf_initSslImpl_Ptr(nullptr),
+      gf_clearSslImpl_Ptr(nullptr),
+      gf_set_option_Ptr(nullptr),
+      gf_listen_Ptr(nullptr),
+      gf_connect_Ptr(nullptr),
+      gf_recv_n_Ptr(nullptr),
+      gf_send_n_Ptr(nullptr),
+      gf_get_local_addr_Ptr(nullptr) {}
 
 void SslSockStream::init() {
   initACESSLFuncPtrs();
@@ -113,7 +113,7 @@ int SslSockStream::get_local_addr(ACE_Addr &addr) const {
 
 int SslSockStream::close() {
   gf_clearSslImpl_Ptr(m_ctx);
-  m_ctx = NULL;
+  m_ctx = nullptr;
   return 0;
 }
 

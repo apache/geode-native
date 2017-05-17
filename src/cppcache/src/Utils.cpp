@@ -26,8 +26,8 @@ using namespace apache::geode::client;
 
 #ifdef _WIN32
 
-pNew Utils::s_pNew = NULL;
-pDelete Utils::s_pDelete = NULL;
+pNew Utils::s_pNew = nullptr;
+pDelete Utils::s_pDelete = nullptr;
 bool Utils::s_setNewAndDelete = false;
 
 void* operator new(size_t size) {
@@ -35,7 +35,7 @@ void* operator new(size_t size) {
     apache::geode::client::setDefaultNewAndDelete();
   }
   void* ret = Utils::s_pNew(size);
-  if (ret == NULL) {
+  if (ret == nullptr) {
     throw apache::geode::client::OutOfMemoryException(
         "Out of memory while executing operator new");
   }
@@ -67,7 +67,7 @@ std::string Utils::getEnv(const char* varName) {
   return varValue;
 #else
   char* varValue = ACE_OS::getenv(varName);
-  if (varValue == NULL) {
+  if (varValue == nullptr) {
     return "";
   }
   return varValue;
@@ -111,7 +111,7 @@ Utils::convertHostToCanonicalForm(const char* endpoint)
   ACE_INET_Addr aia;
   char canonical[MAXHOSTNAMELEN + 11] = {0};
 
-  if ( endpoint == NULL ||
+  if ( endpoint == nullptr ||
        strlen(endpoint) == 0 ) {
     LOGERROR("Cannot convert empty endpoint to canonical form");
     return "";
@@ -130,7 +130,7 @@ Utils::convertHostToCanonicalForm(const char* endpoint)
     int port = atoi(strchr(endpoint, ':') + 1);
     if (ACE_OS::hostname(canonical, MAXHOSTNAMELEN) == 0) {
       struct hostent * host;
-      if ( (host = ACE_OS::gethostbyname(canonical)) != NULL ) {
+      if ( (host = ACE_OS::gethostbyname(canonical)) != nullptr ) {
         if (h_errno != 0) {
           return endpoint;
         }
@@ -158,7 +158,7 @@ endpoint);
 */
 
 std::string Utils::convertHostToCanonicalForm(const char* endpoints) {
-  if (endpoints == NULL) return NULL;
+  if (endpoints == nullptr) return nullptr;
   std::string hostString("");
   uint16_t port = 0;
   std::string endpointsStr(endpoints);
@@ -230,8 +230,8 @@ void Utils::parseEndpointNamesString(
 }
 
 char* Utils::copyString(const char* str) {
-  char* resStr = NULL;
-  if (str != NULL) {
+  char* resStr = nullptr;
+  if (str != nullptr) {
     size_t strSize = strlen(str) + 1;
     resStr = new char[strSize];
     memcpy(resStr, str, strSize);
@@ -242,7 +242,7 @@ char* Utils::copyString(const char* str) {
 CacheableStringPtr Utils::convertBytesToString(const uint8_t* bytes,
                                                int32_t length,
                                                size_t maxLength) {
-  if (bytes != NULL) {
+  if (bytes != nullptr) {
     std::string str;
     size_t totalBytes = 0;
     char byteStr[20];
@@ -263,7 +263,7 @@ CacheableStringPtr Utils::convertBytesToString(const uint8_t* bytes,
 }
 
 int32_t Utils::logWideString(char* buf, size_t maxLen, const wchar_t* wStr) {
-  if (wStr != NULL) {
+  if (wStr != nullptr) {
     mbstate_t state;
     ACE_OS::memset(&state, 0, sizeof(mbstate_t));
     const char* bufStart = buf;

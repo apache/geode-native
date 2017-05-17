@@ -25,7 +25,7 @@ using namespace apache::geode::client;
 TcrDistributionManager::TcrDistributionManager(
     ThinClientRegion* region, TcrConnectionManager& connManager)
     : ThinClientDistributionManager(connManager, region) {
-  GF_R_ASSERT(region != NULL);
+  GF_R_ASSERT(region != nullptr);
   m_clientNotification =
       region->getAttributes()->getClientNotificationEnabled();
 }

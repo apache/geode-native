@@ -69,7 +69,7 @@ GfErrType VersionStamp::processVersionTag(const RegionInternal* region,
   std::string keystr(key, keyLen);
 
   if (nullptr == tag) {
-    LOGERROR("Cannot process version tag as it is NULL.");
+    LOGERROR("Cannot process version tag as it is nullptr.");
     return GF_CACHE_ILLEGAL_STATE_EXCEPTION;
   }
 

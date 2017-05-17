@@ -125,7 +125,7 @@ HostStatSampler::HostStatSampler(const char* filePath, int64_t sampleIntervalMs,
   m_adminError = false;
   m_running = false;
   m_stopRequested = false;
-  m_archiver = NULL;
+  m_archiver = nullptr;
   m_samplerStats = new StatSamplerStats();
 
   ACE_Time_Value startTimeValue = ACE_OS::gettimeofday();
@@ -185,7 +185,7 @@ HostStatSampler::HostStatSampler(const char* filePath, int64_t sampleIntervalMs,
     }
     g_statFile = slashtmp;
     delete[] slashtmp;
-    slashtmp = NULL;
+    slashtmp = nullptr;
 #endif
 
     std::string dirname = ACE::dirname(g_statFile.c_str());
@@ -216,16 +216,16 @@ HostStatSampler::HostStatSampler(const char* filePath, int64_t sampleIntervalMs,
     }
     if (entries_count >= 0) {
       ACE_OS::free( resultArray );
-      resultArray = NULL;
+      resultArray = nullptr;
     }*/
 
     FILE* existingFile = fopen(g_statFileWithExt.c_str(), "r");
-    if (existingFile != NULL && statFileLimit > 0) {
+    if (existingFile != nullptr && statFileLimit > 0) {
       fclose(existingFile);
       /* adongre
        * CID 28820: Resource leak (RESOURCE_LEAK)
        */
-      existingFile = NULL;
+      existingFile = nullptr;
       changeArchive(g_statFileWithExt);
     } else {
       writeGfs();
@@ -233,9 +233,9 @@ HostStatSampler::HostStatSampler(const char* filePath, int64_t sampleIntervalMs,
     /* adongre
      * CID 28820: Resource leak (RESOURCE_LEAK)
      */
-    if (existingFile != NULL) {
+    if (existingFile != nullptr) {
       fclose(existingFile);
-      existingFile = NULL;
+      existingFile = nullptr;
     }
   }
 }
@@ -247,13 +247,13 @@ std::string HostStatSampler::initStatFileWithExt() {
 }
 
 HostStatSampler::~HostStatSampler() {
-  if (m_samplerStats != NULL) {
+  if (m_samplerStats != nullptr) {
     delete m_samplerStats;
-    m_samplerStats = NULL;
+    m_samplerStats = nullptr;
   }
-  if (m_archiver != NULL) {
+  if (m_archiver != nullptr) {
     delete m_archiver;
-    m_archiver = NULL;
+    m_archiver = nullptr;
   }
 }
 
@@ -316,7 +316,7 @@ Statistics* HostStatSampler::findStatistics(const int64_t id) {
       return *i;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 ACE_Recursive_Thread_Mutex& HostStatSampler::getStatListMutex() {
@@ -357,25 +357,25 @@ void HostStatSampler::changeArchive(std::string filename) {
     return;
   }
   filename = chkForGFSExt(filename);
-  if (m_archiver != NULL) {
+  if (m_archiver != nullptr) {
     g_previoussamplesize = m_archiver->getSampleSize();
     m_archiver->closeFile();
   }
   // create new file only when tis file has some data; otherwise reuse it
   if (rollArchive(filename) != 0) {
     delete m_archiver;
-    m_archiver = NULL;
+    m_archiver = nullptr;
     // throw exception
     return;
   } else {
     /*
-    if (m_archiver != NULL) {
+    if (m_archiver != nullptr) {
       m_archiver->openFile(filename);
       m_archiver->close();
     }
     */
     delete m_archiver;
-    m_archiver = NULL;
+    m_archiver = nullptr;
   }
 
   m_archiver = new StatArchiveWriter(filename, this);
@@ -420,7 +420,7 @@ std::string HostStatSampler::chkForGFSExt(std::string filename) {
 
 int32_t HostStatSampler::rollArchive(std::string filename) {
   FILE* fpExist = fopen(filename.c_str(), "r");
-  if (fpExist == NULL) {
+  if (fpExist == nullptr) {
     return 0;  // no need to roll
   } else {
     fclose(fpExist);
@@ -446,8 +446,8 @@ int32_t HostStatSampler::rollArchive(std::string filename) {
   statsbasename = filename.substr(lastPosOfSep + 1, len);
   char gfsFileExtAfter = '.';
   int32_t baselen = static_cast<int32_t>(statsbasename.length());
-  int32_t posOfExt = static_cast<int32_t>(
-      statsbasename.find_last_of(gfsFileExtAfter, static_cast<int32_t>(baselen)));
+  int32_t posOfExt = static_cast<int32_t>(statsbasename.find_last_of(
+      gfsFileExtAfter, static_cast<int32_t>(baselen)));
   if (posOfExt == -1) {
     // throw IllegalArgument;
   } else {
@@ -470,7 +470,7 @@ int32_t HostStatSampler::rollArchive(std::string filename) {
     }
     FILE* fp = fopen(newfilename, "r");
 
-    if (fp != NULL) {
+    if (fp != nullptr) {
       // file exists; increment i and try the next filename
       i++;
       fclose(fp);
@@ -572,9 +572,9 @@ void HostStatSampler::putStatsInAdminRegion() {
           uint16_t hostPort = 0;
           SystemProperties* sysProp = DistributedSystem::getSystemProperties();
           const char* durableId =
-              (sysProp != NULL) ? sysProp->durableClientId() : NULL;
+              (sysProp != nullptr) ? sysProp->durableClientId() : nullptr;
           const uint32_t durableTimeOut =
-              (sysProp != NULL) ? sysProp->durableTimeout() : 0;
+              (sysProp != nullptr) ? sysProp->durableTimeout() : 0;
 
           ClientProxyMembershipID memId(hostName, hostAddr, hostPort, durableId,
                                         durableTimeOut);
@@ -621,7 +621,8 @@ void HostStatSampler::doSample(std::string& archivefilename) {
 
   if (m_archiveFileSizeLimit != 0) {
     int64_t size = m_archiver->getSampleSize();
-    int64_t bytesWritten = m_archiver->bytesWritten();  // + g_previoussamplesize;
+    int64_t bytesWritten =
+        m_archiver->bytesWritten();  // + g_previoussamplesize;
     if (bytesWritten > (m_archiveFileSizeLimit - size)) {
       // roll the archive
       changeArchive(archivefilename);
@@ -667,7 +668,7 @@ void HostStatSampler::checkDiskLimit() {
     }
     if (entries_count >= 0) {
     ACE_OS::free( resultArray );
-    resultArray = NULL;
+    resultArray = nullptr;
     }*/
     sds.close();
   }
@@ -747,7 +748,7 @@ int32_t HostStatSampler::svc(void) {
     }
     closeSpecialStats();
     m_samplerStats->close();
-    if (m_archiver != NULL) {
+    if (m_archiver != nullptr) {
       m_archiver->close();
     }
   } catch (Exception& e) {

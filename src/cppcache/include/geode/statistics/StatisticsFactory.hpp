@@ -26,7 +26,7 @@
 #include <geode/statistics/Statistics.hpp>
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
@@ -88,11 +88,11 @@ class CPPCACHE_EXPORT StatisticsFactory {
                                                  bool largerBetter = true) = 0;
 
   /**
-    * Creates and returns an int gauge {@link StatisticDescriptor}
-    * with the given <code>name</code>, <code>description</code>,
-    * <code>units</code>,  and with smaller values indicating better
+   * Creates and returns an int gauge {@link StatisticDescriptor}
+   * with the given <code>name</code>, <code>description</code>,
+   * <code>units</code>,  and with smaller values indicating better
    * performance.
-    */
+   */
 
   virtual StatisticDescriptor* createDoubleCounter(
       const char* name, const char* description, const char* units,
@@ -199,7 +199,7 @@ class CPPCACHE_EXPORT StatisticsFactory {
                                              const char* textId,
                                              int64_t numericId) = 0;
 
-  /** Return the first instance that matches the type, or NULL */
+  /** Return the first instance that matches the type, or nullptr */
   virtual Statistics* findFirstStatisticsByType(StatisticsType* type) = 0;
 
   /**

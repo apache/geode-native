@@ -39,7 +39,7 @@ class BufferDesc {
 
   BufferDesc(uint8_t* buf, uint32_t size) : m_buf(buf), m_size(size) {}
 
-  BufferDesc() : m_buf(NULL), m_size(0) {}
+  BufferDesc() : m_buf(nullptr), m_size(0) {}
 
   ~BufferDesc() {}
 
@@ -105,7 +105,8 @@ TSSDataOutput::~TSSDataOutput() {
 
 ACE_TSS<TSSDataOutput> TSSDataOutput::s_tssDataOutput;
 
-DataOutput::DataOutput() : m_poolName(NULL), m_size(0), m_haveBigBuffer(false) {
+DataOutput::DataOutput()
+    : m_poolName(nullptr), m_size(0), m_haveBigBuffer(false) {
   m_buf = m_bytes = DataOutput::checkoutBuffer(&m_size);
 }
 

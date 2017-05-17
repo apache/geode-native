@@ -34,8 +34,8 @@ namespace geode {
 namespace client {
 
 PdxFieldType::PdxFieldType() : Serializable() {
-  // m_fieldName = NULL;
-  // m_className = NULL;
+  // m_fieldName = nullptr;
+  // m_className = nullptr;
   m_typeId = 0;
   m_sequenceId = 0;
   m_isVariableLengthType = false;
@@ -81,7 +81,7 @@ void PdxFieldType::toData(DataOutput& output) const {
 Serializable* PdxFieldType::fromData(DataInput& input) {
   int8_t typeId;
   input.read(&typeId);
-  char* fname = NULL;
+  char* fname = nullptr;
   input.readUTF(&fname);
   m_fieldName = fname;
   input.freeUTFMemory(fname);  // freeing fname
@@ -106,7 +106,7 @@ bool PdxFieldType::equals(PdxFieldTypePtr otherObj) {
 
   PdxFieldType* otherFieldType = dynamic_cast<PdxFieldType*>(otherObj.get());
 
-  if (otherFieldType == NULL) return false;
+  if (otherFieldType == nullptr) return false;
 
   if (otherFieldType == this) return true;
 

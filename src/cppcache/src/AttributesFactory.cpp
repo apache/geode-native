@@ -115,7 +115,7 @@ void AttributesFactory::setStatisticsEnabled( bool statisticsEnabled)
 std::unique_ptr<RegionAttributes> AttributesFactory::createRegionAttributes() {
   RegionAttributesPtr res;
   /*
-  if( m_regionAttributes.m_poolName != NULL )
+  if( m_regionAttributes.m_poolName != nullptr )
   {
           PoolPtr pool= PoolManager::find( m_regionAttributes.m_poolName );
     if (pool == nullptr) {
@@ -159,8 +159,8 @@ void AttributesFactory::validateAttributes(RegionAttributes& attrs) {
 
   if (attrs.m_diskPolicy != DiskPolicyType::NONE) {
     if (attrs.m_persistenceManager == nullptr &&
-        (attrs.m_persistenceLibrary == NULL ||
-         attrs.m_persistenceFactory == NULL)) {
+        (attrs.m_persistenceLibrary == nullptr ||
+         attrs.m_persistenceFactory == nullptr)) {
       throw IllegalStateException(
           "Persistence Manager must be set if DiskPolicy is OVERFLOWS");
     }

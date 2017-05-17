@@ -195,7 +195,8 @@ DUNIT_TASK(CLIENT2, VerifyManyPuts)
     char keybuf[100];
     for (int index = 0; index < entriesExpected; ++index) {
       sprintf(keybuf, "keys1%010d", index);
-      auto valPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keybuf));
+      auto valPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr->get(keybuf));
       ASSERT(valPtr != nullptr, "expected non-null value");
       ASSERT(valPtr->length() == 107, "unexpected size of value in verify");
     }
@@ -230,7 +231,8 @@ DUNIT_TASK(CLIENT2, VerifyOldManyPuts)
     char keybuf[100];
     for (int index = 0; index < entriesExpected; ++index) {
       sprintf(keybuf, "keys1%010d", index);
-      auto valPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keybuf));
+      auto valPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr->get(keybuf));
       ASSERT(valPtr != nullptr, "expected non-null value");
       ASSERT(valPtr->length() == 107, "unexpected size of value in verify");
     }
@@ -250,7 +252,8 @@ DUNIT_TASK(CLIENT2, VerifyUpdatedManyPuts)
     char keybuf[100];
     for (int index = 0; index < entriesExpected; ++index) {
       sprintf(keybuf, "keys1%010d", index);
-      auto valPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keybuf));
+      auto valPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr->get(keybuf));
       ASSERT(valPtr != nullptr, "expected non-null value");
       ASSERT(valPtr->length() == 1007, "unexpected size of value in verify");
     }
@@ -285,7 +288,8 @@ DUNIT_TASK(CLIENT2, VerifyUpdatedManyPutsGetAll)
     LOG("On client getAll for entries completed.");
     for (int index = 0; index < entriesExpected; ++index) {
       sprintf(keybuf, "keys1%010d", index);
-      auto valPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keybuf));
+      auto valPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr->get(keybuf));
       ASSERT(valPtr != nullptr, "expected non-null value");
       ASSERT(valPtr->length() == 1007, "unexpected size of value in verify");
     }
@@ -321,7 +325,8 @@ DUNIT_TASK(CLIENT2, VerifyManyPutsInt64)
       int64_t key = index * index * index;
       // CacheableStringPtr valPtr =
       // std::dynamic_pointer_cast<CacheableString>(regPtr->get(key));
-      auto valPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(CacheableInt64::create(key)));
+      auto valPtr = std::dynamic_pointer_cast<CacheableString>(
+          regPtr->get(CacheableInt64::create(key)));
       ASSERT(valPtr != nullptr, "expected non-null value");
       ASSERT(valPtr->length() == 207, "unexpected size of value in verify");
     }
@@ -334,7 +339,8 @@ DUNIT_TASK(CLIENT2, VerifyManyPutsInt64)
       CacheableKeyPtr key = CacheableInt64::create(index * index * index);
       RegionEntryPtr entry = regPtr->getEntry(key);
       ASSERT(entry != nullptr, "expected non-null entry");
-      auto valPtr = std::dynamic_pointer_cast<CacheableString>(entry->getValue());
+      auto valPtr =
+          std::dynamic_pointer_cast<CacheableString>(entry->getValue());
       ASSERT(valPtr != nullptr, "expected non-null value");
       ASSERT(valPtr->length() == 207, "unexpected size of value in verify");
     }
@@ -374,12 +380,13 @@ DUNIT_TASK(CLIENT2, VerifyUpdatedManyPutsInt64GetAll)
       CacheableKeyPtr key = vec[index];
       RegionEntryPtr entry = regPtr->getEntry(key);
       ASSERT(entry != nullptr, "expected non-null entry");
-      auto valPtr = std::dynamic_pointer_cast<CacheableString>(entry->getValue());
+      auto valPtr =
+          std::dynamic_pointer_cast<CacheableString>(entry->getValue());
       ASSERT(valPtr != nullptr, "expected non-null value");
       ASSERT(valPtr->length() == 207, "unexpected size of value in verify");
-      HashMapOfCacheable::Iterator iter = valuesMap->find(key);
+      const auto& iter = valuesMap->find(key);
       ASSERT(iter != valuesMap->end(), "expected to find key in map");
-      valPtr = std::dynamic_pointer_cast<CacheableString>(iter.second());
+      valPtr = std::dynamic_pointer_cast<CacheableString>(iter->second);
       ASSERT(valPtr != nullptr, "expected non-null value");
       ASSERT(valPtr->length() == 207, "unexpected size of value in verify");
     }

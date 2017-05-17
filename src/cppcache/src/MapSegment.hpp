@@ -126,7 +126,7 @@ class CPPCACHE_EXPORT MapSegment {
     std::pair<bool, int> trackerPair = entry->removeTracker();
     if (trackerPair.second <= 0) {
       CacheablePtr value;
-      if (entryImpl == NULL) {
+      if (entryImpl == nullptr) {
         entryImpl = entry->getImplPtr();
       }
       entryImpl->getValueI(value);
@@ -146,7 +146,7 @@ class CPPCACHE_EXPORT MapSegment {
                               const CacheablePtr& newValue,
                               MapEntryImplPtr& newEntry, int updateCount,
                               int destroyTracker, VersionTagPtr versionTag,
-                              VersionStamp* versionStamp = NULL) {
+                              VersionStamp* versionStamp = nullptr) {
     if (!m_concurrencyChecksEnabled) {
       if (updateCount >= 0) {
         // entry was removed while being tracked
@@ -164,9 +164,9 @@ class CPPCACHE_EXPORT MapSegment {
     m_entryFactory->newMapEntry(key, newEntry);
     newEntry->setValueI(newValue);
     if (m_concurrencyChecksEnabled) {
-      if (versionTag != nullptr && versionTag.get() != NULL) {
+      if (versionTag != nullptr && versionTag.get() != nullptr) {
         newEntry->getVersionStamp().setVersions(versionTag);
-      } else if (versionStamp != NULL) {
+      } else if (versionStamp != nullptr) {
         newEntry->getVersionStamp().setVersions(*versionStamp);
       }
     }
@@ -178,7 +178,7 @@ class CPPCACHE_EXPORT MapSegment {
                                const CacheablePtr& newValue, MapEntryPtr& entry,
                                MapEntryImplPtr& entryImpl, int updateCount,
                                VersionStamp& versionStamp,
-                               DataInput* delta = NULL);
+                               DataInput* delta = nullptr);
 
   CacheablePtr getFromDisc(CacheableKeyPtr key, MapEntryImplPtr& entryImpl);
 
@@ -190,14 +190,14 @@ class CPPCACHE_EXPORT MapSegment {
 
  public:
   MapSegment()
-      : m_map(NULL),
-        m_entryFactory(NULL),
+      : m_map(nullptr),
+        m_entryFactory(nullptr),
         m_region(nullptr),
         m_primeIndex(0),
         m_spinlock(),
         m_segmentMutex(),
         m_concurrencyChecksEnabled(false),
-        m_numDestroyTrackers(NULL),
+        m_numDestroyTrackers(nullptr),
         m_rehashCount(0)  // COVERITY  --> 30303 Uninitialized scalar field
   {
     m_tombstoneList = std::make_shared<TombstoneList>(this);
@@ -236,7 +236,7 @@ class CPPCACHE_EXPORT MapSegment {
   GfErrType put(const CacheableKeyPtr& key, const CacheablePtr& newValue,
                 MapEntryImplPtr& me, CacheablePtr& oldValue, int updateCount,
                 int destroyTracker, bool& isUpdate, VersionTagPtr versionTag,
-                DataInput* delta = NULL);
+                DataInput* delta = nullptr);
 
   GfErrType invalidate(const CacheableKeyPtr& key, MapEntryImplPtr& me,
                        CacheablePtr& oldValue, VersionTagPtr versionTag,

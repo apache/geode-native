@@ -39,10 +39,11 @@ ClientMetadata::ClientMetadata(
     BucketServerLocationsType empty;
     m_bucketServerLocationsList.push_back(empty);
   }
-  if (m_tcrdm == NULL) {
-    throw IllegalArgumentException("ClientMetaData: ThinClientPoolDM is NULL.");
+  if (m_tcrdm == nullptr) {
+    throw IllegalArgumentException(
+        "ClientMetaData: ThinClientPoolDM is nullptr.");
   }
-  if (fpaSet != NULL) {
+  if (fpaSet != nullptr) {
     LOGDEBUG(
         "ClientMetadata Creating metadata with %d buckets & fpaset size is %d ",
         totalNumBuckets, fpaSet->size());
@@ -83,7 +84,7 @@ ClientMetadata::ClientMetadata()
       m_previousOne(nullptr),
       m_totalNumBuckets(0),
       m_colocatedWith(nullptr),
-      m_tcrdm(NULL) {}
+      m_tcrdm(nullptr) {}
 
 ClientMetadata::~ClientMetadata() {}
 

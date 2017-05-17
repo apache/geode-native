@@ -34,7 +34,7 @@
 #ifdef __disabled_test__
 static int clientWithNothing = 0;
 void initClient() {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr config = Properties::create();
     if (clientWithNothing > 1) config->insert("grid-client", "true");
     clientWithNothing += 1;
@@ -62,20 +62,20 @@ void startServer(int instance, const char* xmlfile, const char* lochostport) {
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1)
   {
-    CacheHelper::initServer(1, "cacheserver_notify_subscription.xml", NULL,
-                            NULL, false, true, true);
-    CacheHelper::initServer(2, "cacheserver_notify_subscription2.xml", NULL,
-                            NULL, false, true, true);
+    CacheHelper::initServer(1, "cacheserver_notify_subscription.xml", nullptr,
+                            nullptr, false, true, true);
+    CacheHelper::initServer(2, "cacheserver_notify_subscription2.xml", nullptr,
+                            nullptr, false, true, true);
     LOG("SERVER1 and server2 started");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER2, CreateServer2)
   {
-    CacheHelper::initServer(3, "cacheserver_notify_subscription3.xml", NULL,
-                            NULL, false, true, true);
-    CacheHelper::initServer(4, "cacheserver_notify_subscription4.xml", NULL,
-                            NULL, false, true, true);
+    CacheHelper::initServer(3, "cacheserver_notify_subscription3.xml", nullptr,
+                            nullptr, false, true, true);
+    CacheHelper::initServer(4, "cacheserver_notify_subscription4.xml", nullptr,
+                            nullptr, false, true, true);
     LOG("SERVER2 started");
   }
 END_TASK_DEFINITION
@@ -170,9 +170,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_1)
     try {
       RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
       RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
-      auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[2]));
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[2]));
       ASSERT(checkPtr == nullptr, "checkPtr should be null");
-      auto checkPtr1 = std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[0]));
+      auto checkPtr1 =
+          std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[0]));
       ASSERT(checkPtr1 != nullptr, "checkPtr1 should not be null");
     } catch (Exception& excp) {
       LOG(excp.getMessage());
@@ -339,9 +341,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_secureclient1)
     try {
       RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
       RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
-      auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[2]));
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[2]));
       ASSERT(checkPtr == nullptr, "checkPtr should be null");
-      auto checkPtr1 = std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[0]));
+      auto checkPtr1 =
+          std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[0]));
       ASSERT(checkPtr1 != nullptr, "checkPtr1 should not be null");
     } catch (Exception& excp) {
       LOG(excp.getMessage());

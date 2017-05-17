@@ -23,8 +23,8 @@
 using namespace apache::geode::client;
 
 void SPEHelper::throwNullPointerException(const char* ptrtype) {
-  throw NullPointerException(Utils::demangleTypeName(ptrtype)->asChar(), NULL,
-                             true);
+  throw NullPointerException(Utils::demangleTypeName(ptrtype)->asChar(),
+                             nullptr, true);
 }
 
 void SPEHelper::throwClassCastException(const char* msg, const char* fromType,

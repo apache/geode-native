@@ -85,8 +85,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER2, CreateServer2And3_Locator)
   {
-    if (isLocalServer) CacheHelper::initServer(2, NULL, locatorsG);
-    if (isLocalServer) CacheHelper::initServer(3, NULL, locatorsG);
+    if (isLocalServer) CacheHelper::initServer(2, nullptr, locatorsG);
+    if (isLocalServer) CacheHelper::initServer(3, nullptr, locatorsG);
     LOG("SERVER23 started");
   }
 END_TASK_DEFINITION
@@ -200,8 +200,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll)
     reg0->getAll(keys0, values, exceptions);
     ASSERT(values->size() == 2, "Expected 2 values");
     ASSERT(exceptions->size() == 0, "Expected no exceptions");
-    auto val0 = std::dynamic_pointer_cast<CacheableString>(values->operator[](key0));
-    auto val1 = std::dynamic_pointer_cast<CacheableString>(values->operator[](key1));
+    auto val0 =
+        std::dynamic_pointer_cast<CacheableString>(values->operator[](key0));
+    auto val1 =
+        std::dynamic_pointer_cast<CacheableString>(values->operator[](key1));
     ASSERT(strcmp(_nvals[0], val0->asChar()) == 0, "Got unexpected value");
     ASSERT(strcmp(_nvals[1], val1->asChar()) == 0, "Got unexpected value");
 
@@ -220,8 +222,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll)
     reg1->getAll(keys1, values, exceptions, true);
     ASSERT(values->size() == 2, "Expected 2 values");
     ASSERT(exceptions->size() == 0, "Expected no exceptions");
-    auto val2 = std::dynamic_pointer_cast<CacheableString>(values->operator[](key2));
-    auto val3 = std::dynamic_pointer_cast<CacheableString>(values->operator[](key3));
+    auto val2 =
+        std::dynamic_pointer_cast<CacheableString>(values->operator[](key2));
+    auto val3 =
+        std::dynamic_pointer_cast<CacheableString>(values->operator[](key3));
     ASSERT(strcmp(_nvals[2], val2->asChar()) == 0, "Got unexpected value");
     ASSERT(strcmp(_vals[3], val3->asChar()) == 0, "Got unexpected value");
 
@@ -233,7 +237,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll)
     verifyEntry(_regionNames[1], _keys[2], _nvals[2], true);
     verifyEntry(_regionNames[1], _keys[3], _vals[3], true);
 
-    // also check with NULL values that region is properly populated
+    // also check with nullptr values that region is properly populated
     reg1->localInvalidate(key3);
     values = nullptr;
     exceptions->clear();
@@ -297,8 +301,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll_Pool)
     reg0->getAll(keys0, values, exceptions);
     ASSERT(values->size() == 2, "Expected 2 values");
     ASSERT(exceptions->size() == 0, "Expected no exceptions");
-    auto val0 = std::dynamic_pointer_cast<CacheableString>(values->operator[](key0));
-    auto val1 = std::dynamic_pointer_cast<CacheableString>(values->operator[](key1));
+    auto val0 =
+        std::dynamic_pointer_cast<CacheableString>(values->operator[](key0));
+    auto val1 =
+        std::dynamic_pointer_cast<CacheableString>(values->operator[](key1));
     ASSERT(strcmp(_nvals[0], val0->asChar()) == 0, "Got unexpected value");
     ASSERT(strcmp(_nvals[1], val1->asChar()) == 0, "Got unexpected value");
 
@@ -317,8 +323,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll_Pool)
     reg1->getAll(keys1, values, exceptions, true);
     ASSERT(values->size() == 2, "Expected 2 values");
     ASSERT(exceptions->size() == 0, "Expected no exceptions");
-    auto val2 = std::dynamic_pointer_cast<CacheableString>(values->operator[](key2));
-    auto val3 = std::dynamic_pointer_cast<CacheableString>(values->operator[](key3));
+    auto val2 =
+        std::dynamic_pointer_cast<CacheableString>(values->operator[](key2));
+    auto val3 =
+        std::dynamic_pointer_cast<CacheableString>(values->operator[](key3));
     ASSERT(strcmp(_nvals[2], val2->asChar()) == 0, "Got unexpected value");
     ASSERT(strcmp(_vals[3], val3->asChar()) == 0, "Got unexpected value");
 
@@ -330,7 +338,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll_Pool)
     verifyEntry(_regionNames[1], _keys[2], _nvals[2], true);
     verifyEntry(_regionNames[1], _keys[3], _vals[3], true);
 
-    // also check with NULL values that region is properly populated
+    // also check with nullptr values that region is properly populated
     reg1->localInvalidate(key3);
     values = nullptr;
     exceptions->clear();

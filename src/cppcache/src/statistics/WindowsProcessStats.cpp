@@ -33,7 +33,7 @@ WindowsProcessStats::WindowsProcessStats(int64_t pid, const char* name) {
 
   // Create Statistics
   this->stats = statFactory->createOsStatistics(m_statsType, name, pid);
-  GF_D_ASSERT(this->stats != NULL);
+  GF_D_ASSERT(this->stats != nullptr);
 
 // Refresh Stats Values
 #if defined(_WIN32)
@@ -181,7 +181,7 @@ void WindowsProcessStats::createType(StatisticsFactory* statFactory) {
     m_statsType = statFactory->findType("WindowsProcessStats");
   }
 
-  if (m_statsType == NULL) {
+  if (m_statsType == nullptr) {
     throw OutOfMemoryException("WindowsProcessStats::createType: out memory");
   }
 
@@ -216,18 +216,20 @@ int32_t WindowsProcessStats::getCpuUsage() {
 int64_t WindowsProcessStats::getCPUTime() {
   return stats->getLong(activeTimeLONG);
 }
-int32_t WindowsProcessStats::getNumThreads() { return stats->getInt(threadsINT); }
+int32_t WindowsProcessStats::getNumThreads() {
+  return stats->getInt(threadsINT);
+}
 int64_t WindowsProcessStats::getAllCpuTime() {
   return ((stats->getLong(userTimeLONG)) + (stats->getLong(systemTimeLONG)));
 }
 
 void WindowsProcessStats::close() {
-  if (stats != NULL) {
+  if (stats != nullptr) {
     stats->close();
   }
 }
 
 WindowsProcessStats::~WindowsProcessStats() {
-  m_statsType = NULL;
-  stats = NULL;
+  m_statsType = nullptr;
+  stats = nullptr;
 }

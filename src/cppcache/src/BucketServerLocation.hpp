@@ -69,7 +69,7 @@ class BucketServerLocation : public ServerLocation {
         m_isPrimary(isPrimary),
         m_version(version) {
     int32_t size = static_cast<int32_t>(serverGroups.size());
-    CacheableStringPtr* ptrArr = NULL;
+    CacheableStringPtr* ptrArr = nullptr;
     if (size > 0) {
       ptrArr = new CacheableStringPtr[size];
       for (int i = 0; i < size; i++) {
@@ -115,7 +115,7 @@ class BucketServerLocation : public ServerLocation {
     input.readBoolean(&m_isPrimary);
     input.read(&m_version);
     input.read((&m_numServerGroups));
-    CacheableStringPtr* serverGroups = NULL;
+    CacheableStringPtr* serverGroups = nullptr;
     if (m_numServerGroups > 0) {
       serverGroups = new CacheableStringPtr[m_numServerGroups];
       for (int i = 0; i < m_numServerGroups; i++) {
@@ -176,5 +176,19 @@ class BucketServerLocation : public ServerLocation {
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
+
+namespace std {
+
+template <>
+struct hash<apache::geode::client::BucketServerLocation> {
+  typedef apache::geode::client::BucketServerLocation argument_type;
+  typedef size_t result_type;
+  size_t operator()(
+      const apache::geode::client::BucketServerLocation& val) const {
+    return val.hashcode();
+  }
+};
+
+}  // namespace std
 
 #endif  // GEODE_BUCKETSERVERLOCATION_H_

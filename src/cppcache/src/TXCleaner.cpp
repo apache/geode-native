@@ -35,23 +35,24 @@ TXCleaner::TXCleaner(CacheTransactionManagerImpl* cacheTxMgr) {
 
 TXCleaner::~TXCleaner() {
   clean();
-  if (m_txState != NULL) {
+  if (m_txState != nullptr) {
     m_txState->releaseStickyConnection();
     delete m_txState;
-    m_txState = NULL;
+    m_txState = nullptr;
   }
 }
 void TXCleaner::clean() {
-  if (m_txState != NULL && m_txState->getTransactionId().get() != NULL) {
+  if (m_txState != nullptr && m_txState->getTransactionId().get() != nullptr) {
     m_cacheTxMgr->removeTx(m_txState->getTransactionId()->getId());
   }
-  if (m_txStateWrapper != NULL && m_txState != NULL) {
-    m_txStateWrapper->setTXState(NULL);
+  if (m_txStateWrapper != nullptr && m_txState != nullptr) {
+    m_txStateWrapper->setTXState(nullptr);
   }
 }
 
 TXState* TXCleaner::getTXState() {
-  return (m_txStateWrapper == NULL) ? NULL : m_txStateWrapper->getTXState();
+  return (m_txStateWrapper == nullptr) ? nullptr
+                                       : m_txStateWrapper->getTXState();
 }
 }  // namespace client
 }  // namespace geode

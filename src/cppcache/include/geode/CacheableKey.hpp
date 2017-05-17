@@ -20,6 +20,8 @@
  * limitations under the License.
  */
 
+#include <functional>
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 #include "Cacheable.hpp"
@@ -71,6 +73,37 @@ class CPPCACHE_EXPORT CacheableKey : public Cacheable {
   template <class PRIM>
   inline static CacheableKeyPtr create(const PRIM value);
 
+  struct hash {
+    inline std::size_t operator()(const CacheableKey& s) const {
+      return s.hashcode();
+    }
+
+    inline std::size_t operator()(const CacheableKey*& s) const {
+      return s->hashcode();
+    }
+
+    inline std::size_t operator()(const std::shared_ptr<CacheableKey>& s) const {
+      return s->hashcode();
+    }
+  };
+  
+  struct equal_to {
+    inline bool operator()(const CacheableKey &lhs,
+                           const CacheableKey &rhs) const {
+      return lhs == rhs;
+    }
+
+    inline bool operator()(const CacheableKey* &lhs,
+                           const CacheableKey* &rhs) const {
+      return (*lhs) == (*rhs);
+    }
+
+    inline bool operator()(const std::shared_ptr<CacheableKey> &lhs,
+                    const std::shared_ptr<CacheableKey> &rhs) const {
+      return (*lhs) == (*rhs);
+    }
+  };
+
  private:
   // Never defined.
   CacheableKey(const CacheableKey& other);
@@ -85,5 +118,18 @@ inline CacheableKeyPtr createKey(const TKEY* value);
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
+
+namespace std {
+
+template <>
+struct hash<apache::geode::client::CacheableKey> {
+  typedef apache::geode::client::CacheableKey argument_type;
+  typedef size_t result_type;
+  result_type operator()(const argument_type& val) const {
+    return val.hashcode();
+  }
+};
+
+}  // namespace std
 
 #endif  // GEODE_CACHEABLEKEY_H_

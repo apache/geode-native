@@ -42,14 +42,14 @@ StatDataOutput::StatDataOutput(std::string filename) {
   closed = false;
   bytesWritten = 0;
   m_fp = fopen(outFile.c_str(), "a+b");
-  if (m_fp == NULL) {
+  if (m_fp == nullptr) {
     std::string s("error in opening archive file for writing");
     throw NullPointerException(s.c_str());
   }
 }
 
 StatDataOutput::~StatDataOutput() {
-  if (!closed && m_fp != NULL) {
+  if (!closed && m_fp != nullptr) {
     fclose(m_fp);
   }
 }
@@ -58,12 +58,12 @@ int64_t StatDataOutput::getBytesWritten() { return this->bytesWritten; }
 
 void StatDataOutput::flush() {
   const uint8_t *buffBegin = dataBuffer.getBuffer();
-  if (buffBegin == NULL) {
+  if (buffBegin == nullptr) {
     std::string s("undefined stat data buffer beginning");
     throw NullPointerException(s.c_str());
   }
   const uint8_t *buffEnd = dataBuffer.getCursor();
-  if (buffEnd == NULL) {
+  if (buffEnd == nullptr) {
     std::string s("undefined stat data buffer end");
     throw NullPointerException(s.c_str());
   }
@@ -124,13 +124,13 @@ void StatDataOutput::writeUTF(std::wstring s) {
 
 void StatDataOutput::close() {
   fclose(m_fp);
-  m_fp = NULL;
+  m_fp = nullptr;
   closed = true;
 }
 
 void StatDataOutput::openFile(std::string filename, int64_t size) {
   m_fp = fopen(filename.c_str(), "a+b");
-  if (m_fp == NULL) {
+  if (m_fp == nullptr) {
     std::string s("error in opening archive file for writing");
     throw NullPointerException(s.c_str());
   }
@@ -142,7 +142,7 @@ void StatDataOutput::openFile(std::string filename, int64_t size) {
 
 ResourceType::ResourceType(int32_t idArg, StatisticsType *typeArg) {
   StatisticsType *typeImpl = dynamic_cast<StatisticsType *>(typeArg);
-  if (typeImpl == NULL) {
+  if (typeImpl == nullptr) {
     std::string s("could not down cast to StatisticsType");
     throw NullPointerException(s.c_str());
   }
@@ -192,8 +192,8 @@ void ResourceInst::writeSample() {
   bool wroteInstId = false;
   bool checkForChange = true;
   StatisticDescriptor **stats = this->type->getStats();
-  GF_D_ASSERT(stats != NULL);
-  GF_D_ASSERT(*stats != NULL);
+  GF_D_ASSERT(stats != nullptr);
+  GF_D_ASSERT(*stats != nullptr);
   if (this->resource->isClosed()) {
     return;
   }
@@ -221,7 +221,7 @@ void ResourceInst::writeSample() {
 
 void ResourceInst::writeStatValue(StatisticDescriptor *sd, int64_t v) {
   StatisticDescriptorImpl *sdImpl = (StatisticDescriptorImpl *)sd;
-  if (sdImpl == NULL) {
+  if (sdImpl == nullptr) {
     throw NullPointerException("could not downcast to StatisticDescriptorImpl");
   }
   FieldType typeCode = sdImpl->getTypeCode();
@@ -288,7 +288,8 @@ void ResourceInst::writeCompactValue(int64_t v) {
   }
 }
 
-void ResourceInst::writeResourceInst(StatDataOutput *dataOutArg, int32_t instId) {
+void ResourceInst::writeResourceInst(StatDataOutput *dataOutArg,
+                                     int32_t instId) {
   if (instId > MAX_BYTE_RESOURCE_INST_ID) {
     if (instId > MAX_SHORT_RESOURCE_INST_ID) {
       dataOutArg->writeByte(static_cast<int8_t>(INT_RESOURCE_INST_ID_TOKEN));
@@ -373,9 +374,9 @@ StatArchiveWriter::StatArchiveWriter(std::string outfile,
 }
 
 StatArchiveWriter::~StatArchiveWriter() {
-  if (dataBuffer != NULL) {
+  if (dataBuffer != nullptr) {
     delete dataBuffer;
-    dataBuffer = NULL;
+    dataBuffer = nullptr;
   }
   std::map<StatisticsType *, ResourceType *>::iterator p;
   for (p = resourceTypeMap.begin(); p != resourceTypeMap.end(); p++) {
@@ -398,7 +399,7 @@ void StatArchiveWriter::sample(int64_t timeStamp) {
   std::map<Statistics *, ResourceInst *>::iterator p;
   for (p = resourceInstMap.begin(); p != resourceInstMap.end(); p++) {
     ResourceInst *ri = (*p).second;
-    if (!!ri && (*p).first != NULL) {
+    if (!!ri && (*p).first != nullptr) {
       ri->writeSample();
     }
   }
@@ -426,12 +427,12 @@ void StatArchiveWriter::openFile(std::string filename) {
   StatDataOutput *p_dataBuffer = new StatDataOutput(filename);
 
   const uint8_t *buffBegin = dataBuffer->dataBuffer.getBuffer();
-  if (buffBegin == NULL) {
+  if (buffBegin == nullptr) {
     std::string s("undefined stat data buffer beginning");
     throw NullPointerException(s.c_str());
   }
   const uint8_t *buffEnd = dataBuffer->dataBuffer.getCursor();
-  if (buffEnd == NULL) {
+  if (buffEnd == nullptr) {
     std::string s("undefined stat data buffer end");
     throw NullPointerException(s.c_str());
   }
@@ -454,7 +455,7 @@ void StatArchiveWriter::flush() {
   /*
     // have to figure out the problem with this code.
     delete dataBuffer;
-    dataBuffer = NULL;
+    dataBuffer = nullptr;
 
     dataBuffer = new StatDataOutput(archiveFile);
    */
@@ -539,7 +540,7 @@ void StatArchiveWriter::allocateResourceInst(Statistics *s) {
   ResourceType *type = getResourceType(s);
 
   ResourceInst *ri = new ResourceInst(resourceInstId, s, type, dataBuffer);
-  if (ri == NULL) {
+  if (ri == nullptr) {
     std::string s("could not create new resource instance");
     throw NullPointerException(s.c_str());
   }
@@ -555,18 +556,18 @@ void StatArchiveWriter::allocateResourceInst(Statistics *s) {
 
 ResourceType *StatArchiveWriter::getResourceType(Statistics *s) {
   StatisticsType *type = s->getType();
-  if (type == NULL) {
+  if (type == nullptr) {
     std::string s("could not know the type of the statistics object");
     throw NullPointerException(s.c_str());
   }
-  ResourceType *rt = NULL;
+  ResourceType *rt = nullptr;
   std::map<StatisticsType *, ResourceType *>::iterator p;
   p = resourceTypeMap.find(type);
   if (p != resourceTypeMap.end()) {
     rt = (*p).second;
   } else {
     rt = new ResourceType(resourceTypeId, type);
-    if (type == NULL) {
+    if (type == nullptr) {
       std::string s("could not allocate memory for a new resourcetype");
       throw NullPointerException(s.c_str());
     }
@@ -584,7 +585,7 @@ ResourceType *StatArchiveWriter::getResourceType(Statistics *s) {
       std::string statsName = stats[i]->getName();
       this->dataBuffer->writeString(statsName);
       StatisticDescriptorImpl *sdImpl = (StatisticDescriptorImpl *)stats[i];
-      if (sdImpl == NULL) {
+      if (sdImpl == nullptr) {
         std::string err("could not down cast to StatisticDescriptorImpl");
         throw NullPointerException(err.c_str());
       }

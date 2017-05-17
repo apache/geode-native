@@ -28,7 +28,7 @@ void LocatorListRequest::toData(DataOutput& output) const {
   // output.writeObject(pxr);// changed
   output.writeNativeString(m_servergroup.c_str());
 }
-Serializable* LocatorListRequest::fromData(DataInput& input) { return NULL; }
+Serializable* LocatorListRequest::fromData(DataInput& input) { return nullptr; }
 int8_t LocatorListRequest::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::LocatorListRequest);
 }

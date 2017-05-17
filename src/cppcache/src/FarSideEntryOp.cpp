@@ -108,7 +108,7 @@ void FarSideEntryOp::fromData(DataInput& input, bool largeModCount,
           input.readObject(m_value);
         }
       } else {
-        // uint8_t* buf = NULL;
+        // uint8_t* buf = nullptr;
         int32_t len;
         input.readArrayLen(&len);
         input.readObject(m_value);

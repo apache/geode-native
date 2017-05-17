@@ -37,16 +37,16 @@ namespace client {
 //////////////////////////////////////////////////////////////////////
 
 CacheConfig::CacheConfig(const char* xmlFileName)
-    : m_doc(NULL),
-      m_root_element(NULL)
+    : m_doc(nullptr),
+      m_root_element(nullptr)
 
 {
   m_doc = xmlParseFile(xmlFileName);
-  if (m_doc == NULL) {
+  if (m_doc == nullptr) {
     throw IllegalArgumentException("Cacheconfig : xmlParseFile");
   }
   m_root_element = xmlDocGetRootElement(m_doc);
-  if (m_root_element == NULL) {
+  if (m_root_element == nullptr) {
     throw IllegalArgumentException("Cacheconfig : xmlDocGetRootElement");
   }
   if (!parse()) throw IllegalArgumentException("Cacheconfig : parse error");
@@ -61,7 +61,7 @@ CacheConfig::~CacheConfig() {
 bool CacheConfig::parse() {
   if (strcmp(reinterpret_cast<const char*>(m_root_element->name), "cache") ==
       0) {
-    xmlNode* cur_node = NULL;
+    xmlNode* cur_node = nullptr;
 
     for (cur_node = m_root_element->children; cur_node;
          cur_node = cur_node->next) {
@@ -82,8 +82,8 @@ bool CacheConfig::parseRegion(xmlNode* node) {
   xmlChar* name =
       xmlGetNoNsProp(node, reinterpret_cast<const unsigned char*>("name"));
 
-  if (name != NULL) {
-    xmlNode* cur_node = NULL;
+  if (name != nullptr) {
+    xmlNode* cur_node = nullptr;
 
     for (cur_node = node->children; cur_node; cur_node = cur_node->next) {
       if (cur_node->type == XML_ELEMENT_NODE) {
@@ -111,16 +111,18 @@ bool CacheConfig::parseAttributes(const char* name, xmlNode* node) {
       node, reinterpret_cast<const unsigned char*>("caching-enabled"));
 
   std::string scopeStr =
-      (scope == NULL ? "invalid" : reinterpret_cast<const char*>(scope));
+      (scope == nullptr ? "invalid" : reinterpret_cast<const char*>(scope));
   std::string initialCapacityStr =
-      (initialCapacity == NULL ? "1000" : reinterpret_cast<const char*>(
-                                              initialCapacity));
+      (initialCapacity == nullptr
+           ? "1000"
+           : reinterpret_cast<const char*>(initialCapacity));
   std::string limitStr =
-      (lruLimit == NULL ? "0" : reinterpret_cast<const char*>(lruLimit));
+      (lruLimit == nullptr ? "0" : reinterpret_cast<const char*>(lruLimit));
   std::string concStr =
-      (concurrency == NULL ? "0" : reinterpret_cast<const char*>(concurrency));
+      (concurrency == nullptr ? "0"
+                              : reinterpret_cast<const char*>(concurrency));
   std::string cachingStr =
-      (caching == NULL ? "true" : reinterpret_cast<const char*>(caching));
+      (caching == nullptr ? "true" : reinterpret_cast<const char*>(caching));
 
   auto reg = std::make_shared<RegionConfig>(scopeStr, initialCapacityStr);
 

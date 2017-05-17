@@ -69,11 +69,12 @@ class CPPCACHE_EXPORT Utils {
 #ifdef __GNUC__
   inline static char* _gnuDemangledName(const char* typeIdName, size_t& len) {
     int status;
-    char* demangledName = abi::__cxa_demangle(typeIdName, NULL, &len, &status);
-    if (status == 0 && demangledName != NULL) {
+    char* demangledName =
+        abi::__cxa_demangle(typeIdName, nullptr, &len, &status);
+    if (status == 0 && demangledName != nullptr) {
       return demangledName;
     }
-    return NULL;
+    return nullptr;
   }
 #endif
 
@@ -82,7 +83,7 @@ class CPPCACHE_EXPORT Utils {
 #ifdef __GNUC__
     size_t len;
     char* demangledName = _gnuDemangledName(typeIdName, len);
-    if (demangledName != NULL) {
+    if (demangledName != nullptr) {
       str.append(demangledName, len);
       free(demangledName);
       return;
@@ -95,7 +96,7 @@ class CPPCACHE_EXPORT Utils {
 #ifdef __GNUC__
     size_t len;
     char* demangledName = _gnuDemangledName(typeIdName, len);
-    if (demangledName != NULL) {
+    if (demangledName != nullptr) {
       return CacheableString::createNoCopy(demangledName, len);
     }
 #endif
@@ -147,7 +148,7 @@ class CPPCACHE_EXPORT Utils {
   }
 
   inline static int64_t startStatOpTime() {
-    if (DistributedSystem::getSystemProperties() != NULL) {
+    if (DistributedSystem::getSystemProperties() != nullptr) {
       return (DistributedSystem::getSystemProperties()
                   ->getEnableTimeStatistics())
                  ? NanoTimer::now()
@@ -181,7 +182,7 @@ class CPPCACHE_EXPORT Utils {
 
   inline static void updateStatOpTime(statistics::Statistics* m_regionStats,
                                       int32_t statId, int64_t start) {
-    if (DistributedSystem::getSystemProperties() != NULL) {
+    if (DistributedSystem::getSystemProperties() != nullptr) {
       if (DistributedSystem::getSystemProperties()->getEnableTimeStatistics()) {
         m_regionStats->incLong(statId, startStatOpTime() - start);
       }

@@ -36,9 +36,8 @@ namespace client {
  * that can serve as a distributable object for caching.
  */
 class CPPCACHE_EXPORT CacheableObjectArray : public Cacheable,
-                                             public _VectorOfCacheable {
+                                             public VectorOfCacheable {
  public:
-  typedef _VectorOfCacheable::Iterator Iterator;
 
   /**
    *@brief serialize this object
@@ -90,9 +89,9 @@ class CPPCACHE_EXPORT CacheableObjectArray : public Cacheable,
 
  protected:
   /** Constructor, used for deserialization. */
-  inline CacheableObjectArray() : _VectorOfCacheable() {}
+  inline CacheableObjectArray() : VectorOfCacheable() {}
   /** Create a vector with n elements allocated. */
-  inline CacheableObjectArray(int32_t n) : _VectorOfCacheable(n) {}
+  inline CacheableObjectArray(int32_t n) : VectorOfCacheable(n) {}
 
  private:
   // never implemented.

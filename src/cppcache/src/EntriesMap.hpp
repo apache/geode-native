@@ -59,7 +59,7 @@ class CPPCACHE_EXPORT EntriesMap {
                         CacheablePtr& oldValue, int updateCount,
                         int destroyTracker, VersionTagPtr versionTag,
                         bool& isUpdate = EntriesMap::boolVal,
-                        DataInput* delta = NULL) = 0;
+                        DataInput* delta = nullptr) = 0;
   virtual GfErrType invalidate(const CacheableKeyPtr& key, MapEntryImplPtr& me,
                                CacheablePtr& oldValue,
                                VersionTagPtr versionTag) = 0;
@@ -75,7 +75,7 @@ class CPPCACHE_EXPORT EntriesMap {
                    MapEntryImplPtr& me) = 0;
 
   /**
-   * @brief get MapEntry for key; returns NULL if absent
+   * @brief get MapEntry for key; returns nullptr if absent
    */
   virtual void getEntry(const CacheableKeyPtr& key, MapEntryImplPtr& result,
                         CacheablePtr& value) const = 0;
@@ -84,7 +84,7 @@ class CPPCACHE_EXPORT EntriesMap {
 
   /**
    * @brief remove the entry for key from the map;
-   *   returns false and NULL MapEntry if absent
+   *   returns false and nullptr MapEntry if absent
    */
   virtual GfErrType remove(const CacheableKeyPtr& key, CacheablePtr& result,
                            MapEntryImplPtr& me, int updateCount,

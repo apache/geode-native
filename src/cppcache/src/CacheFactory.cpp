@@ -53,7 +53,7 @@ ACE_Recursive_Thread_Mutex g_cfLock;
 
 typedef std::map<std::string, CachePtr> StringToCachePtrMap;
 
-void* CacheFactory::m_cacheMap = (void*)NULL;
+void* CacheFactory::m_cacheMap = (void*)nullptr;
 
 CacheFactoryPtr* CacheFactory::default_CacheFactory = nullptr;
 
@@ -87,7 +87,7 @@ CacheFactoryPtr CacheFactory::createCacheFactory(
 }
 
 void CacheFactory::init() {
-  if (m_cacheMap == (void*)NULL) {
+  if (m_cacheMap == (void*)nullptr) {
     m_cacheMap = (void*)new StringToCachePtrMap();
   }
   if (!reinterpret_cast<StringToCachePtrMap*>(m_cacheMap)) {
@@ -109,8 +109,8 @@ void CacheFactory::create_(const char* name, DistributedSystemPtr& system,
     throw IllegalArgumentException(
         "CacheFactory::create: system uninitialized");
   }
-  if (name == NULL) {
-    throw IllegalArgumentException("CacheFactory::create: name is NULL");
+  if (name == nullptr) {
+    throw IllegalArgumentException("CacheFactory::create: name is nullptr");
   }
   if (name[0] == '\0') {
     name = "NativeCache";
@@ -302,7 +302,7 @@ CachePtr CacheFactory::create(const char* name,
 
 PoolPtr CacheFactory::determineDefaultPool(CachePtr cachePtr) {
   PoolPtr pool = nullptr;
-  HashMapOfPools allPools = PoolManager::getAll();
+  auto allPools = PoolManager::getAll();
   size_t currPoolSize = allPools.size();
 
   // means user has not set any pool attributes
@@ -319,7 +319,7 @@ PoolPtr CacheFactory::determineDefaultPool(CachePtr cachePtr) {
       cachePtr->m_cacheImpl->setDefaultPool(pool);
       return pool;
     } else if (currPoolSize == 1) {
-      pool = allPools.begin().second();
+      pool = allPools.begin()->second;
       LOGINFO("Set default pool from existing pool.");
       cachePtr->m_cacheImpl->setDefaultPool(pool);
       return pool;
@@ -347,8 +347,8 @@ PoolPtr CacheFactory::determineDefaultPool(CachePtr cachePtr) {
     pool = nullptr;
 
     // return any existing pool if it matches
-    for (auto iter = allPools.begin(); iter != allPools.end(); ++iter) {
-      auto currPool = iter.second();
+    for (const auto& iter : allPools) {
+      auto currPool = iter.second;
       if (*(currPool->m_attrs) == *(this->pf->m_attrs)) {
         return currPool;
       }
@@ -377,12 +377,12 @@ PoolFactoryPtr CacheFactory::getPoolFactory() {
 
 CacheFactory::~CacheFactory() {}
 void CacheFactory::cleanup() {
-  if (m_cacheMap != NULL) {
+  if (m_cacheMap != nullptr) {
     if ((reinterpret_cast<StringToCachePtrMap*>(m_cacheMap))->empty() == true) {
       (reinterpret_cast<StringToCachePtrMap*>(m_cacheMap))->clear();
     }
     delete (reinterpret_cast<StringToCachePtrMap*>(m_cacheMap));
-    m_cacheMap = NULL;
+    m_cacheMap = nullptr;
   }
 }
 

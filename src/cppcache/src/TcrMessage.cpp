@@ -42,16 +42,16 @@ uint32_t g_headerLen = 17;
 }  // namespace
 
 // AtomicInc TcrMessage::m_transactionId = 0;
-TcrMessagePing* TcrMessage::m_pingMsg = NULL;
-TcrMessage* TcrMessage::m_closeConnMsg = NULL;
-TcrMessage* TcrMessage::m_allEPDisconnected = NULL;
-uint8_t* TcrMessage::m_keepalive = NULL;
+TcrMessagePing* TcrMessage::m_pingMsg = nullptr;
+TcrMessage* TcrMessage::m_closeConnMsg = nullptr;
+TcrMessage* TcrMessage::m_allEPDisconnected = nullptr;
+uint8_t* TcrMessage::m_keepalive = nullptr;
 const int TcrMessage::m_flag_empty = 0x01;
 const int TcrMessage::m_flag_concurrency_checks = 0x02;
 
 bool TcrMessage::init() {
   bool ret = true;
-  if (m_pingMsg == NULL) {
+  if (m_pingMsg == nullptr) {
     try {
       m_pingMsg = new TcrMessagePing(true);
       m_closeConnMsg = new TcrMessageCloseConnection(true);
@@ -67,8 +67,8 @@ bool TcrMessage::init() {
       LOGERROR("unknown exception");
     }
   }
-  if (m_allEPDisconnected == NULL) {
-    m_allEPDisconnected = new TcrMessageReply(true, NULL);
+  if (m_allEPDisconnected == nullptr) {
+    m_allEPDisconnected = new TcrMessageReply(true, nullptr);
   }
   return ret;
 }
@@ -85,7 +85,7 @@ TcrMessage* TcrMessage::getAllEPDisMess() { return m_allEPDisconnected; }
 TcrMessage* TcrMessage::getCloseConnMessage() { return m_closeConnMsg; }
 
 void TcrMessage::setKeepAlive(bool keepalive) {
-  if (TcrMessage::m_keepalive != NULL) {
+  if (TcrMessage::m_keepalive != nullptr) {
     *TcrMessage::m_keepalive = keepalive ? 1 : 0;
   }
 }
@@ -558,7 +558,7 @@ bool TcrMessage::readExceptionPart(DataInput& input, uint8_t isLastChunk,
 void TcrMessage::writeObjectPart(const SerializablePtr& se, bool isDelta,
                                  bool callToData,
                                  const VectorOfCacheableKey* getAllKeyList) {
-  //  no NULL check since for some messages NULL object may be valid
+  //  no nullptr check since for some messages nullptr object may be valid
   uint32_t size = 0;
   m_request->writeInt(
       static_cast<int32_t>(size));  // write a dummy size of 4 bytes.
@@ -605,11 +605,10 @@ void TcrMessage::writeObjectPart(const SerializablePtr& se, bool isDelta,
     deltaPtr->toDelta(*m_request);
   } else if (isObject) {
     if (!callToData) {
-      if (getAllKeyList != NULL) {
+      if (getAllKeyList != nullptr) {
         int8_t typeId = GeodeTypeIds::CacheableObjectArray;
         m_request->write(typeId);
-        int32_t len = getAllKeyList->size();
-        m_request->writeArrayLen(len);
+        m_request->writeArrayLen(static_cast<int32_t>(getAllKeyList->size()));
         m_request->write(static_cast<int8_t>(GeodeTypeIdsImpl::Class));
         m_request->write(
             static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
@@ -652,7 +651,7 @@ void TcrMessage::readInt(uint8_t* buffer, uint32_t* value) {
 
 void TcrMessage::writeBytesOnly(const SerializablePtr& se) {
   uint32_t cBufferLength = m_request->getBufferLength();
-  uint8_t* startBytes = NULL;
+  uint8_t* startBytes = nullptr;
   m_request->writeObject(se);
   uint8_t* cursor =
       const_cast<uint8_t*>(m_request->getBuffer()) + cBufferLength;
@@ -693,7 +692,7 @@ void TcrMessage::writeHeader(uint32_t msgType, uint32_t numOfParts) {
 
   int8_t earlyAck = 0x0;
   LOGDEBUG("TcrMessage::writeHeader m_isMetaRegion = %d", m_isMetaRegion);
-  if (m_tcdm != NULL) {
+  if (m_tcdm != nullptr) {
     if ((isSecurityOn =
              (m_tcdm->isSecurityOn() &&
               TcrMessage::isUserInitiativeOps(*this) && !m_isMetaRegion))) {
@@ -709,7 +708,7 @@ void TcrMessage::writeHeader(uint32_t msgType, uint32_t numOfParts) {
                                     // 4) offset.
   m_request->writeInt(static_cast<int32_t>(numOfParts));
   TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
-  if (txState == NULL) {
+  if (txState == nullptr) {
     m_txId = -1;
   } else {
     m_txId = txState->getTransactionId()->getId();
@@ -775,7 +774,7 @@ void TcrMessage::startProcessChunk(ACE_Semaphore& finalizeSema) {
       m_msgTypeRequest == TcrMessage::MONITORCQ_MSG_TYPE) {
     return;
   }
-  if (m_chunkedResult == NULL) {
+  if (m_chunkedResult == nullptr) {
     throw FatalInternalException(
         "TcrMessage::startProcessChunk: null "
         "result processor!");
@@ -836,7 +835,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
   this->m_isLastChunkAndisSecurityHeader = isLastChunkAndisSecurityHeader;
   handleSpecialFECase();
 
-  if (m_tcdm == NULL) {
+  if (m_tcdm == nullptr) {
     throw FatalInternalException("TcrMessage::processChunk: null DM!");
   }
 
@@ -863,7 +862,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
             bytes, len, m_chunkedResult, isLastChunkAndisSecurityHeader);
         m_chunkedResult->setEndpointMemId(endpointmemId);
         m_tcdm->queueChunk(chunk);
-        if (bytes == NULL) {
+        if (bytes == nullptr) {
           // last chunk -- wait for processing of all the chunks to complete
           m_chunkedResult->waitFinalize();
           ExceptionPtr ex = m_chunkedResult->getException();
@@ -880,13 +879,13 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
     case TcrMessage::CQDATAERROR_MSG_TYPE:  // one part
     case TcrMessage::CQ_EXCEPTION_TYPE:     // one part
     case TcrMessage::RESPONSE_FROM_PRIMARY: {
-      if (m_chunkedResult != NULL) {
+      if (m_chunkedResult != nullptr) {
         LOGDEBUG("tcrmessage in case22 ");
         TcrChunkedContext* chunk = new TcrChunkedContext(
             bytes, len, m_chunkedResult, isLastChunkAndisSecurityHeader);
         m_chunkedResult->setEndpointMemId(endpointmemId);
         m_tcdm->queueChunk(chunk);
-        if (bytes == NULL) {
+        if (bytes == nullptr) {
           // last chunk -- wait for processing of all the chunks to complete
           m_chunkedResult->waitFinalize();
           //  Throw any exception during processing here.
@@ -897,15 +896,14 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
           // This can cause behaviour like partially filled cache in case
           // of populating cache with registerAllKeys(), so that should be
           // documented since rolling that back may not be a good idea either.
-          ExceptionPtr& ex = m_chunkedResult->getException();
-          if (ex != nullptr) {
+          if (const auto& ex = m_chunkedResult->getException()) {
             ex->raise();
           }
         }
       } else if (TcrMessage::CQ_EXCEPTION_TYPE == m_msgType ||
                  TcrMessage::CQDATAERROR_MSG_TYPE == m_msgType ||
                  TcrMessage::GET_ALL_DATA_ERROR == m_msgType) {
-        if (bytes != NULL) {
+        if (bytes != nullptr) {
           chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
           GF_SAFE_DELETE_ARRAY(bytes);
         }
@@ -916,7 +914,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
                                                     // error
     case EXECUTE_FUNCTION_ERROR:
     case EXECUTE_REGION_FUNCTION_ERROR: {
-      if (bytes != NULL) {
+      if (bytes != nullptr) {
         // DeleteArray<const uint8_t> delChunk(bytes);
         //  DataInput input(bytes, len);
         // TODO: this not send two part...
@@ -930,7 +928,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
       break;
     }
     case TcrMessage::EXCEPTION: {
-      if (bytes != NULL) {
+      if (bytes != nullptr) {
         DeleteArray<const uint8_t> delChunk(bytes);
         DataInput input(bytes, len);
         readExceptionPart(input, isLastChunkAndisSecurityHeader);
@@ -942,7 +940,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
     case TcrMessage::RESPONSE_FROM_SECONDARY: {
       // TODO: how many parts
       chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
-      if (bytes != NULL) {
+      if (bytes != nullptr) {
         DeleteArray<const uint8_t> delChunk(bytes);
         LOGFINEST("processChunk - got response from secondary, ignoring.");
       }
@@ -950,7 +948,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
     }
     case TcrMessage::GET_ALL_DATA_ERROR: {
       chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
-      if (bytes != NULL) {
+      if (bytes != nullptr) {
         GF_SAFE_DELETE_ARRAY(bytes);
       }
       // nothing else to done since this will be taken care of at higher level
@@ -958,7 +956,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
     }
     default: {
       // TODO: how many parts what should we do here
-      if (bytes != NULL) {
+      if (bytes != nullptr) {
         GF_SAFE_DELETE_ARRAY(bytes);
       } else {
         LOGWARN(
@@ -975,19 +973,19 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
 }
 
 const char* TcrMessage::getPoolName() {
-  if (m_region != NULL) {
+  if (m_region != nullptr) {
     const PoolPtr& p = (const_cast<Region*>(m_region))->getPool();
     if (p != nullptr) {
       return p->getName();
     } else {
-      return NULL;
+      return nullptr;
     }
   }
-  return NULL;
+  return nullptr;
   /*ThinClientPoolDM* pool = dynamic_cast<ThinClientPoolDM*>(m_tcdm);
 
-  if(pool == NULL)
-    return NULL;
+  if(pool == nullptr)
+    return nullptr;
 
   return pool->getName();*/
 }
@@ -1007,8 +1005,8 @@ void TcrMessage::handleByteArrayResponse(const char* bytearray, int32_t len,
                                          uint16_t endpointMemId) {
   DataInput input((uint8_t*)bytearray, len);
   // TODO:: this need to make sure that pool is there
-  //  if(m_tcdm == NULL)
-  //  throw IllegalArgumentException("Pool is NULL in TcrMessage");
+  //  if(m_tcdm == nullptr)
+  //  throw IllegalArgumentException("Pool is nullptr in TcrMessage");
   input.setPoolName(getPoolName());
   input.readInt(&m_msgType);
   int32_t msglen;
@@ -1218,7 +1216,7 @@ void TcrMessage::handleByteArrayResponse(const char* bytearray, int32_t len,
       input.readInt(&regionLen);
       int8_t isObj;
       input.read(&isObj);
-      char* regname = NULL;
+      char* regname = nullptr;
       regname = new char[regionLen + 1];
       DeleteArray<char> delRegName(regname);
       input.readBytesOnly(reinterpret_cast<int8_t*>(regname), regionLen);
@@ -1255,7 +1253,7 @@ void TcrMessage::handleByteArrayResponse(const char* bytearray, int32_t len,
       input.readInt(&regionLen);
       int8_t isObj;
       input.read(&isObj);
-      char* regname = NULL;
+      char* regname = nullptr;
       regname = new char[regionLen + 1];
       DeleteArray<char> delRegName(regname);
       input.readBytesOnly(reinterpret_cast<int8_t*>(regname), regionLen);
@@ -1309,7 +1307,7 @@ void TcrMessage::handleByteArrayResponse(const char* bytearray, int32_t len,
       input.readInt(&regionLen);
       int8_t isObj;
       input.read(&isObj);
-      char* regname = NULL;
+      char* regname = nullptr;
       regname = new char[regionLen + 1];
       DeleteArray<char> delRegName(regname);
       input.readBytesOnly(reinterpret_cast<int8_t*>(regname), regionLen);
@@ -1429,7 +1427,7 @@ void TcrMessage::handleByteArrayResponse(const char* bytearray, int32_t len,
       input.readInt(&regionLen);
       int8_t isObj;
       input.read(&isObj);
-      char* regname = NULL;
+      char* regname = nullptr;
 
       regname = new char[regionLen + 1];
       DeleteArray<char> delRegName(regname);
@@ -1493,7 +1491,8 @@ TcrMessageDestroyRegion::TcrMessageDestroyRegion(
     int messageResponsetimeout, ThinClientBaseDM* connectionDM) {
   m_msgType = TcrMessage::DESTROY_REGION;
   m_tcdm = connectionDM;
-  m_regionName = region == NULL ? "INVALID_REGION_NAME" : region->getFullPath();
+  m_regionName =
+      region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
   m_timeout = DEFAULT_TIMEOUT_SECONDS;
   m_messageResponseTimeout = messageResponsetimeout;
@@ -1524,7 +1523,8 @@ TcrMessageClearRegion::TcrMessageClearRegion(
     int messageResponsetimeout, ThinClientBaseDM* connectionDM) {
   m_msgType = TcrMessage::CLEAR_REGION;
   m_tcdm = connectionDM;
-  m_regionName = region == NULL ? "INVALID_REGION_NAME" : region->getFullPath();
+  m_regionName =
+      region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
   m_timeout = DEFAULT_TIMEOUT_SECONDS;
   m_messageResponseTimeout = messageResponsetimeout;
@@ -1562,7 +1562,7 @@ TcrMessageQuery::TcrMessageQuery(const std::string& regionName,
   m_regionName = regionName;  // this is querystri;
   m_timeout = DEFAULT_TIMEOUT_SECONDS;
   m_messageResponseTimeout = messageResponsetimeout;
-  m_region = NULL;
+  m_region = nullptr;
   uint32_t numOfParts = 1;
 
   numOfParts++;
@@ -1585,7 +1585,7 @@ TcrMessageStopCQ::TcrMessageStopCQ(const std::string& regionName,
   m_regionName = regionName;  // this is querystring
   m_timeout = DEFAULT_TIMEOUT_SECONDS;
   m_messageResponseTimeout = messageResponsetimeout;
-  m_region = NULL;
+  m_region = nullptr;
   m_isSecurityHeaderAdded = false;
   m_isMetaRegion = false;
 
@@ -1611,7 +1611,7 @@ TcrMessageCloseCQ::TcrMessageCloseCQ(const std::string& regionName,
   m_regionName = regionName;  // this is querystring
   m_timeout = DEFAULT_TIMEOUT_SECONDS;
   m_messageResponseTimeout = messageResponsetimeout;
-  m_region = NULL;
+  m_region = nullptr;
   uint32_t numOfParts = 1;
 
   numOfParts++;
@@ -1635,16 +1635,16 @@ TcrMessageQueryWithParameters::TcrMessageQueryWithParameters(
   m_regionName = regionName;
   m_timeout = DEFAULT_TIMEOUT_SECONDS;
   m_messageResponseTimeout = messageResponsetimeout;
-  m_region = NULL;
+  m_region = nullptr;
 
   // Find out the numOfParts
-  uint32_t numOfParts = 4 + paramList->size();
+  uint32_t numOfParts = 4 + static_cast<uint32_t>(paramList->size());
   writeHeader(m_msgType, numOfParts);
   // Part-1: Query String
   writeRegionPart(m_regionName);
 
   // Part-2: Number or length of the parameters
-  writeIntPart(paramList->size());
+  writeIntPart(static_cast<uint32_t>(paramList->size()));
 
   // Part-3: X (COMPILE_QUERY_CLEAR_TIMEOUT) parameter
   writeIntPart(15);
@@ -1669,7 +1669,8 @@ TcrMessageContainsKey::TcrMessageContainsKey(
     ThinClientBaseDM* connectionDM) {
   m_msgType = TcrMessage::CONTAINS_KEY;
   m_tcdm = connectionDM;
-  m_regionName = region == NULL ? "INVALID_REGION_NAME" : region->getFullPath();
+  m_regionName =
+      region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
   m_timeout = DEFAULT_TIMEOUT_SECONDS;
 
@@ -1683,7 +1684,7 @@ TcrMessageContainsKey::TcrMessageContainsKey(
   if (key == nullptr) {
     delete m_request;
     throw IllegalArgumentException(
-        "key passed to the constructor can't be NULL");
+        "key passed to the constructor can't be nullptr");
   }
 
   writeHeader(m_msgType, numOfParts);
@@ -1702,7 +1703,7 @@ TcrMessageGetDurableCqs::TcrMessageGetDurableCqs(
   m_msgType = TcrMessage::GETDURABLECQS_MSG_TYPE;
   m_tcdm = connectionDM;
   m_timeout = DEFAULT_TIMEOUT_SECONDS;
-  m_region = NULL;
+  m_region = nullptr;
   // wrirting msgtype with part length =1
   writeHeader(m_msgType, 1);
   // the server expects at least 1 part, so writing a dummy byte part
@@ -1718,7 +1719,7 @@ TcrMessageRequest::TcrMessageRequest(const Region* region,
   m_tcdm = connectionDM;
   m_key = key;
   m_regionName =
-      (region == NULL ? "INVALID_REGION_NAME" : region->getFullPath());
+      (region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath());
   m_region = region;
   m_timeout = DEFAULT_TIMEOUT_SECONDS;
 
@@ -1732,7 +1733,7 @@ TcrMessageRequest::TcrMessageRequest(const Region* region,
   if (key == nullptr) {
     delete m_request;
     throw IllegalArgumentException(
-        "key passed to the constructor can't be NULL");
+        "key passed to the constructor can't be nullptr");
   }
 
   numOfParts--;  // no event id for request
@@ -1755,7 +1756,7 @@ TcrMessageInvalidate::TcrMessageInvalidate(const Region* region,
   m_tcdm = connectionDM;
   m_key = key;
   m_regionName =
-      (region == NULL ? "INVALID_REGION_NAME" : region->getFullPath());
+      (region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath());
   m_region = region;
   m_timeout = DEFAULT_TIMEOUT_SECONDS;
 
@@ -1769,7 +1770,7 @@ TcrMessageInvalidate::TcrMessageInvalidate(const Region* region,
   if (key == nullptr) {
     delete m_request;
     throw IllegalArgumentException(
-        "key passed to the constructor can't be NULL");
+        "key passed to the constructor can't be nullptr");
   }
 
   writeHeader(TcrMessage::INVALIDATE, numOfParts);
@@ -1793,7 +1794,7 @@ TcrMessageDestroy::TcrMessageDestroy(const Region* region,
   m_tcdm = connectionDM;
   m_key = key;
   m_regionName =
-      (region == NULL ? "INVALID_REGION_NAME" : region->getFullPath());
+      (region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath());
   m_region = region;
   m_timeout = DEFAULT_TIMEOUT_SECONDS;
   uint32_t numOfParts = 2;
@@ -1806,7 +1807,7 @@ TcrMessageDestroy::TcrMessageDestroy(const Region* region,
   if (key == nullptr) {
     delete m_request;
     throw IllegalArgumentException(
-        "key passed to the constructor can't be NULL");
+        "key passed to the constructor can't be nullptr");
   }
 
   if (value != nullptr) {
@@ -1849,12 +1850,12 @@ TcrMessagePut::TcrMessagePut(const Region* region, const CacheableKeyPtr& key,
   m_msgType = TcrMessage::PUT;
   m_tcdm = connectionDM;
   m_key = key;
-  m_regionName = region != NULL ? region->getFullPath() : regionName;
+  m_regionName = region != nullptr ? region->getFullPath() : regionName;
   m_region = region;
   m_timeout = DEFAULT_TIMEOUT_SECONDS;
 
   // TODO check the number of parts in this constructor. doubt because in PUT
-  // value can be NULL also.
+  // value can be nullptr also.
   uint32_t numOfParts = 5;
   if (aCallbackArgument != nullptr) {
     ++numOfParts;
@@ -1865,7 +1866,7 @@ TcrMessagePut::TcrMessagePut(const Region* region, const CacheableKeyPtr& key,
   if (key == nullptr) {
     delete m_request;
     throw IllegalArgumentException(
-        "key passed to the constructor can't be NULL");
+        "key passed to the constructor can't be nullptr");
   }
 
   numOfParts++;
@@ -1889,7 +1890,7 @@ TcrMessageReply::TcrMessageReply(bool decodeAll,
   m_decodeAll = decodeAll;
   m_tcdm = connectionDM;
 
-  if (connectionDM != NULL) isSecurityOn = connectionDM->isSecurityOn();
+  if (connectionDM != nullptr) isSecurityOn = connectionDM->isSecurityOn();
 }
 
 TcrMessagePing::TcrMessagePing(bool decodeAll) {
@@ -1940,13 +1941,14 @@ TcrMessageRegisterInterestList::TcrMessageRegisterInterestList(
   m_msgType = TcrMessage::REGISTER_INTEREST_LIST;
   m_tcdm = connectionDM;
   m_keyList = &keys;
-  m_regionName = region == NULL ? "INVALID_REGION_NAME" : region->getFullPath();
+  m_regionName =
+      region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
   m_timeout = DEFAULT_TIMEOUT_SECONDS;
   m_isDurable = isDurable;
   m_receiveValues = receiveValues;
 
-  uint32_t numInItrestList = keys.size();
+  uint32_t numInItrestList = static_cast<int32_t>(keys.size());
   GF_R_ASSERT(numInItrestList != 0);
   uint32_t numOfParts = 2 + numInItrestList;
 
@@ -1964,7 +1966,7 @@ TcrMessageRegisterInterestList::TcrMessageRegisterInterestList(
     if (keys[i] == nullptr) {
       delete m_request;
       throw IllegalArgumentException(
-          "keys in the interest list cannot be NULL");
+          "keys in the interest list cannot be nullptr");
     }
     cal->push_back(keys[i]);
   }
@@ -1991,15 +1993,16 @@ TcrMessageUnregisterInterestList::TcrMessageUnregisterInterestList(
   m_msgType = TcrMessage::UNREGISTER_INTEREST_LIST;
   m_tcdm = connectionDM;
   m_keyList = &keys;
-  m_regionName = region == NULL ? "INVALID_REGION_NAME" : region->getFullPath();
+  m_regionName =
+      region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
   m_timeout = DEFAULT_TIMEOUT_SECONDS;
   m_isDurable = isDurable;
   m_receiveValues = receiveValues;
 
-  uint32_t numInItrestList = keys.size();
+  auto numInItrestList = keys.size();
   GF_R_ASSERT(numInItrestList != 0);
-  uint32_t numOfParts = 2 + numInItrestList;
+  uint32_t numOfParts = 2 + static_cast<uint32_t>(numInItrestList);
 
   numOfParts += 2;
   writeHeader(m_msgType, numOfParts);
@@ -2013,7 +2016,7 @@ TcrMessageUnregisterInterestList::TcrMessageUnregisterInterestList(
     if (keys[i] == nullptr) {
       delete m_request;
       throw IllegalArgumentException(
-          "keys in the interest list cannot be NULL");
+          "keys in the interest list cannot be nullptr");
     }
     writeObjectPart(keys[i]);
   }
@@ -2186,17 +2189,17 @@ TcrMessagePutAll::TcrMessagePutAll(const Region* region,
   m_messageResponseTimeout = messageResponsetimeout;
 
   // TODO check the number of parts in this constructor. doubt because in PUT
-  // value can be NULL also.
+  // value can be nullptr also.
   uint32_t numOfParts = 0;
   // bool skipCallBacks = false;
 
   if (aCallbackArgument != nullptr) {
     m_msgType = TcrMessage::PUT_ALL_WITH_CALLBACK;
-    numOfParts = 6 + map.size() * 2;
+    numOfParts = 6 + static_cast<uint32_t>(map.size()) * 2;
     // skipCallBacks = false;
   } else {
     m_msgType = TcrMessage::PUTALL;
-    numOfParts = 5 + map.size() * 2;
+    numOfParts = 5 + static_cast<uint32_t>(map.size()) * 2;
     // skipCallBacks = true;
   }
 
@@ -2206,7 +2209,7 @@ TcrMessagePutAll::TcrMessagePutAll(const Region* region,
 
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
-  writeEventIdPart(map.size() - 1);
+  writeEventIdPart(static_cast<uint32_t>(map.size()) - 1);
   // writeIntPart(skipCallBacks ? 0 : 1);
   writeIntPart(0);
 
@@ -2225,18 +2228,15 @@ TcrMessagePutAll::TcrMessagePutAll(const Region* region,
   }
   writeIntPart(flags);
 
-  writeIntPart(map.size());
+  writeIntPart(static_cast<int32_t>(map.size()));
 
   if (aCallbackArgument != nullptr) {
     writeObjectPart(aCallbackArgument);
   }
 
-  for (HashMapOfCacheable::Iterator iter = map.begin(); iter != map.end();
-       ++iter) {
-    CacheableKeyPtr key = iter.first();
-    CacheablePtr value = iter.second();
-    writeObjectPart(key);
-    writeObjectPart(value);
+  for (const auto& iter : map) {
+    writeObjectPart(iter.first);
+    writeObjectPart(iter.second);
   }
 
   if (m_messageResponseTimeout != -1) {
@@ -2255,13 +2255,13 @@ TcrMessageRemoveAll::TcrMessageRemoveAll(const Region* region,
   m_region = region;
 
   // TODO check the number of parts in this constructor. doubt because in PUT
-  // value can be NULL also.
-  uint32_t numOfParts = 5 + keys.size();
+  // value can be nullptr also.
+  uint32_t numOfParts = 5 + static_cast<uint32_t>(keys.size());
 
   if (m_messageResponseTimeout != -1) numOfParts++;
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
-  writeEventIdPart(keys.size() - 1);
+  writeEventIdPart(static_cast<int>(keys.size() - 1));
 
   // Client removeall requests now send a flags int as part #0.  1==region has
   // datapolicy.EMPTY, 2==region has concurrency checks enabled.
@@ -2279,11 +2279,10 @@ TcrMessageRemoveAll::TcrMessageRemoveAll(const Region* region,
   }
   writeIntPart(flags);
   writeObjectPart(aCallbackArgument);
-  writeIntPart(keys.size());
+  writeIntPart(static_cast<int32_t>(keys.size()));
 
-  for (VectorOfCacheableKey::Iterator iter = keys.begin(); iter != keys.end();
-       ++iter) {
-    writeObjectPart(*iter);
+  for (const auto& key : keys) {
+    writeObjectPart(key);
   }
   writeMessageLength();
 }
@@ -2309,7 +2308,7 @@ TcrMessageGetAll::TcrMessageGetAll(const Region* region,
   m_region = region;
 
   /*CacheableObjectArrayPtr keyArr = nullptr;
-  if (keys != NULL) {
+  if (keys != nullptr) {
     keyArr = CacheableObjectArray::create();
     for (int32_t index = 0; index < keys->size(); ++index) {
       keyArr->push_back(keys->operator[](index));
@@ -2331,7 +2330,7 @@ TcrMessageGetAll::TcrMessageGetAll(const Region* region,
 
 void TcrMessage::InitializeGetallMsg(const UserDataPtr& aCallbackArgument) {
   /*CacheableObjectArrayPtr keyArr = nullptr;
-  if (m_keyList != NULL) {
+  if (m_keyList != nullptr) {
     keyArr = CacheableObjectArray::create();
     for (int32_t index = 0; index < m_keyList->size(); ++index) {
       keyArr->push_back(m_keyList->operator[](index));
@@ -2410,7 +2409,7 @@ TcrMessageExecuteFunction::TcrMessageExecuteFunction(
   // writeBytePart(getResult ? 1 : 0);
   // if gfcpp property unit set then timeout will be in millisecond
   // otherwise it will be in second
-  if ((DistributedSystem::getSystemProperties() != NULL) &&
+  if ((DistributedSystem::getSystemProperties() != nullptr) &&
       (DistributedSystem::getSystemProperties()->readTimeoutUnitInMillis())) {
     writeByteAndTimeOutPart(getResult, timeout);
   } else {
@@ -2428,16 +2427,18 @@ TcrMessageExecuteRegionFunction::TcrMessageExecuteRegionFunction(
     ThinClientBaseDM* connectionDM, int8_t reExecute) {
   m_msgType = TcrMessage::EXECUTE_REGION_FUNCTION;
   m_tcdm = connectionDM;
-  m_regionName = region == NULL ? "INVALID_REGION_NAME" : region->getFullPath();
+  m_regionName =
+      region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
   m_hasResult = getResult;
 
-  if (routingObj != nullptr && routingObj->size() == 1) {
+  if (routingObj && routingObj->size() == 1) {
     LOGDEBUG("setting up key");
     m_key = std::static_pointer_cast<CacheableKey>(routingObj->at(0));
   }
 
-  uint32_t numOfParts = 6 + (routingObj == nullptr ? 0 : routingObj->size());
+  uint32_t numOfParts =
+      6 + (!routingObj ? 0 : static_cast<uint32_t>(routingObj->size()));
   numOfParts +=
       2;  // for the FunctionHA isReExecute and removedNodesSize parts.
   if (failedNodes != nullptr) {
@@ -2447,7 +2448,7 @@ TcrMessageExecuteRegionFunction::TcrMessageExecuteRegionFunction(
 
   // if gfcpp property unit set then timeout will be in millisecond
   // otherwise it will be in second
-  if ((DistributedSystem::getSystemProperties() != NULL) &&
+  if ((DistributedSystem::getSystemProperties() != nullptr) &&
       (DistributedSystem::getSystemProperties()->readTimeoutUnitInMillis())) {
     writeByteAndTimeOutPart(getResult, timeout);
   } else {
@@ -2459,15 +2460,16 @@ TcrMessageExecuteRegionFunction::TcrMessageExecuteRegionFunction(
   // klug for MemberMappedArgs
   writeObjectPart(nullptr);
   writeBytePart(reExecute);  // FunctionHA isReExecute = false
-  writeIntPart(routingObj == nullptr ? 0 : routingObj->size());
-  if (routingObj != nullptr) {
-    for (int32_t i = 0; i < routingObj->size(); i++) {
-      CacheablePtr value = routingObj->operator[](i);
+  if (routingObj) {
+    writeIntPart(static_cast<int32_t>(routingObj->size()));
+    for (const auto& value : *routingObj) {
       writeObjectPart(value);
     }
+  } else {
+    writeIntPart(0); 
   }
-  if (failedNodes != nullptr) {
-    writeIntPart(failedNodes->size());
+  if (failedNodes) {
+    writeIntPart(static_cast<int32_t>(failedNodes->size()));
     writeObjectPart(failedNodes);
   } else {
     writeIntPart(0);  // FunctionHA removedNodesSize = 0
@@ -2483,11 +2485,13 @@ TcrMessageExecuteRegionFunctionSingleHop::
         int32_t timeout, ThinClientBaseDM* connectionDM) {
   m_msgType = TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP;
   m_tcdm = connectionDM;
-  m_regionName = region == NULL ? "INVALID_REGION_NAME" : region->getFullPath();
+  m_regionName =
+      region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
   m_hasResult = getResult;
 
-  uint32_t numOfParts = 6 + (routingObj == nullptr ? 0 : routingObj->size());
+  uint32_t numOfParts =
+      6 + (routingObj ? static_cast<int32_t>(routingObj->size()) : 0);
   numOfParts +=
       2;  // for the FunctionHA isReExecute and removedNodesSize parts.
   if (failedNodes != nullptr) {
@@ -2497,7 +2501,7 @@ TcrMessageExecuteRegionFunctionSingleHop::
 
   // if gfcpp property unit set then timeout will be in millisecond
   // otherwise it will be in second
-  if ((DistributedSystem::getSystemProperties() != NULL) &&
+  if ((DistributedSystem::getSystemProperties() != nullptr) &&
       (DistributedSystem::getSystemProperties()->readTimeoutUnitInMillis())) {
     writeByteAndTimeOutPart(getResult, timeout);
   } else {
@@ -2509,8 +2513,8 @@ TcrMessageExecuteRegionFunctionSingleHop::
   // klug for MemberMappedArgs
   writeObjectPart(nullptr);
   writeBytePart(allBuckets ? 1 : 0);
-  writeIntPart(routingObj == nullptr ? 0 : routingObj->size());
-  if (routingObj != nullptr) {
+  if (routingObj) {
+    writeIntPart(static_cast<int32_t>(routingObj->size()));
     if (allBuckets) {
       LOGDEBUG("All Buckets so putting IntPart for buckets = %d ",
                routingObj->size());
@@ -2524,9 +2528,11 @@ TcrMessageExecuteRegionFunctionSingleHop::
         writeObjectPart(itr);
       }
     }
+  } else {
+    writeIntPart(0);
   }
-  if (failedNodes != nullptr) {
-    writeIntPart(failedNodes->size());
+  if (failedNodes) {
+    writeIntPart(static_cast<int32_t>(failedNodes->size()));
     writeObjectPart(failedNodes);
   } else {
     writeIntPart(0);  // FunctionHA removedNodesSize = 0
@@ -2974,8 +2980,8 @@ void TcrMessage::readHashMapForGCVersions(
       auto keyPtr = std::dynamic_pointer_cast<CacheableKey>(key);
       auto valVersionPtr = std::dynamic_pointer_cast<Cacheable>(valVersion);
 
-      if (value != nullptr) {
-        value->insert(keyPtr, valVersionPtr);
+      if (value) {
+        value->emplace(keyPtr, valVersionPtr);
       } else {
         throw Exception(
             "Inserting values in HashMap For GC versions. value must not be "

@@ -49,7 +49,7 @@ const int64_t INITIAL_CONNECTION_ID = 26739;
 bool TcrConnection::InitTcrConnection(
     TcrEndpoint* endpointObj, const char* endpoint, Set<uint16_t>& ports,
     bool isClientNotification, bool isSecondary, uint32_t connectTimeout) {
-  m_conn = NULL;
+  m_conn = nullptr;
   m_endpointObj = endpointObj;
   m_poolDM = dynamic_cast<ThinClientPoolDM*>(m_endpointObj->getPoolHADM());
   // add to the connection reference counter of the endpoint
@@ -57,7 +57,7 @@ bool TcrConnection::InitTcrConnection(
   // m_connected = isConnected;
   m_hasServerQueue = NON_REDUNDANT_SERVER;
   m_queueSize = 0;
-  m_dh = NULL;
+  m_dh = nullptr;
   // m_chunksProcessSema = 0;
   m_creationTime = ACE_OS::gettimeofday();
   connectionId = INITIAL_CONNECTION_ID;
@@ -70,7 +70,7 @@ bool TcrConnection::InitTcrConnection(
       m_endpointObj->getConnRefCounter());
   bool isPool = false;
   m_isBeingUsed = false;
-  GF_DEV_ASSERT(endpoint != NULL);
+  GF_DEV_ASSERT(endpoint != nullptr);
   m_endpoint = endpoint;
   // Precondition:
   // 1. isSecondary ==> isClientNotification
@@ -90,7 +90,7 @@ bool TcrConnection::InitTcrConnection(
     m_conn = createConnection(m_endpoint, connectTimeout, 0);
   }
 
-  GF_DEV_ASSERT(m_conn != NULL);
+  GF_DEV_ASSERT(m_conn != nullptr);
 
   DataOutput handShakeMsg;
   bool isNotificationChannel = false;
@@ -161,9 +161,9 @@ bool TcrConnection::InitTcrConnection(
     SystemProperties* sysProp = DistributedSystem::getSystemProperties();
 
     const char* durableId =
-        (sysProp != NULL) ? sysProp->durableClientId() : NULL;
+        (sysProp != nullptr) ? sysProp->durableClientId() : nullptr;
     const uint32_t durableTimeOut =
-        (sysProp != NULL) ? sysProp->durableTimeout() : 0;
+        (sysProp != nullptr) ? sysProp->durableTimeout() : 0;
 
     // Write ClientProxyMembershipID serialized object.
     uint32_t memIdBufferLength;
@@ -387,7 +387,8 @@ bool TcrConnection::InitTcrConnection(
 
       if (error == CONN_NOERR) {
         acceptanceCode = readHandshakeData(1, connectTimeout);
-        LOGDEBUG("Handshake: Got acceptanceCode Finally %d", (*acceptanceCode)[0]);
+        LOGDEBUG("Handshake: Got acceptanceCode Finally %d",
+                 (*acceptanceCode)[0]);
       } else {
         int32_t lastError = ACE_OS::last_error();
         LOGERROR("Handshake failed, errno: %d, server may not be running",
@@ -432,7 +433,7 @@ bool TcrConnection::InitTcrConnection(
     ///////////////////////////////////
     ////////////////////////// 3. Only when handshake is for subscription
     ///////////////////////////////////
-    if (m_poolDM != NULL) {
+    if (m_poolDM != nullptr) {
       if ((m_hasServerQueue == PRIMARY_SERVER ||
            m_hasServerQueue == NON_REDUNDANT_SERVER) &&
           isClientNotification) {
@@ -577,7 +578,7 @@ bool TcrConnection::InitTcrConnection(
 Connector* TcrConnection::createConnection(const char* endpoint,
                                            uint32_t connectTimeout,
                                            int32_t maxBuffSizePool) {
-  Connector* socket = NULL;
+  Connector* socket = nullptr;
   if (DistributedSystem::getSystemProperties()->sslEnabled()) {
     socket = new TcpSslConn(endpoint, connectTimeout, maxBuffSizePool);
   } else {
@@ -590,23 +591,23 @@ Connector* TcrConnection::createConnection(const char* endpoint,
 }
 
 /* The timeout behaviour for different methods is as follows:
-* receive():
-*   Header: default timeout
-*   Body: default timeout
-* sendRequest()/sendRequestForChunkedResponse():
-*  default timeout during send; for receive:
-*   Header: default timeout * default timeout retries to handle large payload
-*           if a timeout other than default timeout is specified then
-*           that is used instead
-*   Body: default timeout
-*/
+ * receive():
+ *   Header: default timeout
+ *   Body: default timeout
+ * sendRequest()/sendRequestForChunkedResponse():
+ *  default timeout during send; for receive:
+ *   Header: default timeout * default timeout retries to handle large payload
+ *           if a timeout other than default timeout is specified then
+ *           that is used instead
+ *   Body: default timeout
+ */
 inline ConnErrType TcrConnection::receiveData(char* buffer, int32_t length,
                                               uint32_t receiveTimeoutSec,
                                               bool checkConnected,
                                               bool isNotificationMessage,
                                               int32_t notPublicApiWithTimeout) {
-  GF_DEV_ASSERT(buffer != NULL);
-  GF_DEV_ASSERT(m_conn != NULL);
+  GF_DEV_ASSERT(buffer != nullptr);
+  GF_DEV_ASSERT(m_conn != nullptr);
 
   // if gfcpp property unit set then sendTimeoutSec will be in millisecond
   // otherwise it will be in second
@@ -660,7 +661,7 @@ inline ConnErrType TcrConnection::receiveData(char* buffer, int32_t length,
     */
     LOGDEBUG("TcrConnection::receiveData length = %d defaultWaitSecs = %d",
              length, defaultWaitSecs);
-    if (m_poolDM != NULL) {
+    if (m_poolDM != nullptr) {
       LOGDEBUG("TcrConnection::receiveData readBytes = %d", readBytes);
       m_poolDM->getStats().incReceivedBytes(static_cast<int64_t>(readBytes));
     }
@@ -688,8 +689,8 @@ inline ConnErrType TcrConnection::sendData(uint32_t& timeSpent,
                                            uint32_t sendTimeoutSec,
                                            bool checkConnected,
                                            int32_t notPublicApiWithTimeout) {
-  GF_DEV_ASSERT(buffer != NULL);
-  GF_DEV_ASSERT(m_conn != NULL);
+  GF_DEV_ASSERT(buffer != nullptr);
+  GF_DEV_ASSERT(m_conn != nullptr);
   bool isPublicApiTimeout = false;
   // if gfcpp property unit set then sendTimeoutSec will be in millisecond
   // otherwise it will be in second
@@ -861,7 +862,7 @@ void TcrConnection::send(const char* buffer, int len, uint32_t sendTimeoutSec,
 void TcrConnection::send(uint32_t& timeSpent, const char* buffer, int len,
                          uint32_t sendTimeoutSec, bool checkConnected,
                          int32_t notPublicApiWithTimeout) {
-  GF_DEV_ASSERT(m_conn != NULL);
+  GF_DEV_ASSERT(m_conn != nullptr);
 
   // LOGINFO("TcrConnection::send: [%p] sending request to endpoint %s;",
   //:  this, m_endpoint);
@@ -891,7 +892,7 @@ void TcrConnection::send(uint32_t& timeSpent, const char* buffer, int len,
 
 char* TcrConnection::receive(size_t* recvLen, ConnErrType* opErr,
                              uint32_t receiveTimeoutSec) {
-  GF_DEV_ASSERT(m_conn != NULL);
+  GF_DEV_ASSERT(m_conn != nullptr);
 
   return readMessage(recvLen, receiveTimeoutSec, false, opErr, true);
 }
@@ -926,7 +927,7 @@ char* TcrConnection::readMessage(size_t* recvLen, uint32_t receiveTimeoutSec,
       if (isNotificationMessage) {
         // fix #752 - do not throw periodic TimeoutException for subscription
         // channels to avoid frequent stack trace processing.
-        return NULL;
+        return nullptr;
       } else {
         throwException(TimeoutException(
             "TcrConnection::readMessage: "
@@ -935,7 +936,7 @@ char* TcrConnection::readMessage(size_t* recvLen, uint32_t receiveTimeoutSec,
     } else {
       if (isNotificationMessage) {
         *opErr = CONN_IOERR;
-        return NULL;
+        return nullptr;
       }
       throwException(GeodeIOException(
           "TcrConnection::readMessage: "
@@ -989,7 +990,7 @@ char* TcrConnection::readMessage(size_t* recvLen, uint32_t receiveTimeoutSec,
     } else {
       if (isNotificationMessage) {
         *opErr = CONN_IOERR;
-        return NULL;
+        return nullptr;
       }
       throwException(
           GeodeIOException("TcrConnection::readMessage: "
@@ -1090,8 +1091,8 @@ void TcrConnection::readMessageChunked(TcrMessageReply& reply,
     FinalizeProcessChunk(TcrMessageReply& reply, uint16_t endpointmemId)
         : m_reply(reply), m_endpointmemId(endpointmemId) {}
     ~FinalizeProcessChunk() {
-      // Enqueue a NULL chunk indicating a wait for processing to complete.
-      m_reply.processChunk(NULL, 0, m_endpointmemId);
+      // Enqueue a nullptr chunk indicating a wait for processing to complete.
+      m_reply.processChunk(nullptr, 0, m_endpointmemId);
     }
   } endProcessChunk(reply, m_endpointObj->getDistributedMemberID());
   bool first = true;
@@ -1514,7 +1515,7 @@ ACE_Time_Value TcrConnection::getLastAccessed() { return m_lastAccessed; }
 uint8_t TcrConnection::getOverrides(SystemProperties* props) {
   const char* conflate = props->conflateEvents();
   uint8_t conflateByte = 0;
-  if (conflate != NULL) {
+  if (conflate != nullptr) {
     if (ACE_OS::strcasecmp(conflate, "true") == 0) {
       conflateByte = 1;
     } else if (ACE_OS::strcasecmp(conflate, "false") == 0) {
@@ -1524,7 +1525,7 @@ uint8_t TcrConnection::getOverrides(SystemProperties* props) {
   /*
   const char * removeUnresponsive = props->removeUnresponsiveClientOverride();
   uint8_t removeByte = 0;
-  if (removeUnresponsive != NULL ) {
+  if (removeUnresponsive != nullptr ) {
   if ( ACE_OS::strcasecmp(removeUnresponsive, "true") == 0 ) {
   removeByte = 1;
   } else if ( ACE_OS::strcasecmp(removeUnresponsive, "false") == 0 ) {
@@ -1533,7 +1534,7 @@ uint8_t TcrConnection::getOverrides(SystemProperties* props) {
   }
   const char * notify = props->notifyBySubscriptionOverride();
   uint8_t notifyByte = 0;
-  if (notify != NULL ) {
+  if (notify != nullptr ) {
   if ( ACE_OS::strcasecmp(notify, "true") == 0 ) {
   notifyByte = 1;
   } else if ( ACE_OS::strcasecmp(notify, "false") == 0 ) {
@@ -1554,13 +1555,13 @@ TcrConnection::~TcrConnection() {
   LOGDEBUG("Tcrconnection destructor %p . conn ref to endopint %d", this,
            m_endpointObj->getConnRefCounter());
   m_endpointObj->addConnRefCounter(-1);
-  if (m_conn != NULL) {
+  if (m_conn != nullptr) {
     LOGDEBUG("closing the connection");
     m_conn->close();
     GF_SAFE_DELETE_CON(m_conn);
   }
 
-  if (m_dh != NULL) {
+  if (m_dh != nullptr) {
     m_dh->clearDhKeys();
     GF_SAFE_DELETE(m_dh);
   }

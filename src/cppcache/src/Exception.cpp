@@ -143,7 +143,7 @@ ACE_TSS<TSSExceptionString> TSSExceptionString::s_tssExceptionMsg;
 
 void setTSSExceptionMessage(const char* exMsg) {
   TSSExceptionString::s_tssExceptionMsg->str().clear();
-  if (exMsg != NULL) {
+  if (exMsg != nullptr) {
     TSSExceptionString::s_tssExceptionMsg->str().append(exMsg);
   }
 }

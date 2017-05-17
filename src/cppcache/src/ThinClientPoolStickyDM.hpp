@@ -33,7 +33,7 @@ class ThinClientPoolStickyDM : public ThinClientPoolDM {
   }
   virtual ~ThinClientPoolStickyDM() {
     // m_manager->closeAllStickyConnections();
-    // delete m_manager; m_manager = NULL;
+    // delete m_manager; m_manager = nullptr;
   }
   virtual bool canItBeDeletedNoImpl(TcrConnection* conn);
 

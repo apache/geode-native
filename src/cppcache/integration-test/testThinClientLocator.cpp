@@ -37,8 +37,8 @@ END_TASK(CreateLocator1)
 DUNIT_TASK(SERVER12, CreateServer12)
   {
     // starting servers
-    if (isLocalServer) CacheHelper::initServer(1, NULL, locHostPort);
-    if (isLocalServer) CacheHelper::initServer(2, NULL, locHostPort);
+    if (isLocalServer) CacheHelper::initServer(1, nullptr, locHostPort);
+    if (isLocalServer) CacheHelper::initServer(2, nullptr, locHostPort);
     LOG("Server12 started");
   }
 END_TASK(CreateServer12)

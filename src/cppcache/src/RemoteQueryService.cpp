@@ -288,7 +288,7 @@ void RemoteQueryService::invokeCqConnectedListeners(ThinClientPoolDM* pool,
   }
   std::string poolName;
   pool = dynamic_cast<ThinClientPoolDM*>(m_tccdm);
-  if (pool != NULL) {
+  if (pool != nullptr) {
     poolName = pool->getName();
     CqPoolsConnected::iterator itr = m_CqPoolsConnected.find(poolName);
     if (itr != m_CqPoolsConnected.end() && itr->second == connected) {

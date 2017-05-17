@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TOMBSTONELIST_H_
-#define GEODE_TOMBSTONELIST_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,13 +15,21 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_TOMBSTONELIST_H_
+#define GEODE_TOMBSTONELIST_H_
+
 #include <list>
+#include <unordered_map>
+
 #include <ace/Recursive_Thread_Mutex.h>
-#include "ace/Guard_T.h"
+#include <ace/Guard_T.h>
+
 #include <geode/SharedPtr.hpp>
 #include <geode/CacheableBuiltins.hpp>
-#include <geode/HashMapT.hpp>
-#include <geode/HashSetT.hpp>
+#include <geode/utils.hpp>
+
 #include "MapEntry.hpp"
 
 namespace apache {
@@ -48,19 +51,21 @@ class TombstoneEntry : public SharedBase {
          * also change the member initialization to initializer list
          */
         m_expiryTaskId(0),
-        m_handler(NULL) {}
+        m_handler(nullptr) {}
   virtual ~TombstoneEntry() {}
   MapEntryImplPtr getEntry() { return m_entry; }
   int64_t getTombstoneCreationTime() { return m_tombstoneCreationTime; }
-  int64_t getExpiryTaskId() { return m_expiryTaskId; }
-  void setExpiryTaskId(int64_t expiryTaskId) { m_expiryTaskId = expiryTaskId; }
+  ExpiryTaskManager::id_type getExpiryTaskId() { return m_expiryTaskId; }
+  void setExpiryTaskId(ExpiryTaskManager::id_type expiryTaskId) {
+    m_expiryTaskId = expiryTaskId;
+  }
   TombstoneExpiryHandler* getHandler() { return m_handler; };
   void setHandler(TombstoneExpiryHandler* handler) { m_handler = handler; };
 
  private:
   MapEntryImplPtr m_entry;
   int64_t m_tombstoneCreationTime;
-  int64_t m_expiryTaskId;
+  ExpiryTaskManager::id_type m_expiryTaskId;
   TombstoneExpiryHandler* m_handler;
 };
 typedef SharedPtr<TombstoneEntry> TombstoneEntryPtr;
@@ -84,14 +89,18 @@ class TombstoneList : public SharedBase {
   long eraseEntryFromTombstoneListWithoutCancelTask(
       const CacheableKeyPtr& key, RegionInternal* region,
       TombstoneExpiryHandler*& handler);
-  bool getEntryFromTombstoneList(const CacheableKeyPtr& key) const;
   void cleanUp();
   long getExpiryTask(TombstoneExpiryHandler** handler);
+  bool exists(const CacheableKeyPtr& key) const;
 
  private:
   void removeEntryFromMapSegment(CacheableKeyPtr key);
   void unguardedRemoveEntryFromMapSegment(CacheableKeyPtr key);
-  HashMapT<CacheableKeyPtr, TombstoneEntryPtr> m_tombstoneMap;
+  typedef std::unordered_map<CacheableKeyPtr, TombstoneEntryPtr,
+                             dereference_hash<CacheableKeyPtr>,
+                             dereference_equal_to<CacheableKeyPtr>>
+      TombstoneMap;
+  TombstoneMap m_tombstoneMap;
   ACE_Recursive_Thread_Mutex m_queueLock;
   MapSegment* m_mapSegment;
   friend class TombstoneExpiryHandler;

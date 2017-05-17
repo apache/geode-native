@@ -57,7 +57,7 @@ const int32_t INT_TIMESTAMP_TOKEN = 65535;
 const int64_t NANOS_PER_MILLI = 1000000;
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
@@ -74,7 +74,7 @@ namespace statistics {
 
 class CPPCACHE_EXPORT StatDataOutput {
  public:
-  StatDataOutput() : bytesWritten(0), m_fp(NULL), closed(false) {}
+  StatDataOutput() : bytesWritten(0), m_fp(nullptr), closed(false) {}
   StatDataOutput(std::string);
   ~StatDataOutput();
   /**

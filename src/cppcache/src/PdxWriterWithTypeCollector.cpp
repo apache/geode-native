@@ -35,7 +35,7 @@ PdxWriterWithTypeCollector::PdxWriterWithTypeCollector() {}
 
 PdxWriterWithTypeCollector::PdxWriterWithTypeCollector(
     DataOutput& output, const char* domainClassName)
-    : PdxLocalWriter(output, NULL) {
+    : PdxLocalWriter(output, nullptr) {
   m_domainClassName = domainClassName;
   initialize();
 }

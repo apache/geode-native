@@ -32,7 +32,7 @@ namespace geode {
 namespace statistics {
 double lastIdle = 0;
 double lastUptime = 0;
-}  // namespace client
+}  // namespace statistics
 }  // namespace geode
 }  // namespace apache
 
@@ -43,7 +43,7 @@ void HostStatHelperLinux::refreshProcess(ProcessStats* processStats) {
   // Get pid, LinuxProcessStats
   LinuxProcessStats* linProcessStat =
       dynamic_cast<LinuxProcessStats*>(processStats);
-  if (linProcessStat == NULL) {
+  if (linProcessStat == nullptr) {
     LOGFINE(
         "HostStatHelperLinux::refreshProcess failed due to null processStat");
     return;
@@ -66,9 +66,10 @@ void HostStatHelperLinux::refreshProcess(ProcessStats* processStats) {
   char procFileName[64];
 
   FILE* fPtr;
-  ACE_OS::snprintf(procFileName, 64, "/proc/%" PRIu32 "/stat", (uint32_t)thePid);
+  ACE_OS::snprintf(procFileName, 64, "/proc/%" PRIu32 "/stat",
+                   (uint32_t)thePid);
   fPtr = fopen(procFileName, "r"); /* read only */
-  if (fPtr != NULL) {
+  if (fPtr != nullptr) {
     int32_t status = fscanf(
         fPtr,
         "%d %100s %c %*d %*d %*d %*d %*d %*u %*u \
@@ -96,7 +97,7 @@ void HostStatHelperLinux::refreshProcess(ProcessStats* processStats) {
         // start_time,
         &vsize,
         &rss  //  mm ? mm->rss : 0, /* you might want to shift this left 3 */
-        );
+    );
 
     if (status != 7 && status != EOF) {
       int32_t errNum = errno;  // for debugging
@@ -131,7 +132,7 @@ void HostStatHelperLinux::refreshProcess(ProcessStats* processStats) {
     temprssSize = (4 * rss) / 1024;
   }
   fPtr = fopen("/proc/uptime", "r");
-  if (fPtr != NULL) {
+  if (fPtr != nullptr) {
     double newUptime = 0;
     double newIdle = 0;
     int32_t status = fscanf(fPtr, "%lf %lf", &newUptime, &newIdle);
@@ -160,7 +161,7 @@ void HostStatHelperLinux::refreshProcess(ProcessStats* processStats) {
   // thread count
   int threadCount = 0;
   glob_t g;
-  if (glob("/proc/self/task/*", GLOB_ONLYDIR, NULL, &g) == 0) {
+  if (glob("/proc/self/task/*", GLOB_ONLYDIR, nullptr, &g) == 0) {
     threadCount = g.gl_pathc;
     // LOGDEBUG("gl_pathc: %d",g.gl_pathc);
     // for( unsigned int i =0; i < g.gl_pathc; i++ ) {

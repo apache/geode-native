@@ -29,7 +29,7 @@
 using namespace apache::geode::client::testframework;
 
 static int hashcode(char* str) {
-  if (str == NULL) {
+  if (str == nullptr) {
     return 0;
   }
   int localHash = 0;
@@ -92,7 +92,7 @@ class BBNamingContextServerImpl {
 // Impls:
 //
 BBNamingContextClientImpl::BBNamingContextClientImpl()
-    : m_bbc(NULL), m_errCount(0) {}
+    : m_bbc(nullptr), m_errCount(0) {}
 BBNamingContextClientImpl::~BBNamingContextClientImpl() { close(); }
 void BBNamingContextClientImpl::open() {
   try {
@@ -113,15 +113,15 @@ void BBNamingContextClientImpl::open() {
   }
 }
 void BBNamingContextClientImpl::close() {
-  if (m_bbc != NULL) {
+  if (m_bbc != nullptr) {
     delete m_bbc;
-    m_bbc = NULL;
+    m_bbc = nullptr;
   }
 }
 int BBNamingContextClientImpl::rebind(const char* key, const char* value,
                                       char* type) {
   // fprintf(stdout, "bind: key=%s, value=%s\n", key, value);
-  if (m_bbc == NULL) {
+  if (m_bbc == nullptr) {
     return -1;
   }
   if (m_errCount > ERR_MAX) {
@@ -152,7 +152,7 @@ int BBNamingContextClientImpl::rebind(const char* key, const char* value,
   return -1;
 }
 void BBNamingContextClientImpl::dump() {
-  if (m_bbc == NULL) {
+  if (m_bbc == nullptr) {
     return;
   }
   if (m_errCount > ERR_MAX) {
@@ -176,7 +176,7 @@ void BBNamingContextClientImpl::dump() {
 int BBNamingContextClientImpl::resolve(const char* key, char* value,
                                        char* type) {
   // fprintf(stdout, "resolve: key=%s\n", key);fflush(stdout);
-  if (m_bbc == NULL) {
+  if (m_bbc == nullptr) {
     return -1;
   }
   if (m_errCount > ERR_MAX) {
@@ -260,7 +260,7 @@ BBNamingContextClient::BBNamingContextClient() {
 BBNamingContextClient::~BBNamingContextClient() {
   if (m_impl) {
     delete m_impl;
-    m_impl = NULL;
+    m_impl = nullptr;
   }
 }
 void BBNamingContextClient::open() { m_impl->open(); }
@@ -280,9 +280,9 @@ BBNamingContextServer::BBNamingContextServer() {
   m_impl = new BBNamingContextServerImpl();
 }
 BBNamingContextServer::~BBNamingContextServer() {
-  if (m_impl != NULL) {
+  if (m_impl != nullptr) {
     delete m_impl;
-    m_impl = NULL;
+    m_impl = nullptr;
   }
 }
 

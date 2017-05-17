@@ -55,11 +55,11 @@ class TestUtils {
     return CacheRegionHelper::getCacheImpl(cptr.get());
   }
 
-  static int testGetNumberOfPdxIds() {
+  static size_t testGetNumberOfPdxIds() {
     return PdxTypeRegistry::testGetNumberOfPdxIds();
   }
 
-  static int testNumberOfPreservedData() {
+  static size_t testNumberOfPreservedData() {
     return PdxTypeRegistry::testNumberOfPreservedData();
   }
 
@@ -132,14 +132,14 @@ class TestUtils {
     }
     VectorOfCacheableKey v;
     rptr->keys(v);
-    uint32_t len = v.size();
-    sprintf(buf, "Total keys in region %s : %u\n", rptr->getName(), len);
+    auto len = v.size();
+    sprintf(buf, "Total keys in region %s : %zu\n", rptr->getName(), len);
     LOG(buf);
     for (uint32_t i = 0; i < len; i++) {
       char keyText[100];
       v[i]->logString(keyText, 100);
       sprintf(buf, "key[%u] = '%s'\n", i,
-              (v[i] == nullptr) ? "NULL KEY" : keyText);
+              (v[i] == nullptr) ? "nullptr KEY" : keyText);
       LOG(buf);
     }
   }
@@ -152,8 +152,8 @@ class TestUtils {
     }
     VectorOfCacheableKey v;
     rptr->keys(v);
-    uint32_t len = v.size();
-    sprintf(buf, "Total keys in region %s : %u\n", rptr->getName(), len);
+    auto len = v.size();
+    sprintf(buf, "Total keys in region %s : %zu\n", rptr->getName(), len);
     LOG(buf);
     for (uint32_t i = 0; i < len; i++) {
       CacheableKeyPtr keyPtr = v[i];
@@ -162,7 +162,7 @@ class TestUtils {
       auto valPtr =
           std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr));
       sprintf(buf, "key[%u] = '%s', value[%u]='%s'\n", i,
-              (keyPtr == nullptr) ? "NULL KEY" : keyText, i,
+              (keyPtr == nullptr) ? "nullptr KEY" : keyText, i,
               (valPtr == nullptr) ? "NULL_VALUE" : valPtr->asChar());
       LOG(buf);
     }
@@ -176,13 +176,13 @@ class TestUtils {
     }
     VectorOfCacheable v;
     rptr->values(v);
-    uint32_t len = v.size();
-    sprintf(buf, "Total values in region %s : %u\n", rptr->getName(), len);
+    auto len = v.size();
+    sprintf(buf, "Total values in region %s : %zu\n", rptr->getName(), len);
     LOG(buf);
-    for (uint32_t i = 0; i < len; i++) {
+    for (size_t i = 0; i < len; i++) {
       auto value = std::dynamic_pointer_cast<CacheableString>(v[i]);
-      sprintf(buf, "value[%u] = '%s'\n", i,
-              (value == nullptr) ? "NULL VALUE" : value->asChar());
+      sprintf(buf, "value[%zu] = '%s'\n", i,
+              (value == nullptr) ? "nullptr VALUE" : value->asChar());
       LOG(buf);
     }
   }

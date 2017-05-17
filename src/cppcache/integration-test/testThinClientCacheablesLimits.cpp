@@ -129,13 +129,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
       ASSERT(!verifyReg->containsValueForKey(KEY_EMPTY_BYTESARR),
              "Contains value key failed for empty bytes array");
 
-      auto bytePtrReturn = std::dynamic_pointer_cast<CacheableBytes>(verifyReg->get(KEY_BYTE));
-      auto stringPtrReturn = std::dynamic_pointer_cast<CacheableString>(verifyReg->get(KEY_STRING));
-      auto emptyBytesArrReturn = std::dynamic_pointer_cast<CacheableBytes>(verifyReg->get(KEY_EMPTY_BYTESARR));
+      auto bytePtrReturn =
+          std::dynamic_pointer_cast<CacheableBytes>(verifyReg->get(KEY_BYTE));
+      auto stringPtrReturn = std::dynamic_pointer_cast<CacheableString>(
+          verifyReg->get(KEY_STRING));
+      auto emptyBytesArrReturn = std::dynamic_pointer_cast<CacheableBytes>(
+          verifyReg->get(KEY_EMPTY_BYTESARR));
 
-      ASSERT(bytePtrReturn != nullptr, "Byte val is NULL");
-      ASSERT(stringPtrReturn != nullptr, "String val is NULL");
-      ASSERT(emptyBytesArrReturn != nullptr, "Empty Bytes Array ptr is NULL");
+      ASSERT(bytePtrReturn != nullptr, "Byte val is nullptr");
+      ASSERT(stringPtrReturn != nullptr, "String val is nullptr");
+      ASSERT(emptyBytesArrReturn != nullptr,
+             "Empty Bytes Array ptr is nullptr");
 
       bool isSameBytes = (bytePtrReturn->length() == bytePtrSent->length() &&
                           !memcmp(bytePtrReturn->value(), bytePtrSent->value(),
@@ -164,8 +168,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
       ASSERT(!verifyReg->containsValueForKey(KEY_EMPTY_BYTESARR),
              "Contains value key failed for empty bytes array");
 
-      auto emptyBytesArrReturn1 = std::dynamic_pointer_cast<CacheableBytes>(verifyReg->get(KEY_EMPTY_BYTESARR));
-      ASSERT(emptyBytesArrReturn1 != nullptr, "Empty Bytes Array ptr is NULL");
+      auto emptyBytesArrReturn1 = std::dynamic_pointer_cast<CacheableBytes>(
+          verifyReg->get(KEY_EMPTY_BYTESARR));
+      ASSERT(emptyBytesArrReturn1 != nullptr,
+             "Empty Bytes Array ptr is nullptr");
       ASSERT(emptyBytesArrReturn1->length() == 0,
              "Empty Bytes Array  length is not 0.");
     }

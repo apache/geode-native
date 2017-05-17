@@ -41,7 +41,7 @@ const char* poolNames[] = {"Pool1"};
 
 void stepOne() {
   initClient(true);
-  createPoolAndDestroy(poolNames[0], locatorsG, NULL, 0, false, -1, 1);
+  createPoolAndDestroy(poolNames[0], locatorsG, nullptr, 0, false, -1, 1);
   LOG("StepOne complete.");
 }
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
@@ -69,12 +69,6 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseServer1)
 END_TASK_DEFINITION
 
 DUNIT_MAIN
-  {
-    CALL_TASK(CreateLocator1)
-    CALL_TASK(CreateServer1_With_Locator)
-    CALL_TASK(StepOne)
-    CALL_TASK(CloseCache1)
-    CALL_TASK(CloseServer1)
-    CALL_TASK(CloseLocator1)
-  }
-END_MAIN
+{CALL_TASK(CreateLocator1) CALL_TASK(CreateServer1_With_Locator)
+     CALL_TASK(StepOne) CALL_TASK(CloseCache1) CALL_TASK(CloseServer1)
+         CALL_TASK(CloseLocator1)} END_MAIN

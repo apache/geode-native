@@ -117,13 +117,13 @@ void initClientCq(int redundancyLevel) {
     // ignore exception
   }
 
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(true);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }
 
-KillServerThread* kst = NULL;
+KillServerThread* kst = nullptr;
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateLocator)
   {
@@ -317,9 +317,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree3)
       LOG(excpmsg);
       ASSERT(false, "get listener failed");
     }
-    ASSERT(cqLstner != nullptr, "listener is NULL");
+    ASSERT(cqLstner != nullptr, "listener is nullptr");
     MyCqListener* myListener = dynamic_cast<MyCqListener*>(cqLstner.get());
-    ASSERT(myListener != NULL, "my listener is NULL<cast failed>");
+    ASSERT(myListener != nullptr, "my listener is nullptr<cast failed>");
     kst = new KillServerThread(myListener);
     char buf[1024];
     sprintf(buf, "before kill server 1, before=%d, after=%d",
@@ -404,9 +404,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
       LOG(excpmsg);
       ASSERT(false, "get listener failed");
     }
-    ASSERT(cqLstner != nullptr, "listener is NULL");
+    ASSERT(cqLstner != nullptr, "listener is nullptr");
     MyCqListener* myListener = dynamic_cast<MyCqListener*>(cqLstner.get());
-    ASSERT(myListener != NULL, "my listener is NULL<cast failed>");
+    ASSERT(myListener != nullptr, "my listener is nullptr<cast failed>");
     char buf[1024];
     sprintf(buf, "after failed over: before=%d, after=%d",
             myListener->getCountBefore(), myListener->getCountAfter());

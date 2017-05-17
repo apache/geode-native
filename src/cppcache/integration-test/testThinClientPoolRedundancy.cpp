@@ -130,13 +130,13 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_1)
     initClient(true);
 
     // create three regions with three pools ( each having diff redun )
-    createPool(poolNames[0], locHostPort, NULL, 2, true);
+    createPool(poolNames[0], locHostPort, nullptr, 2, true);
     createRegionAndAttachPool(poolRegNames[0], USE_ACK, poolNames[0], true);
 
-    createPool(poolNames[1], locHostPort, NULL, 1, true);
+    createPool(poolNames[1], locHostPort, nullptr, 1, true);
     createRegionAndAttachPool(poolRegNames[1], USE_ACK, poolNames[1], true);
 
-    createPool(poolNames[2], locHostPort, NULL, 0, true);
+    createPool(poolNames[2], locHostPort, nullptr, 0, true);
     createRegionAndAttachPool(poolRegNames[2], USE_ACK, poolNames[2], true);
 
     feedEntries(1);
@@ -189,13 +189,13 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_2)
     initClient(true);
 
     // create three regions with three pools ( each having diff redun )
-    createPool(poolNames[0], locHostPort, NULL, 2, true);
+    createPool(poolNames[0], locHostPort, nullptr, 2, true);
     createRegionAndAttachPool(poolRegNames[0], USE_ACK, poolNames[0], true);
 
-    createPool(poolNames[1], locHostPort, NULL, 1, true);
+    createPool(poolNames[1], locHostPort, nullptr, 1, true);
     createRegionAndAttachPool(poolRegNames[1], USE_ACK, poolNames[1], true);
 
-    createPool(poolNames[2], locHostPort, NULL, 0, true);
+    createPool(poolNames[2], locHostPort, nullptr, 0, true);
     createRegionAndAttachPool(poolRegNames[2], USE_ACK, poolNames[2], true);
 
     feedEntries(1);
@@ -272,7 +272,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyK1C1New2)
 
     CacheableKeyPtr keyPtr = createKey(keys[1]);
 
-    auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
+    auto checkPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
     ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
 

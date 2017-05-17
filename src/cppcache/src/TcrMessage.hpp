@@ -44,7 +44,6 @@
 #include <map>
 #include <vector>
 
-
 namespace apache {
 namespace geode {
 namespace client {
@@ -215,7 +214,7 @@ class CPPCACHE_EXPORT TcrMessage {
   void setData(const char* bytearray, int32_t len, uint16_t memId);
 
   void startProcessChunk(ACE_Semaphore& finalizeSema);
-  // NULL chunk means that this is the last chunk
+  // nullptr chunk means that this is the last chunk
   void processChunk(const uint8_t* chunk, int32_t chunkLen,
                     uint16_t endpointmemId,
                     const uint8_t isLastChunkAndisSecurityHeader = 0x00);
@@ -226,7 +225,7 @@ class CPPCACHE_EXPORT TcrMessage {
   //  const std::string& str2, InterestResultPolicy interestPolicy =
   //  InterestResultPolicy::NONE, bool isDurable = false, bool isCachingEnabled
   //  = false, bool receiveValues = true, ThinClientBaseDM *connectionDM =
-  //  NULL);
+  //  nullptr);
 
   void InitializeGetallMsg(const UserDataPtr& aCallbackArgument);
   // for multiuser cache close
@@ -379,16 +378,16 @@ class CPPCACHE_EXPORT TcrMessage {
   //  that
   // takes ownership of delta bytes.
   CacheableBytesPtr getDeltaBytes() {
-    if (m_deltaBytes == NULL) {
+    if (m_deltaBytes == nullptr) {
       return nullptr;
     }
     CacheableBytesPtr retVal(
         CacheableBytes::createNoCopy(m_deltaBytes, m_deltaBytesLen));
-    m_deltaBytes = NULL;
+    m_deltaBytes = nullptr;
     return retVal;
   }
 
-  bool hasDelta() { return (m_delta != NULL); }
+  bool hasDelta() { return (m_delta != nullptr); }
 
   void addSecurityPart(int64_t connectionId, int64_t unique_id,
                        TcrConnection* conn);
@@ -463,9 +462,9 @@ class CPPCACHE_EXPORT TcrMessage {
         m_msgTypeRequest(0),
         m_txId(-1),
         m_decodeAll(false),
-        m_tcdm(NULL),
-        m_chunkedResult(NULL),
-        m_keyList(NULL),
+        m_tcdm(nullptr),
+        m_chunkedResult(nullptr),
+        m_keyList(nullptr),
         m_key(),
         m_value(nullptr),
         m_failedNode(),
@@ -473,7 +472,7 @@ class CPPCACHE_EXPORT TcrMessage {
         m_versionTag(),
         m_eventid(nullptr),
         m_regionName("INVALID_REGION_NAME"),
-        m_region(NULL),
+        m_region(nullptr),
         m_regex(),
         m_interestPolicy(0),
         m_timeout(15 /*DEFAULT_TIMEOUT_SECONDS*/),
@@ -492,11 +491,11 @@ class CPPCACHE_EXPORT TcrMessage {
         m_vectorPtr(),
         m_numCqPart(0),
         m_msgTypeForCq(0),
-        m_cqs(NULL),
+        m_cqs(nullptr),
         m_messageResponseTimeout(-1),
         m_boolValue(0),
-        m_delta(NULL),
-        m_deltaBytes(NULL),
+        m_delta(nullptr),
+        m_deltaBytes(nullptr),
         m_deltaBytesLen(0),
         m_isCallBackArguement(false),
         m_bucketServerLocation(nullptr),
@@ -553,7 +552,7 @@ class CPPCACHE_EXPORT TcrMessage {
   void readPrMetaData(DataInput& input);
   void writeObjectPart(const SerializablePtr& se, bool isDelta = false,
                        bool callToData = false,
-                       const VectorOfCacheableKey* getAllKeyList = NULL);
+                       const VectorOfCacheableKey* getAllKeyList = nullptr);
   void writeHeader(uint32_t msgType, uint32_t numOfParts);
   void writeRegionPart(const std::string& regionName);
   void writeStringPart(const std::string& str);
@@ -715,7 +714,7 @@ class TcrMessageRequest : public TcrMessage {
  public:
   TcrMessageRequest(const Region* region, const CacheableKeyPtr& key,
                     const UserDataPtr& aCallbackArgument,
-                    ThinClientBaseDM* connectionDM = NULL);
+                    ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageRequest() {}
 };
@@ -724,7 +723,7 @@ class TcrMessageInvalidate : public TcrMessage {
  public:
   TcrMessageInvalidate(const Region* region, const CacheableKeyPtr& key,
                        const UserDataPtr& aCallbackArgument,
-                       ThinClientBaseDM* connectionDM = NULL);
+                       ThinClientBaseDM* connectionDM = nullptr);
 };
 
 class TcrMessageDestroy : public TcrMessage {
@@ -732,7 +731,7 @@ class TcrMessageDestroy : public TcrMessage {
   TcrMessageDestroy(const Region* region, const CacheableKeyPtr& key,
                     const CacheablePtr& value,
                     const UserDataPtr& aCallbackArgument,
-                    ThinClientBaseDM* connectionDM = NULL);
+                    ThinClientBaseDM* connectionDM = nullptr);
 };
 
 class TcrMessageRegisterInterestList : public TcrMessage {
@@ -742,7 +741,7 @@ class TcrMessageRegisterInterestList : public TcrMessage {
       bool isDurable = false, bool isCachingEnabled = false,
       bool receiveValues = true,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
-      ThinClientBaseDM* connectionDM = NULL);
+      ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageRegisterInterestList() {}
 };
@@ -754,7 +753,7 @@ class TcrMessageUnregisterInterestList : public TcrMessage {
       bool isDurable = false, bool isCachingEnabled = false,
       bool receiveValues = true,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
-      ThinClientBaseDM* connectionDM = NULL);
+      ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageUnregisterInterestList() {}
 };
@@ -763,9 +762,9 @@ class TcrMessagePut : public TcrMessage {
  public:
   TcrMessagePut(const Region* region, const CacheableKeyPtr& key,
                 const CacheablePtr& value, const UserDataPtr& aCallbackArgument,
-                bool isDelta = false, ThinClientBaseDM* connectionDM = NULL,
+                bool isDelta = false, ThinClientBaseDM* connectionDM = nullptr,
                 bool isMetaRegion = false, bool fullValueAfterDeltaFail = false,
-                const char* regionName = NULL);
+                const char* regionName = nullptr);
 
   virtual ~TcrMessagePut() {}
 };
@@ -776,7 +775,7 @@ class TcrMessageCreateRegion : public TcrMessage {
       const std::string& str1, const std::string& str2,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
       bool isDurable = false, bool isCachingEnabled = false,
-      bool receiveValues = true, ThinClientBaseDM* connectionDM = NULL);
+      bool receiveValues = true, ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageCreateRegion() {}
 };
@@ -787,7 +786,7 @@ class TcrMessageRegisterInterest : public TcrMessage {
       const std::string& str1, const std::string& str2,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
       bool isDurable = false, bool isCachingEnabled = false,
-      bool receiveValues = true, ThinClientBaseDM* connectionDM = NULL);
+      bool receiveValues = true, ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageRegisterInterest() {}
 };
@@ -798,7 +797,7 @@ class TcrMessageUnregisterInterest : public TcrMessage {
       const std::string& str1, const std::string& str2,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
       bool isDurable = false, bool isCachingEnabled = false,
-      bool receiveValues = true, ThinClientBaseDM* connectionDM = NULL);
+      bool receiveValues = true, ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageUnregisterInterest() {}
 };
@@ -858,7 +857,7 @@ class TcrMessageRemoveAll : public TcrMessage {
  public:
   TcrMessageRemoveAll(const Region* region, const VectorOfCacheableKey& keys,
                       const UserDataPtr& aCallbackArgument,
-                      ThinClientBaseDM* connectionDM = NULL);
+                      ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageRemoveAll() {}
 };
@@ -887,7 +886,7 @@ class TcrMessageExecuteRegionFunction : public TcrMessage {
       const std::string& funcName, const Region* region,
       const CacheablePtr& args, CacheableVectorPtr routingObj,
       uint8_t getResult, CacheableHashSetPtr failedNodes, int32_t timeout,
-      ThinClientBaseDM* connectionDM = NULL, int8_t reExecute = 0);
+      ThinClientBaseDM* connectionDM = nullptr, int8_t reExecute = 0);
 
   virtual ~TcrMessageExecuteRegionFunction() {}
 };
@@ -927,7 +926,7 @@ class TcrMessageSize : public TcrMessage {
 class TcrMessageUserCredential : public TcrMessage {
  public:
   TcrMessageUserCredential(PropertiesPtr creds,
-                           ThinClientBaseDM* connectionDM = NULL);
+                           ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageUserCredential() {}
 };
@@ -990,7 +989,7 @@ class TcrMessageGetPdxEnumById : public TcrMessage {
 class TcrMessageGetFunctionAttributes : public TcrMessage {
  public:
   TcrMessageGetFunctionAttributes(const std::string& funcName,
-                                  ThinClientBaseDM* connectionDM = NULL);
+                                  ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageGetFunctionAttributes() {}
 };
@@ -998,7 +997,7 @@ class TcrMessageGetFunctionAttributes : public TcrMessage {
 class TcrMessageKeySet : public TcrMessage {
  public:
   TcrMessageKeySet(const std::string& funcName,
-                   ThinClientBaseDM* connectionDM = NULL);
+                   ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageKeySet() {}
 };
@@ -1027,7 +1026,7 @@ class TcrMessageUpdateClientNotification : public TcrMessage {
 class TcrMessageGetAll : public TcrMessage {
  public:
   TcrMessageGetAll(const Region* region, const VectorOfCacheableKey* keys,
-                   ThinClientBaseDM* connectionDM = NULL,
+                   ThinClientBaseDM* connectionDM = nullptr,
                    const UserDataPtr& aCallbackArgument = nullptr);
 
   virtual ~TcrMessageGetAll() {}

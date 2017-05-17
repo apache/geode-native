@@ -36,7 +36,7 @@ using namespace apache::geode::statistics;
 /**
  * static member initialization
  */
-GeodeStatisticsFactory* GeodeStatisticsFactory::s_singleton = NULL;
+GeodeStatisticsFactory* GeodeStatisticsFactory::s_singleton = nullptr;
 
 GeodeStatisticsFactory::GeodeStatisticsFactory(StatisticsManager* statMngr) {
   m_name = "GeodeStatisticsFactory";
@@ -65,15 +65,15 @@ GeodeStatisticsFactory* GeodeStatisticsFactory::getExistingInstance() {
 
 /**************************Dtor*******************************************/
 void GeodeStatisticsFactory::clean() {
-  if (s_singleton != NULL) {
+  if (s_singleton != nullptr) {
     delete s_singleton;
-    s_singleton = NULL;
+    s_singleton = nullptr;
   }
 }
 
 GeodeStatisticsFactory::~GeodeStatisticsFactory() {
   try {
-    m_statMngr = NULL;
+    m_statMngr = nullptr;
 
     // Clean Map : Delete all the pointers of StatisticsType from the map.
     if (statsTypeMap.total_size() == 0) return;
@@ -83,7 +83,7 @@ GeodeStatisticsFactory::~GeodeStatisticsFactory() {
         statsTypeMap.begin();
     while (iterFind != statsTypeMap.end()) {
       delete (*iterFind).int_id_;
-      (*iterFind).int_id_ = NULL;
+      (*iterFind).int_id_ = nullptr;
       iterFind++;
     }
     statsTypeMap.unbind_all();
@@ -106,7 +106,7 @@ const char* GeodeStatisticsFactory::getName() { return m_name; }
 int64_t GeodeStatisticsFactory::getId() { return m_id; }
 
 Statistics* GeodeStatisticsFactory::createStatistics(StatisticsType* type) {
-  return createAtomicStatistics(type, NULL, 0);
+  return createAtomicStatistics(type, nullptr, 0);
 }
 
 Statistics* GeodeStatisticsFactory::createStatistics(StatisticsType* type,
@@ -124,7 +124,7 @@ Statistics* GeodeStatisticsFactory::createOsStatistics(StatisticsType* type,
                                                        const char* textId,
                                                        int64_t numericId) {
   // Validate input
-  if (type == NULL) {
+  if (type == nullptr) {
     throw IllegalArgumentException("StatisticsType* is Null");
   }
 
@@ -143,7 +143,7 @@ Statistics* GeodeStatisticsFactory::createOsStatistics(StatisticsType* type,
 
 Statistics* GeodeStatisticsFactory::createAtomicStatistics(
     StatisticsType* type) {
-  return createAtomicStatistics(type, NULL, 0);
+  return createAtomicStatistics(type, nullptr, 0);
 }
 
 Statistics* GeodeStatisticsFactory::createAtomicStatistics(StatisticsType* type,
@@ -155,7 +155,7 @@ Statistics* GeodeStatisticsFactory::createAtomicStatistics(StatisticsType* type,
                                                            const char* textId,
                                                            int64_t numericId) {
   // Validate input
-  if (type == NULL) {
+  if (type == nullptr) {
     throw IllegalArgumentException("StatisticsType* is Null");
   }
   int64_t myUniqueId;
@@ -209,7 +209,7 @@ StatisticsType* GeodeStatisticsFactory::createType(const char* name,
   StatisticsTypeImpl* st =
       new StatisticsTypeImpl(name, description, stats, statsLength);
 
-  if (st != NULL) {
+  if (st != nullptr) {
     st = addType(st);
   } else {
     throw OutOfMemoryException(
@@ -220,14 +220,14 @@ StatisticsType* GeodeStatisticsFactory::createType(const char* name,
 
 StatisticsType* GeodeStatisticsFactory::findType(const char* name) {
   std::string statName = name;
-  StatisticsTypeImpl* st = NULL;
+  StatisticsTypeImpl* st = nullptr;
   int status = statsTypeMap.find(statName, st);
   if (status == -1) {
     std::string temp(name);
     std::string s = "There is no statistic named \"" + temp + "\"";
     // LOGWARN(s.c_str());
     // throw IllegalArgumentException(s.c_str());
-    return NULL;
+    return nullptr;
   } else {
     return st;
   }

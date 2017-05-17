@@ -38,14 +38,15 @@ namespace client {
  * constructor nor in any functions that it calls.
  */
 PdxLocalWriter::PdxLocalWriter()
-    : m_dataOutput(NULL),
+    : m_dataOutput(nullptr),
       m_pdxType(nullptr),
-      m_startPosition(NULL),
+      m_startPosition(nullptr),
       m_startPositionOffset(0),
-      m_domainClassName(NULL),
+      m_domainClassName(nullptr),
       m_currentOffsetIndex(0),
-      m_pdxClassName(NULL) {  // COVERITY --> 29282 Uninitialized pointer field
-  // m_dataOutput = NULL;
+      m_pdxClassName(
+          nullptr) {  // COVERITY --> 29282 Uninitialized pointer field
+  // m_dataOutput = nullptr;
   // m_pdxType =nullptr;
 }
 
@@ -54,7 +55,7 @@ PdxLocalWriter::PdxLocalWriter(DataOutput& output, PdxTypePtr pdxType) {
   m_pdxType = pdxType;
   m_currentOffsetIndex = 0;
   m_preserveData = nullptr;
-  m_pdxClassName = NULL;
+  m_pdxClassName = nullptr;
   if (pdxType != nullptr) m_pdxClassName = pdxType->getPdxClassName();
   ;
   initialize();
@@ -64,7 +65,7 @@ PdxLocalWriter::PdxLocalWriter(DataOutput& output, PdxTypePtr pdxType) {
    * constructor nor in any functions that it calls.
    * Fix :
    */
-  m_domainClassName = NULL;
+  m_domainClassName = nullptr;
 }
 
 PdxLocalWriter::PdxLocalWriter(DataOutput& dataOutput, PdxTypePtr pdxType,
@@ -81,23 +82,23 @@ PdxLocalWriter::PdxLocalWriter(DataOutput& dataOutput, PdxTypePtr pdxType,
    * constructor nor in any functions that it calls.
    * Fix :
    */
-  m_domainClassName = NULL;
+  m_domainClassName = nullptr;
 }
 
 PdxLocalWriter::~PdxLocalWriter() {
-  /*if (m_dataOutput != NULL) {
+  /*if (m_dataOutput != nullptr) {
     delete m_dataOutput;
-    m_dataOutput = NULL;
+    m_dataOutput = nullptr;
   }
   */
-  /*if (m_startPosition != NULL) {
+  /*if (m_startPosition != nullptr) {
     delete m_startPosition;
-    m_startPosition = NULL;
+    m_startPosition = nullptr;
   }*/
 
-  /*if (m_domainClassName != NULL) {
+  /*if (m_domainClassName != nullptr) {
     delete m_domainClassName;
-    m_domainClassName = NULL;
+    m_domainClassName = nullptr;
   }*/
 }
 
@@ -179,7 +180,7 @@ PdxWriterPtr PdxLocalWriter::writeUnreadFields(PdxUnreadFieldsPtr unread) {
     } else {
       throw IllegalStateException(
           "PdxLocalWriter::writeUnreadFields: m_preserveData should not be "
-          "NULL");
+          "nullptr");
     }
   }
   return shared_from_this();
@@ -265,7 +266,7 @@ PdxWriterPtr PdxLocalWriter::writeDate(const char* fieldName,
 PdxWriterPtr PdxLocalWriter::writeString(const char* fieldName,
                                          const char* value) {
   addOffset();
-  if (value == NULL) {
+  if (value == nullptr) {
     m_dataOutput->write(static_cast<int8_t>(GeodeTypeIds::CacheableNullString));
   } else {
     int32_t len = DataOutput::getEncodedLength(value);
@@ -286,7 +287,7 @@ PdxWriterPtr PdxLocalWriter::writeString(const char* fieldName,
 PdxWriterPtr PdxLocalWriter::writeWideString(const char* fieldName,
                                              const wchar_t* value) {
   addOffset();
-  if (value == NULL) {
+  if (value == nullptr) {
     m_dataOutput->write(static_cast<int8_t>(GeodeTypeIds::CacheableNullString));
   } else {
     int32_t len = DataOutput::getEncodedLength(value);
@@ -305,7 +306,7 @@ PdxWriterPtr PdxLocalWriter::writeWideString(const char* fieldName,
 }
 
 PdxWriterPtr PdxLocalWriter::writeStringwithoutOffset(const char* value) {
-  if (value == NULL) {
+  if (value == nullptr) {
     m_dataOutput->write(static_cast<int8_t>(GeodeTypeIds::CacheableNullString));
   } else {
     int32_t len = DataOutput::getEncodedLength(value);
@@ -325,7 +326,7 @@ PdxWriterPtr PdxLocalWriter::writeStringwithoutOffset(const char* value) {
 
 PdxWriterPtr PdxLocalWriter::writeWideStringwithoutOffset(
     const wchar_t* value) {
-  if (value == NULL) {
+  if (value == nullptr) {
     m_dataOutput->write(static_cast<int8_t>(GeodeTypeIds::CacheableNullString));
   } else {
     int32_t len = DataOutput::getEncodedLength(value);
@@ -346,7 +347,7 @@ PdxWriterPtr PdxLocalWriter::writeWideStringwithoutOffset(
 PdxWriterPtr PdxLocalWriter::writeStringArray(const char* fieldName,
                                               char** array, int length) {
   addOffset();
-  if (array == NULL) {
+  if (array == nullptr) {
     m_dataOutput->write(static_cast<int8_t>(-1));
     // WriteByte(-1);
   } else {
@@ -361,7 +362,7 @@ PdxWriterPtr PdxLocalWriter::writeStringArray(const char* fieldName,
 PdxWriterPtr PdxLocalWriter::writeWideStringArray(const char* fieldName,
                                                   wchar_t** array, int length) {
   addOffset();
-  if (array == NULL) {
+  if (array == nullptr) {
     m_dataOutput->write(static_cast<int8_t>(-1));
   } else {
     m_dataOutput->writeArrayLen(length);
@@ -399,11 +400,11 @@ PdxWriterPtr PdxLocalWriter::writeObject(const char* fieldName,
       objArrPtr = std::dynamic_pointer_cast<CacheableObjectArray>(value);
       m_dataOutput->write(
           static_cast<int8_t>(GeodeTypeIds::CacheableObjectArray));
-      m_dataOutput->writeArrayLen(objArrPtr->length());
+      m_dataOutput->writeArrayLen(static_cast<int32_t>(objArrPtr->size()));
       m_dataOutput->write(static_cast<int8_t>(GeodeTypeIdsImpl::Class));
 
-      _VectorOfCacheable::Iterator iter = objArrPtr->begin();
-      PdxSerializablePtr actualObjPtr =
+      auto iter = objArrPtr->begin();
+      const auto actualObjPtr =
           std::dynamic_pointer_cast<PdxSerializable>(*iter);
 
       m_dataOutput->write(
@@ -499,7 +500,7 @@ PdxWriterPtr PdxLocalWriter::writeArrayOfByteArrays(const char* fieldName,
                                                     int arrayLength,
                                                     int* elementLength) {
   addOffset();
-  if (byteArrays != NULL) {
+  if (byteArrays != nullptr) {
     m_dataOutput->writeArrayLen(arrayLength);
     for (int i = 0; i < arrayLength; i++) {
       m_dataOutput->writeBytes(byteArrays[i], elementLength[i]);

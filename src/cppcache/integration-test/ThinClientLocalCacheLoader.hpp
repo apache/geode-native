@@ -51,8 +51,8 @@ class ThinClientTallyLoader : public TallyLoader {
     char lstrvalue[32];
     sprintf(lstrvalue, "%i", loadValue);
     CacheableStringPtr lreturnValue = CacheableString::create(lstrvalue);
-    if (key != nullptr && (NULL != rp->getAttributes()->getEndpoints() ||
-                           rp->getAttributes()->getPoolName() != NULL)) {
+    if (key != nullptr && (nullptr != rp->getAttributes()->getEndpoints() ||
+                           rp->getAttributes()->getPoolName() != nullptr)) {
       LOGDEBUG("Putting the value (%s) for local region clients only ",
                lstrvalue);
       rp->put(key, lreturnValue);
@@ -68,7 +68,7 @@ class ThinClientTallyLoader : public TallyLoader {
       ASSERT(region->isDestroyed() == true,
              "region.isDestroyed should return true");
       /*
-      if(region.get() != NULL && region.get()->getCache() != nullptr){
+      if(region.get() != nullptr && region.get()->getCache() != nullptr){
         LOGINFO(" Cache Name is Closed = %d ",
       region.get()->getCache()->isClosed());
       }else{

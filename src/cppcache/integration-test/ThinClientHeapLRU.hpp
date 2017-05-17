@@ -40,7 +40,7 @@ using namespace test;
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 static bool isLocator = false;
 static bool isLocalServer = false;
 static int numberOfLocators = 0;
@@ -61,7 +61,7 @@ const bool NO_ACK = false;
 #include "LocatorHelper.hpp"
 
 void initThinClientWithClientTypeAsCLIENT(const bool isthinClient) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr pp = Properties::create();
     pp->insert("heap-lru-limit", 1);
     pp->insert("heap-lru-delta", 10);
@@ -73,20 +73,20 @@ void initThinClientWithClientTypeAsCLIENT(const bool isthinClient) {
 
 // void initClient( const bool isthinClient )
 //{
-//  if ( cacheHelper == NULL ) {
+//  if ( cacheHelper == nullptr ) {
 //    cacheHelper = new CacheHelper(isthinClient);
 //  }
 //  ASSERT( cacheHelper, "Failed to create a CacheHelper client instance." );
 //}
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
@@ -125,10 +125,13 @@ void createOnekEntries() {
         CacheableWrapperFactory::createInstance(GeodeTypeIds::CacheableBytes);
     tmpkey->initKey(i, 32);
     tmpval->initRandomValue(1024);
-    ASSERT(tmpkey->getCacheable() != nullptr, "tmpkey->getCacheable() is NULL");
-    ASSERT(tmpval->getCacheable() != nullptr, "tmpval->getCacheable() is NULL");
-    dataReg->put(std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable()),
-                 tmpval->getCacheable());
+    ASSERT(tmpkey->getCacheable() != nullptr,
+           "tmpkey->getCacheable() is nullptr");
+    ASSERT(tmpval->getCacheable() != nullptr,
+           "tmpval->getCacheable() is nullptr");
+    dataReg->put(
+        std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable()),
+        tmpval->getCacheable());
     // delete tmpkey;
     //  delete tmpval;
   }
@@ -171,8 +174,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_EndPoint)
   {
     initThinClientWithClientTypeAsCLIENT(true);
-    createPooledRegion(regionNames[0], USE_ACK, endPoints, NULL, poolName);
-    createPooledRegion(regionNames[1], NO_ACK, endPoints, NULL, poolName);
+    createPooledRegion(regionNames[0], USE_ACK, endPoints, nullptr, poolName);
+    createPooledRegion(regionNames[1], NO_ACK, endPoints, nullptr, poolName);
     LOG("StepOne complete.");
   }
 END_TASK_DEFINITION
@@ -198,8 +201,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pooled_EndPoint)
   {
     initThinClientWithClientTypeAsCLIENT(true);
-    createPooledRegion(regionNames[0], USE_ACK, endPoints, NULL, poolName);
-    createPooledRegion(regionNames[1], NO_ACK, endPoints, NULL, poolName);
+    createPooledRegion(regionNames[0], USE_ACK, endPoints, nullptr, poolName);
+    createPooledRegion(regionNames[1], NO_ACK, endPoints, nullptr, poolName);
     LOG("StepTwo_Pooled_EndPoint complete.");
   }
 END_TASK_DEFINITION

@@ -75,7 +75,7 @@ void PutAllPartialResultServerException::toData(DataOutput& output) const {
 Serializable* PutAllPartialResultServerException::fromData(DataInput& input) {
   throw IllegalStateException(
       "PutAllPartialResultServerException::fromData is not intended for use.");
-  return NULL;
+  return nullptr;
 }
 
 int32_t PutAllPartialResultServerException::classId() const {

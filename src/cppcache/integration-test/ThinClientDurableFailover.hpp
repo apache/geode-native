@@ -71,14 +71,8 @@ class OperMonitor : public CacheListener {
       LOG(buf);
     }
 
-    if (value != nullptr) {
-      HashMapOfCacheable::Iterator item = m_map.find(key);
-
-      if (item != m_map.end()) {
-        m_map.update(key, value);
-      } else {
-        m_map.insert(key, value);
-      }
+    if (value) {
+      m_map[key] = value;
     }
   }
 
@@ -92,7 +86,7 @@ class OperMonitor : public CacheListener {
     LOG("validate called");
     char buf[256] = {'\0'};
 
-    sprintf(buf, "Expected %d keys for the region, Actual = %d", keyCount,
+    sprintf(buf, "Expected %d keys for the region, Actual = %zd", keyCount,
             m_map.size());
     ASSERT(m_map.size() == keyCount, buf);
 
@@ -100,12 +94,11 @@ class OperMonitor : public CacheListener {
             m_ops);
     ASSERT(m_ops == eventcount, buf);
 
-    for (HashMapOfCacheable::Iterator item = m_map.begin(); item != m_map.end();
-         item++) {
-      auto keyPtr = std::dynamic_pointer_cast<CacheableString>(item.first());
-      auto valuePtr = std::dynamic_pointer_cast<CacheableInt32>(item.second());
+    for (const auto& item : m_map) {
+      auto keyPtr = std::dynamic_pointer_cast<CacheableString>(item.first);
+      auto valuePtr = std::dynamic_pointer_cast<CacheableInt32>(item.second);
 
-      if (strchr(keyPtr->toString(), 'D') == NULL) { /*Non Durable Key */
+      if (strchr(keyPtr->toString(), 'D') == nullptr) { /*Non Durable Key */
         sprintf(buf,
                 "Expected final value for nonDurable Keys = %d, Actual = %d",
                 nonDurableValue, valuePtr->value());

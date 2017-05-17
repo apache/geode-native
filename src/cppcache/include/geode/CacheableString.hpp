@@ -280,7 +280,7 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
   char* getASCIIString(const wchar_t* value, int32_t& len, int32_t& encodedLen);
   /** Default constructor. */
   inline CacheableString(int8_t type = GF_STRING)
-      : m_str(NULL), m_type(type), m_len(0), m_hashcode(0) {}
+      : m_str(nullptr), m_type(type), m_len(0), m_hashcode(0) {}
 
  private:
   // never implemented.
@@ -310,5 +310,13 @@ inline CacheablePtr createValueArr(const wchar_t* value) {
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
+
+namespace std {
+
+template <>
+struct hash<apache::geode::client::CacheableString>
+    : hash<apache::geode::client::CacheableKey> {};
+
+}  // namespace std
 
 #endif  // GEODE_CACHEABLESTRING_H_

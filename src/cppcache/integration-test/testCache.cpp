@@ -50,7 +50,7 @@ BEGIN_TEST(CacheFunction)
     ASSERT(false, "attribute create failed");
   }
   if (rAttr == nullptr) {
-    cout << "Warnning! : AttributesFactory returned NULL" << endl;
+    cout << "Warnning! : AttributesFactory returned nullptr" << endl;
   }
   RegionPtr rptr;
   if (rptr != nullptr) {

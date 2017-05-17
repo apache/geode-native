@@ -49,8 +49,8 @@ void RegionXmlCreation::createRoot(Cache* cache) {
     //  if(cache->m_cacheImpl->getDefaultPool() == nullptr)
     {
       // we may need to initialize default pool
-      if (regAttrs->getEndpoints() == NULL) {
-        if (regAttrs->getPoolName() == NULL) {
+      if (regAttrs->getEndpoints() == nullptr) {
+        if (regAttrs->getPoolName() == nullptr) {
           PoolPtr pool = CacheFactory::createOrGetDefaultPool();
 
           if (pool == nullptr) {
@@ -87,7 +87,7 @@ RegionXmlCreation::~RegionXmlCreation() {
   std::vector<RegionXmlCreation*>::iterator start = subRegions.begin();
   while (start != subRegions.end()) {
     delete *start;
-    *start = NULL;
+    *start = nullptr;
     ++start;
   }
 }

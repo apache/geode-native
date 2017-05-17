@@ -105,7 +105,7 @@ ClientProxyMembershipID::ClientProxyMembershipID(const char *durableClientId,
                                                  const uint32_t
 durableClntTimeOut)
 {
-  if( durableClientId != NULL && durableClntTimeOut != 0 ) {
+  if( durableClientId != nullptr && durableClntTimeOut != 0 ) {
     DataOutput  m_memID;
     m_memID.write((int8_t)GeodeTypeIds::CacheableASCIIString);
     m_memID.writeASCII(durableClientId);
@@ -119,7 +119,7 @@ durableClntTimeOut)
 */
 ClientProxyMembershipID::ClientProxyMembershipID()
     : m_hostPort(0),
-      m_hostAddr(NULL)
+      m_hostAddr(nullptr)
       /* adongre  - Coverity II
        * CID 29278: Uninitialized scalar field (UNINIT_CTOR)
        */
@@ -158,7 +158,7 @@ void ClientProxyMembershipID::initObjectVars(
     int8_t vmkind, int8_t splitBrainFlag, const char* dsname,
     const char* uniqueTag, uint32_t vmViewId) {
   DataOutput m_memID;
-  if (dsname == NULL) {
+  if (dsname == nullptr) {
     m_dsname = std::string("");
   } else {
     m_dsname = std::string(dsname);
@@ -167,7 +167,7 @@ void ClientProxyMembershipID::initObjectVars(
   m_hostAddr = hostAddr;
   m_hostAddrLen = hostAddrLen;
   m_hostAddrLocalMem = hostAddrLocalMem;
-  if (uniqueTag == NULL) {
+  if (uniqueTag == nullptr) {
     m_uniqueTag = std::string("");
   } else {
     m_uniqueTag = std::string(uniqueTag);
@@ -199,7 +199,7 @@ void ClientProxyMembershipID::initObjectVars(
   m_memID.write(static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
   m_memID.writeASCII(uniqueTag);
 
-  if (durableClientId != NULL && durableClntTimeOut != 0) {
+  if (durableClientId != nullptr && durableClntTimeOut != 0) {
     m_memID.write(static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
     m_memID.writeASCII(durableClientId);
     CacheableInt32Ptr int32ptr = CacheableInt32::create(durableClntTimeOut);
@@ -389,7 +389,7 @@ Serializable* ClientProxyMembershipID::fromData(DataInput& input) {
     vmViewId = atoi(uniqueTag.get()->asChar());
     initObjectVars(hostname->asChar(), hostAddr, len, true, hostPort,
                    durableClientId->asChar(), durableClntTimeOut, dcport, vPID,
-                   vmKind, splitbrain, dsName->asChar(), NULL, vmViewId);
+                   vmKind, splitbrain, dsName->asChar(), nullptr, vmViewId);
   } else {
     // initialize the object
     initObjectVars(hostname->asChar(), hostAddr, len, true, hostPort,
@@ -439,7 +439,7 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
   if (vmKind != ClientProxyMembershipID::LONER_DM_TYPE) {
     // initialize the object with the values read and some dummy values
     initObjectVars("", hostAddr, len, true, hostPort, "", 0, DCPORT, 0, vmKind,
-                   0, dsName->asChar(), NULL, vmViewId);
+                   0, dsName->asChar(), nullptr, vmViewId);
   } else {
     // initialize the object with the values read and some dummy values
     initObjectVars("", hostAddr, len, true, hostPort, "", 0, DCPORT, 0, vmKind,
@@ -478,7 +478,7 @@ int16_t ClientProxyMembershipID::compareTo(
   uint8_t* myAddr = getHostAddr();
   uint8_t* otherAddr = otherMember.getHostAddr();
   // Discard null cases
-  if (myAddr == NULL && otherAddr == NULL) {
+  if (myAddr == nullptr && otherAddr == nullptr) {
     if (myPort < otherPort) {
       return -1;
     } else if (myPort > otherPort) {
@@ -486,9 +486,9 @@ int16_t ClientProxyMembershipID::compareTo(
     } else {
       return 0;
     }
-  } else if (myAddr == NULL) {
+  } else if (myAddr == nullptr) {
     return -1;
-  } else if (otherAddr == NULL) {
+  } else if (otherAddr == nullptr) {
     return 1;
   }
   for (uint32_t i = 0; i < getHostAddrLen(); i++) {

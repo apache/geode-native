@@ -55,7 +55,7 @@ void initClientAndRegion(int redundancy, int ClientIdx,
 }
 void initClientAndTwoRegions(int ClientIdx, int redundancy,
                              int durableClientTimeout,
-                             const char* conflation = NULL,
+                             const char* conflation = nullptr,
                              const char* rNames[] = regionNames) {
   PropertiesPtr pp = Properties::create();
   pp->insert("durable-client-id", durableIds[ClientIdx]);
@@ -72,7 +72,7 @@ void initClientAndTwoRegions(int ClientIdx, int redundancy,
 }
 void initClientAndTwoRegionsAndTwoPools(int ClientIdx, int redundancy,
                                         int durableClientTimeout,
-                                        const char* conflation = NULL,
+                                        const char* conflation = nullptr,
                                         const char* rNames[] = regionNames) {
   PropertiesPtr pp = Properties::create();
   pp->insert("durable-client-id", durableIds[ClientIdx]);

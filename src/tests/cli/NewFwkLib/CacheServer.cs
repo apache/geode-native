@@ -4713,7 +4713,6 @@ private void checkUpdatedValue(TKey key, TVal value)
             }
             else if (opCode == "executefunction")
             {
-              bool getResult = true;
               string funcName = null;
               Random rdn = new Random();
               int num = rdn.Next(3);

@@ -66,11 +66,11 @@ void PdxHelper::serializePdx(DataOutput& output,
 
 void PdxHelper::serializePdx(DataOutput& output,
                              const PdxSerializablePtr& pdxObject) {
-  const char* pdxClassname = NULL;
+  const char* pdxClassname = nullptr;
 
   auto pdxII = std::dynamic_pointer_cast<PdxInstanceImpl>(pdxObject);
 
-  if (pdxII != NULL) {
+  if (pdxII != nullptr) {
     PdxTypePtr piPt = pdxII->getPdxType();
     if (piPt != nullptr &&
         piPt->getTypeId() ==
@@ -116,7 +116,7 @@ void PdxHelper::serializePdx(DataOutput& output,
 
     //[ToDo] need to write bytes for stats
     CacheImpl* cacheImpl = PdxHelper::getCacheImpl();
-    if (cacheImpl != NULL) {
+    if (cacheImpl != nullptr) {
       uint8_t* stPos = const_cast<uint8_t*>(output.getBuffer()) +
                        ptc->getStartPositionOffset();
       int pdxLen = PdxHelper::readInt32(stPos);
@@ -148,7 +148,7 @@ void PdxHelper::serializePdx(DataOutput& output,
 
     //[ToDo] need to write bytes for stats
     CacheImpl* cacheImpl = PdxHelper::getCacheImpl();
-    if (cacheImpl != NULL) {
+    if (cacheImpl != nullptr) {
       uint8_t* stPos = const_cast<uint8_t*>(output.getBuffer()) +
                        prw->getStartPositionOffset();
       int pdxLen = PdxHelper::readInt32(stPos);
@@ -161,7 +161,7 @@ void PdxHelper::serializePdx(DataOutput& output,
 PdxSerializablePtr PdxHelper::deserializePdx(DataInput& dataInput,
                                              bool forceDeserialize,
                                              int32_t typeId, int32_t length) {
-  char* pdxClassname = NULL;
+  char* pdxClassname = nullptr;
   PdxSerializablePtr pdxObjectptr = nullptr;
   PdxTypePtr pdxLocalType = nullptr;
 
@@ -297,7 +297,7 @@ PdxSerializablePtr PdxHelper::deserializePdx(DataInput& dataInput,
     dataInput.readInt(&typeId);
 
     CacheImpl* cacheImpl = PdxHelper::getCacheImpl();
-    if (cacheImpl != NULL) {
+    if (cacheImpl != nullptr) {
       cacheImpl->m_cacheStats->incPdxDeSerialization(len +
                                                      9);  // pdxLen + 1 + 2*4
     }
@@ -331,7 +331,7 @@ PdxSerializablePtr PdxHelper::deserializePdx(DataInput& dataInput,
     dataInput.advanceCursor(len);
 
     CacheImpl* cacheImpl = PdxHelper::getCacheImpl();
-    if (cacheImpl != NULL) {
+    if (cacheImpl != nullptr) {
       cacheImpl->m_cacheStats->incPdxInstanceCreations();
     }
     return pdxObject;

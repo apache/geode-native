@@ -45,8 +45,8 @@ Portfolio::Portfolio(int32_t i, uint32_t size, CacheableStringArrayPtr nm)
     position2 = nullptr;
   }
   positions = CacheableHashMap::create();
-  positions->insert(CacheableString::create(secIds[Position::cnt % numSecIds]),
-                    position1);
+  positions->emplace(CacheableString::create(secIds[Position::cnt % numSecIds]),
+                     position1);
   newVal = new uint8_t[size + 1];
   memset(newVal, 'B', size);
   newVal[size] = '\0';

@@ -84,8 +84,10 @@ class MyCqListener1 : public CqListener {
   void onEvent(const CqEvent& cqe) {
     m_cntEvents++;
     char* opStr = (char*)"Default";
-    CacheableInt32Ptr value(std::dynamic_pointer_cast<CacheableInt32>(cqe.getNewValue()));
-    CacheableInt32Ptr key(std::dynamic_pointer_cast<CacheableInt32>(cqe.getKey()));
+    CacheableInt32Ptr value(
+        std::dynamic_pointer_cast<CacheableInt32>(cqe.getNewValue()));
+    CacheableInt32Ptr key(
+        std::dynamic_pointer_cast<CacheableInt32>(cqe.getKey()));
     switch (cqe.getQueryOperation()) {
       case CqOperation::OP_TYPE_CREATE: {
         opStr = (char*)"CREATE";
@@ -140,7 +142,8 @@ END_TASK_DEFINITION
 void createServer(bool locator = false) {
   LOG("Starting SERVER1...");
   if (isLocalServer) {
-    CacheHelper::initServer(1, "remotequery.xml", locator ? locatorsG : NULL);
+    CacheHelper::initServer(1, "remotequery.xml",
+                            locator ? locatorsG : nullptr);
   }
   LOG("SERVER1 started");
 }
@@ -148,7 +151,7 @@ void createServer(bool locator = false) {
 void createServer_XML() {
   LOG("Starting SERVER...");
   if (isLocalServer) {
-    CacheHelper::initServer(1, "serverDurableClient.xml", NULL);
+    CacheHelper::initServer(1, "serverDurableClient.xml", nullptr);
   }
   LOG("SERVER started");
 }
@@ -257,7 +260,8 @@ void RunFeederClient() {
   LOGINFO("Created the Region Programmatically.");
 
   for (int i = 0; i < 10; i++) {
-    auto keyPtr = std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
+    auto keyPtr =
+        std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
     CacheableInt32Ptr valPtr = CacheableInt32::create(i);
 
     regionPtr->put(keyPtr, valPtr);
@@ -289,7 +293,8 @@ void RunFeederClient1() {
   LOGINFO("Created the Region Programmatically.");
 
   for (int i = 10; i < 20; i++) {
-    auto keyPtr = std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
+    auto keyPtr =
+        std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
     CacheableInt32Ptr valPtr = CacheableInt32::create(i);
 
     regionPtr->put(keyPtr, valPtr);
@@ -529,12 +534,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
           "CLIENT-1 StepFour: verifying getCq() behaviour for the invalid CQ "
           "Name");
       CqQueryPtr invalidCqptr = qs->getCq("InValidCQ");
-      ASSERT(invalidCqptr == nullptr,
-             "Cqptr must be NULL, as it getCq() is invoked on invalid CQ name");
+      ASSERT(
+          invalidCqptr == nullptr,
+          "Cqptr must be nullptr, as it getCq() is invoked on invalid CQ name");
       /*if(invalidCqptr == nullptr){
         LOGINFO("Testing getCq(InvalidName) :: invalidCqptr is nullptr");
       }else{
-         LOGINFO("Testing getCq(InvalidName) :: invalidCqptr is NOT NULL");
+         LOGINFO("Testing getCq(InvalidName) :: invalidCqptr is NOT nullptr");
       }*/
 
       CqQueryPtr cqy = qs->getCq(cqName);
@@ -780,8 +786,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyCqs1)
     CacheableArrayListPtr durableCqListPtr = qs->getAllDurableCqsFromServer();
 
     ASSERT(durableCqListPtr != nullptr, "Durable CQ List should not be null");
-    ASSERT(durableCqListPtr->length() == 2,
-           "Durable CQ List lenght should be 2");
+    ASSERT(durableCqListPtr->size() == 2, "Durable CQ List lenght should be 2");
     ASSERT(isDurableCQName(durableCqListPtr->at(0)->toString()->asChar(), 1,
                            false),
            "Durable CQ name should be in the durable cq list");
@@ -803,8 +808,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyCqsAfterClientup1)
 
     CacheableArrayListPtr durableCqListPtr = qs->getAllDurableCqsFromServer();
     ASSERT(durableCqListPtr != nullptr, "Durable CQ List should not be null");
-    ASSERT(durableCqListPtr->length() == 4,
-           "Durable CQ List length should be 4");
+    ASSERT(durableCqListPtr->size() == 4, "Durable CQ List length should be 4");
     ASSERT(
         isDurableCQName(durableCqListPtr->at(0)->toString()->asChar(), 1, true),
         "Durable CQ name should be in the durable cq list");
@@ -831,8 +835,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyCqs2)
     }
     CacheableArrayListPtr durableCqListPtr = qs->getAllDurableCqsFromServer();
     ASSERT(durableCqListPtr != nullptr, "Durable CQ List should not be null");
-    ASSERT(durableCqListPtr->length() == 4,
-           "Durable CQ List lenght should be 4");
+    ASSERT(durableCqListPtr->size() == 4, "Durable CQ List lenght should be 4");
     ASSERT(isDurableCQName(durableCqListPtr->at(0)->toString()->asChar(), 2,
                            false),
            "Durable CQ name should be in the durable cq list");
@@ -859,8 +862,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyCqsAfterClientup2)
     }
     CacheableArrayListPtr durableCqListPtr = qs->getAllDurableCqsFromServer();
     ASSERT(durableCqListPtr != nullptr, "Durable CQ List should not be null");
-    ASSERT(durableCqListPtr->length() == 8,
-           "Durable CQ List lenght should be 8");
+    ASSERT(durableCqListPtr->size() == 8, "Durable CQ List lenght should be 8");
     ASSERT(
         isDurableCQName(durableCqListPtr->at(0)->toString()->asChar(), 2, true),
         "Durable CQ name should be in the durable cq list");

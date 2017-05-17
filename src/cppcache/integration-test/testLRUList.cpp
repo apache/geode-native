@@ -111,18 +111,19 @@ BEGIN_TEST(TestEndOfList)
       MyNodePtr nodePtr;
       lruList.getLRUEntry(nodePtr);
       sprintf(msgbuf, "expected node %d", k);
-      ASSERT(std::dynamic_pointer_cast<MyNode>(nodePtr)->getValue() == k, msgbuf);
+      ASSERT(std::dynamic_pointer_cast<MyNode>(nodePtr)->getValue() == k,
+             msgbuf);
       k++;
     }
     // now list should be empty...
     MyNodePtr emptyPtr;
     lruList.getLRUEntry(emptyPtr);
-    ASSERT(emptyPtr == nullptr, "expected NULL");
+    ASSERT(emptyPtr == nullptr, "expected nullptr");
     // do it again...
     emptyPtr = nullptr;
-    ASSERT(emptyPtr == nullptr, "expected NULL");
+    ASSERT(emptyPtr == nullptr, "expected nullptr");
     lruList.getLRUEntry(emptyPtr);
-    ASSERT(emptyPtr == nullptr, "expected NULL");
+    ASSERT(emptyPtr == nullptr, "expected nullptr");
     // now add something to the list... and retest...
     {
       MyNodePtr tmp(MyNode::create());
@@ -131,11 +132,11 @@ BEGIN_TEST(TestEndOfList)
     }
     MyNodePtr hundredPtr;
     lruList.getLRUEntry(hundredPtr);
-    ASSERT(hundredPtr != nullptr, "expected to not be NULL");
+    ASSERT(hundredPtr != nullptr, "expected to not be nullptr");
     ASSERT(std::dynamic_pointer_cast<MyNode>(hundredPtr)->getValue() == 100,
            "expected value of 100");
     lruList.getLRUEntry(emptyPtr);
-    ASSERT(emptyPtr == nullptr, "expected NULL");
+    ASSERT(emptyPtr == nullptr, "expected nullptr");
   }
 END_TEST(TestEndOfList)
 

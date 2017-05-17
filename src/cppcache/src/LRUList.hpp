@@ -37,7 +37,7 @@ namespace client {
  */
 class CPPCACHE_EXPORT LRUEntryProperties {
  public:
-  inline LRUEntryProperties() : m_bits(0), m_persistenceInfo(NULL) {}
+  inline LRUEntryProperties() : m_bits(0), m_persistenceInfo(nullptr) {}
 
   inline void setRecentlyUsed() {
     HostAsm::atomicSetBits(m_bits, RECENTLY_USED_BITS);
@@ -92,7 +92,7 @@ class LRUList {
   class LRUListNode {
    public:
     inline LRUListNode(const LRUListEntryPtr& entry)
-        : m_entry(entry), m_nextLRUListNode(NULL) {}
+        : m_entry(entry), m_nextLRUListNode(nullptr) {}
 
     inline ~LRUListNode() {}
 
@@ -104,7 +104,7 @@ class LRUList {
       m_nextLRUListNode = next;
     }
 
-    inline void clearNextLRUListNode() { m_nextLRUListNode = NULL; }
+    inline void clearNextLRUListNode() { m_nextLRUListNode = nullptr; }
 
    private:
     LRUListEntryPtr m_entry;

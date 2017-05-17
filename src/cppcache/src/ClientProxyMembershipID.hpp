@@ -38,7 +38,8 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   const char* getDSMemberId(uint32_t& mesgLength) const;
   const char* getDSMemberIdForCS43(uint32_t& mesgLength) const;
   ClientProxyMembershipID(const char* hostname, uint32_t hostAddr,
-                          uint32_t hostPort, const char* durableClientId = NULL,
+                          uint32_t hostPort,
+                          const char* durableClientId = nullptr,
                           const uint32_t durableClntTimeOut = 0);
 
   // This constructor is only for testing and should not be used for any
@@ -46,8 +47,8 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   ClientProxyMembershipID(uint8_t* hostAddr, uint32_t hostAddrLen,
                           uint32_t hostPort, const char* dsname,
                           const char* uniqueTag, uint32_t vmViewId);
-  // ClientProxyMembershipID(const char *durableClientId = NULL, const uint32_t
-  // durableClntTimeOut = 0);
+  // ClientProxyMembershipID(const char *durableClientId = nullptr, const
+  // uint32_t durableClntTimeOut = 0);
   ClientProxyMembershipID();
   ~ClientProxyMembershipID();
   void getClientProxyMembershipID();

@@ -95,7 +95,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
  protected:
   virtual GfErrType sendSyncRequestRegisterInterest(
       TcrMessage& request, TcrMessageReply& reply, bool attemptFailover = true,
-      ThinClientRegion* region = NULL, TcrEndpoint* endpoint = NULL);
+      ThinClientRegion* region = nullptr, TcrEndpoint* endpoint = nullptr);
 
   virtual GfErrType sendSyncRequestCq(TcrMessage& request,
                                       TcrMessageReply& reply);

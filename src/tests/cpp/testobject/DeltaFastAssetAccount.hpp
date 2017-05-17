@@ -136,11 +136,10 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
   virtual DeltaPtr clone() {
     auto clonePtr = std::make_shared<DeltaFastAssetAccount>();
     clonePtr->assets = CacheableHashMap::create();
-    for (HashMapOfCacheable::Iterator item = this->assets->begin();
-         item != this->assets->end(); item++) {
-      auto key = std::dynamic_pointer_cast<CacheableInt32>(item.first());
-      auto asset = std::dynamic_pointer_cast<FastAsset>(item.second());
-      clonePtr->assets->insert(key, asset->copy());
+    for (const auto& item : *(this->assets)) {
+      auto key = std::dynamic_pointer_cast<CacheableInt32>(item.first);
+      auto asset = std::dynamic_pointer_cast<FastAsset>(item.second);
+      clonePtr->assets->emplace(key, asset->copy());
     }
     return clonePtr;
   }

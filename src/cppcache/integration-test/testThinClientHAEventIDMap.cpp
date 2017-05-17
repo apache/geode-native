@@ -39,15 +39,15 @@ class DupChecker : public CacheListener {
     CacheableKeyPtr key = event.getKey();
     auto value = std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
 
-    HashMapOfCacheable::Iterator item = m_map.find(key);
+    const auto& item = m_map.find(key);
 
     if (item != m_map.end()) {
-      auto check = std::dynamic_pointer_cast<CacheableInt32>(item.second());
+      auto check = std::dynamic_pointer_cast<CacheableInt32>(item->second);
       ASSERT(check->value() + 1 == value->value(),
              "Duplicate or older value received");
-      m_map.update(key, value);
+      m_map[key] = value;
     } else {
-      m_map.insert(key, value);
+      m_map.emplace(key, value);
     }
   }
 
@@ -60,9 +60,8 @@ class DupChecker : public CacheListener {
     ASSERT(m_map.size() == 4, "Expected 4 keys for the region");
     ASSERT(m_ops == 400, "Expected 400 events (100 per key) for the region");
 
-    for (HashMapOfCacheable::Iterator item = m_map.begin(); item != m_map.end();
-         item++) {
-      auto check = std::dynamic_pointer_cast<CacheableInt32>(item.second());
+    for (const auto& item : m_map) {
+      auto check = std::dynamic_pointer_cast<CacheableInt32>(item.second);
       ASSERT(check->value() == 100, "Expected final value to be 100");
     }
   }
@@ -84,7 +83,7 @@ typedef SharedPtr<DupChecker> DupCheckerPtr;
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
@@ -98,21 +97,21 @@ void initClient() {
   props->insert("notify-ack-interval", 3600);  // set to 1 hr.
   props->insert("notify-dupcheck-life", 3600);
 
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(true, props);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }
 
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
@@ -147,7 +146,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
     if (noKey == false) {  // need to find the key!
       ASSERT(regPtr->containsKey(keyPtr), "Key not found in region.");
     }
-    if (val != NULL) {  // need to have a value!
+    if (val != nullptr) {  // need to have a value!
       // ASSERT( regPtr->containsValueForKey( keyPtr ), "Value not found in
       // region." );
     }
@@ -178,7 +177,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
         }
         ASSERT(containsKeyCnt < MAX, "Key found in region.");
       }
-      if (val == NULL) {
+      if (val == nullptr) {
         if (regPtr->containsValueForKey(keyPtr)) {
           containsValueCnt++;
         } else {
@@ -187,8 +186,9 @@ void _verifyEntry(const char* name, const char* key, const char* val,
         ASSERT(containsValueCnt < MAX, "Value found in region.");
       }
 
-      if (val != NULL) {
-        auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
+      if (val != nullptr) {
+        auto checkPtr =
+            std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
         ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
         char buf[1024];
@@ -278,7 +278,8 @@ void _verifyIntEntry(const char* name, const char* key, const int val,
       }
 
       if (val != 0) {
-        auto checkPtr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(keyPtr));
+        auto checkPtr =
+            std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(keyPtr));
 
         ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
         char buf[1024];
@@ -326,7 +327,7 @@ void _verifyCreated(const char* name, const char* key, int line) {
   char logmsg[1024];
   sprintf(logmsg, "verifyCreated() called from %d.\n", line);
   LOG(logmsg);
-  _verifyEntry(name, key, NULL, false, true);
+  _verifyEntry(name, key, nullptr, false, true);
   LOG("Entry created.");
 }
 
@@ -335,7 +336,7 @@ void createRegion(const char* name, bool ackMode,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  char* endpoints = NULL;
+  char* endpoints = nullptr;
   // ack, caching
   RegionPtr regPtr = getHelper()->createRegion(
       name, ackMode, true, nullptr, endpoints, clientNotificationEnabled);

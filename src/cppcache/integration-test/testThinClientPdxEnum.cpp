@@ -42,7 +42,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClientPoolLoc)
     LOG("Starting Step One with Pool + Locator lists");
     initClient(true);
 
-    createPool("__TEST_POOL1__", locatorsG, NULL, 0, true);
+    createPool("__TEST_POOL1__", locatorsG, nullptr, 0, true);
     createRegionAndAttachPool("DistRegionAck", USE_ACK, "__TEST_POOL1__");
 
     LOG("SetupClient complete.");
@@ -160,17 +160,11 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseLocator1)
 END_TASK_DEFINITION
 
 DUNIT_MAIN
-  {
-    CALL_TASK(CreateLocator1)
-    CALL_TASK(CreateServer1_With_Locator)
+{CALL_TASK(CreateLocator1) CALL_TASK(CreateServer1_With_Locator)
 
-    CALL_TASK(SetupClientPoolLoc)
-    CALL_TASK(putPdxWithEnum)
-    CALL_TASK(pdxEnumQuery)
+     CALL_TASK(SetupClientPoolLoc) CALL_TASK(putPdxWithEnum)
+         CALL_TASK(pdxEnumQuery)
 
-    CALL_TASK(CloseCache1)
-    CALL_TASK(CloseServer1)
+             CALL_TASK(CloseCache1) CALL_TASK(CloseServer1)
 
-    CALL_TASK(CloseLocator1)
-  }
-END_MAIN
+                 CALL_TASK(CloseLocator1)} END_MAIN

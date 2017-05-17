@@ -53,7 +53,7 @@ class QueryHelper {
   static QueryHelper* singleton;
 
   static QueryHelper& getHelper() {
-    if (singleton == NULL) {
+    if (singleton == nullptr) {
       singleton = new QueryHelper();
     }
     return *singleton;
@@ -75,7 +75,7 @@ class QueryHelper {
                                     int numSets);
   virtual void populatePortfolioPdxData(RegionPtr& pregion, int setSize,
                                         int numSets, int32_t objSize = 1,
-                                        char** nm = NULL);
+                                        char** nm = nullptr);
   virtual void populatePositionPdxData(RegionPtr& pregion, int setSize,
                                        int numSets);
   virtual void populatePDXObject(RegionPtr& pregion);
@@ -149,7 +149,7 @@ class QueryHelper {
   int positionNumSets;
 };
 
-QueryHelper* QueryHelper::singleton = NULL;
+QueryHelper* QueryHelper::singleton = nullptr;
 
 //===========================================================================================
 
@@ -232,7 +232,8 @@ void QueryHelper::populatePositionPdxData(RegionPtr& rptr, int setSize,
 
   for (int set = 1; set <= numSets; set++) {
     for (int current = 1; current <= setSize; current++) {
-      auto pos = std::make_shared<PositionPdx>(secIds[current % numSecIds], current * 100);
+      auto pos = std::make_shared<PositionPdx>(secIds[current % numSecIds],
+                                               current * 100);
 
       char posname[100] = {0};
       ACE_OS::sprintf(posname, "pos%d-%d", set, current);
@@ -307,7 +308,8 @@ bool QueryHelper::verifyRS(SelectResultsPtr& resultSet, int expectedRows) {
     return false;
   }
 
-  ResultSetPtr rsptr = std::static_pointer_cast<GF_UNWRAP_SP(ResultSetPtr)>(resultSet);
+  ResultSetPtr rsptr =
+      std::static_pointer_cast<GF_UNWRAP_SP(ResultSetPtr)>(resultSet);
 
   int foundRows = 0;
 
@@ -330,11 +332,12 @@ bool QueryHelper::verifySS(SelectResultsPtr& structSet, int expectedRows,
     if (expectedRows == 0 && expectedFields == 0) {
       return true;  // quite possible we got a null set back.
     }
-    printf("we have structSet itself NULL \n");
+    printf("we have structSet itself nullptr \n");
     return false;
   }
 
-  StructSetPtr ssptr = std::static_pointer_cast<GF_UNWRAP_SP(StructSetPtr)>(structSet);
+  StructSetPtr ssptr =
+      std::static_pointer_cast<GF_UNWRAP_SP(StructSetPtr)>(structSet);
 
   int foundRows = 0;
 
@@ -345,8 +348,8 @@ bool QueryHelper::verifySS(SelectResultsPtr& structSet, int expectedRows,
 
     Struct* siptr = dynamic_cast<Struct*>(ser.get());
 
-    if (siptr == NULL) {
-      printf("siptr is NULL \n\n");
+    if (siptr == nullptr) {
+      printf("siptr is nullptr \n\n");
       return false;
     }
 

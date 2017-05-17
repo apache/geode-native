@@ -109,13 +109,13 @@ void putAllWithOneEntryTimeout(int timeout, int waitTimeOnServer) {
     char val0[2500] = {0};
     sprintf(key0, "key-%d", i);
     sprintf(val0, "%1000d", i);
-    map0.insert(CacheableKey::create(key0), CacheableString::create(val0));
+    map0.emplace(CacheableKey::create(key0), CacheableString::create(val0));
   }
 
   char val[16];
   sprintf(val, "%d", waitTimeOnServer);
-  map0.insert(CacheableKey::create("timeout-this-entry"),
-              CacheableString::create(val));
+  map0.emplace(CacheableKey::create("timeout-this-entry"),
+               CacheableString::create(val));
 
   RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
 
@@ -133,13 +133,13 @@ void putAllWithOneEntryTimeoutWithCallBackArg(int timeout,
     char val0[2500] = {0};
     sprintf(key0, "key-%d", i);
     sprintf(val0, "%1000d", i);
-    map0.insert(CacheableKey::create(key0), CacheableString::create(val0));
+    map0.emplace(CacheableKey::create(key0), CacheableString::create(val0));
   }
 
   char val[16];
   sprintf(val, "%d", waitTimeOnServer);
-  map0.insert(CacheableKey::create("timeout-this-entry"),
-              CacheableString::create(val));
+  map0.emplace(CacheableKey::create("timeout-this-entry"),
+               CacheableString::create(val));
 
   RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
 

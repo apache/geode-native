@@ -61,7 +61,7 @@ void stepOne() {
   // Create just one pool and attach all regions to that.
   initClient(true);
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0, true);
+  createPool(poolNames[0], locHostPort, nullptr, 0, true);
   createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
   createRegionAndAttachPool(qRegionNames[1], USE_ACK, poolNames[0]);
   createRegionAndAttachPool(qRegionNames[2], USE_ACK, poolNames[0]);
@@ -198,12 +198,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
         if (!m_isPdx) {
           SerializablePtr ser = (*rsptr)[rows];
           if (std::dynamic_pointer_cast<Portfolio>(ser)) {
-            PortfolioPtr portfolio = std::static_pointer_cast<GF_UNWRAP_SP(PortfolioPtr)>(ser);
+            PortfolioPtr portfolio =
+                std::static_pointer_cast<GF_UNWRAP_SP(PortfolioPtr)>(ser);
             printf(
                 "   query idx %d pulled portfolio object ID %d, pkid  :: %s\n",
                 i, portfolio->getID(), portfolio->getPkid()->asChar());
           } else if (std::dynamic_pointer_cast<Position>(ser)) {
-            PositionPtr position = std::static_pointer_cast<GF_UNWRAP_SP(PositionPtr)>(ser);
+            PositionPtr position =
+                std::static_pointer_cast<GF_UNWRAP_SP(PositionPtr)>(ser);
             printf(
                 "   query idx %d pulled position object secId %s, shares  :: "
                 "%d\n",
@@ -221,13 +223,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
         } else {
           SerializablePtr pdxser = (*rsptr)[rows];
           if (std::dynamic_pointer_cast<PortfolioPdx>(pdxser)) {
-            PortfolioPdxPtr portfoliopdx = std::static_pointer_cast<GF_UNWRAP_SP(PortfolioPdxPtr)>(pdxser);
+            PortfolioPdxPtr portfoliopdx =
+                std::static_pointer_cast<GF_UNWRAP_SP(PortfolioPdxPtr)>(pdxser);
             printf(
                 "   query idx %d pulled portfolioPdx object ID %d, pkid %s  :: "
                 "\n",
                 i, portfoliopdx->getID(), portfoliopdx->getPkid());
           } else if (std::dynamic_pointer_cast<PositionPdx>(pdxser)) {
-            PositionPdxPtr positionpdx = std::static_pointer_cast<GF_UNWRAP_SP(PositionPdxPtr)>(pdxser);
+            PositionPdxPtr positionpdx =
+                std::static_pointer_cast<GF_UNWRAP_SP(PositionPdxPtr)>(pdxser);
             printf(
                 "   query idx %d pulled positionPdx object secId %s, shares %d "
                 " "
@@ -310,13 +314,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
           if (!m_isPdx) {
             SerializablePtr ser = (*rsptr)[rows];
             if (std::dynamic_pointer_cast<Portfolio>(ser)) {
-              PortfolioPtr portfolio = std::static_pointer_cast<GF_UNWRAP_SP(PortfolioPtr)>(ser);
+              PortfolioPtr portfolio =
+                  std::static_pointer_cast<GF_UNWRAP_SP(PortfolioPtr)>(ser);
               printf(
                   "   query idx %d pulled portfolio object ID %d, pkid  :: "
                   "%s\n",
                   i, portfolio->getID(), portfolio->getPkid()->asChar());
             } else if (std::dynamic_pointer_cast<Position>(ser)) {
-              PositionPtr position = std::static_pointer_cast<GF_UNWRAP_SP(PositionPtr)>(ser);
+              PositionPtr position =
+                  std::static_pointer_cast<GF_UNWRAP_SP(PositionPtr)>(ser);
               printf(
                   "   query idx %d pulled position object secId %s, shares  :: "
                   "%d\n",
@@ -335,14 +341,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
             SerializablePtr pdxser = (*rsptr)[rows];
             if (std::dynamic_pointer_cast<PortfolioPdx>(pdxser)) {
               PortfolioPdxPtr portfoliopdx =
-                  std::static_pointer_cast<GF_UNWRAP_SP(PortfolioPdxPtr)>(pdxser);
+                  std::static_pointer_cast<GF_UNWRAP_SP(PortfolioPdxPtr)>(
+                      pdxser);
               printf(
                   "   query idx %d pulled portfolioPdx object ID %d, pkid %s  "
                   ":: "
                   "\n",
                   i, portfoliopdx->getID(), portfoliopdx->getPkid());
             } else if (std::dynamic_pointer_cast<PositionPdx>(pdxser)) {
-              PositionPdxPtr positionpdx = std::static_pointer_cast<GF_UNWRAP_SP(PositionPdxPtr)>(pdxser);
+              PositionPdxPtr positionpdx =
+                  std::static_pointer_cast<GF_UNWRAP_SP(PositionPdxPtr)>(
+                      pdxser);
               printf(
                   "   query idx %d pulled positionPdx object secId %s, shares "
                   "%d "
@@ -432,12 +441,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
           if (!m_isPdx) {
             SerializablePtr ser = (*rsptr)[rows];
             if (std::dynamic_pointer_cast<Portfolio>(ser)) {
-              PortfolioPtr portfolio = std::static_pointer_cast<GF_UNWRAP_SP(PortfolioPtr)>(ser);
+              PortfolioPtr portfolio =
+                  std::static_pointer_cast<GF_UNWRAP_SP(PortfolioPtr)>(ser);
               printf(
                   "   query idx %d pulled portfolio object ID %d, pkid %s : \n",
                   i, portfolio->getID(), portfolio->getPkid()->asChar());
             } else if (std::dynamic_pointer_cast<Position>(ser)) {
-              PositionPtr position = std::static_pointer_cast<GF_UNWRAP_SP(PositionPtr)>(ser);
+              PositionPtr position =
+                  std::static_pointer_cast<GF_UNWRAP_SP(PositionPtr)>(ser);
               printf(
                   "   query idx %d pulled position object secId %s, shares %d  "
                   ": "
@@ -456,14 +467,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
           } else {
             SerializablePtr ser = (*rsptr)[rows];
             if (std::dynamic_pointer_cast<PortfolioPdx>(ser)) {
-              PortfolioPdxPtr portfoliopdx = std::static_pointer_cast<GF_UNWRAP_SP(PortfolioPdxPtr)>(ser);
+              PortfolioPdxPtr portfoliopdx =
+                  std::static_pointer_cast<GF_UNWRAP_SP(PortfolioPdxPtr)>(ser);
               printf(
                   "   query idx %d pulled portfolioPdx object ID %d, pkid %s  "
                   ": "
                   "\n",
                   i, portfoliopdx->getID(), portfoliopdx->getPkid());
             } else if (std::dynamic_pointer_cast<PositionPdx>(ser)) {
-              PositionPdxPtr positionpdx = std::static_pointer_cast<GF_UNWRAP_SP(PositionPdxPtr)>(ser);
+              PositionPdxPtr positionpdx =
+                  std::static_pointer_cast<GF_UNWRAP_SP(PositionPdxPtr)>(ser);
               printf(
                   "   query idx %d pulled positionPdx object secId %s, shares "
                   "%d "
@@ -572,13 +585,12 @@ void runRemoteQueryRSTest() {
 
 void setPortfolioPdxType() { CALL_TASK(SetPortfolioTypeToPdx) }
 
-void UnsetPortfolioType() { CALL_TASK(UnsetPortfolioTypeToPdx) }
+void UnsetPortfolioType(){CALL_TASK(UnsetPortfolioTypeToPdx)}
 
-DUNIT_MAIN
-  {
-    for (int i = 0; i < 2; i++) {
-      runRemoteQueryRSTest();
-      setPortfolioPdxType();
-    }
+DUNIT_MAIN {
+  for (int i = 0; i < 2; i++) {
+    runRemoteQueryRSTest();
+    setPortfolioPdxType();
   }
+}
 END_MAIN

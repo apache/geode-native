@@ -83,7 +83,7 @@ class CPPCACHE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
                         CacheablePtr& oldValue, int updateCount,
                         int destroyTracker, VersionTagPtr versionTag,
                         bool& isUpdate = EntriesMap::boolVal,
-                        DataInput* delta = NULL);
+                        DataInput* delta = nullptr);
   virtual GfErrType invalidate(const CacheableKeyPtr& key, MapEntryImplPtr& me,
                                CacheablePtr& oldValue,
                                VersionTagPtr versionTag);
@@ -113,8 +113,8 @@ class CPPCACHE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
   virtual void close();
 
   inline bool mustEvict() const {
-    if (m_action == NULL) {
-      LOGFINE("Eviction action is NULL");
+    if (m_action == nullptr) {
+      LOGFINE("Eviction action is nullptr");
       return false;
     }
     if (m_action->overflows()) {

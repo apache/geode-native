@@ -117,15 +117,15 @@ class VersionTag;
 typedef SharedPtr<VersionTag> VersionTagPtr;
 _GF_PTR_DEF_(MapEntryImpl, MapEntryImplPtr);
 /**
-* @class RegionInternal RegionInternal.hpp
-*
-* This class specifies internal common interface for all regions.
-*/
+ * @class RegionInternal RegionInternal.hpp
+ *
+ * This class specifies internal common interface for all regions.
+ */
 class RegionInternal : public Region {
  public:
   /**
-  * @brief destructor
-  */
+   * @brief destructor
+   */
   virtual ~RegionInternal();
   /** @brief Default implementation of Public Methods from Region
    */
@@ -154,7 +154,7 @@ class RegionInternal : public Region {
       const char* predicate, uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   /** @brief Public Methods
-  */
+   */
   virtual PersistenceManagerPtr getPersistenceManager() = 0;
   virtual void setPersistenceManager(PersistenceManagerPtr& pmPtr) = 0;
 
@@ -171,7 +171,7 @@ class RegionInternal : public Region {
                                CacheablePtr& oldValue, int updateCount,
                                const CacheEventFlags eventFlags,
                                VersionTagPtr versionTag,
-                               DataInput* delta = NULL,
+                               DataInput* delta = nullptr,
                                EventIdPtr eventId = nullptr) = 0;
   virtual GfErrType createNoThrow(const CacheableKeyPtr& key,
                                   const CacheablePtr& value,
@@ -252,8 +252,8 @@ class RegionInternal : public Region {
 
  protected:
   /**
-  * @brief constructor
-  */
+   * @brief constructor
+   */
   RegionInternal(const RegionAttributesPtr& attributes);
 
   void setLruEntriesLimit(uint32_t limit);

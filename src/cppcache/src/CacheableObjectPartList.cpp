@@ -42,16 +42,16 @@ Serializable* CacheableObjectPartList::fromData(DataInput& input) {
     CacheableStringPtr exMsgPtr;
     ExceptionPtr ex;
     // bool isException;
-    int32_t keysOffset = (m_keysOffset != NULL ? *m_keysOffset : 0);
+    int32_t keysOffset = (m_keysOffset != nullptr ? *m_keysOffset : 0);
     for (int32_t index = keysOffset; index < keysOffset + len; ++index) {
       if (hasKeys) {
         input.readObject(key, true);
-      } else if (m_keys != NULL) {
+      } else if (m_keys != nullptr) {
         key = m_keys->operator[](index);
       } else {
         throw FatalInternalException(
             "CacheableObjectPartList: "
-            "hasKeys is false and m_keys is also NULL");
+            "hasKeys is false and m_keys is also nullptr");
       }
       if (m_resultKeys != nullptr) {
         m_resultKeys->push_back(key);
@@ -70,14 +70,14 @@ Serializable* CacheableObjectPartList::fromData(DataInput& input) {
           const char* exMsg = exMsgPtr->asChar();
           if (strstr(exMsg,
                      "org.apache.geode.security."
-                     "NotAuthorizedException") != NULL) {
+                     "NotAuthorizedException") != nullptr) {
             ex = std::make_shared<NotAuthorizedException>(
                 "Authorization exception at server:", exMsg);
           } else {
             ex = std::make_shared<CacheServerException>(
                 "Exception at remote server:", exMsg);
           }
-          m_exceptions->insert(key, ex);
+          m_exceptions->emplace(key, ex);
         }
       } else {
         input.readObject(value);
@@ -113,11 +113,11 @@ Serializable* CacheableObjectPartList::fromData(DataInput& input) {
           value = oldValue;
         }
         if (m_values != nullptr) {
-          m_values->insert(key, value);
+          m_values->emplace(key, value);
         }
       }
     }
-    if (m_keysOffset != NULL) {
+    if (m_keysOffset != nullptr) {
       *m_keysOffset += len;
     }
   }

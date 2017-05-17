@@ -38,7 +38,7 @@ using namespace PdxTests;
 
 bool isLocalServer = false;
 
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -91,7 +91,7 @@ bool generic2DCompare(T1** value1, T2** value2, int length,
 
 void initClient(const bool isthinClient, bool isPdxReadSerailized) {
   LOGINFO("isPdxReadSerailized = %d ", isPdxReadSerailized);
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr config = Properties::create();
     config->insert("enable-time-statistics", "true");
     LOGINFO("enabled-time-statistics ");
@@ -102,23 +102,23 @@ void initClient(const bool isthinClient, bool isPdxReadSerailized) {
 }
 static int clientWithXml = 0;
 void initClient(const char* clientXmlFile) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr config = Properties::create();
     if (clientWithXml > 2) config->insert("grid-client", "true");
     clientWithXml += 1;
     config->insert("enable-time-statistics", "true");
-    cacheHelper = new CacheHelper(NULL, clientXmlFile, config);
+    cacheHelper = new CacheHelper(nullptr, clientXmlFile, config);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 void createPooledRegion(const char* name, bool ackMode, const char* locators,
@@ -293,7 +293,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxIdentityField)
 
     RegionPtr rptr = getHelper()->getRegion(regionNames[0]);
 
-    auto pi = std::dynamic_pointer_cast<PdxInstance>(rptr->get(CacheableInt32::create(1)));
+    auto pi = std::dynamic_pointer_cast<PdxInstance>(
+        rptr->get(CacheableInt32::create(1)));
     LOG("PdxInstancePtr get complete");
 
     LOG("Statistics for for (PdxTests.PdxType) PdxInstance");
@@ -351,7 +352,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxIdentityField)
         "Pdxhashcode for identity field object SerializePdx1 not matched with "
         "java pdx hash code.");
 
-    auto pi2 = std::dynamic_pointer_cast<PdxInstance>(rptr->get(CacheableInt32::create(1)));
+    auto pi2 = std::dynamic_pointer_cast<PdxInstance>(
+        rptr->get(CacheableInt32::create(1)));
 
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
@@ -459,7 +461,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxNullIdentityFieldHC)
 
     RegionPtr rptr = getHelper()->getRegion(regionNames[0]);
 
-    auto pi = std::dynamic_pointer_cast<PdxInstance>(rptr->get(CacheableInt32::create(2)));
+    auto pi = std::dynamic_pointer_cast<PdxInstance>(
+        rptr->get(CacheableInt32::create(2)));
     LOG("PdxInstancePtr get complete");
 
     CacheableKeyPtr javaPdxHCKey = CacheableKey::create("javaPdxHC");
@@ -477,7 +480,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxNullIdentityFieldHC)
         "Pdxhashcode for identity field object SerializePdx1 not matched with "
         "java pdx hash code.");
 
-    auto pi2 = std::dynamic_pointer_cast<PdxInstance>(rptr->get(CacheableInt32::create(2)));
+    auto pi2 = std::dynamic_pointer_cast<PdxInstance>(
+        rptr->get(CacheableInt32::create(2)));
 
     bool ret = false;
     ret = (*pi.get() == *pi2.get());
@@ -850,14 +854,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_double") == PdxFieldTypes::DOUBLE,
            "Type Value DOUBLE Mismatch");
 
-    char* stringVal = NULL;
+    char* stringVal = nullptr;
     pIPtr->getField("m_string", &stringVal);
     ASSERT(strcmp(stringVal, pdxobjPtr->getString()) == 0,
            "stringVal should be equal");
     ASSERT(pIPtr->getFieldType("m_string") == PdxFieldTypes::STRING,
            "Type Value STRING Mismatch");
 
-    char** stringArrayVal = NULL;
+    char** stringArrayVal = nullptr;
     int32_t stringArrayLen = 0;
     pIPtr->getField("m_stringArray", &stringArrayVal, stringArrayLen);
     ASSERT(genericValCompare(pdxobjPtr->getStringArrayLength(),
@@ -871,7 +875,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
              "All stringVals should be equal");
     }
 
-    signed char* byteArray = NULL;
+    signed char* byteArray = nullptr;
     int32_t byteArrayLength = 0;
     pIPtr->getField("m_byteArray", &byteArray, byteArrayLength);
     ASSERT(genericValCompare(pdxobjPtr->getByteArrayLength(),
@@ -883,7 +887,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_byteArray") == PdxFieldTypes::BYTE_ARRAY,
            "Type Value BYTE_ARRAY Mismatch");
 
-    wchar_t* charArray = NULL;
+    wchar_t* charArray = nullptr;
     int32_t charArrayLength = 0;
     pIPtr->getField("m_charArray", &charArray, charArrayLength);
     ASSERT(genericValCompare(pdxobjPtr->getCharArrayLength(),
@@ -905,7 +909,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_sbyteArray") == PdxFieldTypes::BYTE_ARRAY,
            "Type Value BYTE_ARRAY Mismatch");
 
-    bool* boolArray = NULL;
+    bool* boolArray = nullptr;
     int32_t boolArrayLength = 0;
     pIPtr->getField("m_boolArray", &boolArray, boolArrayLength);
     ASSERT(genericValCompare(pdxobjPtr->getBoolArrayLength(),
@@ -917,7 +921,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_boolArray") == PdxFieldTypes::BOOLEAN_ARRAY,
            "Type Value BOOLEAN_ARRAY Mismatch");
 
-    int16_t* shortArray = NULL;
+    int16_t* shortArray = nullptr;
     int32_t shortArrayLength = 0;
     pIPtr->getField("m_int16Array", &shortArray, shortArrayLength);
     ASSERT(genericValCompare(pdxobjPtr->getShortArrayLength(),
@@ -939,7 +943,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_uint16Array") == PdxFieldTypes::SHORT_ARRAY,
            "Type Value SHORT_ARRAY Mismatch");
 
-    int32_t* intArray = NULL;
+    int32_t* intArray = nullptr;
     int32_t intArrayLength = 0;
     pIPtr->getField("m_int32Array", &intArray, intArrayLength);
     ASSERT(genericValCompare(pdxobjPtr->getIntArrayLength(), intArrayLength) ==
@@ -961,7 +965,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_uint32Array") == PdxFieldTypes::INT_ARRAY,
            "Type Value INT_ARRAY Mismatch");
 
-    int64_t* longArray = NULL;
+    int64_t* longArray = nullptr;
     int32_t longArrayLength = 0;
     pIPtr->getField("m_longArray", &longArray, longArrayLength);
     ASSERT(genericValCompare(pdxobjPtr->getLongArrayLength(),
@@ -983,7 +987,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_ulongArray") == PdxFieldTypes::LONG_ARRAY,
            "Type Value LONG_ARRAY Mismatch");
 
-    double* doubleArray = NULL;
+    double* doubleArray = nullptr;
     int32_t doubleArrayLength = 0;
     pIPtr->getField("m_doubleArray", &doubleArray, doubleArrayLength);
     ASSERT(genericValCompare(pdxobjPtr->getDoubleArrayLength(),
@@ -995,7 +999,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_doubleArray") == PdxFieldTypes::DOUBLE_ARRAY,
            "Type Value DOUBLE_ARRAY Mismatch");
 
-    float* floatArray = NULL;
+    float* floatArray = nullptr;
     int32_t floatArrayLength = 0;
     pIPtr->getField("m_floatArray", &floatArray, floatArrayLength);
     ASSERT(genericValCompare(pdxobjPtr->getFloatArrayLength(),
@@ -1009,7 +1013,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
 
     CacheablePtr object = nullptr;
     pIPtr->getField("m_pdxEnum", object);
-    ASSERT(object != nullptr, "enumObject should not be NULL");
+    ASSERT(object != nullptr, "enumObject should not be nullptr");
     auto enumObject = std::dynamic_pointer_cast<CacheableEnum>(object);
     ASSERT(
         enumObject->getEnumOrdinal() == pdxobjPtr->getEnum()->getEnumOrdinal(),
@@ -1025,7 +1029,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
 
     CacheableDatePtr dateObject = nullptr;
     pIPtr->getField("m_dateTime", dateObject);
-    ASSERT(dateObject != nullptr, "date should not be NULL");
+    ASSERT(dateObject != nullptr, "date should not be nullptr");
     ASSERT((*(dateObject.get()) == *(pdxobjPtr->getDate().get())) == true,
            "dateObject should be equal");
     ASSERT(pIPtr->getFieldType("m_dateTime") == PdxFieldTypes::DATE,
@@ -1033,7 +1037,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
 
     CacheablePtr object2 = nullptr;
     pIPtr->getField("m_map", object2);
-    ASSERT(object2 != nullptr, "object2 should not be NULL");
+    ASSERT(object2 != nullptr, "object2 should not be nullptr");
     auto mapObject = std::dynamic_pointer_cast<CacheableHashMap>(object2);
     ASSERT(genericValCompare(pdxobjPtr->getHashMap()->size(),
                              mapObject->size()) == true,
@@ -1042,7 +1046,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
            "Type Value OBJECT Mismatch");
 
     pIPtr->getField("m_vector", object2);
-    ASSERT(object2 != nullptr, "object2 should not be NULL");
+    ASSERT(object2 != nullptr, "object2 should not be nullptr");
     auto vec = std::dynamic_pointer_cast<CacheableVector>(object2);
     ASSERT(
         genericValCompare(pdxobjPtr->getVector()->size(), vec->size()) == true,
@@ -1051,7 +1055,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
            "Type Value OBJECT Mismatch");
 
     pIPtr->getField("m_arraylist", object2);
-    ASSERT(object2 != nullptr, "object2 should not be NULL");
+    ASSERT(object2 != nullptr, "object2 should not be nullptr");
     auto arrList = std::dynamic_pointer_cast<CacheableArrayList>(object2);
     ASSERT(genericValCompare(pdxobjPtr->getArrayList()->size(),
                              arrList->size()) == true,
@@ -1060,7 +1064,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
            "Type Value OBJECT Mismatch");
 
     pIPtr->getField("m_chs", object2);
-    ASSERT(object2 != nullptr, "object2 should not be NULL");
+    ASSERT(object2 != nullptr, "object2 should not be nullptr");
     auto hashSet = std::dynamic_pointer_cast<CacheableHashSet>(object2);
     ASSERT(genericValCompare(pdxobjPtr->getHashSet()->size(),
                              hashSet->size()) == true,
@@ -1069,17 +1073,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
            "Type Value OBJECT Mismatch");
 
     pIPtr->getField("m_clhs", object2);
-    ASSERT(object2 != nullptr, "object2 should not be NULL");
-    auto linkedHashSet = std::dynamic_pointer_cast<CacheableLinkedHashSet>(object2);
+    ASSERT(object2 != nullptr, "object2 should not be nullptr");
+    auto linkedHashSet =
+        std::dynamic_pointer_cast<CacheableLinkedHashSet>(object2);
     ASSERT(genericValCompare(pdxobjPtr->getLinkedHashSet()->size(),
                              linkedHashSet->size()) == true,
            "linkedHashSet size should be equal");
     ASSERT(pIPtr->getFieldType("m_clhs") == PdxFieldTypes::OBJECT,
            "Type Value OBJECT Mismatch");
 
-    int8_t** byteByteArrayVal = NULL;
+    int8_t** byteByteArrayVal = nullptr;
     int32_t byteArrayLen = 0;
-    int32_t* elementLength = NULL;
+    int32_t* elementLength = nullptr;
     pIPtr->getField("m_byteByteArray", &byteByteArrayVal, byteArrayLen,
                     elementLength);
     ASSERT(genericValCompare(pdxobjPtr->getbyteByteArrayLength(),
@@ -1095,7 +1100,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
 
     CacheableObjectArrayPtr objectArray = nullptr;
     pIPtr->getField("m_objectArray", objectArray);
-    ASSERT(objectArray != nullptr, "objectArray should not be NULL");
+    ASSERT(objectArray != nullptr, "objectArray should not be nullptr");
     ASSERT(genericValCompare(pdxobjPtr->getCacheableObjectArray()->size(),
                              objectArray->size()) == true,
            "objectArray size should be equal");
@@ -1105,7 +1110,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     CacheableObjectArrayPtr objectArrayEmptyFieldName = nullptr;
     pIPtr->getField("", objectArrayEmptyFieldName);
     ASSERT(objectArrayEmptyFieldName != nullptr,
-           "objectArrayEmptyFieldName should not be NULL");
+           "objectArrayEmptyFieldName should not be nullptr");
     ASSERT(genericValCompare(
                pdxobjPtr->getCacheableObjectArrayEmptyPdxFieldName()->size(),
                objectArrayEmptyFieldName->size()) == true,
@@ -1148,7 +1153,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
 
     CacheablePtr childObjPtr;
     pIPtr->getField("m_childPdx", childObjPtr);
-    ASSERT(childObjPtr != nullptr, "childObjPtr should not be NULL");
+    ASSERT(childObjPtr != nullptr, "childObjPtr should not be nullptr");
     LOGINFO("got childPdx field ");
     auto cpi = std::dynamic_pointer_cast<PdxInstance>(childObjPtr);
     LOGINFO("cast to pdxinstance done ");
@@ -1370,7 +1375,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     int arrayLen = 0;
 
     bool setBoolArray[] = {true, false, true, false, true, true, false, true};
-    bool* getBoolArray = NULL;
+    bool* getBoolArray = nullptr;
     wpiPtr->setField("m_boolArray", setBoolArray, 8);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -1395,7 +1400,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     }
 
     signed char setByteArray[] = {0x34, 0x64, 0x34, 0x64};
-    signed char* getByteArray = NULL;
+    signed char* getByteArray = nullptr;
     wpiPtr->setField("m_byteArray", setByteArray, 4);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -1420,7 +1425,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     }
 
     wchar_t setCharArray[] = {'c', 'v', 'c', 'v'};
-    wchar_t* getCharArray = NULL;
+    wchar_t* getCharArray = nullptr;
     wpiPtr->setField("m_charArray", setCharArray, 4);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -1445,7 +1450,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     }
 
     int16_t setShortArray[] = {0x2332, 0x4545, 0x88, 0x898};
-    int16_t* getShortArray = NULL;
+    int16_t* getShortArray = nullptr;
     wpiPtr->setField("m_int16Array", setShortArray, 4);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -1470,7 +1475,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     }
 
     int32_t setIntArray[3] = {23, 676868, 34343};
-    int32_t* newValArray = NULL;
+    int32_t* newValArray = nullptr;
     wpiPtr->setField("m_int32Array", setIntArray, 3);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -1495,7 +1500,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     }
 
     int64_t setLongArray[] = {3245435, 3425435};
-    int64_t* getLongArray = NULL;
+    int64_t* getLongArray = nullptr;
     wpiPtr->setField("m_longArray", setLongArray, 2);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -1521,7 +1526,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     }
 
     float setFloatArray[] = {232.565f, 234323354.67f};
-    float* getFloatArray = NULL;
+    float* getFloatArray = nullptr;
     wpiPtr->setField("m_floatArray", setFloatArray, 2);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -1546,7 +1551,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     }
 
     double setDoubleArray[] = {23423432.00, 43242354315.00};
-    double* getDoubleArray = NULL;
+    double* getDoubleArray = nullptr;
     wpiPtr->setField("m_doubleArray", setDoubleArray, 2);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -1575,7 +1580,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(pIPtr->hasField("m_string") == true, "m_string = true expected");
-    wchar_t* wideStringVal = NULL;
+    wchar_t* wideStringVal = nullptr;
     ASSERT(newPiPtr->hasField("m_string") == true, "m_string = true expected");
     newPiPtr->getField("m_string", &wideStringVal);
     ASSERT(wcscmp(wideStringVal, setWideString) == 0,
@@ -1599,7 +1604,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(pIPtr->hasField("m_string") == true, "m_string = true expected");
-    char* stringVal = NULL;
+    char* stringVal = nullptr;
     ASSERT(newPiPtr->hasField("m_string") == true, "m_string = true expected");
     newPiPtr->getField("m_string", &stringVal);
     ASSERT(strcmp(stringVal, setString) == 0, "stringVal should be equal");
@@ -1723,9 +1728,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
 
     wpiPtr = pIPtr->createWriter();
     CacheableHashMapPtr hashmap = CacheableHashMap::create();
-    hashmap->insert(CacheableInt32::create(3), CacheableInt32::create(3));
-    hashmap->insert(CacheableInt32::create(4), CacheableInt32::create(4));
-    hashmap->insert(CacheableInt32::create(5), CacheableInt32::create(5));
+    hashmap->emplace(CacheableInt32::create(3), CacheableInt32::create(3));
+    hashmap->emplace(CacheableInt32::create(4), CacheableInt32::create(4));
+    hashmap->emplace(CacheableInt32::create(5), CacheableInt32::create(5));
     wpiPtr->setField("m_map", (CacheablePtr)hashmap);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -1758,7 +1763,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_clhs") == true, "m_clhs = true expected");
     ASSERT(pIPtr->hasField("m_clhs") == true, "m_clhs = true expected");
     newPiPtr->getField("m_clhs", object);
-    auto linkedhashsetVal = std::dynamic_pointer_cast<CacheableLinkedHashSet>(object);
+    auto linkedhashsetVal =
+        std::dynamic_pointer_cast<CacheableLinkedHashSet>(object);
     ASSERT(genericValCompare(linkedhashsetVal->size(), linkedhashset->size()) ==
                true,
            "m_clhs size should be equal");
@@ -1775,9 +1781,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     }
 
     LOGINFO("Testing byteByteArray");
-    int8_t** getbyteByteArray = NULL;
+    int8_t** getbyteByteArray = nullptr;
     int byteByteArrayLength = 0;
-    int32_t* elementLength = NULL;
+    int32_t* elementLength = nullptr;
     int8_t** setbyteByteArray = new int8_t*[4];
     setbyteByteArray[0] = new int8_t[1];
     setbyteByteArray[1] = new int8_t[2];
@@ -1838,7 +1844,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     setWideStringArray[0] = const_cast<wchar_t*>(wstr1);
     setWideStringArray[1] = const_cast<wchar_t*>(wstr2);
     setWideStringArray[2] = const_cast<wchar_t*>(wstr3);
-    wchar_t** getWideStringArray = NULL;
+    wchar_t** getWideStringArray = nullptr;
     wpiPtr->setField("m_stringArray", setWideStringArray, 3);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -1878,7 +1884,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     setStringArray[0] = const_cast<char*>(str1);
     setStringArray[1] = const_cast<char*>(str2);
     setStringArray[2] = const_cast<char*>(str3);
-    char** getStringArray = NULL;
+    char** getStringArray = nullptr;
     wpiPtr->setField("m_stringArray", setStringArray, 3);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -1899,7 +1905,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
 
     CacheablePtr childObjPtr;
     pIPtr->getField("m_childPdx", childObjPtr);
-    ASSERT(childObjPtr != nullptr, "childObjPtr should not be NULL");
+    ASSERT(childObjPtr != nullptr, "childObjPtr should not be nullptr");
     LOGINFO("got childPdx field ");
     auto cpi = std::dynamic_pointer_cast<PdxInstance>(childObjPtr);
     LOGINFO("cast to pdxinstance done ");
@@ -1914,7 +1920,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
     newPiPtr->getField("m_childPdx", childObjPtr);
-    ASSERT(childObjPtr != nullptr, "childObjPtr should not be NULL");
+    ASSERT(childObjPtr != nullptr, "childObjPtr should not be nullptr");
     LOGINFO("got childPdx field ");
     auto cpi1 = std::dynamic_pointer_cast<PdxInstance>(childObjPtr);
     ASSERT((*cpi.get() == *cpi1.get()) == false,
@@ -1948,7 +1954,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
            "m_wideChar is not equal");
 
     wchar_t setParentWideCharArray[] = {L'c', L'v', L'c', L'v'};
-    wchar_t* getParentWideCharArray = NULL;
+    wchar_t* getParentWideCharArray = nullptr;
     wpiPtr->setField("m_wideCharArray", setParentWideCharArray, 4);
     rptr->put(keyport1, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport1));
@@ -1961,7 +1967,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
            "m_wideCharArray should be equal");
 
     wchar_t setParentCharArray[] = {'c', 'v', 'c', 'v'};
-    wchar_t* getParentCharArray = NULL;
+    wchar_t* getParentCharArray = nullptr;
     wpiPtr->setField("m_charArray", setParentCharArray, 4);
     rptr->put(keyport1, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport1));
@@ -2035,7 +2041,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     int arrayLen = 0;
 
     bool setBoolArray[] = {true, false, true, false, true, true, false, true};
-    bool* getBoolArray = NULL;
+    bool* getBoolArray = nullptr;
     wpiPtr->setField("m_boolArray", setBoolArray, 8);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -2049,7 +2055,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
            "PdxInstance should not be equal");
 
     signed char setByteArray[] = {0x34, 0x64, 0x34, 0x64};
-    signed char* getByteArray = NULL;
+    signed char* getByteArray = nullptr;
     wpiPtr->setField("m_byteArray", setByteArray, 4);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -2063,7 +2069,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
            "PdxInstance should not be equal");
 
     int16_t setShortArray[] = {0x2332, 0x4545, 0x88, 0x898};
-    int16_t* getShortArray = NULL;
+    int16_t* getShortArray = nullptr;
     wpiPtr->setField("m_int16Array", setShortArray, 4);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -2077,7 +2083,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
            "PdxInstance should not be equal");
 
     int32_t setIntArray[3] = {23, 676868, 34343};
-    int32_t* newValArray = NULL;
+    int32_t* newValArray = nullptr;
     wpiPtr->setField("m_int32Array", setIntArray, 3);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -2091,7 +2097,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
            "PdxInstance should not be equal");
 
     int64_t setLongArray[] = {3245435, 3425435};
-    int64_t* getLongArray = NULL;
+    int64_t* getLongArray = nullptr;
     wpiPtr->setField("m_longArray", setLongArray, 2);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -2105,7 +2111,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
            "PdxInstance should not be equal");
 
     float setFloatArray[] = {232.565f, 234323354.67f};
-    float* getFloatArray = NULL;
+    float* getFloatArray = nullptr;
     wpiPtr->setField("m_floatArray", setFloatArray, 2);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -2119,7 +2125,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
            "PdxInstance should not be equal");
 
     double setDoubleArray[] = {23423432.00, 43242354315.00};
-    double* getDoubleArray = NULL;
+    double* getDoubleArray = nullptr;
     wpiPtr->setField("m_doubleArray", setDoubleArray, 2);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -2247,7 +2253,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(pIPtr->hasField("m_string") == true, "m_string = true expected");
-    wchar_t* stringVal = NULL;
+    wchar_t* stringVal = nullptr;
     LOG("modifyPdxInstanceAndCheckLocally get string complete.");
     newPiPtr->getField("m_string", &stringVal);
     LOGINFO("modifyPdxInstanceAndCheckLocally stringVal = %ls , str = %ls ",
@@ -2261,7 +2267,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(pIPtr->hasField("m_string") == true, "m_string = true expected");
-    char* getstringVal = NULL;
+    char* getstringVal = nullptr;
     LOG("modifyPdxInstanceAndCheckLocally get string complete.");
     newPiPtr->getField("m_string", &getstringVal);
     LOGINFO("modifyPdxInstanceAndCheckLocally getstringVal = %s , str1 = %s ",
@@ -2298,7 +2304,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     setWideStringArray[0] = const_cast<wchar_t*>(wstr1);
     setWideStringArray[1] = const_cast<wchar_t*>(wstr2);
     setWideStringArray[2] = const_cast<wchar_t*>(wstr3);
-    wchar_t** getWideStringArray = NULL;
+    wchar_t** getWideStringArray = nullptr;
     wpiPtr->setField("m_stringArray", setWideStringArray, 3);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));

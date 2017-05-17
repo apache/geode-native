@@ -42,7 +42,7 @@ using namespace test;
 #define SERVER2 s2p2
 #define CREATE_TWICE_KEY "__create_twice_key"
 #define CREATE_TWICE_VALUE "__create_twice_value"
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 0;
@@ -61,7 +61,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, Alter_Client_Grid_Property_2)
 END_TASK_DEFINITION
 
 void initClient(const bool isthinClient) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr config = Properties::create();
     if (g_isGridClient) {
       config->insert("grid-client", "true");
@@ -73,14 +73,14 @@ void initClient(const bool isthinClient) {
 }
 
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
@@ -112,7 +112,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   if (noKey == false) {  // need to find the key!
     ASSERT(regPtr->containsKey(keyPtr), "Key not found in region.");
   }
-  if (val != NULL) {  // need to have a value!
+  if (val != nullptr) {  // need to have a value!
     ASSERT(regPtr->containsValueForKey(keyPtr), "Value not found in region.");
   }
 
@@ -132,7 +132,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
       }
       ASSERT(containsKeyCnt < MAX, "Key found in region.");
     }
-    if (val == NULL) {
+    if (val == nullptr) {
       if (regPtr->containsValueForKey(keyPtr)) {
         containsValueCnt++;
       } else {
@@ -141,7 +141,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
       ASSERT(containsValueCnt < MAX, "Value found in region.");
     }
 
-    if (val != NULL) {
+    if (val != nullptr) {
       auto checkPtr =
           std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
@@ -326,7 +326,7 @@ void doGetAgain(const char* name, const char* key, const char* value) {
             checkPtr->asChar(), key);
     LOG(buf);
   } else {
-    LOG("checkPtr is NULL");
+    LOG("checkPtr is nullptr");
   }
   verifyEntry(name, key, value);
   LOG("GetAgain complete.");
@@ -365,7 +365,7 @@ void doNetsearch(const char* name, const char* key, const char* value) {
             checkPtr->asChar(), key);
     LOG(buf);
   } else {
-    LOG("checkPtr is NULL");
+    LOG("checkPtr is nullptr");
   }
   verifyEntry(name, key, value);
   LOG("Netsearch complete.");

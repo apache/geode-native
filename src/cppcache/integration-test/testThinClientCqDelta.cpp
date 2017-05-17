@@ -35,7 +35,7 @@ using namespace apache::geode::client;
 using namespace test;
 using namespace testobject;
 
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 
 #include "locator_globals.hpp"
 
@@ -57,7 +57,8 @@ class CqDeltaListener : public CqListener {
       m_deltaCount++;
     }
     DeltaTestImplPtr dptr =
-        std::static_pointer_cast<GF_UNWRAP_SP(DeltaTestImplPtr)>(aCqEvent.getNewValue());
+        std::static_pointer_cast<GF_UNWRAP_SP(DeltaTestImplPtr)>(
+            aCqEvent.getNewValue());
     if (dptr->getIntVar() == 5) {
       m_valueCount++;
     }
@@ -74,7 +75,7 @@ typedef SharedPtr<CqDeltaListener> CqDeltaListenerPtr;
 CqDeltaListenerPtr g_CqListener;
 
 void initClient(const bool isthinClient) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
@@ -86,14 +87,14 @@ void initClientNoPools() {
 }
 
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 

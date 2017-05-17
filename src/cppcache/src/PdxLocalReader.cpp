@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 /*
-* PdxLocalReader.cpp
-* Created on: Nov 3, 2011
-*      Author: npatel
-*/
+ * PdxLocalReader.cpp
+ * Created on: Nov 3, 2011
+ *      Author: npatel
+ */
 
 #include "PdxLocalReader.hpp"
 #include "PdxTypeRegistry.hpp"
@@ -28,16 +28,16 @@ namespace geode {
 namespace client {
 
 PdxLocalReader::PdxLocalReader()
-    : m_dataInput(NULL),
-      m_startBuffer(NULL),
+    : m_dataInput(nullptr),
+      m_startBuffer(nullptr),
       m_startPosition(0),
       m_serializedLength(0),
       m_serializedLengthWithOffsets(0),
       m_offsetSize(0),
-      m_offsetsBuffer(NULL),
+      m_offsetsBuffer(nullptr),
       m_isDataNeedToPreserve(false),
-      m_localToRemoteMap(NULL),
-      m_remoteToLocalMap(NULL),
+      m_localToRemoteMap(nullptr),
+      m_remoteToLocalMap(nullptr),
       m_remoteToLocalMapSize(0) {}
 
 PdxLocalReader::PdxLocalReader(DataInput& input, PdxTypePtr remoteType,
@@ -92,7 +92,7 @@ void PdxLocalReader::MoveStream() {
 }
 
 void PdxLocalReader::checkEmptyFieldName(const char* fieldName) {
-  if (fieldName == NULL) {
+  if (fieldName == nullptr) {
     throw IllegalStateException("Field name is null");
   }
 }
@@ -190,7 +190,7 @@ char* PdxLocalReader::readCharArray(const char* fieldName,
                                                         // Length to user for
                                                         // all primitive arrays
   checkEmptyFieldName(fieldName);
-  char* charArray = NULL;
+  char* charArray = nullptr;
   m_dataInput->readCharArray(&charArray, length);
   return charArray;
 }
@@ -200,20 +200,20 @@ wchar_t* PdxLocalReader::readWideCharArray(
     int32_t& length) {  // TODO:: need to return Length to user for all
                         // primitive arrays
   checkEmptyFieldName(fieldName);
-  wchar_t* charArray = NULL;
+  wchar_t* charArray = nullptr;
   m_dataInput->readWideCharArray(&charArray, length);
   return charArray;
 }
 bool* PdxLocalReader::readBooleanArray(const char* fieldName, int32_t& length) {
   checkEmptyFieldName(fieldName);
-  bool* boolArray = NULL;
+  bool* boolArray = nullptr;
   m_dataInput->readBooleanArray(&boolArray, length);
   return boolArray;
 }
 
 int8_t* PdxLocalReader::readByteArray(const char* fieldName, int32_t& length) {
   checkEmptyFieldName(fieldName);
-  int8_t* byteArray = NULL;
+  int8_t* byteArray = nullptr;
   m_dataInput->readByteArray(&byteArray, length);
   return byteArray;
 }
@@ -221,28 +221,28 @@ int8_t* PdxLocalReader::readByteArray(const char* fieldName, int32_t& length) {
 int16_t* PdxLocalReader::readShortArray(const char* fieldName,
                                         int32_t& length) {
   checkEmptyFieldName(fieldName);
-  int16_t* shortArray = NULL;
+  int16_t* shortArray = nullptr;
   m_dataInput->readShortArray(&shortArray, length);
   return shortArray;
 }
 
 int32_t* PdxLocalReader::readIntArray(const char* fieldName, int32_t& length) {
   checkEmptyFieldName(fieldName);
-  int32_t* intArray = NULL;
+  int32_t* intArray = nullptr;
   m_dataInput->readIntArray(&intArray, length);
   return intArray;
 }
 
 int64_t* PdxLocalReader::readLongArray(const char* fieldName, int32_t& length) {
   checkEmptyFieldName(fieldName);
-  int64_t* longArray = NULL;
+  int64_t* longArray = nullptr;
   m_dataInput->readLongArray(&longArray, length);
   return longArray;
 }
 
 float* PdxLocalReader::readFloatArray(const char* fieldName, int32_t& length) {
   checkEmptyFieldName(fieldName);
-  float* floatArray = NULL;
+  float* floatArray = nullptr;
   m_dataInput->readFloatArray(&floatArray, length);
   return floatArray;
 }
@@ -250,14 +250,14 @@ float* PdxLocalReader::readFloatArray(const char* fieldName, int32_t& length) {
 double* PdxLocalReader::readDoubleArray(const char* fieldName,
                                         int32_t& length) {
   checkEmptyFieldName(fieldName);
-  double* doubleArray = NULL;
+  double* doubleArray = nullptr;
   m_dataInput->readDoubleArray(&doubleArray, length);
   return doubleArray;
 }
 
 char** PdxLocalReader::readStringArray(const char* fieldName, int32_t& length) {
   checkEmptyFieldName(fieldName);
-  char** stringArray = NULL;
+  char** stringArray = nullptr;
   m_dataInput->readStringArray(&stringArray, length);
   return stringArray;
 }
@@ -265,7 +265,7 @@ char** PdxLocalReader::readStringArray(const char* fieldName, int32_t& length) {
 wchar_t** PdxLocalReader::readWideStringArray(const char* fieldName,
                                               int32_t& length) {
   checkEmptyFieldName(fieldName);
-  wchar_t** stringArray = NULL;
+  wchar_t** stringArray = nullptr;
   m_dataInput->readWideStringArray(&stringArray, length);
   return stringArray;
 }
@@ -285,7 +285,7 @@ int8_t** PdxLocalReader::readArrayOfByteArrays(const char* fieldName,
                                                int32_t& arrayLength,
                                                int32_t** elementLength) {
   checkEmptyFieldName(fieldName);
-  int8_t** arrofBytearr = NULL;
+  int8_t** arrofBytearr = nullptr;
   m_dataInput->readArrayOfByteArrays(&arrofBytearr, arrayLength, elementLength);
   return arrofBytearr;
 }

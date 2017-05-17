@@ -41,7 +41,7 @@ class ConnectionWrapper {
   explicit ConnectionWrapper(Connector*& conn) : m_conn(conn) {}
   ~ConnectionWrapper() {
     LOGDEBUG("closing the connection locator1");
-    if (m_conn != NULL) {
+    if (m_conn != nullptr) {
       LOGDEBUG("closing the connection locator");
       m_conn->close();
       delete m_conn;
@@ -64,7 +64,7 @@ Connector* ThinClientLocatorHelper::createConnection(Connector*& conn,
                                                      int32_t port,
                                                      uint32_t waitSeconds,
                                                      int32_t maxBuffSizePool) {
-  Connector* socket = NULL;
+  Connector* socket = nullptr;
   if (DistributedSystem::getSystemProperties()->sslEnabled()) {
     socket = new TcpSslConn(hostname, port, waitSeconds, maxBuffSizePool);
   } else {
@@ -87,7 +87,7 @@ GfErrType ThinClientLocatorHelper::getAllServers(
       if (m_poolDM) {
         buffSize = static_cast<int32_t>(m_poolDM->getSocketBufferSize());
       }
-      Connector* conn = NULL;
+      Connector* conn = nullptr;
       ConnectionWrapper cw(conn);
       createConnection(
           conn, loc.getServerName().c_str(), loc.getPort(),
@@ -102,7 +102,7 @@ GfErrType ThinClientLocatorHelper::getAllServers(
                    : 10 * 1000 * 1000,
           0);
       if (sentLength <= 0) {
-        // conn->close(); delete conn; conn = NULL;
+        // conn->close(); delete conn; conn = nullptr;
         continue;
       }
       char buff[BUFF_SIZE];
@@ -112,7 +112,7 @@ GfErrType ThinClientLocatorHelper::getAllServers(
                    : 10 * 1000 * 1000,
           0);
       // conn->close();
-      // delete conn; conn = NULL;
+      // delete conn; conn = nullptr;
       if (receivedLength <= 0) {
         continue;
       }
@@ -151,8 +151,8 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
     ClientProxyMembershipID& memId, std::list<ServerLocation>& outEndpoint,
     std::string& additionalLoc, int redundancy,
     const std::set<ServerLocation>& exclEndPts,
-    /*const std::set<TcrEndpoint*>& exclEndPts,*/ const std::string&
-        serverGrp) {
+    /*const std::set<TcrEndpoint*>& exclEndPts,*/
+    const std::string& serverGrp) {
   ACE_Guard<ACE_Thread_Mutex> guard(m_locatorLock);
   int locatorsRetry = 3;
   if (m_poolDM) {
@@ -181,7 +181,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
       if (m_poolDM) {
         buffSize = static_cast<int32_t>(m_poolDM->getSocketBufferSize());
       }
-      Connector* conn = NULL;
+      Connector* conn = nullptr;
       ConnectionWrapper cw(conn);
       createConnection(
           conn, loc.getServerName().c_str(), loc.getPort(),
@@ -199,7 +199,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
                     1000 * 1000,
           0);
       if (sentLength <= 0) {
-        // conn->close(); delete conn; conn = NULL;
+        // conn->close(); delete conn; conn = nullptr;
         continue;
       }
       char buff[BUFF_SIZE];
@@ -211,7 +211,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
                     1000 * 1000,
           0);
       // conn->close();
-      // delete conn; conn = NULL;
+      // delete conn; conn = nullptr;
       if (receivedLength <= 0) {
         continue;
       }
@@ -276,14 +276,14 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
       if (m_poolDM) {
         buffSize = static_cast<int32_t>(m_poolDM->getSocketBufferSize());
       }
-      Connector* conn = NULL;
+      Connector* conn = nullptr;
       ConnectionWrapper cw(conn);
       createConnection(
           conn, serLoc.getServerName().c_str(), serLoc.getPort(),
           DistributedSystem::getSystemProperties()->connectTimeout(), buffSize);
       DataOutput data;
       data.writeInt(1001);  // GOSSIPVERSION
-      if (currentServer == NULL) {
+      if (currentServer == nullptr) {
         LOGDEBUG("Creating ClientConnectionRequest");
         ClientConnectionRequest request(exclEndPts, serverGrp);
         data.writeObject(&request);
@@ -368,7 +368,7 @@ GfErrType ThinClientLocatorHelper::updateLocators(
   ACE_Guard<ACE_Thread_Mutex> guard(m_locatorLock);
   for (unsigned attempts = 0; attempts < m_locHostPort.size(); attempts++) {
     ServerLocation serLoc = m_locHostPort[attempts];
-    Connector* conn = NULL;
+    Connector* conn = nullptr;
     try {
       int32_t buffSize = 0;
       if (m_poolDM) {
@@ -395,7 +395,7 @@ GfErrType ThinClientLocatorHelper::updateLocators(
       if (sentLength <= 0) {
         //  conn->close();
         // delete conn;
-        conn = NULL;
+        conn = nullptr;
         continue;
       }
       char buff[BUFF_SIZE];
@@ -407,7 +407,7 @@ GfErrType ThinClientLocatorHelper::updateLocators(
                     1000 * 1000,
           0);
       // conn->close();
-      // delete conn; conn = NULL;
+      // delete conn; conn = nullptr;
       if (receivedLength <= 0) {
         continue;
       }

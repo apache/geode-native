@@ -53,7 +53,7 @@ class CPPCACHE_EXPORT ThinClientHARegion : public ThinClientRegion {
                      bool enableNotification = true);
 
   virtual ~ThinClientHARegion() {
-    if (m_poolDM) m_tcrdm = NULL;
+    if (m_poolDM) m_tcrdm = nullptr;
   };
 
   virtual void initTCR();

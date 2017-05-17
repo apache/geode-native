@@ -52,7 +52,7 @@ PortfolioPdx::PortfolioPdx(int32_t i, int32_t size, char** nm) : names(nm) {
     position2 = nullptr;
   }
   positions = CacheableHashMap::create();
-  positions->insert(
+  positions->emplace(
       CacheableString::create(secIds[PositionPdx::cnt % numSecIds]), position1);
 
   if (size > 0) {

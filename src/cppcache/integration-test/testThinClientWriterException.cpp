@@ -47,7 +47,7 @@ CredentialGeneratorPtr credentialGeneratorHandler;
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
   const char* path = ACE_OS::getenv("TESTSRC");
-  ASSERT(path != NULL,
+  ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
   strcat(xmlPath, "xml/Security/");
@@ -74,7 +74,7 @@ void initCredentialGenerator() {
   }
 
   if (credentialGeneratorHandler == nullptr) {
-    FAIL("credentialGeneratorHandler is NULL");
+    FAIL("credentialGeneratorHandler is nullptr");
   }
 
   loopNum++;
@@ -108,7 +108,7 @@ void initClientAuth() {
   PropertiesPtr config = Properties::create();
   opCodeList rt(tmpRArr, tmpRArr + sizeof tmpRArr / sizeof *tmpRArr);
   credentialGeneratorHandler->getAuthInit(config);
-  credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config, NULL);
+  credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config, nullptr);
   printf("User is %s Pass is %s ", config->find("security-username")->asChar(),
          (config->find("security-password") != nullptr
               ? config->find("security-password")->asChar()

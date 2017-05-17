@@ -36,7 +36,7 @@ CredentialGeneratorPtr credentialGeneratorHandler;
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
   const char* path = ACE_OS::getenv("TESTSRC");
-  ASSERT(path != NULL,
+  ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
   strcat(xmlPath, "xml/Security/");
@@ -63,7 +63,7 @@ void initCredentialGenerator() {
   }
 
   if (credentialGeneratorHandler == nullptr) {
-    FAIL("credentialGeneratorHandler is NULL");
+    FAIL("credentialGeneratorHandler is nullptr");
   }
 
   loopNum++;
@@ -124,13 +124,16 @@ void initClientAuth(char UserType) {
   credentialGeneratorHandler->getAuthInit(config);
   switch (UserType) {
     case 'W':
-      credentialGeneratorHandler->getAllowedCredentialsForOps(wr, config, NULL);
+      credentialGeneratorHandler->getAllowedCredentialsForOps(wr, config,
+                                                              nullptr);
       break;
     case 'R':
-      credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config, NULL);
+      credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config,
+                                                              nullptr);
       break;
     case 'A':
-      credentialGeneratorHandler->getAllowedCredentialsForOps(ad, config, NULL);
+      credentialGeneratorHandler->getAllowedCredentialsForOps(ad, config,
+                                                              nullptr);
     default:
       break;
   }
@@ -233,7 +236,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       HashMapOfCacheable entrymap;
       entrymap.clear();
       for (int i = 0; i < 5; i++) {
-        entrymap.insert(CacheableKey::create(i), CacheableInt32::create(i));
+        entrymap.emplace(CacheableKey::create(i), CacheableInt32::create(i));
       }
 
       regPtr->putAll(entrymap);
@@ -338,7 +341,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       HashMapOfCacheable entrymap;
       entrymap.clear();
       for (int i = 0; i < 5; i++) {
-        entrymap.insert(CacheableKey::create(i), CacheableInt32::create(i));
+        entrymap.emplace(CacheableKey::create(i), CacheableInt32::create(i));
       }
       RegionPtr regPtr = getHelper()->getRegion(regionNamesAuth[0]);
       regPtr->putAll(entrymap);
@@ -371,7 +374,8 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
     try {
       RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
       CacheableKeyPtr keyPtr = CacheableKey::create(keys[2]);
-      auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
       if (checkPtr != nullptr) {
         char buf[1024];
         sprintf(buf, "In net search, get returned %s for key %s",
@@ -379,7 +383,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
         LOG(buf);
         FAIL("Should not get the value");
       } else {
-        LOG("checkPtr is NULL");
+        LOG("checkPtr is nullptr");
       }
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION
@@ -502,14 +506,15 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
     try {
       RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
       CacheableKeyPtr keyPtr = CacheableKey::create(keys[2]);
-      auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
       if (checkPtr != nullptr) {
         char buf[1024];
         sprintf(buf, "In net search, get returned %s for key %s",
                 checkPtr->asChar(), keys[2]);
         LOG(buf);
       } else {
-        LOG("checkPtr is NULL");
+        LOG("checkPtr is nullptr");
       }
     }
     HANDLE_NO_NOT_AUTHORIZED_EXCEPTION
@@ -537,7 +542,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
       HashMapOfCacheable entrymap;
       entrymap.clear();
       for (int i = 0; i < 5; i++) {
-        entrymap.insert(CacheableKey::create(i), CacheableInt32::create(i));
+        entrymap.emplace(CacheableKey::create(i), CacheableInt32::create(i));
       }
       regPtr0->putAll(entrymap);
       FAIL("PutAll should not have completed successfully");

@@ -212,11 +212,10 @@ namespace Apache
         try
         {
           auto durableCqsArrayListPtr = m_nativeptr->get()->getAllDurableCqsFromServer();
-          int length = durableCqsArrayListPtr != nullptr ? durableCqsArrayListPtr->length() : 0;
           auto durableCqsList = gcnew System::Collections::Generic::List<String^>();
-          for (int i = 0; i < length; i++)
+          for (const auto& d : *durableCqsArrayListPtr)
           {
-            durableCqsList->Add(CacheableString::GetString(std::static_pointer_cast<apache::geode::client::CacheableString>(durableCqsArrayListPtr->at(i))));
+            durableCqsList->Add(CacheableString::GetString(std::static_pointer_cast<apache::geode::client::CacheableString>(d)));
           }
           return durableCqsList;
         }

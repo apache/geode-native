@@ -24,11 +24,11 @@ using namespace apache::geode::client;
 
 char* ExpirationAction::names[] = {(char*)"INVALIDATE",
                                    (char*)"LOCAL_INVALIDATE", (char*)"DESTROY",
-                                   (char*)"LOCAL_DESTROY", (char*)NULL};
+                                   (char*)"LOCAL_DESTROY", (char*)nullptr};
 
 ExpirationAction::Action ExpirationAction::fromName(const char* name) {
   uint32_t i = 0;
-  while ((names[i] != NULL) || (i <= static_cast<uint32_t>(LOCAL_DESTROY))) {
+  while ((names[i] != nullptr) || (i <= static_cast<uint32_t>(LOCAL_DESTROY))) {
     if (name && names[i] && ACE_OS::strcasecmp(names[i], name) == 0) {
       return static_cast<Action>(i);
     }
@@ -41,7 +41,7 @@ const char* ExpirationAction::fromOrdinal(const int ordinal) {
   if (INVALIDATE <= ordinal && ordinal <= LOCAL_DESTROY) {
     return names[ordinal];
   }
-  return NULL;
+  return nullptr;
 }
 
 ExpirationAction::ExpirationAction() {}

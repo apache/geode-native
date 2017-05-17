@@ -53,8 +53,8 @@ class FairQueue {
     bool isClosed;
     T* mp = getNoGetLock(isClosed);
 
-    if (mp == NULL && !isClosed) {
-      mp = getUntilWithToken(sec, isClosed, (void*)NULL);
+    if (mp == nullptr && !isClosed) {
+      mp = getUntilWithToken(sec, isClosed, (void*)nullptr);
     }
     return mp;
   }
@@ -129,7 +129,7 @@ class FairQueue {
   MUTEX m_queueLock;
 
   inline T* popFromQueue(bool& isClosed) {
-    T* mp = NULL;
+    T* mp = nullptr;
 
     isClosed = m_closed;
     if (!isClosed && m_queue.size() > 0) {
@@ -140,8 +140,8 @@ class FairQueue {
   }
 
   template <typename U>
-  T* getUntilWithToken(int64_t& sec, bool& isClosed, U* excludeList = NULL) {
-    T* mp = NULL;
+  T* getUntilWithToken(int64_t& sec, bool& isClosed, U* excludeList = nullptr) {
+    T* mp = nullptr;
 
     ACE_Guard<ACE_Token> _guard(m_queueGetLock);
 
@@ -162,7 +162,7 @@ class FairQueue {
             deleteAction();
           }
         }
-      } while (mp == NULL && (currTime = ACE_OS::gettimeofday()) < stopAt &&
+      } while (mp == nullptr && (currTime = ACE_OS::gettimeofday()) < stopAt &&
                !isClosed);
       sec = (stopAt - currTime).sec();
     }

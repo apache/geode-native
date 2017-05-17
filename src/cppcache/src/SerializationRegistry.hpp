@@ -66,7 +66,7 @@ class CPPCACHE_EXPORT SerializationRegistry {
    */
   inline static void serialize(const Serializable* obj, DataOutput& output,
                                bool isDelta = false) {
-    if (obj == NULL) {
+    if (obj == nullptr) {
       output.write(static_cast<int8_t>(GeodeTypeIds::NullObj));
     } else {
       int8_t typeId = obj->typeId();

@@ -28,14 +28,12 @@
 #include <algorithm>
 
 /* adongre  - Coverity II
-* CID 29255: Calling risky function (SECURE_CODING)[VERY RISKY]. Using "sprintf"
-* can cause a
-* buffer overflow when done incorrectly. Because sprintf() assumes an
-* arbitrarily long string,
-* callers must be careful not to overflow the actual space of the destination.
-* Use snprintf() instead, or correct precision specifiers.
-* Fix : using ACE_OS::snprintf
-*/
+ * CID 29255: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+ * "sprintf" can cause a buffer overflow when done incorrectly. Because
+ * sprintf() assumes an arbitrarily long string, callers must be careful not to
+ * overflow the actual space of the destination. Use snprintf() instead, or
+ * correct precision specifiers. Fix : using ACE_OS::snprintf
+ */
 
 #define VERIFY_PDX_INSTANCE_FIELD_THROW                                 \
   if (pft == nullptr) {                                                 \
@@ -83,7 +81,7 @@ PdxInstanceImpl::PdxInstanceImpl(
     apache::geode::client::PdxTypePtr pdxType) {
   m_pdxType = pdxType;
   m_updatedFields = fieldVsValue;
-  m_buffer = NULL;
+  m_buffer = nullptr;
   m_bufferLength = 0;
   m_typeId = 0;
 
@@ -92,13 +90,13 @@ PdxInstanceImpl::PdxInstanceImpl(
   // apache::geode::client::DataOutput* output =
   // apache::geode::client::DataOutput::getDataOutput();
   // TODO shared_ptr - what is the purpose of this?
-//  DataOutput output;
-//  PdxHelper::serializePdx(output, *this);
+  //  DataOutput output;
+  //  PdxHelper::serializePdx(output, *this);
 }
 
 PdxInstanceImpl::PdxInstanceImpl() {
   m_pdxType = nullptr;
-  m_buffer = NULL;
+  m_buffer = nullptr;
   m_bufferLength = 0;
   m_typeId = 0;
 }
@@ -108,14 +106,14 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
   switch (typeId) {
     case PdxFieldTypes::INT: {
       CacheableInt32* val = dynamic_cast<CacheableInt32*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         writer->writeInt(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::STRING: {
       CacheableString* val = dynamic_cast<CacheableString*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         if (val->isWideString()) {
           writer->writeWideString(fieldName, val->asWChar());
         } else if (val->isCString()) {
@@ -126,56 +124,56 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
     }
     case PdxFieldTypes::BOOLEAN: {
       CacheableBoolean* val = dynamic_cast<CacheableBoolean*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         writer->writeBoolean(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::FLOAT: {
       CacheableFloat* val = dynamic_cast<CacheableFloat*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         writer->writeFloat(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::DOUBLE: {
       CacheableDouble* val = dynamic_cast<CacheableDouble*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         writer->writeDouble(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::CHAR: {
       CacheableWideChar* val = dynamic_cast<CacheableWideChar*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         writer->writeChar(fieldName, static_cast<char>(val->value()));
       }
       break;
     }
     case PdxFieldTypes::BYTE: {
       CacheableByte* val = dynamic_cast<CacheableByte*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         writer->writeByte(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::SHORT: {
       CacheableInt16* val = dynamic_cast<CacheableInt16*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         writer->writeShort(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::LONG: {
       CacheableInt64* val = dynamic_cast<CacheableInt64*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         writer->writeLong(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::BYTE_ARRAY: {
       CacheableBytes* val = dynamic_cast<CacheableBytes*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         writer->writeByteArray(fieldName, (int8_t*)val->value(), val->length());
       }
       break;
@@ -183,7 +181,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
     case PdxFieldTypes::DOUBLE_ARRAY: {
       CacheableDoubleArray* val =
           dynamic_cast<CacheableDoubleArray*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         writer->writeDoubleArray(fieldName, const_cast<double*>(val->value()),
                                  val->length());
       }
@@ -192,7 +190,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
     case PdxFieldTypes::FLOAT_ARRAY: {
       CacheableFloatArray* val =
           dynamic_cast<CacheableFloatArray*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         writer->writeFloatArray(fieldName, const_cast<float*>(val->value()),
                                 val->length());
       }
@@ -201,7 +199,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
     case PdxFieldTypes::SHORT_ARRAY: {
       CacheableInt16Array* val =
           dynamic_cast<CacheableInt16Array*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         writer->writeShortArray(fieldName, const_cast<int16_t*>(val->value()),
                                 val->length());
       }
@@ -210,7 +208,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
     case PdxFieldTypes::INT_ARRAY: {
       CacheableInt32Array* val =
           dynamic_cast<CacheableInt32Array*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         writer->writeIntArray(fieldName, const_cast<int32_t*>(val->value()),
                               val->length());
       }
@@ -219,7 +217,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
     case PdxFieldTypes::LONG_ARRAY: {
       CacheableInt64Array* val =
           dynamic_cast<CacheableInt64Array*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         writer->writeLongArray(fieldName, const_cast<int64_t*>(val->value()),
                                val->length());
       }
@@ -227,7 +225,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
     }
     case PdxFieldTypes::BOOLEAN_ARRAY: {
       BooleanArray* val = dynamic_cast<BooleanArray*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         writer->writeBooleanArray(fieldName, const_cast<bool*>(val->value()),
                                   val->length());
       }
@@ -235,7 +233,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
     }
     case PdxFieldTypes::CHAR_ARRAY: {
       CharArray* val = dynamic_cast<CharArray*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         writer->writeWideCharArray(
             fieldName, const_cast<wchar_t*>(val->value()), val->length());
       }
@@ -244,7 +242,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
     case PdxFieldTypes::STRING_ARRAY: {
       CacheableStringArray* val =
           dynamic_cast<CacheableStringArray*>(value.get());
-      if (val != NULL) {
+      if (val != nullptr) {
         int size = val->length();
         if (val->operator[](0)->isCString()) {
           char** strings = new char*[size];
@@ -276,19 +274,19 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
       CacheableVectorPtr vector =
           std::dynamic_pointer_cast<CacheableVector>(value);
 
-      if (vector != NULL) {
-        int size = vector->size();
+      if (vector != nullptr) {
+        auto size = vector->size();
         int8_t** values = new int8_t*[size];
         int* lengths = new int[size];
         for (int i = 0; i < size; i++) {
-          CacheableBytes* val =
-              dynamic_cast<CacheableBytes*>(vector->at(i).get());
-          if (val != NULL) {
+          auto val = dynamic_cast<CacheableBytes*>(vector->at(i).get());
+          if (val != nullptr) {
             values[i] = (int8_t*)val->value();
             lengths[i] = val->length();
           }
         }
-        writer->writeArrayOfByteArrays(fieldName, values, size, lengths);
+        writer->writeArrayOfByteArrays(fieldName, values,
+                                       static_cast<int>(size), lengths);
         delete[] values;
         delete[] lengths;
       }
@@ -394,14 +392,11 @@ bool PdxInstanceImpl::enumerateMapEquals(CacheableHashMapPtr Obj,
     return false;
   }
 
-  for (CacheableHashMap::Iterator iter = Obj->begin(); iter != Obj->end();
-       iter++) {
-    if (OtherObj->contains(iter.first())) {
-      CacheableHashMap::Iterator otherIter = OtherObj->find(iter.first());
-      if (otherIter != OtherObj->end()) {
-        if (!deepArrayEquals(iter.second(), otherIter.second())) {
-          return false;
-        }
+  for (const auto& iter : *Obj) {
+    const auto& otherIter = OtherObj->find(iter.first);
+    if (otherIter != OtherObj->end()) {
+      if (!deepArrayEquals(iter.second, otherIter->second)) {
+        return false;
       }
     } else {
       return false;
@@ -424,14 +419,11 @@ bool PdxInstanceImpl::enumerateHashTableEquals(CacheableHashTablePtr Obj,
     return false;
   }
 
-  for (CacheableHashTable::Iterator iter = Obj->begin(); iter != Obj->end();
-       iter++) {
-    if (OtherObj->contains(iter.first())) {
-      CacheableHashTable::Iterator otherIter = OtherObj->find(iter.first());
-      if (otherIter != OtherObj->end()) {
-        if (!deepArrayEquals(iter.second(), otherIter.second())) {
-          return false;
-        }
+  for (const auto& iter : *Obj) {
+    const auto& otherIter = OtherObj->find(iter.first);
+    if (otherIter != OtherObj->end()) {
+      if (!deepArrayEquals(iter.second, otherIter->second)) {
+        return false;
       }
     } else {
       return false;
@@ -453,9 +445,8 @@ bool PdxInstanceImpl::enumerateSetEquals(CacheableHashSetPtr Obj,
   if (Obj->size() != OtherObj->size()) {
     return false;
   }
-  for (CacheableHashSet::Iterator iter = Obj->begin(); iter != Obj->end();
-       iter++) {
-    if (!OtherObj->contains(*iter)) {
+  for (const auto& iter : *Obj) {
+    if (OtherObj->find(iter) == OtherObj->end()) {
       return false;
     }
   }
@@ -475,9 +466,8 @@ bool PdxInstanceImpl::enumerateLinkedSetEquals(
   if (Obj->size() != OtherObj->size()) {
     return false;
   }
-  for (CacheableLinkedHashSet::Iterator iter = Obj->begin(); iter != Obj->end();
-       iter++) {
-    if (!OtherObj->contains(*iter)) {
+  for (const auto& iter : *Obj) {
+    if (OtherObj->find(iter) == OtherObj->end()) {
       return false;
     }
   }
@@ -543,23 +533,23 @@ bool PdxInstanceImpl::deepArrayEquals(CacheablePtr obj, CacheablePtr otherObj) {
       }
       // Chk if it is of CacheableKeyPtr type, eg: CacheableInt32
       else {
-          auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj);
-          auto otherKeyType = std::dynamic_pointer_cast<CacheableKey>(otherObj);
+        auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj);
+        auto otherKeyType = std::dynamic_pointer_cast<CacheableKey>(otherObj);
         if (keyType != nullptr && otherKeyType != nullptr) {
           return keyType->operator==(*otherKeyType);
         }
       }
       char excpStr[256] = {0};
       /* adongre  - Coverity II
-      * CID 29210: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-      * "sprintf" can cause a
-      * buffer overflow when done incorrectly. Because sprintf() assumes an
-      * arbitrarily long string,
-      * callers must be careful not to overflow the actual space of the
-      * destination.
-      * Use snprintf() instead, or correct precision specifiers.
-      * Fix : using ACE_OS::snprintf
-      */
+       * CID 29210: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+       * "sprintf" can cause a
+       * buffer overflow when done incorrectly. Because sprintf() assumes an
+       * arbitrarily long string,
+       * callers must be careful not to overflow the actual space of the
+       * destination.
+       * Use snprintf() instead, or correct precision specifiers.
+       * Fix : using ACE_OS::snprintf
+       */
       ACE_OS::snprintf(excpStr, 256,
                        "PdxInstance cannot calculate equals of the field %s "
                        "since equals is only supported for CacheableKey "
@@ -572,38 +562,34 @@ bool PdxInstanceImpl::deepArrayEquals(CacheablePtr obj, CacheablePtr otherObj) {
 
 int PdxInstanceImpl::enumerateMapHashCode(CacheableHashMapPtr map) {
   int h = 0;
-  for (CacheableHashMap::Iterator itr = map->begin(); itr != map->end();
-       itr++) {
-    h = h + ((deepArrayHashCode(itr.first())) ^
-             ((itr.second() != nullptr) ? deepArrayHashCode(itr.second()) : 0));
+  for (const auto& itr : *map) {
+    h = h + ((deepArrayHashCode(itr.first)) ^
+             ((itr.second) ? deepArrayHashCode(itr.second) : 0));
   }
   return h;
 }
 
 int PdxInstanceImpl::enumerateSetHashCode(CacheableHashSetPtr set) {
   int h = 0;
-  for (CacheableHashSet::Iterator itr = set->begin(); itr != set->end();
-       itr++) {
-    h = h + deepArrayHashCode(*itr);
+  for (const auto& itr : *set) {
+    h = h + deepArrayHashCode(itr);
   }
   return h;
 }
 
 int PdxInstanceImpl::enumerateLinkedSetHashCode(CacheableLinkedHashSetPtr set) {
   int h = 0;
-  for (CacheableLinkedHashSet::Iterator itr = set->begin(); itr != set->end();
-       itr++) {
-    h = h + deepArrayHashCode(*itr);
+  for (const auto& itr : *set) {
+    h = h + deepArrayHashCode(itr);
   }
   return h;
 }
 
 int PdxInstanceImpl::enumerateHashTableCode(CacheableHashTablePtr hashTable) {
   int h = 0;
-  for (CacheableHashTable::Iterator itr = hashTable->begin();
-       itr != hashTable->end(); itr++) {
-    h = h + ((deepArrayHashCode(itr.first())) ^
-             ((itr.second() != nullptr) ? deepArrayHashCode(itr.second()) : 0));
+  for (const auto& itr : *hashTable) {
+    h = h + ((deepArrayHashCode(itr.first)) ^
+             ((itr.second) ? deepArrayHashCode(itr.second) : 0));
   }
   return h;
 }
@@ -686,8 +672,7 @@ int PdxInstanceImpl::deepArrayHashCode(CacheablePtr obj) {
       auto pdxInstPtr = std::dynamic_pointer_cast<PdxInstance>(obj);
       if (pdxInstPtr != nullptr) {
         return pdxInstPtr->hashcode();
-      }
-      else {
+      } else {
         // Chk if it is of CacheableKeyPtr type, eg: CacheableInt32
         auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj);
         if (keyType != nullptr) {
@@ -697,15 +682,15 @@ int PdxInstanceImpl::deepArrayHashCode(CacheablePtr obj) {
       // Else throwing exception since no type matched.
       char excpStr[256] = {0};
       /* adongre  - Coverity II
-      * CID 29211: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-      * "sprintf" can cause a
-      * buffer overflow when done incorrectly. Because sprintf() assumes an
-      * arbitrarily long string,
-      * callers must be careful not to overflow the actual space of the
-      * destination.
-      * Use snprintf() instead, or correct precision specifiers.
-      * Fix : using ACE_OS::snprintf
-      */
+       * CID 29211: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+       * "sprintf" can cause a
+       * buffer overflow when done incorrectly. Because sprintf() assumes an
+       * arbitrarily long string,
+       * callers must be careful not to overflow the actual space of the
+       * destination.
+       * Use snprintf() instead, or correct precision specifiers.
+       * Fix : using ACE_OS::snprintf
+       */
       ACE_OS::snprintf(excpStr, 256,
                        "PdxInstance cannot calculate hashcode of the field %s "
                        "since hashcode is only supported for CacheableKey "
@@ -776,15 +761,15 @@ int32_t PdxInstanceImpl::hashcode() const {
       default: {
         char excpStr[256] = {0};
         /* adongre  - Coverity II
-        * CID 29264: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-        * "sprintf" can cause a
-        * buffer overflow when done incorrectly. Because sprintf() assumes an
-        * arbitrarily long string,
-        * callers must be careful not to overflow the actual space of the
-        * destination.
-        * Use snprintf() instead, or correct precision specifiers.
-        * Fix : using ACE_OS::snprintf
-        */
+         * CID 29264: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+         * "sprintf" can cause a
+         * buffer overflow when done incorrectly. Because sprintf() assumes an
+         * arbitrarily long string,
+         * callers must be careful not to overflow the actual space of the
+         * destination.
+         * Use snprintf() instead, or correct precision specifiers.
+         * Fix : using ACE_OS::snprintf
+         */
         ACE_OS::snprintf(excpStr, 256, "PdxInstance not found typeid %d ",
                          pField->getTypeId());
         throw IllegalStateException(excpStr);
@@ -976,7 +961,7 @@ void PdxInstanceImpl::getField(const char* fieldname, signed char** value,
   int pos = getOffset(dataInput, pt, pft->getSequenceId());
   dataInput.reset();
   dataInput.advanceCursor(pos);
-  int8_t* temp = NULL;
+  int8_t* temp = nullptr;
   dataInput.readByteArray(&temp, length);
   *value = (signed char*)temp;
 }
@@ -990,7 +975,7 @@ void PdxInstanceImpl::getField(const char* fieldname, unsigned char** value,
   int pos = getOffset(dataInput, pt, pft->getSequenceId());
   dataInput.reset();
   dataInput.advanceCursor(pos);
-  int8_t* temp = NULL;
+  int8_t* temp = nullptr;
   dataInput.readByteArray(&temp, length);
   *value = reinterpret_cast<unsigned char*>(temp);
 }
@@ -1087,7 +1072,7 @@ void PdxInstanceImpl::getField(const char* fieldname, wchar_t** value) const {
   int pos = getOffset(dataInput, pt, pft->getSequenceId());
   dataInput.reset();
   dataInput.advanceCursor(pos);
-  wchar_t* temp = NULL;
+  wchar_t* temp = nullptr;
   dataInput.readWideString(&temp);
   *value = temp;
 }
@@ -1100,7 +1085,7 @@ void PdxInstanceImpl::getField(const char* fieldname, char** value) const {
   int pos = getOffset(dataInput, pt, pft->getSequenceId());
   dataInput.reset();
   dataInput.advanceCursor(pos);
-  char* temp = NULL;
+  char* temp = nullptr;
   dataInput.readString(&temp);
   *value = temp;
 }
@@ -1182,14 +1167,14 @@ void PdxInstanceImpl::getField(const char* fieldname, int8_t*** value,
 
 CacheableStringPtr PdxInstanceImpl::toString() const {
   /* adongre - Coverity II
-  * CID 29265: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-  * "sprintf" can cause a
-  * buffer overflow when done incorrectly. Because sprintf() assumes an
-  * arbitrarily long string,
-  * callers must be careful not to overflow the actual space of the destination.
-  * Use snprintf() instead, or correct precision specifiers.
-  * Fix : using ACE_OS::snprintf
-  */
+   * CID 29265: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+   * "sprintf" can cause a
+   * buffer overflow when done incorrectly. Because sprintf() assumes an
+   * arbitrarily long string,
+   * callers must be careful not to overflow the actual space of the
+   * destination. Use snprintf() instead, or correct precision specifiers. Fix :
+   * using ACE_OS::snprintf
+   */
   PdxTypePtr pt = getPdxType();
   std::string toString = "PDX[";
   char buf[2048];
@@ -1453,7 +1438,7 @@ PdxSerializablePtr PdxInstanceImpl::getObject() {
     throw IllegalStateException("cache has been closed. ");
   }
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
-  if (cacheImpl != NULL) {
+  if (cacheImpl != nullptr) {
     Utils::updateStatOpTime(
         cacheImpl->m_cacheStats->getStat(),
         cacheImpl->m_cacheStats->getPdxInstanceDeserializationTimeId(),
@@ -1501,7 +1486,7 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
   CacheableKey& temp = const_cast<CacheableKey&>(other);
   PdxInstanceImpl* otherPdx = dynamic_cast<PdxInstanceImpl*>(&temp);
 
-  if (otherPdx == NULL) {
+  if (otherPdx == nullptr) {
     return false;
   }
 
@@ -1615,15 +1600,15 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
       default: {
         char excpStr[256] = {0};
         /* adongre - Coverity II
-        * CID 29267: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-        * "sprintf" can cause a
-        * buffer overflow when done incorrectly. Because sprintf() assumes an
-        * arbitrarily long string,
-        * callers must be careful not to overflow the actual space of the
-        * destination.
-        * Use snprintf() instead, or correct precision specifiers.
-        * Fix : using ACE_OS::snprintf
-        */
+         * CID 29267: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+         * "sprintf" can cause a
+         * buffer overflow when done incorrectly. Because sprintf() assumes an
+         * arbitrarily long string,
+         * callers must be careful not to overflow the actual space of the
+         * destination.
+         * Use snprintf() instead, or correct precision specifiers.
+         * Fix : using ACE_OS::snprintf
+         */
         ACE_OS::snprintf(excpStr, 256, "PdxInstance not found typeid  %d ",
                          myPFT->getTypeId());
         throw IllegalStateException(excpStr);
@@ -1688,7 +1673,7 @@ CacheableStringArrayPtr PdxInstanceImpl::getFieldNames() {
   PdxTypePtr pt = getPdxType();
   std::vector<PdxFieldTypePtr>* vectorOfFieldTypes = pt->getPdxFieldTypes();
   int size = static_cast<int>(vectorOfFieldTypes->size());
-  CacheableStringPtr* ptrArr = NULL;
+  CacheableStringPtr* ptrArr = nullptr;
   if (size > 0) {
     ptrArr = new CacheableStringPtr[size];
     for (int i = 0; i < size; i++) {
@@ -1729,7 +1714,7 @@ void PdxInstanceImpl::toData(PdxWriterPtr writer) /*const*/ {
   std::vector<PdxFieldTypePtr>* pdxFieldList = pt->getPdxFieldTypes();
   int position = 0;  // ignore typeid and length
   int nextFieldPosition = 0;
-  if (m_buffer != NULL) {
+  if (m_buffer != nullptr) {
     uint8_t* copy = apache::geode::client::DataInput::getBufferCopy(
         m_buffer, m_bufferLength);
     DataInput dataInput(copy, m_bufferLength);  // this will delete buffer
@@ -2009,15 +1994,15 @@ void PdxInstanceImpl::setField(const char* fieldName, bool value) {
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BOOLEAN) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29233: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29233: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2035,15 +2020,15 @@ void PdxInstanceImpl::setField(const char* fieldName, signed char value) {
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BYTE) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29233: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29233: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2061,15 +2046,15 @@ void PdxInstanceImpl::setField(const char* fieldName, unsigned char value) {
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BYTE) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29236: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29236: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2103,15 +2088,15 @@ void PdxInstanceImpl::setField(const char* fieldName, int32_t value) {
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::INT) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29234: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29234: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2129,15 +2114,15 @@ void PdxInstanceImpl::setField(const char* fieldName, int64_t value) {
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::LONG) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29235: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29235: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2155,15 +2140,15 @@ void PdxInstanceImpl::setField(const char* fieldName, float value) {
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::FLOAT) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29232: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29232: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2181,15 +2166,15 @@ void PdxInstanceImpl::setField(const char* fieldName, double value) {
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::DOUBLE) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29231: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29231: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2207,15 +2192,15 @@ void PdxInstanceImpl::setField(const char* fieldName, wchar_t value) {
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::CHAR) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29237: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29237: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2233,15 +2218,15 @@ void PdxInstanceImpl::setField(const char* fieldName, char value) {
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::CHAR) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29230: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29230: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2276,15 +2261,15 @@ void PdxInstanceImpl::setField(const char* fieldName, CacheablePtr value) {
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::OBJECT) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29212: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29212: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2318,15 +2303,15 @@ void PdxInstanceImpl::setField(const char* fieldName, bool* value,
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BOOLEAN_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29218: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29218: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2345,15 +2330,15 @@ void PdxInstanceImpl::setField(const char* fieldName, signed char* value,
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BYTE_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29217: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29217: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2373,15 +2358,15 @@ void PdxInstanceImpl::setField(const char* fieldName, unsigned char* value,
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BYTE_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29222: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29222: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2401,15 +2386,15 @@ void PdxInstanceImpl::setField(const char* fieldName, int16_t* value,
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::SHORT_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29225: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29225: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2428,15 +2413,15 @@ void PdxInstanceImpl::setField(const char* fieldName, int32_t* value,
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::INT_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29223: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29223: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2455,15 +2440,15 @@ void PdxInstanceImpl::setField(const char* fieldName, int64_t* value,
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::LONG_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29224: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29224: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2482,15 +2467,15 @@ void PdxInstanceImpl::setField(const char* fieldName, float* value,
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::FLOAT_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29221: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29221: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2509,15 +2494,15 @@ void PdxInstanceImpl::setField(const char* fieldName, double* value,
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::DOUBLE_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29220: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29220: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2536,15 +2521,15 @@ void PdxInstanceImpl::setField(const char* fieldName, wchar_t* value,
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::CHAR_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29226: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29226: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2563,15 +2548,15 @@ void PdxInstanceImpl::setField(const char* fieldName, char* value,
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::CHAR_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29219: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29219: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2593,15 +2578,15 @@ void PdxInstanceImpl::setField(const char* fieldName, const wchar_t* value) {
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::STRING) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29213: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29213: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2619,15 +2604,15 @@ void PdxInstanceImpl::setField(const char* fieldName, const char* value) {
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::STRING) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29227: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29227: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2647,15 +2632,15 @@ void PdxInstanceImpl::setField(const char* fieldName, int8_t** value,
       pft->getTypeId() != PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29214: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29214: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
@@ -2679,22 +2664,22 @@ void PdxInstanceImpl::setField(const char* fieldName, wchar_t** value,
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::STRING_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29216: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29216: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
-  CacheableStringPtr* ptrArr = NULL;
+  CacheableStringPtr* ptrArr = nullptr;
   if (length > 0) {
     ptrArr = new CacheableStringPtr[length];
     for (int32_t i = 0; i < length; ++i) {
@@ -2707,8 +2692,8 @@ void PdxInstanceImpl::setField(const char* fieldName, wchar_t** value,
   }
 
   /* adongre - Coverity II
-  * CID 29202: Resource leak (RESOURCE_LEAK)
-  */
+   * CID 29202: Resource leak (RESOURCE_LEAK)
+   */
   /*if ( ptrArr ) {
     delete [] ptrArr ;
   }*/
@@ -2722,22 +2707,22 @@ void PdxInstanceImpl::setField(const char* fieldName, char** value,
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::STRING_ARRAY) {
     char excpStr[256] = {0};
     /* adongre - Coverity II
-    * CID 29215: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29215: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "PdxInstance doesn't has field %s or type of field not matched %s ",
         fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
     throw IllegalStateException(excpStr);
   }
-  CacheableStringPtr* ptrArr = NULL;
+  CacheableStringPtr* ptrArr = nullptr;
   if (length > 0) {
     ptrArr = new CacheableStringPtr[length];
     for (int32_t i = 0; i < length; ++i) {
@@ -2749,8 +2734,8 @@ void PdxInstanceImpl::setField(const char* fieldName, char** value,
     m_updatedFields[fieldName] = cacheableObject;
   }
   /* adongre - Coverity II
-  * CID 29201: Resource leak (RESOURCE_LEAK)
-  */
+   * CID 29201: Resource leak (RESOURCE_LEAK)
+   */
   /*if ( ptrArr ) {
     delete [] ptrArr;
   }*/

@@ -174,7 +174,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER, StartS12)
   {
-    const char* lhp = NULL;
+    const char* lhp = nullptr;
     if (!isPoolWithEndpoint) lhp = locHostPort;
     if (isLocalServer) {
       CacheHelper::initServer(1, "func_cacheserver1_pool.xml", lhp);
@@ -188,14 +188,14 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
   {
     // initClient(true);
-    initClientWithPool(true, NULL, locHostPort, serverGroup, nullptr, 0, true,
-                       -1, -1, 60000, /*singlehop*/ true,
+    initClientWithPool(true, nullptr, locHostPort, serverGroup, nullptr, 0,
+                       true, -1, -1, 60000, /*singlehop*/ true,
                        /*threadLocal*/ true);
-    // createPool(poolName, locHostPort,serverGroup, NULL, 0, true );
+    // createPool(poolName, locHostPort,serverGroup, nullptr, 0, true );
     // createRegionAndAttachPool(poolRegNames[0],USE_ACK, poolName);
 
     RegionPtr regPtr0 =
-        createRegionAndAttachPool(poolRegNames[0], USE_ACK, NULL);
+        createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
     ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
     regPtr0->registerAllKeys();
 
@@ -250,17 +250,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
     CacheablePtr args = CacheableBoolean::create(1);
 
     ExecutionPtr funcExec = FunctionService::onRegion(regPtr0);
-    ASSERT(funcExec != nullptr, "onRegion Returned NULL");
+    ASSERT(funcExec != nullptr, "onRegion Returned nullptr");
 
     ResultCollectorPtr collector =
         funcExec->withArgs(args)->withFilter(filter)->execute(
             exFuncNameSendException, 15);
-    ASSERT(collector != nullptr, "onRegion collector NULL");
+    ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     CacheableVectorPtr result = collector->getResult();
 
     if (result == nullptr) {
-      ASSERT(false, "echo String : result is NULL");
+      ASSERT(false, "echo String : result is nullptr");
     } else {
       for (int i = 0; i < result->size(); i++) {
         if (auto uFEPtr =
@@ -281,7 +281,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
     collector = funcExec->withArgs(arrList)->withFilter(filter)->execute(
         exFuncNameSendException, 15);
-    ASSERT(collector != nullptr, "onRegion collector for arrList NULL");
+    ASSERT(collector != nullptr, "onRegion collector for arrList nullptr");
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
     try {

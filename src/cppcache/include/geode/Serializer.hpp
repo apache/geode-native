@@ -20,6 +20,11 @@
  * limitations under the License.
  */
 
+#include <vector>
+#include <unordered_map>
+#include <unordered_map>
+#include <memory>
+
 #include "geode_globals.hpp"
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
@@ -253,7 +258,7 @@ inline void readObject(apache::geode::client::DataInput& input,
 template <typename TObj, typename TLen>
 inline void writeObject(apache::geode::client::DataOutput& output,
                         const TObj* array, TLen len) {
-  if (array == NULL) {
+  if (array == nullptr) {
     output.write(static_cast<int8_t>(-1));
   } else {
     output.writeArrayLen(len);
@@ -276,7 +281,7 @@ inline void readObject(apache::geode::client::DataInput& input, TObj*& array,
       readObject(input, *startArray++);
     }
   } else {
-    array = NULL;
+    array = nullptr;
   }
 }
 
@@ -287,7 +292,7 @@ inline uint32_t objectSize(
   uint32_t size = 0;
   const TObj* endArray = array + len;
   while (array < endArray) {
-    if (*array != NULL) {
+    if (*array != nullptr) {
       size += (*array)->objectSize();
     }
     array++;
@@ -310,32 +315,29 @@ inline uint32_t objectSize(const TObj* array, TLen len) {
 
 // For containers vector/hashmap/hashset
 
-template <typename TObj>
+template <typename TObj, typename... _tail>
 inline void writeObject(apache::geode::client::DataOutput& output,
-                        const VectorT<TObj>& value) {
-  int32_t len = (int32_t)value.size();
-  output.writeArrayLen(len);
-  for (typename VectorT<TObj>::Iterator iter = value.begin();
-       iter != value.end(); ++iter) {
-    writeObject(output, *iter);
+                        const std::vector<TObj, _tail...>& value) {
+  output.writeArrayLen(static_cast<int32_t>(value.size()));
+  for (const auto& v : value) {
+    writeObject(output, v);
   }
 }
 
-inline uint32_t objectSize(const _VectorOfCacheable& value) {
-  uint32_t objectSize = 0;
-  for (_VectorOfCacheable::Iterator iter = value.begin(); iter != value.end();
-       ++iter) {
-    if (*iter != nullptr) {
-      objectSize += (*iter)->objectSize();
+inline uint32_t objectSize(const VectorOfCacheable& value) {
+  size_t objectSize = 0;
+  for (const auto& iter : value) {
+    if (iter) {
+      objectSize += iter->objectSize();
     }
   }
-  objectSize += static_cast<uint32_t>(sizeof(CacheablePtr) * value.size());
-  return objectSize;
+  objectSize += sizeof(CacheablePtr) * value.size();
+  return static_cast<uint32_t>(objectSize);
 }
 
-template <typename TObj>
+template <typename TObj, typename... _tail>
 inline void readObject(apache::geode::client::DataInput& input,
-                       VectorT<TObj>& value) {
+                       std::vector<TObj, _tail...>& value) {
   int32_t len;
   input.readArrayLen(&len);
   if (len >= 0) {
@@ -347,27 +349,23 @@ inline void readObject(apache::geode::client::DataInput& input,
   }
 }
 
-template <typename TKey, typename TValue>
-inline void writeObject(apache::geode::client::DataOutput& output,
-                        const HashMapT<TKey, TValue>& value) {
-  int32_t len = (int32_t)value.size();
-  output.writeArrayLen(len);
-  if (len > 0) {
-    for (typename HashMapT<TKey, TValue>::Iterator iter = value.begin();
-         iter != value.end(); ++iter) {
-      writeObject(output, iter.first());
-      writeObject(output, iter.second());
-    }
+template <typename TKey, typename TValue, typename... _tail>
+inline void writeObject(
+    apache::geode::client::DataOutput& output,
+    const std::unordered_map<TKey, TValue, _tail...>& value) {
+  output.writeArrayLen(static_cast<int32_t>(value.size()));
+  for (const auto& iter : value) {
+    writeObject(output, iter.first);
+    writeObject(output, iter.second);
   }
 }
 
-inline uint32_t objectSize(const _HashMapOfCacheable& value) {
+inline uint32_t objectSize(const HashMapOfCacheable& value) {
   uint32_t objectSize = 0;
-  for (_HashMapOfCacheable::Iterator iter = value.begin(); iter != value.end();
-       ++iter) {
-    objectSize += iter.first()->objectSize();
-    if (iter.second() != nullptr) {
-      objectSize += iter.second()->objectSize();
+  for (const auto& iter : value) {
+    objectSize += iter.first->objectSize();
+    if (iter.second) {
+      objectSize += iter.second->objectSize();
     }
   }
   objectSize += static_cast<uint32_t>(
@@ -375,48 +373,44 @@ inline uint32_t objectSize(const _HashMapOfCacheable& value) {
   return objectSize;
 }
 
-template <typename TKey, typename TValue>
+template <typename TKey, typename TValue, typename... _tail>
 inline void readObject(apache::geode::client::DataInput& input,
-                       HashMapT<TKey, TValue>& value) {
+                       std::unordered_map<TKey, TValue, _tail...>& value) {
   int32_t len;
   input.readArrayLen(&len);
-  if (len > 0) {
-    TKey key;
-    TValue val;
-    for (int32_t index = 0; index < len; index++) {
-      readObject(input, key);
-      readObject(input, val);
-      value.insert(key, val);
-    }
+  value.reserve(len);
+  TKey key;
+  TValue val;
+  for (int32_t index = 0; index < len; index++) {
+    readObject(input, key);
+    readObject(input, val);
+    value.emplace(key, val);
   }
 }
 
-template <typename TKey>
+template <typename TKey, typename... _tail>
 inline void writeObject(apache::geode::client::DataOutput& output,
-                        const HashSetT<TKey>& value) {
-  int32_t len = (int32_t)value.size();
-  output.writeArrayLen(len);
-  for (typename HashSetT<TKey>::Iterator iter = value.begin();
-       iter != value.end(); ++iter) {
-    writeObject(output, *iter);
+                        const std::unordered_set<TKey, _tail...>& value) {
+  output.writeArrayLen(static_cast<int32_t>(value.size()));
+  for (const auto& iter : value) {
+    writeObject(output, iter);
   }
 }
 
-inline uint32_t objectSize(const _HashSetOfCacheableKey& value) {
+inline uint32_t objectSize(const HashSetOfCacheableKey& value) {
   uint32_t objectSize = 0;
-  for (_HashSetOfCacheableKey::Iterator iter = value.begin();
-       iter != value.end(); ++iter) {
-    if (*iter != nullptr) {
-      objectSize += (*iter)->objectSize();
+  for (const auto& iter : value) {
+    if (iter) {
+      objectSize += iter->objectSize();
     }
   }
   objectSize += static_cast<uint32_t>(sizeof(CacheableKeyPtr) * value.size());
   return objectSize;
 }
 
-template <typename TKey>
+template <typename TKey, typename... _tail>
 inline void readObject(apache::geode::client::DataInput& input,
-                       HashSetT<TKey>& value) {
+                       std::unordered_set<TKey, _tail...>& value) {
   int32_t len;
   input.readArrayLen(&len);
   if (len > 0) {

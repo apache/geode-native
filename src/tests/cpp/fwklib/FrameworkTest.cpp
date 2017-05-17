@@ -317,9 +317,7 @@ void FrameworkTest::destroyAllRegions() {
   // destroy all root regions
   VectorOfRegion vec;
   m_cache->rootRegions(vec);
-  int32_t size = vec.size();
-  for (int32_t idx = 0; idx < size; idx++) {
-    RegionPtr region = vec.at(idx);
+  for (auto& region : vec) {
     localDestroyRegion(region);
   }
 }

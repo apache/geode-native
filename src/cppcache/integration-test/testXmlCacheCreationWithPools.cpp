@@ -32,7 +32,7 @@
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
-const char* endPoints = (const char*)NULL;
+const char* endPoints = (const char*)nullptr;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
@@ -83,7 +83,7 @@ bool checkPoolAttribs(PoolPtr pool, SLIST& locators, SLIST& servers,
   char logmsg[500] = {0};
 
   if (pool == nullptr) {
-    LOG("checkPoolAttribs: PoolPtr is NULL");
+    LOG("checkPoolAttribs: PoolPtr is nullptr");
     return false;
   }
 
@@ -91,7 +91,7 @@ bool checkPoolAttribs(PoolPtr pool, SLIST& locators, SLIST& servers,
 
   if (strcmp(pool->getName(), name)) {
     sprintf(logmsg, "checkPoolAttribs: Pool name expected [%s], actual [%s]",
-            name, pool->getName() == NULL ? "null" : pool->getName());
+            name, pool->getName() == nullptr ? "null" : pool->getName());
     LOG(logmsg);
     return false;
   }
@@ -162,10 +162,10 @@ bool checkPoolAttribs(PoolPtr pool, SLIST& locators, SLIST& servers,
     return false;
   }
   if (strcmp(serverGroup, pool->getServerGroup())) {
-    sprintf(logmsg,
-            "checkPoolAttribs: Pool serverGroup expected [%s], actual [%s]",
-            serverGroup,
-            pool->getServerGroup() == NULL ? "null" : pool->getServerGroup());
+    sprintf(
+        logmsg, "checkPoolAttribs: Pool serverGroup expected [%s], actual [%s]",
+        serverGroup,
+        pool->getServerGroup() == nullptr ? "null" : pool->getServerGroup());
     LOG(logmsg);
     return false;
   }

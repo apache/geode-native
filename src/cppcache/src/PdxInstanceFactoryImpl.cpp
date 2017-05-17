@@ -27,7 +27,7 @@ namespace client {
 PdxInstanceFactoryImpl::~PdxInstanceFactoryImpl() {}
 
 PdxInstanceFactoryImpl::PdxInstanceFactoryImpl(const char* className) {
-  if (className == NULL ||
+  if (className == nullptr ||
       *className == '\0') {  // COVERITY ---> 30289 Same on both sides
     throw IllegalStateException("className should not be null.");
   }
@@ -297,7 +297,7 @@ PdxInstanceFactoryPtr PdxInstanceFactoryImpl::writeStringArray(
   isFieldAdded(fieldName);
   m_pdxType->addVariableLengthTypeField(fieldName, "string[]",
                                         PdxFieldTypes::STRING_ARRAY);
-  CacheableStringPtr* ptrArr = NULL;
+  CacheableStringPtr* ptrArr = nullptr;
   if (length > 0) {
     ptrArr = new CacheableStringPtr[length];
     for (int32_t i = 0; i < length; i++) {
@@ -323,7 +323,7 @@ PdxInstanceFactoryPtr PdxInstanceFactoryImpl::writeWideStringArray(
   isFieldAdded(fieldName);
   m_pdxType->addVariableLengthTypeField(fieldName, "string[]",
                                         PdxFieldTypes::STRING_ARRAY);
-  CacheableStringPtr* ptrArr = NULL;
+  CacheableStringPtr* ptrArr = nullptr;
   if (length > 0) {
     ptrArr = new CacheableStringPtr[length];
     for (int32_t i = 0; i < length; i++) {
@@ -383,7 +383,7 @@ PdxInstanceFactoryPtr PdxInstanceFactoryImpl::markIdentityField(
 }
 
 void PdxInstanceFactoryImpl::isFieldAdded(const char* fieldName) {
-  if (fieldName == NULL ||
+  if (fieldName == nullptr ||
       /**fieldName == '\0' ||*/ m_FieldVsValues.find(fieldName) !=
           m_FieldVsValues.end()) {
     char excpStr[256] = {0};

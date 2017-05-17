@@ -43,7 +43,7 @@ typedef SharedPtr<PdxReader> PdxReaderPtr;
  * @note Implementations of PdxReader that are internal to the Native
  *       Client library may be returned to clients via instances of
  *       PdxReaderPtr. For those implementations, any
- *       non-<tt>NULL</tt>, non-empty strings returned from
+ *       non-<tt>nullptr</tt>, non-empty strings returned from
  *       PdxReader::readString() or PdxReader::readWideString() must
  *       be freed with DataInput::freeUTFMemory(). Arrays returned
  *       from PdxReader::readStringArray() or

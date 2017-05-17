@@ -48,7 +48,7 @@ void InternalCacheTransactionManager2PCImpl::prepare() {
     TSSTXStateWrapper* txStateWrapper = TSSTXStateWrapper::s_geodeTSSTXState;
     TXState* txState = txStateWrapper->getTXState();
 
-    if (txState == NULL) {
+    if (txState == nullptr) {
       GfErrTypeThrowException(
           "Transaction is null, cannot prepare of a null transaction",
           GF_CACHE_ILLEGAL_STATE_EXCEPTION);
@@ -57,18 +57,18 @@ void InternalCacheTransactionManager2PCImpl::prepare() {
     ThinClientPoolDM* tcr_dm = getDM();
     // This is for the case when no cache operation/s is performed between
     // tx->begin() and tx->commit()/rollback(),
-    // simply return without sending COMMIT message to server. tcr_dm is NULL
+    // simply return without sending COMMIT message to server. tcr_dm is nullptr
     // implies no cache operation is performed.
     // Theres no need to call txCleaner.clean(); here, because TXCleaner
     // destructor is called which cleans ThreadLocal.
-    if (tcr_dm == NULL) {
+    if (tcr_dm == nullptr) {
       return;
     }
 
     TcrMessageTxSynchronization requestCommitBefore(
         BEFORE_COMMIT, txState->getTransactionId()->getId(), STATUS_COMMITTED);
 
-    TcrMessageReply replyCommitBefore(true, NULL);
+    TcrMessageReply replyCommitBefore(true, nullptr);
     GfErrType err =
         tcr_dm->sendSyncRequest(requestCommitBefore, replyCommitBefore);
     if (err != GF_NOERR) {
@@ -123,7 +123,7 @@ void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
     TSSTXStateWrapper* txStateWrapper = TSSTXStateWrapper::s_geodeTSSTXState;
     TXState* txState = txStateWrapper->getTXState();
 
-    if (txState == NULL) {
+    if (txState == nullptr) {
       GfErrTypeThrowException(
           "Transaction is null, cannot commit a null transaction",
           GF_CACHE_ILLEGAL_STATE_EXCEPTION);
@@ -132,11 +132,11 @@ void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
     ThinClientPoolDM* tcr_dm = getDM();
     // This is for the case when no cache operation/s is performed between
     // tx->begin() and tx->commit()/rollback(),
-    // simply return without sending COMMIT message to server. tcr_dm is NULL
+    // simply return without sending COMMIT message to server. tcr_dm is nullptr
     // implies no cache operation is performed.
     // Theres no need to call txCleaner.clean(); here, because TXCleaner
     // destructor is called which cleans ThreadLocal.
-    if (tcr_dm == NULL) {
+    if (tcr_dm == nullptr) {
       return;
     }
 
@@ -163,7 +163,7 @@ void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
     TcrMessageTxSynchronization requestCommitAfter(
         AFTER_COMMIT, txState->getTransactionId()->getId(), status);
 
-    TcrMessageReply replyCommitAfter(true, NULL);
+    TcrMessageReply replyCommitAfter(true, nullptr);
     GfErrType err =
         tcr_dm->sendSyncRequest(requestCommitAfter, replyCommitAfter);
 
@@ -173,9 +173,10 @@ void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
       switch (replyCommitAfter.getMessageType()) {
         case TcrMessage::RESPONSE: {
           TXCommitMessagePtr commit =
-              std::static_pointer_cast<GF_UNWRAP_SP(TXCommitMessagePtr)>(replyCommitAfter.getValue());
+              std::static_pointer_cast<GF_UNWRAP_SP(TXCommitMessagePtr)>(
+                  replyCommitAfter.getValue());
           if (commit.get() !=
-              NULL)  // e.g. when afterCompletion(STATUS_ROLLEDBACK) called
+              nullptr)  // e.g. when afterCompletion(STATUS_ROLLEDBACK) called
           {
             txCleaner.clean();
             commit->apply(this->getCache());

@@ -35,7 +35,7 @@ CqService::CqService(ThinClientBaseDM* tccdm)
   LOGDEBUG("CqService Started");
 }
 CqService::~CqService() {
-  if (m_cqQueryMap != NULL) delete m_cqQueryMap;
+  if (m_cqQueryMap != nullptr) delete m_cqQueryMap;
   LOGDEBUG("CqService Destroyed");
 }
 
@@ -91,7 +91,7 @@ CqQueryPtr CqService::newCq(const std::string& cqName,
 
   // Check if the subscription is enabled on the pool
   auto pool = dynamic_cast<ThinClientPoolDM*>(m_tccdm);
-  if (pool != NULL && !pool->getSubscriptionEnabled()) {
+  if (pool != nullptr && !pool->getSubscriptionEnabled()) {
     LOGERROR(
         "Cannot create CQ because subscription is not enabled on the pool.");
     throw IllegalStateException(
@@ -117,7 +117,7 @@ CqQueryPtr CqService::newCq(const std::string& cqName,
   }
 
   UserAttributesPtr ua = nullptr;
-  if (m_tccdm != NULL && m_tccdm->isMultiUserMode()) {
+  if (m_tccdm != nullptr && m_tccdm->isMultiUserMode()) {
     ua =
         TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
   }
@@ -263,8 +263,8 @@ void CqService::executeCqs(query_container_type& cqs, bool afterFailover) {
                        " Error : " + qe.getMessage())
                           .c_str());
       } catch (CqClosedException& cce) {
-        LOGFINE(("Failed to execute the CQ, CqName : " + cqName + " Error : " +
-                 cce.getMessage())
+        LOGFINE(("Failed to execute the CQ, CqName : " + cqName +
+                 " Error : " + cce.getMessage())
                     .c_str());
       }
     }
@@ -296,12 +296,12 @@ void CqService::stopCqs(query_container_type& cqs) {
         cqName = cq->getName();
         cq->stop();
       } catch (QueryException& qe) {
-        Log::fine(("Failed to stop the CQ, CqName : " + cqName + " Error : " +
-                   qe.getMessage())
+        Log::fine(("Failed to stop the CQ, CqName : " + cqName +
+                   " Error : " + qe.getMessage())
                       .c_str());
       } catch (CqClosedException& cce) {
-        Log::fine(("Failed to stop the CQ, CqName : " + cqName + " Error : " +
-                   cce.getMessage())
+        Log::fine(("Failed to stop the CQ, CqName : " + cqName +
+                   " Error : " + cce.getMessage())
                       .c_str());
       }
     }
@@ -325,12 +325,12 @@ void CqService::closeCqs(query_container_type& cqs) {
           cqi->close(false);
         }
       } catch (QueryException& qe) {
-        Log::fine(("Failed to close the CQ, CqName : " + cqName + " Error : " +
-                   qe.getMessage())
+        Log::fine(("Failed to close the CQ, CqName : " + cqName +
+                   " Error : " + qe.getMessage())
                       .c_str());
       } catch (CqClosedException& cce) {
-        Log::fine(("Failed to close the CQ, CqName : " + cqName + " Error : " +
-                   cce.getMessage())
+        Log::fine(("Failed to close the CQ, CqName : " + cqName +
+                   " Error : " + cce.getMessage())
                       .c_str());
       }
     }
@@ -488,16 +488,16 @@ void CqService::invokeCqConnectedListeners(const std::string& poolName,
     std::string cqName = vec.at(i)->getName();
     auto cQuery = getCq(cqName);
     auto cQueryImpl = std::dynamic_pointer_cast<CqQueryImpl>(cQuery);
-    if (cQueryImpl == NULL || !cQueryImpl->isRunning()) {
+    if (cQueryImpl == nullptr || !cQueryImpl->isRunning()) {
       LOGFINE("Unable to invoke CqStatusListener, %s, CqName: %s",
-              (cQueryImpl == NULL) ? "CQ not found" : "CQ is Not running",
+              (cQueryImpl == nullptr) ? "CQ not found" : "CQ is Not running",
               cqName.c_str());
       continue;
     }
 
     // Check cq pool to determine if the pool matches, if not continue.
     auto* poolDM = dynamic_cast<ThinClientPoolDM*>(cQueryImpl->getDM());
-    if (poolDM != NULL) {
+    if (poolDM != nullptr) {
       std::string pName = poolDM->getName();
       if (pName.compare(poolName) != 0) {
         continue;
@@ -564,11 +564,11 @@ CqOperation::CqOperationType CqService::getOperation(int eventType) {
 }
 
 /**
-  * Gets all the durable CQs registered by this client.
-  *
-  * @return List of names of registered durable CQs, empty list if no durable
+ * Gets all the durable CQs registered by this client.
+ *
+ * @return List of names of registered durable CQs, empty list if no durable
  * cqs.
-  */
+ */
 CacheableArrayListPtr CqService::getAllDurableCqsFromServer() {
   TcrMessageGetDurableCqs msg(m_tccdm);
   TcrMessageReply reply(true, m_tccdm);

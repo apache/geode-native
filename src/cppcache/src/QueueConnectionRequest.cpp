@@ -37,7 +37,7 @@ void QueueConnectionRequest::toData(DataOutput& output) const {
 QueueConnectionRequest* QueueConnectionRequest::fromData(
     DataInput& input)  // NOt needed as of now.
 {
-  return NULL;
+  return nullptr;
 }
 int8_t QueueConnectionRequest::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::QueueConnectionRequest);

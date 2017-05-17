@@ -22,30 +22,30 @@
 using namespace apache::geode::statistics;
 
 /**
-* Gathers together a number of {@link StatisticDescriptor statistics}
-* into one logical type.
-*
-*/
+ * Gathers together a number of {@link StatisticDescriptor statistics}
+ * into one logical type.
+ *
+ */
 
 /**
-* Creates a new <code>StatisticsType</code> with the given name,
-* description, and statistics.
-*
-* @param name
-*        The name of this statistics type (for example,
-*        <code>"DatabaseStatistics"</code>)
-* @param description
-*        A description of this statistics type (for example,
-*        "Information about the application's use of the
-*        database").
-* @param stats
-*        Descriptions of the individual statistics grouped together
-*        in this statistics type{@link StatisticDescriptor}.
-*
-* @throws NullPointerException
-*         If either <code>name</code> or <code>stats</code> is
-*         <code>null</code>.
-*/
+ * Creates a new <code>StatisticsType</code> with the given name,
+ * description, and statistics.
+ *
+ * @param name
+ *        The name of this statistics type (for example,
+ *        <code>"DatabaseStatistics"</code>)
+ * @param description
+ *        A description of this statistics type (for example,
+ *        "Information about the application's use of the
+ *        database").
+ * @param stats
+ *        Descriptions of the individual statistics grouped together
+ *        in this statistics type{@link StatisticDescriptor}.
+ *
+ * @throws NullPointerException
+ *         If either <code>name</code> or <code>stats</code> is
+ *         <code>null</code>.
+ */
 
 StatisticsTypeImpl::StatisticsTypeImpl(const char* nameArg,
                                        const char* descriptionArg,
@@ -55,7 +55,7 @@ StatisticsTypeImpl::StatisticsTypeImpl(const char* nameArg,
     const char* s = "Cannot have a null statistics type name";
     throw NullPointerException(s);
   }
-  if (statsArg == NULL) {
+  if (statsArg == nullptr) {
     const char* s = "Cannot have a null statistic descriptors";
     throw NullPointerException(s);
   }
@@ -89,7 +89,7 @@ StatisticsTypeImpl::StatisticsTypeImpl(const char* nameArg,
      *       catch the exception thrown by the dynamic_cast
      */
 
-    if (sd != NULL) {
+    if (sd != nullptr) {
       if (sd->getTypeCode() == INT_TYPE) {
         sd->setId(intCount);
         intCount++;
@@ -125,13 +125,13 @@ StatisticsTypeImpl::~StatisticsTypeImpl() {
     // Delete the descriptor pointers from the array
     for (int32_t i = 0; i < statsLength; i++) {
       delete stats[i];
-      stats[i] = NULL;
+      stats[i] = nullptr;
     }
     // same pointers are also stored in this map.
     // So, Set the pointers to null.
     StatisticsDescMap::iterator iterFind = statsDescMap.begin();
     while (iterFind != statsDescMap.end()) {
-      (*iterFind).second = NULL;
+      (*iterFind).second = nullptr;
       iterFind++;
     }
   } catch (...) {
@@ -166,21 +166,21 @@ StatisticDescriptor* StatisticsTypeImpl::nameToDescriptor(const char* nameArg) {
 //////////////////////  Instance Methods  //////////////////////
 
 /**
-* Gets the number of statistics in this type that are ints.
-*/
+ * Gets the number of statistics in this type that are ints.
+ */
 int32_t StatisticsTypeImpl::getIntStatCount() { return intStatCount; }
 
 /**
-* Gets the number of statistics in this type that are longs.
-*/
+ * Gets the number of statistics in this type that are longs.
+ */
 int32_t StatisticsTypeImpl::getLongStatCount() { return longStatCount; }
 
 /**
-* Gets the number of statistics that are doubles.
-*/
+ * Gets the number of statistics that are doubles.
+ */
 int32_t StatisticsTypeImpl::getDoubleStatCount() { return doubleStatCount; }
 
 /**
-* Gets the total number of statistic descriptors.
-*/
+ * Gets the total number of statistic descriptors.
+ */
 int32_t StatisticsTypeImpl::getDescriptorsCount() { return statsLength; }

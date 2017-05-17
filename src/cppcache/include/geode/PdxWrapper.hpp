@@ -51,7 +51,7 @@ class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
    * User code (such as in PdxSerializer) should cast it to a pointer of the
    * known user class.
    * @param detach if set to true will release ownership of the object and
-   * future calls to getObject() return NULL.
+   * future calls to getObject() return nullptr.
    */
   void* getObject(bool detach = false);
 
@@ -67,48 +67,48 @@ class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
   int32_t hashcode() const;
 
   /**
-  *@brief serialize this object in geode PDX format
-  *@param PdxWriter to serialize the PDX object
-  **/
+   *@brief serialize this object in geode PDX format
+   *@param PdxWriter to serialize the PDX object
+   **/
   void toData(PdxWriterPtr output);
   /**
-  *@brief Deserialize this object
-  *@param PdxReader to Deserialize the PDX object
-  **/
+   *@brief Deserialize this object
+   *@param PdxReader to Deserialize the PDX object
+   **/
   void fromData(PdxReaderPtr input);
   /**
-  *@brief serialize this object
-  **/
+   *@brief serialize this object
+   **/
   void toData(DataOutput& output) const;
   /**
-  *@brief deserialize this object, typical implementation should return
-  * the 'this' pointer.
-  **/
+   *@brief deserialize this object, typical implementation should return
+   * the 'this' pointer.
+   **/
   Serializable* fromData(DataInput& input);
   /**
-  *@brief return the classId of the instance being serialized.
-  * This is used by deserialization to determine what instance
-  * type to create and derserialize into.
-  */
+   *@brief return the classId of the instance being serialized.
+   * This is used by deserialization to determine what instance
+   * type to create and derserialize into.
+   */
   int32_t classId() const { return 0; }
   /**
-  *@brief return the size in bytes of the instance being serialized.
-  * This is used to determine whether the cache is using up more
-  * physical memory than it has been configured to use. The method can
-  * return zero if the user does not require the ability to control
-  * cache memory utilization.
-  * Note that you must implement this only if you use the HeapLRU feature.
-  */
+   *@brief return the size in bytes of the instance being serialized.
+   * This is used to determine whether the cache is using up more
+   * physical memory than it has been configured to use. The method can
+   * return zero if the user does not require the ability to control
+   * cache memory utilization.
+   * Note that you must implement this only if you use the HeapLRU feature.
+   */
   uint32_t objectSize() const;
   /**
-  * Display this object as 'string', which depends on the implementation in
-  * the subclasses.
-  * The default implementation renders the classname.
-  *
-  * The return value may be a temporary, so the caller has to ensure that
-  * the SharedPtr count does not go down to zero by storing the result
-  * in a variable or otherwise.
-  */
+   * Display this object as 'string', which depends on the implementation in
+   * the subclasses.
+   * The default implementation renders the classname.
+   *
+   * The return value may be a temporary, so the caller has to ensure that
+   * the SharedPtr count does not go down to zero by storing the result
+   * in a variable or otherwise.
+   */
   CacheableStringPtr toString() const;
 
   virtual ~PdxWrapper();

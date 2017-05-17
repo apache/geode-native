@@ -36,15 +36,15 @@ using namespace apache::geode::statistics;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-RegionStatType* RegionStatType::single = NULL;
+RegionStatType* RegionStatType::single = nullptr;
 SpinLock RegionStatType::m_singletonLock;
 SpinLock RegionStatType::m_statTypeLock;
 
 void RegionStatType::clean() {
   SpinLockGuard guard(m_singletonLock);
-  if (single != NULL) {
+  if (single != nullptr) {
     delete single;
-    single = NULL;
+    single = nullptr;
   }
 }
 
@@ -56,7 +56,7 @@ StatisticsType* RegionStatType::getStatType() {
 
   StatisticsType* statsType = factory->findType("RegionStatistics");
 
-  if (statsType == NULL) {
+  if (statsType == nullptr) {
     m_stats[0] = factory->createIntCounter(
         "creates", "The total number of cache creates for this region",
         "entries", largerIsBetter);
@@ -186,7 +186,7 @@ StatisticsType* RegionStatType::getStatType() {
 
 RegionStatType* RegionStatType::getInstance() {
   SpinLockGuard guard(m_singletonLock);
-  if (single == NULL) {
+  if (single == nullptr) {
     single = new RegionStatType();
   }
   return single;
@@ -205,7 +205,7 @@ RegionStats::RegionStats(const char* regionName) {
 
   StatisticsType* statsType = regStatType->getStatType();
 
-  GF_D_ASSERT(statsType != NULL);
+  GF_D_ASSERT(statsType != nullptr);
 
   StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
 
@@ -266,10 +266,10 @@ RegionStats::RegionStats(const char* regionName) {
 }
 
 RegionStats::~RegionStats() {
-  if (m_regionStats != NULL) {
-    // Don't Delete, Already closed, Just set NULL
+  if (m_regionStats != nullptr) {
+    // Don't Delete, Already closed, Just set nullptr
     // delete m_regionStats;
-    m_regionStats = NULL;
+    m_regionStats = nullptr;
   }
 }
 }  // namespace client

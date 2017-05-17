@@ -71,7 +71,7 @@
 
 typedef unsigned int uint32_t;
 
-ACE_TCHAR* g_programName = NULL;
+ACE_TCHAR* g_programName = nullptr;
 uint32_t g_masterPid = 0;
 
 ClientCleanup gClientCleanup;
@@ -191,8 +191,8 @@ class NamingContextImpl : virtual public NamingContext {
     char value[VALUE_MAX] = {0};
     char type[VALUE_MAX] = {0};
 #else
-    char* value = NULL;
-    char* type = NULL;
+    char* value = nullptr;
+    char* type = nullptr;
 #endif
 
     int res = -1;
@@ -345,10 +345,10 @@ class TaskQueues {
   Task* nextTask(SlaveId& sId) {
     TaskList* tasks = &(m_qmap[sId.getId()]);
     if (tasks->empty()) {
-      return NULL;
+      return nullptr;
     }
     Task* task = tasks->front();
-    if (task != NULL) {
+    if (task != nullptr) {
       char logmsg[1024] = {0};
       sprintf(logmsg, "received task: %s ", task->m_taskName.c_str());
       LOG(logmsg);
@@ -373,24 +373,24 @@ class TaskQueues {
 
  public:
   static void addTask(SlaveId sId, Task* task) {
-    if (taskQueues == NULL) {
+    if (taskQueues == nullptr) {
       taskQueues = new TaskQueues();
     }
     taskQueues->registerTask(sId, task);
   }
 
   static int getSlaveId() {
-    ASSERT(taskQueues != NULL, "failure to initialize fw_dunit module.");
+    ASSERT(taskQueues != nullptr, "failure to initialize fw_dunit module.");
     return taskQueues->nextSlaveId();
   }
 
   static Task* getTask(SlaveId sId) {
-    ASSERT(taskQueues != NULL, "failure to initialize fw_dunit module.");
+    ASSERT(taskQueues != nullptr, "failure to initialize fw_dunit module.");
     return taskQueues->nextTask(sId);
   }
 };
 
-TaskQueues* TaskQueues::taskQueues = NULL;
+TaskQueues* TaskQueues::taskQueues = nullptr;
 
 /** register task with slave. */
 void Task::init(int sId) {
@@ -429,14 +429,14 @@ class Dunit {
 
   /** return the already initialized singleton Dunit instance. */
   static Dunit* getSingleton() {
-    ASSERT(singleton != NULL, "singleton not created yet.");
+    ASSERT(singleton != nullptr, "singleton not created yet.");
     return singleton;
   }
 
   /** delete the existing singleton */
   static void close() {
     Dunit* tmp = singleton;
-    singleton = NULL;
+    singleton = nullptr;
     delete tmp;
   }
 
@@ -491,7 +491,7 @@ class Dunit {
 
 #define DUNIT dunit::Dunit::getSingleton()
 
-Dunit* Dunit::singleton = NULL;
+Dunit* Dunit::singleton = nullptr;
 
 void Task::setTimeout(int seconds) {
   if (seconds > 0) {
@@ -541,7 +541,7 @@ class TestDriver {
     for (uint32_t i = 1; i < 5; i++) {
       ACE_TCHAR cmdline[2048] = {0};
       char* profilerCmd = ACE_OS::getenv("PROFILERCMD");
-      if (profilerCmd != NULL && profilerCmd[0] != '$' &&
+      if (profilerCmd != nullptr && profilerCmd[0] != '$' &&
           profilerCmd[0] != '\0') {
         // replace %d's in profilerCmd with PID and slave ID
         char cmdbuf[2048] = {0};
@@ -574,7 +574,7 @@ class TestDriver {
     dunit::Dunit::close();
 #ifdef SOLARIS_USE_BB
     delete m_bbNamingContextServer;
-    m_bbNamingContextServer = NULL;
+    m_bbNamingContextServer = nullptr;
 #endif
   }
 
@@ -759,7 +759,7 @@ class TestSlave {
         // do next task...
         Task* task = TaskQueues::getTask(m_sId);
         // perform task.
-        if (task != NULL) {
+        if (task != nullptr) {
           DUNIT->setSlaveState(m_sId, SLAVE_STATE_TASK_ACTIVE);
           try {
             task->doTask();
@@ -789,7 +789,7 @@ class TestSlave {
   }
 };
 
-SlaveId* TestSlave::procSlaveId = NULL;
+SlaveId* TestSlave::procSlaveId = nullptr;
 
 void sleep(int millis) {
   if (millis == 0) {
@@ -839,7 +839,7 @@ void cleanup() { gClientCleanup.callClientCleanup(); }
 int dmain(int argc, ACE_TCHAR* argv[]) {
 #ifdef WIN32
   char* envsetting = ACE_OS::getenv("BUG481");
-  if (envsetting != NULL && strlen(envsetting) > 0) {
+  if (envsetting != nullptr && strlen(envsetting) > 0) {
     apache::geode::client::setNewAndDelete(&operator new, & operator delete);
   }
 #endif
@@ -999,7 +999,7 @@ void Record::write(apache::geode::client::DataOutput& output) {
 }
 
 void Record::read(apache::geode::client::DataInput& input) {
-  char* buf = NULL;
+  char* buf = nullptr;
   input.readASCII(&buf);
   m_testName = buf;
   delete[] buf;
@@ -1140,7 +1140,7 @@ ThreadLauncher::~ThreadLauncher() {
   }
 }
 
-Thread::Thread() : ACE_Task_Base(), m_launcher(NULL), m_used(false) {}
+Thread::Thread() : ACE_Task_Base(), m_launcher(nullptr), m_used(false) {}
 
 Thread::~Thread() {}
 

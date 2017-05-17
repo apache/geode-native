@@ -48,7 +48,7 @@ using namespace test;
 #define SERVER2 s2p2
 #define CREATE_TWICE_KEY "__create_twice_key"
 #define CREATE_TWICE_VALUE "__create_twice_value"
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 0;
@@ -67,7 +67,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, Alter_Client_Grid_Property_2)
 END_TASK_DEFINITION
 
 void initClient(const bool isthinClient) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr config = Properties::create();
     if (g_isGridClient) {
       config->insert("grid-client", "true");
@@ -79,14 +79,14 @@ void initClient(const bool isthinClient) {
 }
 
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
@@ -118,7 +118,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   if (noKey == false) {  // need to find the key!
     ASSERT(regPtr->containsKey(keyPtr), "Key not found in region.");
   }
-  if (val != NULL) {  // need to have a value!
+  if (val != nullptr) {  // need to have a value!
     ASSERT(regPtr->containsValueForKey(keyPtr), "Value not found in region.");
   }
 
@@ -138,7 +138,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
       }
       ASSERT(containsKeyCnt < MAX, "Key found in region.");
     }
-    if (val == NULL) {
+    if (val == nullptr) {
       if (regPtr->containsValueForKey(keyPtr)) {
         containsValueCnt++;
       } else {
@@ -147,8 +147,9 @@ void _verifyEntry(const char* name, const char* key, const char* val,
       ASSERT(containsValueCnt < MAX, "Value found in region.");
     }
 
-    if (val != NULL) {
-      auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
+    if (val != nullptr) {
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
       ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
       char buf[1024];
@@ -270,14 +271,16 @@ void createAndVerifyEntry(const char* name) {
   int64_t int64Key = 9223372036854775807LL;   // INT64_MAX
   int64_t in64Value = 9223372036854775807LL;  // INT64_MAX
   regPtr->create(int64Key, in64Value);
-  auto longRetValue = std::dynamic_pointer_cast<CacheableInt64>(regPtr->get(int64Key));
+  auto longRetValue =
+      std::dynamic_pointer_cast<CacheableInt64>(regPtr->get(int64Key));
   ASSERT(in64Value == longRetValue->value(),
          "longRetValue and longvalue should match");
 
   int64_t int64Key1 = 9223372036854775807LL;
   try {
     regPtr->create(int64Key1, in64Value);
-    auto longRetValue = std::dynamic_pointer_cast<CacheableInt64>(regPtr->get(int64Key));
+    auto longRetValue =
+        std::dynamic_pointer_cast<CacheableInt64>(regPtr->get(int64Key));
     FAIL("Expected EntryExistException here");
   } catch (EntryExistsException& e) {
     LOG(" Expected EntryExistsException exception thrown by localCreate");
@@ -450,7 +453,8 @@ void doGetAgain(const char* name, const char* key, const char* value) {
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
 
-  auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));  // force a netsearch
+  auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
+      regPtr->get(keyPtr));  // force a netsearch
 
   if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
@@ -459,7 +463,7 @@ void doGetAgain(const char* name, const char* key, const char* value) {
             checkPtr->asChar(), key);
     LOG(buf);
   } else {
-    LOG("checkPtr is NULL");
+    LOG("checkPtr is nullptr");
   }
   verifyEntry(name, key, value);
   LOG("GetAgain complete.");
@@ -488,7 +492,8 @@ void doNetsearch(const char* name, const char* key, const char* value) {
            "Value should not have been found in region.");
     count++;
   }
-  auto checkPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));  // force a netsearch
+  auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
+      regPtr->get(keyPtr));  // force a netsearch
 
   if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
@@ -497,7 +502,7 @@ void doNetsearch(const char* name, const char* key, const char* value) {
             checkPtr->asChar(), key);
     LOG(buf);
   } else {
-    LOG("checkPtr is NULL");
+    LOG("checkPtr is nullptr");
   }
   verifyEntry(name, key, value);
   LOG("Netsearch complete.");
@@ -555,14 +560,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreatePoolForUpdateLocatorList)
     /*
     PoolPtr  createPool(const char* poolName, const char* locators, const char*
     serverGroup,
-                  const char* servers = NULL, int redundancy = 0, bool
+                  const char* servers = nullptr, int redundancy = 0, bool
     clientNotification = false, int subscriptionAckInterval = -1,
                   int connections = -1, int loadConditioningInterval = - 1, bool
     isMultiuserMode = false, int updateLocatorListInterval = 5000 )
     */
     initClient(true);
-    getHelper()->createPool("__TESTPOOL1_", locatorsG, NULL, 0, false, -1, -1,
-                            -1, false);
+    getHelper()->createPool("__TESTPOOL1_", locatorsG, nullptr, 0, false, -1,
+                            -1, -1, false);
     LOG("CreatePoolForUpdateLocatorList complete.");
   }
 END_TASK_DEFINITION
@@ -572,14 +577,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreatePoolForDontUpdateLocatorList)
     /*
     PoolPtr  createPool(const char* poolName, const char* locators, const char*
     serverGroup,
-                  const char* servers = NULL, int redundancy = 0, bool
+                  const char* servers = nullptr, int redundancy = 0, bool
     clientNotification = false, int subscriptionAckInterval = -1,
                   int connections = -1, int loadConditioningInterval = - 1, bool
     isMultiuserMode = false, int updateLocatorListInterval = 5000 )
     */
     initClient(true);
-    getHelper()->createPool("__TESTPOOL1_", locatorsG, NULL, 0, false, -1, -1,
-                            -1, false);
+    getHelper()->createPool("__TESTPOOL1_", locatorsG, nullptr, 0, false, -1,
+                            -1, -1, false);
     LOG("CreatePoolForDontUpdateLocatorList complete.");
   }
 END_TASK_DEFINITION

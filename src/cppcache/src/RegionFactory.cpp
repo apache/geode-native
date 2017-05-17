@@ -49,7 +49,7 @@ RegionPtr RegionFactory::create(const char* name) {
   RegionAttributesPtr regAttr = m_attributeFactory->createRegionAttributes();
 
   // assuming pool name is not DEFAULT_POOL_NAME
-  if (regAttr->getPoolName() != NULL && strlen(regAttr->getPoolName()) > 0) {
+  if (regAttr->getPoolName() != nullptr && strlen(regAttr->getPoolName()) > 0) {
     // poolname is set
     CachePtr cache = CacheFactory::getAnyInstance();
     CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());

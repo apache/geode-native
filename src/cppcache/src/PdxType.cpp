@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 /*
-* PdxType.cpp
-*
-*  Created on: Nov 3, 2011
-*      Author: npatel
-*/
+ * PdxType.cpp
+ *
+ *  Created on: Nov 3, 2011
+ *      Author: npatel
+ */
 
 #include "PdxType.hpp"
 #include "PdxHelper.hpp"
@@ -45,7 +45,7 @@ PdxType::~PdxType() {
 
 PdxType::PdxType() : Serializable() {
   // m_lockObj = nullptr;
-  m_className = NULL;
+  m_className = nullptr;
   m_isLocal = false;
   m_numberOfVarLenFields = 0;
   m_varLenFieldIdx = 0;  // start with 0
@@ -54,8 +54,8 @@ PdxType::PdxType() : Serializable() {
   m_noJavaClass = false;
   // m_pdxDomainType = nullptr;
   m_pdxFieldTypes = new std::vector<PdxFieldTypePtr>();
-  m_localToRemoteFieldMap = NULL;
-  m_remoteToLocalFieldMap = NULL;
+  m_localToRemoteFieldMap = nullptr;
+  m_remoteToLocalFieldMap = nullptr;
   m_geodeTypeId = 0;
   /* adongre
    * Coverity - II
@@ -78,8 +78,8 @@ PdxType::PdxType(const char* pdxDomainClassName, bool isLocal)
   // m_fieldNameVsPdxType = CacheableHashMap::create();
   m_noJavaClass = false;
   m_pdxFieldTypes = new std::vector<PdxFieldTypePtr>();
-  m_localToRemoteFieldMap = NULL;
-  m_remoteToLocalFieldMap = NULL;
+  m_localToRemoteFieldMap = nullptr;
+  m_remoteToLocalFieldMap = nullptr;
   m_geodeTypeId = 0;
   /* adongre
    * Coverity - II
@@ -146,7 +146,7 @@ Serializable* PdxType::fromData(DataInput& input) {
   bool foundVarLenType = false;
 
   for (int i = 0; i < len; i++) {
-    auto  pft = std::make_shared<PdxFieldType>();
+    auto pft = std::make_shared<PdxFieldType>();
     pft->fromData(input);
 
     m_pdxFieldTypes->push_back(pft);
@@ -168,22 +168,22 @@ Serializable* PdxType::fromData(DataInput& input) {
 void PdxType::addFixedLengthTypeField(const char* fieldName,
                                       const char* className, int8_t typeId,
                                       int32_t size) {
-  if (fieldName == NULL /*|| *fieldName == '\0'*/ ||
+  if (fieldName == nullptr /*|| *fieldName == '\0'*/ ||
       m_fieldNameVsPdxType.find(fieldName) !=
           m_fieldNameVsPdxType
               .end()) {  // COVERITY ---> 30289 Same on both sides
     char excpStr[256] = {0};
     /* adongre
      * Coverity - II
-    * CID 29269: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
+     * CID 29269: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+     * "sprintf" can cause a
+     * buffer overflow when done incorrectly. Because sprintf() assumes an
+     * arbitrarily long string,
+     * callers must be careful not to overflow the actual space of the
+     * destination.
+     * Use snprintf() instead, or correct precision specifiers.
+     * Fix : using ACE_OS::snprintf
+     */
     ACE_OS::snprintf(
         excpStr, 256,
         "Field: %s is either already added into PdxWriter or it is null ",
@@ -191,15 +191,15 @@ void PdxType::addFixedLengthTypeField(const char* fieldName,
     throw IllegalStateException(excpStr);
   }
   auto pfxPtr = std::make_shared<PdxFieldType>(
-      fieldName, className, typeId, static_cast<int32_t>(m_pdxFieldTypes->size()),
-      false, size, 0);
+      fieldName, className, typeId,
+      static_cast<int32_t>(m_pdxFieldTypes->size()), false, size, 0);
   m_pdxFieldTypes->push_back(pfxPtr);
   m_fieldNameVsPdxType[fieldName] = pfxPtr;
 }
 
 void PdxType::addVariableLengthTypeField(const char* fieldName,
                                          const char* className, int8_t typeId) {
-  if (fieldName == NULL /*|| *fieldName == '\0'*/ ||
+  if (fieldName == nullptr /*|| *fieldName == '\0'*/ ||
       m_fieldNameVsPdxType.find(fieldName) !=
           m_fieldNameVsPdxType
               .end()) {  // COVERITY ---> 30289 Same on both sides
@@ -218,8 +218,9 @@ void PdxType::addVariableLengthTypeField(const char* fieldName,
   m_numberOfVarLenFields++;
   m_isVarLenFieldAdded = true;
   auto pfxPtr = std::make_shared<PdxFieldType>(
-      fieldName, className, typeId, static_cast<int32_t>(m_pdxFieldTypes->size()),
-      true, -1, m_varLenFieldIdx);
+      fieldName, className, typeId,
+      static_cast<int32_t>(m_pdxFieldTypes->size()), true, -1,
+      m_varLenFieldIdx);
   m_pdxFieldTypes->push_back(pfxPtr);
   m_fieldNameVsPdxType[fieldName] = pfxPtr;
 }
@@ -430,12 +431,12 @@ int32_t PdxType::variableLengthFieldPosition(PdxFieldTypePtr varLenField,
 }
 
 int32_t* PdxType::getLocalToRemoteMap() {
-  if (m_localToRemoteFieldMap != NULL) {
+  if (m_localToRemoteFieldMap != nullptr) {
     return m_localToRemoteFieldMap;
   }
 
   ReadGuard guard(m_lockObj);
-  if (m_localToRemoteFieldMap != NULL) {
+  if (m_localToRemoteFieldMap != nullptr) {
     return m_localToRemoteFieldMap;
   }
   initLocalToRemote();
@@ -444,12 +445,12 @@ int32_t* PdxType::getLocalToRemoteMap() {
 }
 
 int32_t* PdxType::getRemoteToLocalMap() {
-  if (m_remoteToLocalFieldMap != NULL) {
+  if (m_remoteToLocalFieldMap != nullptr) {
     return m_remoteToLocalFieldMap;
   }
 
   ReadGuard guard(m_lockObj);
-  if (m_remoteToLocalFieldMap != NULL) {
+  if (m_remoteToLocalFieldMap != nullptr) {
     return m_remoteToLocalFieldMap;
   }
   initRemoteToLocal();
@@ -529,7 +530,7 @@ PdxTypePtr PdxType::mergeVersion(PdxTypePtr otherVersion) {
       }
     }
     if (!found) {
-      auto newFt = std::make_shared< PdxFieldType>(
+      auto newFt = std::make_shared<PdxFieldType>(
           (*it)->getFieldName(), (*it)->getClassName(), (*it)->getTypeId(),
           static_cast<int32_t>(newone->m_pdxFieldTypes->size()),  // sequence id
           (*it)->IsVariableLengthType(), (*it)->getFixedSize(),
@@ -610,7 +611,7 @@ bool PdxType::Equals(PdxTypePtr otherObj) {
 
   PdxType* ot = dynamic_cast<PdxType*>(otherObj.get());
 
-  if (ot == NULL) return false;
+  if (ot == nullptr) return false;
 
   if (ot == this) return true;
 

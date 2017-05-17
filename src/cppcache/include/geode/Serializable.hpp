@@ -51,8 +51,7 @@ typedef PdxSerializable* (*TypeFactoryMethodPdx)();
  */
 
 class CPPCACHE_EXPORT Serializable
-    : public SharedBase,
-      public std::enable_shared_from_this<Serializable> {
+    : public std::enable_shared_from_this<Serializable> {
  public:
   /**
    *@brief serialize this object
@@ -160,7 +159,7 @@ class CPPCACHE_EXPORT Serializable
   /**
    * @brief constructors
    */
-  Serializable() : SharedBase() {}
+  Serializable() {}
 
  private:
   // Never defined.

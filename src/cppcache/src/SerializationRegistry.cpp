@@ -89,15 +89,15 @@ class TheTypeMap : private NonCopyable, private NonAssignable {
   TheTypeMap();
 
   virtual ~TheTypeMap() {
-    if (m_map != NULL) {
+    if (m_map != nullptr) {
       delete m_map;
     }
 
-    if (m_map2 != NULL) {
+    if (m_map2 != nullptr) {
       delete m_map2;
     }
 
-    if (m_pdxTypemap != NULL) {
+    if (m_pdxTypemap != nullptr) {
       delete m_pdxTypemap;
     }
   }
@@ -370,7 +370,7 @@ SerializablePtr SerializationRegistry::deserialize(DataInput& input,
     compId |= ((static_cast<int64_t>(classId)) << 32);
   }
 
-  TypeFactoryMethod createType = NULL;
+  TypeFactoryMethod createType = nullptr;
 
   if (compId == GeodeTypeIdsImpl::FixedIDByte) {
     int8_t fixedId;
@@ -394,7 +394,7 @@ SerializablePtr SerializationRegistry::deserialize(DataInput& input,
   } else {
     theTypeMap::instance()->find(compId, createType);
   }
-  if (createType == NULL) {
+  if (createType == nullptr) {
     if (findinternal) {
       LOGERROR(
           "Unregistered class ID %d during deserialization: Did the "
@@ -489,15 +489,10 @@ int32_t SerializationRegistry::GetPDXIdForType(const char* poolName,
                                                SerializablePtr pdxType) {
   PoolPtr pool = nullptr;
 
-  if (poolName == NULL) {
-    const HashMapOfPools& pools = PoolManager::getAll();
-    if (pools.size() > 0) {
-      for (HashMapOfPools::Iterator iter = pools.begin(); iter != pools.end();
-           ++iter) {
-        PoolPtr currPool(iter.second());
-        pool = currPool;
-        break;
-      }
+  if (poolName == nullptr) {
+    for (const auto& iter : PoolManager::getAll()) {
+      pool = iter.second;
+      break;
     }
   } else {
     pool = PoolManager::find(poolName);
@@ -514,12 +509,10 @@ SerializablePtr SerializationRegistry::GetPDXTypeById(const char* poolName,
                                                       int32_t typeId) {
   PoolPtr pool = nullptr;
 
-  if (poolName == NULL) {
-    const HashMapOfPools& pools = PoolManager::getAll();
-    if (pools.size() > 0) {
-      HashMapOfPools::Iterator iter = pools.begin();
-      PoolPtr currPool(iter.second());
-      pool = currPool;
+  if (poolName == nullptr) {
+    for (const auto& iter : PoolManager::getAll()) {
+      pool = iter.second;
+      break;
     }
   } else {
     pool = PoolManager::find(poolName);
@@ -551,13 +544,9 @@ SerializablePtr SerializationRegistry::GetEnum(int32_t val) {
 
 PoolPtr SerializationRegistry::getPool() {
   PoolPtr pool = nullptr;
-  const HashMapOfPools& pools = PoolManager::getAll();
-  if (pools.size() > 0) {
-    for (HashMapOfPools::Iterator iter = pools.begin(); iter != pools.end();
-         ++iter) {
-      pool = iter.second();
-      break;
-    }
+  for (const auto& iter: PoolManager::getAll()) {
+    pool = iter.second;
+    break;
   }
   return pool;
 }

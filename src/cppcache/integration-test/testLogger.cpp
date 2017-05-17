@@ -33,7 +33,7 @@ int numOfLinesInFile(const char* fname) {
   char* read;
   int ln_cnt = 0;
   FILE* fp = fopen(fname, "r");
-  if (fp == NULL) {
+  if (fp == nullptr) {
     return -1;
   }
   while (!!(read = fgets(line, sizeof line, fp))) {

@@ -24,7 +24,7 @@ error,
 request, int8_t& version, bool & dummy, const BucketServerLocationPtr&
 serverLocation )
 {
-  TcrConnection* conn = NULL;
+  TcrConnection* conn = nullptr;
   if( isBGThread ){
     conn = ThinClientPoolDM::getConnectionFromQueueW( error, excludeServers,
 isBGThread, request, version, dummy, serverLocation);
@@ -45,7 +45,7 @@ bool isTransaction )
 }
 void ThinClientPoolStickyHADM::setStickyNull( bool isBGThread )
 {
-   if( !isBGThread ) m_manager->setStickyConnection( NULL, false );
+   if( !isBGThread ) m_manager->setStickyConnection( nullptr, false );
 }
 
 void ThinClientPoolStickyHADM::cleanStickyConnections(volatile bool& isRunning)

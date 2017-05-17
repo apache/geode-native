@@ -66,9 +66,10 @@ char* FETimeOut = (char*)"FunctionExecutionTimeOut";
           "std::dynamic_pointer_cast<CacheableString>(resultList->operator[](" \
           "i))->asChar() "                                                     \
           "= %s ",                                                             \
-          buf, std::dynamic_pointer_cast<CacheableString>(                     \
-                   resultList->operator[](i))                                  \
-                   ->asChar());                                                \
+          buf,                                                                 \
+          std::dynamic_pointer_cast<CacheableString>(                          \
+              resultList->operator[](i))                                       \
+              ->asChar());                                                     \
       found = true;                                                            \
       break;                                                                   \
     }                                                                          \
@@ -88,9 +89,10 @@ char* FETimeOut = (char*)"FunctionExecutionTimeOut";
           "std::dynamic_pointer_cast<CacheableString>(resultList->operator[](" \
           "i))->asChar() "                                                     \
           "= %s ",                                                             \
-          buf, std::dynamic_pointer_cast<CacheableString>(                     \
-                   resultList->operator[](i))                                  \
-                   ->asChar());                                                \
+          buf,                                                                 \
+          std::dynamic_pointer_cast<CacheableString>(                          \
+              resultList->operator[](i))                                       \
+              ->asChar());                                                     \
       found = true;                                                            \
       break;                                                                   \
     }                                                                          \
@@ -220,7 +222,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER, StartS12)
   {
-    const char* lhp = NULL;
+    const char* lhp = nullptr;
     if (!isPoolWithEndpoint) lhp = locHostPort;
     if (isLocalServer) {
       CacheHelper::initServer(1, "func_cacheserver1_pool.xml", lhp);
@@ -233,7 +235,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER, startServer2)
   {
-    const char* lhp = NULL;
+    const char* lhp = nullptr;
     if (!isPoolWithEndpoint) lhp = locHostPort;
     if (isLocalServer) {
       CacheHelper::initServer(2, "func_cacheserver2_pool.xml", lhp);
@@ -243,9 +245,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
   {
-    initClientWithPool(true, NULL, locHostPort, serverGroup, nullptr, 0, true);
+    initClientWithPool(true, nullptr, locHostPort, serverGroup, nullptr, 0,
+                       true);
 
-    auto regPtr0 = createRegionAndAttachPool(poolRegNames[0], USE_ACK, NULL);
+    auto regPtr0 = createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
     regPtr0->registerAllKeys();
 
     LOG("Clnt1Init complete.");
@@ -280,7 +283,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       // test data dependant function
       //     test get function with result
       auto exc = FunctionService::onRegion(regPtr0);
-      ASSERT(exc != nullptr, "onRegion Returned NULL");
+      ASSERT(exc != nullptr, "onRegion Returned nullptr");
       args = CacheableKey::create("echoString");
       CacheablePtr args1 = CacheableKey::create("echoBoolean");
       auto exe1 = exc->withArgs(args);
@@ -289,7 +292,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       auto resultList = CacheableVector::create();
       auto executeFunctionResult = exe1->execute(rjFuncName, 15)->getResult();
       if (executeFunctionResult == nullptr) {
-        ASSERT(false, "echo String : executeFunctionResult is NULL");
+        ASSERT(false, "echo String : executeFunctionResult is nullptr");
       } else {
         sprintf(buf, "echo String : result count = %d",
                 executeFunctionResult->size());
@@ -313,7 +316,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
                                   ->execute(rjFuncName, 15)
                                   ->getResult();
       if (executeFunctionResult == nullptr) {
-        ASSERT(false, "echo String : executeFunctionResult is NULL");
+        ASSERT(false, "echo String : executeFunctionResult is nullptr");
       } else {
         sprintf(buf, "echo String : result count = %d",
                 executeFunctionResult->size());
@@ -330,7 +333,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
                                   ->execute(rjFuncName, 15)
                                   ->getResult();
       if (executeFunctionResult == nullptr) {
-        ASSERT(false, "echo Boolean: executeFunctionResult is NULL");
+        ASSERT(false, "echo Boolean: executeFunctionResult is nullptr");
       } else {
         sprintf(buf, "echo Boolean: result count = %d",
                 executeFunctionResult->size());
@@ -349,15 +352,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       /****
        **decomposed from above long expression:
       exc =  exc->withFilter(routingObj);
-      ASSERT(exc!=nullptr, "withFilter Returned NULL");
+      ASSERT(exc!=nullptr, "withFilter Returned nullptr");
       exc = exc->withArgs(args);
-      ASSERT(exc!=nullptr, "withArgs Returned NULL");
+      ASSERT(exc!=nullptr, "withArgs Returned nullptr");
       ResultCollectorPtr rc = exc->execute(getFuncName, getResult);
-      ASSERT(rc!=nullptr, "execute Returned NULL");
+      ASSERT(rc!=nullptr, "execute Returned nullptr");
       CacheableVectorPtr executeFunctionResult = rc->getResult();
       */
       if (executeFunctionResult == nullptr) {
-        ASSERT(false, "region get: executeFunctionResult is NULL");
+        ASSERT(false, "region get: executeFunctionResult is nullptr");
       } else {
         for (unsigned item = 0;
              item < static_cast<uint32_t>(executeFunctionResult->size());
@@ -410,7 +413,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       LOG(buf);
       if (executeFunctionResult == nullptr) {
         ASSERT(false,
-               "region get new collector: executeFunctionResult is NULL");
+               "region get new collector: executeFunctionResult is nullptr");
       } else {
         resultList->clear();
         for (unsigned item = 0;
@@ -459,7 +462,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
                                   ->getResult();
 
       if (executeFunctionResult == nullptr) {
-        ASSERT(false, "get executeFunctionResult is NULL");
+        ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
         sprintf(buf, "echo String : result count = %d",
                 executeFunctionResult->size());
@@ -523,16 +526,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       getResult = true;
 
       auto funcExec = FunctionService::onRegion(regPtr0);
-      ASSERT(funcExec != nullptr, "onRegion Returned NULL");
+      ASSERT(funcExec != nullptr, "onRegion Returned nullptr");
 
       auto collector = funcExec->withArgs(args)->withFilter(filter)->execute(
           exFuncNameSendException, 15);
-      ASSERT(collector != nullptr, "onRegion collector NULL");
+      ASSERT(collector != nullptr, "onRegion collector nullptr");
 
       auto result = collector->getResult();
 
       if (result == nullptr) {
-        ASSERT(false, "echo String : result is NULL");
+        ASSERT(false, "echo String : result is nullptr");
       } else {
         for (int i = 0; i < result->size(); i++) {
           ASSERT(validateResultTypeIsUserFunctionExecutionException(
@@ -545,7 +548,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
       collector = funcExec->withArgs(arrList)->withFilter(filter)->execute(
           exFuncNameSendException, 15);
-      ASSERT(collector != nullptr, "onRegion collector for arrList NULL");
+      ASSERT(collector != nullptr, "onRegion collector for arrList nullptr");
 
       result = collector->getResult();
       LOGINFO("result->size() = %d & arrList->size()  = %d ", result->size(),
@@ -567,7 +570,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       args = CacheableString::create("Multiple");
       collector = funcExec->withArgs(args)->withFilter(filter)->execute(
           exFuncNameSendException, 15);
-      ASSERT(collector != nullptr, "onRegion collector for string NULL");
+      ASSERT(collector != nullptr, "onRegion collector for string nullptr");
       result = collector->getResult();
       LOGINFO("result->size() for Multiple String = %d ", result->size());
       ASSERT(result->size() == 1,
@@ -602,7 +605,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       ASSERT(1 == myRC1->getEndResultCount(), "end result count is not 1");
       ASSERT(1 == myRC1->getGetResultCount(), "get result count is not 1");
       if (result == nullptr) {
-        ASSERT(false, "region get new collector: result is NULL");
+        ASSERT(false, "region get new collector: result is nullptr");
       } else {
         LOGINFO("Region get new collector: result count = %d", result->size());
         ASSERT(1 == result->size(),
@@ -639,7 +642,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       executeFunctionResult =
           exc->withArgs(args)->execute(getFuncIName, getResult)->getResult();
       if (executeFunctionResult == nullptr) {
-        ASSERT(false, "get executeFunctionResult is NULL");
+        ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
         resultList->clear();
         for (unsigned item = 0;
@@ -720,7 +723,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
               ->getResult();
       LOGINFO("FE on pdxObject done");
       if (executeFunctionResultPdx == nullptr) {
-        ASSERT(false, "get executeFunctionResultPdx is NULL");
+        ASSERT(false, "get executeFunctionResultPdx is nullptr");
       } else {
         LOGINFO("executeFunctionResultPdx size for PdxObject = %d ",
                 executeFunctionResultPdx->size());
@@ -742,10 +745,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
           sprintf(buf, "result[%d] is null\n", i);
           ASSERT(resultListPdx->operator[](i) != nullptr, buf);
           LOG("resultPdx item is not null");
-          LOGINFO("get result[%d]=%s", i, std::dynamic_pointer_cast<PdxTypes8>(
-                                              resultListPdx->operator[](i))
-                                              ->toString()
-                                              ->asChar());
+          LOGINFO(
+              "get result[%d]=%s", i,
+              std::dynamic_pointer_cast<PdxTypes8>(resultListPdx->operator[](i))
+                  ->toString()
+                  ->asChar());
           auto pdxObj2 = std::dynamic_pointer_cast<PdxTypes8>(
               resultListPdx->operator[](i));
           ASSERT(pdxobj->equals(pdxObj2) == true,
@@ -790,7 +794,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
               ->getResult();
       LOGINFO("FE on pdxObject done");
       if (executeFunctionResultPdxInstance == nullptr) {
-        ASSERT(false, "get executeFunctionResultPdxInstance is NULL");
+        ASSERT(false, "get executeFunctionResultPdxInstance is nullptr");
       } else {
         LOGINFO("executeFunctionResultPdxInstance size for PdxObject = %d ",
                 executeFunctionResultPdxInstance->size());
@@ -845,7 +849,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       // adding one more server, this should be return by locator and then
       // function should be executed on all the 3 servers
 
-      const char* lhp = NULL;
+      const char* lhp = nullptr;
       if (!isPoolWithEndpoint) lhp = locHostPort;
 
       if (isLocalServer) {
@@ -860,7 +864,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       executeFunctionResult =
           exc->withArgs(args)->execute(getFuncIName, getResult)->getResult();
       if (executeFunctionResult == nullptr) {
-        ASSERT(false, "get executeFunctionResult is NULL");
+        ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
         resultList->clear();
         for (unsigned item = 0;
@@ -914,13 +918,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
       collector =
           funcExec->withArgs(args)->execute(exFuncNameSendException, 15);
-      ASSERT(collector != nullptr, "onServers collector for bool NULL");
+      ASSERT(collector != nullptr, "onServers collector for bool nullptr");
 
       result = collector->getResult();
       ASSERT(result->size() == 3,
              "Should have got 3 exception strings for sendException.");
       if (result == nullptr) {
-        ASSERT(false, "echo String : result is NULL");
+        ASSERT(false, "echo String : result is nullptr");
       } else {
         for (int i = 0; i < result->size(); i++) {
           ASSERT(validateResultTypeIsUserFunctionExecutionException(
@@ -932,7 +936,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
       collector =
           funcExec->withArgs(arrList)->execute(exFuncNameSendException, 15);
-      ASSERT(collector != nullptr, "onServers collector for arrList NULL");
+      ASSERT(collector != nullptr, "onServers collector for arrList nullptr");
 
       result = collector->getResult();
       ASSERT(result->size() == (arrList->size() + 1) * 3,
@@ -959,7 +963,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       args = CacheableString::create("Multiple");
       collector =
           funcExec->withArgs(args)->execute(exFuncNameSendException, 15);
-      ASSERT(collector != nullptr, "onServers collector for string NULL");
+      ASSERT(collector != nullptr, "onServers collector for string nullptr");
 
       result = collector->getResult();
       ASSERT(result->size() == 3,
@@ -990,7 +994,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       LOGINFO("end result count = %d", myRC2->getEndResultCount());
       LOGINFO("get result count = %d", myRC2->getGetResultCount());
       if (result == nullptr) {
-        ASSERT(false, "region get new collector: result is NULL");
+        ASSERT(false, "region get new collector: result is nullptr");
       } else {
         LOGINFO("Region get new collector: result count = %d", result->size());
         ASSERT(3 == result->size(),
@@ -1037,7 +1041,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client2OpTest)
                     ->execute(FETimeOut, 5000)
                     ->getResult();
       if (fe == nullptr) {
-        ASSERT(false, "functionResult is NULL");
+        ASSERT(false, "functionResult is nullptr");
       } else {
         sprintf(buf, "result count = %d", fe->size());
         LOG(buf);
@@ -1057,7 +1061,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client2OpTest)
                      ->execute(FETimeOut, 5000)
                      ->getResult();
       if (vec == nullptr) {
-        ASSERT(false, "functionResult is NULL");
+        ASSERT(false, "functionResult is nullptr");
       } else {
         sprintf(buf, "result count = %d", vec->size());
         LOG(buf);
@@ -1077,7 +1081,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client2OpTest)
                       ->execute(FETimeOut, 5000)
                       ->getResult();
       if (vecs == nullptr) {
-        ASSERT(false, "functionResult is NULL");
+        ASSERT(false, "functionResult is nullptr");
       } else {
         sprintf(buf, "result count = %d", vecs->size());
         LOG(buf);

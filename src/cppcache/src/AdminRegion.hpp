@@ -53,8 +53,7 @@ class CacheImpl;
  *
  * FIX : Make the class noncopyabl3
  */
-class AdminRegion : public SharedBase,
-                    private NonCopyable,
+class AdminRegion : private NonCopyable,
                     private NonAssignable,
                     public std::enable_shared_from_this<AdminRegion> {
  private:
@@ -72,16 +71,15 @@ class AdminRegion : public SharedBase,
       : m_distMngr(nullptr),
         m_fullPath("/__ADMIN_CLIENT_HEALTH_MONITORING__"),
         m_connectionMgr(nullptr),
-        m_destroyPending(false)
-       {}
+        m_destroyPending(false) {}
 
   ~AdminRegion();
 
   FRIEND_STD_SHARED_PTR(AdminRegion)
 
  public:
-  static std::shared_ptr<AdminRegion> create(CacheImpl* cache,
-                                             ThinClientBaseDM* distMan = NULL);
+  static std::shared_ptr<AdminRegion> create(
+      CacheImpl* cache, ThinClientBaseDM* distMan = nullptr);
   ACE_RW_Thread_Mutex& getRWLock();
   const bool& isDestroyed();
   void close();

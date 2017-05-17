@@ -29,7 +29,7 @@
 using namespace apache::geode::client;
 using namespace test;
 
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 bool isLocalServer = false;
 
 static bool isLocator = false;
@@ -40,7 +40,7 @@ const char* locatorsG =
 #define SERVER1 s2p1
 
 void initClient(const bool isthinClient) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr props = Properties::create();
     props->insert("ssl-enabled", "true");
     std::string keystore = std::string(ACE_OS::getenv("TESTSRC")) + "/keystore";
@@ -54,17 +54,16 @@ void initClient(const bool isthinClient) {
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
-
 
 void createPooledRegion(const char* name, bool ackMode, const char* locators,
                         const char* poolname,
@@ -101,11 +100,9 @@ void createEntry(const char* name, const char* key, const char* value) {
   regPtr->put(keyPtr, valPtr);
   LOG("Created entry.");
 
-  //verifyEntry(name, key, value);
+  // verifyEntry(name, key, value);
   LOG("Entry created.");
 }
-
-
 
 const char* keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
 const char* vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
@@ -125,12 +122,12 @@ DUNIT_TASK_DEFINITION(SERVER1, CreateLocator1_With_SSL_untrustedCert)
   }
 END_TASK_DEFINITION
 
-
-
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1_With_Locator_And_SSL_untrustedCert)
   {
     // starting servers
-    if (isLocalServer) CacheHelper::initServer(1, NULL, locatorsG, NULL, true, true, false, false, false);
+    if (isLocalServer)
+      CacheHelper::initServer(1, nullptr, locatorsG, nullptr, true, true, false,
+                              false, false);
   }
 END_TASK_DEFINITION
 
@@ -147,8 +144,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateRegions1_PoolLocators)
     try {
       regPtr->registerAllKeys(false, nullptr, false, false);
       FAIL("Should have got NotConnectedException during registerAllKeys");
-    }
-    catch (NotConnectedException exp) {
+    } catch (NotConnectedException exp) {
       LOG("Connection Failed as expected via NotConnectedException");
     }
     LOG("CreateRegions1_PoolLocators complete.");

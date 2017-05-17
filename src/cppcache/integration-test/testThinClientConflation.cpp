@@ -43,7 +43,8 @@ class OperMonitor : public CacheListener {
     char buf[256] = {'\0'};
     m_events++;
     auto keyPtr = std::dynamic_pointer_cast<CacheableString>(event.getKey());
-    auto valuePtr = std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
+    auto valuePtr =
+        std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
 
     if (valuePtr != nullptr) {
       m_value = valuePtr->value();
@@ -210,7 +211,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, InitializeClient2WithNone)
   {
-    initClientCache(mon1C2, mon2C2, 1, NULL);
+    initClientCache(mon1C2, mon2C2, 1, nullptr);
     LOG("InitializeClient2WithNone complete");
   }
 END_TASK_DEFINITION

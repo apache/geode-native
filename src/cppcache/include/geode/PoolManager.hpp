@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_POOLMANAGER_H_
-#define GEODE_POOLMANAGER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,8 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_POOLMANAGER_H_
+#define GEODE_POOLMANAGER_H_
+
+#include <unordered_map>
+#include <string>
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
+
 #include "Pool.hpp"
 #include "PoolFactory.hpp"
 #include "Region.hpp"
@@ -29,7 +34,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-typedef HashMapT<CacheableStringPtr, PoolPtr> HashMapOfPools;
+typedef std::unordered_map<std::string, PoolPtr> HashMapOfPools;
 
 /**
  * Manages creation and access to {@link Pool connection pools} for clients.

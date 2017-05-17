@@ -21,8 +21,8 @@
  */
 
 /**
-* @file
-*/
+ * @file
+ */
 
 #include <geode/geode_globals.hpp>
 #include <geode/CacheStatistics.hpp>
@@ -92,33 +92,33 @@ typedef std::unordered_map<CacheableKeyPtr, std::pair<CacheablePtr, int> >
     MapOfOldValue;
 
 /**
-* @class LocalRegion LocalRegion.hpp
-*
-* This class manages subregions and cached data. Each region
-* can contain multiple subregions and entries for data.
-* Regions provide a hierachical name space
-* within the cache. Also, a region can be used to group cached
-* objects for management purposes.
-*
-* The Region interface basically contains two set of APIs: Region management
-* APIs; and (potentially) distributed operations on entries. Non-distributed
-* operations on entries  are provided by <code>RegionEntry</code>.
-*
-* Each <code>Cache</code>  defines regions called the root regions.
-* User applications can use the root regions to create subregions
-* for isolated name space and object grouping.
-*
-* A region's name can be any String except that it should not contain
-* the region name separator, a forward slash (/).
-*
-* <code>Regions</code>  can be referenced by a relative path name from any
-* region
-* higher in the hierarchy in {@link Region::getSubregion}. You can get the
-* relative
-* path from the root region with {@link Region::getFullPath}. The name separator
-* is used to concatenate all the region names together from the root, starting
-* with the root's subregions.
-*/
+ * @class LocalRegion LocalRegion.hpp
+ *
+ * This class manages subregions and cached data. Each region
+ * can contain multiple subregions and entries for data.
+ * Regions provide a hierachical name space
+ * within the cache. Also, a region can be used to group cached
+ * objects for management purposes.
+ *
+ * The Region interface basically contains two set of APIs: Region management
+ * APIs; and (potentially) distributed operations on entries. Non-distributed
+ * operations on entries  are provided by <code>RegionEntry</code>.
+ *
+ * Each <code>Cache</code>  defines regions called the root regions.
+ * User applications can use the root regions to create subregions
+ * for isolated name space and object grouping.
+ *
+ * A region's name can be any String except that it should not contain
+ * the region name separator, a forward slash (/).
+ *
+ * <code>Regions</code>  can be referenced by a relative path name from any
+ * region
+ * higher in the hierarchy in {@link Region::getSubregion}. You can get the
+ * relative
+ * path from the root region with {@link Region::getFullPath}. The name
+ * separator is used to concatenate all the region names together from the root,
+ * starting with the root's subregions.
+ */
 typedef SharedPtr<LocalRegion> LocalRegionPtr;
 
 class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
@@ -127,8 +127,8 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
    */
  public:
   /**
-  * @brief constructor/destructor
-  */
+   * @brief constructor/destructor
+   */
   LocalRegion(const std::string& name, CacheImpl* cache,
               const RegionInternalPtr& rPtr,
               const RegionAttributesPtr& attributes,
@@ -227,7 +227,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                                CacheablePtr& oldValue, int updateCount,
                                const CacheEventFlags eventFlags,
                                VersionTagPtr versionTag,
-                               DataInput* delta = NULL,
+                               DataInput* delta = nullptr,
                                EventIdPtr eventId = nullptr);
   virtual GfErrType putNoThrowTX(const CacheableKeyPtr& key,
                                  const CacheablePtr& value,
@@ -235,7 +235,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                                  CacheablePtr& oldValue, int updateCount,
                                  const CacheEventFlags eventFlags,
                                  VersionTagPtr versionTag,
-                                 DataInput* delta = NULL,
+                                 DataInput* delta = nullptr,
                                  EventIdPtr eventId = nullptr);
   virtual GfErrType createNoThrow(const CacheableKeyPtr& key,
                                   const CacheablePtr& value,
@@ -296,7 +296,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                      const CacheableKeyPtr& keyPtr,
                      const CacheablePtr& valuePtr, CacheablePtr& oldValue,
                      bool cachingEnabled, int updateCount, int destroyTracker,
-                     VersionTagPtr versionTag, DataInput* delta = NULL,
+                     VersionTagPtr versionTag, DataInput* delta = nullptr,
                      EventIdPtr eventId = nullptr);
   GfErrType invalidateLocal(const char* name, const CacheableKeyPtr& keyPtr,
                             const CacheablePtr& value,
@@ -401,7 +401,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
 
   CacheablePtr handleReplay(GfErrType& err, CacheablePtr value) const;
 
-  bool isLocalOp(const CacheEventFlags* eventFlags = NULL) {
+  bool isLocalOp(const CacheEventFlags* eventFlags = nullptr) {
     return typeid(*this) == typeid(LocalRegion) ||
            (eventFlags && eventFlags->isLocal());
   }
@@ -412,7 +412,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                           const UserDataPtr& aCallbackArgument,
                           CacheablePtr& oldValue, int updateCount,
                           const CacheEventFlags eventFlags,
-                          VersionTagPtr versionTag, DataInput* delta = NULL,
+                          VersionTagPtr versionTag, DataInput* delta = nullptr,
                           EventIdPtr eventId = nullptr);
 
   template <typename TAction>
@@ -421,7 +421,8 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                             const UserDataPtr& aCallbackArgument,
                             CacheablePtr& oldValue, int updateCount,
                             const CacheEventFlags eventFlags,
-                            VersionTagPtr versionTag, DataInput* delta = NULL,
+                            VersionTagPtr versionTag,
+                            DataInput* delta = nullptr,
                             EventIdPtr eventId = nullptr);
 
   /* protected attributes */

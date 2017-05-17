@@ -40,7 +40,7 @@ CredentialGeneratorPtr credentialGeneratorHandler;
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
   const char* path = ACE_OS::getenv("TESTSRC");
-  ASSERT(path != NULL,
+  ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
   strcat(xmlPath, "xml/Security/");
@@ -67,7 +67,7 @@ void initCredentialGenerator() {
   }
 
   if (credentialGeneratorHandler == nullptr) {
-    FAIL("credentialGeneratorHandler is NULL");
+    FAIL("credentialGeneratorHandler is nullptr");
   }
 
   loopNum++;
@@ -79,7 +79,7 @@ void initClientAuth(char credentialsType) {
   userCreds = Properties::create();
   PropertiesPtr config = Properties::create();
   if (credentialGeneratorHandler == nullptr) {
-    FAIL("credentialGeneratorHandler is NULL");
+    FAIL("credentialGeneratorHandler is nullptr");
   }
   bool insertAuthInit = true;
   switch (credentialsType) {
@@ -136,7 +136,7 @@ DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateServer1)
     initCredentialGenerator();
     std::string cmdServerAuthenticator;
     if (credentialGeneratorHandler == nullptr) {
-      FAIL("credentialGeneratorHandler is NULL");
+      FAIL("credentialGeneratorHandler is nullptr");
     }
 
     try {
@@ -146,7 +146,7 @@ DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateServer1)
         printf("Input to server cmd is -->  %s",
                cmdServerAuthenticator.c_str());
         CacheHelper::initServer(
-            1, NULL, locHostPort,
+            1, nullptr, locHostPort,
             const_cast<char*>(cmdServerAuthenticator.c_str()));
         LOG("Server1 started");
       }
@@ -198,7 +198,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
         virtualCache->getRegion(regionNamesAuth[0])->put(keys[0], vals[0]);
         LOG("Operation allowed, something is wrong.");
       } else {
-        LOG("Pool is NULL");
+        LOG("Pool is nullptr");
       }
       FAIL("Should have thrown AuthenticationFailedException.");
     } catch (
@@ -232,7 +232,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
             apache::geode::client::CacheableKey::create(keys[0]));
         LOG("Operation allowed.");
       } else {
-        LOG("Pool is NULL");
+        LOG("Pool is nullptr");
       }
     } catch (const apache::geode::client::Exception& other) {
       other.printStackTrace();
@@ -256,7 +256,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepThree)
         RegionServicePtr virtualCache = getVirtualCache(userCreds, pool);
         virtualCache->getRegion(regionNamesAuth[0])->put(keys[0], vals[0]);
       } else {
-        LOG("Pool is NULL");
+        LOG("Pool is nullptr");
       }
     } catch (const apache::geode::client::Exception& other) {
       other.printStackTrace();
@@ -287,7 +287,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, StepFour)
         RegionServicePtr virtualCache = getVirtualCache(userCreds, pool);
         virtualCache->getRegion(regionNamesAuth[0])->put(keys[0], vals[0]);
       } else {
-        LOG("Pool is NULL");
+        LOG("Pool is nullptr");
       }
       FAIL("Should have thrown AuthenticationRequiredException.");
     } catch (
@@ -321,7 +321,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFive)
         virtualCache = getVirtualCache(userCreds, pool);
         virtualRegion = virtualCache->getRegion(regionNamesAuth[1]);
       } else {
-        LOG("Pool is NULL");
+        LOG("Pool is nullptr");
       }
       CacheableKeyPtr keyPtr = CacheableKey::create(keys[0]);
       LOG("before get");
@@ -334,7 +334,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFive)
                 checkPtr->asChar(), keys[0]);
         LOG(buf);
       } else {
-        LOG("checkPtr is NULL");
+        LOG("checkPtr is nullptr");
       }
     } catch (const apache::geode::client::Exception& other) {
       other.printStackTrace();
@@ -361,7 +361,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
         virtualRegion->put(keys[0], nvals[0]);
         LOG("Operation allowed, something is wrong.");
       } else {
-        LOG("Pool is NULL");
+        LOG("Pool is nullptr");
       }
     } catch (const apache::geode::client::Exception& other) {
       other.printStackTrace();
@@ -397,7 +397,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSeven)
         virtualRegion->put(keys[0], nvals[0]);
         LOG("Operation allowed, something is wrong.");
       } else {
-        LOG("Pool is NULL");
+        LOG("Pool is nullptr");
       }
       FAIL("Should have thrown AuthenticationFailedException.");
     } catch (
@@ -427,7 +427,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
         virtualCache = getVirtualCache(userCreds, pool);
         virtualRegion = virtualCache->getRegion(regionNamesAuth[1]);
       } else {
-        LOG("Pool is NULL");
+        LOG("Pool is nullptr");
       }
 
       CacheTransactionManagerPtr txManager =
@@ -452,7 +452,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
                 checkPtr->asChar(), "TxKey");
         LOG(buf);
       } else {
-        LOG("checkPtr is NULL");
+        LOG("checkPtr is nullptr");
       }
 
       txManager->begin();
@@ -473,7 +473,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
                 checkPtr->asChar(), "TxKey");
         LOG(buf);
       } else {
-        LOG("checkPtr is NULL");
+        LOG("checkPtr is nullptr");
       }
     } catch (const apache::geode::client::Exception& other) {
       other.printStackTrace();

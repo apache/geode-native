@@ -29,7 +29,7 @@
 using namespace apache::geode::client;
 using namespace test;
 
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 bool isLocalServer = false;
 
 static bool isLocator = false;
@@ -52,7 +52,7 @@ int PdxDeltaEx::m_fromDataCount = 0;
 int PdxDeltaEx::m_cloneCount = 0;
 
 void initClient(const bool isthinClient) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
@@ -64,14 +64,14 @@ void initClientNoPools() {
 }
 
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
@@ -93,7 +93,7 @@ void createPooledExpirationRegion(const char* name, const char* poolname) {
   LOG("createPooledExpirationRegion() entered.");
   // Entry time-to-live = 1 second.
   RegionPtr regPtr = getHelper()->createPooledRegionDiscOverFlow(
-      name, true, locatorsG, poolname, true, true, 1, 0, 0, 0, 0, NULL,
+      name, true, locatorsG, poolname, true, true, 1, 0, 0, 0, 0, nullptr,
       ExpirationAction::LOCAL_INVALIDATE);
 }
 

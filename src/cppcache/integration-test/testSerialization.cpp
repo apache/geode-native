@@ -132,7 +132,7 @@ class OtherType : public Serializable {
     LOG(logmsg);
     XASSERT(otPtr != nullptr);
     OtherType* ot = static_cast<OtherType*>(otPtr.get());
-    XASSERT(ot != NULL);
+    XASSERT(ot != nullptr);
 
     printf("Validating OtherType: %d, %s, %c, %e\n", ot->m_struct.a,
            ot->m_struct.b ? "true" : "false", ot->m_struct.c, ot->m_struct.d);

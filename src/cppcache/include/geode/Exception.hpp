@@ -55,8 +55,8 @@ class CPPCACHE_EXPORT Exception : public SharedBase {
    * @param  cause optional cause of the exception which can be later
    *               retrieved using <code>getCause</code>
    **/
-  Exception(const char* msg1, const char* msg2 = NULL, bool forceTrace = false,
-            const ExceptionPtr& cause = nullptr);
+  Exception(const char* msg1, const char* msg2 = nullptr,
+            bool forceTrace = false, const ExceptionPtr& cause = nullptr);
 
   /** Creates an exception as a copy of the given other exception.
    * @param  other the original exception.
@@ -83,14 +83,14 @@ class CPPCACHE_EXPORT Exception : public SharedBase {
   virtual void showMessage() const;
 
   /** On some platforms, print a stacktrace from the location the exception
-    * was created.
-    */
+   * was created.
+   */
   virtual void printStackTrace() const;
 
 #ifndef _SOLARIS
   /** On some platforms, get a stacktrace string from the location the
-    * exception was created.
-    */
+   * exception was created.
+   */
   virtual size_t getStackTrace(char* buffer, size_t maxLength) const;
 #endif
 

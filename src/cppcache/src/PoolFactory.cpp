@@ -122,7 +122,7 @@ PoolPtr PoolFactory::create(const char* name) {
     // Create a clone of Attr;
     PoolAttributesPtr copyAttrs = m_attrs->clone();
 
-    if (CacheImpl::getInstance() == NULL) {
+    if (CacheImpl::getInstance() == nullptr) {
       throw IllegalStateException("Cache has not been created.");
     }
 
@@ -172,8 +172,7 @@ PoolPtr PoolFactory::create(const char* name) {
       }
     }
 
-    connectionPools->insert(CacheableString::create(name),
-                            std::static_pointer_cast<GF_UNWRAP_SP(PoolPtr)>(poolDM));
+    connectionPools->insert({name, std::static_pointer_cast<Pool>(poolDM)});
   }
 
   // TODO: poolDM->init() should not throw exceptions!
@@ -182,7 +181,7 @@ PoolPtr PoolFactory::create(const char* name) {
     poolDM->init();
   }
 
-  return std::static_pointer_cast<GF_UNWRAP_SP(PoolPtr)>(poolDM);
+  return std::static_pointer_cast<Pool>(poolDM);
 }
 
 void PoolFactory::addCheck(const char* host, int port) {

@@ -73,7 +73,7 @@ LIBEXP void DllMainGetPath(char *result, int maxLen) {
   dotNetLibName += ".dll";
   HMODULE module = GetModuleHandle(cppLibName.c_str());
   if (module == 0) {
-      module = GetModuleHandle(dotNetLibName.c_str());
+    module = GetModuleHandle(dotNetLibName.c_str());
   }
   if (module != 0) {
     GetModuleFileName(module, result, maxLen);
@@ -92,7 +92,7 @@ void DllMainGetPath(char *result, int maxLen) {
   }
   Dl_info dlInfo;
   dladdr((void *)DllMainGetPath, &dlInfo);
-  if (realpath(dlInfo.dli_fname, result) == NULL) {
+  if (realpath(dlInfo.dli_fname, result) == nullptr) {
     result[0] = '\0';
   }
 }
@@ -117,9 +117,8 @@ void setDefaultNewAndDelete() {
   Utils::s_pDelete = (pDelete)&free;  // operator delete;
 }
 
-
-}
-}
-}
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 #endif  // _WIN32

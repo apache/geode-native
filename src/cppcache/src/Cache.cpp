@@ -159,26 +159,26 @@ Cache::Cache() = default;
 Cache::~Cache() = default;
 
 /** Initialize the cache by the contents of an xml file
-  * @param  cacheXml
-  *         The xml file
-  * @throws OutOfMemoryException
-  * @throws CacheXmlException
-  *         Something went wrong while parsing the XML
-  * @throws IllegalStateException
-  *         If xml file is well-flrmed but not valid
-  * @throws RegionExistsException if a region is already in
-  *         this cache
-  * @throws CacheClosedException if the cache is closed
-  *         at the time of region creation
-  * @throws UnknownException otherwise
-  */
+ * @param  cacheXml
+ *         The xml file
+ * @throws OutOfMemoryException
+ * @throws CacheXmlException
+ *         Something went wrong while parsing the XML
+ * @throws IllegalStateException
+ *         If xml file is well-flrmed but not valid
+ * @throws RegionExistsException if a region is already in
+ *         this cache
+ * @throws CacheClosedException if the cache is closed
+ *         at the time of region creation
+ * @throws UnknownException otherwise
+ */
 void Cache::initializeDeclarativeCache(const char* cacheXml) {
   CacheXmlParser* xmlParser = CacheXmlParser::parse(cacheXml);
   xmlParser->setAttributes(this);
   m_cacheImpl->initServices();
   xmlParser->create(this);
   delete xmlParser;
-  xmlParser = NULL;
+  xmlParser = nullptr;
 }
 
 void Cache::readyForEvents() { m_cacheImpl->readyForEvents(); }
@@ -186,7 +186,7 @@ void Cache::readyForEvents() { m_cacheImpl->readyForEvents(); }
 bool Cache::isPoolInMultiuserMode(RegionPtr regionPtr) {
   const char* poolName = regionPtr->getAttributes()->getPoolName();
 
-  if (poolName != NULL) {
+  if (poolName != nullptr) {
     PoolPtr poolPtr = PoolManager::find(poolName);
     if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
       return poolPtr->getMultiuserAuthentication();
@@ -209,7 +209,7 @@ PdxInstanceFactoryPtr Cache::createPdxInstanceFactory(const char* className) {
 
 RegionServicePtr Cache::createAuthenticatedView(
     PropertiesPtr userSecurityProperties, const char* poolName) {
-  if (poolName == NULL) {
+  if (poolName == nullptr) {
     if (!this->isClosed() && m_cacheImpl->getDefaultPool() != nullptr) {
       return m_cacheImpl->getDefaultPool()->createSecureUserCache(
           userSecurityProperties);
@@ -220,7 +220,7 @@ RegionServicePtr Cache::createAuthenticatedView(
         "Pass poolname to get the secure Cache");
   } else {
     if (!this->isClosed()) {
-      if (poolName != NULL) {
+      if (poolName != nullptr) {
         PoolPtr poolPtr = PoolManager::find(poolName);
         if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
           return poolPtr->createSecureUserCache(userSecurityProperties);
@@ -228,7 +228,7 @@ RegionServicePtr Cache::createAuthenticatedView(
         throw IllegalStateException(
             "Either pool not found or it has been destroyed");
       }
-      throw IllegalArgumentException("poolname is NULL");
+      throw IllegalArgumentException("poolname is nullptr");
     }
 
     throw IllegalStateException("Cache has been closed");

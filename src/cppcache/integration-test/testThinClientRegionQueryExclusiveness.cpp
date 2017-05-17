@@ -63,7 +63,7 @@ void clientOperations() {
   try {
     QueryServicePtr qs = nullptr;  // getHelper()->cachePtr->getQueryService();
 
-    qs = createPool2("_TESTFAILPOOL_", NULL, NULL)->getQueryService();
+    qs = createPool2("_TESTFAILPOOL_", nullptr, nullptr)->getQueryService();
 
     SelectResultsPtr results;
     QueryPtr qry = qs->newQuery("select distinct * from /Portfolios");
@@ -76,7 +76,7 @@ void clientOperations() {
   }
 
   PoolPtr pool1 = nullptr;
-  pool1 = createPool(poolNames[0], locHostPort, NULL, 0, true);
+  pool1 = createPool(poolNames[0], locHostPort, nullptr, 0, true);
   createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
 
   RegionPtr rptr = getHelper()->cachePtr->getRegion(qRegionNames[0]);
@@ -174,12 +174,6 @@ DUNIT_TASK_DEFINITION(LOCATOR, CloseLocator)
 END_TASK_DEFINITION
 
 DUNIT_MAIN
-  {
-    CALL_TASK(StartLocator)
-    CALL_TASK(CreateServerWithLocator)
-    CALL_TASK(ClientOpPoolLocator)
-    CALL_TASK(CloseCache1)
-    CALL_TASK(CloseServer)
-    CALL_TASK(CloseLocator)
-  }
-END_MAIN
+{CALL_TASK(StartLocator) CALL_TASK(CreateServerWithLocator)
+     CALL_TASK(ClientOpPoolLocator) CALL_TASK(CloseCache1)
+         CALL_TASK(CloseServer) CALL_TASK(CloseLocator)} END_MAIN

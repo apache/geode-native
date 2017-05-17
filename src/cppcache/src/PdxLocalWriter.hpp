@@ -84,7 +84,7 @@ class PdxLocalWriter : public PdxWriter,
   }
 
   inline void writePdxCharArray(char* objArray, int arrayLen) {
-    if (objArray != NULL) {
+    if (objArray != nullptr) {
       m_dataOutput->writeArrayLen(arrayLen);
       if (arrayLen > 0) {
         char* ptr = objArray;
@@ -112,7 +112,7 @@ class PdxLocalWriter : public PdxWriter,
 
   template <typename mType>
   void writeObject(mType* objArray, int arrayLen) {
-    if (objArray != NULL) {
+    if (objArray != nullptr) {
       m_dataOutput->writeArrayLen(arrayLen);
       if (arrayLen > 0) {
         mType* ptr = objArray;

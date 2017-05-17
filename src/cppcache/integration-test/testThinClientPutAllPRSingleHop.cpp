@@ -107,10 +107,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_EndpointTL)
     initClient(true);
 
     RegionPtr regPtr = getHelper()->createPooledRegionStickySingleHop(
-        regionNames[0], USE_ACK, NULL, "__TEST_POOL1__", false, false);
+        regionNames[0], USE_ACK, nullptr, "__TEST_POOL1__", false, false);
     ASSERT(regPtr != nullptr, "Failed to create region.");
     regPtr = getHelper()->createPooledRegionStickySingleHop(
-        regionNames[1], NO_ACK, NULL, "__TEST_POOL1__", false, false);
+        regionNames[1], NO_ACK, nullptr, "__TEST_POOL1__", false, false);
     ASSERT(regPtr != nullptr, "Failed to create region.");
 
     LOG("StepOne_Pooled_EndPointTL complete.");
@@ -214,7 +214,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
               CacheableInt32::create(keyPtr->hashcode()));
           LOGINFO("CPPTEST: putALL CASE:: getting key %d with hashcode %d", j,
                   keyPtr->hashcode());
-          valMap.insert(keyPtr, valPtr);
+          valMap.emplace(keyPtr, valPtr);
         }
         LOGINFO("TEST-1");
         ACE_Time_Value startTime = ACE_OS::gettimeofday();
@@ -274,7 +274,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopRemoveAllForIntKeysTask)
           auto valPtr = CacheableInt32::create(keyPtr->hashcode());
           LOGINFO("CPPTEST: removeall CASE:: getting key %d with hashcode %d",
                   j, keyPtr->hashcode());
-          valMap.insert(keyPtr, valPtr);
+          valMap.emplace(keyPtr, valPtr);
           keys.push_back(keyPtr);
         }
         LOGINFO("TEST-1");

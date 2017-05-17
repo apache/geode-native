@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 /*
-* PdxRemoteReader.cpp
-*
-*  Created on: Nov 3, 2011
-*      Author: npatel
-*/
+ * PdxRemoteReader.cpp
+ *
+ *  Created on: Nov 3, 2011
+ *      Author: npatel
+ */
 
 #include "PdxRemoteReader.hpp"
 #include "PdxTypes.hpp"
@@ -560,7 +560,7 @@ char* PdxRemoteReader::readCharArray(const char* fieldName, int32_t& length) {
     case -2:
       return PdxLocalReader::readCharArray(fieldName, length);  // in same order
     case -1: {
-      return NULL;  // null value
+      return nullptr;  // null value
     }
     default: {
       // sequence id read field and then update
@@ -584,7 +584,7 @@ wchar_t* PdxRemoteReader::readWideCharArray(const char* fieldName,
       return PdxLocalReader::readWideCharArray(fieldName,
                                                length);  // in same order
     case -1: {
-      return NULL;  // null value
+      return nullptr;  // null value
     }
     default: {
       // sequence id read field and then update
@@ -608,7 +608,7 @@ bool* PdxRemoteReader::readBooleanArray(const char* fieldName,
       return PdxLocalReader::readBooleanArray(fieldName,
                                               length);  // in same order
     case -1: {
-      return NULL;  // null value
+      return nullptr;  // null value
     }
     default: {
       // sequence id read field and then update
@@ -631,7 +631,7 @@ int8_t* PdxRemoteReader::readByteArray(const char* fieldName, int32_t& length) {
       return PdxLocalReader::readByteArray(fieldName, length);  // in same order
     }
     case -1: {
-      return NULL;
+      return nullptr;
     }
     default: {
       // sequence id read field and then update
@@ -645,7 +645,7 @@ int8_t* PdxRemoteReader::readByteArray(const char* fieldName, int32_t& length) {
         PdxLocalReader::resettoPdxHead();
         return byteArrptr;
       } else {
-        return NULL;
+        return nullptr;
       }
     }
   }
@@ -661,7 +661,7 @@ int16_t* PdxRemoteReader::readShortArray(const char* fieldName,
                                                                  // order
     }
     case -1: {
-      return NULL;
+      return nullptr;
     }
     default: {
       // sequence id read field and then update
@@ -675,7 +675,7 @@ int16_t* PdxRemoteReader::readShortArray(const char* fieldName,
         PdxLocalReader::resettoPdxHead();
         return shortArrptr;
       } else {
-        return NULL;
+        return nullptr;
       }
     }
   }
@@ -689,7 +689,7 @@ int32_t* PdxRemoteReader::readIntArray(const char* fieldName, int32_t& length) {
       return PdxLocalReader::readIntArray(fieldName, length);  // in same order
     }
     case -1: {
-      return NULL;
+      return nullptr;
     }
     default: {
       // sequence id read field and then update
@@ -703,7 +703,7 @@ int32_t* PdxRemoteReader::readIntArray(const char* fieldName, int32_t& length) {
         PdxLocalReader::resettoPdxHead();
         return intArrptr;
       } else {
-        return NULL;
+        return nullptr;
       }
     }
   }
@@ -718,7 +718,7 @@ int64_t* PdxRemoteReader::readLongArray(const char* fieldName,
       return PdxLocalReader::readLongArray(fieldName, length);  // in same order
     }
     case -1: {
-      return NULL;
+      return nullptr;
     }
     default: {
       // sequence id read field and then update
@@ -732,7 +732,7 @@ int64_t* PdxRemoteReader::readLongArray(const char* fieldName,
         PdxLocalReader::resettoPdxHead();
         return longArrptr;
       } else {
-        return NULL;
+        return nullptr;
       }
     }
   }
@@ -747,7 +747,7 @@ float* PdxRemoteReader::readFloatArray(const char* fieldName, int32_t& length) {
                                                                  // order
     }
     case -1: {
-      return NULL;
+      return nullptr;
     }
     default: {
       // sequence id read field and then update
@@ -762,7 +762,7 @@ float* PdxRemoteReader::readFloatArray(const char* fieldName, int32_t& length) {
         PdxLocalReader::resettoPdxHead();
         return floatArrptr;
       } else {
-        return NULL;
+        return nullptr;
       }
     }
   }
@@ -778,7 +778,7 @@ double* PdxRemoteReader::readDoubleArray(const char* fieldName,
                                              length);  // in same order
     }
     case -1: {
-      return NULL;
+      return nullptr;
     }
     default: {
       // sequence id read field and then update
@@ -793,7 +793,7 @@ double* PdxRemoteReader::readDoubleArray(const char* fieldName,
         PdxLocalReader::resettoPdxHead();
         return doubleArrptr;
       } else {
-        return NULL;
+        return nullptr;
       }
     }
   }
@@ -809,7 +809,7 @@ char** PdxRemoteReader::readStringArray(const char* fieldName,
                                              length);  // in same order
     }
     case -1: {
-      return NULL;
+      return nullptr;
     }
     default: {
       // sequence id read field and then update
@@ -823,7 +823,7 @@ char** PdxRemoteReader::readStringArray(const char* fieldName,
         PdxLocalReader::resettoPdxHead();
         return strArray;
       } else {
-        return NULL;
+        return nullptr;
       }
     }
   }
@@ -839,7 +839,7 @@ wchar_t** PdxRemoteReader::readWideStringArray(const char* fieldName,
                                                  length);  // in same order
     }
     case -1: {
-      return NULL;
+      return nullptr;
     }
     default: {
       // sequence id read field and then update
@@ -853,7 +853,7 @@ wchar_t** PdxRemoteReader::readWideStringArray(const char* fieldName,
         PdxLocalReader::resettoPdxHead();
         return strArray;
       } else {
-        return NULL;
+        return nullptr;
       }
     }
   }
@@ -893,7 +893,7 @@ int8_t** PdxRemoteReader::readArrayOfByteArrays(const char* fieldName,
       return PdxLocalReader::readArrayOfByteArrays(
           fieldName, arrayLength, elementLength);  // in same order
     case -1:
-      return NULL;  // null value
+      return nullptr;  // null value
     default: {
       // sequence id read field and then update
       int position = m_pdxType->getFieldPosition(
@@ -943,7 +943,7 @@ CacheableDatePtr PdxRemoteReader::readDate(const char* fieldName) {
       }
     case -1:
       {
-        bytes = NULL;//null value
+        bytes = nullptr;//null value
         break;
       }
     default:
@@ -957,7 +957,7 @@ m_offsetSize, m_serializedLength);
           m_dataInput->rewindCursor(position);
         }
         else {
-          bytes = NULL;//null value
+          bytes = nullptr;//null value
         }
       }
     }
@@ -976,7 +976,7 @@ void PdxRemoteReader::readBytes(const char* fieldName, int8_t*& bytes,
       }
     case -1:
       {
-        bytes = NULL;//null value
+        bytes = nullptr;//null value
         break;
       }
     default:
@@ -990,7 +990,7 @@ m_offsetSize, m_serializedLength);
           m_dataInput->rewindCursor(position);
         }
         else {
-          bytes = NULL;//null value
+          bytes = nullptr;//null value
         }
       }
     }

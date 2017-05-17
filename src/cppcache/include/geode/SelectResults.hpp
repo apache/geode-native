@@ -75,7 +75,7 @@ class CPPCACHE_EXPORT SelectResults : public SharedBase {
   virtual SelectResultsIterator getIterator() = 0;
 
   /** Interface of an iterator for <code>SelectResults</code>.*/
-  typedef CacheableVector::Iterator Iterator;
+  typedef CacheableVector::iterator Iterator;
 
   /** Get an iterator pointing to the start of vector. */
   virtual Iterator begin() const = 0;

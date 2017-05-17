@@ -96,11 +96,11 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   CacheListenerPtr getCacheListener();
 
   /** Gets the partition resolver for the partition region.
-  * @return  a pointer that points to the region's ,
-  * <code>PartitionResolver</code> , nullptr if there is no PartitionResolver
-  * defined
-  * for this region.
-  */
+   * @return  a pointer that points to the region's ,
+   * <code>PartitionResolver</code> , nullptr if there is no PartitionResolver
+   * defined
+   * for this region.
+   */
   PartitionResolverPtr getPartitionResolver();
 
   /** Gets the <code>timeToLive</code> expiration attributes for the region as a
@@ -239,9 +239,9 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   const char* getCacheWriterFactory();
 
   /**
-  * This method returns the path of the library from which
-  * the factory function will be invoked on a cache server.
-  */
+   * This method returns the path of the library from which
+   * the factory function will be invoked on a cache server.
+   */
   const char* getPartitionResolverLibrary();
 
   /**
@@ -299,24 +299,24 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   PersistenceManagerPtr getPersistenceManager();
 
   /** TODO
-    * Returns the name of the {@link Pool} that this region
-    * will use to communicate with servers, if any.
-    * @return the name of the client-server {@link Pool}
-    */
+   * Returns the name of the {@link Pool} that this region
+   * will use to communicate with servers, if any.
+   * @return the name of the client-server {@link Pool}
+   */
   const char* getPoolName() { return m_poolName; }
   bool getCloningEnabled() { return m_isClonable; }
 
   /**
-  * Returns true if concurrent update checks are turned on for this region.
-  * <p>
-  * @return true if concurrent update checks are turned on
-  */
+   * Returns true if concurrent update checks are turned on for this region.
+   * <p>
+   * @return true if concurrent update checks are turned on
+   */
   bool getConcurrencyChecksEnabled() { return m_isConcurrencyChecksEnabled; }
 
  private:
   // Helper function that safely compares two attribute string
   // taking into consideration the fact the one or the other
-  // might be NULL
+  // might be nullptr
   static int32_t compareStringAttribute(char* attributeA, char* attributeB);
 
   // Helper function that safely copies one string attribute to

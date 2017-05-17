@@ -48,16 +48,16 @@ class ThinClientRedundancyManager {
   bool m_globalProcessedMarker;
 
   GfErrType maintainRedundancyLevel(bool init = false,
-                                    const TcrMessage* request = NULL,
-                                    TcrMessageReply* reply = NULL,
-                                    ThinClientRegion* region = NULL);
+                                    const TcrMessage* request = nullptr,
+                                    TcrMessageReply* reply = nullptr,
+                                    ThinClientRegion* region = nullptr);
   void initialize(int redundancyLevel);
   void close();
   void sendNotificationCloseMsgs();
 
   ThinClientRedundancyManager(TcrConnectionManager* theConnManager,
                               int redundencyLevel = 0,
-                              ThinClientPoolHADM* poolHADM = NULL,
+                              ThinClientPoolHADM* poolHADM = nullptr,
                               bool sentReadyForEvents = false,
                               bool globalProcessedMarker = false);
   GfErrType sendSyncRequestRegisterInterest(TcrMessage& request,
@@ -65,7 +65,7 @@ class ThinClientRedundancyManager {
                                             bool attemptFailover,
                                             TcrEndpoint* endpoint,
                                             ThinClientBaseDM* theHADM,
-                                            ThinClientRegion* region = NULL);
+                                            ThinClientRegion* region = nullptr);
 
   GfErrType sendSyncRequestCq(TcrMessage& request, TcrMessageReply& reply,
                               ThinClientBaseDM* theHADM);

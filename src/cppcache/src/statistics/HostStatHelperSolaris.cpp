@@ -39,14 +39,14 @@ using namespace apache::geode::statistics;
 uint8_t HostStatHelperSolaris::m_logStatErrorCountDown = 5;
 uint32_t HostStatHelperSolaris::m_cpuUtilPrev[CPU_STATES] = {0};
 bool HostStatHelperSolaris::m_initialized = false;
-kstat_ctl_t* HostStatHelperSolaris::m_kstat = NULL;
+kstat_ctl_t* HostStatHelperSolaris::m_kstat = nullptr;
 
 void HostStatHelperSolaris::refreshProcess(ProcessStats* processStats) {
   static bool threadCountMissingWarning = false;
   // Get pid, SolarisProcessStats
   SolarisProcessStats* solProcessStat =
       dynamic_cast<SolarisProcessStats*>(processStats);
-  if (solProcessStat == NULL) {
+  if (solProcessStat == nullptr) {
     LOGFINE(
         "HostStatHelperSolaris::refreshProcess failed due to null processStat");
     return;
@@ -146,7 +146,7 @@ void HostStatHelperSolaris::refreshProcess(ProcessStats* processStats) {
   // thread count
   int threadCount = 0;
   glob_t g;
-  if (glob("/proc/self/lwp/*", 0, NULL, &g) == 0) {
+  if (glob("/proc/self/lwp/*", 0, nullptr, &g) == 0) {
     threadCount = g.gl_pathc;
     // LOGDEBUG("gl_pathc: %d",g.gl_pathc);
     // for( unsigned int i =0; i < g.gl_pathc; i++ ) {
@@ -170,9 +170,9 @@ void HostStatHelperSolaris::refreshProcess(ProcessStats* processStats) {
 }
 
 void HostStatHelperSolaris::getKernelStats(uint32_t* cpuUtil) {
-  if (m_kstat == NULL) {
+  if (m_kstat == nullptr) {
     m_kstat = kstat_open();
-    if (m_kstat == NULL) {
+    if (m_kstat == nullptr) {
       char buf[128];
       ACE_OS::snprintf(buf, 128, "Unable to obtain kstat data, errno %d",
                        errno);
@@ -189,7 +189,7 @@ void HostStatHelperSolaris::getKernelStats(uint32_t* cpuUtil) {
   // Make a copy of it.
   memcpy(&wkc, m_kstat, sizeof(kstat_ctl_t));
   // Walk the chain.
-  for (ksp = wkc.kc_chain; ksp != NULL; ksp = ksp->ks_next) {
+  for (ksp = wkc.kc_chain; ksp != nullptr; ksp = ksp->ks_next) {
     // Header information
     // kstats are identified by module, instance, class, and name.
     strncpy(module, ksp->ks_module, KSTAT_STRLEN);
@@ -223,9 +223,9 @@ void HostStatHelperSolaris::getKernelStats(uint32_t* cpuUtil) {
 }
 
 void HostStatHelperSolaris::closeHostStatHelperSolaris() {
-  if (m_kstat != NULL) {
+  if (m_kstat != nullptr) {
     kstat_close(m_kstat);
-    m_kstat = NULL;
+    m_kstat = nullptr;
   }
 }
 #endif /* SOLARIS */

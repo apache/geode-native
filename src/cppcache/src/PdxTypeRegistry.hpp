@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_PDXTYPEREGISTRY_H_
-#define GEODE_PDXTYPEREGISTRY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,12 +15,22 @@
  * limitations under the License.
  */
 
-#include <geode/PdxSerializable.hpp>
-#include "PdxRemotePreservedData.hpp"
-#include "ReadWriteLock.hpp"
+#pragma once
+
+#ifndef GEODE_PDXTYPEREGISTRY_H_
+#define GEODE_PDXTYPEREGISTRY_H_
+
+#include <unordered_map>
 #include <map>
+
 #include <ace/ACE.h>
 #include <ace/Recursive_Thread_Mutex.h>
+
+#include <geode/utils.hpp>
+#include <geode/PdxSerializable.hpp>
+
+#include "PdxRemotePreservedData.hpp"
+#include "ReadWriteLock.hpp"
 #include "PdxType.hpp"
 #include "EnumInfo.hpp"
 #include "PreservedDataExpiryHandler.hpp"
@@ -43,7 +48,9 @@ struct PdxTypeLessThan {
 
 typedef std::map<int32_t, PdxTypePtr> TypeIdVsPdxType;
 typedef std::map</*char**/ std::string, PdxTypePtr> TypeNameVsPdxType;
-typedef HashMapT<PdxSerializablePtr, PdxRemotePreservedDataPtr>
+typedef std::unordered_map<PdxSerializablePtr, PdxRemotePreservedDataPtr,
+                           dereference_hash<CacheableKeyPtr>,
+                           dereference_equal_to<CacheableKeyPtr>>
     PreservedHashMap;
 typedef std::map<PdxTypePtr, int32_t, PdxTypeLessThan> PdxTypeToTypeIdMap;
 
@@ -83,10 +90,10 @@ class CPPCACHE_EXPORT PdxTypeRegistry {
   static void cleanup();
 
   // test hook;
-  static int testGetNumberOfPdxIds();
+  static size_t testGetNumberOfPdxIds();
 
   // test hook
-  static int testNumberOfPreservedData();
+  static size_t testNumberOfPreservedData();
 
   static void addPdxType(int32_t typeId, PdxTypePtr pdxType);
 
@@ -109,7 +116,7 @@ class CPPCACHE_EXPORT PdxTypeRegistry {
   static void clear();
 
   static int32_t getPDXIdForType(const char* type, const char* poolname,
-                               PdxTypePtr nType, bool checkIfThere);
+                                 PdxTypePtr nType, bool checkIfThere);
 
   static bool getPdxIgnoreUnreadFields() { return pdxIgnoreUnreadFields; }
 

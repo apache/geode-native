@@ -33,15 +33,15 @@ using namespace apache::geode::statistics;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-PoolStatType* PoolStatType::single = NULL;
+PoolStatType* PoolStatType::single = nullptr;
 SpinLock PoolStatType::m_singletonLock;
 SpinLock PoolStatType::m_statTypeLock;
 
 void PoolStatType::clean() {
   SpinLockGuard guard(m_singletonLock);
-  if (single != NULL) {
+  if (single != nullptr) {
     delete single;
-    single = NULL;
+    single = nullptr;
   }
 }
 
@@ -52,7 +52,7 @@ StatisticsType* PoolStatType::getStatType() {
 
   StatisticsType* statsType = factory->findType("PoolStatistics");
 
-  if (statsType == NULL) {
+  if (statsType == nullptr) {
     m_stats[0] = factory->createIntGauge(
         "locators", "Current number of locators discovered", "locators");
     m_stats[1] = factory->createIntGauge(
@@ -180,7 +180,7 @@ StatisticsType* PoolStatType::getStatType() {
 
 PoolStatType* PoolStatType::getInstance() {
   SpinLockGuard guard(m_singletonLock);
-  if (single == NULL) {
+  if (single == nullptr) {
     single = new PoolStatType();
   }
   return single;
@@ -224,7 +224,7 @@ PoolStats::PoolStats(const char* poolName) {
 
   StatisticsType* statsType = poolStatType->getStatType();
 
-  GF_D_ASSERT(statsType != NULL);
+  GF_D_ASSERT(statsType != nullptr);
 
   StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
 
@@ -290,8 +290,8 @@ PoolStats::PoolStats(const char* poolName) {
 }
 
 PoolStats::~PoolStats() {
-  if (m_poolStats != NULL) {
-    m_poolStats = NULL;
+  if (m_poolStats != nullptr) {
+    m_poolStats = nullptr;
   }
 }
 }  // namespace client

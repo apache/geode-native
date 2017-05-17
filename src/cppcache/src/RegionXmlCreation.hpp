@@ -41,7 +41,7 @@ class Cache;
 class CPPCACHE_EXPORT RegionXmlCreation {
  private:
   /** An <code>AttributesFactory</code> for creating default
-    * <code>RegionAttribute</code>s */
+   * <code>RegionAttribute</code>s */
   AttributesFactory attrFactory;
 
   /** The name of this region */
@@ -97,7 +97,7 @@ class CPPCACHE_EXPORT RegionXmlCreation {
    *
    * @throws OutOfMemoryException if the memory allocation failed
    * @throws NotConnectedException if the cache is not connected
-   * @throws InvalidArgumentException if the attributePtr is NULL.
+   * @throws InvalidArgumentException if the attributePtr is nullptr.
    * or if RegionAttributes is null or if regionName is null,
    * the empty   string, or contains a '/'
    * @throws RegionExistsException
@@ -113,7 +113,7 @@ class CPPCACHE_EXPORT RegionXmlCreation {
    *
    * @throws OutOfMemoryException if the memory allocation failed
    * @throws NotConnectedException if the cache is not connected
-   * @throws InvalidArgumentException if the attributePtr is NULL.
+   * @throws InvalidArgumentException if the attributePtr is nullptr.
    * or if RegionAttributes is null or if regionName is null,
    * the empty string,or contains a '/'
    * @throws RegionExistsException

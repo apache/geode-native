@@ -59,7 +59,7 @@ void initClientCq(const bool isthinClient) {
     // ignore exception
   }
 
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
@@ -77,7 +77,8 @@ END_TASK_DEFINITION
 void createServer(bool locator = false) {
   LOG("Starting SERVER1...");
   if (isLocalServer) {
-    CacheHelper::initServer(1, "remotequery.xml", locator ? locatorsG : NULL);
+    CacheHelper::initServer(1, "remotequery.xml",
+                            locator ? locatorsG : nullptr);
   }
   LOG("SERVER1 started");
 }

@@ -66,7 +66,7 @@ SelectResultsPtr RemoteQuery::execute(uint32_t timeout, const char* func,
     throw IllegalArgumentException(exMsg);
   }
   ThinClientPoolDM* pool = dynamic_cast<ThinClientPoolDM*>(tcdm);
-  if (pool != NULL) {
+  if (pool != nullptr) {
     pool->getStats().incQueryExecutionId();
   }
   /*get the start time for QueryExecutionTime stat*/
@@ -105,7 +105,7 @@ SelectResultsPtr RemoteQuery::execute(uint32_t timeout, const char* func,
   }
 
   /*update QueryExecutionTime stat */
-  if (pool != NULL) {
+  if (pool != nullptr) {
     Utils::updateStatOpTime(
         pool->getStats().getStats(),
         PoolStatType::getInstance()->getQueryExecutionTimeId(),
@@ -137,7 +137,7 @@ GfErrType RemoteQuery::executeNoThrow(uint32_t timeout, TcrMessageReply& reply,
 
     GfErrType err = GF_NOERR;
     LOGFINEST("%s: sending request for query: %s", func, m_queryString.c_str());
-    if (tcdm == NULL) {
+    if (tcdm == nullptr) {
       tcdm = m_tccdm;
     }
     err = tcdm->sendSyncRequest(msg, reply);
@@ -160,7 +160,7 @@ GfErrType RemoteQuery::executeNoThrow(uint32_t timeout, TcrMessageReply& reply,
 
     GfErrType err = GF_NOERR;
     LOGFINEST("%s: sending request for query: %s", func, m_queryString.c_str());
-    if (tcdm == NULL) {
+    if (tcdm == nullptr) {
       tcdm = m_tccdm;
     }
     err = tcdm->sendSyncRequest(msg, reply);

@@ -26,7 +26,7 @@ void Assert::throwAssertion(const char* expressionText, const char* file,
                             int line) {
   LOGERROR("AssertionException: ( %s ) at %s:%d", expressionText, file, line);
 
-  AssertionException ae(expressionText, NULL, true);
+  AssertionException ae(expressionText, nullptr, true);
   ae.printStackTrace();
   throw ae;
 }

@@ -123,7 +123,7 @@ class PdxType : public Serializable,
 
   virtual uint32_t objectSize() const {
     uint32_t size = sizeof(PdxType);
-    if (m_pdxFieldTypes != NULL) {
+    if (m_pdxFieldTypes != nullptr) {
       for (size_t i = 0; i < m_pdxFieldTypes->size(); i++) {
         size += m_pdxFieldTypes->at(i)->objectSize();
       }
@@ -134,14 +134,14 @@ class PdxType : public Serializable,
       size += static_cast<uint32_t>(iter->first.length());
       size += iter->second->objectSize();
     }
-    if (m_remoteToLocalFieldMap != NULL) {
-      if (m_pdxFieldTypes != NULL) {
+    if (m_remoteToLocalFieldMap != nullptr) {
+      if (m_pdxFieldTypes != nullptr) {
         size +=
             static_cast<uint32_t>(sizeof(int32_t) * m_pdxFieldTypes->size());
       }
     }
-    if (m_localToRemoteFieldMap != NULL) {
-      if (m_pdxFieldTypes != NULL) {
+    if (m_localToRemoteFieldMap != nullptr) {
+      if (m_pdxFieldTypes != nullptr) {
         size +=
             static_cast<uint32_t>(sizeof(int32_t) * m_pdxFieldTypes->size());
       }
@@ -155,7 +155,9 @@ class PdxType : public Serializable,
 
   int32_t getNumberOfVarLenFields() const { return m_numberOfVarLenFields; }
 
-  void setNumberOfVarLenFields(int32_t value) { m_numberOfVarLenFields = value; }
+  void setNumberOfVarLenFields(int32_t value) {
+    m_numberOfVarLenFields = value;
+  }
 
   int32_t getTotalFields() const {
     return static_cast<int32_t>(m_pdxFieldTypes->size());

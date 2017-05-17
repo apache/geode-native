@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 /*
-* PdxObject.cpp
-*
-*  Created on: Sep 29, 2011
-*      Author: npatel
-*/
+ * PdxObject.cpp
+ *
+ *  Created on: Sep 29, 2011
+ *      Author: npatel
+ */
 
 #include "PdxVersioned1.hpp"
 
@@ -218,8 +218,8 @@ void PdxVersioned1::init(const char* key) {
   m_arraylist->push_back(CacheableInt32::create(2));
 
   m_map = CacheableHashMap::create();
-  m_map->insert(CacheableInt32::create(1), CacheableInt32::create(1));
-  m_map->insert(CacheableInt32::create(2), CacheableInt32::create(2));
+  m_map->emplace(CacheableInt32::create(1), CacheableInt32::create(1));
+  m_map->emplace(CacheableInt32::create(2), CacheableInt32::create(2));
   m_pdxEnum = CacheableEnum::create("pdxEnumTest", "pdx2", pdx2);
   m_byte252 = new int8_t[252];
   for (int i = 0; i < 252; i++) {

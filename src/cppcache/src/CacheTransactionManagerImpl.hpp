@@ -27,7 +27,7 @@
  */
 
 #include <geode/CacheTransactionManager.hpp>
-#include <geode/HashSetOfSharedBase.hpp>
+
 #include "TXCommitMessage.hpp"
 #include <geode/Log.hpp>
 #include "SuspendedTxExpiryHandler.hpp"

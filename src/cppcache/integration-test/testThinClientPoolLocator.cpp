@@ -60,7 +60,7 @@ END_TASK(CreateLocators)
 DUNIT_TASK(SERVERS, CreateServer1)
   {
     // starting servers
-    if (isLocalServer) CacheHelper::initServer(1, NULL, locHostPort1);
+    if (isLocalServer) CacheHelper::initServer(1, nullptr, locHostPort1);
     LOG("Server 1 started");
   }
 END_TASK(CreateServer1)
@@ -93,7 +93,7 @@ END_TASK(ConnectC2)
 DUNIT_TASK(SERVERS, CreateServer2)
   {
     // starting servers
-    if (isLocalServer) CacheHelper::initServer(2, NULL, locHostPort2);
+    if (isLocalServer) CacheHelper::initServer(2, nullptr, locHostPort2);
     LOG("Server 2 started");
   }
 END_TASK(CreateServer2)
@@ -137,7 +137,7 @@ END_TASK(CloseLocator1)
 DUNIT_TASK(SERVERS, ReStartS1)
   {
     // Re- starting servers
-    if (isLocalServer) CacheHelper::initServer(1, NULL, locHostPort1);
+    if (isLocalServer) CacheHelper::initServer(1, nullptr, locHostPort1);
     LOG("Server 1 started");
   }
 END_TASK(ReStartS1)
