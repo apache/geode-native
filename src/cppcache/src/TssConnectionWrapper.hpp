@@ -58,7 +58,8 @@ class TssConnectionWrapper {
   TssConnectionWrapper(const TssConnectionWrapper&);
 
  public:
-  static ACE_TSS<TssConnectionWrapper> s_geodeTSSConn;
+  // TODO shared_ptr - remove or refactor with global work
+  static ACE_TSS<TssConnectionWrapper>* s_geodeTSSConn;
   TcrConnection* getConnection() { return m_tcrConn; }
   TcrConnection* getSHConnection(TcrEndpoint* ep, const char* poolname);
   void setConnection(TcrConnection* conn, const PoolPtr& pool) {

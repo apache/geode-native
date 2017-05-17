@@ -55,7 +55,7 @@ typedef std::map<std::string, CachePtr> StringToCachePtrMap;
 
 void* CacheFactory::m_cacheMap = (void*)NULL;
 
-CacheFactoryPtr CacheFactory::default_CacheFactory = nullptr;
+CacheFactoryPtr* CacheFactory::default_CacheFactory = nullptr;
 
 PoolPtr CacheFactory::createOrGetDefaultPool() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
@@ -71,9 +71,10 @@ PoolPtr CacheFactory::createOrGetDefaultPool() {
 
   // if default_poolFactory is null then we are not using latest API....
   if (pool == nullptr && Cache_CreatedFromCacheFactory) {
-    if (default_CacheFactory != nullptr) {
-      pool = default_CacheFactory->determineDefaultPool(cache);
+    if (default_CacheFactory && (*default_CacheFactory)) {
+      pool = (*default_CacheFactory)->determineDefaultPool(cache);
     }
+    (*default_CacheFactory) = nullptr;
     default_CacheFactory = nullptr;
   }
 
@@ -225,7 +226,7 @@ CachePtr CacheFactory::create() {
   cache = getAnyInstance(false);
 
   if (cache == nullptr) {
-    default_CacheFactory = shared_from_this();
+    default_CacheFactory = new CacheFactoryPtr(shared_from_this());
     Cache_CreatedFromCacheFactory = true;
     cache = create(DEFAULT_CACHE_NAME, dsPtr,
                    dsPtr->getSystemProperties()->cacheXMLFile(), nullptr);
@@ -237,8 +238,9 @@ CachePtr CacheFactory::create() {
       determineDefaultPool(cache);
     } else {
       // not yet created, create from first cacheFactory instance
-      if (default_CacheFactory != nullptr) {
-        default_CacheFactory->determineDefaultPool(cache);
+      if (default_CacheFactory && (*default_CacheFactory)) {
+        (*default_CacheFactory)->determineDefaultPool(cache);
+        (*default_CacheFactory) = nullptr;
         default_CacheFactory = nullptr;
       }
       determineDefaultPool(cache);
