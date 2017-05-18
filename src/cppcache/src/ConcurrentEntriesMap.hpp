@@ -71,7 +71,7 @@ class CPPCACHE_EXPORT ConcurrentEntriesMap : public EntriesMap {
    */
   ConcurrentEntriesMap(EntryFactory* entryFactory,
                        bool concurrencyChecksEnabled,
-                       RegionInternal* region = nullptr,
+                       RegionInternal* region,
                        uint8_t concurrency = 16);
 
   /**

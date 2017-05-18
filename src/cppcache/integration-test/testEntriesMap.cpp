@@ -46,13 +46,287 @@ CacheableStringPtr createCacheable(const char* value) {
   return result;
 }
 
+namespace {
+class FakeRegion : public RegionInternal {
+ public:
+  FakeRegion() : RegionInternal(nullptr) {}
+  virtual void registerKeys(const VectorOfCacheableKey& keys,
+                            bool isDurable = false,
+                            bool getInitialValues = false,
+                            bool receiveValues = true) override {}
+  virtual void unregisterKeys(const VectorOfCacheableKey& keys) override {}
+  virtual void registerAllKeys(bool isDurable = false,
+                               VectorOfCacheableKeyPtr resultKeys = nullptr,
+                               bool getInitialValues = false,
+                               bool receiveValues = true) override {}
+  virtual void unregisterAllKeys() override {}
+
+  virtual void registerRegex(const char* regex, bool isDurable = false,
+                             VectorOfCacheableKeyPtr resultKeys = nullptr,
+                             bool getInitialValues = false,
+                             bool receiveValues = true) override {}
+  virtual void unregisterRegex(const char* regex) override {}
+
+  virtual SelectResultsPtr query(
+      const char* predicate,
+      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) override {
+    return nullptr;
+  }
+  virtual bool existsValue(
+      const char* predicate,
+      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) override {
+    return false;
+  }
+  virtual SerializablePtr selectValue(
+      const char* predicate,
+      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) override {
+    return nullptr;
+  }
+  virtual PersistenceManagerPtr getPersistenceManager() override {
+    return nullptr;
+  }
+  virtual void setPersistenceManager(PersistenceManagerPtr& pmPtr) override{};
+
+  virtual GfErrType getNoThrow(const CacheableKeyPtr& key, CacheablePtr& value,
+                               const UserDataPtr& aCallbackArgument) override {
+    return GF_NOERR;
+  }
+  virtual GfErrType getAllNoThrow(
+      const VectorOfCacheableKey& keys, const HashMapOfCacheablePtr& values,
+      const HashMapOfExceptionPtr& exceptions, bool addToLocalCache,
+      const UserDataPtr& aCallbackArgument) override {
+    return GF_NOERR;
+  }
+  virtual GfErrType putNoThrow(const CacheableKeyPtr& key,
+                               const CacheablePtr& value,
+                               const UserDataPtr& aCallbackArgument,
+                               CacheablePtr& oldValue, int updateCount,
+                               const CacheEventFlags eventFlags,
+                               VersionTagPtr versionTag,
+                               DataInput* delta = NULL,
+                               EventIdPtr eventId = nullptr) override {
+    return GF_NOERR;
+  }
+  virtual GfErrType createNoThrow(const CacheableKeyPtr& key,
+                                  const CacheablePtr& value,
+                                  const UserDataPtr& aCallbackArgument,
+                                  int updateCount,
+                                  const CacheEventFlags eventFlags,
+                                  VersionTagPtr versionTag) override {
+    return GF_NOERR;
+  }
+  virtual GfErrType destroyNoThrow(const CacheableKeyPtr& key,
+                                   const UserDataPtr& aCallbackArgument,
+                                   int updateCount,
+                                   const CacheEventFlags eventFlags,
+                                   VersionTagPtr versionTag) override {
+    return GF_NOERR;
+  }
+  virtual GfErrType removeNoThrow(const CacheableKeyPtr& key,
+                                  const CacheablePtr& value,
+                                  const UserDataPtr& aCallbackArgument,
+                                  int updateCount,
+                                  const CacheEventFlags eventFlags,
+                                  VersionTagPtr versionTag) override {
+    return GF_NOERR;
+  }
+  virtual GfErrType invalidateNoThrow(const CacheableKeyPtr& keyPtr,
+                                      const UserDataPtr& aCallbackArgument,
+                                      int updateCount,
+                                      const CacheEventFlags eventFlags,
+                                      VersionTagPtr versionTag) override {
+    return GF_NOERR;
+  }
+  virtual GfErrType invalidateRegionNoThrow(
+      const UserDataPtr& aCallbackArgument,
+      const CacheEventFlags eventFlags) override {
+    return GF_NOERR;
+  }
+  virtual GfErrType destroyRegionNoThrow(
+      const UserDataPtr& aCallbackArgument, bool removeFromParent,
+      const CacheEventFlags eventFlags) override {
+    return GF_NOERR;
+  }
+
+  virtual void setRegionExpiryTask() override {}
+  virtual void acquireReadLock() override {}
+  virtual void releaseReadLock() override {}
+  // behaviors for attributes mutator
+  virtual uint32_t adjustLruEntriesLimit(uint32_t limit) override { return 0; }
+  virtual ExpirationAction::Action adjustRegionExpiryAction(
+      ExpirationAction::Action action) override {
+    return action;
+  }
+  virtual ExpirationAction::Action adjustEntryExpiryAction(
+      ExpirationAction::Action action) override {
+    return action;
+  }
+  virtual int32_t adjustRegionExpiryDuration(int32_t duration) override {
+    return 0;
+  }
+  virtual int32_t adjustEntryExpiryDuration(int32_t duration) override {
+    return 0;
+  }
+  virtual void adjustCacheListener(const CacheListenerPtr& aListener) override {
+  }
+  virtual void adjustCacheListener(const char* libpath,
+                                   const char* factoryFuncName) override {}
+  virtual void adjustCacheLoader(const CacheLoaderPtr& aLoader) override {}
+  virtual void adjustCacheLoader(const char* libpath,
+                                 const char* factoryFuncName) override {}
+  virtual void adjustCacheWriter(const CacheWriterPtr& aWriter) override {}
+  virtual void adjustCacheWriter(const char* libpath,
+                                 const char* factoryFuncName) override {}
+  virtual RegionStats* getRegionStats() override { return nullptr; }
+  virtual bool cacheEnabled() override { return 0; }
+  virtual bool isDestroyed() const override { return 0; }
+  virtual void evict(int32_t percentage) override {}
+  virtual CacheImpl* getCacheImpl() const override { return nullptr; }
+  virtual TombstoneListPtr getTombstoneList() override { return nullptr; }
+
+  virtual void updateAccessAndModifiedTime(bool modified) override {}
+  virtual void updateAccessAndModifiedTimeForEntry(MapEntryImplPtr& ptr,
+                                                   bool modified) override {}
+  virtual void addDisMessToQueue() override {}
+
+  virtual void txDestroy(const CacheableKeyPtr& key,
+                         const UserDataPtr& callBack,
+                         VersionTagPtr versionTag) override {}
+  virtual void txInvalidate(const CacheableKeyPtr& key,
+                            const UserDataPtr& callBack,
+                            VersionTagPtr versionTag) override {}
+  virtual void txPut(const CacheableKeyPtr& key, const CacheablePtr& value,
+                     const UserDataPtr& callBack,
+                     VersionTagPtr versionTag) override {}
+  virtual const PoolPtr& getPool() override { throw "not implemented"; }
+
+  virtual void destroyRegion(
+      const UserDataPtr& aCallbackArgument = nullptr) override {}
+  virtual void clear(const UserDataPtr& aCallbackArgument = nullptr) override {}
+  virtual void localClear(
+      const UserDataPtr& aCallbackArgument = nullptr) override {}
+  virtual void localDestroyRegion(
+      const UserDataPtr& aCallbackArgument = nullptr) override {}
+  virtual RegionPtr getSubregion(const char* path) override { return nullptr; }
+  virtual RegionPtr createSubregion(
+      const char* subregionName,
+      const RegionAttributesPtr& aRegionAttributes) override {
+    return nullptr;
+  }
+  virtual void subregions(const bool recursive, VectorOfRegion& sr) override {}
+  virtual RegionEntryPtr getEntry(const CacheableKeyPtr& key) override {
+    return nullptr;
+  }
+
+  virtual CacheablePtr get(
+      const CacheableKeyPtr& key,
+      const UserDataPtr& aCallbackArgument = nullptr) override {
+    return nullptr;
+  }
+
+  virtual void put(const CacheableKeyPtr& key, const CacheablePtr& value,
+                   const UserDataPtr& aCallbackArgument = nullptr) override {}
+
+  virtual void putAll(const HashMapOfCacheable& map,
+                      uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
+                      const UserDataPtr& aCallbackArgument = nullptr) override {
+  }
+  virtual void localPut(
+      const CacheableKeyPtr& key, const CacheablePtr& value,
+      const UserDataPtr& aCallbackArgument = nullptr) override {}
+
+  virtual void localCreate(
+      const CacheableKeyPtr& key, const CacheablePtr& value,
+      const UserDataPtr& aCallbackArgument = nullptr) override {}
+  virtual void invalidate(
+      const CacheableKeyPtr& key,
+      const UserDataPtr& aCallbackArgument = nullptr) override {}
+
+  virtual void localInvalidate(
+      const CacheableKeyPtr& key,
+      const UserDataPtr& aCallbackArgument = nullptr) override {}
+  virtual void destroy(
+      const CacheableKeyPtr& key,
+      const UserDataPtr& aCallbackArgument = nullptr) override {}
+
+  virtual void localDestroy(
+      const CacheableKeyPtr& key,
+      const UserDataPtr& aCallbackArgument = nullptr) override {}
+
+  virtual bool remove(const CacheableKeyPtr& key, const CacheablePtr& value,
+                      const UserDataPtr& aCallbackArgument = nullptr) override {
+    return false;
+  }
+
+  virtual bool removeEx(
+      const CacheableKeyPtr& key,
+      const UserDataPtr& aCallbackArgument = nullptr) override {
+    return false;
+  }
+
+  virtual bool localRemove(
+      const CacheableKeyPtr& key, const CacheablePtr& value,
+      const UserDataPtr& aCallbackArgument = nullptr) override {
+    return false;
+  }
+
+  virtual bool localRemoveEx(
+      const CacheableKeyPtr& key,
+      const UserDataPtr& aCallbackArgument = nullptr) override {
+    return false;
+  }
+  virtual void keys(VectorOfCacheableKey& v) override {}
+  virtual void serverKeys(VectorOfCacheableKey& v) override {}
+  virtual void values(VectorOfCacheable& vc) override {}
+  virtual void entries(VectorOfRegionEntry& me, bool recursive) override {}
+  virtual void getAll(const VectorOfCacheableKey& keys,
+                      HashMapOfCacheablePtr values,
+                      HashMapOfExceptionPtr exceptions,
+                      bool addToLocalCache = false,
+                      const UserDataPtr& aCallbackArgument = nullptr) override {
+  }
+  virtual void removeAll(
+      const VectorOfCacheableKey& keys,
+      const UserDataPtr& aCallbackArgument = nullptr) override {}
+  virtual uint32_t size() override { return 0; }
+  virtual const char* getName() const override { return nullptr; }
+  virtual const char* getFullPath() const override { return nullptr; }
+  virtual RegionPtr getParentRegion() const override { return nullptr; }
+  virtual RegionAttributesPtr getAttributes() const override { return nullptr; }
+  virtual AttributesMutatorPtr getAttributesMutator() const override {
+    return nullptr;
+  }
+  virtual CacheStatisticsPtr getStatistics() const override { return nullptr; }
+  virtual void invalidateRegion(
+      const UserDataPtr& aCallbackArgument = nullptr) override {}
+  virtual void localInvalidateRegion(
+      const UserDataPtr& aCallbackArgument = nullptr) override {}
+  virtual void create(const CacheableKeyPtr& key, const CacheablePtr& value,
+                      const UserDataPtr& aCallbackArgument = nullptr) override {
+  }
+  virtual RegionServicePtr getRegionService() const override { return nullptr; }
+  virtual bool containsValueForKey(
+                                   const CacheableKeyPtr& keyPtr) const override {return false;}
+  virtual bool containsKey(const CacheableKeyPtr& keyPtr) const override {
+    return false;
+  }
+  virtual bool containsKeyOnServer(
+                                   const CacheableKeyPtr& keyPtr) const override {return false;}
+  virtual void getInterestList(VectorOfCacheableKey& vlist) const override {}
+  virtual void getInterestListRegex(
+      VectorOfCacheableString& vregex) const override {}
+};
+}
+
 BEGIN_TEST(PutAndGet)
   {
     CacheableStringPtr ccstr = createCacheable("100");
     CacheablePtr ct = ccstr;
     EntryFactory* entryFactory = EntryFactory::singleton;
     AttributesFactory af;
-    EntriesMap* entries = new ConcurrentEntriesMap(entryFactory, false);
+    auto region = std::make_shared<FakeRegion>();
+    EntriesMap* entries =
+        new ConcurrentEntriesMap(entryFactory, false, region.get());
     entries->open();
     CacheableKeyPtr keyPtr = CacheableKey::create((char*)"foobar");
     ASSERT(keyPtr != nullptr, "expected keyPtr non-NULL");
@@ -86,7 +360,9 @@ BEGIN_TEST(RemoveTest)
     CacheableStringPtr cst = createCacheable("200");
     CacheablePtr ct = cst;
     EntryFactory* entryFactory = EntryFactory::singleton;
-    EntriesMap* entries = new ConcurrentEntriesMap(entryFactory, false);
+    auto region = std::make_shared<FakeRegion>();
+    EntriesMap* entries =
+        new ConcurrentEntriesMap(entryFactory, false, region.get());
     entries->open();
     CacheableKeyPtr keyPtr = CacheableKey::create(fwtest_Name);
     MapEntryImplPtr me;
@@ -111,7 +387,9 @@ BEGIN_TEST(GetEntryTest)
     CacheableStringPtr cst = createCacheable("200");
     CacheablePtr ct = cst;
     EntryFactory* entryFactory = EntryFactory::singleton;
-    EntriesMap* entries = new ConcurrentEntriesMap(entryFactory, false);
+    auto region = std::make_shared<FakeRegion>();
+    EntriesMap* entries =
+        new ConcurrentEntriesMap(entryFactory, false, region.get());
     entries->open();
     CacheableKeyPtr keyPtr;
     MapEntryImplPtr me;
@@ -173,7 +451,9 @@ END_TEST(VectorOfMapEntryTestB)
 BEGIN_TEST(EntriesTest)
   {
     EntryFactory* entryFactory = EntryFactory::singleton;
-    EntriesMap* entries = new ConcurrentEntriesMap(entryFactory, false);
+    auto region = std::make_shared<FakeRegion>();
+    EntriesMap* entries =
+        new ConcurrentEntriesMap(entryFactory, false, region.get());
     entries->open();
     char keyBuf[100];
     char valBuf[100];
@@ -220,7 +500,9 @@ END_TEST(EntriesTest)
 BEGIN_TEST(ValuesTest)
   {
     EntryFactory* entryFactory = EntryFactory::singleton;
-    EntriesMap* entries = new ConcurrentEntriesMap(entryFactory, false);
+    auto region = std::make_shared<FakeRegion>();
+    EntriesMap* entries =
+        new ConcurrentEntriesMap(entryFactory, false, region.get());
     entries->open();
     char keyBuf[100];
     char valBuf[100];
@@ -259,7 +541,9 @@ END_TEST(ValuesTest)
 BEGIN_TEST(KeysTest)
   {
     EntryFactory* entryFactory = EntryFactory::singleton;
-    EntriesMap* entries = new ConcurrentEntriesMap(entryFactory, false);
+    auto region = std::make_shared<FakeRegion>();
+    EntriesMap* entries =
+        new ConcurrentEntriesMap(entryFactory, false, region.get());
     entries->open();
     char keyBuf[100];
     char valBuf[100];
