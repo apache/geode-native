@@ -17,7 +17,7 @@ project( openssl C )
 
 set( ${PROJECT_NAME}_VERSION 1.0.1u )
 set( ${PROJECT_NAME}_SHA265 4312b4ca1215b6f2c97007503d80db80d5157f76f8f7d3febbe6b4c56ff26739 )
-set( ${PROJECT_NAME}_URL "https://www.openssl.org/source/openssl-${${PROJECT_NAME}_VERSION}.tar.gz" )
+set( ${PROJECT_NAME}_URL "https://www.openssl.org/source/old/1.0.1/openssl-${${PROJECT_NAME}_VERSION}.tar.gz" )
 set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
 
 set ( ${PROJECT_NAME}_CFLAGS "${${PROJECT_NAME}_CFLAGS} ${CFLAGS_ARCH}" )
