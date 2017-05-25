@@ -49,7 +49,6 @@ volatile bool CacheImpl::s_networkhop = false;
 volatile int CacheImpl::s_blacklistBucketTimeout = 0;
 ACE_Recursive_Thread_Mutex CacheImpl::s_nwHopLock;
 volatile int8_t CacheImpl::s_serverGroupFlag = 0;
-MemberListForVersionStampPtr CacheImpl::s_versionStampMemIdList = nullptr;
 
 #define DEFAULT_LRU_MAXIMUM_ENTRIES 100000
 
@@ -153,8 +152,6 @@ CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
 void CacheImpl::initServices() {
   m_tcrConnectionManager = new TcrConnectionManager(this);
   PdxTypeRegistry::init();
-  CacheImpl::s_versionStampMemIdList =
-      MemberListForVersionStampPtr(new MemberListForVersionStamp());
   if (!m_initDone && m_attributes != nullptr && m_attributes->getEndpoints()) {
     if (PoolManager::getAll().size() > 0 && getCacheMode()) {
       LOGWARN(
@@ -364,8 +361,6 @@ void CacheImpl::close(bool keepalive) {
     m_adminRegion->close();
     m_adminRegion = nullptr;
   }
-
-  CacheImpl::s_versionStampMemIdList = nullptr;
 
   // The TCCM gets destroyed when CacheImpl is destroyed, but after that there
   // is still a window for the ping related registered task to get activated
@@ -924,5 +919,7 @@ CacheTransactionManagerPtr CacheImpl::getCacheTransactionManager() {
   return m_cacheTXManager;
 }
 MemberListForVersionStampPtr CacheImpl::getMemberListForVersionStamp() {
-  return CacheImpl::s_versionStampMemIdList;
+
+  static auto versionStampMemIdList = std::make_shared<MemberListForVersionStamp>();
+  return versionStampMemIdList;
 }

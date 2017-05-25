@@ -286,7 +286,6 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   static volatile bool s_networkhop;
   static volatile int s_blacklistBucketTimeout;
   static volatile int8_t s_serverGroupFlag;
-  static MemberListForVersionStampPtr s_versionStampMemIdList;
   PoolPtr m_defaultPool;
   bool m_ignorePdxUnreadFields;
   bool m_readPdxSerialized;
