@@ -30,6 +30,8 @@ pkg install -v --accept \
     developer/java/jdk-8 \
     developer/build/gnu-make \
     developer/build/cmake \
-    developer/versioning/git \
     archiver/gnu-tar \
     text/gnu-patch
+
+# dependent perl package conflict developer/versioning/git
+/opt/csw/bin/pkgutil -i -y git
