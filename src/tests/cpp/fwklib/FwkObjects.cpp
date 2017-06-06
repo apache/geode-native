@@ -576,7 +576,10 @@ Attributes::Attributes(const DOMNode* node)
 
 FwkPool::FwkPool(const DOMNode* node) : m_locators(false), m_servers(false) {
   // Init Factory
-  m_poolFactory = PoolManager::createFactory();
+  auto cacheFactory = CacheFactory::createCacheFactory();
+  m_cache = cacheFactory->create();
+  m_poolManager = new PoolManager(*m_cache);
+  m_poolFactory = m_poolManager->createFactory();
   // Set Attrs to Pool
   setAttributesToFactory(node);
 

@@ -31,7 +31,7 @@ uint8_t DeltaTestImpl::BYTE_ARR_MASK = 0x8;
 uint8_t DeltaTestImpl::TEST_OBJ_MASK = 0x10;
 uint8_t DeltaTestImpl::COMPLETE_MASK = 0x1F;
 
-DeltaTestImpl::DeltaTestImpl() {
+DeltaTestImpl::DeltaTestImpl() : Delta(nullptr) {
   intVar = 1;
   str = CacheableString::create("test");
   doubleVar = 1.1;
@@ -44,18 +44,20 @@ DeltaTestImpl::DeltaTestImpl() {
   fromDeltaCounter = 0;
 }
 DeltaTestImpl::DeltaTestImpl(int intValue, CacheableStringPtr strptr)
-    : intVar(intValue),
+    : Delta(nullptr),
+      intVar(intValue),
       str(strptr),
       doubleVar(0),
       toDeltaCounter(0),
       fromDeltaCounter(0) {}
-DeltaTestImpl::DeltaTestImpl(DeltaTestImplPtr rhs) {
+DeltaTestImpl::DeltaTestImpl(DeltaTestImplPtr rhs) : Delta(nullptr) {
   intVar = rhs->intVar;
   str = CacheableString::create(rhs->str->asChar());
   doubleVar = rhs->doubleVar;
-  byteArr = (rhs->byteArr == nullptr ? nullptr : CacheableBytes::create(
-                                                     rhs->byteArr->value(),
-                                                     rhs->byteArr->length()));
+  byteArr = (rhs->byteArr == nullptr
+                 ? nullptr
+                 : CacheableBytes::create(rhs->byteArr->value(),
+                                          rhs->byteArr->length()));
   testObj = (rhs->testObj == nullptr
                  ? nullptr
                  : TestObject1Ptr(new TestObject1(*(rhs->testObj.get()))));

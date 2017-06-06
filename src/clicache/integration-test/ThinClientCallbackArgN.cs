@@ -342,8 +342,8 @@ namespace Apache.Geode.Client.UnitTests
         m_isSet = true;
         m_callbackarg = new Portfolio(1, 1);
         //TODO:;split
-        Serializable.RegisterTypeGeneric(Portfolio.CreateDeserializable);
-        Serializable.RegisterTypeGeneric(Position.CreateDeserializable);
+        Serializable.RegisterTypeGeneric(Portfolio.CreateDeserializable, CacheHelper.DCache);
+        Serializable.RegisterTypeGeneric(Position.CreateDeserializable, CacheHelper.DCache);
       }
     }
 
@@ -455,7 +455,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       if (!isRegistered)
       {
-        Serializable.RegisterTypeGeneric(DefaultType.CreateDeserializable);
+        Serializable.RegisterTypeGeneric(DefaultType.CreateDeserializable, CacheHelper.DCache);
         isRegistered = true;
       }
     }

@@ -59,7 +59,7 @@ namespace apache
       {
         try {
           int pos = input.getBytesRead();
-          Apache::Geode::Client::DataInput mg_input(&input, true);
+          Apache::Geode::Client::DataInput mg_input(&input, true, input.getCache());
           m_managedSerializableptr->FromData(%mg_input);
 
           //this will move the cursor in c++ layer
@@ -178,7 +178,7 @@ namespace apache
       void ManagedCacheableDeltaGeneric::fromDelta(DataInput& input)
       {
         try {
-          Apache::Geode::Client::DataInput mg_input(&input, true);
+          Apache::Geode::Client::DataInput mg_input(&input, true, input.getCache());
           m_managedptr->FromDelta(%mg_input);
 
           //this will move the cursor in c++ layer

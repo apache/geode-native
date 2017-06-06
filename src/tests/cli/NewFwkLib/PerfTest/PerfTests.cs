@@ -1119,7 +1119,7 @@ namespace Apache.Geode.Client.FwkLib
           isReceiveValues = GetBoolValue("receiveValue");
         }
         region.GetSubscriptionService().RegisterKeys(registerKeyList, isDurable, isGetInitialValues, isReceiveValues);
-        String durableClientId = DistributedSystem.SystemProperties.DurableClientId;
+        String durableClientId = CacheHelper<TKey, TVal>.DCache.DistributedSystem.SystemProperties.DurableClientId;
         if (durableClientId.Length > 0)
         {
           CacheHelper<TKey, TVal>.DCache.ReadyForEvents();
@@ -1150,7 +1150,7 @@ namespace Apache.Geode.Client.FwkLib
           isReceiveValues = GetBoolValue("receiveValue");
         }
         region.GetSubscriptionService().RegisterAllKeys(isDurable, null, isGetInitialValues,isReceiveValues);
-        String durableClientId = DistributedSystem.SystemProperties.DurableClientId;
+        String durableClientId = CacheHelper<TKey, TVal>.DCache.DistributedSystem.SystemProperties.DurableClientId;
         if (durableClientId.Length > 0)
         {
           CacheHelper<TKey, TVal>.DCache.ReadyForEvents();
@@ -1244,7 +1244,7 @@ namespace Apache.Geode.Client.FwkLib
           isReceiveValues = GetBoolValue("receiveValue");
         }
         region.GetSubscriptionService().RegisterRegex(regex, isDurable, null, isGetInitialValues, isReceiveValues);
-        String durableClientId = DistributedSystem.SystemProperties.DurableClientId;
+        String durableClientId = CacheHelper<TKey, TVal>.DCache.DistributedSystem.SystemProperties.DurableClientId;
         if (durableClientId.Length > 0)
         {
           CacheHelper<TKey, TVal>.DCache.ReadyForEvents();
@@ -1359,8 +1359,8 @@ namespace Apache.Geode.Client.FwkLib
         Int32 eventAfterUpdate = (Int32)Util.BBGet("ConflationCacheListener", "AFTER_UPDATE_COUNT_" + Util.ClientId + "_" + region.Name);
         
         FwkInfo("DoValidateQConflation() -- eventAfterCreate {0} and eventAfterUpdate {1}", eventAfterCreate, eventAfterUpdate);
-        String conflateEvent = DistributedSystem.SystemProperties.ConflateEvents;
-        String durableClientId = DistributedSystem.SystemProperties.DurableClientId;
+        String conflateEvent = CacheHelper<TKey, TVal>.DCache.DistributedSystem.SystemProperties.ConflateEvents;
+        String durableClientId = CacheHelper<TKey, TVal>.DCache.DistributedSystem.SystemProperties.DurableClientId;
         Int32 totalCount = 3500;
         if(durableClientId.Length > 0) {
           FwkInfo("DoValidateQConflation() Validation for Durable client .");

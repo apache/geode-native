@@ -306,31 +306,23 @@ bool ThinClientDistributionManager::postFailoverAction(TcrEndpoint* endpoint) {
 }
 
 PropertiesPtr ThinClientDistributionManager::getCredentials(TcrEndpoint* ep) {
-  PropertiesPtr tmpSecurityProperties =
-      DistributedSystem::getSystemProperties()->getSecurityProperties();
+  const auto& distributedSystem =
+      m_connManager.getCacheImpl()->getDistributedSystem();
+  const auto& tmpSecurityProperties =
+      distributedSystem.getSystemProperties().getSecurityProperties();
 
-  AuthInitializePtr authInitialize = DistributedSystem::m_impl->getAuthLoader();
-
-  if (authInitialize != nullptr) {
+  if (const auto& authInitialize = distributedSystem.m_impl->getAuthLoader()) {
     LOGFINER(
         "ThinClientDistributionManager::getCredentials: acquired handle to "
         "authLoader, "
         "invoking getCredentials %s",
         ep->name().c_str());
-    /* adongre
-     * CID 28900: Copy into fixed size buffer (STRING_OVERFLOW)
-     * You might overrun the 100 byte fixed-size string "tmpEndpoint" by copying
-     * the return
-     * value of "stlp_std::basic_string<char, stlp_std::char_traits<char>,
-     *     stlp_std::allocator<char> >::c_str() const" without checking the
-     * length.
-     */
-    // char tmpEndpoint[100] = { '\0' } ;
-    // strcpy(tmpEndpoint, ep->name().c_str());
-    PropertiesPtr tmpAuthIniSecurityProperties = authInitialize->getCredentials(
-        tmpSecurityProperties, /*tmpEndpoint*/ ep->name().c_str());
+    const auto& tmpAuthIniSecurityProperties = authInitialize->getCredentials(
+        tmpSecurityProperties, ep->name().c_str());
+    LOGFINER("Done getting credentials");
     return tmpAuthIniSecurityProperties;
   }
+
   return nullptr;
 }
 
@@ -340,7 +332,9 @@ GfErrType ThinClientDistributionManager::sendUserCredentials(
 
   GfErrType err = GF_NOERR;
 
-  TcrMessageUserCredential request(credentials, this);
+  TcrMessageUserCredential request(
+      m_connManager.getCacheImpl()->getCache()->createDataOutput(), credentials,
+      this);
 
   TcrMessageReply reply(true, this);
 

@@ -22,8 +22,10 @@
 #include <geode/GeodeTypeIds.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 #include <geode/CacheableBuiltins.hpp>
+#include "DataOutputInternal.hpp"
 #include "Version.hpp"
 #include <string>
+#include <memory>
 
 #define ADDRSIZE 4
 #define DCPORT 12334
@@ -50,73 +52,9 @@ static class RandomInitializer {
 } oneTimeRandomInitializer;
 }  // namespace
 
-std::string ClientProxyMembershipID::g_dsName("DSName");
-std::string ClientProxyMembershipID::g_randString("GFNative");
-#define RAND_STRING_LEN 10
 const int ClientProxyMembershipID::VERSION_MASK = 0x8;
 const int8_t ClientProxyMembershipID::TOKEN_ORDINAL = -1;
 
-// initialize random string data and DistributedSystem name
-void ClientProxyMembershipID::init(const std::string& dsName) {
-  if (dsName.size() > 0) {
-    const char selectChars[] =
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
-    const uint32_t numChars = (sizeof(selectChars) / sizeof(char)) - 1;
-
-    g_dsName = dsName;
-    bool randDone = false;
-    char randString[RAND_STRING_LEN + 1];
-    int pid = ACE_OS::getpid();
-    // try /dev/urandom first
-    FILE* urandom = ACE_OS::fopen("/dev/urandom", "rb");
-    if (urandom) {
-      LOGFINE("Opened /dev/urandom for ClientProxyMembershipID random data");
-      uint8_t readBytes[RAND_STRING_LEN];
-      size_t readLen = ACE_OS::fread(readBytes, RAND_STRING_LEN, 1, urandom);
-      if (readLen == 1) {
-        for (uint32_t index = 0; index < RAND_STRING_LEN; ++index) {
-          randString[index] = selectChars[readBytes[index] % numChars];
-        }
-        randString[RAND_STRING_LEN] = '\0';
-        randDone = true;
-      }
-      ACE_OS::fclose(urandom);
-    }
-    if (!randDone) {
-      for (uint32_t index = 0; index < RAND_STRING_LEN; ++index) {
-        randString[index] = selectChars[ACE_OS::rand() % numChars];
-      }
-      randString[RAND_STRING_LEN] = '\0';
-    }
-    char ps[15] = {0};
-    ACE_OS::snprintf(ps, 15, "%d", pid);
-    g_randString = "GFNative_";
-    g_randString.append(randString).append(ps);
-    LOGINFO("Using %s as random data for ClientProxyMembershipID",
-            g_randString.c_str());
-  }
-}
-const std::string& ClientProxyMembershipID::getRandStringId() {
-  return g_randString;
-}
-/*
-// Commenting this function as this is not getting used anywhere.
-ClientProxyMembershipID::ClientProxyMembershipID(const char *durableClientId,
-                                                 const uint32_t
-durableClntTimeOut)
-{
-  if( durableClientId != nullptr && durableClntTimeOut != 0 ) {
-    DataOutput  m_memID;
-    m_memID.write((int8_t)GeodeTypeIds::CacheableASCIIString);
-    m_memID.writeASCII(durableClientId);
-    CacheableInt32Ptr int32ptr = CacheableInt32::create(durableClntTimeOut);
-    int32ptr->toData(m_memID);
-    uint32_t len;
-    char* buf = (char*)m_memID.getBuffer(&len);
-    m_memIDStr.append(buf, len);
-  }
-}
-*/
 ClientProxyMembershipID::ClientProxyMembershipID()
     : m_hostPort(0),
       m_hostAddr(nullptr)
@@ -133,13 +71,14 @@ ClientProxyMembershipID::~ClientProxyMembershipID() {
 }
 
 ClientProxyMembershipID::ClientProxyMembershipID(
-    const char* hostname, uint32_t hostAddr, uint32_t hostPort,
-    const char* durableClientId, const uint32_t durableClntTimeOut) {
+    std::string dsName, std::string randString, const char* hostname,
+    uint32_t hostAddr, uint32_t hostPort, const char* durableClientId,
+    const uint32_t durableClntTimeOut)
+    : m_hostAddrAsUInt32(hostAddr) {
   int32_t vmPID = ACE_OS::getpid();
-
-  initObjectVars(hostname, reinterpret_cast<uint8_t*>(&hostAddr), 4, false,
-                 hostPort, durableClientId, durableClntTimeOut, DCPORT, vmPID,
-                 VMKIND, 0, g_dsName.c_str(), g_randString.c_str(), 0);
+  initObjectVars(hostname, reinterpret_cast<uint8_t*>(&m_hostAddrAsUInt32), 4,
+                 false, hostPort, durableClientId, durableClntTimeOut, DCPORT,
+                 vmPID, VMKIND, 0, dsName.c_str(), randString.c_str(), 0);
 }
 
 // This is only for unit tests and should not be used for any other purpose. See
@@ -157,7 +96,7 @@ void ClientProxyMembershipID::initObjectVars(
     const uint32_t durableClntTimeOut, int32_t dcPort, int32_t vPID,
     int8_t vmkind, int8_t splitBrainFlag, const char* dsname,
     const char* uniqueTag, uint32_t vmViewId) {
-  DataOutput m_memID;
+  DataOutputInternal m_memID;
   if (dsname == nullptr) {
     m_dsname = std::string("");
   } else {
@@ -212,9 +151,7 @@ void ClientProxyMembershipID::initObjectVars(
 
   char PID[15] = {0};
   char Synch_Counter[15] = {0};
-  // ACE_OS::snprintf(PID, 15, "%d",vPID);
   ACE_OS::itoa(vPID, PID, 10);
-  // ACE_OS::snprintf(Synch_Counter, 15, "%d",synch_counter);
   ACE_OS::itoa(synch_counter, Synch_Counter, 10);
   clientID.append(hostname);
   clientID.append("(");
@@ -272,74 +209,6 @@ const std::string& ClientProxyMembershipID::getDSMemberIdForThinClientUse() {
 }
 
 std::string ClientProxyMembershipID::getHashKey() { return m_hashKey; }
-
-void ClientProxyMembershipID::getClientProxyMembershipID() {
-  // Implement LonerDistributionManager::generateMemberId() and store result in
-  // dsMemberId,dsMemberIdLength
-  const char* hex = "0123456789ABCDEF";
-  std::string DSMemberId = "";
-  ACE_TCHAR host[MAXHOSTNAMELEN];
-  std::string hostName = " ";
-  char buf[50];
-  char dsName[50];
-  DistributedSystemPtr dsPtr;
-  dsPtr = DistributedSystem::getInstance();
-
-  ACE_OS::hostname(host, sizeof(host) - 1);
-  hostName = host;
-  pid_t pid;
-  pid = ACE_OS::getpid();
-
-  /* adongre
-   * CID 28814: Resource leak (RESOURCE_LEAK)
-   * Following allocation is not used anywhere
-   * commenting the same.
-   */
-
-  /*int* random = new int[8];
-  for (int i = 0; i < 8; i++) {
-  random[i]=ACE_OS::rand()%16;
-  } */
-  char* hname = host;
-
-  // ACE_OS::sprintf(hname,"%s",hostName);
-  uint32_t len = static_cast<uint32_t>(hostName.length());
-  DataOutput m_dsmemID;
-  m_dsmemID.writeBytesOnly(reinterpret_cast<int8_t*>(hname), len);
-  // DSMemberId = DSMemberId.append(host);
-  // DSMemberId= DSMemberId.append("(");
-  m_dsmemID.write(static_cast<int8_t>('('));
-  int lenPid = ACE_OS::snprintf(buf, 50, "%d", pid);
-  // DSMemberId.append(buf);
-  // m_dsmemID.writeInt((int32_t)pid);
-  m_dsmemID.writeBytesOnly(reinterpret_cast<int8_t*>(buf), lenPid);
-  // DSMemberId.append("):");
-  m_dsmemID.write(static_cast<int8_t>(')'));
-  m_dsmemID.write(static_cast<int8_t>(':'));
-
-  char hexBuf[20];
-  for (int j = 0; j < 8; j++) {
-    //  Hardcoding random number for Thin Client
-    // hexBuf[j] = hex[random[j]%16];
-    hexBuf[j] = hex[1];
-  }
-  // DSMemberId = DSMemberId.append(hexBuf);
-  m_dsmemID.writeBytesOnly(reinterpret_cast<int8_t*>(hexBuf), 8);
-  m_dsmemID.write(static_cast<int8_t>(':'));
-  // DSMemberId = DSMemberId.append(":");
-  ACE_OS::snprintf(dsName, 50, "%s", dsPtr->getName());
-  // DSMemberId.append(dsName);
-  uint32_t dsLen = static_cast<uint32_t>(strlen(dsName));
-  m_dsmemID.writeBytesOnly(reinterpret_cast<int8_t*>(dsName), dsLen);
-  m_dsmemIDStr += (char*)m_dsmemID.getBuffer();
-  uint32_t strLen;
-  char* strBuf = (char*)m_dsmemID.getBuffer(&strLen);
-  m_dsmemIDStr.append(strBuf, strLen);
-  // dsMemberIdLength = DSMemberId.length();
-  // dsMemberId= (char*)ACE_OS::malloc(dsMemberIdLength+1);
-  // ACE_OS::strcpy(dsMemberId,DSMemberId.c_str());
-  // return m_dsmemID;
-}
 
 void ClientProxyMembershipID::toData(DataOutput& output) const {
   throw IllegalStateException("Member ID toData() not implemented.");

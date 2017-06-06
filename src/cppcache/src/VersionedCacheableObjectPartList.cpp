@@ -203,6 +203,8 @@ Serializable* VersionedCacheableObjectPartList::fromData(DataInput& input) {
     len = versionTaglen;
     m_versionTags.resize(versionTaglen);
     std::vector<uint16_t> ids;
+    MemberListForVersionStamp& memberListForVersionStamp =
+        *(m_region->getCacheImpl()->getMemberListForVersionStamp());
     for (int32_t index = 0; index < versionTaglen; index++) {
       uint8_t entryType = 0;
       input.read(&entryType);
@@ -213,9 +215,11 @@ Serializable* VersionedCacheableObjectPartList::fromData(DataInput& input) {
         }
         case FLAG_FULL_TAG: {
           if (persistent) {
-            versionTag = VersionTagPtr(new DiskVersionTag());
+            versionTag =
+                VersionTagPtr(new DiskVersionTag(memberListForVersionStamp));
           } else {
-            versionTag = VersionTagPtr(new VersionTag());
+            versionTag =
+                VersionTagPtr(new VersionTag(memberListForVersionStamp));
           }
           versionTag->fromData(input);
           versionTag->replaceNullMemberId(getEndpointMemId());
@@ -224,9 +228,11 @@ Serializable* VersionedCacheableObjectPartList::fromData(DataInput& input) {
 
         case FLAG_TAG_WITH_NEW_ID: {
           if (persistent) {
-            versionTag = VersionTagPtr(new DiskVersionTag());
+            versionTag =
+                VersionTagPtr(new DiskVersionTag(memberListForVersionStamp));
           } else {
-            versionTag = VersionTagPtr(new VersionTag());
+            versionTag =
+                VersionTagPtr(new VersionTag(memberListForVersionStamp));
           }
           versionTag->fromData(input);
           ids.push_back(versionTag->getInternalMemID());
@@ -235,9 +241,11 @@ Serializable* VersionedCacheableObjectPartList::fromData(DataInput& input) {
 
         case FLAG_TAG_WITH_NUMBER_ID: {
           if (persistent) {
-            versionTag = VersionTagPtr(new DiskVersionTag());
+            versionTag =
+                VersionTagPtr(new DiskVersionTag(memberListForVersionStamp));
           } else {
-            versionTag = VersionTagPtr(new VersionTag());
+            versionTag =
+                VersionTagPtr(new VersionTag(memberListForVersionStamp));
           }
           versionTag->fromData(input);
           int32_t idNumber;

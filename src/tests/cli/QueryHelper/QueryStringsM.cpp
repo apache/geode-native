@@ -15,10 +15,6 @@
  * limitations under the License.
  */
 
-#include "begin_native.hpp"
-#include <memory>
-#include "end_native.hpp"
-
 #include "QueryStringsM.hpp"
 #include "impl/ManagedString.hpp"
 

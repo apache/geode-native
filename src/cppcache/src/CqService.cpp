@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "CqService.hpp"
 #include "ReadWriteLock.hpp"
 #include <geode/DistributedSystem.hpp>
@@ -26,10 +27,12 @@
 #include <geode/CqStatusListener.hpp>
 using namespace apache::geode::client;
 
-CqService::CqService(ThinClientBaseDM* tccdm)
+CqService::CqService(ThinClientBaseDM* tccdm,
+                     StatisticsFactory* statisticsFactory)
     : m_tccdm(tccdm),
+      m_statisticsFactory(statisticsFactory),
       m_notificationSema(1),
-      m_stats(std::make_shared<CqServiceVsdStats>()) {
+      m_stats(std::make_shared<CqServiceVsdStats>(m_statisticsFactory)) {
   m_cqQueryMap = new MapOfCqQueryWithLock();
   m_running = true;
   LOGDEBUG("CqService Started");
@@ -100,9 +103,11 @@ CqQueryPtr CqService::newCq(const std::string& cqName,
 
   // check for durable client
   if (isDurable) {
-    auto sysProps = DistributedSystem::getSystemProperties();
-    const auto durableID =
-        (sysProps != nullptr) ? sysProps->durableClientId() : nullptr;
+    const auto durableID = m_tccdm->getConnectionManager()
+                               .getCacheImpl()
+                               ->getDistributedSystem()
+                               .getSystemProperties()
+                               .durableClientId();
     if (durableID == nullptr || strlen(durableID) == 0) {
       LOGERROR("Cannot create durable CQ because client is not durable.");
       throw IllegalStateException(
@@ -123,7 +128,8 @@ CqQueryPtr CqService::newCq(const std::string& cqName,
   }
 
   auto cQuery = std::make_shared<CqQueryImpl>(
-      shared_from_this(), cqName, queryString, cqAttributes, isDurable, ua);
+      shared_from_this(), cqName, queryString, cqAttributes,
+      m_statisticsFactory, isDurable, ua);
   cQuery->initCq();
   return cQuery;
 }
@@ -570,7 +576,11 @@ CqOperation::CqOperationType CqService::getOperation(int eventType) {
  * cqs.
  */
 CacheableArrayListPtr CqService::getAllDurableCqsFromServer() {
-  TcrMessageGetDurableCqs msg(m_tccdm);
+  TcrMessageGetDurableCqs msg(m_tccdm->getConnectionManager()
+                                  .getCacheImpl()
+                                  ->getCache()
+                                  ->createDataOutput(),
+                              m_tccdm);
   TcrMessageReply reply(true, m_tccdm);
 
   // intialize the chunked response hadler for durable cqs list

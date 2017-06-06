@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CACHEREGIONHELPER_H_
-#define GEODE_CACHEREGIONHELPER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,32 +15,30 @@
  * limitations under the License.
  */
 
-/**
- * @file
- */
+#pragma once
+
+#ifndef GEODE_CACHEREGIONHELPER_H_
+#define GEODE_CACHEREGIONHELPER_H_
+
 #include <geode/geode_globals.hpp>
-#include <geode/Region.hpp>
 #include <geode/Cache.hpp>
-#include "CacheImpl.hpp"
-#include <geode/DistributedSystem.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class CacheRegionHelper {
+class CacheImpl;
+class ProxyCache;
+
+class CPPCACHE_EXPORT CacheRegionHelper {
   /**
    * CacheHelper
    *
    */
  public:
-  inline static CacheImpl* getCacheImpl(const Cache* cache) {
-    return cache->m_cacheImpl.get();
-  }
-
-  inline static DistributedSystemImpl* getDistributedSystemImpl() {
-    return DistributedSystem::m_impl;
-  }
+  static CacheImpl* getCacheImpl(const Cache* cache);
+  static CacheImpl* getCacheImpl(const ProxyCache* cache);
+  static CacheImpl* getCacheImpl(const RegionService* cache);
 };
 }  // namespace client
 }  // namespace geode

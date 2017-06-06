@@ -79,6 +79,7 @@ enum ServerQueueStatus {
 class TcrEndpoint;
 class SystemProperties;
 class ThinClientPoolDM;
+class TcrConnectionManager;
 class CPPCACHE_EXPORT TcrConnection {
  public:
   /** Create one connection, endpoint is in format of hostname:portno
@@ -111,8 +112,10 @@ class CPPCACHE_EXPORT TcrConnection {
                          bool isSecondary = false,
                          uint32_t connectTimeout = DEFAULT_CONNECT_TIMEOUT);
 
-  TcrConnection(volatile const bool& isConnected)
+  TcrConnection(const TcrConnectionManager& connectionManager,
+                volatile const bool& isConnected)
       : connectionId(0),
+        m_connectionManager(&connectionManager),
         m_dh(nullptr),
         m_endpoint(nullptr),
         m_endpointObj(nullptr),
@@ -279,6 +282,10 @@ class CPPCACHE_EXPORT TcrConnection {
     connectionId = id;
   }
 
+  const TcrConnectionManager& getConnectionManager() {
+    return *m_connectionManager;
+  }
+
   CacheableBytesPtr encryptBytes(CacheableBytesPtr data) {
     if (m_dh != nullptr) {
       return m_dh->encrypt(data);
@@ -297,6 +304,7 @@ class CPPCACHE_EXPORT TcrConnection {
 
  private:
   int64_t connectionId;
+  const TcrConnectionManager* m_connectionManager;
   DiffieHellman* m_dh;
   /**
    * To read Intantiator message(which meant for java client), here we are
@@ -308,7 +316,7 @@ class CPPCACHE_EXPORT TcrConnection {
    * Packs the override settings bits into bytes - currently a single byte for
    * conflation, remove-unresponsive-client and notify-by-subscription.
    */
-  uint8_t getOverrides(SystemProperties* props);
+  uint8_t getOverrides(const SystemProperties* props);
 
   /**
    * To read the from stream

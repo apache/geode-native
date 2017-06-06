@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_GEODESTATISTICSFACTORY_H_
-#define GEODE_STATISTICS_GEODESTATISTICSFACTORY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,19 +15,22 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#pragma once
 
-#include <sys/types.h>
-#ifndef WIN32
-#include <unistd.h>
-#endif
+#ifndef GEODE_STATISTICS_GEODESTATISTICSFACTORY_H_
+#define GEODE_STATISTICS_GEODESTATISTICSFACTORY_H_
+
 #include <vector>
+
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Map_Manager.h>
-#include "StatisticsTypeImpl.hpp"
-#include <geode/statistics/StatisticsFactory.hpp>
-#include "StatisticsManager.hpp"
+
+#include <geode/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
+
+#include "StatisticsTypeImpl.hpp"
+#include "StatisticsManager.hpp"
 
 using namespace apache::geode::client;
 
@@ -51,19 +49,11 @@ class StatisticsManager;
  */
 class GeodeStatisticsFactory : public StatisticsFactory {
  private:
-  //--------------------Properties-------------------------------------------------
-
   const char* m_name;
 
   int64_t m_id;
 
   StatisticsManager* m_statMngr;
-
-  static GeodeStatisticsFactory* s_singleton;
-
-  //------------------  methods ------------------------------
-
-  GeodeStatisticsFactory(StatisticsManager* statMngr);
 
   int64_t m_statsListUniqueId;  // Creates a unique id for each stats object in
                                 // the list
@@ -76,23 +66,14 @@ class GeodeStatisticsFactory : public StatisticsFactory {
 
   StatisticsTypeImpl* addType(StatisticsTypeImpl* t);
 
-  //////////////////////////public member functions///////////////////////////
-
  public:
+  GeodeStatisticsFactory(StatisticsManager* statMngr);
   ~GeodeStatisticsFactory();
-
-  static void clean();
 
   const char* getName();
 
   int64_t getId();
 
-  static GeodeStatisticsFactory* initInstance(StatisticsManager* statMngr);
-
-  static GeodeStatisticsFactory* getExistingInstance();
-
-  //------------ StatisticsFactory methods: Statistics
-  //------------------------------
   Statistics* createStatistics(StatisticsType* type);
 
   Statistics* createStatistics(StatisticsType* type, const char* textId);
@@ -110,15 +91,11 @@ class GeodeStatisticsFactory : public StatisticsFactory {
   Statistics* createAtomicStatistics(StatisticsType* type, const char* textId,
                                      int64_t numericId);
 
-  //------------ StatisticsFactory methods: Statistics Type
-  //------------------------------
   StatisticsType* createType(const char* name, const char* description,
                              StatisticDescriptor** stats, int32_t statsLength);
 
   StatisticsType* findType(const char* name);
 
-  //------------ StatisticsFactory methods: Statistics Descriptor
-  //---------------------
   StatisticDescriptor* createIntCounter(const char* name,
                                         const char* description,
                                         const char* units, bool largerBetter);
@@ -145,8 +122,7 @@ class GeodeStatisticsFactory : public StatisticsFactory {
 
   /** Return the first instance that matches the type, or nullptr */
   Statistics* findFirstStatisticsByType(StatisticsType* type);
-
-};  // class
+};
 
 }  // namespace statistics
 }  // namespace geode

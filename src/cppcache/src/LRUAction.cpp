@@ -87,7 +87,7 @@ bool LRUOverFlowToDiskAction::evict(const MapEntryImplPtr& mePtr) {
     lruProps.setPersistenceInfo(persistenceInfo);
   }
   (m_regionPtr->getRegionStats())->incOverflows();
-  (m_regionPtr->getCacheImpl())->m_cacheStats->incOverflows();
+  (m_regionPtr->getCacheImpl())->getCachePerfStats().incOverflows();
   // set value after write on disk to indicate that it is on disk.
   mePtr->setValueI(CacheableToken::overflowed());
 

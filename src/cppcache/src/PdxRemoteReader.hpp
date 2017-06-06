@@ -31,8 +31,9 @@ class PdxRemoteReader : public PdxLocalReader {
   int32_t m_currentIndex;
 
  public:
-  PdxRemoteReader(DataInput& dataInput, PdxTypePtr remoteType, int32_t pdxLen)
-      : PdxLocalReader(dataInput, remoteType, pdxLen) {
+  PdxRemoteReader(DataInput& dataInput, PdxTypePtr remoteType, int32_t pdxLen,
+                  PdxTypeRegistryPtr pdxTypeRegistry)
+      : PdxLocalReader(dataInput, remoteType, pdxLen, pdxTypeRegistry) {
     m_currentIndex = 0;
   }
 

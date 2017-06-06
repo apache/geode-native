@@ -16,13 +16,14 @@
  */
 
 
+#include "begin_native.hpp"
+#include "statistics/StatisticsManager.hpp"
+#include "end_native.hpp"
 
-//#include "geode_includes.hpp"
 #include "StatisticsFactory.hpp"
 #include "StatisticsType.hpp"
 #include "StatisticDescriptor.hpp"
 #include "Statistics.hpp"
-
 #include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"
@@ -35,21 +36,23 @@ namespace Apache
     namespace Client
     {
 
-      StatisticsFactory^ StatisticsFactory::GetExistingInstance()
-      {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+      // TODO globals - pass in distributed system
+      //StatisticsFactory^ StatisticsFactory::GetExistingInstance(DistributedSystem^ distributedSystem)
+      //{
+      //  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return StatisticsFactory::Create(apache::geode::statistics::StatisticsFactory::getExistingInstance());
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
-      }
+      //    return StatisticsFactory::Create(distributedSystem->getStatisticsManager()->getStatisticsFactory());
+
+      //  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+      //}
 
       StatisticDescriptor^ StatisticsFactory::CreateIntCounter( String^ name, String^ description,String^ units )
       {
         return CreateIntCounter(name,description,units,true);
       }
 
-      StatisticDescriptor^ StatisticsFactory::CreateIntCounter(String^ name, String^ description,String^ units, int8_t largerBetter)
+      StatisticDescriptor^ StatisticsFactory::CreateIntCounter(String^ name, String^ description,String^ units, bool largerBetter)
       {
         ManagedString mg_name( name );
         ManagedString mg_description( description );
@@ -66,7 +69,7 @@ namespace Apache
         return CreateLongCounter(name,description,units,true);
       }
 
-      StatisticDescriptor^ StatisticsFactory::CreateLongCounter( String^ name, String^ description,String^ units, int8_t largerBetter )
+      StatisticDescriptor^ StatisticsFactory::CreateLongCounter( String^ name, String^ description,String^ units, bool largerBetter )
       {
         ManagedString mg_name( name );
         ManagedString mg_description( description );
@@ -83,7 +86,7 @@ namespace Apache
         return CreateDoubleCounter(name,description,units,true);
       }
 
-      StatisticDescriptor^ StatisticsFactory::CreateDoubleCounter( String^ name, String^ description, String^ units, int8_t largerBetter )
+      StatisticDescriptor^ StatisticsFactory::CreateDoubleCounter( String^ name, String^ description, String^ units, bool largerBetter )
       {
         ManagedString mg_name( name );
         ManagedString mg_description( description );
@@ -101,7 +104,7 @@ namespace Apache
         return CreateIntGauge(name,description,units,false);
       }
 
-      StatisticDescriptor^ StatisticsFactory::CreateIntGauge( String^ name, String^ description, String^ units, int8_t largerBetter )
+      StatisticDescriptor^ StatisticsFactory::CreateIntGauge( String^ name, String^ description, String^ units, bool largerBetter )
       {
         ManagedString mg_name( name );
         ManagedString mg_description( description );
@@ -118,7 +121,7 @@ namespace Apache
         return CreateLongGauge(name,description,units,false);
       }
 
-      StatisticDescriptor^ StatisticsFactory::CreateLongGauge( String^ name, String^ description, String^ units, int8_t largerBetter )
+      StatisticDescriptor^ StatisticsFactory::CreateLongGauge( String^ name, String^ description, String^ units, bool largerBetter )
       {
         ManagedString mg_name( name );
         ManagedString mg_description( description );
@@ -135,7 +138,7 @@ namespace Apache
         return CreateDoubleGauge(name,description,units,false);
       }
 
-      StatisticDescriptor^ StatisticsFactory::CreateDoubleGauge( String^ name, String^ description, String^ units,int8_t largerBetter )
+      StatisticDescriptor^ StatisticsFactory::CreateDoubleGauge( String^ name, String^ description, String^ units, bool largerBetter )
       {
         ManagedString mg_name( name );
         ManagedString mg_description( description );

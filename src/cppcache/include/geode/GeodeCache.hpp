@@ -32,6 +32,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
+class DistributedSystem;
+
 /**
  * GeodeCache represents the singleton cache that must be created
  * in order to connect to Geode server.
@@ -52,7 +54,7 @@ class CPPCACHE_EXPORT GeodeCache : public RegionService {
   /** Returns the name of this cache.
    * @return the string name of this cache
    */
-  virtual const char* getName() const = 0;
+  virtual const std::string& getName() const = 0;
 
   /**
    * Initializes the cache from an xml file
@@ -63,10 +65,10 @@ class CPPCACHE_EXPORT GeodeCache : public RegionService {
   virtual void initializeDeclarativeCache(const char* cacheXml) = 0;
 
   /**
-  * Returns the distributed system that this cache was
-  * {@link CacheFactory::createCacheFactory created} with.
-  */
-  virtual DistributedSystemPtr getDistributedSystem() const = 0;
+   * Returns the distributed system that this cache was
+   * {@link CacheFactory::createCacheFactory created} with.
+   */
+  virtual DistributedSystem& getDistributedSystem() const = 0;
 
   /**
    * Returns whether Cache saves unread fields for Pdx types.
@@ -74,9 +76,9 @@ class CPPCACHE_EXPORT GeodeCache : public RegionService {
   virtual bool getPdxIgnoreUnreadFields() = 0;
 
   /**
-  * Returns whether { @link PdxInstance} is preferred for PDX types instead of
-  * C++ object.
-  */
+   * Returns whether { @link PdxInstance} is preferred for PDX types instead of
+   * C++ object.
+   */
   virtual bool getPdxReadSerialized() = 0;
 };
 }  // namespace client

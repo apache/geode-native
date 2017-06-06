@@ -36,7 +36,8 @@
 
 #include <geode/ResultSet.hpp>
 #include <geode/StructSet.hpp>
-
+#include "SerializationRegistry.hpp"
+#include "DataOutputInternal.hpp"
 #ifndef ROOT_SCOPE
 #define ROOT_SCOPE LOCAL
 #endif
@@ -806,7 +807,7 @@ bool QueryHelper::compareTwoPositionObjects(SerializablePtr pos1,
     return false;
   }
 
-  DataOutput o1, o2;
+  DataOutputInternal o1, o2;
   p1->toData(o1);
   p2->toData(o2);
 

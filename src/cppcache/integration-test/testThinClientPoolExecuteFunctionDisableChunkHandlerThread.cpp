@@ -338,8 +338,8 @@ void verifyTimeoutFirst() {
 
   LOGINFO("Total timeout %d", totalTimeoutCount);
 
-  int blackListBucketTimeouts =
-      TestUtils::getCacheImpl(getHelper()->cachePtr)->blackListBucketTimeouts();
+  int blackListBucketTimeouts = TestUtils::getCacheImpl(getHelper()->cachePtr)
+                                    ->getBlackListBucketTimeouts();
 
   LOGINFO("blackListBucketTimeouts %d", blackListBucketTimeouts);
 

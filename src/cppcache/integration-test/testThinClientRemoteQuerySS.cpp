@@ -31,6 +31,10 @@
 #include <geode/Query.hpp>
 #include <geode/QueryService.hpp>
 
+#include "SerializationRegistry.hpp"
+#include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
+
 using namespace apache::geode::client;
 using namespace test;
 using namespace testData;
@@ -224,17 +228,18 @@ void compareMaps(HashMapOfCacheable& map, HashMapOfCacheable& expectedMap) {
 }
 
 void stepOne() {
+  initGridClient(true);
   try {
-    Serializable::registerType(Position::createDeserializable);
-    Serializable::registerType(Portfolio::createDeserializable);
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
 
-    Serializable::registerPdxType(PositionPdx::createDeserializable);
-    Serializable::registerPdxType(PortfolioPdx::createDeserializable);
+    serializationRegistry->addType(Position::createDeserializable);
+    serializationRegistry->addType(Portfolio::createDeserializable);
+
+    serializationRegistry->addPdxType(PositionPdx::createDeserializable);
+    serializationRegistry->addPdxType(PortfolioPdx::createDeserializable);
   } catch (const IllegalStateException&) {
     // ignore exception
   }
-
-  initGridClient(true);
 
   isPoolConfig = true;
   createPool(poolNames[0], locHostPort, nullptr, 0, true);

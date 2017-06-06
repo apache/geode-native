@@ -22,6 +22,7 @@
 #include "begin_native.hpp"
 #include <geode/CacheableKey.hpp>
 #include <GeodeTypeIdsImpl.hpp>
+#include "SerializationRegistry.hpp"
 #include "end_native.hpp"
 
 #include "../IGeodeSerializable.hpp"
@@ -34,6 +35,7 @@ namespace apache
   {
     namespace client
     {
+      namespace native = apache::geode::client;
 
       /// <summary>
       /// Wraps the managed <see cref="Apache.Geode.Client.IGeodeSerializable" />
@@ -45,14 +47,16 @@ namespace apache
       private:
         int m_hashcode;
         int m_classId;
+        native::SerializationRegistry* m_serializationRegistry;
         int m_objectSize;
       public:
 
         inline ManagedCacheableKeyGeneric(
-          Apache::Geode::Client::IGeodeSerializable^ managedptr, int hashcode, int classId)
+          Apache::Geode::Client::IGeodeSerializable^ managedptr, int hashcode, int classId, native::SerializationRegistry * serializationRegistry)
           : m_managedptr(managedptr) {
           m_hashcode = hashcode;
           m_classId = classId;
+          m_serializationRegistry = serializationRegistry;
           m_objectSize = 0;
         }
         /// <summary>
@@ -61,11 +65,12 @@ namespace apache
         /// <param name="managedptr">
         /// The managed object.
         /// </param>
-        inline ManagedCacheableKeyGeneric(Apache::Geode::Client::IGeodeSerializable^ managedptr)
+        inline ManagedCacheableKeyGeneric(Apache::Geode::Client::IGeodeSerializable^ managedptr, native::SerializationRegistry * serializationRegistry)
           : m_managedptr(managedptr) {
           // m_hashcode = managedptr->GetHashCode();
           m_hashcode = 0;
           m_classId = managedptr->ClassId;
+          m_serializationRegistry = serializationRegistry;
           m_objectSize = 0;
         }
 

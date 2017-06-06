@@ -54,7 +54,7 @@ namespace apache
       {
         try {
           Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytes::fromData: classid " + m_classId);
-          Apache::Geode::Client::DataInput mg_input(&input, true);
+          Apache::Geode::Client::DataInput mg_input(&input, true, input.getCache());
           const System::Byte* objStartPos = input.currentBufferPosition();
 
           Apache::Geode::Client::IGeodeSerializable^ obj =
@@ -179,7 +179,7 @@ namespace apache
         try {
           Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytes::fromDelta:");
           Apache::Geode::Client::IGeodeDelta^ deltaObj = this->getManagedObject();
-          Apache::Geode::Client::DataInput mg_input(&input, true);
+          Apache::Geode::Client::DataInput mg_input(&input, true, input.getCache());
           deltaObj->FromDelta(%mg_input);
 
           Apache::Geode::Client::IGeodeSerializable^ managedptr =
@@ -188,8 +188,8 @@ namespace apache
           {
             Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytes::fromDelta: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((uint64_t) this) + " with its domain ID: " + m_domainId);
             Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytes::fromDelta: classid " + managedptr->ClassId + " : " + managedptr->ToString());
-            apache::geode::client::DataOutput dataOut;
-            Apache::Geode::Client::DataOutput mg_output(&dataOut, true);
+            auto dataOut = input.getCache()->createDataOutput();
+            Apache::Geode::Client::DataOutput mg_output(dataOut.get(), true);
             managedptr->ToData(%mg_output);
 
             //move cursor
@@ -197,8 +197,8 @@ namespace apache
             mg_output.WriteBytesToUMDataOutput();
 
             GF_SAFE_DELETE(m_bytes);
-            m_bytes = dataOut.getBufferCopy();
-            m_size = dataOut.getBufferLength();
+            m_bytes = dataOut->getBufferCopy();
+            m_size = dataOut->getBufferLength();
             Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytes::fromDelta objectSize = " + m_size + " m_hashCode = " + m_hashCode);
             m_hashCode = managedptr->GetHashCode();
           }
@@ -241,8 +241,8 @@ namespace apache
 
         Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytes::getManagedObject");
 
-        apache::geode::client::DataInput dinp(m_bytes, m_size);
-        Apache::Geode::Client::DataInput mg_dinp(&dinp, true);
+        auto dinp = m_cache->createDataInput(m_bytes, m_size);
+        Apache::Geode::Client::DataInput mg_dinp(dinp.get(), true, m_cache);
         Apache::Geode::Client::TypeFactoryMethodGeneric^ creationMethod =
           Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId);
         Apache::Geode::Client::IGeodeSerializable^ newObj = creationMethod();
@@ -261,8 +261,8 @@ namespace apache
           const ManagedCacheableDeltaBytesGeneric* p_other =
             dynamic_cast<const ManagedCacheableDeltaBytesGeneric*>(&other);
           if (p_other != NULL) {
-            apache::geode::client::DataInput di(m_bytes, m_size);
-            Apache::Geode::Client::DataInput mg_input(&di, true);
+            auto di = m_cache->createDataInput(m_bytes, m_size);
+            Apache::Geode::Client::DataInput mg_input(di.get(), true, m_cache);
             Apache::Geode::Client::IGeodeSerializable^ obj =
               Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId)();
             obj->FromData(%mg_input);
@@ -285,8 +285,8 @@ namespace apache
       {
         try {
           Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytesGeneric::equal. ");
-          apache::geode::client::DataInput di(m_bytes, m_size);
-          Apache::Geode::Client::DataInput mg_input(&di, true);
+          auto di = m_cache->createDataInput(m_bytes, m_size);
+          Apache::Geode::Client::DataInput mg_input(di.get(), true, m_cache);
           Apache::Geode::Client::IGeodeSerializable^ obj =
             Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId)();
           obj->FromData(%mg_input);

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CACHE_H_
-#define GEODE_CACHE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_CACHE_H_
+#define GEODE_CACHE_H_
+
+#include <string>
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 #include "GeodeCache.hpp"
@@ -30,7 +33,8 @@
 #include "RegionShortcut.hpp"
 #include "RegionFactory.hpp"
 #include "InternalCacheTransactionManager2PC.hpp"
-
+#include "statistics/StatisticsFactory.hpp"
+#include "geode/TypeRegistry.hpp"
 /**
  * @file
  */
@@ -39,6 +43,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
+class PoolManager;
 class CacheFactory;
 class CacheRegionHelper;
 class Pool;
@@ -84,7 +89,7 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
   /** Returns the name of this cache.
    * @return the string name of this cache
    */
-  virtual const char* getName() const;
+  virtual const std::string& getName() const;
 
   /**
    * Indicates if this cache has been closed.
@@ -100,7 +105,7 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * Returns the distributed system that this cache was
    * {@link CacheFactory::createCacheFactory created} with.
    */
-  virtual DistributedSystemPtr getDistributedSystem() const;
+  virtual DistributedSystem& getDistributedSystem() const;
 
   /**
    * Terminates this object cache and releases all the local resources.
@@ -211,6 +216,8 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    */
   virtual bool getPdxReadSerialized();
 
+  virtual TypeRegistry& getTypeRegistry();
+
   /**
    * Returns a factory that can create a {@link PdxInstance}.
    * @param className the fully qualified class name that the PdxInstance will
@@ -221,6 +228,14 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    */
   virtual PdxInstanceFactoryPtr createPdxInstanceFactory(const char* className);
 
+  virtual statistics::StatisticsFactory* getStatisticsFactory() const;
+
+  virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* m_buffer,
+                                                     int32_t len) const;
+  virtual std::unique_ptr<DataOutput> createDataOutput() const;
+
+  virtual PoolManager& getPoolManager() const;
+
   /**
    * @brief destructor
    */
@@ -230,10 +245,11 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
   /**
    * @brief constructors
    */
-  Cache(const char* name, DistributedSystemPtr sys, const char* id_data,
+  Cache(const std::string& name, PropertiesPtr dsProp,
         bool ignorePdxUnreadFields, bool readPdxSerialized);
 
   std::unique_ptr<CacheImpl> m_cacheImpl;
+  std::unique_ptr<TypeRegistry> m_typeRegistry;
 
  protected:
   Cache() = delete;

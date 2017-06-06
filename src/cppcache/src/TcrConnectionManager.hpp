@@ -76,7 +76,6 @@ class CPPCACHE_EXPORT TcrConnectionManager {
   void netDown();
   void revive();
   void setClientCrashTEST() { TEST_DURABLE_CLIENT_CRASH = true; }
-  volatile static bool isNetDown;
   volatile static bool TEST_DURABLE_CLIENT_CRASH;
 
   inline ACE_Map_Manager<std::string, TcrEndpoint*, ACE_Recursive_Thread_Mutex>&
@@ -106,7 +105,7 @@ class CPPCACHE_EXPORT TcrConnectionManager {
 
   bool isDurable() { return m_isDurable; };
   bool haEnabled() { return m_redundancyManager->m_HAenabled; };
-  CacheImpl* getCacheImpl() { return m_cache; };
+  CacheImpl* getCacheImpl() const { return m_cache; };
 
   GfErrType sendSyncRequestCq(TcrMessage& request, TcrMessageReply& reply,
                               TcrHADistributionManager* theHADM);
@@ -139,6 +138,8 @@ class CPPCACHE_EXPORT TcrConnectionManager {
   GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply) {
     return m_redundancyManager->sendRequestToPrimary(request, reply);
   }
+
+  bool isNetDown() const { return m_isNetDown; }
 
  private:
   CacheImpl* m_cache;
@@ -174,6 +175,8 @@ class CPPCACHE_EXPORT TcrConnectionManager {
   Task<TcrConnectionManager>* m_redundancyTask;
   ACE_Recursive_Thread_Mutex m_notificationLock;
   bool m_isDurable;
+
+  bool m_isNetDown;
 
   ThinClientRedundancyManager* m_redundancyManager;
 

@@ -31,76 +31,29 @@ namespace apache {
 namespace geode {
 namespace client {
 
-/* adongre  - Coverity II
- * Non-static class member "m_currentOffsetIndex" is not initialized in this
- * constructor nor in any functions that it calls.
- * Non-static class member "m_startPositionOffset" is not initialized in this
- * constructor nor in any functions that it calls.
- */
-PdxLocalWriter::PdxLocalWriter()
-    : m_dataOutput(nullptr),
-      m_pdxType(nullptr),
+PdxLocalWriter::PdxLocalWriter(DataOutput& output, PdxTypePtr pdxType,
+                               PdxTypeRegistryPtr pdxTypeRegistry)
+    : PdxLocalWriter(output, pdxType,
+                     pdxType ? pdxType->getPdxClassName() : nullptr,
+                     pdxTypeRegistry)
+
+{}
+
+PdxLocalWriter::PdxLocalWriter(DataOutput& dataOutput, PdxTypePtr pdxType,
+                               const char* pdxClassName,
+                               PdxTypeRegistryPtr pdxTypeRegistry)
+    : m_dataOutput(&dataOutput),
+      m_pdxType(pdxType),
+      m_pdxClassName(pdxClassName),
       m_startPosition(nullptr),
       m_startPositionOffset(0),
       m_domainClassName(nullptr),
       m_currentOffsetIndex(0),
-      m_pdxClassName(
-          nullptr) {  // COVERITY --> 29282 Uninitialized pointer field
-  // m_dataOutput = nullptr;
-  // m_pdxType =nullptr;
-}
-
-PdxLocalWriter::PdxLocalWriter(DataOutput& output, PdxTypePtr pdxType) {
-  m_dataOutput = &output;
-  m_pdxType = pdxType;
-  m_currentOffsetIndex = 0;
-  m_preserveData = nullptr;
-  m_pdxClassName = nullptr;
-  if (pdxType != nullptr) m_pdxClassName = pdxType->getPdxClassName();
-  ;
+      m_pdxTypeRegistry(pdxTypeRegistry) {
   initialize();
-  /* adongre  - Coverity II
-   * CID 29281: Uninitialized pointer field (UNINIT_CTOR)
-   * Non-static class member "m_domainClassName" is not initialized in this
-   * constructor nor in any functions that it calls.
-   * Fix :
-   */
-  m_domainClassName = nullptr;
 }
 
-PdxLocalWriter::PdxLocalWriter(DataOutput& dataOutput, PdxTypePtr pdxType,
-                               const char* pdxClassName) {
-  m_dataOutput = &dataOutput;
-  m_pdxType = pdxType;
-  m_currentOffsetIndex = 0;
-  m_preserveData = nullptr;
-  m_pdxClassName = pdxClassName;
-  initialize();
-  /* adongre  - Coverity II
-   * CID 29281: Uninitialized pointer field (UNINIT_CTOR)
-   * Non-static class member "m_domainClassName" is not initialized in this
-   * constructor nor in any functions that it calls.
-   * Fix :
-   */
-  m_domainClassName = nullptr;
-}
-
-PdxLocalWriter::~PdxLocalWriter() {
-  /*if (m_dataOutput != nullptr) {
-    delete m_dataOutput;
-    m_dataOutput = nullptr;
-  }
-  */
-  /*if (m_startPosition != nullptr) {
-    delete m_startPosition;
-    m_startPosition = nullptr;
-  }*/
-
-  /*if (m_domainClassName != nullptr) {
-    delete m_domainClassName;
-    m_domainClassName = nullptr;
-  }*/
-}
+PdxLocalWriter::~PdxLocalWriter() {}
 
 void PdxLocalWriter::initialize() {
   if (m_pdxType != nullptr) {
@@ -171,11 +124,11 @@ PdxWriterPtr PdxLocalWriter::writeUnreadFields(PdxUnreadFieldsPtr unread) {
     m_preserveData = std::dynamic_pointer_cast<PdxRemotePreservedData>(unread);
     if (m_preserveData != nullptr) {
       m_pdxType =
-          PdxTypeRegistry::getPdxType(m_preserveData->getMergedTypeId());
+          getPdxTypeRegistry()->getPdxType(m_preserveData->getMergedTypeId());
       if (m_pdxType == nullptr) {
         // its local type
         // this needs to fix for IPdxTypemapper
-        m_pdxType = PdxTypeRegistry::getLocalPdxType(m_pdxClassName);
+        m_pdxType = getPdxTypeRegistry()->getLocalPdxType(m_pdxClassName);
       }
     } else {
       throw IllegalStateException(
@@ -526,6 +479,11 @@ uint8_t* PdxLocalWriter::getPdxStream(int& pdxLen) {
 }
 
 void PdxLocalWriter::writeByte(int8_t byte) { m_dataOutput->write(byte); }
+
+PdxTypeRegistryPtr PdxLocalWriter::getPdxTypeRegistry() const {
+  return m_pdxTypeRegistry;
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

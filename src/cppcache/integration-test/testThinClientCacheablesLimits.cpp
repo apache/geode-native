@@ -90,8 +90,8 @@ const char* _regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       nullptr, 0, true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, nullptr, 0,
+                       true);
     getHelper()->createPooledRegion(_regionNames[1], NO_ACK, locatorsG,
                                     "__TEST_POOL1__", false, false);
     LOG("StepOne complete.");

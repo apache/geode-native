@@ -41,8 +41,6 @@ namespace geode {
 namespace client {
 
 class DiffieHellman {
-  static ACE_Recursive_Thread_Mutex s_mutex;
-
  public:
   void initDhKeys(const PropertiesPtr& props);
   void clearDhKeys(void);
@@ -59,15 +57,10 @@ class DiffieHellman {
 
   static void initOpenSSLFuncPtrs();
 
-  DiffieHellman()
-      : /* adongre
-         * CID 28933: Uninitialized pointer field (UNINIT_CTOR)
-         */
-        m_dhCtx((void*)0) {}
+  DiffieHellman() : m_dhCtx(nullptr) {}
 
  private:
   void* m_dhCtx;
-  static bool m_inited;
   static void* getOpenSSLFuncPtr(const char* function_name);
 
   // OpenSSL Func Ptrs: Declare Func Ptr type and a static variable of FuncPtr

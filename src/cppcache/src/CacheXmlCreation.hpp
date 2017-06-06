@@ -47,10 +47,10 @@ class CPPCACHE_EXPORT CacheXmlCreation {
   /**
    * Adds a root region to the cache
    */
-  void addRootRegion(RegionXmlCreation* root);
+  void addRootRegion(std::shared_ptr<RegionXmlCreation> root);
 
   /** Adds a pool to the cache */
-  void addPool(PoolXmlCreation* pool);
+  void addPool(std::shared_ptr<PoolXmlCreation> pool);
 
   /**
    * Fills in the contents of a {@link Cache} based on this creation
@@ -79,14 +79,14 @@ class CPPCACHE_EXPORT CacheXmlCreation {
 
   bool getPdxReadSerialized(bool val) { return m_readPdxSerialized; }
 
-  ~CacheXmlCreation();
+  ~CacheXmlCreation() = default;
 
  private:
   /** This cache's roots */
-  std::vector<RegionXmlCreation*> rootRegions;
+  std::vector<std::shared_ptr<RegionXmlCreation>> rootRegions;
 
   /** This cache's pools */
-  std::vector<PoolXmlCreation*> pools;
+  std::vector<std::shared_ptr<PoolXmlCreation>> pools;
 
   Cache* m_cache;
   bool m_pdxIgnoreUnreadFields;

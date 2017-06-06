@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#include "SerializationRegistry.hpp"
 #include "PkcsAuthInit.hpp"
 #include <geode/Properties.hpp>
 #include <geode/CacheableBuiltins.hpp>
@@ -109,8 +109,8 @@ static bool s_initDone = openSSLInit();
 }
 // end of extern "C"
 
-PropertiesPtr PKCSAuthInitInternal::getCredentials(PropertiesPtr& securityprops,
-                                                   const char* server) {
+PropertiesPtr PKCSAuthInitInternal::getCredentials(
+    const PropertiesPtr& securityprops, const char* server) {
   if (!s_initDone) {
     throw AuthenticationFailedException(
         "PKCSAuthInit::getCredentials: "
@@ -151,7 +151,6 @@ PropertiesPtr PKCSAuthInitInternal::getCredentials(PropertiesPtr& securityprops,
         "PKCSAuthInit::getCredentials: "
         "key-store password property KEYSTORE_PASSWORD not set.");
   }
-  DataOutput additionalMsg;
 
   FILE* keyStoreFP = fopen(keyStorePath, "r");
   if (keyStoreFP == NULL) {
@@ -176,17 +175,10 @@ PropertiesPtr PKCSAuthInitInternal::getCredentials(PropertiesPtr& securityprops,
   }
 
   fclose(keyStoreFP);
-
-  additionalMsg.writeUTF(alias);
-
-  uint32_t dataLen;
-  char* data = (char*)additionalMsg.getBuffer(&dataLen);
   unsigned int lengthEncryptedData = 0;
 
-  // Skip first two bytes of the java UTF-8 encoded string
-  // containing the length of the string.
   uint8_t* signatureData = createSignature(
-      privateKey, cert, reinterpret_cast<unsigned char*>(data + 2), dataLen - 2,
+      privateKey, cert, reinterpret_cast<const unsigned char*>(alias), strlen(alias),
       &lengthEncryptedData);
   EVP_PKEY_free(privateKey);
   X509_free(cert);

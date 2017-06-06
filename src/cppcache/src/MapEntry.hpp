@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_MAPENTRY_H_
-#define GEODE_MAPENTRY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,8 +15,11 @@
  * limitations under the License.
  */
 
-#include <atomic>
+#pragma once
 
+#ifndef GEODE_MAPENTRY_H_
+#define GEODE_MAPENTRY_H_
+#include <atomic>
 #include <geode/geode_globals.hpp>
 #include <geode/Cacheable.hpp>
 #include <geode/CacheableKey.hpp>
@@ -45,6 +43,7 @@ class CPPCACHE_EXPORT MapEntryImpl;
 typedef std::shared_ptr<MapEntryImpl> MapEntryImplPtr;
 
 class CPPCACHE_EXPORT LRUEntryProperties;
+class CacheImpl;
 
 /**
  * @brief This class encapsulates expiration specific properties for
@@ -52,8 +51,11 @@ class CPPCACHE_EXPORT LRUEntryProperties;
  */
 class CPPCACHE_EXPORT ExpEntryProperties {
  public:
-  inline ExpEntryProperties()
-      : m_lastAccessTime(0), m_lastModifiedTime(0), m_expiryTaskId(-1) {
+  inline ExpEntryProperties(ExpiryTaskManager* expiryTaskManager)
+      : m_lastAccessTime(0),
+        m_lastModifiedTime(0),
+        m_expiryTaskId(-1),
+        m_expiryTaskManager(expiryTaskManager) {
     // The reactor always gives +ve id while scheduling.
     // -1 will indicate that an expiry task has not been scheduled
     // for this entry. // TODO confirm
@@ -86,7 +88,7 @@ class CPPCACHE_EXPORT ExpEntryProperties {
   inline void cancelExpiryTaskId(const CacheableKeyPtr& key) const {
     LOGDEBUG("Cancelling expiration task for key [%s] with id [%d]",
              Utils::getCacheableKeyString(key)->asChar(), m_expiryTaskId);
-    CacheImpl::expiryTaskManager->cancelTask(m_expiryTaskId);
+    m_expiryTaskManager->cancelTask(m_expiryTaskId);
   }
 
  protected:
@@ -100,6 +102,7 @@ class CPPCACHE_EXPORT ExpEntryProperties {
   std::atomic<uint32_t> m_lastModifiedTime;
   /** The expiry task id for this particular entry.. **/
   long m_expiryTaskId;
+  ExpiryTaskManager* m_expiryTaskManager;
 };
 
 /**
@@ -270,19 +273,14 @@ typedef std::shared_ptr<VersionedMapEntryImpl> VersionedMapEntryImplPtr;
 
 class CPPCACHE_EXPORT EntryFactory {
  public:
-  static EntryFactory* singleton;
-  static void init();
-
-  EntryFactory() { m_concurrencyChecksEnabled = true; }
+  EntryFactory(const bool concurrencyChecksEnabled)
+      : m_concurrencyChecksEnabled(concurrencyChecksEnabled) {}
 
   virtual ~EntryFactory() {}
 
-  virtual void newMapEntry(const CacheableKeyPtr& key,
+  virtual void newMapEntry(ExpiryTaskManager* expiryTaskManager,
+                           const CacheableKeyPtr& key,
                            MapEntryImplPtr& result) const;
-
-  virtual void setConcurrencyChecksEnabled(bool enabled) {
-    m_concurrencyChecksEnabled = enabled;
-  }
 
  protected:
   bool m_concurrencyChecksEnabled;

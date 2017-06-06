@@ -44,9 +44,9 @@ class ThinClientPoolDM;
 class CPPCACHE_EXPORT TcrEndpoint {
  public:
   TcrEndpoint(
-      const std::string& name, CacheImpl* cache, ACE_Semaphore& failoverSema,
-      ACE_Semaphore& cleanupSema, ACE_Semaphore& redundancySema,
-      ThinClientBaseDM* dm = nullptr,
+      const std::string& name, CacheImpl* cacheImpl,
+      ACE_Semaphore& failoverSema, ACE_Semaphore& cleanupSema,
+      ACE_Semaphore& redundancySema, ThinClientBaseDM* dm = nullptr,
       bool isMultiUserMode = false);  // TODO: need to look for endpoint case
 
   /* adongre
@@ -206,6 +206,7 @@ class CPPCACHE_EXPORT TcrEndpoint {
   ACE_Recursive_Thread_Mutex m_notifyReceiverLock;
   virtual bool handleIOException(const std::string& message,
                                  TcrConnection*& conn, bool isBgThread = false);
+  CacheImpl* m_cacheImpl;
 
  private:
   int64_t m_uniqueId;
@@ -232,7 +233,6 @@ class CPPCACHE_EXPORT TcrEndpoint {
 
   int m_notifyCount;
 
-  CacheImpl* m_cache;
   ACE_Semaphore& m_failoverSema;
   ACE_Semaphore& m_cleanupSema;
   ACE_Semaphore m_notificationCleanupSema;

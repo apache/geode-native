@@ -37,7 +37,8 @@
 namespace apache {
 namespace geode {
 namespace client {
-
+class SerializationRegistry;
+class DataOutputInternal;
 /**
  * C style memory allocation that throws OutOfMemoryException
  * if it fails
@@ -73,11 +74,6 @@ namespace client {
  */
 class CPPCACHE_EXPORT DataOutput {
  public:
-  /**
-   * Construct a new DataOutput.
-   */
-  DataOutput();
-
   /**
    * Write an unsigned byte to the <code>DataOutput</code>.
    *
@@ -724,10 +720,17 @@ class CPPCACHE_EXPORT DataOutput {
 
   static void safeDelete(uint8_t* src) { GF_SAFE_DELETE(src); }
 
-  static DataOutput* getDataOutput() { return new DataOutput(); }
-  static void releaseDataOutput(DataOutput* dataOutput) {
-    GF_SAFE_DELETE(dataOutput);
-  }
+  virtual const Cache* getCache();
+
+ protected:
+  /**
+   * Construct a new DataOutput.
+   */
+  DataOutput(const Cache* cache);
+
+  DataOutput() : DataOutput(nullptr) {}
+
+  virtual const SerializationRegistry& getSerializationRegistry() const;
 
  private:
   void writeObjectInternal(const Serializable* ptr, bool isDelta = false);
@@ -747,6 +750,7 @@ class CPPCACHE_EXPORT DataOutput {
   static uint32_t m_highWaterMark;
   // flag to indicate we have a big buffer
   volatile bool m_haveBigBuffer;
+  const Cache* m_cache;
 
   inline static void getEncodedLength(const char val, int32_t& encodedLen) {
     if ((val == 0) || (val & 0x80)) {
@@ -813,6 +817,9 @@ class CPPCACHE_EXPORT DataOutput {
   // disable copy constructor and assignment
   DataOutput(const DataOutput&);
   DataOutput& operator=(const DataOutput&);
+
+  friend Cache;
+  friend DataOutputInternal;
 };
 }  // namespace client
 }  // namespace geode

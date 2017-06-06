@@ -50,7 +50,7 @@ class CPPCACHE_EXPORT TcpConn : public Connector {
 
  protected:
   ACE_INET_Addr m_addr;
-  uint32_t m_waitSeconds;
+  uint32_t m_waitMilliSeconds;
 
   int32_t m_maxBuffSizePool;
 
@@ -65,9 +65,9 @@ class CPPCACHE_EXPORT TcpConn : public Connector {
   virtual void createSocket(ACE_SOCKET sock);
 
  public:
-  static int m_chunkSize;
+  int m_chunkSize;
 
-  static int setChunkSize() {
+  static int getDefaultChunkSize() {
     // Attempt to set chunk size to nearest OS page size
     // for perf improvement
     int pageSize = ACE_OS::getpagesize();
@@ -80,12 +80,9 @@ class CPPCACHE_EXPORT TcpConn : public Connector {
     return 16000000;
   }
 
-  TcpConn();
-  TcpConn(const char* hostname, int32_t port,
-          uint32_t waitSeconds = DEFAULT_CONNECT_TIMEOUT,
-          int32_t maxBuffSizePool = 0);
-  TcpConn(const char* ipaddr, uint32_t waitSeconds = DEFAULT_CONNECT_TIMEOUT,
-          int32_t maxBuffSizePool = 0);
+  TcpConn(const char* hostname, int32_t port, uint32_t waitSeconds,
+          int32_t maxBuffSizePool);
+  TcpConn(const char* ipaddr, uint32_t waitSeconds, int32_t maxBuffSizePool);
 
   virtual ~TcpConn() { close(); }
 

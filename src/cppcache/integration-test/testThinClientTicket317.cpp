@@ -36,8 +36,8 @@ DUNIT_TASK_DEFINITION(SERVER1, CreateServerWithNBSTrue)
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       nullptr, 0, true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, nullptr, 0,
+                       true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
     LOG("Client1 started");
@@ -45,8 +45,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1)
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, SetupClient2)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       nullptr, 0, true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, nullptr, 0,
+                       true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
     LOG("Client2 started");

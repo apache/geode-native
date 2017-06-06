@@ -36,7 +36,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        DistributedSystem.Disconnect();
+        DistributedSystem.Disconnect(CacheHelper.getCache());
         Assert.Fail("NotConnectedException should have occurred when "
           + "disconnecting without having connected.");
       }

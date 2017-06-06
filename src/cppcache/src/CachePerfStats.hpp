@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CACHEPERFSTATS_H_
-#define GEODE_CACHEPERFSTATS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,16 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CACHEPERFSTATS_H_
+#define GEODE_CACHEPERFSTATS_H_
+
 #include <geode/geode_globals.hpp>
 #include <geode/statistics/Statistics.hpp>
 #include <geode/statistics/StatisticsFactory.hpp>
+
+#include "statistics/StatisticsManager.hpp"
 
 namespace apache {
 namespace geode {
@@ -33,11 +35,8 @@ using namespace apache::geode::statistics;
 /** hold statistics for cache.. */
 class CPPCACHE_EXPORT CachePerfStats {
  public:
-  CachePerfStats() {
-    StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
-    GF_D_ASSERT(!!factory);
-
-    StatisticsType* statsType = factory->findType("CachePerfStats");
+  CachePerfStats(StatisticsFactory* factory) {
+    auto statsType = factory->findType("CachePerfStats");
 
     if (statsType == nullptr) {
       const bool largerIsBetter = true;

@@ -338,7 +338,7 @@ void FrameworkTest::localDestroyRegion(RegionPtr& region) {
 void FrameworkTest::parseEndPoints(int32_t ep, std::string label,
                                    bool isServer) {
   std::string poolName = "_Test_Pool";
-  PoolFactoryPtr pfPtr = PoolManager::createFactory();
+  PoolFactoryPtr pfPtr = m_cache->getPoolManager().createFactory();
   std::string tag = getStringValue("TAG");
   std::string bb("GFE_BB");
 
@@ -402,14 +402,14 @@ void FrameworkTest::parseEndPoints(int32_t ep, std::string label,
   if (!tag.empty()) {
     poolName.append(tag);
     // check if pool already exists
-    pptr = PoolManager::find(poolName.c_str());
+    pptr = m_cache->getPoolManager().find(poolName.c_str());
     if (pptr == nullptr) {
       pptr = pfPtr->create(poolName.c_str());
     }
   }
   // create default pool
   else {
-    pptr = PoolManager::find(poolName.c_str());
+    pptr = m_cache->getPoolManager().find(poolName.c_str());
     if (pptr == nullptr) {
       pptr = pfPtr->create(poolName.c_str());
     }
@@ -444,12 +444,12 @@ void FrameworkTest::createPool() {
 }
 
 QueryServicePtr FrameworkTest::checkQueryService() {
-  PoolFactoryPtr pfPtr = PoolManager::createFactory();
+  PoolFactoryPtr pfPtr = m_cache->getPoolManager().createFactory();
   std::string bb("GFE_BB");
   std::string keys("testScheme");
   std::string mode = bbGetString(bb, keys);
   if (mode == "poolwithendpoints" || mode == "poolwithlocator") {
-    PoolPtr pool = PoolManager::find("_Test_Pool");
+    PoolPtr pool = m_cache->getPoolManager().find("_Test_Pool");
     return pool->getQueryService();
   } else {
     return m_cache->getQueryService();

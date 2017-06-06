@@ -14,8 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "fw_dunit.hpp"
-#include "ThinClientHelper.hpp"
 #include <geode/statistics/StatisticsFactory.hpp>
 
 #include <ace/ACE.h>
@@ -29,6 +27,9 @@
 #include <ace/Dirent.h>
 #include <ace/Dirent_Selector.h>
 #include <ace/OS_NS_sys_stat.h>
+
+#include "fw_dunit.hpp"
+#include "ThinClientHelper.hpp"
 
 /* This is to test Statistics Functionality, Following Parameters are considered
 1-  Creation of Stats Type / Statistics / Statistics Descriptors ( int_t/ Long /
@@ -125,8 +126,7 @@ void initClientWithStats() {
   pp->insert("statistic-archive-file", "./statArchive.gfs");
   pp->insert("notify-ack-interval", 1);
 
-  initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1", pp, 0,
-                     true);
+  initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, pp, 0, true);
   getHelper()->createPooledRegion(regionNames[0], USE_ACK, locatorsG,
                                   "__TEST_POOL1__", true, true);
 }
@@ -137,8 +137,7 @@ void initClientWithStatsDisabled() {
   // pp->insert("statistic-sample-rate", 1);
   // pp->insert("statistic-archive-file", "./statArchive.gfs");
 
-  initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1", pp, 0,
-                     true);
+  initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, pp, 0, true);
   getHelper()->createPooledRegion(regionNames[0], USE_ACK, locatorsG,
                                   "__TEST_POOL1__", true, true);
 }
@@ -186,9 +185,8 @@ void DoRegionOpsAndVerify() {
     auto cache = std::dynamic_pointer_cast<Cache>(
         regPtr0->getRegionService());  // This depends on LocalCache
                                        // implementing RegionService...
-    bool flag = cache->getDistributedSystem()
-                    ->getSystemProperties()
-                    ->statisticsEnabled();
+    bool flag =
+        cache->getDistributedSystem().getSystemProperties().statisticsEnabled();
     LOGINFO("statisticsEnabled = %d ", flag);
     regEntry->getStatistics(cacheStatptr);
   } catch (StatisticsDisabledException& ex) {
@@ -321,7 +319,7 @@ void testGetSetIncFunctions(Statistics* stat, TestStatisticsType& type) {
 
 void statisticsTest() {
   /* Create Statistics in right and wrong manner */
-  StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
+  auto factory = cacheHelper->getCache()->getStatisticsFactory();
 
   /* Register a type */
   TestStatisticsType testType;
@@ -527,14 +525,24 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseThirdServer)
 END_TASK_DEFINITION
 
 DUNIT_MAIN
-{CALL_TASK(CreateLocator1)
+  {
+    CALL_TASK(CreateLocator1);
 
-     CALL_TASK(StartFirstServer) CALL_TASK(ClientFirstInit) CALL_TASK(StatTest)
-         CALL_TASK(CloseFirstClient) CALL_TASK(GFSFileTest)
-             CALL_TASK(CloseFirstServer) CALL_TASK(StartSecondServer)
-                 CALL_TASK(ClientSecondInit) CALL_TASK(CloseSecondServer)
-                     CALL_TASK(StartThirdServer) CALL_TASK(ClientThirdInit)
-                         CALL_TASK(RegionOps) CALL_TASK(CloseThirdClient)
-                             CALL_TASK(CloseThirdServer)
+    CALL_TASK(StartFirstServer);
+    CALL_TASK(ClientFirstInit);
+    CALL_TASK(StatTest);
+    CALL_TASK(CloseFirstClient);
+    CALL_TASK(GFSFileTest);
+    CALL_TASK(CloseFirstServer);
+    CALL_TASK(StartSecondServer);
+    CALL_TASK(ClientSecondInit);
+    CALL_TASK(CloseSecondServer);
+    CALL_TASK(StartThirdServer);
+    CALL_TASK(ClientThirdInit);
+    CALL_TASK(RegionOps);
+    CALL_TASK(CloseThirdClient);
+    CALL_TASK(CloseThirdServer);
 
-                                 CALL_TASK(CloseLocator1)} END_MAIN
+    CALL_TASK(CloseLocator1);
+  }
+END_MAIN

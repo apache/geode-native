@@ -20,13 +20,15 @@
  * limitations under the License.
  */
 
-#include "CacheableWrapper.hpp"
 #include <limits.h>
 #include <cstdlib>
 #include <wchar.h>
 
 #include <ace/Date_Time.h>
-
+#include "CacheHelper.hpp"
+#include "CacheRegionHelper.hpp"
+#include "CacheableWrapper.hpp"
+#include "CacheImpl.hpp"
 using namespace apache::geode::client;
 
 namespace CacheableHelper {
@@ -148,18 +150,18 @@ inline uint32_t crc32(const uint8_t* buffer, uint32_t bufLen) {
 
 template <typename TPRIM>
 inline uint32_t crc32(TPRIM value) {
-  DataOutput output;
-  apache::geode::client::serializer::writeObject(output, value);
-  return crc32(output.getBuffer(), output.getBufferLength());
+  auto output = CacheHelper::getHelper().getCache()->createDataOutput();
+  apache::geode::client::serializer::writeObject(*output, value);
+  return crc32(output->getBuffer(), output->getBufferLength());
 }
 
 template <typename TPRIM>
 inline uint32_t crc32Array(const TPRIM* arr, uint32_t len) {
-  DataOutput output;
+  auto output = CacheHelper::getHelper().getCache()->createDataOutput();
   for (uint32_t index = 0; index < len; index++) {
-    apache::geode::client::serializer::writeObject(output, arr[index]);
+    apache::geode::client::serializer::writeObject(*output, arr[index]);
   }
-  return crc32(output.getBuffer(), output.getBufferLength());
+  return crc32(output->getBuffer(), output->getBufferLength());
 }
 
 inline bool isContainerTypeId(int8_t typeId) {

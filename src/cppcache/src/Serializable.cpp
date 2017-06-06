@@ -20,6 +20,7 @@
 #include <SerializationRegistry.hpp>
 #include <Utils.hpp>
 #include <geode/CacheableString.hpp>
+#include "CacheImpl.hpp"
 
 namespace apache {
 namespace geode {
@@ -41,18 +42,6 @@ int8_t Serializable::DSFID() const {
 }
 
 uint32_t Serializable::objectSize() const { return 0; }
-
-void Serializable::registerType(TypeFactoryMethod creationFunction) {
-  SerializationRegistry::addType(creationFunction);
-}
-
-void Serializable::registerPdxType(TypeFactoryMethodPdx creationFunction) {
-  SerializationRegistry::addPdxType(creationFunction);
-}
-
-void Serializable::registerPdxSerializer(PdxSerializerPtr pdxSerializer) {
-  SerializationRegistry::setPdxSerializer(pdxSerializer);
-}
 
 CacheableStringPtr Serializable::toString() const {
   return Utils::demangleTypeName(typeid(*this).name());

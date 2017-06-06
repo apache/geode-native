@@ -608,16 +608,16 @@ namespace Apache.Geode.Client.FwkLib
     public virtual void CreatePool()
     {
       CreateCache();
-      PoolFactory pf = PoolManager.CreateFactory();
+      PoolFactory pf =  CacheHelper<TKey, TVal>.DCache.GetPoolFactory();
       ResetKey("poolSpec");
       string poolRegionData = GetStringValue("poolSpec");
       FwkInfo("PoolSpec is :{0}", poolRegionData);
       string poolName = null;
       SetPoolAttributes(pf, poolRegionData, ref poolName);
       
-      if (PoolManager.Find(poolName) == null)
+      if (CacheHelper<TKey, TVal>.DCache.GetPoolManager().Find(poolName) == null)
       {
-        Pool pool = pf.Create(poolName);
+        Pool pool = pf.Create(poolName, CacheHelper<TKey, TVal>.DCache);
         FwkInfo("Pool attributes are {0}:", PoolAttributesToString(pool));
       }
     }
@@ -964,9 +964,6 @@ namespace Apache.Geode.Client.FwkLib
               String createCacheLoader = myType.Namespace + '.' +
                 loaderlibrary + "<" + typeof(TKey) + "," + typeof(TVal) + ">." + "createCacheLoader";
 
-              if (String.Compare(loaderfunction, createCacheLoader, true) == 0) {                
-                loader = new PerfCacheLoader<TKey, TVal>();
-              }
               Util.Log(Util.LogLevel.Info, "Instantiated Loader = {0} ", loaderfunction);
               af.SetCacheLoader(loader);
             }
@@ -1054,12 +1051,6 @@ namespace Apache.Geode.Client.FwkLib
               else if (String.Compare(listenerfunction, createDurablePerfListener, true) == 0) {                
                 listener = new DurablePerfListener<TKey, TVal>();
               }              
-              else if (String.Compare(listenerfunction, CreateDurableCacheListenerSP, true) == 0) {                
-                listener = new DurableCacheListener<TKey, TVal>();
-              }
-              else if (String.Compare(listenerfunction, createLatencyListener, true) == 0) {                
-                listener = new LatencyListeners<TKey, TVal>(InitPerfStat.perfstat[0]);
-              }
               else if (String.Compare(listenerfunction, createSilenceListener, true) == 0)
               {
                 listener = new SilenceListener<TKey, TVal>();
@@ -1303,7 +1294,7 @@ namespace Apache.Geode.Client.FwkLib
             //Properties rootAttrs = GetNewRegionAttributes(rootRegionData);
             // Check if this is a thin-client region; if so set the endpoints
             RegionFactory rootAttrs = null; 
-            //RegionFactory rootAttrs = CacheHelper.DCache.CreateRegionFactory(RegionShortcut.PROXY);
+            //RegionFactory rootAttrs = CacheHelper<TKey, TVal>.DCache.CreateRegionFactory(RegionShortcut.PROXY);
             string m_isPool = null;
               //SetRegionAttributes(rootAttrs, rootRegionData, ref m_isPool);
             int redundancyLevel = 0;
@@ -1358,7 +1349,7 @@ namespace Apache.Geode.Client.FwkLib
     private void ParseEndPoints(string ep, bool isServer, int redundancyLevel)
     {
       string poolName = "_Test_Pool";
-      PoolFactory pf = PoolManager.CreateFactory();
+      PoolFactory pf = CacheHelper<TKey, TVal>.DCache.GetPoolFactory();
       string[] eps = ep.Split(',');
       foreach (string endpoint in eps)
       {
@@ -1397,9 +1388,9 @@ namespace Apache.Geode.Client.FwkLib
 
       if (redundancyLevel > 0)
         pf.SetSubscriptionRedundancy(redundancyLevel);
-      if (PoolManager.Find(poolName) == null)
+      if (CacheHelper<TKey, TVal>.DCache.GetPoolManager().Find(poolName) == null)
       {
-        Pool pool = pf.Create(poolName);
+        Pool pool = pf.Create(poolName, CacheHelper<TKey, TVal>.DCache);
         FwkInfo("Pool attributes are {0}:", PoolAttributesToString(pool));
       }
       FwkInfo("Create Pool complete with poolName= {0}", poolName);
@@ -1515,7 +1506,7 @@ namespace Apache.Geode.Client.FwkLib
     public QueryService<TKey, object> CheckQueryService()
     {
       string mode = Util.GetEnvironmentVariable("POOLOPT");
-      Pool/*<TKey, TVal>*/ pool = PoolManager/*<TKey, TVal>*/.Find("_Test_Pool");
+      Pool/*<TKey, TVal>*/ pool = CacheHelper<TKey, TVal>.DCache.GetPoolManager().Find("_Test_Pool");
       return pool.GetQueryService<TKey, object>();
     }
 

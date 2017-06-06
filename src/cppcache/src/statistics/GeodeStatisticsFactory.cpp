@@ -33,42 +33,12 @@
 using namespace apache::geode::client;
 using namespace apache::geode::statistics;
 
-/**
- * static member initialization
- */
-GeodeStatisticsFactory* GeodeStatisticsFactory::s_singleton = nullptr;
-
 GeodeStatisticsFactory::GeodeStatisticsFactory(StatisticsManager* statMngr) {
   m_name = "GeodeStatisticsFactory";
   m_id = ACE_OS::getpid();
   m_statsListUniqueId = 1;
 
   m_statMngr = statMngr;
-}
-
-GeodeStatisticsFactory* GeodeStatisticsFactory::initInstance(
-    StatisticsManager* statMngr) {
-  if (!s_singleton) {
-    s_singleton = new GeodeStatisticsFactory(statMngr);
-  }
-
-  return s_singleton;
-}
-
-GeodeStatisticsFactory* GeodeStatisticsFactory::getExistingInstance() {
-  GF_D_ASSERT(!!s_singleton);
-
-  s_singleton->getId();  // should fault if !s_singleton
-
-  return s_singleton;
-}
-
-/**************************Dtor*******************************************/
-void GeodeStatisticsFactory::clean() {
-  if (s_singleton != nullptr) {
-    delete s_singleton;
-    s_singleton = nullptr;
-  }
 }
 
 GeodeStatisticsFactory::~GeodeStatisticsFactory() {

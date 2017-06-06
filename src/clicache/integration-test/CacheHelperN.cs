@@ -440,7 +440,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public static void DSConnectAD()
     {
-      m_dsys = DistributedSystem.Connect("DSName", null);
+      m_dsys = DistributedSystem.Connect("DSName", null, m_cache);
     }
 
     private static void SetLogConfig(ref Properties<string, string> config)
@@ -467,7 +467,7 @@ namespace Apache.Geode.Client.UnitTests
     private static void DSConnect(string dsName, Properties<string, string> config)
     {
       SetLogConfig(ref config);
-      m_dsys = DistributedSystem.Connect(dsName, config);
+      m_dsys = DistributedSystem.Connect(dsName, config, m_cache);
     }
 
     public static void ConnectName(string dsName)
@@ -477,17 +477,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public static void ConnectConfig(string dsName, Properties<string, string> config)
     {
-      if (DistributedSystem.IsConnected)
-      {
-        if (m_dsys == null)
-        {
-          m_dsys = DistributedSystem.GetInstance();
-        }
-      }
-      else
-      {
         DSConnect(dsName, config);
-      }
     }
 
     public static void Init()
@@ -625,7 +615,7 @@ namespace Apache.Geode.Client.UnitTests
         }
         catch (CacheExistsException)
         {
-          m_cache = CacheFactory.GetAnyInstance();
+          m_cache = CacheFactory.CreateCacheFactory(config).Create();
         }
       }
 
@@ -648,7 +638,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public static void Close()
     {
-      Util.Log("in cache close " + DistributedSystem.IsConnected + " : " + System.Threading.Thread.GetDomainID());
+      Util.Log("in cache close : " + System.Threading.Thread.GetDomainID());
       //if (DistributedSystem.IsConnected)
       {
         CloseCache();
@@ -680,14 +670,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public static void CloseKeepAlive()
     {
-      if (DistributedSystem.IsConnected)
-      {
-        CloseCacheKeepAlive();
-        if (m_doDisconnect)
-        {
-          DistributedSystem.Disconnect();
-        }
-      }
+      CloseCacheKeepAlive();
       m_dsys = null;
     }
 
@@ -929,7 +912,7 @@ namespace Apache.Geode.Client.UnitTests
         Util.Log("resolver is null {0}", resolver);
       }
 
-      PoolFactory/*<TKey, TVal>*/ poolFactory = PoolManager/*<TKey, TVal>*/.CreateFactory();
+      PoolFactory poolFactory = m_cache.GetPoolFactory();
 
       if (locators != null)
       {
@@ -947,7 +930,7 @@ namespace Apache.Geode.Client.UnitTests
       }
 
       poolFactory.SetSubscriptionEnabled(clientNotification);
-      poolFactory.Create("__TESTPOOL__");
+      poolFactory.Create("__TESTPOOL__", CacheHelper.DCache);
       region = regionFactory.SetPoolName("__TESTPOOL__").Create<TradeKey, Object>(name);
 
       Assert.IsNotNull(region, "IRegion<TradeKey, Object> {0} was not created.", name);
@@ -998,11 +981,11 @@ namespace Apache.Geode.Client.UnitTests
     {
       Init();
 
-      Pool/*<TKey, TValue>*/ existing = PoolManager/*<TKey, TValue>*/.Find(name);
+      Pool/*<TKey, TValue>*/ existing = m_cache.GetPoolManager().Find(name);
 
       if (existing == null)
       {
-        PoolFactory/*<TKey, TValue>*/ fact = PoolManager/*<TKey, TValue>*/.CreateFactory();
+        PoolFactory/*<TKey, TValue>*/ fact = m_cache.GetPoolFactory();
         if (locators != null)
         {
           string[] list = locators.Split(',');
@@ -1035,7 +1018,7 @@ namespace Apache.Geode.Client.UnitTests
           fact.SetMinConnections(numConnections);
           fact.SetMaxConnections(numConnections);
         }
-        Pool/*<TKey, TValue>*/ pool = fact.Create(name);
+        Pool/*<TKey, TValue>*/ pool = fact.Create(name, CacheHelper.DCache);
         if (pool == null)
         {
           Util.Log("Pool creation failed");
@@ -1088,9 +1071,9 @@ namespace Apache.Geode.Client.UnitTests
         Assert.IsTrue(region.IsDestroyed, "IRegion<object, object> {0} was not destroyed.", name);
       }
 
-      if (PoolManager/*<TKey, TValue>*/.Find(poolName) == null)
+      if (m_cache.GetPoolManager().Find(poolName) == null)
       {
-        PoolFactory/*<TKey, TValue>*/ fact = PoolManager/*<TKey, TValue>*/.CreateFactory();
+        PoolFactory/*<TKey, TValue>*/ fact = m_cache.GetPoolFactory();
         fact.SetSubscriptionEnabled(clientNotification);
         if (locators != null)
         {
@@ -1105,7 +1088,7 @@ namespace Apache.Geode.Client.UnitTests
         {
           Util.Log("No locators or servers specified for pool");
         }
-        Pool/*<TKey, TValue>*/ pool = fact.Create(poolName);
+        Pool/*<TKey, TValue>*/ pool = fact.Create(poolName, CacheHelper.DCache);
         if (pool == null)
         {
           Util.Log("Pool creation failed");
@@ -1165,14 +1148,14 @@ namespace Apache.Geode.Client.UnitTests
         region.GetLocalView().DestroyRegion();
         Assert.IsTrue(region.IsDestroyed, "IRegion<object, object> {0} was not destroyed.", name);
       }
-      Pool pl = PoolManager/*<TKey, TValue>*/.Find(poolName);
+      Pool pl = m_cache.GetPoolManager().Find(poolName);
       if (pl != null)
       {
         Util.Log("Pool is not closed " + poolName);
       }
       if (pl == null)
       {
-        PoolFactory/*<TKey, TValue>*/ fact = PoolManager/*<TKey, TValue>*/.CreateFactory();
+        PoolFactory/*<TKey, TValue>*/ fact = m_cache.GetPoolFactory();
         fact.SetSubscriptionEnabled(clientNotification);
         if (locators != null)
         {
@@ -1187,7 +1170,7 @@ namespace Apache.Geode.Client.UnitTests
         {
           Util.Log("No locators or servers specified for pool");
         }
-        Pool/*<TKey, TValue>*/ pool = fact.Create(poolName);
+        Pool/*<TKey, TValue>*/ pool = fact.Create(poolName, CacheHelper.DCache);
         if (pool == null)
         {
           Util.Log("Pool creation failed");
@@ -1240,9 +1223,9 @@ namespace Apache.Geode.Client.UnitTests
         Assert.IsTrue(region.IsDestroyed, "IRegion<object, object> {0} was not destroyed.", name);
       }
 
-      if (PoolManager/*<TKey, TValue>*/.Find(poolName) == null)
+      if (m_cache.GetPoolManager().Find(poolName) == null)
       {
-        PoolFactory/*<TKey, TValue>*/ fact = PoolManager/*<TKey, TValue>*/.CreateFactory();
+        PoolFactory/*<TKey, TValue>*/ fact = m_cache.GetPoolFactory();
         fact.SetSubscriptionEnabled(clientNotification);
         if (locators != null)
         {
@@ -1257,7 +1240,7 @@ namespace Apache.Geode.Client.UnitTests
         {
           Util.Log("No locators or servers specified for pool");
         }
-        Pool/*<TKey, TValue>*/ pool = fact.Create(poolName);
+        Pool/*<TKey, TValue>*/ pool = fact.Create(poolName, CacheHelper.DCache);
         if (pool == null)
         {
           Util.Log("Pool creation failed");
@@ -1306,9 +1289,9 @@ namespace Apache.Geode.Client.UnitTests
         Assert.IsTrue(region.IsDestroyed, "IRegion<object, object> {0} was not destroyed.", name);
       }
 
-      if (PoolManager/*<TKey, TValue>*/.Find(poolName) == null)
+      if (m_cache.GetPoolManager().Find(poolName) == null)
       {
-        PoolFactory/*<TKey, TValue>*/ fact = PoolManager/*<TKey, TValue>*/.CreateFactory();
+        PoolFactory/*<TKey, TValue>*/ fact = m_cache.GetPoolFactory();
         fact.SetSubscriptionEnabled(clientNotification);
         if (locators != null)
         {
@@ -1323,7 +1306,7 @@ namespace Apache.Geode.Client.UnitTests
         {
           Util.Log("No locators or servers specified for pool");
         }
-        Pool/*<TKey, TValue>*/ pool = fact.Create(poolName);
+        Pool/*<TKey, TValue>*/ pool = fact.Create(poolName, CacheHelper.DCache);
         if (pool == null)
         {
           Util.Log("Pool creation failed");
@@ -1374,9 +1357,9 @@ namespace Apache.Geode.Client.UnitTests
         Assert.IsTrue(region.IsDestroyed, "IRegion<object, object> {0} was not destroyed.", name);
       }
 
-      if (PoolManager/*<TKey, TValue>*/.Find(poolName) == null)
+      if (m_cache.GetPoolManager().Find(poolName) == null)
       {
-        PoolFactory/*<TKey, TValue>*/ fact = PoolManager/*<TKey, TValue>*/.CreateFactory();
+        PoolFactory/*<TKey, TValue>*/ fact = m_cache.GetPoolFactory();
         fact.SetSubscriptionEnabled(clientNotification);
         if (serverGroup != null)
         {
@@ -1395,7 +1378,7 @@ namespace Apache.Geode.Client.UnitTests
         {
           Util.Log("No locators or servers specified for pool");
         }
-        Pool/*<TKey, TValue>*/ pool = fact.Create(poolName);
+        Pool/*<TKey, TValue>*/ pool = fact.Create(poolName, CacheHelper.DCache);
         if (pool == null)
         {
           Util.Log("Pool creation failed");
@@ -1448,9 +1431,9 @@ namespace Apache.Geode.Client.UnitTests
         Assert.IsTrue(region.IsDestroyed, "IRegion<object, object> {0} was not destroyed.", name);
       }
 
-      if (PoolManager.Find(poolName) == null)
+      if (m_cache.GetPoolManager().Find(poolName) == null)
       {
-        PoolFactory fact = PoolManager.CreateFactory();
+        PoolFactory fact = m_cache.GetPoolFactory();
         fact.SetSubscriptionEnabled(clientNotification);
         if (locators != null)
         {
@@ -1465,7 +1448,7 @@ namespace Apache.Geode.Client.UnitTests
         {
           Util.Log("No locators or servers specified for pool");
         }
-        Pool pool = fact.Create(poolName);
+        Pool pool = fact.Create(poolName, m_cache);
         if (pool == null)
         {
           Util.Log("Pool creation failed");
@@ -1598,19 +1581,6 @@ namespace Apache.Geode.Client.UnitTests
       return null;
     }
 
-    public static IRegion<TKey, TValue> GetRegionAD<TKey, TValue>(string path)
-    {
-      if (m_cache != null)
-      {
-        return m_cache.GetRegion<TKey, TValue>(path);
-      }
-      else if (DistributedSystem.IsConnected)
-      {
-        return CacheFactory.GetAnyInstance().GetRegion<TKey, TValue>(path);
-      }
-      return null;
-    }
-
     public static Properties<string, object> GetPkcsCredentialsForMU(Properties<string, string> credentials)
     {
       if (credentials == null)
@@ -1632,7 +1602,7 @@ namespace Apache.Geode.Client.UnitTests
           Assert.IsNotNull(region, "IRegion<object, object> [" + path + "] not found.");
           Assert.IsNotNull(region.Attributes.PoolName, "IRegion<object, object> is created without pool.");
 
-          Pool/*<TKey, TValue>*/ pool = PoolManager/*<TKey, TValue>*/.Find(region.Attributes.PoolName);
+          Pool/*<TKey, TValue>*/ pool = m_cache.GetPoolManager().Find(region.Attributes.PoolName);
 
           Assert.IsNotNull(pool, "Pool is null in GetVerifyRegion.");
 
@@ -1651,7 +1621,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       if (m_cacheForMultiUser == null)
       {
-        Pool/*<TKey, TValue>*/ pool = PoolManager/*<TKey, TValue>*/.Find("__TESTPOOL1_");
+        Pool/*<TKey, TValue>*/ pool = m_cache.GetPoolManager().Find("__TESTPOOL1_");
 
         Assert.IsNotNull(pool, "Pool is null in getMultiuserCache.");
         Assert.IsTrue(!pool.Destroyed);
@@ -1674,15 +1644,6 @@ namespace Apache.Geode.Client.UnitTests
       return region;
     }
 
-    public static IRegion<TKey, TValue> GetVerifyRegionAD<TKey, TValue>(string path)
-    {
-      IRegion<TKey, TValue> region = GetRegionAD<TKey, TValue>(path);
-
-      Assert.IsNotNull(region, "IRegion<object, object> [" + path + "] not found.");
-      Util.Log("Found region '{0}'", path);
-      return region;
-    }
-
     public static IRegion<TKey, TValue> GetVerifyRegion<TKey, TValue>(string path, Properties<string, string> credentials)
     {
       Util.Log("GetVerifyRegion " + m_cacheForMultiUser);
@@ -1692,7 +1653,7 @@ namespace Apache.Geode.Client.UnitTests
         Assert.IsNotNull(region, "IRegion<object, object> [" + path + "] not found.");
         Assert.IsNotNull(region.Attributes.PoolName, "IRegion<object, object> is created without pool.");
 
-        Pool/*<TKey, TValue>*/ pool = PoolManager/*<TKey, TValue>*/.Find(region.Attributes.PoolName);
+        Pool/*<TKey, TValue>*/ pool = m_cache.GetPoolManager().Find(region.Attributes.PoolName);
 
         Assert.IsNotNull(pool, "Pool is null in GetVerifyRegion.");
 

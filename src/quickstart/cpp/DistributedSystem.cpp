@@ -44,7 +44,7 @@ using namespace apache::geode::client;
 void distributedsystem(CachePtr cachePtr, char *hostname, int port,
                        char *poolName, char *regionName) {
   // create pool factory to create the pool.
-  PoolFactoryPtr poolFacPtr = PoolManager::createFactory();
+  PoolFactoryPtr poolFacPtr = cachePtr->getPoolManager().createFactory();
 
   // adding host(endpoint) in pool
   poolFacPtr->addServer(hostname, port);
@@ -53,7 +53,7 @@ void distributedsystem(CachePtr cachePtr, char *hostname, int port,
   poolFacPtr->setSubscriptionEnabled(true);
 
   // creating pool with name "examplePool"
-  poolFacPtr->create(poolName);
+  poolFacPtr->create(poolName, *cachePtr.get());
 
   RegionFactoryPtr regionFactory = cachePtr->createRegionFactory(CACHING_PROXY);
 

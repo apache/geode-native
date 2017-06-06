@@ -168,7 +168,7 @@ GfErrType VersionStamp::checkForConflict(const RegionInternal* region,
   }
 
   if (!apply) {
-    region->getCacheImpl()->m_cacheStats->incConflatedEvents();
+    region->getCacheImpl()->getCachePerfStats().incConflatedEvents();
     return GF_CACHE_CONCURRENT_MODIFICATION_EXCEPTION;
   }
   return GF_NOERR;

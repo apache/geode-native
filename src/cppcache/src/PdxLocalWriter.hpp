@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_PDXLOCALWRITER_H_
-#define GEODE_PDXLOCALWRITER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,12 +15,20 @@
  * limitations under the License.
  */
 
-#include <geode/PdxWriter.hpp>
-#include "PdxType.hpp"
-#include <geode/DataOutput.hpp>
+#pragma once
+
+#ifndef GEODE_PDXLOCALWRITER_H_
+#define GEODE_PDXLOCALWRITER_H_
+
 #include <vector>
-#include "PdxRemotePreservedData.hpp"
+
+#include <geode/PdxWriter.hpp>
+#include <geode/DataOutput.hpp>
 #include <geode/CacheableObjectArray.hpp>
+
+#include "PdxType.hpp"
+#include "PdxRemotePreservedData.hpp"
+#include "PdxTypeRegistry.hpp"
 
 namespace apache {
 namespace geode {
@@ -43,6 +46,7 @@ class PdxLocalWriter : public PdxWriter,
   int32_t m_currentOffsetIndex;
 
   PdxRemotePreservedDataPtr m_preserveData;
+  PdxTypeRegistryPtr m_pdxTypeRegistry;
   const char* m_pdxClassName;
 
   PdxWriterPtr writeStringwithoutOffset(const char* value);
@@ -50,12 +54,11 @@ class PdxLocalWriter : public PdxWriter,
   PdxWriterPtr writeWideStringwithoutOffset(const wchar_t* value);
 
  public:
-  PdxLocalWriter();
-
-  PdxLocalWriter(DataOutput& output, PdxTypePtr pdxType);
+  PdxLocalWriter(DataOutput& output, PdxTypePtr pdxType,
+                 PdxTypeRegistryPtr pdxTypeRegistry);
 
   PdxLocalWriter(DataOutput& output, PdxTypePtr pdxType,
-                 const char* pdxDomainType);
+                 const char* pdxDomainType, PdxTypeRegistryPtr pdxTypeRegistry);
 
   virtual ~PdxLocalWriter();
 
@@ -334,6 +337,9 @@ class PdxLocalWriter : public PdxWriter,
   void writeByte(int8_t byte);
 
   inline int32_t getStartPositionOffset() { return m_startPositionOffset; }
+
+ private:
+  PdxTypeRegistryPtr getPdxTypeRegistry() const;
 };
 typedef std::shared_ptr<PdxLocalWriter> PdxLocalWriterPtr;
 }  // namespace client

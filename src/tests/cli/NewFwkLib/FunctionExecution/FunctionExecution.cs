@@ -736,7 +736,7 @@ namespace Apache.Geode.Client.FwkLib
         string poolname = GetStringValue( "poolName" );
         string funcName = null;
         if(executionMode == "onServers" || executionMode  == "onServer"){
-          pptr = PoolManager/*<TKey, TVal>*/.Find(poolname);
+          pptr = CacheHelper<TKey, TVal>.DCache.GetPoolManager().Find(poolname);
           if(getresult)
             funcName = "ServerOperationsFunction";
           else
@@ -1137,7 +1137,7 @@ namespace Apache.Geode.Client.FwkLib
       Apache.Geode.Client.Execution<object> exc = null;
       try
       {
-        Pool/*<TKey, TVal>*/ pptr = PoolManager/*<TKey, TVal>*/.Find(poolname);
+        Pool/*<TKey, TVal>*/ pptr = CacheHelper<TKey, TVal>.DCache.GetPoolManager().Find(poolname);
         MyResultCollector<object> myRC = new MyResultCollector<object>();
         exc = Client.FunctionService<object>.OnServers(pptr).WithCollector(myRC);
         // execute function

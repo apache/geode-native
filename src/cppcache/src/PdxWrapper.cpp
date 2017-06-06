@@ -30,9 +30,9 @@ namespace apache {
 namespace geode {
 namespace client {
 
-PdxWrapper::PdxWrapper(void *userObject, const char *className) {
-  m_userObject = userObject;
-
+PdxWrapper::PdxWrapper(void *userObject, const char *className,
+                       PdxSerializerPtr pdxSerializerPtr)
+    : m_userObject(userObject), m_serializer(pdxSerializerPtr) {
   if (className != nullptr) {
     m_className = Utils::copyString(className);
   } else {
@@ -40,8 +40,6 @@ PdxWrapper::PdxWrapper(void *userObject, const char *className) {
     throw IllegalArgumentException(
         "Class name not provided to PdxWrapper constructor");
   }
-
-  m_serializer = SerializationRegistry::getPdxSerializer();
 
   if (m_serializer == nullptr) {
     LOGERROR("No registered PDX serializer found for PdxWrapper");
@@ -64,7 +62,8 @@ PdxWrapper::PdxWrapper(void *userObject, const char *className) {
   m_sizer = m_serializer->getObjectSizer(className);
 }
 
-PdxWrapper::PdxWrapper(const char *className) {
+PdxWrapper::PdxWrapper(const char *className, PdxSerializerPtr pdxSerializerPtr)
+    : m_serializer(pdxSerializerPtr) {
   if (className != nullptr) {
     m_className = Utils::copyString(className);
   } else {
@@ -72,8 +71,6 @@ PdxWrapper::PdxWrapper(const char *className) {
     throw IllegalArgumentException(
         "Class name not provided to PdxWrapper for deserialization");
   }
-
-  m_serializer = SerializationRegistry::getPdxSerializer();
 
   if (m_serializer == nullptr) {
     LOGERROR(
@@ -173,6 +170,7 @@ PdxWrapper::~PdxWrapper() {
   }
   delete[] m_className;
 }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

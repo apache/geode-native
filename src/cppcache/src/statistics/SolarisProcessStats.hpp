@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_SOLARISPROCESSSTATS_H_
-#define GEODE_STATISTICS_SOLARISPROCESSSTATS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,17 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#pragma once
+
+#ifndef GEODE_STATISTICS_SOLARISPROCESSSTATS_H_
+#define GEODE_STATISTICS_SOLARISPROCESSSTATS_H_
+
 #include <geode/geode_globals.hpp>
 #include <geode/statistics/Statistics.hpp>
 #include <geode/statistics/StatisticsType.hpp>
 #include <geode/statistics/StatisticDescriptor.hpp>
 #include "ProcessStats.hpp"
 #include "HostStatHelper.hpp"
+#include "GeodeStatisticsFactory.hpp"
 
 using namespace apache::geode::client;
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
@@ -60,7 +61,8 @@ class CPPCACHE_EXPORT SolarisProcessStats : public ProcessStats {
   void createType(StatisticsFactory* statFactory);
 
  public:
-  SolarisProcessStats(int64_t pid, const char* name);
+  SolarisProcessStats(GeodeStatisticsFactory* statisticsFactory, int64_t pid,
+                      const char* name);
   ~SolarisProcessStats();
 
   int64_t getProcessSize();
@@ -80,7 +82,7 @@ class CPPCACHE_EXPORT SolarisProcessStats : public ProcessStats {
 
 };  // Class SolarisProcessStats
 
-}  // namespace client
+}  // namespace statistics
 }  // namespace geode
 }  // namespace apache
 

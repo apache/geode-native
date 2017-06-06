@@ -269,8 +269,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER_AND_FEEDER, FeederUpAndFeed)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       nullptr, 0, true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, nullptr, 0,
+                       true);
     getHelper()->createPooledRegion(regions[0], USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
     getHelper()->createPooledRegion(regions[1], USE_ACK, locatorsG,

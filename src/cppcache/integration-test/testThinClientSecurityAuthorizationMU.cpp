@@ -680,8 +680,6 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 
-    // PoolPtr pool = PoolManager::find(regionNamesAuth[0]);
-
     try {
       RegionServicePtr virtualCache;
       PoolPtr pool = getPool(regionNamesAuth[0]);
@@ -1007,26 +1005,6 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
       rptr->query("1=1");
 
       FAIL("Query should not have completed successfully");
-    }
-    HANDLE_NOT_AUTHORIZED_EXCEPTION
-
-    // PoolPtr pool = PoolManager::find(regionNamesAuth[0]);
-
-    try {
-      /*QueryServicePtr qs;
-      if (pool != nullptr) {
-        // Using region name as pool name
-        qs = pool->getQueryService();
-      } else {
-        qs = getHelper()->cachePtr->getQueryService();
-      }
-      char queryString[100];
-      sprintf(queryString, "select * from /%s", regionNamesAuth[0]);
-      CqAttributesFactory cqFac;
-      CqAttributesPtr cqAttrs(cqFac.create());
-      CqQueryPtr qry = qs->newCq("cq_security", queryString, cqAttrs);
-      qs->executeCqs();
-      FAIL("CQ should not have completed successfully");*/
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 

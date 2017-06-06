@@ -642,11 +642,13 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
   m_redundancyLevel = redundancyLevel;
   m_HAenabled = (redundancyLevel > 0 || m_theTcrConnManager->isDurable() ||
                  ThinClientBaseDM::isDeltaEnabledOnServer());
-  SystemProperties* sysProp = DistributedSystem::getSystemProperties();
+  auto& sysProp = m_theTcrConnManager->getCacheImpl()
+                      ->getDistributedSystem()
+                      .getSystemProperties();
   if (m_poolHADM) {
     m_eventidmap.init(m_poolHADM->getSubscriptionMessageTrackingTimeout());
   } else {
-    m_eventidmap.init(sysProp->notifyDupCheckLife());
+    m_eventidmap.init(sysProp.notifyDupCheckLife());
   }
   int millis = 100;
   if (m_HAenabled) {
@@ -655,7 +657,7 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
       millis = m_poolHADM->getSubscriptionAckInterval();
 
     } else {
-      millis = sysProp->notifyAckInterval();
+      millis = sysProp.notifyAckInterval();
     }
     if (millis < 100) millis = 100;
     {
@@ -719,7 +721,8 @@ void ThinClientRedundancyManager::close() {
 
   if (m_periodicAckTask) {
     if (m_processEventIdMapTaskId >= 0) {
-      CacheImpl::expiryTaskManager->cancelTask(m_processEventIdMapTaskId);
+      m_theTcrConnManager->getCacheImpl()->getExpiryTaskManager().cancelTask(
+          m_processEventIdMapTaskId);
     }
     m_periodicAckTask->stopNoblock();
     m_periodicAckSema.release();
@@ -750,7 +753,8 @@ bool ThinClientRedundancyManager::readyForEvents(
     return true;
   }
 
-  TcrMessageClientReady request;
+  TcrMessageClientReady request(
+      m_theTcrConnManager->getCacheImpl()->getCache()->createDataOutput());
   TcrMessageReply reply(true, nullptr);
 
   GfErrType err = GF_NOTCON;
@@ -791,6 +795,7 @@ bool ThinClientRedundancyManager::sendMakePrimaryMesg(
   }
   TcrMessageReply reply(false, nullptr);
   const TcrMessageMakePrimary makePrimaryRequest(
+      m_theTcrConnManager->getCacheImpl()->getCache()->createDataOutput(),
       ThinClientRedundancyManager::m_sentReadyForEvents);
 
   LOGFINE("Making primary subscription endpoint %s", ep->name().c_str());
@@ -1109,7 +1114,8 @@ bool ThinClientRedundancyManager::isDurable() {
 }
 
 void ThinClientRedundancyManager::readyForEvents() {
-  TcrMessageClientReady request;
+  TcrMessageClientReady request(
+      m_theTcrConnManager->getCacheImpl()->getCache()->createDataOutput());
   TcrMessageReply reply(true, nullptr);
   GfErrType result = GF_NOTCON;
   unsigned int epCount = 0;
@@ -1194,7 +1200,9 @@ void ThinClientRedundancyManager::doPeriodicAck() {
           m_redundantEndpoints.begin();
 
       if (endpoint != m_redundantEndpoints.end()) {
-        TcrMessagePeriodicAck request(entries);
+        TcrMessagePeriodicAck request(
+            m_theTcrConnManager->getCacheImpl()->getCache()->createDataOutput(),
+            entries);
         TcrMessageReply reply(true, nullptr);
 
         GfErrType result = GF_NOERR;
@@ -1243,24 +1251,26 @@ void ThinClientRedundancyManager::startPeriodicAck() {
   m_periodicAckTask = new Task<ThinClientRedundancyManager>(
       this, &ThinClientRedundancyManager::periodicAck, NC_PerodicACK);
   m_periodicAckTask->start();
-  SystemProperties* props = DistributedSystem::getSystemProperties();
+  const auto& props = m_theTcrConnManager->getCacheImpl()
+                          ->getDistributedSystem()
+                          .getSystemProperties();
   // start the periodic ACK task handler
-  ACE_Event_Handler* periodicAckTask =
-      new ExpiryHandler_T<ThinClientRedundancyManager>(
-          this, &ThinClientRedundancyManager::processEventIdMap);
-  // m_processEventIdMapTaskId = CacheImpl::expiryTaskManager->
-  // scheduleExpiryTask(periodicAckTask, 1, 1, false);
-  m_processEventIdMapTaskId = CacheImpl::expiryTaskManager->scheduleExpiryTask(
-      periodicAckTask, m_nextAckInc, m_nextAckInc, false);
+  auto periodicAckTask = new ExpiryHandler_T<ThinClientRedundancyManager>(
+      this, &ThinClientRedundancyManager::processEventIdMap);
+  m_processEventIdMapTaskId =
+      m_theTcrConnManager->getCacheImpl()
+          ->getExpiryTaskManager()
+          .scheduleExpiryTask(periodicAckTask, m_nextAckInc, m_nextAckInc,
+                              false);
   LOGFINE(
       "Registered subscription event "
       "periodic ack task with id = %ld, notify-ack-interval = %ld, "
       "notify-dupcheck-life = %ld, periodic ack is %sabled",
       m_processEventIdMapTaskId,
       m_poolHADM ? m_poolHADM->getSubscriptionAckInterval()
-                 : props->notifyAckInterval(),
+                 : props.notifyAckInterval(),
       m_poolHADM ? m_poolHADM->getSubscriptionMessageTrackingTimeout()
-                 : props->notifyDupCheckLife(),
+                 : props.notifyDupCheckLife(),
       m_HAenabled ? "en" : "dis");
 }
 

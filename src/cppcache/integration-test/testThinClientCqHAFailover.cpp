@@ -110,17 +110,21 @@ class KillServerThread : public ACE_Task_Base {
 };
 
 void initClientCq(int redundancyLevel) {
-  try {
-    Serializable::registerType(Position::createDeserializable);
-    Serializable::registerType(Portfolio::createDeserializable);
-  } catch (const IllegalStateException&) {
-    // ignore exception
-  }
-
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(true);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
+
+  try {
+    SerializationRegistryPtr serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
+
+    serializationRegistry->addType(Position::createDeserializable);
+    serializationRegistry->addType(Portfolio::createDeserializable);
+  } catch (const IllegalStateException&) {
+    // ignore exception
+  }
 }
 
 KillServerThread* kst = nullptr;
@@ -197,7 +201,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
     try {
-      PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+      PoolPtr pool =
+          getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
       QueryServicePtr qs;
       if (pool != nullptr) {
         qs = pool->getQueryService();
@@ -295,7 +300,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree3)
   {
     // using region name as pool name
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    PoolPtr pool =
+        getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != nullptr) {
       qs = pool->getQueryService();
@@ -382,7 +388,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
   {
     // using region name as pool name
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    PoolPtr pool =
+        getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != nullptr) {
       qs = pool->getQueryService();

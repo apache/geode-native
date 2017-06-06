@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_MAPENTRYT_H_
-#define GEODE_MAPENTRYT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_MAPENTRYT_H_
+#define GEODE_MAPENTRYT_H_
 
 #include <geode/geode_globals.hpp>
 #include "MapEntry.hpp"
@@ -116,8 +116,16 @@ class MapEntryT : public TBase {
     return std::make_shared<MapEntryT>(key);
   }
 
+  inline static std::shared_ptr<MapEntryT> create(
+      ExpiryTaskManager* expiryTaskManager, const CacheableKeyPtr& key) {
+    return std::make_shared<MapEntryT>(expiryTaskManager, key);
+  }
+
  protected:
   inline MapEntryT(const CacheableKeyPtr& key) : TBase(key) {}
+  inline MapEntryT(ExpiryTaskManager* expiryTaskManager,
+                   const CacheableKeyPtr& key)
+      : TBase(expiryTaskManager, key) {}
 
  private:
   // disabled

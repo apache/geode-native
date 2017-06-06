@@ -24,7 +24,7 @@ namespace Apache.Geode.Client.UnitTests
     using NUnit.Framework;
     using Apache.Geode.DUnitFramework;
     using Apache.Geode.Client;
-
+    
     [TestFixture]
     [Category("unicast_only")]
     public class DataOutputTests : UnitTests
@@ -39,8 +39,10 @@ namespace Apache.Geode.Client.UnitTests
         [Test]
         public void StringExcedesBufferCapacity()
         {
-
-            DataOutput dataOutput = new DataOutput();
+            
+            CacheHelper.InitConfig((String) null);
+          
+            DataOutput dataOutput = CacheHelper.DCache.CreateDataOutput();
 
             // Chcek that native buffer is unused and get initial capacity.
             Assert.AreEqual(0, dataOutput.BufferLength);

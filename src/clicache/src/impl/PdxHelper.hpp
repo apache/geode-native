@@ -19,6 +19,7 @@
 //#include "../DataOutput.hpp"
 #include "begin_native.hpp"
 #include <geode/DataOutput.hpp>
+#include "SerializationRegistry.hpp"
 #include "end_native.hpp"
 
 #include "../IPdxSerializable.hpp"
@@ -30,7 +31,7 @@ namespace Apache
   {
     namespace Client
     {
-
+      namespace native = apache::geode::client;
 				ref class DataOutput;
       ref class DataInput;
       namespace Internal
@@ -42,9 +43,9 @@ namespace Apache
 
           static void SerializePdx(DataOutput^ dataOutput, IPdxSerializable^ pdxObject);
 
-          static IPdxSerializable^ DeserializePdx(DataInput^ dataOutput, bool forceDeserialize);
+          static IPdxSerializable^ DeserializePdx(DataInput^ dataOutput, bool forceDeserialize, const native::SerializationRegistry* serializationRegistry);
 
-          static IPdxSerializable^ PdxHelper::DeserializePdx(DataInput^ dataInput, bool forceDeserialize, int typeId, int length );
+          static IPdxSerializable^ PdxHelper::DeserializePdx(DataInput^ dataInput, bool forceDeserialize, int typeId, int length, const native::SerializationRegistry* serializationRegistry);
 
           literal Byte PdxHeader = 8;
 
@@ -64,12 +65,12 @@ namespace Apache
 
           static Int32 ReadInt(System::Byte* offsetPosition, int size);
 
-          static Int32 GetEnumValue(String^ enumClassName, String^ enumName, int hashcode);
+          static Int32 GetEnumValue(String^ enumClassName, String^ enumName, int hashcode, const native::Cache* cache);
 
-          static Object^ GetEnum(int enumId);
+          static Object^ GetEnum(int enumId, const native::Cache* cache);
 
         private:
-          static void CreateMergedType(PdxType^ localType, PdxType^ remoteType, DataInput^ dataInput);
+          static void CreateMergedType(PdxType^ localType, PdxType^ remoteType, DataInput^ dataInput, const native::SerializationRegistry* serializationRegistry);
         };
     }  // namespace Client
   }  // namespace Geode

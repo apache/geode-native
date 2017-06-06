@@ -1495,21 +1495,22 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
 
   virtual const PoolPtr& getPool() { return m_realRegion->getPool(); }
 
-  ProxyRegion(const ProxyCachePtr& proxyCache, const RegionPtr& realRegion) {
+  ProxyRegion(const ProxyCachePtr& proxyCache, const RegionPtr& realRegion)
+      : Region(realRegion->getCache()) {
     m_proxyCache = proxyCache;
     m_realRegion = realRegion;
   }
 
   virtual ~ProxyRegion() {}
 
+  ProxyRegion(const ProxyRegion&) = delete;
+  ProxyRegion& operator=(const ProxyRegion&) = delete;
+
  private:
   void unSupportedOperation(const char* operationName) const;
 
   ProxyCachePtr m_proxyCache;
   RegionPtr m_realRegion;
-  // Disallow copy constructor and assignment operator.
-  ProxyRegion(const ProxyRegion&);
-  ProxyRegion& operator=(const ProxyRegion&);
   friend class FunctionService;
 
   FRIEND_STD_SHARED_PTR(ProxyRegion)

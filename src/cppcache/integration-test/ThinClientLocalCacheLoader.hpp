@@ -33,7 +33,6 @@ using namespace test;
 
 TallyLoaderPtr reg1Loader1;
 int numLoads = 0;
-DistributedSystemPtr dSysPtr;
 CachePtr cachePtr;
 RegionPtr regionPtr;
 
@@ -123,7 +122,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClientEvents)
   {
     numLoads = 0;
     regionPtr = nullptr;
-    dSysPtr = nullptr;
     cachePtr = nullptr;
   }
 END_TASK_DEFINITION

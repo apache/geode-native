@@ -31,10 +31,12 @@ using namespace apache::geode::client;
 
 TombstoneExpiryHandler::TombstoneExpiryHandler(TombstoneEntryPtr entryPtr,
                                                TombstoneList* tombstoneList,
-                                               uint32_t duration)
+                                               uint32_t duration,
+                                               CacheImpl* cacheImpl)
     : m_entryPtr(entryPtr),
       m_duration(duration),
-      m_tombstoneList(tombstoneList) {}
+      m_tombstoneList(tombstoneList),
+      m_cacheImpl(cacheImpl) {}
 
 int TombstoneExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
                                            const void* arg) {
@@ -59,7 +61,7 @@ int TombstoneExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
           "Resetting expiry task %d secs later for key "
           "[%s]",
           -sec / 1000 + 1, Utils::getCacheableKeyString(key)->asChar());
-      CacheImpl::expiryTaskManager->resetTask(
+      m_cacheImpl->getExpiryTaskManager().resetTask(
           static_cast<long>(m_entryPtr->getExpiryTaskId()),
           uint32_t(-sec / 1000 + 1));
       return 0;
@@ -71,7 +73,8 @@ int TombstoneExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
            Utils::getCacheableKeyString(key)->asChar());
   // we now delete the handler in GF_Timer_Heap_ImmediateReset_T
   // and always return success.
-  CacheImpl::expiryTaskManager->resetTask(static_cast<long>(expiryTaskId), 0);
+  m_cacheImpl->getExpiryTaskManager().resetTask(static_cast<long>(expiryTaskId),
+                                                0);
   return 0;
 }
 

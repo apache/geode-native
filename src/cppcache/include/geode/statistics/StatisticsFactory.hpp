@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_STATISTICSFACTORY_H_
-#define GEODE_STATISTICS_STATISTICSFACTORY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#pragma once
+
+#ifndef GEODE_STATISTICS_STATISTICSFACTORY_H_
+#define GEODE_STATISTICS_STATISTICSFACTORY_H_
+
 #include <geode/geode_globals.hpp>
 #include <geode/statistics/StatisticDescriptor.hpp>
 #include <geode/statistics/StatisticsType.hpp>
@@ -54,15 +54,9 @@ namespace statistics {
 class CPPCACHE_EXPORT StatisticsFactory {
  protected:
   StatisticsFactory() {}
-  StatisticsFactory(const StatisticsFactory&) {}
+  StatisticsFactory(const StatisticsFactory&) = delete;
 
  public:
-  /**
-   * Return a pre-existing statistics factory. Typically configured through
-   * creation of a distributed system.
-   */
-  static StatisticsFactory* getExistingInstance();
-
   virtual ~StatisticsFactory() {}
 
   /**

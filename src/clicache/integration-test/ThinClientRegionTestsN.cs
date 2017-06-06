@@ -376,7 +376,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        Serializable.RegisterTypeGeneric(OtherType.CreateDeserializable);
+        Serializable.RegisterTypeGeneric(OtherType.CreateDeserializable, CacheHelper.DCache);
       }
       catch (IllegalStateException)
       {

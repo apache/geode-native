@@ -94,7 +94,8 @@ _GF_PTR_DEF_(FarSideEntryOp, FarSideEntryOpPtr);
 
 class FarSideEntryOp {
  public:
-  FarSideEntryOp(RegionCommit* region);
+  FarSideEntryOp(RegionCommit* region,
+                 MemberListForVersionStamp& memberListForVersionStamp);
   virtual ~FarSideEntryOp();
 
   void fromData(DataInput& input, bool largeModCount, uint16_t memId);
@@ -115,6 +116,7 @@ class FarSideEntryOp {
   bool m_didDestroy;
   UserDataPtr m_callbackArg;
   VersionTagPtr m_versionTag;
+  MemberListForVersionStamp& m_memberListForVersionStamp;
   // FilterRoutingInfo filterRoutingInfo;
   bool isDestroy(int8_t op);
   bool isInvalidate(int8_t op);

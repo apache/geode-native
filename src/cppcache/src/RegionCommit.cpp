@@ -38,9 +38,11 @@ void RegionCommit::fromData(DataInput& input) {
     input.readBoolean(&largeModCount);
     DSMemberForVersionStampPtr dsMember;
     input.readObject(dsMember);
-    uint16_t memId = CacheImpl::getMemberListForVersionStamp()->add(dsMember);
+
+    auto memId = m_memberListForVersionStamp.add(dsMember);
     for (int i = 0; i < size; i++) {
-      auto entryOp = std::make_shared<FarSideEntryOp>(this);
+      auto entryOp =
+          std::make_shared<FarSideEntryOp>(this, m_memberListForVersionStamp);
       entryOp->fromData(input, largeModCount, memId);
       m_farSideEntryOps.push_back(entryOp);
     }

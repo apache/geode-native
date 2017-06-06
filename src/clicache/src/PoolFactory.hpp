@@ -390,7 +390,7 @@ namespace Apache
         /// throws IllegalStateException if a pool with name already exists
         /// throws IllegalStateException if a locator or server has not been added.
         /// </exception>
-        Pool^ Create(String^ name);
+        Pool^ Create(String^ name, Cache^ cache);
 
       internal:
 

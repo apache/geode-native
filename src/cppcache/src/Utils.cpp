@@ -214,6 +214,17 @@ int32_t Utils::logWideString(char* buf, size_t maxLen, const wchar_t* wStr) {
   }
 }
 
+int64_t Utils::startStatOpTime() {
+  return std::chrono::duration_cast<std::chrono::nanoseconds>(
+      std::chrono::steady_clock::now().time_since_epoch())
+      .count();
+}
+
+void Utils::updateStatOpTime(statistics::Statistics* m_regionStats, int32_t statId,
+                             int64_t start) {
+  m_regionStats->incLong(statId, startStatOpTime() - start);
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

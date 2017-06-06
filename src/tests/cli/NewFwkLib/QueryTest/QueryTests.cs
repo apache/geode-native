@@ -223,7 +223,7 @@ namespace Apache.Geode.Client.FwkLib
         ResetKey(DistinctKeys);
         numOfKeys = GetUIntValue(DistinctKeys);
       }
-      QueryHelper<TKey,TVal> qh = QueryHelper<TKey,TVal>.GetHelper();
+      QueryHelper<TKey,TVal> qh = QueryHelper<TKey,TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
       int setSize = qh.PortfolioSetSize;
       FwkInfo("QueryTests.VerifyResultSet: numOfKeys [{0}], setSize [{1}].",
         numOfKeys, setSize);
@@ -404,7 +404,7 @@ namespace Apache.Geode.Client.FwkLib
         ResetKey(DistinctKeys);
         numOfKeys = GetUIntValue(DistinctKeys);
       }
-      QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+      QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
       int setSize = qh.PortfolioSetSize;
       FwkInfo("QueryTests.VerifyStructSet: numOfKeys [{0}], setSize [{1}].",
         numOfKeys, setSize);
@@ -629,7 +629,6 @@ namespace Apache.Geode.Client.FwkLib
             bool isDC = GetBoolValue("isDurable");
             RegionFactory rootAttrs = null;
             string m_isPool = null;
-            //RegionAttributes rootAttrs = GetRegionAttributes(rootRegionData);
             // Check if this is a thin-client region; if so set the endpoints
             int redundancyLevel = 0;
             if (endpoints != null && endpoints.Length > 0)
@@ -691,11 +690,11 @@ namespace Apache.Geode.Client.FwkLib
         if (!isObjectRegistered)
         {
             {
-                Serializable.RegisterTypeGeneric(Portfolio.CreateDeserializable);
+                Serializable.RegisterTypeGeneric(Portfolio.CreateDeserializable, CacheHelper<TKey, TVal>.DCache);
                 FwkInfo("Completed Portfolio registeration");
             }
             {
-                Serializable.RegisterTypeGeneric(Position.CreateDeserializable);
+                Serializable.RegisterTypeGeneric(Position.CreateDeserializable, CacheHelper<TKey, TVal>.DCache);
                 Serializable.RegisterPdxType(PortfolioPdx.CreateDeserializable);
                 Serializable.RegisterPdxType(PositionPdx.CreateDeserializable);
                 FwkInfo("Completed other object registeration");
@@ -1396,8 +1395,8 @@ namespace Apache.Geode.Client.FwkLib
         if (isTypeRegistered != "registered")
         {
           FwkInfo("Getting inside for registeration");
-          Serializable.RegisterTypeGeneric(Position.CreateDeserializable);
-          Serializable.RegisterTypeGeneric(Portfolio.CreateDeserializable);
+          Serializable.RegisterTypeGeneric(Position.CreateDeserializable, CacheHelper<TKey, TVal>.DCache);
+          Serializable.RegisterTypeGeneric(Portfolio.CreateDeserializable, CacheHelper<TKey, TVal>.DCache);
           Serializable.RegisterPdxType(Apache.Geode.Client.Tests.PortfolioPdx.CreateDeserializable);
           Serializable.RegisterPdxType(Apache.Geode.Client.Tests.PositionPdx.CreateDeserializable);
 
@@ -1461,7 +1460,7 @@ namespace Apache.Geode.Client.FwkLib
         //string label = CacheHelper<TKey, TVal>.RegionTag(region.Attributes);
         ResetKey(DistinctKeys);
         int numOfKeys = GetUIntValue(DistinctKeys);
-        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
         string objectType = GetStringValue(ObjectType);
         int setSize = qh.PortfolioSetSize;
         int destroyKeys = GetUIntValue(DestroyKeys);
@@ -1504,7 +1503,7 @@ namespace Apache.Geode.Client.FwkLib
         //string label = CacheHelper<TKey, TVal>.RegionTag(region.Attributes);
         ResetKey(DistinctKeys);
         int numOfKeys = GetUIntValue(DistinctKeys);
-        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
         string objectType = GetStringValue(ObjectType);
         int setSize = qh.PortfolioSetSize;
         int invalidateKeys = GetUIntValue(InvalidateKeys);
@@ -1548,7 +1547,7 @@ namespace Apache.Geode.Client.FwkLib
         //string label = CacheHelper<TKey, TVal>.RegionTag(region.Attributes);
         ResetKey(DistinctKeys);
         int numOfKeys = GetUIntValue(DistinctKeys); // number of keys should be multiple of 20
-        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
         int numSet = 0;
         int setSize = 0;
         // Loop over value sizes
@@ -1633,7 +1632,7 @@ namespace Apache.Geode.Client.FwkLib
         int numOfKeys = GetUIntValue(DistinctKeys);
 
         string objectType = GetStringValue(ObjectType);
-        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
         int setSize = qh.PortfolioSetSize;
         if (numOfKeys < setSize)
         {
@@ -1730,7 +1729,7 @@ namespace Apache.Geode.Client.FwkLib
     {
       try
       {
-        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
         int numSet = 0;
         int setSize = 0;
         //populating data
@@ -1828,7 +1827,7 @@ namespace Apache.Geode.Client.FwkLib
         int rangeStart = GetUIntValue("range-start");
         int rangeEnd = GetUIntValue("range-end");
 
-        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
         if (m_istransaction)
         {
           txManager = CacheHelper<TKey, TVal>.DCache.CacheTransactionManager;
@@ -1857,7 +1856,7 @@ namespace Apache.Geode.Client.FwkLib
         int rangeStart = GetUIntValue("range-start");
         int rangeEnd = GetUIntValue("range-end");
 
-        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
 
         for (int i = rangeStart; i <= rangeEnd; i++)
         {
@@ -1894,7 +1893,7 @@ namespace Apache.Geode.Client.FwkLib
         endTime = endTime.AddSeconds(secondsToRun);
 
         IRegion<TKey, TVal> region = GetRegion();
-        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
 
         while (nowTime < endTime)
         {
@@ -1917,7 +1916,7 @@ namespace Apache.Geode.Client.FwkLib
       {
         int maxRange = GetUIntValue("range-max");
         IRegion<TKey, TVal> region = GetRegion();
-        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
 
         for (int i = 1; i <= maxRange; i++)
         {

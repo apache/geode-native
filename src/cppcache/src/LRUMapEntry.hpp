@@ -110,14 +110,12 @@ typedef std::shared_ptr<VersionedLRUMapEntry> VersionedLRUMapEntryPtr;
 
 class CPPCACHE_EXPORT LRUEntryFactory : public EntryFactory {
  public:
-  static LRUEntryFactory* singleton;
-  static void init();
-
-  LRUEntryFactory() {}
+  using EntryFactory::EntryFactory;
 
   virtual ~LRUEntryFactory() {}
 
-  virtual void newMapEntry(const CacheableKeyPtr& key,
+  virtual void newMapEntry(ExpiryTaskManager* expiryTaskManager,
+                           const CacheableKeyPtr& key,
                            MapEntryImplPtr& result) const;
 };
 }  // namespace client

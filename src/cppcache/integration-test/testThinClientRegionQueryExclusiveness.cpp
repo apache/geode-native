@@ -34,6 +34,10 @@
 #include <geode/StructSet.hpp>
 #include <geode/SelectResultsIterator.hpp>
 
+#include "SerializationRegistry.hpp"
+#include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
+
 using namespace apache::geode::client;
 using namespace test;
 using namespace testobject;
@@ -52,27 +56,16 @@ const char* locHostPort =
 const char* qRegionNames[] = {"Portfolios", "Positions"};
 
 void clientOperations() {
+  initClient(true);
   try {
-    Serializable::registerType(Position::createDeserializable);
-    Serializable::registerType(Portfolio::createDeserializable);
+    SerializationRegistryPtr serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
+
+    serializationRegistry->addType(Position::createDeserializable);
+    serializationRegistry->addType(Portfolio::createDeserializable);
   } catch (const IllegalStateException&) {
     // ignore exception
-  }
-  initClient(true);
-
-  try {
-    QueryServicePtr qs = nullptr;  // getHelper()->cachePtr->getQueryService();
-
-    qs = createPool2("_TESTFAILPOOL_", nullptr, nullptr)->getQueryService();
-
-    SelectResultsPtr results;
-    QueryPtr qry = qs->newQuery("select distinct * from /Portfolios");
-    results = qry->execute();
-    FAIL("Since no region has been created yet, so exception expected");
-  } catch (IllegalStateException& ex) {
-    const char* err_msg = ex.getMessage();
-    LOG("Good expected exception");
-    LOG(err_msg);
   }
 
   PoolPtr pool1 = nullptr;

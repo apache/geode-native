@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
     LOGINFO("Obtained the Region from the Cache");
 
     // Register our Serializable/Cacheable Delta objects, DeltaExample.
-    Serializable::registerType(DeltaExample::create);
+    serializationRegistry->addType(DeltaExample::create);
 
     // Creating Delta Object.
     DeltaExample* ptr = new DeltaExample(10, 15, 20);

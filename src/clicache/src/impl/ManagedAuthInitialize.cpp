@@ -170,7 +170,7 @@ namespace apache
         return NULL;
       }
 
-      PropertiesPtr ManagedAuthInitializeGeneric::getCredentials(PropertiesPtr&
+      PropertiesPtr ManagedAuthInitializeGeneric::getCredentials(const PropertiesPtr&
                                                                  securityprops, const char* server)
       {
         try {

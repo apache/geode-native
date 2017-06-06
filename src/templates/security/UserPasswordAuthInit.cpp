@@ -33,8 +33,8 @@ LIBEXP AuthInitialize* createUserPasswordAuthInitInstance() {
 }
 }
 
-PropertiesPtr UserPasswordAuthInit::getCredentials(PropertiesPtr& securityprops,
-                                                   const char* server) {
+PropertiesPtr UserPasswordAuthInit::getCredentials(
+    const PropertiesPtr& securityprops, const char* server) {
   // LOGDEBUG("UserPasswordAuthInit: inside userPassword::getCredentials");
   CacheablePtr userName;
   if (securityprops == nullptr ||

@@ -31,6 +31,7 @@
 #include "Log.hpp"
 #include <vcclr.h>
 #include "IPdxTypeMapper.hpp"
+
 using namespace System::Reflection;
 using namespace System;
 using namespace System::Collections::Generic;
@@ -45,6 +46,8 @@ namespace Apache
 
 				interface class IPdxSerializable;
         interface class IPdxSerializer;
+        ref class Cache;
+
       /// <summary>
       /// Signature of native function delegates passed to native
       /// <c>native::Serializable::registerType</c>.
@@ -246,7 +249,8 @@ namespace Apache
         /// to a <c>Serializable</c>.
         /// </summary>
         static operator Apache::Geode::Client::Serializable^ (array<String^>^ value);
-
+        
+        
         /// <summary>
         /// Register an instance factory method for a given type.
         /// This should be used when registering types that implement
@@ -263,7 +267,7 @@ namespace Apache
         /// in registering the type; check <c>Utils::LastError</c> for more
         /// information in the latter case.
         /// </exception>
-        static void RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod);
+        static void RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod, Cache^ cache);
 
         /// <summary>
         /// Set the PDX serializer for the cache. If this serializer is set,
@@ -298,10 +302,10 @@ namespace Apache
 
       internal:
 
-				static System::Int32 GetPDXIdForType(const char* poolName, IGeodeSerializable^ pdxType);
-				static IGeodeSerializable^ GetPDXTypeById(const char* poolName, System::Int32 typeId);
+				static System::Int32 GetPDXIdForType(const char* poolName, IGeodeSerializable^ pdxType, const native::Cache* cache);
+				static IGeodeSerializable^ GetPDXTypeById(const char* poolName, System::Int32 typeId, const native::Cache* cache);
 				static IPdxSerializable^ Serializable::GetPdxType(String^ className);
-				static void RegisterPDXManagedCacheableKey(bool appDomainEnable);
+				static void RegisterPDXManagedCacheableKey(bool appDomainEnable, Cache^ cache);
         static bool IsObjectAndPdxSerializerRegistered(String^ className);
 
         static IPdxSerializer^ GetPdxSerializer();
@@ -311,8 +315,8 @@ namespace Apache
 
         static Type^ GetType(String^ className);
 
-        static int GetEnumValue(Internal::EnumInfo^ ei);
-        static Internal::EnumInfo^ GetEnum(int val);
+        static int GetEnumValue(Internal::EnumInfo^ ei, const native::Cache* cache);
+        static Internal::EnumInfo^ GetEnum(int val, const native::Cache* cache);
 
          static Dictionary<String^, PdxTypeFactoryMethod^>^ PdxDelegateMap =
           gcnew Dictionary<String^, PdxTypeFactoryMethod^>();
@@ -441,31 +445,31 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if the method is null
         /// </exception>
-        static void RegisterTypeGeneric(Byte typeId,
-          TypeFactoryMethodGeneric^ creationMethod, Type^ type);
+        static void RegisterTypeGeneric(Byte typeId, TypeFactoryMethodGeneric^ creationMethod, Type^ type, Cache^ cache);
+
 
         /// <summary>
         /// Unregister the type with the given typeId
         /// </summary>
         /// <param name="typeId">typeId of the type to unregister.</param>
-        static void UnregisterTypeGeneric(Byte typeId);
+        static void UnregisterTypeGeneric(Byte typeId, Cache^ cache);
 
         generic<class TValue>
         static TValue GetManagedValueGeneric(native::SerializablePtr val);
 
         generic<class TKey>
-        static native::CacheableKeyPtr GetUnmanagedValueGeneric(TKey key);
+        static native::CacheableKeyPtr GetUnmanagedValueGeneric(TKey key, native::Cache* cache);
 
         generic<class TKey>
-        static native::CacheableKeyPtr GetUnmanagedValueGeneric(TKey key, bool isAciiChar);
-
-        generic<class TKey>
-        static native::CacheableKeyPtr GetUnmanagedValueGeneric(
-          Type^ managedType, TKey key);
+        static native::CacheableKeyPtr GetUnmanagedValueGeneric(TKey key, bool isAciiChar, native::Cache* cache);
 
         generic<class TKey>
         static native::CacheableKeyPtr GetUnmanagedValueGeneric(
-          Type^ managedType, TKey key, bool isAsciiChar);
+          Type^ managedType, TKey key, native::Cache* cache);
+
+        generic<class TKey>
+        static native::CacheableKeyPtr GetUnmanagedValueGeneric(
+          Type^ managedType, TKey key, bool isAsciiChar, native::Cache* cache);
 
         /// <summary>
         /// Static map of <c>TypeFactoryMethod</c> delegates created

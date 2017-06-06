@@ -264,8 +264,7 @@ int testXmlCacheCreationWithPools() {
     CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
     cptr = cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create();
     if (cptr->getPdxIgnoreUnreadFields() != true) {
-      std::cout << "getPdxIgnoreUnreadFields should return true."
-                 << std::endl;
+      std::cout << "getPdxIgnoreUnreadFields should return true." << std::endl;
       return -1;
     } else {
       std::cout << "getPdxIgnoreUnreadFields returned true." << std::endl;
@@ -291,16 +290,15 @@ int testXmlCacheCreationWithPools() {
 
   std::cout << "Root regions in Cache :" << std::endl;
   for (int32_t i = 0; i < vrp.size(); i++) {
-    std::cout << "vc[" << i << "].m_regionPtr=" << vrp.at(i).get()
-               << std::endl;
+    std::cout << "vc[" << i << "].m_regionPtr=" << vrp.at(i).get() << std::endl;
     std::cout << "vc[" << i << "]=" << vrp.at(i)->getName() << std::endl;
   }
   RegionPtr regPtr1 = vrp.at(0);
 
   VectorOfRegion vr;
   std::cout << "Test if the number of sub regions with the root region Root1 "
-                "are correct"
-             << std::endl;
+               "are correct"
+            << std::endl;
   regPtr1->subregions(true, vr);
   std::cout << "  vr.size=" << vr.size() << std::endl;
   if (vr.size() != 1) {
@@ -309,21 +307,22 @@ int testXmlCacheCreationWithPools() {
   }
 
   std::cout << "get subregions from the root region :" << vrp.at(0)->getName()
-             << std::endl;
+            << std::endl;
   for (int32_t i = 0; i < vr.size(); i++) {
-    std::cout << "vc[" << i << "].m_regionPtr=" << vr.at(i).get()
-               << std::endl;
+    std::cout << "vc[" << i << "].m_regionPtr=" << vr.at(i).get() << std::endl;
     std::cout << "vc[" << i << "]=" << vr.at(i)->getName() << std::endl;
   }
 
+  // TODO - global Issue is that we cannot have config with server and locator
+  // pools. Check if this assumption is valid and if so then break up this test.
   RegionPtr subRegPtr = vr.at(0);
   vr.clear();
 
   RegionPtr regPtr2 = vrp.at(1);
 
   std::cout << "Test if the number of sub regions with the root region Root2 "
-                "are correct"
-             << std::endl;
+               "are correct"
+            << std::endl;
   regPtr2->subregions(true, vr);
   std::cout << "  vr.size=" << vr.size() << std::endl;
   if (vr.size() != 0) {
@@ -353,9 +352,9 @@ int testXmlCacheCreationWithPools() {
     return -1;
   }
 
-  PoolPtr poolOfReg1 = PoolManager::find(poolNameReg1);
-  PoolPtr poolOfSubReg = PoolManager::find(poolNameSubReg);
-  PoolPtr poolOfReg2 = PoolManager::find(poolNameReg2);
+  PoolPtr poolOfReg1 = cptr->getPoolManager().find(poolNameReg1);
+  PoolPtr poolOfSubReg = cptr->getPoolManager().find(poolNameSubReg);
+  PoolPtr poolOfReg2 = cptr->getPoolManager().find(poolNameReg2);
   SLIST locators;
   SLIST servers;
   SLIST emptylist;

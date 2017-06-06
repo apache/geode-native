@@ -328,7 +328,7 @@ namespace Apache.Geode.Client.UnitTests
 
       //---------------------Test for function execution with sendException Done-----------------------//
 
-      Pool/*<object, object>*/ pl = PoolManager/*<object, object>*/.Find(poolName);
+      Pool/*<object, object>*/ pl = CacheHelper.DCache.GetPoolManager().Find(poolName);
       //test date independant fucntion execution on one server
       //     test get function with result
       
@@ -420,7 +420,7 @@ namespace Apache.Geode.Client.UnitTests
     public void genericFEResultIntTest(string locators)
     {
       IRegion<int, int> region = CacheHelper.GetVerifyRegion<int, int>(QERegionName);
-      Pool pl = PoolManager.Find(poolName);
+      Pool pl = CacheHelper.DCache.GetPoolManager().Find(poolName);
 
       for (int n = 0; n < 34; n++)
       {
@@ -463,7 +463,7 @@ namespace Apache.Geode.Client.UnitTests
     public void genericFEResultStringTest(string locators)
     {
       IRegion<string, string> region = CacheHelper.GetVerifyRegion<string, string>(QERegionName);
-      Pool pl = PoolManager.Find(poolName);
+      Pool pl = CacheHelper.DCache.GetPoolManager().Find(poolName);
 
       for (int n = 0; n < 34; n++)
       {
@@ -513,7 +513,7 @@ namespace Apache.Geode.Client.UnitTests
     public void genericFEResultDCStringTest(string locators)
     {
       IRegion<string, string> region = CacheHelper.GetVerifyRegion<string, string>(QERegionName);
-      Pool pl = PoolManager.Find(poolName);
+      Pool pl = CacheHelper.DCache.GetPoolManager().Find(poolName);
 
       for (int n = 0; n < 34; n++)
       {
@@ -560,7 +560,7 @@ namespace Apache.Geode.Client.UnitTests
       Serializable.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
       Serializable.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
       IRegion<string, IPdxSerializable> region = CacheHelper.GetVerifyRegion<string, IPdxSerializable>(QERegionName);
-      Pool pl = PoolManager.Find(poolName);
+      Pool pl = CacheHelper.DCache.GetPoolManager().Find(poolName);
 
       for (int n = 0; n < 34; n++)
       {
@@ -985,7 +985,7 @@ namespace Apache.Geode.Client.UnitTests
         Util.Log("ExecuteFETimeOut onRegion Done");
       }
 
-      Pool pool = PoolManager.Find(poolName);
+      Pool pool = CacheHelper.DCache.GetPoolManager().Find(poolName);
       Execution<object> excs = Client.FunctionService<object>.OnServer(pool);
       IResultCollector<object> rcs = excs.WithArgs<Object>(args).Execute(FuncTimeOutName, 5000);
       ICollection<object> ServerFunctionResult = rcs.GetResult();
@@ -1319,7 +1319,7 @@ namespace Apache.Geode.Client.UnitTests
       }
 
       //test data independant function execution with result onServer
-      Pool/*<TKey, TValue>*/ pool = PoolManager/*<TKey, TValue>*/.Find(poolName);
+      Pool/*<TKey, TValue>*/ pool = CacheHelper.DCache.GetPoolManager().Find(poolName);
       
       Apache.Geode.Client.Execution<object> exc = Client.FunctionService<object>.OnServer(pool);
       Assert.IsTrue(exc != null, "onServer Returned NULL");

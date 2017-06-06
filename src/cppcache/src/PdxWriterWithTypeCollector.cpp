@@ -31,17 +31,16 @@ namespace apache {
 namespace geode {
 namespace client {
 
-PdxWriterWithTypeCollector::PdxWriterWithTypeCollector() {}
-
 PdxWriterWithTypeCollector::PdxWriterWithTypeCollector(
-    DataOutput& output, const char* domainClassName)
-    : PdxLocalWriter(output, nullptr) {
+    DataOutput& output, const char* domainClassName,
+    PdxTypeRegistryPtr pdxTypeRegistry)
+    : PdxLocalWriter(output, nullptr, pdxTypeRegistry) {
   m_domainClassName = domainClassName;
   initialize();
 }
 
 void PdxWriterWithTypeCollector::initialize() {
-  m_pdxType = std::make_shared<PdxType>(m_domainClassName, true);
+  m_pdxType = std::make_shared<PdxType>(m_pdxTypeRegistry, m_domainClassName, true);
 }
 
 PdxWriterWithTypeCollector::~PdxWriterWithTypeCollector() {}

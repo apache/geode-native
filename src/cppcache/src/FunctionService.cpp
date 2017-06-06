@@ -16,12 +16,14 @@
  */
 #include <geode/FunctionService.hpp>
 #include <geode/ExceptionTypes.hpp>
-#include <ExecutionImpl.hpp>
-#include <ProxyRegion.hpp>
-#include <UserAttributes.hpp>
-#include <ProxyCache.hpp>
 #include <geode/PoolManager.hpp>
-#include <CacheRegionHelper.hpp>
+
+#include "CacheRegionHelper.hpp"
+#include "ExecutionImpl.hpp"
+#include "ProxyRegion.hpp"
+#include "UserAttributes.hpp"
+#include "ProxyCache.hpp"
+#include "CacheImpl.hpp"
 
 using namespace apache::geode::client;
 
@@ -45,7 +47,8 @@ ExecutionPtr FunctionService::onRegion(RegionPtr region) {
       // it is in multiuser mode
       proxyCache = pr->m_proxyCache;
       PoolPtr userAttachedPool = proxyCache->m_userAttributes->getPool();
-      PoolPtr pool = PoolManager::find(userAttachedPool->getName());
+      PoolPtr pool = region->getCache()->getPoolManager().find(
+          userAttachedPool->getName());
       if (!(pool != nullptr && pool.get() == userAttachedPool.get() &&
             !pool->isDestroyed())) {
         throw IllegalStateException(
@@ -54,9 +57,9 @@ ExecutionPtr FunctionService::onRegion(RegionPtr region) {
       RegionPtr tmpRegion;
       tmpRegion = nullptr;
       // getting real region to execute function on region
-      if (!CacheFactory::getAnyInstance()->isClosed()) {
-        CacheRegionHelper::getCacheImpl(CacheFactory::getAnyInstance().get())
-            ->getRegion(region->getName(), tmpRegion);
+      if (!region->getCache()->isClosed()) {
+        region->getCache()->m_cacheImpl->getRegion(region->getName(),
+                                                   tmpRegion);
       } else {
         throw IllegalStateException("Cache has been closed");
       }
@@ -109,7 +112,8 @@ ExecutionPtr FunctionService::onServerWithCache(const RegionServicePtr& cache) {
   LOGDEBUG("FunctionService::onServer:");
   if (pc != nullptr) {
     PoolPtr userAttachedPool = pc->m_userAttributes->getPool();
-    PoolPtr pool = PoolManager::find(userAttachedPool->getName());
+    PoolPtr pool =
+        pc->m_cacheImpl->getPoolManager().find(userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       return std::make_shared<ExecutionImpl>(pool, false, pc);
@@ -118,7 +122,8 @@ ExecutionPtr FunctionService::onServerWithCache(const RegionServicePtr& cache) {
         "Pool has been close to execute function on server");
   } else {
     CachePtr realcache = std::static_pointer_cast<Cache>(cache);
-    return FunctionService::onServer(realcache->m_cacheImpl->getDefaultPool());
+    return FunctionService::onServer(
+        realcache->m_cacheImpl->getPoolManager().getDefaultPool());
   }
 }
 
@@ -133,7 +138,8 @@ ExecutionPtr FunctionService::onServersWithCache(
   LOGDEBUG("FunctionService::onServers:");
   if (pc != nullptr && !cache->isClosed()) {
     auto userAttachedPool = pc->m_userAttributes->getPool();
-    auto pool = PoolManager::find(userAttachedPool->getName());
+    auto pool = pc->m_cacheImpl->getCache()->getPoolManager().find(
+        userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       return std::make_shared<ExecutionImpl>(pool, true, pc);
@@ -142,6 +148,7 @@ ExecutionPtr FunctionService::onServersWithCache(
         "Pool has been close to execute function on server");
   } else {
     auto realcache = std::static_pointer_cast<Cache>(cache);
-    return FunctionService::onServers(realcache->m_cacheImpl->getDefaultPool());
+    return FunctionService::onServers(
+        realcache->m_cacheImpl->getPoolManager().getDefaultPool());
   }
 }

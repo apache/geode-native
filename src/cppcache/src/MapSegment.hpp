@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_MAPSEGMENT_H_
-#define GEODE_MAPSEGMENT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_MAPSEGMENT_H_
+#define GEODE_MAPSEGMENT_H_
 
 #include <geode/geode_globals.hpp>
 
@@ -82,6 +82,7 @@ class CPPCACHE_EXPORT MapSegment {
   // does not need deletion here.
   const EntryFactory* m_entryFactory;
   RegionInternal* m_region;
+  ExpiryTaskManager* m_expiryTaskManager;
 
   // index of the current prime in the primes table
   uint32_t m_primeIndex;
@@ -163,7 +164,7 @@ class CPPCACHE_EXPORT MapSegment {
         }
       }
     }
-    m_entryFactory->newMapEntry(key, newEntry);
+    m_entryFactory->newMapEntry(m_expiryTaskManager, key, newEntry);
     newEntry->setValueI(newValue);
     if (m_concurrencyChecksEnabled) {
       if (versionTag != nullptr && versionTag.get() != nullptr) {
@@ -195,15 +196,14 @@ class CPPCACHE_EXPORT MapSegment {
       : m_map(nullptr),
         m_entryFactory(nullptr),
         m_region(nullptr),
+        m_expiryTaskManager(nullptr),
         m_primeIndex(0),
         m_spinlock(),
         m_segmentMutex(),
         m_concurrencyChecksEnabled(false),
         m_numDestroyTrackers(nullptr),
-        m_rehashCount(0)  // COVERITY  --> 30303 Uninitialized scalar field
-  {
-    m_tombstoneList = std::make_shared<TombstoneList>(this);
-  }
+        m_rehashCount(0),
+        m_tombstoneList(nullptr) {}
 
   ~MapSegment();
 
@@ -217,8 +217,8 @@ class CPPCACHE_EXPORT MapSegment {
    * Used when allocated in arrays by EntriesMap implementations.
    */
   void open(RegionInternal* region, const EntryFactory* entryFactory,
-            uint32_t size, std::atomic<int32_t>* destroyTrackers,
-            bool concurrencyChecksEnabled);
+            ExpiryTaskManager* expiryTaskManager, uint32_t size,
+            std::atomic<int32_t>* destroyTrackers, bool concurrencyChecksEnabled);
 
   void close();
   void clear();

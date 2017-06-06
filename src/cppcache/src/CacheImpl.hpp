@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CACHEIMPL_H_
-#define GEODE_CACHEIMPL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,13 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CACHEIMPL_H_
+#define GEODE_CACHEIMPL_H_
+
+#include <atomic>
+
 #include <geode/geode_globals.hpp>
 #include <memory>
 
@@ -28,7 +30,6 @@
 #include <geode/DistributedSystem.hpp>
 #include "MapWithLock.hpp"
 #include <ace/ACE.h>
-#include <ace/Condition_Recursive_Thread_Mutex.h>
 #include <ace/Time_Value.h>
 #include <ace/Guard_T.h>
 #include <ace/Recursive_Thread_Mutex.h>
@@ -40,13 +41,14 @@
 #include "CachePerfStats.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "MemberListForVersionStamp.hpp"
+#include "ClientProxyMembershipIDFactory.hpp"
 
 #include <string>
 #include <string>
 #include <map>
 
 #include "NonCopyable.hpp"
-
+#define DEFAULT_LRU_MAXIMUM_ENTRIES 100000
 /** @todo period '.' consistency */
 /** @todo fix returns to param documentation of result ptr... */
 
@@ -58,14 +60,18 @@ namespace apache {
 namespace geode {
 namespace client {
 
+class ThreadPool;
 class CacheFactory;
 class ExpiryTaskManager;
+class PdxTypeRegistry;
+class SerializationRegistry;
+typedef std::shared_ptr<SerializationRegistry> SerializationRegistryPtr;
 
 /**
  * @class Cache Cache.hpp
  * Geode's implementation of a distributed C++ Cache.
  *
- * Caches are obtained from static methods on the {@link CacheFactory} class.
+ * Caches are obtained from methods on the {@link CacheFactory} class.
  * <p>
  * When a cache is created a {@link DistributedSystem} must be specified.
  * This system tells the cache where to find other caches on the network
@@ -92,26 +98,28 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   void setClientCrashTEST() { m_tcrConnectionManager->setClientCrashTEST(); }
 
   // For PrSingleHop C++unit testing.
-  static ACE_Recursive_Thread_Mutex s_nwHopLock;
-  static void setNetworkHopFlag(bool networkhopflag) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> _lock(s_nwHopLock);
-    CacheImpl::s_networkhop = networkhopflag;
-  }
-  static bool getAndResetNetworkHopFlag();
+  void setNetworkHopFlag(bool networkhopflag) {
+    m_networkhop = networkhopflag;
+  };
 
-  static int blackListBucketTimeouts();
-  static void setBlackListBucketTimeouts();
+  bool getAndResetNetworkHopFlag() { return m_networkhop.exchange(false); }
 
-  static void setServerGroupFlag(int8_t serverGroupFlag) {
-    CacheImpl::s_serverGroupFlag = serverGroupFlag;
+  int getBlackListBucketTimeouts() { return m_blacklistBucketTimeout; }
+
+  void incBlackListBucketTimeouts() { ++m_blacklistBucketTimeout; }
+
+  int8_t getAndResetServerGroupFlag() { return m_serverGroupFlag.exchange(0); }
+
+  void setServerGroupFlag(int8_t serverGroupFlag) {
+    m_serverGroupFlag = serverGroupFlag;
   }
-  static int8_t getAndResetServerGroupFlag();
-  static MemberListForVersionStampPtr getMemberListForVersionStamp();
+
+  MemberListForVersionStampPtr getMemberListForVersionStamp();
 
   /** Returns the name of this cache.
    * @return the string name of this cache
    */
-  const char* getName() const;
+  const std::string& getName() const;
 
   /**
    * Indicates if this cache has been closed.
@@ -133,7 +141,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
    * Returns the distributed system that this cache was
    * {@link CacheFactory::create created} with.
    */
-  void getDistributedSystem(DistributedSystemPtr& dptr) const;
+  DistributedSystem& getDistributedSystem() const;
 
   /**
    * Terminates this object cache and releases all the local resources.
@@ -206,15 +214,19 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   /**
    * @brief constructors
    */
-  CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
-            bool ignorePdxUnreadFields, bool readPdxSerialized);
-  CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
-            const char* id_data, bool ignorePdxUnreadFields,
+  CacheImpl(Cache* c, const std::string& name,
+            std::unique_ptr<DistributedSystem> sys, bool ignorePdxUnreadFields,
             bool readPdxSerialized);
+
   void initServices();
   EvictionController* getEvictionController();
 
-  static ExpiryTaskManager* expiryTaskManager;
+  ExpiryTaskManager& getExpiryTaskManager() { return *m_expiryTaskManager; }
+
+  ClientProxyMembershipIDFactory& getClientProxyMembershipIDFactory() {
+    return m_clientProxyMembershipIDFactory;
+  }
+
   Cache* getCache() const { return m_implementee; }
   TcrConnectionManager& tcrConnectionManager() {
     return *m_tcrConnectionManager;
@@ -243,12 +255,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   void processMarker();
 
   // Pool helpers for unit tests
-  static int getPoolSize(const char* poolName);
-
-  // CachePerfStats
-  CachePerfStats* m_cacheStats;
-
-  static inline CacheImpl* getInstance() { return s_instance; };
+  int getPoolSize(const char* poolName);
 
   bool getCacheMode() {
     return m_attributes == nullptr ? false : m_attributes->m_cacheMode;
@@ -264,22 +271,30 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   bool getPdxReadSerialized() { return m_readPdxSerialized; }
   bool isCacheDestroyPending() const;
 
-  void setDefaultPool(PoolPtr pool);
-
-  PoolPtr getDefaultPool();
-
-  static void setRegionShortcut(AttributesFactoryPtr attrFact,
-                                RegionShortcut preDefinedRegionAttr);
-
   static std::map<std::string, RegionAttributesPtr> getRegionShortcut();
 
+  PdxTypeRegistryPtr getPdxTypeRegistry() const;
+
+  SerializationRegistryPtr getSerializationRegistry() const;
+  inline CachePerfStats& getCachePerfStats() { return *m_cacheStats; };
+
+  PoolManager& getPoolManager() { return *m_poolManager; }
+
+  ThreadPool* getThreadPool();
+
  private:
-  static volatile bool s_networkhop;
-  static volatile int s_blacklistBucketTimeout;
-  static volatile int8_t s_serverGroupFlag;
+  std::atomic<bool> m_networkhop;
+  std::atomic<int> m_blacklistBucketTimeout;
+  std::atomic<int8_t> m_serverGroupFlag;
   PoolPtr m_defaultPool;
   bool m_ignorePdxUnreadFields;
   bool m_readPdxSerialized;
+  std::unique_ptr<ExpiryTaskManager> m_expiryTaskManager;
+
+  // CachePerfStats
+  CachePerfStats* m_cacheStats;
+
+  std::unique_ptr<PoolManager> m_poolManager;
 
   enum RegionKind {
     CPP_REGION,
@@ -303,11 +318,12 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
       srm.bind((*p).ext_id_, (*p).int_id_);
     }
   }
-  char* m_name;
+  std::string m_name;
   bool m_closed;
   bool m_initialized;
 
-  DistributedSystemPtr m_distributedSystem;
+  std::unique_ptr<DistributedSystem> m_distributedSystem;
+  ClientProxyMembershipIDFactory m_clientProxyMembershipIDFactory;
   MapOfRegionWithLock* m_regions;
   Cache* m_implementee;
   ACE_Recursive_Thread_Mutex m_mutex;
@@ -319,10 +335,14 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   ACE_RW_Thread_Mutex m_destroyCacheMutex;
   volatile bool m_destroyPending;
   volatile bool m_initDone;
-  static CacheImpl* s_instance;
   ACE_Thread_Mutex m_initDoneLock;
   AdminRegionPtr m_adminRegion;
   CacheTransactionManagerPtr m_cacheTXManager;
+
+  MemberListForVersionStamp& m_memberListForVersionStamp;
+  SerializationRegistryPtr m_serializationRegistry;
+  PdxTypeRegistryPtr m_pdxTypeRegistry;
+  ThreadPool* m_threadPool;
 
   friend class CacheFactory;
   friend class Cache;

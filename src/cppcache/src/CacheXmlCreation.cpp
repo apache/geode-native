@@ -22,11 +22,13 @@
 
 using namespace apache::geode::client;
 
-void CacheXmlCreation::addRootRegion(RegionXmlCreation* root) {
+void CacheXmlCreation::addRootRegion(std::shared_ptr<RegionXmlCreation> root) {
   rootRegions.push_back(root);
 }
 
-void CacheXmlCreation::addPool(PoolXmlCreation* pool) { pools.push_back(pool); }
+void CacheXmlCreation::addPool(std::shared_ptr<PoolXmlCreation> pool) {
+  pools.push_back(pool);
+}
 
 void CacheXmlCreation::create(Cache* cache) {
   m_cache = cache;
@@ -34,16 +36,12 @@ void CacheXmlCreation::create(Cache* cache) {
   m_cache->m_cacheImpl->setPdxReadSerialized(m_readPdxSerialized);
   // Create any pools before creating any regions.
 
-  std::vector<PoolXmlCreation*>::iterator pool = pools.begin();
-  while (pool != pools.end()) {
-    (*pool)->create();
-    ++pool;
+  for (const auto& pool : pools) {
+    pool->create(*m_cache);
   }
 
-  std::vector<RegionXmlCreation*>::iterator start = rootRegions.begin();
-  while (start != rootRegions.end()) {
-    (*start)->createRoot(cache);
-    ++start;
+  for (const auto& rootRegion : rootRegions) {
+    rootRegion->createRoot(cache);
   }
 }
 
@@ -62,19 +60,4 @@ CacheXmlCreation::CacheXmlCreation()
     : m_cache((Cache*)0) {
   m_pdxIgnoreUnreadFields = false;
   m_readPdxSerialized = false;
-}
-
-CacheXmlCreation::~CacheXmlCreation() {
-  std::vector<RegionXmlCreation*>::iterator start = rootRegions.begin();
-  while (start != rootRegions.end()) {
-    delete *start;
-    *start = nullptr;
-    ++start;
-  }
-  std::vector<PoolXmlCreation*>::iterator pool = pools.begin();
-  while (pool != pools.end()) {
-    delete *pool;
-    *pool = nullptr;
-    ++pool;
-  }
 }

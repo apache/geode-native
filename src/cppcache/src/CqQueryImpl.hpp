@@ -94,7 +94,8 @@ class CqQueryImpl : public CqQuery,
  public:
   CqQueryImpl(const CqServicePtr& cqService, const std::string& cqName,
               const std::string& queryString,
-              const CqAttributesPtr& cqAttributes, const bool isDurable = false,
+              const CqAttributesPtr& cqAttributes, statistics::StatisticsFactory* factory,
+              const bool isDurable = false,
               const UserAttributesPtr& userAttributesPtr = nullptr);
 
   ~CqQueryImpl();

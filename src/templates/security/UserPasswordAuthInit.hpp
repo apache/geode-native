@@ -65,7 +65,7 @@ class UserPasswordAuthInit : public AuthInitialize {
    * @remarks This method can modify the given set of properties. For
    * example it may invoke external agents or even interact with the user.
    */
-  PropertiesPtr getCredentials(PropertiesPtr& securityprops,
+  PropertiesPtr getCredentials(const PropertiesPtr& securityprops,
                                const char* server);
 
   /**

@@ -93,8 +93,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1Regions_Pooled_Locator)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       nullptr, 0, true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, nullptr, 0,
+                       true);
     createPooledRegion(_regionNames[0], USE_ACK, locatorsG, poolName);
     createPooledRegion(_regionNames[1], NO_ACK, locatorsG, poolName);
     LOG("CreateClient1Regions complete.");
@@ -103,8 +103,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2Regions_Pooled_Locator)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       nullptr, 0, true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, nullptr, 0,
+                       true);
     createPooledRegion(_regionNames[0], USE_ACK, locatorsG, poolName);
     createPooledRegion(_regionNames[1], NO_ACK, locatorsG, poolName);
     LOG("CreateClient1Regions complete.");

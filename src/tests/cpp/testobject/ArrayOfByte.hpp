@@ -26,6 +26,10 @@
 #include "fwklib/FrameworkTest.hpp"
 #include <ace/Time_Value.h>
 
+#include "SerializationRegistry.hpp"
+#include "DataInputInternal.hpp"
+#include "DataOutputInternal.hpp"
+
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
 #define TESTOBJECT_EXPORT LIBEXP
@@ -46,7 +50,7 @@ class TESTOBJECT_EXPORT ArrayOfByte {
   static CacheableBytesPtr init(int size, bool encodeKey,
                                 bool encodeTimestamp) {
     if (encodeKey) {
-      DataOutput dos;
+      DataOutputInternal dos;
       try {
         int32_t index = 1234;
         dos.writeInt(index);
@@ -76,12 +80,13 @@ class TESTOBJECT_EXPORT ArrayOfByte {
     }
   }
 
-  static int64_t getTimestamp(CacheableBytesPtr bytes) {
+  static int64_t getTimestamp(CacheableBytesPtr bytes,
+                              SerializationRegistry &serializationRegistry) {
     if (bytes == nullptr) {
       throw apache::geode::client::IllegalArgumentException(
           "the bytes arg was null");
     }
-    DataInput di(bytes->value(), bytes->length());
+    DataInputInternal di(bytes->value(), bytes->length(), nullptr);
     try {
       int32_t index;
       di.readInt(&index);
@@ -96,8 +101,9 @@ class TESTOBJECT_EXPORT ArrayOfByte {
     }
   }
 
-  static void resetTimestamp(CacheableBytesPtr bytes) {
-    DataInput di(bytes->value(), bytes->length());
+  static void resetTimestamp(CacheableBytesPtr bytes,
+                             SerializationRegistry &serializationRegistry) {
+    DataInputInternal di(bytes->value(), bytes->length(), nullptr);
     int32_t index;
     try {
       di.readInt(&index);
@@ -109,7 +115,7 @@ class TESTOBJECT_EXPORT ArrayOfByte {
     } catch (Exception &e) {
       FWKEXCEPTION("Unable to read from stream " << e.getMessage());
     }
-    DataOutput dos;
+    DataOutputInternal dos;
     try {
       dos.writeInt(index);
       ACE_Time_Value startTime;

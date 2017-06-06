@@ -49,20 +49,23 @@ using namespace testData;
 const char* cqName = "MyCq";
 
 void initClientCq(const bool isthinClient) {
-  try {
-    Serializable::registerType(Position::createDeserializable);
-    Serializable::registerType(Portfolio::createDeserializable);
-
-    Serializable::registerPdxType(PositionPdx::createDeserializable);
-    Serializable::registerPdxType(PortfolioPdx::createDeserializable);
-  } catch (const IllegalStateException&) {
-    // ignore exception
-  }
-
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
+
+  try {
+    SerializationRegistryPtr serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
+    serializationRegistry->addType(Position::createDeserializable);
+    serializationRegistry->addType(Portfolio::createDeserializable);
+
+    serializationRegistry->addPdxType(PositionPdx::createDeserializable);
+    serializationRegistry->addPdxType(PortfolioPdx::createDeserializable);
+  } catch (const IllegalStateException&) {
+    // ignore exception
+  }
 }
 const char* regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
                                "Portfolios3"};
@@ -157,7 +160,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
     auto& qh ATTR_UNUSED = QueryHelper::getHelper();
 
     // using region name as pool name
-    auto pool = PoolManager::find(regionNamesCq[0]);
+    auto pool =
+        getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != nullptr) {
       qs = pool->getQueryService();

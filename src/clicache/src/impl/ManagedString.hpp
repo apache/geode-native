@@ -22,7 +22,8 @@
 #include "../geode_defs.hpp"
 
 #ifdef _WIN32
-#define snprintf _snprintf
+// FIXME: Why is this needed?
+//#define snprintf _snprintf
 #endif
 
 

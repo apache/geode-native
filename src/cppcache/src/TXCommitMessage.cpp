@@ -33,7 +33,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-TXCommitMessage::TXCommitMessage()
+TXCommitMessage::TXCommitMessage(MemberListForVersionStamp & memberListForVersionStamp) : m_memberListForVersionStamp(memberListForVersionStamp)
 // UNUSED : m_processorId(0)
 {}
 
@@ -88,7 +88,7 @@ m_processorId = -1;
   int32_t regionSize;
   input.readInt(&regionSize);
   for (int32_t i = 0; i < regionSize; i++) {
-    auto rc = std::make_shared<RegionCommit>();
+    auto rc = std::make_shared<RegionCommit>(m_memberListForVersionStamp);
     rc->fromData(input);
     m_regions.push_back(rc);
   }
@@ -159,7 +159,7 @@ int8_t TXCommitMessage::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::TXCommitMessage);
 }
 
-Serializable* TXCommitMessage::create() { return new TXCommitMessage(); }
+Serializable* TXCommitMessage::create(MemberListForVersionStamp & memberListForVersionStamp) { return new TXCommitMessage(memberListForVersionStamp); }
 
 void TXCommitMessage::apply(Cache* cache) {
   for (std::vector<RegionCommitPtr>::iterator iter = m_regions.begin();

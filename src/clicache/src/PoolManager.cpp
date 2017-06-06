@@ -35,12 +35,12 @@ namespace Apache
 
       PoolFactory^ PoolManager::CreateFactory()
       {
-        return PoolFactory::Create(native::PoolManager::createFactory());
+        return PoolFactory::Create(m_nativeref.createFactory());
       }
 
       const Dictionary<String^, Pool^>^ PoolManager::GetAll()
       {
-        auto pools = native::PoolManager::getAll();
+        auto pools = m_nativeref.getAll();
         auto result = gcnew Dictionary<String^, Pool^>();
         for (const auto& iter : pools)
         {
@@ -54,23 +54,23 @@ namespace Apache
       Pool^ PoolManager::Find(String^ name)
       {
         ManagedString mg_name( name );
-        auto pool = native::PoolManager::find(mg_name.CharPtr);
+        auto pool = m_nativeref.find(mg_name.CharPtr);
         return Pool::Create(pool);
       }
 
       Pool^ PoolManager::Find(Client::Region<Object^, Object^>^ region)
       {
-        return Pool::Create(native::PoolManager::find(region->GetNative()));
+        return Pool::Create(m_nativeref.find(region->GetNative()));
       }
 
       void PoolManager::Close(Boolean KeepAlive)
       {
-        native::PoolManager::close(KeepAlive);
+        m_nativeref.close(KeepAlive);
       }
 
       void PoolManager::Close()
       {
-        native::PoolManager::close();
+        m_nativeref.close();
       }
     }  // namespace Client
   }  // namespace Geode

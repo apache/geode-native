@@ -153,11 +153,11 @@ class CPPCACHE_EXPORT RegionFactory
                                          const PropertiesPtr& config = nullptr);
 
   /** Sets the PersistenceManager for the next <code>RegionAttributes</code>
-  * created.
-  * @param persistenceManager a user defined PersistenceManager, nullptr if no
-  * persistenceManager
-  * @return a reference to <code>this</code>
-  */
+   * created.
+   * @param persistenceManager a user defined PersistenceManager, nullptr if no
+   * persistenceManager
+   * @return a reference to <code>this</code>
+   */
   RegionFactoryPtr setPersistenceManager(
       const PersistenceManagerPtr& persistenceManager,
       const PropertiesPtr& config = nullptr);
@@ -237,31 +237,32 @@ class CPPCACHE_EXPORT RegionFactory
   RegionFactoryPtr setCloningEnabled(bool isClonable);
 
   /**
-  * Enables or disables concurrent modification checks
-  * @since 7.0
-  * @param concurrencyChecksEnabled whether to perform concurrency checks on
-  * operations
-  * @return a reference to <code>this</code>
-  */
+   * Enables or disables concurrent modification checks
+   * @since 7.0
+   * @param concurrencyChecksEnabled whether to perform concurrency checks on
+   * operations
+   * @return a reference to <code>this</code>
+   */
   RegionFactoryPtr setConcurrencyChecksEnabled(bool enable);
 
   /**
-  * Sets time out for tombstones
-  * @since 7.0
-  * @param tombstoneTimeoutInMSec tombstone timeout in milli second
-  * @return a reference to <code>this</code>
-  */
+   * Sets time out for tombstones
+   * @since 7.0
+   * @param tombstoneTimeoutInMSec tombstone timeout in milli second
+   * @return a reference to <code>this</code>
+   */
   RegionFactoryPtr setTombstoneTimeout(uint32_t tombstoneTimeoutInMSec);
 
  private:
-  RegionFactory(apache::geode::client::RegionShortcut preDefinedRegion);
+  RegionFactory(apache::geode::client::RegionShortcut preDefinedRegion,
+                CacheImpl* cacheImpl);
 
   RegionShortcut m_preDefinedRegion;
 
   AttributesFactoryPtr m_attributeFactory;
 
   void setRegionShortcut();
-
+  CacheImpl* m_cacheImpl;
   ~RegionFactory();
   friend class CacheImpl;
   FRIEND_STD_SHARED_PTR(RegionFactory)

@@ -27,10 +27,8 @@
 #include <ace/SOCK_Connector.h>
 #include <ace/SOCK_Acceptor.h>
 #include <ace/OS.h>
-
+#include "CacheImpl.hpp"
 using namespace apache::geode::client;
-
-int TcpConn::m_chunkSize = TcpConn::setChunkSize();
 
 void TcpConn::clearNagle(ACE_SOCKET sock) {
   int32_t val = 1;
@@ -60,19 +58,10 @@ int32_t TcpConn::maxSize(ACE_SOCKET sock, int32_t flag, int32_t size) {
   socklen_t plen = sizeof(val);
   socklen_t clen = sizeof(val);
 
-  static int32_t max = 32000;
-  if (m_maxBuffSizePool <= 0) {
-    SystemProperties *props = DistributedSystem::getSystemProperties();
-    if (props != nullptr) {
-      max = props->maxSocketBufferSize();
-    }
-  } else {
-    max = m_maxBuffSizePool;
-  }
   int32_t inc = 32120;
   val = size - (3 * inc);
   if (val < 0) val = 0;
-  if (size == 0) size = max;
+  if (size == 0) size = m_maxBuffSizePool;
   int32_t red = 0;
   int32_t lastRed = -1;
   while (lastRed != red) {
@@ -92,7 +81,7 @@ int32_t TcpConn::maxSize(ACE_SOCKET sock, int32_t flag, int32_t size) {
 #ifdef _LINUX
     val /= 2;
 #endif
-    if ((val >= max) || (val >= size)) continue;
+    if ((val >= m_maxBuffSizePool) || (val >= size)) continue;
     red = val;
   }
   return val;
@@ -105,17 +94,7 @@ void TcpConn::createSocket(ACE_SOCKET sock) {
 }
 
 void TcpConn::init() {
-  /* adongre
-   * CID 28736: Improper use of negative value (NEGATIVE_RETURNS)
-   * Function "socket(2, 1, 0)" returns a negative number.
-   * Assigning: unsigned variable "sock" = "socket".
-   *
-   * CID 28737: Unsigned compared against 0 (NO_EFFECT)
-   * This less-than-zero comparison of an unsigned value is never true. "sock <
-   * 0U".
-   */
   ACE_SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
-  // if ( sock < 0 ) {
   if (sock == -1) {
     int32_t lastError = ACE_OS::last_error();
     LOGERROR("Failed to create socket. Errno: %d: %s", lastError,
@@ -128,19 +107,19 @@ void TcpConn::init() {
 
   clearNagle(sock);
 
-  static int32_t readSize = 0;
-  static int32_t writeSize = 0;
+  int32_t readSize = 0;
+  int32_t writeSize = 0;
   int32_t originalReadSize = readSize;
   readSize = maxSize(sock, SO_SNDBUF, readSize);
   if (originalReadSize != readSize) {
     // This should get logged once at startup and again only if it changes
-    LOGINFO("Using socket send buffer size of %d.", readSize);
+    LOGFINEST("Using socket send buffer size of %d.", readSize);
   }
   int32_t originalWriteSize = writeSize;
   writeSize = maxSize(sock, SO_RCVBUF, writeSize);
   if (originalWriteSize != writeSize) {
     // This should get logged once at startup and again only if it changes
-    LOGINFO("Using socket receive buffer size of %d.", writeSize);
+    LOGFINEST("Using socket receive buffer size of %d.", writeSize);
   }
 
   createSocket(sock);
@@ -148,21 +127,21 @@ void TcpConn::init() {
   connect();
 }
 
-TcpConn::TcpConn() : m_io(nullptr), m_waitSeconds(0), m_maxBuffSizePool(0) {}
-
 TcpConn::TcpConn(const char *ipaddr, uint32_t waitSeconds,
                  int32_t maxBuffSizePool)
     : m_io(nullptr),
       m_addr(ipaddr),
-      m_waitSeconds(waitSeconds),
-      m_maxBuffSizePool(maxBuffSizePool) {}
+      m_waitMilliSeconds(waitSeconds * 1000),
+      m_maxBuffSizePool(maxBuffSizePool),
+      m_chunkSize(getDefaultChunkSize()) {}
 
 TcpConn::TcpConn(const char *hostname, int32_t port, uint32_t waitSeconds,
                  int32_t maxBuffSizePool)
     : m_io(nullptr),
       m_addr(port, hostname),
-      m_waitSeconds(waitSeconds),
-      m_maxBuffSizePool(maxBuffSizePool) {}
+      m_waitMilliSeconds(waitSeconds * 1000),
+      m_maxBuffSizePool(maxBuffSizePool),
+      m_chunkSize(getDefaultChunkSize()) {}
 
 void TcpConn::listen(const char *hostname, int32_t port, uint32_t waitSeconds) {
   ACE_INET_Addr addr(port, hostname);
@@ -216,14 +195,14 @@ void TcpConn::connect(const char *hostname, int32_t port,
                       uint32_t waitSeconds) {
   ACE_INET_Addr addr(port, hostname);
   m_addr = addr;
-  m_waitSeconds = waitSeconds;
+  m_waitMilliSeconds = waitSeconds;
   connect();
 }
 
 void TcpConn::connect(const char *ipaddr, uint32_t waitSeconds) {
   ACE_INET_Addr addr(ipaddr);
   m_addr = addr;
-  m_waitSeconds = waitSeconds;
+  m_waitMilliSeconds = waitSeconds;
   connect();
 }
 
@@ -231,25 +210,18 @@ void TcpConn::connect() {
   GF_DEV_ASSERT(m_io != nullptr);
 
   ACE_INET_Addr ipaddr = m_addr;
-  uint32_t waitSeconds = m_waitSeconds;
+  uint32_t waitMicroSeconds = m_waitMilliSeconds * 1000;
 
   ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
 
-  // passing waittime as microseconds
-  if (DistributedSystem::getSystemProperties()->readTimeoutUnitInMillis()) {
-    waitSeconds = waitSeconds * 1000;
-  } else {
-    waitSeconds = waitSeconds * (1000 * 1000);
-  }
-
   LOGFINER("Connecting plain socket stream to %s:%d waiting %d micro sec",
-           ipaddr.get_host_name(), ipaddr.get_port_number(), waitSeconds);
+           ipaddr.get_host_name(), ipaddr.get_port_number(), waitMicroSeconds);
 
   ACE_SOCK_Connector conn;
   int32_t retVal = 0;
-  if (waitSeconds > 0) {
+  if (waitMicroSeconds > 0) {
     // passing waittime as microseconds
-    ACE_Time_Value wtime(0, waitSeconds);
+    ACE_Time_Value wtime(0, waitMicroSeconds);
     retVal = conn.connect(*m_io, ipaddr, &wtime);
   } else {
     retVal = conn.connect(*m_io, ipaddr);
@@ -258,10 +230,10 @@ void TcpConn::connect() {
     char msg[256];
     int32_t lastError = ACE_OS::last_error();
     if (lastError == ETIME || lastError == ETIMEDOUT) {
-      ACE_OS::snprintf(
-          msg, 256,
-          "TcpConn::connect Attempt to connect timed out after %d seconds.",
-          waitSeconds);
+      ACE_OS::snprintf(msg, 256,
+                       "TcpConn::connect Attempt to connect timed out after %d "
+                       "microseconds.",
+                       waitMicroSeconds);
       //  this is only called by constructor, so we must delete m_io
       GF_SAFE_DELETE(m_io);
       throw TimeoutException(msg);
@@ -269,7 +241,7 @@ void TcpConn::connect() {
     ACE_OS::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
                      lastError, ACE_OS::strerror(lastError));
     //  this is only called by constructor, so we must delete m_io
-	close();
+    close();
     throw GeodeIOException(msg);
   }
   int rc = this->m_io->enable(ACE_NONBLOCK);

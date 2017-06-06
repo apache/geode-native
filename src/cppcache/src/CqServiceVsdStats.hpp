@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CQSERVICEVSDSTATS_H_
-#define GEODE_CQSERVICEVSDSTATS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_CQSERVICEVSDSTATS_H_
+#define GEODE_CQSERVICEVSDSTATS_H_
+
+#include <string>
 
 #include <geode/geode_globals.hpp>
 #include <geode/statistics/Statistics.hpp>
@@ -39,7 +41,8 @@ using util::concurrent::spinlock_mutex;
 class CPPCACHE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
  public:
   /** hold statistics for a cq. */
-  CqServiceVsdStats(const char* cqName = "CqServiceVsdStats");
+  CqServiceVsdStats(statistics::StatisticsFactory* factory,
+                    const std::string& cqName = "CqServiceVsdStats");
 
   /** disable stat collection for this item. */
   virtual ~CqServiceVsdStats();
@@ -108,42 +111,11 @@ class CPPCACHE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
   int32_t m_numCqsOnClientId;
   int32_t m_numCqsClosedId;
   int32_t m_numCqsStoppedId;
+
+  static constexpr const char* STATS_NAME = "CqServiceStatistics";
+  static constexpr const char* STATS_DESC = "Statistics for this cq Service";
 };
 
-class CqServiceStatType {
- private:
-  static spinlock_mutex m_statTypeLock;
-
- public:
-  static CqServiceStatType& getInstance();
-
-  StatisticsType* getStatType();
-
- private:
-  CqServiceStatType();
-  ~CqServiceStatType() = default;
-  CqServiceStatType(const CqServiceStatType&) = delete;
-  CqServiceStatType& operator=(const CqServiceStatType&) = delete;
-
-  StatisticDescriptor* m_stats[5];
-
-  int32_t m_numCqsActiveId;
-  int32_t m_numCqsCreatedId;
-  int32_t m_numCqsOnClientId;
-  int32_t m_numCqsClosedId;
-  int32_t m_numCqsStoppedId;
-
- public:
-  inline int32_t getNumCqsActiveId() { return m_numCqsActiveId; }
-
-  inline int32_t getNumCqsCreatedId() { return m_numCqsCreatedId; }
-
-  inline int32_t getNumCqsOnClientId() { return m_numCqsOnClientId; }
-
-  inline int32_t getNumCqsClosedId() { return m_numCqsClosedId; }
-
-  inline int32_t getNumCqsStoppedId() { return m_numCqsStoppedId; }
-};
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

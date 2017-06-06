@@ -21,6 +21,7 @@
 #include <vcclr.h>
 #include "begin_native.hpp"
 #include <geode/CacheableKey.hpp>
+#include "DataOutputInternal.hpp"
 #include "end_native.hpp"
 
 #include "../Log.hpp"
@@ -76,7 +77,7 @@ namespace apache
           {
             if (storeBytes)//if value is from app 
             {
-              apache::geode::client::DataOutput dataOut;
+              DataOutputInternal dataOut;
               Apache::Geode::Client::DataOutput mg_output(&dataOut, true);
               managedptr->ToData(%mg_output);
 

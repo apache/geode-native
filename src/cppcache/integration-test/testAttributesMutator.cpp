@@ -19,7 +19,8 @@
 
 #include "fw_dunit.hpp"
 #include <geode/GeodeCppCache.hpp>
-#include <CacheRegionHelper.hpp>
+#include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
 
 // this is a test.
 
@@ -58,7 +59,8 @@ DUNIT_TASK(A, CreateAndVerifyExpiry)
 
     // countdown begins... it is ttl so access should not play into it..
     SLEEP(3000);  // sleep for a second, expect value to still be there.
-    auto res = std::dynamic_pointer_cast<CacheableInt32>(Test.m_region->get("one"));
+    auto res =
+        std::dynamic_pointer_cast<CacheableInt32>(Test.m_region->get("one"));
     ASSERT(res->value() == 1, "Expected to find value 1.");
     fflush(stdout);
     SLEEP(5000);  // sleep for 5 more seconds, expect value to be invalid.

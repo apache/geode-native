@@ -33,9 +33,8 @@ class PdxWriterWithTypeCollector : public PdxLocalWriter {
   void initialize();
 
  public:
-  PdxWriterWithTypeCollector();
-
-  PdxWriterWithTypeCollector(DataOutput& output, const char* pdxType);
+  PdxWriterWithTypeCollector(DataOutput& output, const char* pdxType,
+                             PdxTypeRegistryPtr pdxTypeRegistry);
 
   virtual ~PdxWriterWithTypeCollector();
 

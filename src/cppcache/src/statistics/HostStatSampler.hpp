@@ -39,7 +39,7 @@
 using namespace apache::geode::client;
 
 /** @file
-*/
+ */
 #ifndef GEMFIRE_MAX_STATS_FILE_LIMIT
 #define GEMFIRE_MAX_STATS_FILE_LIMIT (1024 * 1024 * 1024)
 #endif
@@ -82,8 +82,9 @@ class CPPCACHE_EXPORT HostStatSampler : public ACE_Task_Base,
    * Constructor:
    */
   HostStatSampler(const char* filePath, int64_t sampleIntervalMs,
-                  StatisticsManager* statMngr, int64_t statFileLimit = 0,
-                  int64_t statDiskSpaceLimit = 0);
+                  StatisticsManager* statMngr, Cache* cache,
+                  const char* durableClientId, const uint32_t durableTimeout,
+                  int64_t statFileLimit = 0, int64_t statDiskSpaceLimit = 0);
 
   /**
    * Adds the pid to the archive file passed to it.
@@ -192,8 +193,8 @@ class CPPCACHE_EXPORT HostStatSampler : public ACE_Task_Base,
   int32_t svc(void);
 
   /**
-  * Method to know whether the sampling thread is running or not.
-  */
+   * Method to know whether the sampling thread is running or not.
+   */
   bool isRunning();
 
   ~HostStatSampler();
@@ -207,12 +208,15 @@ class CPPCACHE_EXPORT HostStatSampler : public ACE_Task_Base,
   volatile bool m_isStatDiskSpaceEnabled;
   StatArchiveWriter* m_archiver;
   StatSamplerStats* m_samplerStats;
+  const char* m_durableClientId;
+  uint32_t m_durableTimeout;
 
   std::string m_archiveFileName;
   int64_t m_archiveFileSizeLimit;
   int64_t m_archiveDiskSpaceLimit;
   int64_t m_sampleRate;
   StatisticsManager* m_statMngr;
+  Cache* m_cache;
 
   int64_t m_pid;
   system_clock::time_point m_startTime;

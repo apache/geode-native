@@ -36,21 +36,24 @@ using namespace apache::geode::statistics;
 /**
  * static member initialization
  */
-StatisticsManager* StatisticsManager::s_singleton = nullptr;
 
 StatisticsManager::StatisticsManager(const char* filePath,
                                      int64_t sampleInterval, bool enabled,
+                                     Cache* cache, const char* durableClientId,
+                                     const uint32_t durableTimeout,
                                      int64_t statFileLimit,
                                      int64_t statDiskSpaceLimit)
     : m_sampler(nullptr), m_adminRegion(nullptr) {
   m_sampleIntervalMs =
       static_cast<int32_t>(sampleInterval) * 1000; /* convert to millis */
   m_newlyAddedStatsList.reserve(16);               // Allocate initial sizes
-  GeodeStatisticsFactory::initInstance(this);
+  m_statisticsFactory =
+      std::unique_ptr<GeodeStatisticsFactory>(new GeodeStatisticsFactory(this));
 
   try {
     if (m_sampler == nullptr && enabled) {
-      m_sampler = new HostStatSampler(filePath, m_sampleIntervalMs, this,
+      m_sampler = new HostStatSampler(filePath, m_sampleIntervalMs, this, cache,
+                                      durableClientId, durableTimeout,
                                       statFileLimit, statDiskSpaceLimit);
       m_sampler->start();
     }
@@ -58,25 +61,6 @@ StatisticsManager::StatisticsManager(const char* filePath,
     delete m_sampler;
     throw;
   }
-}
-
-StatisticsManager* StatisticsManager::initInstance(
-    const char* filePath, int64_t sampleIntervalMs, bool enabled,
-    int64_t statsFileLimit, int64_t statsDiskSpaceLimit) {
-  if (!s_singleton) {
-    s_singleton = new StatisticsManager(filePath, sampleIntervalMs, enabled,
-                                        statsFileLimit, statsDiskSpaceLimit);
-  }
-
-  return s_singleton;
-}
-
-StatisticsManager* StatisticsManager::getExistingInstance() {
-  if (s_singleton) {
-    return s_singleton;
-  }
-
-  return nullptr;
 }
 
 void StatisticsManager::forceSample() {
@@ -115,10 +99,6 @@ StatisticsManager::~StatisticsManager() {
       }
       m_statsList.erase(m_statsList.begin(), m_statsList.end());
     }
-
-    // Clean Factory: clean Type map etc.
-    GeodeStatisticsFactory::clean();
-
   } catch (const Exception& ex) {
     Log::warningCatch("~StatisticsManager swallowing Geode exception", ex);
 
@@ -131,15 +111,6 @@ StatisticsManager::~StatisticsManager() {
     Log::error("~StatisticsManager swallowing unknown exception");
   }
 }
-
-void StatisticsManager::clean() {
-  if (s_singleton != nullptr) {
-    delete s_singleton;
-    s_singleton = nullptr;
-  }
-}
-
-////////////////////// Mutex methods ///////////////////////////
 
 ACE_Recursive_Thread_Mutex& StatisticsManager::getListMutex() {
   return m_statsListLock;

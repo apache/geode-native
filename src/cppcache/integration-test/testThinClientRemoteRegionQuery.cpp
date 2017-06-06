@@ -31,6 +31,8 @@
 #include <geode/Query.hpp>
 #include <geode/QueryService.hpp>
 
+#include "SerializationRegistry.hpp"
+#include "CacheRegionHelper.hpp"
 using namespace apache::geode::client;
 using namespace test;
 using namespace testData;
@@ -83,16 +85,17 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepOnePoolLocator)
   {
+    initClient(true);
     try {
-      Serializable::registerType(Position::createDeserializable);
-      Serializable::registerType(Portfolio::createDeserializable);
+      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      serializationRegistry->addType(Position::createDeserializable);
+      serializationRegistry->addType(Portfolio::createDeserializable);
 
-      Serializable::registerPdxType(PositionPdx::createDeserializable);
-      Serializable::registerPdxType(PortfolioPdx::createDeserializable);
+      serializationRegistry->addPdxType(PositionPdx::createDeserializable);
+      serializationRegistry->addPdxType(PortfolioPdx::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
-    initClient(true);
     createPool(poolNames[0], locHostPort, nullptr, 0, true);
     createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
     createRegionAndAttachPool(qRegionNames[1], USE_ACK, poolNames[0]);

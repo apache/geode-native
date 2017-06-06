@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_EXPMAPENTRY_H_
-#define GEODE_EXPMAPENTRY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_EXPMAPENTRY_H_
+#define GEODE_EXPMAPENTRY_H_
 
 #include <geode/geode_globals.hpp>
 #include "MapEntry.hpp"
@@ -49,7 +49,9 @@ class CPPCACHE_EXPORT ExpMapEntry : public MapEntryImpl,
   inline explicit ExpMapEntry(bool noInit)
       : MapEntryImpl(true), ExpEntryProperties(true) {}
 
-  inline ExpMapEntry(const CacheableKeyPtr& key) : MapEntryImpl(key) {}
+  inline ExpMapEntry(ExpiryTaskManager* expiryTaskManager,
+                     const CacheableKeyPtr& key)
+      : MapEntryImpl(key), ExpEntryProperties(expiryTaskManager) {}
 
  private:
   // disabled
@@ -69,7 +71,9 @@ class CPPCACHE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
  protected:
   inline explicit VersionedExpMapEntry(bool noInit) : ExpMapEntry(true) {}
 
-  inline VersionedExpMapEntry(const CacheableKeyPtr& key) : ExpMapEntry(key) {}
+  inline VersionedExpMapEntry(ExpiryTaskManager* expiryTaskManager,
+                              const CacheableKeyPtr& key)
+      : ExpMapEntry(expiryTaskManager, key) {}
 
  private:
   // disabled
@@ -81,14 +85,12 @@ typedef std::shared_ptr<VersionedExpMapEntry> VersionedExpMapEntryPtr;
 
 class CPPCACHE_EXPORT ExpEntryFactory : public EntryFactory {
  public:
-  static ExpEntryFactory* singleton;
-  static void init();
-
-  ExpEntryFactory() {}
+  using EntryFactory::EntryFactory;
 
   virtual ~ExpEntryFactory() {}
 
-  virtual void newMapEntry(const CacheableKeyPtr& key,
+  virtual void newMapEntry(ExpiryTaskManager* expiryTaskManager,
+                           const CacheableKeyPtr& key,
                            MapEntryImplPtr& result) const;
 };
 }  // namespace client

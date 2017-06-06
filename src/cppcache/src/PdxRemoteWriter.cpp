@@ -27,32 +27,15 @@
 namespace apache {
 namespace geode {
 namespace client {
-/* adongre
- * Coverity - II
- * Non-static class member "m_currentDataIdx" is not initialized in this
- * constructor nor in any functions that it calls.
- * Non-static class member "m_preserveDataIdx" is not initialized in this
- * constructor nor in any functions that it calls.
- * Non-static class member "m_remoteTolocalMapLength" is not initialized in this
- * constructor nor in any functions that it calls.
- * Fix : Initialize the members
- */
-PdxRemoteWriter::PdxRemoteWriter()
-    : m_preserveDataIdx(0), m_currentDataIdx(-1), m_remoteTolocalMapLength(0) {
-  if (m_pdxType != nullptr) {
-    m_remoteTolocalMap =
-        m_pdxType->getRemoteToLocalMap();  // COVERITY --> 29286 Uninitialized
-                                           // pointer field
-    m_remoteTolocalMapLength = m_pdxType->getTotalFields();
-  }
-}
 
 PdxRemoteWriter::PdxRemoteWriter(DataOutput& output, PdxTypePtr pdxType,
-                                 PdxRemotePreservedDataPtr preservedData)
-    : PdxLocalWriter(output, pdxType),
+                                 PdxRemotePreservedDataPtr preservedData,
+                                 PdxTypeRegistryPtr pdxTypeRegistry)
+    : PdxLocalWriter(output, pdxType, pdxTypeRegistry),
       m_preserveDataIdx(0),
       m_currentDataIdx(-1),
-      m_remoteTolocalMapLength(0) {
+      m_remoteTolocalMapLength(0),
+      m_pdxTypeRegistry(pdxTypeRegistry) {
   m_preserveData = preservedData;
   if (m_pdxType != nullptr) {
     m_remoteTolocalMap = m_pdxType->getRemoteToLocalMap();
@@ -63,11 +46,13 @@ PdxRemoteWriter::PdxRemoteWriter(DataOutput& output, PdxTypePtr pdxType,
   initialize();
 }
 
-PdxRemoteWriter::PdxRemoteWriter(DataOutput& output, const char* pdxClassName)
-    : PdxLocalWriter(output, nullptr, pdxClassName),
+PdxRemoteWriter::PdxRemoteWriter(DataOutput& output, const char* pdxClassName,
+                                 PdxTypeRegistryPtr pdxTypeRegistry)
+    : PdxLocalWriter(output, nullptr, pdxClassName, pdxTypeRegistry),
       m_preserveDataIdx(0),
       m_currentDataIdx(-1),
-      m_remoteTolocalMapLength(0) {
+      m_remoteTolocalMapLength(0),
+      m_pdxTypeRegistry(pdxTypeRegistry) {
   m_preserveData = nullptr;
   if (m_pdxType != nullptr) {
     m_remoteTolocalMapLength = m_pdxType->getTotalFields();
@@ -130,7 +115,7 @@ void PdxRemoteWriter::writePreserveData() {
 void PdxRemoteWriter::initialize() {
   // this is default case
   if (m_preserveData == nullptr) {
-    m_pdxType = PdxTypeRegistry::getLocalPdxType(m_pdxClassName);
+    m_pdxType = getPdxTypeRegistry()->getLocalPdxType(m_pdxClassName);
   }
 }
 
@@ -323,6 +308,11 @@ PdxWriterPtr PdxRemoteWriter::writeArrayOfByteArrays(const char* fieldName,
                                          elementLength);
   return shared_from_this();
 }
+
+PdxTypeRegistryPtr PdxRemoteWriter::getPdxTypeRegistry() const {
+  return m_pdxTypeRegistry;
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -61,7 +61,8 @@ class RegionWrapper {
     int tries = 0;
     int val = 0;
     do {
-      valPtr = std::dynamic_pointer_cast<CacheableString>(m_regionPtr->get(keyPtr));
+      valPtr =
+          std::dynamic_pointer_cast<CacheableString>(m_regionPtr->get(keyPtr));
       ASSERT(valPtr != nullptr, "value should not be null.");
       val = atoi(valPtr->asChar());
       SLEEP(100);
@@ -121,8 +122,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(s1p1, CreateRegionNoCache)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locHostPort, "ServerGroup1",
-                       nullptr, 0, true);
+    initClientWithPool(true, "__TEST_POOL1__", locHostPort, nullptr, nullptr, 0,
+                       true);
     LOG("Creating region in s1p1-pusher, no-ack, no-cache, no-listener");
     getHelper()->createPooledRegion(REGIONNAME, false, locHostPort,
                                     "__TEST_POOL1__", true, true);
@@ -132,8 +133,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(s1p2, CreateNoCacheWListener)
   {
     LOG("Creating region in s1p2-listener, no-ack, no-cache, with-listener");
-    initClientWithPool(true, "__TEST_POOL1__", locHostPort, "ServerGroup1",
-                       nullptr, 0, true);
+    initClientWithPool(true, "__TEST_POOL1__", locHostPort, nullptr, nullptr, 0,
+                       true);
     listener = std::make_shared<TallyListener>();
     getHelper()->createPooledRegion(REGIONNAME, false, locHostPort,
                                     "__TEST_POOL1__", true, true, 0, 0, 0, 0, 0,
@@ -145,8 +146,8 @@ DUNIT_TASK_DEFINITION(s2p1, CreateRegionCacheMirror)
   {
     LOG("Creating region in s2p1-storage, no-ack, cache, no-interestlist, "
         "no-listener");
-    initClientWithPool(true, "__TEST_POOL1__", locHostPort, "ServerGroup1",
-                       nullptr, 0, true);
+    initClientWithPool(true, "__TEST_POOL1__", locHostPort, nullptr, nullptr, 0,
+                       true);
     getHelper()->createPooledRegion(REGIONNAME, false, locHostPort,
                                     "__TEST_POOL1__", true, true);
   }
@@ -156,8 +157,8 @@ DUNIT_TASK_DEFINITION(s2p2, CreateRegionCache)
   {
     LOG("Creating region in s2p2-subset, no-ack, no-mirror, cache, "
         "no-interestlist, with-listener");
-    initClientWithPool(true, "__TEST_POOL1__", locHostPort, "ServerGroup1",
-                       nullptr, 0, true);
+    initClientWithPool(true, "__TEST_POOL1__", locHostPort, nullptr, nullptr, 0,
+                       true);
     listener = std::make_shared<TallyListener>();
     getHelper()->createPooledRegion(REGIONNAME, false, locHostPort,
                                     "__TEST_POOL1__", true, true, 0, 0, 0, 0, 0,

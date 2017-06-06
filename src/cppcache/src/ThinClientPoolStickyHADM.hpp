@@ -29,29 +29,9 @@ class ThinClientPoolStickyHADM : public ThinClientPoolHADM {
   ThinClientPoolStickyHADM(const char* name, PoolAttributesPtr poolAttrs,
                            TcrConnectionManager& connManager)
       : ThinClientPoolHADM(name, poolAttrs, connManager) {
-    // m_manager = new ThinClientStickyManager( this );
     m_sticky = true;
   }
-  virtual ~ThinClientPoolStickyHADM() {
-    /*m_manager->closeAllStickyConnections();
-    delete m_manager; m_manager = nullptr;*/
-  }
-  /*bool canItBeDeletedNoImpl(TcrConnection* conn );
-protected:
-  virtual void cleanStickyConnections(volatile bool& isRunning);
-  virtual TcrConnection* getConnectionFromQueueW( GfErrType* error,
-    std::set< ServerLocation >&, bool isBGThread, TcrMessage & request, int8_t&
-version, bool & dummy, const BucketServerLocationPtr& serverLocation = nullptr
-);
-  virtual void putInQueue(TcrConnection* conn,  bool isBGThread, bool
-isTransaction = false );
-  virtual void setStickyNull( bool isBGThread );
-  virtual bool canItBeDeleted(TcrConnection* conn);
-  virtual void releaseThreadLocalConnection();
-  virtual void setThreadLocalConnection(TcrConnection* conn);
-*/
-  // virtual void cleanStickyConnections(volatile bool& isRunning);
-  // ThinClientStickyManager* m_manager;
+  virtual ~ThinClientPoolStickyHADM() {}
 };
 typedef std::shared_ptr<ThinClientPoolStickyHADM> ThinClientPoolStickyHADMPtr;
 }  // namespace client

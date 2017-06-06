@@ -42,15 +42,16 @@ This is replaced by the connect-timeout (times 3) system property for SR # 6525.
 */
 const char* TcrEndpoint::NC_Notification = "NC Notification";
 
-TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cache,
+TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
                          ACE_Semaphore& failoverSema,
                          ACE_Semaphore& cleanupSema,
                          ACE_Semaphore& redundancySema, ThinClientBaseDM* DM,
                          bool isMultiUserMode)
     : m_needToConnectInLock(false),
       m_connectLockCond(m_connectLock),
-      m_maxConnections(
-          DistributedSystem::getSystemProperties()->javaConnectionPoolSize()),
+      m_maxConnections(cacheImpl->getDistributedSystem()
+                           .getSystemProperties()
+                           .javaConnectionPoolSize()),
       m_notifyConnection(0),
       m_notifyReceiver(0),
       m_numRegionListener(0),
@@ -67,7 +68,7 @@ TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cache,
       m_numRegions(0),
       m_pingTimeouts(0),
       m_notifyCount(0),
-      m_cache(cache),
+      m_cacheImpl(cacheImpl),
       m_failoverSema(failoverSema),
       m_cleanupSema(cleanupSema),
       m_notificationCleanupSema(0),
@@ -115,7 +116,9 @@ TcrEndpoint::~TcrEndpoint() {
 
 inline bool TcrEndpoint::needtoTakeConnectLock() {
 #ifdef __linux
-  if (DistributedSystem::getSystemProperties()->connectWaitTimeout() > 0) {
+  if (m_cacheImpl->getDistributedSystem()
+          .getSystemProperties()
+          .connectWaitTimeout() > 0) {
     return m_needToConnectInLock;  // once pipe or other socket error will take
                                    // lock to connect.
   }
@@ -130,9 +133,10 @@ GfErrType TcrEndpoint::createNewConnectionWL(TcrConnection*& newConn,
                                              bool isSecondary,
                                              uint32_t connectTimeout) {
   LOGFINE("TcrEndpoint::createNewConnectionWL");
-  uint32_t connectWaitTimeout =
-      DistributedSystem::getSystemProperties()->connectWaitTimeout() *
-      1000;  // need to change
+  uint32_t connectWaitTimeout = m_cacheImpl->getDistributedSystem()
+                                    .getSystemProperties()
+                                    .connectWaitTimeout() *
+                                1000;  // need to change
   ACE_Time_Value interval(0, connectWaitTimeout);
   ACE_Time_Value stopAt(ACE_OS::gettimeofday());
   stopAt += interval;
@@ -148,7 +152,8 @@ GfErrType TcrEndpoint::createNewConnectionWL(TcrConnection*& newConn,
     if (ret != -1) {  // got lock
       try {
         LOGFINE("TcrEndpoint::createNewConnectionWL got lock");
-        newConn = new TcrConnection(m_connected);
+        newConn =
+            new TcrConnection(m_cacheImpl->tcrConnectionManager(), m_connected);
         newConn->InitTcrConnection(this, m_name.c_str(), m_ports,
                                    isClientNotification, isSecondary,
                                    connectTimeout);
@@ -204,7 +209,8 @@ GfErrType TcrEndpoint::createNewConnection(
     try {
       if (newConn == nullptr) {
         if (!needtoTakeConnectLock() || !appThreadRequest) {
-          newConn = new TcrConnection(m_connected);
+          newConn = new TcrConnection(m_cacheImpl->tcrConnectionManager(),
+                                      m_connected);
           bool authenticate = newConn->InitTcrConnection(
               this, m_name.c_str(), m_ports, isClientNotification, isSecondary,
               connectTimeout);
@@ -231,6 +237,10 @@ GfErrType TcrEndpoint::createNewConnection(
           LOGFINE("Sending update notification message to endpoint %s",
                   m_name.c_str());
           TcrMessageUpdateClientNotification updateNotificationMsg(
+              newConn->getConnectionManager()
+                  .getCacheImpl()
+                  ->getCache()
+                  ->createDataOutput(),
               static_cast<int32_t>(newConn->getPort()));
           newConn->send(updateNotificationMsg.getMsgData(),
                         updateNotificationMsg.getMsgLength());
@@ -290,12 +300,12 @@ void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
   LOGDEBUG(
       "TcrEndpoint::authenticateEndpoint m_isAuthenticated  = %d "
       "this->m_baseDM = %d",
-      m_isAuthenticated, this->m_baseDM);
-  if (!m_isAuthenticated && this->m_baseDM) {
+      m_isAuthenticated, m_baseDM);
+  if (!m_isAuthenticated && m_baseDM) {
     this->setConnected();
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpointAuthenticationLock);
     GfErrType err = GF_NOERR;
-    PropertiesPtr creds = this->getCredentials();
+    PropertiesPtr creds = getCredentials();
 
     if (creds != nullptr) {
       LOGDEBUG("TcrEndpoint::authenticateEndpoint got creds from app = %d",
@@ -304,7 +314,8 @@ void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
       LOGDEBUG("TcrEndpoint::authenticateEndpoint no creds from app ");
     }
 
-    TcrMessageUserCredential request(creds, this->m_baseDM);
+    TcrMessageUserCredential request(
+        m_cacheImpl->getCache()->createDataOutput(), creds, m_baseDM);
 
     LOGDEBUG("request is created");
     TcrMessageReply reply(true, this->m_baseDM);
@@ -339,27 +350,17 @@ void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
 }
 
 PropertiesPtr TcrEndpoint::getCredentials() {
-  PropertiesPtr tmpSecurityProperties =
-      DistributedSystem::getSystemProperties()->getSecurityProperties();
+  const auto& distributedSystem = m_cacheImpl->getDistributedSystem();
+  const auto& tmpSecurityProperties =
+      distributedSystem.getSystemProperties().getSecurityProperties();
 
-  AuthInitializePtr authInitialize = DistributedSystem::m_impl->getAuthLoader();
-
-  if (authInitialize != nullptr) {
+  if (const auto& authInitialize = distributedSystem.m_impl->getAuthLoader()) {
     LOGFINER(
         "Acquired handle to AuthInitialize plugin, "
         "getting credentials for %s",
         m_name.c_str());
-    /* adongre
-     * CID 28899: Copy into fixed size buffer (STRING_OVERFLOW)
-     * You might overrun the 100 byte fixed-size string "tmpEndpoint" by copying
-     * the return value of
-     * "stlp_std::basic_string<char, stlp_std::char_traits<char>,
-     * stlp_std::allocator<char> >::c_str() const" without checking the length.
-     */
-    // char tmpEndpoint[100] = { '\0' } ;
-    // strcpy(tmpEndpoint, m_name.c_str());
-    PropertiesPtr tmpAuthIniSecurityProperties = authInitialize->getCredentials(
-        tmpSecurityProperties, /*tmpEndpoint*/ m_name.c_str());
+    const auto& tmpAuthIniSecurityProperties =
+        authInitialize->getCredentials(tmpSecurityProperties, m_name.c_str());
     LOGFINER("Done getting credentials");
     return tmpAuthIniSecurityProperties;
   }
@@ -372,9 +373,10 @@ ServerQueueStatus TcrEndpoint::getFreshServerQueueStatus(
   TcrConnection* newConn;
   ServerQueueStatus status = NON_REDUNDANT_SERVER;
 
-  err = createNewConnection(
-      newConn, false, false,
-      DistributedSystem::getSystemProperties()->connectTimeout());
+  err = createNewConnection(newConn, false, false,
+                            m_cacheImpl->getDistributedSystem()
+                                .getSystemProperties()
+                                .connectTimeout());
   if (err == GF_NOERR) {
     status = newConn->getServerQueueStatus(queueSize);
 
@@ -438,10 +440,11 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
               m_name.c_str());
       for (int connNum = 0; connNum < maxConnections; ++connNum) {
         TcrConnection* newConn;
-        if ((err = createNewConnection(
-                 newConn, false, false,
-                 DistributedSystem::getSystemProperties()->connectTimeout(), 0,
-                 m_connected)) != GF_NOERR) {
+        if ((err = createNewConnection(newConn, false, false,
+                                       m_cacheImpl->getDistributedSystem()
+                                           .getSystemProperties()
+                                           .connectTimeout(),
+                                       0, m_connected)) != GF_NOERR) {
           m_connected = false;
           m_isActiveEndpoint = false;
           closeConnections();
@@ -471,10 +474,12 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
       // setup notification channel for the first region
       ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notifyReceiverLock);
       if (m_numRegionListener == 0) {
-        if ((err = createNewConnection(
-                 m_notifyConnection, true, isSecondary,
-                 DistributedSystem::getSystemProperties()->connectTimeout() * 3,
-                 0)) != GF_NOERR) {
+        if ((err = createNewConnection(m_notifyConnection, true, isSecondary,
+                                       m_cacheImpl->getDistributedSystem()
+                                               .getSystemProperties()
+                                               .connectTimeout() *
+                                           3,
+                                       0)) != GF_NOERR) {
           m_connected = false;
           m_isActiveEndpoint = false;
           closeConnections();
@@ -545,7 +550,8 @@ void TcrEndpoint::pingServer(ThinClientPoolDM* poolDM) {
   }
 
   if (!m_msgSent && !m_pingSent) {
-    TcrMessagePing* pingMsg = TcrMessage::getPingMessage();
+    TcrMessagePing* pingMsg =
+        TcrMessage::getPingMessage(m_cacheImpl->getCache());
     TcrMessageReply reply(true, nullptr);
     LOGFINEST("Sending ping message to endpoint %s", m_name.c_str());
     GfErrType error;
@@ -584,19 +590,17 @@ void TcrEndpoint::pingServer(ThinClientPoolDM* poolDM) {
 }
 
 bool TcrEndpoint::checkDupAndAdd(EventIdPtr eventid) {
-  return m_cache->tcrConnectionManager().checkDupAndAdd(eventid);
+  return m_cacheImpl->tcrConnectionManager().checkDupAndAdd(eventid);
 }
 
 int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
-  char* data = 0;
-
   LOGFINE("Started subscription channel for endpoint %s", m_name.c_str());
   while (isRunning) {
     TcrMessageReply* msg = nullptr;
     try {
       size_t dataLen;
       ConnErrType opErr = CONN_NOERR;
-      data = m_notifyConnection->receive(&dataLen, &opErr, 5);
+      auto data = m_notifyConnection->receive(&dataLen, &opErr, 5);
 
       if (opErr == CONN_IOERR) {
         // Endpoint is disconnected, this exception is expected
@@ -616,11 +620,12 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
       }
 
       if (data) {
-        msg = new TcrMessageReply(true, nullptr);
+        msg = new TcrMessageReply(true, m_baseDM);
         msg->initCqMap();
         msg->setData(data, static_cast<int32_t>(dataLen),
-                     this->getDistributedMemberID());
-        data = nullptr;  // memory is released by TcrMessage setData().
+                     this->getDistributedMemberID(),
+                     *(m_cacheImpl->getSerializationRegistry()),
+                     *(m_cacheImpl->getMemberListForVersionStamp()));
         handleNotificationStats(static_cast<int64_t>(dataLen));
         LOGDEBUG("receive notification %d", msg->getMessageType());
 
@@ -644,7 +649,7 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
           if (msg->getMessageType() != TcrMessage::CLIENT_MARKER) {
             const std::string& regionFullPath1 = msg->getRegionName();
             RegionPtr region1;
-            m_cache->getRegion(regionFullPath1.c_str(), region1);
+            m_cacheImpl->getRegion(regionFullPath1.c_str(), region1);
             if (region1 != nullptr &&
                 !static_cast<ThinClientRegion*>(region1.get())
                      ->getDistMgr()
@@ -670,7 +675,7 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
 
         if (isMarker) {
           LOGFINE("Got a marker message on endpont %s", m_name.c_str());
-          m_cache->processMarker();
+          m_cacheImpl->processMarker();
           processMarker();
           GF_SAFE_DELETE(msg);
         } else {
@@ -678,14 +683,14 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
           {
             const std::string& regionFullPath = msg->getRegionName();
             RegionPtr region;
-            m_cache->getRegion(regionFullPath.c_str(), region);
+            m_cacheImpl->getRegion(regionFullPath.c_str(), region);
             if (region != nullptr) {
               static_cast<ThinClientRegion*>(region.get())
                   ->receiveNotification(msg);
             } else {
               LOGWARN(
                   "Notification for region %s that does not exist in "
-                  "client cache.",
+                  "client cacheImpl.",
                   regionFullPath.c_str());
             }
           } else {
@@ -842,13 +847,16 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
     }
     size_t dataLen;
     LOGDEBUG("sendRequestConn: calling sendRequest");
-    char* data = conn->sendRequest(
-        request.getMsgData(), request.getMsgLength(), &dataLen,
-        request.getTimeout(), reply.getTimeout(), request.getMessageType());
+    auto data = conn->sendRequest(request.getMsgData(), request.getMsgLength(),
+                                  &dataLen, request.getTimeout(),
+                                  reply.getTimeout(), request.getMessageType());
     reply.setMessageTypeRequest(type);
-    reply.setData(data, static_cast<int32_t>(dataLen),
-                  this->getDistributedMemberID());  // memory is released by
-                                                    // TcrMessage setData().
+    reply.setData(
+        data, static_cast<int32_t>(dataLen), this->getDistributedMemberID(),
+        *(m_cacheImpl->getSerializationRegistry()),
+        *(m_cacheImpl
+              ->getMemberListForVersionStamp()));  // memory is released by
+                                                   // TcrMessage setData().
   }
 
   // reset idle timeout of the connection for pool connection manager
@@ -923,10 +931,11 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
           LOGFINE(
               "Creating a new connection when connection-pool-size system "
               "property set to 0");
-          if ((error =
-                   createNewConnection(conn, false, false,
-                                       DistributedSystem::getSystemProperties()
-                                           ->connectTimeout())) != GF_NOERR) {
+          if ((error = createNewConnection(conn, false, false,
+                                           m_cacheImpl->getDistributedSystem()
+                                               .getSystemProperties()
+                                               .connectTimeout())) !=
+              GF_NOERR) {
             epFailure = true;
             continue;
           }
@@ -940,11 +949,12 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
       createNewConn = false;
       if (!m_connected) {
         return GF_NOTCON;
-      } else if ((error = createNewConnection(
-                      conn, false, false,
-                      DistributedSystem::getSystemProperties()
-                          ->connectTimeout(),
-                      0, true)) != GF_NOERR) {
+      } else if ((error =
+                      createNewConnection(conn, false, false,
+                                          m_cacheImpl->getDistributedSystem()
+                                              .getSystemProperties()
+                                              .connectTimeout(),
+                                          0, true)) != GF_NOERR) {
         epFailure = true;
         continue;
       }
@@ -1227,8 +1237,9 @@ void TcrEndpoint::closeConnection(TcrConnection*& conn) {
 void TcrEndpoint::closeConnections() {
   m_opConnections.close();
   m_ports.clear();
-  m_maxConnections =
-      DistributedSystem::getSystemProperties()->javaConnectionPoolSize();
+  m_maxConnections = m_cacheImpl->getDistributedSystem()
+                         .getSystemProperties()
+                         .javaConnectionPoolSize();
 }
 
 /*
@@ -1245,7 +1256,7 @@ void TcrEndpoint::closeNotification() {
   LOGFINEST("Closing subscription channel for endpoint %s", m_name.c_str());
   m_notifyConnection->close();
   m_notifyReceiver->stopNoblock();
-  TcrConnectionManager& tccm = m_cache->tcrConnectionManager();
+  TcrConnectionManager& tccm = m_cacheImpl->tcrConnectionManager();
   tccm.addNotificationForDeletion(m_notifyReceiver, m_notifyConnection,
                                   m_notificationCleanupSema);
   m_notifyCount++;
@@ -1328,11 +1339,11 @@ void TcrEndpoint::setServerQueueStatus(ServerQueueStatus queueStatus,
 
 bool TcrEndpoint::isQueueHosted() { return m_isQueueHosted; }
 void TcrEndpoint::processMarker() {
-  m_cache->tcrConnectionManager().processMarker();
+  m_cacheImpl->tcrConnectionManager().processMarker();
 }
 
 QueryServicePtr TcrEndpoint::getQueryService() {
-  return m_cache->getQueryService(true);
+  return m_cacheImpl->getQueryService(true);
 }
 void TcrEndpoint::sendRequestForChunkedResponse(const TcrMessage& request,
                                                 TcrMessageReply& reply,

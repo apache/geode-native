@@ -64,13 +64,12 @@ GfErrType TcrPoolEndPoint::registerDM(bool clientNotification, bool isSecondary,
   GfErrType err = GF_NOERR;
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_dm->getPoolLock());
   ACE_Guard<ACE_Recursive_Thread_Mutex> guardQueueHosted(getQueueHostedMutex());
-
+  auto& sysProp = m_cacheImpl->getDistributedSystem().getSystemProperties();
   if (!connected()) {
     TcrConnection* newConn;
-    if ((err = createNewConnection(
-             newConn, false, false,
-             DistributedSystem::getSystemProperties()->connectTimeout(), 0,
-             connected())) != GF_NOERR) {
+    if ((err = createNewConnection(newConn, false, false,
+                                   sysProp.connectTimeout(), 0, connected())) !=
+        GF_NOERR) {
       setConnected(false);
       return err;
     }
@@ -85,10 +84,9 @@ GfErrType TcrPoolEndPoint::registerDM(bool clientNotification, bool isSecondary,
       name().c_str());
 
   if (m_numRegionListener == 0) {
-    if ((err = createNewConnection(
-             m_notifyConnection, true, isSecondary,
-             DistributedSystem::getSystemProperties()->connectTimeout() * 3,
-             0)) != GF_NOERR) {
+    if ((err = createNewConnection(m_notifyConnection, true, isSecondary,
+                                   sysProp.connectTimeout() * 3, 0)) !=
+        GF_NOERR) {
       setConnected(false);
       LOGWARN("Failed to start subscription channel for endpoint %s",
               name().c_str());

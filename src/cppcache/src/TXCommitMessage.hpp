@@ -32,14 +32,14 @@ _GF_PTR_DEF_(TXCommitMessage, TXCommitMessagePtr);
 
 class TXCommitMessage : public apache::geode::client::Cacheable {
  public:
-  TXCommitMessage();
+  TXCommitMessage(MemberListForVersionStamp & memberListForVersionStamp);
   virtual ~TXCommitMessage();
 
   virtual Serializable* fromData(DataInput& input);
   virtual void toData(DataOutput& output) const;
   virtual int32_t classId() const;
   int8_t typeId() const;
-  static Serializable* create();
+  static Serializable* create(MemberListForVersionStamp & memberListForVersionStamp);
   //	VectorOfEntryEvent getEvents(Cache* cache);
 
   void apply(Cache* cache);
@@ -47,7 +47,7 @@ class TXCommitMessage : public apache::geode::client::Cacheable {
  private:
   // UNUSED int32_t m_processorId;
   bool isAckRequired();
-
+  MemberListForVersionStamp & m_memberListForVersionStamp;
   std::vector<RegionCommitPtr> m_regions;
 };
 }  // namespace client

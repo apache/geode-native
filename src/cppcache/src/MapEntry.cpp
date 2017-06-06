@@ -14,20 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "MapEntry.hpp"
 #include "MapEntryT.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
-EntryFactory* EntryFactory::singleton = nullptr;
 MapEntryPtr MapEntry::MapEntry_NullPointer(nullptr);
 
-/**
- * @brief called when library is initialized... see CppCacheLibrary.
- */
-void EntryFactory::init() { singleton = new EntryFactory(); }
-
-void EntryFactory::newMapEntry(const CacheableKeyPtr& key,
+void EntryFactory::newMapEntry(ExpiryTaskManager* expiryTaskManager,
+                               const CacheableKeyPtr& key,
                                MapEntryImplPtr& result) const {
   if (m_concurrencyChecksEnabled) {
     result = MapEntryT<VersionedMapEntryImpl, 0, 0>::create(key);
@@ -35,3 +33,7 @@ void EntryFactory::newMapEntry(const CacheableKeyPtr& key,
     result = MapEntryT<MapEntryImpl, 0, 0>::create(key);
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

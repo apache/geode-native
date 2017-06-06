@@ -21,6 +21,7 @@
 
 #include "begin_native.hpp"
 #include <geode/Properties.hpp>
+#include "SerializationRegistry.hpp"
 #include "end_native.hpp"
 
 #include "IGeodeSerializable.hpp"
@@ -31,7 +32,6 @@
 #include "native_shared_ptr.hpp"
 #include "impl/SafeConvert.hpp"
 #include "Serializable.hpp"
-#include "native_shared_ptr.hpp"
 
 using namespace System;
 using namespace System::Runtime::Serialization;
@@ -71,27 +71,29 @@ namespace Apache
       /// or an integer.
       /// </summary>
       public ref class Properties sealed
-        : public IGeodeSerializable,
-        public ISerializable
+        : public IGeodeSerializable //,public ISerializable
       {
       public:
 
         /// <summary>
         /// Default constructor: returns an empty collection.
         /// </summary>
-        inline Properties( )
+         inline Properties()
         : Properties(native::Properties::create())
-        {}
+        {
+        
+        }
 
         /// <summary>
         /// Factory method to create an empty collection of properties.
         /// </summary>
         /// <returns>empty collection of properties</returns>
         generic<class TPropKey, class TPropValue>
-        inline static Properties<TPropKey, TPropValue>^ Create( )
+        inline static Properties<TPropKey, TPropValue>^ Create()
         {
-          return gcnew Properties<TPropKey, TPropValue>( );
+          return gcnew Properties<TPropKey, TPropValue>();
         }
+
 
         /// <summary>
         /// Return the value for the given key, or NULL if not found. 
@@ -204,15 +206,15 @@ namespace Apache
 
         // ISerializable members
 
-        virtual void GetObjectData( SerializationInfo^ info,
-          StreamingContext context );
+        //virtual void GetObjectData( SerializationInfo^ info,
+        //  StreamingContext context);
 
         // End: ISerializable members
 
       protected:
 
         // For deserialization using the .NET serialization (ISerializable)
-        Properties( SerializationInfo^ info, StreamingContext context );
+        //Properties(SerializationInfo^ info, StreamingContext context, native::SerializationRegistryPtr serializationRegistry);
 
 
       internal:
@@ -237,9 +239,9 @@ namespace Apache
           return m_nativeptr->get_shared_ptr();
         }
 
-        inline static IGeodeSerializable^ CreateDeserializable( )
+        inline static IGeodeSerializable^ CreateDeserializable()
         {
-          return Create<String^, String^>();
+          return Create<TPropKey, TPropValue>();
         }
 
       private:
@@ -283,6 +285,19 @@ namespace Apache
         Apache::Geode::Client::PropertyVisitorGeneric<TPropKey, TPropValue>^ m_visitor;
 
       };
+
+  /*    ref class PropertiesFactory {
+      public:
+          PropertiesFactory(native::SerializationRegistryPtr serializationRegistry)
+          {
+             m_serializationRegistry = gcnew native_shared_ptr<native::SerializationRegistry>(serializationRegistry);
+          }
+          IGeodeSerializable^ CreateDeserializable() {
+            return Properties<String^, String^>::CreateDeserializable(m_serializationRegistry->get_shared_ptr());
+          }
+      private:
+        native_shared_ptr<native::SerializationRegistry>^  m_serializationRegistry;
+        };*/
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

@@ -86,28 +86,28 @@ class CPPCACHE_EXPORT ProxyCache
   virtual RegionPtr getRegion(const char* path);
 
   /**
-  * Gets the QueryService from which a new Query can be obtained.
-  *
-  * @returns A smart pointer to the QueryService.
-  */
+   * Gets the QueryService from which a new Query can be obtained.
+   *
+   * @returns A smart pointer to the QueryService.
+   */
   virtual QueryServicePtr getQueryService();
 
   /**
-  * Returns a set of root regions in the cache. This set is a snapshot and
-  * is not backed by the Cache. The vector passed in is cleared and the
-  * regions are added to it.
-  *
-  * @param regions the returned set of
-  * regions
-  */
+   * Returns a set of root regions in the cache. This set is a snapshot and
+   * is not backed by the Cache. The vector passed in is cleared and the
+   * regions are added to it.
+   *
+   * @param regions the returned set of
+   * regions
+   */
   virtual void rootRegions(VectorOfRegion& regions);
 
   /**
-    * @brief destructor
-    */
+   * @brief destructor
+   */
   virtual ~ProxyCache();
 
-  ProxyCache(PropertiesPtr credentials, PoolPtr pool);
+  ProxyCache(PropertiesPtr credentials, PoolPtr pool, CacheImpl* cacheImpl);
 
   /**
    * Returns a factory that can create a {@link PdxInstance}.
@@ -126,6 +126,7 @@ class CPPCACHE_EXPORT ProxyCache
   UserAttributesPtr m_userAttributes;
   bool m_isProxyCacheClosed;
   QueryServicePtr m_remoteQueryService;
+  CacheImpl* m_cacheImpl;
   friend class Pool;
   friend class ProxyRegion;
   friend class ProxyRemoteQueryService;
@@ -134,6 +135,7 @@ class CPPCACHE_EXPORT ProxyCache
   friend class FunctionServiceImpl;
   friend class FunctionService;
   friend class GuardUserAttribures;
+  friend class CacheRegionHelper;
 };
 }  // namespace client
 }  // namespace geode

@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
     LOGINFO("Created the Geode Cache");
 
     // Create Poolfactory with endpoint and then create pool using poolfactory.
-    PoolFactoryPtr pfact = PoolManager::createFactory();
+    PoolFactoryPtr pfact = cachePtr->getPoolManager().createFactory();
     pfact->addServer("localhost", 40404);
     PoolPtr pptr = pfact->create("examplePool");
 

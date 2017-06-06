@@ -16,6 +16,10 @@
  */
 
 #pragma once
+#include "begin_native.hpp"
+#include "CachePerfStats.hpp"
+#include "SerializationRegistry.hpp"
+#include "end_native.hpp"
 
 #include "../IPdxInstance.hpp"
 #include "../IPdxSerializable.hpp"
@@ -64,11 +68,13 @@ namespace Apache
 
 
           //DataInput^ m_dataInput;
+          CachePerfStats* m_cachePerfStats;
           System::Byte* m_buffer;
           int m_bufferLength;
           int m_typeId;
           bool m_own;
           PdxType^ m_pdxType;
+          const native::Cache* m_cache;
         internal:
           Dictionary<String^, Object^>^ m_updatedFields;
 
@@ -119,7 +125,7 @@ namespace Apache
           void updatePdxStream(System::Byte* newPdxStream, int len);
 
         public:
-          PdxInstanceImpl(System::Byte* buffer, int length, int typeId, bool own)
+          PdxInstanceImpl(System::Byte* buffer, int length, int typeId, bool own, const native::Cache* cache)
           {
             //m_dataInput = dataInput;
             m_buffer = buffer;
@@ -128,10 +134,11 @@ namespace Apache
             m_updatedFields = nullptr;
             m_own = own;
             m_pdxType = nullptr;
+            m_cache = cache;
           }
 
           //for pdxInstance factory
-          PdxInstanceImpl(Dictionary<String^, Object^>^ fieldVsValue, PdxType^ pdxType);
+          PdxInstanceImpl(Dictionary<String^, Object^>^ fieldVsValue, PdxType^ pdxType, CachePerfStats* cachePerfStats, const native::Cache* cache);
 
           ~PdxInstanceImpl()
           {

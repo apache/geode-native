@@ -26,15 +26,19 @@
 #include <ace/INET_Addr.h>
 #include <ThinClientPoolStickyDM.hpp>
 #include <ThinClientPoolStickyHADM.hpp>
+#include "CacheRegionHelper.hpp"
 using namespace apache::geode::client;
-const char* PoolFactory::DEFAULT_SERVER_GROUP = "";
-extern HashMapOfPools* connectionPools;
-extern ACE_Recursive_Thread_Mutex connectionPoolsLock;
 
-PoolFactory::PoolFactory()
-    : m_attrs(new PoolAttributes),
+#define DEFAULT_SERVER_PORT 40404
+#define DEFAULT_SERVER_HOST "localhost"
+
+constexpr const char* PoolFactory::DEFAULT_SERVER_GROUP;
+
+PoolFactory::PoolFactory(const Cache& cache)
+    : m_attrs(std::make_shared<PoolAttributes>()),
       m_isSubscriptionRedundancy(false),
-      m_addedServerOrLocator(false) {}
+      m_addedServerOrLocator(false),
+      m_cache(cache) {}
 
 PoolFactory::~PoolFactory() {}
 
@@ -114,29 +118,27 @@ void PoolFactory::setPRSingleHopEnabled(bool enabled) {
 PoolPtr PoolFactory::create(const char* name) {
   ThinClientPoolDMPtr poolDM;
   {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
-
-    if (PoolManager::find(name) != nullptr) {
+    if (m_cache.getPoolManager().find(name) != nullptr) {
       throw IllegalStateException("Pool with the same name already exists");
+    }
+    if (!m_addedServerOrLocator) {
+      addServer(DEFAULT_SERVER_HOST, DEFAULT_SERVER_PORT);
     }
     // Create a clone of Attr;
     PoolAttributesPtr copyAttrs = m_attrs->clone();
 
-    if (CacheImpl::getInstance() == nullptr) {
-      throw IllegalStateException("Cache has not been created.");
-    }
+    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(&m_cache);
 
-    if (CacheImpl::getInstance()->isClosed()) {
+    if (m_cache.isClosed()) {
       throw CacheClosedException("Cache is closed");
     }
-    if (CacheImpl::getInstance()->getCacheMode() &&
-        m_isSubscriptionRedundancy) {
+    if (cacheImpl->getCacheMode() && m_isSubscriptionRedundancy) {
       LOGWARN(
           "At least one pool has been created so ignoring cache level "
           "redundancy setting");
     }
-    TcrConnectionManager& tccm =
-        CacheImpl::getInstance()->tcrConnectionManager();
+    TcrConnectionManager& tccm = cacheImpl->tcrConnectionManager();
+
     LOGDEBUG("PoolFactory::create mulitusermode = %d ",
              copyAttrs->getMultiuserSecureModeEnabled());
     if (copyAttrs->getMultiuserSecureModeEnabled()) {
@@ -172,12 +174,15 @@ PoolPtr PoolFactory::create(const char* name) {
       }
     }
 
-    connectionPools->insert({name, std::static_pointer_cast<Pool>(poolDM)});
+    cacheImpl->getPoolManager().addPool(name,
+                                        std::static_pointer_cast<Pool>(poolDM));
   }
 
   // TODO: poolDM->init() should not throw exceptions!
   // Pool DM should only be inited once.
-  if (DistributedSystem::getSystemProperties()->autoReadyForEvents()) {
+  if (m_cache.getDistributedSystem()
+          .getSystemProperties()
+          .autoReadyForEvents()) {
     poolDM->init();
   }
 

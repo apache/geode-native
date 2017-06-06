@@ -119,16 +119,13 @@ class ThinClientPoolDM
 
   virtual ~ThinClientPoolDM() {
     destroy();
-    GF_SAFE_DELETE(m_memId);
     GF_SAFE_DELETE(m_locHelper);
     GF_SAFE_DELETE(m_stats);
     GF_SAFE_DELETE(m_clientMetadataService);
     GF_SAFE_DELETE(m_manager);
   }
   // void updateQueue(const char* regionPath) ;
-  ClientProxyMembershipID* getMembershipId() {
-    return (ClientProxyMembershipID*)m_memId;
-  }
+  ClientProxyMembershipID* getMembershipId() { return m_memId.get(); }
   virtual void processMarker(){};
   virtual bool checkDupAndAdd(EventIdPtr eventid) {
     return m_connManager.checkDupAndAdd(eventid);
@@ -386,7 +383,8 @@ class ThinClientPoolDM
 
   std::string selectEndpoint(std::set<ServerLocation>&,
                              const TcrConnection* currentServer = nullptr);
-  volatile ClientProxyMembershipID* m_memId;
+  // TODO global - m_memId was volatile
+  std::unique_ptr<ClientProxyMembershipID> m_memId;
   virtual TcrEndpoint* createEP(const char* endpointName) {
     return new TcrPoolEndPoint(endpointName, m_connManager.getCacheImpl(),
                                m_connManager.m_failoverSema,
@@ -491,7 +489,11 @@ class FunctionExecution : public PooledWork<GfErrType> {
     if (m_userAttr != nullptr) gua.setProxyCache(m_userAttr->getProxyCache());
 
     std::string funcName(m_func);
-    TcrMessageExecuteFunction request(funcName, m_args, m_getResult, m_poolDM,
+    TcrMessageExecuteFunction request(m_poolDM->getConnectionManager()
+                                          .getCacheImpl()
+                                          ->getCache()
+                                          ->createDataOutput(),
+                                      funcName, m_args, m_getResult, m_poolDM,
                                       m_timeout);
     TcrMessageReply reply(true, m_poolDM);
     ChunkedFunctionExecutionResponse* resultProcessor(
@@ -509,29 +511,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
     m_error = m_poolDM->handleEPError(m_ep, reply, m_error);
     if (m_error != GF_NOERR) {
       if (m_error == GF_NOTCON || m_error == GF_IOERR) {
-        /*
-        ==25848== 650 (72 direct, 578 indirect) bytes in 2 blocks are definitely
-        lost in loss record 184 of 218
-        ==25848==    at 0x4007D75: operator new(unsigned int)
-        (vg_replace_malloc.c:313)
-        ==25848==    by 0x439BD41:
-        apache::geode::client::FunctionExecution::execute()
-        (ThinClientPoolDM.hpp:417)
-        ==25848==    by 0x439A5A1:
-        apache::geode::client::PooledWork<GfErrType>::call()
-        (ThreadPool.hpp:25)
-        ==25848==    by 0x43C335F:
-        apache::geode::client::ThreadPoolWorker::svc()
-        (ThreadPool.cpp:43)
-        ==25848==    by 0x440521D: ACE_6_1_0::ACE_Task_Base::svc_run(void*) (in
-        /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/product/lib/libgfcppcache.so)
-        ==25848==    by 0x441E16A: ACE_6_1_0::ACE_Thread_Adapter::invoke_i() (in
-        /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/product/lib/libgfcppcache.so)
-        ==25848==    by 0x441E307: ACE_6_1_0::ACE_Thread_Adapter::invoke() (in
-        /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/product/lib/libgfcppcache.so)
-        ==25848==    by 0x8CFA48: start_thread (in /lib/libpthread-2.12.so)
-        ==25848==    by 0x34BE1D: clone (in /lib/libc-2.12.so)
-        */
+
         delete resultProcessor;
         resultProcessor = nullptr;
         return GF_NOERR;  // if server is unavailable its not an error for
@@ -543,26 +523,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
       if (reply.getMessageType() == TcrMessage::EXCEPTION) {
         exceptionPtr = CacheableString::create(reply.getException());
       }
-      /**
-       * ==13294== 48,342 (1,656 direct, 46,686 indirect) bytes in 46 blocks are
-definitely lost in loss record 241 of 244
-==13294==    at 0x4007D75: operator new(unsigned int) (vg_replace_malloc.c:313)
-==13294==    by 0x439BE11: apache::geode::client::FunctionExecution::execute()
-(ThinClientPoolDM.hpp:417)
-==13294==    by 0x439A671: apache::geode::client::PooledWork<GfErrType>::call()
-(ThreadPool.hpp:25)
-==13294==    by 0x43C33FF: apache::geode::client::ThreadPoolWorker::svc()
-(ThreadPool.cpp:43)
-==13294==    by 0x44052BD: ACE_6_1_0::ACE_Task_Base::svc_run(void*) (in
-/export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/product/lib/libgfcppcache.so)
-==13294==    by 0x441E20A: ACE_6_1_0::ACE_Thread_Adapter::invoke_i() (in
-/export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/product/lib/libgfcppcache.so)
-==13294==    by 0x441E3A7: ACE_6_1_0::ACE_Thread_Adapter::invoke() (in
-/export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/product/lib/libgfcppcache.so)
-==13294==    by 0x8CFA48: start_thread (in /lib/libpthread-2.12.so)
-==13294==    by 0x34BE1D: clone (in /lib/libc-2.12.so)
-       *
-       */
+
       delete resultProcessor;
       resultProcessor = nullptr;
       return m_error;
@@ -573,13 +534,7 @@ definitely lost in loss record 241 of 244
       exceptionPtr = CacheableString::create(reply.getException());
     }
     if (resultProcessor->getResult() == true) {
-      //          CacheableVectorPtr values =
-      //          resultProcessor->getFunctionExecutionResults();
-      //          ACE_Guard< ACE_Recursive_Thread_Mutex > guard(
-      //          *m_resultCollectorLock );
-      //          //(*m_rc)->addResult(values);
-      //          ExecutionImpl::addResults(*m_rc,values);
-      //          resultProcessor->reset();
+
     }
     delete resultProcessor;
     resultProcessor = nullptr;
@@ -629,6 +584,10 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
     std::string funcName(m_func);
 
     m_request = new TcrMessageExecuteRegionFunctionSingleHop(
+        m_poolDM->getConnectionManager()
+            .getCacheImpl()
+            ->getCache()
+            ->createDataOutput(),
         funcName, m_region, m_args, m_routingObj, m_getResult, nullptr,
         m_allBuckets, timeout, m_poolDM);
     m_reply = new TcrMessageReply(true, m_poolDM);

@@ -24,19 +24,17 @@ using namespace apache::geode::client;
 
 bool EntriesMap::boolVal = false;
 
-ConcurrentEntriesMap::ConcurrentEntriesMap(EntryFactory* entryFactory,
-                                           bool concurrencyChecksEnabled,
-                                           RegionInternal* region,
-                                           uint8_t concurrency)
-    : EntriesMap(entryFactory),
+ConcurrentEntriesMap::ConcurrentEntriesMap(
+    ExpiryTaskManager* expiryTaskManager,
+    std::unique_ptr<EntryFactory> entryFactory, bool concurrencyChecksEnabled,
+    RegionInternal* region, uint8_t concurrency)
+    : EntriesMap(std::move(entryFactory)),
+      m_expiryTaskManager(expiryTaskManager),
       m_concurrency(0),
       m_segments((MapSegment*)0),
       m_size(0),
       m_region(region),
       m_numDestroyTrackers(0),
-      /* adongre
-       * CID 28929: Uninitialized pointer field (UNINIT_CTOR)
-       */
       m_concurrencyChecksEnabled(concurrencyChecksEnabled) {
   GF_DEV_ASSERT(entryFactory != nullptr);
 
@@ -52,8 +50,9 @@ void ConcurrentEntriesMap::open(uint32_t initialCapacity) {
   uint32_t segSize = 1 + (initialCapacity - 1) / m_concurrency;
   m_segments = new MapSegment[m_concurrency];
   for (int index = 0; index < m_concurrency; ++index) {
-    m_segments[index].open(m_region, this->getEntryFactory(), segSize,
-                           &m_numDestroyTrackers, m_concurrencyChecksEnabled);
+    m_segments[index].open(m_region, getEntryFactory(), m_expiryTaskManager,
+                           segSize, &m_numDestroyTrackers,
+                           m_concurrencyChecksEnabled);
   }
 }
 

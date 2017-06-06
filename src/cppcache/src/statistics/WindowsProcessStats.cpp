@@ -19,20 +19,17 @@
 #include <ace/Singleton.h>
 #include "WindowsProcessStats.hpp"
 #include "HostStatHelperWin.hpp"
-#include "GeodeStatisticsFactory.hpp"
 #include "HostStatHelper.hpp"
 
 using namespace apache::geode::statistics;
 
-WindowsProcessStats::WindowsProcessStats(int64_t pid, const char* name) {
-  GeodeStatisticsFactory* statFactory =
-      GeodeStatisticsFactory::getExistingInstance();
-
+WindowsProcessStats::WindowsProcessStats(
+    GeodeStatisticsFactory* statisticsFactory, int64_t pid, const char* name) {
   // Create for Statistics Type
-  createType(statFactory);
+  createType(statisticsFactory);
 
   // Create Statistics
-  this->stats = statFactory->createOsStatistics(m_statsType, name, pid);
+  this->stats = statisticsFactory->createOsStatistics(m_statsType, name, pid);
   GF_D_ASSERT(this->stats != nullptr);
 
 // Refresh Stats Values

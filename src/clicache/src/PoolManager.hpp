@@ -23,7 +23,6 @@
 #include "end_native.hpp"
 
 
-
 using namespace System;
 
 namespace Apache
@@ -38,44 +37,64 @@ namespace Apache
      // generic<class TKey, class TValue>
       ref class PoolFactory;
 
+      namespace native = apache::geode::client;
+
       /// <summary>
       /// This interface provides for the configuration and creation of instances of PoolFactory.
       /// </summary>
      // generic<class TKey, class TValue>
-      public ref class PoolManager STATICCLASS
+      public ref class PoolManager
       {
       public:
 
         /// <summary>
         /// Creates a new PoolFactory which is used to configure and create Pools.
         /// </summary>
-        static PoolFactory/*<TKey, TValue>*/^ CreateFactory();
+        PoolFactory/*<TKey, TValue>*/^ CreateFactory();
 
         /// <summary>
         /// Returns a map containing all the pools in this manager.
         /// The keys are pool names and the values are Pool instances.
         /// </summary>
-        static const Dictionary<String^, Pool/*<TKey, TValue>*/^>^ GetAll();
+        const Dictionary<String^, Pool/*<TKey, TValue>*/^>^ GetAll();
 
         /// <summary>
         /// Find by name an existing connection pool.
         /// </summary>
-        static Pool/*<TKey, TValue>*/^ Find(String^ name);
+        Pool/*<TKey, TValue>*/^ Find(String^ name);
 
         /// <summary>
         /// Find the pool used by the given region.
         /// </summary>
-        static Pool/*<TKey, TValue>*/^ Find(Client::Region<Object^, Object^>^ region);
+        Pool/*<TKey, TValue>*/^ Find(Client::Region<Object^, Object^>^ region);
 
         /// <summary>
         /// Destroys all created pools.
         /// </summary>
-        static void Close(Boolean KeepAlive);
+        void Close(Boolean KeepAlive);
 
         /// <summary>
         /// Destroys all created pools.
         /// </summary>
-        static void Close();
+        void Close();
+
+      internal:
+
+        native::PoolManager& GetNative()
+        {
+          return m_nativeref;
+        }
+
+        /// <summary>
+        /// Private constructor to wrap a native object pointer
+        /// </summary>
+        /// <param name="nativeptr">The native object pointer</param>
+        inline PoolManager(native::PoolManager& nativeref)
+          : m_nativeref(nativeref)
+        {
+        }
+
+        native::PoolManager& m_nativeref;
       };
     }  // namespace Client
   }  // namespace Geode

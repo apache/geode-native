@@ -71,7 +71,8 @@ class putThread : public ACE_Task_Base {
 };
 
 void doAttrTestingAndCreatePool(const char* poolName) {
-  PoolFactoryPtr poolFacPtr = PoolManager::createFactory();
+  PoolFactoryPtr poolFacPtr =
+      getHelper()->getCache()->getPoolManager().createFactory();
   poolFacPtr->setFreeConnectionTimeout(10000);
   poolFacPtr->setLoadConditioningInterval(60000);
   poolFacPtr->setSocketBufferSize(1024);
@@ -130,7 +131,7 @@ void doAttrTestingAndCreatePool(const char* poolName) {
 
 void doAttrTesting(const char* poolName1) {
   // PoolFactoryPtr poolFacPtr = cachePtr->getPoolFactory();
-  PoolPtr pptr = PoolManager::find(poolName1);
+  PoolPtr pptr = getHelper()->getCache()->getPoolManager().find(poolName1);
   // PoolPtr pptr = poolFacPtr->find(poolName1);
 
   ASSERT(strcmp(pptr->getName(), "clientPool") == 0,
@@ -196,7 +197,8 @@ DUNIT_TASK(CLIENT1, StartC1)
     doAttrTestingAndCreatePool(poolName);
 
     // Do PoolCreation testing , create another pool with same name
-    PoolFactoryPtr poolFacPtr = PoolManager::createFactory();
+    PoolFactoryPtr poolFacPtr =
+        getHelper()->getCache()->getPoolManager().createFactory();
     try {
       PoolPtr pptr = poolFacPtr->create(poolName);
       FAIL("Pool creation with same name should fail");
@@ -224,7 +226,10 @@ DUNIT_TASK(CLIENT2, StartC2)
       LOG(" starts client");
       initClient(true, props);
       LOG(" started client");
-      ASSERT(PoolManager::find("clientPoolMultiUser")
+      ASSERT(getHelper()
+                     ->getCache()
+                     ->getPoolManager()
+                     .find("clientPoolMultiUser")
                      ->getMultiuserAuthentication() == true,
              "MultiUser secure mode should be true for Pool");
     } catch (const Exception& excp) {
@@ -247,7 +252,11 @@ DUNIT_TASK(CLIENT1, ClientOp)
         getHelper()->getRegion(poolRegNames[0])->getAttributes()->getPoolName();
     int level = TestUtils::getCacheImpl(getHelper()->cachePtr)
                     ->getPoolSize(poolName.c_str());
-    int min = PoolManager::find(poolName.c_str())->getMinConnections();
+    int min = getHelper()
+                  ->getCache()
+                  ->getPoolManager()
+                  .find(poolName.c_str())
+                  ->getMinConnections();
     char logmsg[100] = {0};
     sprintf(logmsg, "Pool level not equal to min level. Expected %d, actual %d",
             min, level);
@@ -264,7 +273,11 @@ DUNIT_TASK(CLIENT1, ClientOp)
     // Check current # connections they should be == max
     level = TestUtils::getCacheImpl(getHelper()->cachePtr)
                 ->getPoolSize(poolName.c_str());
-    int max = PoolManager::find(poolName.c_str())->getMaxConnections();
+    int max = getHelper()
+                  ->getCache()
+                  ->getPoolManager()
+                  .find(poolName.c_str())
+                  ->getMaxConnections();
     sprintf(logmsg, "Pool level not equal to max level. Expected %d, actual %d",
             max, level);
     ASSERT(level == max, logmsg);
@@ -280,7 +293,11 @@ DUNIT_TASK(CLIENT1, ClientOp)
 
     level = TestUtils::getCacheImpl(getHelper()->cachePtr)
                 ->getPoolSize(poolName.c_str());
-    min = PoolManager::find(poolName.c_str())->getMinConnections();
+    min = getHelper()
+              ->getCache()
+              ->getPoolManager()
+              .find(poolName.c_str())
+              ->getMinConnections();
     sprintf(logmsg,
             "Pool level not equal to min level after idle timeout. "
             "Expected %d, actual %d",

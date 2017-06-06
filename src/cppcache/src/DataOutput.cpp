@@ -22,6 +22,8 @@
 
 #include <ace/Recursive_Thread_Mutex.h>
 #include <vector>
+#include "CacheImpl.hpp"
+#include "CacheRegionHelper.hpp"
 
 namespace apache {
 namespace geode {
@@ -105,8 +107,8 @@ TSSDataOutput::~TSSDataOutput() {
 
 ACE_TSS<TSSDataOutput> TSSDataOutput::s_tssDataOutput;
 
-DataOutput::DataOutput()
-    : m_poolName(nullptr), m_size(0), m_haveBigBuffer(false) {
+DataOutput::DataOutput(const Cache* cache)
+    : m_cache(cache), m_poolName(nullptr), m_size(0), m_haveBigBuffer(false) {
   m_buf = m_bytes = DataOutput::checkoutBuffer(&m_size);
 }
 
@@ -119,12 +121,18 @@ void DataOutput::checkinBuffer(uint8_t* buffer, uint32_t size) {
 }
 
 void DataOutput::writeObjectInternal(const Serializable* ptr, bool isDelta) {
-  SerializationRegistry::serialize(ptr, *this, isDelta);
+  getSerializationRegistry().serialize(ptr, *this, isDelta);
 }
 
 void DataOutput::acquireLock() { g_bigBufferLock.acquire(); }
 
 void DataOutput::releaseLock() { g_bigBufferLock.release(); }
+
+const SerializationRegistry& DataOutput::getSerializationRegistry() const {
+  return *CacheRegionHelper::getCacheImpl(m_cache)->getSerializationRegistry();
+}
+
+const Cache* DataOutput::getCache() { return m_cache; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

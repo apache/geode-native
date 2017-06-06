@@ -43,7 +43,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       byte[] deltaValue = aCqEvent.getDeltaValue();
       DeltaTestImpl newValue = new DeltaTestImpl();
-      DataInput input = new DataInput(deltaValue);
+      DataInput input = CacheHelper.DCache.CreateDataInput(deltaValue);
       newValue.FromDelta(input);
       if (newValue.GetIntVar() == 5)
       {
@@ -281,7 +281,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        Serializable.RegisterTypeGeneric(DeltaEx.create);
+        Serializable.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
       }
       catch (IllegalStateException)
       {
@@ -316,7 +316,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        Serializable.RegisterTypeGeneric(DeltaEx.create);
+        Serializable.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
       }
       catch (IllegalStateException)
       {
@@ -364,7 +364,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        Serializable.RegisterTypeGeneric(DeltaEx.create);
+        Serializable.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
       }
       catch (IllegalStateException)
       {
@@ -408,7 +408,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        Serializable.RegisterTypeGeneric(DeltaEx.create);
+        Serializable.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
       }
       catch (IllegalStateException)
       {
@@ -441,7 +441,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        Serializable.RegisterTypeGeneric(DeltaEx.create);
+        Serializable.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
       }
       catch (IllegalStateException)
       {
@@ -474,7 +474,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        Serializable.RegisterTypeGeneric(DeltaTestAD.Create);
+        Serializable.RegisterTypeGeneric(DeltaTestAD.Create, CacheHelper.DCache);
       }
       catch (IllegalStateException)
       {
@@ -598,7 +598,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        Serializable.RegisterTypeGeneric(DeltaEx.create);
+        Serializable.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
       }
       catch (IllegalStateException)
       {
@@ -615,7 +615,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        Serializable.RegisterTypeGeneric(DeltaTestImpl.CreateDeserializable);
+        Serializable.RegisterTypeGeneric(DeltaTestImpl.CreateDeserializable, CacheHelper.DCache);
       }
       catch (IllegalStateException)
       {
@@ -637,7 +637,7 @@ namespace Apache.Geode.Client.UnitTests
 
     void registerCq()
     {
-      Pool thePool = PoolManager.Find("__TEST_POOL1__");
+      Pool thePool = CacheHelper.DCache.GetPoolManager().Find("__TEST_POOL1__");
       QueryService<object, DeltaTestImpl> cqService = null;
       cqService = thePool.GetQueryService<object, DeltaTestImpl>();
       CqAttributesFactory<object, DeltaTestImpl> attrFac = new CqAttributesFactory<object, DeltaTestImpl>();

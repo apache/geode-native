@@ -282,7 +282,7 @@ void createAndVerifyEntry(const char* name) {
     auto longRetValue =
         std::dynamic_pointer_cast<CacheableInt64>(regPtr->get(int64Key));
     FAIL("Expected EntryExistException here");
-  } catch (EntryExistsException& ) {
+  } catch (EntryExistsException&) {
     LOG(" Expected EntryExistsException exception thrown by localCreate");
   }
 
@@ -316,7 +316,7 @@ void createAndVerifyEntry(const char* name) {
   /*5.create new with entry userobject cantain all cacheable type ( like
    * cacheableInt,CacheableDouble, CacheableString,CacheableHashMap etc) key and
    * null value*/
-  // Serializable::registerPdxType(PdxTests::PdxType::createDeserializable);
+  // serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
   auto keyObject1 = std::make_shared<PdxTests::PdxType>();
   regPtr->create(keyObject1, x);
   CacheablePtr retVal = regPtr->get(keyObject1);
@@ -339,7 +339,7 @@ void createAndVerifyEntry(const char* name) {
       regPtr->create(keyObject2, in64Value);
       FAIL("Expected EntryExistException here");
     }
-  } catch (EntryExistsException& ) {
+  } catch (EntryExistsException&) {
     LOG(" Expected EntryExistsException exception thrown by localCreate");
   }
 
@@ -594,7 +594,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyUpdateLocatorListThread)
     int sleepSeconds = 60;
     dunit::sleep(sleepSeconds * 1000);
 
-    PoolPtr pptr = CacheHelper::getPoolPtr("__TESTPOOL1_");
+    PoolPtr pptr =
+        getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
     int updateIntervalSeconds = pptr->getUpdateLocatorListInterval() / 1000;
 
     int numLocatorListUpdates =
@@ -784,7 +785,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight_Pool_Sticky)
     RegionPtr reg1 = getHelper()->getRegion(regionNames[1]);
     reg0->localInvalidate(createKey(keys[1]));
     reg1->localInvalidate(createKey(keys[3]));
-    PoolPtr pool = PoolManager::find("__TESTPOOL1_");
+    PoolPtr pool =
+        getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
     ASSERT(pool != nullptr, "Pool Should have been found");
     doNetsearch(regionNames[0], keys[1], nvals[1]);
     doNetsearch(regionNames[1], keys[3], nvals[3]);

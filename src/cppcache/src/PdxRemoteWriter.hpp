@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_PDXREMOTEWRITER_H_
-#define GEODE_PDXREMOTEWRITER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * PdxRemoteWriter.hpp
- *
- *  Created on: Nov 3, 2011
- *      Author: npatel
- */
+
+#pragma once
+
+#ifndef GEODE_PDXREMOTEWRITER_H_
+#define GEODE_PDXREMOTEWRITER_H_
 
 #include "PdxLocalWriter.hpp"
 
@@ -40,18 +34,22 @@ class PdxRemoteWriter : public PdxLocalWriter {
 
   int32_t m_remoteTolocalMapLength;
 
+  PdxTypeRegistryPtr m_pdxTypeRegistry;
+
   void initialize();
   void writePreserveData();
 
- public:
-  PdxRemoteWriter();
+  PdxTypeRegistryPtr getPdxTypeRegistry() const;
 
+ public:
   virtual ~PdxRemoteWriter();
 
   PdxRemoteWriter(DataOutput& output, PdxTypePtr pdxType,
-                  PdxRemotePreservedDataPtr preservedData);
+                  PdxRemotePreservedDataPtr preservedData,
+                  PdxTypeRegistryPtr pdxTypeRegistry);
 
-  PdxRemoteWriter(DataOutput& output, const char* pdxClassName);
+  PdxRemoteWriter(DataOutput& output, const char* pdxClassName,
+                  PdxTypeRegistryPtr pdxTypeRegistry);
 
   virtual void endObjectWriting();
 

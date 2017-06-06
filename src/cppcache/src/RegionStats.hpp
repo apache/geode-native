@@ -20,10 +20,11 @@
 #ifndef GEODE_REGIONSTATS_H_
 #define GEODE_REGIONSTATS_H_
 
+#include <string>
+
 #include <geode/geode_globals.hpp>
 #include <geode/statistics/Statistics.hpp>
 #include <geode/statistics/StatisticsFactory.hpp>
-#include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {
@@ -32,12 +33,11 @@ namespace client {
 using statistics::StatisticDescriptor;
 using statistics::StatisticsType;
 using statistics::Statistics;
-using util::concurrent::spinlock_mutex;
 
 class CPPCACHE_EXPORT RegionStats {
  public:
   /** hold statistics for a region.. */
-  RegionStats(const char* regionName);
+  RegionStats(statistics::StatisticsFactory* factory, const std::string& regionName);
 
   /** disable stat collection for this item. */
   virtual ~RegionStats();
@@ -88,9 +88,29 @@ class CPPCACHE_EXPORT RegionStats {
 
   inline void incClears() { m_regionStats->incInt(m_clearsId, 1); }
 
+  inline void updateGetTime() { m_regionStats->incInt(m_clearsId, 1); }
+
   inline apache::geode::statistics::Statistics* getStat() {
     return m_regionStats;
   }
+
+  inline int32_t getGetTimeId() { return m_getTimeId; }
+
+  inline int32_t getPutTimeId() { return m_putTimeId; }
+
+  inline int32_t getGetAllTimeId() { return m_getAllTimeId; }
+
+  inline int32_t getPutAllTimeId() { return m_putAllTimeId; }
+
+  inline int32_t getRemoveAllTimeId() { return m_removeAllTimeId; }
+
+  inline int32_t getLoaderCallTimeId() { return m_LoaderCallTimeId; }
+
+  inline int32_t getWriterCallTimeId() { return m_WriterCallTimeId; }
+
+  inline int32_t getListenerCallTimeId() { return m_ListenerCallTimeId; }
+
+  inline int32_t getClearsId() { return m_clearsId; }
 
  private:
   apache::geode::statistics::Statistics* m_regionStats;
@@ -120,108 +140,11 @@ class CPPCACHE_EXPORT RegionStats {
   int32_t m_ListenerCallsCompletedId;
   int32_t m_ListenerCallTimeId;
   int32_t m_clearsId;
+
+  static constexpr const char* STATS_NAME = "RegionStatistics";
+  static constexpr const char* STATS_DESC = "Statistics for this region";
 };
 
-class RegionStatType {
- private:
-  static RegionStatType* single;
-  static spinlock_mutex m_singletonLock;
-  static spinlock_mutex m_statTypeLock;
-
- public:
-  static RegionStatType* getInstance();
-
-  statistics::StatisticsType* getStatType();
-
-  static void clean();
-
- private:
-  RegionStatType();
-  statistics::StatisticDescriptor* m_stats[25];
-
-  int32_t m_destroysId;
-  int32_t m_createsId;
-  int32_t m_putsId;
-  int32_t m_putTimeId;
-  int32_t m_putAllId;
-  int32_t m_putAllTimeId;
-  int32_t m_removeAllId;
-  int32_t m_removeAllTimeId;
-  int32_t m_getsId;
-  int32_t m_getTimeId;
-  int32_t m_getAllId;
-  int32_t m_getAllTimeId;
-  int32_t m_hitsId;
-  int32_t m_missesId;
-  int32_t m_entriesId;
-  int32_t m_overflowsId;
-  int32_t m_retrievesId;
-  int32_t m_metaDataRefreshId;
-  int32_t m_LoaderCallsCompletedId;
-  int32_t m_LoaderCallTimeId;
-  int32_t m_WriterCallsCompletedId;
-  int32_t m_WriterCallTimeId;
-  int32_t m_ListenerCallsCompletedId;
-  int32_t m_ListenerCallTimeId;
-  int32_t m_clearsId;
-
- public:
-  inline int32_t getDestroysId() { return m_destroysId; }
-
-  inline int32_t getCreatesId() { return m_createsId; }
-
-  inline int32_t getPutsId() { return m_putsId; }
-
-  inline int32_t getPutTimeId() { return m_putTimeId; }
-
-  inline int32_t getPutAllId() { return m_putAllId; }
-
-  inline int32_t getPutAllTimeId() { return m_putAllTimeId; }
-
-  inline int32_t getRemoveAllId() { return m_removeAllId; }
-
-  inline int32_t getRemoveAllTimeId() { return m_removeAllTimeId; }
-
-  inline int32_t getGetsId() { return m_getsId; }
-
-  inline int32_t getGetTimeId() { return m_getTimeId; }
-
-  inline int32_t getGetAllId() { return m_getAllId; }
-
-  inline int32_t getGetAllTimeId() { return m_getAllTimeId; }
-
-  inline int32_t getHitsId() { return m_hitsId; }
-
-  inline int32_t getMissesId() { return m_missesId; }
-
-  inline int32_t getEntriesId() { return m_entriesId; }
-
-  inline int32_t getOverflowsId() { return m_overflowsId; }
-
-  inline int32_t getRetrievesId() { return m_retrievesId; }
-
-  inline int32_t getMetaDataRefreshCount() { return m_metaDataRefreshId; }
-
-  inline int32_t getLoaderCallsCompletedId() {
-    return m_LoaderCallsCompletedId;
-  }
-
-  inline int32_t getLoaderCallTimeId() { return m_LoaderCallTimeId; }
-
-  inline int32_t getWriterCallsCompletedId() {
-    return m_WriterCallsCompletedId;
-  }
-
-  inline int32_t getWriterCallTimeId() { return m_WriterCallTimeId; }
-
-  inline int32_t getListenerCallsCompletedId() {
-    return m_ListenerCallsCompletedId;
-  }
-
-  inline int32_t getListenerCallTimeId() { return m_ListenerCallTimeId; }
-
-  inline int32_t getClearsId() { return m_clearsId; }
-};
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

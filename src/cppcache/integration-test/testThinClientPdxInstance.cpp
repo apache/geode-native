@@ -28,9 +28,10 @@
 #define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include "CacheHelper.hpp"
-
+#include "CacheImpl.hpp"
 #include <ace/Date_Time.h>
-
+#include "SerializationRegistry.hpp"
+#include "CacheRegionHelper.hpp"
 using namespace apache::geode::client;
 using namespace test;
 using namespace testobject;
@@ -228,7 +229,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, putPdxWithIdentityField)
     LOG("putPdxWithIdentityField started ");
 
     try {
-      Serializable::registerPdxType(SerializePdx::createDeserializable);
+      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      serializationRegistry->addPdxType(SerializePdx::createDeserializable);
       LOG("SerializePdx Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("SerializePdx IllegalStateException");
@@ -251,7 +253,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, putCacheableObjectArrayWithPdxFields)
     LOG("putCacheableObjectArrayWithPdxFields started ");
 
     try {
-      Serializable::registerPdxType(Address::createDeserializable);
+      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      serializationRegistry->addPdxType(Address::createDeserializable);
       LOG("Address Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("Address IllegalStateException");
@@ -285,7 +288,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxIdentityField)
     LOG("verifyPdxIdentityField started ");
 
     try {
-      Serializable::registerPdxType(SerializePdx::createDeserializable);
+      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      serializationRegistry->addPdxType(SerializePdx::createDeserializable);
       LOG("SerializePdx Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("SerializePdx IllegalStateException");
@@ -303,23 +307,29 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxIdentityField)
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializations());
-    LOGINFO("pdxInstanceCreations for (PdxTests.PdxType) PdxInstance  = %d ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializations());
+    LOGINFO(
+        "pdxInstanceCreations for (PdxTests.PdxType) PdxInstance  = %d ",
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxInstanceCreations());
     LOGINFO(
         "pdxInstanceDeserializationTime for(PdxTests.PdxType) PdxInstance  = "
         "%d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializationTime());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializationTime());
 
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializations() == 0,
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializations() == 0,
            "pdxInstanceDeserialization should be equal to 0.");
-    ASSERT(
-        lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations() == 1,
-        "pdxInstanceCreations should be equal to 1.");
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializationTime() > 0,
+                   ->getCachePerfStats()
+                   .getPdxInstanceCreations() == 1,
+           "pdxInstanceCreations should be equal to 1.");
+    ASSERT(lregPtr->getCacheImpl()
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializationTime() > 0,
            "pdxInstanceDeserializationTime should be greater than equal to 0.");
 
     ASSERT(pi->getFieldNames()->length() == 4,
@@ -358,23 +368,29 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxIdentityField)
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializations());
-    LOGINFO("pdxInstanceCreations for (PdxTests.PdxType) PdxInstance  = %d ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializations());
+    LOGINFO(
+        "pdxInstanceCreations for (PdxTests.PdxType) PdxInstance  = %d ",
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxInstanceCreations());
     LOGINFO(
         "pdxInstanceDeserializationTime for(PdxTests.PdxType) PdxInstance  = "
         "%d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializationTime());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializationTime());
 
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializations() == 0,
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializations() == 0,
            "pdxInstanceDeserialization should be equal to 0.");
-    ASSERT(
-        lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations() == 2,
-        "pdxInstanceCreations should be equal to 2.");
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializationTime() > 0,
+                   ->getCachePerfStats()
+                   .getPdxInstanceCreations() == 2,
+           "pdxInstanceCreations should be equal to 2.");
+    ASSERT(lregPtr->getCacheImpl()
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializationTime() > 0,
            "pdxInstanceDeserializationTime should be greater than 0.");
 
     bool ret = false;
@@ -391,7 +407,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyCacheableObjectArrayWithPdxField)
     LOG("verifyCacheableObjectArrayWithPdxField started ");
 
     try {
-      Serializable::registerPdxType(Address::createDeserializable);
+      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      serializationRegistry->addPdxType(Address::createDeserializable);
       LOG("Address Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("Address IllegalStateException");
@@ -505,9 +522,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, pdxPut)
   {
     LOG("pdxPut started ");
-
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
     try {
-      Serializable::registerPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("PdxObject IllegalStateException");
@@ -532,23 +549,29 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxPut)
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance = %d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializations());
-    LOGINFO("pdxInstanceCreations for (PdxTests.PdxType) PdxInstance = %d ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializations());
+    LOGINFO(
+        "pdxInstanceCreations for (PdxTests.PdxType) PdxInstance = %d ",
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxInstanceCreations());
     LOGINFO(
         "pdxInstanceDeserializationTime for(PdxTests.PdxType) PdxInstance = "
         "%d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializationTime());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializationTime());
 
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializations() == 0,
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializations() == 0,
            "pdxInstanceDeserialization should be equal to 0.");
-    ASSERT(
-        lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations() == 1,
-        "pdxInstanceCreations should be equal to 1.");
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializationTime() > 0,
+                   ->getCachePerfStats()
+                   .getPdxInstanceCreations() == 1,
+           "pdxInstanceCreations should be equal to 1.");
+    ASSERT(lregPtr->getCacheImpl()
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializationTime() > 0,
            "pdxInstanceDeserializationTime should be greater than 0.");
 
     CacheableStringPtr toString = pIPtr1->toString();
@@ -582,23 +605,23 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, getObject)
   {
     LOG("getObject started ");
-
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
     try {
-      Serializable::registerPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("PdxObject IllegalStateException");
     }
 
     try {
-      Serializable::registerPdxType(ChildPdx::createDeserializable);
+      serializationRegistry->addPdxType(ChildPdx::createDeserializable);
       LOG("ChildPdx Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("ChildPdx IllegalStateException");
     }
 
     try {
-      Serializable::registerPdxType(ParentPdx::createDeserializable);
+      serializationRegistry->addPdxType(ParentPdx::createDeserializable);
       LOG("ParentPdx Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("ParentPdx IllegalStateException");
@@ -625,22 +648,29 @@ DUNIT_TASK_DEFINITION(CLIENT2, getObject)
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializations());
-    LOGINFO("pdxInstanceCreations for (PdxTests.PdxType) PdxInstance  = %d ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializations());
+    LOGINFO(
+        "pdxInstanceCreations for (PdxTests.PdxType) PdxInstance  = %d ",
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxInstanceCreations());
     LOGINFO(
         "pdxInstanceDeserializationTime for(PdxTests.PdxType) PdxInstance  = "
         "%d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializationTime());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializationTime());
 
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializations() == 1,
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializations() == 1,
            "pdxInstanceDeserialization should be equal to 1.");
-    ASSERT(lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations() > 1,
-           "pdxInstanceCreations should be greater than 1.");
+    ASSERT(
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxInstanceCreations() >
+            1,
+        "pdxInstanceCreations should be greater than 1.");
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializationTime() > 0,
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializationTime() > 0,
            "pdxInstanceDeserializationTime should be greater than 0.");
 
     auto ptorig = std::make_shared<PdxTests::PdxType>();
@@ -663,22 +693,29 @@ DUNIT_TASK_DEFINITION(CLIENT2, getObject)
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializations());
-    LOGINFO("pdxInstanceCreations for (PdxTests.PdxType) PdxInstance  = %d ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializations());
+    LOGINFO(
+        "pdxInstanceCreations for (PdxTests.PdxType) PdxInstance  = %d ",
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxInstanceCreations());
     LOGINFO(
         "pdxInstanceDeserializationTime for(PdxTests.PdxType) PdxInstance  = "
         "%d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializationTime());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializationTime());
 
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializations() == 2,
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializations() == 2,
            "pdxInstanceDeserialization should be equal to 2.");
-    ASSERT(lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations() > 1,
-           "pdxInstanceCreations should be greater than 1.");
+    ASSERT(
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxInstanceCreations() >
+            1,
+        "pdxInstanceCreations should be greater than 1.");
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializationTime() > 0,
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializationTime() > 0,
            "pdxInstanceDeserializationTime should be greater than 0.");
 
     auto parentPdxObj = std::make_shared<ParentPdx>(1);
@@ -700,7 +737,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxInstanceEquals)
     LOG("Task verifyPdxInstanceEquals started.");
 
     try {
-      Serializable::registerPdxType(PdxTests::PdxType::createDeserializable);
+      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("PdxObject IllegalStateException");
@@ -762,16 +800,16 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
   {
     LOG("accessPdxInstance started ");
-
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
     try {
-      Serializable::registerPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("PdxObject IllegalStateException");
     }
 
     try {
-      Serializable::registerPdxType(Address::createDeserializable);
+      serializationRegistry->addPdxType(Address::createDeserializable);
       LOG("Address Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("Address IllegalStateException");
@@ -1998,23 +2036,29 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializations());
-    LOGINFO("pdxInstanceCreations for (PdxTests.PdxType) PdxInstance  = %d ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializations());
+    LOGINFO(
+        "pdxInstanceCreations for (PdxTests.PdxType) PdxInstance  = %d ",
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxInstanceCreations());
     LOGINFO(
         "pdxInstanceDeserializationTime for(PdxTests.PdxType) PdxInstance  = "
         "%d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializationTime());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializationTime());
 
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializations() == 0,
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializations() == 0,
            "pdxInstanceDeserialization should be equal to 0.");
-    ASSERT(
-        lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations() == 1,
-        "pdxInstanceCreations should be equal to 1.");
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializationTime() > 0,
+                   ->getCachePerfStats()
+                   .getPdxInstanceCreations() == 1,
+           "pdxInstanceCreations should be equal to 1.");
+    ASSERT(lregPtr->getCacheImpl()
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializationTime() > 0,
            "pdxInstanceDeserializationTime should be greater than 0.");
 
     WritablePdxInstancePtr wpiPtr(pIPtr->createWriter());
@@ -2328,30 +2372,30 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
   {
     LOG("pdxIFPutGetTest started ");
-
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
     try {
-      Serializable::registerPdxType(Address::createDeserializable);
+      serializationRegistry->addPdxType(Address::createDeserializable);
       LOG("Address Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("Address IllegalStateException");
     }
 
     try {
-      Serializable::registerPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("PdxObject IllegalStateException");
     }
 
     try {
-      Serializable::registerPdxType(ChildPdx::createDeserializable);
+      serializationRegistry->addPdxType(ChildPdx::createDeserializable);
       LOG("ChildPdx Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("ChildPdx IllegalStateException");
     }
 
     try {
-      Serializable::registerPdxType(ParentPdx::createDeserializable);
+      serializationRegistry->addPdxType(ParentPdx::createDeserializable);
       LOG("ParentPdx Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("ParentPdx IllegalStateException");
@@ -2483,23 +2527,29 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializations());
-    LOGINFO("pdxInstanceCreations for (PdxTests.PdxType) PdxInstance  = %d ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializations());
+    LOGINFO(
+        "pdxInstanceCreations for (PdxTests.PdxType) PdxInstance  = %d ",
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxInstanceCreations());
     LOGINFO(
         "pdxInstanceDeserializationTime for(PdxTests.PdxType) PdxInstance  = "
         "%d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializationTime());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializationTime());
 
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializations() == 1,
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializations() == 1,
            "pdxInstanceDeserialization should be equal to 1.");
-    ASSERT(
-        lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations() == 0,
-        "pdxInstanceCreations should be equal to 0.");
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializationTime() == 0,
+                   ->getCachePerfStats()
+                   .getPdxInstanceCreations() == 0,
+           "pdxInstanceCreations should be equal to 0.");
+    ASSERT(lregPtr->getCacheImpl()
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializationTime() == 0,
            "pdxInstanceDeserializationTime should be equal to 0.");
 
     PdxTests::PdxType* obj2 = pdxobj.get();
@@ -2519,23 +2569,29 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializations());
-    LOGINFO("pdxInstanceCreations for (PdxTests.PdxType) PdxInstance  = %d ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializations());
+    LOGINFO(
+        "pdxInstanceCreations for (PdxTests.PdxType) PdxInstance  = %d ",
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxInstanceCreations());
     LOGINFO(
         "pdxInstanceDeserializationTime for(PdxTests.PdxType) PdxInstance  = "
         "%d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializationTime());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializationTime());
 
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializations() == 1,
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializations() == 1,
            "pdxInstanceDeserialization should be equal to 1.");
-    ASSERT(
-        lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations() == 0,
-        "pdxInstanceCreations should be equal to 0.");
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializationTime() > 0,
+                   ->getCachePerfStats()
+                   .getPdxInstanceCreations() == 0,
+           "pdxInstanceCreations should be equal to 0.");
+    ASSERT(lregPtr->getCacheImpl()
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializationTime() > 0,
            "pdxInstanceDeserializationTime should be greater than 0.");
 
     PdxTests::PdxType* obj3 = dynamic_cast<PdxTests::PdxType*>(newPiPtr.get());
@@ -2592,25 +2648,30 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
         "= "
         "%d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializations());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializations());
     LOGINFO(
         "pdxInstanceCreations for (testobject::ParentPdx) PdxInstance  = %d ",
-        lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations());
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxInstanceCreations());
     LOGINFO(
         "pdxInstanceDeserializationTime for(testobject::ParentPdx) PdxInstance "
         " "
         "= %d ",
         lregPtr->getCacheImpl()
-            ->m_cacheStats->getPdxInstanceDeserializationTime());
+            ->getCachePerfStats()
+            .getPdxInstanceDeserializationTime());
 
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializations() == 1,
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializations() == 1,
            "pdxInstanceDeserialization should be equal to 1.");
-    ASSERT(
-        lregPtr->getCacheImpl()->m_cacheStats->getPdxInstanceCreations() == 0,
-        "pdxInstanceCreations should be equal to 0.");
     ASSERT(lregPtr->getCacheImpl()
-                   ->m_cacheStats->getPdxInstanceDeserializationTime() > 0,
+                   ->getCachePerfStats()
+                   .getPdxInstanceCreations() == 0,
+           "pdxInstanceCreations should be equal to 0.");
+    ASSERT(lregPtr->getCacheImpl()
+                   ->getCachePerfStats()
+                   .getPdxInstanceDeserializationTime() > 0,
            "pdxInstanceDeserializationTime should be greater than 0.");
 
     auto pp1 = std::dynamic_pointer_cast<ParentPdx>(newPiPtr);

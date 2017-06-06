@@ -23,7 +23,7 @@ using namespace testobject;
 DeltaFastAssetAccount::DeltaFastAssetAccount(int index, bool encodeTimestp,
                                              int maxVal, int asstSize,
                                              bool getbfrUpdate)
-    : encodeTimestamp(encodeTimestp), acctId(index) {
+    : Delta(nullptr), encodeTimestamp(encodeTimestp), acctId(index) {
   customerName = CacheableString::create("Milton Moneybags");
   netWorth = 0.0;
   assets = CacheableHashMap::create();

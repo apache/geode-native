@@ -62,14 +62,17 @@ int RegionExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
       // (lastAccessTime + entryExpiryDuration - curr_time) in seconds
       LOGDEBUG("Resetting expiry task for region [%s] after %d sec",
                m_regionPtr->getFullPath(), -sec);
-      CacheImpl::expiryTaskManager->resetTask(m_expiryTaskId, -sec);
+      m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
+          m_expiryTaskId, -sec);
       return 0;
     }
+    LOGDEBUG("Removing expiry task for region [%s]",
+             m_regionPtr->getFullPath());
+    m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
+        m_expiryTaskId, 0);
   } catch (...) {
     // Ignore whatever exception comes
   }
-  LOGDEBUG("Removing expiry task for region [%s]", m_regionPtr->getFullPath());
-  CacheImpl::expiryTaskManager->resetTask(m_expiryTaskId, 0);
   //  we now delete the handler in GF_Timer_Heap_ImmediateReset_T
   // and always return success.
   return 0;

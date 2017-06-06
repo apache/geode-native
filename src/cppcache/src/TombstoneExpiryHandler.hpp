@@ -43,10 +43,11 @@ namespace client {
 class CPPCACHE_EXPORT TombstoneExpiryHandler : public ACE_Event_Handler {
  public:
   /**
-* Constructor
-*/
+   * Constructor
+   */
   TombstoneExpiryHandler(TombstoneEntryPtr entryPtr,
-                         TombstoneList* tombstoneList, uint32_t duration);
+                         TombstoneList* tombstoneList, uint32_t duration,
+                         CacheImpl* cacheImpl);
 
   /** This task object will be registered with the Timer Queue.
    *  When the timer expires the handle_timeout is invoked.
@@ -65,6 +66,7 @@ class CPPCACHE_EXPORT TombstoneExpiryHandler : public ACE_Event_Handler {
   // Duration after which the task should be reset in case of
   // modification.
   uint32_t m_duration;
+  CacheImpl* m_cacheImpl;
   // perform the actual expiration action
   void DoTheExpirationAction(const CacheableKeyPtr& key);
 

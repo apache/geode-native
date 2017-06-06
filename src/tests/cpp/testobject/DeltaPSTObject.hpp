@@ -59,7 +59,7 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
   }
 
  public:
-  DeltaPSTObject() : timestamp(0), valueData(nullptr) {}
+  DeltaPSTObject() : Delta(nullptr), timestamp(0), valueData(nullptr) {}
   DeltaPSTObject(int size, bool encodeKey, bool encodeTimestamp);
   virtual ~DeltaPSTObject() {}
   void toData(apache::geode::client::DataOutput& output) const;

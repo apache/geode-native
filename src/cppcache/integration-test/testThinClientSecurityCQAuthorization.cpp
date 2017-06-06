@@ -38,6 +38,10 @@
 
 #include "ThinClientCQ.hpp"
 
+#include "SerializationRegistry.hpp"
+#include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
+
 using namespace test;
 using namespace testData;
 
@@ -147,13 +151,6 @@ void initCredentialGenerator() {
 
 PropertiesPtr userCreds;
 void initClientCq(const bool isthinClient) {
-  try {
-    Serializable::registerType(Position::createDeserializable);
-    Serializable::registerType(Portfolio::createDeserializable);
-  } catch (const IllegalStateException&) {
-    // ignore exception
-  }
-
   userCreds = Properties::create();
   PropertiesPtr config = Properties::create();
   credentialGeneratorHandler->getAuthInit(config);
@@ -163,6 +160,16 @@ void initClientCq(const bool isthinClient) {
     cacheHelper = new CacheHelper(isthinClient, config);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
+  try {
+    SerializationRegistryPtr serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
+
+    serializationRegistry->addType(Position::createDeserializable);
+    serializationRegistry->addType(Portfolio::createDeserializable);
+  } catch (const IllegalStateException&) {
+    // ignore exception
+  }
 }
 
 DUNIT_TASK_DEFINITION(CLIENT1, CreateServer1_Locator)
@@ -237,7 +244,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     uint8_t i = 0;
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    PoolPtr pool =
+        getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != nullptr) {
       // Using region name as pool name as in ThinClientCq.hpp
@@ -298,7 +306,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
     auto qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    auto pool = PoolManager::find(regionNamesCq[0]);
+    auto pool =
+        getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != nullptr) {
       // Using region name as pool name as in ThinClientCq.hpp

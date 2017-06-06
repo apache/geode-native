@@ -18,8 +18,8 @@
 #include <ace/Thread_Mutex.h>
 #include <ace/Singleton.h>
 #include "SolarisProcessStats.hpp"
-#include "GeodeStatisticsFactory.hpp"
 #include "HostStatHelperSolaris.hpp"
+
 using namespace apache::geode::statistics;
 
 /**
@@ -28,10 +28,8 @@ using namespace apache::geode::statistics;
  *
  */
 
-SolarisProcessStats::SolarisProcessStats(int64_t pid, const char* name) {
-  GeodeStatisticsFactory* statFactory =
-      GeodeStatisticsFactory::getExistingInstance();
-
+SolarisProcessStats::SolarisProcessStats(GeodeStatisticsFactory* statFactory,
+                                         int64_t pid, const char* name) {
   // Create Statistics Type
   createType(statFactory);
 

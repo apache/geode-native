@@ -52,13 +52,15 @@ class CPPCACHE_EXPORT TestMapAction : public virtual LRUAction {
   friend class LRUAction;
 };
 
-LRUEntriesMap::LRUEntriesMap(EntryFactory* entryFactory, RegionInternal* region,
+LRUEntriesMap::LRUEntriesMap(ExpiryTaskManager* expiryTaskManager,
+                             std::unique_ptr<EntryFactory> entryFactory,
+                             RegionInternal* region,
                              const LRUAction::Action& lruAction,
                              const uint32_t limit,
                              bool concurrencyChecksEnabled,
                              const uint8_t concurrency, bool heapLRUEnabled)
-    : ConcurrentEntriesMap(entryFactory, concurrencyChecksEnabled, region,
-                           concurrency),
+    : ConcurrentEntriesMap(expiryTaskManager, std::move(entryFactory),
+                           concurrencyChecksEnabled, region, concurrency),
       m_lruList(),
       m_limit(limit),
       m_pmPtr(nullptr),
@@ -396,7 +398,7 @@ bool LRUEntriesMap::get(const CacheableKeyPtr& key, CacheablePtr& returnPtr,
         return false;
       }
       m_region->getRegionStats()->incRetrieves();
-      m_region->getCacheImpl()->m_cacheStats->incRetrieves();
+      m_region->getCacheImpl()->getCachePerfStats().incRetrieves();
 
       returnPtr = tmpObj;
 

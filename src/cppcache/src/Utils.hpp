@@ -24,6 +24,11 @@
  * @file
  */
 
+#include <typeinfo>
+#include <string>
+#include <unordered_set>
+#include <memory>
+
 #include <geode/geode_globals.hpp>
 #include <geode/geode_base.hpp>
 #include <geode/ExceptionTypes.hpp>
@@ -141,18 +146,7 @@ class CPPCACHE_EXPORT Utils {
     return CacheableString::create("(null)");
   }
 
-  inline static int64_t startStatOpTime() {
-    if (DistributedSystem::getSystemProperties() != nullptr) {
-      return (DistributedSystem::getSystemProperties()
-                  ->getEnableTimeStatistics())
-                 ? std::chrono::duration_cast<std::chrono::nanoseconds>(
-                       std::chrono::steady_clock::now().time_since_epoch())
-                       .count()
-                 : 0;
-    } else {
-      return 0;
-    }
-  }
+  static int64_t startStatOpTime();
 
   // Check objectSize() implementation return value and log a warning at most
   // once.
@@ -176,14 +170,8 @@ class CPPCACHE_EXPORT Utils {
     return objectSize;
   }
 
-  inline static void updateStatOpTime(statistics::Statistics* m_regionStats,
-                                      int32_t statId, int64_t start) {
-    if (DistributedSystem::getSystemProperties() != nullptr) {
-      if (DistributedSystem::getSystemProperties()->getEnableTimeStatistics()) {
-        m_regionStats->incLong(statId, startStatOpTime() - start);
-      }
-    }
-  }
+  static void updateStatOpTime(statistics::Statistics* m_regionStats,
+                               int32_t statId, int64_t start);
 
   static void parseEndpointNamesString(
       const char* endpoints, std::unordered_set<std::string>& endpointNames);

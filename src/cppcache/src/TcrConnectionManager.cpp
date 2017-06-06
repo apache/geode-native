@@ -39,7 +39,6 @@
 namespace apache {
 namespace geode {
 namespace client {
-volatile bool TcrConnectionManager::isNetDown = false;
 volatile bool TcrConnectionManager::TEST_DURABLE_CLIENT_CRASH = false;
 
 const char *TcrConnectionManager::NC_Redundancy = "NC Redundancy";
@@ -59,7 +58,8 @@ TcrConnectionManager::TcrConnectionManager(CacheImpl *cache)
       m_notifyCleanupSemaList(false),
       m_redundancySema(0),
       m_redundancyTask(nullptr),
-      m_isDurable(false) {
+      m_isDurable(false),
+      m_isNetDown(false) {
   m_redundancyManager = new ThinClientRedundancyManager(this);
 }
 
@@ -70,14 +70,14 @@ void TcrConnectionManager::init(bool isPool) {
   } else {
     return;
   }
-  SystemProperties *props = DistributedSystem::getSystemProperties();
-  m_isDurable = strlen(props->durableClientId()) > 0;
-  int32_t pingInterval = (props->pingInterval() / 2);
-  if (!props->isGridClient() && !isPool) {
+  auto &props = m_cache->getDistributedSystem().getSystemProperties();
+  m_isDurable = strlen(props.durableClientId()) > 0;
+  int32_t pingInterval = (props.pingInterval() / 2);
+  if (!props.isGridClient() && !isPool) {
     ACE_Event_Handler *connectionChecker =
         new ExpiryHandler_T<TcrConnectionManager>(
             this, &TcrConnectionManager::checkConnection);
-    m_pingTaskId = CacheImpl::expiryTaskManager->scheduleExpiryTask(
+    m_pingTaskId = m_cache->getExpiryTaskManager().scheduleExpiryTask(
         connectionChecker, 10, pingInterval, false);
     LOGFINE(
         "TcrConnectionManager::TcrConnectionManager Registered ping "
@@ -105,9 +105,9 @@ void TcrConnectionManager::init(bool isPool) {
     ACE_Event_Handler *redundancyChecker =
         new ExpiryHandler_T<TcrConnectionManager>(
             this, &TcrConnectionManager::checkRedundancy);
-    int32_t redundancyMonitorInterval = props->redundancyMonitorInterval();
+    int32_t redundancyMonitorInterval = props.redundancyMonitorInterval();
 
-    m_servermonitorTaskId = CacheImpl::expiryTaskManager->scheduleExpiryTask(
+    m_servermonitorTaskId = m_cache->getExpiryTaskManager().scheduleExpiryTask(
         redundancyChecker, 1, redundancyMonitorInterval, false);
     LOGFINE(
         "TcrConnectionManager::TcrConnectionManager Registered server "
@@ -125,7 +125,7 @@ void TcrConnectionManager::init(bool isPool) {
     m_redundancyManager->m_HAenabled = true;
   }
 
-  if (!props->isGridClient()) {
+  if (!props.isGridClient()) {
     startFailoverAndCleanupThreads(isPool);
   }
 }
@@ -152,7 +152,7 @@ void TcrConnectionManager::startFailoverAndCleanupThreads(bool isPool) {
 void TcrConnectionManager::close() {
   LOGFINE("TcrConnectionManager is closing");
   if (m_pingTaskId > 0) {
-    CacheImpl::expiryTaskManager->cancelTask(m_pingTaskId);
+    m_cache->getExpiryTaskManager().cancelTask(m_pingTaskId);
   }
 
   if (m_failoverTask != nullptr) {
@@ -166,7 +166,7 @@ void TcrConnectionManager::close() {
   if (cacheAttributes != nullptr &&
       (cacheAttributes->getRedundancyLevel() > 0 || m_isDurable)) {
     if (m_servermonitorTaskId > 0) {
-      CacheImpl::expiryTaskManager->cancelTask(m_servermonitorTaskId);
+      m_cache->getExpiryTaskManager().cancelTask(m_servermonitorTaskId);
     }
     if (m_redundancyTask != nullptr) {
       m_redundancyTask->stopNoblock();
@@ -344,7 +344,7 @@ int TcrConnectionManager::checkConnection(const ACE_Time_Value &,
                   ACE_Recursive_Thread_Mutex>::iterator currItr =
       m_endpoints.begin();
   while (currItr != m_endpoints.end()) {
-    if ((*currItr).int_id_->connected() && !isNetDown) {
+    if ((*currItr).int_id_->connected() && !m_isNetDown) {
       (*currItr).int_id_->pingServer();
     }
     currItr++;
@@ -362,7 +362,7 @@ int TcrConnectionManager::failover(volatile bool &isRunning) {
   LOGFINE("TcrConnectionManager: starting failover thread");
   while (isRunning) {
     m_failoverSema.acquire();
-    if (isRunning && !isNetDown) {
+    if (isRunning && !m_isNetDown) {
       try {
         ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_distMngrsLock);
         for (std::list<ThinClientBaseDM *>::iterator it = m_distMngrs.begin();
@@ -477,7 +477,7 @@ void TcrConnectionManager::removeHAEndpoints() {
 }
 
 void TcrConnectionManager::netDown() {
-  isNetDown = true;
+  m_isNetDown = true;
 
   //  sleep for 15 seconds to allow ping and redundancy threads to pause.
   std::this_thread::sleep_for(std::chrono::seconds(15));
@@ -499,7 +499,7 @@ void TcrConnectionManager::netDown() {
 /* Need to do a get on unknown key after calling this Fn to restablish all
  * connection */
 void TcrConnectionManager::revive() {
-  isNetDown = false;
+  m_isNetDown = false;
 
   //  sleep for 15 seconds to allow redundancy thread to reestablish
   //  connections.
@@ -510,7 +510,7 @@ int TcrConnectionManager::redundancy(volatile bool &isRunning) {
   LOGFINE("Starting subscription maintain redundancy thread.");
   while (isRunning) {
     m_redundancySema.acquire();
-    if (isRunning && !isNetDown) {
+    if (isRunning && !m_isNetDown) {
       m_redundancyManager->maintainRedundancyLevel();
       while (m_redundancySema.tryacquire() != -1) {
         ;

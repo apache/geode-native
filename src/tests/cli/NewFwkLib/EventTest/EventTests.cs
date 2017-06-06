@@ -519,7 +519,7 @@ namespace Apache.Geode.Client.FwkLib
       Region rootRegion;
       RegionAttributes attr;
 
-      rootRegionArray = CacheHelper.DCache.RootRegions();
+      rootRegionArray = CacheHelper<TKey, TVal>.DCache.RootRegions();
 
       int ulRegionCount = rootRegionArray.Length;
 
@@ -562,7 +562,7 @@ namespace Apache.Geode.Client.FwkLib
       {
         FwkException("Data not provided for 'regionName', failing.");
       }
-      Region region = CacheHelper.DCache.GetRegion(testRegionName);
+      Region region = CacheHelper<TKey, TVal>.DCache.GetRegion(testRegionName);
 
       int usePid = GetUIntValue("usePID");
       int pid = Util.PID;
@@ -631,7 +631,7 @@ namespace Apache.Geode.Client.FwkLib
       {
         FwkException("Data not provided for 'regionName', failing.");
       }
-      Region region = CacheHelper.DCache.GetRegion(testRegionName);
+      Region region = CacheHelper<TKey, TVal>.DCache.GetRegion(testRegionName);
 
       int usePid = GetUIntValue("usePID");
       int pid = Util.PID;
@@ -692,8 +692,8 @@ namespace Apache.Geode.Client.FwkLib
       FwkInfo("validateCacheContent()");
       string testRegionName = GetStringValue("testRegion");
       string validateRegionName = GetStringValue("validateRegion");
-      Region testRegion = CacheHelper.DCache.GetRegion(testRegionName);
-      Region validateRegion = CacheHelper.DCache.GetRegion(validateRegionName);
+      Region testRegion = CacheHelper<TKey, TVal>.DCache.GetRegion(testRegionName);
+      Region validateRegion = CacheHelper<TKey, TVal>.DCache.GetRegion(validateRegionName);
       ICacheableKey[] keyVector;
 
       keyVector = testRegion.GetKeys();
@@ -740,8 +740,8 @@ namespace Apache.Geode.Client.FwkLib
       string testRegionName = GetStringValue("testRegion");
       string validateRegionName = GetStringValue("validateRegion");
       string regionName = GetStringValue("regionName");
-      Region testRegion = CacheHelper.DCache.GetRegion(testRegionName);
-      Region validateRegion = CacheHelper.DCache.GetRegion(validateRegionName);
+      Region testRegion = CacheHelper<TKey, TVal>.DCache.GetRegion(testRegionName);
+      Region validateRegion = CacheHelper<TKey, TVal>.DCache.GetRegion(validateRegionName);
 
       FwkInfo("localDestroyRegion region name is " + testRegion.Name);
       // destroy the region
@@ -750,7 +750,7 @@ namespace Apache.Geode.Client.FwkLib
 
       testRegion.LocalDestroyRegion();
       CreateRootRegion();
-      Region region = CacheHelper.DCache.GetRegion(regionName);
+      Region region = CacheHelper<TKey, TVal>.DCache.GetRegion(regionName);
 
       FwkInfo(" Recreated Region name is " + region.Name);
 
@@ -807,8 +807,8 @@ namespace Apache.Geode.Client.FwkLib
       FwkInfo("doIterateOnEntry()");
       string testRegionName = GetStringValue("testRegion");
       string validateRegionName = GetStringValue("validateRegion");
-      Region testRegion = CacheHelper.DCache.GetRegion(testRegionName);
-      Region validateRegion = CacheHelper.DCache.GetRegion(validateRegionName);
+      Region testRegion = CacheHelper<TKey, TVal>.DCache.GetRegion(testRegionName);
+      Region validateRegion = CacheHelper<TKey, TVal>.DCache.GetRegion(validateRegionName);
 
       ICacheableKey[] keyVector = null;
       int keysInRegion = 1;
@@ -849,7 +849,7 @@ namespace Apache.Geode.Client.FwkLib
       {
         FwkException("Data not provided for 'regionName', failing.");
       }
-      Region region = CacheHelper.DCache.GetRegion(testRegionName);
+      Region region = CacheHelper<TKey, TVal>.DCache.GetRegion(testRegionName);
 
       int opsSecond = GetUIntValue("opsSecond");
       if (opsSecond < 0)
@@ -1150,7 +1150,7 @@ namespace Apache.Geode.Client.FwkLib
       // TODO: For lock
       // SpinLockGuard guard( m_lck );
       // TODO: setTask(taskId)
-      if (CacheHelper.DCache == null)
+      if (CacheHelper<TKey, TVal>.DCache == null)
       {
         Properties pp = new Properties();
         //TODO: Initialize? cacheInitialize( pp );
@@ -1448,7 +1448,7 @@ namespace Apache.Geode.Client.FwkLib
     public Region GetRandomRegion(bool bAllowRootRegion)
     {
       FwkInfo("Inside GetRandomRegion ... Check 1");
-      Region[] rootRegionVector = CacheHelper.DCache.RootRegions();
+      Region[] rootRegionVector = CacheHelper<TKey, TVal>.DCache.RootRegions();
       int irootSize = rootRegionVector.Length;
 
       Region[] subRegionVector;
@@ -1666,12 +1666,12 @@ namespace Apache.Geode.Client.FwkLib
 
     public int getAllRegionCount()
     {
-      if (CacheHelper.DCache == null)
+      if (CacheHelper<TKey, TVal>.DCache == null)
       {
         FwkSevere("Null cache pointer, no connection established.");
         return 0;
       }
-      Region[] rootRegions = CacheHelper.DCache.RootRegions();
+      Region[] rootRegions = CacheHelper<TKey, TVal>.DCache.RootRegions();
       int iRootSize = rootRegions.Length;
       int iTotalRegions = iRootSize;
 
@@ -1747,7 +1747,7 @@ namespace Apache.Geode.Client.FwkLib
     public Int32 getRegionCount()
     {
       FwkInfo("Check 1.1 Inside getRegionCount");
-      Region[] roots = CacheHelper.DCache.RootRegions();
+      Region[] roots = CacheHelper<TKey, TVal>.DCache.RootRegions();
       FwkInfo("Check 1.1 root region count = {0}", roots.Length);
       return roots.Length;
     }

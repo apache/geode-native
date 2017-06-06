@@ -15,21 +15,13 @@
  * limitations under the License.
  */
 
+#include <ace/Thread_Mutex.h>
+#include <ace/Singleton.h>
+#include <mutex>
 #include <geode/geode_globals.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
 
 #include "CqServiceVsdStats.hpp"
-//#include "StatisticsFactory.hpp"
-
-#include <ace/Singleton.h>
-
-#include <mutex>
-
-#include "util/concurrent/spinlock_mutex.hpp"
-
-const char* cqServiceStatsName = "CqServiceStatistics";
-const char* cqServiceStatsDesc = "Statistics for this cq Service";
-
-////////////////////////////////////////////////////////////////////////////////
 
 namespace apache {
 namespace geode {
@@ -39,90 +31,47 @@ using statistics::StatisticsFactory;
 using util::concurrent::spinlock_mutex;
 using std::lock_guard;
 
-////////////////////////////////////////////////////////////////////////////////
+constexpr const char* CqServiceVsdStats::STATS_NAME;
+constexpr const char* CqServiceVsdStats::STATS_DESC;
 
-spinlock_mutex CqServiceStatType::m_statTypeLock;
-
-StatisticsType* CqServiceStatType::getStatType() {
-  const bool largerIsBetter = true;
-  lock_guard<spinlock_mutex> guard(m_statTypeLock);
-  StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
-  GF_D_ASSERT(!!factory);
-
-  StatisticsType* statsType = factory->findType("CqServiceStatistics");
-
-  if (statsType == nullptr) {
-    m_stats[0] = factory->createIntCounter(
+CqServiceVsdStats::CqServiceVsdStats(StatisticsFactory* factory,
+                                     const std::string& cqServiceName) {
+  auto statsType = factory->findType(STATS_NAME);
+  if (!statsType) {
+    const bool largerIsBetter = true;
+    auto stats = new StatisticDescriptor*[5];
+    stats[0] = factory->createIntCounter(
         "CqsActive", "The total number of CqsActive this cq qurey", "entries",
         largerIsBetter);
-    m_stats[1] = factory->createIntCounter(
+    stats[1] = factory->createIntCounter(
         "CqsCreated", "The total number of CqsCreated for this cq Service",
         "entries", largerIsBetter);
-    m_stats[2] = factory->createIntCounter(
+    stats[2] = factory->createIntCounter(
         "CqsClosed", "The total number of CqsClosed for this cq Service",
         "entries", largerIsBetter);
-    m_stats[3] = factory->createIntCounter(
+    stats[3] = factory->createIntCounter(
         "CqsStopped", "The total number of CqsStopped for this cq Service",
         "entries", largerIsBetter);
-    m_stats[4] = factory->createIntCounter(
+    stats[4] = factory->createIntCounter(
         "CqsOnClient",
         "The total number of Cqs on the client for this cq Service", "entries",
         largerIsBetter);
 
-    statsType =
-        factory->createType(cqServiceStatsName, cqServiceStatsDesc, m_stats, 5);
-
-    m_numCqsActiveId = statsType->nameToId("CqsActive");
-    m_numCqsCreatedId = statsType->nameToId("CqsCreated");
-    m_numCqsOnClientId = statsType->nameToId("CqsOnClient");
-    m_numCqsClosedId = statsType->nameToId("CqsClosed");
-    m_numCqsStoppedId = statsType->nameToId("CqsStopped");
+    statsType = factory->createType(STATS_NAME, STATS_DESC, stats, 5);
   }
 
-  return statsType;
-}
+  m_cqServiceVsdStats =
+      factory->createAtomicStatistics(statsType, cqServiceName.c_str());
 
-CqServiceStatType& CqServiceStatType::getInstance() {
-  static CqServiceStatType instance;
-  return instance;
-}
-
-CqServiceStatType::CqServiceStatType()
-    : m_numCqsActiveId(0),
-      m_numCqsCreatedId(0),
-      m_numCqsOnClientId(0),
-      m_numCqsClosedId(0),
-      m_numCqsStoppedId(0) {
-  memset(m_stats, 0, sizeof(m_stats));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-// typedef ACE_Singleton<CqServiceVsdStatsInit, ACE_Thread_Mutex>
-// TheCqServiceVsdStatsInit;
-
-////////////////////////////////////////////////////////////////////////////////
-
-CqServiceVsdStats::CqServiceVsdStats(const char* cqServiceName) {
-  auto& regStatType = CqServiceStatType::getInstance();
-
-  StatisticsType* statsType = regStatType.getStatType();
-
-  GF_D_ASSERT(statsType != nullptr);
-
-  StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
-
-  m_cqServiceVsdStats = factory->createAtomicStatistics(
-      statsType, const_cast<char*>(cqServiceName));
-
-  m_numCqsActiveId = regStatType.getNumCqsActiveId();
-  m_numCqsCreatedId = regStatType.getNumCqsCreatedId();
-  m_numCqsOnClientId = regStatType.getNumCqsOnClientId();
-  m_numCqsClosedId = regStatType.getNumCqsClosedId();
-  m_numCqsStoppedId = regStatType.getNumCqsStoppedId();
+  m_numCqsActiveId = statsType->nameToId("CqsActive");
+  m_numCqsCreatedId = statsType->nameToId("CqsCreated");
+  m_numCqsOnClientId = statsType->nameToId("CqsOnClient");
+  m_numCqsClosedId = statsType->nameToId("CqsClosed");
+  m_numCqsStoppedId = statsType->nameToId("CqsStopped");
 
   m_cqServiceVsdStats->setInt(m_numCqsActiveId, 0);
   m_cqServiceVsdStats->setInt(m_numCqsCreatedId, 0);
+  m_cqServiceVsdStats->setInt(m_numCqsOnClientId, 0);
   m_cqServiceVsdStats->setInt(m_numCqsClosedId, 0);
   m_cqServiceVsdStats->setInt(m_numCqsStoppedId, 0);
 }

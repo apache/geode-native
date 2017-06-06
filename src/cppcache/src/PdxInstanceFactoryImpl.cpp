@@ -26,13 +26,20 @@ namespace client {
 
 PdxInstanceFactoryImpl::~PdxInstanceFactoryImpl() {}
 
-PdxInstanceFactoryImpl::PdxInstanceFactoryImpl(const char* className) {
+PdxInstanceFactoryImpl::PdxInstanceFactoryImpl(
+    const char* className, CachePerfStats* cachePerfStats,
+    PdxTypeRegistryPtr pdxTypeRegistry, const Cache* cache,
+    bool enableTimeStatistics)
+    : m_pdxType(std::make_shared<PdxType>(pdxTypeRegistry, className, false)),
+      m_created(false),
+      m_cachePerfStats(cachePerfStats),
+      m_pdxTypeRegistry(pdxTypeRegistry),
+      m_cache(cache),
+      m_enableTimeStatistics(enableTimeStatistics) {
   if (className == nullptr ||
       *className == '\0') {  // COVERITY ---> 30289 Same on both sides
     throw IllegalStateException("className should not be null.");
   }
-  m_pdxType = std::make_shared<PdxType>(className, false);
-  m_created = false;
 }
 
 std::unique_ptr<PdxInstance> PdxInstanceFactoryImpl::create() {
@@ -41,7 +48,8 @@ std::unique_ptr<PdxInstance> PdxInstanceFactoryImpl::create() {
         "The PdxInstanceFactory.Create() method can only be called once.");
   }
   auto pi = std::unique_ptr<PdxInstance>(
-      new PdxInstanceImpl(m_FieldVsValues, m_pdxType));
+      new PdxInstanceImpl(m_FieldVsValues, m_pdxType, m_cachePerfStats,
+                          m_pdxTypeRegistry, m_cache, m_enableTimeStatistics));
   m_created = true;
   return pi;
 }

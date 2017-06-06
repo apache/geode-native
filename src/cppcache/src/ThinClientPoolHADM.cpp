@@ -40,9 +40,11 @@ void ThinClientPoolHADM::init() {
 }
 
 void ThinClientPoolHADM::startBackgroundThreads() {
-  SystemProperties* props = DistributedSystem::getSystemProperties();
+  auto& props = m_connManager.getCacheImpl()
+                    ->getDistributedSystem()
+                    .getSystemProperties();
 
-  if (props->isGridClient()) {
+  if (props.isGridClient()) {
     LOGWARN("Starting background threads and ignoring grid-client setting");
     ThinClientPoolDM::startBackgroundThreads();
   }
@@ -55,10 +57,11 @@ void ThinClientPoolHADM::startBackgroundThreads() {
   ACE_Event_Handler* redundancyChecker =
       new ExpiryHandler_T<ThinClientPoolHADM>(
           this, &ThinClientPoolHADM::checkRedundancy);
-  int32_t redundancyMonitorInterval = props->redundancyMonitorInterval();
+  int32_t redundancyMonitorInterval = props.redundancyMonitorInterval();
 
-  m_servermonitorTaskId = CacheImpl::expiryTaskManager->scheduleExpiryTask(
-      redundancyChecker, 1, redundancyMonitorInterval, false);
+  m_servermonitorTaskId =
+      m_connManager.getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
+          redundancyChecker, 1, redundancyMonitorInterval, false);
   LOGFINE(
       "ThinClientPoolHADM::ThinClientPoolHADM Registered server "
       "monitor task with id = %ld, interval = %ld",
@@ -133,7 +136,7 @@ GfErrType ThinClientPoolHADM::sendSyncRequestCq(TcrMessage& request,
 bool ThinClientPoolHADM::preFailoverAction() { return true; }
 
 bool ThinClientPoolHADM::postFailoverAction(TcrEndpoint* endpoint) {
-  m_theTcrConnManager.triggerRedundancyThread();
+  m_connManager.triggerRedundancyThread();
   return true;
 }
 
@@ -141,7 +144,7 @@ int ThinClientPoolHADM::redundancy(volatile bool& isRunning) {
   LOGFINE("ThinClientPoolHADM: Starting maintain redundancy thread.");
   while (isRunning) {
     m_redundancySema.acquire();
-    if (isRunning && !TcrConnectionManager::isNetDown) {
+    if (isRunning && !m_connManager.isNetDown()) {
       m_redundancyManager->maintainRedundancyLevel();
       while (m_redundancySema.tryacquire() != -1) {
         ;
@@ -183,7 +186,8 @@ void ThinClientPoolHADM::destroy(bool keepAlive) {
 void ThinClientPoolHADM::sendNotificationCloseMsgs() {
   if (m_redundancyTask) {
     if (m_servermonitorTaskId >= 0) {
-      CacheImpl::expiryTaskManager->cancelTask(m_servermonitorTaskId);
+      m_connManager.getCacheImpl()->getExpiryTaskManager().cancelTask(
+          m_servermonitorTaskId);
     }
     m_redundancyTask->stopNoblock();
     m_redundancySema.release();
@@ -192,21 +196,6 @@ void ThinClientPoolHADM::sendNotificationCloseMsgs() {
     m_redundancyManager->sendNotificationCloseMsgs();
   }
 }
-
-/*
-void ThinClientPoolHADM::stopNotificationThreads()
-{
-  ACE_Guard< ACE_Recursive_Thread_Mutex > guard( m_endpointsLock );
-  for( ACE_Map_Manager< std::string, TcrEndpoint *, ACE_Recursive_Thread_Mutex
->::iterator it = m_endpoints.begin(); it != m_endpoints.end(); it++){
-    ((*it).int_id_)->stopNoBlock();
-  }
-  for( ACE_Map_Manager< std::string, TcrEndpoint *, ACE_Recursive_Thread_Mutex
->::iterator it = m_endpoints.begin(); it != m_endpoints.end(); it++){
-    ((*it).int_id_)->stopNotifyReceiverAndCleanup();
-  }
-}
-*/
 
 GfErrType ThinClientPoolHADM::registerInterestAllRegions(
     TcrEndpoint* ep, const TcrMessage* request, TcrMessageReply* reply) {
@@ -248,12 +237,14 @@ void ThinClientPoolHADM::removeRegion(ThinClientRegion* theTCR) {
 }
 
 void ThinClientPoolHADM::readyForEvents() {
-  if (!DistributedSystem::getSystemProperties()->autoReadyForEvents()) {
+  auto& sysProp = m_connManager.getCacheImpl()
+                      ->getDistributedSystem()
+                      .getSystemProperties();
+  if (!sysProp.autoReadyForEvents()) {
     init();
   }
 
-  const char* durable =
-      DistributedSystem::getSystemProperties()->durableClientId();
+  const char* durable = sysProp.durableClientId();
 
   if (durable != nullptr && strlen(durable) > 0) {
     m_redundancyManager->readyForEvents();

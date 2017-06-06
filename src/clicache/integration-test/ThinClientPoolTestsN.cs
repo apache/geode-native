@@ -263,9 +263,9 @@ namespace Apache.Geode.Client.UnitTests
       Assert.AreEqual("test_pool_2", poolNameRegion2);
       Assert.AreEqual("test_pool_2", poolNameSubRegion);
 
-      Pool poolOfRegion1 = PoolManager.Find(poolNameRegion1);
-      Pool poolOfRegion2 = PoolManager.Find(poolNameRegion2);
-      Pool poolOfSubRegion = PoolManager.Find(poolNameSubRegion);
+      Pool poolOfRegion1 = CacheHelper.DCache.GetPoolManager().Find(poolNameRegion1);
+      Pool poolOfRegion2 = CacheHelper.DCache.GetPoolManager().Find(poolNameRegion2);
+      Pool poolOfSubRegion = CacheHelper.DCache.GetPoolManager().Find(poolNameSubRegion);
 
       string[] locators = new string[1] { "localhost:" + CacheHelper.LOCATOR_PORT_1 };
       string[] servers = new string[2] { "localhost:" + CacheHelper.HOST_PORT_1, "localhost:" + CacheHelper.HOST_PORT_2 };
@@ -360,7 +360,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       CacheHelper.Init();
 
-      PoolFactory factory = PoolManager.CreateFactory();
+      PoolFactory factory = CacheHelper.DCache.GetPoolManager().CreateFactory();
       factory.SetFreeConnectionTimeout(10000);
       factory.SetLoadConditioningInterval(1);
       factory.SetSocketBufferSize(1024);
@@ -380,7 +380,7 @@ namespace Apache.Geode.Client.UnitTests
       factory.AddLocator("localhost", CacheHelper.LOCATOR_PORT_1);
       factory.SetPRSingleHopEnabled(false);
 
-      Pool pool = factory.Create(poolName);
+      Pool pool = factory.Create(poolName, CacheHelper.DCache);
 
       Assert.AreEqual(10000, pool.FreeConnectionTimeout, "FreeConnectionTimeout");
       Assert.AreEqual(1, pool.LoadConditioningInterval, "LoadConditioningInterval");
@@ -411,7 +411,7 @@ namespace Apache.Geode.Client.UnitTests
       config.Insert("cache-xml-file", xmlFile);
       CacheHelper.InitConfig(config);
 
-      Pool pool = PoolManager.Find(poolName);
+      Pool pool = CacheHelper.DCache.GetPoolManager().Find(poolName);
 
       Assert.AreEqual("clientPool", pool.Name, "Pool Name");
       Assert.AreEqual(10000, pool.FreeConnectionTimeout, "FreeConnectionTimeout");
@@ -435,10 +435,10 @@ namespace Apache.Geode.Client.UnitTests
 
     public void testExistingPool(string poolName)
     {
-      PoolFactory factory = PoolManager.CreateFactory();
+      PoolFactory factory = CacheHelper.DCache.GetPoolManager().CreateFactory();
       try
       {
-        factory.Create(poolName);
+        factory.Create(poolName, CacheHelper.DCache);
         Assert.Fail("Did not get expected IllegalStateException");
       }
       catch (IllegalStateException /*excp*/)

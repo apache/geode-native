@@ -26,6 +26,7 @@
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
+#include <functional>
 
 namespace apache {
 namespace geode {
@@ -34,14 +35,14 @@ namespace client {
 class DataOutput;
 class DataInput;
 
-typedef void (*CliCallbackMethod)();
+typedef void (*CliCallbackMethod)(Cache& cache);
 
 /** @brief signature of functions passed to registerType. Such functions
  * should return an empty instance of the type they represent. The instance
  * will typically be initialized immediately after creation by a call to
  * fromData().
  */
-typedef Serializable* (*TypeFactoryMethod)();
+using TypeFactoryMethod = std::function<Serializable*()>;
 
 typedef PdxSerializable* (*TypeFactoryMethodPdx)();
 /**
@@ -103,31 +104,6 @@ class CPPCACHE_EXPORT Serializable
    * Note that you must implement this only if you use the HeapLRU feature.
    */
   virtual uint32_t objectSize() const;
-
-  /**
-   * @brief register an instance factory method for a given type.
-   * During registration the factory will be invoked to extract the typeId
-   * to associate with this function.
-   * @throws IllegalStateException if the typeId has already been registered,
-   *         or there is an error in registering the type; check errno for
-   *         more information in the latter case.
-   */
-  static void registerType(TypeFactoryMethod creationFunction);
-
-  /**
-   * @brief register an Pdx instance factory method for a given type.
-   * @throws IllegalStateException if the typeName has already been registered,
-   *         or there is an error in registering the type; check errno for
-   *         more information in the latter case.
-   */
-  static void registerPdxType(TypeFactoryMethodPdx creationFunction);
-
-  /**
-   * Register the PDX serializer which can handle serialization for instances of
-   * user domain classes.
-   * @see PdxSerializer
-   */
-  static void registerPdxSerializer(PdxSerializerPtr pdxSerializer);
 
   /**
    * Display this object as 'string', which depends on the implementation in

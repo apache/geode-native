@@ -43,7 +43,9 @@ void ThinClientHARegion::initTCR() {
   try {
     bool isPool = m_attribute->getPoolName() != nullptr &&
                   strlen(m_attribute->getPoolName()) > 0;
-    if (DistributedSystem::getSystemProperties()->isGridClient()) {
+    if (m_cacheImpl->getDistributedSystem()
+            .getSystemProperties()
+            .isGridClient()) {
       LOGWARN(
           "Region: HA region having notification channel created for grid "
           "client; force starting required notification, cleanup and "
@@ -61,7 +63,10 @@ void ThinClientHARegion::initTCR() {
       m_tcrdm->init();
     } else {
       m_tcrdm = dynamic_cast<ThinClientPoolHADM*>(
-          PoolManager::find(m_attribute->getPoolName()).get());
+          m_cacheImpl->getCache()
+              ->getPoolManager()
+              .find(m_attribute->getPoolName())
+              .get());
       if (m_tcrdm) {
         m_poolDM = true;
         // Pool DM should only be inited once and it
@@ -109,7 +114,7 @@ void ThinClientHARegion::handleMarker() {
 
   if (m_listener != nullptr && !m_processedMarker) {
     RegionEvent event(shared_from_this(), nullptr, false);
-    int64_t sampleStartNanos = Utils::startStatOpTime();
+    int64_t sampleStartNanos = startStatOpTime();
     try {
       m_listener->afterRegionLive(event);
     } catch (const Exception& ex) {
@@ -118,11 +123,9 @@ void ThinClientHARegion::handleMarker() {
     } catch (...) {
       LOGERROR("Unknown exception in CacheListener::afterRegionLive");
     }
-    m_cacheImpl->m_cacheStats->incListenerCalls();
-    Utils::updateStatOpTime(
-        m_regionStats->getStat(),
-        RegionStatType::getInstance()->getListenerCallTimeId(),
-        sampleStartNanos);
+    m_cacheImpl->getCachePerfStats().incListenerCalls();
+    updateStatOpTime(m_regionStats->getStat(),
+                     m_regionStats->getListenerCallTimeId(), sampleStartNanos);
     m_regionStats->incListenerCallsCompleted();
   }
   m_processedMarker = true;
@@ -155,7 +158,8 @@ void ThinClientHARegion::addDisMessToQueue() {
 
     if (poolDM->m_redundancyManager->m_globalProcessedMarker &&
         !m_processedMarker) {
-      TcrMessage* regionMsg = new TcrMessageClientMarker(true);
+      TcrMessage* regionMsg =
+          new TcrMessageClientMarker(m_cache->createDataOutput(), true);
       receiveNotification(regionMsg);
     }
   }
@@ -164,7 +168,8 @@ void ThinClientHARegion::addDisMessToQueue() {
 GfErrType ThinClientHARegion::getNoThrow_FullObject(EventIdPtr eventId,
                                                     CacheablePtr& fullObject,
                                                     VersionTagPtr& versionTag) {
-  TcrMessageRequestEventValue fullObjectMsg(eventId);
+  TcrMessageRequestEventValue fullObjectMsg(m_cache->createDataOutput(),
+                                            eventId);
   TcrMessageReply reply(true, nullptr);
 
   ThinClientPoolHADM* poolHADM = dynamic_cast<ThinClientPoolHADM*>(m_tcrdm);

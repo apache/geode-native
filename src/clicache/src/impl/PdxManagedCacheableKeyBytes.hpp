@@ -22,6 +22,8 @@
 #include "begin_native.hpp"
 #include <geode/CacheableKey.hpp>
 #include <geode/Delta.hpp>
+#include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
 #include "end_native.hpp"
 
 #include "../Log.hpp"
@@ -67,10 +69,11 @@ namespace apache
     /// The managed object.
     /// </param>
     inline PdxManagedCacheableKeyBytes(
-      Apache::Geode::Client::IPdxSerializable^ managedptr, bool storeBytes )
-      : m_domainId(System::Threading::Thread::GetDomainID()),
+      Apache::Geode::Client::IPdxSerializable^ managedptr, bool storeBytes, Cache* cache)
+      : Delta(cache), m_domainId(System::Threading::Thread::GetDomainID()),
         m_bytes(NULL),
         m_size(0),
+        m_cache(cache),
         m_hashCode(0)
     {
       m_hasDelta = false;
@@ -85,17 +88,19 @@ namespace apache
       {
         if(storeBytes)//if value is from app 
         {
-          apache::geode::client::DataOutput dataOut;
-          Apache::Geode::Client::DataOutput mg_output( &dataOut, true);
-					 Apache::Geode::Client::Internal::PdxHelper::SerializePdx(%mg_output, managedptr);
+          auto dataOut = m_cache->createDataOutput();
+          Apache::Geode::Client::DataOutput mg_output(dataOut.get(), true);
+          SerializationRegistry defaultSerializationRegistry;
+
+					Apache::Geode::Client::Internal::PdxHelper::SerializePdx(%mg_output, managedptr);
         //  managedptr->ToData( %mg_output );
           
           //move cursor
           //dataOut.advanceCursor(mg_output.BufferLength);
 					mg_output.WriteBytesToUMDataOutput();
 
-          m_bytes = dataOut.getBufferCopy();
-          m_size = dataOut.getBufferLength();
+          m_bytes = dataOut->getBufferCopy();
+          m_size = dataOut->getBufferLength();
           
           m_hashCode = managedptr->GetHashCode(); 
           Apache::Geode::Client::Log::Fine(
@@ -104,10 +109,11 @@ namespace apache
       }
     }
 
-		inline PdxManagedCacheableKeyBytes( )
-      : m_domainId(System::Threading::Thread::GetDomainID()),
+		inline PdxManagedCacheableKeyBytes(Cache* cache)
+      : Delta(cache), m_domainId(System::Threading::Thread::GetDomainID()),
         m_bytes(NULL),
         m_size(0),
+        m_cache(cache),
         m_hashCode(0)
     {
       m_hasDelta = false;
@@ -198,9 +204,9 @@ namespace apache
       return getManagedObject();
     }
     
-		static Serializable* CreateDeserializable()
+		static Serializable* CreateDeserializable(Cache* cache)
     {
-      return new PdxManagedCacheableKeyBytes();
+      return new PdxManagedCacheableKeyBytes(cache);
     }
 
     inline ~PdxManagedCacheableKeyBytes()
@@ -227,6 +233,7 @@ namespace apache
     UInt32 m_classId;
     System::Byte * m_bytes;
     System::UInt32 m_size;
+    Cache* m_cache;
     bool m_hasDelta;
     System::Int32 m_hashCode;
     // Disable the copy and assignment constructors

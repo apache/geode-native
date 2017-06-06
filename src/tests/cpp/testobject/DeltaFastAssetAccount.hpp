@@ -63,7 +63,8 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
 
  public:
   DeltaFastAssetAccount()
-      : encodeTimestamp(0),
+      : Delta(nullptr),
+        encodeTimestamp(0),
         acctId(0),
         customerName(nullptr),
         netWorth(0.0),

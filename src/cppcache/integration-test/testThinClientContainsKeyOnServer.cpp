@@ -40,8 +40,8 @@ END_TASK(StartServer)
 
 DUNIT_TASK(CLIENT1, SetupClient1)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       nullptr, 0, true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, nullptr, 0,
+                       true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
@@ -52,8 +52,8 @@ END_TASK(SetupClient1)
 
 DUNIT_TASK(CLIENT2, SetupClient2)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       nullptr, 0, true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, nullptr, 0,
+                       true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);

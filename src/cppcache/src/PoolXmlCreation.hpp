@@ -82,7 +82,7 @@ class CPPCACHE_EXPORT PoolXmlCreation {
    * @throws UnknownException otherwise
    *
    */
-  PoolPtr create();
+  PoolPtr create(Cache &cache);
 };
 }  // namespace client
 }  // namespace geode

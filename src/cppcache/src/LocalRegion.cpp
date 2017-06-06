@@ -14,15 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <vector>
 
 #include "LocalRegion.hpp"
 #include <geode/Log.hpp>
 #include <geode/SystemProperties.hpp>
+#include <geode/PoolManager.hpp>
+
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheableToken.hpp"
 #include "Utils.hpp"
-
 #include "EntryExpiryHandler.hpp"
 #include "RegionExpiryHandler.hpp"
 #include "ExpiryTaskManager.hpp"
@@ -30,8 +32,7 @@
 #include "RegionGlobalLocks.hpp"
 #include "TXState.hpp"
 #include "VersionTag.hpp"
-#include <vector>
-#include <geode/PoolManager.hpp>
+#include "statistics/StatisticsManager.hpp"
 
 namespace apache {
 namespace geode {
@@ -40,8 +41,9 @@ namespace client {
 LocalRegion::LocalRegion(const std::string& name, CacheImpl* cache,
                          const RegionInternalPtr& rPtr,
                          const RegionAttributesPtr& attributes,
-                         const CacheStatisticsPtr& stats, bool shared)
-    : RegionInternal(attributes),
+                         const CacheStatisticsPtr& stats, bool shared,
+                         bool enableTimeStatistics)
+    : RegionInternal(cache->getCache()->shared_from_this(), attributes),
       m_name(name),
       m_parentRegion(rPtr),
       m_cacheImpl(cache),
@@ -55,7 +57,8 @@ LocalRegion::LocalRegion(const std::string& name, CacheImpl* cache,
       m_transactionEnabled(false),
       m_isPRSingleHopEnabled(false),
       m_attachedPool(nullptr),
-      m_persistenceManager(nullptr) {
+      m_persistenceManager(nullptr),
+      m_enableTimeStatistics(enableTimeStatistics) {
   if (m_parentRegion != nullptr) {
     ((m_fullPath = m_parentRegion->getFullPath()) += "/") += m_name;
   } else {
@@ -83,8 +86,12 @@ LocalRegion::LocalRegion(const std::string& name, CacheImpl* cache,
     (m_fullPath = "/") += m_name;
   }
 
-  m_regionStats = new RegionStats(m_fullPath.c_str());
-  PoolPtr p = PoolManager::find(getAttributes()->getPoolName());
+  m_regionStats = new RegionStats(cache->getDistributedSystem()
+                                      .getStatisticsManager()
+                                      ->getStatisticsFactory(),
+                                  m_fullPath);
+  PoolPtr p =
+      cache->getCache()->getPoolManager().find(getAttributes()->getPoolName());
   // m_attachedPool = p;
   setPool(p);
 }
@@ -121,11 +128,8 @@ void LocalRegion::updateAccessAndModifiedTime(bool modified) {
 CacheStatisticsPtr LocalRegion::getStatistics() const {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getStatistics);
   bool m_statisticsEnabled = true;
-  SystemProperties* props =
-      m_cacheImpl->getCache()->getDistributedSystem()->getSystemProperties();
-  if (props) {
-    m_statisticsEnabled = props->statisticsEnabled();
-  }
+  auto& props = m_cacheImpl->getDistributedSystem().getSystemProperties();
+  m_statisticsEnabled = props.statisticsEnabled();
   if (!m_statisticsEnabled) {
     throw StatisticsDisabledException(
         "LocalRegion::getStatistics statistics disabled for this region");
@@ -307,11 +311,10 @@ void LocalRegion::getEntry(const CacheableKeyPtr& key, CacheablePtr& valuePtr) {
 CacheablePtr LocalRegion::get(const CacheableKeyPtr& key,
                               const UserDataPtr& aCallbackArgument) {
   CacheablePtr rptr;
-  int64_t sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = startStatOpTime();
   GfErrType err = getNoThrow(key, rptr, aCallbackArgument);
-  Utils::updateStatOpTime(m_regionStats->getStat(),
-                          RegionStatType::getInstance()->getGetTimeId(),
-                          sampleStartNanos);
+  updateStatOpTime(m_regionStats->getStat(), m_regionStats->getGetTimeId(),
+                   sampleStartNanos);
 
   // rptr = handleReplay(err, rptr);
 
@@ -323,13 +326,12 @@ CacheablePtr LocalRegion::get(const CacheableKeyPtr& key,
 void LocalRegion::put(const CacheableKeyPtr& key, const CacheablePtr& value,
                       const UserDataPtr& aCallbackArgument) {
   CacheablePtr oldValue;
-  int64_t sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = startStatOpTime();
   VersionTagPtr versionTag;
   GfErrType err = putNoThrow(key, value, aCallbackArgument, oldValue, -1,
                              CacheEventFlags::NORMAL, versionTag);
-  Utils::updateStatOpTime(m_regionStats->getStat(),
-                          RegionStatType::getInstance()->getPutTimeId(),
-                          sampleStartNanos);
+  updateStatOpTime(m_regionStats->getStat(), m_regionStats->getPutTimeId(),
+                   sampleStartNanos);
   //  handleReplay(err, nullptr);
   GfErrTypeToException("Region::put", err);
 }
@@ -351,11 +353,10 @@ void LocalRegion::putAll(const HashMapOfCacheable& map, uint32_t timeout,
         "Region::putAll: timeout parameter "
         "greater than maximum allowed (2^31/1000 i.e 2147483).");
   }
-  int64_t sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = startStatOpTime();
   GfErrType err = putAllNoThrow(map, timeout, aCallbackArgument);
-  Utils::updateStatOpTime(m_regionStats->getStat(),
-                          RegionStatType::getInstance()->getPutAllTimeId(),
-                          sampleStartNanos);
+  updateStatOpTime(m_regionStats->getStat(), m_regionStats->getPutAllTimeId(),
+                   sampleStartNanos);
   // handleReplay(err, nullptr);
   GfErrTypeToException("Region::putAll", err);
 }
@@ -365,11 +366,10 @@ void LocalRegion::removeAll(const VectorOfCacheableKey& keys,
   if (keys.size() == 0) {
     throw IllegalArgumentException("Region::removeAll: zero keys provided");
   }
-  int64_t sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = startStatOpTime();
   GfErrType err = removeAllNoThrow(keys, aCallbackArgument);
-  Utils::updateStatOpTime(m_regionStats->getStat(),
-                          RegionStatType::getInstance()->getRemoveAllTimeId(),
-                          sampleStartNanos);
+  updateStatOpTime(m_regionStats->getStat(),
+                   m_regionStats->getRemoveAllTimeId(), sampleStartNanos);
   GfErrTypeToException("Region::removeAll", err);
 }
 
@@ -537,17 +537,17 @@ void LocalRegion::getAll(const VectorOfCacheableKey& keys,
       !(addToLocalCache && m_regionAttributes->getCachingEnabled())) {
     throw IllegalArgumentException(
         "Region::getAll: either output \"values\""
-        " parameter should be non-null, or \"addToLocalCache\" should be true "
+        " parameter should be non-null, or \"addToLocalCache\" should be "
+        "true "
         "and caching should be enabled for the region [%s]",
         getFullPath());
   }
 
-  int64_t sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = startStatOpTime();
   GfErrType err = getAllNoThrow(keys, values, exceptions, addToLocalCache,
                                 aCallbackArgument);
-  Utils::updateStatOpTime(m_regionStats->getStat(),
-                          RegionStatType::getInstance()->getGetAllTimeId(),
-                          sampleStartNanos);
+  updateStatOpTime(m_regionStats->getStat(), m_regionStats->getGetAllTimeId(),
+                   sampleStartNanos);
   // handleReplay(err, nullptr);
   GfErrTypeToException("Region::getAll", err);
 }
@@ -650,8 +650,9 @@ void LocalRegion::setRegionExpiryTask() {
     uint32_t duration = getRegionExpiryDuration();
     RegionExpiryHandler* handler =
         new RegionExpiryHandler(rptr, getRegionExpiryAction(), duration);
-    int64_t expiryTaskId =
-        CacheImpl::expiryTaskManager->scheduleExpiryTask(handler, duration, 0);
+    long expiryTaskId =
+        rptr->getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
+            handler, duration, 0);
     handler->setExpiryTaskId(expiryTaskId);
     LOGFINE(
         "expiry for region [%s], expiry task id = %d, duration = %d, "
@@ -670,8 +671,8 @@ void LocalRegion::registerEntryExpiryTask(MapEntryImplPtr& entry) {
   uint32_t duration = getEntryExpiryDuration();
   EntryExpiryHandler* handler =
       new EntryExpiryHandler(rptr, entry, getEntryExpirationAction(), duration);
-  int64_t id =
-      CacheImpl::expiryTaskManager->scheduleExpiryTask(handler, duration, 0);
+  long id = rptr->getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
+      handler, duration, 0);
   if (Log::finestEnabled()) {
     CacheableKeyPtr key;
     entry->getKeyI(key);
@@ -740,7 +741,8 @@ void LocalRegion::release(bool invokeCallbacks) {
 /** Returns whether the specified key currently exists in this region.
  * This method is equivalent to <code>getEntry(key) != null</code>.
  *
- * @param keyPtr the key to check for an existing entry, type is CacheableString
+ * @param keyPtr the key to check for an existing entry, type is
+ *CacheableString
  *&
  * @return true if there is an entry in this region for the specified key
  *@throw RegionDestroyedException,  if region is destroyed.
@@ -788,6 +790,7 @@ GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
                                   const UserDataPtr& aCallbackArgument) {
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
   GfErrType err = GF_NOERR;
+
   if (keyPtr == nullptr) {
     return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
   }
@@ -809,7 +812,8 @@ GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
   }
 
   m_regionStats->incGets();
-  m_cacheImpl->m_cacheStats->incGets();
+  auto& cachePerfStats = m_cacheImpl->getCachePerfStats();
+  cachePerfStats.incGets();
 
   // TODO:  CacheableToken::isInvalid should be completely hidden
   // inside MapSegment; this should be done both for the value obtained
@@ -824,7 +828,7 @@ GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
     isLocal = m_entries->get(keyPtr, value, me);
     if (isLocal && (value != nullptr && !CacheableToken::isInvalid(value))) {
       m_regionStats->incHits();
-      m_cacheImpl->m_cacheStats->incHits();
+      cachePerfStats.incHits();
       updateAccessAndModifiedTimeForEntry(me, false);
       updateAccessAndModifiedTime(false);
       return err;  // found it in local cache...
@@ -867,7 +871,8 @@ GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
   // access times.
   updateAccessAndModifiedTime(false);
   m_regionStats->incMisses();
-  m_cacheImpl->m_cacheStats->incMisses();
+
+  cachePerfStats.incMisses();
   VersionTagPtr versionTag;
   // Get from some remote source (e.g. external java server) if required.
   err = getNoThrow_remote(keyPtr, value, aCallbackArgument, versionTag);
@@ -880,12 +885,10 @@ GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
     try {
       isLoaderInvoked = true;
       /*Update the statistics*/
-      int64_t sampleStartNanos = Utils::startStatOpTime();
+      int64_t sampleStartNanos = startStatOpTime();
       value = m_loader->load(shared_from_this(), keyPtr, aCallbackArgument);
-      Utils::updateStatOpTime(
-          m_regionStats->getStat(),
-          RegionStatType::getInstance()->getLoaderCallTimeId(),
-          sampleStartNanos);
+      updateStatOpTime(m_regionStats->getStat(),
+                       m_regionStats->getLoaderCallTimeId(), sampleStartNanos);
       m_regionStats->incLoaderCallsCompleted();
     } catch (const Exception& ex) {
       LOGERROR("Error in CacheLoader::load: %s: %s", ex.getName(),
@@ -909,7 +912,8 @@ GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
     //  try to create the entry and if that returns an existing value
     // (e.g. from another thread or notification) then return that
     LOGDEBUG(
-        "Region::get: creating entry with tracking update counter [%d] for key "
+        "Region::get: creating entry with tracking update counter [%d] for "
+        "key "
         "[%s]",
         updateCount, Utils::getCacheableKeyString(keyPtr)->asChar());
     if ((err = putLocal("Region::get", false, keyPtr, value, oldValue,
@@ -975,13 +979,15 @@ GfErrType LocalRegion::getAllNoThrow(const VectorOfCacheableKey& keys,
     }
     //		if(!txState->isReplay())
     //		{
-    //			auto args = std::make_shared<VectorOfCacheable>();
+    //			auto args =
+    // std::make_shared<VectorOfCacheable>();
     //			args->push_back(VectorOfCacheableKeyPtr(new
     // VectorOfCacheableKey(keys)));
     //			args->push_back(values);
     //			args->push_back(exceptions);
     //			args->push_back(CacheableBoolean::create(addToLocalCache));
-    //			txState->recordTXOperation(GF_GET_ALL, getFullPath(),
+    //			txState->recordTXOperation(GF_GET_ALL,
+    // getFullPath(),
     // nullptr,
     // args);
     //		}
@@ -998,18 +1004,19 @@ GfErrType LocalRegion::getAllNoThrow(const VectorOfCacheableKey& keys,
   VectorOfCacheableKey serverKeys;
   bool cachingEnabled = m_regionAttributes->getCachingEnabled();
   bool regionAccessed = false;
+  auto& cachePerfStats = m_cacheImpl->getCachePerfStats();
 
   for (int32_t index = 0; index < keys.size(); ++index) {
     const CacheableKeyPtr& key = keys[index];
     MapEntryImplPtr me;
     value = nullptr;
     m_regionStats->incGets();
-    m_cacheImpl->m_cacheStats->incGets();
+    cachePerfStats.incGets();
     if (values && cachingEnabled) {
       if (m_entries->get(key, value, me) && value &&
           !CacheableToken::isInvalid(value)) {
         m_regionStats->incHits();
-        m_cacheImpl->m_cacheStats->incHits();
+        cachePerfStats.incHits();
         updateAccessAndModifiedTimeForEntry(me, false);
         regionAccessed = true;
         values->emplace(key, value);
@@ -1022,7 +1029,7 @@ GfErrType LocalRegion::getAllNoThrow(const VectorOfCacheableKey& keys,
       serverKeys.push_back(key);
 
       m_regionStats->incMisses();
-      m_cacheImpl->m_cacheStats->incMisses();
+      cachePerfStats.incMisses();
     }
     // TODO: No support for loaders in getAll for now.
   }
@@ -1259,6 +1266,8 @@ class DestroyActions {
                                DataInput* delta = nullptr,
                                EventIdPtr eventId = nullptr,
                                bool afterRemote = false) {
+    auto& cachePerfStats = m_region.m_cacheImpl->getCachePerfStats();
+
     if (cachingEnabled) {
       MapEntryImplPtr entry;
       //  for notification invoke the listener even if the key does
@@ -1281,6 +1290,7 @@ class DestroyActions {
         }
         return err;
       }
+
       if (oldValue != nullptr) {
         LOGDEBUG(
             "Region::destroy: region [%s] destroyed key [%s] having "
@@ -1297,12 +1307,12 @@ class DestroyActions {
         }
         // update the stats
         m_region.m_regionStats->setEntries(m_region.m_entries->size());
-        m_region.m_cacheImpl->m_cacheStats->incEntries(-1);
+        cachePerfStats.incEntries(-1);
       }
     }
     // update the stats
     m_region.m_regionStats->incDestroys();
-    m_region.m_cacheImpl->m_cacheStats->incDestroys();
+    cachePerfStats.incDestroys();
     return GF_NOERR;
   }
 
@@ -1361,8 +1371,10 @@ class RemoveActions {
     GfErrType err = GF_NOERR;
     if (!allowNULLValue && m_region.getAttributes()->getCachingEnabled()) {
       m_region.getEntry(key, valuePtr);
-      DataOutput out1;
-      DataOutput out2;
+      std::unique_ptr<DataOutput> out1 =
+          m_region.getCacheImpl()->getCache()->createDataOutput();
+      std::unique_ptr<DataOutput> out2 =
+          m_region.getCacheImpl()->getCache()->createDataOutput();
 
       if (valuePtr != nullptr && value != nullptr) {
         if (valuePtr->classId() != value->classId() ||
@@ -1370,14 +1382,14 @@ class RemoveActions {
           err = GF_ENOENT;
           return err;
         }
-        valuePtr->toData(out1);
-        value->toData(out2);
-        if (out1.getBufferLength() != out2.getBufferLength()) {
+        valuePtr->toData(*out1);
+        value->toData(*out2);
+        if (out1->getBufferLength() != out2->getBufferLength()) {
           err = GF_ENOENT;
           return err;
         }
-        if (memcmp(out1.getBuffer(), out2.getBuffer(),
-                   out1.getBufferLength()) != 0) {
+        if (memcmp(out1->getBuffer(), out2->getBuffer(),
+                   out1->getBufferLength()) != 0) {
           err = GF_ENOENT;
           return err;
         }
@@ -1432,22 +1444,24 @@ class RemoveActions {
     GfErrType err = GF_NOERR;
     if (!allowNULLValue && cachingEnabled) {
       m_region.getEntry(key, valuePtr);
-      DataOutput out1;
-      DataOutput out2;
+      std::unique_ptr<DataOutput> out1 =
+          m_region.getCacheImpl()->getCache()->createDataOutput();
+      std::unique_ptr<DataOutput> out2 =
+          m_region.getCacheImpl()->getCache()->createDataOutput();
       if (valuePtr != nullptr && value != nullptr) {
         if (valuePtr->classId() != value->classId() ||
             valuePtr->typeId() != value->typeId()) {
           err = GF_ENOENT;
           return err;
         }
-        valuePtr->toData(out1);
-        value->toData(out2);
-        if (out1.getBufferLength() != out2.getBufferLength()) {
+        valuePtr->toData(*out1);
+        value->toData(*out2);
+        if (out1->getBufferLength() != out2->getBufferLength()) {
           err = GF_ENOENT;
           return err;
         }
-        if (memcmp(out1.getBuffer(), out2.getBuffer(),
-                   out1.getBufferLength()) != 0) {
+        if (memcmp(out1->getBuffer(), out2->getBuffer(),
+                   out1->getBufferLength()) != 0) {
           err = GF_ENOENT;
           return err;
         }
@@ -1458,9 +1472,9 @@ class RemoveActions {
         if (updateCount >= 0 &&
             !m_region.getAttributes()
                  ->getConcurrencyChecksEnabled()) {  // This means server has
-                                                     // deleted an entry & same
-                                                     // entry has been destroyed
-                                                     // locally
+                                                     // deleted an entry &
+                                                     // same entry has been
+                                                     // destroyed locally
           // So call removeTrackerForEntry to remove key that was added in the
           // map during addTrackerForEntry call.
           m_region.m_entries->removeTrackerForEntry(key);
@@ -1472,6 +1486,7 @@ class RemoveActions {
         return err;
       }
     }
+    auto& cachePerfStats = m_region.m_cacheImpl->getCachePerfStats();
 
     if (cachingEnabled) {
       MapEntryImplPtr entry;
@@ -1511,12 +1526,12 @@ class RemoveActions {
         }
         // update the stats
         m_region.m_regionStats->setEntries(m_region.m_entries->size());
-        m_region.m_cacheImpl->m_cacheStats->incEntries(-1);
+        cachePerfStats.incEntries(-1);
       }
     }
     // update the stats
     m_region.m_regionStats->incDestroys();
-    m_region.m_cacheImpl->m_cacheStats->incDestroys();
+    cachePerfStats.incDestroys();
     return GF_NOERR;
   }
 
@@ -1704,10 +1719,11 @@ GfErrType LocalRegion::updateNoThrow(const CacheableKeyPtr& key,
       return GF_NOERR;
     } else if (err == GF_INVALID_DELTA) {
       LOGDEBUG(
-          "Region::localUpdate: updateNoThrow<%s> for key [%s] failed because "
+          "Region::localUpdate: updateNoThrow<%s> for key [%s] failed "
+          "because "
           "of invalid delta.",
           TAction::name(), Utils::getCacheableKeyString(key)->asChar());
-      m_cacheImpl->m_cacheStats->incFailureOnDeltaReceived();
+      m_cacheImpl->getCachePerfStats().incFailureOnDeltaReceived();
       // Get full object from server.
       CacheablePtr& newValue1 = const_cast<CacheablePtr&>(value);
       VersionTagPtr versionTag1;
@@ -1963,9 +1979,10 @@ GfErrType LocalRegion::putAllNoThrow(const HashMapOfCacheable& map,
             std::make_pair(key, std::make_pair(oldValue, updateCount)));
       }
       if (m_writer != nullptr) {
-        // invokeCacheWriterForEntryEvent method has the check that if oldValue
-        // is a CacheableToken then it sets it to nullptr; also determines if it
-        // should be BEFORE_UPDATE or BEFORE_CREATE depending on oldValue
+        // invokeCacheWriterForEntryEvent method has the check that if
+        // oldValue is a CacheableToken then it sets it to nullptr; also
+        // determines if it should be BEFORE_UPDATE or BEFORE_CREATE depending
+        // on oldValue
         if (!invokeCacheWriterForEntryEvent(
                 key, oldValue, iter.second, aCallbackArgument,
                 CacheEventFlags::LOCAL, BEFORE_UPDATE)) {
@@ -2002,7 +2019,8 @@ GfErrType LocalRegion::putAllNoThrow(const HashMapOfCacheable& map,
         } else {
           // ThrowERROR
           LOGERROR(
-              "ERROR :: LocalRegion::putAllNoThrow() Key must be found in the "
+              "ERROR :: LocalRegion::putAllNoThrow() Key must be found in "
+              "the "
               "usermap");
         }
 
@@ -2022,7 +2040,8 @@ GfErrType LocalRegion::putAllNoThrow(const HashMapOfCacheable& map,
                  versionTag)) == GF_CACHE_ENTRY_UPDATED) {
           LOGFINEST(
               "Region::putAll: did not change local value for key [%s] "
-              "since it has been updated by another thread while operation was "
+              "since it has been updated by another thread while operation "
+              "was "
               "in progress",
               Utils::getCacheableKeyString(key)->asChar());
         } else if (localErr == GF_CACHE_LISTENER_EXCEPTION) {
@@ -2058,7 +2077,8 @@ GfErrType LocalRegion::putAllNoThrow(const HashMapOfCacheable& map,
                  versionTag)) == GF_CACHE_ENTRY_UPDATED) {
           LOGFINEST(
               "Region::putAll: did not change local value for key [%s] "
-              "since it has been updated by another thread while operation was "
+              "since it has been updated by another thread while operation "
+              "was "
               "in progress",
               Utils::getCacheableKeyString(key)->asChar());
         } else if (localErr == GF_CACHE_LISTENER_EXCEPTION) {
@@ -2161,11 +2181,10 @@ GfErrType LocalRegion::removeAllNoThrow(const VectorOfCacheableKey& keys,
 
 void LocalRegion::clear(const UserDataPtr& aCallbackArgument) {
   /*update the stats */
-  int64_t sampleStartNanos = Utils::startStatOpTime();
+  int64_t sampleStartNanos = startStatOpTime();
   localClear(aCallbackArgument);
-  Utils::updateStatOpTime(m_regionStats->getStat(),
-                          RegionStatType::getInstance()->getClearsId(),
-                          sampleStartNanos);
+  updateStatOpTime(m_regionStats->getStat(), m_regionStats->getClearsId(),
+                   sampleStartNanos);
 }
 void LocalRegion::localClear(const UserDataPtr& aCallbackArgument) {
   GfErrType err = localClearNoThrow(aCallbackArgument, CacheEventFlags::LOCAL);
@@ -2326,7 +2345,8 @@ GfErrType LocalRegion::destroyRegionNoThrow(
   if (eventFlags == CacheEventFlags::LOCAL) {
     if (unregisterKeysBeforeDestroyRegion() != GF_NOERR) {
       LOGDEBUG(
-          "DEBUG :: LocalRegion::destroyRegionNoThrow UnregisteredKeys Failed");
+          "DEBUG :: LocalRegion::destroyRegionNoThrow UnregisteredKeys "
+          "Failed");
     }
   }
 
@@ -2436,6 +2456,8 @@ GfErrType LocalRegion::putLocal(const char* name, bool isCreate,
                                 EventIdPtr eventId) {
   GfErrType err = GF_NOERR;
   bool isUpdate = !isCreate;
+  auto& cachePerfStats = m_cacheImpl->getCachePerfStats();
+
   if (cachingEnabled) {
     MapEntryImplPtr entry;
     LOGDEBUG("%s: region [%s] putting key [%s], value [%s]", name,
@@ -2448,7 +2470,7 @@ GfErrType LocalRegion::putLocal(const char* name, bool isCreate,
       err = m_entries->put(key, value, entry, oldValue, updateCount,
                            destroyTracker, versionTag, isUpdate, delta);
       if (err == GF_INVALID_DELTA) {
-        m_cacheImpl->m_cacheStats->incFailureOnDeltaReceived();
+        cachePerfStats.incFailureOnDeltaReceived();
         // PXR: Get full object from server.
         CacheablePtr& newValue1 = const_cast<CacheablePtr&>(value);
         VersionTagPtr versionTag1;
@@ -2461,7 +2483,7 @@ GfErrType LocalRegion::putLocal(const char* name, bool isCreate,
       }
       if (delta != nullptr &&
           err == GF_NOERR) {  // Means that delta is on and there is no failure.
-        m_cacheImpl->m_cacheStats->incDeltaReceived();
+        cachePerfStats.incDeltaReceived();
       }
     }
     if (err != GF_NOERR) {
@@ -2484,14 +2506,14 @@ GfErrType LocalRegion::putLocal(const char* name, bool isCreate,
   // update the stats
   if (isUpdate) {
     m_regionStats->incPuts();
-    m_cacheImpl->m_cacheStats->incPuts();
+    cachePerfStats.incPuts();
   } else {
     if (cachingEnabled) {
       m_regionStats->setEntries(m_entries->size());
-      m_cacheImpl->m_cacheStats->incEntries(1);
+      cachePerfStats.incEntries(1);
     }
     m_regionStats->incCreates();
-    m_cacheImpl->m_cacheStats->incCreates();
+    cachePerfStats.incCreates();
   }
   return err;
 }
@@ -2545,7 +2567,7 @@ bool LocalRegion::invokeCacheWriterForEntryEvent(
     try {
       bool updateStats = true;
       /*Update the CacheWriter Stats*/
-      int64_t sampleStartNanos = Utils::startStatOpTime();
+      int64_t sampleStartNanos = startStatOpTime();
       switch (type) {
         case BEFORE_UPDATE: {
           if (oldValue != nullptr) {
@@ -2572,10 +2594,9 @@ bool LocalRegion::invokeCacheWriterForEntryEvent(
       }
 
       if (updateStats) {
-        Utils::updateStatOpTime(
-            m_regionStats->getStat(),
-            RegionStatType::getInstance()->getWriterCallTimeId(),
-            sampleStartNanos);
+        updateStatOpTime(m_regionStats->getStat(),
+                         m_regionStats->getWriterCallTimeId(),
+                         sampleStartNanos);
         m_regionStats->incWriterCallsCompleted();
       }
 
@@ -2603,7 +2624,7 @@ bool LocalRegion::invokeCacheWriterForRegionEvent(
     try {
       bool updateStats = true;
       /*Update the CacheWriter Stats*/
-      int64_t sampleStartNanos = Utils::startStatOpTime();
+      int64_t sampleStartNanos = startStatOpTime();
       switch (type) {
         case BEFORE_REGION_DESTROY: {
           eventStr = "beforeRegionDestroy";
@@ -2621,10 +2642,9 @@ bool LocalRegion::invokeCacheWriterForRegionEvent(
         }
       }
       if (updateStats) {
-        Utils::updateStatOpTime(
-            m_regionStats->getStat(),
-            RegionStatType::getInstance()->getWriterCallTimeId(),
-            sampleStartNanos);
+        updateStatOpTime(m_regionStats->getStat(),
+                         m_regionStats->getWriterCallTimeId(),
+                         sampleStartNanos);
         m_regionStats->incWriterCallsCompleted();
       }
     } catch (const Exception& ex) {
@@ -2656,7 +2676,7 @@ GfErrType LocalRegion::invokeCacheListenerForEntryEvent(
     try {
       bool updateStats = true;
       /*Update the CacheWriter Stats*/
-      int64_t sampleStartNanos = Utils::startStatOpTime();
+      int64_t sampleStartNanos = startStatOpTime();
       switch (type) {
         case AFTER_UPDATE: {
           //  when CREATE is received from server for notification
@@ -2690,11 +2710,10 @@ GfErrType LocalRegion::invokeCacheListenerForEntryEvent(
         }
       }
       if (updateStats) {
-        m_cacheImpl->m_cacheStats->incListenerCalls();
-        Utils::updateStatOpTime(
-            m_regionStats->getStat(),
-            RegionStatType::getInstance()->getListenerCallTimeId(),
-            sampleStartNanos);
+        m_cacheImpl->getCachePerfStats().incListenerCalls();
+        updateStatOpTime(m_regionStats->getStat(),
+                         m_regionStats->getListenerCallTimeId(),
+                         sampleStartNanos);
         m_regionStats->incListenerCallsCompleted();
       }
     } catch (const Exception& ex) {
@@ -2729,18 +2748,18 @@ GfErrType LocalRegion::invokeCacheListenerForRegionEvent(
         case AFTER_REGION_DESTROY: {
           eventStr = "afterRegionDestroy";
           m_listener->afterRegionDestroy(event);
-          m_cacheImpl->m_cacheStats->incListenerCalls();
+          m_cacheImpl->getCachePerfStats().incListenerCalls();
           if (eventFlags.isCacheClose()) {
             eventStr = "close";
             m_listener->close(shared_from_this());
-            m_cacheImpl->m_cacheStats->incListenerCalls();
+            m_cacheImpl->getCachePerfStats().incListenerCalls();
           }
           break;
         }
         case AFTER_REGION_INVALIDATE: {
           eventStr = "afterRegionInvalidate";
           m_listener->afterRegionInvalidate(event);
-          m_cacheImpl->m_cacheStats->incListenerCalls();
+          m_cacheImpl->getCachePerfStats().incListenerCalls();
           break;
         }
         case AFTER_REGION_CLEAR: {
@@ -2754,10 +2773,9 @@ GfErrType LocalRegion::invokeCacheListenerForRegionEvent(
         }
       }
       if (updateStats) {
-        Utils::updateStatOpTime(
-            m_regionStats->getStat(),
-            RegionStatType::getInstance()->getListenerCallTimeId(),
-            sampleStartNanos);
+        updateStatOpTime(m_regionStats->getStat(),
+                         m_regionStats->getListenerCallTimeId(),
+                         sampleStartNanos);
         m_regionStats->incListenerCallsCompleted();
       }
     } catch (const Exception& ex) {
@@ -2847,7 +2865,8 @@ ExpirationAction::Action LocalRegion::adjustEntryExpiryAction(
   bool hadExpiry = (getEntryExpiryDuration() != 0);
   if (!hadExpiry) {
     throw IllegalStateException(
-        "Cannot change entry ExpirationAction for region created without entry "
+        "Cannot change entry ExpirationAction for region created without "
+        "entry "
         "expiry.");
   }
   ExpirationAction::Action oldValue = getEntryExpirationAction();
@@ -2865,7 +2884,8 @@ int32_t LocalRegion::adjustRegionExpiryDuration(int32_t duration) {
   bool hadExpiry = (getEntryExpiryDuration() != 0);
   if (!hadExpiry) {
     throw IllegalStateException(
-        "Cannot change region  expiration duration for region created without "
+        "Cannot change region  expiration duration for region created "
+        "without "
         "region expiry.");
   }
   int32_t oldValue = getRegionExpiryDuration();
@@ -2899,14 +2919,9 @@ bool LocalRegion::isStatisticsEnabled() {
   if (m_cacheImpl == nullptr) {
     return false;
   }
-  if (m_cacheImpl->getCache() != nullptr) {
-    SystemProperties* props =
-        m_cacheImpl->getCache()->getDistributedSystem()->getSystemProperties();
-    if (props) {
-      status = props->statisticsEnabled();
-    }
-  }
-  return status;
+  return m_cacheImpl->getDistributedSystem()
+      .getSystemProperties()
+      .statisticsEnabled();
 }
 
 bool LocalRegion::useModifiedTimeForRegionExpiry() {
@@ -3106,7 +3121,7 @@ void LocalRegion::evict(int32_t percentage) {
 }
 void LocalRegion::invokeAfterAllEndPointDisconnected() {
   if (m_listener != nullptr) {
-    int64_t sampleStartNanos = Utils::startStatOpTime();
+    int64_t sampleStartNanos = startStatOpTime();
     try {
       m_listener->afterRegionDisconnected(shared_from_this());
     } catch (const Exception& ex) {
@@ -3115,10 +3130,8 @@ void LocalRegion::invokeAfterAllEndPointDisconnected() {
     } catch (...) {
       LOGERROR("Unknown exception in CacheListener::afterRegionDisconnected");
     }
-    Utils::updateStatOpTime(
-        m_regionStats->getStat(),
-        RegionStatType::getInstance()->getListenerCallTimeId(),
-        sampleStartNanos);
+    updateStatOpTime(m_regionStats->getStat(),
+                     m_regionStats->getListenerCallTimeId(), sampleStartNanos);
     m_regionStats->incListenerCallsCompleted();
   }
 }
@@ -3149,6 +3162,16 @@ CacheablePtr LocalRegion::handleReplay(GfErrType& err,
 }
 
 TombstoneListPtr LocalRegion::getTombstoneList() { return m_tombstoneList; }
+
+int64_t LocalRegion::startStatOpTime() {
+  return m_enableTimeStatistics ? Utils::startStatOpTime() : 0;
+}
+void LocalRegion::updateStatOpTime(Statistics* statistics, int32_t statId,
+                                   int64_t start) {
+  if (m_enableTimeStatistics) {
+    Utils::updateStatOpTime(statistics, statId, start);
+  }
+}
 
 }  // namespace client
 }  // namespace geode

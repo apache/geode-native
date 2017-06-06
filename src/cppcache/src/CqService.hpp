@@ -65,6 +65,7 @@ class CPPCACHE_EXPORT CqService
       public std::enable_shared_from_this<CqService> {
  private:
   ThinClientBaseDM* m_tccdm;
+  statistics::StatisticsFactory* m_statisticsFactory;
   ACE_Recursive_Thread_Mutex m_mutex;
   std::string m_queryString;
   ACE_Semaphore m_notificationSema;
@@ -85,7 +86,7 @@ class CPPCACHE_EXPORT CqService
   /**
    * Constructor.
    */
-  CqService(ThinClientBaseDM* tccdm);
+  CqService(ThinClientBaseDM* tccdm, statistics::StatisticsFactory* statisticsFactory);
   ThinClientBaseDM* getDM() { return m_tccdm; }
 
   void receiveNotification(TcrMessage* msg);

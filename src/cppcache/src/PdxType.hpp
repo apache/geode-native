@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_PDXTYPE_H_
-#define GEODE_PDXTYPE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_PDXTYPE_H_
+#define GEODE_PDXTYPE_H_
 
 #include <geode/Serializable.hpp>
 #include "PdxFieldType.hpp"
@@ -40,18 +40,9 @@ namespace client {
 typedef std::map<std::string, PdxFieldTypePtr> NameVsPdxType;
 class PdxType;
 typedef std::shared_ptr<PdxType> PdxTypePtr;
-/* adongre
- * Coverity - II
- * CID 29178: Other violation (MISSING_COPY)
- * Class "apache::geode::client::PdxType" owns resources that are managed
- * in its constructor and destructor but has no user-written copy constructor.
- * Fix : Make the class Non Copyable
- *
- * CID 29173: Other violation (MISSING_ASSIGN)
- * Class "apache::geode::client::PdxType" owns resources that are managed in its
- * constructor and destructor but has no user-written assignment operator.
- * Fix : Make the class Non Assignable
- */
+class PdxTypeRegistry;
+typedef std::shared_ptr <PdxTypeRegistry> PdxTypeRegistryPtr;
+
 class PdxType : public Serializable,
                 private NonCopyable,
                 private NonAssignable {
@@ -86,6 +77,8 @@ class PdxType : public Serializable,
 
   bool m_noJavaClass;
 
+  PdxTypeRegistryPtr m_pdxTypeRegistryPtr;
+
   void initRemoteToLocal();
   void initLocalToRemote();
   int32_t fixedLengthFieldPosition(PdxFieldTypePtr fixLenField,
@@ -107,9 +100,8 @@ class PdxType : public Serializable,
   }
 
  public:
-  PdxType();
 
-  PdxType(const char* pdxDomainClassName, bool isLocal);
+  PdxType(PdxTypeRegistryPtr pdxTypeRegistryPtr, const char* pdxDomainClassName, bool isLocal);
 
   virtual ~PdxType();
 
@@ -119,7 +111,7 @@ class PdxType : public Serializable,
 
   virtual int32_t classId() const { return GeodeTypeIds::PdxType; }
 
-  static Serializable* CreateDeserializable() { return new PdxType(); }
+  static Serializable* CreateDeserializable(PdxTypeRegistryPtr pdxTypeRegistryPtr) { return new PdxType(pdxTypeRegistryPtr, nullptr, false); }
 
   virtual uint32_t objectSize() const {
     uint32_t size = sizeof(PdxType);

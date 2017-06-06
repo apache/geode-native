@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_PDXWRAPPER_H_
-#define GEODE_PDXWRAPPER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_PDXWRAPPER_H_
+#define GEODE_PDXWRAPPER_H_
 
 #include "PdxSerializer.hpp"
 #include "PdxSerializable.hpp"
@@ -43,7 +43,8 @@ class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
    * @param className the fully qualified class name to map this user object to
    * the Java side.
    */
-  PdxWrapper(void* userObject, const char* className);
+  PdxWrapper(void* userObject, const char* className,
+             PdxSerializerPtr pdxSerializerPtr);
 
   /**
    * Returns the pointer to the user object which is deserialized with a
@@ -112,7 +113,7 @@ class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
  private:
   /** hide default constructor */
   PdxWrapper();
-  PdxWrapper(const char* className);
+  PdxWrapper(const char* className, PdxSerializerPtr pdxSerializerPtr);
 
   FRIEND_STD_SHARED_PTR(PdxWrapper)
 
@@ -122,7 +123,7 @@ class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
   UserObjectSizer m_sizer;
   char* m_className;
 
-  friend class SerializationRegistry;
+  // friend class SerializationRegistry;
 
   PdxWrapper(const PdxWrapper&);
 

@@ -114,10 +114,10 @@ class CPPCACHE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
    */
   int getRetryAttempts() const;
   /**
-  * Returns the true if a server-to-client subscriptions are enabled on this
-  * pool.
-  * @see PoolFactory#setSubscriptionEnabled
-  */
+   * Returns the true if a server-to-client subscriptions are enabled on this
+   * pool.
+   * @see PoolFactory#setSubscriptionEnabled
+   */
   bool getSubscriptionEnabled() const;
   /**
    * Returns the subscription redundancy level of this pool.
@@ -272,7 +272,8 @@ class CPPCACHE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
    * @returns Logical instance of cache to do operations on behalf of one
    * particular user.
    */
-  virtual RegionServicePtr createSecureUserCache(PropertiesPtr credentials);
+  virtual RegionServicePtr createSecureUserCache(PropertiesPtr credentials,
+                                                 CacheImpl* cacheImpl);
 
   Pool(const Pool&);
 

@@ -135,7 +135,7 @@ namespace Apache.Geode.Client.FwkLib
         DateTime startTime;
         DateTime endTime;
         TimeSpan elapsedTime;
-        QueryService qs = CacheHelper.DCache.GetQueryService();
+        QueryService qs = CacheHelper<TKey, TVal>.DCache.GetQueryService();
         ResetKey(LargeSetQuery);
         ResetKey(UnsupportedPRQuery);
         bool isLargeSetQuery = GetBoolValue(LargeSetQuery);

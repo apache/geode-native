@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_DISTRIBUTEDSYSTEM_H_
-#define GEODE_DISTRIBUTEDSYSTEM_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,15 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_DISTRIBUTEDSYSTEM_H_
+#define GEODE_DISTRIBUTEDSYSTEM_H_
+
 /**
  * @file
  */
+#include <memory>
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
@@ -32,6 +33,11 @@
 
 namespace apache {
 namespace geode {
+
+namespace statistics {
+class StatisticsManager;
+}  // namespace statistics
+
 namespace client {
 /**
  * @class DistributedSystem DistributedSystem.hpp
@@ -56,44 +62,39 @@ class CPPCACHE_EXPORT DistributedSystem {
    * Initializes the Native Client system to be able to connect to the
    * Geode Java servers. If the name string is empty, then the default
    * "NativeDS" is used as the name of distributed system.
-   * @throws LicenseException if no valid license is found.
    * @throws IllegalStateException if GFCPP variable is not set and
    *   product installation directory cannot be determined
-   * @throws IllegalArgument exception if DS name is nullptr
-   * @throws AlreadyConnectedException if this call has succeeded once before
-   *for this process
    **/
-  static DistributedSystemPtr connect(const char* name,
-                                      const PropertiesPtr& configPtr = nullptr);
+  static std::unique_ptr<DistributedSystem> create(
+      const std::string& name, Cache* cache,
+      const PropertiesPtr& configPtr = nullptr);
 
   /**
-   *@brief disconnect from the distributed system
-   *@throws IllegalStateException if not connected
+   * @brief connects from the distributed system
+   * @throws AlreadyConnectedException if this call has succeeded once before
    */
-  static void disconnect();
+  void connect();
+
+  /**
+   * @brief disconnect from the distributed system
+   * @throws IllegalStateException if not connected
+   */
+  void disconnect();
 
   /** Returns the SystemProperties that were used to create this instance of the
    *  DistributedSystem
-   * @return  SystemProperties
+   *  @return  SystemProperties
    */
-  static SystemProperties* getSystemProperties();
+  SystemProperties& getSystemProperties() const;
 
   /** Returns the name that identifies the distributed system instance
    * @return  name
    */
-  virtual const char* getName() const;
+  virtual const std::string& getName() const;
 
-  /** Returns  true if connected, false otherwise
-   *
-   * @return  true if connected, false otherwise
-   */
-  static bool isConnected();
-
-  /** Returns a pointer to the DistributedSystem instance
-   *
-   * @return  instance
-   */
-  static DistributedSystemPtr getInstance();
+  statistics::StatisticsManager* getStatisticsManager() {
+    return m_statisticsManager.get();
+  }
 
   /**
    * @brief destructor
@@ -104,16 +105,20 @@ class CPPCACHE_EXPORT DistributedSystem {
   /**
    * @brief constructors
    */
-  DistributedSystem(const char* name);
+  DistributedSystem(const std::string& name,
+                    std::unique_ptr<statistics::StatisticsManager> statMngr,
+                    std::unique_ptr<SystemProperties> sysProps);
 
  private:
-  char* m_name;
-  static bool m_connected;
-  static DistributedSystemPtr* m_instance_ptr;
-  // static DistributedSystemImpl *m_impl;
+  std::string m_name;
+  bool m_connected;
+
+  std::unique_ptr<statistics::StatisticsManager> m_statisticsManager;
+
+  std::unique_ptr<SystemProperties> m_sysProps;
 
  public:
-  static DistributedSystemImpl* m_impl;
+  DistributedSystemImpl* m_impl;
   friend class CacheRegionHelper;
   friend class DistributedSystemImpl;
   friend class TcrConnection;
@@ -121,6 +126,8 @@ class CPPCACHE_EXPORT DistributedSystem {
  private:
   DistributedSystem(const DistributedSystem&);
   const DistributedSystem& operator=(const DistributedSystem&);
+
+  void logSystemInformation();
 };
 }  // namespace client
 }  // namespace geode

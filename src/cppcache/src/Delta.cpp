@@ -22,15 +22,18 @@
  */
 
 #include <geode/Delta.hpp>
+#include <geode/Cache.hpp>
 
 using namespace apache::geode::client;
 
+Delta::Delta(Cache* cache) : m_cache(cache) {}
+
 DeltaPtr Delta::clone() {
-  DataOutput out;
-  Cacheable* ptr = dynamic_cast<Cacheable*>(this);
-  out.writeObject(ptr);
-  DataInput in(out.getBuffer(), out.getBufferLength());
+  auto out = m_cache->createDataOutput();
+  auto ptr = dynamic_cast<Cacheable*>(this);
+  out->writeObject(ptr);
+  auto in = m_cache->createDataInput(out->getBuffer(), out->getBufferLength());
   CacheablePtr theClonePtr;
-  in.readObject(theClonePtr);
+  in->readObject(theClonePtr);
   return std::dynamic_pointer_cast<Delta>(theClonePtr);
 }

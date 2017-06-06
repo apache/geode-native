@@ -14,84 +14,116 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <mutex>
+
 #include <geode/PoolManager.hpp>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Guard_T.h>
 
 using namespace apache::geode::client;
 
-// TODO: make this a member of TcrConnectionManager.
-HashMapOfPools* connectionPools = nullptr; /*new HashMapOfPools( )*/
-ACE_Recursive_Thread_Mutex connectionPoolsLock;
+class PoolManager::Impl {
+ public:
+  Impl(const Cache& cache) : m_cache(cache) {}
+  void removePool(const char* name);
 
-void removePool(const char* name) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
-  connectionPools->erase(name);
+  PoolFactoryPtr createFactory();
+
+  void close(bool keepAlive);
+
+  PoolPtr find(const char* name);
+
+  PoolPtr find(RegionPtr region);
+
+  const HashMapOfPools& getAll();
+
+  void addPool(const char* name, const PoolPtr& pool);
+
+  PoolPtr getDefaultPool();
+
+ private:
+  HashMapOfPools m_connectionPools;
+  std::recursive_mutex m_connectionPoolsLock;
+  PoolPtr m_defaultPool;
+  const Cache& m_cache;
+};
+
+void PoolManager::Impl::removePool(const char* name) {
+  std::lock_guard<std::recursive_mutex> guard(m_connectionPoolsLock);
+  m_connectionPools.erase(name);
 }
 
-PoolFactoryPtr PoolManager::createFactory() {
-  if (connectionPools == nullptr) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
-    if (connectionPools == nullptr) {
-      connectionPools = new HashMapOfPools();
-    }
-  }
-  return PoolFactoryPtr(new PoolFactory());
+PoolFactoryPtr PoolManager::Impl::createFactory() {
+  return std::shared_ptr<PoolFactory>(new PoolFactory(m_cache));
 }
 
-void PoolManager::close(bool keepAlive) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
-
-  if (connectionPools == nullptr) {
-    return;
-  }
+void PoolManager::Impl::close(bool keepAlive) {
+  std::lock_guard<std::recursive_mutex> guard(m_connectionPoolsLock);
 
   std::vector<PoolPtr> poolsList;
 
-  for (const auto& c : *connectionPools) {
+  for (const auto& c : m_connectionPools) {
     poolsList.push_back(c.second);
   }
 
   for (const auto& iter : poolsList) {
     iter->destroy(keepAlive);
   }
-
-  GF_SAFE_DELETE(connectionPools);
 }
 
-PoolPtr PoolManager::find(const char* name) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
-
-  if (connectionPools == nullptr) {
-    connectionPools = new HashMapOfPools();
-  }
+PoolPtr PoolManager::Impl::find(const char* name) {
+  std::lock_guard<std::recursive_mutex> guard(m_connectionPoolsLock);
 
   if (name) {
-    const auto& iter = connectionPools->find(name);
+    const auto& iter = m_connectionPools.find(name);
 
     PoolPtr poolPtr = nullptr;
 
-    if (iter != connectionPools->end()) {
+    if (iter != m_connectionPools.end()) {
       poolPtr = iter->second;
       GF_DEV_ASSERT(poolPtr != nullptr);
     }
 
     return poolPtr;
   } else {
-    return nullptr;
+    return m_connectionPools.empty() ? nullptr
+                                     : m_connectionPools.begin()->second;
   }
 }
 
-PoolPtr PoolManager::find(RegionPtr region) {
+PoolPtr PoolManager::Impl::find(RegionPtr region) {
   return find(region->getAttributes()->getPoolName());
 }
 
-const HashMapOfPools& PoolManager::getAll() {
-  if (connectionPools == nullptr) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
-    if (connectionPools == nullptr) {
-      connectionPools = new HashMapOfPools();
-    }
+const HashMapOfPools& PoolManager::Impl::getAll() { return m_connectionPools; }
+
+void PoolManager::Impl::addPool(const char* name, const PoolPtr& pool) {
+  std::lock_guard<std::recursive_mutex> guard(m_connectionPoolsLock);
+
+  if (!m_defaultPool) {
+    m_defaultPool = pool;
   }
-  return *connectionPools;
+
+  m_connectionPools.emplace(name, pool);
 }
+
+PoolPtr PoolManager::Impl::getDefaultPool() { return m_defaultPool; }
+
+PoolManager::PoolManager(const Cache& cache)
+    : m_pimpl(new Impl(cache), [](Impl* impl) { delete impl; }) {}
+
+void PoolManager::removePool(const char* name) { m_pimpl->removePool(name); }
+
+PoolFactoryPtr PoolManager::createFactory() { return m_pimpl->createFactory(); }
+
+void PoolManager::close(bool keepAlive) { m_pimpl->close(keepAlive); }
+
+PoolPtr PoolManager::find(const char* name) { return m_pimpl->find(name); }
+
+PoolPtr PoolManager::find(RegionPtr region) { return m_pimpl->find(region); }
+
+const HashMapOfPools& PoolManager::getAll() { return m_pimpl->getAll(); }
+
+void PoolManager::addPool(const char* name, const PoolPtr& pool) {
+  m_pimpl->addPool(name, pool);
+}
+
+PoolPtr PoolManager::getDefaultPool() { return m_pimpl->getDefaultPool(); }

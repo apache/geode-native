@@ -31,7 +31,7 @@ CqQueryImpl::CqQueryImpl(const CqServicePtr& cqService,
                          const std::string& cqName,
                          const std::string& queryString,
                          const CqAttributesPtr& cqAttributes,
-                         const bool isDurable,
+                         StatisticsFactory* factory, const bool isDurable,
                          const UserAttributesPtr& userAttributesPtr)
     : m_cqName(cqName),
       m_queryString(queryString),
@@ -39,11 +39,8 @@ CqQueryImpl::CqQueryImpl(const CqServicePtr& cqService,
       m_serverCqName(
           cqName),  // On Client Side serverCqName and cqName will be same.
       m_isDurable(isDurable),
-      m_stats(new CqQueryVsdStats(m_cqName.c_str())),
+      m_stats(std::make_shared<CqQueryVsdStats>(factory, m_cqName)),
       m_cqState(CqState::STOPPED),  // Initial state is stopped
-      /* adongre
-       * CID 28930: Uninitialized scalar field (UNINIT_CTOR)
-       */
       m_cqOperation(CqOperation::OP_TYPE_INVALID),
       m_tccdm(m_cqService->getDM()) {
   CqAttributesFactory cqAf(cqAttributes);
@@ -259,7 +256,12 @@ GfErrType CqQueryImpl::execute(TcrEndpoint* endpoint) {
 
   LOGFINE("Executing CQ [%s]", m_cqName.c_str());
 
-  TcrMessageExecuteCq request(m_cqName, m_queryString, CqState::RUNNING,
+  TcrMessageExecuteCq request(m_cqService->getDM()
+                                  ->getConnectionManager()
+                                  .getCacheImpl()
+                                  ->getCache()
+                                  ->createDataOutput(),
+                              m_cqName, m_queryString, CqState::RUNNING,
                               isDurable(), m_tccdm);
   TcrMessageReply reply(true, m_tccdm);
 
@@ -324,7 +326,12 @@ bool CqQueryImpl::executeCq(TcrMessage::MsgType requestType) {
   }
 
   LOGDEBUG("CqQueryImpl::executeCq");
-  TcrMessageExecuteCq msg(m_cqName, m_queryString, CqState::RUNNING,
+  TcrMessageExecuteCq msg(m_cqService->getDM()
+                              ->getConnectionManager()
+                              .getCacheImpl()
+                              ->getCache()
+                              ->createDataOutput(),
+                          m_cqName, m_queryString, CqState::RUNNING,
                           isDurable(), m_tccdm);
   TcrMessageReply reply(true, m_tccdm);
 
@@ -368,7 +375,12 @@ CqResultsPtr CqQueryImpl::executeWithInitialResults(uint32_t timeout) {
         "CqQuery::executeWithInitialResults: cq is already running");
   }
   // QueryResult values;
-  TcrMessageExecuteCqWithIr msg(m_cqName, m_queryString, CqState::RUNNING,
+  TcrMessageExecuteCqWithIr msg(m_cqService->getDM()
+                                    ->getConnectionManager()
+                                    .getCacheImpl()
+                                    ->getCache()
+                                    ->createDataOutput(),
+                                m_cqName, m_queryString, CqState::RUNNING,
                                 isDurable(), m_tccdm);
   TcrMessageReply reply(true, m_tccdm);
   auto resultCollector = (new ChunkedQueryResponse(reply));
@@ -458,10 +470,20 @@ void CqQueryImpl::sendStopOrClose(TcrMessage::MsgType requestType) {
   TcrMessageReply reply(true, m_tccdm);
 
   if (requestType == TcrMessage::STOPCQ_MSG_TYPE) {
-    TcrMessageStopCQ msg(m_cqName, -1, m_tccdm);
+    TcrMessageStopCQ msg(m_cqService->getDM()
+                             ->getConnectionManager()
+                             .getCacheImpl()
+                             ->getCache()
+                             ->createDataOutput(),
+                         m_cqName, -1, m_tccdm);
     err = m_tccdm->sendSyncRequest(msg, reply);
   } else if (requestType == TcrMessage::CLOSECQ_MSG_TYPE) {
-    TcrMessageCloseCQ msg(m_cqName, -1, m_tccdm);
+    TcrMessageCloseCQ msg(m_cqService->getDM()
+                              ->getConnectionManager()
+                              .getCacheImpl()
+                              ->getCache()
+                              ->createDataOutput(),
+                          m_cqName, -1, m_tccdm);
     err = m_tccdm->sendSyncRequest(msg, reply);
   }
 

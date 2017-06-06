@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_STATISTICSMANAGER_H_
-#define GEODE_STATISTICS_STATISTICSMANAGER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,25 +15,28 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#pragma once
 
-#include <sys/types.h>
-#ifndef WIN32
-#include <unistd.h>
-#endif
+#ifndef GEODE_STATISTICS_STATISTICSMANAGER_H_
+#define GEODE_STATISTICS_STATISTICSMANAGER_H_
+
+#include <memory>
 #include <vector>
-#include "HostStatSampler.hpp"
-#include <geode/ExceptionTypes.hpp>
-#include "StatisticsTypeImpl.hpp"
-#include <geode/statistics/Statistics.hpp>
-#include <AdminRegion.hpp>
 
-/** @file
- */
+#include <geode/geode_globals.hpp>
+#include <geode/statistics/Statistics.hpp>
+#include <geode/ExceptionTypes.hpp>
+
+#include "HostStatSampler.hpp"
+#include "StatisticsTypeImpl.hpp"
+#include "AdminRegion.hpp"
+#include "GeodeStatisticsFactory.hpp"
 
 namespace apache {
 namespace geode {
 namespace statistics {
+
+class GeodeStatisticsFactory;
 
 /**
  * Head Application Manager for Statistics Module.
@@ -46,46 +44,32 @@ namespace statistics {
  */
 class StatisticsManager {
  private:
-  //--------------------Properties-------------------------------------------------
-
   // interval at which the sampler will take a sample of Stats
   int32_t m_sampleIntervalMs;
 
-  //----------------Sampler and Stat Lists-----------------------------------
+  // Statistics sampler
+  HostStatSampler* m_sampler;
 
-  HostStatSampler* m_sampler;  // Statistics sampler
-
-  std::vector<Statistics*>
-      m_statsList;  // Vector containing all the Stats objects
+  // Vector containing all the Stats objects
+  std::vector<Statistics*> m_statsList;
 
   // Vector containing stats pointers which are not yet sampled.
   std::vector<Statistics*> m_newlyAddedStatsList;
 
-  ACE_Recursive_Thread_Mutex m_statsListLock;  // Mutex to lock the list of
-                                               // Stats
+  // Mutex to lock the list of Stats
+  ACE_Recursive_Thread_Mutex m_statsListLock;
 
-  //----------------Admin Region -----------------------------------
   AdminRegionPtr m_adminRegion;
 
-  //////////////////////////private member functions///////////////////////////
-
-  static StatisticsManager* s_singleton;
-
-  StatisticsManager(const char* filePath, int64_t sampleIntervalMs,
-                    bool enabled, int64_t statFileLimit = 0,
-                    int64_t statDiskSpaceLimit = 0);
+  std::unique_ptr<GeodeStatisticsFactory> m_statisticsFactory;
 
   void closeSampler();
 
-  //////////////////////////public member functions///////////////////////////
-
  public:
-  static StatisticsManager* initInstance(const char* filePath,
-                                         int64_t sampleIntervalMs, bool enabled,
-                                         int64_t statFileLimit = 0,
-                                         int64_t statDiskSpaceLimit = 0);
-
-  static StatisticsManager* getExistingInstance();
+  StatisticsManager(const char* filePath, int64_t sampleIntervalMs,
+                    bool enabled, Cache* cache, const char* durableClientId,
+                    const uint32_t durableTimeout, int64_t statFileLimit = 0,
+                    int64_t statDiskSpaceLimit = 0);
 
   void RegisterAdminRegion(AdminRegionPtr adminRegPtr) {
     m_adminRegion = adminRegPtr;
@@ -101,17 +85,11 @@ class StatisticsManager {
 
   void addStatisticsToList(Statistics* stat);
 
-  static void clean();
-
-  //--------------------Stat List
-  // functions--------------------------------------
   std::vector<Statistics*>& getStatsList();
 
   std::vector<Statistics*>& getNewlyAddedStatsList();
 
   ACE_Recursive_Thread_Mutex& getListMutex();
-
-  //------------ Find Statistics ---------------------
 
   /** Return the first instance that matches the type, or nullptr */
   Statistics* findFirstStatisticsByType(StatisticsType* type);
@@ -125,6 +103,10 @@ class StatisticsManager {
   Statistics* findStatisticsByUniqueId(int64_t uniqueId);
 
   static void deleteStatistics(Statistics*& stat);
+
+  GeodeStatisticsFactory* getStatisticsFactory() const {
+    return m_statisticsFactory.get();
+  }
 
 };  // class
 

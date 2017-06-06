@@ -25,7 +25,7 @@
 #include <geode/statistics/StatisticDescriptor.hpp>
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
@@ -127,7 +127,8 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    * @throws IllegalArgumentException
    *         <code>code</code> is an unknown type
    */
-  static int32_t getTypeCodeBits(FieldType code) throw(IllegalArgumentException);
+  static int32_t getTypeCodeBits(FieldType code) throw(
+      IllegalArgumentException);
 
   ///////////////////////////Create methods ////////////////////////////////////
 
@@ -138,7 +139,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    */
   static StatisticDescriptor* createIntCounter(
       const char* name, const char* description, const char* units,
-      bool isLargerBetter) throw(OutOfMemoryException);
+      bool isLargerBetter) throw(apache::geode::client::OutOfMemoryException);
   /**
    * Creates a descriptor of Long type
    * whose value behaves like a counter
@@ -147,7 +148,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
 
   static StatisticDescriptor* createLongCounter(
       const char* name, const char* description, const char* units,
-      bool isLargerBetter) throw(OutOfMemoryException);
+      bool isLargerBetter) throw(apache::geode::client::OutOfMemoryException);
 
   /**
    * Creates a descriptor of Double type
@@ -156,7 +157,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    */
   static StatisticDescriptor* createDoubleCounter(
       const char* name, const char* description, const char* units,
-      bool isLargerBetter) throw(OutOfMemoryException);
+      bool isLargerBetter) throw(apache::geode::client::OutOfMemoryException);
 
   /**
    * Creates a descriptor of Integer type
@@ -165,7 +166,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    */
   static StatisticDescriptor* createIntGauge(
       const char* name, const char* description, const char* units,
-      bool isLargerBetter) throw(OutOfMemoryException);
+      bool isLargerBetter) throw(apache::geode::client::OutOfMemoryException);
 
   /**
    * Creates a descriptor of Long type
@@ -174,7 +175,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    */
   static StatisticDescriptor* createLongGauge(
       const char* name, const char* description, const char* units,
-      bool isLargerBetter) throw(OutOfMemoryException);
+      bool isLargerBetter) throw(apache::geode::client::OutOfMemoryException);
 
   /**
    * Creates a descriptor of Double type
@@ -183,7 +184,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    */
   static StatisticDescriptor* createDoubleGauge(
       const char* name, const char* description, const char* units,
-      bool isLargerBetter) throw(OutOfMemoryException);
+      bool isLargerBetter) throw(apache::geode::client::OutOfMemoryException);
 
   /////////////////  StatisticDescriptor(Base class) Methods
   ///////////////////////

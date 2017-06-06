@@ -48,8 +48,8 @@ CacheableStringPtr getUAString(int index) {
 
 DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       nullptr, 0, true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, nullptr, 0,
+                       true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
   }
@@ -68,8 +68,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, setupClient2)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       nullptr, 0, true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, nullptr, 0,
+                       true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
@@ -108,7 +108,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyUpdates)
       char buf[1024];
       sprintf(buf, "key[%s] should have been found", keys[index]);
       ASSERT(regPtr->containsKey(keyPtr), buf);
-      auto val = std::dynamic_pointer_cast<CacheableString>(regPtr->getEntry(keyPtr)->getValue());
+      auto val = std::dynamic_pointer_cast<CacheableString>(
+          regPtr->getEntry(keyPtr)->getValue());
       ASSERT(strcmp(val->asChar(), nvals[index]) == 0,
              "Incorrect value for key");
     }
@@ -165,7 +166,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckUpdateUnicodeStrings)
     RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
     for (int index = 0; index < 5; ++index) {
       CacheableStringPtr key = getUString(index);
-      auto val = std::dynamic_pointer_cast<CacheableFloat>(reg0->getEntry(key)->getValue());
+      auto val = std::dynamic_pointer_cast<CacheableFloat>(
+          reg0->getEntry(key)->getValue());
       ASSERT(val != nullptr, "expected non-null value in get");
       ASSERT(val->value() == (index + 20.0F), "unexpected value in get");
     }

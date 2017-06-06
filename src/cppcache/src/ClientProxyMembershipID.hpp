@@ -37,7 +37,9 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
  public:
   const char* getDSMemberId(uint32_t& mesgLength) const;
   const char* getDSMemberIdForCS43(uint32_t& mesgLength) const;
-  ClientProxyMembershipID(const char* hostname, uint32_t hostAddr,
+
+  ClientProxyMembershipID(std::string dsName, std::string randString,
+                          const char* hostname, uint32_t hostAddr,
                           uint32_t hostPort,
                           const char* durableClientId = nullptr,
                           const uint32_t durableClntTimeOut = 0);
@@ -51,11 +53,6 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   // uint32_t durableClntTimeOut = 0);
   ClientProxyMembershipID();
   ~ClientProxyMembershipID();
-  void getClientProxyMembershipID();
-  // Initialize for random data and set the DS name.
-  // This method is not thread-safe.
-  static void init(const std::string& dsName);
-  static const std::string& getRandStringId();
   static void increaseSynchCounter();
   static Serializable* createDeserializable() {
     return new ClientProxyMembershipID();
@@ -111,15 +108,13 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
  private:
   std::string m_memIDStr;
   std::string m_dsmemIDStr;
-  // static data
-  static std::string g_dsName;
-  static std::string g_randString;
   std::string clientID;
 
   std::string m_dsname;
   uint32_t m_hostPort;
   uint8_t* m_hostAddr;
   uint32_t m_hostAddrLen;
+  uint32_t m_hostAddrAsUInt32;
   std::string m_uniqueTag;
   std::string m_hashKey;
   bool m_hostAddrLocalMem;

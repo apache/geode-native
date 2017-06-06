@@ -73,10 +73,11 @@ class CPPCACHE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
   bool m_heapLRUEnabled;
 
  public:
-  LRUEntriesMap(EntryFactory* entryFactory, RegionInternal* region,
-                const LRUAction::Action& lruAction, const uint32_t limit,
-                bool concurrencyChecksEnabled, const uint8_t concurrency = 16,
-                bool heapLRUEnabled = false);
+  LRUEntriesMap(ExpiryTaskManager* expiryTaskManager,
+                std::unique_ptr<EntryFactory> entryFactory,
+                RegionInternal* region, const LRUAction::Action& lruAction,
+                const uint32_t limit, bool concurrencyChecksEnabled,
+                const uint8_t concurrency = 16, bool heapLRUEnabled = false);
 
   virtual ~LRUEntriesMap();
 
