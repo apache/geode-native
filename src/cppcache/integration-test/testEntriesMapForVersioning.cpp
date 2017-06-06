@@ -892,15 +892,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSeven_TestGetsAfterRemove)
 
     VectorOfCacheable values;
     entries->values(values);
-    ASSERT(values.length() == 1, "an exception");
+    ASSERT(values.size() == 1, "an exception");
 
     VectorOfCacheableKey keys;
     entries->keys(keys);
-    ASSERT(keys.length() == 1, "an exception");
+    ASSERT(keys.size() == 1, "an exception");
 
     VectorOfRegionEntry regionEntries;
     entries->entries(regionEntries);
-    ASSERT(regionEntries.length() == 1, "an exception");
+    ASSERT(regionEntries.size() == 1, "an exception");
 
     entries->put(keyPtr5, ccstr, me, value, -1, 0, versionTag22);
 
@@ -912,13 +912,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSeven_TestGetsAfterRemove)
     ASSERT(entries->get(keyPtr6, value, result) == true, "an exception");
 
     entries->values(values);
-    ASSERT(values.length() == 2, "an exception");
+    ASSERT(values.size() == 2, "an exception");
 
     entries->keys(keys);
-    ASSERT(keys.length() == 2, "an exception");
+    ASSERT(keys.size() == 2, "an exception");
 
     entries->entries(regionEntries);
-    ASSERT(regionEntries.length() == 2, "an exception");
+    ASSERT(regionEntries.size() == 2, "an exception");
 
     sprintf(log, "TestGetsAfterRemove test complete. %d", err);
     LOG(log);

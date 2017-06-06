@@ -3219,7 +3219,7 @@ bool ThinClientRegion::executeFunctionSH(
     CacheableHashSetPtr& failedNodes, uint32_t timeout, bool allBuckets) {
   bool reExecute = false;
   auto resultCollectorLock = std::make_shared<ACE_Recursive_Thread_Mutex>();
-  auto& userAttr =
+  const auto& userAttr =
       TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
   std::vector<OnRegionFunctionExecution*> feWorkers;
   auto threadPool = TPSingleton::instance();

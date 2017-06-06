@@ -201,7 +201,7 @@ class ClientMetadataService : public ACE_Task_Base,
       bool optimizeForWrite);
 
   ClientMetadataService::ServerToBucketsMapPtr
-  ClientMetadataService::pruneNodes(const ClientMetadataPtr& metadata,
+  pruneNodes(const ClientMetadataPtr& metadata,
                                     const BucketSet& buckets);
 
  private:

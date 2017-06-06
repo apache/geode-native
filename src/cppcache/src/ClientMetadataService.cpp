@@ -663,7 +663,7 @@ ClientMetadataService::ServerToBucketsMapPtr ClientMetadataService::pruneNodes(
     }
   }
 
-  auto& itrRes = serverToBucketsMap.begin();
+  auto itrRes = serverToBucketsMap.begin();
   BucketServerLocationPtr randomFirstServer;
   if (serverToBucketsMap.empty()) {
     LOGDEBUG(
