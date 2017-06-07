@@ -118,6 +118,12 @@ if(CLANG_FORMAT)
   endforeach()
 endif()
 
+if(CMAKE_GENERATOR MATCHES Win64*)
+  set(CMAKE_GENERATOR_TOOLSET "host=x64")
+else()
+  set(CMAKE_GENERATOR_TOOLSET )
+endif()
+
 include(CPack)
 include(CheckCXXCompilerFlag)
 include(CheckCCompilerFlag)
