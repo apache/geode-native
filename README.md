@@ -22,8 +22,8 @@ Please refer to the [Native Client documentation](http://gemfire-native.docs.piv
 
 Native Client applications can be written in these client technologies:
 
-* [C++] (https://isocpp.org)
-* [C#] (https://msdn.microsoft.com/en-us/library/ms228593.aspx)
+* [C++](https://isocpp.org)
+* [C#](https://msdn.microsoft.com/en-us/library/ms228593.aspx)
 
 ## Export Control
 
