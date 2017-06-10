@@ -170,7 +170,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
   # TODO cmake find a better way to set runtime libraries
   # C++11 requires these libraries, treat -std=c++11 as library
   #TODO look into CMAKE_CXX_STANDARD_LIBRARIES
-  target_link_libraries(c++11 INTERFACE -std=c++11 stdc++ gcc_s CrunG3 c)
+  target_link_libraries(c++11 INTERFACE -std=c++11 stdc++ gcc_s CrunG3 m c)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs")
 endif()
