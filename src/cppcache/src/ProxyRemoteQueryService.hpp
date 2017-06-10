@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 #include <geode/geode_globals.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 #include "CqService.hpp"
 #include "UserAttributes.hpp"
 #include <geode/QueryService.hpp>
@@ -68,7 +68,7 @@ class CPPCACHE_EXPORT ProxyRemoteQueryService : public QueryService {
   friend class ProxyCache;
 };
 
-typedef SharedPtr<ProxyRemoteQueryService> ProxyRemoteQueryServicePtr;
+typedef std::shared_ptr<ProxyRemoteQueryService> ProxyRemoteQueryServicePtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

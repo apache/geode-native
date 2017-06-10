@@ -65,7 +65,7 @@ class TESTOBJECT_EXPORT TestObject1 : public Cacheable {
   static Serializable* create();
 };
 
-typedef SharedPtr<TestObject1> TestObject1Ptr;
+typedef std::shared_ptr<TestObject1> TestObject1Ptr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_TESTOBJECT1_H_

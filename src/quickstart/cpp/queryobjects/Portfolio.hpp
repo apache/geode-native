@@ -125,6 +125,6 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
   CacheableStringPtr toString() const;
 };
 
-typedef SharedPtr<Portfolio> PortfolioPtr;
-}
+typedef std::shared_ptr<Portfolio> PortfolioPtr;
+}  // namespace testobject
 #endif

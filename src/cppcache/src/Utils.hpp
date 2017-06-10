@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_UTILS_H_
-#define GEODE_UTILS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_INTERNAL_UTILS_H_
+#define GEODE_INTERNAL_UTILS_H_
 
 /**
  * @file
@@ -53,12 +53,6 @@ class CPPCACHE_EXPORT Utils {
    *
    */
  public:
-#ifdef _WIN32
-  static pNew s_pNew;
-  static pDelete s_pDelete;
-  static bool s_setNewAndDelete;
-#endif
-
   /**
    * Get the value of an environment variable.
    * On windows the maximum length of value supported is 8191.
@@ -225,4 +219,4 @@ class RandGen {
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_UTILS_H_
+#endif  // GEODE_INTERNAL_UTILS_H_

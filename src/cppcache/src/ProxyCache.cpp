@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 #include <geode/geode_globals.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 
 #include <geode/DistributedSystem.hpp>
 #include "DistributedSystemImpl.hpp"

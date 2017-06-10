@@ -22,7 +22,6 @@
 #include <ProxyCache.hpp>
 #include <geode/PoolManager.hpp>
 #include <CacheRegionHelper.hpp>
-#include <geode/TypeHelper.hpp>
 
 using namespace apache::geode::client;
 
@@ -118,8 +117,7 @@ ExecutionPtr FunctionService::onServerWithCache(const RegionServicePtr& cache) {
     throw IllegalStateException(
         "Pool has been close to execute function on server");
   } else {
-    CachePtr realcache =
-        std::static_pointer_cast<GF_UNWRAP_SP(CachePtr)>(cache);
+    CachePtr realcache = std::static_pointer_cast<Cache>(cache);
     return FunctionService::onServer(realcache->m_cacheImpl->getDefaultPool());
   }
 }
@@ -134,8 +132,8 @@ ExecutionPtr FunctionService::onServersWithCache(
 
   LOGDEBUG("FunctionService::onServers:");
   if (pc != nullptr && !cache->isClosed()) {
-    PoolPtr userAttachedPool = pc->m_userAttributes->getPool();
-    PoolPtr pool = PoolManager::find(userAttachedPool->getName());
+    auto userAttachedPool = pc->m_userAttributes->getPool();
+    auto pool = PoolManager::find(userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       return std::make_shared<ExecutionImpl>(pool, true, pc);
@@ -143,8 +141,7 @@ ExecutionPtr FunctionService::onServersWithCache(
     throw IllegalStateException(
         "Pool has been close to execute function on server");
   } else {
-    CachePtr realcache =
-        std::static_pointer_cast<GF_UNWRAP_SP(CachePtr)>(cache);
+    auto realcache = std::static_pointer_cast<Cache>(cache);
     return FunctionService::onServers(realcache->m_cacheImpl->getDefaultPool());
   }
 }

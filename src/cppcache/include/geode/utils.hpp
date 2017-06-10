@@ -1,10 +1,7 @@
 #pragma once
 
-// TODO shared_ptr rename to avoid collision with Util.hpp. Consider
-// Equality.hpp?
-
-#ifndef GEODE_UTILSX_H_
-#define GEODE_UTILSX_H_
+#ifndef GEODE_UTILS_H_
+#define GEODE_UTILS_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -77,4 +74,4 @@ struct dereference_equal_to<_T*> : std::equal_to<_T*> {
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_UTILSX_H_
+#endif  // GEODE_UTILS_H_

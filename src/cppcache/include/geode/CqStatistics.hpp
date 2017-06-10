@@ -42,7 +42,7 @@ namespace client {
  * represented by the CqQuery object.
  *
  */
-class CPPCACHE_EXPORT CqStatistics : public SharedBase {
+class CPPCACHE_EXPORT CqStatistics {
  public:
   /**
    * Get number of Insert events qualified by this CQ.

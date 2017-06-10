@@ -46,21 +46,6 @@ namespace statistics {
  *
  */
 
-/* adongre
- * CID 28732: Other violation (MISSING_COPY)
- * Class "apache::geode::statistics::AtomicStatisticsImpl" owns resources that
- * are
- * managed
- * in its constructor and destructor but has no user-written copy constructor.
- *
- * CID 28718: Other violation (MISSING_ASSIGN)
- * Class "apache::geode::statistics::AtomicStatisticsImpl" owns resources that
- * are
- * managed in its constructor and destructor but has no user-written assignment
- * operator.
- *
- * FIX : Make the class non-copyable
- */
 class AtomicStatisticsImpl : public Statistics, private NonCopyable {
  private:
   /**********varbs originally kept in statisticsimpl class*****************/

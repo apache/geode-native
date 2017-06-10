@@ -21,7 +21,6 @@
  */
 
 #include "geode_base.hpp"
-#include "SharedBase.hpp"
 
 namespace apache {
 namespace geode {
@@ -41,7 +40,7 @@ namespace client {
  * This should only happen when a domain class has changed by adding or removing
  *one or more fields.
  **/
-class CPPCACHE_EXPORT PdxUnreadFields : public SharedBase {
+class CPPCACHE_EXPORT PdxUnreadFields {
  public:
   PdxUnreadFields() {}
   virtual ~PdxUnreadFields() {}

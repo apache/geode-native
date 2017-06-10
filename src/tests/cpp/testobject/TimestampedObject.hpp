@@ -50,8 +50,7 @@ class TESTOBJECT_EXPORT TimestampedObject
   virtual uint32_t objectSize() const { return 0; }
   virtual ~TimestampedObject() {}
 };
-typedef apache::geode::client::SharedPtr<TimestampedObject>
-    TimestampedObjectPtr;
+typedef std::shared_ptr<TimestampedObject> TimestampedObjectPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_TIMESTAMPEDOBJECT_H_

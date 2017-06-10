@@ -97,7 +97,8 @@ class CachedDeserializableHelper : public Cacheable,
   int32_t classId() const { return 0; }
 };
 
-typedef SharedPtr<CachedDeserializableHelper> CachedDeserializableHelperPtr;
+typedef std::shared_ptr<CachedDeserializableHelper>
+    CachedDeserializableHelperPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

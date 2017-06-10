@@ -126,14 +126,6 @@ namespace Apache
         static Cache^ GetAnyInstance();
 
         /// <summary>
-        /// Set allocators for non default Microsoft CRT versions.
-        /// </summary>
-        static void SetNewAndDelete()
-        {
-          native::setNewAndDelete(&operator new, &operator delete);
-        }
-
-        /// <summary>
         /// Returns the version of the cache implementation.
         /// For the 1.0 release of Geode, the string returned is <c>1.0</c>.
         /// </summary>

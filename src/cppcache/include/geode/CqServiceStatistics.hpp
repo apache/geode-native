@@ -37,7 +37,7 @@ namespace client {
  * This class provides methods to get aggregate statistical information
  * about the CQs of a client.
  */
-class CPPCACHE_EXPORT CqServiceStatistics : public SharedBase {
+class CPPCACHE_EXPORT CqServiceStatistics  {
  public:
   /**
    * Get the number of CQs currently active.

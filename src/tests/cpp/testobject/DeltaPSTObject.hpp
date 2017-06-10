@@ -96,7 +96,7 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
 
   static Serializable* createDeserializable() { return new DeltaPSTObject(); }
 };
-typedef apache::geode::client::SharedPtr<DeltaPSTObject> DeltaPSTObjectPtr;
+typedef std::shared_ptr<DeltaPSTObject> DeltaPSTObjectPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_DELTAPSTOBJECT_H_

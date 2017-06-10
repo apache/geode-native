@@ -24,7 +24,7 @@
 #include "ThinClientCacheDistributionManager.hpp"
 #include "ReadWriteLock.hpp"
 #include <geode/Serializable.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 //#include <statistics/HostStatSampler.hpp>
 
 #include "NonCopyable.hpp"
@@ -40,19 +40,6 @@ namespace apache {
 namespace geode {
 namespace client {
 class CacheImpl;
-/* adongre
- * CID 28724: Other violation (MISSING_COPY)
- * Class "apache::geode::client::AdminRegion" owns resources that are managed in
- * its
- * constructor and destructor but has no user-written copy constructor.
- *
- * CID 28710: Other violation (MISSING_ASSIGN)
- * Class "apache::geode::client::AdminRegion" owns resources that are managed in
- * its
- * constructor and destructor but has no user-written assignment operator.
- *
- * FIX : Make the class noncopyabl3
- */
 class AdminRegion : private NonCopyable,
                     private NonAssignable,
                     public std::enable_shared_from_this<AdminRegion> {
@@ -88,7 +75,7 @@ class AdminRegion : private NonCopyable,
   friend class apache::geode::statistics::HostStatSampler;
 };
 
-typedef SharedPtr<AdminRegion> AdminRegionPtr;
+typedef std::shared_ptr<AdminRegion> AdminRegionPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

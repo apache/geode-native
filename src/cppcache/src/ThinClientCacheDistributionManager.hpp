@@ -21,7 +21,7 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 #include "ThinClientDistributionManager.hpp"
 
 namespace apache {
@@ -34,8 +34,7 @@ class TcrMessage;
 class TcrConnection;
 
 class CPPCACHE_EXPORT ThinClientCacheDistributionManager
-    : public ThinClientDistributionManager,
-      public SharedBase {
+    : public ThinClientDistributionManager {
  public:
   ThinClientCacheDistributionManager(TcrConnectionManager& connManager);
   ~ThinClientCacheDistributionManager(){};
@@ -60,7 +59,7 @@ class CPPCACHE_EXPORT ThinClientCacheDistributionManager
       const ThinClientCacheDistributionManager&);
 };
 
-typedef SharedPtr<ThinClientCacheDistributionManager>
+typedef std::shared_ptr<ThinClientCacheDistributionManager>
     ThinClientCacheDistributionManagerPtr;
 }  // namespace client
 }  // namespace geode

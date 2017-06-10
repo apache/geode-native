@@ -23,7 +23,7 @@
 #include <geode/geode_globals.hpp>
 #include <geode/Cacheable.hpp>
 #include <geode/CacheableKey.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 #include <geode/ExceptionTypes.hpp>
 #include "HostAsm.hpp"
 #include "CacheImpl.hpp"
@@ -38,9 +38,9 @@ namespace apache {
 namespace geode {
 namespace client {
 class CPPCACHE_EXPORT MapEntry;
-typedef SharedPtr<MapEntry> MapEntryPtr;
+typedef std::shared_ptr<MapEntry> MapEntryPtr;
 class CPPCACHE_EXPORT MapEntryImpl;
-typedef SharedPtr<MapEntryImpl> MapEntryImplPtr;
+typedef std::shared_ptr<MapEntryImpl> MapEntryImplPtr;
 
 class CPPCACHE_EXPORT LRUEntryProperties;
 
@@ -103,7 +103,7 @@ class CPPCACHE_EXPORT ExpEntryProperties {
 /**
  * @brief Interface class for region mapped entry value.
  */
-class CPPCACHE_EXPORT MapEntry : public SharedBase {
+class CPPCACHE_EXPORT MapEntry {
  public:
   static MapEntryPtr MapEntry_NullPointer;
 
@@ -178,7 +178,7 @@ class CPPCACHE_EXPORT MapEntry : public SharedBase {
  protected:
   inline MapEntry() {}
 
-  inline explicit MapEntry(bool noInit) : SharedBase(noInit) {}
+  inline explicit MapEntry(bool noInit) {}
 };
 
 /**
@@ -264,7 +264,7 @@ class CPPCACHE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
   VersionedMapEntryImpl& operator=(const VersionedMapEntryImpl&);
 };
 
-typedef SharedPtr<VersionedMapEntryImpl> VersionedMapEntryImplPtr;
+typedef std::shared_ptr<VersionedMapEntryImpl> VersionedMapEntryImplPtr;
 
 class CPPCACHE_EXPORT EntryFactory {
  public:

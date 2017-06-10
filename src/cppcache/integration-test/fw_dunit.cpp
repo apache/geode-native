@@ -837,13 +837,6 @@ void log(std::string s, int lineno, const char* filename) {
 void cleanup() { gClientCleanup.callClientCleanup(); }
 
 int dmain(int argc, ACE_TCHAR* argv[]) {
-#ifdef WIN32
-  char* envsetting = ACE_OS::getenv("BUG481");
-  if (envsetting != nullptr && strlen(envsetting) > 0) {
-    apache::geode::client::setNewAndDelete(&operator new, & operator delete);
-  }
-#endif
-
 #ifdef USE_SMARTHEAP
   MemRegisterTask();
 #endif
@@ -1199,9 +1192,4 @@ void Semaphore::release(int t) {
 
 namespace test {
 
-NOCout cout;
-NOCout::FLAGS endl = NOCout::endl;
-NOCout::FLAGS flush = NOCout::flush;
-NOCout::FLAGS hex = NOCout::hex;
-NOCout::FLAGS dec = NOCout::dec;
 }  // namespace test

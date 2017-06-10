@@ -30,7 +30,7 @@ using namespace test;
 
 class MyListener;
 
-typedef apache::geode::client::SharedPtr<MyListener> MyListenerPtr;
+typedef std::shared_ptr<MyListener> MyListenerPtr;
 
 class MyListener : public CacheListener {
   uint8_t m_gotit[5];
@@ -43,7 +43,8 @@ class MyListener : public CacheListener {
     auto keyPtr = std::dynamic_pointer_cast<CacheableString>(event.getKey());
     for (int i = 0; i < 5; i++) {
       if (!ACE_OS::strcmp(keys[i], keyPtr->asChar())) {
-        auto valPtr = std::dynamic_pointer_cast<CacheableString>(event.getNewValue());
+        auto valPtr =
+            std::dynamic_pointer_cast<CacheableString>(event.getNewValue());
         if (!ACE_OS::strcmp(vals[i], valPtr->asChar())) m_gotit[i] = 1;
         break;
       }

@@ -61,7 +61,7 @@ class CPPCACHE_EXPORT EnumInfo : public CacheableKey {
   CacheableStringPtr getEnumName() const { return m_enumName; }
   int32_t getEnumOrdinal() const { return m_ordinal; }
 };
-typedef SharedPtr<EnumInfo> EnumInfoPtr;
+typedef std::shared_ptr<EnumInfo> EnumInfoPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

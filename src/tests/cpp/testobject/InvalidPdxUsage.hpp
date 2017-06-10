@@ -145,7 +145,7 @@ class TESTOBJECT_EXPORT CharTypesWithInvalidUsage : public PdxSerializable {
     return new CharTypesWithInvalidUsage();
   }
 };
-typedef SharedPtr<CharTypesWithInvalidUsage> CharTypesWithInvalidUsagePtr;
+typedef std::shared_ptr<CharTypesWithInvalidUsage> CharTypesWithInvalidUsagePtr;
 
 class TESTOBJECT_EXPORT AddressWithInvalidAPIUsage : public PdxSerializable {
  private:
@@ -221,7 +221,8 @@ class TESTOBJECT_EXPORT AddressWithInvalidAPIUsage : public PdxSerializable {
 
   const char* getCity() { return _city; }
 };
-typedef SharedPtr<AddressWithInvalidAPIUsage> AddressWithInvalidAPIUsagePtr;
+typedef std::shared_ptr<AddressWithInvalidAPIUsage>
+    AddressWithInvalidAPIUsagePtr;
 
 enum pdxEnumTestWithInvalidAPIUsage { mypdx1, mypdx2, mypdx3 };
 
@@ -686,7 +687,7 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
   bool generic2DCompare(T1** value1, T2** value2, int length,
                         int* arrLengths) const;
 };
-typedef SharedPtr<PdxTests::InvalidPdxUsage> InvalidPdxUsagePtr;
+typedef std::shared_ptr<PdxTests::InvalidPdxUsage> InvalidPdxUsagePtr;
 }  // namespace PdxTests
 
 #endif  // GEODE_TESTOBJECT_INVALIDPDXUSAGE_H_

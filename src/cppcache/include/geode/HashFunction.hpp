@@ -21,7 +21,7 @@
  */
 
 #include "geode_globals.hpp"
-#include "SharedPtr.hpp"
+#include <memory>
 #include "CacheableKey.hpp"
 
 /** @file

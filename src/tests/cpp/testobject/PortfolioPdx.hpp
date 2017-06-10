@@ -105,7 +105,7 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
   CacheableStringPtr toString() const;
 };
 
-typedef SharedPtr<PortfolioPdx> PortfolioPdxPtr;
+typedef std::shared_ptr<PortfolioPdx> PortfolioPdxPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_PORTFOLIOPDX_H_

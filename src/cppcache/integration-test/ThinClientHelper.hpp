@@ -42,7 +42,6 @@
 #include "CacheHelper.hpp"
 
 using namespace apache::geode::client;
-using namespace test;
 using namespace unitTests;
 
 CacheHelper* cacheHelper = nullptr;

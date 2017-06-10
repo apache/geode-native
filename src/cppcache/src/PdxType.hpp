@@ -39,7 +39,7 @@ namespace client {
 
 typedef std::map<std::string, PdxFieldTypePtr> NameVsPdxType;
 class PdxType;
-typedef SharedPtr<PdxType> PdxTypePtr;
+typedef std::shared_ptr<PdxType> PdxTypePtr;
 /* adongre
  * Coverity - II
  * CID 29178: Other violation (MISSING_COPY)

@@ -309,7 +309,7 @@ bool QueryHelper::verifyRS(SelectResultsPtr& resultSet, int expectedRows) {
   }
 
   ResultSetPtr rsptr =
-      std::static_pointer_cast<GF_UNWRAP_SP(ResultSetPtr)>(resultSet);
+      std::static_pointer_cast<ResultSet>(resultSet);
 
   int foundRows = 0;
 
@@ -337,7 +337,7 @@ bool QueryHelper::verifySS(SelectResultsPtr& structSet, int expectedRows,
   }
 
   StructSetPtr ssptr =
-      std::static_pointer_cast<GF_UNWRAP_SP(StructSetPtr)>(structSet);
+      std::static_pointer_cast<StructSet>(structSet);
 
   int foundRows = 0;
 

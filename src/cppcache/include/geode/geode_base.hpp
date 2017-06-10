@@ -269,26 +269,6 @@ typedef enum {
 
 #include <new>
 
-#ifdef _WIN32
-
-typedef void *(*pNew)(size_t);
-typedef void (*pDelete)(void *);
-
-namespace apache {
-namespace geode {
-namespace client {
-extern void setDefaultNewAndDelete();
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
-
-void *operator new(size_t size);
-void operator delete(void *p);
-void *operator new[](size_t size);
-void operator delete[](void *p);
-
-#endif  // _WIN32
-
 /** Allocates x and throws OutOfMemoryException if it fails */
 #define GF_NEW(v, stmt)                                                 \
   {                                                                     \
@@ -314,8 +294,10 @@ void operator delete[](void *p);
     x = nullptr;                \
   }
 
-// TODO shared_ptre - make C+11 library dependent or make constructor destructor
-// public
+// TODO shared_ptr - Consider making con/destructors public.
+/*
+ * Allows std::shared_ptr to access protected constructors and destructors.
+ */
 #if defined(__clang__)
 #define FRIEND_STD_SHARED_PTR(_T)                                      \
   friend std::__libcpp_compressed_pair_imp<std::allocator<_T>, _T, 1>; \

@@ -21,8 +21,7 @@
  */
 
 #include <memory>
-
-#include "SharedBase.hpp"
+#include "geode_base.hpp"
 
 namespace apache {
 namespace geode {
@@ -33,8 +32,8 @@ namespace client {
 * @see Cache#getCacheTransactionManager
 * @see CacheTransactionManager#getTransactionId
 */
-class CPPCACHE_EXPORT TransactionId : public apache::geode::client::SharedBase {
- protected:
+class CPPCACHE_EXPORT TransactionId {
+ public:
   TransactionId();
   virtual ~TransactionId();
 

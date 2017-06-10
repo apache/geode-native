@@ -54,7 +54,7 @@ enum ServerRegionOperation {
 
 _GF_PTR_DEF_(TransactionalOperation, TransactionalOperationPtr);
 
-class TransactionalOperation : public apache::geode::client::SharedBase {
+class TransactionalOperation {
  public:
   TransactionalOperation(ServerRegionOperation op, const char* regionName,
                          CacheableKeyPtr key, VectorOfCacheablePtr arguments);

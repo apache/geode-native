@@ -34,7 +34,7 @@ namespace client {
 #define GF_EX_MSG_LIMIT 2048
 
 class Exception;
-typedef SharedPtr<Exception> ExceptionPtr;
+typedef std::shared_ptr<Exception> ExceptionPtr;
 
 class DistributedSystem;
 
@@ -42,7 +42,7 @@ class DistributedSystem;
  * @class Exception Exception.hpp
  * A description of an exception that occurred during a cache operation.
  */
-class CPPCACHE_EXPORT Exception : public SharedBase {
+class CPPCACHE_EXPORT Exception {
   /**
    * @brief public methods
    */

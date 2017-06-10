@@ -44,7 +44,7 @@ class StructSetImpl;
  * A SelectResultsIterator is obtained from a ResultSet or StructSet and
  * is used to iterate over the items available in them.
  */
-class CPPCACHE_EXPORT SelectResultsIterator : public SharedBase {
+class CPPCACHE_EXPORT SelectResultsIterator {
  public:
   /**
    * Check whether the SelectResultsIterator has another item to get.

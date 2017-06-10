@@ -53,7 +53,7 @@ namespace client {
  * @see CqAttributes
  *
  */
-class CPPCACHE_EXPORT CqAttributesFactory : public SharedBase {
+class CPPCACHE_EXPORT CqAttributesFactory  {
  public:
   /**
    * Creates a new instance of AttributesFactory ready to create a

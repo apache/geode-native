@@ -43,7 +43,7 @@ namespace client {
  * A Query is created from a QueryService and executed on the server
  * returning a SelectResults which can be either a ResultSet or a StructSet.
  */
-class CPPCACHE_EXPORT QueryService : public SharedBase {
+class CPPCACHE_EXPORT QueryService {
  public:
   typedef std::vector<CqQueryPtr> query_container_type;
 

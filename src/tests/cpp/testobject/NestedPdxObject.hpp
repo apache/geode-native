@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 /*
-* NestedPdxObject.hpp
-*
-*/
+ * NestedPdxObject.hpp
+ *
+ */
 
 #include <geode/PdxSerializable.hpp>
 #include <geode/GeodeCppCache.hpp>
@@ -90,7 +90,7 @@ class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
 
   bool equals(ChildPdx& other) const;
 };
-typedef SharedPtr<ChildPdx> ChildPdxPtr;
+typedef std::shared_ptr<ChildPdx> ChildPdxPtr;
 
 class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
  private:
@@ -201,7 +201,7 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
 
   bool equals(ParentPdx& other, bool isPdxReadSerialized) const;
 };
-typedef SharedPtr<ParentPdx> ParentPdxPtr;
+typedef std::shared_ptr<ParentPdx> ParentPdxPtr;
 
 enum enumQuerytest { id1, id2, id3 };
 
@@ -267,7 +267,7 @@ class TESTOBJECT_EXPORT PdxEnumTestClass : public PdxSerializable {
     return new PdxEnumTestClass();
   }
 };
-typedef SharedPtr<PdxEnumTestClass> PdxEnumTestClassPtr;
+typedef std::shared_ptr<PdxEnumTestClass> PdxEnumTestClassPtr;
 
 class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
  private:
@@ -338,7 +338,7 @@ class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
     return true;
   }
 };
-typedef SharedPtr<SerializePdx> SerializePdxPtr;
+typedef std::shared_ptr<SerializePdx> SerializePdxPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_NESTEDPDXOBJECT_H_

@@ -47,7 +47,7 @@ class CacheRegionHelper;
 class DiffieHellman;
 class TcrConnection;
 
-class CPPCACHE_EXPORT DistributedSystem : public SharedBase {
+class CPPCACHE_EXPORT DistributedSystem {
   /**
    * @brief public methods
    */

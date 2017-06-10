@@ -35,10 +35,12 @@ namespace apache {
 namespace geode {
 namespace client {
 
-typedef std::unordered_map<CacheableKeyPtr, int, CacheableKey::hash, CacheableKey::equal_to> MapOfUpdateCounters;
+typedef std::unordered_map<CacheableKeyPtr, int, CacheableKey::hash,
+                           CacheableKey::equal_to>
+    MapOfUpdateCounters;
 
 class Region;
-typedef SharedPtr<Region> RegionPtr;
+typedef std::shared_ptr<Region> RegionPtr;
 
 /** Map type used to hold root regions in the Cache, and subRegions. */
 typedef ACE_Hash_Map_Manager_Ex<std::string, RegionPtr, ACE_Hash<std::string>,

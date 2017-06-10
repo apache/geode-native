@@ -213,7 +213,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       if (executeFunctionResult == nullptr) {
         ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
-        sprintf(buf, "echo String : result count = %d",
+        sprintf(buf, "echo String : result count = %zd",
                 executeFunctionResult->size());
         LOG(buf);
         resultList->clear();
@@ -228,7 +228,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "get result count = %d", resultList->size());
+        sprintf(buf, "get result count = %zd", resultList->size());
         LOG(buf);
         ASSERT(resultList->size() == 17,
                "get executeFunctionResult count is not 17");
@@ -294,7 +294,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
       if (executeFunctionResult == nullptr) {
         ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
-        sprintf(buf, "echo String : result count = %d",
+        sprintf(buf, "echo String : result count = %zd",
                 executeFunctionResult->size());
         LOG(buf);
         resultList->clear();
@@ -308,7 +308,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "get result count = %d", resultList->size());
+        sprintf(buf, "get result count = %zd", resultList->size());
         LOG(buf);
         ASSERT(resultList->size() == 17,
                "get executeFunctionResult count is not 17");
@@ -333,7 +333,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
       if (executeFunctionResult1 == nullptr) {
         ASSERT(false, "get executeFunctionResult1 is nullptr");
       } else {
-        sprintf(buf, "echo String : result count = %d",
+        sprintf(buf, "echo String : result count = %zd",
                 executeFunctionResult1->size());
         LOG(buf);
         resultList->clear();
@@ -347,7 +347,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "get result count = %d", resultList->size());
+        sprintf(buf, "get result count = %zd", resultList->size());
         LOG(buf);
         ASSERT(resultList->size() == 17,
                "get executeFunctionResult1 count is not 17");

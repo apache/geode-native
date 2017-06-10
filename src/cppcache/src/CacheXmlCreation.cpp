@@ -58,9 +58,7 @@ void CacheXmlCreation::setPdxReadSerialized(bool val) {
 }
 
 CacheXmlCreation::CacheXmlCreation()
-    /* adongre
-     * CID 28926: Uninitialized pointer field (UNINIT_CTOR)
-     */
+
     : m_cache((Cache*)0) {
   m_pdxIgnoreUnreadFields = false;
   m_readPdxSerialized = false;

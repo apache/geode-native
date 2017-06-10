@@ -27,7 +27,7 @@ using namespace test;
 
 class TallyLoader;
 
-typedef apache::geode::client::SharedPtr<TallyLoader> TallyLoaderPtr;
+typedef std::shared_ptr<TallyLoader> TallyLoaderPtr;
 
 class TallyLoader : virtual public CacheLoader {
  private:

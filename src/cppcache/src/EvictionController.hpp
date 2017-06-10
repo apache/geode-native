@@ -27,7 +27,7 @@
 #include <ace/Task.h>
 #include <geode/DataOutput.hpp>
 #include <geode/Log.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 #include "IntQueue.hpp"
 #include "EvictionThread.hpp"
 #include <string>
@@ -68,10 +68,9 @@ typedef std::vector<std::string> VectorOfString;
 class EvictionController;
 class EvictionThread;
 class CacheImpl;
-typedef SharedPtr<EvictionController> EvictionControllerPtr;
+typedef std::shared_ptr<EvictionController> EvictionControllerPtr;
 
-class CPPCACHE_EXPORT EvictionController : public ACE_Task_Base,
-                                           public SharedBase {
+class CPPCACHE_EXPORT EvictionController : public ACE_Task_Base {
  public:
   EvictionController(size_t maxHeapSize, int32_t heapSizeDelta,
                      CacheImpl* cache);

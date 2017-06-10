@@ -141,7 +141,7 @@ class CacheableObjectPartList : public Cacheable {
   virtual uint32_t objectSize() const;
 };
 
-typedef SharedPtr<CacheableObjectPartList> CacheableObjectPartListPtr;
+typedef std::shared_ptr<CacheableObjectPartList> CacheableObjectPartListPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

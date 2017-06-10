@@ -53,7 +53,7 @@ isTransaction = false );
   // virtual void cleanStickyConnections(volatile bool& isRunning);
   // ThinClientStickyManager* m_manager;
 };
-typedef SharedPtr<ThinClientPoolStickyHADM> ThinClientPoolStickyHADMPtr;
+typedef std::shared_ptr<ThinClientPoolStickyHADM> ThinClientPoolStickyHADMPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

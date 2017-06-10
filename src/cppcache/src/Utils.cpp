@@ -15,40 +15,18 @@
  * limitations under the License.
  */
 
-#include "Utils.hpp"
-#include "ace/OS.h"
-#include "NanoTimer.hpp"
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/INET_Addr.h>
 #include <cstdio>
 
-using namespace apache::geode::client;
+#include <ace/OS.h>
+#include <ace/Recursive_Thread_Mutex.h>
+#include <ace/INET_Addr.h>
 
-#ifdef _WIN32
+#include "Utils.hpp"
+#include "NanoTimer.hpp"
 
-pNew Utils::s_pNew = nullptr;
-pDelete Utils::s_pDelete = nullptr;
-bool Utils::s_setNewAndDelete = false;
-
-void* operator new(size_t size) {
-  if (!Utils::s_pNew) {
-    apache::geode::client::setDefaultNewAndDelete();
-  }
-  void* ret = Utils::s_pNew(size);
-  if (ret == nullptr) {
-    throw apache::geode::client::OutOfMemoryException(
-        "Out of memory while executing operator new");
-  }
-  return ret;
-}
-
-void operator delete(void* p) { Utils::s_pDelete(p); }
-
-void* operator new[](size_t size) { return operator new(size); }
-
-void operator delete[](void* p) { operator delete(p); }
-
-#endif  // _WIN32
+namespace apache {
+namespace geode {
+namespace client {
 
 int RandGen::operator()(size_t max) {
   unsigned int seed = static_cast<unsigned int>(NanoTimer::now());
@@ -103,59 +81,6 @@ void Utils::parseEndpointString(const char* endpoints, std::string& host,
   host = endpoint;
   port = atoi(endpointsStr.c_str());
 }
-
-/*
-std::string
-Utils::convertHostToCanonicalForm(const char* endpoint)
-{
-  ACE_INET_Addr aia;
-  char canonical[MAXHOSTNAMELEN + 11] = {0};
-
-  if ( endpoint == nullptr ||
-       strlen(endpoint) == 0 ) {
-    LOGERROR("Cannot convert empty endpoint to canonical form");
-    return "";
-  }
-
-  // first convert the incoming endpoint string to an inet addr
-
-  if (aia.string_to_addr(endpoint) != 0) {
-    LOGERROR("Could not convert endpoint [%s] to inet addr", endpoint);
-    return endpoint;
-  }
-
-  // if its a loopback address, try to get our hostname
-
-  if (aia.is_loopback()) {
-    int port = atoi(strchr(endpoint, ':') + 1);
-    if (ACE_OS::hostname(canonical, MAXHOSTNAMELEN) == 0) {
-      struct hostent * host;
-      if ( (host = ACE_OS::gethostbyname(canonical)) != nullptr ) {
-        if (h_errno != 0) {
-          return endpoint;
-        }
-        sprintf(canonical, "%s:%d", host->h_name, port);
-        if (aia.string_to_addr(canonical) != 0) {
-          LOGERROR("Could not convert canonical endpoint [%s] to inet addr",
-canonical);
-          return endpoint;
-        }
-      }
-    }
-  }
-
-  // convert first to FQDN host name, failing which try IP number
-
-  if ( aia.addr_to_string(canonical, MAXHOSTNAMELEN + 10, 0) != 0 &&
-       aia.addr_to_string(canonical, MAXHOSTNAMELEN + 10, 1) != 0 ) {
-    LOGERROR("Could not convert [%s] from inet addr to canonical form",
-endpoint);
-    return endpoint;
-  }
-
-  return canonical;
-}
-*/
 
 std::string Utils::convertHostToCanonicalForm(const char* endpoints) {
   if (endpoints == nullptr) return nullptr;
@@ -287,3 +212,7 @@ int32_t Utils::logWideString(char* buf, size_t maxLen, const wchar_t* wStr) {
     return ACE_OS::snprintf(buf, maxLen, "null");
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -100,25 +100,3 @@ void DllMainGetPath(char *result, int maxLen) {
 #endif /* WIN32 */
 
 } /* extern "C" */
-
-#ifdef _WIN32
-
-namespace apache {
-namespace geode {
-namespace client {
-void CPPCACHE_EXPORT setNewAndDelete(pNew pn, pDelete pd) {
-  Utils::s_pNew = pn;
-  Utils::s_pDelete = pd;
-  Utils::s_setNewAndDelete = true;
-}
-
-void setDefaultNewAndDelete() {
-  Utils::s_pNew = (pNew)&malloc;      // operator new;
-  Utils::s_pDelete = (pDelete)&free;  // operator delete;
-}
-
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
-
-#endif  // _WIN32

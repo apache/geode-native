@@ -27,7 +27,7 @@ ExpirationAction::Action action = ExpirationAction::DESTROY;
 
 // This test is for serially running the tests.
 
-int getNumOfEntries(RegionPtr& R1) {
+size_t getNumOfEntries(RegionPtr& R1) {
   VectorOfCacheableKey v;
   R1->keys(v);
   LOGFINE("Number of keys in region %s is %d", R1->getFullPath(), v.size());
@@ -98,7 +98,7 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
 
-    int n;
+    size_t n;
 
     RegionAttributesPtr attrs_1;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
@@ -180,7 +180,7 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     n = getNumOfEntries(R5);
 
-    printf("n ==  %d\n", n);
+    printf("n ==  %zd\n", n);
     ASSERT(n == 1, "Expected 1 entry");
 
     // ACE_OS::sleep(3);

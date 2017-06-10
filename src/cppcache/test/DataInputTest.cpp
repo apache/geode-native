@@ -25,7 +25,7 @@
 
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 #include "ByteArrayFixture.hpp"
 
 using namespace apache::geode::client;
@@ -119,7 +119,7 @@ class TestDataInput {
   }
 
   template <class PTR>
-  void readObject(SharedPtr<PTR> &ptr,
+  void readObject(std::shared_ptr<PTR> &ptr,
                   bool throwOnError = DINP_THROWONERROR_DEFAULT) {
     m_dataInput.readObject(ptr, throwOnError);
   }

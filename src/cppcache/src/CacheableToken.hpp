@@ -28,7 +28,7 @@ namespace geode {
 namespace client {
 
 class CPPCACHE_EXPORT CacheableToken;
-typedef SharedPtr<CacheableToken> CacheableTokenPtr;
+typedef std::shared_ptr<CacheableToken> CacheableTokenPtr;
 
 /** Implement a non-mutable int64_t wrapper that can serve as a distributable
  * key object for cacheing as well as being a 64 bit value. */

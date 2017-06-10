@@ -52,7 +52,7 @@ class CacheWriter;
  * @see RegionAttributes
  * @see AttributesFactory
  */
-class CPPCACHE_EXPORT AttributesMutator : public SharedBase {
+class CPPCACHE_EXPORT AttributesMutator {
  private:
   RegionPtr m_region;
 

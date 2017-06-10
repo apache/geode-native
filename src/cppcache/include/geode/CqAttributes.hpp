@@ -47,7 +47,7 @@ namespace client {
  *
  * For compatibility rules and default values, see {@link CqAttributesFactory}.
  */
-class CPPCACHE_EXPORT CqAttributes : virtual public SharedBase {
+class CPPCACHE_EXPORT CqAttributes {
  public:
   typedef std::vector<std::shared_ptr<CqListener>> listener_container_type;
 

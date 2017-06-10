@@ -17,6 +17,8 @@
 
 #define ROOT_NAME "testEntriesMap"
 
+#include <iostream>
+
 #include "fw_helper.hpp"
 
 #ifdef WIN32
@@ -36,7 +38,6 @@ END_TEST(NotOnWindows)
 #include <LocalRegion.hpp>
 
 using namespace apache::geode::client;
-using namespace std;
 
 typedef std::vector<MapEntryImplPtr> VectorOfMapEntry;
 
@@ -486,9 +487,9 @@ BEGIN_TEST(EntriesTest)
       CacheablePtr ccPtr;
       ccPtr = rePtr->getValue();
       ctPtr = std::dynamic_pointer_cast<CacheableString>(ccPtr);
-      test::cout << "value is " << ctPtr->asChar() << test::endl;
+      std::cout << "value is " << ctPtr->asChar() << std::endl;
       int val = atoi(ctPtr->asChar());
-      test::cout << "atoi returned " << val << test::endl;
+      std::cout << "atoi returned " << val << std::endl;
       total += val;
       entriesVec->pop_back();
     }
@@ -622,7 +623,7 @@ BEGIN_TEST(TestRehash)
       entries->get(keyPtr, cvPtr, me);
       valuePtr = std::dynamic_pointer_cast<CacheableString>(cvPtr);
       if (valuePtr == nullptr) {
-        test::cout << "error finding key: " << keyBuf << test::endl;
+        std::cout << "error finding key: " << keyBuf << std::endl;
         FAIL("should have found value for all keys after rehash.");
       }
     }

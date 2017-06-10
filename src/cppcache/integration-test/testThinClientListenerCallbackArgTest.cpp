@@ -45,7 +45,7 @@ const char* locatorsG =
 using namespace apache::geode::client;
 class CallbackListener;
 
-typedef apache::geode::client::SharedPtr<CallbackListener> CallbackListenerPtr;
+typedef std::shared_ptr<CallbackListener> CallbackListenerPtr;
 
 class CallbackListener : public CacheListener {
  private:
@@ -109,8 +109,10 @@ class CallbackListener : public CacheListener {
       } catch (const ClassCastException& ex) {
         LOGFINE(" in class cast exception %s ", ex.getMessage());
         try {
-          auto fromCallback = std::dynamic_pointer_cast<CacheableString>(eventCallback);
-          auto mCallback = std::dynamic_pointer_cast<CacheableString>(m_callbackArg);
+          auto fromCallback =
+              std::dynamic_pointer_cast<CacheableString>(eventCallback);
+          auto mCallback =
+              std::dynamic_pointer_cast<CacheableString>(m_callbackArg);
 
           LOGFINE(" values are %s === %s ", fromCallback->asChar(),
                   mCallback->asChar());

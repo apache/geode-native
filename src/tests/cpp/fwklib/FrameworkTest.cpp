@@ -33,9 +33,6 @@ SpinLock FrameworkTest::m_lck;
 // ----------------------------------------------------------------------------
 
 FrameworkTest::FrameworkTest(const char* initArgs) {
-#ifdef WIN32
-  setNewAndDelete();
-#endif
   txManager = nullptr;
   // parse args into variables,
   char xml[4096];   // xml file name
@@ -225,12 +222,6 @@ const FwkPool* FrameworkTest::getPoolSnippet(const std::string& name) const {
 
 void FrameworkTest::cacheInitialize(PropertiesPtr& props,
                                     const CacheAttributesPtr& cAttrs) {
-#ifdef WIN32
-  if (!m_doneSetNewAndDelete) {
-    FWKEXCEPTION("SetNewAndDelete() not called via initArgs ctor");
-  }
-#endif
-
   CacheFactoryPtr cacheFactory;
   try {
     std::string name = getStringValue("systemName");

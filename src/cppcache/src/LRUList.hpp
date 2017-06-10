@@ -21,7 +21,7 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 #include "SpinLock.hpp"
 
 namespace apache {
@@ -83,7 +83,7 @@ class CPPCACHE_EXPORT LRUEntryProperties {
 template <typename TEntry, typename TCreateEntry>
 class LRUList {
  protected:
-  typedef SharedPtr<TEntry> LRUListEntryPtr;
+  typedef std::shared_ptr<TEntry> LRUListEntryPtr;
 
   /**
    * @brief The entries in the LRU List are instances of LRUListNode.

@@ -87,7 +87,7 @@ class RegionEvent;
  * @see RegionAttributes::getCacheWriter
  * @see AttributesMutator::setCacheWriter
  */
-class CPPCACHE_EXPORT CacheWriter : public SharedBase {
+class CPPCACHE_EXPORT CacheWriter  {
  public:
   /**
    * Called before an entry is updated. The entry update is initiated by a

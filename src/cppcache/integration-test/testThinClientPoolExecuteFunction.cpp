@@ -294,7 +294,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       if (executeFunctionResult == nullptr) {
         ASSERT(false, "echo String : executeFunctionResult is nullptr");
       } else {
-        sprintf(buf, "echo String : result count = %d",
+        sprintf(buf, "echo String : result count = %zd",
                 executeFunctionResult->size());
         LOG(buf);
         if (auto csp = std::dynamic_pointer_cast<CacheableString>(
@@ -318,7 +318,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       if (executeFunctionResult == nullptr) {
         ASSERT(false, "echo String : executeFunctionResult is nullptr");
       } else {
-        sprintf(buf, "echo String : result count = %d",
+        sprintf(buf, "echo String : result count = %zd",
                 executeFunctionResult->size());
         LOG(buf);
         const char* str = std::dynamic_pointer_cast<CacheableString>(
@@ -335,7 +335,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       if (executeFunctionResult == nullptr) {
         ASSERT(false, "echo Boolean: executeFunctionResult is nullptr");
       } else {
-        sprintf(buf, "echo Boolean: result count = %d",
+        sprintf(buf, "echo Boolean: result count = %zd",
                 executeFunctionResult->size());
         LOG(buf);
         bool b = std::dynamic_pointer_cast<CacheableBoolean>(
@@ -372,7 +372,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "Region get: result count = %d", resultList->size());
+        sprintf(buf, "Region get: result count = %zd", resultList->size());
         LOG(buf);
         ASSERT(resultList->size() == 34,
                "region get: resultList count is not 34");
@@ -421,10 +421,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
              item++) {
           resultList->push_back(executeFunctionResult->operator[](item));
         }
-        sprintf(buf, "Region get new collector: result list count = %d",
+        sprintf(buf, "Region get new collector: result list count = %zd",
                 resultList->size());
         LOG(buf);
-        sprintf(buf, "Region get new collector: result count = %d",
+        sprintf(buf, "Region get new collector: result count = %zd",
                 executeFunctionResult->size());
         LOG(buf);
         ASSERT(
@@ -464,7 +464,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       if (executeFunctionResult == nullptr) {
         ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
-        sprintf(buf, "echo String : result count = %d",
+        sprintf(buf, "echo String : result count = %zd",
                 executeFunctionResult->size());
         LOGINFO(buf);
         resultList->clear();
@@ -479,7 +479,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "get result count = %d", resultList->size());
+        sprintf(buf, "get result count = %zd", resultList->size());
         LOGINFO(buf);
         ASSERT(resultList->size() == 34,
                "get executeFunctionResult count is not 34");
@@ -655,7 +655,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "get result count = %d", resultList->size());
+        sprintf(buf, "get result count = %zd", resultList->size());
         LOG(buf);
         ASSERT(resultList->size() == 17,
                "get executeFunctionResult count is not 17");
@@ -877,9 +877,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "get result count = %d", resultList->size());
+        sprintf(buf, "get result count = %zd", resultList->size());
         LOG(buf);
-        printf("resultlist size: %d", resultList->size());
+        printf("resultlist size: %zd", resultList->size());
         ASSERT(resultList->size() == 51,
                "get executeFunctionResult on all servers count is not 51");
         for (int32_t i = 0; i < resultList->size(); i++) {
@@ -1043,7 +1043,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client2OpTest)
       if (fe == nullptr) {
         ASSERT(false, "functionResult is nullptr");
       } else {
-        sprintf(buf, "result count = %d", fe->size());
+        sprintf(buf, "result count = %zd", fe->size());
         LOG(buf);
         for (int i = 0; i < fe->size(); i++) {
           bool b =
@@ -1063,7 +1063,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client2OpTest)
       if (vec == nullptr) {
         ASSERT(false, "functionResult is nullptr");
       } else {
-        sprintf(buf, "result count = %d", vec->size());
+        sprintf(buf, "result count = %zd", vec->size());
         LOG(buf);
         for (int i = 0; i < vec->size(); i++) {
           bool b =
@@ -1083,7 +1083,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client2OpTest)
       if (vecs == nullptr) {
         ASSERT(false, "functionResult is nullptr");
       } else {
-        sprintf(buf, "result count = %d", vecs->size());
+        sprintf(buf, "result count = %zd", vecs->size());
         LOG(buf);
         for (int i = 0; i < vecs->size(); i++) {
           bool b =

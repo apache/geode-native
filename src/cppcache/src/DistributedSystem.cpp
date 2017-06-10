@@ -222,10 +222,6 @@ DistributedSystemPtr DistributedSystem::connect(
   const char* ld_libpath = ACE_OS::getenv("LD_LIBRARY_PATH");
   LOGCONFIG("Current library path: %s",
             ld_libpath == nullptr ? "nullptr" : ld_libpath);
-#else
-  if (Utils::s_setNewAndDelete) {
-    LOGCONFIG("Operators new and delete have been set.");
-  }
 #endif
   // Log the Geode system properties
   g_sysProps->logSettings();

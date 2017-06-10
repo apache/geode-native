@@ -59,22 +59,8 @@ namespace client {
  *
  */
 
-/* adongre
- * CID 28727: Other violation (MISSING_COPY)
- * Class "apache::geode::client::CqService" owns resources that are managed in
- * its
- * constructor and destructor but has no user-written copy constructor.
- *
- * CID 28713: Other violation (MISSING_ASSIGN)
- * Class "apache::geode::client::CqService" owns resources that are managed in
- * its constructor
- * and destructor but has no user-written assignment operator.
- *
- * FIX : Make the class NonCopyable
- */
 class CPPCACHE_EXPORT CqService
-    : public SharedBase,
-      private NonCopyable,
+    : private NonCopyable,
       private NonAssignable,
       public std::enable_shared_from_this<CqService> {
  private:
@@ -265,7 +251,7 @@ class CPPCACHE_EXPORT CqService
                                   const bool connected);
 };
 
-typedef SharedPtr<CqService> CqServicePtr;
+typedef std::shared_ptr<CqService> CqServicePtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

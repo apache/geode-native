@@ -31,8 +31,7 @@
 #define CLIENT3 s2p2
 
 class SimpleCacheListener;
-typedef apache::geode::client::SharedPtr<SimpleCacheListener>
-    SimpleCacheListenerPtr;
+typedef std::shared_ptr<SimpleCacheListener> SimpleCacheListenerPtr;
 
 // The SimpleCacheListener class.
 class SimpleCacheListener : public CacheListener {

@@ -61,7 +61,7 @@ class CPPCACHE_EXPORT LRUExpMapEntry : public MapEntryImpl,
   LRUExpMapEntry& operator=(const LRUExpMapEntry&);
 };
 
-typedef SharedPtr<LRUExpMapEntry> LRUExpMapEntryPtr;
+typedef std::shared_ptr<LRUExpMapEntry> LRUExpMapEntryPtr;
 
 class CPPCACHE_EXPORT VersionedLRUExpMapEntry : public LRUExpMapEntry,
                                                 public VersionStamp {
@@ -82,7 +82,7 @@ class CPPCACHE_EXPORT VersionedLRUExpMapEntry : public LRUExpMapEntry,
   VersionedLRUExpMapEntry& operator=(const VersionedLRUExpMapEntry&);
 };
 
-typedef SharedPtr<VersionedLRUExpMapEntry> VersionedLRUExpMapEntryPtr;
+typedef std::shared_ptr<VersionedLRUExpMapEntry> VersionedLRUExpMapEntryPtr;
 
 class CPPCACHE_EXPORT LRUExpEntryFactory : public EntryFactory {
  public:

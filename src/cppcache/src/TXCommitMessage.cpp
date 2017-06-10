@@ -162,37 +162,13 @@ int8_t TXCommitMessage::typeId() const {
 Serializable* TXCommitMessage::create() { return new TXCommitMessage(); }
 
 void TXCommitMessage::apply(Cache* cache) {
-  for (VectorOfSharedBase::Iterator iter = m_regions.begin();
+  for (std::vector<RegionCommitPtr>::iterator iter = m_regions.begin();
        m_regions.end() != iter; iter++) {
-    RegionCommitPtr regionCommit =
-        std::static_pointer_cast<GF_UNWRAP_SP(RegionCommitPtr)>(*iter);
+    RegionCommitPtr regionCommit = std::static_pointer_cast<RegionCommit>(*iter);
     regionCommit->apply(cache);
   }
 }
-/*
-VectorOfEntryEvent TXCommitMessage::getEvents(Cache* cache)
-{
-        VectorOfEntryEvent events;
-        std::vector<FarSideEntryOpPtr> ops;
-        for(VectorOfSharedBase::Iterator iter = m_regions.begin();
-m_regions.end() != iter; iter++)
-        {
-                RegionCommitPtr regionCommit =
-std::static_pointer_cast<GF_UNWRAP_SP(RegionCommitPtr)>(*iter);
-                regionCommit->fillEvents(cache, ops);
-        }
 
-        std::sort(ops.begin(), ops.end(), FarSideEntryOp::cmp);
-
-        for(std::vector<FarSideEntryOpPtr>::iterator iter = ops.begin();
-ops.end() != iter; iter++)
-        {
-                events.push_back((*iter)->getEntryEvent(cache));
-        }
-
-        return events;
-}
-*/
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

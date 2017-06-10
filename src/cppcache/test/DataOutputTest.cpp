@@ -280,7 +280,7 @@ TEST_F(DataOutputTest, TestEncodedLengthWide) {
 
 TEST_F(DataOutputTest, TestWriteObjectSharedPtr) {
   TestDataOutput dataOutput;
-  SharedPtr<CacheableString> objptr =
+  std::shared_ptr<CacheableString> objptr =
       CacheableString::create("You had me at meat tornado.");
   dataOutput.writeObject(objptr);
   EXPECT_BYTEARRAY_EQ(

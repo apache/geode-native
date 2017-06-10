@@ -432,7 +432,7 @@ class ThinClientPoolDM
   int m_primaryServerQueueSize;
 };
 
-typedef SharedPtr<ThinClientPoolDM> ThinClientPoolDMPtr;
+typedef std::shared_ptr<ThinClientPoolDM> ThinClientPoolDMPtr;
 class FunctionExecution : public PooledWork<GfErrType> {
   ThinClientPoolDM* m_poolDM;
   TcrEndpoint* m_ep;

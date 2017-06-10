@@ -19,18 +19,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TXCommitMessage.hpp
- *
- *  Created on: 21-Feb-2011
- *      Author: ankurs
- */
 
 #include <geode/geode_globals.hpp>
 #include <geode/geode_types.hpp>
 #include <geode/DataInput.hpp>
 #include "RegionCommit.hpp"
-#include <geode/VectorOfSharedBase.hpp>
 
 namespace apache {
 namespace geode {
@@ -55,7 +48,7 @@ class TXCommitMessage : public apache::geode::client::Cacheable {
   // UNUSED int32_t m_processorId;
   bool isAckRequired();
 
-  VectorOfSharedBase m_regions;
+  std::vector<RegionCommitPtr> m_regions;
 };
 }  // namespace client
 }  // namespace geode

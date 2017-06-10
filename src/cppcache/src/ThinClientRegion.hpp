@@ -370,7 +370,7 @@ class ChunkedInterestResponse : public TcrChunkedResult {
   virtual void reset();
 };
 
-typedef SharedPtr<ChunkedInterestResponse> ChunkedInterestResponsePtr;
+typedef std::shared_ptr<ChunkedInterestResponse> ChunkedInterestResponsePtr;
 
 /**
  * Handle each chunk of the chunked query response.
@@ -410,7 +410,7 @@ class ChunkedQueryResponse : public TcrChunkedResult {
   void readObjectPartList(DataInput& input, bool isResultSet);
 };
 
-typedef SharedPtr<ChunkedQueryResponse> ChunkedQueryResponsePtr;
+typedef std::shared_ptr<ChunkedQueryResponse> ChunkedQueryResponsePtr;
 /**
  * Handle each chunk of the chunked function execution response.
  *
@@ -458,7 +458,7 @@ class ChunkedFunctionExecutionResponse : public TcrChunkedResult {
                            uint8_t isLastChunkWithSecurity);
   virtual void reset();
 };
-typedef SharedPtr<ChunkedFunctionExecutionResponse>
+typedef std::shared_ptr<ChunkedFunctionExecutionResponse>
     ChunkedFunctionExecutionResponsePtr;
 
 /**
@@ -518,7 +518,7 @@ class ChunkedGetAllResponse : public TcrChunkedResult {
   ACE_Recursive_Thread_Mutex& getResponseLock() { return m_responseLock; }
 };
 
-typedef SharedPtr<ChunkedGetAllResponse> ChunkedGetAllResponsePtr;
+typedef std::shared_ptr<ChunkedGetAllResponse> ChunkedGetAllResponsePtr;
 
 /**
  * Handle each chunk of the chunked putAll response.
@@ -550,7 +550,7 @@ class ChunkedPutAllResponse : public TcrChunkedResult {
   ACE_Recursive_Thread_Mutex& getResponseLock() { return m_responseLock; }
 };
 
-typedef SharedPtr<ChunkedPutAllResponse> ChunkedPutAllResponsePtr;
+typedef std::shared_ptr<ChunkedPutAllResponse> ChunkedPutAllResponsePtr;
 
 /**
  * Handle each chunk of the chunked removeAll response.
@@ -582,7 +582,7 @@ class ChunkedRemoveAllResponse : public TcrChunkedResult {
   ACE_Recursive_Thread_Mutex& getResponseLock() { return m_responseLock; }
 };
 
-typedef SharedPtr<ChunkedRemoveAllResponse> ChunkedRemoveAllResponsePtr;
+typedef std::shared_ptr<ChunkedRemoveAllResponse> ChunkedRemoveAllResponsePtr;
 
 /**
  * Handle each chunk of the chunked interest registration response.
@@ -613,7 +613,7 @@ class ChunkedKeySetResponse : public TcrChunkedResult {
   virtual void reset();
 };
 
-typedef SharedPtr<ChunkedKeySetResponse> ChunkedKeySetResponsePtr;
+typedef std::shared_ptr<ChunkedKeySetResponse> ChunkedKeySetResponsePtr;
 
 class ChunkedDurableCQListResponse : public TcrChunkedResult {
  private:
@@ -636,7 +636,8 @@ class ChunkedDurableCQListResponse : public TcrChunkedResult {
   virtual void reset();
 };
 
-typedef SharedPtr<ChunkedDurableCQListResponse> ChunkedDurableCQListResponsePtr;
+typedef std::shared_ptr<ChunkedDurableCQListResponse>
+    ChunkedDurableCQListResponsePtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

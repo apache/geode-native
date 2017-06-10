@@ -21,7 +21,7 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 #include "ClientProxyMembershipID.hpp"
 #include "VersionTag.hpp"
 
@@ -84,7 +84,7 @@ class CPPCACHE_EXPORT VersionStamp {
                                   const int64_t tagVersion,
                                   const VersionTagPtr& tag) const;
 };
-typedef SharedPtr<VersionStamp> VersionStampPtr;
+typedef std::shared_ptr<VersionStamp> VersionStampPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

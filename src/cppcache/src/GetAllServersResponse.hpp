@@ -50,7 +50,7 @@ class GetAllServersResponse : public Serializable {
   std::vector<ServerLocation> getServers() { return m_servers; }
   virtual ~GetAllServersResponse() {}
 };
-typedef SharedPtr<GetAllServersResponse> GetAllServersResponsePtr;
+typedef std::shared_ptr<GetAllServersResponse> GetAllServersResponsePtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

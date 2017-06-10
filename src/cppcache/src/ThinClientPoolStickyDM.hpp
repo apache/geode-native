@@ -52,7 +52,7 @@ class ThinClientPoolStickyDM : public ThinClientPoolDM {
 
   // virtual void cleanStickyConnections(volatile bool& isRunning);
 };
-typedef SharedPtr<ThinClientPoolStickyDM> ThinClientPoolStickyDMPtr;
+typedef std::shared_ptr<ThinClientPoolStickyDM> ThinClientPoolStickyDMPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -119,7 +119,7 @@ typedef std::unordered_map<CacheableKeyPtr, std::pair<CacheablePtr, int> >
  * separator is used to concatenate all the region names together from the root,
  * starting with the root's subregions.
  */
-typedef SharedPtr<LocalRegion> LocalRegionPtr;
+typedef std::shared_ptr<LocalRegion> LocalRegionPtr;
 
 class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   /**

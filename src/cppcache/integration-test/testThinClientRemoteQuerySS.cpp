@@ -116,7 +116,7 @@ void _printFields(CacheablePtr field, Struct* ssptr, int32_t& fields) {
                      std::dynamic_pointer_cast<CacheableHashMap>(field)) {
         int index = 0;
         for (const auto& iter : *map) {
-          printf("   hashMap %d of %d ... \n", ++index, map->size());
+          printf("   hashMap %d of %zd ... \n", ++index, map->size());
           _printFields(iter.first, ssptr, fields);
           _printFields(iter.second, ssptr, fields);
         }

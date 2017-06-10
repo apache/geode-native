@@ -21,7 +21,7 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 
 #include <geode/Cache.hpp>
 #include <geode/CacheAttributes.hpp>
@@ -81,14 +81,6 @@ class ExpiryTaskManager;
  *
  */
 
-/* adongre
- * CID 28711: Other violation (MISSING_ASSIGN)
- * Class "apache::geode::client::CacheImpl" owns resources that are managed
- * in its constructor and destructor but has no user-written assignment
- * operator.
- *
- * Fix : Make the class Non copyable and non assignable
- */
 class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   /**
    * @brief public methods

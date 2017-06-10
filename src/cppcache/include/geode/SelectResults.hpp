@@ -41,7 +41,7 @@ class SelectResultsIterator;
  * A SelectResults is obtained by executing a Query on the server.
  * This can either be a ResultSet or a StructSet.
  */
-class CPPCACHE_EXPORT SelectResults : public SharedBase {
+class CPPCACHE_EXPORT SelectResults {
  public:
   /**
    * Check whether the SelectResults is modifiable.

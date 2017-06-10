@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 #include <geode/geode_globals.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 #include "CqService.hpp"
 
 #include <geode/QueryService.hpp>
@@ -87,7 +87,7 @@ class CPPCACHE_EXPORT RemoteQueryService
   CqPoolsConnected m_CqPoolsConnected;
 };
 
-typedef SharedPtr<RemoteQueryService> RemoteQueryServicePtr;
+typedef std::shared_ptr<RemoteQueryService> RemoteQueryServicePtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

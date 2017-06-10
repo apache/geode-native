@@ -31,7 +31,7 @@ namespace apache {
 namespace geode {
 namespace client {
 class ClientProxyMembershipID;
-typedef SharedPtr<ClientProxyMembershipID> ClientProxyMembershipIDPtr;
+typedef std::shared_ptr<ClientProxyMembershipID> ClientProxyMembershipIDPtr;
 
 class ClientProxyMembershipID : public DSMemberForVersionStamp {
  public:

@@ -232,10 +232,11 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    */
   Cache(const char* name, DistributedSystemPtr sys, const char* id_data,
         bool ignorePdxUnreadFields, bool readPdxSerialized);
+
   std::unique_ptr<CacheImpl> m_cacheImpl;
 
  protected:
-  Cache();
+  Cache() = delete;
 
   static bool isPoolInMultiuserMode(RegionPtr regionPtr);
 

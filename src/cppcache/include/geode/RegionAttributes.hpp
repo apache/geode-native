@@ -312,7 +312,7 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
    * @return true if concurrent update checks are turned on
    */
   bool getConcurrencyChecksEnabled() { return m_isConcurrencyChecksEnabled; }
-
+  const RegionAttributes& operator=(const RegionAttributes&) = delete;
  private:
   // Helper function that safely compares two attribute string
   // taking into consideration the fact the one or the other
@@ -347,6 +347,7 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   // will be created by the factory
   RegionAttributes(const RegionAttributes& rhs);
   RegionAttributes();
+
 
   ExpirationAction::Action m_regionTimeToLiveExpirationAction;
   ExpirationAction::Action m_regionIdleTimeoutExpirationAction;
@@ -393,8 +394,8 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   friend class RegionInternal;
   friend class RegionXmlCreation;
 
+
  private:
-  const RegionAttributes& operator=(const RegionAttributes&);
 
   FRIEND_STD_SHARED_PTR(RegionAttributes)
 };

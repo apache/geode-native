@@ -80,7 +80,7 @@ class TESTOBJECT_EXPORT Parent : public GrandParent {
 };
 
 class Child;
-typedef SharedPtr<Child> ChildPtr;
+typedef std::shared_ptr<Child> ChildPtr;
 
 class TESTOBJECT_EXPORT Child : public Parent, public PdxSerializable {
  private:
@@ -242,7 +242,7 @@ class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new CharTypes(); }
 };
-typedef SharedPtr<CharTypes> CharTypesPtr;
+typedef std::shared_ptr<CharTypes> CharTypesPtr;
 
 /**********/
 class TESTOBJECT_EXPORT Address : public PdxSerializable {
@@ -322,7 +322,7 @@ class TESTOBJECT_EXPORT Address : public PdxSerializable {
     return str;
   }*/
 };
-typedef SharedPtr<Address> AddressPtr;
+typedef std::shared_ptr<Address> AddressPtr;
 enum pdxEnumTest { pdx1, pdx2, pdx3 };
 class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
  private:
@@ -797,7 +797,7 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
   bool generic2DCompare(T1** value1, T2** value2, int length,
                         int* arrLengths) const;
 };
-typedef SharedPtr<PdxTests::PdxType> PdxTypePtr;
+typedef std::shared_ptr<PdxTests::PdxType> PdxTypePtr;
 }  // namespace PdxTests
 
 #endif  // GEODE_TESTOBJECT_PDXTYPE_H_

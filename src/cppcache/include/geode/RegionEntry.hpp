@@ -48,7 +48,7 @@ class RegionInternal;
  * invocation, or an <code>EntryDestroyedException</code> if the entry has been
  * destroyed.
  */
-class CPPCACHE_EXPORT RegionEntry : public SharedBase {
+class CPPCACHE_EXPORT RegionEntry {
  public:
   /** Returns the key for this entry.
    *

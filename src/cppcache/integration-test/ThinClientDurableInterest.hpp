@@ -111,7 +111,7 @@ class OperMonitor : public CacheListener {
     LOG("afterRegionLive called.");
   }
 };
-typedef SharedPtr<OperMonitor> OperMonitorPtr;
+typedef std::shared_ptr<OperMonitor> OperMonitorPtr;
 
 const char* mixKeys[] = {"Key-1", "D-Key-1", "Key-2", "D-Key-2"};
 const char* testRegex[] = {"D-Key-.*", "Key-.*"};

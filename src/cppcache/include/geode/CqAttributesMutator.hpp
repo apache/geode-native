@@ -40,7 +40,7 @@ namespace client {
  * of certain CQ attributes after the CQ has been created.
  *
  */
-class CPPCACHE_EXPORT CqAttributesMutator : virtual public SharedBase {
+class CPPCACHE_EXPORT CqAttributesMutator {
  public:
   /**
    * Adds a CQ listener to the end of the list of CQ listeners on this CqQuery.

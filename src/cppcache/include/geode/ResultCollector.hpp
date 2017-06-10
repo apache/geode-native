@@ -22,7 +22,7 @@
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
-#include "SharedPtr.hpp"
+#include <memory>
 #include "VectorT.hpp"
 #include "CacheableBuiltins.hpp"
 
@@ -60,10 +60,10 @@ namespace client {
  * @see FunctionService
  */
 
-class CPPCACHE_EXPORT ResultCollector : public SharedBase {
+class CPPCACHE_EXPORT ResultCollector {
   /**
-    * @brief public methods
-    */
+   * @brief public methods
+   */
  public:
   ResultCollector();
   virtual ~ResultCollector();
@@ -100,7 +100,7 @@ class CPPCACHE_EXPORT ResultCollector : public SharedBase {
    * Function Execution HA) This is to clear the previous execution results from
    * the result collector
    * @since 6.5
-  */
+   */
   virtual void clearResults();
 
  private:

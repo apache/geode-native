@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
+#include <iostream>
+
 #include <geode/GeodeCppCache.hpp>
 
 #include "fw_helper.hpp"
-
-using test::cout;
-using test::endl;
 
 using namespace apache::geode::client;
 
@@ -36,7 +35,7 @@ BEGIN_TEST(TestRegionLRULastTen)
   CacheHelper& cacheHelper = CacheHelper::getHelper();
   RegionPtr regionPtr;
   cacheHelper.createLRURegion(fwtest_Name, regionPtr);
-  cout << regionPtr->getFullPath() << endl;
+  std::cout << regionPtr->getFullPath() << std::endl;
   // put more than 10 items... verify limit is held.
   uint32_t i;
   for (i = 0; i < 10; i++) {
@@ -108,7 +107,7 @@ BEGIN_TEST(TestRegionLRULocal)
   CacheHelper& cacheHelper = CacheHelper::getHelper();
   RegionPtr regionPtr;
   cacheHelper.createLRURegion(fwtest_Name, regionPtr);
-  cout << regionPtr->getFullPath() << endl;
+  std::cout << regionPtr->getFullPath() << std::endl;
   // put more than 10 items... verify limit is held.
   uint32_t i;
   /** @TODO make this local scope and re-increase the iterations... would also
@@ -137,7 +136,7 @@ BEGIN_TEST(TestRecentlyUsedBit)
   CacheHelper& cacheHelper = CacheHelper::getHelper();
   RegionPtr regionPtr;
   cacheHelper.createLRURegion(fwtest_Name, regionPtr);
-  cout << regionPtr->getFullPath() << endl;
+  std::cout << regionPtr->getFullPath() << std::endl;
   // put more than 10 items... verify limit is held.
   uint32_t i;
   char buf[100];
@@ -182,7 +181,7 @@ BEGIN_TEST(TestEmptiedMap)
   CacheHelper& cacheHelper = CacheHelper::getHelper();
   RegionPtr regionPtr;
   cacheHelper.createLRURegion(fwtest_Name, regionPtr);
-  cout << regionPtr->getFullPath() << endl;
+  std::cout << regionPtr->getFullPath() << std::endl;
   // put more than 10 items... verify limit is held.
   uint32_t i;
   for (i = 0; i < 10; i++) {
@@ -201,8 +200,9 @@ BEGIN_TEST(TestEmptiedMap)
     sprintf(buf, "%d", i);
     CacheableKeyPtr key = CacheableKey::create(buf);
     regionPtr->destroy(key);
-    cout << "removed key " << std::dynamic_pointer_cast<CacheableString>(key)->asChar()
-         << endl;
+    std::cout << "removed key "
+              << std::dynamic_pointer_cast<CacheableString>(key)->asChar()
+              << std::endl;
   }
   VectorOfCacheableKey vecKeys;
   regionPtr->keys(vecKeys);

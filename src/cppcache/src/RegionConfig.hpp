@@ -27,7 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include <geode/SharedPtr.hpp>
+#include <memory>
 
 #include <string>
 #include <geode/Properties.hpp>
@@ -38,9 +38,9 @@ namespace geode {
 namespace client {
 
 class RegionConfig;
-typedef SharedPtr<RegionConfig> RegionConfigPtr;
+typedef std::shared_ptr<RegionConfig> RegionConfigPtr;
 
-class CPPCACHE_EXPORT RegionConfig : virtual public SharedBase {
+class CPPCACHE_EXPORT RegionConfig {
  public:
   RegionConfig(const std::string& s, const std::string& c);
 

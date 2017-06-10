@@ -30,7 +30,7 @@ namespace geode {
 namespace client {
 
 class PutAllPartialResultServerException;
-typedef SharedPtr<PutAllPartialResultServerException>
+typedef std::shared_ptr<PutAllPartialResultServerException>
     PutAllPartialResultServerExceptionPtr;
 
 /**
@@ -68,37 +68,37 @@ class CPPCACHE_EXPORT PutAllPartialResultServerException : public Serializable {
   CacheableStringPtr getMessage();
 
   /**
-  * @brief destructor
-  */
+   * @brief destructor
+   */
   virtual ~PutAllPartialResultServerException() {}
 
   /**
-  * @brief constructors
-  */
+   * @brief constructors
+   */
   PutAllPartialResultServerException(CacheableStringPtr msg);
 
   /**
-  *@brief serialize this object
-  * @throws IllegalStateException If this api is called from User code.
-  **/
+   *@brief serialize this object
+   * @throws IllegalStateException If this api is called from User code.
+   **/
   virtual void toData(DataOutput& output) const;
 
   /**
-  *@brief deserialize this object, typical implementation should return
-  * the 'this' pointer.
-  * @throws IllegalStateException If this api is called from User code.
-  **/
+   *@brief deserialize this object, typical implementation should return
+   * the 'this' pointer.
+   * @throws IllegalStateException If this api is called from User code.
+   **/
   virtual Serializable* fromData(DataInput& input);
 
   /**
-  *@brief Return the classId of the instance being serialized.
-  * This is used by deserialization to determine what instance
-  * type to create and deserialize into.
-  *
-  * The classId must be unique within an application suite.
-  * Using a negative value may result in undefined behavior.
-  * @throws IllegalStateException If this api is called from User code.
-  */
+   *@brief Return the classId of the instance being serialized.
+   * This is used by deserialization to determine what instance
+   * type to create and deserialize into.
+   *
+   * The classId must be unique within an application suite.
+   * Using a negative value may result in undefined behavior.
+   * @throws IllegalStateException If this api is called from User code.
+   */
   virtual int32_t classId() const;
 
   /**
@@ -109,7 +109,7 @@ class CPPCACHE_EXPORT PutAllPartialResultServerException : public Serializable {
    * cache memory utilization.
    * Note that you must implement this only if you use the HeapLRU feature.
    * @throws IllegalStateException If this api is called from User code.
- */
+   */
   virtual uint32_t objectSize() const;
 
   /**
@@ -123,9 +123,9 @@ class CPPCACHE_EXPORT PutAllPartialResultServerException : public Serializable {
   virtual int8_t typeId() const;
 
   /**
-  *@brief return as CacheableStringPtr the Exception name returned from geode
-  *sendException api.
-  **/
+   *@brief return as CacheableStringPtr the Exception name returned from geode
+   *sendException api.
+   **/
   CacheableStringPtr getName() {
     const char* msg = "PutAllPartialResultServerException";
     CacheableStringPtr str = CacheableString::create(msg);

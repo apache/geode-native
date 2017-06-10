@@ -174,7 +174,8 @@ class PdxReaderWithTypeCollector : public PdxLocalReader {
   virtual void readCollection(const char* fieldName,
                               CacheableArrayListPtr& collection);
 };
-typedef SharedPtr<PdxReaderWithTypeCollector> PdxReaderWithTypeCollectorPtr;
+typedef std::shared_ptr<PdxReaderWithTypeCollector>
+    PdxReaderWithTypeCollectorPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -120,7 +120,7 @@ class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
   }
 };
 
-typedef apache::geode::client::SharedPtr<FastAssetAccount> FastAssetAccountPtr;
+typedef std::shared_ptr<FastAssetAccount> FastAssetAccountPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_FASTASSETACCOUNT_H_

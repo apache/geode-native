@@ -2034,7 +2034,7 @@ uint32_t ThinClientRegion::size_remote() {
   switch (reply.getMessageType()) {
     case TcrMessage::RESPONSE: {
       CacheableInt32Ptr size =
-          std::static_pointer_cast<GF_UNWRAP_SP(CacheableInt32Ptr)>(
+          std::static_pointer_cast<CacheableInt32>(
               reply.getValue());
       return size->value();
       // LOGINFO("Map is written into remote server at region %s",

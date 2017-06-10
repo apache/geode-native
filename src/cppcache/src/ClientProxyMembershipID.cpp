@@ -209,16 +209,7 @@ void ClientProxyMembershipID::initObjectVars(
   uint32_t len;
   char* buf = (char*)m_memID.getBuffer(&len);
   m_memIDStr.append(buf, len);
-  /* adongre - Coverity II
-   * CID 29206: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-   * "sprintf" can cause a
-   * buffer overflow when done incorrectly. Because sprintf() assumes an
-   * arbitrarily long string,
-   * callers must be careful not to overflow the actual space of the
-   * destination.
-   * Use snprintf() instead, or correct precision specifiers.
-   * Fix : using ACE_OS::snprintf
-   */
+
   char PID[15] = {0};
   char Synch_Counter[15] = {0};
   // ACE_OS::snprintf(PID, 15, "%d",vPID);

@@ -17,13 +17,15 @@
 
 #define ROOT_NAME "testXmlCacheCreationWithRefid"
 
+#include <string>
+#include <iostream>
+#include <math.h>
+
 #include <geode/GeodeCppCache.hpp>
 
 #include "fw_helper.hpp"
-#include <string>
-#include <math.h>
+
 using namespace apache::geode::client;
-using namespace test;
 
 int testXmlCacheCreationWithRefid(const char* fileName) {
   char* host_name = (char*)"XML_CACHE_CREATION_TEST";
@@ -33,7 +35,7 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
   char* path = ACE_OS::getenv("TESTSRC");
   std::string directory(path);
 
-  cout << "create DistributedSytem with name=" << host_name << endl;
+  std::cout << "create DistributedSytem with name=" << host_name << std::endl;
   try {
     cacheFactory = CacheFactory::createCacheFactory();
   } catch (Exception& ex) {
@@ -42,18 +44,18 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
     return -1;
   }
 
-  cout << "Create cache with the configurations provided in "
+  std::cout << "Create cache with the configurations provided in "
           "valid_cache_refid.xml"
-       << endl;
+       << std::endl;
 
   try {
     std::string filePath = directory + fileName;
     cptr = cacheFactory->set("cache-xml-file", filePath.c_str())->create();
     if (cptr->getPdxIgnoreUnreadFields() != false) {
-      cout << "getPdxIgnoreUnreadFields should return false." << endl;
+      std::cout << "getPdxIgnoreUnreadFields should return false." << std::endl;
       return -1;
     } else {
-      cout << "getPdxIgnoreUnreadFields returned false." << endl;
+      std::cout << "getPdxIgnoreUnreadFields returned false." << std::endl;
     }
   } catch (CacheXmlException& ex) {
     ex.showMessage();
@@ -69,7 +71,7 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
   RegionPtr Root2;
   RegionPtr SubRegion21;
 
-  cout << "Verify whether all the regions are created" << endl;
+  std::cout << "Verify whether all the regions are created" << std::endl;
 
   try {
     Root1 = cptr->getRegion("Root1");
@@ -84,7 +86,7 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
     return -1;
   }
 
-  cout << "Verify whether region 'SubRegion11' has correct attributes" << endl;
+  std::cout << "Verify whether region 'SubRegion11' has correct attributes" << std::endl;
 
   RegionAttributesPtr atts = SubRegion11->getAttributes();
 
@@ -108,7 +110,7 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
     return -1;
   }
 
-  cout << "Verify whether region 'SubRegion2' has correct attributes" << endl;
+  std::cout << "Verify whether region 'SubRegion2' has correct attributes" << std::endl;
 
   atts = SubRegion2->getAttributes();
 
@@ -132,7 +134,7 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
     return -1;
   }
 
-  cout << "Verify whether region 'SubRegion21' has correct attributes" << endl;
+  std::cout << "Verify whether region 'SubRegion21' has correct attributes" << std::endl;
 
   atts = SubRegion21->getAttributes();
 
@@ -176,7 +178,7 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
     return -1;
   }
 
-  cout << "Verify whether region 'Root2' has correct attributes" << endl;
+  std::cout << "Verify whether region 'Root2' has correct attributes" << std::endl;
 
   atts = Root2->getAttributes();
 

@@ -42,7 +42,7 @@ namespace client {
  * multiple factories or use {@link PdxInstance#createWriter} to create
  * subsequent instances.
  */
-class CPPCACHE_EXPORT PdxInstanceFactory : public SharedBase {
+class CPPCACHE_EXPORT PdxInstanceFactory {
  public:
   /**
    * @brief destructor

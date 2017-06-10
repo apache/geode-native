@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_SERIALIZER_H_
-#define GEODE_SERIALIZER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,10 +15,16 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_SERIALIZER_H_
+#define GEODE_SERIALIZER_H_
+
 #include <vector>
 #include <unordered_map>
-#include <unordered_map>
+#include <unordered_set>
 #include <memory>
+#include <type_traits>
 
 #include "geode_globals.hpp"
 #include "DataOutput.hpp"
@@ -32,7 +33,6 @@
 #include "HashMapT.hpp"
 #include "HashSetT.hpp"
 #include "GeodeTypeIds.hpp"
-#include "TypeHelper.hpp"
 
 namespace apache {
 namespace geode {
@@ -223,34 +223,20 @@ inline void readObject(apache::geode::client::DataInput& input,
   input.readUTF(&value);
 }
 
-// Base Serializable types
-
-template <typename TObj>
-inline void writeObject(
-    apache::geode::client::DataOutput& output,
-    const apache::geode::client::SharedPtr<TObj>& value,
-    apache::geode::client::TypeHelper::yes_type isSerializable) {
+template <typename TObj,
+          typename std::enable_if<std::is_base_of<Serializable, TObj>::value,
+                                  Serializable>::type* = nullptr>
+inline void writeObject(apache::geode::client::DataOutput& output,
+                        const std::shared_ptr<TObj>& value) {
   output.writeObject(value);
 }
 
-template <typename TObj>
-inline void writeObject(apache::geode::client::DataOutput& output,
-                        const apache::geode::client::SharedPtr<TObj>& value) {
-  writeObject(output, value, GF_TYPE_IS_SERIALIZABLE_TYPE(TObj));
-}
-
-template <typename TObj>
-inline void readObject(
-    apache::geode::client::DataInput& input,
-    apache::geode::client::SharedPtr<TObj>& value,
-    apache::geode::client::TypeHelper::yes_type isSerializable) {
-  input.readObject(value, true);
-}
-
-template <typename TObj>
+template <typename TObj,
+          typename std::enable_if<std::is_base_of<Serializable, TObj>::value,
+                                  Serializable>::type* = nullptr>
 inline void readObject(apache::geode::client::DataInput& input,
-                       apache::geode::client::SharedPtr<TObj>& value) {
-  readObject(input, value, GF_TYPE_IS_SERIALIZABLE_TYPE(TObj));
+                       std::shared_ptr<TObj>& value) {
+  input.readObject(value, true);
 }
 
 // For arrays
@@ -285,10 +271,17 @@ inline void readObject(apache::geode::client::DataInput& input, TObj*& array,
   }
 }
 
-template <typename TObj, typename TLen>
-inline uint32_t objectSize(
-    const TObj* array, TLen len,
-    apache::geode::client::TypeHelper::yes_type isSerializable) {
+template <typename TObj, typename TLen,
+          typename std::enable_if<!std::is_base_of<Serializable, TObj>::value,
+                                  Serializable>::type* = nullptr>
+inline uint32_t objectSize(const TObj* array, TLen len) {
+  return (uint32_t)(sizeof(TObj) * len);
+}
+
+template <typename TObj, typename TLen,
+          typename std::enable_if<std::is_base_of<Serializable, TObj>::value,
+                                  Serializable>::type* = nullptr>
+inline uint32_t objectSize(const TObj* array, TLen len) {
   uint32_t size = 0;
   const TObj* endArray = array + len;
   while (array < endArray) {
@@ -299,18 +292,6 @@ inline uint32_t objectSize(
   }
   size += (uint32_t)(sizeof(TObj) * len);
   return size;
-}
-
-template <typename TObj, typename TLen>
-inline uint32_t objectSize(
-    const TObj* array, TLen len,
-    apache::geode::client::TypeHelper::no_type isNotSerializable) {
-  return (uint32_t)(sizeof(TObj) * len);
-}
-
-template <typename TObj, typename TLen>
-inline uint32_t objectSize(const TObj* array, TLen len) {
-  return objectSize(array, len, GF_TYPE_IS_SERIALIZABLE_TYPE(TObj));
 }
 
 // For containers vector/hashmap/hashset

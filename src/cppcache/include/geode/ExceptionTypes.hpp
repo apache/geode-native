@@ -34,7 +34,7 @@ namespace client {
 #define _GF_EXCEPTION_DEF(x)                                                 \
   const char _exception_name_##x[] = "apache::geode::client::" #x;           \
   class x;                                                                   \
-  typedef SharedPtr<x> x##Ptr;                                               \
+  typedef std::shared_ptr<x> x##Ptr;                                         \
   class CPPCACHE_EXPORT x : public apache::geode::client::Exception {        \
    public:                                                                   \
     x(const char* msg1, const char* msg2 = nullptr, bool forceStack = false, \

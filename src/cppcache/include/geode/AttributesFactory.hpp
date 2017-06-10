@@ -149,7 +149,7 @@ namespace client {
  * @see Region#createSubregion(String, RegionAttributes)
  */
 
-class CPPCACHE_EXPORT AttributesFactory : public SharedBase {
+class CPPCACHE_EXPORT AttributesFactory {
   /**
     * @brief public methods
     */

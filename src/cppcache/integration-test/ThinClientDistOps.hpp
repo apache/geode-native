@@ -282,7 +282,7 @@ void createAndVerifyEntry(const char* name) {
     auto longRetValue =
         std::dynamic_pointer_cast<CacheableInt64>(regPtr->get(int64Key));
     FAIL("Expected EntryExistException here");
-  } catch (EntryExistsException& e) {
+  } catch (EntryExistsException& ) {
     LOG(" Expected EntryExistsException exception thrown by localCreate");
   }
 
@@ -339,7 +339,7 @@ void createAndVerifyEntry(const char* name) {
       regPtr->create(keyObject2, in64Value);
       FAIL("Expected EntryExistException here");
     }
-  } catch (EntryExistsException& e) {
+  } catch (EntryExistsException& ) {
     LOG(" Expected EntryExistsException exception thrown by localCreate");
   }
 

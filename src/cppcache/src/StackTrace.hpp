@@ -23,7 +23,7 @@
 #define GF_TRACE_LEN 25
 
 #include "StackFrame.hpp"
-#include <geode/SharedPtr.hpp>
+#include <memory>
 #include <string>
 #include <list>
 
@@ -32,9 +32,9 @@ namespace geode {
 namespace client {
 
 class StackTrace;
-typedef SharedPtr<StackTrace> StackTracePtr;
+typedef std::shared_ptr<StackTrace> StackTracePtr;
 #ifdef _WINDOWS
-class StackTrace : public SharedBase {
+class StackTrace {
  public:
   StackTrace();
   virtual ~StackTrace();
@@ -48,7 +48,7 @@ class StackTrace : public SharedBase {
   std::list<std::string> m_frames;
 };
 #else
-class StackTrace : public SharedBase {
+class StackTrace {
   StackFrame m_frames[GF_TRACE_LEN];
   int m_size;
 

@@ -17,13 +17,17 @@
 
 #define ROOT_NAME "testOverflowPutGetSqLite"
 
+#include <string>
+#include <iostream>
+
+#include <ace/OS.h>
+
 #include <geode/GeodeCppCache.hpp>
 
 #include "fw_helper.hpp"
 #include <CacheableToken.hpp>
 #include <MapEntry.hpp>
 #include <CacheRegionHelper.hpp>
-#include <ace/OS.h>
 
 using namespace apache::geode::client;
 
@@ -228,10 +232,10 @@ void testEntryDestroy(RegionPtr& regionPtr, uint32_t num) {
   CacheablePtr valuePtr;
   for (uint32_t i = 45; i < 50; i++) {
     try {
-      test::cout << "try to destroy key" << i << test::endl;
+      std::cout << "try to destroy key" << i << std::endl;
       regionPtr->destroy(v.at(i));
     } catch (Exception& ex) {
-      test::cout << ex.getMessage() << test::endl;
+      std::cout << ex.getMessage() << std::endl;
       ASSERT(false, (char*)"entry missing");
     }
   }
@@ -246,10 +250,10 @@ void testEntryInvalidate(RegionPtr& regionPtr, uint32_t num) {
   CacheablePtr valuePtr;
   for (uint32_t i = 40; i < 45; i++) {
     try {
-      test::cout << "try to invalidate key" << i << test::endl;
+      std::cout << "try to invalidate key" << i << std::endl;
       regionPtr->invalidate(v.at(i));
     } catch (Exception& ex) {
-      test::cout << ex.getMessage() << test::endl;
+      std::cout << ex.getMessage() << std::endl;
       ASSERT(false, (char*)"entry missing");
     }
   }

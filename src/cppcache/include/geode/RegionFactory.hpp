@@ -32,8 +32,7 @@ namespace geode {
 namespace client {
 class CacheImpl;
 class CPPCACHE_EXPORT RegionFactory
-    : public SharedBase,
-      public std::enable_shared_from_this<RegionFactory> {
+    : public std::enable_shared_from_this<RegionFactory> {
  public:
   /*
    * To create the (@link Region}.

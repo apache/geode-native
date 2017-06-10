@@ -579,7 +579,7 @@ class CPPCACHE_EXPORT DataOutput {
    *   to be written
    */
   template <class PTR>
-  void writeObject(const SharedPtr<PTR>& objptr, bool isDelta = false) {
+  void writeObject(const std::shared_ptr<PTR>& objptr, bool isDelta = false) {
     writeObjectInternal(objptr.get(), isDelta);
   }
 

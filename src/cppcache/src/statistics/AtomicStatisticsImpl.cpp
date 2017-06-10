@@ -176,18 +176,7 @@ void AtomicStatisticsImpl::_setInt(int32_t offset, int32_t value) {
 void AtomicStatisticsImpl::_setLong(int32_t offset, int64_t value) {
   if (offset >= statsType->getLongStatCount()) {
     char s[128] = {'\0'};
-    /* adongre  - Coverity II
-     * CID 29273: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    // sprintf(s, "setLong:The id (%d) of the Statistic Descriptor is not valid
-    // ", offset);
+
     ACE_OS::snprintf(
         s, 128, "setLong:The id (%d) of the Statistic Descriptor is not valid ",
         offset);

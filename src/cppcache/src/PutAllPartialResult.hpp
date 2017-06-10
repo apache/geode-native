@@ -29,7 +29,7 @@ namespace apache {
 namespace geode {
 namespace client {
 class PutAllPartialResult;
-typedef SharedPtr<PutAllPartialResult> PutAllPartialResultPtr;
+typedef std::shared_ptr<PutAllPartialResult> PutAllPartialResultPtr;
 
 class PutAllPartialResult : public Serializable {
  private:

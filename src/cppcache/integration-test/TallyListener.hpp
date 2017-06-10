@@ -26,7 +26,7 @@
 using namespace apache::geode::client;
 class TallyListener;
 
-typedef apache::geode::client::SharedPtr<TallyListener> TallyListenerPtr;
+typedef std::shared_ptr<TallyListener> TallyListenerPtr;
 
 class TallyListener : public CacheListener {
  private:

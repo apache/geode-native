@@ -74,7 +74,7 @@ class DupChecker : public CacheListener {
   virtual void afterRegionDestroy(const RegionEvent& event){};
 };
 
-typedef SharedPtr<DupChecker> DupCheckerPtr;
+typedef std::shared_ptr<DupChecker> DupCheckerPtr;
 
 ///////////////////////////////////////////////////////
 

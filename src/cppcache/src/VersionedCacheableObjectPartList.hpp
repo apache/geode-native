@@ -56,7 +56,7 @@ class ThinClientRegion;
  */
 
 class VersionedCacheableObjectPartList;
-typedef SharedPtr<VersionedCacheableObjectPartList>
+typedef std::shared_ptr<VersionedCacheableObjectPartList>
     VersionedCacheableObjectPartListPtr;
 
 class VersionedCacheableObjectPartList : public CacheableObjectPartList {

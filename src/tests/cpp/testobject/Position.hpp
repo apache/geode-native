@@ -105,7 +105,7 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
   void init();
 };
 
-typedef apache::geode::client::SharedPtr<Position> PositionPtr;
+typedef std::shared_ptr<Position> PositionPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_POSITION_H_

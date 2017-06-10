@@ -57,7 +57,7 @@ class QueryService;
  *
  */
 
-class CPPCACHE_EXPORT RegionService : public SharedBase {
+class CPPCACHE_EXPORT RegionService {
   /**
    * @brief public methods
    */

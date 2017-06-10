@@ -43,8 +43,8 @@ int32_t g_classIdToReturn2 = 0x1234;
 int32_t g_classIdToReturn4 = 0x123456;
 
 template <class T>
-SharedPtr<T> duplicate(const SharedPtr<T>& orig) {
-  SharedPtr<T> result;
+std::shared_ptr<T> duplicate(const std::shared_ptr<T>& orig) {
+  std::shared_ptr<T> result;
   DataOutput dout;
   SerializationRegistry::serialize(orig, dout);
   // dout.writeObject(orig);
@@ -198,13 +198,13 @@ ENDTASK
 DUNIT_TASK(NoDist, OtherTypeInMemory)
   {
     Serializable::registerType(OtherType::createDeserializable);
-    SharedPtr<OtherType> ot(new OtherType());
+    std::shared_ptr<OtherType> ot(new OtherType());
     ot->m_struct.a = 1;
     ot->m_struct.b = true;
     ot->m_struct.c = 2;
     ot->m_struct.d = 3.0;
 
-    SharedPtr<OtherType> copy = duplicate(ot);
+    std::shared_ptr<OtherType> copy = duplicate(ot);
 
     ASSERT(copy->classId() == g_classIdToReturn, "unexpected classId");
     if (copy->classId() > 0xFFFF) {

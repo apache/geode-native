@@ -517,9 +517,7 @@ void CacheXmlParser::endPdx() {}
 void CacheXmlParser::startLocator(const xmlChar** atts) {
   int attrsCount = 0;
   if (!atts) {
-    /* adongre
-     * CID 28741: Parse warning (PW.EXPR_HAS_NO_EFFECT)expression has no effect
-     */
+
     std::string s =
         "XML:No attributes provided for <locator>. "
         "A locator requires a host and port";
@@ -556,9 +554,7 @@ void CacheXmlParser::startLocator(const xmlChar** atts) {
 void CacheXmlParser::startServer(const xmlChar** atts) {
   int attrsCount = 0;
   if (!atts) {
-    /* adongre
-     * CID 28742: Parse warning (PW.EXPR_HAS_NO_EFFECT)expression has no effect
-     */
+
     std::string s =
         "XML:No attributes provided for <server>. A server requires a host and "
         "port";
@@ -1137,9 +1133,7 @@ void CacheXmlParser::startPersistenceManager(const xmlChar** atts) {
       i++;
       size_t len = strlen((char*)atts[i]) + 1;
       libraryName = new char[len];
-      /* adongre
-       * CID 28824: Dereference before null check (REVERSE_INULL)
-       */
+
       if (libraryName == nullptr) {
         std::string s = "Memory allocation fails";
         throw CacheXmlException(s.c_str());
@@ -1158,9 +1152,7 @@ void CacheXmlParser::startPersistenceManager(const xmlChar** atts) {
       i++;
       size_t len = strlen((char*)atts[i]) + 1;
       libraryFunctionName = new char[len];
-      /* adongre
-       * CID 28823: Dereference before null check (REVERSE_INULL)
-       */
+
       if (libraryFunctionName == nullptr) {
         std::string s = "Memory allocation fails";
         throw CacheXmlException(s.c_str());

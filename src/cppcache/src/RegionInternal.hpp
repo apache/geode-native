@@ -112,9 +112,9 @@ class CacheEventFlags {
 };
 
 class TombstoneList;
-typedef SharedPtr<TombstoneList> TombstoneListPtr;
+typedef std::shared_ptr<TombstoneList> TombstoneListPtr;
 class VersionTag;
-typedef SharedPtr<VersionTag> VersionTagPtr;
+typedef std::shared_ptr<VersionTag> VersionTagPtr;
 _GF_PTR_DEF_(MapEntryImpl, MapEntryImplPtr);
 /**
  * @class RegionInternal RegionInternal.hpp
@@ -292,7 +292,7 @@ class RegionInternal : public Region {
   RegionInternal& operator=(const RegionInternal&);
 };
 
-typedef SharedPtr<RegionInternal> RegionInternalPtr;
+typedef std::shared_ptr<RegionInternal> RegionInternalPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

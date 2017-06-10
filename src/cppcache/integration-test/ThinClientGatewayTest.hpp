@@ -62,7 +62,7 @@ class MyListener : public CacheListener {
   int getNumEvents() { return m_events; }
 };
 
-typedef apache::geode::client::SharedPtr<MyListener> MyListenerPtr;
+typedef std::shared_ptr<MyListener> MyListenerPtr;
 
 void setCacheListener(const char* regName, TallyListenerPtr regListener) {
   RegionPtr reg = getHelper()->getRegion(regName);

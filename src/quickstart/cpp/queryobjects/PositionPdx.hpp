@@ -99,6 +99,6 @@ class TESTOBJECT_EXPORT PositionPdx
   void init();
 };
 
-typedef apache::geode::client::SharedPtr<PositionPdx> PositionPdxPtr;
-}
+typedef std::shared_ptr<PositionPdx> PositionPdxPtr;
+}  // namespace testobject
 #endif

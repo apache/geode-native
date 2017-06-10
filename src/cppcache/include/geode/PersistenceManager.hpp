@@ -49,7 +49,7 @@ typedef PersistenceManagerPtr (*getPersistenceManagerInstance)(
  * A specific disk storage implementation will implement all the methods
  * described here.
  */
-class CPPCACHE_EXPORT PersistenceManager : public SharedBase {
+class CPPCACHE_EXPORT PersistenceManager {
   /**
    * @brief public methods
    */

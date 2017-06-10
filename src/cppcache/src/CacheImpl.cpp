@@ -890,7 +890,8 @@ CacheTransactionManagerPtr CacheImpl::getCacheTransactionManager() {
   return m_cacheTXManager;
 }
 MemberListForVersionStampPtr CacheImpl::getMemberListForVersionStamp() {
-
-  static auto versionStampMemIdList = std::make_shared<MemberListForVersionStamp>();
-  return versionStampMemIdList;
+  static auto versionStampMemIdList =
+      new std::shared_ptr<MemberListForVersionStamp>(
+          new MemberListForVersionStamp());
+  return *versionStampMemIdList;
 }

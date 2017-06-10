@@ -17,6 +17,8 @@
 
 #define ROOT_NAME "testLRUList"
 
+#include <iostream>
+
 #include "fw_helper.hpp"
 
 #ifdef WIN32
@@ -33,9 +35,8 @@ END_TEST(NotOnWindows)
 #include <geode/GeodeCppCache.hpp>
 
 using namespace apache::geode::client;
-using namespace test;
 
-class MyNode : public SharedBase, public LRUEntryProperties {
+class MyNode : public LRUEntryProperties {
  public:
   static MyNode* create(const CacheableKeyPtr& key = nullptr) {
     return new MyNode();
@@ -51,7 +52,7 @@ class MyNode : public SharedBase, public LRUEntryProperties {
   int m_value;
 };
 
-typedef SharedPtr<MyNode> MyNodePtr;
+typedef std::shared_ptr<MyNode> MyNodePtr;
 
 /**
  * @brief Test the LRU-ness of the LRUList.
@@ -68,7 +69,7 @@ BEGIN_TEST(LRUListTest)
       // add each node to list
       lruList.appendEntry(tenNodes[i]);
       auto myPtr = std::dynamic_pointer_cast<MyNode>(tenNodes[i]);
-      cout << "  appendEntry( " << myPtr->getValue() << " )" << endl;
+      std::cout << "  appendEntry( " << myPtr->getValue() << " )" << std::endl;
     }
 
     // now mark odd indexed nodes recently used.
@@ -82,7 +83,7 @@ BEGIN_TEST(LRUListTest)
     for (int k = 0; k < 10; k += 2) {
       lruList.getLRUEntry(aNode);
       sprintf(msgbuf, "expected node %d", k);
-      cout << " gotEntry( " << aNode->getValue() << " )" << endl;
+      std::cout << " gotEntry( " << aNode->getValue() << " )" << std::endl;
       ASSERT(aNode == tenNodes[k], msgbuf);
     }
 

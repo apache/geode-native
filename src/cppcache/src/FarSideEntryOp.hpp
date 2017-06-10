@@ -92,7 +92,7 @@ class RegionCommit;
 
 _GF_PTR_DEF_(FarSideEntryOp, FarSideEntryOpPtr);
 
-class FarSideEntryOp : public apache::geode::client::SharedBase {
+class FarSideEntryOp {
  public:
   FarSideEntryOp(RegionCommit* region);
   virtual ~FarSideEntryOp();

@@ -87,7 +87,7 @@ class TESTOBJECT_EXPORT PSTObject : public TimestampedObject {
   }
 };
 
-typedef apache::geode::client::SharedPtr<PSTObject> PSTObjectPtr;
+typedef std::shared_ptr<PSTObject> PSTObjectPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_PSTOBJECT_H_

@@ -28,7 +28,7 @@
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 #include "VectorT.hpp"
-#include "SharedPtr.hpp"
+#include <memory>
 #include "CacheableBuiltins.hpp"
 #include "ResultCollector.hpp"
 
@@ -45,7 +45,7 @@ namespace client {
  * @see FunctionService
  */
 
-class CPPCACHE_EXPORT Execution : public SharedBase {
+class CPPCACHE_EXPORT Execution {
  public:
   /**
    * Specifies a data filter of routing objects for selecting the Geode

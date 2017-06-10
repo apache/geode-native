@@ -149,7 +149,7 @@ class TESTOBJECT_EXPORT EqStruct : public TimestampedObject {
   }
 };
 
-typedef apache::geode::client::SharedPtr<EqStruct> EqStructPtr;
+typedef std::shared_ptr<EqStruct> EqStructPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_EQSTRUCT_H_

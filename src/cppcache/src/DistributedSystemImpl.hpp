@@ -21,11 +21,11 @@
  */
 
 /**
-* @file
-*/
+ * @file
+ */
 
 #include <geode/geode_globals.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 #include <geode/geode_types.hpp>
 #include "ace/Recursive_Thread_Mutex.h"
 #include "ace/Guard_T.h"
@@ -45,22 +45,22 @@ namespace client {
 class SystemProperties;
 
 /**
-* @class DistributedSystemImpl DistributedSystemImpl.hpp
-* A "connection" to a Geode distributed system.
-* The connection will be through a (host, port) pair.
-*/
+ * @class DistributedSystemImpl DistributedSystemImpl.hpp
+ * A "connection" to a Geode distributed system.
+ * The connection will be through a (host, port) pair.
+ */
 
 class DistributedSystemImpl;
-typedef SharedPtr<DistributedSystemImpl> DistributedSystemImplPtr;
+typedef std::shared_ptr<DistributedSystemImpl> DistributedSystemImplPtr;
 
-class CPPCACHE_EXPORT DistributedSystemImpl : public SharedBase {
+class CPPCACHE_EXPORT DistributedSystemImpl {
   /**
-  * @brief public methods
-  */
+   * @brief public methods
+   */
  public:
   /*
-  * threadname should have less than 16 bytes
-  */
+   * threadname should have less than 16 bytes
+   */
   static void setThreadName(const char* tn) {
 #ifdef __linux
     int idx = 0;
@@ -78,12 +78,12 @@ class CPPCACHE_EXPORT DistributedSystemImpl : public SharedBase {
 #endif
   }
   /**
-  * @brief destructor
-  */
+   * @brief destructor
+   */
   virtual ~DistributedSystemImpl();
 
   /**
-  */
+   */
   virtual AuthInitializePtr getAuthLoader();
 
   /** Retrieve the MemberId used to create this Cache. */
@@ -95,8 +95,8 @@ class CPPCACHE_EXPORT DistributedSystemImpl : public SharedBase {
   DiffieHellman m_dh;
 
   /**
-  * @brief constructors
-  */
+   * @brief constructors
+   */
   DistributedSystemImpl(const char* name, DistributedSystem* implementee);
 
   // acquire/release locks
@@ -116,9 +116,9 @@ class CPPCACHE_EXPORT DistributedSystemImpl : public SharedBase {
   static void disconnectInstance();
 
   /**
-  * The current number of connection instances created using
-  * connectionOrGetInstance().
-  */
+   * The current number of connection instances created using
+   * connectionOrGetInstance().
+   */
   static int currentInstances();
 
   static void registerCliCallback(int appdomainId,

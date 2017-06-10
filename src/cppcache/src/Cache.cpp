@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 #include <geode/geode_globals.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 
 #include <geode/DistributedSystem.hpp>
 #include <DistributedSystemImpl.hpp>
@@ -155,7 +155,6 @@ Cache::Cache(const char* name, DistributedSystemPtr sys, const char* id_data,
       this, name, sys, id_data, ignorePdxUnreadFields, readPdxSerialized));
 }
 
-Cache::Cache() = default;
 Cache::~Cache() = default;
 
 /** Initialize the cache by the contents of an xml file

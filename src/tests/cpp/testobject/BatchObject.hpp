@@ -88,7 +88,7 @@ class TESTOBJECT_EXPORT BatchObject : public TimestampedObject {
   }
 };
 
-typedef apache::geode::client::SharedPtr<BatchObject> BatchObjectPtr;
+typedef std::shared_ptr<BatchObject> BatchObjectPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_BATCHOBJECT_H_

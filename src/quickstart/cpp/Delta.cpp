@@ -42,7 +42,7 @@
 using namespace apache::geode::client;
 
 // The Delta QuickStart example.
-typedef SharedPtr<DeltaExample> DeltaExamplePtr;
+typedef std::shared_ptr<DeltaExample> DeltaExamplePtr;
 int main(int argc, char** argv) {
   try {
     // Create a Geode Cache.

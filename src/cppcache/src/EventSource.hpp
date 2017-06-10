@@ -31,7 +31,7 @@ namespace client {
  *
  * EventSource is the combination of MembershipId and ThreadId from the EventId
  */
-class CPPCACHE_EXPORT EventSource : public SharedBase {
+class CPPCACHE_EXPORT EventSource {
   char *m_srcId;
   int32_t m_srcIdLen;
   int64_t m_thrId;
@@ -95,7 +95,7 @@ class CPPCACHE_EXPORT EventSource : public SharedBase {
   };
 };
 
-typedef SharedPtr<EventSource> EventSourcePtr;
+typedef std::shared_ptr<EventSource> EventSourcePtr;
 
 }  // namespace client
 }  // namespace geode

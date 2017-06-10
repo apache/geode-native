@@ -30,7 +30,7 @@ namespace geode {
 namespace client {
 
 class PdxWriter;
-typedef SharedPtr<PdxWriter> PdxWriterPtr;
+typedef std::shared_ptr<PdxWriter> PdxWriterPtr;
 
 /**
  * A PdxWriter will be passed to PdxSerializable.toData
@@ -38,7 +38,7 @@ typedef SharedPtr<PdxWriter> PdxWriterPtr;
  * member
  * fields using this abstract class. This class is implemented by Native Client.
  */
-class CPPCACHE_EXPORT PdxWriter : public SharedBase {
+class CPPCACHE_EXPORT PdxWriter {
  public:
   /**
    * @brief constructors

@@ -104,10 +104,6 @@ class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
    * Display this object as 'string', which depends on the implementation in
    * the subclasses.
    * The default implementation renders the classname.
-   *
-   * The return value may be a temporary, so the caller has to ensure that
-   * the SharedPtr count does not go down to zero by storing the result
-   * in a variable or otherwise.
    */
   CacheableStringPtr toString() const;
 

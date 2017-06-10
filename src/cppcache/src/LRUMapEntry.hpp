@@ -86,7 +86,7 @@ class CPPCACHE_EXPORT LRUMapEntry : public MapEntryImpl,
   LRUMapEntry& operator=(const LRUMapEntry&);
 };
 
-typedef SharedPtr<LRUMapEntry> LRUMapEntryPtr;
+typedef std::shared_ptr<LRUMapEntry> LRUMapEntryPtr;
 
 class CPPCACHE_EXPORT VersionedLRUMapEntry : public LRUMapEntry,
                                              public VersionStamp {
@@ -106,7 +106,7 @@ class CPPCACHE_EXPORT VersionedLRUMapEntry : public LRUMapEntry,
   VersionedLRUMapEntry& operator=(const VersionedLRUMapEntry&);
 };
 
-typedef SharedPtr<VersionedLRUMapEntry> VersionedLRUMapEntryPtr;
+typedef std::shared_ptr<VersionedLRUMapEntry> VersionedLRUMapEntryPtr;
 
 class CPPCACHE_EXPORT LRUEntryFactory : public EntryFactory {
  public:

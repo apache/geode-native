@@ -27,7 +27,7 @@ using namespace test;
 
 class TallyWriter;
 
-typedef apache::geode::client::SharedPtr<TallyWriter> TallyWriterPtr;
+typedef std::shared_ptr<TallyWriter> TallyWriterPtr;
 
 class TallyWriter : virtual public CacheWriter {
  private:

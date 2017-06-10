@@ -32,7 +32,7 @@
 #include <ace/Guard_T.h>
 
 #include <geode/utils.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 
 #include "EventId.hpp"
 #include "EventSource.hpp"
@@ -44,8 +44,8 @@ namespace client {
 class EventSequence;
 class EventIdMap;
 
-typedef SharedPtr<EventSequence> EventSequencePtr;
-typedef SharedPtr<EventIdMap> EventIdMapPtr;
+typedef std::shared_ptr<EventSequence> EventSequencePtr;
+typedef std::shared_ptr<EventIdMap> EventIdMapPtr;
 
 typedef std::pair<EventSourcePtr, EventSequencePtr> EventIdMapEntry;
 typedef std::vector<EventIdMapEntry> EventIdMapEntryList;
@@ -60,7 +60,7 @@ typedef ACE_Guard<ACE_Recursive_Thread_Mutex> MapGuard;
  * provides the operations for duplicate checking and
  * expiry of idle event IDs from notifications.
  */
-class CPPCACHE_EXPORT EventIdMap : public SharedBase {
+class CPPCACHE_EXPORT EventIdMap {
  private:
   typedef std::unordered_map<EventSourcePtr, EventSequencePtr,
                              dereference_hash<EventSourcePtr>,
@@ -134,7 +134,7 @@ class CPPCACHE_EXPORT EventIdMap : public SharedBase {
  * EventSequence is the combination of SequenceNum from EventId, a timestamp and
  * a flag indicating whether or not it is ACKed
  */
-class CPPCACHE_EXPORT EventSequence : public SharedBase {
+class CPPCACHE_EXPORT EventSequence {
   int64_t m_seqNum;
   bool m_acked;
   ACE_Time_Value m_deadline;  // current time plus the expiration delay (age)

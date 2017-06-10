@@ -17,13 +17,12 @@
 
 #include <gtest/gtest.h>
 
-#include <geode/SharedBase.hpp>
 #include <AutoDelete.hpp>
 
 using namespace apache::geode::client;
 
 namespace {
-class TestSharedBase : public SharedBase {
+class TestSharedBase {
  public:
   explicit TestSharedBase(bool& destructed) : m_destructed(destructed) {
     // NOP

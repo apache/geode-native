@@ -144,7 +144,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   friend class ThinClientRedundancyManager;
   static const char* NC_Redundancy;
 };
-typedef SharedPtr<ThinClientPoolHADM> ThinClientPoolHADMPtr;
+typedef std::shared_ptr<ThinClientPoolHADM> ThinClientPoolHADMPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

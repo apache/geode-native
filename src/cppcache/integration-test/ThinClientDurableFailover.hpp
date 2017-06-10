@@ -129,7 +129,7 @@ class OperMonitor : public CacheListener {
   virtual void afterRegionInvalidate(const RegionEvent& event){};
   virtual void afterRegionDestroy(const RegionEvent& event){};
 };
-typedef SharedPtr<OperMonitor> OperMonitorPtr;
+typedef std::shared_ptr<OperMonitor> OperMonitorPtr;
 
 void setCacheListener(const char* regName, OperMonitorPtr monitor) {
   RegionPtr reg = getHelper()->getRegion(regName);

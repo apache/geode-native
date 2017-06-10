@@ -112,7 +112,7 @@ void CacheTransactionManagerImpl::commit() {
   }
 
   TXCommitMessagePtr commit =
-      std::static_pointer_cast<GF_UNWRAP_SP(TXCommitMessagePtr)>(
+      std::static_pointer_cast<TXCommitMessage>(
           reply.getValue());
   txCleaner.clean();
   commit->apply(m_cache);
@@ -307,7 +307,7 @@ GfErrType CacheTransactionManagerImpl::rollback(TXState* txState,
   /*	if(err == GF_NOERR && callListener)
           {
   //		TXCommitMessagePtr commit =
-  std::static_pointer_cast<GF_UNWRAP_SP(TXCommitMessagePtr)>(reply.getValue());
+  std::static_pointer_cast<TXCommitMessage>(reply.getValue());
                   noteRollbackSuccess(txState, nullptr);
           }
   */
@@ -632,7 +632,7 @@ TransactionEvent(txState->getTransactionId(), CachePtr(m_cache), events));
 m_listeners.end() != iter; iter++)
         {
                 TransactionListenerPtr listener =
-std::static_pointer_cast<GF_UNWRAP_SP(TransactionListenerPtr)>(*iter);
+std::static_pointer_cast<TransactionListener>(*iter);
                 listener->afterFailedCommit(event);
         }
 }
@@ -652,7 +652,7 @@ TransactionEvent(txState->getTransactionId(), CachePtr(m_cache), events));
 m_listeners.end() != iter; iter++)
         {
                 TransactionListenerPtr listener =
-std::static_pointer_cast<GF_UNWRAP_SP(TransactionListenerPtr)>(*iter);
+std::static_pointer_cast<TransactionListenerPtr>(*iter);
                 listener->afterCommit(event);
         }
 }
@@ -672,7 +672,7 @@ TransactionEvent(txState->getTransactionId(), CachePtr(m_cache), events));
 m_listeners.end() != iter; iter++)
         {
                 TransactionListenerPtr listener =
-std::static_pointer_cast<GF_UNWRAP_SP(TransactionListenerPtr)>(*iter);
+std::static_pointer_cast<TransactionListener>(*iter);
                 listener->afterRollback(event);
         }
 }

@@ -254,7 +254,7 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
   bool generic2DCompare(T1** value1, T2** value2, int length,
                         int* arrLengths) const;
 };
-typedef SharedPtr<PdxTests::PdxVersioned1> PdxVersioned1Ptr;
+typedef std::shared_ptr<PdxTests::PdxVersioned1> PdxVersioned1Ptr;
 }  // namespace PdxTests
 
 #endif  // GEODE_TESTOBJECT_PDXVERSIONED1_H_

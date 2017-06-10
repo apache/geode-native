@@ -20,7 +20,9 @@
  * limitations under the License.
  */
 
-#include "SharedPtr.hpp"
+#include <memory>
+
+#include "geode_globals.hpp"
 
 /**
  * @file
@@ -34,7 +36,7 @@ class CacheFactory;
 
 #define _GF_PTR_DEF_(a, b) \
   class CPPCACHE_EXPORT a; \
-  typedef SharedPtr<a> b;
+  typedef std::shared_ptr<a> b;
 
 _GF_PTR_DEF_(DistributedSystem, DistributedSystemPtr);
 _GF_PTR_DEF_(CacheFactory, CacheFactoryPtr);

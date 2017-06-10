@@ -86,12 +86,6 @@ PdxInstanceImpl::PdxInstanceImpl(
   m_typeId = 0;
 
   m_pdxType->InitializeType();  // to generate static position map
-
-  // apache::geode::client::DataOutput* output =
-  // apache::geode::client::DataOutput::getDataOutput();
-  // TODO shared_ptr - what is the purpose of this?
-  //  DataOutput output;
-  //  PdxHelper::serializePdx(output, *this);
 }
 
 PdxInstanceImpl::PdxInstanceImpl() {

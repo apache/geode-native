@@ -77,7 +77,7 @@ class OperMonitor : public CacheListener {
     ASSERT(m_value == 5, buf);
   }
 };
-typedef SharedPtr<OperMonitor> OperMonitorPtr;
+typedef std::shared_ptr<OperMonitor> OperMonitorPtr;
 
 void setCacheListener(const char* regName, OperMonitorPtr monitor) {
   RegionPtr reg = getHelper()->getRegion(regName);

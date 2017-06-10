@@ -84,8 +84,7 @@ namespace client {
 *
 * @see RegionAttributes
 */
-class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region>,
-                               public SharedBase {
+class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
   /** @brief Public Methods
   */
  public:

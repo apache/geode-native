@@ -41,7 +41,7 @@ namespace client {
  * Base class for holding chunked results, processing a chunk
  * and signalling end of chunks using semaphore.
  */
-class TcrChunkedResult : public SharedBase {
+class TcrChunkedResult {
  private:
   ACE_Semaphore* m_finalizeSema;
   ExceptionPtr m_ex;
@@ -62,7 +62,7 @@ class TcrChunkedResult : public SharedBase {
         m_inSameThread(false),
         appDomainContext(createAppDomainContext()),
         m_dsmemId(0) {}
-
+  virtual ~TcrChunkedResult() {}
   void setFinalizeSemaphore(ACE_Semaphore* finalizeSema) {
     m_finalizeSema = finalizeSema;
   }
@@ -124,7 +124,7 @@ class TcrChunkedResult : public SharedBase {
   inline ExceptionPtr& getException() { return m_ex; }
 };
 
-typedef SharedPtr<TcrChunkedResult> TcrChunkedResultPtr;
+typedef std::shared_ptr<TcrChunkedResult> TcrChunkedResultPtr;
 
 /**
  * Holds the context for a chunk including the chunk bytes, length and the

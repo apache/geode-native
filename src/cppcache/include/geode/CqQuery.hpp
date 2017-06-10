@@ -50,7 +50,7 @@ namespace client {
  * operate on the same <code>CqQuery</code> object concurrently rather should
  * have their own <code>CqQuery</code> objects.
  */
-class CPPCACHE_EXPORT CqQuery : public SharedBase {
+class CPPCACHE_EXPORT CqQuery  {
  public:
   /**
    * Get the query string provided when a new Query was created from a

@@ -228,7 +228,7 @@ class MyCqStatusListener : public CqStatusListener {
     m_cqsConnectedCount = 0;
   }
 };
-typedef SharedPtr<MyCqStatusListener> MyCqStatusListenerPtr;
+typedef std::shared_ptr<MyCqStatusListener> MyCqStatusListenerPtr;
 
 DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateLocator)
   {

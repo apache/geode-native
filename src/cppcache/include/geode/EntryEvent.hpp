@@ -34,7 +34,7 @@ namespace client {
 
 /** Represents an entry event affecting an entry, including its identity and the
  * the circumstances of the event. */
-class CPPCACHE_EXPORT EntryEvent : public apache::geode::client::SharedBase {
+class CPPCACHE_EXPORT EntryEvent {
  protected:
   RegionPtr m_region;      /**< Region */
   CacheableKeyPtr m_key;   /**< Cacheable key */

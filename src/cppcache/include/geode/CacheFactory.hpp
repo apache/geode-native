@@ -45,9 +45,7 @@ class CppCacheLibrary;
  * For the default values for the pool attributes see {@link PoolFactory}.
  * To create additional {@link Pool}s see {@link PoolManager}
  */
-class CPPCACHE_EXPORT CacheFactory
-    : public SharedBase,
-      public std::enable_shared_from_this<CacheFactory> {
+class CPPCACHE_EXPORT CacheFactory : public std::enable_shared_from_this<CacheFactory> {
  public:
   /**
    * To create the instance of {@link CacheFactory}

@@ -53,7 +53,7 @@ namespace client {
  * @see AttributesFactory::setCacheLoader
  * @see RegionAttributes::getCacheLoader
  */
-class CPPCACHE_EXPORT CacheLoader : public SharedBase {
+class CPPCACHE_EXPORT CacheLoader  {
  public:
   /**Loads a value. Application writers should implement this
    * method to customize the loading of a value. This method is called

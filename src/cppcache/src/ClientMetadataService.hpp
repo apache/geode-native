@@ -27,7 +27,7 @@
 #include <ace/Task.h>
 
 #include <geode/utils.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 #include <geode/CacheableKey.hpp>
 #include <geode/Cacheable.hpp>
 #include <geode/Region.hpp>
@@ -200,9 +200,8 @@ class ClientMetadataService : public ACE_Task_Base,
       const ClientMetadataPtr& metadata, const BucketSet& bucketSet,
       bool optimizeForWrite);
 
-  ClientMetadataService::ServerToBucketsMapPtr
-  pruneNodes(const ClientMetadataPtr& metadata,
-                                    const BucketSet& buckets);
+  ClientMetadataService::ServerToBucketsMapPtr pruneNodes(
+      const ClientMetadataPtr& metadata, const BucketSet& buckets);
 
  private:
   // const PartitionResolverPtr& getResolver(const RegionPtr& region, const

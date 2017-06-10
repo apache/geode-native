@@ -209,7 +209,7 @@ class PdxRemoteReader : public PdxLocalReader {
   virtual void readCollection(const char* fieldName,
                               CacheableArrayListPtr& collection);
 };
-typedef SharedPtr<PdxRemoteReader> PdxRemoteReaderPtr;
+typedef std::shared_ptr<PdxRemoteReader> PdxRemoteReaderPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

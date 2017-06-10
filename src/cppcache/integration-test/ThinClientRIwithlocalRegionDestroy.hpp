@@ -91,7 +91,7 @@ class SimpleCacheListener : public CacheListener {
     LOGINFO("SimpleCacheListener: Got a close event.");
   }
 };
-typedef SharedPtr<SimpleCacheListener> SimpleCacheListenerPtr;
+typedef std::shared_ptr<SimpleCacheListener> SimpleCacheListenerPtr;
 
 SimpleCacheListenerPtr eventListener1 = nullptr;
 SimpleCacheListenerPtr eventListener2 = nullptr;

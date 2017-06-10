@@ -43,7 +43,7 @@ namespace client {
  * is an event satisfied by the CQ and the other called when there is an
  * error during CQ processing.
  */
-class CPPCACHE_EXPORT CqListener : public SharedBase {
+class CPPCACHE_EXPORT CqListener  {
  public:
   /**
    * This method is invoked when an event is occurred on the region

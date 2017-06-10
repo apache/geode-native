@@ -26,7 +26,7 @@
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Guard_T.h>
 
-#include <geode/SharedPtr.hpp>
+#include <memory>
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/utils.hpp>
 
@@ -37,7 +37,7 @@ namespace geode {
 namespace client {
 class MapSegment;
 class TombstoneExpiryHandler;
-class TombstoneEntry : public SharedBase {
+class TombstoneEntry {
  public:
   TombstoneEntry(const MapEntryImplPtr& entry, int64_t tombstoneCreationTime)
       : m_entry(entry),
@@ -68,9 +68,9 @@ class TombstoneEntry : public SharedBase {
   ExpiryTaskManager::id_type m_expiryTaskId;
   TombstoneExpiryHandler* m_handler;
 };
-typedef SharedPtr<TombstoneEntry> TombstoneEntryPtr;
+typedef std::shared_ptr<TombstoneEntry> TombstoneEntryPtr;
 
-class TombstoneList : public SharedBase {
+class TombstoneList {
  public:
   TombstoneList(MapSegment* mapSegment) { m_mapSegment = mapSegment; }
   virtual ~TombstoneList() { cleanUp(); }
@@ -105,7 +105,7 @@ class TombstoneList : public SharedBase {
   MapSegment* m_mapSegment;
   friend class TombstoneExpiryHandler;
 };
-typedef SharedPtr<TombstoneList> TombstoneListPtr;
+typedef std::shared_ptr<TombstoneList> TombstoneListPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

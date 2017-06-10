@@ -21,7 +21,7 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 #include "DSMemberForVersionStamp.hpp"
 #include "ace/RW_Thread_Mutex.h"
 #include "ReadWriteLock.hpp"
@@ -41,7 +41,7 @@ struct DistributedMemberWithIntIdentifier {
   uint16_t m_identifier;
 };
 
-class MemberListForVersionStamp : public SharedBase {
+class MemberListForVersionStamp {
  public:
   MemberListForVersionStamp();
   virtual ~MemberListForVersionStamp();
@@ -57,7 +57,7 @@ class MemberListForVersionStamp : public SharedBase {
   uint32_t m_memberCounter;
 };
 
-typedef SharedPtr<MemberListForVersionStamp> MemberListForVersionStampPtr;
+typedef std::shared_ptr<MemberListForVersionStamp> MemberListForVersionStampPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

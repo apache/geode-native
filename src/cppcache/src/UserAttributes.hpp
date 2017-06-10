@@ -31,7 +31,7 @@ namespace apache {
 namespace geode {
 namespace client {
 class ProxyCache;
-typedef SharedPtr<ProxyCache> ProxyCachePtr;
+typedef std::shared_ptr<ProxyCache> ProxyCachePtr;
 class ThinClientPoolDM;
 class UserConnectionAttributes {
  public:
@@ -69,7 +69,7 @@ class UserConnectionAttributes {
   // UserConnectionAttributes & operator =(const UserConnectionAttributes &);
 };
 
-class CPPCACHE_EXPORT UserAttributes : public SharedBase {
+class CPPCACHE_EXPORT UserAttributes {
   // TODO: need to add lock here so that user should not be authenticated at two
   // servers
  public:
@@ -120,7 +120,7 @@ class CPPCACHE_EXPORT UserAttributes : public SharedBase {
   UserAttributes& operator=(const UserAttributes&);
 };
 
-typedef SharedPtr<UserAttributes> UserAttributesPtr;
+typedef std::shared_ptr<UserAttributes> UserAttributesPtr;
 
 class TSSUserAttributesWrapper {
  private:

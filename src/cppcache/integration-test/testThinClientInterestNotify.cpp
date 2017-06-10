@@ -48,7 +48,8 @@ class EventListener : public CacheListener {
 
     try {
       auto keyPtr = std::dynamic_pointer_cast<CacheableString>(event.getKey());
-      auto valuePtr = std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
+      auto valuePtr =
+          std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
 
       sprintf(
           buf, "%s: %s: Key = %s, NewValue = %s", m_name.c_str(), eventType,
@@ -123,7 +124,7 @@ class EventListener : public CacheListener {
     ASSERT(m_destroys == destroys, logmsg);
   }
 };
-typedef SharedPtr<EventListener> EventListenerPtr;
+typedef std::shared_ptr<EventListener> EventListenerPtr;
 
 void setCacheListener(const char* regName, EventListenerPtr monitor) {
   RegionPtr reg = getHelper()->getRegion(regName);

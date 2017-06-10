@@ -296,7 +296,7 @@ PdxSerializablePtr PdxHelper::deserializePdx(DataInput& dataInput,
     // read typeId
     dataInput.readInt(&typeId);
 
-    CacheImpl* cacheImpl = PdxHelper::getCacheImpl();
+    auto cacheImpl = PdxHelper::getCacheImpl();
     if (cacheImpl != nullptr) {
       cacheImpl->m_cacheStats->incPdxDeSerialization(len +
                                                      9);  // pdxLen + 1 + 2*4
@@ -313,11 +313,10 @@ PdxSerializablePtr PdxHelper::deserializePdx(DataInput& dataInput,
     // read typeId
     dataInput.readInt(&typeId);
 
-    PdxTypePtr pType = PdxTypeRegistry::getPdxType(typeId);
+    auto pType = PdxTypeRegistry::getPdxType(typeId);
 
     if (pType == nullptr) {
-      // TODO shared_ptr why redef?
-      PdxTypePtr pType = std::static_pointer_cast<PdxType>(
+      auto pType = std::static_pointer_cast<PdxType>(
           SerializationRegistry::GetPDXTypeById(dataInput.getPoolName(),
                                                 typeId));
       PdxTypeRegistry::addLocalPdxType(pType->getPdxClassName(), pType);
@@ -330,7 +329,7 @@ PdxSerializablePtr PdxHelper::deserializePdx(DataInput& dataInput,
 
     dataInput.advanceCursor(len);
 
-    CacheImpl* cacheImpl = PdxHelper::getCacheImpl();
+    auto cacheImpl = PdxHelper::getCacheImpl();
     if (cacheImpl != nullptr) {
       cacheImpl->m_cacheStats->incPdxInstanceCreations();
     }

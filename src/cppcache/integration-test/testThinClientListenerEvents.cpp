@@ -30,8 +30,7 @@ using namespace test;
 using namespace apache::geode::client;
 class SimpleCacheListener;
 
-typedef apache::geode::client::SharedPtr<SimpleCacheListener>
-    SimpleCacheListenerPtr;
+typedef std::shared_ptr<SimpleCacheListener> SimpleCacheListenerPtr;
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;

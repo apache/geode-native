@@ -21,7 +21,6 @@
  */
 
 #include "geode_globals.hpp"
-#include "SharedBase.hpp"
 #include "geode_types.hpp"
 #include "CacheableBuiltins.hpp"
 #include "Cache.hpp"
@@ -49,8 +48,7 @@ class PoolAttributes;
  *
  *
  */
-class CPPCACHE_EXPORT Pool : public SharedBase,
-                             public std::enable_shared_from_this<Pool> {
+class CPPCACHE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
  public:
   /**
    * Gets the name of the connection pool

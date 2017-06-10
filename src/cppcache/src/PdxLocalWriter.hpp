@@ -335,7 +335,7 @@ class PdxLocalWriter : public PdxWriter,
 
   inline int32_t getStartPositionOffset() { return m_startPositionOffset; }
 };
-typedef SharedPtr<PdxLocalWriter> PdxLocalWriterPtr;
+typedef std::shared_ptr<PdxLocalWriter> PdxLocalWriterPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

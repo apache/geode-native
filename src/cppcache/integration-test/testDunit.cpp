@@ -17,6 +17,8 @@
 
 #define ROOT_NAME "testDunit"
 
+#include <iostream>
+
 #include "fw_dunit.hpp"
 #include <geode/GeodeCppCache.hpp>
 
@@ -75,7 +77,7 @@ END_TASK(Test4)
 
 DUNIT_TASK(s1p1, TestA)
   {
-    test::cout << "SlaveTest = " << getSlaveTest() << test::endl;
+    std::cout << "SlaveTest = " << getSlaveTest() << std::endl;
     ASSERT(getSlaveTest() == 8,
            "a previous slave must have failed undetected.");
     dunit::globals()->dump();

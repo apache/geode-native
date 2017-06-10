@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_FWKLIB_FRAMEWORKTEST_H_
-#define GEODE_FWKLIB_FRAMEWORKTEST_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,11 +15,16 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_FWKLIB_FRAMEWORKTEST_H_
+#define GEODE_FWKLIB_FRAMEWORKTEST_H_
+
+#include <string>
+
 #include "fwklib/TimeSync.hpp"
 #include "fwklib/ClientTask.hpp"
 #include "fwklib/FwkBBClient.hpp"
-
-#include <string>
 
 namespace apache {
 namespace geode {
@@ -48,24 +48,7 @@ class FrameworkTest  // Base class all test classes written for xml testing
   CacheTransactionManagerPtr txManager;
   static SpinLock m_lck;
 
-#ifdef _WIN32
-  bool m_doneSetNewAndDelete;
-
-  void setNewAndDelete() {
-    char* envsetting = ACE_OS::getenv("BUG481");
-    if (envsetting != NULL && strlen(envsetting) > 0) {
-      apache::geode::client::setNewAndDelete(&operator new, & operator delete);
-      FWKINFO("setNewAndDelete() was called");
-    }
-    m_doneSetNewAndDelete = true;
-  }
-#endif
-
  public:
-#ifdef _WIN32
-  FrameworkTest() : m_doneSetNewAndDelete(false) {}
-#endif
-
   FrameworkTest(const char* initArgs);
   ~FrameworkTest();
 
@@ -163,113 +146,113 @@ class FrameworkTest  // Base class all test classes written for xml testing
   }
 
   /** @brief dump all data
-    * @param sResult result of dump
-    * @retval true = Success, false = Failed
-    */
+   * @param sResult result of dump
+   * @retval true = Success, false = Failed
+   */
   inline std::string bbDump() const { return m_bbc->dump(); }
 
   /** @brief dump BB data
-    * @param pszBBName name of BB
-    * @param sResult result of dump
-    * @retval true = Success, false = Failed
-    */
+   * @param pszBBName name of BB
+   * @param sResult result of dump
+   * @retval true = Success, false = Failed
+   */
   inline std::string bbDump(const std::string& bb) const {
     return m_bbc->dump(bb);
   }
 
   /** @brief clear BB data
-    * @param pszBBName name of BB
-    * @retval true = Success, false = Failed
-    */
+   * @param pszBBName name of BB
+   * @retval true = Success, false = Failed
+   */
   inline void bbClear(const std::string& bb) const { m_bbc->clear(bb); }
 
   /** @brief get BB key value
-    * @param bb name of BB
-    * @param key name of key in BB
-    * @retval value from BB
-    */
+   * @param bb name of BB
+   * @param key name of key in BB
+   * @retval value from BB
+   */
   inline std::string bbGetString(const std::string& bb,
                                  const std::string& key) const {
     return m_bbc->getString(bb, key);
   }
 
   /** @brief get BB counter value
-    * @param bb name of BB
-    * @param cntr name of counter
-    * @retval value from BB
-    */
+   * @param bb name of BB
+   * @param cntr name of counter
+   * @retval value from BB
+   */
   inline int64_t bbGet(const std::string& bb, const std::string& cntr) const {
     return m_bbc->get(bb, cntr);
   }
 
   /** @brief set BB key value
-    * @param bb name of BB
-    * @param key name of key in BB
-    * @param val value to set
-    */
+   * @param bb name of BB
+   * @param key name of key in BB
+   * @param val value to set
+   */
   inline void bbSet(const std::string& bb, const std::string& key,
                     const std::string& val) const {
     m_bbc->set(bb, key, val);
   }
 
   /** @brief set BB counter value
-    * @param bb name of BB
-    * @param cntr name of counter
-    * @param val value to set
-    */
+   * @param bb name of BB
+   * @param cntr name of counter
+   * @param val value to set
+   */
   inline void bbSet(const std::string& bb, const std::string& cntr,
                     const int64_t val) const {
     m_bbc->set(bb, cntr, val);
   }
 
   /** @brief add BB counter value
-    * @param bb name of BB
-    * @param cntr name of counter
-    * @param val value to add to counter
-    * @retval value of after add
-    */
+   * @param bb name of BB
+   * @param cntr name of counter
+   * @param val value to add to counter
+   * @retval value of after add
+   */
   inline int64_t bbAdd(const std::string& bb, const std::string& cntr,
                        const int64_t val) const {
     return m_bbc->add(bb, cntr, val);
   }
 
   /** @brief increment BB counter value by 1
-    * @param bb name of BB
-    * @param cntr name of counter
-    * @retval value after increment
-    */
+   * @param bb name of BB
+   * @param cntr name of counter
+   * @retval value after increment
+   */
   inline int64_t bbIncrement(const std::string& bb,
                              const std::string& cntr) const {
     return m_bbc->increment(bb, cntr);
   }
 
   /** @brief decrement BB counter value by 1
-    * @param bb name of BB
-    * @param cntr name of counter
-    * @retval value after decrement
-    */
+   * @param bb name of BB
+   * @param cntr name of counter
+   * @retval value after decrement
+   */
   inline int64_t bbDecrement(const std::string& bb,
                              const std::string& cntr) const {
     return m_bbc->decrement(bb, cntr);
   }
 
   /** @brief setIfGreater BB counter value is greater
-    * @param bb name of BB
-    * @param cntr name of counter
-    * @param val value to set
-    * @retval value after setIfGreater
-    */
+   * @param bb name of BB
+   * @param cntr name of counter
+   * @param val value to set
+   * @retval value after setIfGreater
+   */
   inline int64_t bbSetIfGreater(const std::string& bb, const std::string& cntr,
                                 const int64_t val) const {
     return m_bbc->setIfGreater(bb, cntr, val);
   }
 
   /** @brief setIfLess BB counter value is less
-    * @param bb name of BB
-    * @param cntr name of counter
-    * @param val value to set
-    * @retval value after setIfLess
-    */
+   * @param bb name of BB
+   * @param cntr name of counter
+   * @param val value to set
+   * @retval value after setIfLess
+   */
   inline int64_t bbSetIfLess(const std::string& bb, const std::string& cntr,
                              const int64_t val) const {
     return m_bbc->setIfLess(bb, cntr, val);

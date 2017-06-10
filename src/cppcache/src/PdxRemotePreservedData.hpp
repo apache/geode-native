@@ -27,7 +27,7 @@ namespace apache {
 namespace geode {
 namespace client {
 class PdxRemotePreservedData;
-typedef SharedPtr<PdxRemotePreservedData> PdxRemotePreservedDataPtr;
+typedef std::shared_ptr<PdxRemotePreservedData> PdxRemotePreservedDataPtr;
 
 class PdxRemotePreservedData : public PdxUnreadFields {
  private:

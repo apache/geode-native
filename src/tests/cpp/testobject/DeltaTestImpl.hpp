@@ -48,7 +48,7 @@ using namespace apache::geode::client;
 
 namespace testobject {
 class DeltaTestImpl;
-typedef SharedPtr<DeltaTestImpl> DeltaTestImplPtr;
+typedef std::shared_ptr<DeltaTestImpl> DeltaTestImplPtr;
 class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
  private:
   static uint8_t INT_MASK;

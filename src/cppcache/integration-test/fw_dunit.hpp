@@ -361,6 +361,6 @@ int ACE_TMAIN(int argc, ACE_TCHAR* argv[]) { return dunit::dmain(argc, argv); }
 
 #include "fw_perf.hpp"
 
-#include "no_cout.hpp"
-
+namespace test {
+}  // namespace test
 #endif  // GEODE_INTEGRATION_TEST_FW_DUNIT_H_

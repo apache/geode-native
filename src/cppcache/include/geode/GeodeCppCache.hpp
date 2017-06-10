@@ -67,7 +67,7 @@
 #include "ResultCollector.hpp"
 #include "ResultSet.hpp"
 #include "Serializable.hpp"
-#include "SharedPtr.hpp"
+#include <memory>
 #include "StructSet.hpp"
 #include "UserData.hpp"
 #include "VectorT.hpp"

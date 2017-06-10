@@ -46,8 +46,7 @@ using namespace apache::geode::client;
 using namespace testframework;
 namespace testobject {
 class DeltaFastAssetAccount;
-typedef apache::geode::client::SharedPtr<DeltaFastAssetAccount>
-    DeltaFastAssetAccountPtr;
+typedef std::shared_ptr<DeltaFastAssetAccount> DeltaFastAssetAccountPtr;
 class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
  private:
   bool encodeTimestamp;

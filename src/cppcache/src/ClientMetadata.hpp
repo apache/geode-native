@@ -39,14 +39,14 @@ namespace client {
 class ThinClientPoolDM;
 class ClientMetadata;
 
-typedef SharedPtr<ClientMetadata> ClientMetadataPtr;
+typedef std::shared_ptr<ClientMetadata> ClientMetadataPtr;
 typedef std::vector<BucketServerLocationPtr> BucketServerLocationsType;
 // typedef std::map<int,BucketServerLocationsType >
 // BucketServerLocationsListType;
 typedef std::vector<BucketServerLocationsType> BucketServerLocationsListType;
 typedef std::map<std::string, std::vector<int> > FixedMapType;
 
-class CPPCACHE_EXPORT ClientMetadata : public SharedBase, public NonAssignable {
+class CPPCACHE_EXPORT ClientMetadata : public NonAssignable {
  private:
   void setPartitionNames();
   CacheableHashSetPtr m_partitionNames;

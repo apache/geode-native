@@ -856,7 +856,7 @@ CacheableStringPtr CacheHelper::createCacheable(const char* value) {
 }
 
 void CacheHelper::showKeys(VectorOfCacheableKey& vecKeys) {
-  fprintf(stdout, "vecKeys.size() = %d\n", vecKeys.size());
+  fprintf(stdout, "vecKeys.size() = %zd\n", vecKeys.size());
   for (uint32_t i = 0; i < static_cast<uint32_t>(vecKeys.size()); i++) {
     char msg[1024];
     size_t wrote = vecKeys.at(i)->logString(msg, 1023);
@@ -1373,7 +1373,7 @@ void CacheHelper::createDuplicateXMLFile(std::string& originalFile,
   std::string s(cmd);
   CacheHelper::staticConfigFileList.push_back(s);
 
-  printf("createDuplicateXMLFile added file %s %ld", cmd,
+  printf("createDuplicateXMLFile added file %s %zd", cmd,
          CacheHelper::staticConfigFileList.size());
 }
 

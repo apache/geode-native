@@ -82,24 +82,25 @@ class CPPCACHE_EXPORT CacheableKey : public Cacheable {
       return s->hashcode();
     }
 
-    inline std::size_t operator()(const std::shared_ptr<CacheableKey>& s) const {
+    inline std::size_t operator()(
+        const std::shared_ptr<CacheableKey>& s) const {
       return s->hashcode();
     }
   };
-  
+
   struct equal_to {
-    inline bool operator()(const CacheableKey &lhs,
-                           const CacheableKey &rhs) const {
+    inline bool operator()(const CacheableKey& lhs,
+                           const CacheableKey& rhs) const {
       return lhs == rhs;
     }
 
-    inline bool operator()(const CacheableKey* &lhs,
-                           const CacheableKey* &rhs) const {
+    inline bool operator()(const CacheableKey*& lhs,
+                           const CacheableKey*& rhs) const {
       return (*lhs) == (*rhs);
     }
 
-    inline bool operator()(const std::shared_ptr<CacheableKey> &lhs,
-                    const std::shared_ptr<CacheableKey> &rhs) const {
+    inline bool operator()(const std::shared_ptr<CacheableKey>& lhs,
+                           const std::shared_ptr<CacheableKey>& rhs) const {
       return (*lhs) == (*rhs);
     }
   };
@@ -111,7 +112,7 @@ class CPPCACHE_EXPORT CacheableKey : public Cacheable {
 };
 
 template <class TKEY>
-inline CacheableKeyPtr createKey(const SharedPtr<TKEY>& value);
+inline CacheableKeyPtr createKey(const std::shared_ptr<TKEY>& value);
 
 template <typename TKEY>
 inline CacheableKeyPtr createKey(const TKEY* value);

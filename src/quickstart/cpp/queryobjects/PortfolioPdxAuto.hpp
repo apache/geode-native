@@ -106,6 +106,6 @@ class PortfolioPdxAuto : public apache::geode::client::PdxSerializable {
   CacheableStringPtr toString() const;
 };
 
-typedef SharedPtr<PortfolioPdxAuto> PortfolioPdxPtr;
+typedef std::shared_ptr<PortfolioPdxAuto> PortfolioPdxPtr;
 }
 #endif

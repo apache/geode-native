@@ -47,7 +47,7 @@ using namespace apache::geode::client;
 using namespace testframework;
 namespace testobject {
 class FastAsset;
-typedef apache::geode::client::SharedPtr<FastAsset> FastAssetPtr;
+typedef std::shared_ptr<FastAsset> FastAssetPtr;
 
 class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
  private:
@@ -113,7 +113,7 @@ class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
   }
 };
 
-// typedef apache::geode::client::SharedPtr<FastAsset> FastAssetPtr;
+// typedef std::shared_ptr<FastAsset> FastAssetPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_FASTASSET_H_

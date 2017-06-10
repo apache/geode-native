@@ -160,7 +160,7 @@ class MyResultCollector : public ResultCollector {
   uint32_t m_addResultCount;
   uint32_t m_getResultCount;
 };
-typedef SharedPtr<MyResultCollector> MyResultCollectorPtr;
+typedef std::shared_ptr<MyResultCollector> MyResultCollectorPtr;
 
 DUNIT_TASK_DEFINITION(LOCATOR1, StartLocator1)
   {

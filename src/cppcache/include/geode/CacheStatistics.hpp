@@ -42,7 +42,7 @@ class LocalRegion;
 *@see Region::getStatistics
 *@see RegionEntry::getStatistics
 */
-class CPPCACHE_EXPORT CacheStatistics : public SharedBase {
+class CPPCACHE_EXPORT CacheStatistics  {
  public:
   CacheStatistics();
 

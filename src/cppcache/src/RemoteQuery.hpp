@@ -23,7 +23,7 @@
 #include <geode/geode_globals.hpp>
 #include <geode/geode_types.hpp>
 #include <geode/ExceptionTypes.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 
 #include <geode/Query.hpp>
 #include <geode/SelectResults.hpp>
@@ -80,7 +80,7 @@ class CPPCACHE_EXPORT RemoteQuery : public Query {
   bool isCompiled();
 };
 
-typedef SharedPtr<RemoteQuery> RemoteQueryPtr;
+typedef std::shared_ptr<RemoteQuery> RemoteQueryPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

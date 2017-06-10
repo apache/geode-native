@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 
-#include <geode/SharedBase.hpp>
 #include <geode/Properties.hpp>
 
 #include "typedefs.hpp"
@@ -50,9 +49,10 @@ const stringList::value_type QRArr[] = {"Portfolios", "Positions"};
 const char* PRiUsnm = "%s%d";
 
 class XmlAuthzCredentialGenerator;
-typedef SharedPtr<XmlAuthzCredentialGenerator> XmlAuthzCredentialGeneratorPtr;
+typedef std::shared_ptr<XmlAuthzCredentialGenerator>
+    XmlAuthzCredentialGeneratorPtr;
 
-class XmlAuthzCredentialGenerator : public SharedBase {
+class XmlAuthzCredentialGenerator {
  private:
   ID m_id;
   opCodeList* m_opCode;

@@ -160,6 +160,6 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
     return CacheableString::create(idbuf);
   }
 };
-typedef SharedPtr<PdxDeltaEx> PdxDeltaExPtr;
+typedef std::shared_ptr<PdxDeltaEx> PdxDeltaExPtr;
 
 #endif  // GEODE_INTEGRATION_TEST_DELTAEX_H_

@@ -57,8 +57,7 @@ class CqDeltaListener : public CqListener {
       m_deltaCount++;
     }
     DeltaTestImplPtr dptr =
-        std::static_pointer_cast<GF_UNWRAP_SP(DeltaTestImplPtr)>(
-            aCqEvent.getNewValue());
+        std::static_pointer_cast<DeltaTestImpl>(aCqEvent.getNewValue());
     if (dptr->getIntVar() == 5) {
       m_valueCount++;
     }
@@ -71,7 +70,7 @@ class CqDeltaListener : public CqListener {
   int m_deltaCount;
   int m_valueCount;
 };
-typedef SharedPtr<CqDeltaListener> CqDeltaListenerPtr;
+typedef std::shared_ptr<CqDeltaListener> CqDeltaListenerPtr;
 CqDeltaListenerPtr g_CqListener;
 
 void initClient(const bool isthinClient) {
