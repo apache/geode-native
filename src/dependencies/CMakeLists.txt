@@ -23,6 +23,7 @@ set ( DEPENDENCIES
 	xerces-c
 	openssl
 	ACE
+	boost
 	sqlite
 	doxygen
 	gtest
