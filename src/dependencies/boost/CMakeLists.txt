@@ -53,6 +53,10 @@ ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
    CONFIGURE_COMMAND ${_BOOTSTRAP_COMMAND}
    BUILD_COMMAND ${_B2_COMMAND} ${_B2_FLAGS}
    INSTALL_COMMAND ${_B2_COMMAND} ${_B2_FLAGS} install
+   PREFIX .
+   DOWNLOAD_DIR .
+   SOURCE_DIR ./src
+   STAMP_DIR ./stamp
 )
 
 ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} SOURCE_DIR )
