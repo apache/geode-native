@@ -34,16 +34,18 @@ class GsRandom {
  private:
   std::default_random_engine engine;
 
-  std::uniform_int_distribution<> distBoolean;
-  std::uniform_int_distribution<uint8_t> distUint8;
+  std::uniform_int_distribution<int16_t> distBoolean;
+  std::uniform_int_distribution<int16_t> distUint8;
   std::uniform_int_distribution<uint16_t> distUint16;
   std::uniform_int_distribution<int32_t> distInt32;
   std::uniform_int_distribution<uint32_t> distUint32;
   std::uniform_real_distribution<double> distDouble;
 
   GsRandom()
-      : distBoolean(0, 1),
-        distUint8(),
+      : distBoolean(std::numeric_limits<bool>::min(),
+                    std::numeric_limits<bool>::max()),
+        distUint8(std::numeric_limits<uint8_t>::min(),
+                  std::numeric_limits<uint8_t>::max()),
         distUint16(),
         distInt32(),
         distUint32(),
@@ -57,85 +59,81 @@ class GsRandom {
 
  public:
   /**
-    * Creates a new random number generator. Its seed is initialized to
-    * a value based on the random device.
-    *
-    */
+   * Creates a new random number generator. Its seed is initialized to
+   * a value based on the random device.
+   *
+   */
   static GsRandom& getInstance();
 
   /**
-    * @return the next pseudorandom, uniformly distributed <code>boolean</code>
-    *         value from this random number generator's sequence.
-    */
+   * @return the next pseudorandom, uniformly distributed <code>boolean</code>
+   *         value from this random number generator's sequence.
+   */
   inline bool nextBoolean() { return 1 == distBoolean(engine); }
 
   /**
-    * @return the next pseudorandom, uniformly distributed <code>uint16_t</code>
-    *         value from this random number generator's sequence.
-    */
+   * @return the next pseudorandom, uniformly distributed <code>uint16_t</code>
+   *         value from this random number generator's sequence.
+   */
   inline uint16_t nextInt16() { return distUint16(engine); }
 
   /**
-    * @return the next pseudorandom, uniformly distributed <code>byte</code>
-    *         value from this random number generator's sequence.
-    */
-  inline uint8_t nextByte() { return distUint8(engine); }
+   * @return the next pseudorandom, uniformly distributed <code>byte</code>
+   *         value from this random number generator's sequence.
+   */
+  inline uint8_t nextByte() { return static_cast<uint8_t>(distUint8(engine)); }
 
   /**
-    * @param   min the minimum range (inclusive) for the pseudorandom.
-    * @param   max the maximum range (inclusive) for the pseudorandom.
-    * @return  the next pseudorandom, uniformly distributed <code>char</code>
-    *          value from this random number generator's sequence.
-    *       If max < min, returns 0 .
-    */
+   * @param   min the minimum range (inclusive) for the pseudorandom.
+   * @param   max the maximum range (inclusive) for the pseudorandom.
+   * @return  the next pseudorandom, uniformly distributed <code>char</code>
+   *          value from this random number generator's sequence.
+   *       If max < min, returns 0 .
+   */
   inline uint8_t nextByte(uint8_t min, uint8_t max) {
-    return distUint8(
-        engine, std::uniform_int_distribution<uint8_t>::param_type(min, max));
+    return static_cast<uint8_t>(
+        distUint8(engine, decltype(distUint8)::param_type(min, max)));
   }
 
   /**
-    * @param   max the maximum range (inclusive) for the pseudorandom.
-    * @return  the next pseudorandom, uniformly distributed <code>double</code>
-    *          value from this random number generator's sequence.
-    */
+   * @param   max the maximum range (inclusive) for the pseudorandom.
+   * @return  the next pseudorandom, uniformly distributed <code>double</code>
+   *          value from this random number generator's sequence.
+   */
   inline double nextDouble(double max) { return nextDouble(0.0, max); }
 
   /**
-    * @param   min the minimum range (inclusive) for the pseudorandom.
-    * @param   max the maximum range (inclusive) for the pseudorandom.
-    * @return  the next pseudorandom, uniformly distributed <code>double</code>
-    *      value from this random number generator's sequence within a range
-    *      from min to max.
-    */
+   * @param   min the minimum range (inclusive) for the pseudorandom.
+   * @param   max the maximum range (inclusive) for the pseudorandom.
+   * @return  the next pseudorandom, uniformly distributed <code>double</code>
+   *      value from this random number generator's sequence within a range
+   *      from min to max.
+   */
   inline double nextDouble(double min, double max) {
-    return distDouble(
-        engine, std::uniform_real_distribution<double>::param_type(min, max));
+    return distDouble(engine, decltype(distDouble)::param_type(min, max));
   }
 
   /**
-    * @param   max the maximum range (inclusive) for the pseudorandom.
-    * @return  the next pseudorandom, uniformly distributed <code>int32_t</code>
-    *          value from this random number generator's sequence.
-    */
+   * @param   max the maximum range (inclusive) for the pseudorandom.
+   * @return  the next pseudorandom, uniformly distributed <code>int32_t</code>
+   *          value from this random number generator's sequence.
+   */
   inline int32_t nextInt(int32_t max) { return nextInt(0, max); }
 
   /**
-    * @param   min the minimum range (inclusive) for the pseudorandom.
-    * @param   max the maximum range (inclusive) for the pseudorandom.
-    * @return  the next pseudorandom, uniformly distributed <code>int32_t</code>
-    *          value from this random number generator's sequence.
-    *       If max < min, returns 0 .
-    */
+   * @param   min the minimum range (inclusive) for the pseudorandom.
+   * @param   max the maximum range (inclusive) for the pseudorandom.
+   * @return  the next pseudorandom, uniformly distributed <code>int32_t</code>
+   *          value from this random number generator's sequence.
+   *       If max < min, returns 0 .
+   */
   inline int32_t nextInt(int32_t min, int32_t max) {
-    return distInt32(
-        engine, std::uniform_int_distribution<int32_t>::param_type(min, max));
+    return distInt32(engine, decltype(distInt32)::param_type(min, max));
   }
 
   /** @brief return random number where: min <= retValue < max */
   static uint32_t random(uint32_t min, uint32_t max) {
-    return getInstance().distUint32(
-        getInstance().engine,
-        std::uniform_int_distribution<uint32_t>::param_type(min, max - 1));
+    return getInstance().nextInt(min, max - 1);
   }
 
   /** @brief return random number where: 0 <= retValue < max */
@@ -147,12 +145,12 @@ class GsRandom {
   }
 
   /** @brief return bounded random string,
-    * Like randomString(), but returns only only alphanumeric,
-    *   underscore, or space characters.
-    *
-    * @param uSize the length of the random string to generate.
-    * @retval a bounded random string
-    */
+   * Like randomString(), but returns only only alphanumeric,
+   *   underscore, or space characters.
+   *
+   * @param uSize the length of the random string to generate.
+   * @retval a bounded random string
+   */
   static std::string getAlphanumericString(uint32_t size) {
     std::string str(size + 1, '\0');
     static const char chooseFrom[] =
@@ -167,12 +165,12 @@ class GsRandom {
   }
 
   /** @brief return bounded random string,
-    * Like randomString(), but returns only only alphanumeric,
-    *   underscore, or space characters.
-    *
-    * @param uSize the length of the random string to generate.
-    * @retval a bounded random string
-    */
+   * Like randomString(), but returns only only alphanumeric,
+   *   underscore, or space characters.
+   *
+   * @param uSize the length of the random string to generate.
+   * @retval a bounded random string
+   */
   static void getAlphanumericString(uint32_t size, char* buffer) {
     static const char chooseFrom[] =
         "0123456789 abcdefghijklmnopqrstuvwxyz_ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -184,29 +182,29 @@ class GsRandom {
   }
 
   /**
-    * @param max the maximum length of the random string to generate.
-    * @return a bounded random string with a length between 0 and
-    * max length inclusive.
-    */
+   * @param max the maximum length of the random string to generate.
+   * @return a bounded random string with a length between 0 and
+   * max length inclusive.
+   */
   char* randomString(int32_t max, int32_t min = 0);
 
   /**
-    * Like randomString(), but returns only readable characters.
-  *
-    * @param max the maximum length of the random string to generate.
-    * @return a bounded random string with a length between 0 and
-    * max length inclusive.
-    */
+   * Like randomString(), but returns only readable characters.
+   *
+   * @param max the maximum length of the random string to generate.
+   * @return a bounded random string with a length between 0 and
+   * max length inclusive.
+   */
   char* randomReadableString(int32_t max, int32_t min = 0);
 
   /**
-    * Like randomString(), but returns only alphanumeric, underscore, or space
+   * Like randomString(), but returns only alphanumeric, underscore, or space
    * characters.
-  *
-    * @param max the maximum length of the random string to generate.
-    * @return a bounded random string with a length between 0 and
-    * max length inclusive.
-    */
+   *
+   * @param max the maximum length of the random string to generate.
+   * @return a bounded random string with a length between 0 and
+   * max length inclusive.
+   */
   char* randomAlphanumericString(int32_t max, int32_t min,
                                  const char* prefix = 0);
 };
