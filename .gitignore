@@ -4,3 +4,11 @@
 /.settings/
 /.cproject
 /.project
+.vs/config/applicationhost.config
+src/CMakeSettings.json
+.vs/slnx.sqlite
+*.json
+.vs/geode-native2/v15/Browse.VC.opendb
+*.db
+.vs/geode-native2/v15/.suo
+.vs/geode-native2/v15/ipch/AutoPCH/1f9ac4ce/GEODE_BASE-2ee16599/GEODE_BASE.ipch
