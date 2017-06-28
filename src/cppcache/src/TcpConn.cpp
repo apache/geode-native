@@ -269,7 +269,7 @@ void TcpConn::connect() {
     ACE_OS::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
                      lastError, ACE_OS::strerror(lastError));
     //  this is only called by constructor, so we must delete m_io
-	close();
+    GF_SAFE_DELETE(m_io);
     throw GeodeIOException(msg);
   }
   int rc = this->m_io->enable(ACE_NONBLOCK);
