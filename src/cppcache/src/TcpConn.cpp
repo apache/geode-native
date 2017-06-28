@@ -263,7 +263,7 @@ void TcpConn::connect() {
           "TcpConn::connect Attempt to connect timed out after %d seconds.",
           waitSeconds);
       //  this is only called by constructor, so we must delete m_io
-	  close();
+      GF_SAFE_DELETE(m_io);
       throw TimeoutException(msg);
     }
     ACE_OS::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
