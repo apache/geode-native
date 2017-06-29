@@ -107,8 +107,7 @@ ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} patches
     DEPENDEES download
     DEPENDERS patch
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/patches
-    WORKING_D.
-	IRECTORY ${${PROJECT_NAME}_SOURCE_DIR}
+    WORKING_DIRECTORY ${${PROJECT_NAME}_SOURCE_DIR}
     COMMAND ${PATCH} -u -N -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 endif()
