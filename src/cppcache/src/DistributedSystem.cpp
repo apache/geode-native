@@ -57,58 +57,6 @@ StatisticsManager* g_statMngr = nullptr;
 SystemProperties* g_sysProps = nullptr;
 }  // namespace
 
-namespace apache {
-namespace geode {
-namespace client {
-void setLFH() {
-#ifdef _WIN32
-  static HINSTANCE kernelMod = nullptr;
-  if (kernelMod == nullptr) {
-    kernelMod = GetModuleHandle("kernel32");
-    if (kernelMod != nullptr) {
-      typedef BOOL(WINAPI * PHSI)(
-          HANDLE HeapHandle, HEAP_INFORMATION_CLASS HeapInformationClass,
-          PVOID HeapInformation, SIZE_T HeapInformationLength);
-      typedef HANDLE(WINAPI * PGPH)();
-      PHSI pHSI = nullptr;
-      PGPH pGPH = nullptr;
-      if ((pHSI = (PHSI)GetProcAddress(kernelMod, "HeapSetInformation")) !=
-          nullptr) {
-        // The LFH API is available
-        /* Only set LFH for process heap; causes problems in C++ framework if
-        set for all heaps
-        HANDLE hProcessHeapHandles[1024];
-        DWORD dwRet;
-        ULONG heapFragValue = 2;
-
-        dwRet= GetProcessHeaps( 1024, hProcessHeapHandles );
-        for (DWORD i = 0; i < dwRet; i++)
-        {
-          HeapSetInformation( hProcessHeapHandles[i],
-            HeapCompatibilityInformation, &heapFragValue, sizeof(heapFragValue)
-        );
-        }
-        */
-        HANDLE hProcessHeapHandle;
-        ULONG heapFragValue = 2;
-        if ((pGPH = (PGPH)GetProcAddress(kernelMod, "GetProcessHeap")) !=
-            nullptr) {
-          hProcessHeapHandle = pGPH();
-          LOGCONFIG(
-              "Setting Microsoft Windows' low-fragmentation heap for use as "
-              "the main process heap.");
-          pHSI(hProcessHeapHandle, HeapCompatibilityInformation, &heapFragValue,
-               sizeof(heapFragValue));
-        }
-      }
-    }
-  }
-#endif
-}
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
-
 DistributedSystem::DistributedSystem(const char* name) : m_name(nullptr) {
   LOGDEBUG("DistributedSystem::DistributedSystem");
   if (name != nullptr) {
@@ -125,7 +73,6 @@ DistributedSystem::~DistributedSystem() { GF_SAFE_DELETE_ARRAY(m_name); }
 DistributedSystemPtr DistributedSystem::connect(
     const char* name, const PropertiesPtr& configPtr) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
-  setLFH();
   if (m_connected == true) {
     throw AlreadyConnectedException(
         "DistributedSystem::connect: already connected, call getInstance to "

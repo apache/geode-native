@@ -12,12 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required( VERSION 3.3 )
+
 project( ACE )
 
-set( ${PROJECT_NAME}_VERSION 6.4.1 )
-set( ${PROJECT_NAME}_SHA265 bc51ffcc6c68f9a244def11a92c6843e789349538b997529c7942629641379ce )
-set( ${PROJECT_NAME}_URL "https://github.com/DOCGroup/ACE_TAO/releases/download/ACE%2BTAO-6_4_1/ACE.tar.gz" )
+set( ${PROJECT_NAME}_VERSION 6.4.3 )
+set( ${PROJECT_NAME}_SHA265 164daf3e0cafa86a6a2b35a598eb42231bc6c71b55991fdaacbeade008ac5b8d )
+string(REPLACE "." "_" _VERSION_UNDERSCORE ${${PROJECT_NAME}_VERSION})
+set( ${PROJECT_NAME}_URL "https://github.com/DOCGroup/ACE_TAO/releases/download/ACE%2BTAO-${_VERSION_UNDERSCORE}/ACE.tar.gz" )
 set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
 set( ${PROJECT_NAME}_DEPENDS openssl-extern )
 
