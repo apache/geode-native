@@ -4,3 +4,15 @@
 /.settings/
 /.cproject
 /.project
+*.config
+.vs/geode-native2/v15/.suo
+*.db
+.vs/geode-native2/v15/ipch/AutoPCH/1f9ac4ce/GEODE_BASE-2ee16599/GEODE_BASE.ipch
+*.opendb
+.vs/VSWorkspaceState.json
+src/CMakeSettings.json
+*.sqlite
+.vs/ProjectSettings.json
+CMakeFiles/
+*.bak
+CMakeCache.txt

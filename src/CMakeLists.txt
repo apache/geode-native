@@ -17,7 +17,7 @@ project(nativeclient)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/../cmake)
 
-if(CMAKE_GENERATOR MATCHES Win64*)
+if(CMAKE_GENERATOR MATCHES Win64*)f
   if ((CMAKE_GENERATOR MATCHES "Visual Studio") AND (CMAKE_GENERATOR_TOOLSET STREQUAL ""))
     message(WARNING "GEODE expects that a user must provode -Thost=x64 if you are using a"
             " 64-bit toolset, otherwise you may get a linker error when DLLs are larger"
