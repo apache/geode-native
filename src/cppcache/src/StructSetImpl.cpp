@@ -16,6 +16,7 @@
  */
 
 #include <vector>
+#include <stdexcept>
 
 #include "StructSetImpl.hpp"
 
@@ -38,7 +39,6 @@ StructSetImpl::StructSetImpl(
   int32_t numOfValues = response->size();
   int32_t valStoredCnt = 0;
 
-  // LOGDEBUG("FieldNames = %d and Values = %d", numOfFields, numOfValues);
   m_structVector = CacheableVector::create();
   while (valStoredCnt < numOfValues) {
     std::vector<SerializablePtr> tmpVec;
@@ -66,25 +66,22 @@ SelectResultsIterator StructSetImpl::getIterator() {
   return SelectResultsIterator(m_structVector, shared_from_this());
 }
 
-int32_t StructSetImpl::getFieldIndex(const char* fieldname) {
-  std::map<std::string, int32_t>::iterator iter =
+const int32_t StructSetImpl::getFieldIndex(const std::string& fieldname) {
+  const auto& iter =
       m_fieldNameIndexMap.find(fieldname);
   if (iter != m_fieldNameIndexMap.end()) {
     return iter->second;
   } else {
-    // std::string tmp = "fieldname ";
-    // tmp += fieldname + " not found";
-    throw IllegalArgumentException("fieldname not found");
+    throw std::invalid_argument("fieldname not found");
   }
 }
 
-const char* StructSetImpl::getFieldName(int32_t index) {
-  for (std::map<std::string, int32_t>::iterator iter =
-           m_fieldNameIndexMap.begin();
-       iter != m_fieldNameIndexMap.end(); ++iter) {
-    if (iter->second == index) return iter->first.c_str();
+const std::string& StructSetImpl::getFieldName(int32_t index) {
+  for (const auto& iter : m_fieldNameIndexMap) {
+    if (iter.second == index) return (iter.first);
   }
-  return nullptr;
+
+  throw std::out_of_range("Struct: fieldName not found.");
 }
 
 SelectResults::Iterator StructSetImpl::begin() const {

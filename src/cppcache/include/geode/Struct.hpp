@@ -76,7 +76,7 @@ class CPPCACHE_EXPORT Struct : public Serializable {
    * @returns A smart pointer to the field value.
    * @throws IllegalArgumentException if the field name is not found.
    */
-  const SerializablePtr operator[](const char* fieldName) const;
+  const SerializablePtr operator[](const std::string& fieldName) const;
 
   /**
    * Get the parent StructSet of this Struct.
@@ -137,8 +137,9 @@ class CPPCACHE_EXPORT Struct : public Serializable {
   /**
    * Returns the name of the field corresponding to the index number in the
    * Struct
+   * @throws std::out_of_range if index is not found
    */
-  virtual const char* getFieldName(const int32_t index) const;
+  virtual const std::string& getFieldName(const int32_t index) const;
 
   /**
    * always returns 0
@@ -152,9 +153,7 @@ class CPPCACHE_EXPORT Struct : public Serializable {
 
   Struct();
 
-  typedef std::unordered_map<CacheableStringPtr, CacheableInt32Ptr,
-                             dereference_hash<CacheableStringPtr>,
-                             dereference_equal_to<CacheableStringPtr>>
+  typedef std::unordered_map<std::string, int32_t>
       FieldNames;
   FieldNames m_fieldNames;
   std::vector<SerializablePtr> m_fieldValues;
