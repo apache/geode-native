@@ -14,6 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <string>
+
 #include <geode/Struct.hpp>
 #include <GeodeTypeIdsImpl.hpp>
 #include <geode/DataInput.hpp>
@@ -71,11 +74,11 @@ Serializable* Struct::fromData(DataInput& input) {
   input.readArrayLen(&numOfFields);
 
   m_parent = nullptr;
-  for (int i = 0; i < numOfFields; i++) {
+  for (int32_t i = 0; i < numOfFields; i++) {
     CacheableStringPtr fieldName;
     // input.readObject(fieldName);
     input.readNativeString(fieldName);
-    m_fieldNames.emplace(fieldName, CacheableInt32::create(i));
+    m_fieldNames.emplace(fieldName->asChar(), i);
   }
   int32_t lengthForTypes;
   input.readArrayLen(&lengthForTypes);
@@ -96,16 +99,16 @@ Serializable* Struct::fromData(DataInput& input) {
   return this;
 }
 
-const char* Struct::getFieldName(const int32_t index) const {
+const std::string& Struct::getFieldName(const int32_t index) const {
   if (m_parent != nullptr) {
     return m_parent->getFieldName(index);
   } else {
     for (const auto& iter : m_fieldNames) {
-      if ((iter.second)->value() == index) return iter.first->asChar();
+      if (iter.second == index) return (iter.first);
     }
   }
 
-  return nullptr;
+  throw OutOfRangeException("Struct: fieldName not found.");
 }
 
 const SerializablePtr Struct::operator[](int32_t index) const {
@@ -116,15 +119,14 @@ const SerializablePtr Struct::operator[](int32_t index) const {
   return m_fieldValues[index];
 }
 
-const SerializablePtr Struct::operator[](const char* fieldName) const {
+const SerializablePtr Struct::operator[](const std::string& fieldName) const {
   int32_t index;
   if (m_parent == nullptr) {
-    auto fName = CacheableString::create(fieldName);
-    const auto& iter = m_fieldNames.find(fName);
+    const auto& iter = m_fieldNames.find(fieldName);
     if (iter == m_fieldNames.end()) {
       throw OutOfRangeException("Struct: fieldName not found.");
     }
-    index = iter->second->value();
+    index = iter->second;
   } else {
     index = m_parent->getFieldIndex(fieldName);
   }
