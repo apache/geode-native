@@ -152,7 +152,7 @@ void initClientWithIntrest(int ClientIdx, OperMonitorPtr& mon) {
 
 void initClientWithIntrest2(int ClientIdx, OperMonitorPtr& monitor1,
                             OperMonitorPtr& monitor2) {
-  initClientAndTwoRegionsAndTwoPools(0, ClientIdx, 60);
+  initClientAndTwoRegionsAndTwoPools(0, ClientIdx, std::chrono::seconds(60));
   if (monitor1 == nullptr) {
     monitor1 = std::make_shared<OperMonitor>(1);
   }

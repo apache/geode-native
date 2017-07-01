@@ -14,12 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * testThinClientCqDelta.cpp
- *
- *  Created on: Sept 17, 2009
- *      Author: abhaware
- */
 
 #include "testobject/DeltaTestImpl.hpp"
 #include "fw_dunit.hpp"
@@ -124,7 +118,9 @@ void createPooledLRURegion(const char* name, bool ackMode, const char* locators,
   LOG(" createPooledLRURegion entered");
   RegionPtr regPtr = getHelper()->createPooledRegionDiscOverFlow(
       name, ackMode, locators, poolname, cachingEnable,
-      clientNotificationEnabled, 0, 0, 0, 0, 3 /*LruLimit = 3*/);
+      clientNotificationEnabled, std::chrono::seconds(0),
+      std::chrono::seconds(0), std::chrono::seconds(0), std::chrono::seconds(0),
+      3 /*LruLimit = 3*/);
   LOG(" createPooledLRURegion exited");
 }
 

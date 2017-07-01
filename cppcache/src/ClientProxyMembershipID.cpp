@@ -73,7 +73,7 @@ ClientProxyMembershipID::~ClientProxyMembershipID() {
 ClientProxyMembershipID::ClientProxyMembershipID(
     std::string dsName, std::string randString, const char* hostname,
     uint32_t hostAddr, uint32_t hostPort, const char* durableClientId,
-    const uint32_t durableClntTimeOut)
+    const std::chrono::seconds durableClntTimeOut)
     : m_hostAddrAsUInt32(hostAddr) {
   int32_t vmPID = ACE_OS::getpid();
   initObjectVars(hostname, reinterpret_cast<uint8_t*>(&m_hostAddrAsUInt32), 4,
@@ -87,13 +87,14 @@ ClientProxyMembershipID::ClientProxyMembershipID(
     uint8_t* hostAddr, uint32_t hostAddrLen, uint32_t hostPort,
     const char* dsname, const char* uniqueTag, uint32_t vmViewId) {
   int32_t vmPID = ACE_OS::getpid();
-  initObjectVars("localhost", hostAddr, hostAddrLen, false, hostPort, "", 0,
-                 DCPORT, vmPID, VMKIND, 0, dsname, uniqueTag, vmViewId);
+  initObjectVars("localhost", hostAddr, hostAddrLen, false, hostPort, "",
+                 std::chrono::seconds::zero(), DCPORT, vmPID, VMKIND, 0, dsname,
+                 uniqueTag, vmViewId);
 }
 void ClientProxyMembershipID::initObjectVars(
     const char* hostname, uint8_t* hostAddr, uint32_t hostAddrLen,
     bool hostAddrLocalMem, uint32_t hostPort, const char* durableClientId,
-    const uint32_t durableClntTimeOut, int32_t dcPort, int32_t vPID,
+    const std::chrono::seconds durableClntTimeOut, int32_t dcPort, int32_t vPID,
     int8_t vmkind, int8_t splitBrainFlag, const char* dsname,
     const char* uniqueTag, uint32_t vmViewId) {
   DataOutputInternal m_memID;
@@ -138,10 +139,11 @@ void ClientProxyMembershipID::initObjectVars(
   m_memID.write(static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
   m_memID.writeASCII(uniqueTag);
 
-  if (durableClientId != nullptr && durableClntTimeOut != 0) {
+  if (durableClientId != nullptr &&
+      durableClntTimeOut != std::chrono::seconds::zero()) {
     m_memID.write(static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
     m_memID.writeASCII(durableClientId);
-    CacheableInt32Ptr int32ptr = CacheableInt32::create(durableClntTimeOut);
+    const auto int32ptr = CacheableInt32::create(durableClntTimeOut.count());
     int32ptr->toData(m_memID);
   }
   writeVersion(Version::getOrdinal(), m_memID);
@@ -217,7 +219,7 @@ void ClientProxyMembershipID::toData(DataOutput& output) const {
 void ClientProxyMembershipID::fromData(DataInput& input) {
   // deserialization for PR FX HA
   uint8_t* hostAddr;
-  int32_t len, hostPort, dcport, vPID, durableClntTimeOut;
+  int32_t len, hostPort, dcport, vPID;
   CacheableStringPtr hostname, dsName, uniqueTag, durableClientId;
   int8_t splitbrain, vmKind;
 
@@ -241,7 +243,7 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
   dsName = input.readObject<CacheableString>();           // name
   uniqueTag = input.readObject<CacheableString>();        // unique tag
   durableClientId = input.readObject<CacheableString>();  // durable client id
-  durableClntTimeOut = input.readInt32();  // durable client timeout
+  auto durableClntTimeOut = std::chrono::seconds(input.readInt32());  // durable client timeout
   int32_t vmViewId = 0;
   readVersion(splitbrain, input);
 
@@ -294,12 +296,14 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
 
   if (vmKind != ClientProxyMembershipID::LONER_DM_TYPE) {
     // initialize the object with the values read and some dummy values
-    initObjectVars("", hostAddr, len, true, hostPort, "", 0, DCPORT, 0, vmKind,
-                   0, dsName->asChar(), nullptr, vmViewId);
+    initObjectVars("", hostAddr, len, true, hostPort, "",
+                   std::chrono::seconds::zero(), DCPORT, 0, vmKind, 0,
+                   dsName->asChar(), nullptr, vmViewId);
   } else {
     // initialize the object with the values read and some dummy values
-    initObjectVars("", hostAddr, len, true, hostPort, "", 0, DCPORT, 0, vmKind,
-                   0, dsName->asChar(), uniqueTag->asChar(), vmViewId);
+    initObjectVars("", hostAddr, len, true, hostPort, "",
+                   std::chrono::seconds::zero(), DCPORT, 0, vmKind, 0,
+                   dsName->asChar(), uniqueTag->asChar(), vmViewId);
   }
 
   readAdditionalData(input);

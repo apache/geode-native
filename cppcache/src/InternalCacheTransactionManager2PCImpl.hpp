@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTERNALCACHETRANSACTIONMANAGER2PCIMPL_H_
-#define GEODE_INTERNALCACHETRANSACTIONMANAGER2PCIMPL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * CacheTransactionManager2PCImpl.h
- *
- *  Created on: 13-Nov-2011
- *      Author: sshcherbakov
- */
+
+#pragma once
+
+#ifndef GEODE_INTERNALCACHETRANSACTIONMANAGER2PCIMPL_H_
+#define GEODE_INTERNALCACHETRANSACTIONMANAGER2PCIMPL_H_
 
 #include "InternalCacheTransactionManager2PC.hpp"
 #include "CacheTransactionManagerImpl.hpp"
@@ -40,9 +34,9 @@ class InternalCacheTransactionManager2PCImpl
   InternalCacheTransactionManager2PCImpl(Cache* cache);
   virtual ~InternalCacheTransactionManager2PCImpl();
 
-  virtual void prepare();
-  virtual void commit();
-  virtual void rollback();
+  virtual void prepare() override;
+  virtual void commit() override;
+  virtual void rollback() override;
 
  private:
   void afterCompletion(int32_t status);
@@ -52,6 +46,7 @@ class InternalCacheTransactionManager2PCImpl
   InternalCacheTransactionManager2PCImpl(
       const InternalCacheTransactionManager2PCImpl& other);
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

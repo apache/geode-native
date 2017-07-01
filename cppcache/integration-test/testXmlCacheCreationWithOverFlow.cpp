@@ -167,7 +167,7 @@ int testXmlCacheCreationWithOverflow() {
   if (initialCapacity != 25) {
     return -1;
   }
-  int regionIdleTO = regAttr->getRegionIdleTimeout();
+  int regionIdleTO = regAttr->getRegionIdleTimeout().count();
   std::cout << "RegionIdleTimeout:20 " << std::endl;
   if (regionIdleTO != 20) {
     return -1;

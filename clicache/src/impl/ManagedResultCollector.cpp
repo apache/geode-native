@@ -164,7 +164,7 @@ namespace apache
         }
       }
 
-      CacheableVectorPtr ManagedResultCollectorGeneric::getResult(System::UInt32 timeout)
+      CacheableVectorPtr ManagedResultCollectorGeneric::getResult(std::chrono::milliseconds timeout)
       {
         try {
           //array<IGeodeSerializable^>^ rs = m_managedptr->GetResult(timeout);

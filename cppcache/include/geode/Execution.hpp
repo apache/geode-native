@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_EXECUTION_H_
-#define GEODE_EXECUTION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,15 +15,17 @@
  * limitations under the License.
  */
 
-/*
- * The specification of function behaviors is found in the corresponding .cpp
- * file.
- */
+#pragma once
+
+#ifndef GEODE_EXECUTION_H_
+#define GEODE_EXECUTION_H_
+
+#include <memory>
+#include <chrono>
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 #include "VectorT.hpp"
-#include <memory>
 #include "CacheableBuiltins.hpp"
 #include "ResultCollector.hpp"
 
@@ -46,6 +43,7 @@ namespace client {
  */
 
 class CPPCACHE_EXPORT Execution {
+
  public:
   /**
    * Specifies a data filter of routing objects for selecting the Geode
@@ -88,7 +86,8 @@ class CPPCACHE_EXPORT Execution {
    * #withCollector(ResultCollector)}
    */
   virtual ResultCollectorPtr execute(
-      const char* func, uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
+      const char* func,
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
 
   /**
    * Executes the function using its name
@@ -108,8 +107,9 @@ class CPPCACHE_EXPORT Execution {
   virtual ResultCollectorPtr execute(const CacheableVectorPtr& routingObj,
                                      const CacheablePtr& args,
                                      const ResultCollectorPtr& rs,
-                                     const char* func, uint32_t timeout) = 0;
+                                     const char* func, std::chrono::milliseconds timeout) = 0;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

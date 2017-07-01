@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TCPCONN_H_
-#define GEODE_TCPCONN_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_TCPCONN_H_
+#define GEODE_TCPCONN_H_
 
 #include <geode/geode_globals.hpp>
 #include "util/Log.hpp"
@@ -50,7 +50,7 @@ class CPPCACHE_EXPORT TcpConn : public Connector {
 
  protected:
   ACE_INET_Addr m_addr;
-  uint32_t m_waitMilliSeconds;
+  std::chrono::microseconds m_waitMilliSeconds;
 
   int32_t m_maxBuffSizePool;
 
@@ -60,7 +60,7 @@ class CPPCACHE_EXPORT TcpConn : public Connector {
   int32_t maxSize(ACE_SOCKET sock, int32_t flag, int32_t size);
 
   virtual int32_t socketOp(SockOp op, char* buff, int32_t len,
-                           uint32_t waitSeconds);
+                           std::chrono::microseconds waitSeconds);
 
   virtual void createSocket(ACE_SOCKET sock);
 
@@ -80,38 +80,41 @@ class CPPCACHE_EXPORT TcpConn : public Connector {
     return 16000000;
   }
 
-  TcpConn(const char* hostname, int32_t port, uint32_t waitSeconds,
+  TcpConn(const char* hostname, int32_t port,
+          std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool);
+  TcpConn(const char* ipaddr, std::chrono::microseconds waitSeconds,
           int32_t maxBuffSizePool);
-  TcpConn(const char* ipaddr, uint32_t waitSeconds, int32_t maxBuffSizePool);
 
   virtual ~TcpConn() { close(); }
 
   // Close this tcp connection
-  virtual void close();
+  virtual void close() override;
 
-  void init();
+  void init() override;
 
   // Listen
-  void listen(const char* hostname, int32_t port,
-              uint32_t waitSeconds = DEFAULT_READ_TIMEOUT_SECS);
-  void listen(const char* ipaddr,
-              uint32_t waitSeconds = DEFAULT_READ_TIMEOUT_SECS);
+  void listen(
+      const char* hostname, int32_t port,
+      std::chrono::microseconds waitSeconds = DEFAULT_READ_TIMEOUT_SECS);
+  void listen(const char* ipaddr, std::chrono::microseconds waitSeconds =
+                                      DEFAULT_READ_TIMEOUT_SECS);
 
-  virtual void listen(ACE_INET_Addr addr,
-                      uint32_t waitSeconds = DEFAULT_READ_TIMEOUT_SECS);
+  virtual void listen(
+      ACE_INET_Addr addr,
+      std::chrono::microseconds waitSeconds = DEFAULT_READ_TIMEOUT_SECS);
 
   // connect
   void connect(const char* hostname, int32_t port,
-               uint32_t waitSeconds = DEFAULT_CONNECT_TIMEOUT);
+               std::chrono::microseconds waitSeconds = DEFAULT_CONNECT_TIMEOUT);
   void connect(const char* ipaddr,
-               uint32_t waitSeconds = DEFAULT_CONNECT_TIMEOUT);
+               std::chrono::microseconds waitSeconds = DEFAULT_CONNECT_TIMEOUT);
 
   virtual void connect();
 
-  int32_t receive(char* buff, int32_t len, uint32_t waitSeconds,
-                  uint32_t waitMicroSeconds);
-  int32_t send(const char* buff, int32_t len, uint32_t waitSeconds,
-               uint32_t waitMicroSeconds);
+  int32_t receive(char* buff, int32_t len,
+                  std::chrono::microseconds waitSeconds) override;
+  int32_t send(const char* buff, int32_t len,
+               std::chrono::microseconds waitSeconds) override;
 
   virtual void setOption(int32_t level, int32_t option, void* val,
                          int32_t len) {
@@ -132,7 +135,7 @@ class CPPCACHE_EXPORT TcpConn : public Connector {
     setOption(level, option, (void*)&val, sizeof(bool));
   }
 
-  virtual uint16_t getPort();
+  virtual uint16_t getPort() override;
 };
 }  // namespace client
 }  // namespace geode

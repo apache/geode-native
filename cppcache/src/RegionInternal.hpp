@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_REGIONINTERNAL_H_
-#define GEODE_REGIONINTERNAL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,10 +15,18 @@
  * limitations under the License.
  */
 
-#include <geode/Region.hpp>
-#include "RegionStats.hpp"
+#pragma once
+
+#ifndef GEODE_REGIONINTERNAL_H_
+#define GEODE_REGIONINTERNAL_H_
+
 #include <string>
 #include <map>
+#include <chrono>
+
+#include <geode/Region.hpp>
+
+#include "RegionStats.hpp"
 #include "EventId.hpp"
 
 namespace apache {
@@ -146,24 +149,30 @@ class RegionInternal : public Region {
   virtual void registerKeys(const VectorOfCacheableKey& keys,
                             bool isDurable = false,
                             bool getInitialValues = false,
-                            bool receiveValues = true);
-  virtual void unregisterKeys(const VectorOfCacheableKey& keys);
+                            bool receiveValues = true) override;
+  virtual void unregisterKeys(const VectorOfCacheableKey& keys) override;
   virtual void registerAllKeys(bool isDurable = false,
                                bool getInitialValues = false,
-                               bool receiveValues = true);
-  virtual void unregisterAllKeys();
+                               bool receiveValues = true) override;
+  virtual void unregisterAllKeys() override;
 
   virtual void registerRegex(const char* regex, bool isDurable = false,
                              bool getInitialValues = false,
-                             bool receiveValues = true);
-  virtual void unregisterRegex(const char* regex);
+                             bool receiveValues = true) override;
+  virtual void unregisterRegex(const char* regex) override;
 
-  virtual SelectResultsPtr query(
-      const char* predicate, uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+  virtual SelectResultsPtr query(const char* predicate,
+                                 std::chrono::milliseconds timeout =
+                                     DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
+
   virtual bool existsValue(const char* predicate,
-                           uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+                           std::chrono::milliseconds timeout =
+                               DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
+
   virtual SerializablePtr selectValue(
-      const char* predicate, uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+      const char* predicate,
+      std::chrono::milliseconds timeout =
+          DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
   /** @brief Public Methods
    */
@@ -215,9 +224,9 @@ class RegionInternal : public Region {
   virtual GfErrType invalidateRegionNoThrow(
       const SerializablePtr& aCallbackArgument,
       const CacheEventFlags eventFlags) = 0;
-  virtual GfErrType destroyRegionNoThrow(const SerializablePtr& aCallbackArgument,
-                                         bool removeFromParent,
-                                         const CacheEventFlags eventFlags) = 0;
+  virtual GfErrType destroyRegionNoThrow(
+      const SerializablePtr& aCallbackArgument, bool removeFromParent,
+      const CacheEventFlags eventFlags) = 0;
 
   virtual void setRegionExpiryTask() = 0;
   virtual void acquireReadLock() = 0;
@@ -228,8 +237,10 @@ class RegionInternal : public Region {
       ExpirationAction::Action action) = 0;
   virtual ExpirationAction::Action adjustEntryExpiryAction(
       ExpirationAction::Action action) = 0;
-  virtual int32_t adjustRegionExpiryDuration(int32_t duration) = 0;
-  virtual int32_t adjustEntryExpiryDuration(int32_t duration) = 0;
+  virtual std::chrono::seconds adjustRegionExpiryDuration(
+      const std::chrono::seconds& duration) = 0;
+  virtual std::chrono::seconds adjustEntryExpiryDuration(
+      const std::chrono::seconds& duration) = 0;
   virtual void adjustCacheListener(const CacheListenerPtr& aListener) = 0;
   virtual void adjustCacheListener(const char* libpath,
                                    const char* factoryFuncName) = 0;
@@ -242,7 +253,7 @@ class RegionInternal : public Region {
 
   virtual RegionStats* getRegionStats() = 0;
   virtual bool cacheEnabled() = 0;
-  virtual bool isDestroyed() const = 0;
+  virtual bool isDestroyed() const override = 0;
   virtual void evict(int32_t percentage) = 0;
   virtual CacheImpl* getCacheImpl() const = 0;
   virtual TombstoneListPtr getTombstoneList();
@@ -265,7 +276,7 @@ class RegionInternal : public Region {
   inline bool isConcurrencyCheckEnabled() const {
     return m_regionAttributes->getConcurrencyChecksEnabled();
   }
-  virtual const PoolPtr& getPool() = 0;
+  virtual const PoolPtr& getPool() override = 0;
 
  protected:
   /**
@@ -278,10 +289,10 @@ class RegionInternal : public Region {
   void setRegionIdleTimeoutExpirationAction(ExpirationAction::Action action);
   void setEntryTimeToLiveExpirationAction(ExpirationAction::Action action);
   void setEntryIdleTimeoutExpirationAction(ExpirationAction::Action action);
-  void setRegionTimeToLive(int32_t duration);
-  void setRegionIdleTimeout(int32_t duration);
-  void setEntryTimeToLive(int32_t duration);
-  void setEntryIdleTimeout(int32_t duration);
+  void setRegionTimeToLive(const std::chrono::seconds& duration);
+  void setRegionIdleTimeout(const std::chrono::seconds& duration);
+  void setEntryTimeToLive(const std::chrono::seconds& duration);
+  void setEntryIdleTimeout(const std::chrono::seconds& duration);
   void setCacheListener(const CacheListenerPtr& aListener);
   void setCacheListener(const char* libpath, const char* factoryFuncName);
   void setPartitionResolver(const PartitionResolverPtr& aListener);

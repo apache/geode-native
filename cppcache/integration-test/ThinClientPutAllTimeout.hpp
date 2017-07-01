@@ -99,7 +99,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1_Pool_Locator)
   }
 END_TASK_DEFINITION
 
-void putAllWithOneEntryTimeout(int timeout, int waitTimeOnServer) {
+void putAllWithOneEntryTimeout(std::chrono::milliseconds timeout,
+                               std::chrono::milliseconds waitTimeOnServer) {
   LOG("Do large PutAll");
   HashMapOfCacheable map0;
   map0.clear();
@@ -112,18 +113,18 @@ void putAllWithOneEntryTimeout(int timeout, int waitTimeOnServer) {
     map0.emplace(CacheableKey::create(key0), CacheableString::create(val0));
   }
 
-  char val[16];
-  sprintf(val, "%d", waitTimeOnServer);
   map0.emplace(CacheableKey::create("timeout-this-entry"),
-               CacheableString::create(val));
+               CacheableString::create(
+                   std::to_string(waitTimeOnServer.count()).c_str()));
 
-  RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+  auto regPtr0 = getHelper()->getRegion(regionNames[0]);
 
   regPtr0->putAll(map0, timeout);
 }
 
-void putAllWithOneEntryTimeoutWithCallBackArg(int timeout,
-                                              int waitTimeOnServer) {
+void putAllWithOneEntryTimeoutWithCallBackArg(
+    std::chrono::milliseconds timeout,
+    std::chrono::milliseconds waitTimeOnServer) {
   LOG("Do large PutAll putAllWithOneEntryTimeoutWithCallBackArg");
   HashMapOfCacheable map0;
   map0.clear();
@@ -136,12 +137,11 @@ void putAllWithOneEntryTimeoutWithCallBackArg(int timeout,
     map0.emplace(CacheableKey::create(key0), CacheableString::create(val0));
   }
 
-  char val[16];
-  sprintf(val, "%d", waitTimeOnServer);
   map0.emplace(CacheableKey::create("timeout-this-entry"),
-               CacheableString::create(val));
+               CacheableString::create(
+                   std::to_string(waitTimeOnServer.count()).c_str()));
 
-  RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+  auto regPtr0 = getHelper()->getRegion(regionNames[0]);
 
   regPtr0->putAll(map0, timeout, CacheableInt32::create(1000));
   LOG("Do large PutAll putAllWithOneEntryTimeoutWithCallBackArg complete. ");
@@ -155,7 +155,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, testTimeoutException)
     regPtr->registerAllKeys();
 
     try {
-      putAllWithOneEntryTimeout(20, 30000);
+      putAllWithOneEntryTimeout(std::chrono::seconds(20),
+                                std::chrono::seconds(40));
       FAIL("Didnt get expected timeout exception for putAll");
     } catch (const TimeoutException& excp) {
       std::string logmsg = "";
@@ -168,7 +169,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, testTimeoutException)
     dunit::sleep(30000);
 
     try {
-      putAllWithOneEntryTimeoutWithCallBackArg(20, 30000);
+      putAllWithOneEntryTimeoutWithCallBackArg(std::chrono::seconds(20),
+                                               std::chrono::seconds(40));
       FAIL("Didnt get expected timeout exception for putAllwithCallBackArg");
     } catch (const TimeoutException& excp) {
       std::string logmsg = "";
@@ -192,7 +194,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, testWithoutTimeoutException)
     // regPtr->registerAllKeys();
 
     try {
-      putAllWithOneEntryTimeout(40, 20000);
+      putAllWithOneEntryTimeout(std::chrono::seconds(40),
+                                std::chrono::seconds(20));
       LOG("testWithoutTimeoutException completed");
       return;
     } catch (const TimeoutException& excp) {
@@ -213,7 +216,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, testWithoutTimeoutWithCallBackArgException)
   {
     try {
-      putAllWithOneEntryTimeoutWithCallBackArg(40, 20000);
+      putAllWithOneEntryTimeoutWithCallBackArg(std::chrono::seconds(40),
+                                               std::chrono::seconds(20));
       LOG("testWithoutTimeoutException completed");
       return;
     } catch (const TimeoutException& excp) {

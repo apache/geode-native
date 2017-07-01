@@ -118,10 +118,10 @@ namespace Apache
         /// <summary>
         /// Gets the <c>timeToLive</c> value for the region as a whole.
         /// </summary>
-        /// <returns>the timeToLive duration for this region, in seconds</returns>
-        property System::Int32 RegionTimeToLive
+        /// <returns>the timeToLive duration for this region</returns>
+        property TimeSpan RegionTimeToLive
         {
-          System::Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>
@@ -136,10 +136,10 @@ namespace Apache
         /// <summary>
         /// Gets the <c>idleTimeout</c> value for the region as a whole.
         /// </summary>
-        /// <returns>the IdleTimeout duration for this region, in seconds</returns>
-        property System::Int32 RegionIdleTimeout
+        /// <returns>the IdleTimeout duration for this region</returns>
+        property TimeSpan RegionIdleTimeout
         {
-          System::Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>
@@ -154,10 +154,10 @@ namespace Apache
         /// <summary>
         /// Gets the <c>timeToLive</c> value for entries in this region.
         /// </summary>
-        /// <returns>the timeToLive duration for entries in this region, in seconds</returns>
-        property System::Int32 EntryTimeToLive
+        /// <returns>the timeToLive duration for entries in this region</returns>
+        property TimeSpan EntryTimeToLive
         {
-          System::Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>
@@ -172,10 +172,10 @@ namespace Apache
         /// <summary>
         /// Gets the <c>idleTimeout</c> value for entries in this region.
         /// </summary>
-        /// <returns>the idleTimeout duration for entries in this region, in seconds</returns>
-        property System::Int32 EntryIdleTimeout
+        /// <returns>the idleTimeout duration for entries in this region</returns>
+        property TimeSpan EntryIdleTimeout
         {
-          System::Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>

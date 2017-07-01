@@ -72,25 +72,32 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
   virtual void registerKeys(const VectorOfCacheableKey& keys,
                             bool isDurable = false,
                             bool getInitialValues = false,
-                            bool receiveValues = true);
-  virtual void unregisterKeys(const VectorOfCacheableKey& keys);
+                            bool receiveValues = true) override;
+  virtual void unregisterKeys(const VectorOfCacheableKey& keys) override;
   virtual void registerAllKeys(bool isDurable = false,
                                bool getInitialValues = false,
-                               bool receiveValues = true);
-  virtual void unregisterAllKeys();
+                               bool receiveValues = true) override;
+  virtual void unregisterAllKeys() override;
   virtual void registerRegex(const char* regex, bool isDurable = false,
                              bool getInitialValues = false,
-                             bool receiveValues = true);
-  virtual void unregisterRegex(const char* regex);
-  virtual VectorOfCacheableKey serverKeys();
-  virtual void clear(const SerializablePtr& aCallbackArgument = nullptr);
+                             bool receiveValues = true) override;
+  virtual void unregisterRegex(const char* regex) override;
+  virtual VectorOfCacheableKey serverKeys() override;
+  virtual void clear(
+      const SerializablePtr& aCallbackArgument = nullptr) override;
 
-  virtual SelectResultsPtr query(
-      const char* predicate, uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+  virtual SelectResultsPtr query(const char* predicate,
+                                 std::chrono::milliseconds timeout =
+                                     DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
+
   virtual bool existsValue(const char* predicate,
-                           uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+                           std::chrono::milliseconds timeout =
+                               DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
+
   virtual SerializablePtr selectValue(
-      const char* predicate, uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+      const char* predicate,
+      std::chrono::milliseconds timeout =
+          DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
   /** @brief Public Methods from RegionInternal
    *  These are all virtual methods
@@ -98,12 +105,12 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
   GfErrType putAllNoThrow_remote(
       const HashMapOfCacheable& map,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
-      uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-      const SerializablePtr& aCallbackArgument = nullptr);
+      std::chrono::milliseconds timeout = DEFAULT_RESPONSE_TIMEOUT,
+      const SerializablePtr& aCallbackArgument = nullptr) override;
   GfErrType removeAllNoThrow_remote(
       const VectorOfCacheableKey& keys,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
-      const SerializablePtr& aCallbackArgument = nullptr);
+      const SerializablePtr& aCallbackArgument = nullptr) override;
   GfErrType registerKeys(TcrEndpoint* endpoint = nullptr,
                          const TcrMessage* request = nullptr,
                          TcrMessageReply* reply = nullptr);
@@ -115,10 +122,10 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
   GfErrType findRegex(const std::string& regex);
   void clearRegex(const std::string& regex);
 
-  bool containsKeyOnServer(const CacheableKeyPtr& keyPtr) const;
-  virtual bool containsValueForKey_remote(const CacheableKeyPtr& keyPtr) const;
-  virtual VectorOfCacheableKey getInterestList() const;
-  virtual VectorOfCacheableString getInterestListRegex() const;
+  bool containsKeyOnServer(const CacheableKeyPtr& keyPtr) const override;
+  virtual bool containsValueForKey_remote(const CacheableKeyPtr& keyPtr) const override;
+  virtual VectorOfCacheableKey getInterestList() const override;
+  virtual VectorOfCacheableString getInterestListRegex() const override;
 
   /** @brief Public Methods from RegionInternal
    *  These are all virtual methods
@@ -129,8 +136,8 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
   static GfErrType handleServerException(const char* func,
                                          const char* exceptionMsg);
 
-  virtual void acquireGlobals(bool failover);
-  virtual void releaseGlobals(bool failover);
+  virtual void acquireGlobals(bool failover)override;
+  virtual void releaseGlobals(bool failover)override;
 
   void localInvalidateFailover();
 
@@ -140,18 +147,21 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
       const char* func, const CacheablePtr& args, CacheableVectorPtr routingObj,
       uint8_t getResult, ResultCollectorPtr rc, int32_t retryAttempts,
       CacheableHashSetPtr& failedNodes,
-      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+
   bool executeFunctionSH(
       const char* func, const CacheablePtr& args, uint8_t getResult,
       ResultCollectorPtr rc,
       const ClientMetadataService::ServerToKeysMapPtr& locationMap,
       CacheableHashSetPtr& failedNodes,
-      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT,
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT,
       bool allBuckets = false);
-  void executeFunction(const char* func, const CacheablePtr& args,
-                       CacheableVectorPtr routingObj, uint8_t getResult,
-                       ResultCollectorPtr rc, int32_t retryAttempts,
-                       uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+
+  void executeFunction(
+      const char* func, const CacheablePtr& args, CacheableVectorPtr routingObj,
+      uint8_t getResult, ResultCollectorPtr rc, int32_t retryAttempts,
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+
   GfErrType getFuncAttributes(const char* func, std::vector<int8_t>** attr);
 
   ACE_RW_Thread_Mutex& getMataDataMutex() { return m_RegionMutex; }
@@ -162,15 +172,17 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
     m_isMetaDataRefreshed = aMetaDataRefreshed;
   }
 
-  uint32_t size_remote();
+  uint32_t size_remote() override;
 
   virtual void txDestroy(const CacheableKeyPtr& key,
-                         const SerializablePtr& callBack, VersionTagPtr versionTag);
+                         const SerializablePtr& callBack,
+                         VersionTagPtr versionTag) override;
   virtual void txInvalidate(const CacheableKeyPtr& key,
                             const SerializablePtr& callBack,
-                            VersionTagPtr versionTag);
+                            VersionTagPtr versionTag) override;
   virtual void txPut(const CacheableKeyPtr& key, const CacheablePtr& value,
-                     const SerializablePtr& callBack, VersionTagPtr versionTag);
+                     const SerializablePtr& callBack,
+                     VersionTagPtr versionTag) override;
 
  protected:
   /** @brief the methods need to be overloaded in TCR
@@ -178,36 +190,36 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
   GfErrType getNoThrow_remote(const CacheableKeyPtr& keyPtr,
                               CacheablePtr& valPtr,
                               const SerializablePtr& aCallbackArgument,
-                              VersionTagPtr& versionTag);
+                              VersionTagPtr& versionTag) override;
   GfErrType putNoThrow_remote(const CacheableKeyPtr& keyPtr,
                               const CacheablePtr& cvalue,
                               const SerializablePtr& aCallbackArgument,
                               VersionTagPtr& versionTag,
-                              bool checkDelta = true);
+                              bool checkDelta = true) override;
   GfErrType createNoThrow_remote(const CacheableKeyPtr& keyPtr,
                                  const CacheablePtr& cvalue,
                                  const SerializablePtr& aCallbackArgument,
-                                 VersionTagPtr& versionTag);
+                                 VersionTagPtr& versionTag) override;
   GfErrType destroyNoThrow_remote(const CacheableKeyPtr& keyPtr,
                                   const SerializablePtr& aCallbackArgument,
-                                  VersionTagPtr& versionTag);
+                                  VersionTagPtr& versionTag) override;
   GfErrType removeNoThrow_remote(const CacheableKeyPtr& keyPtr,
                                  const CacheablePtr& cvalue,
                                  const SerializablePtr& aCallbackArgument,
-                                 VersionTagPtr& versionTag);
+                                 VersionTagPtr& versionTag) override;
   GfErrType removeNoThrowEX_remote(const CacheableKeyPtr& keyPtr,
                                    const SerializablePtr& aCallbackArgument,
-                                   VersionTagPtr& versionTag);
+                                   VersionTagPtr& versionTag) override;
   GfErrType invalidateNoThrow_remote(const CacheableKeyPtr& keyPtr,
                                      const SerializablePtr& aCallbackArgument,
-                                     VersionTagPtr& versionTag);
-  GfErrType getAllNoThrow_remote(const VectorOfCacheableKey* keys,
-                                 const HashMapOfCacheablePtr& values,
-                                 const HashMapOfExceptionPtr& exceptions,
-                                 const VectorOfCacheableKeyPtr& resultKeys,
-                                 bool addToLocalCache,
-                                 const SerializablePtr& aCallbackArgument);
-  GfErrType destroyRegionNoThrow_remote(const SerializablePtr& aCallbackArgument);
+                                     VersionTagPtr& versionTag) override;
+  GfErrType getAllNoThrow_remote(
+      const VectorOfCacheableKey* keys, const HashMapOfCacheablePtr& values,
+      const HashMapOfExceptionPtr& exceptions,
+      const VectorOfCacheableKeyPtr& resultKeys, bool addToLocalCache,
+      const SerializablePtr& aCallbackArgument) override;
+  GfErrType destroyRegionNoThrow_remote(
+      const SerializablePtr& aCallbackArgument) override;
   GfErrType registerKeysNoThrow(
       const VectorOfCacheableKey& keys, bool attemptFailover = true,
       TcrEndpoint* endpoint = nullptr, bool isDurable = false,
@@ -238,9 +250,9 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
       VectorOfCacheableKey& keysVector,
       std::unordered_map<CacheableKeyPtr, InterestResultPolicy>& interestList)
       const;
-  virtual void release(bool invokeCallbacks = true);
+  virtual void release(bool invokeCallbacks = true) override;
 
-  GfErrType unregisterKeysBeforeDestroyRegion();
+  GfErrType unregisterKeysBeforeDestroyRegion() override;
 
   bool isDurableClient() { return m_isDurableClnt; }
   /** @brief Protected fields. */
@@ -294,7 +306,7 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
                                  const VectorOfCacheableKey* keys,
                                  const VectorOfCacheableKeyPtr& resultKeys);
   GfErrType getNoThrow_FullObject(EventIdPtr eventId, CacheablePtr& fullObject,
-                                  VersionTagPtr& versionTag);
+                                  VersionTagPtr& versionTag) override;
 
   // Disallow copy constructor and assignment operator.
   ThinClientRegion(const ThinClientRegion&);
@@ -302,12 +314,12 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
   GfErrType singleHopPutAllNoThrow_remote(
       ThinClientPoolDM* tcrdm, const HashMapOfCacheable& map,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
-      uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
+      std::chrono::milliseconds timeout = DEFAULT_RESPONSE_TIMEOUT,
       const SerializablePtr& aCallbackArgument = nullptr);
   GfErrType multiHopPutAllNoThrow_remote(
       const HashMapOfCacheable& map,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
-      uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
+      std::chrono::milliseconds timeout = DEFAULT_RESPONSE_TIMEOUT,
       const SerializablePtr& aCallbackArgument = nullptr);
 
   GfErrType singleHopRemoveAllNoThrow_remote(

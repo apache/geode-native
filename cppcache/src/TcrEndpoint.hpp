@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TCRENDPOINT_H_
-#define GEODE_TCRENDPOINT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,13 +15,21 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#pragma once
+
+#ifndef GEODE_TCRENDPOINT_H_
+#define GEODE_TCRENDPOINT_H_
+
 #include <string>
 #include <list>
 #include <atomic>
+
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
+
+#include <geode/geode_globals.hpp>
 #include <geode/geode_base.hpp>
+
 #include "FairQueue.hpp"
 #include "Set.hpp"
 #include "TcrConnection.hpp"
@@ -35,12 +38,14 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 class ThinClientRegion;
 class TcrMessage;
 class ThinClientBaseDM;
 class CacheImpl;
 class ThinClientPoolHADM;
 class ThinClientPoolDM;
+
 class CPPCACHE_EXPORT TcrEndpoint {
  public:
   TcrEndpoint(
@@ -74,7 +79,7 @@ class CPPCACHE_EXPORT TcrEndpoint {
                                  TcrMessageReply& reply, TcrConnection*& conn,
                                  bool& epFailure, std::string& failReason,
                                  int maxSendRetries, bool useEPPool,
-                                 int64_t requestedTimeout,
+                                 std::chrono::microseconds requestedTimeout,
                                  bool isBgThread = false);
   GfErrType sendRequestConnWithRetry(const TcrMessage& request,
                                      TcrMessageReply& reply,
@@ -144,7 +149,7 @@ class CPPCACHE_EXPORT TcrEndpoint {
   GfErrType createNewConnection(
       TcrConnection*& newConn, bool isClientNotification = false,
       bool isSecondary = false,
-      uint32_t connectTimeout = DEFAULT_CONNECT_TIMEOUT,
+      std::chrono::microseconds connectTimeout = DEFAULT_CONNECT_TIMEOUT,
       int32_t timeoutRetries = 1, bool sendUpdateNotification = true,
       bool appThreadRequest = false);
 
@@ -155,7 +160,7 @@ class CPPCACHE_EXPORT TcrEndpoint {
 
   GfErrType createNewConnectionWL(TcrConnection*& newConn,
                                   bool isClientNotification, bool isSecondary,
-                                  uint32_t connectTimeout);
+                                  std::chrono::microseconds connectTimeout);
 
   void setConnected(volatile bool connected = true) { m_connected = connected; }
   virtual ThinClientPoolDM* getPoolHADM() { return nullptr; }
@@ -220,8 +225,7 @@ class CPPCACHE_EXPORT TcrEndpoint {
   bool compareTransactionIds(int32_t reqTransId, int32_t replyTransId,
                              std::string& failReason, TcrConnection* conn);
   void closeConnections();
-  void setRetryAndTimeout(const TcrMessage& request, int& maxSendRetries,
-                          uint32_t& requestedTimeout);
+  void setRetry(const TcrMessage& request, int& maxSendRetries);
 
   std::string m_name;
   ACE_Recursive_Thread_Mutex m_connectionLock;

@@ -172,8 +172,8 @@ CacheFactoryPtr CacheFactory::set(const char* name, const char* value) {
 }
 
 CacheFactoryPtr CacheFactory::setAuthInitialize(
-    const AuthInitializePtr& authInitialize) {
-  this->authInitialize = authInitialize;
+    const AuthInitializePtr& handler) {
+  this->authInitialize = handler;
   return shared_from_this();
 }
 
@@ -186,6 +186,7 @@ CacheFactoryPtr CacheFactory::setPdxReadSerialized(bool prs) {
   pdxReadSerialized = prs;
   return shared_from_this();
 }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

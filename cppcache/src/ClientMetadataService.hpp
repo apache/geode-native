@@ -53,11 +53,11 @@ class BucketStatus {
 
  public:
   BucketStatus() : m_lastTimeout(ACE_Time_Value::zero) {}
-  bool isTimedoutAndReset(uint32_t millis) {
+  bool isTimedoutAndReset(std::chrono::milliseconds millis) {
     if (m_lastTimeout == ACE_Time_Value::zero) {
       return false;
     } else {
-      ACE_Time_Value to(0, millis * 1000);
+      ACE_Time_Value to(millis);
       to += m_lastTimeout;
       if (to > ACE_OS::gettimeofday()) {
         return true;  // timeout as buckste not recovered yet
@@ -84,27 +84,12 @@ class PRbuckets {
   PRbuckets(int32_t nBuckets) { m_buckets = new BucketStatus[nBuckets]; }
   ~PRbuckets() { delete[] m_buckets; }
 
-  bool isBucketTimedOut(int32_t bucketId, uint32_t millis) {
+  bool isBucketTimedOut(int32_t bucketId, std::chrono::milliseconds millis) {
     return m_buckets[bucketId].isTimedoutAndReset(millis);
   }
 
   void setBucketTimeout(int32_t bucketId) { m_buckets[bucketId].setTimeout(); }
 };
-
-/* adongre
- * CID 28726: Other violation (MISSING_COPY)
- * Class "apache::geode::client::ClientMetadataService" owns resources that are
- * managed
- * in its constructor and destructor but has no user-written copy constructor.
- *
- * CID 28712: Other violation (MISSING_ASSIGN)
- * Class "apache::geode::client::ClientMetadataService" owns resources that are
- * managed
- * in its constructor and destructor but has no user-written assignment
- * operator.
- *
- * FIX : Make the class NonCopyabl3
- */
 
 class ClientMetadataService : public ACE_Task_Base,
                               private NonCopyable,
@@ -228,7 +213,7 @@ class ClientMetadataService : public ACE_Task_Base,
 
   ACE_RW_Thread_Mutex m_PRbucketStatusLock;
   std::map<std::string, PRbuckets*> m_bucketStatus;
-  uint32_t m_bucketWaitTimeout;
+  std::chrono::milliseconds m_bucketWaitTimeout;
   static const char* NC_CMDSvcThread;
 };
 }  // namespace client

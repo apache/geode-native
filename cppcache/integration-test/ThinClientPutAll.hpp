@@ -566,9 +566,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       sprintf(val0, "%1000d", i);
       map0.emplace(CacheableKey::create(key0), CacheableString::create(val0));
     }
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
 
-    regPtr0->putAll(map0, 40000);
+    regPtr0->putAll(map0, std::chrono::seconds(40000));
 
     LOG("StepEight complete.");
     dunit::sleep(10000);
@@ -700,7 +700,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThirteen)
     try {
       map0.emplace(CacheableInt64::create(345),
                    CacheableInt64::create(3465987));
-      regPtr0->putAll(map0, -1);
+      regPtr0->putAll(map0, std::chrono::seconds(-1));
       auto checkPtr = std::dynamic_pointer_cast<CacheableInt64>(
           regPtr0->get(CacheableInt64::create(345)));
       ASSERT(checkPtr->value() == 3465987,
@@ -718,7 +718,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThirteen)
     try {
       map0.emplace(CacheableInt64::create(3451),
                    CacheableInt64::create(3465987));
-      regPtr0->putAll(map0, 2147500);
+      regPtr0->putAll(map0, std::chrono::seconds(2147500));
       auto checkPtr = std::dynamic_pointer_cast<CacheableInt64>(
           regPtr0->get(CacheableInt64::create(3451)));
       ASSERT(checkPtr->value() == 3465987,

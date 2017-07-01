@@ -224,7 +224,7 @@ namespace Apache.Geode.Client.UnitTests
     public void createExpirationRegion(string name, string poolName)
     {
       IRegion<object, object> region = CacheHelper.CreateExpirationRegion<object, object>(name,
-          poolName, ExpirationAction.LocalInvalidate, 5);
+          poolName, ExpirationAction.LocalInvalidate, TimeSpan.FromSeconds(5));
     }
 
     public void createExpirationRegion(string name)

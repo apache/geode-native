@@ -101,16 +101,16 @@ namespace Apache.Geode.Client.UnitTests
     }
 
     public void InitDurableClientWithTwoPools(string locators,
-    int redundancyLevel, string durableClientId, int durableTimeout, int expectedQ0, int expectedQ1)
+    int redundancyLevel, string durableClientId, TimeSpan durableTimeout, int expectedQ0, int expectedQ1)
     {
       DurableListener<object, object> checker = null;
       CacheHelper.InitConfigForDurable_Pool2(locators, redundancyLevel,
-          durableClientId, durableTimeout, 35000, "__TESTPOOL1_");
+          durableClientId, durableTimeout, TimeSpan.FromSeconds(35), "__TESTPOOL1_");
       CacheHelper.CreateTCRegion_Pool(RegionNames[0], false, true, checker,
           CacheHelper.Locators, "__TESTPOOL1_", true);
 
       CacheHelper.InitConfigForDurable_Pool2(locators, redundancyLevel,
-          durableClientId, durableTimeout, 35000, "__TESTPOOL2_");
+          durableClientId, durableTimeout, TimeSpan.FromSeconds(35), "__TESTPOOL2_");
       CacheHelper.CreateTCRegion_Pool(RegionNames[1], false, true, checker,
           CacheHelper.Locators, "__TESTPOOL2_", true);
 
@@ -158,7 +158,7 @@ namespace Apache.Geode.Client.UnitTests
     }
 
     public void InitDurableClient(int client, string locators, int redundancyLevel,
-      string durableClientId, int durableTimeout)
+      string durableClientId, TimeSpan durableTimeout)
     {
       // Create DurableListener for first time and use same afterward.
       DurableListener<object, object> checker = null;
@@ -389,8 +389,8 @@ namespace Apache.Geode.Client.UnitTests
             m_client1.Call(ClearChecker, 1);
             m_client2.Call(ClearChecker, 2);
 
-            m_client1.Call(InitDurableClient, 1, CacheHelper.Locators, redundancy, DurableClientId1, 300);
-            m_client2.Call(InitDurableClient, 2, CacheHelper.Locators, redundancy, DurableClientId2, 3);
+            m_client1.Call(InitDurableClient, 1, CacheHelper.Locators, redundancy, DurableClientId1, TimeSpan.FromSeconds(300));
+            m_client2.Call(InitDurableClient, 2, CacheHelper.Locators, redundancy, DurableClientId2, TimeSpan.FromSeconds(3));
 
             Util.Log("Clients initialized.");
 
@@ -435,12 +435,12 @@ namespace Apache.Geode.Client.UnitTests
               Thread.Sleep(20000); // wait for HA Q to drain and notify ack to go out.
             }
 
-            m_client1.Call(InitDurableClient, 1, CacheHelper.Locators, redundancy, DurableClientId1, 300);
+            m_client1.Call(InitDurableClient, 1, CacheHelper.Locators, redundancy, DurableClientId1, TimeSpan.FromSeconds(300));
 
             // Sleep for 45 seconds since durable timeout is 30 seconds so that client2 times out
             Thread.Sleep(45000);
 
-            m_client2.Call(InitDurableClient, 2, CacheHelper.Locators, redundancy, DurableClientId2, 30);
+            m_client2.Call(InitDurableClient, 2, CacheHelper.Locators, redundancy, DurableClientId2, TimeSpan.FromSeconds(30));
 
             Util.Log("Clients brought back up.");
 
@@ -501,7 +501,7 @@ namespace Apache.Geode.Client.UnitTests
     #region Durable Intrest Test
 
     public void InitDurableClientRemoveInterest(int client, string locators,
-      int redundancyLevel, string durableClientId, int durableTimeout)
+      int redundancyLevel, string durableClientId, TimeSpan durableTimeout)
     {
       // Client Registered Durable Intrest on two keys. We need to unregister them all here.
 
@@ -541,7 +541,7 @@ namespace Apache.Geode.Client.UnitTests
     }
 
     public void InitDurableClientNoInterest(int client, string locators,
-      int redundancyLevel, string durableClientId, int durableTimeout)
+      int redundancyLevel, string durableClientId, TimeSpan durableTimeout)
     {
       // we use "client" to either create a DurableListener or use the existing ones
       // if the clients are initialized for the second time
@@ -583,9 +583,9 @@ namespace Apache.Geode.Client.UnitTests
       m_client1.Call(ClearChecker, 1);
       m_client2.Call(ClearChecker, 2);
       m_client1.Call(InitDurableClient, 1, CacheHelper.Locators,
-        0, DurableClientId1, 60);
+        0, DurableClientId1, TimeSpan.FromSeconds(60));
       m_client2.Call(InitDurableClient, 2, CacheHelper.Locators,
-        0, DurableClientId2, 60);
+        0, DurableClientId2, TimeSpan.FromSeconds(60));
       Util.Log("Clients started.");
 
       m_feeder.Call(FeederUpdate, 1, 10);
@@ -598,11 +598,11 @@ namespace Apache.Geode.Client.UnitTests
       Util.Log("Clients downed with keepalive true.");
 
       m_client1.Call(InitDurableClientNoInterest, 1, CacheHelper.Locators,
-        0, DurableClientId1, 60);
+        0, DurableClientId1, TimeSpan.FromSeconds(60));
       Util.Log("Client 1 started with no interest.");
 
       m_client2.Call(InitDurableClientRemoveInterest, 2, CacheHelper.Locators,
-        0, DurableClientId2, 60);
+        0, DurableClientId2, TimeSpan.FromSeconds(60));
       Util.Log("Client 2 started with remove interest.");
 
       m_feeder.Call(FeederUpdate, 2, 10);
@@ -646,7 +646,7 @@ namespace Apache.Geode.Client.UnitTests
 
 
     public void InitDurableClientForFailover(int client, string locators,
-      int redundancyLevel, string durableClientId, int durableTimeout)
+      int redundancyLevel, string durableClientId, TimeSpan durableTimeout)
     {
       // we use "client" to either create a DurableListener or use the existing ones
       // if the clients are initialized for the second time
@@ -668,7 +668,7 @@ namespace Apache.Geode.Client.UnitTests
         checker = ThinClientDurableTests.m_checker2;
       }
       CacheHelper.InitConfigForDurable_Pool(locators, redundancyLevel,
-        durableClientId, durableTimeout, 35000);
+        durableClientId, durableTimeout, TimeSpan.FromSeconds(35));
       CacheHelper.CreateTCRegion_Pool(RegionNames[0], false, true, checker,
         CacheHelper.Locators, "__TESTPOOL1_", true);
       CacheHelper.DCache.ReadyForEvents();
@@ -719,7 +719,7 @@ namespace Apache.Geode.Client.UnitTests
 
           m_client1.Call(ClearChecker, 1);
           m_client1.Call(InitDurableClientForFailover, 1, CacheHelper.Locators,
-            redundancy, DurableClientId1, 300);
+            redundancy, DurableClientId1, TimeSpan.FromSeconds(300));
           Util.Log("Client started with redundancy level as {0}.", redundancy);
 
           m_feeder.Call(FeederUpdateForFailover, RegionNames[0], 1, 10);
@@ -749,7 +749,7 @@ namespace Apache.Geode.Client.UnitTests
           if (clientDown == 1)
           {
             m_client1.Call(InitDurableClientForFailover, 1, CacheHelper.Locators,
-              redundancy, DurableClientId1, 300);
+              redundancy, DurableClientId1, TimeSpan.FromSeconds(300));
             Util.Log("Client Restarted with redundancy level as {0}.", redundancy);
           }
 
@@ -793,13 +793,13 @@ namespace Apache.Geode.Client.UnitTests
     {
       Properties<string, string> pp = Properties<string, string>.Create<string, string>();
       pp.Insert("durable-client-id", "DurableClientId");
-      pp.Insert("durable-timeout", "30");
+      pp.Insert("durable-timeout", "30s");
 
       CacheFactory cacheFactory = CacheFactory.CreateCacheFactory(pp);
       Cache cache = cacheFactory.Create();
       cache.GetPoolFactory().SetSubscriptionEnabled(true);
-      cache.GetPoolFactory().SetSubscriptionAckInterval(5000);
-      cache.GetPoolFactory().SetSubscriptionMessageTrackingTimeout(5000);
+      cache.GetPoolFactory().SetSubscriptionAckInterval(TimeSpan.FromMilliseconds(5000));
+      cache.GetPoolFactory().SetSubscriptionMessageTrackingTimeout(TimeSpan.FromMilliseconds(5000));
       Util.Log("Created the Geode Cache Programmatically");
 
       RegionFactory regionFactory = cache.CreateRegionFactory(RegionShortcut.CACHING_PROXY);
@@ -851,25 +851,25 @@ namespace Apache.Geode.Client.UnitTests
       m_feeder.Call(InitFeeder2, CacheHelper.Locators, 0);
       Util.Log("Feeder started.");
 
-      m_client1.Call(InitDurableClientWithTwoPools, CacheHelper.Locators, 0, DurableClientId1, 30, -2, -2);
+      m_client1.Call(InitDurableClientWithTwoPools, CacheHelper.Locators, 0, DurableClientId1, TimeSpan.FromSeconds(30), -2, -2);
       Util.Log("DurableClient with Two Pools Initialized");
 
       m_feeder.Call(FeederUpdate2, 5, 10);
       Util.Log("Feeder performed first update.");
       Thread.Sleep(15000);
 
-      m_client1.Call(InitDurableClientWithTwoPools, CacheHelper.Locators, 0, DurableClientId1, 30, 6, 11); //+1 for marker, so 5+1, 10+1 etc
+      m_client1.Call(InitDurableClientWithTwoPools, CacheHelper.Locators, 0, DurableClientId1, TimeSpan.FromSeconds(30), 6, 11); //+1 for marker, so 5+1, 10+1 etc
       Util.Log("DurableClient with Two Pools after first update");
 
       m_feeder.Call(FeederUpdate2, 10, 5);
       Util.Log("Feeder performed second update.");
       Thread.Sleep(15000);
 
-      m_client1.Call(InitDurableClientWithTwoPools, CacheHelper.Locators, 0, DurableClientId1, 30, 16, 16);
+      m_client1.Call(InitDurableClientWithTwoPools, CacheHelper.Locators, 0, DurableClientId1, TimeSpan.FromSeconds(30), 16, 16);
       Util.Log("DurableClient with Two Pools after second update");
 
       Thread.Sleep(45000); //45 > 30 secs.
-      m_client1.Call(InitDurableClientWithTwoPools, CacheHelper.Locators, 0, DurableClientId1, 30, -1, -1);
+      m_client1.Call(InitDurableClientWithTwoPools, CacheHelper.Locators, 0, DurableClientId1, TimeSpan.FromSeconds(30), -1, -1);
       Util.Log("DurableClient with Two Pools after timeout");
 
       m_feeder.Call(ClientDown, false);

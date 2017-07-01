@@ -22,10 +22,17 @@ ExpirationAttributes::ExpirationAttributes()
     : m_action(ExpirationAction::INVALIDATE), m_timeout(0) {}
 
 ExpirationAttributes::ExpirationAttributes(
-    const int expirationTime, const ExpirationAction::Action expirationAction)
+    const std::chrono::seconds& expirationTime,
+    const ExpirationAction::Action expirationAction)
     : m_action(ExpirationAction::INVALIDATE), m_timeout(expirationTime) {}
-int ExpirationAttributes::getTimeout() const { return m_timeout; }
-void ExpirationAttributes::setTimeout(int timeout) { m_timeout = timeout; }
+const std::chrono::seconds& ExpirationAttributes::getTimeout() const {
+  return m_timeout;
+}
+
+void ExpirationAttributes::setTimeout(const std::chrono::seconds& timeout) {
+  m_timeout = timeout;
+}
+
 ExpirationAction::Action ExpirationAttributes::getAction() const {
   return m_action;
 }

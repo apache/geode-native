@@ -101,7 +101,8 @@ const char* regions[] = {"ConflatedRegion", "NonConflatedRegion"};
 
 void initClientCache(OperMonitorPtr& mon1, OperMonitorPtr& mon2, int durableIdx,
                      const char* conflation) {
-  initClientAndTwoRegions(durableIdx, 0, 300, conflation, regions);
+  initClientAndTwoRegions(durableIdx, 0, std::chrono::seconds(300), conflation,
+                          regions);
 
   // Recreate listener
   mon1 = std::make_shared<OperMonitor>();

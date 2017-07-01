@@ -48,6 +48,6 @@ This programmatic example creates a durable client using the `CacheFactory::set(
 // Create durable client's properties using the C++ api
 PropertiesPtr pp = Properties::create();
 pp->insert("durable-client-id", "DurableClientId");
-pp->insert("durable-timeout", 200);
+pp->insert("durable-timeout", std::chrono::seconds(200));
 cacheFactoryPtr = CacheFactory::createCacheFactory(pp);
 ```

@@ -38,19 +38,17 @@ using namespace apache::geode::client;
 long TombstoneList::getExpiryTask(TombstoneExpiryHandler** handler) {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
-  // read TombstoneTImeout from systemProperties.
-  uint32_t duration = m_cacheImpl->getDistributedSystem()
-                          .getSystemProperties()
-                          .tombstoneTimeoutInMSec() /
-                      1000;
+  auto duration = m_cacheImpl->getDistributedSystem()
+                      .getSystemProperties()
+                      .tombstoneTimeout();
   ACE_Time_Value currTime(ACE_OS::gettimeofday());
   auto tombstoneEntryPtr = std::make_shared<TombstoneEntry>(
       nullptr, static_cast<int64_t>(currTime.get_msec()));
   *handler = new TombstoneExpiryHandler(tombstoneEntryPtr, this, duration,
                                         m_cacheImpl);
   tombstoneEntryPtr->setHandler(*handler);
-  long id = m_cacheImpl->getExpiryTaskManager().scheduleExpiryTask(*handler,
-                                                                   duration, 0);
+  long id = m_cacheImpl->getExpiryTaskManager().scheduleExpiryTask(
+      *handler, duration, std::chrono::seconds(0));
   return id;
 }
 

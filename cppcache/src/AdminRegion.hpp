@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_ADMINREGION_H_
-#define GEODE_ADMINREGION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,26 +15,36 @@
  * limitations under the License.
  */
 
-#include <geode/geode_types.hpp>
-#include "ThinClientCacheDistributionManager.hpp"
-#include "ReadWriteLock.hpp"
-#include <geode/Serializable.hpp>
+#pragma once
+
+#ifndef GEODE_ADMINREGION_H_
+#define GEODE_ADMINREGION_H_
+
 #include <memory>
-//#include <statistics/HostStatSampler.hpp>
+#include <string>
 
+#include <geode/Serializable.hpp>
+#include <geode/Cacheable.hpp>
+#include <geode/geode_types.hpp>
+
+#include "ReadWriteLock.hpp"
 #include "NonCopyable.hpp"
-namespace apache {
-namespace geode {
-namespace statistics {
-class HostStatSampler;
-}  // namespace statistics
-}  // namespace geode
-}  // namespace apache
 
 namespace apache {
 namespace geode {
+
+namespace statistics {
+
+class HostStatSampler;
+
+}  // namespace statistics
+
 namespace client {
+
 class CacheImpl;
+class ThinClientBaseDM;
+class TcrConnectionManager;
+
 class AdminRegion : private NonCopyable,
                     private NonAssignable,
                     public std::enable_shared_from_this<AdminRegion> {

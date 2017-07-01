@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TCRCONNECTION_H_
-#define GEODE_TCRCONNECTION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,14 +15,23 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_TCRCONNECTION_H_
+#define GEODE_TCRCONNECTION_H_
+
 #include <atomic>
+#include <chrono>
+
 #include <ace/Semaphore.h>
+
 #include <geode/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/CacheableBuiltins.hpp>
+
 #include "Connector.hpp"
 #include "Set.hpp"
 #include "TcrMessage.hpp"
-#include <geode/CacheableBuiltins.hpp>
 #include "DiffieHellman.hpp"
 
 #define DEFAULT_TIMEOUT_RETRIES 12
@@ -106,11 +110,10 @@ class CPPCACHE_EXPORT TcrConnection {
    * @param     ports     List of local ports for connections to endpoint
    * @param     numPorts  Size of ports list
    */
-  bool InitTcrConnection(TcrEndpoint* endpointObj, const char* endpoint,
-                         Set<uint16_t>& ports,
-                         bool isClientNotification = false,
-                         bool isSecondary = false,
-                         uint32_t connectTimeout = DEFAULT_CONNECT_TIMEOUT);
+  bool InitTcrConnection(
+      TcrEndpoint* endpointObj, const char* endpoint, Set<uint16_t>& ports,
+      bool isClientNotification = false, bool isSecondary = false,
+      std::chrono::microseconds connectTimeout = DEFAULT_CONNECT_TIMEOUT);
 
   TcrConnection(const TcrConnectionManager& connectionManager,
                 volatile const bool& isConnected)
@@ -160,10 +163,11 @@ class CPPCACHE_EXPORT TcrConnection {
    * @exception  TimeoutException  if timeout happens at any of the 3 socket
    * operation: 1 write, 2 read
    */
-  char* sendRequest(const char* buffer, int32_t len, size_t* recvLen,
-                    uint32_t sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
-                    uint32_t receiveTimeoutSec = DEFAULT_READ_TIMEOUT_SECS,
-                    int32_t request = -1);
+  char* sendRequest(
+      const char* buffer, int32_t len, size_t* recvLen,
+      std::chrono::microseconds sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
+      std::chrono::microseconds receiveTimeoutSec = DEFAULT_READ_TIMEOUT_SECS,
+      int32_t request = -1);
 
   /**
    * send a synchronized request to server for REGISTER_INTEREST_LIST.
@@ -179,8 +183,8 @@ class CPPCACHE_EXPORT TcrConnection {
    */
   void sendRequestForChunkedResponse(
       const TcrMessage& request, int32_t len, TcrMessageReply& message,
-      uint32_t sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
-      uint32_t receiveTimeoutSec = DEFAULT_READ_TIMEOUT_SECS);
+      std::chrono::microseconds sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
+      std::chrono::microseconds receiveTimeoutSec = DEFAULT_READ_TIMEOUT_SECS);
 
   /**
    * send an asynchronized request to server. No response is expected.
@@ -195,14 +199,12 @@ class CPPCACHE_EXPORT TcrConnection {
    * operation: 1 write, 2 read
    */
   void send(const char* buffer, int len,
-            uint32_t sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
+            std::chrono::microseconds sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
             bool checkConnected = true);
 
-  void send(
-      uint32_t& timeSpent, const char* buffer, int len,
-      uint32_t sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
-      bool checkConnected = true,
-      int32_t notPublicApiWithTimeout = -2 /*NOT_PUBLIC_API_WITH_TIMEOUT*/);
+  void send(std::chrono::microseconds& timeSpent, const char* buffer, int len,
+            std::chrono::microseconds sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
+            bool checkConnected = true);
 
   /**
    * This method is for receiving client notification. It will read 2 times as
@@ -215,8 +217,9 @@ class CPPCACHE_EXPORT TcrConnection {
    * @exception  TimeoutException  if timeout happens at any of the 3 socket
    * operation: 1 write, 2 read
    */
-  char* receive(size_t* recvLen, ConnErrType* opErr,
-                uint32_t receiveTimeoutSec = DEFAULT_READ_TIMEOUT_SECS);
+  char* receive(
+      size_t* recvLen, ConnErrType* opErr,
+      std::chrono::microseconds receiveTimeoutSec = DEFAULT_READ_TIMEOUT_SECS);
 
   //  readMessage is now public
   /**
@@ -229,7 +232,8 @@ class CPPCACHE_EXPORT TcrConnection {
    * @exception  GeodeIOException  if an I/O error occurs (socket failure).
    * @exception  TimeoutException  if timeout happens during read
    */
-  char* readMessage(size_t* recvLen, uint32_t receiveTimeoutSec,
+  char* readMessage(size_t* recvLen,
+                    std::chrono::microseconds receiveTimeoutSec,
                     bool doHeaderTimeoutRetries, ConnErrType* opErr,
                     bool isNotificationMessage = false, int32_t request = -1);
 
@@ -243,7 +247,8 @@ class CPPCACHE_EXPORT TcrConnection {
    * @exception  GeodeIOException  if an I/O error occurs (socket failure).
    * @exception  TimeoutException  if timeout happens during read
    */
-  void readMessageChunked(TcrMessageReply& reply, uint32_t receiveTimeoutSec,
+  void readMessageChunked(TcrMessageReply& reply,
+                          std::chrono::microseconds receiveTimeoutSec,
                           bool doHeaderTimeoutRetries);
 
   /**
@@ -267,8 +272,8 @@ class CPPCACHE_EXPORT TcrConnection {
 
   // helpers for pool connection manager
   void touch();
-  bool hasExpired(int expiryTime);
-  bool isIdle(int idleTime);
+  bool hasExpired(const std::chrono::milliseconds& expiryTime);
+  bool isIdle(const std::chrono::milliseconds& idleTime);
   ACE_Time_Value getLastAccessed();
   void updateCreationTime();
 
@@ -310,7 +315,7 @@ class CPPCACHE_EXPORT TcrConnection {
    * To read Intantiator message(which meant for java client), here we are
    * ignoring it
    */
-  void readHandshakeInstantiatorMsg(uint32_t connectTimeout);
+  void readHandshakeInstantiatorMsg(std::chrono::microseconds connectTimeout);
 
   /**
    * Packs the override settings bits into bytes - currently a single byte for
@@ -321,77 +326,69 @@ class CPPCACHE_EXPORT TcrConnection {
   /**
    * To read the from stream
    */
-  int32_t readHandShakeInt(uint32_t connectTimeout);
+  int32_t readHandShakeInt(std::chrono::microseconds connectTimeout);
 
   /*
    * To read the arraysize
    */
-  uint32_t readHandshakeArraySize(uint32_t connectTimeout);
+  uint32_t readHandshakeArraySize(std::chrono::microseconds connectTimeout);
 
   /*
    * This function reads "numberOfBytes" and ignores it.
    */
-  void readHandShakeBytes(int numberOfBytes, uint32_t connectTimeout);
+  void readHandShakeBytes(int numberOfBytes,
+                          std::chrono::microseconds connectTimeout);
 
   /** Create a normal or SSL connection */
-  Connector* createConnection(const char* ipaddr,
-                              uint32_t waitSeconds = DEFAULT_CONNECT_TIMEOUT,
-                              int32_t maxBuffSizePool = 0);
+  Connector* createConnection(
+      const char* ipaddr,
+      std::chrono::microseconds waitSeconds = DEFAULT_CONNECT_TIMEOUT,
+      int32_t maxBuffSizePool = 0);
 
   /**
    * Reads bytes from socket and handles error conditions in case of Handshake.
    */
-  /* adongre
-   * CID 28738: Unsigned compared against 0 (NO_EFFECT)
-   * This less-than-zero comparison of an unsigned value is never true.
-   * "msgLength < 0U".
-   */
   CacheableBytesPtr readHandshakeData(int32_t msgLength,
-                                      uint32_t connectTimeout);
+                                      std::chrono::microseconds connectTimeout);
 
   /**
    * Reads raw bytes (without appending nullptr terminator) from socket and
    * handles error conditions in case of Handshake.
    */
-  /* adongre
-   * CID 28739: Unsigned compared against 0 (NO_EFFECT)
-   * change the input parameter from unint32_t to int32_t
-   * as the comparasion case is valid
-   */
-  // CacheableBytesPtr readHandshakeRawData( uint32_t msgLength, uint32_t
-  // connectTimeout );
-  CacheableBytesPtr readHandshakeRawData(int32_t msgLength,
-                                         uint32_t connectTimeout);
+  CacheableBytesPtr readHandshakeRawData(
+      int32_t msgLength, std::chrono::microseconds connectTimeout);
   /**
    * Reads a string from socket and handles error conditions in case of
    * Handshake.
    */
-  CacheableStringPtr readHandshakeString(uint32_t connectTimeout);
+  CacheableStringPtr readHandshakeString(
+      std::chrono::microseconds connectTimeout);
 
   /**
    * Reads a byte array (using initial length) from socket and handles error
    * conditions in case of Handshake.
    */
-  CacheableBytesPtr readHandshakeByteArray(uint32_t connectTimeout);
+  CacheableBytesPtr readHandshakeByteArray(
+      std::chrono::microseconds connectTimeout);
 
   /**
-   * Send data to the connection till sendTimeoutSec
+   * Send data to the connection till sendTimeout
    */
   ConnErrType sendData(const char* buffer, int32_t length,
-                       uint32_t sendTimeoutSec, bool checkConnected = true);
+                       std::chrono::microseconds sendTimeout,
+                       bool checkConnected = true);
 
-  ConnErrType sendData(
-      uint32_t& timeSpent, const char* buffer, int32_t length,
-      uint32_t sendTimeoutSec, bool checkConnected = true,
-      int32_t notPublicApiWithTimeout = -2 /*NOT_PUBLIC_API_WITH_TIMEOUT*/);
+  ConnErrType sendData(std::chrono::microseconds& timeSpent, const char* buffer,
+                       int32_t length, std::chrono::microseconds sendTimeout,
+                       bool checkConnected = true);
 
   /**
    * Read data from the connection till receiveTimeoutSec
    */
-  ConnErrType receiveData(
-      char* buffer, int32_t length, uint32_t receiveTimeoutSec,
-      bool checkConnected = true, bool isNotificationMessage = false,
-      int32_t notPublicApiWithTimeout = -2 /*NOT_PUBLIC_API_WITH_TIMEOUT*/);
+  ConnErrType receiveData(char* buffer, int32_t length,
+                          std::chrono::microseconds receiveTimeoutSec,
+                          bool checkConnected = true,
+                          bool isNotificationMessage = false);
 
   const char* m_endpoint;
   TcrEndpoint* m_endpointObj;

@@ -165,7 +165,8 @@ void initClientForInterestNotify(EventListenerPtr& mon1, EventListenerPtr& mon2,
   initClient(true, props);
 
   LOG("CLIENT: Setting pool with locator.");
-  getHelper()->createPoolWithLocators("__TESTPOOL1_", locatorsG, true, 0, 1);
+  getHelper()->createPoolWithLocators("__TESTPOOL1_", locatorsG, true, 0,
+                                      std::chrono::seconds(1));
   createRegionAndAttachPool(regions[0], USE_ACK, "__TESTPOOL1_", true);
   createRegionAndAttachPool(regions[1], USE_ACK, "__TESTPOOL1_", true);
   createRegionAndAttachPool(regions[2], USE_ACK, "__TESTPOOL1_", true);

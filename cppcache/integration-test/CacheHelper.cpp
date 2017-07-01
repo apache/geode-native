@@ -16,16 +16,20 @@
  */
 
 #include <cstdlib>
-#include <ace/OS.h>
-#include <ace/INET_Addr.h>
-#include <ace/SOCK_Acceptor.h>
 #include <fstream>
 #include <regex>
 #include <list>
+
+#include <ace/OS.h>
+#include <ace/INET_Addr.h>
+#include <ace/SOCK_Acceptor.h>
+
 #include <geode/GeodeCppCache.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/PoolManager.hpp>
-#include <CacheRegionHelper.hpp>
+#include <geode/util/chrono/duration.hpp>
+
+#include "CacheRegionHelper.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "TimeBomb.hpp"
 #include "Utils.hpp"
@@ -59,6 +63,7 @@
 #endif
 
 using namespace apache::geode::client;
+using namespace apache::geode::util::chrono::duration;
 
 extern ClientCleanup gClientCleanup;
 
@@ -238,7 +243,7 @@ CacheHelper::CacheHelper(const bool isthinClient, const char* poolName,
     poolFactory->setSubscriptionEnabled(clientNotification);
     poolFactory->setMultiuserAuthentication(isMultiuserMode);
     if (loadConditioningInterval > 0) {
-      poolFactory->setLoadConditioningInterval(loadConditioningInterval);
+      poolFactory->setLoadConditioningInterval(std::chrono::milliseconds(loadConditioningInterval));
     }
     printf("Setting connections to %d ", connections);
     if (connections >= 0) {
@@ -246,7 +251,7 @@ CacheHelper::CacheHelper(const bool isthinClient, const char* poolName,
       poolFactory->setMaxConnections(connections);
     }
     if (subscriptionAckInterval != -1) {
-      poolFactory->setSubscriptionAckInterval(subscriptionAckInterval);
+      poolFactory->setSubscriptionAckInterval(std::chrono::milliseconds(subscriptionAckInterval));
     }
 
     poolFactory->create(poolName);
@@ -405,11 +410,11 @@ RegionPtr CacheHelper::createRegion(const char* name, bool ack, bool caching,
   return regionPtr;
 }
 
-RegionPtr CacheHelper::createRegion(const char* name, bool ack, bool caching,
-                                    int ettl, int eit, int rttl, int rit,
-                                    int lel, ExpirationAction::Action action,
-                                    const char* endpoints,
-                                    bool clientNotificationEnabled) {
+RegionPtr CacheHelper::createRegion(
+    const char* name, bool ack, bool caching, const std::chrono::seconds& ettl,
+    const std::chrono::seconds& eit, const std::chrono::seconds& rttl,
+    const std::chrono::seconds& rit, int lel, ExpirationAction::Action action,
+    const char* endpoints, bool clientNotificationEnabled) {
   AttributesFactory af;
   af.setCachingEnabled(caching);
   af.setLruEntriesLimit(lel);
@@ -426,12 +431,11 @@ RegionPtr CacheHelper::createRegion(const char* name, bool ack, bool caching,
   return regionPtr;
 }
 
-PoolPtr CacheHelper::createPool(const char* poolName, const char* locators,
-                                const char* serverGroup, int redundancy,
-                                bool clientNotification,
-                                int subscriptionAckInterval, int connections,
-                                int loadConditioningInterval,
-                                bool isMultiuserMode) {
+PoolPtr CacheHelper::createPool(
+    const char* poolName, const char* locators, const char* serverGroup,
+    int redundancy, bool clientNotification,
+    std::chrono::milliseconds subscriptionAckInterval, int connections,
+    int loadConditioningInterval, bool isMultiuserMode) {
   // printf(" in createPool isMultiuserMode = %d \n", isMultiuserMode);
   PoolFactoryPtr poolFacPtr = getCache()->getPoolManager().createFactory();
 
@@ -445,14 +449,14 @@ PoolPtr CacheHelper::createPool(const char* poolName, const char* locators,
   poolFacPtr->setMultiuserAuthentication(isMultiuserMode);
   // poolFacPtr->setStatisticInterval(1000);
   if (loadConditioningInterval > 0) {
-    poolFacPtr->setLoadConditioningInterval(loadConditioningInterval);
+    poolFacPtr->setLoadConditioningInterval(std::chrono::milliseconds(loadConditioningInterval));
   }
 
   if (connections >= 0) {
     poolFacPtr->setMinConnections(connections);
     poolFacPtr->setMaxConnections(connections);
   }
-  if (subscriptionAckInterval != -1) {
+  if (subscriptionAckInterval > std::chrono::milliseconds::zero()) {
     poolFacPtr->setSubscriptionAckInterval(subscriptionAckInterval);
   }
 
@@ -485,7 +489,7 @@ PoolPtr CacheHelper::createPool2(const char* poolName, const char* locators,
     poolFacPtr->setMaxConnections(connections);
   }
   if (subscriptionAckInterval != -1) {
-    poolFacPtr->setSubscriptionAckInterval(subscriptionAckInterval);
+    poolFacPtr->setSubscriptionAckInterval(std::chrono::milliseconds(subscriptionAckInterval));
   }
 
   return poolFacPtr->create(poolName);
@@ -519,12 +523,11 @@ void CacheHelper::logPoolAttributes(PoolPtr& pool) {
           pool->getPRSingleHopEnabled() ? "true" : "false");
 }
 
-void CacheHelper::createPoolWithLocators(const char* name, const char* locators,
-                                         bool clientNotificationEnabled,
-                                         int subscriptionRedundancy,
-                                         int subscriptionAckInterval,
-                                         int connections, bool isMultiuserMode,
-                                         const char* serverGroup) {
+void CacheHelper::createPoolWithLocators(
+    const char* name, const char* locators, bool clientNotificationEnabled,
+    int subscriptionRedundancy,
+    std::chrono::milliseconds subscriptionAckInterval, int connections,
+    bool isMultiuserMode, const char* serverGroup) {
   LOG("createPool() entered.");
   printf(" in createPoolWithLocators isMultiuserMode = %d\n", isMultiuserMode);
   PoolPtr poolPtr =
@@ -537,8 +540,10 @@ void CacheHelper::createPoolWithLocators(const char* name, const char* locators,
 }
 
 RegionPtr CacheHelper::createRegionAndAttachPool(
-    const char* name, bool ack, const char* poolName, bool caching, int ettl,
-    int eit, int rttl, int rit, int lel, ExpirationAction::Action action) {
+    const char* name, bool ack, const char* poolName, bool caching,
+    const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
+    const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
+    ExpirationAction::Action action) {
   RegionShortcut preDefRA = PROXY;
   if (caching) {
     preDefRA = CACHING_PROXY;
@@ -560,8 +565,10 @@ RegionPtr CacheHelper::createRegionAndAttachPool(
 
 RegionPtr CacheHelper::createRegionAndAttachPool2(
     const char* name, bool ack, const char* poolName,
-    const PartitionResolverPtr& aResolver, bool caching, int ettl, int eit,
-    int rttl, int rit, int lel, ExpirationAction::Action action) {
+    const PartitionResolverPtr& aResolver, bool caching,
+    const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
+    const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
+    ExpirationAction::Action action) {
   RegionShortcut preDefRA = PROXY;
   if (caching) {
     preDefRA = CACHING_PROXY;
@@ -625,9 +632,10 @@ void CacheHelper::addServerLocatorEPs(const char* epList, PoolFactoryPtr pfPtr,
 
 RegionPtr CacheHelper::createPooledRegion(
     const char* name, bool ack, const char* locators, const char* poolName,
-    bool caching, bool clientNotificationEnabled, int ettl, int eit, int rttl,
-    int rit, int lel, const CacheListenerPtr& cacheListener,
-    ExpirationAction::Action action) {
+    bool caching, bool clientNotificationEnabled,
+    const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
+    const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
+    const CacheListenerPtr& cacheListener, ExpirationAction::Action action) {
   PoolFactoryPtr poolFacPtr = getCache()->getPoolManager().createFactory();
   poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
 
@@ -664,7 +672,8 @@ RegionPtr CacheHelper::createPooledRegion(
 RegionPtr CacheHelper::createPooledRegionConcurrencyCheckDisabled(
     const char* name, bool ack, const char* locators, const char* poolName,
     bool caching, bool clientNotificationEnabled, bool concurrencyCheckEnabled,
-    int ettl, int eit, int rttl, int rit, int lel,
+    const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
+    const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
     const CacheListenerPtr& cacheListener, ExpirationAction::Action action) {
   PoolFactoryPtr poolFacPtr = getCache()->getPoolManager().createFactory();
   poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
@@ -699,8 +708,10 @@ RegionPtr CacheHelper::createPooledRegionConcurrencyCheckDisabled(
 }
 
 RegionPtr CacheHelper::createRegionDiscOverFlow(
-    const char* name, bool caching, bool clientNotificationEnabled, int ettl,
-    int eit, int rttl, int rit, int lel, ExpirationAction::Action action) {
+    const char* name, bool caching, bool clientNotificationEnabled,
+    const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
+    const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
+    ExpirationAction::Action action) {
   AttributesFactory af;
   af.setCachingEnabled(caching);
   af.setLruEntriesLimit(lel);
@@ -730,9 +741,10 @@ RegionPtr CacheHelper::createRegionDiscOverFlow(
 
 RegionPtr CacheHelper::createPooledRegionDiscOverFlow(
     const char* name, bool ack, const char* locators, const char* poolName,
-    bool caching, bool clientNotificationEnabled, int ettl, int eit, int rttl,
-    int rit, int lel, const CacheListenerPtr& cacheListener,
-    ExpirationAction::Action action) {
+    bool caching, bool clientNotificationEnabled,
+    const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
+    const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
+    const CacheListenerPtr& cacheListener, ExpirationAction::Action action) {
   PoolFactoryPtr poolFacPtr = getCache()->getPoolManager().createFactory();
   poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
 
@@ -785,9 +797,10 @@ RegionPtr CacheHelper::createPooledRegionDiscOverFlow(
 
 RegionPtr CacheHelper::createPooledRegionSticky(
     const char* name, bool ack, const char* locators, const char* poolName,
-    bool caching, bool clientNotificationEnabled, int ettl, int eit, int rttl,
-    int rit, int lel, const CacheListenerPtr& cacheListener,
-    ExpirationAction::Action action) {
+    bool caching, bool clientNotificationEnabled,
+    const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
+    const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
+    const CacheListenerPtr& cacheListener, ExpirationAction::Action action) {
   PoolFactoryPtr poolFacPtr = getCache()->getPoolManager().createFactory();
   poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
   poolFacPtr->setThreadLocalConnections(true);
@@ -825,9 +838,10 @@ RegionPtr CacheHelper::createPooledRegionSticky(
 
 RegionPtr CacheHelper::createPooledRegionStickySingleHop(
     const char* name, bool ack, const char* locators, const char* poolName,
-    bool caching, bool clientNotificationEnabled, int ettl, int eit, int rttl,
-    int rit, int lel, const CacheListenerPtr& cacheListener,
-    ExpirationAction::Action action) {
+    bool caching, bool clientNotificationEnabled,
+    const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
+    const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
+    const CacheListenerPtr& cacheListener, ExpirationAction::Action action) {
   LOG("createPooledRegionStickySingleHop");
   PoolFactoryPtr poolFacPtr = getCache()->getPoolManager().createFactory();
   poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
@@ -893,10 +907,14 @@ void CacheHelper::showKeys(VectorOfCacheableKey& vecKeys) {
 
 void CacheHelper::showRegionAttributes(RegionAttributes& attributes) {
   printf("caching=%s\n", attributes.getCachingEnabled() ? "true" : "false");
-  printf("Entry Time To Live = %d\n", attributes.getEntryTimeToLive());
-  printf("Entry Idle Timeout = %d\n", attributes.getEntryIdleTimeout());
-  printf("Region Time To Live = %d\n", attributes.getRegionTimeToLive());
-  printf("Region Idle Timeout = %d\n", attributes.getRegionIdleTimeout());
+  printf("Entry Time To Live = %s\n",
+         to_string(attributes.getEntryTimeToLive()).c_str());
+  printf("Entry Idle Timeout = %s\n",
+         to_string(attributes.getEntryIdleTimeout()).c_str());
+  printf("Region Time To Live = %s\n",
+         to_string(attributes.getRegionTimeToLive()).c_str());
+  printf("Region Idle Timeout = %s\n",
+         to_string(attributes.getRegionIdleTimeout()).c_str());
   printf("Initial Capacity = %d\n", attributes.getInitialCapacity());
   printf("Load Factor = %f\n", attributes.getLoadFactor());
   printf("End Points = %s\n",
@@ -1618,8 +1636,8 @@ void CacheHelper::terminate_process_file(
             std::chrono::system_clock::now() - start);
         LOG("CacheHelper::terminate_process_file: process exited. "
             "pidFileName=" +
-            pidFileName + ", pid=" + pid +
-            ", elapsed=" + std::to_string(elapsed.count()) + "ms");
+            pidFileName + ", pid=" + pid + ", elapsed=" +
+            std::to_string(elapsed.count()) + "ms");
         return;
       }
       std::this_thread::yield();

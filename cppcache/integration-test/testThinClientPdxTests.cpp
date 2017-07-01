@@ -2346,7 +2346,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
 
     ResultCollectorPtr collector = funcExec->withArgs(args)
                                        ->withFilter(routingObj)
-                                       ->execute("ComparePdxTypes", true);
+                                       ->execute("ComparePdxTypes");
     ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     CacheableVectorPtr result = collector->getResult();
@@ -2513,7 +2513,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
 
     ResultCollectorPtr collector = funcExec->withArgs(args)
                                        ->withFilter(routingObj)
-                                       ->execute("ComparePdxTypes", true);
+                                       ->execute("ComparePdxTypes");
     ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     CacheableVectorPtr result = collector->getResult();
@@ -2620,7 +2620,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, client3GetsV2Object)
 
     ExecutionPtr funcExec = FunctionService::onRegion(regPtr0);
 
-    ResultCollectorPtr collector = funcExec->execute("IterateRegion", true);
+    ResultCollectorPtr collector = funcExec->execute("IterateRegion");
     ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     CacheableVectorPtr result = collector->getResult();

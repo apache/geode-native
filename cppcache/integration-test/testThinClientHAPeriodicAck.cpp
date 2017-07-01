@@ -97,8 +97,8 @@ bool g_poolLocators = false;
 
 void initClient(int redundancyLevel) {
   PropertiesPtr props = Properties::create();
-  props->insert("notify-ack-interval", 1);
-  props->insert("notify-dupcheck-life", 30);
+  props->insert("notify-ack-interval", std::chrono::seconds(1));
+  props->insert("notify-dupcheck-life", std::chrono::seconds(30));
 
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(redundancyLevel, props);
@@ -109,8 +109,8 @@ void initClient(int redundancyLevel) {
 
 void initClient() {
   PropertiesPtr props = Properties::create();
-  props->insert("notify-ack-interval", 1);
-  props->insert("notify-dupcheck-life", 30);
+  props->insert("notify-ack-interval", std::chrono::seconds(1));
+  props->insert("notify-dupcheck-life", std::chrono::seconds(30));
 
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(true, props);

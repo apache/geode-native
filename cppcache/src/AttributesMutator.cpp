@@ -27,102 +27,54 @@ AttributesMutator::AttributesMutator(const RegionPtr& region)
 
 AttributesMutator::~AttributesMutator() { m_region = nullptr; }
 
-/** Sets the idleTimeout duration for region entries.
- * @param idleTimeout the idleTimeout in seconds for entries in this region.
- * @return the previous value.
- * @throw IllegalStateException if the new idleTimeout changes entry expiration
- * from
- *   disabled to enabled or enabled to disabled.
- */
-int32_t AttributesMutator::setEntryIdleTimeout(int32_t idleTimeout) {
-  RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
-  return rImpl->adjustEntryExpiryDuration(idleTimeout);
+std::chrono::seconds AttributesMutator::setEntryIdleTimeout(
+    std::chrono::seconds idleTimeout) {
+  return std::static_pointer_cast<RegionInternal>(m_region)
+      ->adjustEntryExpiryDuration(idleTimeout);
 }
 
-/** Set the idleTimeout Action for region entries.
- * @param action the idleTimeout ExpirationAction::Action for entries in this
- * region.
- * @return the previous value.
- */
 ExpirationAction::Action AttributesMutator::setEntryIdleTimeoutAction(
     ExpirationAction::Action action) {
   RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   return rImpl->adjustEntryExpiryAction(action);
 }
 
-/** Sets the timeToLive duration for region entries.
- * @param timeToLive the timeToLive in seconds for entries in this region.
- * @return the previous value.
- * @throw IllegalStateException if the new timeToLive changes entry expiration
- * from
- *   disabled to enabled or enabled to disabled.
- */
-int32_t AttributesMutator::setEntryTimeToLive(int32_t timeToLive) {
+std::chrono::seconds AttributesMutator::setEntryTimeToLive(
+    std::chrono::seconds timeToLive) {
   RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   return rImpl->adjustEntryExpiryDuration(timeToLive);
 }
 
-/** Set the timeToLive Action for region entries.
- * @param action the timeToLive ExpirationAction::Action for entries in this
- * region.
- * @return the previous value.
- */
 ExpirationAction::Action AttributesMutator::setEntryTimeToLiveAction(
     ExpirationAction::Action action) {
   RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   return rImpl->adjustEntryExpiryAction(action);
 }
 
-/** Sets the idleTimeout duration for the region itself.
- * @param idleTimeout the ExpirationAttributes for this region idleTimeout
- * @return the previous value.
- * @throw IllegalStateException if the new idleTimeout changes region expiration
- * from
- *   disabled to enabled or enabled to disabled.
- */
-int32_t AttributesMutator::setRegionIdleTimeout(int32_t idleTimeout) {
+std::chrono::seconds AttributesMutator::setRegionIdleTimeout(
+    std::chrono::seconds idleTimeout) {
   RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   return rImpl->adjustRegionExpiryDuration(idleTimeout);
 }
 
-/** Set the idleTimeout Action for the region itself.
- * @param action the idleTimeout ExpirationAction::Action for this region.
- * @return the previous value.
- */
 ExpirationAction::Action AttributesMutator::setRegionIdleTimeoutAction(
     ExpirationAction::Action action) {
   RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   return rImpl->adjustRegionExpiryAction(action);
 }
 
-/** Sets the timeToLive duration for the region itself.
- * @param timeToLive the ExpirationAttributes for this region timeToLive
- * @return the previous value.
- * @throw IllegalStateException if the new timeToLive changes region expiration
- * from
- *   disabled to enabled or enabled to disabled.
- */
-int32_t AttributesMutator::setRegionTimeToLive(int32_t timeToLive) {
+std::chrono::seconds AttributesMutator::setRegionTimeToLive(
+    std::chrono::seconds timeToLive) {
   RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   return rImpl->adjustRegionExpiryDuration(timeToLive);
 }
 
-/** Set the timeToLive Action for the region itself.
- * @param action the timeToLive ExpirationAction::Action for this region.
- * @return the previous value.
- */
 ExpirationAction::Action AttributesMutator::setRegionTimeToLiveAction(
     ExpirationAction::Action action) {
   RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   return rImpl->adjustRegionExpiryAction(action);
 }
 
-/** Sets the Maximum entry count in the region before LRU eviction.
- * @param entriesLimit the number of entries to allow.
- * @return the previous value.
- * @throw IllegalStateException if the new entriesLimit changes LRU from
- *   disabled to enabled or enabled to disabled.
- */
 uint32_t AttributesMutator::setLruEntriesLimit(uint32_t entriesLimit) {
   RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   return rImpl->adjustLruEntriesLimit(entriesLimit);

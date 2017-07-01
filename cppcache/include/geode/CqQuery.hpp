@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CQQUERY_H_
-#define GEODE_CQQUERY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_CQQUERY_H_
+#define GEODE_CQQUERY_H_
+
+#include <chrono>
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
@@ -83,6 +85,7 @@ class CPPCACHE_EXPORT CqQuery  {
    * @return CqAttributesMutator, the CqAttributesMutator object.
    */
   virtual const CqAttributesMutatorPtr getCqAttributesMutator() const = 0;
+
   /**
    * Start executing the CQ or if this CQ is stopped earlier, resumes execution
    * of the CQ.
@@ -91,11 +94,8 @@ class CPPCACHE_EXPORT CqQuery  {
    * on all the
    * server then a CqException is thrown.
    *
-   * @param timeout The time (in seconds) to wait for query response, optional.
-   *        This should be less than or equal to 2^31/1000 i.e. 2147483.
+   * @param timeout The time to wait for query response, optional.
    *
-   * @throws IllegalArgumentException if timeout parameter is greater than
-   * 2^31/1000.
    * @throws CqClosedException if this CqQuery is closed.
    * @throws RegionNotFoundException if the specified region in the
    *         query string is not found.
@@ -105,7 +105,7 @@ class CPPCACHE_EXPORT CqQuery  {
    * @return CqResults resultset obtained by executing the query.
    */
   virtual CqResultsPtr executeWithInitialResults(
-      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
 
   /**
    * @notsupported_cacheserver
@@ -176,7 +176,9 @@ class CPPCACHE_EXPORT CqQuery  {
    * @since 5.5
    */
   virtual bool isDurable() = 0;
+
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

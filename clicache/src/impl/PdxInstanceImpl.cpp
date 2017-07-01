@@ -34,17 +34,17 @@
 #include "PdxType.hpp"
 #include "Cache.hpp"
 
-using namespace System::Text;
-
 namespace Apache
 {
   namespace Geode
   {
     namespace Client
     {
-
       namespace Internal
       {
+        using namespace System;
+        using namespace System::Text;
+
         //this is for PdxInstanceFactory
         PdxInstanceImpl::PdxInstanceImpl(Dictionary<String^, Object^>^ fieldVsValue, PdxType^ pdxType, Apache::Geode::Client::Cache^ cache)
         {
@@ -55,7 +55,7 @@ namespace Apache
           m_bufferLength = 0;
           m_pdxType = pdxType;
           m_cache = cache;
-          m_cachePerfStats = &CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getCachePerfStats();
+          //m_cachePerfStats = &CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getCachePerfStats();
           m_pdxType->InitializeType(cache);//to generate static position map
 
           //need to initiailize stream. this will call todata and in toData we will have stream
@@ -77,6 +77,7 @@ namespace Apache
           //will it ever happen
           throw gcnew IllegalStateException("PdxInstance typeid is not defined yet, to get classname.");
         }
+
         Object^ PdxInstanceImpl::GetObject()
         {
           DataInput^ dataInput = gcnew DataInput(m_buffer, m_bufferLength, m_cache);
@@ -85,13 +86,13 @@ namespace Apache
           Object^ ret = Internal::PdxHelper::DeserializePdx(dataInput, true, m_typeId, m_bufferLength, CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry().get());
           //dataInput->ResetPdx(0);
 
-          if(m_cachePerfStats)
-          {
-            Utils::updateStatOpTime(m_cachePerfStats->getStat(),
-                                    m_cachePerfStats->getPdxInstanceDeserializationTimeId(),
-                                    sampleStartNanos);
-            m_cachePerfStats->incPdxInstanceDeserializations();
-          }
+          //if(m_cachePerfStats)
+          //{
+          //  Utils::updateStatOpTime(m_cachePerfStats->getStat(),
+          //                          m_cachePerfStats->getPdxInstanceDeserializationTimeId(),
+          //                          sampleStartNanos);
+          //  m_cachePerfStats->incPdxInstanceDeserializations();
+          //}
           return ret;
         }
 
@@ -1418,13 +1419,10 @@ namespace Apache
             default:
             {
               writer->WriteObject(fieldName, value);
-              //throw gcnew IllegalStateException("ReadField unable to de-serialize  " 
-              //																	+ fieldName + " of " + type); 
-            }  // namespace Client
-            }  // namespace Geode
-          }  // namespace Apache
-
-      }
-    }
-  }
-}
+            }
+          }
+        }
+      }  // namespace Internal
+    }  // namespace Client
+  }  // namespace Geode
+}  // namespace Apache

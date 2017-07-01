@@ -760,28 +760,28 @@ namespace Apache.Geode.Client.FwkLib
         if(!isReplicate){
           if(getresult == true){
             if(executionMode == "onRegion"){
-              executeFunctionResult = exc.WithArgs<string>(ops).WithFilter<object>(filterObj).Execute(funcName, 15).GetResult();
+              executeFunctionResult = exc.WithArgs<string>(ops).WithFilter<object>(filterObj).Execute(funcName, TimeSpan.FromSeconds(15)).GetResult();
             }else{
               args.Add(ops);
-              executeFunctionResult = exc.WithArgs<ArrayList>(args).Execute(funcName, 15).GetResult();
+              executeFunctionResult = exc.WithArgs<ArrayList>(args).Execute(funcName, TimeSpan.FromSeconds(15)).GetResult();
             }
           }else {
             if(executionMode == "onRegion"){
-              exc.WithArgs<string>(ops).WithFilter<object>(filterObj).Execute(funcName, 15);
+              exc.WithArgs<string>(ops).WithFilter<object>(filterObj).Execute(funcName, TimeSpan.FromSeconds(15));
             } else {
               args.Add(ops);
-              exc.WithArgs<ArrayList>(args).Execute(funcName, 15);
+              exc.WithArgs<ArrayList>(args).Execute(funcName, TimeSpan.FromSeconds(15));
             }
           }
         } else {
           args.Add(ops);
           if (getresult)
           {
-            executeFunctionResult = exc.WithArgs<ArrayList>(args).Execute(funcName, 15).GetResult();
+            executeFunctionResult = exc.WithArgs<ArrayList>(args).Execute(funcName, TimeSpan.FromSeconds(15)).GetResult();
           }
           else
           {
-            executeFunctionResult = exc.WithArgs<ArrayList>(args).Execute(funcName, 15).GetResult();
+            executeFunctionResult = exc.WithArgs<ArrayList>(args).Execute(funcName, TimeSpan.FromSeconds(15)).GetResult();
           }       
         }
         Thread.Sleep(30000);
@@ -1061,7 +1061,7 @@ namespace Apache.Geode.Client.FwkLib
            exc = exc.WithFilter(filterObj).WithCollector(myRC);
          }
          // execute function
-         Client.IResultCollector<object> rc = exc.Execute("ExceptionHandlingFunction", 30);
+         Client.IResultCollector<object> rc = exc.Execute("ExceptionHandlingFunction", TimeSpan.FromSeconds(30));
 
       }
       catch (Apache.Geode.Client.FunctionExecutionException)
@@ -1085,7 +1085,7 @@ namespace Apache.Geode.Client.FwkLib
         MyResultCollector<object> myRC = new MyResultCollector<object>();
         exc = exc.WithCollector(myRC);
         // execute function
-        Client.IResultCollector<object> rc = exc.Execute("ExceptionHandlingFunction", 30);
+        Client.IResultCollector<object> rc = exc.Execute("ExceptionHandlingFunction", TimeSpan.FromSeconds(30));
       }
       catch (Apache.Geode.Client.FunctionExecutionException)
       {
@@ -1117,7 +1117,7 @@ namespace Apache.Geode.Client.FwkLib
         MyResultCollector<object> myRC = new MyResultCollector<object>();
         Apache.Geode.Client.Execution<object> exc = Client.FunctionService<object>.OnRegion<TKey, TVal>(region).WithCollector(myRC);
         // execute function
-        Client.IResultCollector<object> rc = exc.Execute("FireNForget", 30);
+        Client.IResultCollector<object> rc = exc.Execute("FireNForget", TimeSpan.FromSeconds(30));
       }
       catch (Apache.Geode.Client.FunctionExecutionException)
       {
@@ -1141,7 +1141,7 @@ namespace Apache.Geode.Client.FwkLib
         MyResultCollector<object> myRC = new MyResultCollector<object>();
         exc = Client.FunctionService<object>.OnServers(pptr).WithCollector(myRC);
         // execute function
-        Client.IResultCollector<object> rc = exc.Execute("ExceptionHandlingFunction", 30);
+        Client.IResultCollector<object> rc = exc.Execute("ExceptionHandlingFunction", TimeSpan.FromSeconds(30));
       }
       catch (Apache.Geode.Client.FunctionExecutionException)
       {
@@ -1166,7 +1166,7 @@ namespace Apache.Geode.Client.FwkLib
       Apache.Geode.Client.Execution<object> exc = Client.FunctionService<object>.OnRegion<TKey, TVal>(region);
       MyResultCollectorHA<object> myRC = new MyResultCollectorHA<object>();
       exc = exc.WithCollector(myRC);
-      Client.IResultCollector<object>  rc = exc.Execute(funcName, 120);
+      Client.IResultCollector<object>  rc = exc.Execute(funcName, TimeSpan.FromSeconds(120));
       executeFunctionResult = myRC.GetResult();
       if (executeFunctionResult != null)
       {
@@ -1176,7 +1176,7 @@ namespace Apache.Geode.Client.FwkLib
         //Boolean lastResult = (Boolean)executeFunctionResult[0];
        // if (lastResult!= true) 
        //   FwkException("FunctionExecution::DoExecuteFunctionHA failed, last result is not true");
-        ICollection<object> resultListColl = myRC.GetResult(60);
+        ICollection<object> resultListColl = myRC.GetResult(TimeSpan.FromSeconds(60));
         string[] resultList = new string[resultListColl.Count];
         resultList.CopyTo(resultList, 0);
         //FwkInfo("FunctionExecution::DoExecuteFunctionHA GetClearResultCount {0} GetGetResultCount {1} GetAddResultCount {2}", myRC.GetClearResultCount(), myRC.GetGetResultCount(), myRC.GetAddResultCount());

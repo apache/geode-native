@@ -45,7 +45,7 @@ class GeodeStatisticsFactory;
 class StatisticsManager {
  private:
   // interval at which the sampler will take a sample of Stats
-  int32_t m_sampleIntervalMs;
+  std::chrono::milliseconds m_sampleIntervalMs;
 
   // Statistics sampler
   HostStatSampler* m_sampler;
@@ -66,10 +66,11 @@ class StatisticsManager {
   void closeSampler();
 
  public:
-  StatisticsManager(const char* filePath, int64_t sampleIntervalMs,
-                    bool enabled, Cache* cache, const char* durableClientId,
-                    const uint32_t durableTimeout, int64_t statFileLimit = 0,
-                    int64_t statDiskSpaceLimit = 0);
+  StatisticsManager(const char* filePath,
+                    std::chrono::milliseconds sampleIntervalMs, bool enabled,
+                    Cache* cache, const char* durableClientId,
+                    const std::chrono::seconds durableTimeout,
+                    int64_t statFileLimit = 0, int64_t statDiskSpaceLimit = 0);
 
   void RegisterAdminRegion(AdminRegionPtr adminRegPtr) {
     m_adminRegion = adminRegPtr;

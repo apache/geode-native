@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_EXPIRATIONATTRIBUTES_H_
-#define GEODE_EXPIRATIONATTRIBUTES_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_EXPIRATIONATTRIBUTES_H_
+#define GEODE_EXPIRATIONATTRIBUTES_H_
+
+#include <chrono>
 
 #include "geode_globals.hpp"
 #include "ExpirationAction.hpp"
@@ -68,7 +70,7 @@ class CPPCACHE_EXPORT ExpirationAttributes {
    * @param expirationAction the action to take when the value expires
    * @throws IllegalArgumentException if expirationTime is nonpositive
    */
-  ExpirationAttributes(const int expirationTime,
+  ExpirationAttributes(const std::chrono::seconds& expirationTime,
                        const ExpirationAction::Action expirationAction =
                            ExpirationAction::INVALIDATE);
 
@@ -77,8 +79,8 @@ class CPPCACHE_EXPORT ExpirationAttributes {
    * @return the relative number of seconds before a region or value expires
    * or zero if it will never expire
    */
-  int getTimeout() const;
-  void setTimeout(int timeout);
+  const std::chrono::seconds& getTimeout() const;
+  void setTimeout(const std::chrono::seconds& timeout);
 
   /** Returns the action that should take place when this value or region
    * expires.
@@ -94,8 +96,9 @@ class CPPCACHE_EXPORT ExpirationAttributes {
   ExpirationAction::Action m_action;
   /** The number of seconds since this value or region was created before it
    * expires. */
-  int m_timeout;
+  std::chrono::seconds m_timeout;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

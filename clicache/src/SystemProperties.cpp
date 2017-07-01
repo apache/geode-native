@@ -17,8 +17,7 @@
 
 #include "SystemProperties.hpp"
 #include "impl/SafeConvert.hpp"
-
-using namespace System;
+#include "TimeSpanUtils.hpp"
 
 namespace Apache
 {
@@ -26,6 +25,8 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace System;
+
       namespace native = apache::geode::client;
 
       void SystemProperties::LogSettings( )
@@ -33,9 +34,9 @@ namespace Apache
         m_nativeptr->logSettings( );
       }
 
-      System::Int32 SystemProperties::StatisticsSampleInterval::get( )
+      TimeSpan SystemProperties::StatisticsSampleInterval::get( )
       {
-        return m_nativeptr->statisticsSampleInterval( );
+        return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->statisticsSampleInterval( ));
       }
 
       bool SystemProperties::StatisticsEnabled::get( )
@@ -78,24 +79,24 @@ namespace Apache
         return m_nativeptr->maxSocketBufferSize( );
       }
       
-      System::Int32 SystemProperties::PingInterval::get( )
+      TimeSpan SystemProperties::PingInterval::get( )
       {
-        return m_nativeptr->pingInterval( );
+        return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->pingInterval( ));
       }
       
-      System::Int32 SystemProperties::RedundancyMonitorInterval::get( )
+      TimeSpan SystemProperties::RedundancyMonitorInterval::get( )
       {
-        return m_nativeptr->redundancyMonitorInterval( );
+        return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->redundancyMonitorInterval( ));
       }
       
-      System::Int32 SystemProperties::NotifyAckInterval::get( )
+      TimeSpan SystemProperties::NotifyAckInterval::get( )
       {
-        return m_nativeptr->notifyAckInterval( );
+        return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->notifyAckInterval( ));
       }
       
-      System::Int32 SystemProperties::NotifyDupCheckLife::get( )
+      TimeSpan SystemProperties::NotifyDupCheckLife::get( )
       {
-        return m_nativeptr->notifyDupCheckLife( );
+        return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->notifyDupCheckLife( ));
       }
       
       bool SystemProperties::DebugStackTraceEnabled::get( )
@@ -180,14 +181,14 @@ namespace Apache
         return ManagedString::Get( m_nativeptr->durableClientId( ) );
       }
 
-      System::UInt32 SystemProperties::DurableTimeout::get( )
+      TimeSpan SystemProperties::DurableTimeout::get( )
       {
-        return m_nativeptr->durableTimeout( );
+        return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->durableTimeout( ));
       }
 
-      System::UInt32 SystemProperties::ConnectTimeout::get( )
+      TimeSpan SystemProperties::ConnectTimeout::get( )
       {
-        return m_nativeptr->connectTimeout( );
+        return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->connectTimeout( ));
       }
 
       String^ SystemProperties::ConflateEvents::get( )
@@ -195,21 +196,15 @@ namespace Apache
         return ManagedString::Get( m_nativeptr->conflateEvents( ) );
       }
 
-      System::UInt32 SystemProperties::SuspendedTxTimeout::get( )
+      TimeSpan SystemProperties::SuspendedTxTimeout::get( )
       {
-        return m_nativeptr->suspendedTxTimeout( );
-      }
-
-      bool SystemProperties::ReadTimeoutUnitInMillis::get( )
-      {
-        return m_nativeptr->readTimeoutUnitInMillis( );
+        return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->suspendedTxTimeout( ));
       }
 
        bool SystemProperties::OnClientDisconnectClearPdxTypeIds::get( )
       {
         return m_nativeptr->onClientDisconnectClearPdxTypeIds( );
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
-}

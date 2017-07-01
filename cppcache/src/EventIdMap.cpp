@@ -20,7 +20,9 @@ using namespace apache::geode::client;
 
 EventIdMap::~EventIdMap() { clear(); }
 
-void EventIdMap::init(int32_t expirySecs) { m_expiry = expirySecs; }
+void EventIdMap::init(std::chrono::milliseconds expirySecs) {
+  m_expiry = expirySecs;
+}
 
 void EventIdMap::clear() {
   GUARD_MAP;
@@ -170,12 +172,12 @@ EventSequence::EventSequence(int64_t seqNum) {
 
 EventSequence::~EventSequence() { clear(); }
 
-void EventSequence::touch(int32_t ageSecs) {
+void EventSequence::touch(std::chrono::milliseconds ageSecs) {
   m_deadline = ACE_OS::gettimeofday();
   m_deadline += ageSecs;
 }
 
-void EventSequence::touch(int64_t seqNum, int32_t ageSecs) {
+void EventSequence::touch(int64_t seqNum, std::chrono::milliseconds ageSecs) {
   touch(ageSecs);
   m_seqNum = seqNum;
   m_acked = false;

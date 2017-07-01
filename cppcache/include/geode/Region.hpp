@@ -45,11 +45,14 @@
 #include "AttributesFactory.hpp"
 #include "CacheableKey.hpp"
 #include "Query.hpp"
-#define DEFAULT_RESPONSE_TIMEOUT 15
 
 namespace apache {
 namespace geode {
 namespace client {
+
+static constexpr std::chrono::milliseconds DEFAULT_RESPONSE_TIMEOUT =
+    std::chrono::seconds(15);
+
 /**
 * @class Region Region.hpp
 *
@@ -392,20 +395,19 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * the entries.
    *
    * @param map: A hashmap containing key-value pairs
-   * @param timeout: The time (in seconds) to wait for the response, optional.
-   *        This should be less than or equal to 2^31/1000 i.e. 2147483.
-   *        Default is 15 (seconds).
-   * @since 8.1
+   * @param timeout: The time to wait for the response, optional.
    * @param aCallbackArgument an argument that is passed to the callback
    * functions.
    * It is ignored if nullptr. It must be serializable if this operation is
    * distributed.
    * @throws IllegalArgumentException If timeout
    *         parameter is greater than 2^31/1000, ie 2147483.
+   * @since 8.1
    */
-  virtual void putAll(const HashMapOfCacheable& map,
-                      uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-                      const SerializablePtr& aCallbackArgument = nullptr) = 0;
+  virtual void putAll(
+      const HashMapOfCacheable& map,
+      std::chrono::milliseconds timeout = DEFAULT_RESPONSE_TIMEOUT,
+      const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /**
    * Places a new value into an entry in this region with the specified key
@@ -1333,7 +1335,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    */
   virtual SelectResultsPtr query(
       const char* predicate,
-      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
 
   /**
    * Executes the query on the server based on the predicate and returns whether
@@ -1359,7 +1361,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    */
   virtual bool existsValue(
       const char* predicate,
-      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
 
   /**
    * Executes the query on the server based on the predicate and returns a
@@ -1387,7 +1389,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    */
   virtual SerializablePtr selectValue(
       const char* predicate,
-      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
 
   /**
    * Removes all of the entries for the specified keys from this region.
@@ -1440,6 +1442,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   FRIEND_STD_SHARED_PTR(Region)
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

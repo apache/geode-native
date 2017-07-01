@@ -41,7 +41,8 @@ const char* poolNames[] = {"Pool1"};
 
 void stepOne() {
   initClient(true);
-  createPoolAndDestroy(poolNames[0], locatorsG, nullptr, 0, false, -1, 1);
+  createPoolAndDestroy(poolNames[0], locatorsG, nullptr, 0, false,
+                       std::chrono::seconds::zero(), 1);
   LOG("StepOne complete.");
 }
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne)

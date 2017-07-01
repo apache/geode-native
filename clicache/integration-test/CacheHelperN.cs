@@ -496,39 +496,39 @@ namespace Apache.Geode.Client.UnitTests
     }
 
     public static void InitConfigForDurable_Pool(string locators, int redundancyLevel,
-      string durableClientId, int durableTimeout)
+      string durableClientId, TimeSpan durableTimeout)
     {
-      InitConfigForDurable_Pool(locators, redundancyLevel, durableClientId, durableTimeout, 1);
+      InitConfigForDurable_Pool(locators, redundancyLevel, durableClientId, durableTimeout, TimeSpan.FromSeconds(1));
     }
 
     public static void InitConfigForDurable_Pool(string locators, int redundancyLevel,
-      string durableClientId, int durableTimeout, int ackInterval)
+      string durableClientId, TimeSpan durableTimeout, TimeSpan ackInterval)
     {
       Properties<string, string> config = new Properties<string, string>();
       config.Insert("durable-client-id", durableClientId);
-      config.Insert("durable-timeout", durableTimeout.ToString());
+      config.Insert("durable-timeout", durableTimeout.TotalSeconds + "s");
       InitConfig(config, null);
       CreatePool<object, object>("__TESTPOOL1_", locators, (string)null, redundancyLevel, true,
-        ackInterval, 300);
+        ackInterval, TimeSpan.FromSeconds(300));
     }
 
     public static void InitConfigForDurable_Pool2(string locators, int redundancyLevel,
-      string durableClientId, int durableTimeout, int ackInterval, string poolName)
+      string durableClientId, TimeSpan durableTimeout, TimeSpan ackInterval, string poolName)
     {
       Properties<string, string> config = new Properties<string, string>();
       config.Insert("durable-client-id", durableClientId);
-      config.Insert("durable-timeout", durableTimeout.ToString());
+      config.Insert("durable-timeout", durableTimeout.TotalSeconds + "s");
       InitConfig(config, null);
       CreatePool<object, object>(poolName, locators, (string)null, redundancyLevel, true,
-        ackInterval, 300);
+        ackInterval, TimeSpan.FromSeconds(300));
     }
 
     public static void InitConfigForConflation(string durableClientId, string conflation)
     {
       Properties<string, string> config = new Properties<string, string>();
       config.Insert("durable-client-id", durableClientId);
-      config.Insert("durable-timeout", "300");
-      config.Insert("notify-ack-interval", "1");
+      config.Insert("durable-timeout", "300s");
+      config.Insert("notify-ack-interval", "1s");
       if (conflation != null && conflation.Length > 0)
       {
         config.Insert("conflate-events", conflation);
@@ -555,8 +555,8 @@ namespace Apache.Geode.Client.UnitTests
     {
       Properties<string, string> config = new Properties<string, string>();
       config.Insert("durable-client-id", durableClientId);
-      config.Insert("durable-timeout", "300");
-      config.Insert("notify-ack-interval", "1");
+      config.Insert("durable-timeout", "300s");
+      config.Insert("notify-ack-interval", "1s");
       if (conflation != null && conflation.Length > 0)
       {
         config.Insert("conflate-events", conflation);
@@ -720,7 +720,7 @@ namespace Apache.Geode.Client.UnitTests
 
 
     public static IRegion<TKey, TValue> CreateExpirationRegion<TKey, TValue>(
-      string name, string poolname, ExpirationAction action, int entryTimeToLive)
+      string name, string poolname, ExpirationAction action, TimeSpan entryTimeToLive)
     {
       Init();
       IRegion<TKey, TValue> region = GetRegion<TKey, TValue>(name);
@@ -731,14 +731,14 @@ namespace Apache.Geode.Client.UnitTests
       }
 
       region = m_cache.CreateRegionFactory(RegionShortcut.CACHING_PROXY)
-        .SetEntryTimeToLive(action, (uint)entryTimeToLive).SetPoolName(poolname).Create<TKey, TValue>(name);
+        .SetEntryTimeToLive(action, entryTimeToLive).SetPoolName(poolname).Create<TKey, TValue>(name);
       Assert.IsNotNull(region, "IRegion<object, object> was not created.");
       m_currRegion = region as IRegion<object, object>;
       return region;
     }
 
     public static IRegion<TKey, TValue> CreateLocalRegionWithETTL<TKey, TValue>(
-      string name, ExpirationAction action, int entryTimeToLive)
+      string name, ExpirationAction action, TimeSpan entryTimeToLive)
     {
       Init();
       IRegion<TKey, TValue> region = GetRegion<TKey, TValue>(name);
@@ -749,7 +749,7 @@ namespace Apache.Geode.Client.UnitTests
       }
 
       region = m_cache.CreateRegionFactory(RegionShortcut.LOCAL)
-        .SetEntryTimeToLive(action, (uint)entryTimeToLive).Create<TKey, TValue>(name);
+        .SetEntryTimeToLive(action, entryTimeToLive).Create<TKey, TValue>(name);
       Assert.IsNotNull(region, "IRegion<object, object> was not created.");
       m_currRegion = region as IRegion<object, object>;
       return region;
@@ -948,42 +948,42 @@ namespace Apache.Geode.Client.UnitTests
     public static Pool/*<TKey, TValue>*/ CreatePool<TKey, TValue>(string name, string locators, string serverGroup,
       int redundancy, bool subscription)
     {
-      return CreatePool<TKey, TValue>(name, locators, serverGroup, redundancy, subscription, 5, 1, 300);
+      return CreatePool<TKey, TValue>(name, locators, serverGroup, redundancy, subscription, 5, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(300));
     }
 
     public static Pool/*<TKey, TValue>*/ CreatePool<TKey, TValue>(string name, string locators, string serverGroup,
       int redundancy, bool subscription, bool prSingleHop, bool threadLocal = false)
     {
-      return CreatePool<TKey, TValue>(name, locators, serverGroup, redundancy, subscription, -1, 1, 300, false, prSingleHop, threadLocal);
+      return CreatePool<TKey, TValue>(name, locators, serverGroup, redundancy, subscription, -1, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(300), false, prSingleHop, threadLocal);
     }
 
     public static Pool/*<TKey, TValue>*/ CreatePool<TKey, TValue>(string name, string locators, string serverGroup,
       int redundancy, bool subscription, int numConnections, bool isMultiuserMode)
     {
-      return CreatePool<TKey, TValue>(name, locators, serverGroup, redundancy, subscription, numConnections, 1, 300, isMultiuserMode);
+      return CreatePool<TKey, TValue>(name, locators, serverGroup, redundancy, subscription, numConnections, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(300), isMultiuserMode);
     }
 
     public static Pool/*<TKey, TValue>*/ CreatePool<TKey, TValue>(string name, string locators, string serverGroup,
       int redundancy, bool subscription, int numConnections)
     {
-      return CreatePool<TKey, TValue>(name, locators, serverGroup, redundancy, subscription, numConnections, 1, 300);
+      return CreatePool<TKey, TValue>(name, locators, serverGroup, redundancy, subscription, numConnections, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(300));
     }
 
     public static Pool/*<TKey, TValue>*/ CreatePool<TKey, TValue>(string name, string locators, string serverGroup,
-      int redundancy, bool subscription, int ackInterval, int dupCheckLife)
+      int redundancy, bool subscription, TimeSpan ackInterval, TimeSpan dupCheckLife)
     {
       return CreatePool<TKey, TValue>(name, locators, serverGroup, redundancy, subscription,
         5, ackInterval, dupCheckLife);
     }
 
     public static Pool/*<TKey, TValue>*/ CreatePool<TKey, TValue>(string name, string locators, string serverGroup,
-      int redundancy, bool subscription, int numConnections, int ackInterval, int dupCheckLife)
+      int redundancy, bool subscription, int numConnections, TimeSpan ackInterval, TimeSpan dupCheckLife)
     {
-      return CreatePool<TKey, TValue>(name, locators, serverGroup, redundancy, subscription, numConnections, ackInterval, 300, false);
+      return CreatePool<TKey, TValue>(name, locators, serverGroup, redundancy, subscription, numConnections, ackInterval, dupCheckLife, false);
     }
 
     public static Pool/*<TKey, TValue>*/ CreatePool<TKey, TValue>(string name, string locators, string serverGroup,
-      int redundancy, bool subscription, int numConnections, int ackInterval, int dupCheckLife, bool isMultiuserMode, bool prSingleHop = true, bool threadLocal = false)
+      int redundancy, bool subscription, int numConnections, TimeSpan ackInterval, TimeSpan dupCheckLife, bool isMultiuserMode, bool prSingleHop = true, bool threadLocal = false)
     {
       Init();
 

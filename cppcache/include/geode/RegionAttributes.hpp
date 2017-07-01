@@ -24,6 +24,8 @@
  * @file
  */
 
+#include <chrono>
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 #include "CacheLoader.hpp"
@@ -35,6 +37,7 @@
 #include "Serializable.hpp"
 #include "DiskPolicyType.hpp"
 #include "PersistenceManager.hpp"
+#include "util/chrono/duration.hpp"
 
 namespace apache {
 namespace geode {
@@ -108,29 +111,34 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
    * whole.
    * @return the timeToLive expiration attributes for this region
    */
-  int getRegionTimeToLive();
-  ExpirationAction::Action getRegionTimeToLiveAction();
+  std::chrono::seconds getRegionTimeToLive() const;
+
+  ExpirationAction::Action getRegionTimeToLiveAction() const;
 
   /** Gets the idleTimeout expiration attributes for the region as a whole.
    *
    * @return the IdleTimeout expiration attributes for this region
    */
-  int getRegionIdleTimeout();
-  ExpirationAction::Action getRegionIdleTimeoutAction();
+  std::chrono::seconds getRegionIdleTimeout() const;
+
+  ExpirationAction::Action getRegionIdleTimeoutAction() const;
 
   /** Gets the <code>timeToLive</code> expiration attributes for entries in this
    * region.
    * @return the timeToLive expiration attributes for entries in this region
    */
-  int getEntryTimeToLive();
-  ExpirationAction::Action getEntryTimeToLiveAction();
+  std::chrono::seconds getEntryTimeToLive() const;
+
+  ExpirationAction::Action getEntryTimeToLiveAction() const;
 
   /** Gets the <code>idleTimeout</code> expiration attributes for entries in
    * this region.
    * @return the idleTimeout expiration attributes for entries in this region
+   * @tparam Duration std::chrono::duration type to return
    */
-  int getEntryIdleTimeout();
-  ExpirationAction::Action getEntryIdleTimeoutAction();
+  std::chrono::seconds getEntryIdleTimeout() const;
+
+  ExpirationAction::Action getEntryIdleTimeoutAction() const;
 
   /**
    * If true, this region will store data in the current process.
@@ -338,12 +346,14 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   void setLruEntriesLimit(int limit);
   void setDiskPolicy(DiskPolicyType::PolicyType diskPolicy);
   void setConcurrencyChecksEnabled(bool enable);
+
   inline bool getEntryExpiryEnabled() const {
-    return (m_entryTimeToLive != 0 || m_entryIdleTimeout != 0);
+    return (m_entryTimeToLive.count() != 0 || m_entryIdleTimeout.count() != 0);
   }
 
   inline bool getRegionExpiryEnabled() const {
-    return (m_regionTimeToLive != 0 || m_regionIdleTimeout != 0);
+    return (m_regionTimeToLive.count() != 0 ||
+            m_regionIdleTimeout.count() != 0);
   }
 
   // will be created by the factory
@@ -362,10 +372,10 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   uint32_t m_lruEntriesLimit;
   bool m_caching;
   uint32_t m_maxValueDistLimit;
-  uint32_t m_entryIdleTimeout;
-  uint32_t m_entryTimeToLive;
-  uint32_t m_regionIdleTimeout;
-  uint32_t m_regionTimeToLive;
+  std::chrono::seconds m_entryIdleTimeout;
+  std::chrono::seconds m_entryTimeToLive;
+  std::chrono::seconds m_regionIdleTimeout;
+  std::chrono::seconds m_regionTimeToLive;
   uint32_t m_initialCapacity;
   float m_loadFactor;
   uint8_t m_concurrencyLevel;

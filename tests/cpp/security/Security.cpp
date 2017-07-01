@@ -908,7 +908,7 @@ void Security::runQuery(int32_t &queryCnt) {
               << i << "] query : " << resultsetQueries[i].query());
       qry = qs->newQuery(resultsetQueries[i].query());
       startTime = ACE_OS::gettimeofday();
-      results = qry->execute(600);
+      results = qry->execute(std::chrono::seconds{600});
       endTime = ACE_OS::gettimeofday() - startTime;
       FWKINFO(" Time Taken to execute the reselt set query : "
               << resultsetQueries[i].query() << ": is " << endTime.sec() << "."
@@ -924,7 +924,7 @@ void Security::runQuery(int32_t &queryCnt) {
               << i << "] query : " << structsetQueries[i].query());
       qry = qs->newQuery(structsetQueries[i].query());
       startTime = ACE_OS::gettimeofday();
-      results = qry->execute(600);
+      results = qry->execute(std::chrono::seconds{600});
       endTime = ACE_OS::gettimeofday() - startTime;
       FWKINFO(" Time Taken to execute the struct set query : "
               << structsetQueries[i].query() << ": is " << endTime.sec() << "."

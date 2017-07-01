@@ -58,26 +58,26 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    */
  public:
   /** return single name of region. The storage is backed by the region. */
-  virtual const char* getName() const { return m_realRegion->getName(); }
+  virtual const char* getName() const override { return m_realRegion->getName(); }
   // virtual uint64_t getUpdateReceived() const { return 0; };
 
   /** return the full path of the region as can be used to lookup the
    * region from Cache::getRegion. The storage is backed by the region.
    */
-  virtual const char* getFullPath() const {
+  virtual const char* getFullPath() const override {
     return m_realRegion->getFullPath();
   }
 
   /** Returns the parent region, or nullptr if a root region.
    * @throws RegionDestroyedException
    */
-  virtual RegionPtr getParentRegion() const {
+  virtual RegionPtr getParentRegion() const override {
     return m_realRegion->getParentRegion();
   }
 
   /** Return the RegionAttributes for this region.
    */
-  virtual RegionAttributesPtr getAttributes() const {
+  virtual RegionAttributesPtr getAttributes() const override {
     return m_realRegion->getAttributes();
   }
 
@@ -85,13 +85,13 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * attributes.
    * @throws RegionDestroyedException.
    */
-  virtual AttributesMutatorPtr getAttributesMutator() const {
+  virtual AttributesMutatorPtr getAttributesMutator() const override {
     throw UnsupportedOperationException("Region.getAttributesMutator()");
   }
 
   // virtual void updateAccessOrModifiedTime() = 0;
 
-  virtual CacheStatisticsPtr getStatistics() const {
+  virtual CacheStatisticsPtr getStatistics() const override {
     return m_realRegion->getStatistics();
   }
 
@@ -112,7 +112,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * This operation is not distributed.
    */
   virtual void invalidateRegion(
-      const SerializablePtr& aCallbackArgument = nullptr) {
+      const SerializablePtr& aCallbackArgument = nullptr) override {
     throw UnsupportedOperationException("Region.invalidateRegion()");
   }
 
@@ -136,7 +136,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
 
   */
   virtual void localInvalidateRegion(
-      const SerializablePtr& aCallbackArgument = nullptr) {
+      const SerializablePtr& aCallbackArgument = nullptr) override {
     throw UnsupportedOperationException("Region.localInvalidateRegion()");
   }
 
@@ -173,7 +173,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws TimeoutException if operation timed out
    * @see  invalidateRegion
    */
-  virtual void destroyRegion(const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void destroyRegion(
+      const SerializablePtr& aCallbackArgument = nullptr) override {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->destroyRegion(aCallbackArgument);
   }
@@ -186,7 +187,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheListener#afterRegionClear
    * @see CacheWriter#beforeRegionClear
    */
-  virtual void clear(const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void clear(
+      const SerializablePtr& aCallbackArgument = nullptr) override {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->clear(aCallbackArgument);
   }
@@ -198,7 +200,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheListener#afterRegionClear
    * @see CacheWriter#beforeRegionClear
    */
-  virtual void localClear(const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void localClear(const SerializablePtr& aCallbackArgument = nullptr) override {
     throw UnsupportedOperationException("localClear()");
   }
 
@@ -222,13 +224,13 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see  localInvalidateRegion
    */
   virtual void localDestroyRegion(
-      const SerializablePtr& aCallbackArgument = nullptr) {
+      const SerializablePtr& aCallbackArgument = nullptr) override {
     throw UnsupportedOperationException("Region.localDestroyRegion()");
   }
 
   /** Returns the subregion identified by the path, nullptr if no such subregion
    */
-  virtual RegionPtr getSubregion(const char* path) {
+  virtual RegionPtr getSubregion(const char* path) override {
     LOGDEBUG("ProxyRegion getSubregion");
     auto rPtr = std::static_pointer_cast<RegionInternal>(
         m_realRegion->getSubregion(path));
@@ -240,7 +242,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
 
   /** Creates a subregion with the specified attributes */
   virtual RegionPtr createSubregion(
-      const char* subregionName, const RegionAttributesPtr& aRegionAttributes) {
+      const char* subregionName, const RegionAttributesPtr& aRegionAttributes) override {
     throw UnsupportedOperationException("createSubregion()");
     return nullptr;
     /*LOGDEBUG("ProxyRegion getSubregion");
@@ -261,7 +263,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @param[out] sr subregions
    * @throws RegionDestroyedException
    */
-  VectorOfRegion subregions(const bool recursive) {
+  VectorOfRegion subregions(const bool recursive) override {
     VectorOfRegion realVectorRegion = m_realRegion->subregions(recursive);
     VectorOfRegion proxyRegions(realVectorRegion.size());
 
@@ -280,7 +282,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Return the meta-object RegionEntry for key.
    * @throws IllegalArgumentException, RegionDestroyedException.
    */
-  virtual RegionEntryPtr getEntry(const CacheableKeyPtr& key) {
+  virtual RegionEntryPtr getEntry(const CacheableKeyPtr& key) override {
     return m_realRegion->getEntry(key);
   }
 
@@ -328,8 +330,9 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws RegionDestroyedException if the method is called on a destroyed
    *region
    **/
-  virtual CacheablePtr get(const CacheableKeyPtr& key,
-                           const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual CacheablePtr get(
+      const CacheableKeyPtr& key,
+      const SerializablePtr& aCallbackArgument = nullptr) override {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->get(key, aCallbackArgument);
   }
@@ -383,8 +386,9 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws TimeoutException if operation timed out
    * @throws OutOfMemoryException if  not enoough memory for the value
    */
-  virtual void put(const CacheableKeyPtr& key, const CacheablePtr& value,
-                   const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void put(
+      const CacheableKeyPtr& key, const CacheablePtr& value,
+      const SerializablePtr& aCallbackArgument = nullptr) override {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->put(key, value, aCallbackArgument);
   }
@@ -431,9 +435,10 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws IllegalArgumentException If timeout
    *         parameter is greater than 2^31/1000, ie 2147483.
    */
-  virtual void putAll(const HashMapOfCacheable& map,
-                      uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-                      const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void putAll(
+      const HashMapOfCacheable& map,
+      std::chrono::milliseconds timeout = DEFAULT_RESPONSE_TIMEOUT,
+      const SerializablePtr& aCallbackArgument = nullptr) override {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->putAll(map, timeout, aCallbackArgument);
   }
@@ -463,7 +468,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws OutOfMemoryException if not enoough memory for the value
    */
   virtual void localPut(const CacheableKeyPtr& key, const CacheablePtr& value,
-                        const SerializablePtr& aCallbackArgument = nullptr) {
+                        const SerializablePtr& aCallbackArgument = nullptr) override {
     throw UnsupportedOperationException("Region.localPut()");
   }
 
@@ -531,8 +536,9 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws OutOfMemoryException if no memory for new entry
    * @throws EntryExistsException if an entry with this key already exists
    */
-  virtual void create(const CacheableKeyPtr& key, const CacheablePtr& value,
-                      const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void create(
+      const CacheableKeyPtr& key, const CacheablePtr& value,
+      const SerializablePtr& aCallbackArgument = nullptr) override {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->create(key, value, aCallbackArgument);
   }
@@ -585,7 +591,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    */
   virtual void localCreate(const CacheableKeyPtr& key,
                            const CacheablePtr& value,
-                           const SerializablePtr& aCallbackArgument = nullptr) {
+                           const SerializablePtr& aCallbackArgument = nullptr) override {
     throw UnsupportedOperationException("Region.localCreate()");
   }
 
@@ -632,8 +638,9 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see destroy
    * @see CacheListener::afterInvalidate
    */
-  virtual void invalidate(const CacheableKeyPtr& key,
-                          const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void invalidate(
+      const CacheableKeyPtr& key,
+      const SerializablePtr& aCallbackArgument = nullptr) override {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->invalidate(key, aCallbackArgument);
   }
@@ -665,7 +672,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheListener::afterInvalidate
    */
   virtual void localInvalidate(const CacheableKeyPtr& key,
-                               const SerializablePtr& aCallbackArgument = nullptr) {
+                               const SerializablePtr& aCallbackArgument = nullptr) override {
     throw UnsupportedOperationException("Region.localInvalidate()");
   }
 
@@ -718,8 +725,9 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheListener::afterDestroy
    * @see CacheWriter::beforeDestroy
    */
-  virtual void destroy(const CacheableKeyPtr& key,
-                       const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void destroy(
+      const CacheableKeyPtr& key,
+      const SerializablePtr& aCallbackArgument = nullptr) override {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->destroy(key, aCallbackArgument);
   }
@@ -755,7 +763,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheWriter::beforeDestroy
    */
   virtual void localDestroy(const CacheableKeyPtr& key,
-                            const SerializablePtr& aCallbackArgument = nullptr) {
+                            const SerializablePtr& aCallbackArgument = nullptr) override {
     throw UnsupportedOperationException("Region.localDestroy()");
   }
 
@@ -814,8 +822,9 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheListener::afterDestroy
    * @see CacheWriter::beforeDestroy
    */
-  virtual bool remove(const CacheableKeyPtr& key, const CacheablePtr& value,
-                      const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual bool remove(
+      const CacheableKeyPtr& key, const CacheablePtr& value,
+      const SerializablePtr& aCallbackArgument = nullptr) override {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->remove(key, value, aCallbackArgument);
   }
@@ -888,8 +897,9 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheWriter::beforeDestroy
    */
 
-  virtual bool removeEx(const CacheableKeyPtr& key,
-                        const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual bool removeEx(
+      const CacheableKeyPtr& key,
+      const SerializablePtr& aCallbackArgument = nullptr) override {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->removeEx(key, aCallbackArgument);
   }
@@ -929,7 +939,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    */
   virtual bool localRemove(const CacheableKeyPtr& key,
                            const CacheablePtr& value,
-                           const SerializablePtr& aCallbackArgument = nullptr) {
+                           const SerializablePtr& aCallbackArgument = nullptr) override {
     throw UnsupportedOperationException("Region.localRemove()");
     return false;
   }
@@ -981,7 +991,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheWriter::beforeDestroy
    */
   virtual bool localRemoveEx(const CacheableKeyPtr& key,
-                             const SerializablePtr& aCallbackArgument = nullptr) {
+                             const SerializablePtr& aCallbackArgument = nullptr) override {
     throw UnsupportedOperationException("Region.localRemoveEx()");
     return false;
   }
@@ -997,7 +1007,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * Return all the keys in the local process for this region. This includes
    * keys for which the entry is invalid.
    */
-  virtual VectorOfCacheableKey keys() {
+  virtual VectorOfCacheableKey keys() override {
     throw UnsupportedOperationException("Region.keys()");
     return VectorOfCacheableKey();
   }
@@ -1024,7 +1034,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws UnsupportedOperationException if the member type is not CLIENT
    *                                       or region is not a native client one.
    */
-  virtual VectorOfCacheableKey serverKeys() {
+  virtual VectorOfCacheableKey serverKeys() override {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->serverKeys();
   }
@@ -1033,26 +1043,28 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * Return all values in the local process for this region. No value is
    * included for entries that are invalidated.
    */
-  virtual VectorOfCacheable values() {
+  virtual VectorOfCacheable values() override {
     throw UnsupportedOperationException("Region.values()");
   }
 
-  virtual VectorOfRegionEntry entries(bool recursive) {
+  virtual VectorOfRegionEntry entries(bool recursive) override {
     throw UnsupportedOperationException("Region.entries()");
   }
 
-  virtual RegionServicePtr getRegionService() const {
+  virtual RegionServicePtr getRegionService() const override {
     return RegionServicePtr(m_proxyCache);
   }
 
-  virtual bool isDestroyed() const { return m_realRegion->isDestroyed(); }
+  virtual bool isDestroyed() const override {
+    return m_realRegion->isDestroyed();
+  }
 
   /**
    * This operations checks for the value in the local cache .
    * It is not propagated to the Geode cache server
    * to which it is connected.
    */
-  virtual bool containsValueForKey(const CacheableKeyPtr& keyPtr) const {
+  virtual bool containsValueForKey(const CacheableKeyPtr& keyPtr) const override {
     throw UnsupportedOperationException("Region.containsValueForKey()");
     return false;
   }
@@ -1073,7 +1085,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * server
    * to which it is connected with.
    */
-  virtual bool containsKey(const CacheableKeyPtr& keyPtr) const {
+  virtual bool containsKey(const CacheableKeyPtr& keyPtr) const override {
     throw UnsupportedOperationException("Region.containsKey()");
     return false;
   }
@@ -1084,7 +1096,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws UnsupportedOperationException if the region's scope is
    * ScopeType::LOCAL.
    */
-  virtual bool containsKeyOnServer(const CacheableKeyPtr& keyPtr) const {
+  virtual bool containsKeyOnServer(
+      const CacheableKeyPtr& keyPtr) const override {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->containsKeyOnServer(keyPtr);
   }
@@ -1094,7 +1107,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws UnsupportedOperationException if the region's scope is
    * ScopeType::LOCAL.
    */
-  virtual VectorOfCacheableKey getInterestList() const {
+  virtual VectorOfCacheableKey getInterestList() const override {
     throw UnsupportedOperationException("Region.getInterestList()");
   }
   /**
@@ -1103,7 +1116,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws UnsupportedOperationException if the region's scope is
    * ScopeType::LOCAL.
    */
-  virtual VectorOfCacheableString getInterestListRegex() const {
+  virtual VectorOfCacheableString getInterestListRegex() const override {
     throw UnsupportedOperationException("Region.getInterestListRegex()");
   }
 
@@ -1153,7 +1166,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   virtual void registerKeys(const VectorOfCacheableKey& keys,
                             bool isDurable = false,
                             bool getInitialValues = false,
-                            bool receiveValues = true) {
+                            bool receiveValues = true) override {
     throw UnsupportedOperationException("Region.registerKeys()");
   }
 
@@ -1179,7 +1192,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws UnknownException For other exceptions.
    * @throws TimeoutException if operation timed out
    */
-  virtual void unregisterKeys(const VectorOfCacheableKey& keys) {
+  virtual void unregisterKeys(const VectorOfCacheableKey& keys) override {
     throw UnsupportedOperationException("Region.unregisterKeys()");
   }
 
@@ -1217,7 +1230,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    */
   virtual void registerAllKeys(bool isDurable = false,
                                bool getInitialValues = false,
-                               bool receiveValues = true) {
+                               bool receiveValues = true) override {
     throw UnsupportedOperationException("Region.registerAllKeys()");
   }
 
@@ -1240,7 +1253,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws UnknownException For other exceptions.
    * @throws TimeoutException if operation timed out
    */
-  virtual void unregisterAllKeys() {
+  virtual void unregisterAllKeys() override {
     throw UnsupportedOperationException("Region.unregisterAllKeys()");
   }
 
@@ -1286,7 +1299,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    */
   virtual void registerRegex(const char* regex, bool isDurable = false,
                              bool getInitialValues = false,
-                             bool receiveValues = true) {
+                             bool receiveValues = true) override {
     throw UnsupportedOperationException("Region.registerRegex()");
   }
 
@@ -1314,7 +1327,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws UnknownException For other exceptions.
    * @throws TimeoutException if operation timed out
    */
-  virtual void unregisterRegex(const char* regex) {
+  virtual void unregisterRegex(const char* regex) override {
     throw UnsupportedOperationException("Region.unregisterRegex()");
   }
 
@@ -1362,7 +1375,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    */
   virtual HashMapOfCacheable getAll(
       const VectorOfCacheableKey& keys,
-      const SerializablePtr& aCallbackArgument = nullptr) {
+      const SerializablePtr& aCallbackArgument = nullptr) override {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->getAll_internal(keys, aCallbackArgument, false);
   }
@@ -1393,9 +1406,9 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @returns A smart pointer to the SelectResults which can either be a
    * ResultSet or a StructSet.
    */
-  virtual SelectResultsPtr query(
-      const char* predicate,
-      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) {
+  virtual SelectResultsPtr query(const char* predicate,
+                                 std::chrono::milliseconds timeout =
+                                     DEFAULT_QUERY_RESPONSE_TIMEOUT) override {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->query(predicate, timeout);
   }
@@ -1420,7 +1433,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @returns true if the result size is non-zero, false otherwise.
    */
   virtual bool existsValue(const char* predicate,
-                           uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) {
+                           std::chrono::milliseconds timeout =
+                               DEFAULT_QUERY_RESPONSE_TIMEOUT) override {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->existsValue(predicate, timeout);
   }
@@ -1448,7 +1462,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    */
   virtual SerializablePtr selectValue(
       const char* predicate,
-      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) {
+      std::chrono::milliseconds timeout =
+          DEFAULT_QUERY_RESPONSE_TIMEOUT) override {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->selectValue(predicate, timeout);
   }
@@ -1480,8 +1495,9 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws UnknownException For other exceptions.
    * @see destroy
    */
-  virtual void removeAll(const VectorOfCacheableKey& keys,
-                         const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void removeAll(
+      const VectorOfCacheableKey& keys,
+      const SerializablePtr& aCallbackArgument = nullptr) override {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->removeAll(keys, aCallbackArgument);
   }
@@ -1490,9 +1506,9 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * Get the size of region. For native client regions, this will give the
    * number of entries in the local cache and not on the servers.
    */
-  virtual uint32_t size() { return m_realRegion->size(); }
+  virtual uint32_t size() override { return m_realRegion->size(); }
 
-  virtual const PoolPtr& getPool() { return m_realRegion->getPool(); }
+  virtual const PoolPtr& getPool() override { return m_realRegion->getPool(); }
 
   ProxyRegion(const ProxyCachePtr& proxyCache,
               const std::shared_ptr<RegionInternal>& realRegion)

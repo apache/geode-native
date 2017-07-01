@@ -158,9 +158,9 @@ const char* testRegex[] = {"D-Key-.*", "Key-.*"};
 #include "ThinClientDurableInit.hpp"
 #include "ThinClientTasks_C2S2.hpp"
 
-void initClientCache(int durableIdx, int redundancy, int durableTimeout,
-                     OperMonitorPtr& mon1, OperMonitorPtr& mon2,
-                     int sleepDuration = 0) {
+void initClientCache(int durableIdx, int redundancy,
+                     std::chrono::seconds durableTimeout, OperMonitorPtr& mon1,
+                     OperMonitorPtr& mon2, int sleepDuration = 0) {
   // Sleep before starting , Used for Timeout testing.
   if (sleepDuration) SLEEP(sleepDuration);
 
@@ -240,7 +240,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClient1Timeout300)
     if (mon2C1 == nullptr) {
       mon2C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[1]);
     }
-    initClientCache(0, 0 /* Redundancy */, 300 /* D Timeout */, mon1C1, mon2C1);
+    initClientCache(0, 0 /* Redundancy */,
+                    std::chrono::seconds(300) /* D Timeout */, mon1C1, mon2C1);
   }
 END_TASK_DEFINITION
 
@@ -252,7 +253,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClient1Timeout30)
     if (mon2C1 == nullptr) {
       mon2C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[1]);
     }
-    initClientCache(0, 0 /* Redundancy */, 30 /* D Timeout */, mon1C1, mon2C1);
+    initClientCache(0, 0 /* Redundancy */,
+                    std::chrono::seconds(30) /* D Timeout */, mon1C1, mon2C1);
   }
 END_TASK_DEFINITION
 
@@ -264,7 +266,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClient1DelayedStart)
     if (mon2C1 == nullptr) {
       mon2C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[1]);
     }
-    initClientCache(0, 0 /* Redundancy */, 30 /* D Timeout */, mon1C1, mon2C1,
+    initClientCache(0, 0 /* Redundancy */,
+                    std::chrono::seconds(30) /* D Timeout */, mon1C1, mon2C1,
                     35000 /* Sleep before starting */);
   }
 END_TASK_DEFINITION
@@ -277,7 +280,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, InitClient2Timeout300)
     if (mon2C2 == nullptr) {
       mon2C2 = std::make_shared<OperMonitor>(durableIds[1], regionNames[1]);
     }
-    initClientCache(1, 1 /* Redundancy */, 300 /* D Timeout */, mon1C2, mon2C2);
+    initClientCache(1, 1 /* Redundancy */,
+                    std::chrono::seconds(300) /* D Timeout */, mon1C2, mon2C2);
   }
 END_TASK_DEFINITION
 
@@ -290,7 +294,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, InitClient2Timeout30)
     if (mon2C2 == nullptr) {
       mon2C2 = std::make_shared<OperMonitor>(durableIds[1], regionNames[1]);
     }
-    initClientCache(1, 1 /* Redundancy */, 30 /* D Timeout */, mon1C2, mon2C2);
+    initClientCache(1, 1 /* Redundancy */,
+                    std::chrono::seconds(30) /* D Timeout */, mon1C2, mon2C2);
   }
 END_TASK_DEFINITION
 

@@ -44,8 +44,8 @@ DUNIT_TASK(CLIENT1, SetupClient1)
   {
     PropertiesPtr pp = Properties::create();
     pp->insert("durable-client-id", durableIds[0]);
-    pp->insert("durable-timeout", 300);
-    pp->insert("notify-ack-interval", 1);
+    pp->insert("durable-timeout", std::chrono::seconds(300));
+    pp->insert("notify-ack-interval", std::chrono::seconds(1));
 
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, pp, 0, true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,

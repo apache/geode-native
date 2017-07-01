@@ -631,15 +631,15 @@ namespace Apache.Geode.Client.FwkLib
       {
         case "free-connection-timeout":
           int fct = int.Parse(value);
-           pf.SetFreeConnectionTimeout(fct);
+           pf.SetFreeConnectionTimeout(TimeSpan.FromSeconds(fct));
            break;
         case "idle-timeout":
           int it = int.Parse(value);
-            pf.SetIdleTimeout(it);
+            pf.SetIdleTimeout(TimeSpan.FromSeconds(it));
             break;
         case "load-conditioning-interval":
           int lci = int.Parse(value);
-            pf.SetLoadConditioningInterval(lci);
+            pf.SetLoadConditioningInterval(TimeSpan.FromSeconds(lci));
           break;
         case "max-connections":
           int mxc = int.Parse(value);
@@ -651,11 +651,11 @@ namespace Apache.Geode.Client.FwkLib
            break;
         case "ping-interval":
           int pi = int.Parse(value);
-            pf.SetPingInterval(pi);
+            pf.SetPingInterval(TimeSpan.FromSeconds(pi));
             break;
         case "read-timeout":
           int rt = int.Parse(value);
-           pf.SetReadTimeout(rt);
+           pf.SetReadTimeout(TimeSpan.FromSeconds(rt));
            break;
         case "retry-attempts":
           int ra = int.Parse(value);
@@ -670,7 +670,7 @@ namespace Apache.Geode.Client.FwkLib
           break;
         case "subscription-ack-interval":
            int acki = int.Parse(value);
-            pf.SetSubscriptionAckInterval(acki);
+            pf.SetSubscriptionAckInterval(TimeSpan.FromSeconds(acki));
             break;
         case "subscription-enabled":
            if (value == "true")
@@ -694,7 +694,7 @@ namespace Apache.Geode.Client.FwkLib
           break;
         case "subscription-message-tracking-timeout":
             int smtt = int.Parse(value);
-            pf.SetSubscriptionMessageTrackingTimeout(smtt);
+            pf.SetSubscriptionMessageTrackingTimeout(TimeSpan.FromSeconds(smtt));
             break;
         case "subscription-redundancy":
             int sr = int.Parse(value);
@@ -878,7 +878,7 @@ namespace Apache.Geode.Client.FwkLib
             XmlAttributeCollection exAttrColl = nlrttl.Attributes;
             ExpirationAction action = StrToExpirationAction(exAttrColl["action"].Value);
             string rttl = exAttrColl["timeout"].Value;
-            af.SetRegionTimeToLive(action, uint.Parse(rttl));
+            af.SetRegionTimeToLive(action, TimeSpan.FromSeconds(uint.Parse(rttl)));
           }
           else
           {
@@ -893,7 +893,7 @@ namespace Apache.Geode.Client.FwkLib
             XmlAttributeCollection exAttrColl = nlrit.Attributes;
             ExpirationAction action = StrToExpirationAction(exAttrColl["action"].Value);
             string rit = exAttrColl["timeout"].Value;
-            af.SetRegionIdleTimeout(action, uint.Parse(rit));
+            af.SetRegionIdleTimeout(action, TimeSpan.FromSeconds(uint.Parse(rit)));
           }
           else
           {
@@ -908,7 +908,7 @@ namespace Apache.Geode.Client.FwkLib
             XmlAttributeCollection exAttrColl = nlettl.Attributes;
             ExpirationAction action = StrToExpirationAction(exAttrColl["action"].Value);
             string ettl = exAttrColl["timeout"].Value;
-            af.SetEntryTimeToLive(action, uint.Parse(ettl));
+            af.SetEntryTimeToLive(action, TimeSpan.FromSeconds(uint.Parse(ettl)));
           }
           else
           {
@@ -923,7 +923,7 @@ namespace Apache.Geode.Client.FwkLib
             XmlAttributeCollection exAttrColl = nleit.Attributes;
             ExpirationAction action = StrToExpirationAction(exAttrColl["action"].Value);
             string eit = exAttrColl["timeout"].Value;
-            af.SetEntryIdleTimeout(action, uint.Parse(eit));
+            af.SetEntryIdleTimeout(action, TimeSpan.FromSeconds(uint.Parse(eit)));
           }
           else
           {
@@ -1381,8 +1381,8 @@ namespace Apache.Geode.Client.FwkLib
         pf.SetMultiuserAuthentication(false);
         FwkInfo("MultiUser Mode is set to false");
       }
-      pf.SetFreeConnectionTimeout(180000);
-      pf.SetReadTimeout(180000);
+      pf.SetFreeConnectionTimeout(TimeSpan.FromMilliseconds(180000));
+      pf.SetReadTimeout(TimeSpan.FromMilliseconds(180000));
       pf.SetMinConnections(20);
       pf.SetMaxConnections(30);
 

@@ -28,15 +28,14 @@
 #include "ICacheLoader.hpp"
 #include "ICacheWriter.hpp"
 
-
-using namespace System;
-
 namespace Apache
 {
   namespace Geode
   {
     namespace Client
     {
+      using namespace System;
+
       namespace native = apache::geode::client;
 
       /// <summary>
@@ -72,7 +71,7 @@ namespace Apache
         /// if the new idleTimeout changes entry expiration from
         /// disabled to enabled or enabled to disabled.
         /// </exception>
-        System::Int32 SetEntryIdleTimeout( System::Int32 idleTimeout );
+        TimeSpan SetEntryIdleTimeout( TimeSpan idleTimeout );
 
         /// <summary>
         /// Sets the idleTimeout action for region entries.
@@ -94,7 +93,7 @@ namespace Apache
         /// if the new timeToLive changes entry expiration from
         /// disabled to enabled or enabled to disabled
         /// </exception>
-        System::Int32 SetEntryTimeToLive( System::Int32 timeToLive );
+        TimeSpan SetEntryTimeToLive( TimeSpan timeToLive );
 
         /// <summary>
         /// Set the timeToLive action for region entries.
@@ -116,7 +115,7 @@ namespace Apache
         /// if the new idleTimeout changes region expiration from
         /// disabled to enabled or enabled to disabled.
         /// </exception>
-        System::Int32 SetRegionIdleTimeout( System::Int32 idleTimeout );
+        TimeSpan SetRegionIdleTimeout( TimeSpan idleTimeout );
 
         /// <summary>
         /// Sets the idleTimeout action for the region itself.
@@ -138,7 +137,7 @@ namespace Apache
         /// if the new timeToLive changes region expiration from
         /// disabled to enabled or enabled to disabled.
         /// </exception>
-        System::Int32 SetRegionTimeToLive( System::Int32 timeToLive );
+        TimeSpan SetRegionTimeToLive( TimeSpan timeToLive );
 
         /// <summary>
         /// Sets the timeToLive action for the region itself.

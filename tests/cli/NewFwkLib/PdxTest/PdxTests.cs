@@ -784,7 +784,7 @@ namespace Apache.Geode.Client.FwkLib
    
             // do the putAll
             FwkTest<TKey, TVal>.CurrentTest.FwkInfo("putAll: calling putAll with map of " + mapToPut.Count + " entries");
-            r.PutAll(mapToPut, 60);
+            r.PutAll(mapToPut, TimeSpan.FromSeconds(60));
 
             FwkTest<TKey, TVal>.CurrentTest.FwkInfo("putAll: done calling putAll with map of " + mapToPut.Count + " entries");
 
@@ -1149,11 +1149,11 @@ namespace Apache.Geode.Client.FwkLib
                 startTime = DateTime.Now;
                 if (isparam)
                 {
-                    results = qry.Execute(paramList, 600);
+                    results = qry.Execute(paramList, TimeSpan.FromSeconds(600));
                 }
                 else
                 {
-                    results = qry.Execute(600);
+                    results = qry.Execute(TimeSpan.FromSeconds(600));
                 }
                 endTime = DateTime.Now;
                 elapsedTime = endTime - startTime;
@@ -1275,7 +1275,7 @@ namespace Apache.Geode.Client.FwkLib
                     map.Add(key, value);
                 }
             }
-            region.PutAll(map, 60);
+            region.PutAll(map, TimeSpan.FromSeconds(60));
         }
 
         private void GetAllOps()
@@ -3541,7 +3541,7 @@ namespace Apache.Geode.Client.FwkLib
                         {
                             QueryService<TKey, object> qs = CheckQueryService();
                             Query<object> qry = qs.NewQuery("select distinct * from /Portfolios where FALSE");
-                            ISelectResults<object> result = qry.Execute(600);
+                            ISelectResults<object> result = qry.Execute(TimeSpan.FromSeconds(600));
                         }
                         else if (opCode == "cq")
                         {

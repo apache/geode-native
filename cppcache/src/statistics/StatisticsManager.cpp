@@ -37,15 +37,14 @@ using namespace apache::geode::statistics;
  * static member initialization
  */
 
-StatisticsManager::StatisticsManager(const char* filePath,
-                                     int64_t sampleInterval, bool enabled,
-                                     Cache* cache, const char* durableClientId,
-                                     const uint32_t durableTimeout,
-                                     int64_t statFileLimit,
-                                     int64_t statDiskSpaceLimit)
-    : m_sampler(nullptr), m_adminRegion(nullptr) {
-  m_sampleIntervalMs =
-      static_cast<int32_t>(sampleInterval) * 1000; /* convert to millis */
+StatisticsManager::StatisticsManager(
+    const char* filePath, const std::chrono::milliseconds sampleInterval,
+    bool enabled, Cache* cache, const char* durableClientId,
+    const std::chrono::seconds durableTimeout, int64_t statFileLimit,
+    int64_t statDiskSpaceLimit)
+    : m_sampleIntervalMs(sampleInterval),
+      m_sampler(nullptr),
+      m_adminRegion(nullptr) {
   m_newlyAddedStatsList.reserve(16);               // Allocate initial sizes
   m_statisticsFactory =
       std::unique_ptr<GeodeStatisticsFactory>(new GeodeStatisticsFactory(this));

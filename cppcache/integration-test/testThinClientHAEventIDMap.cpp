@@ -96,8 +96,8 @@ int g_redundancyLevel = 0;
 
 void initClient() {
   PropertiesPtr props = Properties::create();
-  props->insert("notify-ack-interval", 3600);  // set to 1 hr.
-  props->insert("notify-dupcheck-life", 3600);
+  props->insert("notify-ack-interval", std::chrono::hours(1));  // set to 1 hr.
+  props->insert("notify-dupcheck-life", std::chrono::hours(1));
 
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(true, props);

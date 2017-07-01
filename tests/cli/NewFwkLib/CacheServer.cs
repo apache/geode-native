@@ -856,7 +856,7 @@ namespace Apache.Geode.Client.FwkLib
   {
     #region Private constants and statics
 
-    private const UInt32 QueryResponseTimeout = 600;
+    private static TimeSpan QueryResponseTimeout = TimeSpan.FromSeconds(600);
     private const string RegionName = "regionName";
     private const string ValueSizes = "valueSizes";
     private const string OpsSecond = "opsSecond";
@@ -1100,11 +1100,11 @@ namespace Apache.Geode.Client.FwkLib
           startTime = DateTime.Now;
           if (isparam)
           {
-            results = qry.Execute(paramList,600);
+            results = qry.Execute(paramList, TimeSpan.FromSeconds(600));
           }
           else
           {
-            results = qry.Execute(600);
+            results = qry.Execute(TimeSpan.FromSeconds(600));
           }
           endTime = DateTime.Now;
           elapsedTime = endTime - startTime;
@@ -1250,7 +1250,7 @@ namespace Apache.Geode.Client.FwkLib
           map.Add(key, value);
         }
       }
-      region.PutAll(map,60);
+      region.PutAll(map, TimeSpan.FromSeconds(60));
     }
 
     private void GetAllOps()
@@ -1896,7 +1896,7 @@ namespace Apache.Geode.Client.FwkLib
 
    // do the putAll
    FwkInfo("putAll: calling putAll with map of " + mapToPut.Count + " entries");
-   r.PutAll(mapToPut,60);
+   r.PutAll(mapToPut, TimeSpan.FromSeconds(60));
 
    FwkInfo("putAll: done calling putAll with map of " + mapToPut.Count + " entries");
 
@@ -2820,7 +2820,7 @@ namespace Apache.Geode.Client.FwkLib
             {
               QueryService<TKey, object> qs = CheckQueryService();
               Query<object> qry = qs.NewQuery("select distinct * from /Portfolios where FALSE");
-              ISelectResults<object> result = qry.Execute(600);
+              ISelectResults<object> result = qry.Execute(TimeSpan.FromSeconds(600));
               query++;
             }
             else if (opCode == "cq")
@@ -4691,7 +4691,7 @@ private void checkUpdatedValue(TKey key, TVal value)
             {
               QueryService<TKey, object> qs = authCache.GetQueryService<TKey, object>();
               Query<object> qry = qs.NewQuery("select distinct * from /Portfolios where FALSE");
-              ISelectResults<object> result = qry.Execute(600);
+              ISelectResults<object> result = qry.Execute(TimeSpan.FromSeconds(600));
             }
             else if (opCode == "cq")
             {
@@ -4725,7 +4725,7 @@ private void checkUpdatedValue(TKey key, TVal value)
                 args.Add("addKey"); 
                 funcName = "RegionOperationsFunction";
                 exc = Client.FunctionService<object>.OnRegion(region);
-                executeFunctionResult = exc.WithArgs(args).WithFilter(filterObj).Execute(funcName, 15).GetResult();
+                executeFunctionResult = exc.WithArgs(args).WithFilter(filterObj).Execute(funcName, TimeSpan.FromSeconds(15)).GetResult();
               }
               else if (num == 1)
               {
@@ -4733,7 +4733,7 @@ private void checkUpdatedValue(TKey key, TVal value)
                 funcName = "ServerOperationsFunction";
                 //exc = region.Cache.GetFunctionService().OnServer();
                 exc = Client.FunctionService<object>.OnServer(authCache);
-                executeFunctionResult = exc.WithArgs(args).Execute(funcName, 15).GetResult();
+                executeFunctionResult = exc.WithArgs(args).Execute(funcName, TimeSpan.FromSeconds(15)).GetResult();
               }
               else
               {
@@ -4743,7 +4743,7 @@ private void checkUpdatedValue(TKey key, TVal value)
                   funcName = "ServerOperationsFunction";
                   //exc = region.Cache.GetFunctionService().OnServers();
                   exc = Client.FunctionService<object>.OnServers(authCache);
-                  executeFunctionResult = exc.WithArgs(args).Execute(funcName, 15).GetResult();
+                  executeFunctionResult = exc.WithArgs(args).Execute(funcName, TimeSpan.FromSeconds(15)).GetResult();
                 }
                 catch (FunctionExecutionException)
                 {

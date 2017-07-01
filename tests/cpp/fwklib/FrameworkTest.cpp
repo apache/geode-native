@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
+#include <geode/AttributesFactory.hpp>
+#include <geode/PoolFactory.hpp>
+#include <geode/util/chrono/duration.hpp>
+
 #include "fwklib/FrameworkTest.hpp"
 #include "fwklib/TestClient.hpp"
 #include "fwklib/FwkLog.hpp"
-#include <geode/AttributesFactory.hpp>
-//#include <geode/RegionAttributes.hpp>
-#include <geode/PoolFactory.hpp>
+
 #include "PoolAttributes.hpp"
 
 #include <util/concurrent/spinlock_mutex.hpp>
@@ -391,8 +393,8 @@ void FrameworkTest::parseEndPoints(int32_t ep, std::string label,
   pfPtr->setMinConnections(20);
   pfPtr->setMaxConnections(30);
   pfPtr->setSubscriptionEnabled(true);
-  pfPtr->setReadTimeout(180000);
-  pfPtr->setFreeConnectionTimeout(180000);
+  pfPtr->setReadTimeout(std::chrono::seconds(180));
+  pfPtr->setFreeConnectionTimeout(std::chrono::seconds(180));
   int32_t redundancyLevel = getIntValue("redundancyLevel");
   if (redundancyLevel > 0) pfPtr->setSubscriptionRedundancy(redundancyLevel);
   // create tag specific pools
@@ -478,23 +480,25 @@ void FrameworkTest::setTestScheme() {
 }
 
 std::string FrameworkTest::poolAttributesToString(PoolPtr& pool) {
+  using namespace apache::geode::util::chrono::duration;
+
   std::string sString;
   sString += "\npoolName: ";
   sString += FwkStrCvt(pool->getName()).toString();
   sString += "\nFreeConnectionTimeout: ";
-  sString += FwkStrCvt(pool->getFreeConnectionTimeout()).toString();
+  sString += to_string(pool->getFreeConnectionTimeout());
   sString += "\nLoadConditioningInterval: ";
-  sString += FwkStrCvt(pool->getLoadConditioningInterval()).toString();
+  sString += to_string(pool->getLoadConditioningInterval());
   sString += "\nSocketBufferSize: ";
   sString += FwkStrCvt(pool->getSocketBufferSize()).toString();
   sString += "\nReadTimeout: ";
-  sString += FwkStrCvt(pool->getReadTimeout()).toString();
+  sString += to_string(pool->getReadTimeout());
   sString += "\nMinConnections: ";
   sString += FwkStrCvt(pool->getMinConnections()).toString();
   sString += "\nMaxConnections: ";
   sString += FwkStrCvt(pool->getMaxConnections()).toString();
   sString += "\nStatisticInterval: ";
-  sString += FwkStrCvt(pool->getStatisticInterval()).toString();
+  sString += to_string(pool->getStatisticInterval());
   sString += "\nRetryAttempts: ";
   sString += FwkStrCvt(pool->getRetryAttempts()).toString();
   sString += "\nSubscriptionEnabled: ";
@@ -502,17 +506,15 @@ std::string FrameworkTest::poolAttributesToString(PoolPtr& pool) {
   sString += "\nSubscriptionRedundancy: ";
   sString += FwkStrCvt(pool->getSubscriptionRedundancy()).toString();
   sString += "\nSubscriptionMessageTrackingTimeout: ";
-  sString +=
-      FwkStrCvt(pool->getSubscriptionMessageTrackingTimeout()).toString();
+  sString += to_string(pool->getSubscriptionMessageTrackingTimeout());
   sString += "\nSubscriptionAckInterval: ";
-  sString += FwkStrCvt(pool->getSubscriptionAckInterval()).toString();
+  sString += to_string(pool->getSubscriptionAckInterval());
   sString += "\nServerGroup: ";
   sString += pool->getServerGroup();
   sString += "\nIdleTimeout: ";
-  sString += FwkStrCvt(static_cast<int64_t>(pool->getIdleTimeout())).toString();
+  sString += util::chrono::duration::to_string(pool->getIdleTimeout());
   sString += "\nPingInterval: ";
-  sString +=
-      FwkStrCvt(static_cast<int64_t>(pool->getPingInterval())).toString();
+  sString += to_string(pool->getPingInterval());
   sString += "\nThreadLocalConnections: ";
   sString += pool->getThreadLocalConnections() ? "true" : "false";
   sString += "\nMultiuserAuthentication: ";

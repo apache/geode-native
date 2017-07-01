@@ -280,19 +280,13 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       LOG("CQ completed successfully");
       if (pool != nullptr) {
         // TODO:
-        FunctionService::onServer(pool)
-            ->execute("securityTest", true)
-            ->getResult();
+        FunctionService::onServer(pool)->execute("securityTest")->getResult();
         LOG("Function execution completed successfully");
-        FunctionService::onServers(pool)
-            ->execute("securityTest", true)
-            ->getResult();
+        FunctionService::onServers(pool)->execute("securityTest")->getResult();
         LOG("Function execution completed successfully");
-        FunctionService::onRegion(regPtr)
-            ->execute("securityTest", true)
-            ->getResult();
+        FunctionService::onRegion(regPtr)->execute("securityTest")->getResult();
         LOG("Function execution completed successfully");
-        FunctionService::onRegion(regPtr)->execute("FireNForget", false);
+        FunctionService::onRegion(regPtr)->execute("FireNForget");
         LOG("Function execution with no result completed successfully");
       } else {
         LOG("Skipping function execution for non pool case");
@@ -597,9 +591,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
 
     try {
       if (pool != nullptr) {
-        FunctionService::onServer(pool)
-            ->execute("securityTest", true)
-            ->getResult();
+        FunctionService::onServer(pool)->execute("securityTest")->getResult();
         FAIL("Function execution should not have completed successfully");
       } else {
         LOG("Skipping function execution for non pool case");
@@ -609,9 +601,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
 
     try {
       if (pool != nullptr) {
-        FunctionService::onServer(pool)
-            ->execute("securityTest", true)
-            ->getResult();
+        FunctionService::onServer(pool)->execute("securityTest")->getResult();
         FAIL("Function execution should not have completed successfully");
       } else {
         LOG("Skipping function execution for non pool case");
@@ -621,9 +611,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
 
     try {
       if (pool != nullptr) {
-        FunctionService::onServers(pool)
-            ->execute("securityTest", true)
-            ->getResult();
+        FunctionService::onServers(pool)->execute("securityTest")->getResult();
         FAIL("Function execution should not have completed successfully");
       } else {
         LOG("Skipping function execution for non pool case");
@@ -635,7 +623,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
       if (pool != nullptr) {
         RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
         FunctionService::onRegion(regPtr0)
-            ->execute("securityTest", true)
+            ->execute("securityTest")
             ->getResult();
         FAIL("Function execution should not have completed successfully");
       } else {

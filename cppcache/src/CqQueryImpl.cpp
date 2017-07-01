@@ -359,7 +359,8 @@ bool CqQueryImpl::executeCq(TcrMessage::MsgType requestType) {
 }
 
 // for EXECUTE_INITIAL_RESULTS_REQUEST :
-CqResultsPtr CqQueryImpl::executeWithInitialResults(uint32_t timeout) {
+CqResultsPtr CqQueryImpl::executeWithInitialResults(
+    std::chrono::milliseconds timeout) {
   GuardUserAttribures gua;
   if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);
@@ -381,6 +382,7 @@ CqResultsPtr CqQueryImpl::executeWithInitialResults(uint32_t timeout) {
                                     ->createDataOutput(),
                                 m_cqName, m_queryString, CqState::RUNNING,
                                 isDurable(), m_tccdm);
+
   TcrMessageReply reply(true, m_tccdm);
   auto resultCollector = (new ChunkedQueryResponse(reply));
   reply.setChunkedResultHandler(
@@ -474,7 +476,7 @@ void CqQueryImpl::sendStopOrClose(TcrMessage::MsgType requestType) {
                              .getCacheImpl()
                              ->getCache()
                              ->createDataOutput(),
-                         m_cqName, -1, m_tccdm);
+                         m_cqName, std::chrono::milliseconds(-1), m_tccdm);
     err = m_tccdm->sendSyncRequest(msg, reply);
   } else if (requestType == TcrMessage::CLOSECQ_MSG_TYPE) {
     TcrMessageCloseCQ msg(m_cqService->getDM()
@@ -482,7 +484,7 @@ void CqQueryImpl::sendStopOrClose(TcrMessage::MsgType requestType) {
                               .getCacheImpl()
                               ->getCache()
                               ->createDataOutput(),
-                          m_cqName, -1, m_tccdm);
+                          m_cqName, std::chrono::milliseconds(-1), m_tccdm);
     err = m_tccdm->sendSyncRequest(msg, reply);
   }
 

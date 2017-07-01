@@ -49,7 +49,7 @@ namespace Apache.Geode.Client.UnitTests
     }
 
     public void InitDurableClient(string locators, int redundancyLevel,
-     string durableClientId, int durableTimeout)
+     string durableClientId, TimeSpan durableTimeout)
     {
       CacheHelper.InitConfigForDurable_Pool(locators, redundancyLevel, durableClientId, durableTimeout);
       CacheHelper.CreateTCRegion_Pool(QueryRegionNames[0], true, true, (ICacheListener<object, object>)null, CacheHelper.Locators, "__TESTPOOL1_", true);
@@ -200,8 +200,8 @@ namespace Apache.Geode.Client.UnitTests
         CacheHelper.StartJavaServerWithLocators(1, "GFECS1", 1);
         Util.Log("Cache server 1 started");
 
-        m_client1.Call(InitDurableClient, CacheHelper.Locators, 0, "DurableClient1", 300);
-        m_client2.Call(InitDurableClient, CacheHelper.Locators, 0, "DurableClient2", 300);
+        m_client1.Call(InitDurableClient, CacheHelper.Locators, 0, "DurableClient1", TimeSpan.FromSeconds(300));
+        m_client2.Call(InitDurableClient, CacheHelper.Locators, 0, "DurableClient2", TimeSpan.FromSeconds(300));
         Util.Log("client initialization done.");
 
         m_client1.Call(RegisterCqsClient1, false);
@@ -233,8 +233,8 @@ namespace Apache.Geode.Client.UnitTests
         CacheHelper.StartJavaServerWithLocators(1, "GFECS1", 1);
         Util.Log("Cache server 1 started");
 
-        m_client1.Call(InitDurableClient, CacheHelper.Locators, 0, "DurableClient1", 300);
-        m_client2.Call(InitDurableClient, CacheHelper.Locators, 0, "DurableClient2", 300);
+        m_client1.Call(InitDurableClient, CacheHelper.Locators, 0, "DurableClient1", TimeSpan.FromSeconds(300));
+        m_client2.Call(InitDurableClient, CacheHelper.Locators, 0, "DurableClient2", TimeSpan.FromSeconds(300));
         Util.Log("client initialization done.");
 
         m_client1.Call(RegisterCqsClient1, false);
@@ -250,8 +250,8 @@ namespace Apache.Geode.Client.UnitTests
         m_client2.Call(CacheHelper.CloseKeepAlive);
 
 
-        m_client1.Call(InitDurableClient, CacheHelper.Locators, 0, "DurableClient1", 300);
-        m_client2.Call(InitDurableClient, CacheHelper.Locators, 0, "DurableClient2", 300);
+        m_client1.Call(InitDurableClient, CacheHelper.Locators, 0, "DurableClient1", TimeSpan.FromSeconds(300));
+        m_client2.Call(InitDurableClient, CacheHelper.Locators, 0, "DurableClient2", TimeSpan.FromSeconds(300));
         Util.Log("client re-initialization done.");
 
         m_client1.Call(RegisterCqsClient1, true);

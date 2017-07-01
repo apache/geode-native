@@ -36,15 +36,15 @@
 #include "native_unique_ptr.hpp"
 
 
-using namespace System;
-using namespace System::Collections::Generic;
-
 namespace Apache
 {
   namespace Geode
   {
     namespace Client
     {
+      using namespace System;
+      using namespace System::Collections::Generic;
+
       namespace native = apache::geode::client;
 
       /// <summary>
@@ -286,7 +286,7 @@ namespace Apache
         /// <param name="idleTimeout">
         /// the idleTimeout in seconds for entries in this region.
         /// </param>
-        void SetEntryIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout );
+        void SetEntryIdleTimeout( ExpirationAction action, TimeSpan idleTimeout );
 
         /// <summary>
         /// Sets the timeToLive expiration attributes for region entries for the next
@@ -298,7 +298,7 @@ namespace Apache
         /// <param name="timeToLive">
         /// the timeToLive in seconds for entries in this region.
         /// </param>
-        void SetEntryTimeToLive( ExpirationAction action, System::UInt32 timeToLive );
+        void SetEntryTimeToLive( ExpirationAction action, TimeSpan timeToLive );
 
         /// <summary>
         /// Sets the idleTimeout expiration attributes for the region itself for the
@@ -310,7 +310,7 @@ namespace Apache
         /// <param name="idleTimeout">
         /// the idleTimeout in seconds for the region as a whole.
         /// </param>
-        void SetRegionIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout );
+        void SetRegionIdleTimeout( ExpirationAction action, TimeSpan idleTimeout );
 
         /// <summary>
         /// Sets the timeToLive expiration attributes for the region itself for the
@@ -322,7 +322,7 @@ namespace Apache
         /// <param name="timeToLive">
         /// the timeToLive in seconds for the region as a whole.
         /// </param>
-        void SetRegionTimeToLive( ExpirationAction action, System::UInt32 timeToLive );
+        void SetRegionTimeToLive( ExpirationAction action, TimeSpan timeToLive );
 
 
         // PERSISTENCE

@@ -209,7 +209,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        ISelectResults<object> results = region.Query<object>(QueryStatics.RegionQueries[0].Query, 2200000);
+        ISelectResults<object> results = region.Query<object>(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
         Assert.Fail("Expected IllegalArgumentException exception for invalid timeout");
       }
       catch (IllegalArgumentException ex)
@@ -280,7 +280,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        bool existsValue = region.ExistsValue(QueryStatics.RegionQueries[0].Query, 2200000);
+        bool existsValue = region.ExistsValue(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
         Assert.Fail("Expected IllegalArgumentException exception for invalid timeout");
       }
       catch (IllegalArgumentException ex)
@@ -372,7 +372,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        Object result = region.SelectValue(QueryStatics.RegionQueries[0].Query, 2200000);
+        Object result = region.SelectValue(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
         Assert.Fail("Expected IllegalArgumentException exception for invalid timeout");
       }
       catch (IllegalArgumentException ex)

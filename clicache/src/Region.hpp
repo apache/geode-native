@@ -27,14 +27,13 @@
 #include "ISubscriptionService.hpp"
 #include "native_shared_ptr.hpp"
 
-using namespace System;
-
 namespace Apache
 {
   namespace Geode
   {
     namespace Client
     {
+      using namespace System;
 
       namespace native = apache::geode::client;
 
@@ -120,9 +119,9 @@ namespace Apache
 
           virtual void PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map);
 
-          virtual void PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map, int timeout);
+          virtual void PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map, TimeSpan timeout);
 
-          virtual void PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map, int timeout, Object^ callbackArg);
+          virtual void PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map, TimeSpan timeout, Object^ callbackArg);
 
           virtual void GetAll(System::Collections::Generic::ICollection<TKey>^ keys, 
             System::Collections::Generic::IDictionary<TKey, TValue>^ values, 
@@ -243,15 +242,15 @@ namespace Apache
           virtual ISelectResults<TResult>^ Query( String^ predicate );
 
           generic<class TResult>
-          virtual ISelectResults<TResult>^ Query( String^ predicate, System::UInt32 timeout );
+          virtual ISelectResults<TResult>^ Query( String^ predicate, TimeSpan timeout );
 
           virtual bool ExistsValue( String^ predicate );
 
-          virtual bool ExistsValue( String^ predicate, System::UInt32 timeout );
+          virtual bool ExistsValue( String^ predicate, TimeSpan timeout );
 
           virtual Object^ SelectValue( String^ predicate );
 
-          virtual Object^ SelectValue( String^ predicate, System::UInt32 timeout );
+          virtual Object^ SelectValue( String^ predicate, TimeSpan timeout );
 
 
       internal:

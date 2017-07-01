@@ -38,6 +38,7 @@
 #include "PoolManager.hpp"
 #include "SystemProperties.hpp"
 #include "impl/CacheResolver.hpp"
+#include "TimeSpanUtils.hpp"
 
 namespace Apache
 {
@@ -592,14 +593,14 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return PutAll(map, DEFAULT_RESPONSE_TIMEOUT);
+          return PutAll(map, TimeSpanUtils::DurationToTimeSpan(native::DEFAULT_RESPONSE_TIMEOUT));
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
 
       }
 
       generic<class TKey, class TValue>
-      void Region<TKey, TValue>::PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map, int timeout)
+      void Region<TKey, TValue>::PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map, TimeSpan timeout)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
@@ -612,7 +613,7 @@ namespace Apache
         }
         try
         {
-          m_nativeptr->get()->putAll(nativeMap, timeout);
+          m_nativeptr->get()->putAll(nativeMap, TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
         }
         finally
         {
@@ -624,7 +625,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      void Region<TKey, TValue>::PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map, int timeout, Object^ callbackArg)
+      void Region<TKey, TValue>::PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map, TimeSpan timeout, Object^ callbackArg)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
@@ -638,7 +639,7 @@ namespace Apache
         native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
         try
         {
-          m_nativeptr->get()->putAll(nativeMap, timeout, callbackptr);
+          m_nativeptr->get()->putAll(nativeMap, TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout), callbackptr);
         }
         finally
         {
@@ -1354,12 +1355,12 @@ namespace Apache
       generic<class TResult>
       ISelectResults<TResult>^ Region<TKey, TValue>::Query(String^ predicate)
       {
-        return Query<TResult>( predicate, DEFAULT_QUERY_RESPONSE_TIMEOUT );
+        return Query<TResult>( predicate, TimeSpanUtils::DurationToTimeSpan(native::DEFAULT_QUERY_RESPONSE_TIMEOUT ));
       }
 
       generic<class TKey, class TValue>
       generic<class TResult>
-      ISelectResults<TResult>^ Region<TKey, TValue>::Query(String^ predicate, System::UInt32 timeout)
+      ISelectResults<TResult>^ Region<TKey, TValue>::Query(String^ predicate, TimeSpan timeout)
       {
         ManagedString mg_predicate(predicate);
 
@@ -1367,7 +1368,7 @@ namespace Apache
 
           try
           {
-            auto selectResults = m_nativeptr->get()->query(mg_predicate.CharPtr, timeout);
+            auto selectResults = m_nativeptr->get()->query(mg_predicate.CharPtr, TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
             if (auto resultptr = std::dynamic_pointer_cast<native::ResultSet>(selectResults))
             {
               return ResultSet<TResult>::Create(resultptr);
@@ -1389,11 +1390,11 @@ namespace Apache
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::ExistsValue(String^ predicate)
       {
-        return ExistsValue(predicate, DEFAULT_QUERY_RESPONSE_TIMEOUT);
+        return ExistsValue(predicate, TimeSpanUtils::DurationToTimeSpan(native::DEFAULT_QUERY_RESPONSE_TIMEOUT));
       }
 
       generic<class TKey, class TValue>
-      bool Region<TKey, TValue>::ExistsValue(String^ predicate, System::UInt32 timeout)
+      bool Region<TKey, TValue>::ExistsValue(String^ predicate, TimeSpan timeout)
       {
         ManagedString mg_predicate(predicate);
 
@@ -1401,7 +1402,7 @@ namespace Apache
 
           try
           {
-            return m_nativeptr->get()->existsValue(mg_predicate.CharPtr, timeout);
+            return m_nativeptr->get()->existsValue(mg_predicate.CharPtr, TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
           }
           finally
           {
@@ -1415,11 +1416,11 @@ namespace Apache
       generic<class TKey, class TValue>
       Object^ Region<TKey, TValue>::SelectValue(String^ predicate)
       {
-        return SelectValue(predicate, DEFAULT_QUERY_RESPONSE_TIMEOUT);
+        return SelectValue(predicate, TimeSpanUtils::DurationToTimeSpan(native::DEFAULT_QUERY_RESPONSE_TIMEOUT));
       }
 
       generic<class TKey, class TValue>
-      Object^ Region<TKey, TValue>::SelectValue(String^ predicate, System::UInt32 timeout)
+      Object^ Region<TKey, TValue>::SelectValue(String^ predicate, TimeSpan timeout)
       {
         ManagedString mg_predicate(predicate);
 
@@ -1427,7 +1428,7 @@ namespace Apache
 
         try
         {
-          auto nativeptr = m_nativeptr->get()->selectValue(mg_predicate.CharPtr, timeout);
+          auto nativeptr = m_nativeptr->get()->selectValue(mg_predicate.CharPtr, TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
           return Serializable::GetManagedValueGeneric<Object^>(nativeptr);
         }
         finally

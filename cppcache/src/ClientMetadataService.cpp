@@ -32,7 +32,7 @@ namespace client {
 const char* ClientMetadataService::NC_CMDSvcThread = "NC CMDSvcThread";
 ClientMetadataService::~ClientMetadataService() {
   delete m_regionQueue;
-  if (m_bucketWaitTimeout > 0) {
+  if (m_bucketWaitTimeout > std::chrono::milliseconds::zero()) {
     try {
       std::map<std::string, PRbuckets*>::iterator bi;
       for (bi = m_bucketStatus.begin(); bi != m_bucketStatus.end(); ++bi) {
@@ -46,9 +46,6 @@ ClientMetadataService::~ClientMetadataService() {
 }
 
 ClientMetadataService::ClientMetadataService(Pool* pool)
-    /* adongre
-     * CID 28928: Uninitialized scalar field (UNINIT_CTOR)
-     */
     : m_run(false)
 
 {
@@ -144,7 +141,8 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
       cptr = std::make_shared<ClientMetadata>(reply.getNumBuckets(),
                                               reply.getColocatedWith(), tcrdm,
                                               reply.getFpaSet());
-      if (m_bucketWaitTimeout > 0 && reply.getNumBuckets() > 0) {
+      if (m_bucketWaitTimeout > std::chrono::milliseconds::zero() &&
+          reply.getNumBuckets() > 0) {
         WriteGuard guard(m_PRbucketStatusLock);
         m_bucketStatus[regionFullPath] = new PRbuckets(reply.getNumBuckets());
       }
@@ -463,7 +461,7 @@ void ClientMetadataService::markPrimaryBucketForTimeout(
     const RegionPtr& region, const CacheableKeyPtr& key,
     const CacheablePtr& value, const SerializablePtr& aCallbackArgument,
     bool isPrimary, BucketServerLocationPtr& serverLocation, int8_t& version) {
-  if (m_bucketWaitTimeout == 0) return;
+  if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return;
 
   WriteGuard guard(m_PRbucketStatusLock);
 
@@ -810,7 +808,7 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
     const RegionPtr& region, const CacheableKeyPtr& key,
     const CacheablePtr& value, const SerializablePtr& aCallbackArgument,
     bool isPrimary, BucketServerLocationPtr& serverLocation, int8_t& version) {
-  if (m_bucketWaitTimeout == 0) return;
+  if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return;
 
   WriteGuard guard(m_PRbucketStatusLock);
 
@@ -862,7 +860,7 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
 
 bool ClientMetadataService::isBucketMarkedForTimeout(const char* regionFullPath,
                                                      int32_t bucketid) {
-  if (m_bucketWaitTimeout == 0) return false;
+  if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return false;
 
   ReadGuard guard(m_PRbucketStatusLock);
 

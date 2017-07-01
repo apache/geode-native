@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_QUERY_H_
-#define GEODE_QUERY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_QUERY_H_
+#define GEODE_QUERY_H_
+
+#include <chrono>
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
@@ -66,7 +68,7 @@ class CPPCACHE_EXPORT Query {
    * ResultSet or a StructSet.
    */
   virtual SelectResultsPtr execute(
-      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
 
   /**
    * Executes the parameterized OQL Query on the cache server and returns the
@@ -91,7 +93,7 @@ class CPPCACHE_EXPORT Query {
 
   virtual SelectResultsPtr execute(
       CacheableVectorPtr paramList,
-      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
   /**
    * Get the query string provided when a new Query was created from a
    * QueryService.
@@ -117,6 +119,7 @@ class CPPCACHE_EXPORT Query {
    */
   virtual bool isCompiled() = 0;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

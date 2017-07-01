@@ -38,4 +38,10 @@
 // Disable native code generation warning
 #pragma warning(disable: 4793)
 
+// Disable /clr warnings
+#pragma warning(disable: 4575)
+
+//#pragma pack(push)
+
 #pragma managed(push, off)
+

@@ -19,6 +19,7 @@
 #include "../geode_defs.hpp"
 #include <vcclr.h>
 #include "begin_native.hpp"
+#include <chrono>
 #include <geode/ResultCollector.hpp>
 #include "end_native.hpp"
 
@@ -73,10 +74,11 @@ namespace apache {
         /// </summary>
         virtual ~ManagedResultCollectorGeneric() { }
 
-        CacheableVectorPtr getResult(System::UInt32 timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
-        void addResult(const CacheablePtr& result);
-        void endResults();
-        void clearResults();
+        CacheableVectorPtr getResult(std::chrono::milliseconds timeout = native::DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
+        void addResult(const CacheablePtr& result) override;
+        void endResults() override;
+        void clearResults() override;
+
         /// <summary>
         /// Returns the wrapped managed object reference.
         /// </summary>

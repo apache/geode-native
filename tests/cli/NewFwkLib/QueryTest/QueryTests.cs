@@ -115,7 +115,7 @@ namespace Apache.Geode.Client.FwkLib
 
     #region Private constants
 
-    private const UInt32 QueryResponseTimeout = 600;
+    private static TimeSpan QueryResponseTimeout = TimeSpan.FromSeconds(600);
     
     private const string QueryBB = "QueryBB";
     private const string DistinctKeys = "distinctKeys";

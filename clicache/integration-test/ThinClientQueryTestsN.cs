@@ -1021,7 +1021,7 @@ namespace Apache.Geode.Client.UnitTests
       try
       {
         Util.Log("EXECUTE 1 START for query: ", query.QueryString);
-        ISelectResults<object> results = query.Execute(3);
+        ISelectResults<object> results = query.Execute(TimeSpan.FromSeconds(3));
         Util.Log("EXECUTE 1 STOP");
         Util.Log("Result size is {0}", results.Size);
         Assert.Fail("Didnt get expected timeout exception for first execute");
@@ -1043,7 +1043,7 @@ namespace Apache.Geode.Client.UnitTests
       try
       {
         Util.Log("EXECUTE 2 START for query: ", query.QueryString);
-        ISelectResults<object> results = query.Execute(850);
+        ISelectResults<object> results = query.Execute(TimeSpan.FromSeconds(850));
         Util.Log("EXECUTE 2 STOP");
         Util.Log("Result size is {0}", results.Size);
       }
@@ -1064,7 +1064,7 @@ namespace Apache.Geode.Client.UnitTests
       try
       {
         Util.Log("EXECUTE 3 START for query: ", query.QueryString);
-        ISelectResults<object> results = query.Execute(2);
+        ISelectResults<object> results = query.Execute(TimeSpan.FromSeconds(2));
         Util.Log("EXECUTE 3 STOP");
         Util.Log("Result size is {0}", results.Size);
         Assert.Fail("Didnt get expected timeout exception for third execute");
@@ -1085,7 +1085,7 @@ namespace Apache.Geode.Client.UnitTests
       try
       {
         Util.Log("EXECUTE 4 START for query: ", query.QueryString);
-        ISelectResults<object> results = query.Execute(850);
+        ISelectResults<object> results = query.Execute(TimeSpan.FromSeconds(850));
         Util.Log("EXECUTE 4 STOP");
         Util.Log("Result size is {0}", results.Size);
       }
@@ -1127,7 +1127,7 @@ namespace Apache.Geode.Client.UnitTests
           }
         }
 
-        ISelectResults<object> results = query.Execute(paramList, 1);
+        ISelectResults<object> results = query.Execute(paramList, TimeSpan.FromSeconds(1));
         Util.Log("EXECUTE 5 STOP");
         Util.Log("Result size is {0}", results.Size);
         Assert.Fail("Didnt get expected timeout exception for Fifth execute");
@@ -1169,7 +1169,7 @@ namespace Apache.Geode.Client.UnitTests
           }
         }
 
-        ISelectResults<object> results = query.Execute(paramList, 850);
+        ISelectResults<object> results = query.Execute(paramList, TimeSpan.FromSeconds(850));
         Util.Log("EXECUTE 6 STOP");
         Util.Log("Result size is {0}", results.Size);
       }
@@ -1237,7 +1237,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        ISelectResults<object> results = region.Query<object>(QueryStatics.RegionQueries[0].Query, 2200000);
+        ISelectResults<object> results = region.Query<object>(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
         Assert.Fail("Expected IllegalArgumentException exception for invalid timeout");
       }
       catch (IllegalArgumentException ex)
@@ -1308,7 +1308,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        bool existsValue = region.ExistsValue(QueryStatics.RegionQueries[0].Query, 2200000);
+        bool existsValue = region.ExistsValue(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
         Assert.Fail("Expected IllegalArgumentException exception for invalid timeout");
       }
       catch (IllegalArgumentException ex)
@@ -1400,7 +1400,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        Object result = region.SelectValue(QueryStatics.RegionQueries[0].Query, 2200000);
+        Object result = region.SelectValue(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
         Assert.Fail("Expected IllegalArgumentException exception for invalid timeout");
       }
       catch (IllegalArgumentException ex)

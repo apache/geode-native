@@ -90,11 +90,16 @@ void TcrMessage::writeBytePart(uint8_t byteValue) {
   m_request->write(byteValue);
 }
 
-void TcrMessage::writeByteAndTimeOutPart(uint8_t byteValue, int32_t timeout) {
+void TcrMessage::writeByteAndTimeOutPart(uint8_t byteValue,
+                                         std::chrono::milliseconds timeout) {
   m_request->writeInt((int32_t)5);  // 1 (byte) + 4 (timeout)
   m_request->write(static_cast<int8_t>(0));
   m_request->write(byteValue);
-  m_request->writeInt(timeout);
+  m_request->writeInt(static_cast<int32_t>(timeout.count()));
+}
+
+void TcrMessage::writeMillisecondsPart(std::chrono::milliseconds millis) {
+  writeIntPart(static_cast<int32_t>(millis.count()));
 }
 
 void TcrMessage::readBooleanPartAsObject(DataInput& input, bool* boolVal) {
@@ -1408,7 +1413,8 @@ void TcrMessage::handleByteArrayResponse(
 
 TcrMessageDestroyRegion::TcrMessageDestroyRegion(
     std::unique_ptr<DataOutput> dataOutput, const Region* region,
-    const SerializablePtr& aCallbackArgument, int messageResponsetimeout,
+    const SerializablePtr& aCallbackArgument,
+    std::chrono::milliseconds messageResponsetimeout,
     ThinClientBaseDM* connectionDM) {
   m_request = std::move(dataOutput);
   m_msgType = TcrMessage::DESTROY_REGION;
@@ -1426,15 +1432,16 @@ TcrMessageDestroyRegion::TcrMessageDestroyRegion(
 
   numOfParts++;
 
-  if (m_messageResponseTimeout != -1) numOfParts++;
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero())
+    numOfParts++;
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
   writeEventIdPart();
   if (aCallbackArgument != nullptr) {
     writeObjectPart(aCallbackArgument);
   }
-  if (m_messageResponseTimeout != -1) {
-    writeIntPart(m_messageResponseTimeout);
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
+    writeMillisecondsPart(m_messageResponseTimeout);
   }
 
   writeMessageLength();
@@ -1442,7 +1449,8 @@ TcrMessageDestroyRegion::TcrMessageDestroyRegion(
 
 TcrMessageClearRegion::TcrMessageClearRegion(
     std::unique_ptr<DataOutput> dataOutput, const Region* region,
-    const SerializablePtr& aCallbackArgument, int messageResponsetimeout,
+    const SerializablePtr& aCallbackArgument,
+    std::chrono::milliseconds messageResponsetimeout,
     ThinClientBaseDM* connectionDM) {
   m_request = std::move(dataOutput);
   m_msgType = TcrMessage::CLEAR_REGION;
@@ -1463,24 +1471,25 @@ TcrMessageClearRegion::TcrMessageClearRegion(
 
   numOfParts++;
 
-  if (m_messageResponseTimeout != -1) numOfParts++;
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero())
+    numOfParts++;
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
   writeEventIdPart();
   if (aCallbackArgument != nullptr) {
     writeObjectPart(aCallbackArgument);
   }
-  if (m_messageResponseTimeout != -1) {
-    writeIntPart(m_messageResponseTimeout);
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
+    writeMillisecondsPart(m_messageResponseTimeout);
   }
 
   writeMessageLength();
 }
 
-TcrMessageQuery::TcrMessageQuery(std::unique_ptr<DataOutput> dataOutput,
-                                 const std::string& regionName,
-                                 int messageResponsetimeout,
-                                 ThinClientBaseDM* connectionDM) {
+TcrMessageQuery::TcrMessageQuery(
+    std::unique_ptr<DataOutput> dataOutput, const std::string& regionName,
+    std::chrono::milliseconds messageResponsetimeout,
+    ThinClientBaseDM* connectionDM) {
   m_request = std::move(dataOutput);
   m_msgType = TcrMessage::QUERY;
   m_tcdm = connectionDM;
@@ -1492,20 +1501,21 @@ TcrMessageQuery::TcrMessageQuery(std::unique_ptr<DataOutput> dataOutput,
 
   numOfParts++;
 
-  if (m_messageResponseTimeout != -1) numOfParts++;
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero())
+    numOfParts++;
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
   writeEventIdPart();
-  if (m_messageResponseTimeout != -1) {
-    writeIntPart(m_messageResponseTimeout);
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
+    writeMillisecondsPart(m_messageResponseTimeout);
   }
   writeMessageLength();
 }
 
-TcrMessageStopCQ::TcrMessageStopCQ(std::unique_ptr<DataOutput> dataOutput,
-                                   const std::string& regionName,
-                                   int messageResponsetimeout,
-                                   ThinClientBaseDM* connectionDM) {
+TcrMessageStopCQ::TcrMessageStopCQ(
+    std::unique_ptr<DataOutput> dataOutput, const std::string& regionName,
+    std::chrono::milliseconds messageResponsetimeout,
+    ThinClientBaseDM* connectionDM) {
   m_request = std::move(dataOutput);
   m_msgType = TcrMessage::STOPCQ_MSG_TYPE;
   m_tcdm = connectionDM;
@@ -1520,20 +1530,23 @@ TcrMessageStopCQ::TcrMessageStopCQ(std::unique_ptr<DataOutput> dataOutput,
 
   numOfParts++;
 
-  if (m_messageResponseTimeout != -1) numOfParts++;
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
+    numOfParts++;
+  }
+
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
   writeEventIdPart();
-  if (m_messageResponseTimeout != -1) {
-    writeIntPart(m_messageResponseTimeout);
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
+    writeMillisecondsPart(m_messageResponseTimeout);
   }
   writeMessageLength();
 }
 
-TcrMessageCloseCQ::TcrMessageCloseCQ(std::unique_ptr<DataOutput> dataOutput,
-                                     const std::string& regionName,
-                                     int messageResponsetimeout,
-                                     ThinClientBaseDM* connectionDM) {
+TcrMessageCloseCQ::TcrMessageCloseCQ(
+    std::unique_ptr<DataOutput> dataOutput, const std::string& regionName,
+    std::chrono::milliseconds messageResponsetimeout,
+    ThinClientBaseDM* connectionDM) {
   m_request = std::move(dataOutput);
   m_msgType = TcrMessage::CLOSECQ_MSG_TYPE;
   m_tcdm = connectionDM;
@@ -1545,12 +1558,14 @@ TcrMessageCloseCQ::TcrMessageCloseCQ(std::unique_ptr<DataOutput> dataOutput,
 
   numOfParts++;
 
-  if (m_messageResponseTimeout != -1) numOfParts++;
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
+    numOfParts++;
+  }
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
   writeEventIdPart();
-  if (m_messageResponseTimeout != -1) {
-    writeIntPart(m_messageResponseTimeout);
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
+    writeMillisecondsPart(m_messageResponseTimeout);
   }
   writeMessageLength();
 }
@@ -1558,7 +1573,8 @@ TcrMessageCloseCQ::TcrMessageCloseCQ(std::unique_ptr<DataOutput> dataOutput,
 TcrMessageQueryWithParameters::TcrMessageQueryWithParameters(
     std::unique_ptr<DataOutput> dataOutput, const std::string& regionName,
     const SerializablePtr& aCallbackArgument, CacheableVectorPtr paramList,
-    int messageResponsetimeout, ThinClientBaseDM* connectionDM) {
+    std::chrono::milliseconds messageResponsetimeout,
+    ThinClientBaseDM* connectionDM) {
   m_request = std::move(dataOutput);
   m_msgType = TcrMessage::QUERY_WITH_PARAMETERS;
   m_tcdm = connectionDM;
@@ -1580,8 +1596,8 @@ TcrMessageQueryWithParameters::TcrMessageQueryWithParameters(
   writeIntPart(15);
 
   // Part-4: Request specific timeout
-  if (m_messageResponseTimeout != -1) {
-    writeIntPart(m_messageResponseTimeout);
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
+    writeMillisecondsPart(m_messageResponseTimeout);
   }
   // Part-5: Parameters
   if (paramList != nullptr) {
@@ -2135,12 +2151,11 @@ TcrMessagePeriodicAck::TcrMessagePeriodicAck(
   writeMessageLength();
 }
 
-TcrMessagePutAll::TcrMessagePutAll(std::unique_ptr<DataOutput> dataOutput,
-                                   const Region* region,
-                                   const HashMapOfCacheable& map,
-                                   int messageResponsetimeout,
-                                   ThinClientBaseDM* connectionDM,
-                                   const SerializablePtr& aCallbackArgument) {
+TcrMessagePutAll::TcrMessagePutAll(
+    std::unique_ptr<DataOutput> dataOutput, const Region* region,
+    const HashMapOfCacheable& map,
+    std::chrono::milliseconds messageResponsetimeout,
+    ThinClientBaseDM* connectionDM, const SerializablePtr& aCallbackArgument) {
   m_tcdm = connectionDM;
   m_regionName = region->getFullPath();
   m_region = region;
@@ -2164,7 +2179,8 @@ TcrMessagePutAll::TcrMessagePutAll(std::unique_ptr<DataOutput> dataOutput,
 
   // numOfParts++;
 
-  if (m_messageResponseTimeout != -1) numOfParts++;
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero())
+    numOfParts++;
 
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
@@ -2198,8 +2214,8 @@ TcrMessagePutAll::TcrMessagePutAll(std::unique_ptr<DataOutput> dataOutput,
     writeObjectPart(iter.second);
   }
 
-  if (m_messageResponseTimeout != -1) {
-    writeIntPart(m_messageResponseTimeout);
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
+    writeMillisecondsPart(m_messageResponseTimeout);
   }
   writeMessageLength();
 }
@@ -2219,7 +2235,8 @@ TcrMessageRemoveAll::TcrMessageRemoveAll(std::unique_ptr<DataOutput> dataOutput,
   // value can be nullptr also.
   uint32_t numOfParts = 5 + static_cast<uint32_t>(keys.size());
 
-  if (m_messageResponseTimeout != -1) numOfParts++;
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero())
+    numOfParts++;
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
   writeEventIdPart(static_cast<int>(keys.size() - 1));
@@ -2370,7 +2387,7 @@ TcrMessageExecuteCqWithIr::TcrMessageExecuteCqWithIr(
 TcrMessageExecuteFunction::TcrMessageExecuteFunction(
     std::unique_ptr<DataOutput> dataOutput, const std::string& funcName,
     const CacheablePtr& args, uint8_t getResult, ThinClientBaseDM* connectionDM,
-    int32_t timeout) {
+    std::chrono::milliseconds timeout) {
   m_request = std::move(dataOutput);
 
   m_msgType = TcrMessage::EXECUTE_FUNCTION;
@@ -2389,7 +2406,7 @@ TcrMessageExecuteRegionFunction::TcrMessageExecuteRegionFunction(
     std::unique_ptr<DataOutput> dataOutput, const std::string& funcName,
     const Region* region, const CacheablePtr& args,
     CacheableVectorPtr routingObj, uint8_t getResult,
-    CacheableHashSetPtr failedNodes, int32_t timeout,
+    CacheableHashSetPtr failedNodes, std::chrono::milliseconds timeout,
     ThinClientBaseDM* connectionDM, int8_t reExecute) {
   m_request = std::move(dataOutput);
 
@@ -2442,8 +2459,8 @@ TcrMessageExecuteRegionFunctionSingleHop::
         std::unique_ptr<DataOutput> dataOutput, const std::string& funcName,
         const Region* region, const CacheablePtr& args,
         CacheableHashSetPtr routingObj, uint8_t getResult,
-        CacheableHashSetPtr failedNodes, bool allBuckets, int32_t timeout,
-        ThinClientBaseDM* connectionDM) {
+        CacheableHashSetPtr failedNodes, bool allBuckets,
+        std::chrono::milliseconds timeout, ThinClientBaseDM* connectionDM) {
   m_request = std::move(dataOutput);
 
   m_msgType = TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP;
@@ -2874,9 +2891,11 @@ int32_t TcrMessage::getTransId() const { return m_txId; }
 
 void TcrMessage::setTransId(int32_t txId) { m_txId = txId; }
 
-uint32_t TcrMessage::getTimeout() const { return m_timeout; }
+std::chrono::milliseconds TcrMessage::getTimeout() const { return m_timeout; }
 
-void TcrMessage::setTimeout(uint32_t timeout) { m_timeout = timeout; }
+void TcrMessage::setTimeout(std::chrono::milliseconds timeout) {
+  m_timeout = timeout;
+}
 
 void TcrMessage::skipParts(DataInput& input, int32_t numParts) {
   while (numParts > 0) {

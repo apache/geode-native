@@ -72,17 +72,17 @@ void TcrConnectionManager::init(bool isPool) {
   }
   auto &props = m_cache->getDistributedSystem().getSystemProperties();
   m_isDurable = strlen(props.durableClientId()) > 0;
-  int32_t pingInterval = (props.pingInterval() / 2);
+  auto pingInterval = (props.pingInterval() / 2);
   if (!props.isGridClient() && !isPool) {
     ACE_Event_Handler *connectionChecker =
         new ExpiryHandler_T<TcrConnectionManager>(
             this, &TcrConnectionManager::checkConnection);
     m_pingTaskId = m_cache->getExpiryTaskManager().scheduleExpiryTask(
-        connectionChecker, 10, pingInterval, false);
+        connectionChecker, std::chrono::seconds(10), pingInterval, false);
     LOGFINE(
         "TcrConnectionManager::TcrConnectionManager Registered ping "
         "task with id = %ld, interval = %ld",
-        m_pingTaskId, pingInterval);
+        m_pingTaskId, pingInterval.count());
   }
 
   CacheAttributesPtr cacheAttributes = m_cache->getAttributes();
@@ -105,14 +105,15 @@ void TcrConnectionManager::init(bool isPool) {
     ACE_Event_Handler *redundancyChecker =
         new ExpiryHandler_T<TcrConnectionManager>(
             this, &TcrConnectionManager::checkRedundancy);
-    int32_t redundancyMonitorInterval = props.redundancyMonitorInterval();
+    const auto redundancyMonitorInterval = props.redundancyMonitorInterval();
 
     m_servermonitorTaskId = m_cache->getExpiryTaskManager().scheduleExpiryTask(
-        redundancyChecker, 1, redundancyMonitorInterval, false);
+        redundancyChecker, std::chrono::seconds(1), redundancyMonitorInterval,
+        false);
     LOGFINE(
         "TcrConnectionManager::TcrConnectionManager Registered server "
         "monitor task with id = %ld, interval = %ld",
-        m_servermonitorTaskId, redundancyMonitorInterval);
+        m_servermonitorTaskId, redundancyMonitorInterval.count());
 
     if (ThinClientBaseDM::isFatalError(err)) {
       GfErrTypeToException("TcrConnectionManager::init", err);

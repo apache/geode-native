@@ -22,10 +22,8 @@
 
 #include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
-
 #include "Cache.hpp"
-
-using namespace System;
+#include "TimeSpanUtils.hpp"
 
 namespace Apache
 {
@@ -34,14 +32,15 @@ namespace Apache
     namespace Client
     {
 
+      using namespace System;
 
-      PoolFactory^ PoolFactory::SetFreeConnectionTimeout( Int32 connectionTimeout )
+      PoolFactory^ PoolFactory::SetFreeConnectionTimeout( TimeSpan connectionTimeout )
 		  {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
 			  try
 			  {
-			    m_nativeptr->get()->setFreeConnectionTimeout( connectionTimeout );
+			    m_nativeptr->get()->setFreeConnectionTimeout( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(connectionTimeout) );
 			  }
 			  finally
 			  {
@@ -53,13 +52,13 @@ namespace Apache
 		  }
 
 
-		  PoolFactory^ PoolFactory::SetLoadConditioningInterval( Int32 loadConditioningInterval )
+		  PoolFactory^ PoolFactory::SetLoadConditioningInterval( TimeSpan loadConditioningInterval )
 		  {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
 			  try
 			  {
-			    m_nativeptr->get()->setLoadConditioningInterval( loadConditioningInterval );
+			    m_nativeptr->get()->setLoadConditioningInterval( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(loadConditioningInterval) );
 			  }
 			  finally
 			  {
@@ -89,13 +88,13 @@ namespace Apache
 		  }
 
 
-		  PoolFactory^ PoolFactory::SetReadTimeout( Int32 timeout )
+		  PoolFactory^ PoolFactory::SetReadTimeout( TimeSpan timeout )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
 			  try
 			  {
-			    m_nativeptr->get()->setReadTimeout( timeout );
+			    m_nativeptr->get()->setReadTimeout( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout) );
 			  }
 			  finally
 			  {
@@ -143,13 +142,13 @@ namespace Apache
 		  }
 
 
-		  PoolFactory^ PoolFactory::SetIdleTimeout( Int32 idleTimeout )
+		  PoolFactory^ PoolFactory::SetIdleTimeout( TimeSpan idleTimeout )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
 			  try
 			  {
-			    m_nativeptr->get()->setIdleTimeout( idleTimeout );
+			    m_nativeptr->get()->setIdleTimeout( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(idleTimeout) );
 			  }
 			  finally
 			  {
@@ -179,13 +178,13 @@ namespace Apache
 		  }
 
 
-		  PoolFactory^ PoolFactory::SetPingInterval( Int32 pingInterval )
+		  PoolFactory^ PoolFactory::SetPingInterval( TimeSpan pingInterval )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
 			  try
 			  {
-			    m_nativeptr->get()->setPingInterval( pingInterval );
+			    m_nativeptr->get()->setPingInterval( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(pingInterval) );
 			  }
 			  finally
 			  {
@@ -197,13 +196,13 @@ namespace Apache
 		  }
 
 
-		  PoolFactory^ PoolFactory::SetUpdateLocatorListInterval( Int32 updateLocatorListInterval )
+		  PoolFactory^ PoolFactory::SetUpdateLocatorListInterval( TimeSpan updateLocatorListInterval )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
 			  try
 			  {
-			    m_nativeptr->get()->setUpdateLocatorListInterval( updateLocatorListInterval );
+			    m_nativeptr->get()->setUpdateLocatorListInterval( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(updateLocatorListInterval) );
 			  }
 			  finally
 			  {
@@ -215,13 +214,13 @@ namespace Apache
 		  }
 
 
-      PoolFactory^ PoolFactory::SetStatisticInterval( Int32 statisticInterval )
+      PoolFactory^ PoolFactory::SetStatisticInterval( TimeSpan statisticInterval )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
 			  try
 			  {
-			    m_nativeptr->get()->setStatisticInterval( statisticInterval );
+			    m_nativeptr->get()->setStatisticInterval( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(statisticInterval) );
 			  }
 			  finally
 			  {
@@ -344,13 +343,13 @@ namespace Apache
 		  }
 
 
-		  PoolFactory^ PoolFactory::SetSubscriptionMessageTrackingTimeout( Int32 messageTrackingTimeout )
+		  PoolFactory^ PoolFactory::SetSubscriptionMessageTrackingTimeout( TimeSpan messageTrackingTimeout )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
 			  try
 			  {
-			    m_nativeptr->get()->setSubscriptionMessageTrackingTimeout( messageTrackingTimeout );
+			    m_nativeptr->get()->setSubscriptionMessageTrackingTimeout( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(messageTrackingTimeout) );
 			  }
 			  finally
 			  {
@@ -362,13 +361,13 @@ namespace Apache
 		  }
 
 
-		  PoolFactory^ PoolFactory::SetSubscriptionAckInterval( Int32 ackInterval )
+		  PoolFactory^ PoolFactory::SetSubscriptionAckInterval( TimeSpan ackInterval )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
 			  try
 			  {
-			    m_nativeptr->get()->setSubscriptionAckInterval( ackInterval );
+			    m_nativeptr->get()->setSubscriptionAckInterval( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(ackInterval) );
 			  }
 			  finally
 			  {

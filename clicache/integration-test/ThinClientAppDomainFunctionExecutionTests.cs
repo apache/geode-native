@@ -52,43 +52,45 @@ namespace Apache.Geode.Client.UnitTests
     }
     public ICollection<TResult> GetResult()
     {
-      return GetResult(50);
+      return GetResult(TimeSpan.FromSeconds(50));
     }
 
-    public ICollection<TResult> GetResult(UInt32 timeout)
+    public ICollection<TResult> GetResult(TimeSpan timeout)
     {
       m_getResultCount++;
-      if (m_resultReady == true)
-      {
-        return m_results;
-      }
-      else
-      {
-        for (int i = 0; i < timeout; i++)
-        {
-          Thread.Sleep(1000);
-          if (m_resultReady == true)
-          {
-            return m_results;
+
+      lock (this) {
+        if (!m_resultReady) {
+          if (timeout > TimeSpan.Zero) {
+            if (!Monitor.Wait(this, timeout)) {
+              throw new FunctionExecutionException("Timeout waiting for result.");
+            }
+          } else {
+            throw new FunctionExecutionException("Results not ready.");
           }
-
         }
-        throw new FunctionExecutionException(
-                   "Result is not ready, endResults callback is called before invoking getResult() method");
-
       }
+
+      return m_results;
     }
+
     public void EndResults()
     {
       m_endResultCount++;
-      m_resultReady = true;
+
+      lock (this) {
+        m_resultReady = true;
+        Monitor.Pulse(this);
+      }
     }
+
     public void ClearResults(/*bool unused*/)
     {
       m_results.Clear();
       m_addResultCount = 0;
       m_getResultCount = 0;
       m_endResultCount = 0;
+      m_resultReady = false;
     }
   }
 
@@ -186,7 +188,7 @@ namespace Apache.Geode.Client.UnitTests
       Apache.Geode.Client.Execution<object> exc = FunctionService<object>.OnServer(pool);
       Assert.IsTrue(exc != null, "onServer Returned NULL");
 
-      IResultCollector<object> rc = exc.WithArgs<ArrayList>(args1).Execute(OnServerHAExceptionFunction, 15);
+      IResultCollector<object> rc = exc.WithArgs<ArrayList>(args1).Execute(OnServerHAExceptionFunction, TimeSpan.FromSeconds(15));
 
       ICollection<object> executeFunctionResult = rc.GetResult();
 
@@ -210,7 +212,7 @@ namespace Apache.Geode.Client.UnitTests
         Assert.IsTrue(((string)resultList[i]) != null, "onServer Returned NULL");
       }
 
-      rc = exc.WithArgs<ArrayList>(args1).Execute(OnServerHAShutdownFunction, 15);
+      rc = exc.WithArgs<ArrayList>(args1).Execute(OnServerHAShutdownFunction, TimeSpan.FromSeconds(15));
 
       ICollection<object> executeFunctionResult1 = rc.GetResult();
 

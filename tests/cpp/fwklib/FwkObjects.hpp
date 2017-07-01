@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_FWKLIB_FWKOBJECTS_H_
-#define GEODE_FWKLIB_FWKOBJECTS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,14 +15,19 @@
  * limitations under the License.
  */
 
-/**
- * @file    FwkObjects.hpp
- * @since   1.0
- * @version 1.0
- * @see
- */
+#pragma once
 
-// ----------------------------------------------------------------------------
+#ifndef GEODE_FWKLIB_FWKOBJECTS_H_
+#define GEODE_FWKLIB_FWKOBJECTS_H_
+
+#include <chrono>
+#include <vector>
+#include <list>
+#include <map>
+
+#include <errno.h>
+
+#include <ace/OS.h>
 
 #include <geode/Cache.hpp>
 #include <geode/Properties.hpp>
@@ -35,17 +35,12 @@
 #include <geode/RegionAttributes.hpp>
 #include <geode/AttributesFactory.hpp>
 #include <geode/PoolManager.hpp>
+#include <geode/util/chrono/duration.hpp>
 
 #include "fwklib/FwkStrCvt.hpp"
 #include "fwklib/FwkLog.hpp"
 
 #include "fwklib/GsRandom.hpp"
-
-#include <vector>
-#include <list>
-#include <map>
-#include <ace/OS.h>
-#include <errno.h>
 
 #include <xercesc/dom/DOM.hpp>
 
@@ -317,10 +312,13 @@ class ActionPair {
 // ----------------------------------------------------------------------------
 
 class ExpiryAttributes {
-  int32_t m_timeout;
+  std::chrono::seconds m_timeout;
   ExpirationAction::Action m_action;
 
-  void setTimeout(std::string str) { m_timeout = FwkStrCvt::toInt32(str); }
+  // TODO GEODE-3136: Consider parser
+  void setTimeout(std::string str) {
+    m_timeout = std::chrono::seconds(FwkStrCvt::toInt32(str));
+  }
 
   void setAction(std::string action) {
     if (action == "invalidate") {
@@ -338,7 +336,7 @@ class ExpiryAttributes {
   ExpiryAttributes(const DOMNode* node);
 
   ExpirationAction::Action getAction() { return m_action; }
-  int32_t getTimeout() { return m_timeout; }
+  std::chrono::seconds getTimeout() { return m_timeout; }
 };
 
 // ----------------------------------------------------------------------------
@@ -503,11 +501,13 @@ class FwkPool {
   void setAttributesToFactory(const DOMNode* node);
 
   void setFreeConnectionTimeout(std::string val) {
-    m_poolFactory->setFreeConnectionTimeout(FwkStrCvt::toInt32(val));
+    m_poolFactory->setFreeConnectionTimeout(
+        util::chrono::duration::from_string<std::chrono::milliseconds>(val));
   }
 
   void setLoadConditioningInterval(std::string val) {
-    m_poolFactory->setLoadConditioningInterval(FwkStrCvt::toInt32(val));
+    m_poolFactory->setLoadConditioningInterval(
+        util::chrono::duration::from_string<std::chrono::milliseconds>(val));
   }
 
   void setSocketBufferSize(std::string val) {
@@ -515,7 +515,8 @@ class FwkPool {
   }
 
   void setReadTimeout(std::string val) {
-    m_poolFactory->setReadTimeout(FwkStrCvt::toInt32(val));
+    m_poolFactory->setReadTimeout(
+        util::chrono::duration::from_string<std::chrono::milliseconds>(val));
   }
 
   void setMinConnections(std::string val) {
@@ -527,7 +528,8 @@ class FwkPool {
   }
 
   void setIdleTimeout(std::string val) {
-    m_poolFactory->setIdleTimeout(FwkStrCvt(val).toLong());
+    m_poolFactory->setIdleTimeout(
+        util::chrono::duration::from_string<std::chrono::milliseconds>(val));
   }
 
   void setRetryAttempts(std::string val) {
@@ -535,11 +537,13 @@ class FwkPool {
   }
 
   void setPingInterval(std::string val) {
-    m_poolFactory->setPingInterval(FwkStrCvt(val).toLong());
+    m_poolFactory->setPingInterval(
+        util::chrono::duration::from_string<std::chrono::milliseconds>(val));
   }
 
   void setStatisticInterval(std::string val) {
-    m_poolFactory->setStatisticInterval(FwkStrCvt::toInt32(val));
+    m_poolFactory->setStatisticInterval(
+        util::chrono::duration::from_string<std::chrono::milliseconds>(val));
   }
 
   void setServerGroup(std::string val) {
@@ -556,11 +560,12 @@ class FwkPool {
 
   void setSubscriptionMessageTrackingTimeout(std::string val) {
     m_poolFactory->setSubscriptionMessageTrackingTimeout(
-        FwkStrCvt::toInt32(val));
+        util::chrono::duration::from_string<std::chrono::milliseconds>(val));
   }
 
   void setSubscriptionAckInterval(std::string val) {
-    m_poolFactory->setSubscriptionAckInterval(FwkStrCvt::toInt32(val));
+    m_poolFactory->setSubscriptionAckInterval(
+        util::chrono::duration::from_string<std::chrono::milliseconds>(val));
   }
 
   void setThreadLocalConnections(std::string val) {

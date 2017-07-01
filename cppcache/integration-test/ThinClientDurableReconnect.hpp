@@ -80,7 +80,8 @@ const char* mixKeys[] = {"D-Key-1"};
 #include "ThinClientTasks_C2S2.hpp"
 
 void initClientCache(int redundancy, OperMonitorPtr& mon) {
-  initClientAndRegion(redundancy, 0, 60000, 1, 300);
+  initClientAndRegion(redundancy, 0, std::chrono::seconds(60000),
+                      std::chrono::seconds(1), std::chrono::seconds(300));
 
   if (mon == nullptr) {
     mon = std::make_shared<OperMonitor>();

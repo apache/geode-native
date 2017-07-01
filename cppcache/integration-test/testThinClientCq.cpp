@@ -328,12 +328,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_Locator)
     initClient(true);
 
     getHelper()->createPoolWithLocators("__TEST_POOL1__", locHostPort, true, -1,
-                                        -1, -1, false, "group1");
+                                        std::chrono::seconds::zero(), -1, false,
+                                        "group1");
     getHelper()->createRegionAndAttachPool(regionName, USE_ACK,
                                            "__TEST_POOL1__", true);
 
     getHelper()->createPoolWithLocators("__TEST_POOL2__", locHostPort, true, -1,
-                                        -1, -1, false, "group2");
+                                        std::chrono::seconds::zero(), -1, false,
+                                        "group2");
     getHelper()->createRegionAndAttachPool(regionName1, USE_ACK,
                                            "__TEST_POOL2__", true);
 

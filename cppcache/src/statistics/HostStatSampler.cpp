@@ -128,10 +128,11 @@ using std::chrono::nanoseconds;
 
 const char* HostStatSampler::NC_HSS_Thread = "NC HSS Thread";
 
-HostStatSampler::HostStatSampler(const char* filePath, int64_t sampleIntervalMs,
+HostStatSampler::HostStatSampler(const char* filePath,
+                                 std::chrono::milliseconds sampleIntervalMs,
                                  StatisticsManager* statMngr, Cache* cache,
                                  const char* durableClientId,
-                                 const uint32_t durableTimeout,
+                                 const std::chrono::seconds durableTimeout,
                                  int64_t statFileLimit,
                                  int64_t statDiskSpaceLimit)
     : m_cache(cache) {
@@ -298,7 +299,9 @@ int64_t HostStatSampler::getArchiveDiskSpaceLimit() {
   return m_archiveDiskSpaceLimit;
 }
 
-int64_t HostStatSampler::getSampleRate() { return m_sampleRate; }
+std::chrono::milliseconds HostStatSampler::getSampleRate() {
+  return m_sampleRate;
+}
 
 bool HostStatSampler::isSamplingEnabled() { return true; }
 

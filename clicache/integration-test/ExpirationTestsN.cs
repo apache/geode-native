@@ -112,10 +112,10 @@ namespace Apache.Geode.Client.UnitTests
 
       RegionFactory rf = CacheHelper.DCache.CreateRegionFactory(RegionShortcut.LOCAL);
 
-      rf.SetEntryTimeToLive(action, entryTTL);
-      rf.SetEntryIdleTimeout(action, entryIdleTimeout);
-      rf.SetRegionTimeToLive(action, regionTTL);
-      rf.SetRegionIdleTimeout(action, regionIdleTimeout);
+      rf.SetEntryTimeToLive(action, TimeSpan.FromSeconds(entryTTL));
+      rf.SetEntryIdleTimeout(action, TimeSpan.FromSeconds(entryIdleTimeout));
+      rf.SetRegionTimeToLive(action, TimeSpan.FromSeconds(regionTTL));
+      rf.SetRegionIdleTimeout(action, TimeSpan.FromSeconds(regionIdleTimeout));
 
       CacheHelper.Init();
       IRegion<object, object> region = CacheHelper.GetRegion<object, object>(m_regionName);

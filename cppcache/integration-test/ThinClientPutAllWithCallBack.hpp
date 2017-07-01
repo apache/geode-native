@@ -462,8 +462,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, RegisterClient2Keys)
     }
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
     RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
-    regPtr0->putAll(map0, 15, CacheableInt32::create(1000));
-    regPtr1->putAll(map1, 15, CacheableInt32::create(1000));
+    regPtr0->putAll(map0, std::chrono::seconds(15),
+                    CacheableInt32::create(1000));
+    regPtr1->putAll(map1, std::chrono::seconds(15),
+                    CacheableInt32::create(1000));
     LOG("RegisterClient2Keys complete.");
   }
 END_TASK_DEFINITION
@@ -482,7 +484,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllOps)
     }
 
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    regPtr0->putAll(entryMap, 15, CacheableInt32::create(1000));
+    regPtr0->putAll(entryMap, std::chrono::seconds(15),
+                    CacheableInt32::create(1000));
 
     LOG("putAll1 complete");
 
@@ -535,10 +538,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, TriggerAfterUpdateEvents)
       map1.emplace(CacheableKey::create(keys[i]),
                    CacheableString::create(nvals[i]));
     }
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
-    regPtr0->putAll(map0, 15, CacheableInt32::create(1000));
-    regPtr1->putAll(map1, 15, CacheableInt32::create(1000));
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
+    regPtr0->putAll(map0, std::chrono::seconds(15),
+                    CacheableInt32::create(1000));
+    regPtr1->putAll(map1, std::chrono::seconds(15),
+                    CacheableInt32::create(1000));
 
     // register all keys for the large putall test case
     regPtr0->registerAllKeys();
@@ -570,9 +575,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, ExecuteLargePutAll)
       sprintf(val0, "%1000d", i);
       map0.emplace(CacheableKey::create(key0), CacheableString::create(val0));
     }
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
 
-    regPtr0->putAll(map0, 40000, CacheableInt32::create(1000));
+    regPtr0->putAll(map0, std::chrono::seconds(40000),
+                    CacheableInt32::create(1000));
 
     LOG("ExecuteLargePutAll complete.");
     dunit::sleep(10000);
@@ -637,12 +643,13 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, VerifyPutAllWithLongKeyAndStringValue)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable map0;
     for (int i = 0; i < 2; i++) {
       map0.emplace(CacheableInt64::create(i), CacheableInt64::create(i));
     }
-    regPtr0->putAll(map0, 15, CacheableInt32::create(1000));
+    regPtr0->putAll(map0, std::chrono::seconds(15),
+                    CacheableInt32::create(1000));
     for (int i = 0; i < 2; i++) {
       auto checkPtr = std::dynamic_pointer_cast<CacheableInt64>(
           regPtr0->get(CacheableInt64::create(i)));
@@ -656,7 +663,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyPutAllWithLongKeyAndStringValue)
       map0.emplace(CacheableInt64::create(i),
                    CacheableString::create(vals[i - 80]));
     }
-    regPtr0->putAll(map0, 15, CacheableInt32::create(1000));
+    regPtr0->putAll(map0, std::chrono::seconds(15),
+                    CacheableInt32::create(1000));
     for (int i = 80; i < 82; i++) {
       auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
           regPtr0->get(CacheableInt64::create(i)));
@@ -675,7 +683,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyPutAllWithLongKeyAndLongValue)
     try {
       map0.emplace(CacheableInt64::create(345),
                    CacheableInt64::create(3465987));
-      regPtr0->putAll(map0, -1, CacheableInt32::create(1000));
+      regPtr0->putAll(map0, std::chrono::seconds(-1),
+                      CacheableInt32::create(1000));
       auto checkPtr = std::dynamic_pointer_cast<CacheableInt64>(
           regPtr0->get(CacheableInt64::create(345)));
       ASSERT(checkPtr->value() == 3465987,
@@ -693,7 +702,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyPutAllWithLongKeyAndLongValue)
     try {
       map0.emplace(CacheableInt64::create(3451),
                    CacheableInt64::create(3465987));
-      regPtr0->putAll(map0, 2147500, CacheableInt32::create(1000));
+      regPtr0->putAll(map0, std::chrono::seconds(2147500),
+                      CacheableInt32::create(1000));
       auto checkPtr = std::dynamic_pointer_cast<CacheableInt64>(
           regPtr0->get(CacheableInt64::create(3451)));
       ASSERT(checkPtr->value() == 3465987,
@@ -713,11 +723,12 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, VerifyPutAllWithObjectKey)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable map0;
     auto val111 = std::make_shared<PdxTests::PdxTypes1>();
     map0.emplace(CacheableInt32::create(1211), val111);
-    regPtr0->putAll(map0, 15, CacheableInt32::create(1000));
+    regPtr0->putAll(map0, std::chrono::seconds(15),
+                    CacheableInt32::create(1000));
     auto retObj = std::dynamic_pointer_cast<PdxTests::PdxTypes1>(
         regPtr0->get(CacheableInt32::create(1211)));
     ASSERT(val111->equals(retObj) == true, "val111 and retObj should match.");
@@ -725,16 +736,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyPutAllWithObjectKey)
 
     auto keyObject = std::make_shared<PdxTests::PdxType>();
     map0.emplace(keyObject, CacheableInt32::create(111));
-    regPtr0->putAll(map0, 15, CacheableInt32::create(1000));
-    CacheableInt32Ptr checkPtr =
+    regPtr0->putAll(map0, std::chrono::seconds(15),
+                    CacheableInt32::create(1000));
+    auto checkPtr =
         std::dynamic_pointer_cast<CacheableInt32>(regPtr0->get(keyObject));
     ASSERT(checkPtr->value() == 111,
            "putAll with entry as object key and value as int  Mismatch");
     map0.clear();
     auto keyObject6 = std::make_shared<PdxTests::PdxTypes3>();
     map0.emplace(keyObject6, CacheableString::create("testString"));
-    regPtr0->putAll(map0, 15, CacheableInt32::create(1000));
-    CacheablePtr checkPtr1 = regPtr0->get(keyObject6);
+    regPtr0->putAll(map0, std::chrono::seconds(15),
+                    CacheableInt32::create(1000));
+    auto checkPtr1 = regPtr0->get(keyObject6);
     ASSERT(strcmp(checkPtr1->toString()->asChar(), "testString") == 0,
            "strVal should be testString.");
     map0.clear();
@@ -745,7 +758,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyPutAllWithObjectKey)
     auto valObject2 = std::make_shared<PdxTests::PdxTypes1>();
     map0.emplace(keyObject7, valObject);
     map0.emplace(keyObject8, valObject2);
-    regPtr0->putAll(map0, 15, CacheableInt32::create(1000));
+    regPtr0->putAll(map0, std::chrono::seconds(15),
+                    CacheableInt32::create(1000));
     auto objVal = std::dynamic_pointer_cast<PdxTests::PdxTypes1>(
         regPtr0->get(keyObject7));
     ASSERT(valObject == objVal, "valObject and objVal should match.");
@@ -760,7 +774,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyPutAllWithObjectKey)
       char buf[2048];
       for (const auto& iter : values) {
         auto key = std::dynamic_pointer_cast<CacheableKey>(iter.first);
-        CacheablePtr mVal = iter.second;
+        auto mVal = iter.second;
         if (mVal != nullptr) {
           auto val1 = std::dynamic_pointer_cast<PdxTests::PdxTypes1>(mVal);
           sprintf(buf, "value from map %d , expected value %d ",

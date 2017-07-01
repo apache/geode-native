@@ -14,8 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
 #define ACE_LACKS_IOSTREAM_TOTALLY 1
 #define ACE_HAS_VERSIONED_NAMESPACE 1
+
+#if __cplusplus >= 201103L
+// Force ACE to use C++11 since it fails to autodetect in all cases.
+#define ACE_HAS_CPP11 1
+#endif
 
 #if defined __SUNPRO_CC && __cplusplus >= 201103L
 #define _RWSTD_ALLOCATOR 1

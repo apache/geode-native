@@ -19,8 +19,7 @@
 #include "impl/ManagedTransactionListener.hpp"
 #include "impl/ManagedTransactionWriter.hpp"
 #include "CacheTransactionManager.hpp"
-
-using namespace System;
+#include "TimeSpanUtils.hpp"
 
 namespace Apache
 {
@@ -28,6 +27,8 @@ namespace Apache
   {
     namespace Client
     {
+
+      using namespace System;
 
       void CacheTransactionManager::Begin( )
       {
@@ -180,13 +181,13 @@ namespace Apache
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
-      bool CacheTransactionManager::TryResume(Apache::Geode::Client::TransactionId^ transactionId, System::Int32 waitTimeInMilliSec)
+      bool CacheTransactionManager::TryResume(Apache::Geode::Client::TransactionId^ transactionId, TimeSpan waitTime)
       {
         _GF_MG_EXCEPTION_TRY2
 
           try
           {
-            return m_nativeptr->get()->tryResume(transactionId->GetNative(), waitTimeInMilliSec);
+            return m_nativeptr->get()->tryResume(transactionId->GetNative(), TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(waitTime));
           }
           finally
           {

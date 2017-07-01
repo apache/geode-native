@@ -122,7 +122,7 @@ namespace Apache.Geode.Client.FwkLib
       bool commited = false;
       CacheTransactionManager txManager = null;
       txManager = CacheHelper<TKey, TVal>.DCache.CacheTransactionManager;
-      if (txManager.TryResume(id, 30000))
+      if (txManager.TryResume(id, TimeSpan.FromMilliseconds(30000)))
       {
         try
         {
@@ -156,7 +156,7 @@ namespace Apache.Geode.Client.FwkLib
       CacheTransactionManager txManager = null;
       bool isRollBack = false;
       txManager = CacheHelper<TKey, TVal>.DCache.CacheTransactionManager;
-      if (txManager.TryResume(id, 30000))
+      if (txManager.TryResume(id, TimeSpan.FromMilliseconds(30000)))
       {
          txManager.Rollback();
          isRollBack = true;
@@ -175,7 +175,7 @@ namespace Apache.Geode.Client.FwkLib
       txManager = CacheHelper<TKey, TVal>.DCache.CacheTransactionManager;
       bool executedOps = false;
       int numOfOpsToDo = 5;
-      if (txManager.TryResume(id, 30000))
+      if (txManager.TryResume(id, TimeSpan.FromMilliseconds(30000)))
       {
         try
         {

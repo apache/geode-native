@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <string>
 
 #include <ace/OS.h>
@@ -272,12 +273,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_LocatorTL)
     initClient(true);
 
     RegionPtr regPtr = getHelper()->createPooledRegionStickySingleHop(
-        regionNames[0], USE_ACK, nullptr, locatorsG, "__TEST_POOL1__", false,
-        false);
+        regionNames[0], USE_ACK, locatorsG, "__TEST_POOL1__", false, false);
     ASSERT(regPtr != nullptr, "Failed to create region.");
     regPtr = getHelper()->createPooledRegionStickySingleHop(
-        regionNames[1], NO_ACK, nullptr, locatorsG, "__TEST_POOL1__", false,
-        false);
+        regionNames[1], NO_ACK, locatorsG, "__TEST_POOL1__", false, false);
     ASSERT(regPtr != nullptr, "Failed to create region.");
 
     LOG("StepOne_Pooled_LocatorTL complete.");

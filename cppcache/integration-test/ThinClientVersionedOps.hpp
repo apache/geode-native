@@ -143,7 +143,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartClient1)
 
     initClient(true);
     getHelper()->createPoolWithLocators("__TEST_POOL1__", locatorsG, true, -1,
-                                        -1, -1, false, group1);
+                                        std::chrono::milliseconds::zero(), -1,
+                                        false, group1);
     RegionPtr regPtr0 = getHelper()->createRegionAndAttachPool(
         regNames[0], USE_ACK, "__TEST_POOL1__", true);
     LOG("StepOne_Pooled_Locator1 complete.");
@@ -176,7 +177,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StartClient2)
     */
     initClient(true);
     getHelper()->createPoolWithLocators("__TEST_POOL1__", locatorsG, true, -1,
-                                        -1, -1, false, group2);
+                                        std::chrono::milliseconds::zero(), -1,
+                                        false, group2);
     RegionPtr regPtr0 = getHelper()->createRegionAndAttachPool(
         regNames[0], USE_ACK, "__TEST_POOL1__", true);
     LOG("StepOne_Pooled_Locator1 complete.");

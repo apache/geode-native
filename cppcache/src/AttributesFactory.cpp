@@ -71,24 +71,25 @@ void AttributesFactory::setPartitionResolver(const char* lib,
 }
 
 void AttributesFactory::setEntryIdleTimeout(ExpirationAction::Action action,
-                                            int idleTimeout) {
+                                            std::chrono::seconds idleTimeout) {
   m_regionAttributes.m_entryIdleTimeout = idleTimeout;
   m_regionAttributes.m_entryIdleTimeoutExpirationAction = action;
 }
 
 void AttributesFactory::setEntryTimeToLive(ExpirationAction::Action action,
-                                           int timeToLive) {
+                                           std::chrono::seconds timeToLive) {
   m_regionAttributes.m_entryTimeToLive = timeToLive;
   m_regionAttributes.m_entryTimeToLiveExpirationAction = action;
 }
 
 void AttributesFactory::setRegionIdleTimeout(ExpirationAction::Action action,
-                                             int idleTimeout) {
+                                             std::chrono::seconds idleTimeout) {
   m_regionAttributes.m_regionIdleTimeout = idleTimeout;
   m_regionAttributes.m_regionIdleTimeoutExpirationAction = action;
 }
+
 void AttributesFactory::setRegionTimeToLive(ExpirationAction::Action action,
-                                            int timeToLive) {
+                                            std::chrono::seconds timeToLive) {
   m_regionAttributes.m_regionTimeToLive = timeToLive;
   m_regionAttributes.m_regionTimeToLiveExpirationAction = action;
 }
@@ -121,12 +122,12 @@ std::unique_ptr<RegionAttributes> AttributesFactory::createRegionAttributes() {
 
 void AttributesFactory::validateAttributes(RegionAttributes& attrs) {
   if (!attrs.m_caching) {
-    if (attrs.m_entryTimeToLive != 0) {
+    if (attrs.m_entryTimeToLive.count() != 0) {
       throw IllegalStateException(
           "Entry TimeToLive use is incompatible with disabled caching");
     }
 
-    if (attrs.m_entryIdleTimeout != 0) {
+    if (attrs.m_entryIdleTimeout.count() != 0) {
       throw IllegalStateException(
           "Entry IdleTimeout use is incompatible with disabled caching");
     }

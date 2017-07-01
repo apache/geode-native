@@ -44,7 +44,7 @@ void RunDurableClient() {
   // Create durable client's properties using api.
   PropertiesPtr pp = Properties::create();
   pp->insert("durable-client-id", "DurableClientId");
-  pp->insert("durable-timeout", 300);
+  pp->insert("durable-timeout", std::chrono::seconds(300));
 
   // Create a Geode Cache Programmatically.
   CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory(pp);

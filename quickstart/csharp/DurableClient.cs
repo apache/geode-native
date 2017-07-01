@@ -45,7 +45,7 @@ namespace Apache.Geode.Client.QuickStart
         // Create durable client's properties using api.
       Properties<string, string> durableProp = Properties<string, string>.Create<string, string>();
         durableProp.Insert("durable-client-id", "DurableClientId");
-        durableProp.Insert("durable-timeout", "300");
+        durableProp.Insert("durable-timeout", "300s");
 
         // Create a Geode Cache programmatically.
         CacheFactory cacheFactory = CacheFactory.CreateCacheFactory(durableProp);

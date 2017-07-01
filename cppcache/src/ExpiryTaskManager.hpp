@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_EXPIRYTASKMANAGER_H_
-#define GEODE_EXPIRYTASKMANAGER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_EXPIRYTASKMANAGER_H_
+#define GEODE_EXPIRYTASKMANAGER_H_
+
+#include <chrono>
+
 #include <ace/Reactor.h>
 #include <ace/Task.h>
 #include <ace/Timer_Heap.h>
-#include "ReadWriteLock.hpp"
 
 #include <geode/geode_globals.hpp>
+#include <geode/util/chrono/duration.hpp>
+
+#include "ReadWriteLock.hpp"
 #include "util/Log.hpp"
 
 /**
@@ -230,9 +235,34 @@ class CPPCACHE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
                           bool cancelExistingTask = false);
 
   long scheduleExpiryTask(ACE_Event_Handler* handler,
+                          const std::chrono::microseconds expTime,
+                          const std::chrono::microseconds interval,
+                          const bool cancelExistingTask = false);
+
+  long scheduleExpiryTask(ACE_Event_Handler* handler,
                           ACE_Time_Value expTimeValue,
                           ACE_Time_Value intervalVal,
                           bool cancelExistingTask = false);
+
+  template <class ExpRep, class ExpPeriod, class IntRep, class IntPeriod>
+  long scheduleExpiryTask(ACE_Event_Handler* handler,
+                          std::chrono::duration<ExpRep, ExpPeriod> expTime,
+                          std::chrono::duration<IntRep, IntPeriod> interval,
+                          bool cancelExistingTask) {
+    LOGFINER(
+        "ExpiryTaskManager: expTime %s, interval %s, cancelExistingTask %d",
+        util::chrono::duration::to_string(expTime).c_str(),
+        util::chrono::duration::to_string(interval).c_str(),
+        cancelExistingTask);
+    if (cancelExistingTask) {
+      m_reactor->cancel_timer(handler, 1);
+    }
+
+    ACE_Time_Value expTimeValue(expTime);
+    ACE_Time_Value intervalValue(interval);
+    LOGFINER("Scheduled expiration ... in %d seconds.", expTime.count());
+    return m_reactor->schedule_timer(handler, 0, expTimeValue, intervalValue);
+  }
 
   /**
    * for resetting the interval an already registered task.

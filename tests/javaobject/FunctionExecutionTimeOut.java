@@ -47,7 +47,7 @@ public class FunctionExecutionTimeOut extends FunctionAdapter implements
   public void execute(FunctionContext context) {
     DistributedSystem ds = InternalDistributedSystem.getAnyInstance();
     LogWriter logger = ds.getLogWriter();
-    logger.fine("Executing FunctionExecutionTimeOut ");
+    logger.info("Executing FunctionExecutionTimeOut ");
     int expected = (Integer)context.getArguments();
 	boolean timeoutFound = false;
     GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
@@ -56,7 +56,7 @@ public class FunctionExecutionTimeOut extends FunctionAdapter implements
     for (int i = 0; i < scs.length; ++i) {
       ClientHandShake hs = scs[i].getHandshake();
 	  if (hs != null) {
-	    logger.fine("hs.getClientReadTimeout() =  " + hs.getClientReadTimeout());
+	    logger.info("hs.getClientReadTimeout() =  " + hs.getClientReadTimeout());
 	  }
       if (hs != null && expected == hs.getClientReadTimeout()) {
         // success

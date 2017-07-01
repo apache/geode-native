@@ -216,8 +216,8 @@ class CPPCACHE_EXPORT SerializationRegistry {
 
   typedef std::function<std::shared_ptr<Serializable>(DataInput&)>
       PdxTypeHandler;
-  void setPdxTypeHandler(const PdxTypeHandler& pdxTypeHandler) {
-    this->pdxTypeHandler = pdxTypeHandler;
+  void setPdxTypeHandler(const PdxTypeHandler& handler) {
+    this->pdxTypeHandler = handler;
   }
 
  private:

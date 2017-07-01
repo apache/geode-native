@@ -55,7 +55,7 @@ namespace Apache
         /// <summary>
         /// get result 
         /// </summary>
-        System::Collections::Generic::ICollection<TResult>^  GetResult(UInt32 timeout);
+        System::Collections::Generic::ICollection<TResult>^  GetResult(TimeSpan timeout);
 
         /// <summary>
         ///Call back provided to caller, which is called after function execution is

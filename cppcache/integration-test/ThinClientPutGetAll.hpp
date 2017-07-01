@@ -312,7 +312,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, putallAndGetallPdxWithCallBackArg)
 
     RegionPtr regPtr0 = getHelper()->getRegion(_regionNames[0]);
     // TODO: Investigate whether callback is used
-    regPtr0->putAll(map0, 15, CacheableInt32::create(1001));
+    regPtr0->putAll(map0, std::chrono::seconds(15),
+                    CacheableInt32::create(1001));
     LOG("putallPdxWithCallBackArg on Pdx objects completed.");
 
     regPtr0->localDestroy(CacheableInt32::create(21));

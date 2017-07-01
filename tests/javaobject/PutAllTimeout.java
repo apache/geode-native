@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 package javaobject;
+
 import java.util.*;
+
+import org.apache.logging.log4j.*;
+
 import org.apache.geode.cache.CacheListener;
 import org.apache.geode.cache.EntryEvent;
 import org.apache.geode.cache.RegionEvent;
 import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.Declarable;
 import org.apache.geode.internal.cache.tier.sockets.CacheClientProxy;
-import org.apache.geode.LogWriter;
+
 
 public class PutAllTimeout implements Declarable, CacheListener {
+
+  final Logger log = LogManager.getLogger(getClass());
 
   public PutAllTimeout() 
   {
@@ -40,10 +46,10 @@ public class PutAllTimeout implements Declarable, CacheListener {
      if (event.getKey().toString().indexOf("timeout") >= 0) {
         
         int sleepVal = Integer.parseInt( event.getNewValue().toString() );
-        System.out.println("Put all timeout value " + event.getNewValue().toString()); 
-        System.out.println("Put all timeout " + sleepVal);
+        log.info("Put all timeout value " + event.getNewValue().toString());
+        log.info("Put all timeout " + sleepVal);
         Thread.sleep(sleepVal);
-        System.out.println("Put all sleep done");
+        log.info("Put all sleep done");
       }              
     }catch(InterruptedException e)
     {
@@ -60,9 +66,9 @@ public class PutAllTimeout implements Declarable, CacheListener {
      {
        if (event.getKey().toString().indexOf("timeout") >= 0) {
          int sleepVal = Integer.parseInt( event.getNewValue().toString() );
-         System.out.println("Put all timeout " + sleepVal);
+         log.info("Put all timeout " + sleepVal);
          Thread.sleep(sleepVal);
-         System.out.println("Put all sleep done");
+         log.info("Put all sleep done");
        }              
      }catch(InterruptedException e)
      {
@@ -70,7 +76,7 @@ public class PutAllTimeout implements Declarable, CacheListener {
      }
      catch(Exception e)
      {
-       System.out.println("Exception: After update " + e.getMessage());
+       log.info("Exception: After update " + e.getMessage());
      }
    }
   

@@ -183,7 +183,7 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
                              ? (poolSeparator + m_poolName)
                              : "");
 
-  const uint32_t durableTimeOut = sysProp.durableTimeout();
+  const auto durableTimeOut = sysProp.durableTimeout();
   m_memId = cacheImpl->getClientProxyMembershipIDFactory().create(
       hostName, hostAddr, hostPort, clientDurableId.c_str(), durableTimeOut);
 
@@ -281,7 +281,7 @@ void ThinClientPoolDM::startBackgroundThreads() {
   ACE_Event_Handler* pingHandler =
       new ExpiryHandler_T<ThinClientPoolDM>(this, &ThinClientPoolDM::doPing);
 
-  long pingInterval = getPingInterval() / (1000 * 2);
+  long pingInterval = getPingInterval().count() / (1000 * 2);
   if (pingInterval > 0) {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Scheduling ping task at %ld",
@@ -293,10 +293,10 @@ void ThinClientPoolDM::startBackgroundThreads() {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Not Scheduling ping task as "
         "ping interval %ld",
-        getPingInterval());
+        getPingInterval().count());
   }
 
-  long updateLocatorListInterval = getUpdateLocatorListInterval();
+  long updateLocatorListInterval = getUpdateLocatorListInterval().count();
 
   if (updateLocatorListInterval > 0) {
     m_updateLocatorListTask =
@@ -328,16 +328,17 @@ void ThinClientPoolDM::startBackgroundThreads() {
       this, &ThinClientPoolDM::manageConnections, NC_MC_Thread);
   m_connManageTask->start();
 
-  int idle = getIdleTimeout();
-  int load = getLoadConditioningInterval();
+  auto idle = getIdleTimeout();
+  auto load = getLoadConditioningInterval();
 
-  if (load != -1) {
-    if (load < idle || idle == -1) {
+  // TODO GEODE-3136 - consider using 0 rather than -1.
+  if (load.count() >= 0) {
+    if (load < idle || idle.count() < 0) {
       idle = load;
     }
   }
 
-  if (idle != -1) {
+  if (idle.count() != -1) {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Starting manageConnections "
         "task");
@@ -349,7 +350,7 @@ void ThinClientPoolDM::startBackgroundThreads() {
         "manageConnections task");
     m_connManageTaskId =
         m_connManager.getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
-            connHandler, 1, idle / 1000 + 1, false);
+            connHandler, std::chrono::seconds(1), idle, false);
   }
 
   LOGDEBUG(
@@ -362,10 +363,10 @@ void ThinClientPoolDM::startBackgroundThreads() {
 
   LOGDEBUG(
       "ThinClientPoolDM::startBackgroundThreads: Starting pool stat sampler");
-  if (m_PoolStatsSampler == nullptr && getStatisticInterval() > -1 &&
+  if (m_PoolStatsSampler == nullptr && getStatisticInterval().count() > -1 &&
       props.statisticsEnabled()) {
     m_PoolStatsSampler = new PoolStatsSampler(
-        getStatisticInterval() / 1000 + 1, m_connManager.getCacheImpl(), this);
+        getStatisticInterval().count() / 1000 + 1, m_connManager.getCacheImpl(), this);
     m_PoolStatsSampler->start();
   }
 
@@ -399,9 +400,7 @@ void ThinClientPoolDM::cleanStaleConnections(volatile bool& isRunning) {
 
   LOGDEBUG("Cleaning stale connections");
 
-  int idle = getIdleTimeout();
-
-  ACE_Time_Value _idle(idle / 1000, (idle % 1000) * 1000);
+  ACE_Time_Value _idle(getIdleTimeout());
   ACE_Time_Value _nextIdle = _idle;
   {
     TcrConnection* conn = nullptr;
@@ -561,10 +560,11 @@ std::string ThinClientPoolDM::selectEndpoint(
     // Update Locator Request Stats
     getStats().incLoctorRequests();
 
-    if (GF_NOERR != ((ThinClientLocatorHelper*)m_locHelper)
-                        ->getEndpointForNewFwdConn(
-                            outEndpoint, additionalLoc, excludeServers,
-                            m_attrs->m_serverGrp, currentServer)) {
+    if (GF_NOERR !=
+        ((ThinClientLocatorHelper*)m_locHelper)
+            ->getEndpointForNewFwdConn(outEndpoint, additionalLoc,
+                                       excludeServers, m_attrs->m_serverGrp,
+                                       currentServer)) {
       throw IllegalStateException("Locator query failed");
     }
     // Update Locator stats
@@ -613,8 +613,9 @@ void ThinClientPoolDM::addConnection(TcrConnection* conn) {
   ++m_poolSize;
 }
 GfErrType ThinClientPoolDM::sendRequestToAllServers(
-    const char* func, uint8_t getResult, uint32_t timeout, CacheablePtr args,
-    ResultCollectorPtr& rs, CacheableStringPtr& exceptionPtr) {
+    const char* func, uint8_t getResult, std::chrono::milliseconds timeout,
+    CacheablePtr args, ResultCollectorPtr& rs,
+    CacheableStringPtr& exceptionPtr) {
   GfErrType err = GF_NOERR;
 
   getStats().setCurClientOps(++m_clientOps);
@@ -1367,8 +1368,8 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
         type == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP ||
         type == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE)) {
     // set only when message is not query, putall and executeCQ
-    reply.setTimeout(this->getReadTimeout() / 1000);
-    request.setTimeout(this->getReadTimeout() / 1000);
+    reply.setTimeout(this->getReadTimeout());
+    request.setTimeout(this->getReadTimeout());
   }
 
   bool retryAllEPsOnce = false;
@@ -1388,8 +1389,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
     isAuthRequireExcep = false;
     if (!firstTry) request.updateHeaderForRetry();
     // if it's a query or putall and we had a timeout, just return with the
-    // newly
-    // selected endpoint without failover-retry
+    // newly selected endpoint without failover-retry
     if ((type == TcrMessage::QUERY ||
          type == TcrMessage::QUERY_WITH_PARAMETERS ||
          type == TcrMessage::PUTALL ||
@@ -1892,8 +1892,7 @@ GfErrType ThinClientPoolDM::createPoolConnection(
 TcrConnection* ThinClientPoolDM::getConnectionFromQueue(
     bool timeout, GfErrType* error, std::set<ServerLocation>& excludeServers,
     bool& maxConnLimit) {
-  int64_t timeoutTime = m_attrs->getFreeConnectionTimeout() /
-                        1000;  // in millisec so divide by 1000
+  std::chrono::microseconds timeoutTime = m_attrs->getFreeConnectionTimeout();
 
   getStats().setCurWaitingConnections(waiters());
   getStats().incWaitingConnections();
@@ -1903,10 +1902,8 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueue(
                                   ->getDistributedSystem()
                                   .getSystemProperties()
                                   .getEnableTimeStatistics();
-  int64_t sampleStartNanos =
-      enableTimeStatistics ? Utils::startStatOpTime() : 0;
-  TcrConnection* mp =
-      getUntil(timeoutTime, error, excludeServers, maxConnLimit);
+  auto sampleStartNanos = enableTimeStatistics ? Utils::startStatOpTime() : 0;
+  auto mp = getUntil(timeoutTime, error, excludeServers, maxConnLimit);
   /*Update the time stat for clientOpsTime */
   if (enableTimeStatistics) {
     Utils::updateStatOpTime(getStats().getStats(),
@@ -1979,7 +1976,7 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
           type == TcrMessage::EXECUTE_REGION_FUNCTION ||
           type == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP ||
           type == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE)) {
-      reply.setTimeout(this->getReadTimeout() / 1000);
+      reply.setTimeout(this->getReadTimeout());
     }
 
     reply.setDM(this);
@@ -2198,25 +2195,18 @@ void ThinClientPoolDM::setThreadLocalConnection(TcrConnection* conn) {
 }
 
 bool ThinClientPoolDM::hasExpired(TcrConnection* conn) {
-  int load = getLoadConditioningInterval();
-  int idle = getIdleTimeout();
-
-  if (load != -1) {
-    if (load < idle || idle == -1) {
-      idle = load;
-    }
-  }
-
+  const auto& load = getLoadConditioningInterval();
   return conn->hasExpired(load);
 }
 
 bool ThinClientPoolDM::canItBeDeleted(TcrConnection* conn) {
-  int load = getLoadConditioningInterval();
-  int idle = getIdleTimeout();
+  const auto& load = getLoadConditioningInterval();
+  auto idle = getIdleTimeout();
   int min = getMinConnections();
 
-  if (load != -1) {
-    if (load < idle || idle == -1) {
+  // TODO GEODE-3136 reconsider use of -1
+  if (load.count() >= 0) {
+    if (load < idle || idle.count() < 0) {
       idle = load;
     }
   }

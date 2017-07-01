@@ -945,7 +945,7 @@ namespace Apache.Geode.Client.FwkLib
         DateTime endTime;
         TimeSpan elapsedTime;
         startTime = DateTime.Now;
-        region.PutAll(map,60);
+        region.PutAll(map, TimeSpan.FromSeconds(60));
         endTime = DateTime.Now;
         elapsedTime = endTime - startTime;
         FwkInfo("PerfTests.DoPutAll: Time Taken to execute" +

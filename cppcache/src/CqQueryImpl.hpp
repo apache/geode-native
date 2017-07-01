@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CQQUERYIMPL_H_
-#define GEODE_CQQUERYIMPL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_CQQUERYIMPL_H_
+#define GEODE_CQQUERYIMPL_H_
 
 #include <geode/geode_globals.hpp>
 #include <geode/geode_types.hpp>
@@ -94,16 +94,17 @@ class CqQueryImpl : public CqQuery,
  public:
   CqQueryImpl(const CqServicePtr& cqService, const std::string& cqName,
               const std::string& queryString,
-              const CqAttributesPtr& cqAttributes, statistics::StatisticsFactory* factory,
+              const CqAttributesPtr& cqAttributes,
+              statistics::StatisticsFactory* factory,
               const bool isDurable = false,
               const UserAttributesPtr& userAttributesPtr = nullptr);
 
-  ~CqQueryImpl();
+  virtual ~CqQueryImpl();
 
   /**
    * returns CQ name
    */
-  const char* getName() const;
+  const char* getName() const override;
 
   /**
    * sets the CqName.
@@ -122,7 +123,7 @@ class CqQueryImpl : public CqQuery,
    *        On Server side, takes care of repository cleanup.
    * @throws CqException
    */
-  void close();
+  void close() override;
 
   /**
    * Closes the Query.
@@ -148,24 +149,24 @@ class CqQueryImpl : public CqQuery,
   /**
    * Returns the QueryString of this CQ.
    */
-  const char* getQueryString() const;
+  const char* getQueryString() const override;
 
   /**
    * Return the query after replacing region names with parameters
    * @return the Query for the query string
    */
-  QueryPtr getQuery() const;
+  QueryPtr getQuery() const override;
 
   /**
    * @see org.apache.geode.cache.query.CqQuery#getStatistics()
    */
-  const CqStatisticsPtr getStatistics() const;
+  const CqStatisticsPtr getStatistics() const override;
 
   CqQueryVsdStats& getVsdStats() {
     return *dynamic_cast<CqQueryVsdStats*>(m_stats.get());
   }
 
-  const CqAttributesPtr getCqAttributes() const;
+  const CqAttributesPtr getCqAttributes() const override;
 
   RegionPtr getCqBaseRegion();
 
@@ -183,7 +184,7 @@ class CqQueryImpl : public CqQuery,
   /**
    * Start or resume executing the query.
    */
-  void execute();
+  void execute() override;
 
   void executeAfterFailover();
 
@@ -196,7 +197,7 @@ class CqQueryImpl : public CqQuery,
    * Start or resume executing the query.
    * Gets or updates the CQ results and returns them.
    */
-  CqResultsPtr executeWithInitialResults(uint32_t timeout);
+  CqResultsPtr executeWithInitialResults(std::chrono::milliseconds timeout) override;
 
   /**
    * This is called when the new server comes-up.
@@ -208,13 +209,13 @@ class CqQueryImpl : public CqQuery,
   /**
    * Stop or pause executing the query.
    */
-  void stop();
+  void stop() override;
 
   /**
    * Return the state of this query.
    * @return STOPPED RUNNING or CLOSED
    */
-  CqState::StateType getState();
+  CqState::StateType getState() override;
 
   /**
    * Sets the state of the cq.
@@ -222,7 +223,7 @@ class CqQueryImpl : public CqQuery,
    */
   void setCqState(CqState::StateType state);
 
-  const CqAttributesMutatorPtr getCqAttributesMutator() const;
+  const CqAttributesMutatorPtr getCqAttributesMutator() const override;
 
   /**
    * @return Returns the cqOperation.
@@ -244,25 +245,25 @@ class CqQueryImpl : public CqQuery,
    * Return true if the CQ is in running state
    * @return true if running, false otherwise
    */
-  bool isRunning();
+  bool isRunning() override;
 
   /**
    * Return true if the CQ is in Sstopped state
    * @return true if stopped, false otherwise
    */
-  bool isStopped();
+  bool isStopped() override;
 
   /**
    * Return true if the CQ is closed
    * @return true if closed, false otherwise
    */
-  bool isClosed();
+  bool isClosed() override;
 
   /**
    * Return true if the CQ is durable
    * @return true if durable, false otherwise
    */
-  bool isDurable();
+  bool isDurable() override;
 
   inline ThinClientBaseDM* getDM() { return m_tccdm; }
 
@@ -275,6 +276,7 @@ class CqQueryImpl : public CqQuery,
 
   FRIEND_STD_SHARED_PTR(CqQueryImpl)
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

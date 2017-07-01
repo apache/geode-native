@@ -17,6 +17,8 @@
 
 #pragma managed(pop)
 
+//#pragma pack(pop)
+
 #pragma warning(pop)
 
 #pragma pop_macro("nullptr")

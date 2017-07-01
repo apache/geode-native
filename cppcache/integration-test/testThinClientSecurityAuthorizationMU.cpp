@@ -305,7 +305,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
 
       SelectResultsPtr results;
       printf(" before query executing\n");
-      results = qry->execute(850);
+      results = qry->execute(std::chrono::seconds(850));
       LOG("Query completed successfully");
 
       sprintf(queryString, "select * from /%s", regionNamesAuth[0]);
@@ -323,19 +323,19 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
         // FunctionServicePtr funcServ = virtualCache->getFunctionService();
         // funcServ->onServer()->execute("securityTest", true)->getResult();
         FunctionService::onServer(virtualCache)
-            ->execute("securityTest", true)
+            ->execute("securityTest")
             ->getResult();
         LOG("onServer executed successfully.");
         // funcServ->onServers()->execute("securityTest", true)->getResult();
         FunctionService::onServers(virtualCache)
-            ->execute("securityTest", true)
+            ->execute("securityTest")
             ->getResult();
         LOG("onServerS executed successfully.");
         FunctionService::onRegion(regionPtr)
-            ->execute("securityTest", true)
+            ->execute("securityTest")
             ->getResult();
         LOG("FunctionService::onRegion executed successfully.");
-        FunctionService::onRegion(regionPtr)->execute("FireNForget", false);
+        FunctionService::onRegion(regionPtr)->execute("FireNForget");
         LOG("Function execution with no result completed successfully");
 
         //-----------------------Test with
@@ -375,7 +375,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
 
         ResultCollectorPtr collector =
             funcExec->withArgs(args)->withFilter(filter)->execute(
-                exFuncNameSendException, 15);
+                exFuncNameSendException, std::chrono::seconds(15));
         ASSERT(collector != nullptr, "onRegion collector nullptr");
 
         CacheableVectorPtr result = collector->getResult();
@@ -413,7 +413,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
         LOG("exFuncNameSendException done for bool arguement.");
 
         collector = funcExec->withArgs(arrList)->withFilter(filter)->execute(
-            exFuncNameSendException, 15);
+            exFuncNameSendException, std::chrono::seconds(15));
         ASSERT(collector != nullptr, "onRegion collector for arrList nullptr");
 
         result = collector->getResult();
@@ -702,7 +702,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       //  FunctionServicePtr funcServ = virtualCache->getFunctionService();
       // funcServ->onServer()->execute("securityTest", true)->getResult();
       FunctionService::onServer(virtualCache)
-          ->execute("securityTest", true)
+          ->execute("securityTest")
           ->getResult();
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION
@@ -717,7 +717,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       // FunctionServicePtr funcServ = virtualCache->getFunctionService();
       // funcServ->onServers()->execute("securityTest", true)->getResult();
       FunctionService::onServers(virtualCache)
-          ->execute("securityTest", true)
+          ->execute("securityTest")
           ->getResult();
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION
@@ -766,8 +766,8 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
 
       ExecutionPtr funcExec = FunctionService::onServers(virtualCache);
 
-      ResultCollectorPtr collector =
-          funcExec->withArgs(args)->execute(exFuncNameSendException, 15);
+      ResultCollectorPtr collector = funcExec->withArgs(args)->execute(
+          exFuncNameSendException, std::chrono::seconds(15));
 
       //----------------------------------------------------------------------------------------------//
     }
@@ -784,7 +784,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       // true)->getResult();
       // FAIL("Function execution should not have completed successfully");
       FunctionService::onRegion(regionPtr)
-          ->execute("securityTest", true)
+          ->execute("securityTest")
           ->getResult();
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION
@@ -835,7 +835,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
 
       ResultCollectorPtr collector =
           funcExec->withArgs(args)->withFilter(filter)->execute(
-              exFuncNameSendException, 15);
+              exFuncNameSendException, std::chrono::seconds(15));
 
       //----------------------------------------------------------------------------------------------//
 
@@ -1008,7 +1008,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
       // FunctionServicePtr funcServ = virtualCache->getFunctionService();
       // funcServ->onServer()->execute("securityTest", true)->getResult();
       FunctionService::onServer(virtualCache)
-          ->execute("securityTest", true)
+          ->execute("securityTest")
           ->getResult();
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION

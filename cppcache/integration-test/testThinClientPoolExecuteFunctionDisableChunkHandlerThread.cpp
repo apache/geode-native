@@ -137,8 +137,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartTestClient)
     config->insert("disable-chunk-handler-thread", "true");
     config->insert("read-timeout-unit-in-millis", "true");
     config->insert("ping-interval", "-1");
-    config->insert("bucket-wait-timeout", "2000");
-    config->insert("connect-wait-timeout", "10");
+    config->insert("bucket-wait-timeout", "2000s");
+    config->insert("connect-wait-timeout", "10s");
 
     initClientWithPool(true, nullptr, locHostPort, serverGroup, config, 0, true,
                        -1, -1, -1, true, false);
@@ -159,8 +159,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StartTestClient2)
     config->insert("disable-chunk-handler-thread", "true");
     config->insert("read-timeout-unit-in-millis", "true");
     config->insert("ping-interval", "-1");
-    config->insert("bucket-wait-timeout", "2000");
-    config->insert("connect-wait-timeout", "10");
+    config->insert("bucket-wait-timeout", "2000s");
+    config->insert("connect-wait-timeout", "10s");
 
     initClientWithPool(true, nullptr, locHostPort, serverGroup, config, 0, true,
                        -1, -1, -1, true, false);
@@ -226,7 +226,8 @@ class putThread : public ACE_Task_Base {
           CacheableVectorPtr routingObj = CacheableVector::create();
           routingObj->push_back(key);
           ExecutionPtr exc = FunctionService::onRegion(regPtr0);
-          exc->execute(routingObj, args, rPtr, getFuncName2, 300 /*in millis*/)
+          exc->execute(routingObj, args, rPtr, getFuncName2,
+                       std::chrono::seconds(300))
               ->getResult();
         } catch (const TimeoutException& te) {
           LOGINFO("Timeout exception occurred %s", te.getMessage());
@@ -268,7 +269,8 @@ void executeFunction() {
     CacheableVectorPtr routingObj = CacheableVector::create();
     routingObj->push_back(key);
     ExecutionPtr exc = FunctionService::onRegion(regPtr0);
-    exc->execute(routingObj, args, rPtr, getFuncName2, 300 /*in millis*/)
+    exc->execute(routingObj, args, rPtr, getFuncName2,
+                 std::chrono::seconds(300))
         ->getResult();
   }
   LOGINFO("executeFunction failureCount %d", failureCount);

@@ -24,15 +24,14 @@
 #include "end_native.hpp"
 #include "native_shared_ptr.hpp"
 
-
-using namespace System;
-
 namespace Apache
 {
   namespace Geode
   {
     namespace Client
     {
+      using namespace System;
+
       namespace native = apache::geode::client;
 
       generic<class TResult>
@@ -84,13 +83,9 @@ namespace Apache
         /// Executes the Cq Query on the cache server
         /// with the specified timeout and returns the results.
         /// </summary>
-        /// <param name="timeout">The time (in seconds) to wait for query response.
-        /// This should be less than or equal to 2^31/1000 i.e. 2147483.
+        /// <param name="timeout">The time to wait for query response.
         /// </param>
-        /// <exception cref="IllegalArgumentException">
-        /// if timeout parameter is greater than 2^31/1000.
-        /// </exception>
-        ICqResults<TResult>^ ExecuteWithInitialResults(System::UInt32 timeout);
+        ICqResults<TResult>^ ExecuteWithInitialResults(TimeSpan timeout);
 
         /// <summary>
         /// Get the string for this cq query.

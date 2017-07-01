@@ -59,11 +59,9 @@ ThinClientLocatorHelper::ThinClientLocatorHelper(
   }
 }
 
-Connector* ThinClientLocatorHelper::createConnection(Connector*& conn,
-                                                     const char* hostname,
-                                                     int32_t port,
-                                                     uint32_t waitSeconds,
-                                                     int32_t maxBuffSizePool) {
+Connector* ThinClientLocatorHelper::createConnection(
+    Connector*& conn, const char* hostname, int32_t port,
+    std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool) {
   Connector* socket = nullptr;
   auto& systemProperties = m_poolDM->getConnectionManager()
                                .getCacheImpl()
@@ -109,9 +107,7 @@ GfErrType ThinClientLocatorHelper::getAllServers(
       data->writeObject(&request);
       int sentLength = conn->send(
           (char*)(data->getBuffer()), data->getBufferLength(),
-          m_poolDM ? (m_poolDM->getReadTimeout() / 1000) * 1000 * 1000
-                   : 10 * 1000 * 1000,
-          0);
+          m_poolDM ? m_poolDM->getReadTimeout() : std::chrono::seconds(10));
       if (sentLength <= 0) {
         // conn->close(); delete conn; conn = nullptr;
         continue;
@@ -119,9 +115,7 @@ GfErrType ThinClientLocatorHelper::getAllServers(
       char buff[BUFF_SIZE];
       int receivedLength = conn->receive(
           buff, BUFF_SIZE,
-          m_poolDM ? (m_poolDM->getReadTimeout() / 1000) * 1000 * 1000
-                   : 10 * 1000 * 1000,
-          0);
+          m_poolDM ? m_poolDM->getReadTimeout() : std::chrono::seconds(10));
       // conn->close();
       // delete conn; conn = nullptr;
       if (receivedLength <= 0) {
@@ -205,9 +199,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
       data->writeObject(&request);
       int sentLength = conn->send(
           (char*)(data->getBuffer()), data->getBufferLength(),
-          m_poolDM ? (m_poolDM->getReadTimeout() / 1000) * 1000 * 1000
-                   : sysProps.connectTimeout() * 1000 * 1000,
-          0);
+          m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       if (sentLength <= 0) {
         // conn->close(); delete conn; conn = nullptr;
         continue;
@@ -215,9 +207,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
       char buff[BUFF_SIZE];
       int receivedLength = conn->receive(
           buff, BUFF_SIZE,
-          m_poolDM ? (m_poolDM->getReadTimeout() / 1000) * 1000 * 1000
-                   : sysProps.connectTimeout() * 1000 * 1000,
-          0);
+          m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       // conn->close();
       // delete conn; conn = nullptr;
       if (receivedLength <= 0) {
@@ -292,7 +282,10 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
       ConnectionWrapper cw(conn);
       createConnection(conn, serLoc.getServerName().c_str(), serLoc.getPort(),
                        sysProps.connectTimeout(), buffSize);
-      auto data = m_poolDM->getConnectionManager().getCacheImpl()->getCache()->createDataOutput();
+      auto data = m_poolDM->getConnectionManager()
+                      .getCacheImpl()
+                      ->getCache()
+                      ->createDataOutput();
       data->writeInt(1001);  // GOSSIPVERSION
       if (currentServer == nullptr) {
         LOGDEBUG("Creating ClientConnectionRequest");
@@ -307,9 +300,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
       }
       int sentLength = conn->send(
           (char*)(data->getBuffer()), data->getBufferLength(),
-          m_poolDM ? (m_poolDM->getReadTimeout() / 1000) * 1000 * 1000
-                   : sysProps.connectTimeout() * 1000 * 1000,
-          0);
+          m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       if (sentLength <= 0) {
         // conn->close();
         // delete conn;
@@ -318,9 +309,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
       char buff[BUFF_SIZE];
       int receivedLength = conn->receive(
           buff, BUFF_SIZE,
-          m_poolDM ? (m_poolDM->getReadTimeout() / 1000) * 1000 * 1000
-                   : sysProps.connectTimeout() * 1000 * 1000,
-          0);
+          m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       // conn->close();
       // delete conn;
       if (receivedLength <= 0) {
@@ -392,14 +381,15 @@ GfErrType ThinClientLocatorHelper::updateLocators(
       createConnection(conn, serLoc.getServerName().c_str(), serLoc.getPort(),
                        sysProps.connectTimeout(), buffSize);
       LocatorListRequest request(serverGrp);
-      auto data = m_poolDM->getConnectionManager().getCacheImpl()->getCache()->createDataOutput();
+      auto data = m_poolDM->getConnectionManager()
+                      .getCacheImpl()
+                      ->getCache()
+                      ->createDataOutput();
       data->writeInt((int32_t)1001);  // GOSSIPVERSION
       data->writeObject(&request);
       int sentLength = conn->send(
           (char*)(data->getBuffer()), data->getBufferLength(),
-          m_poolDM ? (m_poolDM->getReadTimeout() / 1000) * 1000 * 1000
-                   : sysProps.connectTimeout() * 1000 * 1000,
-          0);
+          m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       if (sentLength <= 0) {
         //  conn->close();
         // delete conn;
@@ -409,9 +399,7 @@ GfErrType ThinClientLocatorHelper::updateLocators(
       char buff[BUFF_SIZE];
       int receivedLength = conn->receive(
           buff, BUFF_SIZE,
-          m_poolDM ? (m_poolDM->getReadTimeout() / 1000) * 1000 * 1000
-                   : sysProps.connectTimeout() * 1000 * 1000,
-          0);
+          m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       // conn->close();
       // delete conn; conn = nullptr;
       if (receivedLength <= 0) {

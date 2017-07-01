@@ -132,16 +132,14 @@ inline bool TcrEndpoint::needtoTakeConnectLock() {
 #endif
 }
 
-GfErrType TcrEndpoint::createNewConnectionWL(TcrConnection*& newConn,
-                                             bool isClientNotification,
-                                             bool isSecondary,
-                                             uint32_t connectTimeout) {
+GfErrType TcrEndpoint::createNewConnectionWL(
+    TcrConnection*& newConn, bool isClientNotification, bool isSecondary,
+    std::chrono::microseconds connectTimeout) {
   LOGFINE("TcrEndpoint::createNewConnectionWL");
-  uint32_t connectWaitTimeout = m_cacheImpl->getDistributedSystem()
-                                    .getSystemProperties()
-                                    .connectWaitTimeout() *
-                                1000;  // need to change
-  ACE_Time_Value interval(0, connectWaitTimeout);
+  auto connectWaitTimeout = m_cacheImpl->getDistributedSystem()
+                                .getSystemProperties()
+                                .connectWaitTimeout();
+  ACE_Time_Value interval(connectWaitTimeout);
   ACE_Time_Value stopAt(ACE_OS::gettimeofday());
   stopAt += interval;
   bool connCreated = false;
@@ -201,12 +199,12 @@ GfErrType TcrEndpoint::createNewConnectionWL(TcrConnection*& newConn,
 
 GfErrType TcrEndpoint::createNewConnection(
     TcrConnection*& newConn, bool isClientNotification, bool isSecondary,
-    uint32_t connectTimeout, int32_t timeoutRetries,
+    std::chrono::microseconds connectTimeout, int32_t timeoutRetries,
     bool sendUpdateNotification, bool appThreadRequest) {
   LOGFINE(
       "TcrEndpoint::createNewConnection: connectTimeout =%d "
       "m_needToConnectInLock=%d appThreadRequest =%d",
-      connectTimeout, m_needToConnectInLock, appThreadRequest);
+      connectTimeout.count(), m_needToConnectInLock, appThreadRequest);
   GfErrType err = GF_NOERR;
   newConn = nullptr;
   while (timeoutRetries-- >= 0) {
@@ -604,7 +602,8 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
     try {
       size_t dataLen;
       ConnErrType opErr = CONN_NOERR;
-      auto data = m_notifyConnection->receive(&dataLen, &opErr, 5);
+      auto data = m_notifyConnection->receive(&dataLen, &opErr,
+                                              std::chrono::seconds(5));
 
       if (opErr == CONN_IOERR) {
         // Endpoint is disconnected, this exception is expected
@@ -908,7 +907,8 @@ bool TcrEndpoint::isMultiUserMode() {
 GfErrType TcrEndpoint::sendRequestWithRetry(
     const TcrMessage& request, TcrMessageReply& reply, TcrConnection*& conn,
     bool& epFailure, std::string& failReason, int maxSendRetries,
-    bool useEPPool, int64_t requestedTimeout, bool isBgThread) {
+    bool useEPPool, std::chrono::microseconds requestedTimeout,
+    bool isBgThread) {
   GfErrType error = GF_NOTCON;
   bool createNewConn = false;
   // int32_t type = request.getMessageType();
@@ -926,7 +926,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
       (const_cast<TcrMessage&>(request)).updateHeaderForRetry();
     }
 
-    int64_t timeout = requestedTimeout;
+    auto timeout = requestedTimeout;
     epFailure = false;
     if (useEPPool) {
       if (m_maxConnections == 0) {
@@ -966,9 +966,9 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
       LOGFINER(
           "sendRequestWithRetry:: looking for connection in queue timeout = "
           "%d ",
-          timeout);
-      conn = m_opConnections.getUntil(
-          timeout);  // max wait time to get a connection
+          timeout.count());
+      // max wait time to get a connection
+      conn = m_opConnections.getUntil(timeout);
     }
     if (!m_connected) {
       return GF_NOTCON;
@@ -1088,18 +1088,18 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
       if (useEPPool) {
         epFailure = true;
         failReason = "server connection could not be obtained";
-        if (timeout <= 0) {
+        if (timeout <= std::chrono::microseconds::zero()) {
           error = GF_TIMOUT;
           LOGWARN(
               "No connection available for %ld seconds "
               "for endpoint %s.",
-              requestedTimeout, m_name.c_str());
+              requestedTimeout.count(), m_name.c_str());
         } else {
           error = GF_NOTCON;
           LOGFINE(
               "Returning without connection with %d seconds remaining "
               "for endpoint %s.",
-              timeout, m_name.c_str());
+              timeout.count(), m_name.c_str());
         }
       } else {
         LOGERROR("Unexpected failure while sending request to server.");
@@ -1111,9 +1111,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
   return error;
 }
 
-void TcrEndpoint::setRetryAndTimeout(const TcrMessage& request,
-                                     int& maxSendRetries,
-                                     uint32_t& requestedTimeout) {
+void TcrEndpoint::setRetry(const TcrMessage& request, int& maxSendRetries) {
   int32_t type = request.getMessageType();
   if (type == TcrMessage::QUERY || type == TcrMessage::QUERY_WITH_PARAMETERS ||
       type == TcrMessage::PUTALL || type == TcrMessage::PUT_ALL_WITH_CALLBACK ||
@@ -1127,17 +1125,16 @@ void TcrEndpoint::setRetryAndTimeout(const TcrMessage& request,
 
 GfErrType TcrEndpoint::send(const TcrMessage& request, TcrMessageReply& reply) {
   GfErrType error = GF_NOTCON;
-  int maxSendRetries = 1;
 
-  uint32_t requestedTimeout = reply.getTimeout();
-  setRetryAndTimeout(request, maxSendRetries, requestedTimeout);
+  int maxSendRetries = 1;
+  setRetry(request, maxSendRetries);
 
   TcrConnection* conn = nullptr;
   bool epFailure;
   std::string failReason;
   //  TODO: remove sendRetryCount as parameter.
   error = sendRequestWithRetry(request, reply, conn, epFailure, failReason,
-                               maxSendRetries, true, requestedTimeout);
+                               maxSendRetries, true, reply.getTimeout());
 
   if (error == GF_NOERR) {
     m_msgSent = true;
@@ -1168,10 +1165,9 @@ GfErrType TcrEndpoint::sendRequestConnWithRetry(const TcrMessage& request,
                                                 TcrConnection*& conn,
                                                 bool isBgThread) {
   GfErrType error = GF_NOTCON;
-  int maxSendRetries = 1;
 
-  uint32_t requestedTimeout = reply.getTimeout();
-  setRetryAndTimeout(request, maxSendRetries, requestedTimeout);
+  int maxSendRetries = 1;
+  setRetry(request, maxSendRetries);
 
   //  Retry on the following send errors:
   // Timeout: 1 retry
@@ -1181,9 +1177,9 @@ GfErrType TcrEndpoint::sendRequestConnWithRetry(const TcrMessage& request,
   bool epFailure;
   std::string failReason;
   LOGFINE("sendRequestConnWithRetry:: maxSendRetries = %d ", maxSendRetries);
-  error =
-      sendRequestWithRetry(request, reply, conn, epFailure, failReason,
-                           maxSendRetries, false, requestedTimeout, isBgThread);
+  error = sendRequestWithRetry(request, reply, conn, epFailure, failReason,
+                               maxSendRetries, false, reply.getTimeout(),
+                               isBgThread);
   if (error == GF_NOERR) {
     m_msgSent = true;
   }

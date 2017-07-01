@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_POOL_H_
-#define GEODE_POOL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,8 +15,16 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_POOL_H_
+#define GEODE_POOL_H_
+
+#include <chrono>
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
+#include "util/chrono/duration.hpp"
 #include "CacheableBuiltins.hpp"
 #include "Cache.hpp"
 #include "CacheFactory.hpp"
@@ -32,9 +35,11 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 class Cache;
 class CacheFactory;
 class PoolAttributes;
+
 /**
  * A pool of connections to connect from a client to a set of Geode Cache
  * Servers.
@@ -62,78 +67,92 @@ class CPPCACHE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
    * Returns the connection timeout of this pool.
    * @see PoolFactory#setFreeConnectionTimeout
    */
-  int getFreeConnectionTimeout() const;
+  std::chrono::milliseconds getFreeConnectionTimeout() const;
+
   /**
    * Returns the load conditioning interval of this pool.
    * @see PoolFactory#setLoadConditioningInterval
    */
-  int getLoadConditioningInterval() const;
+  std::chrono::milliseconds getLoadConditioningInterval() const;
+
   /**
    * Returns the socket buffer size of this pool.
    * @see PoolFactory#setSocketBufferSize
    */
   int getSocketBufferSize() const;
+
   /**
    * Returns the read timeout of this pool.
    * @see PoolFactory#setReadTimeout
    */
-  int getReadTimeout() const;
+  std::chrono::milliseconds getReadTimeout() const;
+
   /**
    * Gets the minimum connections for this pool.
    * @see PoolFactory#setMinConnections(int)
    */
   int getMinConnections() const;
+
   /**
    * Gets the maximum connections for this pool.
    * @see PoolFactory#setMaxConnections(int)
    */
   int getMaxConnections() const;
+
   /**
    * Gets the idle connection timeout for this pool.
    * @see PoolFactory#setIdleTimeout(long)
    */
-  long getIdleTimeout() const;
+  std::chrono::milliseconds getIdleTimeout() const;
+
   /**
    * Gets the ping interval for this pool.
    * @see PoolFactory#setPingInterval(long)
    */
-  long getPingInterval() const;
+  std::chrono::milliseconds getPingInterval() const;
+
   /**
    * Gets the update locator list interval for this pool.
    * @see PoolFactory#setUpdateLocatorListInterval(long)
    */
-  long getUpdateLocatorListInterval() const;
+  std::chrono::milliseconds getUpdateLocatorListInterval() const;
+
   /**
    * Gets the statistic interval for this pool.
    * @see PoolFactory#setStatisticInterval(int)
    */
-  int getStatisticInterval() const;
+  std::chrono::milliseconds getStatisticInterval() const;
+
   /**
    * Gets the retry attempts for this pool.
    * @see PoolFactory#setRetryAttempts(int)
    */
   int getRetryAttempts() const;
+
   /**
    * Returns the true if a server-to-client subscriptions are enabled on this
    * pool.
    * @see PoolFactory#setSubscriptionEnabled
    */
   bool getSubscriptionEnabled() const;
+
   /**
    * Returns the subscription redundancy level of this pool.
    * @see PoolFactory#setSubscriptionRedundancy
    */
   int getSubscriptionRedundancy() const;
+
   /**
    * Returns the subscription message tracking timeout of this pool.
    * @see PoolFactory#setSubscriptionMessageTrackingTimeout
    */
-  int getSubscriptionMessageTrackingTimeout() const;
+  std::chrono::milliseconds getSubscriptionMessageTrackingTimeout() const;
+
   /**
    * Returns the subscription ack interval of this pool.
    * @see PoolFactory#setSubscriptionAckInterval(int)
    */
-  int getSubscriptionAckInterval() const;
+  std::chrono::milliseconds getSubscriptionAckInterval() const;
 
   /**
    * Returns the server group of this pool.
@@ -281,6 +300,7 @@ class CPPCACHE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
   friend class CacheFactory;
   friend class Cache;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

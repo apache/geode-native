@@ -172,9 +172,6 @@
  *  Definitions of types and functions supported in the Geode C++ interface
  */
 
-/** default timeout for query response */
-#define DEFAULT_QUERY_RESPONSE_TIMEOUT 15
-
 /**
  * @enum GfErrType
  *Error codes returned by Geode C++ interface functions
@@ -319,5 +316,18 @@ typedef enum {
 #else
 #define FRIEND_STD_SHARED_PTR(_T)
 #endif
+
+#include <chrono>
+
+namespace apache {
+namespace geode {
+namespace client {
+
+constexpr static std::chrono::milliseconds DEFAULT_QUERY_RESPONSE_TIMEOUT =
+    std::chrono::seconds{15};
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 #endif  // GEODE_BASE_H_

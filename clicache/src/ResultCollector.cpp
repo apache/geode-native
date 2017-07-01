@@ -16,11 +16,11 @@
  */
 
 
-//#include "geode_includes.hpp"
 #include "ResultCollector.hpp"
 #include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"
+#include "TimeSpanUtils.hpp"
 
 using namespace System;
 
@@ -54,16 +54,16 @@ namespace Apache
       generic<class TResult>
       System::Collections::Generic::ICollection<TResult>^  ResultCollector<TResult>::GetResult()
       {
-        return GetResult( DEFAULT_QUERY_RESPONSE_TIMEOUT );
+        return GetResult( TimeSpanUtils::DurationToTimeSpan(DEFAULT_QUERY_RESPONSE_TIMEOUT) );
       }
 
       generic<class TResult>
-      System::Collections::Generic::ICollection<TResult>^  ResultCollector<TResult>::GetResult(UInt32 timeout)
+      System::Collections::Generic::ICollection<TResult>^  ResultCollector<TResult>::GetResult(TimeSpan timeout)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
           try
           {
-            auto results = m_nativeptr->get()->getResult(timeout);
+            auto results = m_nativeptr->get()->getResult(TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
             auto rs = gcnew array<TResult>(results->size());
             for (System::Int32 index = 0; index < results->size(); index++)
             {

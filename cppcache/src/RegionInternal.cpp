@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "RegionInternal.hpp"
 #include <geode/RegionEntry.hpp>
 #include "TombstoneList.hpp"
@@ -81,18 +82,19 @@ void RegionInternal::unregisterRegex(const char* regex) {
 }
 
 SelectResultsPtr RegionInternal::query(const char* predicate,
-                                       uint32_t timeout) {
+                                       std::chrono::milliseconds timeout) {
   throw UnsupportedOperationException(
       "query only supported by Thin Client Region.");
 }
 
-bool RegionInternal::existsValue(const char* predicate, uint32_t timeout) {
+bool RegionInternal::existsValue(const char* predicate,
+                                 std::chrono::milliseconds timeout) {
   throw UnsupportedOperationException(
       "existsValue only supported by Thin Client Region.");
 }
 
 SerializablePtr RegionInternal::selectValue(const char* predicate,
-                                            uint32_t timeout) {
+                                            std::chrono::milliseconds timeout) {
   throw UnsupportedOperationException(
       "selectValue only supported by Thin Client Region.");
 }
@@ -141,25 +143,26 @@ void RegionInternal::setEntryIdleTimeoutExpirationAction(
   }
 }
 
-void RegionInternal::setRegionTimeToLive(int32_t duration) {
+void RegionInternal::setRegionTimeToLive(const std::chrono::seconds& duration) {
   if (m_regionAttributes != nullptr) {
     m_regionAttributes->m_regionTimeToLive = duration;
   }
 }
 
-void RegionInternal::setRegionIdleTimeout(int32_t duration) {
+void RegionInternal::setRegionIdleTimeout(
+    const std::chrono::seconds& duration) {
   if (m_regionAttributes != nullptr) {
     m_regionAttributes->m_regionIdleTimeout = duration;
   }
 }
 
-void RegionInternal::setEntryTimeToLive(int32_t duration) {
+void RegionInternal::setEntryTimeToLive(const std::chrono::seconds& duration) {
   if (m_regionAttributes != nullptr) {
     m_regionAttributes->m_entryTimeToLive = duration;
   }
 }
 
-void RegionInternal::setEntryIdleTimeout(int32_t duration) {
+void RegionInternal::setEntryIdleTimeout(const std::chrono::seconds& duration) {
   if (m_regionAttributes != nullptr) {
     m_regionAttributes->m_entryIdleTimeout = duration;
   }

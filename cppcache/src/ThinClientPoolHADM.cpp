@@ -57,15 +57,16 @@ void ThinClientPoolHADM::startBackgroundThreads() {
   ACE_Event_Handler* redundancyChecker =
       new ExpiryHandler_T<ThinClientPoolHADM>(
           this, &ThinClientPoolHADM::checkRedundancy);
-  int32_t redundancyMonitorInterval = props.redundancyMonitorInterval();
+  const auto redundancyMonitorInterval = props.redundancyMonitorInterval();
 
   m_servermonitorTaskId =
       m_connManager.getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
-          redundancyChecker, 1, redundancyMonitorInterval, false);
+          redundancyChecker, std::chrono::seconds(1), redundancyMonitorInterval,
+          false);
   LOGFINE(
       "ThinClientPoolHADM::ThinClientPoolHADM Registered server "
       "monitor task with id = %ld, interval = %ld",
-      m_servermonitorTaskId, redundancyMonitorInterval);
+      m_servermonitorTaskId, redundancyMonitorInterval.count());
 
   if (ThinClientBaseDM::isFatalClientError(err)) {
     if (err == GF_CACHE_LOCATOR_EXCEPTION) {

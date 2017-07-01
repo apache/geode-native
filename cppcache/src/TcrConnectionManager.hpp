@@ -32,7 +32,6 @@
 #include "ace/config-lite.h"
 #include "ace/Versioned_Namespace.h"
 #include "Queue.hpp"
-#include "EventIdMap.hpp"
 #include "ThinClientRedundancyManager.hpp"
 
 ACE_BEGIN_VERSIONED_NAMESPACE_DECL

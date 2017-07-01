@@ -20,7 +20,6 @@
 #include "RegionFactory.hpp"
 #include "RegionAttributes.hpp"
 #include "impl/SafeConvert.hpp"
-
 #include "impl/ManagedCacheLoader.hpp"
 #include "impl/ManagedCacheWriter.hpp"
 #include "impl/ManagedCacheListener.hpp"
@@ -28,7 +27,6 @@
 #include "impl/ManagedFixedPartitionResolver.hpp"
 #include "impl/ManagedFixedPartitionResolver.hpp"
 #include "impl/ManagedPersistenceManager.hpp"
-
 #include "impl/CacheLoader.hpp"
 #include "impl/CacheWriter.hpp"
 #include "impl/CacheListener.hpp"
@@ -36,10 +34,7 @@
 #include "impl/FixedPartitionResolver.hpp"
 #include "impl/FixedPartitionResolver.hpp"
 #include "impl/PersistenceManagerProxy.hpp"
-
-using namespace System;
-using namespace System::Collections::Generic;
-
+#include "TimeSpanUtils.hpp"
 
 namespace Apache
 {
@@ -47,6 +42,9 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace System;
+      using namespace System::Collections::Generic;
+
       namespace native = apache::geode::client;
 
       RegionFactory^ RegionFactory::SetCacheLoader( String^ libPath, String^ factoryFunctionName )
@@ -119,11 +117,11 @@ namespace Apache
 
       // EXPIRATION ATTRIBUTES
 
-      RegionFactory^ RegionFactory::SetEntryIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout )
+      RegionFactory^ RegionFactory::SetEntryIdleTimeout( ExpirationAction action, TimeSpan idleTimeout )
       {
         try
         {
-          m_nativeptr->get()->setEntryIdleTimeout( static_cast<native::ExpirationAction::Action>( action ), idleTimeout );
+          m_nativeptr->get()->setEntryIdleTimeout( static_cast<native::ExpirationAction::Action>( action ), TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(idleTimeout) );
         }
         finally
         {
@@ -132,11 +130,11 @@ namespace Apache
         return this;
       }
 
-      RegionFactory^ RegionFactory::SetEntryTimeToLive( ExpirationAction action, System::UInt32 timeToLive )
+      RegionFactory^ RegionFactory::SetEntryTimeToLive( ExpirationAction action, TimeSpan timeToLive )
       {
         try
         {
-          m_nativeptr->get()->setEntryTimeToLive(static_cast<native::ExpirationAction::Action>( action ), timeToLive );
+          m_nativeptr->get()->setEntryTimeToLive(static_cast<native::ExpirationAction::Action>( action ), TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeToLive) );
         }
         finally
         {
@@ -145,11 +143,11 @@ namespace Apache
         return this;
       }
 
-      RegionFactory^ RegionFactory::SetRegionIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout )
+      RegionFactory^ RegionFactory::SetRegionIdleTimeout( ExpirationAction action, TimeSpan idleTimeout )
       {
         try
         {
-          m_nativeptr->get()->setRegionIdleTimeout(static_cast<native::ExpirationAction::Action>( action ), idleTimeout );
+          m_nativeptr->get()->setRegionIdleTimeout(static_cast<native::ExpirationAction::Action>( action ), TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(idleTimeout) );
         }
         finally
         {
@@ -158,11 +156,11 @@ namespace Apache
         return this;
       }
 
-      RegionFactory^ RegionFactory::SetRegionTimeToLive( ExpirationAction action, System::UInt32 timeToLive )
+      RegionFactory^ RegionFactory::SetRegionTimeToLive( ExpirationAction action, TimeSpan timeToLive )
       {
         try
         {
-          m_nativeptr->get()->setRegionTimeToLive(static_cast<native::ExpirationAction::Action>( action ), timeToLive );
+          m_nativeptr->get()->setRegionTimeToLive(static_cast<native::ExpirationAction::Action>( action ), TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeToLive) );
         }
         finally
         {

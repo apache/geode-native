@@ -168,9 +168,9 @@ namespace Apache
         /// </para>
         /// </summary>
         /// <param name="transactionId">the transaction to resume</param>
-        /// <param name="waitTimeInMilliSec">the maximum milliseconds to wait </param>
+        /// <param name="waitTime">the maximum time to wait </param>
         /// <returns>true if the transaction was resumed, false otherwise</returns>
-        bool TryResume(Apache::Geode::Client::TransactionId^ transactionId, System::Int32 waitTimeInMilliSec);
+        bool TryResume(Apache::Geode::Client::TransactionId^ transactionId, TimeSpan waitTime);
 
 
 

@@ -48,7 +48,7 @@ int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
     uint32_t curr_time = static_cast<uint32_t>(current_time.sec());
 
     uint32_t lastTimeForExp = expProps.getLastAccessTime();
-    if (m_regionPtr->getAttributes()->getEntryTimeToLive() > 0) {
+    if (m_regionPtr->getAttributes()->getEntryTimeToLive().count() > 0) {
       lastTimeForExp = expProps.getLastModifiedTime();
     }
 

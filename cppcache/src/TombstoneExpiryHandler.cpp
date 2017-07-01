@@ -29,10 +29,9 @@
 
 using namespace apache::geode::client;
 
-TombstoneExpiryHandler::TombstoneExpiryHandler(TombstoneEntryPtr entryPtr,
-                                               TombstoneList* tombstoneList,
-                                               uint32_t duration,
-                                               CacheImpl* cacheImpl)
+TombstoneExpiryHandler::TombstoneExpiryHandler(
+    TombstoneEntryPtr entryPtr, TombstoneList* tombstoneList,
+    std::chrono::milliseconds duration, CacheImpl* cacheImpl)
     : m_entryPtr(entryPtr),
       m_duration(duration),
       m_tombstoneList(tombstoneList),
@@ -45,13 +44,13 @@ int TombstoneExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
   int64_t creationTime = m_entryPtr->getTombstoneCreationTime();
   int64_t curr_time = static_cast<int64_t>(current_time.get_msec());
   int64_t expiryTaskId = m_entryPtr->getExpiryTaskId();
-  int64_t sec = curr_time - creationTime - m_duration * 1000;
+  int64_t sec = curr_time - creationTime - m_duration.count();
   try {
     LOGDEBUG(
         "Entered entry expiry task handler for tombstone of key [%s]: "
         "%lld,%lld,%d,%lld",
         Utils::getCacheableKeyString(key)->asChar(), curr_time, creationTime,
-        m_duration, sec);
+        m_duration.count(), sec);
     if (sec >= 0) {
       DoTheExpirationAction(key);
     } else {

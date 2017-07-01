@@ -22,6 +22,7 @@
 #include "fw_dunit.hpp"
 
 #include <geode/GeodeCppCache.hpp>
+#include <geode/util/chrono/duration.hpp>
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -74,13 +75,16 @@ bool checkStringArray(SLIST& first, CacheableStringArrayPtr second) {
 bool checkPoolAttribs(PoolPtr pool, SLIST& locators, SLIST& servers,
                       int freeConnectionTimeout, int loadConditioningInterval,
                       int minConnections, int maxConnections, int retryAttempts,
-                      int idleTimeout, int pingInterval, const char* name,
-                      int readTimeout, const char* serverGroup,
-                      int socketBufferSize, bool subscriptionEnabled,
+                      std::chrono::milliseconds idleTimeout, int pingInterval,
+                      const char* name, int readTimeout,
+                      const char* serverGroup, int socketBufferSize,
+                      bool subscriptionEnabled,
                       int subscriptionMessageTrackingTimeout,
                       int subscriptionAckInterval, int subscriptionRedundancy,
                       int statisticInterval, int threadLocalConnections,
                       bool prSingleHopEnabled, int updateLocatorListInterval) {
+  using namespace apache::geode::util::chrono::duration;
+
   char logmsg[500] = {0};
 
   if (pool == nullptr) {
@@ -104,19 +108,22 @@ bool checkPoolAttribs(PoolPtr pool, SLIST& locators, SLIST& servers,
     LOG("checkPoolAttribs: servers mismatch");
     return false;
   }
-  if (freeConnectionTimeout != pool->getFreeConnectionTimeout()) {
+  if (std::chrono::milliseconds(freeConnectionTimeout) !=
+      pool->getFreeConnectionTimeout()) {
     sprintf(logmsg,
             "checkPoolAttribs: Pool freeConnectionTimeout expected [%d], "
-            "actual [%d]",
-            freeConnectionTimeout, pool->getFreeConnectionTimeout());
+            "actual [%lld]",
+            freeConnectionTimeout, pool->getFreeConnectionTimeout().count());
     LOG(logmsg);
     return false;
   }
-  if (loadConditioningInterval != pool->getLoadConditioningInterval()) {
+  if (std::chrono::milliseconds(loadConditioningInterval) !=
+      pool->getLoadConditioningInterval()) {
     sprintf(logmsg,
             "checkPoolAttribs: Pool loadConditioningInterval expected [%d], "
-            "actual [%d]",
-            loadConditioningInterval, pool->getLoadConditioningInterval());
+            "actual [%lld]",
+            loadConditioningInterval,
+            pool->getLoadConditioningInterval().count());
     LOG(logmsg);
     return false;
   }
@@ -143,22 +150,23 @@ bool checkPoolAttribs(PoolPtr pool, SLIST& locators, SLIST& servers,
   }
   if (idleTimeout != pool->getIdleTimeout()) {
     sprintf(logmsg,
-            "checkPoolAttribs: Pool idleTimeout expected [%d], actual [%ld]",
-            idleTimeout, pool->getIdleTimeout());
+            "checkPoolAttribs: Pool idleTimeout expected [%s], actual [%s]",
+            to_string(idleTimeout).c_str(),
+            to_string(pool->getIdleTimeout()).c_str());
     LOG(logmsg);
     return false;
   }
-  if (pingInterval != pool->getPingInterval()) {
+  if (std::chrono::milliseconds(pingInterval) != pool->getPingInterval()) {
     sprintf(logmsg,
-            "checkPoolAttribs: Pool pingInterval expected [%d], actual [%ld]",
-            pingInterval, pool->getPingInterval());
+            "checkPoolAttribs: Pool pingInterval expected [%d], actual [%lld]",
+            pingInterval, pool->getPingInterval().count());
     LOG(logmsg);
     return false;
   }
-  if (readTimeout != pool->getReadTimeout()) {
+  if (std::chrono::milliseconds(readTimeout) != pool->getReadTimeout()) {
     sprintf(logmsg,
-            "checkPoolAttribs: Pool readTimeout expected [%d], actual [%d]",
-            readTimeout, pool->getReadTimeout());
+            "checkPoolAttribs: Pool readTimeout expected [%d], actual [%lld]",
+            readTimeout, pool->getReadTimeout().count());
     LOG(logmsg);
     return false;
   }
@@ -187,21 +195,23 @@ bool checkPoolAttribs(PoolPtr pool, SLIST& locators, SLIST& servers,
     LOG(logmsg);
     return false;
   }
-  if (subscriptionMessageTrackingTimeout !=
+  if (std::chrono::milliseconds(subscriptionMessageTrackingTimeout) !=
       pool->getSubscriptionMessageTrackingTimeout()) {
     sprintf(logmsg,
             "checkPoolAttribs: Pool subscriptionMessageTrackingTimeout "
-            "expected [%d], actual [%d]",
+            "expected [%d], actual [%lld]",
             subscriptionMessageTrackingTimeout,
-            pool->getSubscriptionMessageTrackingTimeout());
+            pool->getSubscriptionMessageTrackingTimeout().count());
     LOG(logmsg);
     return false;
   }
-  if (subscriptionAckInterval != pool->getSubscriptionAckInterval()) {
+  if (std::chrono::milliseconds(subscriptionAckInterval) !=
+      pool->getSubscriptionAckInterval()) {
     sprintf(logmsg,
             "checkPoolAttribs: Pool subscriptionAckInterval expected [%d], "
-            "actual [%d]",
-            subscriptionAckInterval, pool->getSubscriptionAckInterval());
+            "actual [%lld]",
+            subscriptionAckInterval,
+            pool->getSubscriptionAckInterval().count());
     LOG(logmsg);
     return false;
   }
@@ -213,11 +223,12 @@ bool checkPoolAttribs(PoolPtr pool, SLIST& locators, SLIST& servers,
     LOG(logmsg);
     return false;
   }
-  if (statisticInterval != pool->getStatisticInterval()) {
+  if (std::chrono::milliseconds(statisticInterval) !=
+      pool->getStatisticInterval()) {
     sprintf(
         logmsg,
-        "checkPoolAttribs: Pool statisticInterval expected [%d], actual [%d]",
-        statisticInterval, pool->getStatisticInterval());
+        "checkPoolAttribs: Pool statisticInterval expected [%d], actual [%lld]",
+        statisticInterval, pool->getStatisticInterval().count());
     LOG(logmsg);
     return false;
   }
@@ -229,11 +240,13 @@ bool checkPoolAttribs(PoolPtr pool, SLIST& locators, SLIST& servers,
     LOG(logmsg);
     return false;
   }
-  if (updateLocatorListInterval != pool->getUpdateLocatorListInterval()) {
+  if (std::chrono::milliseconds(updateLocatorListInterval) !=
+      pool->getUpdateLocatorListInterval()) {
     sprintf(logmsg,
             "checkPoolAttribs: Pool updateLocatorListInterval expected [%d], "
-            "actual [%ld]",
-            updateLocatorListInterval, pool->getUpdateLocatorListInterval());
+            "actual [%lld]",
+            updateLocatorListInterval,
+            pool->getUpdateLocatorListInterval().count());
     LOG(logmsg);
     return false;
   }
@@ -371,19 +384,19 @@ int testXmlCacheCreationWithPools() {
 
   // THIS MUST MATCH WITH THE CLIENT CACHE XML LOADED
 
-  bool check1 =
-      checkPoolAttribs(poolOfReg1, locators, emptylist, 12345, 23456, 3, 7, 3,
-                       5555, 12345, "test_pool_1", 23456, "ServerGroup1", 32768,
-                       true, 900123, 567, 0, 10123, 5, true, 250001);
+  bool check1 = checkPoolAttribs(
+      poolOfReg1, locators, emptylist, 12345, 23456, 3, 7, 3,
+      std::chrono::milliseconds(5555), 12345, "test_pool_1", 23456,
+      "ServerGroup1", 32768, true, 900123, 567, 0, 10123, 5, true, 250001);
 
-  bool check2 =
-      checkPoolAttribs(poolOfReg2, emptylist, servers, 23456, 34567, 2, 8, 5,
-                       6666, 23456, "test_pool_2", 34567, "ServerGroup2", 65536,
-                       false, 800222, 678, 1, 20345, 3, false, 5000);
-  bool check3 =
-      checkPoolAttribs(poolOfSubReg, emptylist, servers, 23456, 34567, 2, 8, 5,
-                       6666, 23456, "test_pool_2", 34567, "ServerGroup2", 65536,
-                       false, 800222, 678, 1, 20345, 3, false, 5000);
+  bool check2 = checkPoolAttribs(
+      poolOfReg2, emptylist, servers, 23456, 34567, 2, 8, 5,
+      std::chrono::milliseconds(6666), 23456, "test_pool_2", 34567,
+      "ServerGroup2", 65536, false, 800222, 678, 1, 20345, 3, false, 5000);
+  bool check3 = checkPoolAttribs(
+      poolOfSubReg, emptylist, servers, 23456, 34567, 2, 8, 5,
+      std::chrono::milliseconds(6666), 23456, "test_pool_2", 34567,
+      "ServerGroup2", 65536, false, 800222, 678, 1, 20345, 3, false, 5000);
 
   if (!cptr->isClosed()) {
     cptr->close();

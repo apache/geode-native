@@ -76,10 +76,11 @@ CacheablePtr TransactionalOperation::replay(Cache* cache) {
                   std::static_pointer_cast<CacheableVector>(m_arguments->at(1)))
               ->withCollector(std::dynamic_pointer_cast<ResultCollector>(
                   m_arguments->at(2)))
-              ->execute(
-                  m_arguments->at(3)->toString()->asChar(),
-                  std::static_pointer_cast<CacheableInt32>(m_arguments->at(4))
-                      ->value()));
+              ->execute(m_arguments->at(3)->toString()->asChar(),
+                        std::chrono::milliseconds(
+                            std::static_pointer_cast<CacheableInt32>(
+                                m_arguments->at(4))
+                                ->value())));
     } break;
     case GF_GET:
       result = cache->getRegion(m_regionName)->get(m_key, m_arguments->at(0));
@@ -128,10 +129,12 @@ CacheablePtr TransactionalOperation::replay(Cache* cache) {
       break;
     case GF_PUT_ALL:
       cache->getRegion(m_regionName)
-          ->putAll(*std::dynamic_pointer_cast<HashMapOfCacheable>(
-                       m_arguments->at(0)),
-                   std::static_pointer_cast<CacheableInt32>(m_arguments->at(1))
-                       ->value());
+          ->putAll(
+              *std::dynamic_pointer_cast<HashMapOfCacheable>(
+                  m_arguments->at(0)),
+              std::chrono::milliseconds(
+                  std::static_pointer_cast<CacheableInt32>(m_arguments->at(1))
+                      ->value()));
       break;
     default:
       throw UnsupportedOperationException(

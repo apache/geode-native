@@ -24,10 +24,10 @@
 
 #include "ResultCollector.hpp"
 #include "impl/ManagedResultCollector.hpp"
-
 #include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"
+#include "TimeSpanUtils.hpp"
 
 using namespace System;
 
@@ -106,13 +106,13 @@ namespace Apache
       }
 
       generic<class TResult>
-      IResultCollector<TResult>^ Execution<TResult>::Execute(String^ func, UInt32 timeout)
+      IResultCollector<TResult>^ Execution<TResult>::Execute(String^ func, TimeSpan timeout)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
         try
         {
           ManagedString mg_function(func);
-          auto rc = m_nativeptr->get()->execute(mg_function.CharPtr, timeout);
+          auto rc = m_nativeptr->get()->execute(mg_function.CharPtr, TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
           if (m_rc == nullptr)
             return gcnew ResultCollector<TResult>(rc);
           else
@@ -128,7 +128,7 @@ namespace Apache
       generic<class TResult>
       IResultCollector<TResult>^ Execution<TResult>::Execute(String^ func)
       {
-        return Execute(func, DEFAULT_QUERY_RESPONSE_TIMEOUT);
+        return Execute(func, TimeSpanUtils::DurationToTimeSpan(native::DEFAULT_QUERY_RESPONSE_TIMEOUT));
       }
     }  // namespace Client
   }  // namespace Geode

@@ -60,7 +60,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_Locator1)
   {
     initClient(true);
     getHelper()->createPoolWithLocators("__TEST_POOL1__", locatorsG, false, -1,
-                                        -1, -1, false, group1);
+                                        std::chrono::seconds::zero(), -1, false,
+                                        group1);
     getHelper()->createRegionAndAttachPool(regionNames[0], USE_ACK,
                                            "__TEST_POOL1__", false);
     LOG("StepOne_Pooled_Locator1 complete.");
@@ -71,7 +72,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepOne_Pooled_Locator2)
   {
     initClient(true);
     getHelper()->createPoolWithLocators("__TEST_POOL2__", locatorsG, false, -1,
-                                        -1, -1, false, group2);
+                                        std::chrono::seconds::zero(), -1, false,
+                                        group2);
     getHelper()->createRegionAndAttachPool(regionNames[0], USE_ACK,
                                            "__TEST_POOL2__", false);
     LOG("StepOne_Pooled_Locator2 complete.");
@@ -82,7 +84,8 @@ DUNIT_TASK_DEFINITION(CLIENT3, StepOne_Pooled_Locator3)
   {
     initClient(true);
     getHelper()->createPoolWithLocators("__TEST_POOL3__", locatorsG, false, -1,
-                                        -1, -1, false, group3);
+                                        std::chrono::seconds::zero(), -1, false,
+                                        group3);
     getHelper()->createRegionAndAttachPool(regionNames[0], USE_ACK,
                                            "__TEST_POOL3__", false);
     LOG("StepOne_Pooled_Locator3 complete.");

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_THINCLIENTREDUNDANCYMANAGER_H_
-#define GEODE_THINCLIENTREDUNDANCYMANAGER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,20 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * ThinClientRedundancyManager.hpp
- *
- *  Created on: Dec 1, 2008
- *      Author: abhaware
- */
 
-#include "TcrMessage.hpp"
-#include "TcrEndpoint.hpp"
-#include "ServerLocation.hpp"
+#pragma once
+
+#ifndef GEODE_THINCLIENTREDUNDANCYMANAGER_H_
+#define GEODE_THINCLIENTREDUNDANCYMANAGER_H_
 
 #include <set>
 #include <list>
 #include <string>
+
+#include "TcrMessage.hpp"
+#include "TcrEndpoint.hpp"
+#include "ServerLocation.hpp"
+#include "EventIdMap.hpp"
 
 namespace apache {
 namespace geode {

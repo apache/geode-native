@@ -59,7 +59,8 @@ class ThinClientLocatorHelper {
 
  private:
   Connector* createConnection(Connector*& conn, const char* hostname,
-                              int32_t port, uint32_t waitSeconds,
+                              int32_t port,
+                              std::chrono::microseconds waitSeconds,
                               int32_t maxBuffSizePool = 0);
   ACE_Thread_Mutex m_locatorLock;
   std::vector<ServerLocation> m_locHostPort;

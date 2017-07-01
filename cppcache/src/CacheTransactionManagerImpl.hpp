@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CACHETRANSACTIONMANAGERIMPL_H_
-#define GEODE_CACHETRANSACTIONMANAGERIMPL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * CacheTransactionManagerImpl.h
- *
- *  Created on: 04-Feb-2011
- *      Author: ankurs
- */
+
+#pragma once
+
+#ifndef GEODE_CACHETRANSACTIONMANAGERIMPL_H_
+#define GEODE_CACHETRANSACTIONMANAGERIMPL_H_
 
 #include <geode/CacheTransactionManager.hpp>
 
@@ -45,20 +39,20 @@ class CacheTransactionManagerImpl
   CacheTransactionManagerImpl(Cache* cache);
   virtual ~CacheTransactionManagerImpl();
 
-  virtual void begin();
-  virtual void commit();
-  virtual void rollback();
-  virtual bool exists();
-  virtual TransactionIdPtr suspend();
-  virtual void resume(TransactionIdPtr transactionId);
-  virtual bool isSuspended(TransactionIdPtr transactionId);
-  virtual bool tryResume(TransactionIdPtr transactionId);
+  virtual void begin() override;
+  virtual void commit() override;
+  virtual void rollback() override;
+  virtual bool exists() override;
+  virtual TransactionIdPtr suspend() override;
+  virtual void resume(TransactionIdPtr transactionId) override;
+  virtual bool isSuspended(TransactionIdPtr transactionId) override;
+  virtual bool tryResume(TransactionIdPtr transactionId) override;
   bool tryResume(TransactionIdPtr transactionId, bool cancelExpiryTask);
   virtual bool tryResume(TransactionIdPtr transactionId,
-                         int32_t waitTimeInMillisec);
-  virtual bool exists(TransactionIdPtr transactionId);
+                         std::chrono::milliseconds waitTime) override;
+  virtual bool exists(TransactionIdPtr transactionId) override;
 
-  virtual TransactionIdPtr getTransactionId();
+  virtual TransactionIdPtr getTransactionId() override;
 
   TXState* getSuspendedTx(int32_t txId);
 
@@ -73,7 +67,7 @@ class CacheTransactionManagerImpl
   GfErrType rollback(TXState* txState, bool callListener);
   void addSuspendedTx(int32_t txId, TXState* txState);
   TXState* removeSuspendedTx(int32_t txId);
-  TXState* removeSuspendedTxUntil(int32_t txId, int32_t waitTimeInSec);
+  TXState* removeSuspendedTx(int32_t txId, std::chrono::milliseconds waitTime);
   bool isSuspendedTx(int32_t txId);
   void addTx(int32_t txId);
   bool removeTx(int32_t txId);

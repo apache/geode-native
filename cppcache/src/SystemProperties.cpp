@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
-
 #include <string>
 #include <cstdlib>
 #include <string>
 
-#include <geode/SystemProperties.hpp>
-#include <CppCacheLibrary.hpp>
-#include "util/Log.hpp"
-#include <geode/ExceptionTypes.hpp>
 #include <ace/OS.h>
 #include <ace/DLL.h>
+
+#include <geode/geode_globals.hpp>
+#include <geode/util/chrono/duration.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/ExceptionTypes.hpp>
+
+#include "CppCacheLibrary.hpp"
+#include "util/Log.hpp"
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -34,29 +36,6 @@
 #include <dlfcn.h>
 #endif
 
-using namespace apache::geode::client;
-namespace apache {
-namespace geode {
-namespace client {
-namespace impl {
-
-void* getFactoryFunc(const char* lib, const char* funcName);
-
-}  // namespace impl
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
-
-using namespace apache::geode::client::impl;
-
-/******************************************************************************/
-
-/**
- * The implementation of the SystemProperties class
- *
- *
- *
- */
 
 namespace {
 
@@ -111,23 +90,23 @@ const char OnClientDisconnectClearPdxTypeIds[] =
     "on-client-disconnect-clear-pdxType-Ids";
 const char TombstoneTimeoutInMSec[] = "tombstone-timeout";
 const char DefaultConflateEvents[] = "server";
-const char ReadTimeoutUnitInMillis[] = "read-timeout-unit-in-millis";
 
 const char DefaultDurableClientId[] = "";
-const uint32_t DefaultDurableTimeout = 300;
+constexpr auto DefaultDurableTimeout = std::chrono::seconds(300);
 
-const uint32_t DefaultConnectTimeout = 59;
-const uint32_t DefaultConnectWaitTimeout = 0;
-const uint32_t DefaultBucketWaitTimeout = 0;
+constexpr auto DefaultConnectTimeout = std::chrono::seconds(59);
+constexpr auto DefaultConnectWaitTimeout = std::chrono::seconds(0);
+constexpr auto DefaultBucketWaitTimeout = std::chrono::seconds(0);
 
-const int DefaultSamplingInterval = 1;
+constexpr auto DefaultSamplingInterval = std::chrono::seconds(1);
 const bool DefaultSamplingEnabled = true;
 const bool DefaultAppDomainEnabled = false;
 
 const char DefaultStatArchive[] = "statArchive.gfs";
 const char DefaultLogFilename[] = "";  // stdout...
 
-const Log::LogLevel DefaultLogLevel = Log::Config;
+const apache::geode::client::Log::LogLevel DefaultLogLevel =
+    apache::geode::client::Log::Config;
 
 const int DefaultJavaConnectionPoolSize = 5;
 const bool DefaultDebugStackTraceEnabled = false;  // or true
@@ -155,22 +134,31 @@ const uint32_t DefaultHeapLRULimit = 0;  // = unlimited, disabled when it is 0
 const int32_t DefaultHeapLRUDelta = 10;  // = unlimited, disabled when it is 0
 
 const int32_t DefaultMaxSocketBufferSize = 65 * 1024;
-const int32_t DefaultPingInterval = 10;
-const int32_t DefaultRedundancyMonitorInterval = 10;
-const int32_t DefaultNotifyAckInterval = 1;
-const int32_t DefaultNotifyDupCheckLife = 300;
+constexpr auto DefaultPingInterval = std::chrono::seconds(10);
+constexpr auto DefaultRedundancyMonitorInterval = std::chrono::seconds(10);
+constexpr auto DefaultNotifyAckInterval = std::chrono::seconds(1);
+constexpr auto DefaultNotifyDupCheckLife = std::chrono::seconds(300);
 const char DefaultSecurityPrefix[] = "security-";
 const char DefaultSecurityClientDhAlgo[] ATTR_UNUSED = "";
 const char DefaultSecurityClientKsPath[] ATTR_UNUSED = "";
 const uint32_t DefaultThreadPoolSize = ACE_OS::num_processors() * 2;
-const uint32_t DefaultSuspendedTxTimeout = 30;
-const uint32_t DefaultTombstoneTimeout = 480000;
+constexpr auto DefaultSuspendedTxTimeout = std::chrono::seconds(30);
+constexpr auto DefaultTombstoneTimeout = std::chrono::seconds(480);
 // not disable; all region api will use chunk handler thread
 const bool DefaultDisableChunkHandlerThread = false;
-const bool DefaultReadTimeoutUnitInMillis = false;
 const bool DefaultOnClientDisconnectClearPdxTypeIds = false;
+
 }  // namespace
 
+namespace apache {
+namespace geode {
+namespace client {
+
+namespace impl {
+
+void* getFactoryFunc(const char* lib, const char* funcName);
+
+}  // namespace impl
 
 SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
                                    const char* configFile)
@@ -216,9 +204,8 @@ SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
       m_conflateEvents(nullptr),
       m_threadPoolSize(DefaultThreadPoolSize),
       m_suspendedTxTimeout(DefaultSuspendedTxTimeout),
-      m_tombstoneTimeoutInMSec(DefaultTombstoneTimeout),
+      m_tombstoneTimeout(DefaultTombstoneTimeout),
       m_disableChunkHandlerThread(DefaultDisableChunkHandlerThread),
-      m_readTimeoutUnitInMillis(DefaultReadTimeoutUnitInMillis),
       m_onClientDisconnectClearPdxTypeIds(
           DefaultOnClientDisconnectClearPdxTypeIds) {
   processProperty(ConflateEvents, DefaultConflateEvents);
@@ -304,6 +291,19 @@ void SystemProperties::throwError(const char* msg) {
   throw GeodeConfigException(msg);
 }
 
+template <class _Rep, class _Period>
+void SystemProperties::parseDurationProperty(
+    const std::string& property, const std::string& value,
+    std::chrono::duration<_Rep, _Period>& duration) {
+  try {
+    duration = util::chrono::duration::from_string<
+        std::chrono::duration<_Rep, _Period>>(value);
+  } catch (std::invalid_argument& e) {
+    throwError(
+        ("SystemProperties: non-duration " + property + "=" + value).c_str());
+  }
+}
+
 void SystemProperties::processProperty(const char* property,
                                        const char* value) {
   std::string prop = property;
@@ -327,98 +327,44 @@ void SystemProperties::processProperty(const char* property,
     }
 
   } else if (prop == PingInterval) {
-    char* end;
-    long si = strtol(value, &end, 10);
-    if (!*end) {
-      m_pingInterval = si;
-    } else {
+    try {
+      m_pingInterval =
+          util::chrono::duration::from_string<decltype(m_pingInterval)>(
+              std::string(value));
+    } catch (std::invalid_argument& e) {
       throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
+          ("SystemProperties: non-duration " + prop + "=" + value).c_str());
     }
-
   } else if (prop == RedundancyMonitorInterval) {
-    char* end;
-    long si = strtol(value, &end, 10);
-    if (!*end) {
-      m_redundancyMonitorInterval = si;
-    } else {
+    try {
+      m_redundancyMonitorInterval =
+          util::chrono::duration::from_string<decltype(
+              m_redundancyMonitorInterval)>(std::string(value));
+    } catch (std::invalid_argument& e) {
       throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
+          ("SystemProperties: non-duration " + prop + "=" + value).c_str());
     }
-
   } else if (prop == NotifyAckInterval) {
-    char* end;
-    long si = strtol(value, &end, 10);
-    if (!*end) {
-      m_notifyAckInterval = si;
-    } else {
+    try {
+      m_notifyAckInterval =
+          util::chrono::duration::from_string<decltype(m_notifyAckInterval)>(
+              std::string(value));
+    } catch (std::invalid_argument& e) {
       throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
+          ("SystemProperties: non-duration " + prop + "=" + value).c_str());
     }
   } else if (prop == NotifyDupCheckLife) {
-    char* end;
-    long si = strtol(value, &end, 10);
-    if (!*end) {
-      m_notifyDupCheckLife = si;
-    } else {
-      throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
-    }
-
+    parseDurationProperty(prop, std::string(value), m_notifyDupCheckLife);
   } else if (prop == StatisticsSampleInterval) {
-    char* end;
-    long si = strtol(value, &end, 10);
-    if (!*end) {
-      m_statisticsSampleInterval = si;
-
-    } else {
-      throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
-    }
+    parseDurationProperty(prop, std::string(value), m_statisticsSampleInterval);
   } else if (prop == DurableTimeout) {
-    char* end;
-    uint32_t si = strtoul(value, &end, 10);
-    if (!*end) {
-      m_durableTimeout = si;
-
-    } else {
-      throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
-    }
-
+    parseDurationProperty(prop, std::string(value), m_durableTimeout);
   } else if (prop == ConnectTimeout) {
-    char* end;
-    uint32_t si = strtoul(value, &end, 10);
-    if (!*end) {
-      m_connectTimeout = si;
-
-    } else {
-      throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
-    }
-
+    parseDurationProperty(prop, std::string(value), m_connectTimeout);
   } else if (prop == ConnectWaitTimeout) {
-    char* end;
-    uint32_t si = strtoul(value, &end, 10);
-    if (!*end) {
-      m_connectWaitTimeout = si;
-
-    } else {
-      throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
-    }
-
+    parseDurationProperty(prop, std::string(value), m_connectWaitTimeout);
   } else if (prop == BucketWaitTimeout) {
-    char* end;
-    uint32_t si = strtoul(value, &end, 10);
-    if (!*end) {
-      m_bucketWaitTimeout = si;
-
-    } else {
-      throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
-    }
-
+    parseDurationProperty(prop, std::string(value), m_bucketWaitTimeout);
   } else if (prop == DisableShufflingEndpoint) {
     std::string val = value;
     if (val == "false") {
@@ -673,26 +619,9 @@ void SystemProperties::processProperty(const char* property,
           ("SystemProperties: non-integer " + prop + "=" + value).c_str());
     }
   } else if (prop == SuspendedTxTimeout) {
-    char* end;
-    uint32_t si = strtoul(value, &end, 10);
-    if (!*end) {
-      m_suspendedTxTimeout = si;
-
-    } else {
-      throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
-    }
-
-  } else if (prop == TombstoneTimeoutInMSec) {  // Added system properties for
-                                                // TombStone-Timeout.
-    char* end;
-    uint32_t si = strtoul(value, &end, 10);
-    if (!*end) {
-      m_tombstoneTimeoutInMSec = si;
-    } else {
-      throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
-    }
+    parseDurationProperty(prop, std::string(value), m_suspendedTxTimeout);
+  } else if (prop == TombstoneTimeoutInMSec) {
+    parseDurationProperty(prop, std::string(value), m_tombstoneTimeout);
   } else if (strncmp(property, DefaultSecurityPrefix,
                      sizeof(DefaultSecurityPrefix) - 1) == 0) {
     m_securityPropertiesPtr->insert(property, value);
@@ -711,15 +640,6 @@ void SystemProperties::processProperty(const char* property,
       m_onClientDisconnectClearPdxTypeIds = false;
     } else if (val == "true") {
       m_onClientDisconnectClearPdxTypeIds = true;
-    } else {
-      throwError(("SystemProperties: non-boolean " + prop + "=" + val).c_str());
-    }
-  } else if (prop == ReadTimeoutUnitInMillis) {
-    std::string val = value;
-    if (val == "false") {
-      m_readTimeoutUnitInMillis = false;
-    } else if (val == "true") {
-      m_readTimeoutUnitInMillis = true;
     } else {
       throwError(("SystemProperties: non-boolean " + prop + "=" + val).c_str());
     }
@@ -752,9 +672,8 @@ void SystemProperties::logSettings() {
   settings += "\n  auto-ready-for-events = ";
   settings += autoReadyForEvents() ? "true" : "false";
 
-  ACE_OS::snprintf(buf, 2048, "%" PRIu32, bucketWaitTimeout());
   settings += "\n  bucket-wait-timeout = ";
-  settings += buf;
+  settings += util::chrono::duration::to_string(bucketWaitTimeout());
 
   settings += "\n  cache-xml-file = ";
   settings += cacheXMLFile();
@@ -762,17 +681,15 @@ void SystemProperties::logSettings() {
   settings += "\n  conflate-events = ";
   settings += conflateEvents();
 
-  ACE_OS::snprintf(buf, 2048, "%" PRIu32, connectTimeout());
   settings += "\n  connect-timeout = ";
-  settings += buf;
+  settings += util::chrono::duration::to_string(connectTimeout());
 
   ACE_OS::snprintf(buf, 2048, "%" PRIu32, javaConnectionPoolSize());
   settings += "\n  connection-pool-size = ";
   settings += buf;
 
-  ACE_OS::snprintf(buf, 2048, "%" PRIu32, connectWaitTimeout());
   settings += "\n  connect-wait-timeout = ";
-  settings += buf;
+  settings += util::chrono::duration::to_string(connectWaitTimeout());
 
   settings += "\n  crash-dump-enabled = ";
   settings += crashDumpEnabled() ? "true" : "false";
@@ -786,9 +703,8 @@ void SystemProperties::logSettings() {
   settings += "\n  durable-client-id = ";
   settings += durableClientId();
 
-  ACE_OS::snprintf(buf, 2048, "%" PRIu32, durableTimeout());
   settings += "\n  durable-timeout = ";
-  settings += buf;
+  settings += util::chrono::duration::to_string(durableTimeout());
 
   // *** PLEASE ADD IN ALPHABETICAL ORDER - USER VISIBLE ***
 
@@ -836,29 +752,22 @@ void SystemProperties::logSettings() {
   settings += "\n  max-socket-buffer-size = ";
   settings += buf;
 
-  ACE_OS::snprintf(buf, 2048, "%" PRIi32, notifyAckInterval());
   settings += "\n  notify-ack-interval = ";
-  settings += buf;
+  settings += util::chrono::duration::to_string(notifyAckInterval());
 
-  ACE_OS::snprintf(buf, 2048, "%" PRIi32, notifyDupCheckLife());
   settings += "\n  notify-dupcheck-life = ";
-  settings += buf;
+  settings += util::chrono::duration::to_string(notifyDupCheckLife());
 
   settings += "\n  on-client-disconnect-clear-pdxType-Ids = ";
   settings += onClientDisconnectClearPdxTypeIds() ? "true" : "false";
 
   // *** PLEASE ADD IN ALPHABETICAL ORDER - USER VISIBLE ***
 
-  ACE_OS::snprintf(buf, 2048, "%" PRIi32, pingInterval());
   settings += "\n  ping-interval = ";
-  settings += buf;
+  settings += util::chrono::duration::to_string(pingInterval());
 
-  settings += "\n  read-timeout-unit-in-millis = ";
-  settings += readTimeoutUnitInMillis() ? "true" : "false";
-
-  ACE_OS::snprintf(buf, 2048, "%" PRIi32, redundancyMonitorInterval());
   settings += "\n  redundancy-monitor-interval = ";
-  settings += buf;
+  settings += util::chrono::duration::to_string(redundancyMonitorInterval());
 
   settings += "\n  security-client-dhalgo = ";
   settings += securityClientDhAlgo();
@@ -887,21 +796,20 @@ void SystemProperties::logSettings() {
   settings += "\n  statistic-sampling-enabled = ";
   settings += statisticsEnabled() ? "true" : "false";
 
-  ACE_OS::snprintf(buf, 2048, "%" PRIu32, statisticsSampleInterval());
   settings += "\n  statistic-sample-rate = ";
-  settings += buf;
+  settings += util::chrono::duration::to_string(statisticsSampleInterval());
 
-  ACE_OS::snprintf(buf, 2048, "%" PRIu32, suspendedTxTimeout());
   settings += "\n  suspended-tx-timeout = ";
-  settings += buf;
+  settings += util::chrono::duration::to_string(suspendedTxTimeout());
 
-  // tombstone-timeout
-  ACE_OS::snprintf(buf, 2048, "%" PRIu32, tombstoneTimeoutInMSec());
   settings += "\n  tombstone-timeout = ";
-  settings += buf;
+  settings += util::chrono::duration::to_string(tombstoneTimeout());
 
   // *** PLEASE ADD IN ALPHABETICAL ORDER - USER VISIBLE ***
 
   LOGCONFIG(settings.c_str());
 }
 
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

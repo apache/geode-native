@@ -55,29 +55,32 @@ class CPPCACHE_EXPORT RemoteQuery : public Query {
 
   //@TODO check the return type, is it ok. second option could be to pass
   // SelectResults by reference as a parameter.
-  SelectResultsPtr execute(uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+  SelectResultsPtr execute(std::chrono::milliseconds timeout =
+                               DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
   //@TODO check the return type, is it ok. second option could be to pass
   // SelectResults by reference as a parameter.
   SelectResultsPtr execute(CacheableVectorPtr paramList = nullptr,
-                           uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+                           std::chrono::milliseconds timeout =
+                               DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
   // executes a query using a given distribution manager
   // used by Region.query() and Region.getAll()
-  SelectResultsPtr execute(uint32_t timeout, const char* func,
+  SelectResultsPtr execute(std::chrono::milliseconds timeout, const char* func,
                            ThinClientBaseDM* tcdm,
                            CacheableVectorPtr paramList);
 
   // nothrow version of execute()
-  GfErrType executeNoThrow(uint32_t timeout, TcrMessageReply& reply,
-                           const char* func, ThinClientBaseDM* tcdm,
+  GfErrType executeNoThrow(std::chrono::milliseconds timeout,
+                           TcrMessageReply& reply, const char* func,
+                           ThinClientBaseDM* tcdm,
                            CacheableVectorPtr paramList);
 
-  const char* getQueryString() const;
+  const char* getQueryString() const override;
 
-  void compile();
+  void compile() override;
 
-  bool isCompiled();
+  bool isCompiled() override;
 };
 
 typedef std::shared_ptr<RemoteQuery> RemoteQueryPtr;

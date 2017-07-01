@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CRYPTOIMPL_SSLIMPL_H_
-#define GEODE_CRYPTOIMPL_SSLIMPL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,17 +15,28 @@
  * limitations under the License.
  */
 
-#include <geode/geode_base.hpp>
-#include "ace/ACE.h"
-#include "ace/OS.h"
+#pragma once
+
+#ifndef GEODE_CRYPTOIMPL_SSLIMPL_H_
+#define GEODE_CRYPTOIMPL_SSLIMPL_H_
+
+#include <ace/ACE.h>
+#include <ace/OS.h>
 #include <ace/INET_Addr.h>
 #include <ace/SOCK_IO.h>
 #include <ace/SSL/SSL_SOCK_Connector.h>
 #include <ace/SSL/SSL_SOCK_Acceptor.h>
 #include <ace/OS.h>
 #include <ace/Recursive_Thread_Mutex.h>
-#include "ace/Time_Value.h"
+#include <ace/Time_Value.h>
+
+#include <geode/geode_base.hpp>
+
 #include "Ssl.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
 
 class SSLImpl : public apache::geode::client::Ssl {
  private:
@@ -43,13 +49,13 @@ class SSLImpl : public apache::geode::client::Ssl {
           const char* password);
   virtual ~SSLImpl();
 
-  int setOption(int, int, void*, int);
-  int listen(ACE_INET_Addr, unsigned);
-  int connect(ACE_INET_Addr, unsigned);
-  ssize_t recv(void*, size_t, const ACE_Time_Value*, size_t*);
-  ssize_t send(const void*, size_t, const ACE_Time_Value*, size_t*);
-  int getLocalAddr(ACE_Addr&);
-  void close();
+  int setOption(int, int, void*, int) override;
+  int listen(ACE_INET_Addr, std::chrono::microseconds) override;
+  int connect(ACE_INET_Addr, std::chrono::microseconds) override;
+  ssize_t recv(void*, size_t, const ACE_Time_Value*, size_t*) override;
+  ssize_t send(const void*, size_t, const ACE_Time_Value*, size_t*) override;
+  int getLocalAddr(ACE_Addr&) override;
+  void close() override;
 };
 
 extern "C" {
@@ -58,5 +64,9 @@ CPPCACHE_EXPORT void* gf_create_SslImpl(ACE_SOCKET sock, const char* pubkeyfile,
                                         const char* pemPassword);
 CPPCACHE_EXPORT void gf_destroy_SslImpl(void* impl);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 #endif  // GEODE_CRYPTOIMPL_SSLIMPL_H_

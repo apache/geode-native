@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_FWKLIB_REGIONHELPER_H_
-#define GEODE_FWKLIB_REGIONHELPER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,21 +15,29 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_FWKLIB_REGIONHELPER_H_
+#define GEODE_FWKLIB_REGIONHELPER_H_
+
+#include <cstdlib>
+#include <string>
+#include <map>
+
 #include <geode/GeodeCppCache.hpp>
+#include <geode/util/chrono/duration.hpp>
 
 #include "fwklib/FrameworkTest.hpp"
 #include "fwklib/FwkObjects.hpp"
 #include "fwklib/FwkStrCvt.hpp"
 #include "fwklib/FwkLog.hpp"
-#include <cstdlib>
-
-#include <string>
-#include <map>
 
 namespace apache {
 namespace geode {
 namespace client {
 namespace testframework {
+
+using namespace apache::geode::util::chrono::duration;
 
 // ----------------------------------------------------------------------------
 
@@ -107,19 +110,19 @@ class RegionHelper {
     sString += "\nlruEvictionAction: ";
     sString += ExpirationAction::fromOrdinal(attr->getLruEvictionAction());
     sString += "\nentryTimeToLive: ";
-    sString += FwkStrCvt(attr->getEntryTimeToLive()).toString();
+    sString += to_string(attr->getEntryTimeToLive());
     sString += "\nentryTimeToLiveAction: ";
     sString += ExpirationAction::fromOrdinal(attr->getEntryTimeToLiveAction());
     sString += "\nentryIdleTimeout: ";
-    sString += FwkStrCvt(attr->getEntryIdleTimeout()).toString();
+    sString += to_string(attr->getEntryIdleTimeout());
     sString += "\nentryIdleTimeoutAction: ";
     sString += ExpirationAction::fromOrdinal(attr->getEntryIdleTimeoutAction());
     sString += "\nregionTimeToLive: ";
-    sString += FwkStrCvt(attr->getRegionTimeToLive()).toString();
+    sString += to_string(attr->getRegionTimeToLive());
     sString += "\nregionTimeToLiveAction: ";
     sString += ExpirationAction::fromOrdinal(attr->getRegionTimeToLiveAction());
     sString += "\nregionIdleTimeout: ";
-    sString += FwkStrCvt(attr->getRegionIdleTimeout()).toString();
+    sString += to_string(attr->getRegionIdleTimeout());
     sString += "\nregionIdleTimeoutAction: ";
     sString +=
         ExpirationAction::fromOrdinal(attr->getRegionIdleTimeoutAction());
@@ -164,19 +167,19 @@ class RegionHelper {
       regionFac.setCacheWriter(atts->getCacheWriterLibrary(),
                                atts->getCacheWriterFactory());
     }
-    if (atts->getEntryIdleTimeout() != 0) {
+    if (atts->getEntryIdleTimeout().count() != 0) {
       regionFac.setEntryIdleTimeout(atts->getEntryIdleTimeoutAction(),
                                     atts->getEntryIdleTimeout());
     }
-    if (atts->getEntryTimeToLive() != 0) {
+    if (atts->getEntryTimeToLive().count() != 0) {
       regionFac.setEntryTimeToLive(atts->getEntryTimeToLiveAction(),
                                    atts->getEntryTimeToLive());
     }
-    if (atts->getRegionIdleTimeout() != 0) {
+    if (atts->getRegionIdleTimeout().count() != 0) {
       regionFac.setRegionIdleTimeout(atts->getRegionIdleTimeoutAction(),
                                      atts->getRegionIdleTimeout());
     }
-    if (atts->getRegionTimeToLive() != 0) {
+    if (atts->getRegionTimeToLive().count() != 0) {
       regionFac.setRegionTimeToLive(atts->getRegionTimeToLiveAction(),
                                     atts->getRegionTimeToLive());
     }

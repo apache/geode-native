@@ -37,7 +37,7 @@ RemoteQuery::RemoteQuery(const char* querystr,
   LOGFINEST("RemoteQuery: created a new query: %s", querystr);
 }
 
-SelectResultsPtr RemoteQuery::execute(uint32_t timeout) {
+SelectResultsPtr RemoteQuery::execute(std::chrono::milliseconds timeout) {
   GuardUserAttribures gua;
   if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);
@@ -46,7 +46,7 @@ SelectResultsPtr RemoteQuery::execute(uint32_t timeout) {
 }
 
 SelectResultsPtr RemoteQuery::execute(CacheableVectorPtr paramList,
-                                      uint32_t timeout) {
+                                      std::chrono::milliseconds timeout) {
   GuardUserAttribures gua;
   if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);
@@ -54,17 +54,9 @@ SelectResultsPtr RemoteQuery::execute(CacheableVectorPtr paramList,
   return execute(timeout, "Query::execute", m_tccdm, paramList);
 }
 
-SelectResultsPtr RemoteQuery::execute(uint32_t timeout, const char* func,
-                                      ThinClientBaseDM* tcdm,
+SelectResultsPtr RemoteQuery::execute(std::chrono::milliseconds timeout,
+                                      const char* func, ThinClientBaseDM* tcdm,
                                       CacheableVectorPtr paramList) {
-  if ((timeout * 1000) >= 0x7fffffff) {
-    char exMsg[1024];
-    ACE_OS::snprintf(exMsg, 1023,
-                     "%s: timeout parameter "
-                     "greater than maximum allowed (2^31/1000 i.e 2147483)",
-                     func);
-    throw IllegalArgumentException(exMsg);
-  }
   ThinClientPoolDM* pool = dynamic_cast<ThinClientPoolDM*>(tcdm);
   if (pool != nullptr) {
     pool->getStats().incQueryExecutionId();
@@ -120,8 +112,9 @@ SelectResultsPtr RemoteQuery::execute(uint32_t timeout, const char* func,
   return sr;
 }
 
-GfErrType RemoteQuery::executeNoThrow(uint32_t timeout, TcrMessageReply& reply,
-                                      const char* func, ThinClientBaseDM* tcdm,
+GfErrType RemoteQuery::executeNoThrow(std::chrono::milliseconds timeout,
+                                      TcrMessageReply& reply, const char* func,
+                                      ThinClientBaseDM* tcdm,
                                       CacheableVectorPtr paramList) {
   LOGFINEST("%s: executing query: %s", func, m_queryString.c_str());
 
@@ -134,13 +127,12 @@ GfErrType RemoteQuery::executeNoThrow(uint32_t timeout, TcrMessageReply& reply,
            m_queryString.c_str());
   if (paramList != nullptr) {
     // QUERY_WITH_PARAMETERS
-    TcrMessageQueryWithParameters msg(
-        m_tccdm->getConnectionManager()
-            .getCacheImpl()
-            ->getCache()
-            ->createDataOutput(),
-        m_queryString, nullptr, paramList,
-        static_cast<int>(timeout * 1000) /* in milli second */, tcdm);
+    TcrMessageQueryWithParameters msg(m_tccdm->getConnectionManager()
+                                          .getCacheImpl()
+                                          ->getCache()
+                                          ->createDataOutput(),
+                                      m_queryString, nullptr, paramList,
+                                      timeout, tcdm);
     msg.setTimeout(timeout);
     reply.setTimeout(timeout);
 
@@ -165,9 +157,7 @@ GfErrType RemoteQuery::executeNoThrow(uint32_t timeout, TcrMessageReply& reply,
                             .getCacheImpl()
                             ->getCache()
                             ->createDataOutput(),
-                        m_queryString,
-                        static_cast<int>(timeout * 1000) /* in milli second */,
-                        tcdm);
+                        m_queryString, timeout, tcdm);
     msg.setTimeout(timeout);
     reply.setTimeout(timeout);
 

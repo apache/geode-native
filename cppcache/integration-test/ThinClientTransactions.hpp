@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTTRANSACTIONS_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTTRANSACTIONS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTTRANSACTIONS_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTTRANSACTIONS_H_
 
 #include "fw_dunit.hpp"
 #include <geode/GeodeCppCache.hpp>
@@ -66,7 +66,7 @@ void initClient(const bool isthinClient) {
     if (g_isGridClient) {
       config->insert("grid-client", "true");
     }
-    config->insert("suspended-tx-timeout", "1");
+    config->insert("suspended-tx-timeout", std::chrono::minutes(1));
     cacheHelper = new CacheHelper(isthinClient, config);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
@@ -498,7 +498,7 @@ class ResumeTransactionThread : public ACE_Task_Base {
 
     if (m_tryResumeWithSleep) {
       m_txEvent->signal();
-      txManager->tryResume(m_suspendedTransaction, 30000);
+      txManager->tryResume(m_suspendedTransaction, std::chrono::seconds(30));
     } else {
       txManager->resume(m_suspendedTransaction);
     }

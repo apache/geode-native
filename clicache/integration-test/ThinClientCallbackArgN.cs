@@ -566,7 +566,7 @@ namespace Apache.Geode.Client.UnitTests
         string value = item.ToString();
         entryMap.Add(K, value);
       }
-      o_region.Region.PutAll(entryMap, 15, m_callbackarg);
+      o_region.Region.PutAll(entryMap, TimeSpan.FromSeconds(15), m_callbackarg);
     }
 
     public void TestGetAll()

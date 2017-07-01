@@ -63,8 +63,8 @@ static bool m_isPdx = false;
 void initClientWithId(int ClientIdx, bool typeRegistered = false) {
   PropertiesPtr pp = Properties::create();
   pp->insert("durable-client-id", durableIds[ClientIdx]);
-  pp->insert("durable-timeout", 60);
-  pp->insert("notify-ack-interval", 1);
+  pp->insert("durable-timeout", std::chrono::seconds(60));
+  pp->insert("notify-ack-interval", std::chrono::seconds(1));
 
   initClient(true, pp);
 
@@ -188,15 +188,15 @@ void RunDurableCqClient() {
   // Create durable client's properties using api.
   auto pp = Properties::create();
   pp->insert("durable-client-id", "DurableClientId");
-  pp->insert("durable-timeout", 3600);
+  pp->insert("durable-timeout", std::chrono::seconds(3600));
 
   // Create a Geode Cache Programmatically.
   auto cacheFactory = CacheFactory::createCacheFactory(pp);
   auto cachePtr = cacheFactory->create();
   auto poolFactory = cachePtr->getPoolManager().createFactory();
   poolFactory->setSubscriptionEnabled(true);
-  poolFactory->setSubscriptionAckInterval(5000);
-  poolFactory->setSubscriptionMessageTrackingTimeout(50000);
+  poolFactory->setSubscriptionAckInterval(std::chrono::milliseconds(5000));
+  poolFactory->setSubscriptionMessageTrackingTimeout(std::chrono::milliseconds(50000));
   poolFactory->create("");
 
   LOGINFO("Created the Geode Cache Programmatically");

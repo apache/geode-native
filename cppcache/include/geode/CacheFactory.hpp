@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CACHEFACTORY_H_
-#define GEODE_CACHEFACTORY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,12 +15,21 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CACHEFACTORY_H_
+#define GEODE_CACHEFACTORY_H_
+
+#include <chrono>
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
+#include "util/chrono/duration.hpp"
 #include "DistributedSystem.hpp"
 #include "Cache.hpp"
 #include "CacheAttributes.hpp"
 #include "PoolFactory.hpp"
+
 /**
  * @file
  */
@@ -156,6 +160,7 @@ class CPPCACHE_EXPORT CacheFactory
 
   FRIEND_STD_SHARED_PTR(CacheFactory)
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
