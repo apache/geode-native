@@ -22,7 +22,7 @@
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
-#include "SharedPtr.hpp"
+#include <memory>
 
 /**
  * @file
@@ -75,10 +75,10 @@ class RegionEvent;
  * @see RegionAttributes::getCacheListener
  * @see CacheListenerException
  */
-class CPPCACHE_EXPORT CacheListener : public SharedBase {
+class CPPCACHE_EXPORT CacheListener {
   /**
-    * @brief public methods
-    */
+   * @brief public methods
+   */
  public:
   /**
    * @brief destructor
@@ -87,7 +87,7 @@ class CPPCACHE_EXPORT CacheListener : public SharedBase {
 
   /** Handles the event of a new key being added to a region. The entry
    * did not previously exist in this region in the local cache (even with a
-   * NULLPTR value).
+   * nullptr value).
    *
    * @param event denotes the event object associated with the entry creation
    * This function does not throw any exception.
@@ -101,7 +101,7 @@ class CPPCACHE_EXPORT CacheListener : public SharedBase {
    * entry
    * previously existed in this region in the local cache, but its previous
    * value
-   * may have been NULLPTR.
+   * may have been nullptr.
    *
    * @param event EntryEvent denotes the event object associated with updating
    * the entry
@@ -114,7 +114,7 @@ class CPPCACHE_EXPORT CacheListener : public SharedBase {
    *
    * @param event EntryEvent denotes the event object associated with the entry
    * invalidation
-  */
+   */
   virtual void afterInvalidate(const EntryEvent& event);
 
   /**
@@ -170,29 +170,29 @@ class CPPCACHE_EXPORT CacheListener : public SharedBase {
   virtual void afterRegionLive(const RegionEvent& event);
 
   /** Called when the region containing this callback is destroyed, when
-    * the cache is closed.
-    *
-    * <p>Implementations should clean up any external
-    * resources, such as database connections. Any runtime exceptions this
+   * the cache is closed.
+   *
+   * <p>Implementations should clean up any external
+   * resources, such as database connections. Any runtime exceptions this
    * method
-    * throws will be logged.
-    *
-    * <p>It is possible for this method to be called multiple times on a single
-    * callback instance, so implementations must be tolerant of this.
-    *
-    * @see Cache::close
-    * @see Region::destroyRegion
-    */
+   * throws will be logged.
+   *
+   * <p>It is possible for this method to be called multiple times on a single
+   * callback instance, so implementations must be tolerant of this.
+   *
+   * @see Cache::close
+   * @see Region::destroyRegion
+   */
 
   virtual void close(const RegionPtr& region);
   /**
-  * Called when all the endpoints assosiated with region are down.
-  * This will be called when all the endpoints are down for the first time.
-  * If endpoints come up and again go down it will be called again.
-  * This will also be called when all endpoints are down and region is attached
-  * to the pool.
-  * @param region RegionPtr denotes the assosiated region.
-  */
+   * Called when all the endpoints assosiated with region are down.
+   * This will be called when all the endpoints are down for the first time.
+   * If endpoints come up and again go down it will be called again.
+   * This will also be called when all endpoints are down and region is attached
+   * to the pool.
+   * @param region RegionPtr denotes the assosiated region.
+   */
   virtual void afterRegionDisconnected(const RegionPtr& region);
 
  protected:

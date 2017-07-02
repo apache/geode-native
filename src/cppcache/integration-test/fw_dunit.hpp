@@ -121,12 +121,10 @@ END_TASK(validate)
 
 #define ASSERT(x, y)                                   \
   if (!(x)) {                                          \
-    raise(SIGABRT);                                    \
     throw dunit::TestException(y, __LINE__, __FILE__); \
   }
 #define XASSERT(x)                                      \
   if (!(x)) {                                           \
-    raise(SIGABRT);                                     \
     throw dunit::TestException(#x, __LINE__, __FILE__); \
   }
 #define FAIL(y) throw dunit::TestException(y, __LINE__, __FILE__)
@@ -363,6 +361,6 @@ int ACE_TMAIN(int argc, ACE_TCHAR* argv[]) { return dunit::dmain(argc, argv); }
 
 #include "fw_perf.hpp"
 
-#include "no_cout.hpp"
-
+namespace test {
+}  // namespace test
 #endif  // GEODE_INTEGRATION_TEST_FW_DUNIT_H_

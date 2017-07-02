@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
 #include "LocalRegion.hpp"
 #include "Cache.hpp"
 #include "CacheStatistics.hpp"
@@ -23,8 +22,6 @@
 #include "RegionEntry.hpp"
 #include "impl/AuthenticatedCache.hpp"
 #include "impl/SafeConvert.hpp"
-//#include <geode/Serializable.hpp>
-//#include <cppcache/DataOutPut.hpp>
 
 using namespace System;
 
@@ -38,9 +35,9 @@ namespace Apache
       generic<class TKey, class TValue>
       TValue LocalRegion<TKey, TValue>::Get(TKey key, Object^ callbackArg)
       {
-        apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( key ) );
-        apache::geode::client::CacheablePtr nativeptr(this->getRegionEntryValue(keyptr));
-        if (nativeptr == NULLPTR)
+        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );
+        auto nativeptr= this->getRegionEntryValue(keyptr);
+        if (nativeptr == nullptr)
         {
           throw gcnew KeyNotFoundException("The given key was not present in the region");
         }
@@ -52,12 +49,18 @@ namespace Apache
       apache::geode::client::SerializablePtr LocalRegion<TKey, TValue>::getRegionEntryValue(apache::geode::client::CacheableKeyPtr& keyptr)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          apache::geode::client::RegionEntryPtr entryPtr =  NativePtr->getEntry( keyptr );
-          if (entryPtr != NULLPTR) {
-            return entryPtr->getValue() ;
+          try
+          {
+            if (auto entryPtr = m_nativeptr->get()->getEntry(keyptr)) {
+              return entryPtr->getValue();
+            }
+            else {
+              return nullptr;
+            }
           }
-          else {
-            return NULLPTR;
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
           }
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -67,11 +70,17 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-        apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( key ) );
-        apache::geode::client::CacheablePtr valueptr( Serializable::GetUnmanagedValueGeneric<TValue>( value ) );        
-        apache::geode::client::UserDataPtr callbackptr(
-          Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg ) );
-        NativePtr->localPut( keyptr, valueptr, callbackptr );
+        try
+        {
+          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );
+          native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( value );        
+          native::UserDataPtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg );
+          m_nativeptr->get()->localPut( keyptr, valueptr, callbackptr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -79,9 +88,9 @@ namespace Apache
       generic<class TKey, class TValue>
       TValue LocalRegion<TKey, TValue>::default::get(TKey key)
       { 
-        apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( key ) );
-        apache::geode::client::CacheablePtr nativeptr(this->getRegionEntryValue(keyptr));
-        if (nativeptr == NULLPTR)
+        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );
+        auto nativeptr = this->getRegionEntryValue(keyptr);
+        if (nativeptr == nullptr)
         {
           throw gcnew KeyNotFoundException("The given key was not present in the region");
         }
@@ -94,9 +103,16 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-        apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( key ) );
-        apache::geode::client::CacheablePtr valueptr( Serializable::GetUnmanagedValueGeneric<TValue>( value ) );
-        NativePtr->localPut( keyptr, valueptr );
+        try
+        {
+          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );
+          native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( value );
+          m_nativeptr->get()->localPut( keyptr, valueptr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -105,20 +121,25 @@ namespace Apache
       System::Collections::Generic::IEnumerator<KeyValuePair<TKey,TValue>>^ 
         LocalRegion<TKey, TValue>::GetEnumerator()
       {
-        array<KeyValuePair<TKey,TValue>>^ toArray;
         apache::geode::client::VectorOfRegionEntry vc;
 
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          NativePtr->entries( vc, false );
+          try
+          {
+            m_nativeptr->get()->entries( vc, false );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */ 
 
-          toArray = gcnew array<KeyValuePair<TKey,TValue>>(vc.size());
-
+        auto toArray = gcnew array<KeyValuePair<TKey,TValue>>(static_cast<int>(vc.size()));
         for( System::Int32 index = 0; index < vc.size( ); index++ )
         {
-          apache::geode::client::RegionEntryPtr nativeptr =  vc[ index ];  
+          auto nativeptr = vc[ index ];  
           TKey key = Serializable::GetManagedValueGeneric<TKey> (nativeptr->getKey());
           TValue val = Serializable::GetManagedValueGeneric<TValue> (nativeptr->getValue());
           toArray[ index ] = KeyValuePair<TKey,TValue>(key, val);           
@@ -130,20 +151,25 @@ namespace Apache
       System::Collections::IEnumerator^ 
         LocalRegion<TKey, TValue>::GetEnumeratorOld()
       {
-        array<Object^>^ toArray;
         apache::geode::client::VectorOfRegionEntry vc;
 
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          NativePtr->entries( vc, false );
+          try
+          {
+            m_nativeptr->get()->entries( vc, false );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
 
-          toArray = gcnew array<Object^>(vc.size());
-
+        auto toArray = gcnew array<Object^>(static_cast<int>(vc.size()));
         for( System::Int32 index = 0; index < vc.size( ); index++ )
         {
-          apache::geode::client::RegionEntryPtr nativeptr =  vc[ index ];                       
+          auto nativeptr = vc[ index ];                       
           TKey key = Serializable::GetManagedValueGeneric<TKey> (nativeptr->getKey());
           TValue val = Serializable::GetManagedValueGeneric<TValue> (nativeptr->getValue());            
           toArray[ index ] = KeyValuePair<TKey,TValue>(key, val);           
@@ -155,15 +181,15 @@ namespace Apache
       generic<class TKey, class TValue>
       bool LocalRegion<TKey, TValue>::AreValuesEqual(apache::geode::client::CacheablePtr& val1, apache::geode::client::CacheablePtr& val2)
       {
-        if ( val1 == NULLPTR && val2 == NULLPTR )
+        if ( val1 == nullptr && val2 == nullptr )
         {
           return true;
         }
-        else if ((val1 == NULLPTR && val2 != NULLPTR) || (val1 != NULLPTR && val2 == NULLPTR))
+        else if ((val1 == nullptr && val2 != nullptr) || (val1 != nullptr && val2 == nullptr))
         {
           return false;
         }
-        else if( val1 != NULLPTR && val2 != NULLPTR )
+        else if( val1 != nullptr && val2 != nullptr )
         {
           if (val1->classId() != val2->classId() || val1->typeId() != val2->typeId())
           {
@@ -189,10 +215,10 @@ namespace Apache
       generic<class TKey, class TValue> 
       bool LocalRegion<TKey, TValue>::Contains(KeyValuePair<TKey,TValue> keyValuePair) 
       { 
-        apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( keyValuePair.Key ) ); 
-        apache::geode::client::CacheablePtr nativeptr(this->getRegionEntryValue(keyptr));
+        auto keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( keyValuePair.Key ); 
+        auto nativeptr = this->getRegionEntryValue(keyptr);
         //This means that key is not present.
-        if (nativeptr == NULLPTR) {
+        if (nativeptr == nullptr) {
           return false;
         }        
         TValue value = Serializable::GetManagedValueGeneric<TValue>(nativeptr);
@@ -204,9 +230,15 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( key ) );          
-
-          return NativePtr->containsKey( keyptr );
+        try
+        {
+          auto keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );          
+          return m_nativeptr->get()->containsKey(keyptr);
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -214,9 +246,9 @@ namespace Apache
       generic<class TKey, class TValue>
       bool LocalRegion<TKey, TValue>::TryGetValue(TKey key, TValue %val)
       {        
-        apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( key ) );
-        apache::geode::client::CacheablePtr nativeptr(this->getRegionEntryValue(keyptr));
-        if (nativeptr == NULLPTR) {            
+        auto keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );
+        auto nativeptr = this->getRegionEntryValue(keyptr);
+        if (nativeptr == nullptr) {            
           val = TValue();
           return false;
         }
@@ -232,17 +264,22 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
         apache::geode::client::VectorOfCacheableKey vc;
-        NativePtr->keys( vc );
-        //List<TKey>^ collectionlist = gcnew List<TKey>(vc.size());
-        array<TKey>^ keyarr =
-          gcnew array<TKey>( vc.size( ) );
+        try
+        {
+          m_nativeptr->get()->keys(vc);
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+        auto keyarr =  gcnew array<TKey>( static_cast<int>(vc.size( )) );
         for( System::Int32 index = 0; index < vc.size( ); index++ )
         {            
-          apache::geode::client::CacheableKeyPtr& nativeptr( vc[ index ] );
+          auto& nativeptr = vc[ index ];
           keyarr[ index ] = Serializable::GetManagedValueGeneric<TKey>(nativeptr);
-          //collectionlist[ index ] = Serializable::GetManagedValue<TKey>(nativeptr);
         }
-        System::Collections::Generic::ICollection<TKey>^ collectionlist = (System::Collections::Generic::ICollection<TKey>^)keyarr;
+        auto collectionlist = (System::Collections::Generic::ICollection<TKey>^)keyarr;
         return collectionlist;
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
@@ -254,17 +291,23 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
           apache::geode::client::VectorOfCacheable vc;
-          NativePtr->values( vc );
+          try
+          {
+            m_nativeptr->get()->values( vc );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+
           //List<TValue>^ collectionlist = gcnew List<TValue>(vc.size());
-          array<TValue>^ valarr =
-            gcnew array<TValue>( vc.size( ) );
+          auto valarr = gcnew array<TValue>( static_cast<int>(vc.size( )) );
           for( System::Int32 index = 0; index < vc.size( ); index++ )
           {
-            apache::geode::client::CacheablePtr& nativeptr( vc[ index ] );            
+            auto& nativeptr = vc[ index ];            
             valarr[ index ] = Serializable::GetManagedValueGeneric<TValue>(nativeptr);
-            //collectionlist[ index ] = Serializable::GetManagedValueGeneric<TValue>(nativeptr);
           }
-          System::Collections::Generic::ICollection<TValue>^ collectionlist = (System::Collections::Generic::ICollection<TValue>^)valarr;
+          auto collectionlist = (System::Collections::Generic::ICollection<TValue>^)valarr;
           return collectionlist;
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
@@ -275,9 +318,16 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( key ) );
-          apache::geode::client::CacheablePtr valueptr( Serializable::GetUnmanagedValueGeneric<TValue>( value ) );
-          NativePtr->localCreate( keyptr, valueptr );
+          try
+          {
+            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );
+            native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( value );
+            m_nativeptr->get()->localCreate( keyptr, valueptr );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -287,9 +337,16 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( keyValuePair.Key ) );
-          apache::geode::client::CacheablePtr valueptr( Serializable::GetUnmanagedValueGeneric<TValue>( keyValuePair.Value ) );
-          NativePtr->localCreate( keyptr, valueptr );
+          try
+          {
+            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( keyValuePair.Key );
+            native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( keyValuePair.Value );
+            m_nativeptr->get()->localCreate( keyptr, valueptr );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -299,11 +356,17 @@ namespace Apache
       {
           _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( key ) );
-          apache::geode::client::CacheablePtr valueptr( Serializable::GetUnmanagedValueGeneric<TValue>( value ) );          
-          apache::geode::client::UserDataPtr callbackptr(
-            Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg ) );
-          NativePtr->localCreate( keyptr, valueptr, callbackptr );
+          try
+          {
+            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );
+            native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( value );          
+            native::UserDataPtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg );
+            m_nativeptr->get()->localCreate( keyptr, valueptr, callbackptr );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -315,13 +378,17 @@ namespace Apache
     
           try
           {
-            apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( key ) );          
-            NativePtr->localDestroy( keyptr );
+            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+            m_nativeptr->get()->localDestroy(keyptr);
             return true;
           }
-          catch(apache::geode::client::EntryNotFoundException /*ex*/)
+          catch (apache::geode::client::EntryNotFoundException /*ex*/)
           {
             return false;
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
           }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
@@ -332,20 +399,22 @@ namespace Apache
       bool LocalRegion<TKey, TValue>::Remove( TKey key, Object^ callbackArg )
       {
          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          try
-          {
-            apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( key ) );                    
-            apache::geode::client::UserDataPtr callbackptr(
-            Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg ) );
-            NativePtr->localDestroy( keyptr, callbackptr );
-            return true;
-          }
-          catch(apache::geode::client::EntryNotFoundException /*ex*/)
-          {
-            return false;
-          }
-
-          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+           try
+           {
+             native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+             native::UserDataPtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+             m_nativeptr->get()->localDestroy(keyptr, callbackptr);
+             return true;
+           }
+           catch (apache::geode::client::EntryNotFoundException /*ex*/)
+           {
+             return false;
+           }
+           finally
+           {
+             GC::KeepAlive(m_nativeptr);
+           }
+        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
@@ -353,32 +422,18 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( keyValuePair.Key ) );
-          apache::geode::client::CacheablePtr valueptr( Serializable::GetUnmanagedValueGeneric<TValue>( keyValuePair.Value ) );
-          return NativePtr->localRemove(keyptr, valueptr);
+          try
+          {
+            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( keyValuePair.Key );
+            native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( keyValuePair.Value );
+            return m_nativeptr->get()->localRemove(keyptr, valueptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
-
-        //_GF_MG_EXCEPTION_TRY2/* due to auto replace */
-
-        //apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( keyValuePair.Key ) );
-        //if (NativePtr->containsKey( keyptr )) {
-        //  apache::geode::client::CacheablePtr nativeptr(this->getRegionEntryValue(keyptr));
-        //  TValue returnVal = Serializable::GetManagedValueGeneric<TValue>( nativeptr );
-        //  apache::geode::client::CacheablePtr valueptr( Serializable::GetUnmanagedValueGeneric<TValue>( keyValuePair.Value ) );
-        //  TValue actualVal = Serializable::GetManagedValueGeneric<TValue>( valueptr );
-        //  if (actualVal->Equals(returnVal)) {
-        //    NativePtr->localDestroy( keyptr );
-        //    return true;
-        //  }
-        //  else {
-        //    return false;
-        //  }
-        //}
-        //else {
-        //  return false;
-        //} 
-        //_GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
@@ -386,10 +441,17 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( key ) );                   
-          apache::geode::client::CacheablePtr valueptr ( Serializable::GetUnmanagedValueGeneric<TValue>( value ));                 
-          apache::geode::client::UserDataPtr callbackptr( Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg ) );          
-          return NativePtr->localRemove(keyptr, valueptr, callbackptr);
+          try
+          {
+            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+            native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
+            native::UserDataPtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+            return m_nativeptr->get()->localRemove(keyptr, valueptr, callbackptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -409,9 +471,15 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
                     
-          apache::geode::client::UserDataPtr callbackptr(
-            Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg ) );
-          NativePtr->localInvalidateRegion( callbackptr );
+          try
+          {
+            native::UserDataPtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg );
+            m_nativeptr->get()->localInvalidateRegion( callbackptr );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
       
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -430,9 +498,15 @@ namespace Apache
       void LocalRegion<TKey, TValue>::DestroyRegion(Object^ callbackArg)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */          
-          apache::geode::client::UserDataPtr callbackptr(
-            Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg ) );
-          NativePtr->localDestroyRegion( callbackptr );
+          try
+          {
+            native::UserDataPtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg );
+            m_nativeptr->get()->localDestroyRegion( callbackptr );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -452,10 +526,16 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( key ) );          
-          apache::geode::client::UserDataPtr callbackptr(
-            Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg ) );            
-          NativePtr->localInvalidate( keyptr, callbackptr );
+          try
+          {
+            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );          
+            native::UserDataPtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg );            
+            m_nativeptr->get()->localInvalidate( keyptr, callbackptr );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -520,13 +600,27 @@ namespace Apache
       generic<class TKey, class TValue>
       String^ LocalRegion<TKey, TValue>::Name::get()
       { 
-        return ManagedString::Get( NativePtr->getName( ) ); 
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getName( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        } 
       } 
 
       generic<class TKey, class TValue>
       String^ LocalRegion<TKey, TValue>::FullPath::get()
       { 
-        return ManagedString::Get( NativePtr->getFullPath( ) ); 
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getFullPath( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        } 
       } 
 
       generic<class TKey, class TValue>
@@ -534,14 +628,19 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          apache::geode::client::RegionPtr& nativeptr( NativePtr->getParentRegion( ) );
-
-         IRegion<TKey, TValue>^ region = Region<TKey, TValue>::Create( nativeptr.ptr( ) );
-         if (region == nullptr) {
-           return nullptr;
-         }
-         return region->GetLocalView();
-
+          try
+          {
+            auto parentRegion = m_nativeptr->get()->getParentRegion( );
+            auto region = Region<TKey, TValue>::Create( parentRegion );
+            if (region == nullptr) {
+              return nullptr;
+            }
+            return region->GetLocalView();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -550,9 +649,14 @@ namespace Apache
       { 
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-        apache::geode::client::RegionAttributesPtr& nativeptr( NativePtr->getAttributes( ) );
-
-        return Apache::Geode::Client::RegionAttributes<TKey, TValue>::Create(nativeptr.ptr());
+        try
+        {
+          return Apache::Geode::Client::RegionAttributes<TKey, TValue>::Create(m_nativeptr->get()->getAttributes());
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       } 
@@ -562,10 +666,14 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          apache::geode::client::AttributesMutatorPtr& nativeptr(
-            NativePtr->getAttributesMutator( ) );
-
-        return Apache::Geode::Client::AttributesMutator<TKey, TValue>::Create( nativeptr.ptr( ) );
+          try
+          {
+            return Apache::Geode::Client::AttributesMutator<TKey, TValue>::Create(m_nativeptr->get()->getAttributesMutator());
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -575,8 +683,14 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-        apache::geode::client::CacheStatisticsPtr& nativeptr( NativePtr->getStatistics( ) );
-        return Apache::Geode::Client::CacheStatistics::Create( nativeptr.ptr( ) );
+          try
+          {
+            return Apache::Geode::Client::CacheStatistics::Create(m_nativeptr->get()->getStatistics());
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -586,14 +700,20 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          ManagedString mg_path( path );
-          apache::geode::client::RegionPtr& nativeptr(
-            NativePtr->getSubregion( mg_path.CharPtr ) );
-          IRegion<TKey, TValue>^ region = Region<TKey, TValue>::Create( nativeptr.ptr( ) );
-          if (region == nullptr) {
-            return nullptr;
+          try
+          {
+            ManagedString mg_path(path);
+            auto nativeptr = m_nativeptr->get()->getSubregion(mg_path.CharPtr);
+            auto region = Region<TKey, TValue>::Create(nativeptr);
+            if (region == nullptr) {
+              return nullptr;
+            }
+            return region->GetLocalView();
           }
-          return region->GetLocalView();          
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -604,14 +724,16 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          ManagedString mg_subregionName( subRegionName );
-				//TODO::split
-        /*  apache::geode::client::RegionAttributesPtr p_attrs(
-            GetNativePtrFromSBWrap<apache::geode::client::RegionAttributes>( attributes ) );*/
-
-          apache::geode::client::RegionPtr& nativeptr( NativePtr->createSubregion(
-            mg_subregionName.CharPtr, /*p_attrs*/NULLPTR ) );
-          return Region<TKey, TValue>::Create( nativeptr.ptr( ) )->GetLocalView();
+          try
+          {
+            ManagedString mg_subregionName(subRegionName);
+            return Region<TKey, TValue>::Create(m_nativeptr->get()->createSubregion(
+              mg_subregionName.CharPtr, __nullptr))->GetLocalView();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
 
@@ -623,17 +745,23 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
           apache::geode::client::VectorOfRegion vsr;
-          NativePtr->subregions( recursive, vsr );
+          try
+          {
+            m_nativeptr->get()->subregions( recursive, vsr );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           array<IRegion<TKey, TValue>^>^ subRegions =
-            gcnew array<IRegion<TKey, TValue>^>( vsr.size( ) );
+            gcnew array<IRegion<TKey, TValue>^>( static_cast<int>(vsr.size( )) );
 
           for( System::Int32 index = 0; index < vsr.size( ); index++ )
           {
-            apache::geode::client::RegionPtr& nativeptr( vsr[ index ] );
-            subRegions[ index ] = Region<TKey, TValue>::Create( nativeptr.ptr( ) )->GetLocalView();
+            auto nativeptr = vsr[ index ];
+            subRegions[ index ] = Region<TKey, TValue>::Create( nativeptr )->GetLocalView();
           }
-          System::Collections::Generic::ICollection<IRegion<TKey, TValue>^>^ collection =
-            (System::Collections::Generic::ICollection<IRegion<TKey, TValue>^>^)subRegions;
+          auto collection = (System::Collections::Generic::ICollection<IRegion<TKey, TValue>^>^)subRegions;
           return collection;
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
@@ -644,10 +772,17 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( key ) );
-          apache::geode::client::RegionEntryPtr& nativeptr( NativePtr->getEntry( keyptr ) );
-          return RegionEntry<TKey, TValue>::Create( nativeptr.ptr( ) );
-
+          try
+          {
+            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+            auto nativeptr = m_nativeptr->get()->getEntry(keyptr);
+            return RegionEntry<TKey, TValue>::Create(nativeptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+ 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -657,18 +792,23 @@ namespace Apache
          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
           apache::geode::client::VectorOfRegionEntry vc;
-          NativePtr->entries( vc, recursive );          
-          array<RegionEntry<TKey, TValue>^>^ entryarr = gcnew array<RegionEntry<TKey, TValue>^>( vc.size( ) );
+          try
+          {
+            m_nativeptr->get()->entries( vc, recursive );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }          
+          auto entryarr = gcnew array<RegionEntry<TKey, TValue>^>( static_cast<int>(vc.size( )) );
 
           for( System::Int32 index = 0; index < vc.size( ); index++ )
           {
-            apache::geode::client::RegionEntryPtr& nativeptr( vc[ index ] );
-            entryarr[ index ] = RegionEntry<TKey, TValue>::Create( nativeptr.ptr( ) );
+            auto nativeptr = vc[ index ] ;
+            entryarr[ index ] = RegionEntry<TKey, TValue>::Create( nativeptr );
           }
-          System::Collections::Generic::ICollection<RegionEntry<TKey, TValue>^>^ collection =
-            (System::Collections::Generic::ICollection<RegionEntry<TKey, TValue>^>^)entryarr;
-
-          return collection;          
+          auto collection = (System::Collections::Generic::ICollection<RegionEntry<TKey, TValue>^>^)entryarr;
+          return collection;
 
          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
         
@@ -679,17 +819,21 @@ namespace Apache
       {        
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          apache::geode::client::RegionServicePtr& nativeptr( NativePtr->getRegionService( ) );
-
-          apache::geode::client::Cache* realCache = dynamic_cast<apache::geode::client::Cache*>(nativeptr.ptr());
-
-          if(realCache != NULL)
+          try
           {
-						return Apache::Geode::Client::Cache::Create( ((apache::geode::client::CachePtr)nativeptr).ptr( ) );
+            auto regionService = m_nativeptr->get()->getRegionService();
+            if (auto realCache = std::dynamic_pointer_cast<apache::geode::client::Cache>(regionService))
+            {
+              return Apache::Geode::Client::Cache::Create(realCache);
+            }
+            else
+            {
+              return Apache::Geode::Client::AuthenticatedCache::Create(regionService);
+            }
           }
-          else
+          finally
           {
-            return Apache::Geode::Client::AuthenticatedCache::Create( nativeptr.ptr( ) );
+            GC::KeepAlive(m_nativeptr);
           }
           
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
@@ -700,8 +844,14 @@ namespace Apache
       {
          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-           apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TKey>( key ) );
-           return NativePtr->containsValueForKey( keyptr );
+           try
+           {
+             return m_nativeptr->get()->containsValueForKey(Serializable::GetUnmanagedValueGeneric<TKey>(key));
+           }
+           finally
+           {
+             GC::KeepAlive(m_nativeptr);
+           }
 
          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -709,7 +859,14 @@ namespace Apache
       generic<class TKey, class TValue>
       int LocalRegion<TKey, TValue>::Count::get()
       {
-        return NativePtr->size();
+        try
+        {
+          return m_nativeptr->get()->size();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TValue>
@@ -721,10 +878,15 @@ namespace Apache
       generic<class TKey, class TValue>
       void LocalRegion<TKey, TValue>::Clear(Object^ callbackArg)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          apache::geode::client::UserDataPtr callbackptr(
-              Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg ) );          
-          NativePtr->localClear(callbackptr );
+        _GF_MG_EXCEPTION_TRY2/* due to auto replace */        
+          try
+          {
+            m_nativeptr->get()->localClear(Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg ) );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -745,7 +907,14 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
         apache::geode::client::VectorOfRegionEntry vc;
-        NativePtr->entries( vc, false );        
+        try
+        {
+          m_nativeptr->get()->entries( vc, false );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }        
 
         if (toArray->Rank > 1 || (vc.size() > (toArray->Length - startIdx)))
         {
@@ -767,7 +936,14 @@ namespace Apache
       generic<class TKey, class TValue>
       bool LocalRegion<TKey, TValue>::IsDestroyed::get()
       {
-        return NativePtr->isDestroyed();
+        try
+        {
+          return m_nativeptr->get()->isDestroyed();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
       
       generic<class TKey, class TValue>
@@ -817,8 +993,8 @@ namespace Apache
       generic<class TKey, class TValue>
       IRegion<TKey, TValue>^ LocalRegion<TKey, TValue>::GetLocalView()
       {
-        throw gcnew System::NotSupportedException;   
+        throw gcnew System::NotSupportedException;
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
- } //namespace 

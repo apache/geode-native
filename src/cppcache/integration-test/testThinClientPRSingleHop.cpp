@@ -53,7 +53,7 @@ const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 std::string convertHostToCanonicalForm(const char* endpoints) {
-  if (endpoints == NULL) return NULL;
+  if (endpoints == nullptr) return nullptr;
   std::string hostString("");
   uint16_t port = 0;
   std::string endpointsStr(endpoints);
@@ -119,10 +119,12 @@ class putThread : public ACE_Task_Base {
       if (!m_isWarmUpTask) {
         unsigned int seed = i;
         rand = ACE_OS::rand_r(&seed);
-        keyPtr = dynCast<CacheableKeyPtr>(CacheableInt32::create(rand));
+        keyPtr = std::dynamic_pointer_cast<CacheableKey>(
+            CacheableInt32::create(rand));
         LOGDEBUG("svc: putting key %d  ", rand);
       } else {
-        keyPtr = dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
+        keyPtr =
+            std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
         LOGDEBUG("svc: putting key %d  ", i);
       }
       try {
@@ -190,12 +192,12 @@ class putThread : public ACE_Task_Base {
 
 std::vector<char*> storeEndPoints(const char* points) {
   std::vector<char*> endpointNames;
-  if (points != NULL) {
+  if (points != nullptr) {
     char* ep = strdup(points);
     char* token = strtok(ep, ",");
     while (token) {
       endpointNames.push_back(token);
-      token = strtok(NULL, ",");
+      token = strtok(nullptr, ",");
     }
   }
   ASSERT(endpointNames.size() == 3, "There should be 3 end points");
@@ -268,13 +270,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_LocatorTL)
     initClient(true);
 
     RegionPtr regPtr = getHelper()->createPooledRegionStickySingleHop(
-        regionNames[0], USE_ACK, NULL, locatorsG, "__TEST_POOL1__", false,
+        regionNames[0], USE_ACK, nullptr, locatorsG, "__TEST_POOL1__", false,
         false);
-    ASSERT(regPtr != NULLPTR, "Failed to create region.");
+    ASSERT(regPtr != nullptr, "Failed to create region.");
     regPtr = getHelper()->createPooledRegionStickySingleHop(
-        regionNames[1], NO_ACK, NULL, locatorsG, "__TEST_POOL1__", false,
+        regionNames[1], NO_ACK, nullptr, locatorsG, "__TEST_POOL1__", false,
         false);
-    ASSERT(regPtr != NULLPTR, "Failed to create region.");
+    ASSERT(regPtr != nullptr, "Failed to create region.");
 
     LOG("StepOne_Pooled_LocatorTL complete.");
   }
@@ -289,8 +291,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
 
     // This is to get MetaDataService going.
     for (int i = 0; i < 2000; i++) {
-      CacheableKeyPtr keyPtr =
-          dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
+      auto keyPtr =
+          std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
       try {
         LOGDEBUG("CPPTEST: put item %d", i);
         dataReg->put(keyPtr, keyPtr->hashcode());
@@ -312,7 +314,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
         LOGINFO(
             "WarmUpTask: & metadatarefreshCount is %d "
             "failureCount = %d",
-             metadatarefreshCount, failureCount);
+            metadatarefreshCount, failureCount);
         LOGINFO("CPPTEST: put success ");
       } catch (CacheServerException&) {
         // This is actually a success situation!
@@ -370,8 +372,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask3)
 
     // This is to get MetaDataService going.
     for (int i = 0; i < 2000; i++) {
-      CacheableKeyPtr keyPtr =
-          dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
+      auto keyPtr =
+          std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
       try {
         LOGDEBUG("CPPTEST: put item %d", i);
         dataReg->put(keyPtr, keyPtr->hashcode());
@@ -504,10 +506,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForAllKeysTask)
       CacheableWrapper* tmpkey =
           CacheableWrapperFactory::createInstance(keyTypeId);
       tmpkey->initKey(i, KEYSIZE);
-      CacheableKeyPtr keyPtr = dynCast<CacheableKeyPtr>(tmpkey->getCacheable());
+      auto keyPtr =
+          std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable());
 
-      ASSERT(tmpkey->getCacheable() != NULLPTR,
-             "tmpkey->getCacheable() is NULL");
+      ASSERT(tmpkey->getCacheable() != nullptr,
+             "tmpkey->getCacheable() is nullptr");
 
       char logmsg[KEYSIZE * 4 + 100] = {0};
       keyPtr->toString()->logString(logmsg, KEYSIZE * 4);
@@ -624,8 +627,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
     RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
 
     for (int i = 2000; i < 3000; i++) {
-      CacheableKeyPtr keyPtr =
-          dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
+      auto keyPtr =
+          std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
 
       try {
         LOGDEBUG("CPPTEST: Putting key %d with hashcode %d", i,
@@ -741,8 +744,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
     LOG("CheckPrSingleHopForIntKeysTask2 put completed.");
 
     for (int i = 0; i < 1000; i++) {
-      CacheableKeyPtr keyPtr =
-          dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
+      auto keyPtr =
+          std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
 
       try {
         LOGDEBUG("CPPTEST: getting key %d with hashcode %d", i,
@@ -808,8 +811,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         keys.push_back(CacheableInt32::create(j));
       }
 
-      HashMapOfCacheablePtr values(new HashMapOfCacheable());
-      HashMapOfExceptionPtr exceptions(new HashMapOfException());
+      auto values = std::make_shared<HashMapOfCacheable>();
+      auto exceptions = std::make_shared<HashMapOfException>();
 
       try {
         // LOGINFO("CPPTEST: getting key %d with hashcode %d", i,
@@ -864,18 +867,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForGetAllTask)
   {
     RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
     VectorOfCacheableKey keys;
-    HashMapOfCacheablePtr valuesMap(new HashMapOfCacheable());
+    auto valuesMap = std::make_shared<HashMapOfCacheable>();
     for (int i = 0; i < 100; i++) {
-      CacheableKeyPtr keyPtr =
-          dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
+      auto keyPtr =
+          std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
       dataReg->put(keyPtr, keyPtr->hashcode());
       keys.push_back(keyPtr);
     }
 
-    dataReg->getAll(keys, valuesMap, NULLPTR, true);
+    dataReg->getAll(keys, valuesMap, nullptr, true);
     ASSERT(valuesMap->size() == 100, "GetAll returns wrong number of values");
 
-    dataReg->getAll(keys, valuesMap, NULLPTR, true,
+    dataReg->getAll(keys, valuesMap, nullptr, true,
                     CacheableInt32::create(1000));
     ASSERT(valuesMap->size() == 100,
            "GetAllWithCallBack returns wrong number of values");
@@ -891,8 +894,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
     RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
 
     for (int i = 2000; i < 3000; i++) {
-      CacheableKeyPtr keyPtr =
-          dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
+      auto keyPtr =
+          std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
 
       try {
         LOGDEBUG("CPPTEST: Putting key %d with hashcode %d", i,
@@ -995,8 +998,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
     LOG("CheckPrSingleHopForIntKeysTask put completed.");
 
     for (int i = 0; i < 1000; i++) {
-      CacheableKeyPtr keyPtr =
-          dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
+      auto keyPtr =
+          std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
 
       try {
         LOGDEBUG("CPPTEST: getting key %d with hashcode %d", i,
@@ -1054,8 +1057,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         keys.push_back(CacheableInt32::create(j));
       }
 
-      HashMapOfCacheablePtr values(new HashMapOfCacheable());
-      HashMapOfExceptionPtr exceptions(new HashMapOfException());
+      auto values = std::make_shared<HashMapOfCacheable>();
+      auto exceptions = std::make_shared<HashMapOfException>();
 
       try {
         // LOGINFO("CPPTEST: getting key %d with hashcode %d", i,
@@ -1241,23 +1244,23 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckGetAllTask)
   {
     RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
     VectorOfCacheableKey keys;
-    HashMapOfCacheablePtr valuesMap(new HashMapOfCacheable());
+    auto valuesMap = std::make_shared<HashMapOfCacheable>();
     for (int i = 0; i < 100000; i++) {
-      CacheableKeyPtr keyPtr =
-          dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
+      auto keyPtr =
+          std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
       dataReg->put(keyPtr, keyPtr->hashcode());
       keys.push_back(keyPtr);
     }
 
     ACE_Time_Value startTime = ACE_OS::gettimeofday();
-    dataReg->getAll(keys, valuesMap, NULLPTR, true);
+    dataReg->getAll(keys, valuesMap, nullptr, true);
     ACE_Time_Value interval = ACE_OS::gettimeofday() - startTime;
     LOGDEBUG("NILKANTH: Time taken to execute getALL sec = %d and MSec = %d ",
              interval.sec(), interval.usec());
     ASSERT(valuesMap->size() == 100000,
            "GetAll returns wrong number of values");
 
-    dataReg->getAll(keys, valuesMap, NULLPTR, true,
+    dataReg->getAll(keys, valuesMap, nullptr, true,
                     CacheableInt32::create(10000));
     ASSERT(valuesMap->size() == 100000,
            "GetAllWithCallBack returns wrong number of values");

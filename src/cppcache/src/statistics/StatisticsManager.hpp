@@ -34,7 +34,7 @@
 #include <AdminRegion.hpp>
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
@@ -71,8 +71,9 @@ class StatisticsManager {
 
   static StatisticsManager* s_singleton;
 
-  StatisticsManager(const char* filePath, int64_t sampleIntervalMs, bool enabled,
-                    int64_t statFileLimit = 0, int64_t statDiskSpaceLimit = 0);
+  StatisticsManager(const char* filePath, int64_t sampleIntervalMs,
+                    bool enabled, int64_t statFileLimit = 0,
+                    int64_t statDiskSpaceLimit = 0);
 
   void closeSampler();
 
@@ -112,7 +113,7 @@ class StatisticsManager {
 
   //------------ Find Statistics ---------------------
 
-  /** Return the first instance that matches the type, or NULL */
+  /** Return the first instance that matches the type, or nullptr */
   Statistics* findFirstStatisticsByType(StatisticsType* type);
 
   std::vector<Statistics*> findStatisticsByType(StatisticsType* type);

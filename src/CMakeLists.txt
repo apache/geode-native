@@ -17,6 +17,15 @@ project(nativeclient)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/../cmake)
 
+if(CMAKE_GENERATOR MATCHES Win64*)
+  if ((CMAKE_GENERATOR MATCHES "Visual Studio") AND (CMAKE_GENERATOR_TOOLSET STREQUAL ""))
+    message(WARNING "GEODE expects that a user must provode -Thost=x64 if you are using a"
+            " 64-bit toolset, otherwise you may get a linker error when DLLs are larger"
+            " than 2GB saying \"Unable to open file apache-geode-static.dll.\" This is due"
+            " to the 32bit toolset being used by default.")
+  endif()
+endif()
+
 set(BUILD_BITS 64 CACHE STRING "Build for 64 (default) or 32 bit.")
 
 set(PRODUCT_VENDOR "Apache" CACHE STRING "Product vendor")
@@ -118,6 +127,12 @@ if(CLANG_FORMAT)
   endforeach()
 endif()
 
+if(CMAKE_GENERATOR MATCHES Win64*)
+  set(CMAKE_GENERATOR_TOOLSET "host=x64")
+else()
+  set(CMAKE_GENERATOR_TOOLSET )
+endif()
+
 include(CPack)
 include(CheckCXXCompilerFlag)
 include(CheckCCompilerFlag)
@@ -151,11 +166,11 @@ add_library(c++11 INTERFACE)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
   # Force linker to error on undefined symbols in shared libraries
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -z defs")
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -z defs -xatomic=none")
   # TODO cmake find a better way to set runtime libraries
   # C++11 requires these libraries, treat -std=c++11 as library
   #TODO look into CMAKE_CXX_STANDARD_LIBRARIES
-  target_link_libraries(c++11 INTERFACE -std=c++11 stdc++ gcc_s CrunG3 c)
+  target_link_libraries(c++11 INTERFACE -std=c++11 stdc++ gcc_s CrunG3 m c)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs")
 endif()

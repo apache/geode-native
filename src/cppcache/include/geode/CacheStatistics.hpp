@@ -22,6 +22,8 @@
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
+#include <atomic>
+
 /**
  * @file
  */
@@ -42,7 +44,7 @@ class LocalRegion;
 *@see Region::getStatistics
 *@see RegionEntry::getStatistics
 */
-class CPPCACHE_EXPORT CacheStatistics : public SharedBase {
+class CPPCACHE_EXPORT CacheStatistics  {
  public:
   CacheStatistics();
 
@@ -102,8 +104,8 @@ class CPPCACHE_EXPORT CacheStatistics : public SharedBase {
   virtual void setLastAccessedTime(uint32_t lat);
   virtual void setLastModifiedTime(uint32_t lmt);
 
-  volatile uint32_t m_lastAccessTime;
-  volatile uint32_t m_lastModifiedTime;
+  std::atomic<uint32_t> m_lastAccessTime;
+  std::atomic<uint32_t> m_lastModifiedTime;
 
   friend class LocalRegion;
 };

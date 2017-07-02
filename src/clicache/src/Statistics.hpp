@@ -20,10 +20,13 @@
 #pragma once
 
 #include "geode_defs.hpp"
-#include "impl/NativeWrapper.hpp"
+#include "begin_native.hpp"
 #include <geode/statistics/Statistics.hpp>
 #include <geode/statistics/StatisticDescriptor.hpp>
 #include <geode/statistics/StatisticsType.hpp>
+#include "end_native.hpp"
+
+using namespace System;
 
 namespace Apache
 {
@@ -39,13 +42,7 @@ namespace Apache
       /// An instantiation of an existing <c>StatisticsType</c> object with methods for
       /// setting, incrementing and getting individual <c>StatisticDescriptor</c> values.
       /// </summary>
-      /// <para>
-      /// The class is purposefully inherited from UMWrapN and not UMWrap as the destructor
-      /// of the class is protected, and so it is now not called from inside the InternalCleanup
-      /// method.
-      /// </para>
       public ref class Statistics sealed
-        : public Internal::UMWrapN<apache::geode::statistics::Statistics>
        {
        public:
 
@@ -520,8 +517,8 @@ namespace Apache
           inline static Statistics^ Create(
           apache::geode::statistics::Statistics* nativeptr )
           {
-            return ( nativeptr != nullptr ?
-            gcnew Statistics( nativeptr ) : nullptr );
+          return __nullptr == nativeptr ? nullptr :
+            gcnew Statistics( nativeptr );
           }
 
          private:
@@ -530,7 +527,11 @@ namespace Apache
            /// </summary>
            /// <param name="nativeptr">The native object pointer</param>
           inline Statistics( apache::geode::statistics::Statistics* nativeptr )
-          : UMWrapN( nativeptr, false ) { }
+          : m_nativeptr( nativeptr )
+          {
+          }
+        private:
+          apache::geode::statistics::Statistics* m_nativeptr;
 
       };
     }  // namespace Client

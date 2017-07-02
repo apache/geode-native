@@ -130,7 +130,7 @@ class MyCqListener : public CqListener {
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
   const char* path = ACE_OS::getenv("TESTSRC");
-  ASSERT(path != NULL,
+  ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
   strcat(xmlPath, "xml/Security/");
@@ -140,8 +140,8 @@ std::string getXmlPath() {
 void initCredentialGenerator() {
   credentialGeneratorHandler = CredentialGenerator::create("DUMMY3");
 
-  if (credentialGeneratorHandler == NULLPTR) {
-    FAIL("credentialGeneratorHandler is NULL");
+  if (credentialGeneratorHandler == nullptr) {
+    FAIL("credentialGeneratorHandler is nullptr");
   }
 }
 
@@ -159,7 +159,7 @@ void initClientCq(const bool isthinClient) {
   credentialGeneratorHandler->getAuthInit(config);
   credentialGeneratorHandler->getValidCredentials(config);
 
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, config);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
@@ -239,7 +239,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
 
     PoolPtr pool = PoolManager::find(regionNamesCq[0]);
     QueryServicePtr qs;
-    if (pool != NULLPTR) {
+    if (pool != nullptr) {
       // Using region name as pool name as in ThinClientCq.hpp
       qs = pool->getQueryService();
     } else {
@@ -247,7 +247,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     }
     CqAttributesFactory cqFac;
     for (i = 0; i < MAX_LISTNER; i++) {
-      CqListenerPtr cqLstner(new MyCqListener(i));
+      auto cqLstner = std::make_shared<MyCqListener>(i);
       cqFac.addCqListener(cqLstner);
       CqAttributesPtr cqAttr = cqFac.create();
       CqQueryPtr qry = qs->newCq(cqNames[i], queryStrings[i], cqAttr);
@@ -282,7 +282,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo2)
     qh->populatePortfolioData(regPtr0, 3, 2, 1);
     qh->populatePositionData(subregPtr0, 3, 2);
     for (int i = 1; i < 3; i++) {
-      CacheablePtr port(new Portfolio(i, 2));
+      auto port = std::make_shared<Portfolio>(i, 2);
 
       CacheableKeyPtr keyport = CacheableKey::create("port1-1");
       regPtr0->put(keyport, port);
@@ -296,11 +296,11 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
-    QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+    auto qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    auto pool = PoolManager::find(regionNamesCq[0]);
     QueryServicePtr qs;
-    if (pool != NULLPTR) {
+    if (pool != nullptr) {
       // Using region name as pool name as in ThinClientCq.hpp
       qs = pool->getQueryService();
     } else {
@@ -326,8 +326,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     for (i = 0; i < MAX_LISTNER; i++) {
       sprintf(buf, "get info for cq[%s]:", cqNames[i]);
       LOG(buf);
-      CqQueryPtr cqy = qs->getCq(cqNames[i]);
-      CqStatisticsPtr cqStats = cqy->getStatistics();
+      auto cqy = qs->getCq(cqNames[i]);
+      auto cqStats = cqy->getStatistics();
       sprintf(buf,
               "Cq[%s]From CqStatistics: numInserts[%d], numDeletes[%d], "
               "numUpdates[%d], numEvents[%d]",
@@ -340,21 +340,21 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
         deletes[j] += cqStats->numDeletes();
         events[j] += cqStats->numEvents();
       }
-      CqAttributesPtr cqAttr = cqy->getCqAttributes();
-      VectorOfCqListener vl;
+      auto cqAttr = cqy->getCqAttributes();
+      std::vector<CqListenerPtr> vl;
       cqAttr->getCqListeners(vl);
-      sprintf(buf, "number of listeners for cq[%s] is %d", cqNames[i],
+      sprintf(buf, "number of listeners for cq[%s] is %zd", cqNames[i],
               vl.size());
       LOG(buf);
       ASSERT(vl.size() == i + 1, "incorrect number of listeners");
       if (i == (MAX_LISTNER - 1)) {
         MyCqListener* myLl[MAX_LISTNER];
         for (int k = 0; k < MAX_LISTNER; k++) {
-          MyCqListener* ml = dynamic_cast<MyCqListener*>(vl[k].ptr());
+          MyCqListener* ml = dynamic_cast<MyCqListener*>(vl[k].get());
           myLl[ml->getId()] = ml;
         }
         for (j = 0; j < MAX_LISTNER; j++) {
-          MyCqListener* ml = myLl[j];
+          auto ml = myLl[j];
           sprintf(buf,
                   "MyCount for Listener[%d]: numInserts[%d], numDeletes[%d], "
                   "numUpdates[%d], numEvents[%d]",
@@ -376,18 +376,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
                  "accumulative events count incorrect");
         }
         LOG("removing listener");
-        CqAttributesMutatorPtr cqAttrMtor = cqy->getCqAttributesMutator();
-        CqListenerPtr ptr = vl[0];
+        auto cqAttrMtor = cqy->getCqAttributesMutator();
+        auto ptr = vl[0];
         cqAttrMtor->removeCqListener(ptr);
         cqAttr->getCqListeners(vl);
-        sprintf(buf, "number of listeners for cq[%s] is %d", cqNames[i],
+        sprintf(buf, "number of listeners for cq[%s] is %zd", cqNames[i],
                 vl.size());
         LOG(buf);
         ASSERT(vl.size() == i, "incorrect number of listeners");
       }
     }
     try {
-      CqQueryPtr cqy = qs->getCq(cqNames[1]);
+      auto cqy = qs->getCq(cqNames[1]);
       cqy->stop();
 
       cqy = qs->getCq(cqNames[6]);
@@ -421,7 +421,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
 
       cqy = qs->getCq(cqNames[2]);
       sprintf(buf, "cq[%s] should have been removed after close!", cqNames[2]);
-      ASSERT(cqy == NULLPTR, buf);
+      ASSERT(cqy == nullptr, buf);
     } catch (Exception& excp) {
       std::string failmsg = "";
       failmsg += excp.getName();
@@ -431,8 +431,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       FAIL(failmsg.c_str());
       excp.printStackTrace();
     }
-    CqServiceStatisticsPtr serviceStats = qs->getCqServiceStatistics();
-    ASSERT(serviceStats != NULLPTR, "serviceStats is NULL");
+    auto serviceStats = qs->getCqServiceStatistics();
+    ASSERT(serviceStats != nullptr, "serviceStats is nullptr");
     sprintf(buf,
             "numCqsActive=%d, numCqsCreated=%d, "
             "numCqsClosed=%d,numCqsStopped=%d, numCqsOnClient=%d",
@@ -504,7 +504,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     ASSERT(serviceStats->numCqsOnClient() == 0, "cq count incorrect!");
 
     i = 0;
-    CqListenerPtr cqLstner(new MyCqListener(i));
+    auto cqLstner = std::make_shared<MyCqListener>(i);
     cqFac.addCqListener(cqLstner);
     CqAttributesPtr cqAttr = cqFac.create();
     try {

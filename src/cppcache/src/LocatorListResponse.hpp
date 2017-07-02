@@ -37,7 +37,7 @@ class LocatorListResponse : public ServerLocationResponse {
   LocatorListResponse()
       :                         /* adonre
                                  * CID 28938: Uninitialized scalar field (UNINIT_CTOR) *
-                                */
+                                 */
         m_isBalanced(false) {}  // Default constru needed for de-serialization
   virtual LocatorListResponse* fromData(DataInput& input);
   virtual int8_t typeId() const;
@@ -47,7 +47,7 @@ class LocatorListResponse : public ServerLocationResponse {
   virtual ~LocatorListResponse() {}  // Virtual destructor
   static Serializable* create();
 };
-typedef SharedPtr<LocatorListResponse> LocatorListResponsePtr;
+typedef std::shared_ptr<LocatorListResponse> LocatorListResponsePtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

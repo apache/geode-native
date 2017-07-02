@@ -15,6 +15,10 @@
  * limitations under the License.
  */
 
+#include "begin_native.hpp"
+#include <memory>
+#include "end_native.hpp"
+
 #include "QueryStringsM.hpp"
 #include "impl/ManagedString.hpp"
 
@@ -25,7 +29,7 @@ namespace Apache
   {
     namespace Client
     {
-namespace Tests
+      namespace Tests
       {
 
         // Region: QueryStrings method definitions
@@ -35,10 +39,10 @@ namespace Tests
         {
           Apache::Geode::Client::ManagedString mg_pquery( pquery );
 
-          testData::QueryStrings* nativeptr = new testData::QueryStrings(
+           auto nativeptr = std::unique_ptr<testData::QueryStrings>(new testData::QueryStrings(
             static_cast<testData::queryCategory>( pcategory ),
-            mg_pquery.CharPtr, pisLargeResultset );
-          SetPtr( nativeptr, true );
+            mg_pquery.CharPtr, pisLargeResultset ));
+           m_nativeptr = gcnew native_conditional_unique_ptr<testData::QueryStrings>(std::move(nativeptr));
         }
 
         Int32 QueryStrings::RSsize::get( )
@@ -73,17 +77,38 @@ namespace Tests
 
         QueryCategory QueryStrings::Category::get()
         {
-          return static_cast<QueryCategory>( NativePtr->category );
+          try
+          {
+            return static_cast<QueryCategory>( m_nativeptr->get()->category );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         }
 
         String^ QueryStrings::Query::get( )
         {
-          return Apache::Geode::Client::ManagedString::Get( NativePtr->query( ) );
+          try
+          {
+            return Apache::Geode::Client::ManagedString::Get( m_nativeptr->get()->query( ) );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         }
 
         bool QueryStrings::IsLargeResultset::get( )
         {
-          return NativePtr->haveLargeResultset;
+          try
+          {
+            return m_nativeptr->get()->haveLargeResultset;
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         }
 
         // End Region: QueryStrings method definitions

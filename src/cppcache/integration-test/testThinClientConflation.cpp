@@ -18,6 +18,9 @@
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 
+#include <thread>
+#include <chrono>
+
 /* Testing Parameters              Param's Value
 Server Conflation:                   on / off
 Client side conflation setting   on/ off / server / not set
@@ -42,11 +45,11 @@ class OperMonitor : public CacheListener {
   void check(const EntryEvent& event) {
     char buf[256] = {'\0'};
     m_events++;
-    CacheableStringPtr keyPtr = dynCast<CacheableStringPtr>(event.getKey());
-    CacheableInt32Ptr valuePtr =
-        dynCast<CacheableInt32Ptr>(event.getNewValue());
+    auto keyPtr = std::dynamic_pointer_cast<CacheableString>(event.getKey());
+    auto valuePtr =
+        std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
 
-    if (valuePtr != NULLPTR) {
+    if (valuePtr != nullptr) {
       m_value = valuePtr->value();
     }
     sprintf(buf, "Key = %s, Value = %d", keyPtr->toString(), valuePtr->value());
@@ -77,7 +80,7 @@ class OperMonitor : public CacheListener {
     ASSERT(m_value == 5, buf);
   }
 };
-typedef SharedPtr<OperMonitor> OperMonitorPtr;
+typedef std::shared_ptr<OperMonitor> OperMonitorPtr;
 
 void setCacheListener(const char* regName, OperMonitorPtr monitor) {
   RegionPtr reg = getHelper()->getRegion(regName);
@@ -85,10 +88,10 @@ void setCacheListener(const char* regName, OperMonitorPtr monitor) {
   attrMutator->setCacheListener(monitor);
 }
 
-OperMonitorPtr mon1C1 = NULLPTR;
-OperMonitorPtr mon2C1 = NULLPTR;
-OperMonitorPtr mon1C2 = NULLPTR;
-OperMonitorPtr mon2C2 = NULLPTR;
+OperMonitorPtr mon1C1 = nullptr;
+OperMonitorPtr mon2C1 = nullptr;
+OperMonitorPtr mon1C2 = nullptr;
+OperMonitorPtr mon2C2 = nullptr;
 
 const char* regions[] = {"ConflatedRegion", "NonConflatedRegion"};
 
@@ -101,8 +104,8 @@ void initClientCache(OperMonitorPtr& mon1, OperMonitorPtr& mon2, int durableIdx,
   initClientAndTwoRegions(durableIdx, 0, 300, conflation, regions);
 
   // Recreate listener
-  mon1 = new OperMonitor();
-  mon2 = new OperMonitor();
+  mon1 = std::make_shared<OperMonitor>();
+  mon2 = std::make_shared<OperMonitor>();
 
   setCacheListener(regions[0], mon1);
   setCacheListener(regions[1], mon2);
@@ -162,7 +165,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(FEEDER, CreateRegionsAndFirstFeederUpdate)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regions[0], USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
     getHelper()->createPooledRegion(regions[1], USE_ACK, locatorsG,
@@ -176,7 +179,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ValidateClient1Conflation)
   {
     // Client Already Initiated , Send Client Ready and wait
     getHelper()->cachePtr->readyForEvents();
-    apache::geode::client::millisleep(5000);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     mon1C1->validate(true);
     LOG("Client 1 region 1 verified for conflation = true");
@@ -191,7 +194,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, ValidateClient2Conflation)
   {
     // Client Already Initiated , Send Client Ready and wait
     getHelper()->cachePtr->readyForEvents();
-    apache::geode::client::millisleep(5000);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     mon1C2->validate(false);
     LOG("Client 2 region 1 verified for conflation = false");
@@ -211,7 +214,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, InitializeClient2WithNone)
   {
-    initClientCache(mon1C2, mon2C2, 1, NULL);
+    initClientCache(mon1C2, mon2C2, 1, nullptr);
     LOG("InitializeClient2WithNone complete");
   }
 END_TASK_DEFINITION
@@ -227,7 +230,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ValidateClient1Server)
   {
     // Client Already Initiated , Send Client Ready and wait
     getHelper()->cachePtr->readyForEvents();
-    apache::geode::client::millisleep(5000);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     mon1C1->validate(true);
     LOG("Client 1 region 1 verified for conflation = server");
@@ -242,7 +245,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, ValidateClient2None)
   {
     // Client Already Initiated , Send Client Ready and wait
     getHelper()->cachePtr->readyForEvents();
-    apache::geode::client::millisleep(5000);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     mon1C2->validate(true);
     LOG("Client 2 region 1 verified for no conflation setting");

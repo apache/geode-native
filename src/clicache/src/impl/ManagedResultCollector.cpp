@@ -149,10 +149,8 @@ namespace apache
       void ManagedResultCollectorGeneric::addResult(CacheablePtr& result)
       {
         try {
-          //Apache::Geode::Client::IGeodeSerializable^ res = SafeUMSerializableConvertGeneric(result.ptr());
           Object^ rs = Apache::Geode::Client::Serializable::GetManagedValueGeneric<Object^>(result);
           m_managedptr->AddResult(rs);
-          //m_managedptr->AddResult( SafeUMSerializableConvert( result.ptr( ) ) );
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();
@@ -190,7 +188,7 @@ namespace apache
           ex_str += mg_exStr.CharPtr;
           throw apache::geode::client::IllegalArgumentException(ex_str.c_str());
         }
-        return NULLPTR;
+        return nullptr;
       }
       void ManagedResultCollectorGeneric::endResults()
       {

@@ -77,7 +77,7 @@ class CPPCACHE_EXPORT CacheableUndefined : public Cacheable {
    * Factory method for creating the default instance of CacheableUndefined.
    */
   inline static CacheableUndefinedPtr create() {
-    return CacheableUndefinedPtr(new CacheableUndefined());
+    return std::make_shared<CacheableUndefined>();
   }
 
   virtual uint32_t objectSize() const;
@@ -90,6 +90,8 @@ class CPPCACHE_EXPORT CacheableUndefined : public Cacheable {
   // never implemented.
   CacheableUndefined& operator=(const CacheableUndefined& other);
   CacheableUndefined(const CacheableUndefined& other);
+
+  FRIEND_STD_SHARED_PTR(CacheableUndefined)
 };
 }  // namespace client
 }  // namespace geode

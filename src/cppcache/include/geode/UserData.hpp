@@ -32,7 +32,7 @@ namespace geode {
 namespace client {
 
 typedef Serializable UserData;
-typedef SharedPtr<UserData> UserDataPtr;
+typedef std::shared_ptr<UserData> UserDataPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

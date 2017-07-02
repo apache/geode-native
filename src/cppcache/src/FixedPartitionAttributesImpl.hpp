@@ -41,13 +41,13 @@ class FixedPartitionAttributesImpl : public Serializable {
  public:
   FixedPartitionAttributesImpl()
       : Serializable(),
-        m_partitionName(NULLPTR),
+        m_partitionName(nullptr),
         m_isPrimary(false),
         m_numBuckets(1),
         m_startingBucketId(-1) {}
 
   std::string getPartitionName() {
-    if (m_partitionName != NULLPTR) {
+    if (m_partitionName != nullptr) {
       return m_partitionName->asChar();
     }
     return "";
@@ -58,7 +58,7 @@ class FixedPartitionAttributesImpl : public Serializable {
   int isPrimary() const { return m_isPrimary; }
 
   void toData(DataOutput& output) const {
-    if (m_partitionName != NULLPTR) {
+    if (m_partitionName != nullptr) {
       output.writeNativeString(m_partitionName->asChar());
     }
     output.writeBoolean(m_isPrimary);
@@ -75,7 +75,7 @@ class FixedPartitionAttributesImpl : public Serializable {
   }
 
   uint32_t objectSize() const {
-    if (m_partitionName != NULLPTR) {
+    if (m_partitionName != nullptr) {
       return static_cast<uint32_t>(sizeof(int)) +
              static_cast<uint32_t>(sizeof(int)) +
              static_cast<uint32_t>(sizeof(bool)) +

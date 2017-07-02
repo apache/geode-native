@@ -17,8 +17,10 @@
 
 #pragma once
 
+#include "begin_native.hpp"
 #include <geode/geode_globals.hpp>
 #include <ExpiryTaskManager.hpp>
+#include "end_native.hpp"
 
 namespace Apache
 {

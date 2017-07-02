@@ -133,7 +133,7 @@ inline void randomString(int32_t size, std::wstring& randStr,
 }
 
 inline uint32_t crc32(const uint8_t* buffer, uint32_t bufLen) {
-  if (buffer == NULL || bufLen == 0) {
+  if (buffer == nullptr || bufLen == 0) {
     return 0;
   }
 
@@ -182,7 +182,7 @@ class CacheableBooleanWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  inline CacheableBooleanWrapper() : CacheableWrapper(NULLPTR) {}
+  inline CacheableBooleanWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableBooleanWrapper(); }
 
@@ -201,8 +201,8 @@ class CacheableBooleanWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableBoolean* obj =
-        dynamic_cast<const CacheableBoolean*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableBoolean*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32<uint8_t>(obj->value() ? 1 : 0);
   }
 };
@@ -211,7 +211,7 @@ class CacheableByteWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  inline CacheableByteWrapper() : CacheableWrapper(NULLPTR) {}
+  inline CacheableByteWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableByteWrapper(); }
 
@@ -229,8 +229,8 @@ class CacheableByteWrapper : public CacheableWrapper {
   }
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
-    const CacheableByte* obj = dynamic_cast<const CacheableByte*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+    const CacheableByte* obj = dynamic_cast<const CacheableByte*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32<uint8_t>(obj->value());
   }
 };
@@ -239,7 +239,7 @@ class CacheableDoubleWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableDoubleWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableDoubleWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableDoubleWrapper(); }
 
@@ -258,8 +258,8 @@ class CacheableDoubleWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableDouble* obj =
-        dynamic_cast<const CacheableDouble*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableDouble*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32<double>(obj->value());
   }
 };
@@ -268,7 +268,7 @@ class CacheableDateWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableDateWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableDateWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableDateWrapper(); }
 
@@ -294,8 +294,8 @@ class CacheableDateWrapper : public CacheableWrapper {
   }
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
-    const CacheableDate* obj = dynamic_cast<const CacheableDate*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+    const CacheableDate* obj = dynamic_cast<const CacheableDate*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32<int64_t>(obj->milliseconds());
   }
 };
@@ -304,7 +304,7 @@ class CacheableFileNameWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableFileNameWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableFileNameWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableFileNameWrapper(); }
 
@@ -347,8 +347,8 @@ class CacheableFileNameWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableFileName* obj =
-        dynamic_cast<const CacheableFileName*>(object.ptr());
-    return (obj != NULL
+        dynamic_cast<const CacheableFileName*>(object.get());
+    return (obj != nullptr
                 ? CacheableHelper::crc32((uint8_t*)obj->asChar(), obj->length())
                 : 0);
   }
@@ -358,7 +358,7 @@ class CacheableFloatWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableFloatWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableFloatWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableFloatWrapper(); }
 
@@ -377,8 +377,8 @@ class CacheableFloatWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableFloat* obj =
-        dynamic_cast<const CacheableFloat*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableFloat*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32<float>(obj->value());
   }
 };
@@ -387,7 +387,7 @@ class CacheableInt16Wrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableInt16Wrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableInt16Wrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableInt16Wrapper(); }
 
@@ -406,8 +406,8 @@ class CacheableInt16Wrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableInt16* obj =
-        dynamic_cast<const CacheableInt16*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableInt16*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32<int16_t>(obj->value());
   }
 };
@@ -416,7 +416,7 @@ class CacheableInt32Wrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableInt32Wrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableInt32Wrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableInt32Wrapper(); }
 
@@ -435,8 +435,8 @@ class CacheableInt32Wrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableInt32* obj =
-        dynamic_cast<const CacheableInt32*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableInt32*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32<int32_t>(obj->value());
   }
 };
@@ -445,7 +445,7 @@ class CacheableInt64Wrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableInt64Wrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableInt64Wrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableInt64Wrapper(); }
 
@@ -465,8 +465,8 @@ class CacheableInt64Wrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableInt64* obj =
-        dynamic_cast<const CacheableInt64*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableInt64*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32<int64_t>(obj->value());
   }
 };
@@ -475,7 +475,7 @@ class CacheableStringWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableStringWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableStringWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableStringWrapper(); }
 
@@ -506,8 +506,8 @@ class CacheableStringWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableString* obj =
-        dynamic_cast<const CacheableString*>(object.ptr());
-    return (obj != NULL
+        dynamic_cast<const CacheableString*>(object.get());
+    return (obj != nullptr
                 ? CacheableHelper::crc32((uint8_t*)obj->asChar(), obj->length())
                 : 0);
   }
@@ -517,7 +517,7 @@ class CacheableHugeStringWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableHugeStringWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableHugeStringWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableHugeStringWrapper(); }
 
@@ -551,8 +551,8 @@ class CacheableHugeStringWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableString* obj =
-        dynamic_cast<const CacheableString*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableString*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32((uint8_t*)obj->asChar(), obj->length());
   }
 };
@@ -561,7 +561,7 @@ class CacheableHugeUnicodeStringWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableHugeUnicodeStringWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableHugeUnicodeStringWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() {
     return new CacheableHugeUnicodeStringWrapper();
@@ -597,8 +597,8 @@ class CacheableHugeUnicodeStringWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableString* obj =
-        dynamic_cast<const CacheableString*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableString*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32((uint8_t*)obj->asWChar(),
                                   obj->length() * sizeof(wchar_t));
   }
@@ -608,7 +608,7 @@ class CacheableUnicodeStringWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableUnicodeStringWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableUnicodeStringWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() {
     return new CacheableUnicodeStringWrapper();
@@ -641,8 +641,8 @@ class CacheableUnicodeStringWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableString* obj =
-        dynamic_cast<const CacheableString*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableString*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32((uint8_t*)obj->asWChar(),
                                   obj->length() * sizeof(wchar_t));
   }
@@ -652,7 +652,7 @@ class CacheableWideCharWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableWideCharWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableWideCharWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableWideCharWrapper(); }
 
@@ -672,8 +672,8 @@ class CacheableWideCharWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableWideChar* obj =
-        dynamic_cast<const CacheableWideChar*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableWideChar*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32<wchar_t>(obj->value());
   }
 };
@@ -685,7 +685,7 @@ class CacheableHashMapTypeWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableHashMapTypeWrapper<HMAPTYPE>() : CacheableWrapper(NULLPTR) {}
+  CacheableHashMapTypeWrapper<HMAPTYPE>() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() {
     return new CacheableHashMapTypeWrapper<HMAPTYPE>();
@@ -695,8 +695,8 @@ class CacheableHashMapTypeWrapper : public CacheableWrapper {
 
   virtual void initRandomValue(int32_t maxSize) {
     m_cacheableObject = HMAPTYPE::create(maxSize);
-    HMAPTYPE* chmp = dynamic_cast<HMAPTYPE*>(m_cacheableObject.ptr());
-    ASSERT(chmp != NULL, "initRandomValue: null object.");
+    HMAPTYPE* chmp = dynamic_cast<HMAPTYPE*>(m_cacheableObject.get());
+    ASSERT(chmp != nullptr, "initRandomValue: null object.");
     std::vector<int8_t> keyTypeIds =
         CacheableWrapperFactory::getRegisteredKeyTypes();
     std::vector<int8_t> valTypeIds =
@@ -726,46 +726,42 @@ class CacheableHashMapTypeWrapper : public CacheableWrapper {
           continue;
         }
 
-        CacheableWrapper* keyWrapper =
-            CacheableWrapperFactory::createInstance(*keyIter);
-        ASSERT(keyWrapper != NULL, "initRandomValue: keyWrapper null object.");
+        const auto keyWrapper = std::unique_ptr<CacheableWrapper>(
+            CacheableWrapperFactory::createInstance(*keyIter));
+        ASSERT(keyWrapper != nullptr,
+               "initRandomValue: keyWrapper null object.");
         if (item > keyWrapper->maxKeys()) {
-          delete keyWrapper;
-          break;
         }
-        CacheableWrapper* valWrapper =
-            CacheableWrapperFactory::createInstance(*valIter);
-        ASSERT(valWrapper != NULL, "initRandomValue: valWrapper null object.");
+        const auto valWrapper = std::unique_ptr<CacheableWrapper>(
+            CacheableWrapperFactory::createInstance(*valIter));
+        ASSERT(valWrapper != nullptr,
+               "initRandomValue: valWrapper null object.");
         keyWrapper->initKey(((*keyIter) << 8) + item, maxSize);
         valWrapper->initRandomValue(maxSize);
-        chmp->insert(dynCast<CacheableKeyPtr>(keyWrapper->getCacheable()),
-                     valWrapper->getCacheable());
-        delete keyWrapper;
-        delete valWrapper;
+        chmp->emplace(
+            std::dynamic_pointer_cast<CacheableKey>(keyWrapper->getCacheable()),
+            valWrapper->getCacheable());
         item++;
       }
     }
   }
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
-    const HMAPTYPE* obj = dynamic_cast<const HMAPTYPE*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+    const HMAPTYPE* obj = dynamic_cast<const HMAPTYPE*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     uint32_t chksum = 0;
 
-    for (typename HMAPTYPE::Iterator iter = obj->begin(); iter != obj->end();
-         ++iter) {
-      CacheableWrapper* cwpKey =
-          CacheableWrapperFactory::createInstance(iter.first()->typeId());
-      CacheablePtr cwpObj = iter.second();
+    for (const auto& iter : *obj) {
+      const auto cwpKey = std::unique_ptr<CacheableWrapper>(
+          CacheableWrapperFactory::createInstance(iter.first->typeId()));
+      const auto& cwpObj = iter.second;
       uint32_t cwpObjCkSum = 0;
-      if (cwpObj != NULLPTR) {
-        CacheableWrapper* cwpVal =
-            CacheableWrapperFactory::createInstance(cwpObj->typeId());
+      if (cwpObj != nullptr) {
+        const auto cwpVal = std::unique_ptr<CacheableWrapper>(
+            CacheableWrapperFactory::createInstance(cwpObj->typeId()));
         cwpObjCkSum = cwpVal->getCheckSum(cwpObj);
-        delete cwpVal;
       }
-      chksum ^= (cwpKey->getCheckSum(iter.first()) ^ cwpObjCkSum);
-      delete cwpKey;
+      chksum ^= (cwpKey->getCheckSum(iter.first) ^ cwpObjCkSum);
     }
 
     return chksum;
@@ -785,7 +781,7 @@ class CacheableHashSetTypeWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableHashSetTypeWrapper<HSETTYPE>() : CacheableWrapper(NULLPTR) {}
+  CacheableHashSetTypeWrapper<HSETTYPE>() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() {
     return new CacheableHashSetTypeWrapper<HSETTYPE>();
@@ -806,24 +802,23 @@ class CacheableHashSetTypeWrapper : public CacheableWrapper {
           CacheableWrapperFactory::createInstance(keyTypeId);
       wrapper->initRandomValue(maxSize);
       CacheablePtr cptr = wrapper->getCacheable();
-      set->insert(dynCast<CacheableKeyPtr>(wrapper->getCacheable()));
+      set->insert(
+          std::dynamic_pointer_cast<CacheableKey>(wrapper->getCacheable()));
       delete wrapper;
     }
-    m_cacheableObject = set;
+    m_cacheableObject = std::shared_ptr<Serializable>(set);
   }
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
-    const HSETTYPE* obj = dynamic_cast<const HSETTYPE*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+    const HSETTYPE* obj = dynamic_cast<const HSETTYPE*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     uint32_t checkSum = 0;
 
-    for (typename HSETTYPE::Iterator iter = obj->begin(); iter != obj->end();
-         ++iter) {
-      int8_t typeId = (*iter)->typeId();
-      CacheableWrapper* wrapper =
-          CacheableWrapperFactory::createInstance(typeId);
-      checkSum ^= wrapper->getCheckSum(*iter);
-      delete wrapper;
+    for (const auto& iter : *obj) {
+      const auto typeId = iter->typeId();
+      const auto wrapper = std::unique_ptr<CacheableWrapper>(
+          CacheableWrapperFactory::createInstance(typeId));
+      checkSum ^= wrapper->getCheckSum(iter);
     }
     return checkSum;
   }
@@ -838,7 +833,7 @@ class CacheableBytesWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableBytesWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableBytesWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableBytesWrapper(); }
 
@@ -853,8 +848,8 @@ class CacheableBytesWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableBytes* obj =
-        dynamic_cast<const CacheableBytes*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableBytes*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32(obj->value(), obj->length());
   }
 };
@@ -863,7 +858,7 @@ class CacheableDoubleArrayWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableDoubleArrayWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableDoubleArrayWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() {
     return new CacheableDoubleArrayWrapper();
@@ -881,8 +876,8 @@ class CacheableDoubleArrayWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableDoubleArray* obj =
-        dynamic_cast<const CacheableDoubleArray*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableDoubleArray*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32Array(obj->value(), obj->length());
   }
 };
@@ -891,7 +886,7 @@ class CacheableFloatArrayWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableFloatArrayWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableFloatArrayWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableFloatArrayWrapper(); }
 
@@ -907,8 +902,8 @@ class CacheableFloatArrayWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableFloatArray* obj =
-        dynamic_cast<const CacheableFloatArray*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableFloatArray*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32Array(obj->value(), obj->length());
   }
 };
@@ -917,7 +912,7 @@ class CacheableInt16ArrayWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableInt16ArrayWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableInt16ArrayWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableInt16ArrayWrapper(); }
 
@@ -932,8 +927,8 @@ class CacheableInt16ArrayWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableInt16Array* obj =
-        dynamic_cast<const CacheableInt16Array*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableInt16Array*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32Array(obj->value(), obj->length());
   }
 };
@@ -942,7 +937,7 @@ class CacheableInt32ArrayWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableInt32ArrayWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableInt32ArrayWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableInt32ArrayWrapper(); }
 
@@ -957,8 +952,8 @@ class CacheableInt32ArrayWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableInt32Array* obj =
-        dynamic_cast<const CacheableInt32Array*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableInt32Array*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32Array(obj->value(), obj->length());
   }
 };
@@ -967,7 +962,7 @@ class CacheableInt64ArrayWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableInt64ArrayWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableInt64ArrayWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableInt64ArrayWrapper(); }
 
@@ -982,8 +977,8 @@ class CacheableInt64ArrayWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableInt64Array* obj =
-        dynamic_cast<const CacheableInt64Array*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableInt64Array*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32Array(obj->value(), obj->length());
   }
 };
@@ -992,18 +987,18 @@ class CacheableNullStringWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableNullStringWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableNullStringWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableNullStringWrapper(); }
 
   // CacheableWrapper members
 
   virtual void initRandomValue(int32_t maxSize) {
-    m_cacheableObject = CacheableString::create((char*)NULL);
+    m_cacheableObject = CacheableString::create((char*)nullptr);
   }
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
-    ASSERT(object == NULLPTR, "getCheckSum: expected null object");
+    ASSERT(object == nullptr, "getCheckSum: expected null object");
     return 0;
   }
 };
@@ -1012,7 +1007,7 @@ class CacheableStringArrayWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableStringArrayWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableStringArrayWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() {
     return new CacheableStringArrayWrapper();
@@ -1046,8 +1041,8 @@ class CacheableStringArrayWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableStringArray* obj =
-        dynamic_cast<const CacheableStringArray*>(object.ptr());
-    ASSERT(obj != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableStringArray*>(object.get());
+    ASSERT(obj != nullptr, "getCheckSum: null object.");
     uint32_t checkSum = 0;
     CacheableStringPtr str;
     for (int32_t index = 0; index < obj->length(); index++) {
@@ -1068,14 +1063,15 @@ class CacheableUndefinedWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableUndefinedWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableUndefinedWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() { return new CacheableUndefinedWrapper(); }
 
   // CacheableWrapper members
 
   virtual void initRandomValue(int32_t maxSize) {
-    m_cacheableObject = CacheableUndefined::createDeserializable();
+    m_cacheableObject = std::shared_ptr<Serializable>(
+        CacheableUndefined::createDeserializable());
   }
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const { return 0; }
@@ -1086,7 +1082,7 @@ class CacheableVectorTypeWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableVectorTypeWrapper<VECTTYPE>() : CacheableWrapper(NULLPTR) {}
+  CacheableVectorTypeWrapper<VECTTYPE>() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() {
     return new CacheableVectorTypeWrapper<VECTTYPE>();
@@ -1111,16 +1107,16 @@ class CacheableVectorTypeWrapper : public CacheableWrapper {
         delete wrapper;
       }
     }
-    m_cacheableObject = vec;
+    m_cacheableObject = std::shared_ptr<Serializable>(vec);
   }
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
-    const VECTTYPE* vec = dynamic_cast<const VECTTYPE*>(object.ptr());
-    ASSERT(vec != NULL, "getCheckSum: null object.");
+    const VECTTYPE* vec = dynamic_cast<const VECTTYPE*>(object.get());
+    ASSERT(vec != nullptr, "getCheckSum: null object.");
     uint32_t checkSum = 0;
     for (uint32_t index = 0; index < (uint32_t)vec->size(); ++index) {
       CacheablePtr obj = vec->at(index);
-      if (obj == NULLPTR) {
+      if (obj == nullptr) {
         continue;
       }
       int8_t typeId = obj->typeId();
@@ -1147,7 +1143,7 @@ class CacheableObjectArrayWrapper : public CacheableWrapper {
  public:
   // Constructor and factory function
 
-  CacheableObjectArrayWrapper() : CacheableWrapper(NULLPTR) {}
+  CacheableObjectArrayWrapper() : CacheableWrapper(nullptr) {}
 
   static CacheableWrapper* create() {
     return new CacheableObjectArrayWrapper();
@@ -1172,18 +1168,18 @@ class CacheableObjectArrayWrapper : public CacheableWrapper {
         delete wrapper;
       }
     }
-    m_cacheableObject = arr;
+    m_cacheableObject = std::shared_ptr<Serializable>(arr);
   }
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
     const CacheableObjectArray* arr =
-        dynamic_cast<const CacheableObjectArray*>(object.ptr());
-    ASSERT(arr != NULL, "getCheckSum: null object.");
+        dynamic_cast<const CacheableObjectArray*>(object.get());
+    ASSERT(arr != nullptr, "getCheckSum: null object.");
     uint32_t checkSum = 0;
     for (uint32_t index = 0; index < static_cast<uint32_t>(arr->size());
          ++index) {
       const CacheablePtr obj = arr->at(index);
-      if (obj == NULLPTR) {
+      if (obj == nullptr) {
         continue;
       }
       int8_t typeId = obj->typeId();

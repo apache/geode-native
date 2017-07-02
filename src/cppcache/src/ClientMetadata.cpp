@@ -29,8 +29,8 @@ ClientMetadata::ClientMetadata(
     int totalNumBuckets, CacheableStringPtr colocatedWith,
     ThinClientPoolDM* tcrdm,
     std::vector<FixedPartitionAttributesImplPtr>* fpaSet)
-    : m_partitionNames(NULLPTR),
-      m_previousOne(NULLPTR),
+    : m_partitionNames(nullptr),
+      m_previousOne(nullptr),
       m_totalNumBuckets(totalNumBuckets),
       m_colocatedWith(colocatedWith),
       m_tcrdm(tcrdm) {
@@ -39,10 +39,11 @@ ClientMetadata::ClientMetadata(
     BucketServerLocationsType empty;
     m_bucketServerLocationsList.push_back(empty);
   }
-  if (m_tcrdm == NULL) {
-    throw IllegalArgumentException("ClientMetaData: ThinClientPoolDM is NULL.");
+  if (m_tcrdm == nullptr) {
+    throw IllegalArgumentException(
+        "ClientMetaData: ThinClientPoolDM is nullptr.");
   }
-  if (fpaSet != NULL) {
+  if (fpaSet != nullptr) {
     LOGDEBUG(
         "ClientMetadata Creating metadata with %d buckets & fpaset size is %d ",
         totalNumBuckets, fpaSet->size());
@@ -62,8 +63,8 @@ ClientMetadata::ClientMetadata(
 }
 
 ClientMetadata::ClientMetadata(ClientMetadata& other) {
-  m_partitionNames = NULLPTR;
-  m_previousOne = NULLPTR;
+  m_partitionNames = nullptr;
+  m_previousOne = nullptr;
   m_totalNumBuckets = other.m_totalNumBuckets;
   for (int item = 0; item < m_totalNumBuckets; item++) {
     BucketServerLocationsType empty;
@@ -79,11 +80,11 @@ ClientMetadata::ClientMetadata(ClientMetadata& other) {
 }
 
 ClientMetadata::ClientMetadata()
-    : m_partitionNames(NULLPTR),
-      m_previousOne(NULLPTR),
+    : m_partitionNames(nullptr),
+      m_previousOne(nullptr),
       m_totalNumBuckets(0),
-      m_colocatedWith(NULLPTR),
-      m_tcrdm(NULL) {}
+      m_colocatedWith(nullptr),
+      m_tcrdm(nullptr) {}
 
 ClientMetadata::~ClientMetadata() {}
 
@@ -182,10 +183,10 @@ void ClientMetadata::updateBucketServerLocations(
              bucketServerLocations.begin();
          iter != bucketServerLocations.end(); ++iter) {
       CacheableStringArrayPtr groups = (*iter)->getServerGroups();
-      if ((groups != NULLPTR) && (groups->length() > 0)) {
+      if ((groups != nullptr) && (groups->length() > 0)) {
         bool added = false;
         for (int i = 0; i < groups->length(); i++) {
-          CacheableStringPtr cs = groups[i];
+          CacheableStringPtr cs = (*groups)[i];
           if (cs->length() > 0) {
             std::string str = cs->toString();
             if ((ACE_OS::strcmp(str.c_str(), serverGroup.c_str()) == 0)) {
@@ -208,7 +209,7 @@ void ClientMetadata::updateBucketServerLocations(
           }
         }
         if (!added) {
-          (*iter)->setServername(NULLPTR);
+          (*iter)->setServername(nullptr);
           if ((*iter)->isPrimary()) {
             primaries.push_back(*iter);
           } else {
@@ -370,7 +371,7 @@ BucketServerLocationPtr ClientMetadata::advisePrimaryServerLocation(
       return location;
     }
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 BucketServerLocationPtr ClientMetadata::adviseRandomServerLocation() {
@@ -380,10 +381,10 @@ BucketServerLocationPtr ClientMetadata::adviseRandomServerLocation() {
     checkBucketId(random);
     std::vector<BucketServerLocationPtr> locations =
         m_bucketServerLocationsList[random];
-    if (locations.size() == 0) return NULLPTR;
+    if (locations.size() == 0) return nullptr;
     return locations.at(0);
   }
-  return NULLPTR;
+  return nullptr;
 }
 }  // namespace client
 }  // namespace geode

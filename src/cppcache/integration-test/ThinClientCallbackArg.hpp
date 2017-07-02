@@ -67,9 +67,9 @@ void createClientPooledLocatorRegion() {
       "writer");
   createPooledRegion(regionNames[0], false, locatorsG, poolName, true,
                      regListener, true);
-  regWriter = new TallyWriter();
+  regWriter = std::make_shared<TallyWriter>();
   setCacheWriter(regionNames[0], regWriter);
-  regListener = new TallyListener();
+  regListener = std::make_shared<TallyListener>();
   setCacheListener(regionNames[0], regListener);
   regWriter->setCallBackArg(key0);
   regListener->setCallBackArg(key0);

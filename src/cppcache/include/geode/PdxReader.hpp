@@ -28,7 +28,7 @@ namespace geode {
 namespace client {
 
 class PdxReader;
-typedef SharedPtr<PdxReader> PdxReaderPtr;
+typedef std::shared_ptr<PdxReader> PdxReaderPtr;
 
 /**
  * A PdxReader will be passed to PdxSerializable.fromData or
@@ -43,7 +43,7 @@ typedef SharedPtr<PdxReader> PdxReaderPtr;
  * @note Implementations of PdxReader that are internal to the Native
  *       Client library may be returned to clients via instances of
  *       PdxReaderPtr. For those implementations, any
- *       non-<tt>NULL</tt>, non-empty strings returned from
+ *       non-<tt>nullptr</tt>, non-empty strings returned from
  *       PdxReader::readString() or PdxReader::readWideString() must
  *       be freed with DataInput::freeUTFMemory(). Arrays returned
  *       from PdxReader::readStringArray() or
@@ -53,7 +53,7 @@ typedef SharedPtr<PdxReader> PdxReaderPtr;
  * @note Custom implementations of PdxReader are not subject
  *       to this restriction.
  */
-class CPPCACHE_EXPORT PdxReader : public SharedBase {
+class CPPCACHE_EXPORT PdxReader {
  public:
   /**
    * @brief constructors

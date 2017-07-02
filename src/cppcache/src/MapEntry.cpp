@@ -19,8 +19,8 @@
 
 using namespace apache::geode::client;
 
-EntryFactory* EntryFactory::singleton = NULL;
-MapEntryPtr MapEntry::MapEntry_NullPointer(NULLPTR);
+EntryFactory* EntryFactory::singleton = nullptr;
+MapEntryPtr MapEntry::MapEntry_NullPointer(nullptr);
 
 /**
  * @brief called when library is initialized... see CppCacheLibrary.

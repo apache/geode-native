@@ -100,6 +100,6 @@ class PositionPdxAuto : public apache::geode::client::PdxSerializable {
   void init();
 };
 
-typedef apache::geode::client::SharedPtr<PositionPdxAuto> PositionPdxPtr;
+typedef std::shared_ptr<PositionPdxAuto> PositionPdxPtr;
 }
 #endif

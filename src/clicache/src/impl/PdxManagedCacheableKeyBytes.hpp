@@ -19,11 +19,17 @@
 
 #include "../geode_defs.hpp"
 #include <vcclr.h>
+#include "begin_native.hpp"
 #include <geode/CacheableKey.hpp>
+#include "end_native.hpp"
+
 #include "../Log.hpp"
 #include "../DataOutput.hpp"
 #include "PdxHelper.hpp"
+#include "begin_native.hpp"
 #include <geode/Delta.hpp>
+#include "end_native.hpp"
+
 
 using namespace System;
 
@@ -204,7 +210,7 @@ namespace apache
       Apache::Geode::Client::Log::Fine(
         "ManagedCacheableKeyBytes::Destructor current AppDomain ID: " +
         System::Threading::Thread::GetDomainID() + " for object: " +
-        System::Convert::ToString((int)this) + " with its AppDomain ID: " + m_domainId);
+        System::Convert::ToString((uint64_t) this) + " with its AppDomain ID: " + m_domainId);
       GF_SAFE_DELETE(m_bytes);
     }
 

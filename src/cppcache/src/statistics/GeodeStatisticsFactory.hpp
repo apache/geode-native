@@ -37,7 +37,7 @@
 using namespace apache::geode::client;
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
@@ -66,7 +66,7 @@ class GeodeStatisticsFactory : public StatisticsFactory {
   GeodeStatisticsFactory(StatisticsManager* statMngr);
 
   int64_t m_statsListUniqueId;  // Creates a unique id for each stats object in
-                              // the list
+                                // the list
 
   ACE_Recursive_Thread_Mutex m_statsListUniqueIdLock;
 
@@ -143,12 +143,12 @@ class GeodeStatisticsFactory : public StatisticsFactory {
                                          const char* description,
                                          const char* units, bool largerBetter);
 
-  /** Return the first instance that matches the type, or NULL */
+  /** Return the first instance that matches the type, or nullptr */
   Statistics* findFirstStatisticsByType(StatisticsType* type);
 
 };  // class
 
-}  // namespace client
+}  // namespace statistics
 }  // namespace geode
 }  // namespace apache
 

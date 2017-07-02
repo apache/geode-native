@@ -22,8 +22,7 @@ void GetAllServersResponse::toData(DataOutput& output) const {
   int32_t length = static_cast<int32_t>(m_servers.size());
   output.writeInt(length);
   for (int32_t i = 0; i < length; i++) {
-    SerializablePtr sPtr(&m_servers.at(i));
-    output.writeObject(sPtr);
+    output.writeObject(&m_servers.at(i));
   }
 }
 Serializable* GetAllServersResponse::fromData(DataInput& input) {

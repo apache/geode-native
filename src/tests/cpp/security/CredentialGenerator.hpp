@@ -21,18 +21,17 @@
  */
 
 /**
-  * @file    CredentialGenerator.hpp
-  * @since   1.0
-  * @version 1.0
-  * @see
-  *
-  */
+ * @file    CredentialGenerator.hpp
+ * @since   1.0
+ * @version 1.0
+ * @see
+ *
+ */
 
 // ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
 
-#include <geode/SharedBase.hpp>
 #include <geode/Properties.hpp>
 
 #ifndef __COMPILE_DUNIT_
@@ -59,7 +58,7 @@ namespace testframework {
 namespace security {
 
 class CredentialGenerator;
-typedef SharedPtr<CredentialGenerator> CredentialGeneratorPtr;
+typedef std::shared_ptr<CredentialGenerator> CredentialGeneratorPtr;
 
 /**
  * @class CredentialGenerator CredentialGenerator.hpp
@@ -85,7 +84,7 @@ typedef SharedPtr<CredentialGenerator> CredentialGeneratorPtr;
  *   str = cg->getServerCmdParams(":authenticator:authorizer");
  *
  */
-class CredentialGenerator : public SharedBase {
+class CredentialGenerator {
  public:
   typedef std::map<std::string, CredentialGeneratorPtr> registeredClassMap;
 

@@ -18,7 +18,10 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/ExceptionTypes.hpp>
+#include "end_native.hpp"
+
 #include "impl/ManagedString.hpp"
 
 
@@ -162,11 +165,11 @@ namespace Apache
                 cause = GeodeException::GetNative(ex->InnerException);
               }
               ManagedString mg_exStr(MgSysExPrefix + ex->ToString());
-              return apache::geode::client::ExceptionPtr(new apache::geode::client::Exception(
-                  mg_exStr.CharPtr, NULL, false, cause));
+              return std::make_shared<apache::geode::client::Exception>(
+                  mg_exStr.CharPtr, __nullptr, false, cause);
             }
           }
-          return NULLPTR;
+          return nullptr;
         }
 
         /// <summary>
@@ -181,8 +184,8 @@ namespace Apache
           if (this->InnerException != nullptr) {
             cause = GeodeException::GetNative(this->InnerException);
           }
-          return apache::geode::client::ExceptionPtr(new apache::geode::client::Exception(mg_msg.CharPtr,
-              NULL, false, cause));
+          return std::make_shared<apache::geode::client::Exception>(mg_msg.CharPtr,
+              __nullptr, false, cause);
         }
 
         /// <summary>
@@ -355,8 +358,8 @@ namespace Apache
           if (this->InnerException != nullptr) { \
             cause = GeodeException::GetNative(this->InnerException); \
           } \
-          return apache::geode::client::ExceptionPtr(new apache::geode::client::y(mg_msg.CharPtr, \
-              NULL, false, cause)); \
+          return std::make_shared<apache::geode::client::y>(mg_msg.CharPtr, \
+              __nullptr, false, cause); \
         } \
       }
 

@@ -117,9 +117,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1_1)
     RegionPtr regPtr1 = getHelper()->getRegion(poolRegNames[1]);
     RegionPtr regPtr2 = getHelper()->getRegion(poolRegNames[2]);
 
-    regPtr0->registerAllKeys(false, NULLPTR, true);
-    regPtr1->registerAllKeys(false, NULLPTR, true);
-    regPtr2->registerAllKeys(false, NULLPTR, true);
+    regPtr0->registerAllKeys(false, nullptr, true);
+    regPtr1->registerAllKeys(false, nullptr, true);
+    regPtr2->registerAllKeys(false, nullptr, true);
 
     LOG("CreateClient1 complete.");
   }
@@ -130,13 +130,13 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_1)
     initClient(true);
 
     // create three regions with three pools ( each having diff redun )
-    createPool(poolNames[0], locHostPort, NULL, 2, true);
+    createPool(poolNames[0], locHostPort, nullptr, 2, true);
     createRegionAndAttachPool(poolRegNames[0], USE_ACK, poolNames[0], true);
 
-    createPool(poolNames[1], locHostPort, NULL, 1, true);
+    createPool(poolNames[1], locHostPort, nullptr, 1, true);
     createRegionAndAttachPool(poolRegNames[1], USE_ACK, poolNames[1], true);
 
-    createPool(poolNames[2], locHostPort, NULL, 0, true);
+    createPool(poolNames[2], locHostPort, nullptr, 0, true);
     createRegionAndAttachPool(poolRegNames[2], USE_ACK, poolNames[2], true);
 
     feedEntries(1);
@@ -145,9 +145,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_1)
     RegionPtr regPtr1 = getHelper()->getRegion(poolRegNames[1]);
     RegionPtr regPtr2 = getHelper()->getRegion(poolRegNames[2]);
 
-    regPtr0->registerAllKeys(false, NULLPTR, true);
-    regPtr1->registerAllKeys(false, NULLPTR, true);
-    regPtr2->registerAllKeys(false, NULLPTR, true);
+    regPtr0->registerAllKeys(false, nullptr, true);
+    regPtr1->registerAllKeys(false, nullptr, true);
+    regPtr2->registerAllKeys(false, nullptr, true);
 
     LOG("CreateClient2 verify starts.");
     verifyEntries(0);
@@ -176,9 +176,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1_2)
     RegionPtr regPtr1 = getHelper()->getRegion(poolRegNames[1]);
     RegionPtr regPtr2 = getHelper()->getRegion(poolRegNames[2]);
 
-    regPtr0->registerAllKeys(false, NULLPTR, true);
-    regPtr1->registerAllKeys(false, NULLPTR, true);
-    regPtr2->registerAllKeys(false, NULLPTR, true);
+    regPtr0->registerAllKeys(false, nullptr, true);
+    regPtr1->registerAllKeys(false, nullptr, true);
+    regPtr2->registerAllKeys(false, nullptr, true);
 
     LOG("CreateClient1 complete.");
   }
@@ -189,13 +189,13 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_2)
     initClient(true);
 
     // create three regions with three pools ( each having diff redun )
-    createPool(poolNames[0], locHostPort, NULL, 2, true);
+    createPool(poolNames[0], locHostPort, nullptr, 2, true);
     createRegionAndAttachPool(poolRegNames[0], USE_ACK, poolNames[0], true);
 
-    createPool(poolNames[1], locHostPort, NULL, 1, true);
+    createPool(poolNames[1], locHostPort, nullptr, 1, true);
     createRegionAndAttachPool(poolRegNames[1], USE_ACK, poolNames[1], true);
 
-    createPool(poolNames[2], locHostPort, NULL, 0, true);
+    createPool(poolNames[2], locHostPort, nullptr, 0, true);
     createRegionAndAttachPool(poolRegNames[2], USE_ACK, poolNames[2], true);
 
     feedEntries(1);
@@ -204,9 +204,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_2)
     RegionPtr regPtr1 = getHelper()->getRegion(poolRegNames[1]);
     RegionPtr regPtr2 = getHelper()->getRegion(poolRegNames[2]);
 
-    regPtr0->registerAllKeys(false, NULLPTR, true);
-    regPtr1->registerAllKeys(false, NULLPTR, true);
-    regPtr2->registerAllKeys(false, NULLPTR, true);
+    regPtr0->registerAllKeys(false, nullptr, true);
+    regPtr1->registerAllKeys(false, nullptr, true);
+    regPtr2->registerAllKeys(false, nullptr, true);
 
     verifyEntries(0);
 
@@ -272,10 +272,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyK1C1New2)
 
     CacheableKeyPtr keyPtr = createKey(keys[1]);
 
-    CacheableStringPtr checkPtr =
-        dynCast<CacheableStringPtr>(regPtr->get(keyPtr));
+    auto checkPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
-    ASSERT(checkPtr != NULLPTR, "Value Ptr should not be null.");
+    ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
 
     char buf[1024];
     sprintf(buf, "get returned %s for key %s", checkPtr->asChar(), keys[1]);

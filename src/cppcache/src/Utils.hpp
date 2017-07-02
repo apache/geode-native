@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_UTILS_H_
-#define GEODE_UTILS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_INTERNAL_UTILS_H_
+#define GEODE_INTERNAL_UTILS_H_
+
 /**
  * @file
  */
@@ -29,13 +29,15 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/DataOutput.hpp>
-#include "NanoTimer.hpp"
 #include <geode/statistics/Statistics.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/DistributedSystem.hpp>
 #include <typeinfo>
 #include <string>
 #include <unordered_set>
+#include <memory>
+#include <chrono>
+
 #ifdef __GNUC__
 extern "C" {
 #include <cxxabi.h>
@@ -51,12 +53,6 @@ class CPPCACHE_EXPORT Utils {
    *
    */
  public:
-#ifdef _WIN32
-  static pNew s_pNew;
-  static pDelete s_pDelete;
-  static bool s_setNewAndDelete;
-#endif
-
   /**
    * Get the value of an environment variable.
    * On windows the maximum length of value supported is 8191.
@@ -67,11 +63,12 @@ class CPPCACHE_EXPORT Utils {
 #ifdef __GNUC__
   inline static char* _gnuDemangledName(const char* typeIdName, size_t& len) {
     int status;
-    char* demangledName = abi::__cxa_demangle(typeIdName, NULL, &len, &status);
-    if (status == 0 && demangledName != NULL) {
+    char* demangledName =
+        abi::__cxa_demangle(typeIdName, nullptr, &len, &status);
+    if (status == 0 && demangledName != nullptr) {
       return demangledName;
     }
-    return NULL;
+    return nullptr;
   }
 #endif
 
@@ -80,7 +77,7 @@ class CPPCACHE_EXPORT Utils {
 #ifdef __GNUC__
     size_t len;
     char* demangledName = _gnuDemangledName(typeIdName, len);
-    if (demangledName != NULL) {
+    if (demangledName != nullptr) {
       str.append(demangledName, len);
       free(demangledName);
       return;
@@ -93,7 +90,7 @@ class CPPCACHE_EXPORT Utils {
 #ifdef __GNUC__
     size_t len;
     char* demangledName = _gnuDemangledName(typeIdName, len);
-    if (demangledName != NULL) {
+    if (demangledName != nullptr) {
       return CacheableString::createNoCopy(demangledName, len);
     }
 #endif
@@ -108,7 +105,7 @@ class CPPCACHE_EXPORT Utils {
   inline static CacheableStringPtr getCacheableKeyString(
       const CacheableKeyPtr& key) {
     CacheableStringPtr result;
-    if (key != NULLPTR) {
+    if (key != nullptr) {
       char* buf;
       GF_NEW(buf, char[_GF_MSG_LIMIT + 1]);
       key->logString(buf, _GF_MSG_LIMIT);
@@ -124,13 +121,12 @@ class CPPCACHE_EXPORT Utils {
   }
 
   static CacheableStringPtr getCacheableString(const CacheablePtr& val) {
-    if (val != NULLPTR) {
-      if (instanceOf<CacheableKeyPtr>(val)) {
-        const CacheableKeyPtr& key = staticCast<CacheableKeyPtr>(val);
+    if (val != nullptr) {
+      if (const auto key = std::dynamic_pointer_cast<CacheableKey>(val)) {
         return getCacheableKeyString(key);
       } else {
         const CacheableStringPtr& cStr = val->toString();
-        if (cStr != NULLPTR) {
+        if (cStr != nullptr) {
           if (cStr->isCString()) {
             return cStr;
           } else {
@@ -146,10 +142,12 @@ class CPPCACHE_EXPORT Utils {
   }
 
   inline static int64_t startStatOpTime() {
-    if (DistributedSystem::getSystemProperties() != NULL) {
+    if (DistributedSystem::getSystemProperties() != nullptr) {
       return (DistributedSystem::getSystemProperties()
                   ->getEnableTimeStatistics())
-                 ? NanoTimer::now()
+                 ? std::chrono::duration_cast<std::chrono::nanoseconds>(
+                       std::chrono::steady_clock::now().time_since_epoch())
+                       .count()
                  : 0;
     } else {
       return 0;
@@ -180,7 +178,7 @@ class CPPCACHE_EXPORT Utils {
 
   inline static void updateStatOpTime(statistics::Statistics* m_regionStats,
                                       int32_t statId, int64_t start) {
-    if (DistributedSystem::getSystemProperties() != NULL) {
+    if (DistributedSystem::getSystemProperties() != nullptr) {
       if (DistributedSystem::getSystemProperties()->getEnableTimeStatistics()) {
         m_regionStats->incLong(statId, startStatOpTime() - start);
       }
@@ -223,4 +221,4 @@ class RandGen {
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_UTILS_H_
+#endif  // GEODE_INTERNAL_UTILS_H_

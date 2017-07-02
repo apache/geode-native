@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-//#include "../geode_includes.hpp"
+#include "begin_native.hpp"
+#include <GeodeTypeIdsImpl.hpp>
+#include "end_native.hpp"
+
 #include "ManagedCacheableKeyBytes.hpp"
 #include "../DataInput.hpp"
 #include "../DataOutput.hpp"
 #include "../Serializable.hpp"
 #include "../CacheableString.hpp"
-#include <GeodeTypeIdsImpl.hpp>
 #include "../ExceptionTypes.hpp"
 #include "ManagedString.hpp"
 
@@ -36,7 +38,7 @@ namespace apache
     {
       void ManagedCacheableKeyBytesGeneric::toData(apache::geode::client::DataOutput& output) const
       {
-        Apache::Geode::Client::Log::Debug("ManagedCacheableKeyBytesGeneric::toData: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((int)this) + " with its domain ID: " + m_domainId);
+        Apache::Geode::Client::Log::Debug("ManagedCacheableKeyBytesGeneric::toData: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((uint64_t) this) + " with its domain ID: " + m_domainId);
         try {
           //TODO: I think this should work as it is
           output.writeBytesOnly(m_bytes, m_size);
@@ -173,7 +175,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULLPTR;
+        return nullptr;
       }
 
       bool ManagedCacheableKeyBytesGeneric::operator ==(const apache::geode::client::CacheableKey& other) const
@@ -217,7 +219,7 @@ namespace apache
           bool ret = obj->Equals(other.ptr());
           Apache::Geode::Client::Log::Debug("ManagedCacheableKeyBytesGeneric::equal return VAL = " + ret);
           return ret;
-          //return obj->Equals(other.ptr());
+          //return obj->Equals(other.get());
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();

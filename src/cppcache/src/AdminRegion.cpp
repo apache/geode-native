@@ -20,35 +20,34 @@
 #include "ThinClientRegion.hpp"
 #include <statistics/StatisticsManager.hpp>
 #include "ThinClientPoolDM.hpp"
-using namespace apache::geode::client;
-AdminRegion::AdminRegion(CacheImpl* cache, ThinClientBaseDM* distMan)
-    : m_distMngr((ThinClientBaseDM*)0)
-      /* adongre
-       * CID 28925: Uninitialized pointer field (UNINIT_CTOR)
-       */
-      ,
-      m_connectionMgr((TcrConnectionManager*)0),
-      m_destroyPending(false) {
-  m_fullPath = "/__ADMIN_CLIENT_HEALTH_MONITORING__";
 
-  // Only if Stats are enabled
+namespace apache {
+namespace geode {
+namespace client {
+
+AdminRegionPtr AdminRegion::create(CacheImpl* cache,
+                                   ThinClientBaseDM* distMan) {
+  auto adminRegion = std::make_shared<AdminRegion>();
 
   SystemProperties* props =
       cache->getCache()->getDistributedSystem()->getSystemProperties();
   if (props && props->statisticsEnabled()) {
     // no need to create a region .. just create a cacheDistribution Manager
-    m_connectionMgr = &(cache->tcrConnectionManager());
+    adminRegion->m_connectionMgr = &(cache->tcrConnectionManager());
     if (!distMan) {
-      m_distMngr = new ThinClientCacheDistributionManager(*m_connectionMgr);
+      adminRegion->m_distMngr =
+          new ThinClientCacheDistributionManager(*adminRegion->m_connectionMgr);
       StatisticsManager* mngr = StatisticsManager::getExistingInstance();
       if (mngr) {
         // Register it with StatisticsManager
-        mngr->RegisterAdminRegion(AdminRegionPtr(this));
+        mngr->RegisterAdminRegion(adminRegion);
       }
     } else {
-      m_distMngr = distMan;
+      adminRegion->m_distMngr = distMan;
     }
   }
+
+  return adminRegion;
 }
 
 void AdminRegion::init() {
@@ -59,7 +58,7 @@ void AdminRegion::init() {
   */
   // Init distribution manager if it is not a pool
   ThinClientPoolDM* pool = dynamic_cast<ThinClientPoolDM*>(m_distMngr);
-  if (pool == NULL) {
+  if (pool == nullptr) {
     m_distMngr->init();
   }
 }
@@ -79,7 +78,7 @@ GfErrType AdminRegion::putNoThrow(const CacheableKeyPtr& keyPtr,
   // put obj to region
   GfErrType err = GF_NOERR;
 
-  TcrMessagePut request(NULL, keyPtr, valuePtr, NULLPTR, false, m_distMngr,
+  TcrMessagePut request(nullptr, keyPtr, valuePtr, nullptr, false, m_distMngr,
                         true, false, m_fullPath.c_str());
   request.setMetaRegion(true);
   TcrMessageReply reply(true, m_distMngr);
@@ -127,7 +126,7 @@ void AdminRegion::close() {
 
   // Close distribution manager if it is not a pool
   ThinClientPoolDM* pool = dynamic_cast<ThinClientPoolDM*>(m_distMngr);
-  if (pool == NULL) {
+  if (pool == nullptr) {
     m_distMngr->destroy();
     GF_SAFE_DELETE(m_distMngr);
   }
@@ -135,10 +134,14 @@ void AdminRegion::close() {
 
 AdminRegion::~AdminRegion() {
   // destructor should be single threaded in any case, so no need of guard
-  if (m_distMngr != NULL) {
+  if (m_distMngr != nullptr) {
     close();
   }
 }
 
 const bool& AdminRegion::isDestroyed() { return m_destroyPending; }
 ACE_RW_Thread_Mutex& AdminRegion::getRWLock() { return m_rwLock; }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

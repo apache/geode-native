@@ -49,10 +49,13 @@ void createOnekEntries() {
         CacheableWrapperFactory::createInstance(GeodeTypeIds::CacheableBytes);
     tmpkey->initKey(i, 32);
     tmpval->initRandomValue(1024);
-    ASSERT(tmpkey->getCacheable() != NULLPTR, "tmpkey->getCacheable() is NULL");
-    ASSERT(tmpval->getCacheable() != NULLPTR, "tmpval->getCacheable() is NULL");
-    dataReg->put(dynCast<CacheableKeyPtr>(tmpkey->getCacheable()),
-                 tmpval->getCacheable());
+    ASSERT(tmpkey->getCacheable() != nullptr,
+           "tmpkey->getCacheable() is nullptr");
+    ASSERT(tmpval->getCacheable() != nullptr,
+           "tmpval->getCacheable() is nullptr");
+    dataReg->put(
+        std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable()),
+        tmpval->getCacheable());
     // delete tmpkey;
     //  delete tmpval;
   }
@@ -61,7 +64,7 @@ void createOnekEntries() {
   dataReg->entries(me, false);
   LOG("Verifying size outside loop");
   char buf[1024];
-  sprintf(buf, "region size is %d", me.size());
+  sprintf(buf, "region size is %zd", me.size());
   LOG(buf);
 
   ASSERT(me.size() <= 1024, "Should have evicted anything over 1024 entries");

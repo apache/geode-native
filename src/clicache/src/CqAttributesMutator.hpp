@@ -18,8 +18,12 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/CqAttributesMutator.hpp>
-#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
+
+#include "native_shared_ptr.hpp"
 
 
 using namespace System;
@@ -32,6 +36,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       generic<class TKey, class TResult>
 	  interface class ICqListener;
@@ -39,9 +44,9 @@ namespace Apache
       generic<class TKey, class TResult>
       private ref class CqListenerHelper sealed{
         public:
-        static IDictionary<Client::ICqListener<TKey, TResult>^, IntPtr>^
+        static Dictionary<Client::ICqListener<TKey, TResult>^, native_shared_ptr<native::CqListener>^>^
           m_ManagedVsUnManagedCqLstrDict = gcnew 
-          Dictionary<Client::ICqListener<TKey, TResult>^, IntPtr>();
+          Dictionary<Client::ICqListener<TKey, TResult>^, native_shared_ptr<native::CqListener>^>();
 
         static ReaderWriterLock^ g_readerWriterLock = gcnew ReaderWriterLock();
       };
@@ -52,7 +57,6 @@ namespace Apache
       /// </summary>
       generic<class TKey, class TResult>
       public ref class CqAttributesMutator sealed
-        : public Internal::SBWrap<apache::geode::client::CqAttributesMutator>
       {
       public:
 
@@ -87,13 +91,10 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static Client::CqAttributesMutator<TKey, TResult>^ Create( apache::geode::client::CqAttributesMutator* nativeptr )
+        inline static Client::CqAttributesMutator<TKey, TResult>^ Create( native::CqAttributesMutatorPtr nativeptr )
         {
-          if (nativeptr == nullptr)
-          {
-            return nullptr;
-          }
-          return gcnew Client::CqAttributesMutator<TKey, TResult>( nativeptr );
+          return __nullptr == nativeptr ? nullptr :
+            gcnew  Client::CqAttributesMutator<TKey, TResult>( nativeptr );
         }
 
 
@@ -103,8 +104,12 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CqAttributesMutator<TKey, TResult>( apache::geode::client::CqAttributesMutator* nativeptr )
-          : SBWrap( nativeptr ) { }
+        inline CqAttributesMutator<TKey, TResult>( native::CqAttributesMutatorPtr nativeptr )
+        {
+          m_nativeptr = gcnew native_shared_ptr<native::CqAttributesMutator>(nativeptr);
+        }
+
+        native_shared_ptr<native::CqAttributesMutator>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

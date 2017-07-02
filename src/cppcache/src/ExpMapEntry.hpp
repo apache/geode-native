@@ -57,7 +57,7 @@ class CPPCACHE_EXPORT ExpMapEntry : public MapEntryImpl,
   ExpMapEntry& operator=(const ExpMapEntry&);
 };
 
-typedef SharedPtr<ExpMapEntry> ExpMapEntryPtr;
+typedef std::shared_ptr<ExpMapEntry> ExpMapEntryPtr;
 
 class CPPCACHE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
                                              public VersionStamp {
@@ -77,7 +77,7 @@ class CPPCACHE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
   VersionedExpMapEntry& operator=(const VersionedExpMapEntry&);
 };
 
-typedef SharedPtr<VersionedExpMapEntry> VersionedExpMapEntryPtr;
+typedef std::shared_ptr<VersionedExpMapEntry> VersionedExpMapEntryPtr;
 
 class CPPCACHE_EXPORT ExpEntryFactory : public EntryFactory {
  public:

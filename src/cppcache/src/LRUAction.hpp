@@ -119,7 +119,7 @@ class CPPCACHE_EXPORT LRUDestroyAction : public virtual LRUAction {
              Utils::getCacheableKeyString(keyPtr)->asChar());
     GfErrType err = GF_NOERR;
     if (!m_regionPtr->isDestroyed()) {
-      err = m_regionPtr->destroyNoThrow(keyPtr, NULLPTR, -1,
+      err = m_regionPtr->destroyNoThrow(keyPtr, nullptr, -1,
                                         CacheEventFlags::EVICTION, versionTag);
     }
     return (err == GF_NOERR);

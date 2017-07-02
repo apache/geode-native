@@ -37,8 +37,8 @@ PropertiesPtr UserPasswordAuthInit::getCredentials(PropertiesPtr& securityprops,
                                                    const char* server) {
   // LOGDEBUG("UserPasswordAuthInit: inside userPassword::getCredentials");
   CacheablePtr userName;
-  if (securityprops == NULLPTR ||
-      (userName = securityprops->find(SECURITY_USERNAME)) == NULLPTR) {
+  if (securityprops == nullptr ||
+      (userName = securityprops->find(SECURITY_USERNAME)) == nullptr) {
     throw AuthenticationFailedException(
         "UserPasswordAuthInit: user name "
         "property [" SECURITY_USERNAME "] not set.");
@@ -48,7 +48,7 @@ PropertiesPtr UserPasswordAuthInit::getCredentials(PropertiesPtr& securityprops,
   credentials->insert(SECURITY_USERNAME, userName->toString()->asChar());
   CacheablePtr passwd = securityprops->find(SECURITY_PASSWORD);
   // If password is not provided then use empty string as the password.
-  if (passwd == NULLPTR) {
+  if (passwd == nullptr) {
     passwd = CacheableString::create("");
   }
   credentials->insert(SECURITY_PASSWORD, passwd->toString()->asChar());

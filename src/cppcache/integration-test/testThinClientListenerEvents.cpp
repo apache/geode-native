@@ -30,8 +30,7 @@ using namespace test;
 using namespace apache::geode::client;
 class SimpleCacheListener;
 
-typedef apache::geode::client::SharedPtr<SimpleCacheListener>
-    SimpleCacheListenerPtr;
+typedef std::shared_ptr<SimpleCacheListener> SimpleCacheListenerPtr;
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;
@@ -81,7 +80,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
   }
@@ -92,7 +91,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, doRemoteGet)
     RegionPtr regionPtr = getHelper()->getRegion(regionNames[0]);
 
     AttributesMutatorPtr attrMutatorPtr = regionPtr->getAttributesMutator();
-    SimpleCacheListenerPtr regListener1(new SimpleCacheListener());
+    auto regListener1 = std::make_shared<SimpleCacheListener>();
     attrMutatorPtr->setCacheListener(regListener1);
 
     // Put 3 Entries into the Region.

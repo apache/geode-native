@@ -45,7 +45,7 @@ const char* locatorsG =
 using namespace apache::geode::client;
 class CallbackListener;
 
-typedef apache::geode::client::SharedPtr<CallbackListener> CallbackListenerPtr;
+typedef std::shared_ptr<CallbackListener> CallbackListenerPtr;
 
 class CallbackListener : public CacheListener {
  private:
@@ -69,7 +69,7 @@ class CallbackListener : public CacheListener {
         m_regionInvalidate(0),
         m_regionDestroy(0),
         m_regionClear(0),
-        m_callbackArg(NULLPTR) {
+        m_callbackArg(nullptr) {
     LOG("CallbackListener contructor called");
   }
 
@@ -88,11 +88,11 @@ class CallbackListener : public CacheListener {
   }
 
   void check(CacheablePtr eventCallback, int& updateEvent) {
-    if (m_callbackArg != NULLPTR) {
+    if (m_callbackArg != nullptr) {
       try {
-        PortfolioPtr mCallbkArg = dynCast<PortfolioPtr>(m_callbackArg);
+        auto mCallbkArg = std::dynamic_pointer_cast<Portfolio>(m_callbackArg);
 
-        PortfolioPtr callbkArg = dynCast<PortfolioPtr>(eventCallback);
+        auto callbkArg = std::dynamic_pointer_cast<Portfolio>(eventCallback);
 
         CacheableStringPtr fromCallback = callbkArg->getPkid();
         CacheableStringPtr mCallback = mCallbkArg->getPkid();
@@ -100,7 +100,7 @@ class CallbackListener : public CacheListener {
         LOGFINE(" values are %s === %s ", fromCallback->asChar(),
                 mCallback->asChar());
 
-        if (*(fromCallback.ptr()) == *(mCallback.ptr())) {
+        if (*(fromCallback.get()) == *(mCallback.get())) {
           LOGFINE("values are same");
           updateEvent++;
         } else {
@@ -109,15 +109,15 @@ class CallbackListener : public CacheListener {
       } catch (const ClassCastException& ex) {
         LOGFINE(" in class cast exception %s ", ex.getMessage());
         try {
-          CacheableStringPtr fromCallback =
-              dynCast<CacheableStringPtr>(eventCallback);
-          CacheableStringPtr mCallback =
-              dynCast<CacheableStringPtr>(m_callbackArg);
+          auto fromCallback =
+              std::dynamic_pointer_cast<CacheableString>(eventCallback);
+          auto mCallback =
+              std::dynamic_pointer_cast<CacheableString>(m_callbackArg);
 
           LOGFINE(" values are %s === %s ", fromCallback->asChar(),
                   mCallback->asChar());
 
-          if (*(fromCallback.ptr()) == *(mCallback.ptr())) {
+          if (*(fromCallback.get()) == *(mCallback.get())) {
             LOGFINE("values are same");
             updateEvent++;
           } else {
@@ -167,7 +167,7 @@ class CallbackListener : public CacheListener {
 };
 //---------------------------------------------------------------------------------
 
-CallbackListenerPtr reg1Listener1 = NULLPTR;
+CallbackListenerPtr reg1Listener1 = nullptr;
 CacheableStringPtr callBackStrPtr;
 
 CacheablePtr callBackPortFolioPtr;
@@ -225,8 +225,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1_Pool_Locator)
 
     Serializable::registerType(Portfolio::createDeserializable);
     Serializable::registerType(Position::createDeserializable);
-    reg1Listener1 = new CallbackListener();
-    callBackPortFolioPtr = new Portfolio(1, 0, NULLPTR);
+    reg1Listener1 = std::make_shared<CallbackListener>();
+    callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
 
     reg1Listener1->setCallBackArg(callBackPortFolioPtr);
     setCacheListener(regionNames[0], reg1Listener1);
@@ -250,7 +250,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, testCreatesAndUpdates)
   {
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
 
-    callBackPortFolioPtr = new Portfolio(1, 0, NULLPTR);
+    callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
     regPtr->create("aaa", "bbb", callBackPortFolioPtr);
     regPtr->create(keys[1], vals[1], callBackPortFolioPtr);
     regPtr->put(keys[1], nvals[1], callBackPortFolioPtr);
@@ -261,7 +261,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidates)
   {
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
 
-    callBackPortFolioPtr = new Portfolio(1, 0, NULLPTR);
+    callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
     regPtr->localCreate(1234, 1234, callBackPortFolioPtr);
     regPtr->localCreate(12345, 12345, callBackPortFolioPtr);
     regPtr->localCreate(12346, 12346, callBackPortFolioPtr);
@@ -282,7 +282,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, testDestroy)
   {
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
 
-    callBackPortFolioPtr = new Portfolio(1, 0, NULLPTR);
+    callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
     regPtr->destroy(keys[1], callBackPortFolioPtr);
     ASSERT(regPtr->removeEx("aaa", callBackPortFolioPtr) == true,
            "Result of remove should be true, as this value exists.");

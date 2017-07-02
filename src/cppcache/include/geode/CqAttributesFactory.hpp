@@ -53,7 +53,7 @@ namespace client {
  * @see CqAttributes
  *
  */
-class CPPCACHE_EXPORT CqAttributesFactory : public SharedBase {
+class CPPCACHE_EXPORT CqAttributesFactory  {
  public:
   /**
    * Creates a new instance of AttributesFactory ready to create a
@@ -70,12 +70,12 @@ class CPPCACHE_EXPORT CqAttributesFactory : public SharedBase {
    *          the <code>CqAttributes</code> used to initialize this
    *          AttributesFactory
    */
-  CqAttributesFactory(CqAttributesPtr& cqAttributes);
+  CqAttributesFactory(const CqAttributesPtr& cqAttributes);
 
   /**
    * Adds a CQ listener to the end of the list of cq listeners on this factory.
    * @param cqListener the CqListener to add to the factory.
-   * @throws IllegalArgumentException if <code>cqListener</code> is NULLPTR
+   * @throws IllegalArgumentException if <code>cqListener</code> is nullptr
    */
   void addCqListener(const CqListenerPtr& cqListener);
 
@@ -86,9 +86,9 @@ class CPPCACHE_EXPORT CqAttributesFactory : public SharedBase {
    * factory.
    * @throws IllegalArgumentException if the <code>cqListeners</code> array has
    * a
-   * NULLPTR element
+   * nullptr element
    */
-  void initCqListeners(VectorOfCqListener& cqListeners);
+  void initCqListeners(const std::vector<CqListenerPtr>& cqListeners);
 
   /**
    * Creates a <code>CqAttributes</code> with the current settings.

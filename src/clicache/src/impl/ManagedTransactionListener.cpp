@@ -204,7 +204,7 @@ namespace apache
       {
         try {
           Apache::Geode::Client::Log::Error("ManagedTransactionListenerGeneric::afterCommit in");
-          Apache::Geode::Client::TransactionEvent  mevent(te.ptr());
+          Apache::Geode::Client::TransactionEvent  mevent(te.get());
           m_managedptr->AfterCommit(%mevent);
           Apache::Geode::Client::Log::Error("ManagedTransactionListenerGeneric::afterCommit in");
 
@@ -219,7 +219,7 @@ namespace apache
       void ManagedTransactionListenerGeneric::afterFailedCommit(apache::geode::client::TransactionEventPtr& te)
       {
         try {
-          Apache::Geode::Client::TransactionEvent mevent(te.ptr());
+          Apache::Geode::Client::TransactionEvent mevent(te.get());
           m_managedptr->AfterFailedCommit(%mevent);
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
@@ -232,7 +232,7 @@ namespace apache
       void ManagedTransactionListenerGeneric::afterRollback(apache::geode::client::TransactionEventPtr& te)
       {
         try {
-          Apache::Geode::Client::TransactionEvent mevent(te.ptr());
+          Apache::Geode::Client::TransactionEvent mevent(te.get());
           m_managedptr->AfterRollback(%mevent);
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {

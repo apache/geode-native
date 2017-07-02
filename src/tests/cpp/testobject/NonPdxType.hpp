@@ -264,13 +264,13 @@ class TESTOBJECT_EXPORT NonPdxType {
     m_arraylist->push_back(CacheableInt32::create(2));
 
     m_map = CacheableHashMap::create();
-    m_map->insert(CacheableInt32::create(1), CacheableInt32::create(1));
-    m_map->insert(CacheableInt32::create(2), CacheableInt32::create(2));
+    m_map->emplace(CacheableInt32::create(1), CacheableInt32::create(1));
+    m_map->emplace(CacheableInt32::create(2), CacheableInt32::create(2));
 
     m_hashtable = CacheableHashTable::create();
-    m_hashtable->insert(CacheableInt32::create(1),
-                        CacheableString::create("1111111111111111"));
-    m_hashtable->insert(
+    m_hashtable->emplace(CacheableInt32::create(1),
+                         CacheableString::create("1111111111111111"));
+    m_hashtable->emplace(
         CacheableInt32::create(2),
         CacheableString::create("2222222222221111111111111111"));
 
@@ -446,7 +446,9 @@ class TESTOBJECT_EXPORT NonPdxType {
 
   CacheableObjectArrayPtr getCacheableObjectArray() { return m_objectArray; }
 
-  CacheableEnumPtr getEnum() { return m_pdxEnum; }
+  CacheableEnumPtr getEnum() {
+    return std::static_pointer_cast<CacheableEnum>(m_pdxEnum);
+  }
 
   int32_t getByteArrayLength() { return byteArrayLen; }
 

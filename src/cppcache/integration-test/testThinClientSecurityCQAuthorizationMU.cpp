@@ -101,7 +101,7 @@ class MyCqListener : public CqListener {
     printf(" in cqEvent.getQueryOperation() %d id = %d\n",
            cqEvent.getQueryOperation(), m_id);
     printf(" in update key = %s \n",
-           (dynamic_cast<CacheableString*>(cqEvent.getKey().ptr()))->asChar());
+           (dynamic_cast<CacheableString*>(cqEvent.getKey().get()))->asChar());
     m_numEvents++;
     switch (cqEvent.getQueryOperation()) {
       case CqOperation::OP_TYPE_CREATE:
@@ -134,7 +134,7 @@ class MyCqListener : public CqListener {
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
   const char* path = ACE_OS::getenv("TESTSRC");
-  ASSERT(path != NULL,
+  ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
   strcat(xmlPath, "xml/Security/");
@@ -144,8 +144,8 @@ std::string getXmlPath() {
 void initCredentialGenerator() {
   credentialGeneratorHandler = CredentialGenerator::create("DUMMY3");
 
-  if (credentialGeneratorHandler == NULLPTR) {
-    FAIL("credentialGeneratorHandler is NULL");
+  if (credentialGeneratorHandler == nullptr) {
+    FAIL("credentialGeneratorHandler is nullptr");
   }
 }
 
@@ -163,7 +163,7 @@ void initClientCq(const bool isthinClient) {
   // credentialGeneratorHandler->getAuthInit(config);
   credentialGeneratorHandler->getValidCredentials(userCreds);
 
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, config);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
@@ -179,7 +179,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateServer1)
           "authenticator:authorizer:authorizerPP", getXmlPath());
       printf("string %s", cmdServerAuthenticator.c_str());
       CacheHelper::initServer(
-          1, "remotequery.xml", NULL,
+          1, "remotequery.xml", nullptr,
           const_cast<char*>(cmdServerAuthenticator.c_str()));
       LOG("Server1 started");
     }
@@ -195,7 +195,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateServer2)
           "authenticator:authorizer:authorizerPP", getXmlPath());
       printf("string %s", cmdServerAuthenticator.c_str());
       CacheHelper::initServer(
-          2, "remotequery2.xml", NULL,
+          2, "remotequery2.xml", nullptr,
           const_cast<char*>(cmdServerAuthenticator.c_str()));
       LOG("Server2 started");
     }
@@ -207,7 +207,7 @@ void stepOne(bool pool = false, bool locator = false) {
   LOG("StepOne1 complete. 1");
   initClientCq(true);
   LOG("StepOne1 complete. 2");
-  createRegionForCQMU(regionNamesCq[0], USE_ACK, true, 0, NULLPTR, false, true);
+  createRegionForCQMU(regionNamesCq[0], USE_ACK, true, 0, nullptr, false, true);
   LOG("StepOne1 complete. 3");
   RegionPtr regptr = getHelper()->getRegion(regionNamesCq[0]);
   LOG("StepOne1 complete. 4");
@@ -222,7 +222,7 @@ void stepOne2(bool pool = false, bool locator = false) {
   LOG("StepOne2 complete. 1");
   initClientCq(true);
   LOG("StepOne2 complete. 2");
-  createRegionForCQMU(regionNamesCq[0], USE_ACK, true, 0, NULLPTR, false, true);
+  createRegionForCQMU(regionNamesCq[0], USE_ACK, true, 0, nullptr, false, true);
   LOG("StepOne2 complete. 3");
   RegionPtr regptr = getHelper()->getRegion(regionNamesCq[0]);
   LOG("StepOne2 complete. 4");
@@ -290,7 +290,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
 
     try {
       for (i = 0; i < MAX_LISTNER; i++) {
-        CqListenerPtr cqLstner(new MyCqListener(i));
+        auto cqLstner = std::make_shared<MyCqListener>(i);
         CqAttributesFactory cqFac;
         cqFac.addCqListener(cqLstner);
         CqAttributesPtr cqAttr = cqFac.create();
@@ -335,7 +335,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo2)
     qh->populatePortfolioData(regPtr0, 3, 2, 1);
     qh->populatePositionData(subregPtr0, 3, 2);
     for (int i = 1; i <= 4; i++) {
-      CacheablePtr port(new Portfolio(i, 2));
+      auto port = std::make_shared<Portfolio>(i, 2);
 
       char tmp[25] = {'\0'};
       sprintf(tmp, "port1-%d", i);
@@ -380,12 +380,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     }
 
     // if key port1-4 then only query 3 and 4 will satisfied
-    CqQueryPtr cqy = qs->getCq(cqNames[3]);
-    CqAttributesPtr cqAttr = cqy->getCqAttributes();
-    VectorOfCqListener vl;
+    auto cqy = qs->getCq(cqNames[3]);
+    auto cqAttr = cqy->getCqAttributes();
+    std::vector<CqListenerPtr> vl;
     cqAttr->getCqListeners(vl);
 
-    MyCqListener* cqListener_3 = static_cast<MyCqListener*>(vl[0].ptr());
+    auto cqListener_3 = static_cast<MyCqListener*>(vl[0].get());
     printf(" cqListener_3 should have one create event = %d \n",
            cqListener_3->getNumInserts());
     ASSERT(cqListener_3->getNumInserts() == 1,
@@ -397,7 +397,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     cqAttr = cqy->getCqAttributes();
     cqAttr->getCqListeners(vl);
 
-    MyCqListener* cqListener_4 = static_cast<MyCqListener*>(vl[0].ptr());
+    auto cqListener_4 = static_cast<MyCqListener*>(vl[0].get());
     printf(" cqListener_4 should have one create event = %d \n",
            cqListener_4->getNumInserts());
     ASSERT(cqListener_4->getNumInserts() == 1,
@@ -420,10 +420,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepFour2)
   {
-    // CachePtr userCache = getVirtualCache(userCreds, regionNamesCq[0]);
-    QueryServicePtr qs;
-
-    qs = userQueryService;
+    auto qs = userQueryService;
 
     char buf[1024];
 
@@ -440,7 +437,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour2)
       events[i] = 0;
     }
 
-    CqAttributesFactory cqFac;
     for (i = 0; i < MAX_LISTNER; i++) {
       sprintf(buf, "get info for cq[%s]:", cqNames[i]);
       LOG(buf);
@@ -449,12 +445,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour2)
     }
 
     // if key port1-4 then only query 3 and 4 will satisfied
-    CqQueryPtr cqy = qs->getCq(cqNames[3]);
-    CqAttributesPtr cqAttr = cqy->getCqAttributes();
-    VectorOfCqListener vl;
+    auto cqy = qs->getCq(cqNames[3]);
+    auto cqAttr = cqy->getCqAttributes();
+    std::vector<CqListenerPtr> vl;
     cqAttr->getCqListeners(vl);
 
-    MyCqListener* cqListener_3 = static_cast<MyCqListener*>(vl[0].ptr());
+    MyCqListener* cqListener_3 = static_cast<MyCqListener*>(vl[0].get());
     printf(" cqListener_3 should have one update event = %d \n",
            cqListener_3->getNumUpdates());
     ASSERT(cqListener_3->getNumUpdates() == 1,
@@ -466,7 +462,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour2)
     cqAttr = cqy->getCqAttributes();
     cqAttr->getCqListeners(vl);
 
-    MyCqListener* cqListener_4 = static_cast<MyCqListener*>(vl[0].ptr());
+    auto cqListener_4 = static_cast<MyCqListener*>(vl[0].get());
     printf(" cqListener_4 should have one update event = %d \n",
            cqListener_4->getNumUpdates());
     ASSERT(cqListener_4->getNumUpdates() == 1,

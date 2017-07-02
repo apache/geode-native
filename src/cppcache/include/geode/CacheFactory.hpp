@@ -45,7 +45,7 @@ class CppCacheLibrary;
  * For the default values for the pool attributes see {@link PoolFactory}.
  * To create additional {@link Pool}s see {@link PoolManager}
  */
-class CPPCACHE_EXPORT CacheFactory : public SharedBase {
+class CPPCACHE_EXPORT CacheFactory : public std::enable_shared_from_this<CacheFactory> {
  public:
   /**
    * To create the instance of {@link CacheFactory}
@@ -53,7 +53,7 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
    *        Properties which are applicable at client level.
    */
   static CacheFactoryPtr createCacheFactory(
-      const PropertiesPtr& dsProps = NULLPTR);
+      const PropertiesPtr& dsProps = nullptr);
 
   /**
    * To create the instance of {@link Cache}.
@@ -466,9 +466,9 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
 
   PoolFactoryPtr getPoolFactory();
 
-  CachePtr create(const char* name, DistributedSystemPtr system = NULLPTR,
+  CachePtr create(const char* name, DistributedSystemPtr system = nullptr,
                   const char* cacheXml = 0,
-                  const CacheAttributesPtr& attrs = NULLPTR);
+                  const CacheAttributesPtr& attrs = nullptr);
 
   static void create_(const char* name, DistributedSystemPtr& system,
                       const char* id_data, CachePtr& cptr,
@@ -477,6 +477,8 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
   // no instances allowed
   CacheFactory();
   CacheFactory(const PropertiesPtr dsProps);
+
+ private:
   ~CacheFactory();
 
   PoolPtr determineDefaultPool(CachePtr cachePtr);
@@ -486,7 +488,8 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
                                     bool closeOk, CachePtr& cptr);
 
   // Set very first time some creates cache
-  static CacheFactoryPtr default_CacheFactory;
+  // TODO shared_ptr - remove or refactor with global work
+  static CacheFactoryPtr* default_CacheFactory;
   static PoolPtr createOrGetDefaultPool();
   static void* m_cacheMap;
   static void init();
@@ -497,6 +500,8 @@ class CPPCACHE_EXPORT CacheFactory : public SharedBase {
   friend class RegionFactory;
   friend class RegionXmlCreation;
   friend class CacheXmlCreation;
+
+  FRIEND_STD_SHARED_PTR(CacheFactory)
 };
 }  // namespace client
 }  // namespace geode

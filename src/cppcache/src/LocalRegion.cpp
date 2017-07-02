@@ -21,7 +21,6 @@
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheableToken.hpp"
-#include "NanoTimer.hpp"
 #include "Utils.hpp"
 
 #include "EntryExpiryHandler.hpp"
@@ -34,10 +33,12 @@
 #include <vector>
 #include <geode/PoolManager.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 LocalRegion::LocalRegion(const std::string& name, CacheImpl* cache,
-                         RegionInternal* rPtr,
+                         const RegionInternalPtr& rPtr,
                          const RegionAttributesPtr& attributes,
                          const CacheStatisticsPtr& stats, bool shared)
     : RegionInternal(attributes),
@@ -45,17 +46,17 @@ LocalRegion::LocalRegion(const std::string& name, CacheImpl* cache,
       m_parentRegion(rPtr),
       m_cacheImpl(cache),
       m_destroyPending(false),
-      m_listener(NULLPTR),
-      m_writer(NULLPTR),
-      m_loader(NULLPTR),
+      m_listener(nullptr),
+      m_writer(nullptr),
+      m_loader(nullptr),
       m_released(false),
-      m_entries(NULL),
+      m_entries(nullptr),
       m_cacheStatistics(stats),
       m_transactionEnabled(false),
       m_isPRSingleHopEnabled(false),
-      m_attachedPool(NULLPTR),
-      m_persistenceManager(NULLPTR) {
-  if (m_parentRegion != NULLPTR) {
+      m_attachedPool(nullptr),
+      m_persistenceManager(nullptr) {
+  if (m_parentRegion != nullptr) {
     ((m_fullPath = m_parentRegion->getFullPath()) += "/") += m_name;
   } else {
     (m_fullPath = "/") += m_name;
@@ -76,7 +77,7 @@ LocalRegion::LocalRegion(const std::string& name, CacheImpl* cache,
   cldptr = m_regionAttributes->getCacheLoader();
   m_loader = cldptr;
 
-  if (m_parentRegion != NULLPTR) {
+  if (m_parentRegion != nullptr) {
     ((m_fullPath = m_parentRegion->getFullPath()) += "/") += m_name;
   } else {
     (m_fullPath = "/") += m_name;
@@ -110,8 +111,8 @@ void LocalRegion::updateAccessAndModifiedTime(bool modified) {
       m_cacheStatistics->setLastModifiedTime(static_cast<uint32_t>(currTime));
     }
     // TODO:  should we really touch the parent region??
-    RegionInternal* ri = dynamic_cast<RegionInternal*>(m_parentRegion.ptr());
-    if (ri != NULL) {
+    RegionInternal* ri = dynamic_cast<RegionInternal*>(m_parentRegion.get());
+    if (ri != nullptr) {
       ri->updateAccessAndModifiedTime(modified);
     }
   }
@@ -164,19 +165,17 @@ void LocalRegion::tombstoneOperationNoThrow(
 
   if (!cachingEnabled) return;
 
-  if (tombstoneVersions.ptr() != NULL) {
+  if (tombstoneVersions) {
     std::map<uint16_t, int64_t> gcVersions;
-    for (HashMapT<CacheableKeyPtr, CacheablePtr>::Iterator itr =
-             tombstoneVersions->begin();
-         itr != tombstoneVersions->end(); ++itr) {
-      try {
-        DSMemberForVersionStampPtr member =
-            dynCast<DSMemberForVersionStampPtr>(itr.first());
+    for (const auto& itr : *tombstoneVersions) {
+      if (auto member =
+              std::dynamic_pointer_cast<DSMemberForVersionStamp>(itr.first)) {
         uint16_t memberId =
             getCacheImpl()->getMemberListForVersionStamp()->add(member);
-        int64_t version = (dynCast<CacheableInt64Ptr>(itr.second()))->value();
+        int64_t version =
+            (std::dynamic_pointer_cast<CacheableInt64>(itr.second))->value();
         gcVersions[memberId] = version;
-      } catch (const ClassCastException&) {
+      } else {
         LOGERROR(
             "tombstone_operation contains incorrect gc versions in the "
             "message. Region %s",
@@ -190,7 +189,7 @@ void LocalRegion::tombstoneOperationNoThrow(
   }
 }
 RegionPtr LocalRegion::getSubregion(const char* path) {
-  if (path == NULL) {
+  if (path == nullptr) {
     throw IllegalArgumentException("LocalRegion::getSubregion: path is null");
   }
 
@@ -240,9 +239,11 @@ RegionPtr LocalRegion::createSubregion(
         "LocalRegion::createSubregion: named region exists in the region");
   }
 
-  CacheStatisticsPtr csptr(new CacheStatistics);
-  RegionInternal* rPtr = m_cacheImpl->createRegion_internal(
-      subregionName, this, aRegionAttributes, csptr, false);
+  auto csptr = std::make_shared<CacheStatistics>();
+  RegionInternalPtr rPtr = m_cacheImpl->createRegion_internal(
+      subregionName,
+      std::static_pointer_cast<RegionInternal>(shared_from_this()),
+      aRegionAttributes, csptr, false);
   region_ptr = rPtr;
   if (!rPtr) {
     throw OutOfMemoryException("createSubregion: failed to create region");
@@ -251,7 +252,7 @@ RegionPtr LocalRegion::createSubregion(
   // Instantiate a PersistenceManager object if DiskPolicy is overflow
   if (aRegionAttributes->getDiskPolicy() == DiskPolicyType::OVERFLOWS) {
     PersistenceManagerPtr pmPtr = aRegionAttributes->getPersistenceManager();
-    if (pmPtr == NULLPTR) {
+    if (pmPtr == nullptr) {
       throw NullPointerException(
           "PersistenceManager could not be instantiated");
     }
@@ -278,21 +279,21 @@ void LocalRegion::subregions(const bool recursive, VectorOfRegion& sr) {
 }
 
 RegionEntryPtr LocalRegion::getEntry(const CacheableKeyPtr& key) {
-  if (getTXState() != NULL) {
+  if (getTXState() != nullptr) {
     GfErrTypeThrowException("GetEntry is not supported in transaction",
                             GF_NOTSUP);
   }
   RegionEntryPtr rptr;
   CacheablePtr valuePtr;
   getEntry(key, valuePtr);
-  if (valuePtr != NULLPTR) {
+  if (valuePtr != nullptr) {
     rptr = createRegionEntry(key, valuePtr);
   }
   return rptr;
 }
 
 void LocalRegion::getEntry(const CacheableKeyPtr& key, CacheablePtr& valuePtr) {
-  if (key == NULLPTR) {
+  if (key == nullptr) {
     throw IllegalArgumentException("LocalRegion::getEntry: null key");
   }
 
@@ -329,7 +330,7 @@ void LocalRegion::put(const CacheableKeyPtr& key, const CacheablePtr& value,
   Utils::updateStatOpTime(m_regionStats->getStat(),
                           RegionStatType::getInstance()->getPutTimeId(),
                           sampleStartNanos);
-  //  handleReplay(err, NULLPTR);
+  //  handleReplay(err, nullptr);
   GfErrTypeToException("Region::put", err);
 }
 
@@ -355,7 +356,7 @@ void LocalRegion::putAll(const HashMapOfCacheable& map, uint32_t timeout,
   Utils::updateStatOpTime(m_regionStats->getStat(),
                           RegionStatType::getInstance()->getPutAllTimeId(),
                           sampleStartNanos);
-  // handleReplay(err, NULLPTR);
+  // handleReplay(err, nullptr);
   GfErrTypeToException("Region::putAll", err);
 }
 
@@ -377,7 +378,7 @@ void LocalRegion::create(const CacheableKeyPtr& key, const CacheablePtr& value,
   VersionTagPtr versionTag;
   GfErrType err = createNoThrow(key, value, aCallbackArgument, -1,
                                 CacheEventFlags::NORMAL, versionTag);
-  // handleReplay(err, NULLPTR);
+  // handleReplay(err, nullptr);
   GfErrTypeToException("Region::create", err);
 }
 
@@ -395,7 +396,7 @@ void LocalRegion::invalidate(const CacheableKeyPtr& key,
   VersionTagPtr versionTag;
   GfErrType err = invalidateNoThrow(key, aCallbackArgument, -1,
                                     CacheEventFlags::NORMAL, versionTag);
-  //  handleReplay(err, NULLPTR);
+  //  handleReplay(err, nullptr);
   GfErrTypeToException("Region::invalidate", err);
 }
 
@@ -413,7 +414,7 @@ void LocalRegion::destroy(const CacheableKeyPtr& key,
 
   GfErrType err = destroyNoThrow(key, aCallbackArgument, -1,
                                  CacheEventFlags::NORMAL, versionTag);
-  // handleReplay(err, NULLPTR);
+  // handleReplay(err, nullptr);
   GfErrTypeToException("Region::destroy", err);
 }
 
@@ -532,7 +533,7 @@ void LocalRegion::getAll(const VectorOfCacheableKey& keys,
     throw IllegalArgumentException("Region::getAll: zero keys provided");
   }
   // check for the combination which will result in no action
-  if (values == NULLPTR &&
+  if (values == nullptr &&
       !(addToLocalCache && m_regionAttributes->getCachingEnabled())) {
     throw IllegalArgumentException(
         "Region::getAll: either output \"values\""
@@ -547,7 +548,7 @@ void LocalRegion::getAll(const VectorOfCacheableKey& keys,
   Utils::updateStatOpTime(m_regionStats->getStat(),
                           RegionStatType::getInstance()->getGetAllTimeId(),
                           sampleStartNanos);
-  // handleReplay(err, NULLPTR);
+  // handleReplay(err, nullptr);
   GfErrTypeToException("Region::getAll", err);
 }
 uint32_t LocalRegion::size_remote() {
@@ -560,7 +561,7 @@ uint32_t LocalRegion::size_remote() {
 
 uint32_t LocalRegion::size() {
   TXState* txState = getTXState();
-  if (txState != NULL) {
+  if (txState != nullptr) {
     if (isLocalOp()) {
       return GF_NOTSUP;
     }
@@ -572,10 +573,10 @@ uint32_t LocalRegion::size() {
 
 RegionServicePtr LocalRegion::getRegionService() const {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getRegionService);
-  return RegionServicePtr(m_cacheImpl->getCache());
+  return m_cacheImpl->getCache()->shared_from_this();
 }
 
-CacheImpl* LocalRegion::getCacheImpl() {
+CacheImpl* LocalRegion::getCacheImpl() const {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getCache);
   return m_cacheImpl;
 }
@@ -589,21 +590,21 @@ bool LocalRegion::containsValueForKey_remote(
   CacheablePtr valuePtr;
   MapEntryImplPtr mePtr;
   m_entries->getEntry(keyPtr, mePtr, valuePtr);
-  if (mePtr == NULLPTR) {
+  if (mePtr == nullptr) {
     return false;
   }
-  return (valuePtr != NULLPTR && !CacheableToken::isInvalid(valuePtr));
+  return (valuePtr != nullptr && !CacheableToken::isInvalid(valuePtr));
 }
 
 bool LocalRegion::containsValueForKey(const CacheableKeyPtr& keyPtr) const {
-  if (keyPtr == NULLPTR) {
+  if (keyPtr == nullptr) {
     throw IllegalArgumentException(
         "LocalRegion::containsValueForKey: "
         "key is null");
   }
 
   TXState* txState = getTXState();
-  if (txState == NULL) {
+  if (txState == nullptr) {
     return LocalRegion::containsValueForKey_remote(keyPtr);
   }
 
@@ -624,7 +625,7 @@ void LocalRegion::getInterestListRegex(VectorOfCacheableString& vregex) const {
 }
 
 bool LocalRegion::containsKey(const CacheableKeyPtr& keyPtr) const {
-  if (keyPtr == NULLPTR) {
+  if (keyPtr == nullptr) {
     throw IllegalArgumentException(
         "LocalRegion::containsKey: "
         "key is null");
@@ -637,18 +638,19 @@ void LocalRegion::setPersistenceManager(PersistenceManagerPtr& pmPtr) {
   m_persistenceManager = pmPtr;
   // set the memberVariable of LRUEntriesMap too.
   LRUEntriesMap* lruMap = dynamic_cast<LRUEntriesMap*>(m_entries);
-  if (lruMap != NULL) {
+  if (lruMap != nullptr) {
     lruMap->setPersistenceManager(pmPtr);
   }
 }
 
 void LocalRegion::setRegionExpiryTask() {
   if (regionExpiryEnabled()) {
-    RegionInternalPtr rptr(this);
+    RegionInternalPtr rptr =
+        std::static_pointer_cast<RegionInternal>(shared_from_this());
     uint32_t duration = getRegionExpiryDuration();
     RegionExpiryHandler* handler =
         new RegionExpiryHandler(rptr, getRegionExpiryAction(), duration);
-    long expiryTaskId =
+    int64_t expiryTaskId =
         CacheImpl::expiryTaskManager->scheduleExpiryTask(handler, duration, 0);
     handler->setExpiryTaskId(expiryTaskId);
     LOGFINE(
@@ -663,11 +665,12 @@ void LocalRegion::registerEntryExpiryTask(MapEntryImplPtr& entry) {
   // the entry will register the expiry task for that entry
   ExpEntryProperties& expProps = entry->getExpProperties();
   expProps.initStartTime();
-  RegionInternalPtr rptr(this);
+  RegionInternalPtr rptr =
+      std::static_pointer_cast<RegionInternal>(shared_from_this());
   uint32_t duration = getEntryExpiryDuration();
   EntryExpiryHandler* handler =
       new EntryExpiryHandler(rptr, entry, getEntryExpirationAction(), duration);
-  long id =
+  int64_t id =
       CacheImpl::expiryTaskManager->scheduleExpiryTask(handler, duration, 0);
   if (Log::finestEnabled()) {
     CacheableKeyPtr key;
@@ -686,9 +689,9 @@ LocalRegion::~LocalRegion() {
   if (!m_destroyPending) {
     release(false);
   }
-  m_listener = NULLPTR;
-  m_writer = NULLPTR;
-  m_loader = NULLPTR;
+  m_listener = nullptr;
+  m_writer = nullptr;
+  m_loader = nullptr;
 
   GF_SAFE_DELETE(m_entries);
   GF_SAFE_DELETE(m_regionStats);
@@ -704,16 +707,16 @@ void LocalRegion::release(bool invokeCallbacks) {
   LOGFINE("LocalRegion::release entered for region %s", m_fullPath.c_str());
   m_released = true;
 
-  if (m_regionStats != NULL) {
+  if (m_regionStats != nullptr) {
     m_regionStats->close();
   }
   if (invokeCallbacks) {
     try {
-      if (m_loader != NULLPTR) {
-        m_loader->close(RegionPtr(this));
+      if (m_loader != nullptr) {
+        m_loader->close(shared_from_this());
       }
-      if (m_writer != NULLPTR) {
-        m_writer->close(RegionPtr(this));
+      if (m_writer != nullptr) {
+        m_writer->close(shared_from_this());
       }
       // TODO:  shouldn't listener also be here instead of
       // during CacheImpl.close()
@@ -724,28 +727,28 @@ void LocalRegion::release(bool invokeCallbacks) {
     }
   }
 
-  if (m_persistenceManager != NULLPTR) {
+  if (m_persistenceManager != nullptr) {
     m_persistenceManager->close();
-    m_persistenceManager = NULLPTR;
+    m_persistenceManager = nullptr;
   }
-  if (m_entries != NULL && m_regionAttributes->getCachingEnabled()) {
+  if (m_entries != nullptr && m_regionAttributes->getCachingEnabled()) {
     m_entries->close();
   }
   LOGFINE("LocalRegion::release done for region %s", m_fullPath.c_str());
 }
 
 /** Returns whether the specified key currently exists in this region.
-* This method is equivalent to <code>getEntry(key) != null</code>.
-*
-* @param keyPtr the key to check for an existing entry, type is CacheableString
-*&
-* @return true if there is an entry in this region for the specified key
-*@throw RegionDestroyedException,  if region is destroyed.
-*@throw IllegalArgumentException, if the key is 'null'.
-*@throw NotConnectedException, if not connected to geode system.
-*/
+ * This method is equivalent to <code>getEntry(key) != null</code>.
+ *
+ * @param keyPtr the key to check for an existing entry, type is CacheableString
+ *&
+ * @return true if there is an entry in this region for the specified key
+ *@throw RegionDestroyedException,  if region is destroyed.
+ *@throw IllegalArgumentException, if the key is 'null'.
+ *@throw NotConnectedException, if not connected to geode system.
+ */
 bool LocalRegion::containsKey_internal(const CacheableKeyPtr& keyPtr) const {
-  if (keyPtr == NULLPTR) {
+  if (keyPtr == nullptr) {
     throw IllegalArgumentException("Region::containsKey: key is null");
   }
   if (!m_regionAttributes->getCachingEnabled()) {
@@ -774,7 +777,7 @@ void LocalRegion::subregions_internal(const bool recursive,
   if (recursive == true) {
     // decend...
     for (int32_t i = 0; i < subRegions.size(); i++) {
-      dynamic_cast<LocalRegion*>(subRegions.at(i).ptr())
+      dynamic_cast<LocalRegion*>(subRegions.at(i).get())
           ->subregions_internal(true, sr);
     }
   }
@@ -785,11 +788,11 @@ GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
                                   const UserDataPtr& aCallbackArgument) {
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
   GfErrType err = GF_NOERR;
-  if (keyPtr == NULLPTR) {
+  if (keyPtr == nullptr) {
     return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
   }
   TXState* txState = getTXState();
-  if (txState != NULL) {
+  if (txState != nullptr) {
     if (isLocalOp()) {
       return GF_NOTSUP;
     }
@@ -800,7 +803,7 @@ GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
     }
     if (CacheableToken::isInvalid(value) ||
         CacheableToken::isTombstone(value)) {
-      value = NULLPTR;
+      value = nullptr;
     }
     return err;
   }
@@ -816,10 +819,10 @@ GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
   bool isLoaderInvoked = false;
   bool isLocal = false;
   bool cachingEnabled = m_regionAttributes->getCachingEnabled();
-  CacheablePtr localValue = NULLPTR;
+  CacheablePtr localValue = nullptr;
   if (cachingEnabled) {
     isLocal = m_entries->get(keyPtr, value, me);
-    if (isLocal && (value != NULLPTR && !CacheableToken::isInvalid(value))) {
+    if (isLocal && (value != nullptr && !CacheableToken::isInvalid(value))) {
       m_regionStats->incHits();
       m_cacheImpl->m_cacheStats->incHits();
       updateAccessAndModifiedTimeForEntry(me, false);
@@ -827,7 +830,7 @@ GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
       return err;  // found it in local cache...
     }
     localValue = value;
-    value = NULLPTR;
+    value = nullptr;
     // start tracking the entry
     if (!m_regionAttributes->getConcurrencyChecksEnabled()) {
       updateCount =
@@ -871,14 +874,14 @@ GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
 
   // Its a cache missor it is invalid token then Check if we have a local
   // loader.
-  if ((value == NULLPTR || CacheableToken::isInvalid(value) ||
+  if ((value == nullptr || CacheableToken::isInvalid(value) ||
        CacheableToken::isTombstone(value)) &&
-      m_loader != NULLPTR) {
+      m_loader != nullptr) {
     try {
       isLoaderInvoked = true;
       /*Update the statistics*/
       int64_t sampleStartNanos = Utils::startStatOpTime();
-      value = m_loader->load(RegionPtr(this), keyPtr, aCallbackArgument);
+      value = m_loader->load(shared_from_this(), keyPtr, aCallbackArgument);
       Utils::updateStatOpTime(
           m_regionStats->getStat(),
           RegionStatType::getInstance()->getLoaderCallTimeId(),
@@ -899,10 +902,10 @@ GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
 
   CacheablePtr oldValue;
   // Found it somehow, so store it.
-  if (value != NULLPTR /*&& value != CacheableToken::invalid( )*/ &&
+  if (value != nullptr /*&& value != CacheableToken::invalid( )*/ &&
       cachingEnabled &&
       !(CacheableToken::isTombstone(value) &&
-        (localValue == NULLPTR || CacheableToken::isInvalid(localValue)))) {
+        (localValue == nullptr || CacheableToken::isInvalid(localValue)))) {
     //  try to create the entry and if that returns an existing value
     // (e.g. from another thread or notification) then return that
     LOGDEBUG(
@@ -919,7 +922,7 @@ GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
             Utils::getCacheableKeyString(keyPtr)->asChar());
         if (CacheableToken::isInvalid(value) ||
             CacheableToken::isTombstone(value)) {
-          value = NULLPTR;
+          value = nullptr;
         }
         // don't do anything and  exit
         return GF_NOERR;
@@ -928,7 +931,7 @@ GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
       LOGDEBUG("Region::get: putLocal for key [%s] failed with error %d",
                Utils::getCacheableKeyString(keyPtr)->asChar(), err);
       err = GF_NOERR;
-      if (oldValue != NULLPTR && !CacheableToken::isInvalid(oldValue)) {
+      if (oldValue != nullptr && !CacheableToken::isInvalid(oldValue)) {
         LOGDEBUG("Region::get: returning updated value [%s] for key [%s]",
                  Utils::getCacheableString(oldValue)->asChar(),
                  Utils::getCacheableKeyString(keyPtr)->asChar());
@@ -940,14 +943,14 @@ GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
   }
 
   if (CacheableToken::isInvalid(value) || CacheableToken::isTombstone(value)) {
-    value = NULLPTR;
+    value = nullptr;
   }
 
   // invokeCacheListenerForEntryEvent method has the check that if oldValue
-  // is a CacheableToken then it sets it to NULL; also determines if it
+  // is a CacheableToken then it sets it to nullptr; also determines if it
   // should be AFTER_UPDATE or AFTER_CREATE depending on oldValue, so don't
   // check here.
-  if (isLoaderInvoked == false && err == GF_NOERR && value != NULLPTR) {
+  if (isLoaderInvoked == false && err == GF_NOERR && value != nullptr) {
     err = invokeCacheListenerForEntryEvent(
         keyPtr, oldValue, value, aCallbackArgument, CacheEventFlags::NORMAL,
         AFTER_UPDATE, isLocal);
@@ -966,23 +969,23 @@ GfErrType LocalRegion::getAllNoThrow(const VectorOfCacheableKey& keys,
   CacheablePtr value;
 
   TXState* txState = getTXState();
-  if (txState != NULL) {
+  if (txState != nullptr) {
     if (isLocalOp()) {
       return GF_NOTSUP;
     }
     //		if(!txState->isReplay())
     //		{
-    //			VectorOfCacheablePtr args(new VectorOfCacheable());
+    //			auto args = std::make_shared<VectorOfCacheable>();
     //			args->push_back(VectorOfCacheableKeyPtr(new
     // VectorOfCacheableKey(keys)));
     //			args->push_back(values);
     //			args->push_back(exceptions);
     //			args->push_back(CacheableBoolean::create(addToLocalCache));
     //			txState->recordTXOperation(GF_GET_ALL, getFullPath(),
-    // NULLPTR,
+    // nullptr,
     // args);
     //		}
-    err = getAllNoThrow_remote(&keys, values, exceptions, NULLPTR, false,
+    err = getAllNoThrow_remote(&keys, values, exceptions, nullptr, false,
                                aCallbackArgument);
     if (err == GF_NOERR) {
       txState->setDirty();
@@ -999,22 +1002,22 @@ GfErrType LocalRegion::getAllNoThrow(const VectorOfCacheableKey& keys,
   for (int32_t index = 0; index < keys.size(); ++index) {
     const CacheableKeyPtr& key = keys[index];
     MapEntryImplPtr me;
-    value = NULLPTR;
+    value = nullptr;
     m_regionStats->incGets();
     m_cacheImpl->m_cacheStats->incGets();
-    if (values != NULLPTR && cachingEnabled) {
-      if (m_entries->get(key, value, me) && value != NULLPTR &&
+    if (values && cachingEnabled) {
+      if (m_entries->get(key, value, me) && value &&
           !CacheableToken::isInvalid(value)) {
         m_regionStats->incHits();
         m_cacheImpl->m_cacheStats->incHits();
         updateAccessAndModifiedTimeForEntry(me, false);
         regionAccessed = true;
-        values->insert(key, value);
+        values->emplace(key, value);
       } else {
-        value = NULLPTR;
+        value = nullptr;
       }
     }
-    if (value == NULLPTR) {
+    if (value == nullptr) {
       // Add to missed keys list.
       serverKeys.push_back(key);
 
@@ -1027,16 +1030,13 @@ GfErrType LocalRegion::getAllNoThrow(const VectorOfCacheableKey& keys,
     updateAccessAndModifiedTime(false);
   }
   if (serverKeys.size() > 0) {
-    err = getAllNoThrow_remote(&serverKeys, values, exceptions, NULLPTR,
+    err = getAllNoThrow_remote(&serverKeys, values, exceptions, nullptr,
                                addToLocalCache, aCallbackArgument);
   }
   m_regionStats->incGetAll();
   return err;
 }
 
-namespace apache {
-namespace geode {
-namespace client {
 // encapsulates actions that need to be taken for a put() operation
 class PutActions {
  public:
@@ -1054,8 +1054,8 @@ class PutActions {
 
   inline static GfErrType checkArgs(const CacheableKeyPtr& key,
                                     const CacheablePtr& value,
-                                    DataInput* delta = NULL) {
-    if (key == NULLPTR || (value == NULLPTR && delta == NULL)) {
+                                    DataInput* delta = nullptr) {
+    if (key == nullptr || (value == nullptr && delta == nullptr)) {
       return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return GF_NOERR;
@@ -1072,7 +1072,7 @@ class PutActions {
 
   inline static void logCacheWriterFailure(const CacheableKeyPtr& key,
                                            const CacheablePtr& oldValue) {
-    bool isUpdate = (oldValue != NULLPTR);
+    bool isUpdate = (oldValue != nullptr);
     LOGFINER("Cache writer vetoed %s for key %s",
              (isUpdate ? "update" : "create"),
              Utils::getCacheableKeyString(key)->asChar());
@@ -1082,9 +1082,9 @@ class PutActions {
                                 const CacheablePtr& value,
                                 const UserDataPtr& aCallbackArgument,
                                 VersionTagPtr& versionTag) {
-    //    	if(m_txState != NULL && !m_txState->isReplay())
+    //    	if(m_txState != nullptr && !m_txState->isReplay())
     //    	{
-    //    		VectorOfCacheablePtr args(new VectorOfCacheable());
+    //    		auto args = std::make_shared<VectorOfCacheable>();
     //    		args->push_back(value);
     //    		args->push_back(aCallbackArgument);
     //    		m_txState->recordTXOperation(GF_PUT,
@@ -1100,8 +1100,8 @@ class PutActions {
                                CacheablePtr& oldValue, bool cachingEnabled,
                                const CacheEventFlags eventFlags,
                                int updateCount, VersionTagPtr versionTag,
-                               DataInput* delta = NULL,
-                               EventIdPtr eventId = NULLPTR,
+                               DataInput* delta = nullptr,
+                               EventIdPtr eventId = nullptr,
                                bool afterRemote = false) {
     return m_region.putLocal(name(), false, key, value, oldValue,
                              cachingEnabled, updateCount, 0, versionTag, delta,
@@ -1120,8 +1120,8 @@ class PutActionsTx : public PutActions {
   inline explicit PutActionsTx(LocalRegion& region) : PutActions(region) {}
   inline static GfErrType checkArgs(const CacheableKeyPtr& key,
                                     const CacheablePtr& value,
-                                    DataInput* delta = NULL) {
-    if (key == NULLPTR) {
+                                    DataInput* delta = nullptr) {
+    if (key == nullptr) {
       return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return GF_NOERR;
@@ -1146,7 +1146,7 @@ class CreateActions {
   inline static GfErrType checkArgs(const CacheableKeyPtr& key,
                                     const CacheablePtr& value,
                                     DataInput* delta) {
-    if (key == NULLPTR) {
+    if (key == nullptr) {
       return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return GF_NOERR;
@@ -1168,9 +1168,9 @@ class CreateActions {
                                 const UserDataPtr& aCallbackArgument,
                                 VersionTagPtr& versionTag) {
     // propagate the create to remote server, if any
-    //  	  if(m_txState != NULL && !m_txState->isReplay())
+    //  	  if(m_txState != nullptr && !m_txState->isReplay())
     //  	  {
-    //  		  VectorOfCacheablePtr args(new VectorOfCacheable());
+    //  		  auto args = std::make_shared<VectorOfCacheable>();
     //  		  args->push_back(value);
     //  		  args->push_back(aCallbackArgument);
     //  		  m_txState->recordTXOperation(GF_CREATE,
@@ -1185,8 +1185,8 @@ class CreateActions {
                                CacheablePtr& oldValue, bool cachingEnabled,
                                const CacheEventFlags eventFlags,
                                int updateCount, VersionTagPtr versionTag,
-                               DataInput* delta = NULL,
-                               EventIdPtr eventId = NULLPTR,
+                               DataInput* delta = nullptr,
+                               EventIdPtr eventId = nullptr,
                                bool afterRemote = false) {
     return m_region.putLocal(name(), true, key, value, oldValue, cachingEnabled,
                              updateCount, 0, versionTag);
@@ -1214,7 +1214,7 @@ class DestroyActions {
   inline static GfErrType checkArgs(const CacheableKeyPtr& key,
                                     const CacheablePtr& value,
                                     DataInput* delta) {
-    if (key == NULLPTR) {
+    if (key == nullptr) {
       return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return GF_NOERR;
@@ -1240,9 +1240,9 @@ class DestroyActions {
                                 const UserDataPtr& aCallbackArgument,
                                 VersionTagPtr& versionTag) {
     // propagate the destroy to remote server, if any
-    //    	if(m_txState != NULL && !m_txState->isReplay())
+    //    	if(m_txState != nullptr && !m_txState->isReplay())
     //    	{
-    //    		VectorOfCacheablePtr args(new VectorOfCacheable());
+    //    		auto args = std::make_shared<VectorOfCacheable>();
     //    		args->push_back(aCallbackArgument);
     //    		m_txState->recordTXOperation(GF_DESTROY,
     //    m_region.getFullPath(), key, args);
@@ -1256,8 +1256,8 @@ class DestroyActions {
                                CacheablePtr& oldValue, bool cachingEnabled,
                                const CacheEventFlags eventFlags,
                                int updateCount, VersionTagPtr versionTag,
-                               DataInput* delta = NULL,
-                               EventIdPtr eventId = NULLPTR,
+                               DataInput* delta = nullptr,
+                               EventIdPtr eventId = nullptr,
                                bool afterRemote = false) {
     if (cachingEnabled) {
       MapEntryImplPtr entry;
@@ -1281,14 +1281,14 @@ class DestroyActions {
         }
         return err;
       }
-      if (oldValue != NULLPTR) {
+      if (oldValue != nullptr) {
         LOGDEBUG(
             "Region::destroy: region [%s] destroyed key [%s] having "
             "value [%s]",
             m_region.getFullPath(), Utils::getCacheableKeyString(key)->asChar(),
             Utils::getCacheableString(oldValue)->asChar());
         // any cleanup required for the entry (e.g. removing from LRU list)
-        if (entry != NULLPTR) {
+        if (entry != nullptr) {
           entry->cleanup(eventFlags);
         }
         // entry/region expiration
@@ -1331,7 +1331,7 @@ class RemoveActions {
   inline static GfErrType checkArgs(const CacheableKeyPtr& key,
                                     const CacheablePtr& value,
                                     DataInput* delta) {
-    if (key == NULLPTR) {
+    if (key == nullptr) {
       return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return GF_NOERR;
@@ -1364,7 +1364,7 @@ class RemoveActions {
       DataOutput out1;
       DataOutput out2;
 
-      if (valuePtr != NULLPTR && value != NULLPTR) {
+      if (valuePtr != nullptr && value != nullptr) {
         if (valuePtr->classId() != value->classId() ||
             valuePtr->typeId() != value->typeId()) {
           err = GF_ENOENT;
@@ -1381,8 +1381,8 @@ class RemoveActions {
           err = GF_ENOENT;
           return err;
         }
-      } else if ((valuePtr == NULLPTR || CacheableToken::isInvalid(valuePtr))) {
-        //        	if(m_txState != NULL && !m_txState->isReplay())
+      } else if ((valuePtr == nullptr || CacheableToken::isInvalid(valuePtr))) {
+        //        	if(m_txState != nullptr && !m_txState->isReplay())
         //        	{
         //        		VectorOfCacheablePtr args(new
         //        VectorOfCacheable());
@@ -1396,14 +1396,14 @@ class RemoveActions {
             key, value, aCallbackArgument, versionTag);
 
         return m_ServerResponse;
-      } else if (valuePtr != NULLPTR && value == NULLPTR) {
+      } else if (valuePtr != nullptr && value == nullptr) {
         err = GF_ENOENT;
         return err;
       }
     }
-    //  	if(m_txState != NULL && !m_txState->isReplay())
+    //  	if(m_txState != nullptr && !m_txState->isReplay())
     //  	{
-    //  		VectorOfCacheablePtr args(new VectorOfCacheable());
+    //  		auto args = std::make_shared<VectorOfCacheable>();
     //  		args->push_back(value);
     //  		args->push_back(aCallbackArgument);
     //  		m_txState->recordTXOperation(GF_REMOVE,
@@ -1425,8 +1425,8 @@ class RemoveActions {
                                CacheablePtr& oldValue, bool cachingEnabled,
                                const CacheEventFlags eventFlags,
                                int updateCount, VersionTagPtr versionTag,
-                               DataInput* delta = NULL,
-                               EventIdPtr eventId = NULLPTR,
+                               DataInput* delta = nullptr,
+                               EventIdPtr eventId = nullptr,
                                bool afterRemote = false) {
     CacheablePtr valuePtr;
     GfErrType err = GF_NOERR;
@@ -1434,7 +1434,7 @@ class RemoveActions {
       m_region.getEntry(key, valuePtr);
       DataOutput out1;
       DataOutput out2;
-      if (valuePtr != NULLPTR && value != NULLPTR) {
+      if (valuePtr != nullptr && value != nullptr) {
         if (valuePtr->classId() != value->classId() ||
             valuePtr->typeId() != value->typeId()) {
           err = GF_ENOENT;
@@ -1451,9 +1451,9 @@ class RemoveActions {
           err = GF_ENOENT;
           return err;
         }
-      } else if (value == NULLPTR && (!CacheableToken::isInvalid(valuePtr) ||
-                                      valuePtr == NULLPTR)) {
-        err = (m_ServerResponse == 0 && valuePtr == NULLPTR) ? GF_NOERR
+      } else if (value == nullptr && (!CacheableToken::isInvalid(valuePtr) ||
+                                      valuePtr == nullptr)) {
+        err = (m_ServerResponse == 0 && valuePtr == nullptr) ? GF_NOERR
                                                              : GF_ENOENT;
         if (updateCount >= 0 &&
             !m_region.getAttributes()
@@ -1466,7 +1466,7 @@ class RemoveActions {
           m_region.m_entries->removeTrackerForEntry(key);
         }
         return err;
-      } else if (valuePtr == NULLPTR && value != NULLPTR &&
+      } else if (valuePtr == nullptr && value != nullptr &&
                  m_ServerResponse != 0) {
         err = GF_ENOENT;
         return err;
@@ -1495,14 +1495,14 @@ class RemoveActions {
         }
         return err;
       }
-      if (oldValue != NULLPTR) {
+      if (oldValue != nullptr) {
         LOGDEBUG(
             "Region::remove: region [%s] removed key [%s] having "
             "value [%s]",
             m_region.getFullPath(), Utils::getCacheableKeyString(key)->asChar(),
             Utils::getCacheableString(oldValue)->asChar());
         // any cleanup required for the entry (e.g. removing from LRU list)
-        if (entry != NULLPTR) {
+        if (entry != nullptr) {
           entry->cleanup(eventFlags);
         }
         // entry/region expiration
@@ -1549,8 +1549,8 @@ class InvalidateActions {
 
   inline static GfErrType checkArgs(const CacheableKeyPtr& key,
                                     const CacheablePtr& value,
-                                    DataInput* delta = NULL) {
-    if (key == NULLPTR) {
+                                    DataInput* delta = nullptr) {
+    if (key == nullptr) {
       return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return GF_NOERR;
@@ -1567,7 +1567,7 @@ class InvalidateActions {
 
   inline static void logCacheWriterFailure(const CacheableKeyPtr& key,
                                            const CacheablePtr& oldValue) {
-    bool isUpdate = (oldValue != NULLPTR);
+    bool isUpdate = (oldValue != nullptr);
     LOGFINER("Cache writer vetoed %s for key %s",
              (isUpdate ? "update" : "invalidate"),
              Utils::getCacheableKeyString(key)->asChar());
@@ -1577,9 +1577,9 @@ class InvalidateActions {
                                 const CacheablePtr& value,
                                 const UserDataPtr& aCallbackArgument,
                                 VersionTagPtr& versionTag) {
-    //    	if(m_txState != NULL && !m_txState->isReplay())
+    //    	if(m_txState != nullptr && !m_txState->isReplay())
     //    	{
-    //    		VectorOfCacheablePtr args(new VectorOfCacheable());
+    //    		auto args = std::make_shared<VectorOfCacheable>();
     //    		args->push_back(aCallbackArgument);
     //    		m_txState->recordTXOperation(GF_INVALIDATE,
     //    m_region.getFullPath(), key, args);
@@ -1594,8 +1594,8 @@ class InvalidateActions {
                                CacheablePtr& oldValue, bool cachingEnabled,
                                const CacheEventFlags eventFlags,
                                int updateCount, VersionTagPtr versionTag,
-                               DataInput* delta = NULL,
-                               EventIdPtr eventId = NULLPTR,
+                               DataInput* delta = nullptr,
+                               EventIdPtr eventId = nullptr,
                                bool afterRemote = false) {
     return m_region.invalidateLocal(name(), key, value, eventFlags, versionTag);
   }
@@ -1603,9 +1603,6 @@ class InvalidateActions {
  private:
   LocalRegion& m_region;
 };
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
 
 template <typename TAction>
 GfErrType LocalRegion::updateNoThrow(const CacheableKeyPtr& key,
@@ -1624,7 +1621,7 @@ GfErrType LocalRegion::updateNoThrow(const CacheableKeyPtr& key,
 
   TAction action(*this);
   TXState* txState = action.m_txState;
-  if (txState != NULL) {
+  if (txState != nullptr) {
     if (isLocalOp(&eventFlags)) {
       return GF_NOTSUP;
     }
@@ -1645,10 +1642,10 @@ GfErrType LocalRegion::updateNoThrow(const CacheableKeyPtr& key,
 
   //  do not invoke the writer in case of notification/eviction
   // or expiration
-  if (m_writer != NULLPTR && eventFlags.invokeCacheWriter()) {
+  if (m_writer != nullptr && eventFlags.invokeCacheWriter()) {
     action.getCallbackOldValue(cachingEnabled, key, entry, oldValue);
     // invokeCacheWriterForEntryEvent method has the check that if oldValue
-    // is a CacheableToken then it sets it to NULL; also determines if it
+    // is a CacheableToken then it sets it to nullptr; also determines if it
     // should be BEFORE_UPDATE or BEFORE_CREATE depending on oldValue
     if (!invokeCacheWriterForEntryEvent(key, oldValue, value, aCallbackArgument,
                                         eventFlags,
@@ -1671,7 +1668,7 @@ GfErrType LocalRegion::updateNoThrow(const CacheableKeyPtr& key,
       if ((updateCount = m_entries->addTrackerForEntry(
                key, oldValue, TAction::s_addIfAbsent, TAction::s_failIfPresent,
                true)) < 0) {
-        if (oldValue != NULLPTR) {
+        if (oldValue != nullptr) {
           // fail for "create" when entry exists
           return GF_CACHE_ENTRY_EXISTS;
         }
@@ -1715,9 +1712,9 @@ GfErrType LocalRegion::updateNoThrow(const CacheableKeyPtr& key,
       CacheablePtr& newValue1 = const_cast<CacheablePtr&>(value);
       VersionTagPtr versionTag1;
       err = getNoThrow_FullObject(eventId, newValue1, versionTag1);
-      if (err == GF_NOERR && newValue1 != NULLPTR) {
+      if (err == GF_NOERR && newValue1 != nullptr) {
         err = m_entries->put(key, newValue1, entry, oldValue, updateCount, 0,
-                             versionTag1 != NULLPTR ? versionTag1 : versionTag);
+                             versionTag1 != nullptr ? versionTag1 : versionTag);
         if (err == GF_CACHE_CONCURRENT_MODIFICATION_EXCEPTION) {
           LOGDEBUG(
               "Region::localUpdate: updateNoThrow<%s> for key [%s] failed because the cache already contains \
@@ -1740,7 +1737,7 @@ GfErrType LocalRegion::updateNoThrow(const CacheableKeyPtr& key,
     }
   }
   // invokeCacheListenerForEntryEvent method has the check that if oldValue
-  // is a CacheableToken then it sets it to NULL; also determines if it
+  // is a CacheableToken then it sets it to nullptr; also determines if it
   // should be AFTER_UPDATE or AFTER_CREATE depending on oldValue
   err =
       invokeCacheListenerForEntryEvent(key, oldValue, value, aCallbackArgument,
@@ -1797,7 +1794,7 @@ GfErrType LocalRegion::updateNoThrowTX(const CacheableKeyPtr& key,
     }
   }
   // invokeCacheListenerForEntryEvent method has the check that if oldValue
-  // is a CacheableToken then it sets it to NULL; also determines if it
+  // is a CacheableToken then it sets it to nullptr; also determines if it
   // should be AFTER_UPDATE or AFTER_CREATE depending on oldValue
   err =
       invokeCacheListenerForEntryEvent(key, oldValue, value, aCallbackArgument,
@@ -1846,7 +1843,7 @@ GfErrType LocalRegion::destroyNoThrow(const CacheableKeyPtr& key,
                                       const CacheEventFlags eventFlags,
                                       VersionTagPtr versionTag) {
   CacheablePtr oldValue;
-  return updateNoThrow<DestroyActions>(key, NULLPTR, aCallbackArgument,
+  return updateNoThrow<DestroyActions>(key, nullptr, aCallbackArgument,
                                        oldValue, updateCount, eventFlags,
                                        versionTag);
 }
@@ -1857,7 +1854,7 @@ GfErrType LocalRegion::destroyNoThrowTX(const CacheableKeyPtr& key,
                                         const CacheEventFlags eventFlags,
                                         VersionTagPtr versionTag) {
   CacheablePtr oldValue;
-  return updateNoThrowTX<DestroyActions>(key, NULLPTR, aCallbackArgument,
+  return updateNoThrowTX<DestroyActions>(key, nullptr, aCallbackArgument,
                                          oldValue, updateCount, eventFlags,
                                          versionTag);
 }
@@ -1879,7 +1876,7 @@ GfErrType LocalRegion::removeNoThrowEx(const CacheableKeyPtr& key,
                                        const CacheEventFlags eventFlags,
                                        VersionTagPtr versionTag) {
   CacheablePtr oldValue;
-  return updateNoThrow<RemoveActionsEx>(key, NULLPTR, aCallbackArgument,
+  return updateNoThrow<RemoveActionsEx>(key, nullptr, aCallbackArgument,
                                         oldValue, updateCount, eventFlags,
                                         versionTag);
 }
@@ -1890,7 +1887,7 @@ GfErrType LocalRegion::invalidateNoThrow(const CacheableKeyPtr& key,
                                          const CacheEventFlags eventFlags,
                                          VersionTagPtr versionTag) {
   CacheablePtr oldValue;
-  return updateNoThrow<InvalidateActions>(key, NULLPTR, aCallbackArgument,
+  return updateNoThrow<InvalidateActions>(key, nullptr, aCallbackArgument,
                                           oldValue, updateCount, eventFlags,
                                           versionTag);
 }
@@ -1901,7 +1898,7 @@ GfErrType LocalRegion::invalidateNoThrowTX(const CacheableKeyPtr& key,
                                            const CacheEventFlags eventFlags,
                                            VersionTagPtr versionTag) {
   CacheablePtr oldValue;
-  return updateNoThrowTX<InvalidateActions>(key, NULLPTR, aCallbackArgument,
+  return updateNoThrowTX<InvalidateActions>(key, nullptr, aCallbackArgument,
                                             oldValue, updateCount, eventFlags,
                                             versionTag);
 }
@@ -1915,17 +1912,11 @@ GfErrType LocalRegion::putAllNoThrow(const HashMapOfCacheable& map,
   VersionedCacheableObjectPartListPtr
       versionedObjPartListPtr;  //= new VersionedCacheableObjectPartList();
   TXState* txState = getTXState();
-  if (txState != NULL) {
+  if (txState != nullptr) {
     if (isLocalOp()) {
       return GF_NOTSUP;
     }
-    // if(!txState->isReplay())
-    //{
-    //	VectorOfCacheablePtr args(new VectorOfCacheable());
-    //	args->push_back(HashMapOfCacheablePtr(new HashMapOfCacheable(map)));
-    //	args->push_back(CacheableInt32::create(timeout));
-    //	txState->recordTXOperation(GF_PUT_ALL, getFullPath(), NULLPTR, args);
-    //}
+
     err = putAllNoThrow_remote(map, /*versionTag*/ versionedObjPartListPtr,
                                timeout, aCallbackArgument);
     if (err == GF_NOERR) {
@@ -1960,11 +1951,10 @@ GfErrType LocalRegion::putAllNoThrow(const HashMapOfCacheable& map,
     }
   } _removeTracking(oldValueMap, *this);
 
-  if (cachingEnabled || m_writer != NULLPTR) {
+  if (cachingEnabled || m_writer != nullptr) {
     CacheablePtr oldValue;
-    for (HashMapOfCacheable::Iterator iter = map.begin(); iter != map.end();
-         ++iter) {
-      const CacheableKeyPtr& key = iter.first();
+    for (const auto& iter : map) {
+      const auto& key = iter.first;
       if (cachingEnabled &&
           !m_regionAttributes->getConcurrencyChecksEnabled()) {
         int updateCount =
@@ -1972,12 +1962,12 @@ GfErrType LocalRegion::putAllNoThrow(const HashMapOfCacheable& map,
         oldValueMap.insert(
             std::make_pair(key, std::make_pair(oldValue, updateCount)));
       }
-      if (m_writer != NULLPTR) {
+      if (m_writer != nullptr) {
         // invokeCacheWriterForEntryEvent method has the check that if oldValue
-        // is a CacheableToken then it sets it to NULL; also determines if it
+        // is a CacheableToken then it sets it to nullptr; also determines if it
         // should be BEFORE_UPDATE or BEFORE_CREATE depending on oldValue
         if (!invokeCacheWriterForEntryEvent(
-                key, oldValue, iter.second(), aCallbackArgument,
+                key, oldValue, iter.second, aCallbackArgument,
                 CacheEventFlags::LOCAL, BEFORE_UPDATE)) {
           PutActions::logCacheWriterFailure(key, oldValue);
           return GF_CACHEWRITER_ERROR;
@@ -2000,15 +1990,15 @@ GfErrType LocalRegion::putAllNoThrow(const HashMapOfCacheable& map,
       for (int keyIndex = 0;
            keyIndex < versionedObjPartListPtr->getSucceededKeys()->size();
            keyIndex++) {
-        const CacheablePtr valPtr =
+        const CacheableKeyPtr valPtr =
             versionedObjPartListPtr->getSucceededKeys()->at(keyIndex);
-        HashMapOfCacheable::Iterator mapIter = map.find(valPtr);
-        CacheableKeyPtr key = NULLPTR;
-        CacheablePtr value = NULLPTR;
+        const auto& mapIter = map.find(valPtr);
+        CacheableKeyPtr key = nullptr;
+        CacheablePtr value = nullptr;
 
         if (mapIter != map.end()) {
-          key = mapIter.first();
-          value = mapIter.second();
+          key = mapIter->first;
+          value = mapIter->second;
         } else {
           // ThrowERROR
           LOGERROR(
@@ -2016,8 +2006,8 @@ GfErrType LocalRegion::putAllNoThrow(const HashMapOfCacheable& map,
               "usermap");
         }
 
-        if (versionedObjPartListPtr != NULLPTR &&
-            versionedObjPartListPtr.ptr() != NULL) {
+        if (versionedObjPartListPtr != nullptr &&
+            versionedObjPartListPtr.get() != nullptr) {
           LOGDEBUG("versionedObjPartListPtr->getVersionedTagptr().size() = %d ",
                    versionedObjPartListPtr->getVersionedTagptr().size());
           if (versionedObjPartListPtr->getVersionedTagptr().size() > 0) {
@@ -2049,14 +2039,13 @@ GfErrType LocalRegion::putAllNoThrow(const HashMapOfCacheable& map,
           "expected false",
           m_isPRSingleHopEnabled);
       int index = 0;
-      for (HashMapOfCacheable::Iterator iter = map.begin(); iter != map.end();
-           ++iter) {
-        const CacheableKeyPtr& key = iter.first();
-        const CacheablePtr& value = iter.second();
-        std::pair<CacheablePtr, int>& p = oldValueMap[key];
+      for (const auto& iter : map) {
+        const auto& key = iter.first;
+        const auto& value = iter.second;
+        auto& p = oldValueMap[key];
 
-        if (versionedObjPartListPtr != NULLPTR &&
-            versionedObjPartListPtr.ptr() != NULL) {
+        if (versionedObjPartListPtr != nullptr &&
+            versionedObjPartListPtr.get() != nullptr) {
           LOGDEBUG("versionedObjPartListPtr->getVersionedTagptr().size() = %d ",
                    versionedObjPartListPtr->getVersionedTagptr().size());
           if (versionedObjPartListPtr->getVersionedTagptr().size() > 0) {
@@ -2096,7 +2085,7 @@ GfErrType LocalRegion::removeAllNoThrow(const VectorOfCacheableKey& keys,
 
   // 2.check transaction state and do remote op
   TXState* txState = getTXState();
-  if (txState != NULL) {
+  if (txState != nullptr) {
     if (isLocalOp()) return GF_NOTSUP;
     err = removeAllNoThrow_remote(keys, versionedObjPartListPtr,
                                   aCallbackArgument);
@@ -2120,21 +2109,21 @@ GfErrType LocalRegion::removeAllNoThrow(const VectorOfCacheableKey& keys,
   if (cachingEnabled) {
     VectorOfCacheableKey* keysPtr;
     if (m_isPRSingleHopEnabled) {
-      keysPtr = versionedObjPartListPtr->getSucceededKeys().ptr();
+      keysPtr = versionedObjPartListPtr->getSucceededKeys().get();
     } else {
       keysPtr = const_cast<VectorOfCacheableKey*>(&keys);
     }
 
     for (int keyIndex = 0; keyIndex < keysPtr->size(); keyIndex++) {
       CacheableKeyPtr key = keysPtr->at(keyIndex);
-      if (versionedObjPartListPtr != NULLPTR &&
-          versionedObjPartListPtr.ptr() != NULL) {
+      if (versionedObjPartListPtr != nullptr &&
+          versionedObjPartListPtr.get() != nullptr) {
         LOGDEBUG("versionedObjPartListPtr->getVersionedTagptr().size() = %d ",
                  versionedObjPartListPtr->getVersionedTagptr().size());
         if (versionedObjPartListPtr->getVersionedTagptr().size() > 0) {
           versionTag = versionedObjPartListPtr->getVersionedTagptr()[keyIndex];
         }
-        if (versionTag == NULLPTR) {
+        if (versionTag == nullptr) {
           LOGDEBUG(
               "RemoveAll hits EntryNotFoundException at server side for key "
               "[%s], not to destroy it from local cache.",
@@ -2208,7 +2197,7 @@ GfErrType LocalRegion::invalidateLocal(const char* name,
                                        const CacheablePtr& value,
                                        const CacheEventFlags eventFlags,
                                        VersionTagPtr versionTag) {
-  if (keyPtr == NULLPTR) {
+  if (keyPtr == nullptr) {
     return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
   }
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
@@ -2277,12 +2266,12 @@ GfErrType LocalRegion::invalidateRegionNoThrow(
   if (m_regionAttributes->getCachingEnabled()) {
     VectorOfCacheableKey v;
     keys_internal(v);
-    uint32_t size = v.size();
+    const auto size = v.size();
     MapEntryImplPtr me;
-    for (uint32_t i = 0; i < size; i++) {
+    for (size_t i = 0; i < size; i++) {
       {
         CacheablePtr oldValue;
-        // invalidate all the entries with a NULL versionTag
+        // invalidate all the entries with a nullptr versionTag
         VersionTagPtr versionTag;
         m_entries->invalidate(v.at(i), me, oldValue, versionTag);
         if (!eventFlags.isEvictOrExpire()) {
@@ -2306,8 +2295,8 @@ GfErrType LocalRegion::invalidateRegionNoThrow(
     for (MapOfRegionWithLock::iterator p = m_subRegions.begin();
          p != m_subRegions.end(); ++p) {
       RegionInternal* subRegion =
-          dynamic_cast<RegionInternal*>((*p).int_id_.ptr());
-      if (subRegion != NULL) {
+          dynamic_cast<RegionInternal*>((*p).int_id_.get());
+      if (subRegion != nullptr) {
         err = subRegion->invalidateRegionNoThrow(aCallbackArgument, eventFlags);
         if (err != GF_NOERR) {
           return err;
@@ -2385,8 +2374,8 @@ GfErrType LocalRegion::destroyRegionNoThrow(
       // TODO: remove unnecessary dynamic_cast by having m_subRegions hold
       // RegionInternal and invoke the destroy method in that
       RegionInternal* subRegion =
-          dynamic_cast<RegionInternal*>((*p).int_id_.ptr());
-      if (subRegion != NULL) {
+          dynamic_cast<RegionInternal*>((*p).int_id_.get());
+      if (subRegion != nullptr) {
         //  for subregions never remove from parent since that will cause
         // the region to be destroyed and SEGV; unbind_all takes care of that
         // Also don't send remote destroy message for sub-regions
@@ -2423,11 +2412,11 @@ GfErrType LocalRegion::destroyRegionNoThrow(
   GF_D_ASSERT(m_destroyPending);
 
   if (removeFromParent) {
-    if (m_parentRegion == NULLPTR) {
+    if (m_parentRegion == nullptr) {
       m_cacheImpl->removeRegion(m_name.c_str());
     } else {
-      LocalRegion* parent = dynamic_cast<LocalRegion*>(m_parentRegion.ptr());
-      if (parent != NULL) {
+      LocalRegion* parent = dynamic_cast<LocalRegion*>(m_parentRegion.get());
+      if (parent != nullptr) {
         parent->removeRegion(m_name);
         if (!eventFlags.isEvictOrExpire()) {
           parent->updateAccessAndModifiedTime(true);
@@ -2464,13 +2453,13 @@ GfErrType LocalRegion::putLocal(const char* name, bool isCreate,
         CacheablePtr& newValue1 = const_cast<CacheablePtr&>(value);
         VersionTagPtr versionTag1;
         err = getNoThrow_FullObject(eventId, newValue1, versionTag1);
-        if (err == GF_NOERR && newValue1 != NULLPTR) {
+        if (err == GF_NOERR && newValue1 != nullptr) {
           err = m_entries->put(
               key, newValue1, entry, oldValue, updateCount, destroyTracker,
-              versionTag1 != NULLPTR ? versionTag1 : versionTag, isUpdate);
+              versionTag1 != nullptr ? versionTag1 : versionTag, isUpdate);
         }
       }
-      if (delta != NULL &&
+      if (delta != nullptr &&
           err == GF_NOERR) {  // Means that delta is on and there is no failure.
         m_cacheImpl->m_cacheStats->incDeltaReceived();
       }
@@ -2527,7 +2516,7 @@ void LocalRegion::entries_internal(VectorOfRegionEntry& me,
     MapOfRegionGuard guard(m_subRegions.mutex());
     for (MapOfRegionWithLock::iterator p = m_subRegions.begin();
          p != m_subRegions.end(); ++p) {
-      dynamic_cast<LocalRegion*>((*p).int_id_.ptr())
+      dynamic_cast<LocalRegion*>((*p).int_id_.get())
           ->entries_internal(me, true);
     }
   }
@@ -2546,11 +2535,11 @@ bool LocalRegion::invokeCacheWriterForEntryEvent(
     CacheEventFlags eventFlags, EntryEventType type) {
   // Check if we have a local cache writer. If so, invoke and return.
   bool bCacheWriterReturn = true;
-  if (m_writer != NULLPTR) {
-    if (oldValue != NULLPTR && CacheableToken::isInvalid(oldValue)) {
-      oldValue = NULLPTR;
+  if (m_writer != nullptr) {
+    if (oldValue != nullptr && CacheableToken::isInvalid(oldValue)) {
+      oldValue = nullptr;
     }
-    EntryEvent event(RegionPtr(this), key, oldValue, newValue,
+    EntryEvent event(shared_from_this(), key, oldValue, newValue,
                      aCallbackArgument, eventFlags.isNotification());
     const char* eventStr = "unknown";
     try {
@@ -2559,12 +2548,12 @@ bool LocalRegion::invokeCacheWriterForEntryEvent(
       int64_t sampleStartNanos = Utils::startStatOpTime();
       switch (type) {
         case BEFORE_UPDATE: {
-          if (oldValue != NULLPTR) {
+          if (oldValue != nullptr) {
             eventStr = "beforeUpdate";
             bCacheWriterReturn = m_writer->beforeUpdate(event);
             break;
           }
-          // if oldValue is NULL then fall to BEFORE_CREATE case
+          // if oldValue is nullptr then fall to BEFORE_CREATE case
         }
         case BEFORE_CREATE: {
           eventStr = "beforeCreate";
@@ -2607,8 +2596,8 @@ bool LocalRegion::invokeCacheWriterForRegionEvent(
     RegionEventType type) {
   // Check if we have a local cache writer. If so, invoke and return.
   bool bCacheWriterReturn = true;
-  if (m_writer != NULLPTR) {
-    RegionEvent event(RegionPtr(this), aCallbackArgument,
+  if (m_writer != nullptr) {
+    RegionEvent event(shared_from_this(), aCallbackArgument,
                       eventFlags.isNotification());
     const char* eventStr = "unknown";
     try {
@@ -2657,11 +2646,11 @@ GfErrType LocalRegion::invokeCacheListenerForEntryEvent(
   GfErrType err = GF_NOERR;
 
   // Check if we have a local cache listener. If so, invoke and return.
-  if (m_listener != NULLPTR) {
-    if (oldValue != NULLPTR && CacheableToken::isInvalid(oldValue)) {
-      oldValue = NULLPTR;
+  if (m_listener != nullptr) {
+    if (oldValue != nullptr && CacheableToken::isInvalid(oldValue)) {
+      oldValue = nullptr;
     }
-    EntryEvent event(RegionPtr(this), key, oldValue, newValue,
+    EntryEvent event(shared_from_this(), key, oldValue, newValue,
                      aCallbackArgument, eventFlags.isNotification());
     const char* eventStr = "unknown";
     try {
@@ -2672,13 +2661,13 @@ GfErrType LocalRegion::invokeCacheListenerForEntryEvent(
         case AFTER_UPDATE: {
           //  when CREATE is received from server for notification
           // then force an afterUpdate even if key is not present in cache.
-          if (oldValue != NULLPTR || eventFlags.isNotificationUpdate() ||
+          if (oldValue != nullptr || eventFlags.isNotificationUpdate() ||
               isLocal) {
             eventStr = "afterUpdate";
             m_listener->afterUpdate(event);
             break;
           }
-          // if oldValue is NULL then fall to AFTER_CREATE case
+          // if oldValue is nullptr then fall to AFTER_CREATE case
         }
         case AFTER_CREATE: {
           eventStr = "afterCreate";
@@ -2728,8 +2717,8 @@ GfErrType LocalRegion::invokeCacheListenerForRegionEvent(
   GfErrType err = GF_NOERR;
 
   // Check if we have a local cache listener. If so, invoke and return.
-  if (m_listener != NULLPTR) {
-    RegionEvent event(RegionPtr(this), aCallbackArgument,
+  if (m_listener != nullptr) {
+    RegionEvent event(shared_from_this(), aCallbackArgument,
                       eventFlags.isNotification());
     const char* eventStr = "unknown";
     try {
@@ -2743,7 +2732,7 @@ GfErrType LocalRegion::invokeCacheListenerForRegionEvent(
           m_cacheImpl->m_cacheStats->incListenerCalls();
           if (eventFlags.isCacheClose()) {
             eventStr = "close";
-            m_listener->close(RegionPtr(this));
+            m_listener->close(shared_from_this());
             m_cacheImpl->m_cacheStats->incListenerCalls();
           }
           break;
@@ -2788,7 +2777,7 @@ GfErrType LocalRegion::invokeCacheListenerForRegionEvent(
 void LocalRegion::updateAccessAndModifiedTimeForEntry(MapEntryImplPtr& ptr,
                                                       bool modified) {
   // locking is not required since setters use atomic operations
-  if (ptr != NULLPTR && entryExpiryEnabled()) {
+  if (ptr != nullptr && entryExpiryEnabled()) {
     ExpEntryProperties& expProps = ptr->getExpProperties();
     uint32_t currTime = static_cast<uint32_t>(ACE_OS::gettimeofday().sec());
     CacheableStringPtr keyStr;
@@ -2907,10 +2896,10 @@ int32_t LocalRegion::adjustEntryExpiryDuration(int32_t duration) {
 /** they used to public methods in hpp file */
 bool LocalRegion::isStatisticsEnabled() {
   bool status = true;
-  if (m_cacheImpl == NULL) {
+  if (m_cacheImpl == nullptr) {
     return false;
   }
-  if (m_cacheImpl->getCache() != NULL) {
+  if (m_cacheImpl->getCache() != nullptr) {
     SystemProperties* props =
         m_cacheImpl->getCache()->getDistributedSystem()->getSystemProperties();
     if (props) {
@@ -3105,9 +3094,9 @@ void LocalRegion::adjustCacheWriter(const char* lib, const char* func) {
 void LocalRegion::evict(int32_t percentage) {
   TryReadGuard guard(m_rwLock, m_destroyPending);
   if (m_released || m_destroyPending) return;
-  if (m_entries != NULL) {
+  if (m_entries != nullptr) {
     int32_t size = m_entries->size();
-    int32_t entriesToEvict = (int32_t)(percentage * size) / 100;
+    int32_t entriesToEvict = (percentage * size) / 100;
     // only invoked from EvictionController so static_cast is always safe
     LRUEntriesMap* lruMap = static_cast<LRUEntriesMap*>(m_entries);
     LOGINFO("Evicting %d entries. Current entry count is %d", entriesToEvict,
@@ -3116,10 +3105,10 @@ void LocalRegion::evict(int32_t percentage) {
   }
 }
 void LocalRegion::invokeAfterAllEndPointDisconnected() {
-  if (m_listener != NULLPTR) {
+  if (m_listener != nullptr) {
     int64_t sampleStartNanos = Utils::startStatOpTime();
     try {
-      m_listener->afterRegionDisconnected(RegionPtr(this));
+      m_listener->afterRegionDisconnected(shared_from_this());
     } catch (const Exception& ex) {
       LOGERROR("Exception in CacheListener::afterRegionDisconnected: %s: %s",
                ex.getName(), ex.getMessage());
@@ -3146,8 +3135,8 @@ CacheablePtr LocalRegion::handleReplay(GfErrType& err,
       err == GF_TRANSACTION_DATA_NODE_HAS_DEPARTED_EXCEPTION) {
     bool isRollBack = (err == GF_TRANSACTION_DATA_REBALANCED_EXCEPTION);
     TXState* txState = getTXState();
-    if (txState == NULL) {
-      GfErrTypeThrowException("TXState is NULL",
+    if (txState == nullptr) {
+      GfErrTypeThrowException("TXState is nullptr",
                               GF_CACHE_ILLEGAL_STATE_EXCEPTION);
     }
 
@@ -3160,3 +3149,7 @@ CacheablePtr LocalRegion::handleReplay(GfErrType& err,
 }
 
 TombstoneListPtr LocalRegion::getTombstoneList() { return m_tombstoneList; }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

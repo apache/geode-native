@@ -19,7 +19,10 @@
 
 #include "../geode_defs.hpp"
 #include <vcclr.h>
+#include "begin_native.hpp"
 #include <geode/CacheLoader.hpp>
+#include "end_native.hpp"
+
 
 #include "../ICacheLoader.hpp"
 #include "CacheLoader.hpp"

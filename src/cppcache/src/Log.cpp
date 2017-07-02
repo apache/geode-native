@@ -21,6 +21,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <thread>
+#include <chrono>
 
 #include <ace/ACE.h>
 #include <ace/Guard_T.h>
@@ -65,8 +67,8 @@ namespace geode {
 namespace log {
 namespace globals {
 
-std::string* g_logFile = NULL;
-std::string* g_logFileWithExt = NULL;
+std::string* g_logFile = nullptr;
+std::string* g_logFileWithExt = nullptr;
 
 size_t g_bytesWritten = 0;
 bool g_isLogFileOpened = false;
@@ -76,7 +78,7 @@ size_t g_diskSpaceLimit = GEODE_MAX_LOG_DISK_LIMIT;
 
 char g_logFileNameBuffer[2048] = {0};
 
-ACE_Thread_Mutex* g_logMutex = NULL;
+ACE_Thread_Mutex* g_logMutex = nullptr;
 
 int g_rollIndex = 0;
 size_t g_spaceUsed = 0;
@@ -85,7 +87,7 @@ std::pair<std::string, int64_t> g_fileInfoPair;
 // Vector to hold the fileInformation
 typedef std::vector<std::pair<std::string, int64_t> > g_fileInfo;
 
-FILE* g_log = NULL;
+FILE* g_log = nullptr;
 ACE_utsname g_uname;
 pid_t g_pid = 0;
 
@@ -157,8 +159,8 @@ namespace client {
 // this method is not thread-safe and expected to be invoked once
 // during initialization
 void gf_log_libinit() {
-  if (g_logMutex == NULL) {
-    g_logFile = NULL;
+  if (g_logMutex == nullptr) {
+    g_logFile = nullptr;
     g_bytesWritten = 0;
     g_fileSizeLimit = 0;
     g_diskSpaceLimit = 0;
@@ -166,7 +168,7 @@ void gf_log_libinit() {
     g_spaceUsed = 0;
     g_logMutex = new ACE_Thread_Mutex("Log::logMutex");
   }
-  if (g_logMutex == NULL) {
+  if (g_logMutex == nullptr) {
     throw IllegalStateException("Log not initialized successfully");
   }
 }
@@ -195,13 +197,13 @@ const char* Log::logFileName() {
 
 void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
                int64_t logDiskSpaceLimit) {
-  if (g_log != NULL) {
+  if (g_log != nullptr) {
     throw IllegalStateException(
         "The Log has already been initialized. "
         "Call Log::close() before calling Log::init again.");
   }
   s_logLevel = level;
-  if (g_logMutex == NULL) g_logMutex = new ACE_Thread_Mutex("Log::logMutex");
+  if (g_logMutex == nullptr) g_logMutex = new ACE_Thread_Mutex("Log::logMutex");
 
   if (logDiskSpaceLimit <
       0 /*|| logDiskSpaceLimit > GEODE_MAX_LOG_DISK_LIMIT*/) {
@@ -238,7 +240,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
     }
     *g_logFile = slashtmp;
     delete[] slashtmp;
-    slashtmp = NULL;
+    slashtmp = nullptr;
 #endif
 
     // Appending a ".log" at the end if it does not exist or file has some other
@@ -303,7 +305,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
     sds.close();
 
     FILE* existingFile = fopen(g_logFileWithExt->c_str(), "r");
-    if (existingFile != NULL && logFileLimit > 0) {
+    if (existingFile != nullptr && logFileLimit > 0) {
       /* adongre
        * Coverity - II
        * CID 29205: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -347,9 +349,9 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
       bool rollFileNameGot = false;
       while (!rollFileNameGot) {
         FILE* checkFile = fopen(rollFile, "r");
-        if (checkFile != NULL) {
+        if (checkFile != nullptr) {
           fclose(checkFile);
-          checkFile = NULL;
+          checkFile = nullptr;
           ACE_OS::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
                            ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
                            g_rollIndex++, extName.c_str());
@@ -359,7 +361,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
         /* adongre
          * CID 28999: Use after free (USE_AFTER_FREE)
          */
-        if (checkFile != NULL) fclose(existingFile);
+        if (checkFile != nullptr) fclose(existingFile);
       }
       // retry some number of times before giving up when file is busy etc.
       int renameResult = -1;
@@ -370,7 +372,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
           break;
         }
         // continue after some sleep
-        apache::geode::client::millisleep(200);
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
       }
       /* (don't throw exception; try appending to existing file instead)
       if (renameResult < 0) {
@@ -380,14 +382,14 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
       }
       */
     }
-    if (existingFile != NULL) {
+    if (existingFile != nullptr) {
       fclose(existingFile);
-      existingFile = NULL;
+      existingFile = nullptr;
     }
   } else if (g_logFile) {
     delete g_logFile;
-    g_logFile = NULL;
-    g_logFileWithExt = NULL;
+    g_logFile = nullptr;
+    g_logFileWithExt = nullptr;
   }
   writeBanner();
 }
@@ -400,21 +402,21 @@ void Log::close() {
   if (g_logFile) {
     oldfile = *g_logFile;
     delete g_logFile;
-    g_logFile = NULL;
+    g_logFile = nullptr;
   }
   if (g_logFileWithExt) {
     delete g_logFileWithExt;
-    g_logFileWithExt = NULL;
+    g_logFileWithExt = nullptr;
   }
 
   if (g_log) {
     fclose(g_log);
-    g_log = NULL;
+    g_log = nullptr;
   }
 }
 
 void Log::writeBanner() {
-  if (g_logFileWithExt == NULL) {
+  if (g_logFileWithExt == nullptr) {
     return;
   }
   const char* dirname = ACE::dirname(g_logFileWithExt->c_str());
@@ -427,7 +429,7 @@ void Log::writeBanner() {
   int maxTries = 10;
   while (maxTries-- > 0) {
     g_log = fopen(g_logFileWithExt->c_str(), "a");
-    if (g_log != NULL) {
+    if (g_log != nullptr) {
       break;
     }
     int lastError = ACE_OS::last_error();
@@ -435,7 +437,7 @@ void Log::writeBanner() {
       break;
     }
     // continue after some sleep
-    apache::geode::client::millisleep(200);
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
   }
   if (!g_log) {
     g_isLogFileOpened = false;
@@ -449,7 +451,7 @@ void Log::writeBanner() {
   }
   std::string bannertext = geodeBanner::getBanner();
 
-  if (g_logFile == NULL) {
+  if (g_logFile == nullptr) {
     fprintf(stdout, "%s", bannertext.c_str());
     fflush(stdout);
     return;
@@ -462,9 +464,9 @@ void Log::writeBanner() {
   }
 
   int numchars = 0;
-  const char* pch = NULL;
+  const char* pch = nullptr;
   pch = strchr(bannertext.c_str(), '\n');
-  while (pch != NULL) {
+  while (pch != nullptr) {
     pch = strchr(pch + 1, '\n');
     numchars += 2;
   }
@@ -643,7 +645,7 @@ void Log::put(LogLevel level, const char* msg) {
       bool rollFileNameGot = false;
       while (!rollFileNameGot) {
         FILE* fp1 = fopen(rollFile, "r");
-        if (fp1 != NULL) {
+        if (fp1 != nullptr) {
           fclose(fp1);
           ACE_OS::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
                            ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
@@ -654,7 +656,7 @@ void Log::put(LogLevel level, const char* msg) {
       }
 
       fclose(g_log);
-      g_log = NULL;
+      g_log = nullptr;
 
       if (ACE_OS::rename(g_logFileWithExt->c_str(), rollFile) < 0) {
         return;  // no need to throw exception try next time
@@ -716,7 +718,7 @@ void Log::put(LogLevel level, const char* msg) {
       // lets continue wothout throwing the exception; it should not cause
       // process to terminate
       fclose(g_log);
-      g_log = NULL;
+      g_log = nullptr;
     } else {
       fflush(g_log);
     }

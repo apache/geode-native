@@ -40,23 +40,15 @@ PreservedDataExpiryHandler::PreservedDataExpiryHandler(
 int PreservedDataExpiryHandler::handle_timeout(
     const ACE_Time_Value& current_time, const void* arg) {
   WriteGuard guard(PdxTypeRegistry::getPreservedDataLock());
+  auto map = PdxTypeRegistry::getPreserveDataMap();
   LOGDEBUG(
       "Entered PreservedDataExpiryHandler "
       "PdxTypeRegistry::getPreserveDataMap().size() = %d",
-      PdxTypeRegistry::getPreserveDataMap().size());
+      map.size());
 
   try {
     // remove the entry from the map
-    if (PdxTypeRegistry::getPreserveDataMap().contains(m_pdxObjectPtr)) {
-      PdxTypeRegistry::getPreserveDataMap().erase(m_pdxObjectPtr);
-      LOGDEBUG(
-          "PreservedDataExpiry:: preserveData erased entry from map updated "
-          "size = %d",
-          PdxTypeRegistry::getPreserveDataMap().size());
-    } else {
-      LOGDEBUG("PreservedDataExpiry:: preserveData does not contains Entry");
-    }
-
+    map.erase(m_pdxObjectPtr);
   } catch (...) {
     // Ignore whatever exception comes
     LOGDEBUG(

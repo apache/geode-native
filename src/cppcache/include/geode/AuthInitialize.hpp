@@ -42,8 +42,7 @@ namespace client {
  * AuthInitialize object) as the <code>security-client-auth-factory</code>
  * system property.
  */
-class CPPCACHE_EXPORT AuthInitialize
-    : public ::apache::geode::client::SharedBase {
+class CPPCACHE_EXPORT AuthInitialize {
  public:
   /**@brief initialize with the given set of security properties
    * and return the credentials for the client as properties.

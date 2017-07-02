@@ -40,7 +40,9 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class CPPCACHE_EXPORT StructSetImpl : public StructSet {
+class CPPCACHE_EXPORT StructSetImpl
+    : public StructSet,
+      public std::enable_shared_from_this<StructSetImpl> {
  public:
   StructSetImpl(const CacheableVectorPtr& values,
                 const std::vector<CacheableStringPtr>& fieldNames);

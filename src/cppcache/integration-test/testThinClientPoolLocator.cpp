@@ -37,14 +37,11 @@ DUNIT_TASK(CLIENT1, SetupClient1_NoLocators_At_Init)
     try {
       createEntry(regionNames[0], keys[0], vals[0]);
     } catch (NotConnectedException& ex) {
-      try {
-        ExceptionPtr exCause =
-            dynCast<SharedPtr<NoAvailableLocatorsException> >(ex.getCause());
-      } catch (ClassCastException&) {
-        FAIL(
-            "NotconnectedException with cause NoAvailableLocatorsException was "
-            "not thrown.");
-      }
+      ASSERT(
+          std::dynamic_pointer_cast<NoAvailableLocatorsException>(
+              ex.getCause()),
+          "NotconnectedException with cause NoAvailableLocatorsException was "
+          "not thrown.");
     }
     LOG("SetupClient1 complete.");
   }
@@ -63,7 +60,7 @@ END_TASK(CreateLocators)
 DUNIT_TASK(SERVERS, CreateServer1)
   {
     // starting servers
-    if (isLocalServer) CacheHelper::initServer(1, NULL, locHostPort1);
+    if (isLocalServer) CacheHelper::initServer(1, nullptr, locHostPort1);
     LOG("Server 1 started");
   }
 END_TASK(CreateServer1)
@@ -96,7 +93,7 @@ END_TASK(ConnectC2)
 DUNIT_TASK(SERVERS, CreateServer2)
   {
     // starting servers
-    if (isLocalServer) CacheHelper::initServer(2, NULL, locHostPort2);
+    if (isLocalServer) CacheHelper::initServer(2, nullptr, locHostPort2);
     LOG("Server 2 started");
   }
 END_TASK(CreateServer2)
@@ -140,7 +137,7 @@ END_TASK(CloseLocator1)
 DUNIT_TASK(SERVERS, ReStartS1)
   {
     // Re- starting servers
-    if (isLocalServer) CacheHelper::initServer(1, NULL, locHostPort1);
+    if (isLocalServer) CacheHelper::initServer(1, nullptr, locHostPort1);
     LOG("Server 1 started");
   }
 END_TASK(ReStartS1)
@@ -197,12 +194,8 @@ DUNIT_TASK(CLIENT2, AgainFailoverC2)
       updateEntry(regionNames[0], keys[1], vals[1]);
       FAIL("Client Failover Should Fail");
     } catch (const NotConnectedException& ex) {
-      try {
-        ExceptionPtr exCause =
-            dynCast<SharedPtr<NoAvailableLocatorsException> >(ex.getCause());
-        LOG("Expected exception "
-            "NoAvailableLocatorsException got");
-      } catch (ClassCastException&) {
+      if (!std::dynamic_pointer_cast<NoAvailableLocatorsException>(
+              ex.getCause())) {
         LOG(ex.getName());
         LOG(ex.getMessage());
         FAIL(

@@ -15,43 +15,22 @@
  * limitations under the License.
  */
 
-#include "Utils.hpp"
-#include "ace/OS.h"
-#include "NanoTimer.hpp"
+#include <cstdio>
+#include <chrono>
+
+#include <ace/OS.h>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/INET_Addr.h>
-#include <cstdio>
 
-using namespace apache::geode::client;
+#include "Utils.hpp"
 
-#ifdef _WIN32
-
-pNew Utils::s_pNew = NULL;
-pDelete Utils::s_pDelete = NULL;
-bool Utils::s_setNewAndDelete = false;
-
-void* operator new(size_t size) {
-  if (!Utils::s_pNew) {
-    apache::geode::client::setDefaultNewAndDelete();
-  }
-  void* ret = Utils::s_pNew(size);
-  if (ret == NULL) {
-    throw apache::geode::client::OutOfMemoryException(
-        "Out of memory while executing operator new");
-  }
-  return ret;
-}
-
-void operator delete(void* p) { Utils::s_pDelete(p); }
-
-void* operator new[](size_t size) { return operator new(size); }
-
-void operator delete[](void* p) { operator delete(p); }
-
-#endif  // _WIN32
+namespace apache {
+namespace geode {
+namespace client {
 
 int RandGen::operator()(size_t max) {
-  unsigned int seed = static_cast<unsigned int>(NanoTimer::now());
+  unsigned int seed = static_cast<unsigned int>(
+      std::chrono::system_clock::now().time_since_epoch().count());
   return ACE_OS::rand_r(&seed) % max;
 }
 
@@ -67,7 +46,7 @@ std::string Utils::getEnv(const char* varName) {
   return varValue;
 #else
   char* varValue = ACE_OS::getenv(varName);
-  if (varValue == NULL) {
+  if (varValue == nullptr) {
     return "";
   }
   return varValue;
@@ -104,61 +83,8 @@ void Utils::parseEndpointString(const char* endpoints, std::string& host,
   port = atoi(endpointsStr.c_str());
 }
 
-/*
-std::string
-Utils::convertHostToCanonicalForm(const char* endpoint)
-{
-  ACE_INET_Addr aia;
-  char canonical[MAXHOSTNAMELEN + 11] = {0};
-
-  if ( endpoint == NULL ||
-       strlen(endpoint) == 0 ) {
-    LOGERROR("Cannot convert empty endpoint to canonical form");
-    return "";
-  }
-
-  // first convert the incoming endpoint string to an inet addr
-
-  if (aia.string_to_addr(endpoint) != 0) {
-    LOGERROR("Could not convert endpoint [%s] to inet addr", endpoint);
-    return endpoint;
-  }
-
-  // if its a loopback address, try to get our hostname
-
-  if (aia.is_loopback()) {
-    int port = atoi(strchr(endpoint, ':') + 1);
-    if (ACE_OS::hostname(canonical, MAXHOSTNAMELEN) == 0) {
-      struct hostent * host;
-      if ( (host = ACE_OS::gethostbyname(canonical)) != NULL ) {
-        if (h_errno != 0) {
-          return endpoint;
-        }
-        sprintf(canonical, "%s:%d", host->h_name, port);
-        if (aia.string_to_addr(canonical) != 0) {
-          LOGERROR("Could not convert canonical endpoint [%s] to inet addr",
-canonical);
-          return endpoint;
-        }
-      }
-    }
-  }
-
-  // convert first to FQDN host name, failing which try IP number
-
-  if ( aia.addr_to_string(canonical, MAXHOSTNAMELEN + 10, 0) != 0 &&
-       aia.addr_to_string(canonical, MAXHOSTNAMELEN + 10, 1) != 0 ) {
-    LOGERROR("Could not convert [%s] from inet addr to canonical form",
-endpoint);
-    return endpoint;
-  }
-
-  return canonical;
-}
-*/
-
 std::string Utils::convertHostToCanonicalForm(const char* endpoints) {
-  if (endpoints == NULL) return NULL;
+  if (endpoints == nullptr) return nullptr;
   std::string hostString("");
   uint16_t port = 0;
   std::string endpointsStr(endpoints);
@@ -230,8 +156,8 @@ void Utils::parseEndpointNamesString(
 }
 
 char* Utils::copyString(const char* str) {
-  char* resStr = NULL;
-  if (str != NULL) {
+  char* resStr = nullptr;
+  if (str != nullptr) {
     size_t strSize = strlen(str) + 1;
     resStr = new char[strSize];
     memcpy(resStr, str, strSize);
@@ -242,7 +168,7 @@ char* Utils::copyString(const char* str) {
 CacheableStringPtr Utils::convertBytesToString(const uint8_t* bytes,
                                                int32_t length,
                                                size_t maxLength) {
-  if (bytes != NULL) {
+  if (bytes != nullptr) {
     std::string str;
     size_t totalBytes = 0;
     char byteStr[20];
@@ -263,7 +189,7 @@ CacheableStringPtr Utils::convertBytesToString(const uint8_t* bytes,
 }
 
 int32_t Utils::logWideString(char* buf, size_t maxLen, const wchar_t* wStr) {
-  if (wStr != NULL) {
+  if (wStr != nullptr) {
     mbstate_t state;
     ACE_OS::memset(&state, 0, sizeof(mbstate_t));
     const char* bufStart = buf;
@@ -287,3 +213,7 @@ int32_t Utils::logWideString(char* buf, size_t maxLen, const wchar_t* wStr) {
     return ACE_OS::snprintf(buf, maxLen, "null");
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

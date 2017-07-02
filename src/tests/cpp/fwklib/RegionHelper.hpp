@@ -21,7 +21,7 @@
  */
 
 #include <geode/GeodeCppCache.hpp>
-#include <AtomicInc.hpp>
+
 #include "fwklib/FrameworkTest.hpp"
 #include "fwklib/FwkObjects.hpp"
 #include "fwklib/FwkStrCvt.hpp"
@@ -79,7 +79,7 @@ class RegionHelper {
     std::string sString;
 
     sString += attr->getCachingEnabled() ? "Caching" : "NoCache";
-    sString += (attr->getCacheListener() == NULLPTR) ? "Nlstnr" : "Lstnr";
+    sString += (attr->getCacheListener() == nullptr) ? "Nlstnr" : "Lstnr";
     return sString;
   }
 

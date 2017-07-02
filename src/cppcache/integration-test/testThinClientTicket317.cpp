@@ -37,7 +37,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
     LOG("Client1 started");
@@ -46,7 +46,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, SetupClient2)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
     LOG("Client2 started");
@@ -79,7 +79,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyKeyDestroyedOnServer)
   {
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
     CacheablePtr value = regPtr->get(keys[0]);
-    if (value != NULLPTR) {
+    if (value != nullptr) {
       FAIL("Entry not destroyed on server.");
     }
   }

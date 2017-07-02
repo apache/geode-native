@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
 #include "ExceptionTypes.hpp"
 #include <cstdlib>
 
@@ -114,7 +113,7 @@ namespace Apache
       {
         Exception^ innerException = nullptr;
         const apache::geode::client::ExceptionPtr& cause = nativeEx.getCause();
-        if (cause != NULLPTR) {
+        if (cause != nullptr) {
           innerException = GeodeException::Get(*cause);
         }
         String^ exName = gcnew String( nativeEx.getName( ) );

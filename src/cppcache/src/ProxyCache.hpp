@@ -52,7 +52,9 @@ class FunctionServiceImpl;
  * <p>A cache can have multiple root regions, each with a different name.
  *
  */
-class CPPCACHE_EXPORT ProxyCache : public RegionService {
+class CPPCACHE_EXPORT ProxyCache
+    : public RegionService,
+      public std::enable_shared_from_this<ProxyCache> {
   /**
    * @brief public methods
    */
@@ -79,7 +81,7 @@ class CPPCACHE_EXPORT ProxyCache : public RegionService {
 
   /** Look up a region with the full path from root.
    * @param path the region's path, such as <code>RootA/Sub1/Sub1A</code>.
-   * @returns region, or NULLPTR if no such region exists.
+   * @returns region, or nullptr if no such region exists.
    */
   virtual RegionPtr getRegion(const char* path);
 

@@ -76,31 +76,31 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
  public:
   /** Gets the cache loader for the region.
    * @return  a pointer that points to the region's ,
-   * <code>CacheLoader</code> , NULLPTR if there is no CacheLoader for this
+   * <code>CacheLoader</code> , nullptr if there is no CacheLoader for this
    * region.
    */
   CacheLoaderPtr getCacheLoader();
 
   /** Gets the cache writer for the region.
    * @return  a pointer that points to the region's ,
-   * <code>CacheWriter</code> , NULLPTR if there is no CacheWriter for this
+   * <code>CacheWriter</code> , nullptr if there is no CacheWriter for this
    * region
    */
   CacheWriterPtr getCacheWriter();
 
   /** Gets the cache listener for the region.
    * @return  a pointer that points to the region's ,
-   * <code>CacheListener</code> , NULLPTR if there is no CacheListener defined
+   * <code>CacheListener</code> , nullptr if there is no CacheListener defined
    * for this region.
    */
   CacheListenerPtr getCacheListener();
 
   /** Gets the partition resolver for the partition region.
-  * @return  a pointer that points to the region's ,
-  * <code>PartitionResolver</code> , NULLPTR if there is no PartitionResolver
-  * defined
-  * for this region.
-  */
+   * @return  a pointer that points to the region's ,
+   * <code>PartitionResolver</code> , nullptr if there is no PartitionResolver
+   * defined
+   * for this region.
+   */
   PartitionResolverPtr getPartitionResolver();
 
   /** Gets the <code>timeToLive</code> expiration attributes for the region as a
@@ -239,9 +239,9 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   const char* getCacheWriterFactory();
 
   /**
-  * This method returns the path of the library from which
-  * the factory function will be invoked on a cache server.
-  */
+   * This method returns the path of the library from which
+   * the factory function will be invoked on a cache server.
+   */
   const char* getPartitionResolverLibrary();
 
   /**
@@ -292,31 +292,31 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
 
   /** Gets the persistence for the region.
    * @return  a pointer that points to the region's ,
-   * <code>PersistenceManager</code> , NULLPTR if there is no PersistenceManager
+   * <code>PersistenceManager</code> , nullptr if there is no PersistenceManager
    * for this
    * region.
    */
   PersistenceManagerPtr getPersistenceManager();
 
   /** TODO
-    * Returns the name of the {@link Pool} that this region
-    * will use to communicate with servers, if any.
-    * @return the name of the client-server {@link Pool}
-    */
+   * Returns the name of the {@link Pool} that this region
+   * will use to communicate with servers, if any.
+   * @return the name of the client-server {@link Pool}
+   */
   const char* getPoolName() { return m_poolName; }
   bool getCloningEnabled() { return m_isClonable; }
 
   /**
-  * Returns true if concurrent update checks are turned on for this region.
-  * <p>
-  * @return true if concurrent update checks are turned on
-  */
+   * Returns true if concurrent update checks are turned on for this region.
+   * <p>
+   * @return true if concurrent update checks are turned on
+   */
   bool getConcurrencyChecksEnabled() { return m_isConcurrencyChecksEnabled; }
-
+  const RegionAttributes& operator=(const RegionAttributes&) = delete;
  private:
   // Helper function that safely compares two attribute string
   // taking into consideration the fact the one or the other
-  // might be NULL
+  // might be nullptr
   static int32_t compareStringAttribute(char* attributeA, char* attributeB);
 
   // Helper function that safely copies one string attribute to
@@ -347,6 +347,7 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   // will be created by the factory
   RegionAttributes(const RegionAttributes& rhs);
   RegionAttributes();
+
 
   ExpirationAction::Action m_regionTimeToLiveExpirationAction;
   ExpirationAction::Action m_regionIdleTimeoutExpirationAction;
@@ -393,8 +394,10 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   friend class RegionInternal;
   friend class RegionXmlCreation;
 
+
  private:
-  const RegionAttributes& operator=(const RegionAttributes&);
+
+  FRIEND_STD_SHARED_PTR(RegionAttributes)
 };
 }  // namespace client
 }  // namespace geode

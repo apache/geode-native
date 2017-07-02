@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+#include "begin_native.hpp"
+#include <geode/QueryService.hpp>
+#include "end_native.hpp"
 
 //#include "geode_includes.hpp"
 #include "CqAttributesFactory.hpp"
@@ -32,112 +35,126 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       generic<class TKey, class TResult>
-      void CqAttributesFactory<TKey, TResult>::AddCqListener(Client::ICqListener<TKey, TResult>^ cqListener )
+      void CqAttributesFactory<TKey, TResult>::AddCqListener( Client::ICqListener<TKey, TResult>^ cqListener )
       {
-        apache::geode::client::CqListenerPtr listenerptr;
+        native_shared_ptr<native::CqListener>^ listenerptr;
         if ( cqListener != nullptr ) {
-          ICqStatusListener<TKey, TResult>^ cqStatusListener = 
-            dynamic_cast<ICqStatusListener<TKey, TResult>^>(cqListener);
-          if (cqStatusListener != nullptr) {
-            CqStatusListenerGeneric<TKey, TResult>^ sLstr = gcnew CqStatusListenerGeneric<TKey, TResult>();
+          if (auto cqStatusListener = dynamic_cast<ICqStatusListener<TKey, TResult>^>(cqListener)) {
+            auto sLstr = gcnew CqStatusListenerGeneric<TKey, TResult>();
             sLstr->AddCqListener(cqListener);
-            listenerptr = new apache::geode::client::ManagedCqStatusListenerGeneric(cqListener);
+            listenerptr = gcnew native_shared_ptr<native::CqListener>(std::shared_ptr<native::ManagedCqStatusListenerGeneric>(new native::ManagedCqStatusListenerGeneric(cqListener)));
             try {
               CqListenerHelper<TKey, TResult>::g_readerWriterLock->AcquireWriterLock(-1);
-              if ( CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->ContainsKey( cqListener) ) {
-                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict[cqListener] = (IntPtr)listenerptr.ptr();
+              if ( CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->ContainsKey(cqListener) ) {
+                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict[cqListener] = listenerptr;
               }
               else {
-                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->Add(cqListener, (IntPtr)listenerptr.ptr());
+                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->Add(cqListener, listenerptr);
               }
-            } finally {
-                CqListenerHelper<TKey, TResult>::g_readerWriterLock->ReleaseWriterLock();
             }
-            ((apache::geode::client::ManagedCqStatusListenerGeneric*)listenerptr.ptr())->setptr(sLstr);
+            finally {
+              CqListenerHelper<TKey, TResult>::g_readerWriterLock->ReleaseWriterLock();
+            }
+            ((native::ManagedCqStatusListenerGeneric*)listenerptr->get())->setptr(sLstr);
           }
           else {
             //TODO::split
-            CqListenerGeneric<TKey, TResult>^ cqlg = gcnew CqListenerGeneric<TKey, TResult>();
+            auto cqlg = gcnew CqListenerGeneric<TKey, TResult>();
             cqlg->AddCqListener(cqListener);
-            //listenerptr = new apache::geode::client::ManagedCqListenerGeneric((ICqListener<Object^, Object^>^)cqListener );
-            listenerptr = new apache::geode::client::ManagedCqListenerGeneric( /*clg,*/ cqListener );
+            listenerptr = gcnew native_shared_ptr<native::CqListener>(std::shared_ptr<native::ManagedCqListenerGeneric>(new native::ManagedCqListenerGeneric(cqListener)));
             try {
               CqListenerHelper<TKey, TResult>::g_readerWriterLock->AcquireWriterLock(-1);
-              if ( CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->ContainsKey( cqListener) ) {
-                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict[cqListener] = (IntPtr)listenerptr.ptr();
+              if ( CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->ContainsKey(cqListener) ) {
+                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict[cqListener] = listenerptr; 
               }
               else {
-                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->Add(cqListener, (IntPtr)listenerptr.ptr());
+                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->Add(cqListener, listenerptr);
               }
             } finally {
                 CqListenerHelper<TKey, TResult>::g_readerWriterLock->ReleaseWriterLock();
             }
-            ((apache::geode::client::ManagedCqListenerGeneric*)listenerptr.ptr())->setptr(cqlg);
+            ((native::ManagedCqListenerGeneric*)listenerptr->get())->setptr(cqlg);            
           }
         }
-
-        NativePtr->addCqListener( listenerptr );
+        try
+        {
+          m_nativeptr->get()->addCqListener( listenerptr->get_shared_ptr() );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TResult>
-      void CqAttributesFactory<TKey, TResult>::InitCqListeners(array<Client::ICqListener<TKey, TResult>^>^ cqListeners)
+      void CqAttributesFactory<TKey, TResult>::InitCqListeners(array<Client::ICqListener<TKey, TResult>^>^ newListeners)
       {
-        apache::geode::client::VectorOfCqListener vrr;
-        for( int i = 0; i < cqListeners->Length; i++ )
+        native::CqAttributes::listener_container_type vrr;
+        for( int i = 0; i < newListeners->Length; i++ )
         {
-          ICqStatusListener<TKey, TResult>^ lister = dynamic_cast<ICqStatusListener<TKey, TResult>^>(cqListeners[i]);
-          if (lister != nullptr) {
-            apache::geode::client::CqStatusListenerPtr cptr(new apache::geode::client::ManagedCqStatusListenerGeneric(
-              (ICqStatusListener<TKey, TResult>^)lister ));
-            vrr.push_back(cptr);
-            CqStatusListenerGeneric<TKey, TResult>^ cqlg = gcnew CqStatusListenerGeneric<TKey, TResult>();
-            cqlg->AddCqListener(cqListeners[i]);
+          if (auto lister = dynamic_cast<Client::ICqStatusListener<TKey, TResult>^>(newListeners[i])) {
+            auto cptr = gcnew native_shared_ptr<native::CqListener>(std::shared_ptr<native::ManagedCqStatusListenerGeneric>(new native::ManagedCqStatusListenerGeneric(lister)));
+            vrr.push_back(cptr->get_shared_ptr());
+            auto cqlg = gcnew CqStatusListenerGeneric<TKey, TResult>();
+            cqlg->AddCqListener(newListeners[i]);
             try {
               CqListenerHelper<TKey, TResult>::g_readerWriterLock->AcquireWriterLock(-1);
-              if ( CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->ContainsKey( cqListeners[i]) ) {
-                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict[cqListeners[i]] = (IntPtr)cptr.ptr();
+              if ( CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->ContainsKey( newListeners[i]) ) {
+                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict[newListeners[i]] = cptr;
               }
               else {
-                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->Add(cqListeners[i], (IntPtr)cptr.ptr());
+                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->Add(newListeners[i], cptr);
               }
             } finally {
                 CqListenerHelper<TKey, TResult>::g_readerWriterLock->ReleaseWriterLock();
             }
-            ((apache::geode::client::ManagedCqStatusListenerGeneric*)vrr[i].ptr())->setptr(cqlg);
+            ((native::ManagedCqStatusListenerGeneric*)cptr->get())->setptr(cqlg);
           }
           else {
-            ICqListener<TKey, TResult>^ lister = cqListeners[i];
-            apache::geode::client::CqListenerPtr cptr(new apache::geode::client::ManagedCqListenerGeneric(
-              (ICqListener<TKey, TResult>^)lister ));
-            vrr.push_back(cptr);
-            CqListenerGeneric<TKey, TResult>^ cqlg = gcnew CqListenerGeneric<TKey, TResult>();
-            cqlg->AddCqListener(cqListeners[i]);
+            auto cptr = gcnew native_shared_ptr<native::CqListener>(std::shared_ptr<native::ManagedCqListenerGeneric>(new native::ManagedCqListenerGeneric(newListeners[i])));
+            vrr.push_back(cptr->get_shared_ptr());
+            auto cqlg = gcnew CqListenerGeneric<TKey, TResult>();
+            cqlg->AddCqListener(newListeners[i]);
             try {
               CqListenerHelper<TKey, TResult>::g_readerWriterLock->AcquireWriterLock(-1);
-              if ( CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->ContainsKey( cqListeners[i]) ) {
-                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict[cqListeners[i]] = (IntPtr)cptr.ptr();
+              if ( CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->ContainsKey( newListeners[i]) ) {
+                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict[newListeners[i]] = cptr;
               }
               else {
-                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->Add(cqListeners[i], (IntPtr)cptr.ptr());
+                CqListenerHelper<TKey, TResult>::m_ManagedVsUnManagedCqLstrDict->Add(newListeners[i], cptr);
               }
             } finally {
                 CqListenerHelper<TKey, TResult>::g_readerWriterLock->ReleaseWriterLock();
             }
-            ((apache::geode::client::ManagedCqListenerGeneric*)vrr[i].ptr())->setptr(cqlg);
+            ((native::ManagedCqListenerGeneric*)cptr->get())->setptr(cqlg);
           }
         }
 
-        NativePtr->initCqListeners( vrr );
+        try
+        {
+          m_nativeptr->get()->initCqListeners( vrr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TResult>
       Client::CqAttributes<TKey, TResult>^ CqAttributesFactory<TKey, TResult>::Create( )
       {
-        return Client::CqAttributes<TKey, TResult>::Create(NativePtr->create().ptr());
+        try
+        {
+          return Client::CqAttributes<TKey, TResult>::Create(m_nativeptr->get()->create());
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
-} //namespace 

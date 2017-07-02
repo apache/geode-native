@@ -30,7 +30,7 @@ namespace geode {
 namespace client {
 
 class PdxWriter;
-typedef SharedPtr<PdxWriter> PdxWriterPtr;
+typedef std::shared_ptr<PdxWriter> PdxWriterPtr;
 
 /**
  * A PdxWriter will be passed to PdxSerializable.toData
@@ -38,7 +38,7 @@ typedef SharedPtr<PdxWriter> PdxWriterPtr;
  * member
  * fields using this abstract class. This class is implemented by Native Client.
  */
-class CPPCACHE_EXPORT PdxWriter : public SharedBase {
+class CPPCACHE_EXPORT PdxWriter {
  public:
   /**
    * @brief constructors
@@ -47,7 +47,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
 
   /**
    * @brief destructor
-  */
+   */
   virtual ~PdxWriter() {}
 
   /**
@@ -58,7 +58,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param value The value of the field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty
+   * or fieldName is nullptr or empty
    */
   virtual PdxWriterPtr writeChar(const char* fieldName, char value) = 0;
 
@@ -70,8 +70,8 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param value The value of the field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty
-  */
+   * or fieldName is nullptr or empty
+   */
   virtual PdxWriterPtr writeWideChar(const char* fieldName, wchar_t value) = 0;
 
   /**
@@ -82,7 +82,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param value the value of the field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty
+   * or fieldName is nullptr or empty
    */
   virtual PdxWriterPtr writeBoolean(const char* fieldName, bool value) = 0;
 
@@ -94,8 +94,8 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param value the value of the field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty
-  */
+   * or fieldName is nullptr or empty
+   */
   virtual PdxWriterPtr writeByte(const char* fieldName, int8_t value) = 0;
 
   /**
@@ -106,7 +106,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param value the value of the field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty
+   * or fieldName is nullptr or empty
    */
   virtual PdxWriterPtr writeShort(const char* fieldName, int16_t value) = 0;
 
@@ -118,7 +118,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param value the value of the field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty
+   * or fieldName is nullptr or empty
    */
   virtual PdxWriterPtr writeInt(const char* fieldName, int32_t value) = 0;
 
@@ -130,7 +130,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param value the value of the field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty
+   * or fieldName is nullptr or empty
    */
   virtual PdxWriterPtr writeLong(const char* fieldName, int64_t value) = 0;
 
@@ -142,7 +142,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param value the value of the field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty
+   * or fieldName is nullptr or empty
    */
   virtual PdxWriterPtr writeFloat(const char* fieldName, float value) = 0;
 
@@ -154,7 +154,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param value the value of the field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty
+   * or fieldName is nullptr or empty
    */
   virtual PdxWriterPtr writeDouble(const char* fieldName, double value) = 0;
 
@@ -166,7 +166,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param value the value of the field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty
+   * or fieldName is nullptr or empty
    */
   virtual PdxWriterPtr writeDate(const char* fieldName,
                                  CacheableDatePtr date) = 0;
@@ -179,7 +179,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param value the value of the field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty
+   * or fieldName is nullptr or empty
    */
   virtual PdxWriterPtr writeString(const char* fieldName,
                                    const char* value) = 0;
@@ -192,7 +192,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param value the value of the field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty
+   * or fieldName is nullptr or empty
    */
   virtual PdxWriterPtr writeWideString(const char* fieldName,
                                        const wchar_t* value) = 0;
@@ -212,7 +212,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param value the value of the field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty.
+   * or fieldName is nullptr or empty.
    */
   virtual PdxWriterPtr writeObject(const char* fieldName,
                                    CacheablePtr value) = 0;
@@ -226,7 +226,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty.
+   * or fieldName is nullptr or empty.
    */
   virtual PdxWriterPtr writeBooleanArray(const char* fieldName, bool* array,
                                          int length) = 0;
@@ -240,7 +240,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty.
+   * or fieldName is nullptr or empty.
    */
   virtual PdxWriterPtr writeWideCharArray(const char* fieldName, wchar_t* array,
                                           int length) = 0;
@@ -254,7 +254,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty.
+   * or fieldName is nullptr or empty.
    */
   virtual PdxWriterPtr writeCharArray(const char* fieldName, char* array,
                                       int length) = 0;
@@ -268,7 +268,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty.
+   * or fieldName is nullptr or empty.
    */
   virtual PdxWriterPtr writeByteArray(const char* fieldName, int8_t* array,
                                       int length) = 0;
@@ -282,7 +282,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty.
+   * or fieldName is nullptr or empty.
    */
   virtual PdxWriterPtr writeShortArray(const char* fieldName, int16_t* array,
                                        int length) = 0;
@@ -296,7 +296,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty.
+   * or fieldName is nullptr or empty.
    */
   virtual PdxWriterPtr writeIntArray(const char* fieldName, int32_t* array,
                                      int length) = 0;
@@ -310,7 +310,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty.
+   * or fieldName is nullptr or empty.
    */
   virtual PdxWriterPtr writeLongArray(const char* fieldName, int64_t* array,
                                       int length) = 0;
@@ -324,7 +324,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty.
+   * or fieldName is nullptr or empty.
    */
   virtual PdxWriterPtr writeFloatArray(const char* fieldName, float* array,
                                        int length) = 0;
@@ -338,7 +338,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty.
+   * or fieldName is nullptr or empty.
    */
   virtual PdxWriterPtr writeDoubleArray(const char* fieldName, double* array,
                                         int length) = 0;
@@ -352,7 +352,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty.
+   * or fieldName is nullptr or empty.
    */
   virtual PdxWriterPtr writeStringArray(const char* fieldName, char** array,
                                         int length) = 0;
@@ -366,7 +366,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty.
+   * or fieldName is nullptr or empty.
    */
   virtual PdxWriterPtr writeWideStringArray(const char* fieldName,
                                             wchar_t** array, int length) = 0;
@@ -383,7 +383,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param array the value of the field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty.
+   * or fieldName is nullptr or empty.
    */
   virtual PdxWriterPtr writeObjectArray(const char* fieldName,
                                         CacheableObjectArrayPtr array) = 0;
@@ -399,7 +399,7 @@ class CPPCACHE_EXPORT PdxWriter : public SharedBase {
    * @param elementLength the length of the individual byte arrays to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
-   * or fieldName is NULL or empty.
+   * or fieldName is nullptr or empty.
    */
   virtual PdxWriterPtr writeArrayOfByteArrays(const char* fieldName,
                                               int8_t** array, int arrayLength,

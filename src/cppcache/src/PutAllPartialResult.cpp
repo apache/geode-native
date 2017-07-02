@@ -22,7 +22,7 @@ namespace client {
 
 PutAllPartialResult::PutAllPartialResult(
     int totalMapSize, ACE_Recursive_Thread_Mutex& responseLock) {
-  m_succeededKeys = new VersionedCacheableObjectPartList(
+  m_succeededKeys = std::make_shared<VersionedCacheableObjectPartList>(
       new VectorOfCacheableKey(), responseLock);
   m_totalMapSize = totalMapSize;
 }

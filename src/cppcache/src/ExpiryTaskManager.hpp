@@ -42,6 +42,7 @@ namespace client {
  */
 class CPPCACHE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
  public:
+  typedef long id_type;
   /**
    * This class allows resetting of the timer to take immediate effect when
    * done from inside ACE_Event_Handler::handle_timeout(). With the default
@@ -80,7 +81,7 @@ class CPPCACHE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
       ACE_TRACE("GF_Timer_Heap_ImmediateReset_T::expire_single");
       ACE_Timer_Node_Dispatch_Info_T<TYPE> info;
       ACE_Time_Value cur_time;
-      ACE_Timer_Node_T<TYPE>* expired = NULL;
+      ACE_Timer_Node_T<TYPE>* expired = nullptr;
 
       // Create a scope for the lock ...
       {
@@ -93,7 +94,7 @@ class CPPCACHE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
 
         expired = this->getFirstNode(cur_time, info);
 
-        if (expired == NULL) return 0;
+        if (expired == nullptr) return 0;
       }
 
       const void* upcall_act = 0;
@@ -152,9 +153,9 @@ class CPPCACHE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
         return 0;
       }
       int number_of_timers_expired = 0;
-      ACE_Timer_Node_T<TYPE>* expired = NULL;
+      ACE_Timer_Node_T<TYPE>* expired = nullptr;
       ACE_Timer_Node_Dispatch_Info_T<TYPE> info;
-      while ((expired = this->getFirstNode(cur_time, info)) != NULL) {
+      while ((expired = this->getFirstNode(cur_time, info)) != nullptr) {
         const void* upcall_act = 0;
         this->preinvoke(info, cur_time, upcall_act);
 
@@ -194,16 +195,16 @@ class CPPCACHE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
       ACE_TRACE("GF_Timer_Heap_ImmediateReset_T::getFirstNode");
 
       if (this->is_empty()) {
-        return NULL;
+        return nullptr;
       }
-      ACE_Timer_Node_T<TYPE>* expired = NULL;
+      ACE_Timer_Node_T<TYPE>* expired = nullptr;
       if (this->earliest_time() <= cur_time) {
         expired = this->get_first();
         // Get the dispatch info
         expired->get_dispatch_info(info);
         return expired;
       }
-      return NULL;
+      return nullptr;
     }
   };
 
@@ -240,13 +241,13 @@ class CPPCACHE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
    * millisec - The time after which you would like it to get
    * invoked from the current time.
    */
-  int resetTask(long id, uint32_t sec);
+  int resetTask(id_type id, uint32_t sec);
   /**
    * for cancelling an already registered task.
    * returns '0' if successful '-1' on failure.
    * id - the id assigned to the expiry task initially.
    */
-  int cancelTask(long id);
+  int cancelTask(id_type id);
   /**
    * A separate thread is started in which the reactor event loop
    * is kept running unless explicitly stopped or when this object

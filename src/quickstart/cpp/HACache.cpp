@@ -81,12 +81,12 @@ int main(int argc, char** argv) {
 
     int count = 0;
 
-    if (regionPtr->get(key1) == NULLPTR) {
+    if (regionPtr->get(key1) == nullptr) {
       LOGINFO("Verified that key1 has been destroyed");
       count++;
     }
 
-    if (regionPtr->get(key2) == NULLPTR) {
+    if (regionPtr->get(key2) == nullptr) {
       LOGINFO("Verified that key2 has been destroyed");
       count++;
     }

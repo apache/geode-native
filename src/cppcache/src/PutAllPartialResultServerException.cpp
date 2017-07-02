@@ -29,7 +29,7 @@ PutAllPartialResultServerException::PutAllPartialResultServerException(
 PutAllPartialResultServerException::PutAllPartialResultServerException() {
   LOGDEBUG("Partial keys are processed in putAll");
   ACE_Recursive_Thread_Mutex responseLock;
-  m_result = new PutAllPartialResult(-1, responseLock);
+  m_result = std::make_shared<PutAllPartialResult>(-1, responseLock);
 }
 
 void PutAllPartialResultServerException::consolidate(
@@ -75,7 +75,7 @@ void PutAllPartialResultServerException::toData(DataOutput& output) const {
 Serializable* PutAllPartialResultServerException::fromData(DataInput& input) {
   throw IllegalStateException(
       "PutAllPartialResultServerException::fromData is not intended for use.");
-  return NULL;
+  return nullptr;
 }
 
 int32_t PutAllPartialResultServerException::classId() const {

@@ -56,14 +56,14 @@ class ThinClientTallyLoader : public TallyLoader {
 
   CacheablePtr load(const RegionPtr& rp, const CacheableKeyPtr& key,
                     const UserDataPtr& aCallbackArgument) {
-    int32_t loadValue = dynCast<CacheableInt32Ptr>(
+    int32_t loadValue = std::dynamic_pointer_cast<CacheableInt32>(
                             TallyLoader::load(rp, key, aCallbackArgument))
                             ->value();
     char lstrvalue[32];
     sprintf(lstrvalue, "%i", loadValue);
     CacheableStringPtr lreturnValue = CacheableString::create(lstrvalue);
-    if (key != NULLPTR && (NULL != rp->getAttributes()->getEndpoints() ||
-                           rp->getAttributes()->getPoolName() != NULL)) {
+    if (key != nullptr && (nullptr != rp->getAttributes()->getEndpoints() ||
+                           rp->getAttributes()->getPoolName() != nullptr)) {
       LOGDEBUG("Putting the value (%s) for local region clients only ",
                lstrvalue);
       rp->put(key, lreturnValue);
@@ -122,11 +122,11 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, SetupClient_Pooled_Locator)
   {
     initClient(true);
-    reg1Listener1 = new TallyListener();
+    reg1Listener1 = std::make_shared<TallyListener>();
     createPooledRegion(regionNames[0], false, locatorsG, poolName, true,
                        reg1Listener1);
-    reg1Loader1 = new ThinClientTallyLoader();
-    reg1Writer1 = new TallyWriter();
+    reg1Loader1 = std::make_shared<ThinClientTallyLoader>();
+    reg1Writer1 = std::make_shared<TallyWriter>();
     setCacheLoader(regionNames[0], reg1Loader1);
     setCacheWriter(regionNames[0], reg1Writer1);
   }
@@ -138,7 +138,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testLoaderAndWriter)
     CacheableKeyPtr keyPtr = CacheableKey::create(keys[0]);
     VectorOfCacheableKey keys;
     keys.push_back(keyPtr);
-    regPtr->registerKeys(keys, NULLPTR);
+    regPtr->registerKeys(keys);
 
     /*NIL: Changed the asserion due to the change in invalidate.
       Now we create new entery for every invalidate event received or
@@ -146,7 +146,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testLoaderAndWriter)
       so expect  containsKey to returns true insted of false earlier. */
     ASSERT(regPtr->containsKey(keyPtr), "Key should found in region.");
     // now having all the Callbacks set, lets call the loader and writer
-    ASSERT(regPtr->get(keyPtr) != NULLPTR, "Expected non null value");
+    ASSERT(regPtr->get(keyPtr) != nullptr, "Expected non null value");
 
     RegionEntryPtr regEntryPtr = regPtr->getEntry(keyPtr);
     CacheablePtr valuePtr = regEntryPtr->getValue();
@@ -168,7 +168,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testCreatesAndUpdates)
     VectorOfCacheableKey keys;
     keys.push_back(keyPtr1);
     keys.push_back(keyPtr2);
-    regPtr->registerKeys(keys, NULLPTR);
+    regPtr->registerKeys(keys);
 
     // Do a create followed by a create on the same key
     /*NIL: Changed the asserion due to the change in invalidate.
@@ -187,7 +187,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testCreatesAndUpdates)
     see bug #252
     try {
       regPtr->create(keyPtr1, nvals[1]);
-      ASSERT(NULL, "Expected an EntryExistsException");
+      ASSERT(nullptr, "Expected an EntryExistsException");
     } catch(EntryExistsException &) {
       //Expected Behavior
     }

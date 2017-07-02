@@ -33,7 +33,7 @@ namespace client {
 PdxWrapper::PdxWrapper(void *userObject, const char *className) {
   m_userObject = userObject;
 
-  if (className != NULL) {
+  if (className != nullptr) {
     m_className = Utils::copyString(className);
   } else {
     LOGERROR("Class name not provided to PdxWrapper constructor");
@@ -43,7 +43,7 @@ PdxWrapper::PdxWrapper(void *userObject, const char *className) {
 
   m_serializer = SerializationRegistry::getPdxSerializer();
 
-  if (m_serializer == NULLPTR) {
+  if (m_serializer == nullptr) {
     LOGERROR("No registered PDX serializer found for PdxWrapper");
     throw IllegalArgumentException(
         "No registered PDX serializer found for PdxWrapper");
@@ -51,7 +51,7 @@ PdxWrapper::PdxWrapper(void *userObject, const char *className) {
 
   m_deallocator = m_serializer->getDeallocator(className);
 
-  if (m_deallocator == NULL) {
+  if (m_deallocator == nullptr) {
     LOGERROR(
         "No deallocator function found from PDX serializer for PdxWrapper for "
         "%s",
@@ -60,12 +60,12 @@ PdxWrapper::PdxWrapper(void *userObject, const char *className) {
         "No deallocator function found from PDX serializer for PdxWrapper");
   }
 
-  /* m_sizer can be NULL - required only if heap LRU is enabled */
+  /* m_sizer can be nullptr - required only if heap LRU is enabled */
   m_sizer = m_serializer->getObjectSizer(className);
 }
 
 PdxWrapper::PdxWrapper(const char *className) {
-  if (className != NULL) {
+  if (className != nullptr) {
     m_className = Utils::copyString(className);
   } else {
     LOGERROR("Class name not provided to PdxWrapper for deserialization");
@@ -75,7 +75,7 @@ PdxWrapper::PdxWrapper(const char *className) {
 
   m_serializer = SerializationRegistry::getPdxSerializer();
 
-  if (m_serializer == NULLPTR) {
+  if (m_serializer == nullptr) {
     LOGERROR(
         "No registered PDX serializer found for PdxWrapper deserialization");
     throw IllegalArgumentException(
@@ -84,7 +84,7 @@ PdxWrapper::PdxWrapper(const char *className) {
 
   m_deallocator = m_serializer->getDeallocator(className);
 
-  if (m_deallocator == NULL) {
+  if (m_deallocator == nullptr) {
     LOGERROR(
         "No deallocator function found from PDX serializer for PdxWrapper "
         "deserialization for %s",
@@ -94,7 +94,7 @@ PdxWrapper::PdxWrapper(const char *className) {
         "deserialization");
   }
 
-  /* m_sizer can be NULL - required only if heap LRU is enabled */
+  /* m_sizer can be nullptr - required only if heap LRU is enabled */
   m_sizer = m_serializer->getObjectSizer(className);
 
   /* adongre   - Coverity II
@@ -106,7 +106,7 @@ PdxWrapper::PdxWrapper(const char *className) {
 void *PdxWrapper::getObject(bool detach) {
   void *retVal = m_userObject;
   if (detach) {
-    m_userObject = NULL;
+    m_userObject = nullptr;
   }
   return retVal;
 }
@@ -118,7 +118,7 @@ const char *PdxWrapper::getClassName() const {
 bool PdxWrapper::operator==(const CacheableKey &other) const {
   PdxWrapper *wrapper =
       dynamic_cast<PdxWrapper *>(const_cast<CacheableKey *>(&other));
-  if (wrapper == NULL) {
+  if (wrapper == nullptr) {
     return false;
   }
   return (intptr_t)m_userObject == (intptr_t)wrapper->m_userObject;
@@ -130,12 +130,12 @@ int32_t PdxWrapper::hashcode() const {
 }
 
 void PdxWrapper::toData(PdxWriterPtr output) {
-  if (m_userObject != NULL) {
+  if (m_userObject != nullptr) {
     m_serializer->toData(m_userObject, (const char *)m_className, output);
   } else {
-    LOGERROR("User object is NULL or detached in PdxWrapper toData");
+    LOGERROR("User object is nullptr or detached in PdxWrapper toData");
     throw IllegalStateException(
-        "User object is NULL or detached in PdxWrapper toData");
+        "User object is nullptr or detached in PdxWrapper toData");
   }
 }
 
@@ -154,7 +154,7 @@ Serializable *PdxWrapper::fromData(DataInput &input) {
 }
 
 uint32_t PdxWrapper::objectSize() const {
-  if (m_sizer == NULL || m_userObject == NULL) {
+  if (m_sizer == nullptr || m_userObject == nullptr) {
     return 0;
   } else {
     return m_sizer(m_userObject, (const char *)m_className);
@@ -168,7 +168,7 @@ CacheableStringPtr PdxWrapper::toString() const {
 }
 
 PdxWrapper::~PdxWrapper() {
-  if (m_userObject != NULL) {
+  if (m_userObject != nullptr) {
     m_deallocator(m_userObject, (const char *)m_className);
   }
   delete[] m_className;

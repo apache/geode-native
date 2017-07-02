@@ -38,7 +38,7 @@ CredentialGeneratorPtr credentialGeneratorHandler;
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
   const char* path = ACE_OS::getenv("TESTSRC");
-  ASSERT(path != NULL,
+  ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
   strcat(xmlPath, "xml/Security/");
@@ -64,8 +64,8 @@ void initCredentialGenerator() {
     }
   }
 
-  if (credentialGeneratorHandler == NULLPTR) {
-    FAIL("credentialGeneratorHandler is NULL");
+  if (credentialGeneratorHandler == nullptr) {
+    FAIL("credentialGeneratorHandler is nullptr");
   }
 
   loopNum++;
@@ -126,31 +126,34 @@ void initClientAuth(char UserType) {
   credentialGeneratorHandler->getAuthInit(config);
   switch (UserType) {
     case 'W':
-      credentialGeneratorHandler->getAllowedCredentialsForOps(wr, config, NULL);
+      credentialGeneratorHandler->getAllowedCredentialsForOps(wr, config,
+                                                              nullptr);
       break;
     case 'R':
-      credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config, NULL);
+      credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config,
+                                                              nullptr);
       break;
     case 'A':
-      credentialGeneratorHandler->getAllowedCredentialsForOps(ad, config, NULL);
+      credentialGeneratorHandler->getAllowedCredentialsForOps(ad, config,
+                                                              nullptr);
     default:
       break;
   }
 
-  CacheableStringPtr alias(config->find("security-alias"));
-  CacheableStringPtr uname(config->find("security-username"));
-  CacheableStringPtr passwd(config->find("security-password"));
+  auto alias = config->find("security-alias");
+  auto uname = config->find("security-username");
+  auto passwd = config->find("security-password");
 
   char msgAlias[100];
   char msgUname[100];
   char msgPasswd[100];
 
   sprintf(msgAlias, "PKCS alias is %s",
-          alias == NULLPTR ? "null" : alias->asChar());
+          alias == nullptr ? "null" : alias->asChar());
   sprintf(msgUname, "username is %s",
-          uname == NULLPTR ? "null" : uname->asChar());
+          uname == nullptr ? "null" : uname->asChar());
   sprintf(msgPasswd, "password is %s",
-          passwd == NULLPTR ? "null" : passwd->asChar());
+          passwd == nullptr ? "null" : passwd->asChar());
 
   LOG(msgAlias);
   LOG(msgUname);
@@ -227,7 +230,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       HashMapOfCacheable entrymap;
       entrymap.clear();
       for (int i = 0; i < 5; i++) {
-        entrymap.insert(CacheableKey::create(i), CacheableInt32::create(i));
+        entrymap.emplace(CacheableKey::create(i), CacheableInt32::create(i));
       }
       RegionPtr regPtr = getHelper()->getRegion(regionNamesAuth[0]);
       regPtr->putAll(entrymap);
@@ -239,9 +242,9 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       for (int i = 0; i < 5; i++) {
         entrykeys.push_back(CacheableKey::create(i));
       }
-      HashMapOfCacheablePtr valuesMap(new HashMapOfCacheable());
+      auto valuesMap = std::make_shared<HashMapOfCacheable>();
       valuesMap->clear();
-      regPtr->getAll(entrykeys, valuesMap, NULLPTR, false);
+      regPtr->getAll(entrykeys, valuesMap, nullptr, false);
       if (valuesMap->size() > 0) {
         LOG("GetAll completed successfully");
       } else {
@@ -251,7 +254,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       LOG("Query completed successfully");
       PoolPtr pool = PoolManager::find(regionNamesAuth[0]);
       QueryServicePtr qs;
-      if (pool != NULLPTR) {
+      if (pool != nullptr) {
         // Using region name as pool name
         qs = pool->getQueryService();
       } else {
@@ -260,11 +263,11 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       char queryString[100];
       sprintf(queryString, "select * from /%s", regionNamesAuth[0]);
       CqAttributesFactory cqFac;
-      CqAttributesPtr cqAttrs(cqFac.create());
+      auto cqAttrs = cqFac.create();
       CqQueryPtr qry = qs->newCq("cq_security", queryString, cqAttrs);
       qs->executeCqs();
       LOG("CQ completed successfully");
-      if (pool != NULLPTR) {
+      if (pool != nullptr) {
         FunctionService::onServer(pool)
             ->execute("securityTest", true)
             ->getResult();
@@ -288,7 +291,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       createEntry(regionNamesAuth[0], keys[2], vals[2]);
       LOG("Entry created successfully");
       RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
-      if (regPtr0 != NULLPTR) {
+      if (regPtr0 != nullptr) {
         LOG("Going to do registerAllKeys");
         regPtr0->registerAllKeys();
         LOG("Going to do unregisterAllKeys");
@@ -314,7 +317,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       HashMapOfCacheable entrymap;
       entrymap.clear();
       for (int i = 0; i < 5; i++) {
-        entrymap.insert(CacheableKey::create(i), CacheableInt32::create(i));
+        entrymap.emplace(CacheableKey::create(i), CacheableInt32::create(i));
       }
       RegionPtr regPtr = getHelper()->getRegion(regionNamesAuth[0]);
       regPtr->putAll(entrymap);
@@ -338,16 +341,16 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
     try {
       RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
       CacheableKeyPtr keyPtr = CacheableKey::create(keys[2]);
-      CacheableStringPtr checkPtr =
-          dynCast<CacheableStringPtr>(regPtr0->get(keyPtr));
-      if (checkPtr != NULLPTR) {
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
+      if (checkPtr != nullptr) {
         char buf[1024];
         sprintf(buf, "In net search, get returned %s for key %s",
                 checkPtr->asChar(), keys[2]);
         LOG(buf);
         FAIL("Should not get the value");
       } else {
-        LOG("checkPtr is NULL");
+        LOG("checkPtr is nullptr");
       }
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION
@@ -367,9 +370,9 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       for (int i = 0; i < 5; i++) {
         entrykeys.push_back(CacheableKey::create(i));
       }
-      HashMapOfCacheablePtr valuesMap(new HashMapOfCacheable());
+      auto valuesMap = std::make_shared<HashMapOfCacheable>();
       valuesMap->clear();
-      regPtr0->getAll(entrykeys, valuesMap, NULLPTR, false);
+      regPtr0->getAll(entrykeys, valuesMap, nullptr, false);
       if (valuesMap->size() > 0) {
         FAIL("GetAll should not have completed successfully");
       }
@@ -386,7 +389,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
 
     try {
       QueryServicePtr qs;
-      if (pool != NULLPTR) {
+      if (pool != nullptr) {
         // Using region name as pool name
         qs = pool->getQueryService();
       } else {
@@ -395,7 +398,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       char queryString[100];
       sprintf(queryString, "select * from /%s", regionNamesAuth[0]);
       CqAttributesFactory cqFac;
-      CqAttributesPtr cqAttrs(cqFac.create());
+      auto cqAttrs = cqFac.create();
       CqQueryPtr qry = qs->newCq("cq_security", queryString, cqAttrs);
       qs->executeCqs();
       FAIL("CQ should not have completed successfully");
@@ -403,7 +406,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 
     try {
-      if (pool != NULLPTR) {
+      if (pool != nullptr) {
         FunctionService::onServer(pool)
             ->execute("securityTest", true)
             ->getResult();
@@ -467,21 +470,21 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
     try {
       RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
       CacheableKeyPtr keyPtr = CacheableKey::create(keys[2]);
-      CacheableStringPtr checkPtr =
-          dynCast<CacheableStringPtr>(regPtr0->get(keyPtr));
-      if (checkPtr != NULLPTR) {
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
+      if (checkPtr != nullptr) {
         char buf[1024];
         sprintf(buf, "In net search, get returned %s for key %s",
                 checkPtr->asChar(), keys[2]);
         LOG(buf);
       } else {
-        LOG("checkPtr is NULL");
+        LOG("checkPtr is nullptr");
       }
     }
     HANDLE_NO_NOT_AUTHORIZED_EXCEPTION
 
     RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
-    if (regPtr0 != NULLPTR) {
+    if (regPtr0 != nullptr) {
       try {
         LOG("Going to do registerAllKeys");
         regPtr0->registerAllKeys();
@@ -495,7 +498,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
       HashMapOfCacheable entrymap;
       entrymap.clear();
       for (int i = 0; i < 5; i++) {
-        entrymap.insert(CacheableKey::create(i), CacheableInt32::create(i));
+        entrymap.emplace(CacheableKey::create(i), CacheableInt32::create(i));
       }
       regPtr0->putAll(entrymap);
       FAIL("PutAll should not have completed successfully");
@@ -507,9 +510,9 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
       for (int i = 0; i < 5; i++) {
         entrykeys.push_back(CacheableKey::create(i));
       }
-      HashMapOfCacheablePtr valuesMap(new HashMapOfCacheable());
+      auto valuesMap = std::make_shared<HashMapOfCacheable>();
       valuesMap->clear();
-      regPtr0->getAll(entrykeys, valuesMap, NULLPTR, false);
+      regPtr0->getAll(entrykeys, valuesMap, nullptr, false);
       if (valuesMap->size() > 0) {
         LOG("GetAll completed successfully");
       } else {
@@ -528,7 +531,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
 
     try {
       QueryServicePtr qs;
-      if (pool != NULLPTR) {
+      if (pool != nullptr) {
         // Using region name as pool name
         qs = pool->getQueryService();
       } else {
@@ -537,7 +540,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
       char queryString[100];
       sprintf(queryString, "select * from /%s", regionNamesAuth[0]);
       CqAttributesFactory cqFac;
-      CqAttributesPtr cqAttrs(cqFac.create());
+      auto cqAttrs = cqFac.create();
       CqQueryPtr qry = qs->newCq("cq_security", queryString, cqAttrs);
       qs->executeCqs();
       //    FAIL("CQ should not have completed successfully");
@@ -545,7 +548,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 
     try {
-      if (pool != NULLPTR) {
+      if (pool != nullptr) {
         FunctionService::onServer(pool)
             ->execute("securityTest", true)
             ->getResult();

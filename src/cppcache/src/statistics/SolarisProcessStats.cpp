@@ -37,7 +37,7 @@ SolarisProcessStats::SolarisProcessStats(int64_t pid, const char* name) {
 
   // Create Statistics
   this->stats = statFactory->createOsStatistics(m_statsType, name, pid);
-  GF_D_ASSERT(this->stats != NULL);
+  GF_D_ASSERT(this->stats != nullptr);
 
 // Refresh Stats Values
 #if defined(_SOLARIS)
@@ -89,7 +89,7 @@ void SolarisProcessStats::createType(StatisticsFactory* statFactory) {
     } catch (Exception&) {
       m_statsType = statFactory->findType("SolarisProcessStats");
     }
-    if (m_statsType == NULL) {
+    if (m_statsType == nullptr) {
       throw OutOfMemoryException("SolarisProcessStats::createType: out memory");
     }
     imageSizeINT = m_statsType->nameToId("imageSize");
@@ -113,18 +113,20 @@ int32_t SolarisProcessStats::getCpuUsage() {
   return stats->getInt(hostCpuUsageINT);
 }
 int64_t SolarisProcessStats::getCPUTime() { return stats->getInt(userTimeINT); }
-int32_t SolarisProcessStats::getNumThreads() { return stats->getInt(threadsINT); }
+int32_t SolarisProcessStats::getNumThreads() {
+  return stats->getInt(threadsINT);
+}
 int64_t SolarisProcessStats::getAllCpuTime() {
   return ((stats->getInt(userTimeINT)) + (stats->getInt(systemTimeINT)));
 }
 
 void SolarisProcessStats::close() {
-  if (stats != NULL) {
+  if (stats != nullptr) {
     stats->close();
   }
 }
 
 SolarisProcessStats::~SolarisProcessStats() {
-  m_statsType = NULL;
-  stats = NULL;
+  m_statsType = nullptr;
+  stats = nullptr;
 }

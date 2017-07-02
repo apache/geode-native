@@ -33,7 +33,12 @@
 #include "ServerLocation.hpp"
 #include <ace/INET_Addr.h>
 #include <set>
-using namespace apache::geode::client;
+#include <thread>
+#include <chrono>
+
+namespace apache {
+namespace geode {
+namespace client {
 volatile bool TcrConnectionManager::isNetDown = false;
 volatile bool TcrConnectionManager::TEST_DURABLE_CLIENT_CRASH = false;
 
@@ -45,15 +50,15 @@ TcrConnectionManager::TcrConnectionManager(CacheImpl *cache)
     : m_cache(cache),
       m_initGuard(false),
       m_failoverSema(0),
-      m_failoverTask(NULL),
+      m_failoverTask(nullptr),
       m_cleanupSema(0),
-      m_cleanupTask(NULL),
+      m_cleanupTask(nullptr),
       m_pingTaskId(-1),
       m_servermonitorTaskId(-1),
       // Create the queues with flag to not delete the objects
       m_notifyCleanupSemaList(false),
       m_redundancySema(0),
-      m_redundancyTask(NULL),
+      m_redundancyTask(nullptr),
       m_isDurable(false) {
   m_redundancyManager = new ThinClientRedundancyManager(this);
 }
@@ -84,9 +89,9 @@ void TcrConnectionManager::init(bool isPool) {
   const char *endpoints;
   m_redundancyManager->m_HAenabled = false;
 
-  if (cacheAttributes != NULLPTR &&
+  if (cacheAttributes != nullptr &&
       (cacheAttributes->getRedundancyLevel() > 0 || m_isDurable) &&
-      (endpoints = cacheAttributes->getEndpoints()) != NULL &&
+      (endpoints = cacheAttributes->getEndpoints()) != nullptr &&
       strcmp(endpoints, "none") != 0) {
     initializeHAEndpoints(endpoints);  // no distributaion manager at this point
     m_redundancyManager->initialize(cacheAttributes->getRedundancyLevel());
@@ -126,14 +131,14 @@ void TcrConnectionManager::init(bool isPool) {
 }
 
 void TcrConnectionManager::startFailoverAndCleanupThreads(bool isPool) {
-  if (m_failoverTask == NULL || m_cleanupTask == NULL) {
+  if (m_failoverTask == nullptr || m_cleanupTask == nullptr) {
     ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_distMngrsLock);
-    if (m_failoverTask == NULL && !isPool) {
+    if (m_failoverTask == nullptr && !isPool) {
       m_failoverTask = new Task<TcrConnectionManager>(
           this, &TcrConnectionManager::failover, NC_Failover);
       m_failoverTask->start();
     }
-    if (m_cleanupTask == NULL && !isPool) {
+    if (m_cleanupTask == nullptr && !isPool) {
       if (m_redundancyManager->m_HAenabled && !isPool) {
         m_redundancyManager->startPeriodicAck();
       }
@@ -150,7 +155,7 @@ void TcrConnectionManager::close() {
     CacheImpl::expiryTaskManager->cancelTask(m_pingTaskId);
   }
 
-  if (m_failoverTask != NULL) {
+  if (m_failoverTask != nullptr) {
     m_failoverTask->stopNoblock();
     m_failoverSema.release();
     m_failoverTask->wait();
@@ -158,12 +163,12 @@ void TcrConnectionManager::close() {
   }
 
   CacheAttributesPtr cacheAttributes = m_cache->getAttributes();
-  if (cacheAttributes != NULLPTR &&
+  if (cacheAttributes != nullptr &&
       (cacheAttributes->getRedundancyLevel() > 0 || m_isDurable)) {
     if (m_servermonitorTaskId > 0) {
       CacheImpl::expiryTaskManager->cancelTask(m_servermonitorTaskId);
     }
-    if (m_redundancyTask != NULL) {
+    if (m_redundancyTask != nullptr) {
       m_redundancyTask->stopNoblock();
       m_redundancySema.release();
       m_redundancyTask->wait();
@@ -186,7 +191,7 @@ void TcrConnectionManager::readyForEvents() {
 }
 
 TcrConnectionManager::~TcrConnectionManager() {
-  if (m_cleanupTask != NULL) {
+  if (m_cleanupTask != nullptr) {
     m_cleanupTask->stopNoblock();
     m_cleanupSema.release();
     m_cleanupTask->wait();
@@ -260,7 +265,7 @@ void TcrConnectionManager::connect(
   if (m_redundancyManager->m_globalProcessedMarker) {
     TcrHADistributionManager *tcrHADM =
         dynamic_cast<TcrHADistributionManager *>(distMng);
-    if (tcrHADM != NULL) {
+    if (tcrHADM != nullptr) {
       ThinClientHARegion *tcrHARegion =
           dynamic_cast<ThinClientHARegion *>(tcrHADM->m_region);
       tcrHARegion->setProcessedMarker();
@@ -270,7 +275,7 @@ void TcrConnectionManager::connect(
 
 TcrEndpoint *TcrConnectionManager::addRefToTcrEndpoint(std::string endpointName,
                                                        ThinClientBaseDM *dm) {
-  TcrEndpoint *ep = NULL;
+  TcrEndpoint *ep = nullptr;
   /*
   endpointName = Utils::convertHostToCanonicalForm(endpointName.c_str());
   */
@@ -329,7 +334,7 @@ bool TcrConnectionManager::removeRefToEndpoint(TcrEndpoint *ep,
 
 int TcrConnectionManager::processEventIdMap(const ACE_Time_Value &currTime,
                                             const void *) {
-  return m_redundancyManager->processEventIdMap(currTime, NULL);
+  return m_redundancyManager->processEventIdMap(currTime, nullptr);
 }
 
 int TcrConnectionManager::checkConnection(const ACE_Time_Value &,
@@ -413,7 +418,7 @@ GfErrType TcrConnectionManager::registerInterestAllRegions(
   for (std::list<ThinClientBaseDM *>::iterator it = begin; it != end; ++it) {
     TcrHADistributionManager *tcrHADM =
         dynamic_cast<TcrHADistributionManager *>(*it);
-    if (tcrHADM != NULL) {
+    if (tcrHADM != nullptr) {
       if ((opErr = tcrHADM->registerInterestForRegion(ep, request, reply)) !=
           GF_NOERR) {
         if (err == GF_NOERR) {
@@ -438,7 +443,7 @@ GfErrType TcrConnectionManager::sendSyncRequestCq(TcrMessage &request,
   for (std::list<ThinClientBaseDM *>::iterator it = begin; it != end; ++it) {
     TcrHADistributionManager *tcrHADM =
         dynamic_cast<TcrHADistributionManager *>(*it);
-    if (tcrHADM != NULL) {
+    if (tcrHADM != nullptr) {
       return tcrHADM->sendSyncRequestCq(request, reply);
     }
   }
@@ -475,7 +480,7 @@ void TcrConnectionManager::netDown() {
   isNetDown = true;
 
   //  sleep for 15 seconds to allow ping and redundancy threads to pause.
-  apache::geode::client::millisleep(15000);
+  std::this_thread::sleep_for(std::chrono::seconds(15));
 
   {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpoints.mutex());
@@ -498,7 +503,7 @@ void TcrConnectionManager::revive() {
 
   //  sleep for 15 seconds to allow redundancy thread to reestablish
   //  connections.
-  apache::geode::client::millisleep(15000);
+  std::this_thread::sleep_for(std::chrono::seconds(15));
 }
 
 int TcrConnectionManager::redundancy(volatile bool &isRunning) {
@@ -601,3 +606,6 @@ GfErrType TcrConnectionManager::sendSyncRequestRegisterInterest(
   return m_redundancyManager->sendSyncRequestRegisterInterest(
       request, reply, attemptFailover, endpoint, theHADM, region);
 }
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

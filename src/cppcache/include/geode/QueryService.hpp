@@ -43,8 +43,10 @@ namespace client {
  * A Query is created from a QueryService and executed on the server
  * returning a SelectResults which can be either a ResultSet or a StructSet.
  */
-class CPPCACHE_EXPORT QueryService : public SharedBase {
+class CPPCACHE_EXPORT QueryService {
  public:
+  typedef std::vector<CqQueryPtr> query_container_type;
+
   /**
    * Get a new Query with the specified query string.
    *
@@ -68,7 +70,7 @@ class CPPCACHE_EXPORT QueryService : public SharedBase {
    * @throws CqExistsException if a CQ by this name already exists on this
    * client
    * @throws IllegalArgumentException if queryString is null, or cqAttr is
-   * NULLPTR
+   * nullptr
    * @throws IllegalStateException if this method is called from a cache
    *         server
    * @throws QueryInvalidException if there is a syntax error in the query
@@ -102,7 +104,7 @@ class CPPCACHE_EXPORT QueryService : public SharedBase {
    * @throws CqExistsException if a CQ by this name already exists on this
    * client
    * @throws IllegalArgumentException if queryString is null, or cqAttr is
-   * NULLPTR
+   * nullptr
    * @throws IllegalStateException if this method is called from a cache
    *         server
    * @throws QueryInvalidException if there is a syntax error in the query
@@ -134,11 +136,11 @@ class CPPCACHE_EXPORT QueryService : public SharedBase {
    * Retrieve  all registered CQs
    * @endnativeclient
    */
-  virtual void getCqs(VectorOfCqQuery& vec) = 0;
+  virtual void getCqs(query_container_type& vec) = 0;
   /**
    * @nativeclient
    * Retrieve a CqQuery by name.
-   * @return the CqQuery or NULLPTR if not found
+   * @return the CqQuery or nullptr if not found
    * @endnativeclient
    */
   virtual CqQueryPtr getCq(const char* name) = 0;

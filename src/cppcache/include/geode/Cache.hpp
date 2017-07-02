@@ -42,6 +42,7 @@ namespace client {
 class CacheFactory;
 class CacheRegionHelper;
 class Pool;
+class CacheImpl;
 
 /**
  * @class Cache Cache.hpp
@@ -56,7 +57,8 @@ class Pool;
  * <p>A cache can have multiple root regions, each with a different name.
  *
  */
-class CPPCACHE_EXPORT Cache : public GeodeCache {
+class CPPCACHE_EXPORT Cache : public GeodeCache,
+                              public std::enable_shared_from_this<Cache> {
   /**
    * @brief public methods
    */
@@ -131,7 +133,7 @@ class CPPCACHE_EXPORT Cache : public GeodeCache {
    * Cache#createAuthenticatedView(PropertiesPtr).
    *
    * @param path the region's name, such as <code>AuthRegion</code>.
-   * @returns region, or NULLPTR if no such region exists.
+   * @returns region, or nullptr if no such region exists.
    */
   virtual RegionPtr getRegion(const char* path);
 
@@ -146,18 +148,18 @@ class CPPCACHE_EXPORT Cache : public GeodeCache {
   virtual void rootRegions(VectorOfRegion& regions);
 
   /**
-  * Gets the QueryService from which a new Query can be obtained.
-  * @returns A smart pointer to the QueryService.
-  */
+   * Gets the QueryService from which a new Query can be obtained.
+   * @returns A smart pointer to the QueryService.
+   */
   virtual QueryServicePtr getQueryService();
 
   /**
-  * Gets the QueryService from which a new Query can be obtained.
-  * @param poolName
-  *        Pass poolname if pool is created from cache.xml or {@link
-  * PoolManager}
-  * @returns A smart pointer to the QueryService.
-  */
+   * Gets the QueryService from which a new Query can be obtained.
+   * @param poolName
+   *        Pass poolname if pool is created from cache.xml or {@link
+   * PoolManager}
+   * @returns A smart pointer to the QueryService.
+   */
   virtual QueryServicePtr getQueryService(const char* poolName);
 
   /**
@@ -189,24 +191,24 @@ class CPPCACHE_EXPORT Cache : public GeodeCache {
    */
 
   virtual RegionServicePtr createAuthenticatedView(
-      PropertiesPtr userSecurityProperties, const char* poolName = NULL);
+      PropertiesPtr userSecurityProperties, const char* poolName = nullptr);
 
   /**
-  * Get the CacheTransactionManager instance for this Cache.
-  * @return The CacheTransactionManager instance.
-  * @throws CacheClosedException if the cache is closed.
-  */
+   * Get the CacheTransactionManager instance for this Cache.
+   * @return The CacheTransactionManager instance.
+   * @throws CacheClosedException if the cache is closed.
+   */
   virtual CacheTransactionManagerPtr getCacheTransactionManager();
 
   /**
-    * Returns whether Cache saves unread fields for Pdx types.
-    */
+   * Returns whether Cache saves unread fields for Pdx types.
+   */
   virtual bool getPdxIgnoreUnreadFields();
 
   /**
-  * Returns whether { @link PdxInstance} is preferred for PDX types instead of
-  * C++ object.
-  */
+   * Returns whether { @link PdxInstance} is preferred for PDX types instead of
+   * C++ object.
+   */
   virtual bool getPdxReadSerialized();
 
   /**
@@ -214,28 +216,27 @@ class CPPCACHE_EXPORT Cache : public GeodeCache {
    * @param className the fully qualified class name that the PdxInstance will
    * become
    * when it is fully deserialized.
-   * @throws IllegalStateException if the className is NULL or invalid.
+   * @throws IllegalStateException if the className is nullptr or invalid.
    * @return the factory
    */
   virtual PdxInstanceFactoryPtr createPdxInstanceFactory(const char* className);
 
   /**
-    * @brief destructor
-    */
+   * @brief destructor
+   */
   virtual ~Cache();
 
  private:
   /**
    * @brief constructors
    */
-  Cache(const char* name, DistributedSystemPtr sys, bool ignorePdxUnreadFields,
-        bool readPdxSerialized);
   Cache(const char* name, DistributedSystemPtr sys, const char* id_data,
         bool ignorePdxUnreadFields, bool readPdxSerialized);
-  CacheImpl* m_cacheImpl;
+
+  std::unique_ptr<CacheImpl> m_cacheImpl;
 
  protected:
-  Cache() { m_cacheImpl = NULL; }
+  Cache() = delete;
 
   static bool isPoolInMultiuserMode(RegionPtr regionPtr);
 
@@ -245,6 +246,8 @@ class CPPCACHE_EXPORT Cache : public GeodeCache {
   friend class FunctionService;
   friend class CacheXmlCreation;
   friend class RegionXmlCreation;
+
+  FRIEND_STD_SHARED_PTR(Cache)
 };
 }  // namespace client
 }  // namespace geode

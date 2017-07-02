@@ -39,16 +39,16 @@ RemoteQuery::RemoteQuery(const char* querystr,
 
 SelectResultsPtr RemoteQuery::execute(uint32_t timeout) {
   GuardUserAttribures gua;
-  if (m_proxyCache != NULLPTR) {
+  if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);
   }
-  return execute(timeout, "Query::execute", m_tccdm, NULLPTR);
+  return execute(timeout, "Query::execute", m_tccdm, nullptr);
 }
 
 SelectResultsPtr RemoteQuery::execute(CacheableVectorPtr paramList,
                                       uint32_t timeout) {
   GuardUserAttribures gua;
-  if (m_proxyCache != NULLPTR) {
+  if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);
   }
   return execute(timeout, "Query::execute", m_tccdm, paramList);
@@ -66,7 +66,7 @@ SelectResultsPtr RemoteQuery::execute(uint32_t timeout, const char* func,
     throw IllegalArgumentException(exMsg);
   }
   ThinClientPoolDM* pool = dynamic_cast<ThinClientPoolDM*>(tcdm);
-  if (pool != NULL) {
+  if (pool != nullptr) {
     pool->getStats().incQueryExecutionId();
   }
   /*get the start time for QueryExecutionTime stat*/
@@ -88,7 +88,7 @@ SelectResultsPtr RemoteQuery::execute(uint32_t timeout, const char* func,
   if (sizeOfFieldNamesVec == 0) {
     LOGFINEST("%s: creating ResultSet for query: %s", func,
               m_queryString.c_str());
-    sr = new ResultSetImpl(values);
+    sr = std::make_shared<ResultSetImpl>(values);
   } else {
     if (values->size() % fieldNameVec.size() != 0) {
       char exMsg[1024];
@@ -100,12 +100,12 @@ SelectResultsPtr RemoteQuery::execute(uint32_t timeout, const char* func,
     } else {
       LOGFINEST("%s: creating StructSet for query: %s", func,
                 m_queryString.c_str());
-      sr = new StructSetImpl(values, fieldNameVec);
+      sr = std::make_shared<StructSetImpl>(values, fieldNameVec);
     }
   }
 
   /*update QueryExecutionTime stat */
-  if (pool != NULL) {
+  if (pool != nullptr) {
     Utils::updateStatOpTime(
         pool->getStats().getStats(),
         PoolStatType::getInstance()->getQueryExecutionTimeId(),
@@ -127,17 +127,17 @@ GfErrType RemoteQuery::executeNoThrow(uint32_t timeout, TcrMessageReply& reply,
   }
   LOGDEBUG("%s: creating QUERY TcrMessage for query: %s", func,
            m_queryString.c_str());
-  if (paramList != NULLPTR) {
+  if (paramList != nullptr) {
     // QUERY_WITH_PARAMETERS
     TcrMessageQueryWithParameters msg(
-        m_queryString, NULLPTR, paramList,
+        m_queryString, nullptr, paramList,
         static_cast<int>(timeout * 1000) /* in milli second */, tcdm);
     msg.setTimeout(timeout);
     reply.setTimeout(timeout);
 
     GfErrType err = GF_NOERR;
     LOGFINEST("%s: sending request for query: %s", func, m_queryString.c_str());
-    if (tcdm == NULL) {
+    if (tcdm == nullptr) {
       tcdm = m_tccdm;
     }
     err = tcdm->sendSyncRequest(msg, reply);
@@ -160,7 +160,7 @@ GfErrType RemoteQuery::executeNoThrow(uint32_t timeout, TcrMessageReply& reply,
 
     GfErrType err = GF_NOERR;
     LOGFINEST("%s: sending request for query: %s", func, m_queryString.c_str());
-    if (tcdm == NULL) {
+    if (tcdm == nullptr) {
       tcdm = m_tccdm;
     }
     err = tcdm->sendSyncRequest(msg, reply);

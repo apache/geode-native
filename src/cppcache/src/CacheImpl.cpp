@@ -43,13 +43,12 @@
 
 using namespace apache::geode::client;
 
-ExpiryTaskManager* CacheImpl::expiryTaskManager = NULL;
-CacheImpl* CacheImpl::s_instance = NULL;
+ExpiryTaskManager* CacheImpl::expiryTaskManager = nullptr;
+CacheImpl* CacheImpl::s_instance = nullptr;
 volatile bool CacheImpl::s_networkhop = false;
 volatile int CacheImpl::s_blacklistBucketTimeout = 0;
 ACE_Recursive_Thread_Mutex CacheImpl::s_nwHopLock;
 volatile int8_t CacheImpl::s_serverGroupFlag = 0;
-MemberListForVersionStampPtr CacheImpl::s_versionStampMemIdList = NULLPTR;
 
 #define DEFAULT_LRU_MAXIMUM_ENTRIES 100000
 
@@ -59,7 +58,7 @@ ExpiryTaskManager* getCacheImplExpiryTaskManager() {
 
 CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
                      const char* id_data, bool iPUF, bool readPdxSerialized)
-    : m_defaultPool(NULLPTR),
+    : m_defaultPool(nullptr),
       m_ignorePdxUnreadFields(iPUF),
       m_readPdxSerialized(readPdxSerialized),
       m_closed(false),
@@ -67,13 +66,13 @@ CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
       m_distributedSystem(sys),
       m_implementee(c),
       m_cond(m_mutex),
-      m_attributes(NULLPTR),
-      m_evictionControllerPtr(NULL),
-      m_tcrConnectionManager(NULL),
-      m_remoteQueryServicePtr(NULLPTR),
+      m_attributes(nullptr),
+      m_evictionControllerPtr(nullptr),
+      m_tcrConnectionManager(nullptr),
+      m_remoteQueryServicePtr(nullptr),
       m_destroyPending(false),
       m_initDone(false),
-      m_adminRegion(NULLPTR) {
+      m_adminRegion(nullptr) {
   m_cacheTXManager = InternalCacheTransactionManager2PCPtr(
       new InternalCacheTransactionManager2PCImpl(c));
 
@@ -92,7 +91,7 @@ CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
   }
   /*
   else {
-    LOGFINE("Eviction controller is NULL");
+    LOGFINE("Eviction controller is nullptr");
   }
   */
 
@@ -106,7 +105,7 @@ CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
 
 CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
                      bool iPUF, bool readPdxSerialized)
-    : m_defaultPool(NULLPTR),
+    : m_defaultPool(nullptr),
       m_ignorePdxUnreadFields(iPUF),
       m_readPdxSerialized(readPdxSerialized),
       m_closed(false),
@@ -114,13 +113,13 @@ CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
       m_distributedSystem(sys),
       m_implementee(c),
       m_cond(m_mutex),
-      m_attributes(NULLPTR),
-      m_evictionControllerPtr(NULL),
-      m_tcrConnectionManager(NULL),
-      m_remoteQueryServicePtr(NULLPTR),
+      m_attributes(nullptr),
+      m_evictionControllerPtr(nullptr),
+      m_tcrConnectionManager(nullptr),
+      m_remoteQueryServicePtr(nullptr),
       m_destroyPending(false),
       m_initDone(false),
-      m_adminRegion(NULLPTR) {
+      m_adminRegion(nullptr) {
   m_cacheTXManager = InternalCacheTransactionManager2PCPtr(
       new InternalCacheTransactionManager2PCImpl(c));
 
@@ -138,7 +137,7 @@ CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
   }
   /*
   else {
-    LOGFINE("Eviction controller is NULL");
+    LOGFINE("Eviction controller is nullptr");
   }
   */
 
@@ -153,20 +152,18 @@ CacheImpl::CacheImpl(Cache* c, const char* name, DistributedSystemPtr sys,
 void CacheImpl::initServices() {
   m_tcrConnectionManager = new TcrConnectionManager(this);
   PdxTypeRegistry::init();
-  CacheImpl::s_versionStampMemIdList =
-      MemberListForVersionStampPtr(new MemberListForVersionStamp());
-  if (!m_initDone && m_attributes != NULLPTR && m_attributes->getEndpoints()) {
+  if (!m_initDone && m_attributes != nullptr && m_attributes->getEndpoints()) {
     if (PoolManager::getAll().size() > 0 && getCacheMode()) {
       LOGWARN(
           "At least one pool has been created so ignoring cache level "
           "redundancy setting");
     }
     m_tcrConnectionManager->init();
-    m_remoteQueryServicePtr = new RemoteQueryService(this);
+    m_remoteQueryServicePtr = std::make_shared<RemoteQueryService>(this);
     // StartAdminRegion
     SystemProperties* prop = DistributedSystem::getSystemProperties();
     if (prop && prop->statisticsEnabled()) {
-      m_adminRegion = new AdminRegion(this);
+      m_adminRegion = AdminRegion::create(this);
     }
     m_initDone = true;
   }
@@ -194,17 +191,11 @@ int8_t CacheImpl::getAndResetServerGroupFlag() {
 void CacheImpl::netDown() {
   m_tcrConnectionManager->netDown();
 
-  const HashMapOfPools& pools = PoolManager::getAll();
-  PoolPtr currPool = NULLPTR;
-  for (HashMapOfPools::Iterator itr = pools.begin(); itr != pools.end();
-       itr++) {
-    currPool = itr.second();
-    try {
-      ThinClientPoolHADMPtr poolHADM = dynCast<ThinClientPoolHADMPtr>(currPool);
+  for (const auto& itr : PoolManager::getAll()) {
+    auto currPool = itr.second;
+    if (auto poolHADM =
+            std::dynamic_pointer_cast<ThinClientPoolHADM>(currPool)) {
       poolHADM->netDown();
-    } catch (const ClassCastException&) {
-      // Expect a ClassCastException for non-HA PoolDMs.
-      continue;
     }
   }
 }
@@ -214,18 +205,18 @@ void CacheImpl::revive() { m_tcrConnectionManager->revive(); }
 CacheImpl::RegionKind CacheImpl::getRegionKind(
     const RegionAttributesPtr& rattrs) const {
   RegionKind regionKind = CPP_REGION;
-  const char* endpoints = NULL;
+  const char* endpoints = nullptr;
 
-  if (m_attributes != NULLPTR &&
-      (endpoints = m_attributes->getEndpoints()) != NULL &&
+  if (m_attributes != nullptr &&
+      (endpoints = m_attributes->getEndpoints()) != nullptr &&
       (m_attributes->getRedundancyLevel() > 0 ||
        m_tcrConnectionManager->isDurable())) {
     regionKind = THINCLIENT_HA_REGION;
-  } else if (endpoints != NULL && rattrs->getEndpoints() == NULL) {
+  } else if (endpoints != nullptr && rattrs->getEndpoints() == nullptr) {
     rattrs->setEndpoints(endpoints);
   }
 
-  if ((endpoints = rattrs->getEndpoints()) != NULL) {
+  if ((endpoints = rattrs->getEndpoints()) != nullptr) {
     if (strcmp(endpoints, "none") == 0) {
       regionKind = CPP_REGION;
     } else if (regionKind != THINCLIENT_HA_REGION) {
@@ -233,7 +224,7 @@ CacheImpl::RegionKind CacheImpl::getRegionKind(
     }
   } else if (rattrs->getPoolName()) {
     PoolPtr pPtr = PoolManager::find(rattrs->getPoolName());
-    if ((pPtr != NULLPTR && (pPtr->getSubscriptionRedundancy() > 0 ||
+    if ((pPtr != nullptr && (pPtr->getSubscriptionRedundancy() > 0 ||
                              pPtr->getSubscriptionEnabled())) ||
         m_tcrConnectionManager->isDurable()) {
       regionKind = THINCLIENT_HA_REGION;  // As of now ThinClinetHARegion deals
@@ -257,16 +248,16 @@ int CacheImpl::removeRegion(const char* name) {
 }
 
 QueryServicePtr CacheImpl::getQueryService(bool noInit) {
-  if (m_defaultPool != NULLPTR) {
+  if (m_defaultPool != nullptr) {
     if (m_defaultPool->isDestroyed()) {
       throw IllegalStateException("Pool has been destroyed.");
     }
     return m_defaultPool->getQueryService();
   }
 
-  if (m_remoteQueryServicePtr == NULLPTR) {
+  if (m_remoteQueryServicePtr == nullptr) {
     m_tcrConnectionManager->init();
-    m_remoteQueryServicePtr = new RemoteQueryService(this);
+    m_remoteQueryServicePtr = std::make_shared<RemoteQueryService>(this);
   }
   if (!noInit) {
     m_remoteQueryServicePtr->init();
@@ -275,12 +266,12 @@ QueryServicePtr CacheImpl::getQueryService(bool noInit) {
 }
 
 QueryServicePtr CacheImpl::getQueryService(const char* poolName) {
-  if (poolName == NULL || strlen(poolName) == 0) {
-    throw IllegalArgumentException("PoolName is NULL or not defined..");
+  if (poolName == nullptr || strlen(poolName) == 0) {
+    throw IllegalArgumentException("PoolName is nullptr or not defined..");
   }
   PoolPtr pool = PoolManager::find(poolName);
 
-  if (pool != NULLPTR) {
+  if (pool != nullptr) {
     if (pool->isDestroyed()) {
       throw IllegalStateException("Pool has been destroyed.");
     }
@@ -295,11 +286,11 @@ CacheImpl::~CacheImpl() {
     close();
   }
 
-  if (m_regions != NULL) {
+  if (m_regions != nullptr) {
     delete m_regions;
   }
 
-  if (m_name != NULL) {
+  if (m_name != nullptr) {
     delete[] m_name;
   }
 }
@@ -314,7 +305,7 @@ const char* CacheImpl::getName() const {
 bool CacheImpl::isClosed() const { return m_closed; }
 
 void CacheImpl::setAttributes(const CacheAttributesPtr& attrs) {
-  if (m_attributes == NULLPTR && attrs != NULLPTR) {
+  if (m_attributes == nullptr && attrs != nullptr) {
     m_attributes = attrs;
   }
 }
@@ -327,12 +318,9 @@ void CacheImpl::getDistributedSystem(DistributedSystemPtr& dptr) const {
 }
 
 void CacheImpl::sendNotificationCloseMsgs() {
-  HashMapOfPools pools = PoolManager::getAll();
-  for (HashMapOfPools::Iterator iter = pools.begin(); iter != pools.end();
-       ++iter) {
-    ThinClientPoolHADM* pool =
-        dynamic_cast<ThinClientPoolHADM*>(iter.second().ptr());
-    if (pool != NULL) {
+  for (const auto& iter : PoolManager::getAll()) {
+    if (const auto& pool =
+            std::dynamic_pointer_cast<ThinClientPoolHADM>(iter.second)) {
       pool->sendNotificationCloseMsgs();
     }
   }
@@ -353,15 +341,15 @@ void CacheImpl::close(bool keepalive) {
   if (m_closed || (!m_initialized)) return;
 
   // Close the distribution manager used for queries.
-  if (m_remoteQueryServicePtr != NULLPTR) {
+  if (m_remoteQueryServicePtr != nullptr) {
     m_remoteQueryServicePtr->close();
-    m_remoteQueryServicePtr = NULLPTR;
+    m_remoteQueryServicePtr = nullptr;
   }
 
   // Close AdminRegion
-  if (m_adminRegion != NULLPTR) {
+  if (m_adminRegion != nullptr) {
     m_adminRegion->close();
-    m_adminRegion = NULLPTR;
+    m_adminRegion = nullptr;
   }
 
   // The TCCM gets destroyed when CacheImpl is destroyed, but after that there
@@ -369,7 +357,7 @@ void CacheImpl::close(bool keepalive) {
   // because expiryTaskManager is closed in DS::disconnect. If this happens
   // then the handler will work on an already destroyed object which would
   // lead to a SEGV. So cancelling the task in TcrConnectionManager::close().
-  if (m_tcrConnectionManager != NULL) {
+  if (m_tcrConnectionManager != nullptr) {
     m_tcrConnectionManager->close();
   }
 
@@ -380,15 +368,16 @@ void CacheImpl::close(bool keepalive) {
        ++q) {
     // TODO: remove dynamic_cast here by having RegionInternal in the regions
     // map
-    RegionInternal* rImpl = dynamic_cast<RegionInternal*>((*q).int_id_.ptr());
-    if (rImpl != NULL) {
+    RegionInternalPtr rImpl =
+        std::dynamic_pointer_cast<RegionInternal>((*q).int_id_);
+    if (rImpl != nullptr) {
       rImpl->destroyRegionNoThrow(
-          NULLPTR, false,
+          nullptr, false,
           CacheEventFlags::LOCAL | CacheEventFlags::CACHE_CLOSE);
     }
   }
 
-  if (m_evictionControllerPtr != NULL) {
+  if (m_evictionControllerPtr != nullptr) {
     m_evictionControllerPtr->stop();
     GF_SAFE_DELETE(m_evictionControllerPtr);
   }
@@ -413,7 +402,7 @@ void CacheImpl::close(bool keepalive) {
   LOGDEBUG("CacheImpl::close( ): destroyed regions.");
 
   GF_SAFE_DELETE(m_tcrConnectionManager);
-  m_cacheTXManager = NULLPTR;
+  m_cacheTXManager = nullptr;
   m_closed = true;
 
   LOGFINE("Cache closed.");
@@ -439,7 +428,7 @@ void CacheImpl::validateRegionAttributes(
   }
 }
 
-// We'll pass a NULL loader function pointer and let the region.get method to
+// We'll pass a nullptr loader function pointer and let the region.get method to
 // do a load using a real C++ loader, instead of passing a member function
 // pointer here
 void CacheImpl::createRegion(const char* name,
@@ -450,10 +439,10 @@ void CacheImpl::createRegion(const char* name,
     if (!m_initDone) {
       if (!(aRegionAttributes->getPoolName())) {
         m_tcrConnectionManager->init();
-        m_remoteQueryServicePtr = new RemoteQueryService(this);
+        m_remoteQueryServicePtr = std::make_shared<RemoteQueryService>(this);
         SystemProperties* prop = DistributedSystem::getSystemProperties();
         if (prop && prop->statisticsEnabled()) {
-          m_adminRegion = new AdminRegion(this);
+          m_adminRegion = AdminRegion::create(this);
         }
       }
       m_initDone = true;
@@ -463,7 +452,7 @@ void CacheImpl::createRegion(const char* name,
   if (m_closed || m_destroyPending) {
     throw CacheClosedException("Cache::createRegion: cache closed");
   }
-  if (aRegionAttributes == NULLPTR) {
+  if (aRegionAttributes == nullptr) {
     throw IllegalArgumentException(
         "Cache::createRegion: RegionAttributes is null");
   }
@@ -475,7 +464,7 @@ void CacheImpl::createRegion(const char* name,
   }
 
   validateRegionAttributes(name, aRegionAttributes);
-  RegionInternal* rpImpl = NULL;
+  RegionInternalPtr rpImpl = nullptr;
   {
     // For multi threading and the operations between bind and find seems to be
     // hard to be atomic since a regionImpl needs to be valid before it can be
@@ -491,10 +480,10 @@ void CacheImpl::createRegion(const char* name,
       throw RegionExistsException(buffer);
     }
 
-    CacheStatisticsPtr csptr(new CacheStatistics);
+    auto csptr = std::make_shared<CacheStatistics>();
     try {
-      rpImpl = createRegion_internal(namestr.c_str(), NULL, aRegionAttributes,
-                                     csptr, false);
+      rpImpl = createRegion_internal(namestr.c_str(), nullptr,
+                                     aRegionAttributes, csptr, false);
     } catch (const AuthenticationFailedException&) {
       throw;
     } catch (const AuthenticationRequiredException&) {
@@ -519,7 +508,7 @@ void CacheImpl::createRegion(const char* name,
                        namestr.c_str());
       throw UnknownException(buffer);
     }
-    if (rpImpl == NULL) {
+    if (rpImpl == nullptr) {
       char buffer[256];
       ACE_OS::snprintf(buffer, 256,
                        "Cache::createRegion: Failed to create Region \"%s\"",
@@ -531,7 +520,7 @@ void CacheImpl::createRegion(const char* name,
     // Instantiate a PersistenceManager object if DiskPolicy is overflow
     if (aRegionAttributes->getDiskPolicy() == DiskPolicyType::OVERFLOWS) {
       PersistenceManagerPtr pmPtr = aRegionAttributes->getPersistenceManager();
-      if (pmPtr == NULLPTR) {
+      if (pmPtr == nullptr) {
         throw NullPointerException(
             "PersistenceManager could not be instantiated");
       }
@@ -549,14 +538,14 @@ void CacheImpl::createRegion(const char* name,
     SystemProperties* props = DistributedSystem::getSystemProperties();
     if (!props->isGridClient()) {
       const char* poolName = aRegionAttributes->getPoolName();
-      if (poolName != NULL) {
+      if (poolName != nullptr) {
         PoolPtr pool = PoolManager::find(poolName);
-        if (pool != NULLPTR && !pool->isDestroyed() &&
+        if (pool != nullptr && !pool->isDestroyed() &&
             pool->getPRSingleHopEnabled()) {
           ThinClientPoolDM* poolDM =
-              dynamic_cast<ThinClientPoolDM*>(pool.ptr());
-          if ((poolDM != NULL) &&
-              (poolDM->getClientMetaDataService() != NULL)) {
+              dynamic_cast<ThinClientPoolDM*>(pool.get());
+          if ((poolDM != nullptr) &&
+              (poolDM->getClientMetaDataService() != nullptr)) {
             LOGFINE(
                 "enqueued region %s for initial metadata refresh for "
                 "singlehop ",
@@ -591,18 +580,19 @@ void CacheImpl::createRegion(const char* name,
 void CacheImpl::getRegion(const char* path, RegionPtr& rptr) {
   TryReadGuard guardCacheDestroy(m_destroyCacheMutex, m_destroyPending);
   if (m_destroyPending) {
-    rptr = NULLPTR;
+    rptr = nullptr;
     return;
   }
 
   MapOfRegionGuard guard(m_regions->mutex());
   std::string pathstr;
-  if (path != NULL) {
+  if (path != nullptr) {
     pathstr = path;
   }
-  rptr = NULLPTR;
+  rptr = nullptr;
   std::string slash("/");
-  if ((path == (void*)NULL) || (pathstr == slash) || (pathstr.length() < 1)) {
+  if ((path == (void*)nullptr) || (pathstr == slash) ||
+      (pathstr.length() < 1)) {
     LOGERROR("Cache::getRegion: path [%s] is not valid.", pathstr.c_str());
     throw IllegalArgumentException("Cache::getRegion: path is null or a /");
   }
@@ -621,40 +611,41 @@ void CacheImpl::getRegion(const char* path, RegionPtr& rptr) {
       return;
     }
     std::string remainder = fullname.substr(stepname.length() + 1);
-    if (region != NULLPTR) {
+    if (region != nullptr) {
       rptr = region->getSubregion(remainder.c_str());
     } else {
-      rptr = NULLPTR;
+      rptr = nullptr;
       return;  // Return null if the parent region was not found.
     }
   }
 }
 
-RegionInternal* CacheImpl::createRegion_internal(
-    const std::string& name, RegionInternal* rootRegion,
+std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
+    const std::string& name, const std::shared_ptr<RegionInternal>& rootRegion,
     const RegionAttributesPtr& attrs, const CacheStatisticsPtr& csptr,
     bool shared) {
-  if (attrs == NULLPTR) {
+  if (attrs == nullptr) {
     throw IllegalArgumentException(
         "createRegion: "
         "RegionAttributes is null");
   }
 
-  RegionInternal* rptr = NULL;
+  RegionInternalPtr rptr = nullptr;
   RegionKind regionKind = getRegionKind(attrs);
   const char* poolName = attrs->getPoolName();
   const char* regionEndpoints = attrs->getEndpoints();
   const char* cacheEndpoints =
-      m_attributes == NULLPTR ? NULL : m_attributes->getEndpoints();
+      m_attributes == nullptr ? nullptr : m_attributes->getEndpoints();
 
-  /*if(m_defaultPool != NULLPTR && (poolName == NULL || strlen(poolName) == 0))
+  /*if(m_defaultPool != nullptr && (poolName == nullptr || strlen(poolName) ==
+  0))
   {
     attrs->setPoolName(m_defaultPool->getName());
   }*/
 
-  if (poolName != NULL) {
+  if (poolName != nullptr) {
     PoolPtr pool = PoolManager::find(poolName);
-    if (pool != NULLPTR && !pool->isDestroyed()) {
+    if (pool != nullptr && !pool->isDestroyed()) {
       bool isMultiUserSecureMode = pool->getMultiuserAuthentication();
       if (isMultiUserSecureMode && (attrs->getCachingEnabled())) {
         LOGERROR(
@@ -680,31 +671,30 @@ RegionInternal* CacheImpl::createRegion_internal(
         "specified");
   }
 
-  DeleteObject<RegionInternal> delrptr(rptr);
   if (regionKind == THINCLIENT_REGION) {
     LOGINFO("Creating region %s with region endpoints %s", name.c_str(),
             attrs->getEndpoints());
-    GF_NEW(rptr,
-           ThinClientRegion(name, this, rootRegion, attrs, csptr, shared));
-    ((ThinClientRegion*)rptr)->initTCR();
-    delrptr.noDelete();
+    auto tmp = std::make_shared<ThinClientRegion>(name, this, rootRegion, attrs,
+                                                  csptr, shared);
+    tmp->initTCR();
+    rptr = tmp;
   } else if (regionKind == THINCLIENT_HA_REGION) {
     LOGINFO("Creating region %s with subscriptions enabled", name.c_str());
-    GF_NEW(rptr,
-           ThinClientHARegion(name, this, rootRegion, attrs, csptr, shared));
-    ((ThinClientHARegion*)rptr)->initTCR();
-    delrptr.noDelete();
+    auto tmp = std::make_shared<ThinClientHARegion>(name, this, rootRegion,
+                                                    attrs, csptr, shared);
+    tmp->initTCR();
+    rptr = tmp;
   } else if (regionKind == THINCLIENT_POOL_REGION) {
     LOGINFO("Creating region %s attached to pool %s", name.c_str(),
             attrs->getPoolName());
-    GF_NEW(rptr,
-           ThinClientPoolRegion(name, this, rootRegion, attrs, csptr, shared));
-    ((ThinClientPoolRegion*)rptr)->initTCR();
-    delrptr.noDelete();
+    auto tmp = std::make_shared<ThinClientPoolRegion>(name, this, rootRegion,
+                                                      attrs, csptr, shared);
+    tmp->initTCR();
+    rptr = tmp;
   } else {
     LOGINFO("Creating local region %s", name.c_str());
-    GF_NEW(rptr, LocalRegion(name, this, rootRegion, attrs, csptr, shared));
-    delrptr.noDelete();
+    rptr = std::make_shared<LocalRegion>(name, this, rootRegion, attrs, csptr,
+                                         shared);
   }
   return rptr;
 }
@@ -748,21 +738,15 @@ void CacheImpl::readyForEvents() {
     return;
   }
 
-  const HashMapOfPools& pools = PoolManager::getAll();
+  const auto& pools = PoolManager::getAll();
   if (pools.empty()) throw IllegalStateException("No pools found.");
-  PoolPtr currPool = NULLPTR;
-  for (HashMapOfPools::Iterator itr = pools.begin(); itr != pools.end();
-       itr++) {
-    currPool = itr.second();
+  for (const auto& itr : pools) {
+    const auto& currPool = itr.second;
     LOGDEBUG("Sending readyForEvents( ) with pool %s", currPool->getName());
     try {
-      try {
-        ThinClientPoolHADMPtr poolHADM =
-            dynCast<ThinClientPoolHADMPtr>(currPool);
+      if (const auto& poolHADM =
+              std::dynamic_pointer_cast<ThinClientPoolHADM>(currPool)) {
         poolHADM->readyForEvents();
-      } catch (const ClassCastException&) {
-        // Expect a ClassCastException for non-HA PoolDMs.
-        continue;
       }
     } catch (Exception& ex) {
       LOGWARN("readyForEvents( ) failed for pool %s with exception: %s",
@@ -772,29 +756,23 @@ void CacheImpl::readyForEvents() {
 }
 
 bool CacheImpl::getEndpointStatus(const std::string& endpoint) {
-  const HashMapOfPools& pools = PoolManager::getAll();
-  std::string fullName;
-
-  /*
-  fullName = endpoint.find(':') == std::string::npos ? endpoint :
-  Utils::convertHostToCanonicalForm(endpoint.c_str() );
-  */
-  fullName = endpoint;
+  const auto& pools = PoolManager::getAll();
+  std::string fullName = endpoint;
 
   if (pools.empty()) {
     return m_tcrConnectionManager->getEndpointStatus(fullName);
   }
+
   fullName = endpoint.find(':') == std::string::npos
                  ? endpoint
                  : Utils::convertHostToCanonicalForm(endpoint.c_str());
-  ThinClientPoolDMPtr currPool =
-      staticCast<ThinClientPoolDMPtr>(pools.begin().second());
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(currPool->m_endpointsLock);
-  for (ACE_Map_Manager<std::string, TcrEndpoint*,
-                       ACE_Recursive_Thread_Mutex>::iterator itr =
-           currPool->m_endpoints.begin();
-       itr != currPool->m_endpoints.end(); itr++) {
-    TcrEndpoint* ep = (*itr).int_id_;
+
+  const auto firstPool =
+      std::static_pointer_cast<ThinClientPoolDM>(pools.begin()->second);
+
+  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(firstPool->m_endpointsLock);
+  for (const auto& itr : firstPool->m_endpoints) {
+    const auto& ep = itr.int_id_;
     if (ep->name().find(fullName) != std::string::npos) {
       return ep->getServerQueueStatusTEST();
     }
@@ -810,22 +788,18 @@ void CacheImpl::processMarker() {
 
   MapOfRegionGuard guard(m_regions->mutex());
 
-  for (MapOfRegionWithLock::iterator q = m_regions->begin();
-       q != m_regions->end(); ++q) {
-    if (!(*q).int_id_->isDestroyed()) {
-      ThinClientHARegion* tcrHARegion =
-          dynamic_cast<ThinClientHARegion*>((*q).int_id_.ptr());
-      if (tcrHARegion != NULL) {
-        TcrMessage* regionMsg = new TcrMessageClientMarker(true);
+  for (const auto& q : *m_regions) {
+    if (!q.int_id_->isDestroyed()) {
+      if (const auto tcrHARegion =
+              std::dynamic_pointer_cast<ThinClientHARegion>(q.int_id_)) {
+        auto regionMsg = new TcrMessageClientMarker(true);
         tcrHARegion->receiveNotification(regionMsg);
         VectorOfRegion subregions;
         tcrHARegion->subregions(true, subregions);
-        for (VectorOfRegion::Iterator iter = subregions.begin();
-             iter != subregions.end(); ++iter) {
-          if (!(*iter)->isDestroyed()) {
-            ThinClientHARegion* subregion =
-                dynamic_cast<ThinClientHARegion*>((*iter).ptr());
-            if (subregion != NULL) {
+        for (const auto& iter : subregions) {
+          if (!iter->isDestroyed()) {
+            if (const auto subregion =
+                    std::dynamic_pointer_cast<ThinClientHARegion>(iter)) {
               regionMsg = new TcrMessageClientMarker(true);
               subregion->receiveNotification(regionMsg);
             }
@@ -837,23 +811,17 @@ void CacheImpl::processMarker() {
 }
 
 int CacheImpl::getPoolSize(const char* poolName) {
-  PoolPtr pool = PoolManager::find(poolName);
-  if (pool == NULLPTR) {
-    return -1;
-  } else {
-    ThinClientPoolDM* dm = dynamic_cast<ThinClientPoolDM*>(pool.ptr());
-    if (dm) {
+  if (const auto pool = PoolManager::find(poolName)) {
+    if (const auto dm = std::dynamic_pointer_cast<ThinClientPoolDM>(pool)) {
       return dm->m_poolSize;
-    } else {
-      return -1;
     }
   }
+  return -1;
 }
 
 RegionFactoryPtr CacheImpl::createRegionFactory(
     RegionShortcut preDefinedRegion) {
-  RegionFactoryPtr rfPtr(new RegionFactory(preDefinedRegion));
-  return rfPtr;
+  return std::make_shared<RegionFactory>(preDefinedRegion);
 }
 
 void CacheImpl::setRegionShortcut(AttributesFactoryPtr attrFact,
@@ -882,21 +850,21 @@ std::map<std::string, RegionAttributesPtr> CacheImpl::getRegionShortcut() {
 
   {
     // PROXY
-    RegionAttributesPtr regAttr_PROXY(new RegionAttributes());
+    auto regAttr_PROXY = std::make_shared<RegionAttributes>();
     regAttr_PROXY->setCachingEnabled(false);
     preDefined["PROXY"] = regAttr_PROXY;
   }
 
   {
     // CACHING_PROXY
-    RegionAttributesPtr regAttr_CACHING_PROXY(new RegionAttributes());
+    auto regAttr_CACHING_PROXY = std::make_shared<RegionAttributes>();
     regAttr_CACHING_PROXY->setCachingEnabled(true);
     preDefined["CACHING_PROXY"] = regAttr_CACHING_PROXY;
   }
 
   {
     // CACHING_PROXY_ENTRY_LRU
-    RegionAttributesPtr regAttr_CACHING_PROXY_LRU(new RegionAttributes());
+    auto regAttr_CACHING_PROXY_LRU = std::make_shared<RegionAttributes>();
     regAttr_CACHING_PROXY_LRU->setCachingEnabled(true);
     regAttr_CACHING_PROXY_LRU->setLruEntriesLimit(DEFAULT_LRU_MAXIMUM_ENTRIES);
     preDefined["CACHING_PROXY_ENTRY_LRU"] = regAttr_CACHING_PROXY_LRU;
@@ -904,13 +872,13 @@ std::map<std::string, RegionAttributesPtr> CacheImpl::getRegionShortcut() {
 
   {
     // LOCAL
-    RegionAttributesPtr regAttr_LOCAL(new RegionAttributes());
+    auto regAttr_LOCAL = std::make_shared<RegionAttributes>();
     preDefined["LOCAL"] = regAttr_LOCAL;
   }
 
   {
     // LOCAL_ENTRY_LRU
-    RegionAttributesPtr regAttr_LOCAL_LRU(new RegionAttributes());
+    auto regAttr_LOCAL_LRU = std::make_shared<RegionAttributes>();
     regAttr_LOCAL_LRU->setLruEntriesLimit(DEFAULT_LRU_MAXIMUM_ENTRIES);
     preDefined["LOCAL_ENTRY_LRU"] = regAttr_LOCAL_LRU;
   }
@@ -922,5 +890,8 @@ CacheTransactionManagerPtr CacheImpl::getCacheTransactionManager() {
   return m_cacheTXManager;
 }
 MemberListForVersionStampPtr CacheImpl::getMemberListForVersionStamp() {
-  return CacheImpl::s_versionStampMemIdList;
+  static auto versionStampMemIdList =
+      new std::shared_ptr<MemberListForVersionStamp>(
+          new MemberListForVersionStamp());
+  return *versionStampMemIdList;
 }

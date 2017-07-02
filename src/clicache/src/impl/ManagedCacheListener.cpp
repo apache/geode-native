@@ -331,7 +331,7 @@ namespace apache
       {
         try {
           Apache::Geode::Client::IRegion<Object^, Object^>^ mregion =
-            Apache::Geode::Client::Region<Object^, Object^>::Create(region.ptr());
+            Apache::Geode::Client::Region<Object^, Object^>::Create(region);
 
           m_managedptr->Close(mregion);
         }
@@ -346,7 +346,7 @@ namespace apache
       {
         try {
           Apache::Geode::Client::IRegion<Object^, Object^>^ mregion =
-            Apache::Geode::Client::Region<Object^, Object^>::Create(region.ptr());
+            Apache::Geode::Client::Region<Object^, Object^>::Create(region);
           m_managedptr->AfterRegionDisconnected(mregion);
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {

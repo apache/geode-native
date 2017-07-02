@@ -63,7 +63,7 @@ int32_t TcpConn::maxSize(ACE_SOCKET sock, int32_t flag, int32_t size) {
   static int32_t max = 32000;
   if (m_maxBuffSizePool <= 0) {
     SystemProperties *props = DistributedSystem::getSystemProperties();
-    if (props != NULL) {
+    if (props != nullptr) {
       max = props->maxSocketBufferSize();
     }
   } else {
@@ -148,18 +148,18 @@ void TcpConn::init() {
   connect();
 }
 
-TcpConn::TcpConn() : m_io(NULL), m_waitSeconds(0), m_maxBuffSizePool(0) {}
+TcpConn::TcpConn() : m_io(nullptr), m_waitSeconds(0), m_maxBuffSizePool(0) {}
 
 TcpConn::TcpConn(const char *ipaddr, uint32_t waitSeconds,
                  int32_t maxBuffSizePool)
-    : m_io(NULL),
+    : m_io(nullptr),
       m_addr(ipaddr),
       m_waitSeconds(waitSeconds),
       m_maxBuffSizePool(maxBuffSizePool) {}
 
 TcpConn::TcpConn(const char *hostname, int32_t port, uint32_t waitSeconds,
                  int32_t maxBuffSizePool)
-    : m_io(NULL),
+    : m_io(nullptr),
       m_addr(port, hostname),
       m_waitSeconds(waitSeconds),
       m_maxBuffSizePool(maxBuffSizePool) {}
@@ -175,7 +175,7 @@ void TcpConn::listen(const char *ipaddr, uint32_t waitSeconds) {
 }
 
 void TcpConn::listen(ACE_INET_Addr addr, uint32_t waitSeconds) {
-  GF_DEV_ASSERT(m_io != NULL);
+  GF_DEV_ASSERT(m_io != nullptr);
 
   ACE_SOCK_Acceptor listener(addr, 1);
   int32_t retVal = 0;
@@ -191,15 +191,15 @@ void TcpConn::listen(ACE_INET_Addr addr, uint32_t waitSeconds) {
     if (lastError == ETIME || lastError == ETIMEDOUT) {
       /* adongre
        * Coverity - II
-      * CID 29270: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-      * "sprintf" can cause a
-      * buffer overflow when done incorrectly. Because sprintf() assumes an
-      * arbitrarily long string,
-      * callers must be careful not to overflow the actual space of the
-      * destination.
-      * Use snprintf() instead, or correct precision specifiers.
-      * Fix : using ACE_OS::snprintf
-      */
+       * CID 29270: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+       * "sprintf" can cause a
+       * buffer overflow when done incorrectly. Because sprintf() assumes an
+       * arbitrarily long string,
+       * callers must be careful not to overflow the actual space of the
+       * destination.
+       * Use snprintf() instead, or correct precision specifiers.
+       * Fix : using ACE_OS::snprintf
+       */
       ACE_OS::snprintf(
           msg, 256,
           "TcpConn::listen Attempt to listen timed out after %d seconds.",
@@ -228,7 +228,7 @@ void TcpConn::connect(const char *ipaddr, uint32_t waitSeconds) {
 }
 
 void TcpConn::connect() {
-  GF_DEV_ASSERT(m_io != NULL);
+  GF_DEV_ASSERT(m_io != nullptr);
 
   ACE_INET_Addr ipaddr = m_addr;
   uint32_t waitSeconds = m_waitSeconds;
@@ -269,7 +269,7 @@ void TcpConn::connect() {
     ACE_OS::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
                      lastError, ACE_OS::strerror(lastError));
     //  this is only called by constructor, so we must delete m_io
-    GF_SAFE_DELETE(m_io);
+	close();
     throw GeodeIOException(msg);
   }
   int rc = this->m_io->enable(ACE_NONBLOCK);
@@ -284,7 +284,7 @@ void TcpConn::connect() {
 }
 
 void TcpConn::close() {
-  if (m_io != NULL) {
+  if (m_io != nullptr) {
     m_io->close();
     GF_SAFE_DELETE(m_io);
   }
@@ -317,8 +317,8 @@ int32_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, int32_t len,
       }
     }*/
 
-    GF_DEV_ASSERT(m_io != NULL);
-    GF_DEV_ASSERT(buff != NULL);
+    GF_DEV_ASSERT(m_io != nullptr);
+    GF_DEV_ASSERT(buff != nullptr);
 
 #if GF_DEVEL_ASSERTS == 1
     if (len <= 0) {
@@ -389,7 +389,7 @@ int32_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, int32_t len,
 
 //  Return the local port for this TCP connection.
 uint16_t TcpConn::getPort() {
-  GF_DEV_ASSERT(m_io != NULL);
+  GF_DEV_ASSERT(m_io != nullptr);
 
   ACE_INET_Addr localAddr;
   m_io->get_local_addr(*(ACE_Addr *)&localAddr);

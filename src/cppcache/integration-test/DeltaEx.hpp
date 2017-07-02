@@ -25,6 +25,11 @@
 #include <ace/OS.h>
 #include "CacheHelper.hpp"
 class DeltaEx : public Cacheable, public Delta {
+ private:
+  std::shared_ptr<DeltaEx> shared_from_this() {
+    return std::static_pointer_cast<DeltaEx>(Serializable::shared_from_this());
+  }
+
  public:
   int counter;
   bool isDelta;
@@ -74,7 +79,7 @@ class DeltaEx : public Cacheable, public Delta {
   virtual uint32_t objectSize() const { return 0; }
   DeltaPtr clone() {
     cloneCount++;
-    return DeltaPtr(this);
+    return shared_from_this();
   }
   virtual ~DeltaEx() {}
   void setDelta(bool delta) { this->isDelta = delta; }
@@ -82,6 +87,12 @@ class DeltaEx : public Cacheable, public Delta {
 };
 
 class PdxDeltaEx : public PdxSerializable, public Delta {
+ private:
+  std::shared_ptr<PdxDeltaEx> shared_from_this() {
+    return std::static_pointer_cast<PdxDeltaEx>(
+        Serializable::shared_from_this());
+  }
+
  public:
   int m_counter;
   bool m_isDelta;
@@ -135,7 +146,7 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
 
   DeltaPtr clone() {
     m_cloneCount++;
-    return DeltaPtr(this);
+    return shared_from_this();
   }
 
   virtual ~PdxDeltaEx() {}
@@ -149,6 +160,6 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
     return CacheableString::create(idbuf);
   }
 };
-typedef SharedPtr<PdxDeltaEx> PdxDeltaExPtr;
+typedef std::shared_ptr<PdxDeltaEx> PdxDeltaExPtr;
 
 #endif  // GEODE_INTEGRATION_TEST_DELTAEX_H_

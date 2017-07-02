@@ -15,14 +15,6 @@
  * limitations under the License.
  */
 
-namespace apache {
-namespace geode {
-namespace client {
-class Region;
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
-
 #include <geode/Cache.hpp>
 #include <geode/ExpirationAttributes.hpp>
 #include <Utils.hpp>
@@ -31,7 +23,12 @@ class Region;
 #include <string>
 #include <geode/Pool.hpp>
 #include <geode/PoolManager.hpp>
-using namespace apache::geode::client;
+
+namespace apache {
+namespace geode {
+namespace client {
+
+class Region;
 
 AttributesFactory::AttributesFactory() : m_regionAttributes() {}
 
@@ -115,13 +112,13 @@ void AttributesFactory::setStatisticsEnabled( bool statisticsEnabled)
 }
 */
 
-RegionAttributesPtr AttributesFactory::createRegionAttributes() {
+std::unique_ptr<RegionAttributes> AttributesFactory::createRegionAttributes() {
   RegionAttributesPtr res;
   /*
-  if( m_regionAttributes.m_poolName != NULL )
+  if( m_regionAttributes.m_poolName != nullptr )
   {
           PoolPtr pool= PoolManager::find( m_regionAttributes.m_poolName );
-    if (pool == NULLPTR) {
+    if (pool == nullptr) {
       throw IllegalStateException("Pool not found while creating region
   attributes");
     }
@@ -131,8 +128,8 @@ RegionAttributesPtr AttributesFactory::createRegionAttributes() {
   }
   */
   validateAttributes(m_regionAttributes);
-  res = new RegionAttributes(m_regionAttributes);
-  return res;
+  return std::unique_ptr<RegionAttributes>(
+      new RegionAttributes(m_regionAttributes));
 }
 
 void AttributesFactory::validateAttributes(RegionAttributes& attrs) {
@@ -161,9 +158,9 @@ void AttributesFactory::validateAttributes(RegionAttributes& attrs) {
   }
 
   if (attrs.m_diskPolicy != DiskPolicyType::NONE) {
-    if (attrs.m_persistenceManager == NULLPTR &&
-        (attrs.m_persistenceLibrary == NULL ||
-         attrs.m_persistenceFactory == NULL)) {
+    if (attrs.m_persistenceManager == nullptr &&
+        (attrs.m_persistenceLibrary == nullptr ||
+         attrs.m_persistenceFactory == nullptr)) {
       throw IllegalStateException(
           "Persistence Manager must be set if DiskPolicy is OVERFLOWS");
     }
@@ -214,3 +211,7 @@ void AttributesFactory::setCloningEnabled(bool isClonable) {
 void AttributesFactory::setConcurrencyChecksEnabled(bool enable) {
   m_regionAttributes.setConcurrencyChecksEnabled(enable);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

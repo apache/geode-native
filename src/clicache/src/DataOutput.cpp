@@ -15,15 +15,18 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
-#include "DataOutput.hpp"
+#include "begin_native.hpp"
 #include <GeodeTypeIdsImpl.hpp>
+#include "end_native.hpp"
+
 #include <vcclr.h>
 
+#include "DataOutput.hpp"
 #include "IGeodeSerializable.hpp"
 #include "CacheableObjectArray.hpp"
 #include "impl/PdxHelper.hpp"
 #include "impl/PdxWrapper.hpp"
+
 using namespace System;
 using namespace System::Runtime::InteropServices;
 using namespace apache::geode::client;
@@ -731,23 +734,36 @@ namespace Apache
       {
         //first set native one
         WriteBytesToUMDataOutput();
-        NativePtr->rewindCursor(offset);
+        try
+        {
+          m_nativeptr->get()->rewindCursor(offset);
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         SetBuffer();
       }
 
       array<Byte>^ DataOutput::GetBuffer()
       {
-        WriteBytesToUMDataOutput();
-        SetBuffer();
+        try
+        {
+          WriteBytesToUMDataOutput();
+          SetBuffer();
+          int buffLen = m_nativeptr->get()->getBufferLength();
+          array<Byte>^ buffer = gcnew array<Byte>(buffLen);
 
-        int buffLen = NativePtr->getBufferLength();
-        array<Byte>^ buffer = gcnew array<Byte>(buffLen);
-
-        if (buffLen > 0) {
-          pin_ptr<Byte> pin_buffer = &buffer[0];
-          memcpy((void*)pin_buffer, NativePtr->getBuffer(), buffLen);
+          if (buffLen > 0) {
+            pin_ptr<Byte> pin_buffer = &buffer[0];
+            memcpy((void*)pin_buffer, m_nativeptr->get()->getBuffer(), buffLen);
+          }
+          return buffer;
         }
-        return buffer;
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       System::UInt32 DataOutput::BufferLength::get()
@@ -756,13 +772,27 @@ namespace Apache
         WriteBytesToUMDataOutput();
         SetBuffer();
 
-        return NativePtr->getBufferLength();
+        try
+        {
+          return m_nativeptr->get()->getBufferLength();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       void DataOutput::Reset()
       {
         WriteBytesToUMDataOutput();
-        NativePtr->reset();
+        try
+        {
+          m_nativeptr->get()->reset();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         SetBuffer();
       }
 
@@ -784,7 +814,14 @@ namespace Apache
 
       void DataOutput::WriteBytesToUMDataOutput()
       {
-        NativePtr->advanceCursor(m_cursor);
+        try
+        {
+          m_nativeptr->get()->advanceCursor(m_cursor);
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         m_cursor = 0;
         m_remainingBufferLength = 0;
         m_bytes = nullptr;
@@ -876,8 +913,7 @@ namespace Apache
       void DataOutput::WriteDoubleArray(array<double>^ doubleArray)
       {
         WriteObject<double>(doubleArray);
-      }  // namespace Client
-    }  // namespace Geode
-  }  // namespace Apache
-
-}
+      }
+    }  // namespace Client
+  }  // namespace Geode
+}  // namespace Apache

@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
 #include "RegionEvent.hpp"
 #include "Region.hpp"
 #include "IGeodeSerializable.hpp"
@@ -30,42 +29,23 @@ namespace Apache
     {
 
       generic<class TKey, class TValue>
-      RegionEvent<TKey, TValue>::RegionEvent(Client::IRegion<TKey, TValue>^ region,
-        Object^ aCallbackArgument, bool remoteOrigin)
-        : UMWrap( )
-      {
-        //TODO:: do we neeed this
-        /*if ( region == nullptr ) {
-          throw gcnew IllegalArgumentException( "RegionEvent.ctor(): "
-            "null region passed" );
-        }
-
-        apache::geode::client::UserDataPtr callbackptr(SafeMSerializableConvert(
-            aCallbackArgument));
-
-        SetPtr(new apache::geode::client::RegionEvent(apache::geode::client::RegionPtr(region->_NativePtr),
-          callbackptr, remoteOrigin), true);*/
-      }
-
-      generic<class TKey, class TValue>
       IRegion<TKey, TValue>^ RegionEvent<TKey, TValue>::Region::get( )
       {
-        apache::geode::client::RegionPtr& regionptr( NativePtr->getRegion( ) );
-
-        return Client::Region<TKey, TValue>::Create( regionptr.ptr( ) );
+        auto regionptr = m_nativeptr->getRegion( );
+        return Client::Region<TKey, TValue>::Create( regionptr );
       }
 
       generic<class TKey, class TValue>
       Object^ RegionEvent<TKey, TValue>::CallbackArgument::get()
       {
-        apache::geode::client::UserDataPtr& valptr(NativePtr->getCallbackArgument());
+        apache::geode::client::UserDataPtr& valptr(m_nativeptr->getCallbackArgument());
         return Serializable::GetManagedValueGeneric<Object^>( valptr );
       }
 
       generic<class TKey, class TValue>
       bool RegionEvent<TKey, TValue>::RemoteOrigin::get( )
       {
-        return NativePtr->remoteOrigin( );
+        return m_nativeptr->remoteOrigin( );
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

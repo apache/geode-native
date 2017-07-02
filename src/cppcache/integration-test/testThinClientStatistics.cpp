@@ -168,22 +168,22 @@ void DoRegionOpsAndVerify() {
   bool flag ATTR_UNUSED = regPtr0->remove(keyptr);
 
   RegionEntryPtr remRegEntry = regPtr0->getEntry(keyptr);
-  ASSERT(remRegEntry == NULLPTR,
-         "regionEntry pointer to removed entry must be NULLPTR");
+  ASSERT(remRegEntry == nullptr,
+         "regionEntry pointer to removed entry must be nullptr");
 
-  if (remRegEntry != NULLPTR) {
+  if (remRegEntry != nullptr) {
     LOGINFO("remRegEntry->isDestroyed() = %d ", remRegEntry->isDestroyed());
     ASSERT(remRegEntry->isDestroyed() == true,
            "regionEntry is not destroyed, remRegEntry->isDestroyed must return "
            "false");
   } else {
-    LOGINFO("regionEntry pointer for removed key is NULL");
+    LOGINFO("regionEntry pointer for removed key is nullptr");
   }
 
-  CacheStatisticsPtr cacheStatptr(new CacheStatistics());
+  auto cacheStatptr = std::make_shared<CacheStatistics>();
   // CacheStatisticsPtr cacheStatptr;
   try {
-    CachePtr cache = dynCast<CachePtr>(
+    auto cache = std::dynamic_pointer_cast<Cache>(
         regPtr0->getRegionService());  // This depends on LocalCache
                                        // implementing RegionService...
     bool flag = cache->getDistributedSystem()
@@ -198,10 +198,10 @@ void DoRegionOpsAndVerify() {
   } catch (Exception& ex) {
     LOGINFO("Exception Caught:: %s", ex.getMessage());
   }
-  if (cacheStatptr != NULLPTR) {
+  if (cacheStatptr != nullptr) {
     LOGINFO("LastAccessedTime = %d ", cacheStatptr->getLastAccessedTime());
   } else {
-    LOGINFO("cacheStatptr is NULL");
+    LOGINFO("cacheStatptr is nullptr");
   }
 }
 
@@ -237,7 +237,7 @@ void createType(StatisticsFactory* statFactory, TestStatisticsType& testType) {
   StatisticsType* statsType = statFactory->createType(
       "TestStatsType", "Statistics for Unit Test.", statDescriptorArr, 6);
 
-  ASSERT(statsType != NULL, "Error in creating Stats Type");
+  ASSERT(statsType != nullptr, "Error in creating Stats Type");
 
   testType.testStatsType = statsType;
   testType.statIdIntCounter = statsType->nameToId("IntCounter");
@@ -331,7 +331,7 @@ void statisticsTest() {
   /* Create a statistics */
   Statistics* testStat1 =
       factory->createStatistics(testType.testStatsType, "TestStatistics");
-  ASSERT(testStat1 != NULL, "Test Statistics Creation Failed");
+  ASSERT(testStat1 != nullptr, "Test Statistics Creation Failed");
 
   /* Tests Find Type , Find Statistics */
   Statistics* temp = factory->findFirstStatisticsByType(testType.testStatsType);
@@ -346,7 +346,7 @@ void statisticsTest() {
   testStat1->close();
   Statistics* temp2 =
       factory->findFirstStatisticsByType(testType.testStatsType);
-  ASSERT(temp2 == NULL, "Statistics close() Failed");
+  ASSERT(temp2 == nullptr, "Statistics close() Failed");
 
   LOG("StatisticsTest Completed");
 }
@@ -404,8 +404,8 @@ void StatFileTest() {
 
   /* Test if this file Stat-pid.gfs is there */
   FILE* fp = fopen(statFilename.c_str(), "r");
-  ASSERT(fp != NULL, "Statistics GFS file does not exist");
-  if (fp != NULL) {
+  ASSERT(fp != nullptr, "Statistics GFS file does not exist");
+  if (fp != nullptr) {
     LOG("SUCCESS: .gfs file exist.");
     fclose(fp);
   }
@@ -527,24 +527,14 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseThirdServer)
 END_TASK_DEFINITION
 
 DUNIT_MAIN
-  {
-    CALL_TASK(CreateLocator1)
+{CALL_TASK(CreateLocator1)
 
-    CALL_TASK(StartFirstServer)
-    CALL_TASK(ClientFirstInit)
-    CALL_TASK(StatTest)
-    CALL_TASK(CloseFirstClient)
-    CALL_TASK(GFSFileTest)
-    CALL_TASK(CloseFirstServer)
-    CALL_TASK(StartSecondServer)
-    CALL_TASK(ClientSecondInit)
-    CALL_TASK(CloseSecondServer)
-    CALL_TASK(StartThirdServer)
-    CALL_TASK(ClientThirdInit)
-    CALL_TASK(RegionOps)
-    CALL_TASK(CloseThirdClient)
-    CALL_TASK(CloseThirdServer)
+     CALL_TASK(StartFirstServer) CALL_TASK(ClientFirstInit) CALL_TASK(StatTest)
+         CALL_TASK(CloseFirstClient) CALL_TASK(GFSFileTest)
+             CALL_TASK(CloseFirstServer) CALL_TASK(StartSecondServer)
+                 CALL_TASK(ClientSecondInit) CALL_TASK(CloseSecondServer)
+                     CALL_TASK(StartThirdServer) CALL_TASK(ClientThirdInit)
+                         CALL_TASK(RegionOps) CALL_TASK(CloseThirdClient)
+                             CALL_TASK(CloseThirdServer)
 
-    CALL_TASK(CloseLocator1)
-  }
-END_MAIN
+                                 CALL_TASK(CloseLocator1)} END_MAIN

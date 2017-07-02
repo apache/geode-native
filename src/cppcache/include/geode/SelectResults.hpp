@@ -41,7 +41,7 @@ class SelectResultsIterator;
  * A SelectResults is obtained by executing a Query on the server.
  * This can either be a ResultSet or a StructSet.
  */
-class CPPCACHE_EXPORT SelectResults : public SharedBase {
+class CPPCACHE_EXPORT SelectResults {
  public:
   /**
    * Check whether the SelectResults is modifiable.
@@ -75,7 +75,7 @@ class CPPCACHE_EXPORT SelectResults : public SharedBase {
   virtual SelectResultsIterator getIterator() = 0;
 
   /** Interface of an iterator for <code>SelectResults</code>.*/
-  typedef CacheableVector::Iterator Iterator;
+  typedef CacheableVector::iterator Iterator;
 
   /** Get an iterator pointing to the start of vector. */
   virtual Iterator begin() const = 0;

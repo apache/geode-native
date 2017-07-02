@@ -54,12 +54,12 @@ int PdxType1V1::getHashCode() {
 }
 
 bool PdxType1V1::equals(PdxSerializablePtr obj) {
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
-  PdxType1V1Ptr pap = dynCast<PdxType1V1Ptr>(obj);
-  if (pap == NULLPTR) return false;
+  auto pap = std::dynamic_pointer_cast<PdxType1V1>(obj);
+  if (pap == nullptr) return false;
 
-  if (pap == this) return true;
+  if (pap.get() == this) return true;
 
   if (m_i1 + m_diffInSameFields <= pap->m_i1 &&
       m_i2 + m_diffInSameFields <= pap->m_i2 &&
@@ -195,12 +195,12 @@ int PdxType2V1::getHashCode() {
 }
 
 bool PdxType2V1::equals(PdxSerializablePtr obj) {
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
-  PdxType2V1Ptr pap = dynCast<PdxType2V1Ptr>(obj);
-  if (pap == NULLPTR) return false;
+  auto pap = std::dynamic_pointer_cast<PdxType2V1>(obj);
+  if (pap == nullptr) return false;
 
-  if (pap == this) return true;
+  if (pap.get() == this) return true;
 
   if (m_i1 + m_diffInSameFields <= pap->m_i1 &&
       m_i2 + m_diffInSameFields <= pap->m_i2 &&
@@ -273,12 +273,12 @@ int PdxType3V1::getHashCode() {
 }
 
 bool PdxType3V1::equals(PdxSerializablePtr obj) {
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
-  PdxType3V1Ptr pap = dynCast<PdxType3V1Ptr>(obj);
-  if (pap == NULLPTR) return false;
+  auto pap = std::dynamic_pointer_cast<PdxType3V1>(obj);
+  if (pap == nullptr) return false;
 
-  if (pap == this) return true;
+  if (pap.get() == this) return true;
 
   if (m_i1 + m_diffInSameFields <= pap->m_i1 &&
       m_i2 + m_diffInSameFields <= pap->m_i2 &&
@@ -374,12 +374,12 @@ int PdxTypesV1R1::getHashCode() {
 }
 
 bool PdxTypesV1R1::equals(PdxSerializablePtr obj) {
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
-  PdxTypesV1R1Ptr pap = dynCast<PdxTypesV1R1Ptr>(obj);
-  if (pap == NULLPTR) return false;
+  auto pap = std::dynamic_pointer_cast<PdxTypesV1R1>(obj);
+  if (pap == nullptr) return false;
 
-  if (pap == this) return true;
+  if (pap.get() == this) return true;
 
   if (m_i1 + m_diffInSameFields <= pap->m_i1 &&
       m_i2 + m_diffInSameFields <= pap->m_i2 &&
@@ -445,12 +445,12 @@ int PdxTypesV1R2::getHashCode() {
 }
 
 bool PdxTypesV1R2::equals(PdxSerializablePtr obj) {
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
-  PdxTypesV1R2Ptr pap = dynCast<PdxTypesV1R2Ptr>(obj);
-  if (pap == NULLPTR) return false;
+  auto pap = std::dynamic_pointer_cast<PdxTypesV1R2>(obj);
+  if (pap == nullptr) return false;
 
-  if (pap == this) return true;
+  if (pap.get() == this) return true;
 
   if (m_i1 + m_diffInSameFields <= pap->m_i1 &&
       m_i2 + m_diffInSameFields <= pap->m_i2 &&
@@ -515,13 +515,12 @@ int PdxTypesIgnoreUnreadFieldsV1::getHashCode() {
 }
 
 bool PdxTypesIgnoreUnreadFieldsV1::equals(PdxSerializablePtr obj) {
-  if (obj == NULLPTR) return false;
+  if (obj == nullptr) return false;
 
-  PdxTypesIgnoreUnreadFieldsV1Ptr pap =
-      dynCast<PdxTypesIgnoreUnreadFieldsV1Ptr>(obj);
-  if (pap == NULLPTR) return false;
+  auto pap = std::dynamic_pointer_cast<PdxTypesIgnoreUnreadFieldsV1>(obj);
+  if (pap == nullptr) return false;
 
-  if (pap == this) return true;
+  if (pap.get() == this) return true;
 
   if (m_i1 + m_diffInSameFields <= pap->m_i1 &&
       m_i2 + m_diffInSameFields <= pap->m_i2 &&
@@ -595,7 +594,7 @@ void PdxVersionedV1::init(int32_t size) {
   m_charArray[0] = 'c';
   m_charArray[1] = 'v';
 
-  m_dateTime = NULLPTR;
+  m_dateTime = nullptr;
 
   m_int16Array = new int16_t[size];
   m_int32Array = new int32_t[size];

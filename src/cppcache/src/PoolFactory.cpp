@@ -116,13 +116,13 @@ PoolPtr PoolFactory::create(const char* name) {
   {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
 
-    if (PoolManager::find(name) != NULLPTR) {
+    if (PoolManager::find(name) != nullptr) {
       throw IllegalStateException("Pool with the same name already exists");
     }
     // Create a clone of Attr;
     PoolAttributesPtr copyAttrs = m_attrs->clone();
 
-    if (CacheImpl::getInstance() == NULL) {
+    if (CacheImpl::getInstance() == nullptr) {
       throw IllegalStateException("Cache has not been created.");
     }
 
@@ -155,23 +155,24 @@ PoolPtr PoolFactory::create(const char* name) {
       if (copyAttrs
               ->getThreadLocalConnectionSetting() /*&& !copyAttrs->getPRSingleHopEnabled()*/) {
         // TODO: what should we do for sticky connections
-        poolDM = new ThinClientPoolStickyDM(name, copyAttrs, tccm);
+        poolDM =
+            std::make_shared<ThinClientPoolStickyDM>(name, copyAttrs, tccm);
       } else {
         LOGDEBUG("ThinClientPoolDM created ");
-        poolDM = new ThinClientPoolDM(name, copyAttrs, tccm);
+        poolDM = std::make_shared<ThinClientPoolDM>(name, copyAttrs, tccm);
       }
     } else {
       LOGDEBUG("ThinClientPoolHADM created ");
       if (copyAttrs
               ->getThreadLocalConnectionSetting() /*&& !copyAttrs->getPRSingleHopEnabled()*/) {
-        poolDM = new ThinClientPoolStickyHADM(name, copyAttrs, tccm);
+        poolDM =
+            std::make_shared<ThinClientPoolStickyHADM>(name, copyAttrs, tccm);
       } else {
-        poolDM = new ThinClientPoolHADM(name, copyAttrs, tccm);
+        poolDM = std::make_shared<ThinClientPoolHADM>(name, copyAttrs, tccm);
       }
     }
 
-    connectionPools->insert(CacheableString::create(name),
-                            staticCast<PoolPtr>(poolDM));
+    connectionPools->insert({name, std::static_pointer_cast<Pool>(poolDM)});
   }
 
   // TODO: poolDM->init() should not throw exceptions!
@@ -180,7 +181,7 @@ PoolPtr PoolFactory::create(const char* name) {
     poolDM->init();
   }
 
-  return staticCast<PoolPtr>(poolDM);
+  return std::static_pointer_cast<Pool>(poolDM);
 }
 
 void PoolFactory::addCheck(const char* host, int port) {

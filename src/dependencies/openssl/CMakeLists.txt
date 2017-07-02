@@ -12,11 +12,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required( VERSION 3.3 )
+
 project( openssl C )
 
-set( ${PROJECT_NAME}_VERSION 1.0.1u )
-set( ${PROJECT_NAME}_SHA265 4312b4ca1215b6f2c97007503d80db80d5157f76f8f7d3febbe6b4c56ff26739 )
+set( ${PROJECT_NAME}_VERSION 1.0.2l )
+set( ${PROJECT_NAME}_SHA265 ce07195b659e75f4e1db43552860070061f156a98bb37b672b101ba6e3ddf30c )
 set( ${PROJECT_NAME}_URL "https://www.openssl.org/source/openssl-${${PROJECT_NAME}_VERSION}.tar.gz" )
 set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
 
@@ -52,8 +52,8 @@ elseif ("Windows" STREQUAL ${CMAKE_SYSTEM_NAME})
     set( openssl_PLATFORM $<$<CONFIG:Debug>:debug->VC-WIN64A )
 	set( openssl_WINDOWS_CMD cmd /c ms\\do_win64a)
   else()
-    set( openssl_PLATFORM $<$<CONFIG:Debug>:debug->VC-WIN32 )
-	set( openssl_WINDOWS_CMD cmd /c ms\\do_nt)
+    set( openssl_PLATFORM $<$<CONFIG:Debug>:debug->VC-WIN32 no-asm)
+	set( openssl_WINDOWS_CMD cmd /c ms\\do_ms)
   endif()
 endif()
 

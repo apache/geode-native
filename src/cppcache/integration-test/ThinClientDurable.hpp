@@ -29,6 +29,9 @@
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 
+#include <thread>
+#include <chrono>
+
 /* Testing Parameters              Param's Value
 Termination :                   Keepalive = true/ false, Client crash / Netdown
 Restart Time:                   Before Timeout / After Timeout
@@ -58,25 +61,19 @@ class OperMonitor : public CacheListener {
     m_ops++;
 
     CacheableKeyPtr key = event.getKey();
-    CacheableInt32Ptr value = NULLPTR;
+    CacheableInt32Ptr value = nullptr;
     try {
-      value = dynCast<CacheableInt32Ptr>(event.getNewValue());
-    } catch (Exception) {
+      value = std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
+    } catch (Exception&) {
       //  do nothing.
     }
 
     char buff[128] = {'\0'};
-    CacheableStringPtr keyPtr = dynCast<CacheableStringPtr>(key);
-    if (value != NULLPTR) {
+    auto keyPtr = std::dynamic_pointer_cast<CacheableString>(key);
+    if (value != nullptr) {
       sprintf(buff, "Event [%s, %d] called for %s:%s", keyPtr->toString(),
               value->value(), m_clientName.c_str(), m_regionName.c_str());
-
-      HashMapOfCacheable::Iterator item = m_map.find(key);
-      if (item != m_map.end()) {
-        m_map.update(key, value);
-      } else {
-        m_map.insert(key, value);
-      }
+      m_map[key] = value;
     } else {
       sprintf(buff, "Event Key=%s called for %s:%s", keyPtr->toString(),
               m_clientName.c_str(), m_regionName.c_str());
@@ -95,7 +92,7 @@ class OperMonitor : public CacheListener {
     LOG("validate called");
     char buf[256] = {'\0'};
 
-    sprintf(buf, "Expected %d keys for the region, Actual = %d", keyCount,
+    sprintf(buf, "Expected %d keys for the region, Actual = %zd", keyCount,
             m_map.size());
     ASSERT(m_map.size() == keyCount, buf);
 
@@ -103,12 +100,13 @@ class OperMonitor : public CacheListener {
             m_ops);
     ASSERT(m_ops == eventcount, buf);
 
-    for (HashMapOfCacheable::Iterator item = m_map.begin(); item != m_map.end();
-         item++) {
-      CacheableStringPtr keyPtr = dynCast<CacheableStringPtr>(item.first());
-      CacheableInt32Ptr valuePtr = dynCast<CacheableInt32Ptr>(item.second());
+    for (const auto& item : m_map) {
+      const auto keyPtr =
+          std::dynamic_pointer_cast<CacheableString>(item.first);
+      const auto valuePtr =
+          std::dynamic_pointer_cast<CacheableInt32>(item.second);
 
-      if (strchr(keyPtr->toString(), 'D') == NULL) { /*Non Durable Key */
+      if (strchr(keyPtr->toString(), 'D') == nullptr) { /*Non Durable Key */
         sprintf(buf,
                 "Expected final value for nonDurable Keys = %d, Actual = %d",
                 nonDurableValue, valuePtr->value());
@@ -139,7 +137,7 @@ class OperMonitor : public CacheListener {
   virtual void afterRegionInvalidate(const RegionEvent& event){};
   virtual void afterRegionDestroy(const RegionEvent& event){};
 };
-typedef SharedPtr<OperMonitor> OperMonitorPtr;
+typedef std::shared_ptr<OperMonitor> OperMonitorPtr;
 
 void setCacheListener(const char* regName, OperMonitorPtr monitor) {
   RegionPtr reg = getHelper()->getRegion(regName);
@@ -147,11 +145,11 @@ void setCacheListener(const char* regName, OperMonitorPtr monitor) {
   attrMutator->setCacheListener(monitor);
 }
 
-OperMonitorPtr mon1C1 = NULLPTR;
-OperMonitorPtr mon2C1 = NULLPTR;
+OperMonitorPtr mon1C1 = nullptr;
+OperMonitorPtr mon2C1 = nullptr;
 
-OperMonitorPtr mon1C2 = NULLPTR;
-OperMonitorPtr mon2C2 = NULLPTR;
+OperMonitorPtr mon1C2 = nullptr;
+OperMonitorPtr mon2C2 = nullptr;
 
 /* Total 10 Keys , alternate durable and non-durable */
 const char* mixKeys[] = {"Key-1", "D-Key-1", "L-Key", "LD-Key"};
@@ -203,29 +201,29 @@ void feederUpdate(int value, int ignoreR2 = false) {
       continue;
     }
     createIntEntry(regionNames[regIdx], mixKeys[0], value);
-    apache::geode::client::millisleep(10);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     createIntEntry(regionNames[regIdx], mixKeys[1], value);
-    apache::geode::client::millisleep(10);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     createIntEntry(regionNames[regIdx], mixKeys[2], value);
-    apache::geode::client::millisleep(10);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     createIntEntry(regionNames[regIdx], mixKeys[3], value);
-    apache::geode::client::millisleep(10);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     destroyEntry(regionNames[regIdx], mixKeys[0]);
-    apache::geode::client::millisleep(10);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     destroyEntry(regionNames[regIdx], mixKeys[1]);
-    apache::geode::client::millisleep(10);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     destroyEntry(regionNames[regIdx], mixKeys[2]);
-    apache::geode::client::millisleep(10);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     destroyEntry(regionNames[regIdx], mixKeys[3]);
-    apache::geode::client::millisleep(10);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
 }
 
 DUNIT_TASK_DEFINITION(FEEDER, FeederInit)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regionNames[0], USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
     getHelper()->createPooledRegion(regionNames[1], USE_ACK, locatorsG,
@@ -236,11 +234,11 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, InitClient1Timeout300)
   {
-    if (mon1C1 == NULLPTR) {
-      mon1C1 = new OperMonitor(durableIds[0], regionNames[0]);
+    if (mon1C1 == nullptr) {
+      mon1C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[0]);
     }
-    if (mon2C1 == NULLPTR) {
-      mon2C1 = new OperMonitor(durableIds[0], regionNames[1]);
+    if (mon2C1 == nullptr) {
+      mon2C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[1]);
     }
     initClientCache(0, 0 /* Redundancy */, 300 /* D Timeout */, mon1C1, mon2C1);
   }
@@ -248,11 +246,11 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, InitClient1Timeout30)
   {
-    if (mon1C1 == NULLPTR) {
-      mon1C1 = new OperMonitor(durableIds[0], regionNames[0]);
+    if (mon1C1 == nullptr) {
+      mon1C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[0]);
     }
-    if (mon2C1 == NULLPTR) {
-      mon2C1 = new OperMonitor(durableIds[0], regionNames[1]);
+    if (mon2C1 == nullptr) {
+      mon2C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[1]);
     }
     initClientCache(0, 0 /* Redundancy */, 30 /* D Timeout */, mon1C1, mon2C1);
   }
@@ -260,11 +258,11 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, InitClient1DelayedStart)
   {
-    if (mon1C1 == NULLPTR) {
-      mon1C1 = new OperMonitor(durableIds[0], regionNames[0]);
+    if (mon1C1 == nullptr) {
+      mon1C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[0]);
     }
-    if (mon2C1 == NULLPTR) {
-      mon2C1 = new OperMonitor(durableIds[0], regionNames[1]);
+    if (mon2C1 == nullptr) {
+      mon2C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[1]);
     }
     initClientCache(0, 0 /* Redundancy */, 30 /* D Timeout */, mon1C1, mon2C1,
                     35000 /* Sleep before starting */);
@@ -273,11 +271,11 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, InitClient2Timeout300)
   {
-    if (mon1C2 == NULLPTR) {
-      mon1C2 = new OperMonitor(durableIds[1], regionNames[0]);
+    if (mon1C2 == nullptr) {
+      mon1C2 = std::make_shared<OperMonitor>(durableIds[1], regionNames[0]);
     }
-    if (mon2C2 == NULLPTR) {
-      mon2C2 = new OperMonitor(durableIds[1], regionNames[1]);
+    if (mon2C2 == nullptr) {
+      mon2C2 = std::make_shared<OperMonitor>(durableIds[1], regionNames[1]);
     }
     initClientCache(1, 1 /* Redundancy */, 300 /* D Timeout */, mon1C2, mon2C2);
   }
@@ -286,11 +284,11 @@ END_TASK_DEFINITION
 // Client 2 don't need to sleep for timeout as C1 does before it
 DUNIT_TASK_DEFINITION(CLIENT2, InitClient2Timeout30)
   {
-    if (mon1C2 == NULLPTR) {
-      mon1C2 = new OperMonitor(durableIds[1], regionNames[0]);
+    if (mon1C2 == nullptr) {
+      mon1C2 = std::make_shared<OperMonitor>(durableIds[1], regionNames[0]);
     }
-    if (mon2C2 == NULLPTR) {
-      mon2C2 = new OperMonitor(durableIds[1], regionNames[1]);
+    if (mon2C2 == nullptr) {
+      mon2C2 = std::make_shared<OperMonitor>(durableIds[1], regionNames[1]);
     }
     initClientCache(1, 1 /* Redundancy */, 30 /* D Timeout */, mon1C2, mon2C2);
   }
@@ -320,7 +318,7 @@ DUNIT_TASK_DEFINITION(FEEDER, FeederUpdate1)
     feederUpdate(1);
 
     //  Wait 5 seconds for events to be removed from ha queues.
-    apache::geode::client::millisleep(5000);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     LOG("FeederUpdate1 complete.");
   }
@@ -469,8 +467,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, CloseClient1)
   {
-    mon1C1 = NULLPTR;
-    mon2C1 = NULLPTR;
+    mon1C1 = nullptr;
+    mon2C1 = nullptr;
     cleanProc();
     LOG("CLIENT1 closed");
   }
@@ -478,8 +476,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, CloseClient2)
   {
-    mon1C2 = NULLPTR;
-    mon2C2 = NULLPTR;
+    mon1C2 = nullptr;
+    mon2C2 = nullptr;
     cleanProc();
     LOG("CLIENT2 closed");
   }

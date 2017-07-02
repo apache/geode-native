@@ -58,7 +58,7 @@ class PortfolioPdxAuto : public apache::geode::client::PdxSerializable {
         type(NULL),
         status(NULL),
         newVal(NULL),
-        creationDate(NULLPTR),
+        creationDate(nullptr),
         arrayNull(NULL),
         arrayNullSize(0),
         arrayZeroSize(NULL),
@@ -106,6 +106,6 @@ class PortfolioPdxAuto : public apache::geode::client::PdxSerializable {
   CacheableStringPtr toString() const;
 };
 
-typedef SharedPtr<PortfolioPdxAuto> PortfolioPdxPtr;
+typedef std::shared_ptr<PortfolioPdxAuto> PortfolioPdxPtr;
 }
 #endif

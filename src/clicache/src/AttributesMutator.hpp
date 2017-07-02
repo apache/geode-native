@@ -18,8 +18,11 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/AttributesMutator.hpp>
-//#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
+#include "native_shared_ptr.hpp"
 #include "ExpirationAction.hpp"
 #include "ICacheListener.hpp"
 #include "ICacheLoader.hpp"
@@ -34,6 +37,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       /// <summary>
       /// Supports modification of certain region attributes after the region
@@ -54,7 +58,6 @@ namespace Apache
       /// <seealso cref="AttributesFactory" />
       generic<class TKey, class TValue>
       public ref class AttributesMutator sealed
-        : public Internal::SBWrap<apache::geode::client::AttributesMutator>
       {
       public:
 
@@ -242,10 +245,10 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static AttributesMutator<TKey, TValue>^ Create( apache::geode::client::AttributesMutator* nativeptr )
+        inline static AttributesMutator<TKey, TValue>^ Create( native::AttributesMutatorPtr nativeptr )
         {
-          return ( nativeptr != nullptr ?
-            gcnew AttributesMutator<TKey, TValue>( nativeptr ) : nullptr );
+          return __nullptr == nativeptr ? nullptr :
+            gcnew AttributesMutator<TKey, TValue>( nativeptr );
         }
 
 
@@ -255,8 +258,12 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline AttributesMutator<TKey, TValue>( apache::geode::client::AttributesMutator* nativeptr )
-          : SBWrap( nativeptr ) { }
+        inline AttributesMutator<TKey, TValue>( native::AttributesMutatorPtr nativeptr )
+        {
+          m_nativeptr = gcnew native_shared_ptr<native::AttributesMutator>(nativeptr);
+        }
+
+        native_shared_ptr<native::AttributesMutator>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

@@ -50,7 +50,8 @@ typedef PdxSerializable* (*TypeFactoryMethodPdx)();
  * in the cache that can be serialized.
  */
 
-class CPPCACHE_EXPORT Serializable : public SharedBase {
+class CPPCACHE_EXPORT Serializable
+    : public std::enable_shared_from_this<Serializable> {
  public:
   /**
    *@brief serialize this object
@@ -132,10 +133,6 @@ class CPPCACHE_EXPORT Serializable : public SharedBase {
    * Display this object as 'string', which depends on the implementation in
    * the subclasses.
    * The default implementation renders the classname.
-   *
-   * The return value may be a temporary, so the caller has to ensure that
-   * the SharedPtr count does not go down to zero by storing the result
-   * in a variable or otherwise.
    */
   virtual CacheableStringPtr toString() const;
 
@@ -158,7 +155,7 @@ class CPPCACHE_EXPORT Serializable : public SharedBase {
   /**
    * @brief constructors
    */
-  Serializable() : SharedBase() {}
+  Serializable() {}
 
  private:
   // Never defined.

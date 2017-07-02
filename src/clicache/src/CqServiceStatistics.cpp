@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
 #include "CqServiceStatistics.hpp"
 
 
@@ -25,28 +24,63 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace System;
 
-	System::UInt32 CqServiceStatistics::numCqsActive( )
-	{
-	  return NativePtr->numCqsActive( );
-	}
-    System::UInt32 CqServiceStatistics::numCqsCreated( )
-	{
-	  return NativePtr->numCqsCreated( );
-	}
-    System::UInt32 CqServiceStatistics::numCqsClosed( )
-	{
-	  return NativePtr->numCqsClosed( );
-	}
-    System::UInt32 CqServiceStatistics::numCqsStopped( )
-	{
-	  return NativePtr->numCqsStopped( );
-	}
-    System::UInt32 CqServiceStatistics::numCqsOnClient( )
-	{
-	  return NativePtr->numCqsOnClient( );
+      System::UInt32 CqServiceStatistics::numCqsActive()
+      {
+        try
+        {
+          return m_nativeptr->get()->numCqsActive();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+      }
+      System::UInt32 CqServiceStatistics::numCqsCreated()
+      {
+        try
+        {
+          return m_nativeptr->get()->numCqsCreated();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+      }
+      System::UInt32 CqServiceStatistics::numCqsClosed()
+      {
+        try
+        {
+          return m_nativeptr->get()->numCqsClosed();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+      }
+      System::UInt32 CqServiceStatistics::numCqsStopped()
+      {
+        try
+        {
+          return m_nativeptr->get()->numCqsStopped();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+      }
+      System::UInt32 CqServiceStatistics::numCqsOnClient()
+      {
+        try
+        {
+          return m_nativeptr->get()->numCqsOnClient();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
- } //namespace 

@@ -52,16 +52,16 @@ class CPPCACHE_EXPORT Properties : public Serializable {
   };
 
   /**
-   * Return the value for the given key, or NULLPTR if not found.
+   * Return the value for the given key, or nullptr if not found.
    *
    * @throws NullPointerException if the key is null
    */
   CacheableStringPtr find(const char* key);
   /**
    * Return the value for the given <code>CacheableKey</code>,
-   * or NULLPTR if not found.
+   * or nullptr if not found.
    *
-   * @throws NullPointerException if the key is NULLPTR
+   * @throws NullPointerException if the key is nullptr
    */
   CacheablePtr find(const CacheableKeyPtr& key);
 
@@ -82,7 +82,7 @@ class CPPCACHE_EXPORT Properties : public Serializable {
   /**
    * Add or update Cacheable value for CacheableKey
    *
-   * @throws NullPointerException if the key is NULLPTR
+   * @throws NullPointerException if the key is nullptr
    */
   void insert(const CacheableKeyPtr& key, const CacheablePtr& value);
 
@@ -96,7 +96,7 @@ class CPPCACHE_EXPORT Properties : public Serializable {
   /**
    * Remove the <code>CacheableKey</code> from the collection.
    *
-   * @throws NullPointerException if the key is NULLPTR
+   * @throws NullPointerException if the key is nullptr
    */
   void remove(const CacheableKeyPtr& key);
 

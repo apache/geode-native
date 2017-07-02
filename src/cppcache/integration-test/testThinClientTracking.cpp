@@ -25,8 +25,8 @@
 
 // This is the test for tracking work.
 
-putThread *thread1 = NULL;
-putThread *thread2 = NULL;
+putThread *thread1 = nullptr;
+putThread *thread2 = nullptr;
 
 void createAuthzRegion() {
   initCredentialGenerator();
@@ -39,11 +39,11 @@ void createAuthzRegion() {
 void verifyEntry(const char *value) {
   RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
   RegionEntryPtr entry = rptr->getEntry("key-1");
-  ASSERT(entry != NULLPTR, "Key should have been found in region.");
-  CacheableStringPtr valuePtr = dynCast<CacheableStringPtr>(entry->getValue());
+  ASSERT(entry != nullptr, "Key should have been found in region.");
+  auto valuePtr = std::dynamic_pointer_cast<CacheableString>(entry->getValue());
   char buf1[1024];
 
-  if (valuePtr == NULLPTR) {
+  if (valuePtr == nullptr) {
     FAIL("Value was null.");
   }
   sprintf(buf1, "value for key-1 is %s", valuePtr->asChar());

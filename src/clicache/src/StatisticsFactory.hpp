@@ -20,11 +20,14 @@
 #pragma once
 
 #include "geode_defs.hpp"
-#include "impl/NativeWrapper.hpp"
+#include "begin_native.hpp"
 #include <geode/statistics/StatisticsFactory.hpp>
 #include <geode/statistics/StatisticsType.hpp>
 #include <geode/statistics/StatisticDescriptor.hpp>
 #include <geode/statistics/Statistics.hpp>
+#include "end_native.hpp"
+
+using namespace System;
 
 namespace Apache
 {
@@ -54,7 +57,6 @@ namespace Apache
       /// is, exceeds its maximum value).
       /// </para>
       public ref class StatisticsFactory sealed
-        : public Internal::UMWrap<apache::geode::statistics::StatisticsFactory>
       {
       protected:
         StatisticsFactory(){}
@@ -248,8 +250,8 @@ namespace Apache
         inline static StatisticsFactory^ Create(
           apache::geode::statistics::StatisticsFactory* nativeptr)
         {
-          return (nativeptr != nullptr ?
-                  gcnew StatisticsFactory(nativeptr) : nullptr);
+          return __nullptr == nativeptr ? nullptr :
+            gcnew StatisticsFactory( nativeptr );
         }
 
       private:
@@ -258,7 +260,11 @@ namespace Apache
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
         inline StatisticsFactory(apache::geode::statistics::StatisticsFactory* nativeptr)
-          : UMWrap(nativeptr, false) { }
+          : m_nativeptr( nativeptr )
+        {
+        }
+
+        apache::geode::statistics::StatisticsFactory* m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

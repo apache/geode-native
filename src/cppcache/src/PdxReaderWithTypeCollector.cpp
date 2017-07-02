@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 /*
-* PdxReaderWithTypeCollector.cpp
-*
-*  Created on: Nov 3, 2011
-*      Author: npatel
-*/
+ * PdxReaderWithTypeCollector.cpp
+ *
+ *  Created on: Nov 3, 2011
+ *      Author: npatel
+ */
 
 #include "PdxReaderWithTypeCollector.hpp"
 #include "PdxTypes.hpp"
@@ -34,7 +34,7 @@ PdxReaderWithTypeCollector::PdxReaderWithTypeCollector(DataInput& dataInput,
                                                        PdxTypePtr pdxType,
                                                        int32_t pdxlen)
     : PdxLocalReader(dataInput, pdxType, pdxlen) {
-  m_newPdxType = new PdxType(pdxType->getPdxClassName(), true);
+  m_newPdxType = std::make_shared<PdxType>(pdxType->getPdxClassName(), true);
 }
 
 PdxReaderWithTypeCollector::PdxReaderWithTypeCollector() {}
@@ -44,12 +44,12 @@ PdxReaderWithTypeCollector::~PdxReaderWithTypeCollector() {}
 void PdxReaderWithTypeCollector::checkType(const char* fieldName, int8_t typeId,
                                            const char* fieldType) {
   // Check for Empty Field.
-  if (fieldName == NULL) {
+  if (fieldName == nullptr) {
     throw IllegalStateException("Field name is null");
   }
 
   PdxFieldTypePtr pft = m_pdxType->getPdxField(fieldName);
-  if (pft != NULLPTR) {
+  if (pft != nullptr) {
     if (typeId != pft->getTypeId()) {
       char excpStr[128] = {0};
       ACE_OS::snprintf(
@@ -236,7 +236,7 @@ char* PdxReaderWithTypeCollector::readString(const char* fieldName) {
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
-    startLoc = NULL;
+    startLoc = nullptr;
     return str;
   } else {
     static char emptyString[] = {static_cast<char>(0)};
@@ -261,7 +261,7 @@ wchar_t* PdxReaderWithTypeCollector::readWideString(const char* fieldName) {
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
-    startLoc = NULL;
+    startLoc = nullptr;
     return str;
   } else {
     static wchar_t emptyString[] = {static_cast<wchar_t>(0)};
@@ -285,10 +285,10 @@ SerializablePtr PdxReaderWithTypeCollector::readObject(const char* fieldName) {
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
-    startLoc = NULL;
+    startLoc = nullptr;
     return ptr;
   } else {
-    return NULLPTR;
+    return nullptr;
   }
 }
 
@@ -308,10 +308,10 @@ char* PdxReaderWithTypeCollector::readCharArray(const char* fieldName,
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
-    startLoc = NULL;
+    startLoc = nullptr;
     return retVal;
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -331,10 +331,10 @@ wchar_t* PdxReaderWithTypeCollector::readWideCharArray(const char* fieldName,
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
-    startLoc = NULL;
+    startLoc = nullptr;
     return retVal;
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -357,10 +357,10 @@ bool* PdxReaderWithTypeCollector::readBooleanArray(const char* fieldName,
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
-    startLoc = NULL;
+    startLoc = nullptr;
     return retVal;
   }
-  return NULL;
+  return nullptr;
 }
 
 int8_t* PdxReaderWithTypeCollector::readByteArray(const char* fieldName,
@@ -380,10 +380,10 @@ int8_t* PdxReaderWithTypeCollector::readByteArray(const char* fieldName,
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
-    startLoc = NULL;
+    startLoc = nullptr;
     return byteArrptr;
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -404,10 +404,10 @@ int16_t* PdxReaderWithTypeCollector::readShortArray(const char* fieldName,
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
-    startLoc = NULL;
+    startLoc = nullptr;
     return shortArrptr;
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -428,10 +428,10 @@ int32_t* PdxReaderWithTypeCollector::readIntArray(const char* fieldName,
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
-    startLoc = NULL;
+    startLoc = nullptr;
     return intArrayptr;
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -452,10 +452,10 @@ int64_t* PdxReaderWithTypeCollector::readLongArray(const char* fieldName,
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
-    startLoc = NULL;
+    startLoc = nullptr;
     return longArrptr;
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -476,10 +476,10 @@ float* PdxReaderWithTypeCollector::readFloatArray(const char* fieldName,
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
-    startLoc = NULL;
+    startLoc = nullptr;
     return floatArrptr;
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -500,10 +500,10 @@ double* PdxReaderWithTypeCollector::readDoubleArray(const char* fieldName,
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
-    startLoc = NULL;
+    startLoc = nullptr;
     return doubleArrptr;
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -524,10 +524,10 @@ char** PdxReaderWithTypeCollector::readStringArray(const char* fieldName,
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
-    startLoc = NULL;
+    startLoc = nullptr;
     return strArray;
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -548,10 +548,10 @@ wchar_t** PdxReaderWithTypeCollector::readWideStringArray(const char* fieldName,
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
-    startLoc = NULL;
+    startLoc = nullptr;
     return strArray;
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -571,10 +571,10 @@ CacheableObjectArrayPtr PdxReaderWithTypeCollector::readObjectArray(
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
-    startLoc = NULL;
+    startLoc = nullptr;
     return retVal;
   } else {
-    return NULLPTR;
+    return nullptr;
   }
 }
 
@@ -595,10 +595,10 @@ int8_t** PdxReaderWithTypeCollector::readArrayOfByteArrays(
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
-    startLoc = NULL;
+    startLoc = nullptr;
     return retVal;
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -615,7 +615,7 @@ CacheableDatePtr PdxReaderWithTypeCollector::readDate(const char* fieldName) {
     m_dataInput->rewindCursor(position + PdxTypes::DATE_SIZE);
     return retVal;
   } else {
-    return NULLPTR;
+    return nullptr;
   }
 }
 
@@ -635,7 +635,7 @@ void PdxReaderWithTypeCollector::readCollection(
     PdxLocalReader::readCollection(fieldName, collection);
     m_dataInput->rewindCursor(position);
   } else {
-    collection = NULLPTR;
+    collection = nullptr;
   }
 }
 }  // namespace client

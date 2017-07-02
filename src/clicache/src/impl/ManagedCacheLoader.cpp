@@ -218,19 +218,6 @@ namespace apache
                                                    const CacheableKeyPtr& key, const UserDataPtr& aCallbackArgument)
       {
         try {
-          /*
-          Region<Object^, Object^>^ mregion =
-          Region<Object^, Object^>::Create( region.ptr( ) );
-
-          ICacheableKey^ mkey = SafeGenericUMKeyConvert( key.ptr( ) );
-
-          IGeodeSerializable^ mcallbackArg = SafeGenericUMSerializableConvert(aCallbackArgument.ptr());
-          */
-
-          /*
-          return apache::geode::client::CacheablePtr(SafeMSerializableConvert(
-          m_managedptr->Load(mregion, mkey, mcallbackArg)));
-          */
           return m_managedptr->load(region, key, aCallbackArgument);
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
@@ -239,7 +226,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULLPTR;
+        return nullptr;
       }
 
       void ManagedCacheLoaderGeneric::close(const RegionPtr& region)
@@ -247,7 +234,7 @@ namespace apache
         try {
           /*
           Apache::Geode::Client::Region^ mregion =
-          Apache::Geode::Client::Region::Create( region.ptr( ) );
+          Apache::Geode::Client::Region::Create( region.get() );
           */
 
           m_managedptr->close(region);

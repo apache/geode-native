@@ -105,7 +105,7 @@ ClientProxyMembershipID::ClientProxyMembershipID(const char *durableClientId,
                                                  const uint32_t
 durableClntTimeOut)
 {
-  if( durableClientId != NULL && durableClntTimeOut != 0 ) {
+  if( durableClientId != nullptr && durableClntTimeOut != 0 ) {
     DataOutput  m_memID;
     m_memID.write((int8_t)GeodeTypeIds::CacheableASCIIString);
     m_memID.writeASCII(durableClientId);
@@ -119,7 +119,7 @@ durableClntTimeOut)
 */
 ClientProxyMembershipID::ClientProxyMembershipID()
     : m_hostPort(0),
-      m_hostAddr(NULL)
+      m_hostAddr(nullptr)
       /* adongre  - Coverity II
        * CID 29278: Uninitialized scalar field (UNINIT_CTOR)
        */
@@ -158,7 +158,7 @@ void ClientProxyMembershipID::initObjectVars(
     int8_t vmkind, int8_t splitBrainFlag, const char* dsname,
     const char* uniqueTag, uint32_t vmViewId) {
   DataOutput m_memID;
-  if (dsname == NULL) {
+  if (dsname == nullptr) {
     m_dsname = std::string("");
   } else {
     m_dsname = std::string(dsname);
@@ -167,7 +167,7 @@ void ClientProxyMembershipID::initObjectVars(
   m_hostAddr = hostAddr;
   m_hostAddrLen = hostAddrLen;
   m_hostAddrLocalMem = hostAddrLocalMem;
-  if (uniqueTag == NULL) {
+  if (uniqueTag == nullptr) {
     m_uniqueTag = std::string("");
   } else {
     m_uniqueTag = std::string(uniqueTag);
@@ -199,7 +199,7 @@ void ClientProxyMembershipID::initObjectVars(
   m_memID.write(static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
   m_memID.writeASCII(uniqueTag);
 
-  if (durableClientId != NULL && durableClntTimeOut != 0) {
+  if (durableClientId != nullptr && durableClntTimeOut != 0) {
     m_memID.write(static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
     m_memID.writeASCII(durableClientId);
     CacheableInt32Ptr int32ptr = CacheableInt32::create(durableClntTimeOut);
@@ -209,16 +209,7 @@ void ClientProxyMembershipID::initObjectVars(
   uint32_t len;
   char* buf = (char*)m_memID.getBuffer(&len);
   m_memIDStr.append(buf, len);
-  /* adongre - Coverity II
-   * CID 29206: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-   * "sprintf" can cause a
-   * buffer overflow when done incorrectly. Because sprintf() assumes an
-   * arbitrarily long string,
-   * callers must be careful not to overflow the actual space of the
-   * destination.
-   * Use snprintf() instead, or correct precision specifiers.
-   * Fix : using ACE_OS::snprintf
-   */
+
   char PID[15] = {0};
   char Synch_Counter[15] = {0};
   // ACE_OS::snprintf(PID, 15, "%d",vPID);
@@ -376,7 +367,7 @@ Serializable* ClientProxyMembershipID::fromData(DataInput& input) {
   input.readInt(&dcport);              // port
   input.readInt(&vPID);                // pid
   input.read(&vmKind);                 // vmkind
-  CacheableStringArrayPtr aStringArray(CacheableStringArray::create());
+  auto aStringArray = CacheableStringArray::create();
   aStringArray->fromData(input);
   input.readObject(dsName);            // name
   input.readObject(uniqueTag);         // unique tag
@@ -386,10 +377,10 @@ Serializable* ClientProxyMembershipID::fromData(DataInput& input) {
   readVersion(splitbrain, input);
 
   if (vmKind != ClientProxyMembershipID::LONER_DM_TYPE) {
-    vmViewId = atoi(uniqueTag.ptr()->asChar());
+    vmViewId = atoi(uniqueTag.get()->asChar());
     initObjectVars(hostname->asChar(), hostAddr, len, true, hostPort,
                    durableClientId->asChar(), durableClntTimeOut, dcport, vPID,
-                   vmKind, splitbrain, dsName->asChar(), NULL, vmViewId);
+                   vmKind, splitbrain, dsName->asChar(), nullptr, vmViewId);
   } else {
     // initialize the object
     initObjectVars(hostname->asChar(), hostAddr, len, true, hostPort,
@@ -431,7 +422,7 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
     input.readObject(uniqueTag);  // unique tag
   } else {
     input.readObject(vmViewIdstr);
-    vmViewId = atoi(vmViewIdstr.ptr()->asChar());
+    vmViewId = atoi(vmViewIdstr.get()->asChar());
   }
 
   input.readObject(dsName);  // name
@@ -439,7 +430,7 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
   if (vmKind != ClientProxyMembershipID::LONER_DM_TYPE) {
     // initialize the object with the values read and some dummy values
     initObjectVars("", hostAddr, len, true, hostPort, "", 0, DCPORT, 0, vmKind,
-                   0, dsName->asChar(), NULL, vmViewId);
+                   0, dsName->asChar(), nullptr, vmViewId);
   } else {
     // initialize the object with the values read and some dummy values
     initObjectVars("", hostAddr, len, true, hostPort, "", 0, DCPORT, 0, vmKind,
@@ -461,27 +452,24 @@ void ClientProxyMembershipID::increaseSynchCounter() { ++synch_counter; }
 // Compares two membershipIds. This is based on the compareTo function
 // of InternalDistributedMember class of Java.
 // Any change to the java function should be reflected here as well.
-int16_t ClientProxyMembershipID::compareTo(DSMemberForVersionStampPtr other) {
-  if (other.operator==(this)) {
+int16_t ClientProxyMembershipID::compareTo(
+    const DSMemberForVersionStamp& other) const {
+  if (this == &other) {
     return 0;
   }
-  if (other.ptr() == NULL) {
-    throw ClassCastException(
-        "ClientProxyMembershipID.compare(): comparing with a null value");
-  }
 
-  ClientProxyMembershipIDPtr otherMember =
-      dynCast<ClientProxyMembershipIDPtr>(other);
+  const ClientProxyMembershipID& otherMember =
+      static_cast<const ClientProxyMembershipID&>(other);
   uint32_t myPort = getHostPort();
-  uint32_t otherPort = otherMember->getHostPort();
+  uint32_t otherPort = otherMember.getHostPort();
 
   if (myPort < otherPort) return -1;
   if (myPort > otherPort) return 1;
 
   uint8_t* myAddr = getHostAddr();
-  uint8_t* otherAddr = otherMember->getHostAddr();
+  uint8_t* otherAddr = otherMember.getHostAddr();
   // Discard null cases
-  if (myAddr == NULL && otherAddr == NULL) {
+  if (myAddr == nullptr && otherAddr == nullptr) {
     if (myPort < otherPort) {
       return -1;
     } else if (myPort > otherPort) {
@@ -489,9 +477,9 @@ int16_t ClientProxyMembershipID::compareTo(DSMemberForVersionStampPtr other) {
     } else {
       return 0;
     }
-  } else if (myAddr == NULL) {
+  } else if (myAddr == nullptr) {
     return -1;
-  } else if (otherAddr == NULL) {
+  } else if (otherAddr == nullptr) {
     return 1;
   }
   for (uint32_t i = 0; i < getHostAddrLen(); i++) {
@@ -500,11 +488,11 @@ int16_t ClientProxyMembershipID::compareTo(DSMemberForVersionStampPtr other) {
   }
 
   std::string myUniqueTag = getUniqueTag();
-  std::string otherUniqueTag = otherMember->getUniqueTag();
+  std::string otherUniqueTag = otherMember.getUniqueTag();
   if (myUniqueTag.empty() && otherUniqueTag.empty()) {
-    if (m_vmViewId < otherMember->m_vmViewId) {
+    if (m_vmViewId < otherMember.m_vmViewId) {
       return -1;
-    } else if (m_vmViewId > otherMember->m_vmViewId) {
+    } else if (m_vmViewId > otherMember.m_vmViewId) {
       return 1;
     }  // else they're the same, so continue
   } else if (myUniqueTag.empty()) {

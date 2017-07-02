@@ -31,7 +31,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class PdxLocalWriter : public PdxWriter {
+class PdxLocalWriter : public PdxWriter,
+                       public std::enable_shared_from_this<PdxLocalWriter> {
  protected:
   DataOutput* m_dataOutput;
   PdxTypePtr m_pdxType;
@@ -83,7 +84,7 @@ class PdxLocalWriter : public PdxWriter {
   }
 
   inline void writePdxCharArray(char* objArray, int arrayLen) {
-    if (objArray != NULL) {
+    if (objArray != nullptr) {
       m_dataOutput->writeArrayLen(arrayLen);
       if (arrayLen > 0) {
         char* ptr = objArray;
@@ -111,7 +112,7 @@ class PdxLocalWriter : public PdxWriter {
 
   template <typename mType>
   void writeObject(mType* objArray, int arrayLen) {
-    if (objArray != NULL) {
+    if (objArray != nullptr) {
       m_dataOutput->writeArrayLen(arrayLen);
       if (arrayLen > 0) {
         mType* ptr = objArray;
@@ -334,7 +335,7 @@ class PdxLocalWriter : public PdxWriter {
 
   inline int32_t getStartPositionOffset() { return m_startPositionOffset; }
 };
-typedef SharedPtr<PdxLocalWriter> PdxLocalWriterPtr;
+typedef std::shared_ptr<PdxLocalWriter> PdxLocalWriterPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

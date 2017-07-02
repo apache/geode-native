@@ -42,15 +42,15 @@ class TcrPoolEndPoint : public TcrEndpoint {
   virtual GfErrType registerDM(bool clientNotification,
                                bool isSecondary = false,
                                bool isActiveEndpoint = false,
-                               ThinClientBaseDM* distMgr = NULL);
+                               ThinClientBaseDM* distMgr = nullptr);
   virtual void unregisterDM(bool clientNotification,
-                            ThinClientBaseDM* distMgr = NULL,
+                            ThinClientBaseDM* distMgr = nullptr,
                             bool checkQueueHosted = false);
   using TcrEndpoint::handleIOException;
   virtual bool handleIOException(const std::string& message,
                                  TcrConnection*& conn, bool isBgThread = false);
   void handleNotificationStats(int64_t byteLength);
-  virtual ~TcrPoolEndPoint() { m_dm = NULL; }
+  virtual ~TcrPoolEndPoint() { m_dm = nullptr; }
   virtual bool isMultiUserMode();
 
  protected:

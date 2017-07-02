@@ -25,7 +25,7 @@
 
 // This is the test for tracking work. bug#304
 
-putThread *thread1 = NULL;
+putThread *thread1 = nullptr;
 
 void createAuthzRegion() {
   initCredentialGenerator();

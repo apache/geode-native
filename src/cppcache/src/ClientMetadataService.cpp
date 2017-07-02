@@ -14,13 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "TcrMessage.hpp"
-#include "ClientMetadataService.hpp"
-#include "ThinClientPoolDM.hpp"
-#include <geode/FixedPartitionResolver.hpp>
+
+#include <unordered_set>
 #include <iterator>
 #include <cstdlib>
 #include <climits>
+
+#include <geode/FixedPartitionResolver.hpp>
+
+#include "TcrMessage.hpp"
+#include "ClientMetadataService.hpp"
+#include "ThinClientPoolDM.hpp"
 
 namespace apache {
 namespace geode {
@@ -41,10 +45,10 @@ ClientMetadataService::~ClientMetadataService() {
   }
 }
 
-ClientMetadataService::ClientMetadataService(PoolPtr pool)
+ClientMetadataService::ClientMetadataService(Pool* pool)
     /* adongre
-    * CID 28928: Uninitialized scalar field (UNINIT_CTOR)
-    */
+     * CID 28928: Uninitialized scalar field (UNINIT_CTOR)
+     */
     : m_run(false)
 
 {
@@ -59,17 +63,17 @@ int ClientMetadataService::svc() {
   LOGINFO("ClientMetadataService started for pool %s", m_pool->getName());
   while (m_run) {
     m_regionQueueSema.acquire();
-    ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.ptr());
+    ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
     CacheImpl* cache = tcrdm->getConnectionManager().getCacheImpl();
     while (true) {
       std::string* regionFullPath = m_regionQueue->get();
 
-      if (regionFullPath != NULL && regionFullPath->c_str() != NULL) {
+      if (regionFullPath != nullptr && regionFullPath->c_str() != nullptr) {
         while (true) {
           if (m_regionQueue->size() > 0) {
             std::string* nextRegionFullPath = m_regionQueue->get();
-            if (nextRegionFullPath != NULL &&
-                nextRegionFullPath->c_str() != NULL &&
+            if (nextRegionFullPath != nullptr &&
+                nextRegionFullPath->c_str() != nullptr &&
                 regionFullPath->compare(nextRegionFullPath->c_str()) == 0) {
               delete nextRegionFullPath;  // we are going for same
             } else {
@@ -83,14 +87,14 @@ int ClientMetadataService::svc() {
         }
       }
 
-      if (!cache->isCacheDestroyPending() && regionFullPath != NULL &&
-          regionFullPath->c_str() != NULL) {
+      if (!cache->isCacheDestroyPending() && regionFullPath != nullptr &&
+          regionFullPath->c_str() != nullptr) {
         getClientPRMetadata(regionFullPath->c_str());
         delete regionFullPath;
-        regionFullPath = NULL;
+        regionFullPath = nullptr;
       } else {
         delete regionFullPath;
-        regionFullPath = NULL;
+        regionFullPath = nullptr;
         break;
       }
     }
@@ -101,9 +105,9 @@ int ClientMetadataService::svc() {
 }
 
 void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
-  if (regionFullPath == NULL) return;
-  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.ptr());
-  if (tcrdm == NULL) {
+  if (regionFullPath == nullptr) return;
+  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
+  if (tcrdm == nullptr) {
     throw IllegalArgumentException(
         "ClientMetaData: pool cast to ThinClientPoolDM failed");
   }
@@ -111,68 +115,56 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
   // for a particular region use GetClientPartitionAttributesOp
   // TcrMessage to fetch the metadata and put it into map for later use.send
   // this message to server and get metadata from server.
-  TcrMessageReply reply(true, NULL);
+  TcrMessageReply reply(true, nullptr);
   std::string path(regionFullPath);
-  ClientMetadataPtr cptr = NULLPTR;
+  ClientMetadataPtr cptr = nullptr;
   {
     ReadGuard guard(m_regionMetadataLock);
     RegionMetadataMapType::iterator itr = m_regionMetaDataMap.find(path);
     if (itr != m_regionMetaDataMap.end()) {
       cptr = itr->second;
     }
-    // cptr = m_regionMetaDataMap[path];
   }
-  ClientMetadataPtr newCptr = NULLPTR;
+  ClientMetadataPtr newCptr = nullptr;
 
-  {
-    // ACE_Guard< ACE_Recursive_Thread_Mutex > guard( m_regionMetadataLock );
-
-    if (cptr == NULLPTR) {
-      TcrMessageGetClientPartitionAttributes request(regionFullPath);
-      GfErrType err = tcrdm->sendSyncRequest(request, reply);
-      if (err == GF_NOERR &&
-          reply.getMessageType() ==
-              TcrMessage::RESPONSE_CLIENT_PARTITION_ATTRIBUTES) {
-        cptr =
-            new ClientMetadata(reply.getNumBuckets(), reply.getColocatedWith(),
-                               tcrdm, reply.getFpaSet());
-        if (m_bucketWaitTimeout > 0 && reply.getNumBuckets() > 0) {
-          WriteGuard guard(m_PRbucketStatusLock);
-          m_bucketStatus[regionFullPath] = new PRbuckets(reply.getNumBuckets());
-        }
-        LOGDEBUG("ClientMetadata buckets %d ", reply.getNumBuckets());
-        if (cptr != NULLPTR) {
-          // m_regionMetaDataMap[regionFullPath] = cptr;
-        }
+  if (cptr == nullptr) {
+    TcrMessageGetClientPartitionAttributes request(regionFullPath);
+    GfErrType err = tcrdm->sendSyncRequest(request, reply);
+    if (err == GF_NOERR &&
+        reply.getMessageType() ==
+            TcrMessage::RESPONSE_CLIENT_PARTITION_ATTRIBUTES) {
+      cptr = std::make_shared<ClientMetadata>(reply.getNumBuckets(),
+                                              reply.getColocatedWith(), tcrdm,
+                                              reply.getFpaSet());
+      if (m_bucketWaitTimeout > 0 && reply.getNumBuckets() > 0) {
+        WriteGuard guard(m_PRbucketStatusLock);
+        m_bucketStatus[regionFullPath] = new PRbuckets(reply.getNumBuckets());
       }
+      LOGDEBUG("ClientMetadata buckets %d ", reply.getNumBuckets());
     }
   }
-  if (cptr == NULLPTR) {
+  if (cptr == nullptr) {
     return;
   }
   CacheableStringPtr colocatedWith;
-  if (cptr != NULLPTR) {
+  if (cptr != nullptr) {
     colocatedWith = cptr->getColocatedWith();
   }
-  if (colocatedWith == NULLPTR) {
+  if (colocatedWith == nullptr) {
     newCptr = SendClientPRMetadata(regionFullPath, cptr);
     // now we will get new instance so assign it again
-    if (newCptr != NULLPTR) {
-      cptr->setPreviousone(NULLPTR);
+    if (newCptr != nullptr) {
+      cptr->setPreviousone(nullptr);
       newCptr->setPreviousone(cptr);
       WriteGuard guard(m_regionMetadataLock);
       m_regionMetaDataMap[path] = newCptr;
       LOGINFO("Updated client meta data");
     }
   } else {
-    {
-      // ACE_Guard< ACE_Recursive_Thread_Mutex > guard( m_regionMetadataLock );
-      // m_regionMetaDataMap[colocatedWith->asChar()] = cptr;
-    }
     newCptr = SendClientPRMetadata(colocatedWith->asChar(), cptr);
 
-    if (newCptr != NULLPTR) {
-      cptr->setPreviousone(NULLPTR);
+    if (newCptr) {
+      cptr->setPreviousone(nullptr);
       newCptr->setPreviousone(cptr);
       // now we will get new instance so assign it again
       WriteGuard guard(m_regionMetadataLock);
@@ -185,32 +177,32 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
 
 ClientMetadataPtr ClientMetadataService::SendClientPRMetadata(
     const char* regionPath, ClientMetadataPtr cptr) {
-  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.ptr());
-  if (tcrdm == NULL) {
+  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
+  if (tcrdm == nullptr) {
     throw IllegalArgumentException(
         "ClientMetaData: pool cast to ThinClientPoolDM failed");
   }
   TcrMessageGetClientPrMetadata request(regionPath);
-  TcrMessageReply reply(true, NULL);
+  TcrMessageReply reply(true, nullptr);
   // send this message to server and get metadata from server.
   LOGFINE("Now sending GET_CLIENT_PR_METADATA for getting from server: %s",
           regionPath);
-  RegionPtr region = NULLPTR;
+  RegionPtr region = nullptr;
   GfErrType err = tcrdm->sendSyncRequest(request, reply);
   if (err == GF_NOERR &&
       reply.getMessageType() == TcrMessage::RESPONSE_CLIENT_PR_METADATA) {
     tcrdm->getConnectionManager().getCacheImpl()->getRegion(regionPath, region);
-    if (region != NULLPTR) {
-      LocalRegion* lregion = dynamic_cast<LocalRegion*>(region.ptr());
+    if (region != nullptr) {
+      LocalRegion* lregion = dynamic_cast<LocalRegion*>(region.get());
       lregion->getRegionStats()->incMetaDataRefreshCount();
     }
     std::vector<BucketServerLocationsType>* metadata = reply.getMetadata();
-    if (metadata == NULL) return NULLPTR;
+    if (metadata == nullptr) return nullptr;
     if (metadata->empty()) {
       delete metadata;
-      return NULLPTR;
+      return nullptr;
     }
-    ClientMetadata* newCptr = new ClientMetadata(*(cptr.ptr()));
+    auto newCptr = std::make_shared<ClientMetadata>(*cptr);
     for (std::vector<BucketServerLocationsType>::iterator iter =
              metadata->begin();
          iter != metadata->end(); ++iter) {
@@ -220,10 +212,9 @@ ClientMetadataPtr ClientMetadataService::SendClientPRMetadata(
       }
     }
     delete metadata;
-    ClientMetadataPtr newCMDPtr(newCptr);
-    return newCMDPtr;
+    return newCptr;
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 void ClientMetadataService::getBucketServerLocation(
@@ -231,43 +222,40 @@ void ClientMetadataService::getBucketServerLocation(
     const CacheablePtr& value, const UserDataPtr& aCallbackArgument,
     bool isPrimary, BucketServerLocationPtr& serverLocation, int8_t& version) {
   // ACE_Guard< ACE_Recursive_Thread_Mutex > guard( m_regionMetadataLock );
-  if (region != NULLPTR) {
+  if (region != nullptr) {
     ReadGuard guard(m_regionMetadataLock);
     LOGDEBUG(
         "ClientMetadataService::getBucketServerLocation m_regionMetaDataMap "
         "size is %d",
         m_regionMetaDataMap.size());
     std::string path(region->getFullPath());
-    ClientMetadataPtr cptr = NULLPTR;
-    RegionMetadataMapType::iterator itr = m_regionMetaDataMap.find(path);
+    ClientMetadataPtr cptr = nullptr;
+    const auto& itr = m_regionMetaDataMap.find(path);
     if (itr != m_regionMetaDataMap.end()) {
       cptr = itr->second;
     }
-    // ClientMetadataPtr cptr = m_regionMetaDataMap[path];
-    if (cptr == NULLPTR) {
-      // serverLocation = BucketServerLocation();
+    if (!cptr) {
       return;
     }
     CacheableKeyPtr resolvekey;
-    const PartitionResolverPtr& resolver =
-        region->getAttributes()->getPartitionResolver();
+    const auto& resolver = region->getAttributes()->getPartitionResolver();
 
-    EntryEvent event(region, key, value, NULLPTR, aCallbackArgument, false);
+    EntryEvent event(region, key, value, nullptr, aCallbackArgument, false);
     int bucketId = 0;
-    if (resolver == NULLPTR) {
+    if (resolver == nullptr) {
       resolvekey = key;
     } else {
       resolvekey = resolver->getRoutingObject(event);
-      if (resolvekey == NULLPTR) {
+      if (resolvekey == nullptr) {
         throw IllegalStateException(
             "The RoutingObject returned by PartitionResolver is null.");
       }
     }
     FixedPartitionResolverPtr fpResolver(
-        dynamic_cast<FixedPartitionResolver*>(resolver.ptr()));
-    if (fpResolver != NULLPTR) {
+        dynamic_cast<FixedPartitionResolver*>(resolver.get()));
+    if (fpResolver != nullptr) {
       const char* partition = fpResolver->getPartitionName(event);
-      if (partition == NULL) {
+      if (partition == nullptr) {
         throw IllegalStateException(
             "partition name returned by Partition resolver is null.");
       } else {
@@ -278,8 +266,8 @@ void ClientMetadataService::getBucketServerLocation(
       }
     } else {
       if (cptr->getTotalNumBuckets() > 0) {
-        bucketId = std::abs(resolvekey->hashcode() %
-                            cptr->getTotalNumBuckets());
+        bucketId =
+            std::abs(resolvekey->hashcode() % cptr->getTotalNumBuckets());
       }
     }
     cptr->getServerLocation(bucketId, isPrimary, serverLocation, version);
@@ -293,9 +281,9 @@ void ClientMetadataService::removeBucketServerLocation(
            m_regionMetaDataMap.begin();
        regionMetadataIter != m_regionMetaDataMap.end(); regionMetadataIter++) {
     ClientMetadataPtr cptr = (*regionMetadataIter).second;
-    if (cptr != NULLPTR) {
+    if (cptr != nullptr) {
       // Yogesh has commented out this as it was causing a SIGV
-      // cptr->removeBucketServerLocation(serverLocation);
+      // clientMetadata->removeBucketServerLocation(serverLocation);
     }
   }
 }
@@ -308,31 +296,8 @@ ClientMetadataPtr ClientMetadataService::getClientMetadata(
   if (regionMetadataIter != m_regionMetaDataMap.end()) {
     return (*regionMetadataIter).second;
   }
-  return NULLPTR;
+  return nullptr;
 }
-
-/*const  PartitionResolverPtr& ClientMetadataService::getResolver(const
-  RegionPtr& region, const CacheableKeyPtr& key,
-   const UserDataPtr& aCallbackArgument){
-     //const char * regionFullPath = region->getFullPath();
-     //if (regionFullPath != NULL) {
-       //const RegionAttributesPtr& rAttrsPtr = region->getAttributes();
-       return region->getAttributes()->getPartitionResolver();
-     //}
-  }*/
-
-/*BucketServerLocation
-ClientMetadataService::getServerLocation(ClientMetadataPtr cptr, int bucketId,
-bool tryPrimary)
-{
-LOGFINE("Inside getServerLocation");
-if (cptr == NULLPTR) {
-LOGDEBUG("MetaData does not exist");
-return BucketServerLocation();
-}
-LOGFINE("Ending getServerLocation");
-return cptr->getServerLocation(bucketId, tryPrimary);
-}*/
 
 void ClientMetadataService::populateDummyServers(const char* regionName,
                                                  ClientMetadataPtr cptr) {
@@ -342,15 +307,15 @@ void ClientMetadataService::populateDummyServers(const char* regionName,
 
 void ClientMetadataService::enqueueForMetadataRefresh(
     const char* regionFullPath, int8_t serverGroupFlag) {
-  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.ptr());
-  if (tcrdm == NULL) {
+  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
+  if (tcrdm == nullptr) {
     throw IllegalArgumentException(
         "ClientMetaData: pool cast to ThinClientPoolDM failed");
   }
   RegionPtr region;
   tcrdm->getConnectionManager().getCacheImpl()->getRegion(regionFullPath,
                                                           region);
-  LocalRegion* lregion = dynamic_cast<LocalRegion*>(region.ptr());
+  LocalRegion* lregion = dynamic_cast<LocalRegion*>(region.get());
 
   std::string serverGroup = tcrdm->getServerGroup();
   if (serverGroup.length() != 0) {
@@ -363,8 +328,8 @@ void ClientMetadataService::enqueueForMetadataRefresh(
     }
   }
 
-  if (region != NULLPTR) {
-    ThinClientRegion* tcrRegion = dynamic_cast<ThinClientRegion*>(region.ptr());
+  if (region != nullptr) {
+    ThinClientRegion* tcrRegion = dynamic_cast<ThinClientRegion*>(region.get());
     {
       TryWriteGuard guardRegionMetaDataRefresh(
           tcrRegion->getMataDataMutex(), tcrRegion->getMetaDataRefreshed());
@@ -381,119 +346,106 @@ void ClientMetadataService::enqueueForMetadataRefresh(
   }
 }
 
-HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>*
-ClientMetadataService::getServerToFilterMap(const VectorOfCacheableKey* keys,
+ClientMetadataPtr ClientMetadataService::getClientMetadata(
+    const RegionPtr& region) {
+  ReadGuard guard(m_regionMetadataLock);
+
+  const auto& entry = m_regionMetaDataMap.find(region->getFullPath());
+
+  if (entry == m_regionMetaDataMap.end()) {
+    return nullptr;
+  }
+
+  return entry->second;
+}
+
+ClientMetadataService::ServerToFilterMapPtr
+ClientMetadataService::getServerToFilterMap(const VectorOfCacheableKey& keys,
                                             const RegionPtr& region,
                                             bool isPrimary) {
-  // const char* regionFullPath = region->getFullPath();
-  ClientMetadataPtr cptr = NULLPTR;
-  {
-    ReadGuard guard(m_regionMetadataLock);
-    RegionMetadataMapType::iterator cptrIter =
-        m_regionMetaDataMap.find(region->getFullPath());
-
-    if (cptrIter != m_regionMetaDataMap.end()) {
-      cptr = cptrIter->second;
-    }
-
-    if (cptr == NULLPTR || keys == NULL) {
-      // enqueueForMetadataRefresh(region->getFullPath());
-      return NULL;
-      //		//serverLocation = BucketServerLocation();
-      //		return;
-    }
+  auto clientMetadata = getClientMetadata(region);
+  if (!clientMetadata) {
+    return nullptr;
   }
-  // int totalNumberOfBuckets = cptr->getTotalNumBuckets();
-  HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>* result =
-      new HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>();
-  VectorOfCacheableKeyPtr keysWhichLeft(new VectorOfCacheableKey());
 
+  auto serverToFilterMap = std::make_shared<ServerToFilterMap>();
+
+  VectorOfCacheableKey keysWhichLeft;
   std::map<int, BucketServerLocationPtr> buckets;
 
-  for (VectorOfCacheableKey::Iterator iter = keys->begin(); iter != keys->end();
-       iter++) {
-    CacheableKeyPtr key = *iter;
+  for (const auto& key : keys) {
     LOGDEBUG("cmds = %s", key->toString()->toString());
-    PartitionResolverPtr resolver =
-        region->getAttributes()->getPartitionResolver();
+    const auto resolver = region->getAttributes()->getPartitionResolver();
     CacheableKeyPtr resolveKey;
 
-    if (resolver == NULLPTR) {
+    if (resolver == nullptr) {
       // client has not registered PartitionResolver
       // Assuming even PR at server side is not using PartitionResolver
       resolveKey = key;
     } else {
-      EntryEvent event(region, key, NULLPTR, NULLPTR, NULLPTR, false);
+      EntryEvent event(region, key, nullptr, nullptr, nullptr, false);
       resolveKey = resolver->getRoutingObject(event);
     }
 
-    int bucketId = std::abs(resolveKey->hashcode() %
-                            cptr->getTotalNumBuckets());
-    VectorOfCacheableKeyPtr keyList = NULLPTR;
-    std::map<int, BucketServerLocationPtr>::iterator bucketsIter =
-        buckets.find(bucketId);
+    int bucketId =
+        std::abs(resolveKey->hashcode() % clientMetadata->getTotalNumBuckets());
+    VectorOfCacheableKeyPtr keyList = nullptr;
 
+    const auto& bucketsIter = buckets.find(bucketId);
     if (bucketsIter == buckets.end()) {
       int8_t version = -1;
-      // BucketServerLocationPtr serverLocation(new BucketServerLocation());
-      BucketServerLocationPtr serverLocation = NULLPTR;
-      cptr->getServerLocation(bucketId, isPrimary, serverLocation, version);
-      if (serverLocation == NULLPTR) {  //:if server not returns all buckets,
-                                        // need to confiem with PR team about
-        // this why??
-        keysWhichLeft->push_back(key);
-        continue;
-      } else if (!serverLocation->isValid()) {
-        keysWhichLeft->push_back(key);
+      // auto serverLocation = std::make_shared<BucketServerLocation>();
+      BucketServerLocationPtr serverLocation = nullptr;
+      clientMetadata->getServerLocation(bucketId, isPrimary, serverLocation,
+                                        version);
+      if (!(serverLocation && serverLocation->isValid())) {
+        keysWhichLeft.push_back(key);
         continue;
       }
-      // if(serverLocation == NULLPTR)
-      // continue;// need to fix
-      buckets[bucketId] = serverLocation;
-      HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>::Iterator
-          itrRes = result->find(serverLocation);
-      // keyList = (*result)[serverLocation];
 
-      if (itrRes == result->end()) {
-        keyList = new VectorOfCacheableKey();
-        result->insert(serverLocation, keyList);
+      buckets[bucketId] = serverLocation;
+
+      const auto& itrRes = serverToFilterMap->find(serverLocation);
+
+      if (itrRes == serverToFilterMap->end()) {
+        keyList = std::make_shared<VectorOfCacheableKey>();
+        serverToFilterMap->emplace(serverLocation, keyList);
       } else {
-        keyList = itrRes.second();
+        keyList = itrRes->second;
       }
+
       LOGDEBUG("new keylist buckets =%d res = %d", buckets.size(),
-               result->size());
+               serverToFilterMap->size());
     } else {
-      keyList = (*result)[bucketsIter->second];
+      keyList = (*serverToFilterMap)[bucketsIter->second];
     }
 
     keyList->push_back(key);
   }
 
-  if (keysWhichLeft->size() > 0 &&
-      result->size() > 0) {  // add left keys in result
-    int keyLefts = keysWhichLeft->size();
-    int totalServers = result->size();
-    int perServer = keyLefts / totalServers + 1;
+  if (keysWhichLeft.size() > 0 &&
+      serverToFilterMap->size() > 0) {  // add left keys in result
+    auto keyLefts = keysWhichLeft.size();
+    auto totalServers = serverToFilterMap->size();
+    auto perServer = keyLefts / totalServers + 1;
 
     int keyIdx = 0;
-    for (HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>::Iterator
-             locationIter = result->begin();
-         locationIter != result->end(); locationIter++) {
-      VectorOfCacheableKeyPtr keys = locationIter.second();
+    for (const auto& locationIter : *serverToFilterMap) {
+      const auto keys = locationIter.second;
       for (int i = 0; i < perServer; i++) {
         if (keyIdx < keyLefts) {
-          keys->push_back(keysWhichLeft->at(keyIdx++));
+          keys->push_back(keysWhichLeft.at(keyIdx++));
         } else {
           break;
         }
       }
       if (keyIdx >= keyLefts) break;  // done
     }
-  } else if (result->size() == 0) {  // not be able to map any key
-    return NULL;  // it will force all keys to send to one server
+  } else if (serverToFilterMap->size() == 0) {  // not be able to map any key
+    return nullptr;  // it will force all keys to send to one server
   }
 
-  return result;
+  return serverToFilterMap;
 }
 
 void ClientMetadataService::markPrimaryBucketForTimeout(
@@ -508,7 +460,7 @@ void ClientMetadataService::markPrimaryBucketForTimeout(
                           false /*look for secondary host*/, serverLocation,
                           version);
 
-  if (serverLocation != NULLPTR && serverLocation->isValid()) {
+  if (serverLocation && serverLocation->isValid()) {
     LOGDEBUG("Server host and port are %s:%d",
              serverLocation->getServerName().c_str(),
              serverLocation->getPort());
@@ -524,166 +476,143 @@ void ClientMetadataService::markPrimaryBucketForTimeout(
   }
 }
 
-HashMapT<CacheableInt32Ptr, CacheableHashSetPtr>*
-ClientMetadataService::groupByBucketOnClientSide(const RegionPtr& region,
-                                                 CacheableVectorPtr* keySet,
-                                                 ClientMetadataPtr& metadata) {
-  HashMapT<CacheableInt32Ptr, CacheableHashSetPtr>* bucketToKeysMap =
-      new HashMapT<CacheableInt32Ptr, CacheableHashSetPtr>();
-  for (CacheableVector::Iterator itr = (*keySet)->begin();
-       itr != (*keySet)->end(); ++itr) {
-    CacheableKeyPtr key = dynCast<CacheableKeyPtr>(*itr);
-    PartitionResolverPtr resolver =
-        region->getAttributes()->getPartitionResolver();
+ClientMetadataService::BucketToKeysMapPtr
+ClientMetadataService::groupByBucketOnClientSide(
+    const RegionPtr& region, const CacheableVectorPtr& keySet,
+    const ClientMetadataPtr& metadata) {
+  auto bucketToKeysMap = std::make_shared<BucketToKeysMap>();
+  for (const auto& k : *keySet) {
+    const auto key = std::static_pointer_cast<CacheableKey>(k);
+    const auto resolver = region->getAttributes()->getPartitionResolver();
     CacheableKeyPtr resolvekey;
-    EntryEvent event(region, key, NULLPTR, NULLPTR, NULLPTR, false);
+    EntryEvent event(region, key, nullptr, nullptr, nullptr, false);
     int bucketId = -1;
-    if (resolver == NULLPTR) {
-      resolvekey = key;
-    } else {
+    if (resolver) {
       resolvekey = resolver->getRoutingObject(event);
-      if (resolvekey == NULLPTR) {
+      if (!resolvekey) {
         throw IllegalStateException(
             "The RoutingObject returned by PartitionResolver is null.");
       }
+    } else {
+      resolvekey = key;
     }
-    FixedPartitionResolverPtr fpResolver(
-        dynamic_cast<FixedPartitionResolver*>(resolver.ptr()));
-    if (fpResolver != NULLPTR) {
-      const char* partition = fpResolver->getPartitionName(event);
-      if (partition == NULL) {
-        throw IllegalStateException(
-            "partition name returned by Partition resolver is null.");
-      } else {
+
+    if (const auto fpResolver =
+            std::dynamic_pointer_cast<FixedPartitionResolver>(resolver)) {
+      const auto partition = fpResolver->getPartitionName(event);
+      if (partition) {
         bucketId = metadata->assignFixedBucketId(partition, resolvekey);
         if (bucketId == -1) {
           this->enqueueForMetadataRefresh(region->getFullPath(), 0);
         }
+      } else {
+        throw IllegalStateException(
+            "partition name returned by Partition resolver is null.");
       }
     } else {
       if (metadata->getTotalNumBuckets() > 0) {
-        bucketId = std::abs(resolvekey->hashcode() %
-                            metadata->getTotalNumBuckets());
+        bucketId =
+            std::abs(resolvekey->hashcode() % metadata->getTotalNumBuckets());
       }
     }
-    HashMapT<CacheableInt32Ptr, CacheableHashSetPtr>::Iterator iter =
-        bucketToKeysMap->find(CacheableInt32::create(bucketId));
+
     CacheableHashSetPtr bucketKeys;
+
+    const auto& iter = bucketToKeysMap->find(bucketId);
     if (iter == bucketToKeysMap->end()) {
       bucketKeys = CacheableHashSet::create();
-      bucketToKeysMap->insert(CacheableInt32::create(bucketId), bucketKeys);
+      bucketToKeysMap->emplace(bucketId, bucketKeys);
     } else {
-      bucketKeys = iter.second();
+      bucketKeys = iter->second;
     }
+
     bucketKeys->insert(key);
   }
+
   return bucketToKeysMap;
 }
 
-HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>*
+ClientMetadataService::ServerToKeysMapPtr
 ClientMetadataService::getServerToFilterMapFESHOP(
-    CacheableVectorPtr* routingKeys, const RegionPtr& region, bool isPrimary) {
+    const CacheableVectorPtr& routingKeys, const RegionPtr& region,
+    bool isPrimary) {
   ClientMetadataPtr cptr = getClientMetadata(region->getFullPath());
 
-  if (cptr == NULLPTR /*|| cptr->adviseRandomServerLocation() == NULLPTR*/) {
+  if (!cptr) {
     enqueueForMetadataRefresh(region->getFullPath(), 0);
-    return NULL;
+    return nullptr;
   }
 
-  if (routingKeys == NULL) {
-    return NULL;
+  if (!routingKeys) {
+    return nullptr;
   }
 
-  HashMapT<CacheableInt32Ptr, CacheableHashSetPtr>* bucketToKeysMap =
+  const auto bucketToKeysMap =
       groupByBucketOnClientSide(region, routingKeys, cptr);
-  CacheableHashSetPtr bucketSet = CacheableHashSet::create();
-  for (HashMapT<CacheableInt32Ptr, CacheableHashSetPtr>::Iterator iter =
-           bucketToKeysMap->begin();
-       iter != bucketToKeysMap->end(); ++iter) {
-    bucketSet->insert(iter.first());
+  BucketSet bucketSet(bucketToKeysMap->size());
+  for (const auto& iter : *bucketToKeysMap) {
+    bucketSet.insert(iter.first);
   }
   LOGDEBUG(
       "ClientMetadataService::getServerToFilterMapFESHOP: bucketSet size = %d ",
-      bucketSet->size());
+      bucketSet.size());
 
-  HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>* serverToBuckets =
+  const auto serverToBuckets =
       groupByServerToBuckets(cptr, bucketSet, isPrimary);
 
-  if (serverToBuckets == NULL) {
-    delete bucketToKeysMap;
-    return NULL;
+  if (serverToBuckets == nullptr) {
+    return nullptr;
   }
 
-  HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>* serverToKeysMap =
-      new HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>();
+  auto serverToKeysMap = std::make_shared<ServerToKeysMap>();
 
-  for (HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>::Iterator itrRes =
-           serverToBuckets->begin();
-       itrRes != serverToBuckets->end(); ++itrRes) {
-    BucketServerLocationPtr serverLocation = itrRes.first();
-    CacheableHashSetPtr buckets = itrRes.second();
-    for (CacheableHashSet::Iterator bucket = buckets->begin();
-         bucket != buckets->end(); ++bucket) {
-      HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>::Iterator iter =
-          serverToKeysMap->find(serverLocation);
-      CacheableHashSetPtr keys;
+  for (const auto& serverToBucket : *serverToBuckets) {
+    const auto& serverLocation = serverToBucket.first;
+    const auto& buckets = serverToBucket.second;
+    for (const auto& bucket : *buckets) {
+      CacheableHashSetPtr serverToKeysEntry;
+      const auto& iter = serverToKeysMap->find(serverLocation);
       if (iter == serverToKeysMap->end()) {
-        keys = CacheableHashSet::create();
+        serverToKeysEntry = CacheableHashSet::create();
+        serverToKeysMap->emplace(serverLocation, serverToKeysEntry);
       } else {
-        keys = iter.second();
+        serverToKeysEntry = iter->second;
       }
-      HashMapT<CacheableInt32Ptr, CacheableHashSetPtr>::Iterator
-          bucketToKeysiter = bucketToKeysMap->find(*bucket);
-      if (bucketToKeysiter != bucketToKeysMap->end()) {
-        CacheableHashSetPtr bkeys = bucketToKeysiter.second();
-        for (CacheableHashSet::Iterator itr = bkeys->begin();
-             itr != bkeys->end(); ++itr) {
-          keys->insert(*itr);
-        }
+
+      const auto& bucketToKeys = bucketToKeysMap->find(bucket);
+      if (bucketToKeys != bucketToKeysMap->end()) {
+        const auto& bucketKeys = bucketToKeys->second;
+        serverToKeysEntry->insert(bucketKeys->begin(), bucketKeys->end());
       }
-      serverToKeysMap->insert(serverLocation, keys);
     }
   }
-  delete bucketToKeysMap;
-  delete serverToBuckets;
   return serverToKeysMap;
 }
 
 BucketServerLocationPtr ClientMetadataService::findNextServer(
-    HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>* serverToBucketsMap,
-    CacheableHashSetPtr& currentBucketSet) {
-  BucketServerLocationPtr serverLocation;
-  int max = -1;
+    const ClientMetadataService::ServerToBucketsMap& serverToBucketsMap,
+    const ClientMetadataService::BucketSet& currentBucketSet) {
+  size_t max = 0;
   std::vector<BucketServerLocationPtr> nodesOfEqualSize;
-  for (HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>::Iterator itr =
-           serverToBucketsMap->begin();
-       itr != serverToBucketsMap->end(); ++itr) {
-    CacheableHashSetPtr buckets = CacheableHashSet::create();
-    CacheableHashSetPtr sBuckets = itr.second();
 
-    for (CacheableHashSet::Iterator sItr = sBuckets->begin();
-         sItr != sBuckets->end(); ++sItr) {
-      buckets->insert(*sItr);
-    }
+  for (const auto& serverToBucketEntry : serverToBucketsMap) {
+    const auto& serverLocation = serverToBucketEntry.first;
+    BucketSet buckets(*(serverToBucketEntry.second));
 
     LOGDEBUG(
         "ClientMetadataService::findNextServer currentBucketSet->size() = %d  "
         "bucketSet->size() = %d ",
-        currentBucketSet->size(), buckets->size());
+        currentBucketSet.size(), buckets.size());
 
-    for (CacheableHashSet::Iterator currentBucketSetIter =
-             currentBucketSet->begin();
-         currentBucketSetIter != currentBucketSet->end();
-         ++currentBucketSetIter) {
-      buckets->erase(*currentBucketSetIter);
+    for (const auto& currentBucketSetIter : currentBucketSet) {
+      buckets.erase(currentBucketSetIter);
       LOGDEBUG("ClientMetadataService::findNextServer bucketSet->size() = %d ",
-               buckets->size());
+               buckets.size());
     }
 
-    int size = buckets->size();
+    auto size = buckets.size();
     if (max < size) {
       max = size;
-      serverLocation = itr.first();
       nodesOfEqualSize.clear();
       nodesOfEqualSize.push_back(serverLocation);
     } else if (max == size) {
@@ -691,101 +620,58 @@ BucketServerLocationPtr ClientMetadataService::findNextServer(
     }
   }
 
-  size_t nodeSize = nodesOfEqualSize.size();
+  auto nodeSize = nodesOfEqualSize.size();
   if (nodeSize > 0) {
     RandGen randgen;
-    int random = randgen(nodeSize);
+    auto random = randgen(nodeSize);
     return nodesOfEqualSize.at(random);
   }
-  return NULLPTR;
+  return nullptr;
 }
 
-bool ClientMetadataService::AreBucketSetsEqual(
-    CacheableHashSetPtr& currentBucketSet, CacheableHashSetPtr& bucketSet) {
-  int32_t currentBucketSetSize = currentBucketSet->size();
-  int32_t bucketSetSetSize = bucketSet->size();
+ClientMetadataService::ServerToBucketsMapPtr ClientMetadataService::pruneNodes(
+    const ClientMetadataPtr& metadata, const BucketSet& buckets) {
+  BucketSet bucketSetWithoutServer;
+  ServerToBucketsMap serverToBucketsMap;
 
-  LOGDEBUG(
-      "ClientMetadataService::AreBucketSetsEqual currentBucketSetSize = %d "
-      "bucketSetSetSize = %d ",
-      currentBucketSetSize, bucketSetSetSize);
+  auto prunedServerToBucketsMap = std::make_shared<ServerToBucketsMap>();
 
-  if (currentBucketSetSize != bucketSetSetSize) {
-    return false;
-  }
-
-  bool found = false;
-  for (CacheableHashSet::Iterator currentBucketSetIter =
-           currentBucketSet->begin();
-       currentBucketSetIter != currentBucketSet->end();
-       ++currentBucketSetIter) {
-    found = false;
-    for (CacheableHashSet::Iterator bucketSetIter = bucketSet->begin();
-         bucketSetIter != bucketSet->end(); ++bucketSetIter) {
-      if (*currentBucketSetIter == *bucketSetIter) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) return false;
-  }
-  return true;
-}
-
-HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>*
-ClientMetadataService::pruneNodes(ClientMetadataPtr& metadata,
-                                  CacheableHashSetPtr& buckets) {
-  CacheableHashSetPtr bucketSetWithoutServer = CacheableHashSet::create();
-  HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>* serverToBucketsMap =
-      new HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>();
-  HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>*
-      prunedServerToBucketsMap =
-          new HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>();
-
-  for (CacheableHashSet::Iterator bucketId = buckets->begin();
-       bucketId != buckets->end(); ++bucketId) {
-    CacheableInt32Ptr bID = *bucketId;
-    std::vector<BucketServerLocationPtr> locations =
-        metadata->adviseServerLocations(bID->value());
+  for (const auto& bucketId : buckets) {
+    const auto locations = metadata->adviseServerLocations(bucketId);
     if (locations.size() == 0) {
       LOGDEBUG(
           "ClientMetadataService::pruneNodes Since no server location "
           "available for bucketId = %d  putting it into "
           "bucketSetWithoutServer ",
-          bID->value());
-      bucketSetWithoutServer->insert(bID);
+          bucketId);
+      bucketSetWithoutServer.insert(bucketId);
       continue;
     }
 
-    for (std::vector<BucketServerLocationPtr>::iterator location =
-             locations.begin();
-         location != locations.end(); ++location) {
-      HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>::Iterator itrRes =
-          serverToBucketsMap->find(*location);
-      CacheableHashSetPtr bucketSet;
-      if (itrRes == serverToBucketsMap->end()) {
-        bucketSet = CacheableHashSet::create();
+    for (const auto& location : locations) {
+      BucketSetPtr bucketSet;
+
+      const auto& itrRes = serverToBucketsMap.find(location);
+      if (itrRes == serverToBucketsMap.end()) {
+        bucketSet = std::make_shared<BucketSet>();
+        serverToBucketsMap.emplace(location, bucketSet);
       } else {
-        bucketSet = itrRes.second();
+        bucketSet = itrRes->second;
       }
-      bucketSet->insert(bID);
-      serverToBucketsMap->insert(*location, bucketSet);
+
+      bucketSet->insert(bucketId);
     }
   }
 
-  HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>::Iterator itrRes =
-      serverToBucketsMap->begin();
-  CacheableHashSetPtr currentBucketSet = CacheableHashSet::create();
+  auto itrRes = serverToBucketsMap.begin();
   BucketServerLocationPtr randomFirstServer;
-  if (serverToBucketsMap->empty()) {
+  if (serverToBucketsMap.empty()) {
     LOGDEBUG(
         "ClientMetadataService::pruneNodes serverToBucketsMap is empty so "
-        "returning NULL");
-    delete prunedServerToBucketsMap;
-    delete serverToBucketsMap;
-    return NULL;
+        "returning nullptr");
+    return nullptr;
   } else {
-    size_t size = serverToBucketsMap->size();
+    size_t size = serverToBucketsMap.size();
     LOGDEBUG(
         "ClientMetadataService::pruneNodes Total size of serverToBucketsMap = "
         "%d ",
@@ -793,43 +679,33 @@ ClientMetadataService::pruneNodes(ClientMetadataPtr& metadata,
     for (size_t idx = 0; idx < (rand() % size); idx++) {
       itrRes++;
     }
-    randomFirstServer = itrRes.first();
+    randomFirstServer = itrRes->first;
   }
-  HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>::Iterator itrRes1 =
-      serverToBucketsMap->find(randomFirstServer);
-  CacheableHashSetPtr bucketSet = itrRes1.second();
+  const auto& itrRes1 = serverToBucketsMap.find(randomFirstServer);
+  const auto bucketSet = itrRes1->second;
 
-  for (CacheableHashSet::Iterator bt = bucketSet->begin();
-       bt != bucketSet->end(); ++bt) {
-    currentBucketSet->insert(*bt);
-  }
-  prunedServerToBucketsMap->insert(randomFirstServer, bucketSet);
-  serverToBucketsMap->erase(randomFirstServer);
+  BucketSet currentBucketSet(*bucketSet);
 
-  while (!AreBucketSetsEqual(currentBucketSet, buckets)) {
-    BucketServerLocationPtr server =
-        findNextServer(serverToBucketsMap, currentBucketSet);
-    if (server == NULLPTR) {
+  prunedServerToBucketsMap->emplace(randomFirstServer, bucketSet);
+  serverToBucketsMap.erase(randomFirstServer);
+
+  while (buckets != currentBucketSet) {
+    auto server = findNextServer(serverToBucketsMap, currentBucketSet);
+    if (server == nullptr) {
       LOGDEBUG(
           "ClientMetadataService::pruneNodes findNextServer returned no "
           "server");
       break;
     }
 
-    HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>::Iterator itrRes2 =
-        serverToBucketsMap->find(server);
-    CacheableHashSetPtr bucketSet2 = itrRes2.second();
-
+    const auto& bucketSet2 = serverToBucketsMap.find(server)->second;
     LOGDEBUG(
         "ClientMetadataService::pruneNodes currentBucketSet->size() = %d  "
         "bucketSet2->size() = %d ",
-        currentBucketSet->size(), bucketSet2->size());
+        currentBucketSet.size(), bucketSet2->size());
 
-    for (CacheableHashSet::Iterator currentBucketSetIter =
-             currentBucketSet->begin();
-         currentBucketSetIter != currentBucketSet->end();
-         ++currentBucketSetIter) {
-      bucketSet2->erase(*currentBucketSetIter);
+    for (const auto& currentBucketSetIter : currentBucketSet) {
+      bucketSet2->erase(currentBucketSetIter);
       LOGDEBUG("ClientMetadataService::pruneNodes bucketSet2->size() = %d ",
                bucketSet2->size());
     }
@@ -838,85 +714,76 @@ ClientMetadataService::pruneNodes(ClientMetadataPtr& metadata,
       LOGDEBUG(
           "ClientMetadataService::pruneNodes bucketSet2 is empty() so removing "
           "server from serverToBucketsMap");
-      serverToBucketsMap->erase(server);
+      serverToBucketsMap.erase(server);
       continue;
     }
 
-    for (CacheableHashSet::Iterator itr = bucketSet2->begin();
-         itr != bucketSet2->end(); ++itr) {
-      currentBucketSet->insert(*itr);
+    for (const auto& itr : *bucketSet2) {
+      currentBucketSet.insert(itr);
     }
 
-    prunedServerToBucketsMap->insert(server, bucketSet2);
-    serverToBucketsMap->erase(server);
+    prunedServerToBucketsMap->emplace(server, bucketSet2);
+    serverToBucketsMap.erase(server);
   }
 
-  HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>::Iterator itrRes2 =
-      prunedServerToBucketsMap->begin();
-  for (CacheableHashSet::Iterator itr = bucketSetWithoutServer->begin();
-       itr != bucketSetWithoutServer->end(); ++itr) {
-    CacheableInt32Ptr buckstId = *itr;
-    itrRes2.second()->insert(buckstId);
+  const auto& itrRes2 = prunedServerToBucketsMap->begin();
+  for (const auto& itr : bucketSetWithoutServer) {
+    itrRes2->second->insert(itr);
   }
 
-  delete serverToBucketsMap;
   return prunedServerToBucketsMap;
 }
 
-HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>*
+ClientMetadataService::ServerToBucketsMapPtr
 ClientMetadataService::groupByServerToAllBuckets(const RegionPtr& region,
                                                  bool optimizeForWrite) {
   ClientMetadataPtr cptr = getClientMetadata(region->getFullPath());
-  if (cptr == NULLPTR) {
+  if (cptr == nullptr) {
     enqueueForMetadataRefresh(region->getFullPath(), false);
-    return NULL;
+    return nullptr;
   }
   int totalBuckets = cptr->getTotalNumBuckets();
-  CacheableHashSetPtr bucketSet = CacheableHashSet::create();
+  BucketSet bucketSet(totalBuckets);
   for (int i = 0; i < totalBuckets; i++) {
-    bucketSet->insert(CacheableInt32::create(i));
+    bucketSet.insert(i);
   }
   return groupByServerToBuckets(cptr, bucketSet, optimizeForWrite);
 }
 
-HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>*
-ClientMetadataService::groupByServerToBuckets(ClientMetadataPtr& metadata,
-                                              CacheableHashSetPtr& bucketSet,
+ClientMetadataService::ServerToBucketsMapPtr
+ClientMetadataService::groupByServerToBuckets(const ClientMetadataPtr& metadata,
+                                              const BucketSet& bucketSet,
                                               bool optimizeForWrite) {
   if (optimizeForWrite) {
-    HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>* serverToBucketsMap =
-        new HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>();
-    CacheableHashSetPtr bucketsWithoutServer = CacheableHashSet::create();
-    for (CacheableHashSet::Iterator itr = bucketSet->begin();
-         itr != bucketSet->end(); ++itr) {
-      CacheableInt32Ptr bucketId = *itr;
-      BucketServerLocationPtr serverLocation =
-          metadata->advisePrimaryServerLocation(bucketId->value());
-      if (serverLocation == NULLPTR) {
-        bucketsWithoutServer->insert(bucketId);
+    auto serverToBucketsMap = std::make_shared<ServerToBucketsMap>();
+    BucketSet bucketsWithoutServer(bucketSet.size());
+    for (const auto& bucketId : bucketSet) {
+      const auto serverLocation =
+          metadata->advisePrimaryServerLocation(bucketId);
+      if (serverLocation == nullptr) {
+        bucketsWithoutServer.insert(bucketId);
         continue;
       } else if (!serverLocation->isValid()) {
-        bucketsWithoutServer->insert(bucketId);
+        bucketsWithoutServer.insert(bucketId);
         continue;
       }
-      HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>::Iterator itrRes =
-          serverToBucketsMap->find(serverLocation);
-      CacheableHashSetPtr buckets;
+
+      BucketSetPtr buckets;
+      const auto& itrRes = serverToBucketsMap->find(serverLocation);
       if (itrRes == serverToBucketsMap->end()) {
-        buckets = CacheableHashSet::create();
-        serverToBucketsMap->insert(serverLocation, buckets);
+        buckets = std::make_shared<BucketSet>();
+        serverToBucketsMap->emplace(serverLocation, buckets);
       } else {
-        buckets = itrRes.second();
+        buckets = itrRes->second;
       }
+
       buckets->insert(bucketId);
     }
 
     if (!serverToBucketsMap->empty()) {
-      HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>::Iterator itrRes =
-          serverToBucketsMap->begin();
-      for (CacheableHashSet::Iterator itr = bucketsWithoutServer->begin();
-           itr != bucketsWithoutServer->end(); ++itr) {
-        itrRes.second()->insert(*itr);
+      const auto& itrRes = serverToBucketsMap->begin();
+      for (const auto& itr : bucketsWithoutServer) {
+        itrRes->second->insert(itr);
         LOGDEBUG(
             "ClientMetadataService::groupByServerToBuckets inserting "
             "bucketsWithoutServer");
@@ -939,17 +806,17 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
   std::map<std::string, PRbuckets*>::iterator bs =
       m_bucketStatus.find(region->getFullPath());
 
-  PRbuckets* prBuckets = NULL;
+  PRbuckets* prBuckets = nullptr;
   if (bs != m_bucketStatus.end()) {
     prBuckets = bs->second;
   }
 
-  if (prBuckets == NULL) return;
+  if (prBuckets == nullptr) return;
 
   getBucketServerLocation(region, key, value, aCallbackArgument, true,
                           serverLocation, version);
 
-  ClientMetadataPtr cptr = NULLPTR;
+  ClientMetadataPtr cptr = nullptr;
   {
     ReadGuard guard(m_regionMetadataLock);
     RegionMetadataMapType::iterator cptrIter =
@@ -959,7 +826,7 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
       cptr = cptrIter->second;
     }
 
-    if (cptr == NULLPTR) {
+    if (cptr == nullptr) {
       return;
     }
   }
@@ -994,7 +861,7 @@ bool ClientMetadataService::isBucketMarkedForTimeout(const char* regionFullPath,
   if (bs != m_bucketStatus.end()) {
     bool m = bs->second->isBucketTimedOut(bucketid, m_bucketWaitTimeout);
     if (m == true) {
-      ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.ptr());
+      ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
       CacheImpl* cache = tcrdm->getConnectionManager().getCacheImpl();
       cache->setBlackListBucketTimeouts();
     }

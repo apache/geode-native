@@ -22,7 +22,7 @@ using namespace testframework;
 using namespace testobject;
 
 FastAsset::FastAsset(int idx, int maxVal) : assetId(idx) {
-  value = GsRandom::getInstance(12)->nextDouble(1, static_cast<double>(maxVal));
+  value = GsRandom::getInstance().nextDouble(1, maxVal);
 }
 
 FastAsset::~FastAsset() {}

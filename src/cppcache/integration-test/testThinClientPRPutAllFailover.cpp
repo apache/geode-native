@@ -83,7 +83,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_Locator_Client1)
     getHelper()->createRegionAndAttachPool(regionNames[1], NO_ACK,
                                            "__TEST_POOL1__");
 
-    reg1Listener1 = new TallyListener();
+    reg1Listener1 = std::make_shared<TallyListener>();
     setCacheListener(regionNames[0], reg1Listener1);
     LOG("StepOne_Pooled_Locator_Client1 complete.");
   }
@@ -99,7 +99,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepOne_Pooled_Locator_Client2)
     getHelper()->createRegionAndAttachPool(regionNames[1], NO_ACK,
                                            "__TEST_POOL1__");
 
-    reg1Listener1 = new TallyListener();
+    reg1Listener1 = std::make_shared<TallyListener>();
     setCacheListener(regionNames[0], reg1Listener1);
     LOG("StepOne_Pooled_Locator_Client2 complete.");
   }
@@ -126,8 +126,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllOneTask)
     for (int32_t item = 0; item < 1000; item++) {
       sprintf(key, "key-%d", item);
       sprintf(value, "%d", item);
-      entryMap.insert(CacheableKey::create(key),
-                      CacheableString::create(value));
+      entryMap.emplace(CacheableKey::create(key),
+                       CacheableString::create(value));
       LOGDEBUG(
           "CPPTEST:PutAllOneTask Doing PutAll on key using key: = %s: & value: "
           "= "
@@ -165,8 +165,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllTwoTask)
           "= "
           "%s",
           key, value);
-      entryMap.insert(CacheableKey::create(key),
-                      CacheableString::create(value));
+      entryMap.emplace(CacheableKey::create(key),
+                       CacheableString::create(value));
     }
     try {
       dataReg->putAll(entryMap);
@@ -199,8 +199,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllThreeTask)
           "value: "
           "= %s",
           key, value);
-      entryMap.insert(CacheableKey::create(key),
-                      CacheableString::create(value));
+      entryMap.emplace(CacheableKey::create(key),
+                       CacheableString::create(value));
     }
     try {
       dataReg->putAll(entryMap);
@@ -233,8 +233,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllFourTask)
           "value: "
           "= %s",
           key, value);
-      entryMap.insert(CacheableKey::create(key),
-                      CacheableString::create(value));
+      entryMap.emplace(CacheableKey::create(key),
+                       CacheableString::create(value));
     }
     try {
       dataReg->putAll(entryMap);
@@ -256,7 +256,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyAllPutAllTask)
     LOG("VerifyAllPutAllTask started.");
 
     RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
-    ASSERT(dataReg != NULLPTR, "Region not found.");
+    ASSERT(dataReg != nullptr, "Region not found.");
     LOGINFO("dataregion size is %d: ", dataReg->size());
     LOGINFO("dataregion getCreates is %d: ", reg1Listener1->getCreates());
     ASSERT(reg1Listener1->getCreates() == 4000,
@@ -270,9 +270,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyAllPutAllTask)
       sprintf(value, "%d", item);
       LOGDEBUG("CPPTEST:VerifyAllPutAllTask Doing get on key using: = %s: ",
                key);
-      CacheableStringPtr checkPtr =
-          dynCast<CacheableStringPtr>(dataReg->get(CacheableKey::create(key)));
-      ASSERT(checkPtr != NULLPTR, "Value Ptr should not be null.");
+      auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
+          dataReg->get(CacheableKey::create(key)));
+      ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
       LOGDEBUG("CPPTEST:VerifyAllPutAllTask value is: = %s: ",
                checkPtr->asChar());
       ASSERT(atoi(checkPtr->asChar()) == item, "Value did not match.");
@@ -293,8 +293,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllOneTask)
     for (int32_t item = 0; item < 1000; item++) {
       sprintf(key, "key-%d", item);
       sprintf(value, "%d", item);
-      entryMap.insert(CacheableKey::create(key),
-                      CacheableString::create(value));
+      entryMap.emplace(CacheableKey::create(key),
+                       CacheableString::create(value));
       keys.push_back(CacheableKey::create(key));
       LOGDEBUG(
           "CPPTEST:RemoveAllOneTask Doing PutAll on key using key: = %s: & "
@@ -329,8 +329,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllTwoTask)
     for (int32_t item = 1000; item < 2000; item++) {
       sprintf(key, "key-%d", item);
       sprintf(value, "%d", item);
-      entryMap.insert(CacheableKey::create(key),
-                      CacheableString::create(value));
+      entryMap.emplace(CacheableKey::create(key),
+                       CacheableString::create(value));
       keys.push_back(CacheableKey::create(key));
       LOGDEBUG(
           "CPPTEST:RemoveAllTwoTask Doing RemoveAll on key using key: = %s: & "
@@ -365,8 +365,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllThreeTask)
     for (int32_t item = 2000; item < 3000; item++) {
       sprintf(key, "key-%d", item);
       sprintf(value, "%d", item);
-      entryMap.insert(CacheableKey::create(key),
-                      CacheableString::create(value));
+      entryMap.emplace(CacheableKey::create(key),
+                       CacheableString::create(value));
       keys.push_back(CacheableKey::create(key));
       LOGDEBUG(
           "CPPTEST:RemoveAllThreeTask Doing RemoveAll on key using key: = %s: "
@@ -403,8 +403,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllFourTask)
     for (int32_t item = 3000; item < 4000; item++) {
       sprintf(key, "key-%d", item);
       sprintf(value, "%d", item);
-      entryMap.insert(CacheableKey::create(key),
-                      CacheableString::create(value));
+      entryMap.emplace(CacheableKey::create(key),
+                       CacheableString::create(value));
       keys.push_back(CacheableKey::create(key));
       LOGDEBUG(
           "CPPTEST:RemoveAllFourTask Doing RemoveAll on key using key: = %s: & "
@@ -433,7 +433,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyAllRemoveAllTask)
     LOG("VerifyAllRemoveAllTask started.");
 
     RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
-    ASSERT(dataReg != NULLPTR, "Region not found.");
+    ASSERT(dataReg != nullptr, "Region not found.");
     LOGINFO("dataregion size is %d: ", dataReg->size());
     LOGINFO("dataregion getDestroys is %d: ", reg1Listener1->getDestroys());
     ASSERT(reg1Listener1->getDestroys() == 4000,

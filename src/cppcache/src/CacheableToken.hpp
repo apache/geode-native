@@ -28,7 +28,7 @@ namespace geode {
 namespace client {
 
 class CPPCACHE_EXPORT CacheableToken;
-typedef SharedPtr<CacheableToken> CacheableTokenPtr;
+typedef std::shared_ptr<CacheableToken> CacheableTokenPtr;
 
 /** Implement a non-mutable int64_t wrapper that can serve as a distributable
  * key object for cacheing as well as being a 64 bit value. */
@@ -38,18 +38,16 @@ class CPPCACHE_EXPORT CacheableToken : public Cacheable {
 
   TokenType m_value;
 
-  static CacheableTokenPtr* invalidToken;
-  static CacheableTokenPtr* destroyedToken;
-  static CacheableTokenPtr* overflowedToken;
-  static CacheableTokenPtr* tombstoneToken;
+  static CacheableTokenPtr invalidToken;
+  static CacheableTokenPtr destroyedToken;
+  static CacheableTokenPtr overflowedToken;
+  static CacheableTokenPtr tombstoneToken;
 
  public:
-  inline static CacheableTokenPtr& invalid() { return *invalidToken; }
-
-  inline static CacheableTokenPtr& destroyed() { return *destroyedToken; }
-
-  inline static CacheableTokenPtr& overflowed() { return *overflowedToken; }
-  inline static CacheableTokenPtr& tombstone() { return *tombstoneToken; }
+  inline static CacheableTokenPtr& invalid() { return invalidToken; }
+  inline static CacheableTokenPtr& destroyed() { return destroyedToken; }
+  inline static CacheableTokenPtr& overflowed() { return overflowedToken; }
+  inline static CacheableTokenPtr& tombstone() { return tombstoneToken; }
   /**
    *@brief serialize this object
    **/
@@ -81,6 +79,8 @@ class CPPCACHE_EXPORT CacheableToken : public Cacheable {
 
   virtual ~CacheableToken();
 
+  FRIEND_STD_SHARED_PTR(CacheableToken)
+
   inline bool isInvalid() { return m_value == INVALID; }
 
   inline bool isDestroyed() { return m_value == DESTROYED; }
@@ -90,26 +90,23 @@ class CPPCACHE_EXPORT CacheableToken : public Cacheable {
   inline bool isTombstone() { return m_value == TOMBSTONE; }
 
   static bool isToken(const CacheablePtr& ptr) {
-    return (*invalidToken == ptr) || (*destroyedToken == ptr) ||
-           (*overflowedToken == ptr) || (*tombstoneToken == ptr);
+    return (invalidToken == ptr) || (destroyedToken == ptr) ||
+           (overflowedToken == ptr) || (tombstoneToken == ptr);
   }
 
-  static bool isInvalid(const CacheablePtr& ptr) {
-    return *invalidToken == ptr;
-  }
+  static bool isInvalid(const CacheablePtr& ptr) { return invalidToken == ptr; }
 
   static bool isDestroyed(const CacheablePtr& ptr) {
-    return *destroyedToken == ptr;
+    return destroyedToken == ptr;
   }
 
   static bool isOverflowed(const CacheablePtr& ptr) {
-    return *overflowedToken == ptr;
+    return overflowedToken == ptr;
   }
 
   static bool isTombstone(const CacheablePtr& ptr) {
-    return *tombstoneToken == ptr;
+    return tombstoneToken == ptr;
   }
-  static void init();
 
   /**
    * Display this object as 'string', which depend on the implementation in

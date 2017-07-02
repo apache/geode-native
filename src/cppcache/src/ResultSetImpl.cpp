@@ -42,7 +42,7 @@ const SerializablePtr ResultSetImpl::operator[](int32_t index) const {
 }
 
 SelectResultsIterator ResultSetImpl::getIterator() {
-  return SelectResultsIterator(m_resultSetVector, SelectResultsPtr(this));
+  return SelectResultsIterator(m_resultSetVector, shared_from_this());
 }
 
 SelectResults::Iterator ResultSetImpl::begin() const {

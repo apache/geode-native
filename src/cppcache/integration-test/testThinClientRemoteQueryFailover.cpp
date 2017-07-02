@@ -70,7 +70,7 @@ bool isLocator = false;
 bool isLocalServer = false;
 
 const char* qRegionNames[] = {"Portfolios", "Positions"};
-KillServerThread* kst = NULL;
+KillServerThread* kst = nullptr;
 const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
@@ -122,15 +122,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, RegisterTypesAndCreatePoolAndRegion)
     initClient(true);
 
     isPoolConfig = true;
-    createPool(poolNames[0], locHostPort, NULL, 0, true);
+    createPool(poolNames[0], locHostPort, nullptr, 0, true);
     createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
 
     RegionPtr rptr = getHelper()->cachePtr->getRegion(qRegionNames[0]);
 
-    CacheablePtr port1(new Portfolio(1, 100));
-    CacheablePtr port2(new Portfolio(2, 200));
-    CacheablePtr port3(new Portfolio(3, 300));
-    CacheablePtr port4(new Portfolio(4, 400));
+    auto port1 = std::make_shared<Portfolio>(1, 100);
+    auto port2 = std::make_shared<Portfolio>(2, 200);
+    auto port3 = std::make_shared<Portfolio>(3, 300);
+    auto port4 = std::make_shared<Portfolio>(4, 400);
 
     rptr->put("1", port1);
     rptr->put("2", port2);
@@ -146,7 +146,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ValidateQueryExecutionAcrossServerFailure)
     try {
       kst = new KillServerThread();
 
-      QueryServicePtr qs = NULLPTR;
+      QueryServicePtr qs = nullptr;
       if (isPoolConfig) {
         PoolPtr pool1 = findPool(poolNames[0]);
         qs = pool1->getQueryService();
@@ -226,17 +226,15 @@ DUNIT_TASK_DEFINITION(LOCATOR, CloseLocator)
   }
 END_TASK_DEFINITION
 
-void runRemoteQueryFailoverTest() {
-  CALL_TASK(StartLocator)
-  CALL_TASK(CreateServer1WithLocator)
-  CALL_TASK(RegisterTypesAndCreatePoolAndRegion)
-  CALL_TASK(CreateServer2WithLocator)
-  CALL_TASK(ValidateQueryExecutionAcrossServerFailure)
-  CALL_TASK(CloseCache1)
-  CALL_TASK(CloseServer2)
-  CALL_TASK(CloseLocator)
-}
+void runRemoteQueryFailoverTest(){
+    CALL_TASK(StartLocator) CALL_TASK(CreateServer1WithLocator)
+        CALL_TASK(RegisterTypesAndCreatePoolAndRegion)
+            CALL_TASK(CreateServer2WithLocator)
+                CALL_TASK(ValidateQueryExecutionAcrossServerFailure)
+                    CALL_TASK(CloseCache1) CALL_TASK(CloseServer2)
+                        CALL_TASK(CloseLocator)}
 
-DUNIT_MAIN
-  { runRemoteQueryFailoverTest(); }
+DUNIT_MAIN {
+  runRemoteQueryFailoverTest();
+}
 END_MAIN

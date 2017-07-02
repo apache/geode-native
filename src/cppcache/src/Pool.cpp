@@ -73,7 +73,7 @@ RegionServicePtr Pool::createSecureUserCache(PropertiesPtr credentials) {
   if (this->getMultiuserAuthentication()) {
     CachePtr realCache = CacheFactory::getAnyInstance();
 
-    if (!(realCache != NULLPTR && realCache->m_cacheImpl != NULL)) {
+    if (!(realCache != nullptr && realCache->m_cacheImpl != nullptr)) {
       throw IllegalStateException("cache has not been created yet.");
       ;
     }
@@ -82,21 +82,19 @@ RegionServicePtr Pool::createSecureUserCache(PropertiesPtr credentials) {
       throw IllegalStateException("cache has been closed. ");
     }
 
-    if (credentials != NULLPTR && credentials.ptr() == NULL) {
+    if (credentials != nullptr && credentials.get() == nullptr) {
       LOGDEBUG("Pool::createSecureUserCache creds are null");
-      credentials = NULLPTR;
+      credentials = nullptr;
     }
 
-    PoolPtr tmpPool(this);
     // TODO: this will return cache with userattribtes
-    ProxyCachePtr userCache(new ProxyCache(credentials, tmpPool));
-    return userCache;
+    return std::make_shared<ProxyCache>(credentials, shared_from_this());
   }
 
   throw IllegalStateException(
       "This operation is only allowed when attached pool is in "
       "multiuserSecureMode");
-  // return NULLPTR;
+  // return nullptr;
 }
 bool Pool::getPRSingleHopEnabled() const {
   return m_attrs->getPRSingleHopEnabled();
@@ -110,12 +108,12 @@ int Pool::getPendingEventCount() const {
     throw IllegalStateException(
         "This operation should only be called by durable client");
   }
-  PoolPtr currPool(this);
-  ThinClientPoolHADMPtr poolHADM = dynCast<ThinClientPoolHADMPtr>(currPool);
-  if (poolHADM->isReadyForEvent()) {
+  const auto poolHADM = dynamic_cast<const ThinClientPoolHADM*>(this);
+  if (nullptr == poolHADM || poolHADM->isReadyForEvent()) {
     LOGERROR("This operation should only be called before readyForEvents.");
     throw IllegalStateException(
         "This operation should only be called before readyForEvents");
   }
+
   return poolHADM->getPrimaryServerQueueSize();
 }

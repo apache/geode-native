@@ -16,6 +16,13 @@
  */
 
 #pragma once
+
+#include "begin_native.hpp"
+#include <CacheRegionHelper.hpp>
+#include <geode/Cache.hpp>
+#include <CacheImpl.hpp>
+#include "end_native.hpp"
+
 #include "PdxInstanceImpl.hpp"
 #include "PdxHelper.hpp"
 #include "PdxTypeRegistry.hpp"
@@ -24,10 +31,8 @@
 #include "PdxLocalWriter.hpp"
 #include "../DataInput.hpp"
 #include "DotNetTypes.hpp"
-#include <CacheRegionHelper.hpp>
-#include <geode/Cache.hpp>
-#include <CacheImpl.hpp>
 #include "PdxType.hpp"
+
 using namespace System::Text;
 
 namespace Apache
@@ -86,7 +91,7 @@ namespace Apache
           //dataInput->ResetPdx(0);
 
           CachePtr cache = CacheFactory::getAnyInstance();
-          if (cache == NULLPTR)
+          if (cache == nullptr)
           {
             throw gcnew IllegalStateException("cache has not been created yet.");;
           }
@@ -94,7 +99,7 @@ namespace Apache
           {
             throw gcnew IllegalStateException("cache has been closed. ");
           }
-          CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.ptr());
+          CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
           if (cacheImpl != NULL) {
             Utils::updateStatOpTime(cacheImpl->m_cacheStats->getStat(),
                                     cacheImpl->m_cacheStats->getPdxInstanceDeserializationTimeId(),

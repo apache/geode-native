@@ -32,6 +32,7 @@
 #include <ace/SOCK_Dgram.h>
 #include <ace/TSS_T.h>
 
+#include <atomic>
 #include <string>
 #include <list>
 
@@ -150,9 +151,9 @@ class UDPMessageClient {
 
 class UDPMessageQueues : public SharedTaskObject {
  private:
-  AtomicInc m_cntInbound;
-  AtomicInc m_cntOutbound;
-  AtomicInc m_cntProcessed;
+  std::atomic<int32_t> m_cntInbound;
+  std::atomic<int32_t> m_cntOutbound;
+  std::atomic<int32_t> m_cntProcessed;
 
   SafeQueue<UDPMessage> m_inbound;
   SafeQueue<UDPMessage> m_outbound;
@@ -162,12 +163,9 @@ class UDPMessageQueues : public SharedTaskObject {
  public:
   UDPMessageQueues(std::string label) : m_label(label) {}
   ~UDPMessageQueues() {
-    FWKINFO(m_label << "MessageQueues::Inbound   count: "
-                    << m_cntInbound.value());
-    FWKINFO(m_label << "MessageQueues::Processed count: "
-                    << m_cntProcessed.value());
-    FWKINFO(m_label << "MessageQueues::Outbound  count: "
-                    << m_cntOutbound.value());
+    FWKINFO(m_label << "MessageQueues::Inbound   count: " << m_cntInbound);
+    FWKINFO(m_label << "MessageQueues::Processed count: " << m_cntProcessed);
+    FWKINFO(m_label << "MessageQueues::Outbound  count: " << m_cntOutbound);
     FWKINFO(m_label << "MessageQueues::Inbound  still queued: "
                     << m_inbound.size());
     FWKINFO(m_label << "MessageQueues::Outbound still queued: "
@@ -199,15 +197,15 @@ class UDPMessageQueues : public SharedTaskObject {
 class Receiver : public ServiceTask {
  private:
   ACE_TSS<ACE_SOCK_Dgram> m_io;
-  int32_t m_basePort;
+  uint16_t m_basePort;
   ACE_thread_t m_listener;
-  AtomicInc m_offset;
+  std::atomic<uint16_t> m_offset;
   std::list<std::string> m_addrs;
   UDPMessageQueues* m_queues;
   ACE_Thread_Mutex m_mutex;
 
  public:
-  Receiver(UDPMessageQueues* shared, int32_t port)
+  Receiver(UDPMessageQueues* shared, uint16_t port)
       : ServiceTask(shared), m_basePort(port), m_listener(0), m_mutex() {
     m_queues = dynamic_cast<UDPMessageQueues*>(m_shared);
   }
@@ -226,12 +224,12 @@ class Receiver : public ServiceTask {
 class STReceiver : public ServiceTask {
  private:
   ACE_SOCK_Dgram m_io;
-  int32_t m_basePort;
+  uint16_t m_basePort;
   UDPMessageQueues* m_queues;
   std::string m_addr;
 
  public:
-  STReceiver(UDPMessageQueues* shared, int32_t port)
+  STReceiver(UDPMessageQueues* shared, uint16_t port)
       : ServiceTask(shared), m_basePort(port) {
     m_queues = dynamic_cast<UDPMessageQueues*>(m_shared);
   }
@@ -274,12 +272,12 @@ class Processor : public ServiceTask {
 class Responder : public ServiceTask {
  private:
   ACE_TSS<ACE_SOCK_Dgram> m_io;
-  int32_t m_basePort;
-  AtomicInc m_offset;
+  uint16_t m_basePort;
+  std::atomic<uint16_t> m_offset;
   UDPMessageQueues* m_queues;
 
  public:
-  Responder(UDPMessageQueues* shared, int32_t port)
+  Responder(UDPMessageQueues* shared, uint16_t port)
       : ServiceTask(shared), m_basePort(port) {
     m_queues = dynamic_cast<UDPMessageQueues*>(m_shared);
   }

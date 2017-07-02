@@ -18,8 +18,11 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/Pool.hpp>
-#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
+#include "native_shared_ptr.hpp"
 
 
 using namespace System;
@@ -30,9 +33,7 @@ namespace Apache
   {
     namespace Client
     {
-
-      //generic<class TKey, class TResult>
-      //ref class Properties;
+      namespace native = apache::geode::client;
 
       generic<class TKey, class TResult>
       ref class QueryService;
@@ -47,7 +48,6 @@ namespace Apache
       /// </remarks>
       // generic<class TKey, class TValue>
       public ref class Pool sealed
-        : public Client::Internal::SBWrap<apache::geode::client::Pool>
       {
       public:
 
@@ -323,10 +323,15 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static Pool^ Create(apache::geode::client::Pool* nativeptr)
+        inline static Pool^ Create(native::PoolPtr nativeptr)
         {
-          return (nativeptr != nullptr ?
-                  gcnew Pool(nativeptr) : nullptr);
+          return __nullptr == nativeptr ? nullptr :
+            gcnew Pool( nativeptr );
+        }
+
+        std::shared_ptr<native::Pool> GetNative()
+        {
+          return m_nativeptr->get_shared_ptr();
         }
 
       private:
@@ -335,8 +340,12 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline Pool(apache::geode::client::Pool* nativeptr)
-          : SBWrap(nativeptr) { }
+        inline Pool(native::PoolPtr nativeptr)
+        {
+          m_nativeptr = gcnew native_shared_ptr<native::Pool>(nativeptr);
+        }
+
+        native_shared_ptr<native::Pool>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

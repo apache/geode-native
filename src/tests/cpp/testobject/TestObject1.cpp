@@ -25,7 +25,7 @@
 using namespace testobject;
 
 TestObject1::TestObject1()
-    : name(NULLPTR), arr(CacheableBytes::create(4 * 1024)), identifier(1) {}
+    : name(nullptr), arr(CacheableBytes::create(4 * 1024)), identifier(1) {}
 
 TestObject1::TestObject1(std::string& str, int32_t id) {
   name = CacheableString::create(str.c_str());
@@ -41,7 +41,7 @@ TestObject1::TestObject1(std::string& str, int32_t id) {
 }
 
 TestObject1::TestObject1(TestObject1& rhs) {
-  name = rhs.name == NULLPTR ? NULLPTR
+  name = rhs.name == nullptr ? nullptr
                              : CacheableString::create(rhs.name->asChar());
   identifier = rhs.identifier;
   arr = CacheableBytes::create(rhs.arr->value(), rhs.arr->length());

@@ -18,7 +18,7 @@
 #pragma once
 
 #include "QueryStrings.hpp"
-#include "impl/NativeWrapper.hpp"
+#include "native_conditional_unique_ptr.hpp"
 
 
 using namespace System;
@@ -29,7 +29,7 @@ namespace Apache
   {
     namespace Client
     {
-namespace Tests
+      namespace Tests
       {
 
         /// <summary>
@@ -60,7 +60,6 @@ namespace Tests
         /// Encapsulates a query string.
         /// </summary>
         public ref class QueryStrings sealed
-          : public Apache::Geode::Client::Internal::UMWrap<testData::QueryStrings>
         {
         public:
 
@@ -125,6 +124,7 @@ namespace Tests
           void Init( QueryCategory pcategory, String^ pquery,
             Boolean pisLargeResultset );
 
+          native_conditional_unique_ptr<testData::QueryStrings>^ m_nativeptr;
 
         internal:
 
@@ -132,8 +132,10 @@ namespace Tests
           /// Internal constructor to wrap a native object pointer
           /// </summary>
           /// <param name="nativeptr">The native object pointer</param>
-          inline QueryStrings( testData::QueryStrings* nativeptr )
-            : UMWrap( nativeptr, false ) { }
+          inline QueryStrings(testData::QueryStrings* nativeptr)
+          {
+            m_nativeptr = gcnew native_conditional_unique_ptr<testData::QueryStrings>(nativeptr);
+          }
         };
 
         /// <summary>

@@ -17,7 +17,6 @@
 
 #pragma once
 
-//#include "geode_includes.hpp"
 #include "Pool.hpp"
 #include "PoolFactory.hpp"
 
@@ -33,260 +32,419 @@ namespace Apache
     namespace Client
     {
 
-      //generic<class TKey, class TValue>
-      PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetFreeConnectionTimeout( Int32 connectionTimeout )
+
+      PoolFactory^ PoolFactory::SetFreeConnectionTimeout( Int32 connectionTimeout )
 		  {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			  NativePtr->setFreeConnectionTimeout( connectionTimeout );
+			  try
+			  {
+			    m_nativeptr->get()->setFreeConnectionTimeout( connectionTimeout );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-		  PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetLoadConditioningInterval( Int32 loadConditioningInterval )
+
+		  PoolFactory^ PoolFactory::SetLoadConditioningInterval( Int32 loadConditioningInterval )
 		  {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			  NativePtr->setLoadConditioningInterval( loadConditioningInterval );
+			  try
+			  {
+			    m_nativeptr->get()->setLoadConditioningInterval( loadConditioningInterval );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-		  PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetSocketBufferSize( Int32 bufferSize )
+
+		  PoolFactory^ PoolFactory::SetSocketBufferSize( Int32 bufferSize )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			  NativePtr->setSocketBufferSize( bufferSize );
+			  try
+			  {
+			    m_nativeptr->get()->setSocketBufferSize( bufferSize );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-		  PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetReadTimeout( Int32 timeout )
+
+		  PoolFactory^ PoolFactory::SetReadTimeout( Int32 timeout )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			  NativePtr->setReadTimeout( timeout );
+			  try
+			  {
+			    m_nativeptr->get()->setReadTimeout( timeout );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-		  PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetMinConnections( Int32 minConnections )
+
+		  PoolFactory^ PoolFactory::SetMinConnections( Int32 minConnections )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			  NativePtr->setMinConnections( minConnections );
+			  try
+			  {
+			    m_nativeptr->get()->setMinConnections( minConnections );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-		  PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetMaxConnections( Int32 maxConnections )
+
+		  PoolFactory^ PoolFactory::SetMaxConnections( Int32 maxConnections )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			  NativePtr->setMaxConnections( maxConnections );
+			  try
+			  {
+			    m_nativeptr->get()->setMaxConnections( maxConnections );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-		  PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetIdleTimeout( Int32 idleTimeout )
+
+		  PoolFactory^ PoolFactory::SetIdleTimeout( Int32 idleTimeout )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			  NativePtr->setIdleTimeout( idleTimeout );
+			  try
+			  {
+			    m_nativeptr->get()->setIdleTimeout( idleTimeout );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-		  PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetRetryAttempts( Int32 retryAttempts )
+
+		  PoolFactory^ PoolFactory::SetRetryAttempts( Int32 retryAttempts )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			  NativePtr->setRetryAttempts( retryAttempts );
+			  try
+			  {
+			    m_nativeptr->get()->setRetryAttempts( retryAttempts );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-		  PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetPingInterval( Int32 pingInterval )
+
+		  PoolFactory^ PoolFactory::SetPingInterval( Int32 pingInterval )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			  NativePtr->setPingInterval( pingInterval );
+			  try
+			  {
+			    m_nativeptr->get()->setPingInterval( pingInterval );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-		  PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetUpdateLocatorListInterval( Int32 updateLocatorListInterval )
+
+		  PoolFactory^ PoolFactory::SetUpdateLocatorListInterval( Int32 updateLocatorListInterval )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			  NativePtr->setUpdateLocatorListInterval( updateLocatorListInterval );
+			  try
+			  {
+			    m_nativeptr->get()->setUpdateLocatorListInterval( updateLocatorListInterval );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-      PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetStatisticInterval( Int32 statisticInterval )
+
+      PoolFactory^ PoolFactory::SetStatisticInterval( Int32 statisticInterval )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			  NativePtr->setStatisticInterval( statisticInterval );
+			  try
+			  {
+			    m_nativeptr->get()->setStatisticInterval( statisticInterval );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-      PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetServerGroup( String^ group )
+
+      PoolFactory^ PoolFactory::SetServerGroup( String^ group )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
         ManagedString mg_servergroup( group );
-			  NativePtr->setServerGroup( mg_servergroup.CharPtr );
+			  try
+			  {
+			    m_nativeptr->get()->setServerGroup( mg_servergroup.CharPtr );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-		  PoolFactory^ PoolFactory/*<TKey, TValue>*/::AddLocator( String^ host, Int32 port )
+
+		  PoolFactory^ PoolFactory::AddLocator( String^ host, Int32 port )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
         ManagedString mg_host( host );
-			  NativePtr->addLocator( mg_host.CharPtr, port );
+			  try
+			  {
+			    m_nativeptr->get()->addLocator( mg_host.CharPtr, port );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-      PoolFactory^ PoolFactory/*<TKey, TValue>*/::AddServer( String^ host, Int32 port )
+
+      PoolFactory^ PoolFactory::AddServer( String^ host, Int32 port )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
 			  ManagedString mg_host( host );
-			  NativePtr->addServer( mg_host.CharPtr, port );
+			  try
+			  {
+			    m_nativeptr->get()->addServer( mg_host.CharPtr, port );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-		  PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetSubscriptionEnabled( Boolean enabled )
+
+		  PoolFactory^ PoolFactory::SetSubscriptionEnabled( Boolean enabled )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			  NativePtr->setSubscriptionEnabled( enabled );
+			  try
+			  {
+			    m_nativeptr->get()->setSubscriptionEnabled( enabled );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-          PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetPRSingleHopEnabled( Boolean enabled )
+
+          PoolFactory^ PoolFactory::SetPRSingleHopEnabled( Boolean enabled )
           {
             _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-              NativePtr->setPRSingleHopEnabled(enabled);
+              try
+              {
+                m_nativeptr->get()->setPRSingleHopEnabled(enabled);
+              }
+              finally
+              {
+                GC::KeepAlive(m_nativeptr);
+              }
 
              _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
                return this;
           }
 
-          //generic<class TKey, class TValue>
-		  PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetSubscriptionRedundancy( Int32 redundancy )
+    
+		  PoolFactory^ PoolFactory::SetSubscriptionRedundancy( Int32 redundancy )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			  NativePtr->setSubscriptionRedundancy( redundancy );
+			  try
+			  {
+			    m_nativeptr->get()->setSubscriptionRedundancy( redundancy );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-		  PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetSubscriptionMessageTrackingTimeout( Int32 messageTrackingTimeout )
+
+		  PoolFactory^ PoolFactory::SetSubscriptionMessageTrackingTimeout( Int32 messageTrackingTimeout )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			  NativePtr->setSubscriptionMessageTrackingTimeout( messageTrackingTimeout );
+			  try
+			  {
+			    m_nativeptr->get()->setSubscriptionMessageTrackingTimeout( messageTrackingTimeout );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-		  PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetSubscriptionAckInterval( Int32 ackInterval )
+
+		  PoolFactory^ PoolFactory::SetSubscriptionAckInterval( Int32 ackInterval )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			  NativePtr->setSubscriptionAckInterval( ackInterval );
+			  try
+			  {
+			    m_nativeptr->get()->setSubscriptionAckInterval( ackInterval );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
-      PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetThreadLocalConnections( Boolean enabled )
+      PoolFactory^ PoolFactory::SetThreadLocalConnections( Boolean enabled )
       {
 			  _GF_MG_EXCEPTION_TRY2
 
-			  NativePtr->setThreadLocalConnections( enabled );
+			  try
+			  {
+			    m_nativeptr->get()->setThreadLocalConnections( enabled );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
           return this;
 	  }
-      //generic<class TKey, class TValue>
-      PoolFactory^ PoolFactory/*<TKey, TValue>*/::SetMultiuserAuthentication( bool multiuserAuthentication )
+
+      PoolFactory^ PoolFactory::SetMultiuserAuthentication( bool multiuserAuthentication )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          NativePtr->setMultiuserAuthentication( multiuserAuthentication );
+          try
+          {
+            m_nativeptr->get()->setMultiuserAuthentication( multiuserAuthentication );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 	   }
 
-      //generic<class TKey, class TValue>
-		  PoolFactory^ PoolFactory/*<TKey, TValue>*/::Reset()
+
+		  PoolFactory^ PoolFactory::Reset()
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			  NativePtr->reset( );
+			  try
+			  {
+			    m_nativeptr->get()->reset( );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
           return this;
 		  }
 
-      //generic<class TKey, class TValue>
-		  Pool/*<TKey, TValue>*/^ PoolFactory/*<TKey, TValue>*/::Create( String^ name )
+
+      Pool^ PoolFactory::Create(String^ name)
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-        ManagedString mg_name( name );
-        apache::geode::client::PoolPtr & pool = NativePtr->create(mg_name.CharPtr);
-        return Pool/*<TKey, TValue>*/::Create(pool.ptr());
-
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+          ManagedString mg_name(name);
+          try
+          {
+            return Pool::Create(m_nativeptr->get()->create(mg_name.CharPtr));
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+        
+        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
- } //namespace 

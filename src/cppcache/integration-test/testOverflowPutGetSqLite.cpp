@@ -17,13 +17,17 @@
 
 #define ROOT_NAME "testOverflowPutGetSqLite"
 
+#include <string>
+#include <iostream>
+
+#include <ace/OS.h>
+
 #include <geode/GeodeCppCache.hpp>
 
 #include "fw_helper.hpp"
 #include <CacheableToken.hpp>
 #include <MapEntry.hpp>
 #include <CacheRegionHelper.hpp>
-#include <ace/OS.h>
 
 using namespace apache::geode::client;
 
@@ -36,7 +40,7 @@ void getNumOfEntries(RegionPtr& regionPtr, uint32_t num) {
   regionPtr->keys(v);
   VectorOfCacheable vecValues;
   regionPtr->values(vecValues);
-  printf("Values vector size is %d\n", vecValues.size());
+  printf("Values vector size is %zd\n", vecValues.size());
   printf("Num is %d\n", num);
   ASSERT(vecValues.size() == num, (char*)"size of value vec and num not equal");
 }
@@ -99,7 +103,7 @@ void checkOverflowTokenValues(RegionPtr& regionPtr, uint32_t num) {
       nonoverflowCount++;
     }
 
-    valuePtr = NULLPTR;
+    valuePtr = nullptr;
   }
   ASSERT(count == 0, "No of overflowed entries should be zero");
   ASSERT(nonoverflowCount == v.size(),
@@ -128,12 +132,12 @@ void checkOverflowToken(RegionPtr& regionPtr, uint32_t lruLimit) {
       invalidCount++;
     } else if (CacheableToken::isDestroyed(valuePtr)) {
       destoyedCount++;
-    } else if (valuePtr != NULLPTR) {
+    } else if (valuePtr != nullptr) {
       normalCount++;
     }
-    valuePtr = NULLPTR;
+    valuePtr = nullptr;
   }
-  printf("Keys vector size is %d\n", v.size());
+  printf("Keys vector size is %zd\n", v.size());
   printf("Normal entries count is %d\n", normalCount);
   printf("Overflow entries count is %d\n", overflowCount);
   printf("Invalid entries count is %d\n", invalidCount);
@@ -181,9 +185,9 @@ uint32_t doNgetLargeData(RegionPtr& regionPtr, int num) {
 
   for (int i = 0; i < num; i++) {
     printf("Getting key = %d\n", i);
-    CacheableStringPtr valuePtr =
-        dynCast<CacheableStringPtr>(regionPtr->get(i));
-    if (valuePtr == NULLPTR) {
+    auto valuePtr =
+        std::dynamic_pointer_cast<CacheableString>(regionPtr->get(i));
+    if (valuePtr == nullptr) {
       countNotFound++;
     } else {
       countFound++;
@@ -201,10 +205,10 @@ uint32_t doNget(RegionPtr& regionPtr, uint32_t num, uint32_t start = 0) {
   for (uint32_t i = start; i < num; i++) {
     char keybuf[100];
     sprintf(keybuf, "key-%d", i);
-    CacheableStringPtr valuePtr =
-        dynCast<CacheableStringPtr>(regionPtr->get(keybuf));
+    auto valuePtr =
+        std::dynamic_pointer_cast<CacheableString>(regionPtr->get(keybuf));
     printf("Getting key = %s\n", keybuf);
-    if (valuePtr == NULLPTR) {
+    if (valuePtr == nullptr) {
       countNotFound++;
     } else {
       countFound++;
@@ -228,10 +232,10 @@ void testEntryDestroy(RegionPtr& regionPtr, uint32_t num) {
   CacheablePtr valuePtr;
   for (uint32_t i = 45; i < 50; i++) {
     try {
-      test::cout << "try to destroy key" << i << test::endl;
+      std::cout << "try to destroy key" << i << std::endl;
       regionPtr->destroy(v.at(i));
     } catch (Exception& ex) {
-      test::cout << ex.getMessage() << test::endl;
+      std::cout << ex.getMessage() << std::endl;
       ASSERT(false, (char*)"entry missing");
     }
   }
@@ -246,10 +250,10 @@ void testEntryInvalidate(RegionPtr& regionPtr, uint32_t num) {
   CacheablePtr valuePtr;
   for (uint32_t i = 40; i < 45; i++) {
     try {
-      test::cout << "try to invalidate key" << i << test::endl;
+      std::cout << "try to invalidate key" << i << std::endl;
       regionPtr->invalidate(v.at(i));
     } catch (Exception& ex) {
-      test::cout << ex.getMessage() << test::endl;
+      std::cout << ex.getMessage() << std::endl;
       ASSERT(false, (char*)"entry missing");
     }
   }
@@ -286,16 +290,15 @@ void verifyGetAll(RegionPtr region, int startIndex) {
   for (int i = 0; i <= 100; i++) keysVector.push_back(CacheableKey::create(i));
 
   // keysVector.push_back(CacheableKey::create(101)); //key not there
-  HashMapOfCacheablePtr valuesMap(new HashMapOfCacheable());
+  auto valuesMap = std::make_shared<HashMapOfCacheable>();
   valuesMap->clear();
-  region->getAll(keysVector, valuesMap, NULLPTR, false);
+  region->getAll(keysVector, valuesMap, nullptr, false);
   if (valuesMap->size() == keysVector.size()) {
     int i = startIndex;
-    for (HashMapOfCacheable::Iterator iter = valuesMap->begin();
-         iter != valuesMap->end(); iter++, i++) {
-      CacheableKeyPtr key = dynCast<CacheableKeyPtr>(iter.first());
-      CacheablePtr mVal = iter.second();
-      if (mVal != NULLPTR) {
+    for (const auto& iter : *valuesMap) {
+      auto key = std::dynamic_pointer_cast<CacheableKey>(iter.first);
+      CacheablePtr mVal = iter.second;
+      if (mVal != nullptr) {
         int val = atoi(mVal->toString()->asChar());
         ASSERT(val == i, "value not matched");
       }
@@ -308,7 +311,7 @@ void createRegion(RegionPtr& regionPtr, const char* regionName,
   CacheFactoryPtr cacheFactoryPtr =
       CacheFactory::createCacheFactory(cacheProps);
   CachePtr cachePtr = CacheFactory::createCacheFactory()->create();
-  ASSERT(cachePtr != NULLPTR, "Expected cache to be NON-NULL");
+  ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
   RegionFactoryPtr regionFactoryPtr = cachePtr->createRegionFactory(LOCAL);
   regionFactoryPtr->setCachingEnabled(true);
   regionFactoryPtr->setLruEntriesLimit(10);
@@ -317,7 +320,7 @@ void createRegion(RegionPtr& regionPtr, const char* regionName,
   regionFactoryPtr->setPersistenceManager("SqLiteImpl", "createSqLiteInstance",
                                           sqLiteProps);
   regionPtr = regionFactoryPtr->create(regionName);
-  ASSERT(regionPtr != NULLPTR, "Expected regionPtr to be NON-NULL");
+  ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
 }
 
 void setSqLiteProperties(PropertiesPtr& sqliteProperties,
@@ -327,8 +330,8 @@ void setSqLiteProperties(PropertiesPtr& sqliteProperties,
   sqliteProperties->insert(MAX_PAGE_COUNT, maxPageCount);
   sqliteProperties->insert(PAGE_SIZE, pageSize);
   sqliteProperties->insert(PERSISTENCE_DIR, pDir.c_str());
-  ASSERT(sqliteProperties != NULLPTR,
-         "Expected sqlite properties to be NON-NULL");
+  ASSERT(sqliteProperties != nullptr,
+         "Expected sqlite properties to be NON-nullptr");
 }
 // creation of subregion.
 
@@ -337,7 +340,7 @@ void createSubRegion(RegionPtr& regionPtr, RegionPtr& subRegion,
   RegionAttributesPtr regionAttributesPtr;
   setAttributes(regionAttributesPtr, pDir);
   subRegion = regionPtr->createSubregion(regionName, regionAttributesPtr);
-  ASSERT(subRegion != NULLPTR, "Expected region to be NON-NULL");
+  ASSERT(subRegion != nullptr, "Expected region to be NON-nullptr");
   char fileName[512];
   sprintf(fileName, "%s/%s/%s.db", pDir.c_str(), regionName, regionName);
   ACE_stat fileStat;
@@ -356,7 +359,7 @@ BEGIN_TEST(OverFlowTest)
     RegionPtr regionPtr;
     createRegion(regionPtr, "OverFlowRegion", cacheProperties,
                  sqliteProperties);
-    ASSERT(regionPtr != NULLPTR, "Expected regionPtr to be NON-NULL");
+    ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
     validateAttribute(regionPtr);
     /** put some values into the cache. */
     doNput(regionPtr, 50);
@@ -384,12 +387,12 @@ BEGIN_TEST(OverFlowTest)
     RegionPtr subRegion;
     for (int i = 0; i < 10; i++) {
       createSubRegion(regionPtr, subRegion, "SubRegion");
-      ASSERT(subRegion != NULLPTR, "Expected region to be NON-NULL");
+      ASSERT(subRegion != nullptr, "Expected region to be NON-nullptr");
       checkOverflowToken(subRegion,
                          10);  // check the overflow count for each reion
       subRegion->destroyRegion();
       ASSERT(subRegion->isDestroyed(), "Expected region is not destroyed ");
-      subRegion = NULLPTR;
+      subRegion = nullptr;
       ACE_TCHAR hname[MAXHOSTNAMELEN];
       ACE_OS::hostname(hname, sizeof(hname) - 1);
       char sqliteDirSubRgn[512];
@@ -411,7 +414,8 @@ BEGIN_TEST(OverFlowTest_absPath)
     RegionAttributesPtr attrsPtr;
     char currWDPath[512];
     char* wdPath = ACE_OS::getcwd(currWDPath, 512);
-    ASSERT(wdPath != NULL, "Expected current Working Directory to be NON-NULL");
+    ASSERT(wdPath != nullptr,
+           "Expected current Working Directory to be NON-nullptr");
     std::string absPersistenceDir = std::string(wdPath) + "/absSqLite";
 
     /** Creating a cache to manage regions. */
@@ -421,7 +425,7 @@ BEGIN_TEST(OverFlowTest_absPath)
     RegionPtr regionPtr;
     createRegion(regionPtr, "OverFlowRegion", cacheProperties,
                  sqliteProperties);
-    ASSERT(regionPtr != NULLPTR, "Expected regionPtr to be NON-NULL");
+    ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
 
     validateAttribute(regionPtr);
     /** put some values into the cache. */
@@ -449,10 +453,10 @@ BEGIN_TEST(OverFlowTest_absPath)
     RegionPtr subRegion;
     for (int i = 0; i < 10; i++) {
       createSubRegion(regionPtr, subRegion, "SubRegion", absPersistenceDir);
-      ASSERT(subRegion != NULLPTR, "Expected region to be NON-NULL");
+      ASSERT(subRegion != nullptr, "Expected region to be NON-nullptr");
       subRegion->destroyRegion();
       ASSERT(subRegion->isDestroyed(), "Expected region is not destroyed ");
-      subRegion = NULLPTR;
+      subRegion = nullptr;
       char fileName[512];
       sprintf(fileName, "%s/%s/%s.db", absPersistenceDir.c_str(), "SubRegion",
               "SubRegion");
@@ -469,7 +473,7 @@ BEGIN_TEST(OverFlowTest_SqLiteFull)
   {
     CacheFactoryPtr cacheFactoryPtr = CacheFactory::createCacheFactory();
     CachePtr cachePtr = CacheFactory::createCacheFactory()->create();
-    ASSERT(cachePtr != NULLPTR, "Expected cache to be NON-NULL");
+    ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
     RegionFactoryPtr regionFactoryPtr = cachePtr->createRegionFactory(LOCAL);
     regionFactoryPtr->setCachingEnabled(true);
     regionFactoryPtr->setLruEntriesLimit(1);
@@ -483,7 +487,7 @@ BEGIN_TEST(OverFlowTest_SqLiteFull)
     regionFactoryPtr->setPersistenceManager(
         "SqLiteImpl", "createSqLiteInstance", sqliteProperties);
     RegionPtr regionPtr = regionFactoryPtr->create("OverFlowRegion");
-    ASSERT(regionPtr != NULLPTR, "Expected regionPtr to be NON-NULL");
+    ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
 
     try {
       doNput(regionPtr, 100);
@@ -514,8 +518,8 @@ END_TEST(OverFlowTest_SqLiteFull)
 //  CachePtr cachePtr ;
 //  PropertiesPtr pp = Properties::create();
 //  startDSandCreateCache(dsysPtr, cachePtr, pp);
-//  ASSERT(dsysPtr != NULLPTR, "Expected dsys to be NON-NULL");
-//  ASSERT(cachePtr != NULLPTR, "Expected cache to be NON-NULL");
+//  ASSERT(dsysPtr != nullptr, "Expected dsys to be NON-nullptr");
+//  ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
 //
 //  RegionAttributesPtr attrsPtr;
 //  AttributesFactory attrsFact;
@@ -531,11 +535,11 @@ END_TEST(OverFlowTest_SqLiteFull)
 //  attrsFact.setPersistenceManager("SqLiteImpl","createSqLiteInstance",sqliteProperties);
 //
 //  attrsPtr = attrsFact.createRegionAttributes( );
-//  ASSERT(attrsPtr != NULLPTR, "Expected region attributes to be NON-NULL");
+//  ASSERT(attrsPtr != nullptr, "Expected region attributes to be NON-nullptr");
 //
 //  /** Create a region with caching and LRU. */
 //  RegionPtr regionPtr = cachePtr->createRegion( "OverFlowRegion", attrsPtr );
-//  ASSERT(regionPtr != NULLPTR, "Expected regionPtr to be NON-NULL");
+//  ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
 //
 //  /** put one million values into the cache.  to test the large data values*/
 //  doNputLargeData(regionPtr, 1024 * 1); //arround 100 GB data
@@ -552,10 +556,10 @@ END_TEST(OverFlowTest_SqLiteFull)
 //  for(int i = 0; i<10; i++)
 //  {
 //    createSubRegion(regionPtr,subRegion,attrsPtr,"SubRegion");
-//    ASSERT(subRegion != NULLPTR, "Expected region to be NON-NULL");
+//    ASSERT(subRegion != nullptr, "Expected region to be NON-nullptr");
 //    subRegion->destroyRegion();
 //    ASSERT(subRegion->isDestroyed(), "Expected region is not destroyed ");
-//    subRegion = NULLPTR;
+//    subRegion = nullptr;
 //    ACE_TCHAR hname[MAXHOSTNAMELEN];
 //    ACE_OS::hostname( hname, sizeof(hname)-1);
 //    char sqliteDirSubRgn[512];
@@ -582,7 +586,7 @@ BEGIN_TEST(OverFlowTest_HeapLRU)
     pp->insert("heap-lru-delta", 10);
     CacheFactoryPtr cacheFactoryPtr = CacheFactory::createCacheFactory(pp);
     CachePtr cachePtr = CacheFactory::createCacheFactory()->create();
-    ASSERT(cachePtr != NULLPTR, "Expected cache to be NON-NULL");
+    ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
     RegionFactoryPtr regionFactoryPtr = cachePtr->createRegionFactory(LOCAL);
     regionFactoryPtr->setCachingEnabled(true);
     regionFactoryPtr->setLruEntriesLimit(1024 * 10);
@@ -597,7 +601,7 @@ BEGIN_TEST(OverFlowTest_HeapLRU)
     regionFactoryPtr->setPersistenceManager(
         "SqLiteImpl", "createSqLiteInstance", sqliteProperties);
     RegionPtr regionPtr = regionFactoryPtr->create("OverFlowRegion");
-    ASSERT(regionPtr != NULLPTR, "Expected regionPtr to be NON-NULL");
+    ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
 
     validateAttribute(regionPtr);
     /** put some values into the cache. */
@@ -619,7 +623,7 @@ BEGIN_TEST(OverFlowTest_HeapLRU)
       RegionAttributesPtr regionAttributesPtr;
       setAttributes(regionAttributesPtr);
       subRegion = regionPtr->createSubregion("SubRegion", regionAttributesPtr);
-      ASSERT(subRegion != NULLPTR, "Expected region to be NON-NULL");
+      ASSERT(subRegion != nullptr, "Expected region to be NON-nullptr");
       char fileName[512];
       sprintf(fileName, "%s/%s/%s.db", sqlite_dir.c_str(), "SubRegion",
               "SubRegion");
@@ -630,7 +634,7 @@ BEGIN_TEST(OverFlowTest_HeapLRU)
       doNget(subRegion, 50);
       subRegion->destroyRegion();
       ASSERT(subRegion->isDestroyed(), "Expected region is not destroyed ");
-      subRegion = NULLPTR;
+      subRegion = nullptr;
       ASSERT(ACE_OS::stat(fileName, &fileStat) == -1,
              "persistence file still present");
     }
@@ -643,17 +647,17 @@ BEGIN_TEST(OverFlowTest_MultiThreaded)
   {
     /** Creating a cache to manage regions. */
     CachePtr cachePtr = CacheFactory::createCacheFactory()->create();
-    ASSERT(cachePtr != NULLPTR, "Expected cache to be NON-NULL");
+    ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
 
     RegionAttributesPtr attrsPtr;
     setAttributes(attrsPtr);
-    ASSERT(attrsPtr != NULLPTR, "Expected region attributes to be NON-NULL");
+    ASSERT(attrsPtr != nullptr, "Expected region attributes to be NON-nullptr");
     /** Create a region with caching and LRU. */
 
     RegionPtr regionPtr;
-    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.ptr());
+    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
     cacheImpl->createRegion("OverFlowRegion", attrsPtr, regionPtr);
-    ASSERT(regionPtr != NULLPTR, "Expected regionPtr to be NON-NULL");
+    ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
     validateAttribute(regionPtr);
 
     /** test to verify same region repeatedly to ensure that the persistece
@@ -684,24 +688,24 @@ BEGIN_TEST(OverFlowTest_PutGetAll)
   {
     /** Creating a cache to manage regions. */
     CachePtr cachePtr = CacheFactory::createCacheFactory()->create();
-    ASSERT(cachePtr != NULLPTR, "Expected cache to be NON-NULL");
+    ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
 
     RegionAttributesPtr attrsPtr;
     setAttributes(attrsPtr);
-    ASSERT(attrsPtr != NULLPTR, "Expected region attributes to be NON-NULL");
+    ASSERT(attrsPtr != nullptr, "Expected region attributes to be NON-nullptr");
     /** Create a region with caching and LRU. */
 
     RegionPtr regionPtr;
-    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.ptr());
+    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
     cacheImpl->createRegion("OverFlowRegion", attrsPtr, regionPtr);
-    ASSERT(regionPtr != NULLPTR, "Expected regionPtr to be NON-NULL");
+    ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
     validateAttribute(regionPtr);
 
     // putAll some entries
     HashMapOfCacheable map0;
     map0.clear();
     for (int i = 1; i <= 50; i++) {
-      map0.insert(CacheableKey::create(i), Cacheable::create(i));
+      map0.emplace(CacheableKey::create(i), Cacheable::create(i));
     }
     regionPtr->putAll(map0);
     checkOverflowToken(regionPtr, 10);

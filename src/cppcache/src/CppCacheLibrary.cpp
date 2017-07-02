@@ -30,7 +30,6 @@
 #include "LRUExpMapEntry.hpp"
 #include <geode/CacheFactory.hpp>
 #include "SerializationRegistry.hpp"
-#include "CacheableToken.hpp"
 #include <geode/DataOutput.hpp>
 #include "TcrMessage.hpp"
 #include "Utils.hpp"
@@ -38,15 +37,20 @@
 
 #include <string>
 
-using namespace apache::geode::client;
+// called during DLL initialization
+void initLibDllEntry(void) {
+  apache::geode::client::CppCacheLibrary::initLib();
+}
+
+extern "C" {
+void DllMainGetPath(char* result, int maxLen);
+}
 
 namespace apache {
 namespace geode {
 namespace client {
+
 void gf_log_libinit();
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
 
 CppCacheLibrary::CppCacheLibrary() {
   // TODO: This should catch any exceptions, log it, and bail out..
@@ -58,7 +62,6 @@ CppCacheLibrary::CppCacheLibrary() {
     ExpEntryFactory::init();
     LRUExpEntryFactory::init();
     CacheFactory::init();
-    CacheableToken::init();
     SerializationRegistry::init();
     // PdxTypeRegistry::init();
     // log( "Finished initializing CppCacheLibrary." );
@@ -96,19 +99,12 @@ void CppCacheLibrary::closeLib(void) {
   // using geode.
 }
 
-// called during DLL initialization
-void initLibDllEntry(void) { CppCacheLibrary::initLib(); }
-
-extern "C" {
-void DllMainGetPath(char* result, int maxLen);
-}
-
 // Returns pathname of product's lib directory, adds 'addon' to it if 'addon' is
 // not null.
 std::string CppCacheLibrary::getProductLibDir(const char* addon) {
   std::string proddir = CppCacheLibrary::getProductDir();
   proddir += "/lib/";
-  if (addon != NULL) {
+  if (addon != nullptr) {
     proddir += addon;
   }
   return proddir;
@@ -129,9 +125,9 @@ std::string CppCacheLibrary::getProductLibDir() {
   cppName += ".dll";
   pos = path.find(cppName);
   if (std::string::npos == pos) {
-	  std::string dotNetName = PRODUCT_DLL_NAME;
-	  dotNetName += ".dll";
-	  pos = path.find(dotNetName);
+    std::string dotNetName = PRODUCT_DLL_NAME;
+    dotNetName += ".dll";
+    pos = path.find(dotNetName);
   }
 #else
   std::string cppName = "lib";
@@ -139,7 +135,7 @@ std::string CppCacheLibrary::getProductLibDir() {
   pos = path.find(cppName);
 #endif
   if (0 < pos) {
-	  return path.substr(0, --pos);
+    return path.substr(0, --pos);
   }
   return std::string();
 }
@@ -173,7 +169,7 @@ std::string CppCacheLibrary::getProductDir() {
   }
   libdirname = slashtmp;
   delete[] slashtmp;
-  slashtmp = NULL;
+  slashtmp = nullptr;
 
   // check if it is "hidden/lib/debug" and work back from build area.
   size_t hiddenidx = libdirname.find("hidden");
@@ -198,5 +194,8 @@ std::string CppCacheLibrary::getProductDir() {
   } else {
     return libdirname;
   }
-
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

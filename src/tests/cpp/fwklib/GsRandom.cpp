@@ -17,53 +17,16 @@
 
 #include "GsRandom.hpp"
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
+#include <cstring>
 
-GsRandom *GsRandom::singleton = 0;
-MTRand GsRandom::gen;
-int32_t GsRandom::seedUsed = -101;
-SpinLock GsRandom::lck;
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 
-/**
-  * Creates a new random number generator using a single
-  * <code>int32_t</code> seed.
-  *
-  * @param   seed   the initial seed.
-  * @see     java.util.Random#Random(int32_t)
-  */
-GsRandom *GsRandom::getInstance(int32_t seed) {
-  if (singleton == 0) {
-    setInstance(seed);
-  } else {
-    SpinLockGuard guard(lck);
-    setSeed(seed);
-  }
-  return singleton;
-}
-
-void GsRandom::setInstance(int32_t seed) {
-  SpinLockGuard guard(lck);
-  if (singleton == 0) {
-    singleton = new GsRandom();
-    if (seed != -1) {
-      singleton->gen.seed(seed);
-    } else {
-      singleton->gen.seed();
-    }
-    seedUsed = seed;
-  }
-}
-
-void GsRandom::setSeed(int32_t seed) {
-  if (seed != seedUsed) {
-    if (seed != -1) {
-      singleton->gen.seed(seed);
-    } else {
-      singleton->gen.seed();
-    }
-    seedUsed = seed;
-  }
+GsRandom &GsRandom::getInstance() {
+  static GsRandom instance;
+  return instance;
 }
 
 /**
@@ -116,3 +79,7 @@ char *GsRandom::randomAlphanumericString(int32_t max, int32_t min,
   buf[len] = 0;
   return buf;
 }
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

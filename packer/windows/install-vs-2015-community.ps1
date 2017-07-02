@@ -20,7 +20,7 @@ Import-Module Packer
 
 $log = "vs_community.log"
 
-Install-Package https://download.microsoft.com/download/0/B/C/0BC321A4-013F-479C-84E6-4A2F90B11269/vs_community.exe `
+Install-Package https://download.microsoft.com/download/e/4/c/e4c393a9-8fff-441b-ad3a-3f4040317a1f/vs_community.exe `
     -Hash ED8D88D0AB88832754302BFC2A374E803B3A21C1590B428092944272F9EA30FE `
-    -ArgumentList @("/quiet", "/log", $log) `
+    -ArgumentList @("/AdminFile", "C:\\vs-2015-admin.xml", "/quiet", "/log", $log) `
     -Log $log -Verbose

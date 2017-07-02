@@ -21,18 +21,18 @@
 using namespace apache::geode::client;
 
 // TODO: make this a member of TcrConnectionManager.
-HashMapOfPools* connectionPools = NULL; /*new HashMapOfPools( )*/
+HashMapOfPools* connectionPools = nullptr; /*new HashMapOfPools( )*/
 ACE_Recursive_Thread_Mutex connectionPoolsLock;
 
 void removePool(const char* name) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
-  connectionPools->erase(CacheableString::create(name));
+  connectionPools->erase(name);
 }
 
 PoolFactoryPtr PoolManager::createFactory() {
-  if (connectionPools == NULL) {
+  if (connectionPools == nullptr) {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
-    if (connectionPools == NULL) {
+    if (connectionPools == nullptr) {
       connectionPools = new HashMapOfPools();
     }
   }
@@ -42,21 +42,18 @@ PoolFactoryPtr PoolManager::createFactory() {
 void PoolManager::close(bool keepAlive) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
 
-  if (connectionPools == NULL) {
+  if (connectionPools == nullptr) {
     return;
   }
 
   std::vector<PoolPtr> poolsList;
 
-  for (HashMapOfPools::Iterator iter = connectionPools->begin();
-       iter != connectionPools->end(); ++iter) {
-    PoolPtr currPool(iter.second());
-    poolsList.push_back(currPool);
+  for (const auto& c : *connectionPools) {
+    poolsList.push_back(c.second);
   }
 
-  for (std::vector<PoolPtr>::iterator iter = poolsList.begin();
-       iter != poolsList.end(); ++iter) {
-    (*iter)->destroy(keepAlive);
+  for (const auto& iter : poolsList) {
+    iter->destroy(keepAlive);
   }
 
   GF_SAFE_DELETE(connectionPools);
@@ -65,24 +62,23 @@ void PoolManager::close(bool keepAlive) {
 PoolPtr PoolManager::find(const char* name) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
 
-  if (connectionPools == NULL) {
+  if (connectionPools == nullptr) {
     connectionPools = new HashMapOfPools();
   }
 
   if (name) {
-    HashMapOfPools::Iterator iter =
-        connectionPools->find(CacheableString::create(name));
+    const auto& iter = connectionPools->find(name);
 
-    PoolPtr poolPtr = NULLPTR;
+    PoolPtr poolPtr = nullptr;
 
     if (iter != connectionPools->end()) {
-      poolPtr = iter.second();
-      GF_DEV_ASSERT(poolPtr != NULLPTR);
+      poolPtr = iter->second;
+      GF_DEV_ASSERT(poolPtr != nullptr);
     }
 
     return poolPtr;
   } else {
-    return NULLPTR;
+    return nullptr;
   }
 }
 
@@ -91,9 +87,9 @@ PoolPtr PoolManager::find(RegionPtr region) {
 }
 
 const HashMapOfPools& PoolManager::getAll() {
-  if (connectionPools == NULL) {
+  if (connectionPools == nullptr) {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(connectionPoolsLock);
-    if (connectionPools == NULL) {
+    if (connectionPools == nullptr) {
       connectionPools = new HashMapOfPools();
     }
   }

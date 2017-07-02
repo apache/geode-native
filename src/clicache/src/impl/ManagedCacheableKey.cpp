@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-//#include "../geode_includes.hpp"
+#include "begin_native.hpp"
+#include <GeodeTypeIdsImpl.hpp>
+#include "end_native.hpp"
+
 #include "../ICacheableKey.hpp"
 #include "ManagedCacheableKey.hpp"
 #include "../DataInput.hpp"
 #include "../DataOutput.hpp"
 #include "../CacheableString.hpp"
-#include <GeodeTypeIdsImpl.hpp>
 #include "../ExceptionTypes.hpp"
 #include "../Log.hpp"
 
@@ -160,7 +162,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULLPTR;
+        return nullptr;
       }
 
       bool ManagedCacheableKeyGeneric::operator ==(const apache::geode::client::CacheableKey& other) const

@@ -73,17 +73,17 @@ class MyResultCollector : public ResultCollector {
 
   void addResult(CacheablePtr& resultItem) {
     m_addResultCount++;
-    if (resultItem == NULLPTR) {
+    if (resultItem == nullptr) {
       return;
     }
     try {
-      CacheableArrayListPtr result = dynCast<CacheableArrayListPtr>(resultItem);
+      auto result = std::dynamic_pointer_cast<CacheableArrayList>(resultItem);
       for (int32_t i = 0; i < result->size(); i++) {
         m_resultList->push_back(result->operator[](i));
       }
     } catch (ClassCastException) {
-      UserFunctionExecutionExceptionPtr result =
-          dynCast<UserFunctionExecutionExceptionPtr>(resultItem);
+      auto result =
+          std::dynamic_pointer_cast<UserFunctionExecutionException>(resultItem);
       m_resultList->push_back(result);
     }
   }
@@ -102,7 +102,7 @@ class MyResultCollector : public ResultCollector {
   uint32_t m_addResultCount;
   uint32_t m_getResultCount;
 };
-typedef SharedPtr<MyResultCollector> MyResultCollectorPtr;
+typedef std::shared_ptr<MyResultCollector> MyResultCollectorPtr;
 class MyResultCollector2 : public ResultCollector {
  public:
   MyResultCollector2()
@@ -129,10 +129,10 @@ class MyResultCollector2 : public ResultCollector {
 
   void addResult(CacheablePtr& resultItem) {
     m_addResultCount++;
-    if (resultItem == NULLPTR) {
+    if (resultItem == nullptr) {
       return;
     }
-    CacheableBooleanPtr result = dynCast<CacheableBooleanPtr>(resultItem);
+    auto result = std::dynamic_pointer_cast<CacheableBoolean>(resultItem);
     m_resultList->push_back(result);
   }
   void endResults() {
@@ -150,7 +150,7 @@ class MyResultCollector2 : public ResultCollector {
   uint32_t m_addResultCount;
   uint32_t m_getResultCount;
 };
-typedef SharedPtr<MyResultCollector2> MyResultCollectorPtr2;
+typedef std::shared_ptr<MyResultCollector2> MyResultCollectorPtr2;
 
 DUNIT_TASK_DEFINITION(LOCATOR1, StartLocator1)
   {
@@ -178,12 +178,12 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
   {
-    initClientWithPool(true, NULL, locHostPort, serverGroup, NULLPTR, 0, true,
-                       -1, -1, 60000, /*singlehop*/ true,
+    initClientWithPool(true, nullptr, locHostPort, serverGroup, nullptr, 0,
+                       true, -1, -1, 60000, /*singlehop*/ true,
                        /*threadLocal*/ true);
 
     RegionPtr regPtr0 =
-        createRegionAndAttachPool(poolRegNames[0], USE_ACK, NULL);
+        createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
     ;
     regPtr0->registerAllKeys();
 
@@ -211,43 +211,43 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
         }
         LOGINFO("routingObj size = %d ", routingObj->size());
         ExecutionPtr exe = FunctionService::onRegion(regPtr0);
-        ASSERT(exe != NULLPTR, "onRegion Returned NULL");
+        ASSERT(exe != nullptr, "onRegion Returned nullptr");
 
         CacheableVectorPtr resultList = CacheableVector::create();
         LOG("Executing getFuncName function");
         CacheableVectorPtr executeFunctionResult =
             exe->withFilter(routingObj)->execute(getFuncName, 15)->getResult();
-        if (executeFunctionResult == NULLPTR) {
-          ASSERT(false, "executeFunctionResult is NULL");
+        if (executeFunctionResult == nullptr) {
+          ASSERT(false, "executeFunctionResult is nullptr");
         } else {
-          sprintf(buf, "result count = %d", executeFunctionResult->size());
+          sprintf(buf, "result count = %zd", executeFunctionResult->size());
           LOGINFO(buf);
           resultList->clear();
           for (unsigned item = 0;
                item < static_cast<uint32_t>(executeFunctionResult->size());
                item++) {
-            CacheableArrayListPtr arrayList = dynCast<CacheableArrayListPtr>(
+            auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
                 executeFunctionResult->operator[](item));
             for (unsigned pos = 0;
                  pos < static_cast<uint32_t>(arrayList->size()); pos++) {
               resultList->push_back(arrayList->operator[](pos));
             }
           }
-          sprintf(buf, "get result count = %d", resultList->size());
+          sprintf(buf, "get result count = %zd", resultList->size());
           LOGINFO(buf);
           ASSERT(resultList->size() == 40,
                  "get executeFunctionResult count is not 40");
           for (int32_t i = 0; i < resultList->size(); i++) {
             sprintf(buf, "result[%d] is null\n", i);
-            ASSERT(resultList->operator[](i) != NULLPTR, buf);
-            sprintf(buf, "get result[%d]=%s", i,
-                    dynCast<CacheableStringPtr>(resultList->operator[](i))
-                        ->asChar());
-            LOGINFO(buf);
+            ASSERT(resultList->operator[](i) != nullptr, buf);
+            // sprintf(buf, "get result[%d]=%s", i,
+            //        std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))
+            //            ->asChar());
+            // LOGINFO(buf);
           }
         }
         LOGINFO("getFuncName done");
-        MyResultCollectorPtr myRC(new MyResultCollector());
+        auto myRC = std::make_shared<MyResultCollector>();
         CacheableVectorPtr executeFunctionResult1 =
             exe->withFilter(routingObj)
                 ->withCollector(myRC)
@@ -259,48 +259,49 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
         ASSERT(4 == myRC->getAddResultCount(), "add result count is not 4");
         ASSERT(1 == myRC->getEndResultCount(), "end result count is not 1");
         ASSERT(1 == myRC->getGetResultCount(), "get result count is not 1");
-        if (executeFunctionResult == NULLPTR) {
-          ASSERT(false, "region get new collector: result is NULL");
+        if (executeFunctionResult == nullptr) {
+          ASSERT(false, "region get new collector: result is nullptr");
         } else {
-          sprintf(buf, "result count = %d", executeFunctionResult->size());
+          sprintf(buf, "result count = %zd", executeFunctionResult->size());
           LOGINFO(buf);
           resultList->clear();
           for (unsigned item = 0;
                item < static_cast<uint32_t>(executeFunctionResult->size());
                item++) {
-            CacheableArrayListPtr arrayList = dynCast<CacheableArrayListPtr>(
+            auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
                 executeFunctionResult->operator[](item));
             for (unsigned pos = 0;
                  pos < static_cast<uint32_t>(arrayList->size()); pos++) {
               resultList->push_back(arrayList->operator[](pos));
             }
           }
-          sprintf(buf, "get result count = %d", resultList->size());
+          sprintf(buf, "get result count = %zd", resultList->size());
           LOGINFO(buf);
           ASSERT(resultList->size() == 40,
                  "get executeFunctionResult count is not 40");
           for (int32_t i = 0; i < resultList->size(); i++) {
             sprintf(buf, "result[%d] is null\n", i);
-            ASSERT(resultList->operator[](i) != NULLPTR, buf);
-            sprintf(buf, "get result[%d]=%s", i,
-                    dynCast<CacheableStringPtr>(resultList->operator[](i))
-                        ->asChar());
-            LOGINFO(buf);
+            ASSERT(resultList->operator[](i) != nullptr, buf);
+            // sprintf(buf, "get result[%d]=%s", i,
+            //        std::dynamic_pointer_cast<CacheableString>(
+            //            resultList->operator[](i))
+            //            ->asChar());
+            // LOGINFO(buf);
           }
         }
         LOGINFO("getFuncName MyResultCollector done");
 
         CacheableVectorPtr executeFunctionResult2 =
             exe->withFilter(routingObj)->execute(FEOnRegionPrSHOP)->getResult();
-        if (executeFunctionResult2 == NULLPTR) {
-          ASSERT(false, "executeFunctionResult2 is NULL");
+        if (executeFunctionResult2 == nullptr) {
+          ASSERT(false, "executeFunctionResult2 is nullptr");
         } else {
-          sprintf(buf, "result count = %d", executeFunctionResult2->size());
+          sprintf(buf, "result count = %zd", executeFunctionResult2->size());
           LOG(buf);
           ASSERT(2 == executeFunctionResult2->size(),
                  "executeFunctionResult2 size is not 2");
           for (int i = 0; i < executeFunctionResult2->size(); i++) {
-            bool b = dynCast<CacheableBooleanPtr>(
+            bool b = std::dynamic_pointer_cast<CacheableBoolean>(
                          executeFunctionResult2->operator[](i))
                          ->value();
             LOG(b == true ? "true" : "false");
@@ -324,15 +325,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
         ASSERT(2 == myRC2->getAddResultCount(), "add result count is not 2");
         ASSERT(1 == myRC2->getEndResultCount(), "end result count is not 1");
         ASSERT(1 == myRC2->getGetResultCount(), "get result count is not 1");
-        if (executeFunctionResult21 == NULLPTR) {
-          ASSERT(false, "executeFunctionResult21 is NULL");
+        if (executeFunctionResult21 == nullptr) {
+          ASSERT(false, "executeFunctionResult21 is nullptr");
         } else {
-          sprintf(buf, "result count = %d", executeFunctionResult21->size());
+          sprintf(buf, "result count = %zd", executeFunctionResult21->size());
           LOG(buf);
           ASSERT(2 == executeFunctionResult21->size(),
                  "executeFunctionResult21 size is not 2");
           for (int i = 0; i < executeFunctionResult21->size(); i++) {
-            bool b = dynCast<CacheableBooleanPtr>(
+            bool b = std::dynamic_pointer_cast<CacheableBoolean>(
                          executeFunctionResult21->operator[](i))
                          ->value();
             LOG(b == true ? "true" : "false");
@@ -348,15 +349,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
             exe->withFilter(routingObj)
                 ->execute(FEOnRegionPrSHOP_OptimizeForWrite)
                 ->getResult();
-        if (executeFunctionResult3 == NULLPTR) {
-          ASSERT(false, "executeFunctionResult3 is NULL");
+        if (executeFunctionResult3 == nullptr) {
+          ASSERT(false, "executeFunctionResult3 is nullptr");
         } else {
-          sprintf(buf, "result count = %d", executeFunctionResult3->size());
+          sprintf(buf, "result count = %zd", executeFunctionResult3->size());
           LOG(buf);
           ASSERT(3 == executeFunctionResult3->size(),
                  "executeFunctionResult3->size() is not 3");
           for (int i = 0; i < executeFunctionResult3->size(); i++) {
-            bool b = dynCast<CacheableBooleanPtr>(
+            bool b = std::dynamic_pointer_cast<CacheableBoolean>(
                          executeFunctionResult3->operator[](i))
                          ->value();
             LOG(b == true ? "true" : "false");
@@ -379,15 +380,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
         ASSERT(3 == myRC3->getAddResultCount(), "add result count is not 3");
         ASSERT(1 == myRC3->getEndResultCount(), "end result count is not 1");
         ASSERT(1 == myRC3->getGetResultCount(), "get result count is not 1");
-        if (executeFunctionResult31 == NULLPTR) {
-          ASSERT(false, "executeFunctionResult31 is NULL");
+        if (executeFunctionResult31 == nullptr) {
+          ASSERT(false, "executeFunctionResult31 is nullptr");
         } else {
-          sprintf(buf, "result count = %d", executeFunctionResult31->size());
+          sprintf(buf, "result count = %zd", executeFunctionResult31->size());
           LOG(buf);
           ASSERT(3 == executeFunctionResult31->size(),
                  "executeFunctionResult31->size() is not 3");
           for (int i = 0; i < executeFunctionResult31->size(); i++) {
-            bool b = dynCast<CacheableBooleanPtr>(
+            bool b = std::dynamic_pointer_cast<CacheableBoolean>(
                          executeFunctionResult31->operator[](i))
                          ->value();
             LOG(b == true ? "true" : "false");
@@ -400,19 +401,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
       }
 
       ExecutionPtr exc = FunctionService::onRegion(regPtr0);
-      ASSERT(exc != NULLPTR, "onRegion Returned NULL");
+      ASSERT(exc != nullptr, "onRegion Returned nullptr");
       // Now w/o filter, chk for singlehop
       CacheableVectorPtr executeFunctionResult2 =
           exc->execute(FEOnRegionPrSHOP)->getResult();
-      if (executeFunctionResult2 == NULLPTR) {
-        ASSERT(false, "executeFunctionResult2 is NULL");
+      if (executeFunctionResult2 == nullptr) {
+        ASSERT(false, "executeFunctionResult2 is nullptr");
       } else {
-        sprintf(buf, "result count = %d", executeFunctionResult2->size());
+        sprintf(buf, "result count = %zd", executeFunctionResult2->size());
         LOG(buf);
         ASSERT(2 == executeFunctionResult2->size(),
                "executeFunctionResult2 size is not 2");
         for (int i = 0; i < executeFunctionResult2->size(); i++) {
-          bool b = dynCast<CacheableBooleanPtr>(
+          bool b = std::dynamic_pointer_cast<CacheableBoolean>(
                        executeFunctionResult2->operator[](i))
                        ->value();
           LOG(b == true ? "true" : "false");
@@ -437,15 +438,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
              "end result count is not 1");
       ASSERT(1 == resultCollector->getGetResultCount(),
              "get result count is not 1");
-      if (executeFunctionResult21 == NULLPTR) {
-        ASSERT(false, "executeFunctionResult21 is NULL");
+      if (executeFunctionResult21 == nullptr) {
+        ASSERT(false, "executeFunctionResult21 is nullptr");
       } else {
-        sprintf(buf, "result count = %d", executeFunctionResult21->size());
+        sprintf(buf, "result count = %zd", executeFunctionResult21->size());
         LOG(buf);
         ASSERT(2 == executeFunctionResult21->size(),
                "executeFunctionResult21 size is not 2");
         for (int i = 0; i < executeFunctionResult21->size(); i++) {
-          bool b = dynCast<CacheableBooleanPtr>(
+          bool b = std::dynamic_pointer_cast<CacheableBoolean>(
                        executeFunctionResult21->operator[](i))
                        ->value();
           LOG(b == true ? "true" : "false");
@@ -466,15 +467,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
       ASSERT(3 == rC->getAddResultCount(), "add result count is not 3");
       ASSERT(1 == rC->getEndResultCount(), "end result count is not 1");
       ASSERT(1 == rC->getGetResultCount(), "get result count is not 1");
-      if (executeFunctionResult31 == NULLPTR) {
-        ASSERT(false, "executeFunctionResult31 is NULL");
+      if (executeFunctionResult31 == nullptr) {
+        ASSERT(false, "executeFunctionResult31 is nullptr");
       } else {
-        sprintf(buf, "result count = %d", executeFunctionResult31->size());
+        sprintf(buf, "result count = %zd", executeFunctionResult31->size());
         LOG(buf);
         ASSERT(3 == executeFunctionResult31->size(),
                "executeFunctionResult31->size() is not 3");
         for (int i = 0; i < executeFunctionResult31->size(); i++) {
-          bool b = dynCast<CacheableBooleanPtr>(
+          bool b = std::dynamic_pointer_cast<CacheableBoolean>(
                        executeFunctionResult31->operator[](i))
                        ->value();
           LOG(b == true ? "true" : "false");
@@ -488,14 +489,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
       // Now w/o filter chk for singleHop
       CacheableVectorPtr functionResult =
           exc->execute(FEOnRegionPrSHOP_OptimizeForWrite)->getResult();
-      if (functionResult == NULLPTR) {
-        ASSERT(false, "functionResult is NULL");
+      if (functionResult == nullptr) {
+        ASSERT(false, "functionResult is nullptr");
       } else {
-        sprintf(buf, "result count = %d", functionResult->size());
+        sprintf(buf, "result count = %zd", functionResult->size());
         LOG(buf);
         ASSERT(3 == functionResult->size(), "FunctionResult->size() is not 3");
         for (int i = 0; i < functionResult->size(); i++) {
-          bool b = dynCast<CacheableBooleanPtr>(functionResult->operator[](i))
+          bool b = std::dynamic_pointer_cast<CacheableBoolean>(
+                       functionResult->operator[](i))
                        ->value();
           LOG(b == true ? "true" : "false");
           ASSERT(b == true, "true is not eched back");
@@ -527,8 +529,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
           "arrList "
           "arguement done.");
       for (int i = 0; i < fil->size(); i++) {
-        CacheableStringPtr str = fil->at(i);
-        CacheableStringPtr val = dynCast<CacheableStringPtr>(regPtr0->get(str));
+        auto str = std::dynamic_pointer_cast<CacheableString>(fil->at(i));
+        auto val =
+            std::dynamic_pointer_cast<CacheableString>(regPtr0->get(str));
         LOGINFO("Filter Key = %s , get Value = %s ", str->asChar(),
                 val->asChar());
         if (strcmp(str->asChar(), val->asChar()) != 0) {
@@ -550,8 +553,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
           "arguement done.");
       SLEEP(4000);
       for (int i = 0; i < arrList->size(); i++) {
-        CacheableStringPtr str = arrList->at(i);
-        CacheableStringPtr val = dynCast<CacheableStringPtr>(regPtr0->get(str));
+        auto str = std::dynamic_pointer_cast<CacheableString>(arrList->at(i));
+        auto val =
+            std::dynamic_pointer_cast<CacheableString>(regPtr0->get(str));
         LOGINFO("Filter Key = %s ", str->asChar());
         LOGINFO("get Value = %s ", val->asChar());
         if (strcmp(str->asChar(), val->asChar()) != 0) {
@@ -566,14 +570,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
           RexecutionPtr->withArgs(CacheableInt32::create(5000 * 1000))
               ->execute(FETimeOut, 5000)
               ->getResult();
-      if (fe == NULLPTR) {
-        ASSERT(false, "functionResult is NULL");
+      if (fe == nullptr) {
+        ASSERT(false, "functionResult is nullptr");
       } else {
-        sprintf(buf, "result count = %d", fe->size());
+        sprintf(buf, "result count = %zd", fe->size());
         LOG(buf);
         ASSERT(2 == fe->size(), "FunctionResult->size() is not 2");
         for (int i = 0; i < fe->size(); i++) {
-          bool b = dynCast<CacheableBooleanPtr>(fe->operator[](i))->value();
+          bool b =
+              std::dynamic_pointer_cast<CacheableBoolean>(fe->operator[](i))
+                  ->value();
           LOG(b == true ? "true" : "false");
           ASSERT(b == true, "true is not eched back");
         }

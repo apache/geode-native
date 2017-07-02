@@ -20,8 +20,11 @@
 #include "PoolStatistics.hpp"
 //#include "StatisticsFactory.hpp"
 
-#include <ace/Thread_Mutex.h>
 #include <ace/Singleton.h>
+
+#include <mutex>
+
+#include "util/concurrent/spinlock_mutex.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -29,30 +32,32 @@ namespace apache {
 namespace geode {
 namespace client {
 
-using namespace apache::geode::statistics;
+using statistics::StatisticsFactory;
+using statistics::StatisticsManager;
+using util::concurrent::spinlock_mutex;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-PoolStatType* PoolStatType::single = NULL;
-SpinLock PoolStatType::m_singletonLock;
-SpinLock PoolStatType::m_statTypeLock;
+PoolStatType* PoolStatType::single = nullptr;
+spinlock_mutex PoolStatType::m_singletonLock;
+spinlock_mutex PoolStatType::m_statTypeLock;
 
 void PoolStatType::clean() {
-  SpinLockGuard guard(m_singletonLock);
-  if (single != NULL) {
+  std::lock_guard<spinlock_mutex> guard(m_singletonLock);
+  if (single) {
     delete single;
-    single = NULL;
+    single = nullptr;
   }
 }
 
 StatisticsType* PoolStatType::getStatType() {
-  SpinLockGuard guard(m_statTypeLock);
+  std::lock_guard<spinlock_mutex> guard(m_statTypeLock);
   StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
   GF_D_ASSERT(!!factory);
 
   StatisticsType* statsType = factory->findType("PoolStatistics");
 
-  if (statsType == NULL) {
+  if (statsType == nullptr) {
     m_stats[0] = factory->createIntGauge(
         "locators", "Current number of locators discovered", "locators");
     m_stats[1] = factory->createIntGauge(
@@ -179,8 +184,8 @@ StatisticsType* PoolStatType::getStatType() {
 }
 
 PoolStatType* PoolStatType::getInstance() {
-  SpinLockGuard guard(m_singletonLock);
-  if (single == NULL) {
+  std::lock_guard<spinlock_mutex> guard(m_singletonLock);
+  if (!single) {
     single = new PoolStatType();
   }
   return single;
@@ -224,7 +229,7 @@ PoolStats::PoolStats(const char* poolName) {
 
   StatisticsType* statsType = poolStatType->getStatType();
 
-  GF_D_ASSERT(statsType != NULL);
+  GF_D_ASSERT(statsType != nullptr);
 
   StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
 
@@ -290,8 +295,8 @@ PoolStats::PoolStats(const char* poolName) {
 }
 
 PoolStats::~PoolStats() {
-  if (m_poolStats != NULL) {
-    m_poolStats = NULL;
+  if (m_poolStats != nullptr) {
+    m_poolStats = nullptr;
   }
 }
 }  // namespace client

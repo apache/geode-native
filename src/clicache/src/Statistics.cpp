@@ -37,7 +37,7 @@ namespace Apache
       void Statistics::Close()
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          NativePtr->close();
+          m_nativeptr->close();
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */ 
       }
 
@@ -45,7 +45,7 @@ namespace Apache
       {
         ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return NativePtr->nameToId(mg_name.CharPtr);
+          return m_nativeptr->nameToId(mg_name.CharPtr);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */ 
       }
 
@@ -53,46 +53,46 @@ namespace Apache
       {
         ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return StatisticDescriptor::Create(NativePtr->nameToDescriptor(mg_name.CharPtr));
+          return StatisticDescriptor::Create(m_nativeptr->nameToDescriptor(mg_name.CharPtr));
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */ 
       }
 
       System::Int64 Statistics::UniqueId::get( )
       {
-        return NativePtr->getUniqueId();
+        return m_nativeptr->getUniqueId();
       }
 
       StatisticsType^ Statistics::Type::get( )
       { 
-        return StatisticsType::Create(NativePtr->getType());
+        return StatisticsType::Create(m_nativeptr->getType());
       }
 
       String^ Statistics::TextId::get()
       {
-        return ManagedString::Get(NativePtr->getTextId());
+        return ManagedString::Get(m_nativeptr->getTextId());
       }
 
       System::Int64 Statistics::NumericId::get()
       {
-        return NativePtr->getNumericId();
+        return m_nativeptr->getNumericId();
       }
       bool Statistics::IsAtomic::get()
       {
-        return NativePtr->isAtomic();
+        return m_nativeptr->isAtomic();
       }
       bool Statistics::IsShared::get()
       {
-        return NativePtr->isShared();
+        return m_nativeptr->isShared();
       }
       bool Statistics::IsClosed::get()
       {
-        return NativePtr->isClosed();
+        return m_nativeptr->isClosed();
       }
       
       void Statistics::SetInt(System::Int32 id, System::Int32 value)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          NativePtr->setInt(id, value);
+          m_nativeptr->setInt(id, value);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */ 
       } 
 
@@ -100,28 +100,28 @@ namespace Apache
       {
         ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          NativePtr->setInt((char*)mg_name.CharPtr, value);
+          m_nativeptr->setInt((char*)mg_name.CharPtr, value);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */ 
       }
 
       void Statistics::SetInt(StatisticDescriptor^ descriptor, System::Int32 value)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          NativePtr->setInt(GetNativePtr<apache::geode::statistics::StatisticDescriptor>(descriptor),value);
+          m_nativeptr->setInt(descriptor->GetNative(), value);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */ 
       }
 
       void Statistics::SetLong(System::Int32 id, System::Int64 value)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          NativePtr->setLong(id, value);
+          m_nativeptr->setLong(id, value);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */ 
       }
 
       void Statistics::SetLong(StatisticDescriptor^ descriptor, System::Int64 value)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          NativePtr->setLong(GetNativePtr<apache::geode::statistics::StatisticDescriptor>(descriptor),value);
+          m_nativeptr->setLong(descriptor->GetNative(), value);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */ 
       }
 
@@ -129,14 +129,14 @@ namespace Apache
       {
         ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          NativePtr->setLong((char*)mg_name.CharPtr, value);
+          m_nativeptr->setLong((char*)mg_name.CharPtr, value);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */ 
       }
 
       void Statistics::SetDouble(System::Int32 id, double value)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          NativePtr->setDouble(id, value);
+          m_nativeptr->setDouble(id, value);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -144,28 +144,28 @@ namespace Apache
       {
         ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          NativePtr->setDouble((char*)mg_name.CharPtr, value);
+          m_nativeptr->setDouble((char*)mg_name.CharPtr, value);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       void Statistics::SetDouble(StatisticDescriptor^ descriptor, double value)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-            NativePtr->setDouble(GetNativePtr<apache::geode::statistics::StatisticDescriptor>(descriptor), value);
+            m_nativeptr->setDouble(descriptor->GetNative(), value);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       System::Int32 Statistics::GetInt(System::Int32 id)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return NativePtr->getInt(id);
+          return m_nativeptr->getInt(id);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       System::Int32 Statistics::GetInt(StatisticDescriptor^ descriptor)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return NativePtr->getInt(GetNativePtr<apache::geode::statistics::StatisticDescriptor>(descriptor));
+          return m_nativeptr->getInt(descriptor->GetNative());
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -173,20 +173,20 @@ namespace Apache
       {
         ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return NativePtr->getInt((char*)mg_name.CharPtr);
+          return m_nativeptr->getInt((char*)mg_name.CharPtr);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       System::Int64 Statistics::GetLong(System::Int32 id)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-           return NativePtr->getLong(id);
+           return m_nativeptr->getLong(id);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
        System::Int64 Statistics::GetLong(StatisticDescriptor^ descriptor)
        {
           _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-            return NativePtr->getLong(GetNativePtr<apache::geode::statistics::StatisticDescriptor>(descriptor));
+            return m_nativeptr->getLong(descriptor->GetNative());
           _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
        }
 
@@ -194,21 +194,21 @@ namespace Apache
       {
         ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-         return NativePtr->getLong((char*)mg_name.CharPtr);
+         return m_nativeptr->getLong((char*)mg_name.CharPtr);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       double Statistics::GetDouble(System::Int32 id)
       {
          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-           return NativePtr->getDouble(id);
+           return m_nativeptr->getDouble(id);
          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       double Statistics::GetDouble(StatisticDescriptor^ descriptor)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-           return NativePtr->getDouble(GetNativePtr<apache::geode::statistics::StatisticDescriptor>(descriptor));
+           return m_nativeptr->getDouble(descriptor->GetNative());
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -216,28 +216,28 @@ namespace Apache
       {
         ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return NativePtr->getDouble((char*)mg_name.CharPtr);
+          return m_nativeptr->getDouble((char*)mg_name.CharPtr);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       System::Int64 Statistics::GetRawBits(StatisticDescriptor^ descriptor)
       {
          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-           return NativePtr->getRawBits(GetNativePtr<apache::geode::statistics::StatisticDescriptor>(descriptor));
+           return m_nativeptr->getRawBits(descriptor->GetNative());
          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       System::Int32 Statistics::IncInt(System::Int32 id, System::Int32 delta)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return NativePtr->incInt(id,delta);
+          return m_nativeptr->incInt(id,delta);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       System::Int32 Statistics::IncInt(StatisticDescriptor^ descriptor, System::Int32 delta)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return NativePtr->incInt(GetNativePtr<apache::geode::statistics::StatisticDescriptor>(descriptor),delta);
+          return m_nativeptr->incInt(descriptor->GetNative(),delta);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -245,21 +245,21 @@ namespace Apache
       {
          ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return NativePtr->incInt((char*)mg_name.CharPtr,delta);
+          return m_nativeptr->incInt((char*)mg_name.CharPtr,delta);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       System::Int64 Statistics::IncLong(System::Int32 id, System::Int64 delta)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return NativePtr->incLong(id,delta);
+          return m_nativeptr->incLong(id,delta);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       System::Int64 Statistics::IncLong(StatisticDescriptor^ descriptor, System::Int64 delta)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return NativePtr->incLong(GetNativePtr<apache::geode::statistics::StatisticDescriptor>(descriptor),delta);
+          return m_nativeptr->incLong(descriptor->GetNative(),delta);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -267,21 +267,21 @@ namespace Apache
       {
          ManagedString mg_name( name );
          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-           return NativePtr->incLong((char*)mg_name.CharPtr,delta);
+           return m_nativeptr->incLong((char*)mg_name.CharPtr,delta);
          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       double Statistics::IncDouble(System::Int32 id, double delta)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return NativePtr->incDouble(id,delta);
+          return m_nativeptr->incDouble(id,delta);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       double Statistics::IncDouble(StatisticDescriptor^ descriptor, double delta)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return NativePtr->incDouble(GetNativePtr<apache::geode::statistics::StatisticDescriptor>(descriptor),delta);
+          return m_nativeptr->incDouble(descriptor->GetNative(),delta);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -289,7 +289,7 @@ namespace Apache
       {
         ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return NativePtr->incDouble((char*)mg_name.CharPtr,delta);
+          return m_nativeptr->incDouble((char*)mg_name.CharPtr,delta);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
     }  // namespace Client
   }  // namespace Geode

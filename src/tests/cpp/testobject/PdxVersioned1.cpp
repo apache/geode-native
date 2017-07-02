@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 /*
-* PdxObject.cpp
-*
-*  Created on: Sep 29, 2011
-*      Author: npatel
-*/
+ * PdxObject.cpp
+ *
+ *  Created on: Sep 29, 2011
+ *      Author: npatel
+ */
 
 #include "PdxVersioned1.hpp"
 
@@ -218,8 +218,8 @@ void PdxVersioned1::init(const char* key) {
   m_arraylist->push_back(CacheableInt32::create(2));
 
   m_map = CacheableHashMap::create();
-  m_map->insert(CacheableInt32::create(1), CacheableInt32::create(1));
-  m_map->insert(CacheableInt32::create(2), CacheableInt32::create(2));
+  m_map->emplace(CacheableInt32::create(1), CacheableInt32::create(1));
+  m_map->emplace(CacheableInt32::create(2), CacheableInt32::create(2));
   m_pdxEnum = CacheableEnum::create("pdxEnumTest", "pdx2", pdx2);
   m_byte252 = new int8_t[252];
   for (int i = 0; i < 252; i++) {
@@ -337,8 +337,9 @@ void PdxTests::PdxVersioned1::fromData(PdxReaderPtr pr) {
   m_byte = pr->readByte("m_byte");
   m_byteArray = pr->readByteArray("m_byteArray", byteArrayLen);
   m_charArray = pr->readWideCharArray("m_charArray", charArrayLen);
-  m_arraylist = dynCast<CacheableArrayListPtr>(pr->readObject("m_arraylist"));
-  m_map = dynCast<CacheableHashMapPtr>(pr->readObject("m_map"));
+  m_arraylist = std::static_pointer_cast<CacheableArrayList>(
+      pr->readObject("m_arraylist"));
+  m_map = std::static_pointer_cast<CacheableHashMap>(pr->readObject("m_map"));
   // TODO:Check for the size
   m_string = pr->readString("m_string");  // GenericValCompare
   m_date = pr->readDate("m_dateTime");    // compareData
@@ -420,8 +421,8 @@ bool PdxTests::PdxVersioned1::equals(PdxTests::PdxVersioned1& other,
   // generic2DCompare(ot->m_byteByteArray, m_byteByteArray, byteByteArrayLen,
   // lengthArr);
 
-  // CacheableEnumPtr myenum = dynCast<CacheableEnumPtr>(m_pdxEnum);
-  // CacheableEnumPtr otenum = dynCast<CacheableEnumPtr>(ot->m_pdxEnum);
+  // auto myenum = std::dynamic_pointer_cast<CacheableEnum>(m_pdxEnum);
+  // auto otenum = std::dynamic_pointer_cast<CacheableEnum>(ot->m_pdxEnum);
   // if (myenum->getEnumOrdinal() != otenum->getEnumOrdinal()) return false;
   // if (strcmp(myenum->getEnumClassName(), otenum->getEnumClassName()) != 0)
   // return false;

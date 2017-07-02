@@ -32,44 +32,70 @@ namespace Apache
 
       generic<class TKey, class TValue>
       TKey RegionEntry<TKey, TValue>::Key::get( )
-      {
-        apache::geode::client::CacheableKeyPtr& nativeptr( NativePtr->getKey( ) );
-        
-        return Serializable::GetManagedValueGeneric<TKey>( nativeptr );
+      {        
+        try
+        {
+          return Serializable::GetManagedValueGeneric<TKey>(m_nativeptr->get()->getKey());
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TValue>
       TValue RegionEntry<TKey, TValue>::Value::get( )
       {
-        apache::geode::client::CacheablePtr& nativeptr( NativePtr->getValue( ) );
-
-        return Serializable::GetManagedValueGeneric<TValue>( nativeptr );
+        try
+        {
+          return Serializable::GetManagedValueGeneric<TValue>(m_nativeptr->get()->getValue());
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TValue>
       IRegion<TKey, TValue>^ RegionEntry<TKey, TValue>::Region::get( )
       {
-        apache::geode::client::RegionPtr rptr;
-
-        NativePtr->getRegion( rptr );
-        return Apache::Geode::Client::Region<TKey, TValue>::Create( rptr.ptr( ) );
+        try
+        {
+          return Apache::Geode::Client::Region<TKey, TValue>::Create(m_nativeptr->get()->getRegion());
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TValue>
       Apache::Geode::Client::CacheStatistics^ RegionEntry<TKey, TValue>::Statistics::get( )
       {
         apache::geode::client::CacheStatisticsPtr nativeptr;
-
-        NativePtr->getStatistics( nativeptr );
-        return Apache::Geode::Client::CacheStatistics::Create( nativeptr.ptr( ) );
+        try
+        {
+          m_nativeptr->get()->getStatistics( nativeptr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+        return Apache::Geode::Client::CacheStatistics::Create( nativeptr);
       }
 
       generic<class TKey, class TValue>
       bool RegionEntry<TKey, TValue>::IsDestroyed::get( )
       {
-        return NativePtr->isDestroyed( );
+        try
+        {
+          return m_nativeptr->get()->isDestroyed( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
- } //namespace 

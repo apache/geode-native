@@ -19,21 +19,19 @@
 #include <geode/PoolManager.hpp>
 #include "CqQueryImpl.hpp"
 
-ProxyRemoteQueryService::ProxyRemoteQueryService(ProxyCache* cptr) {
-  ProxyCachePtr pcp(cptr);
-  m_proxyCache = pcp;
-}
+ProxyRemoteQueryService::ProxyRemoteQueryService(ProxyCachePtr cptr)
+    : m_proxyCache(cptr) {}
 
 QueryPtr ProxyRemoteQueryService::newQuery(const char* querystring) {
   if (!m_proxyCache->isClosed()) {
-    PoolPtr userAttachedPool = m_proxyCache->m_userAttributes->getPool();
-    PoolPtr pool = PoolManager::find(userAttachedPool->getName());
-    if (pool != NULLPTR && pool.ptr() == userAttachedPool.ptr() &&
+    auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
+    auto pool = PoolManager::find(userAttachedPool->getName());
+    if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       GuardUserAttribures gua(m_proxyCache);
-      ThinClientPoolDMPtr pooDM(static_cast<ThinClientPoolDM*>(pool.ptr()));
-      if (!pooDM->isDestroyed()) {
-        return pooDM->getQueryServiceWithoutCheck()->newQuery(querystring);
+      auto poolDM = std::static_pointer_cast<ThinClientPoolDM>(pool);
+      if (!poolDM->isDestroyed()) {
+        return poolDM->getQueryServiceWithoutCheck()->newQuery(querystring);
       }
     }
     throw IllegalStateException("Pool has been closed.");
@@ -54,14 +52,14 @@ CqQueryPtr ProxyRemoteQueryService::newCq(const char* querystr,
                                           CqAttributesPtr& cqAttr,
                                           bool isDurable) {
   if (!m_proxyCache->isClosed()) {
-    PoolPtr userAttachedPool = m_proxyCache->m_userAttributes->getPool();
-    PoolPtr pool = PoolManager::find(userAttachedPool->getName());
-    if (pool != NULLPTR && pool.ptr() == userAttachedPool.ptr() &&
+    auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
+    auto pool = PoolManager::find(userAttachedPool->getName());
+    if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       GuardUserAttribures gua(m_proxyCache);
-      ThinClientPoolDMPtr pooDM(static_cast<ThinClientPoolDM*>(pool.ptr()));
+      auto pooDM = std::static_pointer_cast<ThinClientPoolDM>(pool);
       if (!pooDM->isDestroyed()) {
-        CqQueryPtr cqQuery = pooDM->getQueryServiceWithoutCheck()->newCq(
+        auto cqQuery = pooDM->getQueryServiceWithoutCheck()->newCq(
             querystr, cqAttr, isDurable);
         addCqQuery(cqQuery);
         return cqQuery;
@@ -82,14 +80,14 @@ CqQueryPtr ProxyRemoteQueryService::newCq(const char* name,
                                           CqAttributesPtr& cqAttr,
                                           bool isDurable) {
   if (!m_proxyCache->isClosed()) {
-    PoolPtr userAttachedPool = m_proxyCache->m_userAttributes->getPool();
-    PoolPtr pool = PoolManager::find(userAttachedPool->getName());
-    if (pool != NULLPTR && pool.ptr() == userAttachedPool.ptr() &&
+    auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
+    auto pool = PoolManager::find(userAttachedPool->getName());
+    if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       GuardUserAttribures gua(m_proxyCache);
-      ThinClientPoolDMPtr pooDM(static_cast<ThinClientPoolDM*>(pool.ptr()));
-      if (!pooDM->isDestroyed()) {
-        CqQueryPtr cqQuery = pooDM->getQueryServiceWithoutCheck()->newCq(
+      auto poolDM = std::static_pointer_cast<ThinClientPoolDM>(pool);
+      if (!poolDM->isDestroyed()) {
+        auto cqQuery = poolDM->getQueryServiceWithoutCheck()->newCq(
             name, querystr, cqAttr, isDurable);
         addCqQuery(cqQuery);
         return cqQuery;
@@ -105,14 +103,14 @@ void ProxyRemoteQueryService::closeCqs() { closeCqs(false); }
 void ProxyRemoteQueryService::closeCqs(bool keepAlive) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
 
-  for (int32_t i = 0; i < m_cqQueries.size(); i++) {
-    std::string cqName = m_cqQueries[i]->getName();
+  for (auto& q : m_cqQueries) {
+    std::string cqName = q->getName();
     try {
-      if (!(m_cqQueries[i]->isDurable() && keepAlive)) {
-        m_cqQueries[i]->close();
+      if (!(q->isDurable() && keepAlive)) {
+        q->close();
       } else {
         // need to just cleanup client side data structure
-        CqQueryImpl* cqImpl = static_cast<CqQueryImpl*>(m_cqQueries[i].ptr());
+        auto cqImpl = std::static_pointer_cast<CqQueryImpl>(q);
         cqImpl->close(false);
       }
     } catch (QueryException& qe) {
@@ -127,24 +125,21 @@ void ProxyRemoteQueryService::closeCqs(bool keepAlive) {
   }
 }
 
-void ProxyRemoteQueryService::getCqs(VectorOfCqQuery& vec) {
+void ProxyRemoteQueryService::getCqs(query_container_type& vec) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
-
-  for (int32_t i = 0; i < m_cqQueries.size(); i++) {
-    vec.push_back(m_cqQueries[i]);
-  }
+  vec = m_cqQueries;
 }
 
 CqQueryPtr ProxyRemoteQueryService::getCq(const char* name) {
   if (!m_proxyCache->isClosed()) {
-    PoolPtr userAttachedPool = m_proxyCache->m_userAttributes->getPool();
-    PoolPtr pool = PoolManager::find(userAttachedPool->getName());
-    if (pool != NULLPTR && pool.ptr() == userAttachedPool.ptr() &&
+    auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
+    auto pool = PoolManager::find(userAttachedPool->getName());
+    if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       GuardUserAttribures gua(m_proxyCache);
-      ThinClientPoolDMPtr pooDM(static_cast<ThinClientPoolDM*>(pool.ptr()));
-      if (!pooDM->isDestroyed()) {
-        return pooDM->getQueryServiceWithoutCheck()->getCq(name);
+      auto poolDM = std::static_pointer_cast<ThinClientPoolDM>(pool);
+      if (!poolDM->isDestroyed()) {
+        return poolDM->getQueryServiceWithoutCheck()->getCq(name);
       }
     }
     throw IllegalStateException("Pool has been closed.");
@@ -155,10 +150,10 @@ CqQueryPtr ProxyRemoteQueryService::getCq(const char* name) {
 void ProxyRemoteQueryService::executeCqs() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
 
-  for (int32_t i = 0; i < m_cqQueries.size(); i++) {
-    std::string cqName = m_cqQueries[i]->getName();
+  for (auto& q : m_cqQueries) {
+    std::string cqName = q->getName();
     try {
-      m_cqQueries[i]->execute();
+      q->execute();
     } catch (QueryException& qe) {
       Log::fine(("Failed to excecue the CQ, CqName : " + cqName + " Error : " +
                  qe.getMessage())
@@ -174,10 +169,10 @@ void ProxyRemoteQueryService::executeCqs() {
 void ProxyRemoteQueryService::stopCqs() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
 
-  for (int32_t i = 0; i < m_cqQueries.size(); i++) {
-    std::string cqName = m_cqQueries[i]->getName();
+  for (auto& q : m_cqQueries) {
+    std::string cqName = q->getName();
     try {
-      m_cqQueries[i]->stop();
+      q->stop();
     } catch (QueryException& qe) {
       Log::fine(("Failed to stop the CQ, CqName : " + cqName + " Error : " +
                  qe.getMessage())
@@ -192,10 +187,10 @@ void ProxyRemoteQueryService::stopCqs() {
 
 CqServiceStatisticsPtr ProxyRemoteQueryService::getCqServiceStatistics() {
   unSupportedException("getCqServiceStatistics()");
-  return NULLPTR;
+  return nullptr;
 }
 
 CacheableArrayListPtr ProxyRemoteQueryService::getAllDurableCqsFromServer() {
   unSupportedException("getAllDurableCqsFromServer()");
-  return NULLPTR;
+  return nullptr;
 }

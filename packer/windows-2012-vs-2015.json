@@ -1,9 +1,9 @@
 {
   "variables":{
     "region":"us-west-2",
-    "source_ami":"ami-ac5395cc",
-    "source_image_name":"X.vmx",
-    "image_name":"windows-2012-vs-2015"
+    "source_ami":"",
+    "source_image_name":"",
+    "image_name":"windows-2012-r2-vs-2015"
   },
   "builders":[
     {
@@ -38,6 +38,12 @@
       "type":"file",
       "source":"windows/Packer.psm1",
       "destination":"Documents/WindowsPowerShell/Modules/Packer/Packer.psm1"
+    },
+    {
+      "pause_before":"30s",
+      "type":"file",
+      "source":"windows/vs-2015-admin.xml",
+      "destination":"C:/vs-2015-admin.xml"
     },
     {
       "type":"powershell",

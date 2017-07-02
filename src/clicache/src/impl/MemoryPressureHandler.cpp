@@ -65,12 +65,11 @@ namespace Apache
         return 0;
       }
 
-      int MemoryPressureHandler::handle_close( ACE_HANDLE handle,
-          ACE_Reactor_Mask close_mask )
+      int MemoryPressureHandler::handle_close(ACE_HANDLE handle,
+        ACE_Reactor_Mask close_mask)
       {
         return 0;
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
- } //namespace 

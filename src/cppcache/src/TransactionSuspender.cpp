@@ -31,7 +31,7 @@ namespace client {
 TransactionSuspender::TransactionSuspender() {
   TSSTXStateWrapper* txStateWrapper = TSSTXStateWrapper::s_geodeTSSTXState;
   m_TXState = txStateWrapper->getTXState();
-  txStateWrapper->setTXState(NULL);
+  txStateWrapper->setTXState(nullptr);
 }
 
 TransactionSuspender::~TransactionSuspender() {

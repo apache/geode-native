@@ -17,11 +17,12 @@
 
 
 
-//#include "geode_includes.hpp"
 #include "CacheableStack.hpp"
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
+#include "begin_native.hpp"
 #include <GeodeTypeIdsImpl.hpp>
+#include "end_native.hpp"
 #include "impl/SafeConvert.hpp"
 #include "GeodeClassIds.hpp"
 

@@ -49,21 +49,21 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
   uint8_t* arrayZeroSize;
 
   inline uint32_t getObjectSize(const SerializablePtr& obj) const {
-    return (obj == NULLPTR ? 0 : obj->objectSize());
+    return (obj == nullptr ? 0 : obj->objectSize());
   }
 
  public:
   Portfolio()
       : ID(0),
-        pkid(NULLPTR),
-        type(NULLPTR),
+        pkid(nullptr),
+        type(nullptr),
         status(NULL),
         newVal(NULL),
-        creationDate(NULLPTR),
+        creationDate(nullptr),
         arrayNull(NULL),
         arrayZeroSize(NULL) {}
   Portfolio(int32_t id, uint32_t size = 0,
-            CacheableStringArrayPtr nm = NULLPTR);
+            CacheableStringArrayPtr nm = nullptr);
   virtual ~Portfolio();
 
   virtual uint32_t objectSize() const {
@@ -85,7 +85,7 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
   int32_t getID() { return ID; }
   void showNames(const char* label) {
     LOGINFO(label);
-    if (names == NULLPTR) {
+    if (names == nullptr) {
       LOGINFO("names is NULL");
       return;
     }
@@ -128,7 +128,7 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
   CacheableStringPtr toString() const;
 };
 
-typedef SharedPtr<Portfolio> PortfolioPtr;
+typedef std::shared_ptr<Portfolio> PortfolioPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_PORTFOLIO_H_

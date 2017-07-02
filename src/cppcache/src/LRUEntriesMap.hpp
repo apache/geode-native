@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_LRUENTRIESMAP_H_
-#define GEODE_LRUENTRIESMAP_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,12 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_LRUENTRIESMAP_H_
+#define GEODE_LRUENTRIESMAP_H_
+
+#include <atomic>
 #include <geode/geode_globals.hpp>
 #include <geode/Cache.hpp>
 #include "ConcurrentEntriesMap.hpp"
@@ -27,7 +28,8 @@
 #include "LRUList.hpp"
 #include "LRUMapEntry.hpp"
 #include "MapEntryT.hpp"
-#include "SpinLock.hpp"
+
+#include "util/concurrent/spinlock_mutex.hpp"
 
 #include "NonCopyable.hpp"
 
@@ -65,9 +67,9 @@ class CPPCACHE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
   PersistenceManagerPtr m_pmPtr;
   EvictionController* m_evictionControllerPtr;
   int64_t m_currentMapSize;
-  SpinLock m_mapInfoLock;
+  spinlock_mutex m_mapInfoLock;
   std::string m_name;
-  AtomicInc m_validEntries;
+  std::atomic<uint32_t> m_validEntries;
   bool m_heapLRUEnabled;
 
  public:
@@ -83,7 +85,7 @@ class CPPCACHE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
                         CacheablePtr& oldValue, int updateCount,
                         int destroyTracker, VersionTagPtr versionTag,
                         bool& isUpdate = EntriesMap::boolVal,
-                        DataInput* delta = NULL);
+                        DataInput* delta = nullptr);
   virtual GfErrType invalidate(const CacheableKeyPtr& key, MapEntryImplPtr& me,
                                CacheablePtr& oldValue,
                                VersionTagPtr versionTag);
@@ -94,7 +96,7 @@ class CPPCACHE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
   virtual bool get(const CacheableKeyPtr& key, CacheablePtr& returnPtr,
                    MapEntryImplPtr& me);
   virtual CacheablePtr getFromDisk(const CacheableKeyPtr& key,
-                                   MapEntryImpl* me) const;
+                                   MapEntryImplPtr& me) const;
   GfErrType processLRU();
   void processLRU(int32_t numEntriesToEvict);
   GfErrType evictionHelper();
@@ -113,8 +115,8 @@ class CPPCACHE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
   virtual void close();
 
   inline bool mustEvict() const {
-    if (m_action == NULL) {
-      LOGFINE("Eviction action is NULL");
+    if (m_action == nullptr) {
+      LOGFINE("Eviction action is nullptr");
       return false;
     }
     if (m_action->overflows()) {
@@ -126,7 +128,7 @@ class CPPCACHE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
     }
   }
 
-  inline uint32_t validEntriesSize() const { return m_validEntries.value(); }
+  inline uint32_t validEntriesSize() const { return m_validEntries; }
 
   inline void adjustLimit(uint32_t limit) { m_limit = limit; }
 

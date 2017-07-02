@@ -35,13 +35,13 @@ PdxWriterWithTypeCollector::PdxWriterWithTypeCollector() {}
 
 PdxWriterWithTypeCollector::PdxWriterWithTypeCollector(
     DataOutput& output, const char* domainClassName)
-    : PdxLocalWriter(output, NULL) {
+    : PdxLocalWriter(output, nullptr) {
   m_domainClassName = domainClassName;
   initialize();
 }
 
 void PdxWriterWithTypeCollector::initialize() {
-  m_pdxType = new PdxType(m_domainClassName, true);
+  m_pdxType = std::make_shared<PdxType>(m_domainClassName, true);
 }
 
 PdxWriterWithTypeCollector::~PdxWriterWithTypeCollector() {}
@@ -99,7 +99,7 @@ bool PdxWriterWithTypeCollector::isFieldWritingStarted() {
 PdxWriterPtr PdxWriterWithTypeCollector::writeUnreadFields(
     PdxUnreadFieldsPtr unread) {
   PdxLocalWriter::writeUnreadFields(unread);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeChar(const char* fieldName,
@@ -107,7 +107,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeChar(const char* fieldName,
   m_pdxType->addFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR,
                                      PdxTypes::CHAR_SIZE);
   PdxLocalWriter::writeChar(fieldName, value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeWideChar(const char* fieldName,
@@ -115,7 +115,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeWideChar(const char* fieldName,
   m_pdxType->addFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR,
                                      PdxTypes::CHAR_SIZE);
   PdxLocalWriter::writeWideChar(fieldName, value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeBoolean(const char* fieldName,
@@ -123,7 +123,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeBoolean(const char* fieldName,
   m_pdxType->addFixedLengthTypeField(
       fieldName, "boolean", PdxFieldTypes::BOOLEAN, PdxTypes::BOOLEAN_SIZE);
   PdxLocalWriter::writeBoolean(fieldName, value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeByte(const char* fieldName,
@@ -131,7 +131,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeByte(const char* fieldName,
   m_pdxType->addFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,
                                      PdxTypes::BYTE_SIZE);
   PdxLocalWriter::writeByte(fieldName, value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeShort(const char* fieldName,
@@ -139,7 +139,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeShort(const char* fieldName,
   m_pdxType->addFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT,
                                      PdxTypes::SHORT_SIZE);
   PdxLocalWriter::writeShort(fieldName, value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeInt(const char* fieldName,
@@ -147,7 +147,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeInt(const char* fieldName,
   m_pdxType->addFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT,
                                      PdxTypes::INTEGER_SIZE);
   PdxLocalWriter::writeInt(fieldName, value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeLong(const char* fieldName,
@@ -155,7 +155,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeLong(const char* fieldName,
   m_pdxType->addFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG,
                                      PdxTypes::LONG_SIZE);
   PdxLocalWriter::writeLong(fieldName, value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeFloat(const char* fieldName,
@@ -163,7 +163,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeFloat(const char* fieldName,
   m_pdxType->addFixedLengthTypeField(fieldName, "float", PdxFieldTypes::FLOAT,
                                      PdxTypes::FLOAT_SIZE);
   PdxLocalWriter::writeFloat(fieldName, value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeDouble(const char* fieldName,
@@ -171,7 +171,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeDouble(const char* fieldName,
   m_pdxType->addFixedLengthTypeField(fieldName, "double", PdxFieldTypes::DOUBLE,
                                      PdxTypes::DOUBLE_SIZE);
   PdxLocalWriter::writeDouble(fieldName, value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeDate(const char* fieldName,
@@ -179,7 +179,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeDate(const char* fieldName,
   m_pdxType->addFixedLengthTypeField(fieldName, "Date", PdxFieldTypes::DATE,
                                      PdxTypes::DATE_SIZE);
   PdxLocalWriter::writeDate(fieldName, date);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeString(const char* fieldName,
@@ -187,7 +187,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeString(const char* fieldName,
   m_pdxType->addVariableLengthTypeField(fieldName, "String",
                                         PdxFieldTypes::STRING);
   PdxLocalWriter::writeString(fieldName, value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeWideString(const char* fieldName,
@@ -195,7 +195,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeWideString(const char* fieldName,
   m_pdxType->addVariableLengthTypeField(fieldName, "String",
                                         PdxFieldTypes::STRING);
   PdxLocalWriter::writeWideString(fieldName, value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeObject(const char* fieldName,
@@ -203,7 +203,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeObject(const char* fieldName,
   m_pdxType->addVariableLengthTypeField(fieldName, "Serializable",
                                         PdxFieldTypes::OBJECT);
   PdxLocalWriter::writeObject(fieldName, value);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeBooleanArray(
@@ -211,7 +211,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeBooleanArray(
   m_pdxType->addVariableLengthTypeField(fieldName, "bool[]",
                                         PdxFieldTypes::BOOLEAN_ARRAY);
   PdxLocalWriter::writeBooleanArray(fieldName, array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeCharArray(const char* fieldName,
@@ -220,7 +220,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeCharArray(const char* fieldName,
   m_pdxType->addVariableLengthTypeField(fieldName, "char[]",
                                         PdxFieldTypes::CHAR_ARRAY);
   PdxLocalWriter::writeCharArray(fieldName, array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeWideCharArray(
@@ -228,7 +228,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeWideCharArray(
   m_pdxType->addVariableLengthTypeField(fieldName, "char[]",
                                         PdxFieldTypes::CHAR_ARRAY);
   PdxLocalWriter::writeWideCharArray(fieldName, array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeByteArray(const char* fieldName,
@@ -237,7 +237,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeByteArray(const char* fieldName,
   m_pdxType->addVariableLengthTypeField(fieldName, "byte[]",
                                         PdxFieldTypes::BYTE_ARRAY);
   PdxLocalWriter::writeByteArray(fieldName, array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeShortArray(const char* fieldName,
@@ -246,7 +246,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeShortArray(const char* fieldName,
   m_pdxType->addVariableLengthTypeField(fieldName, "short[]",
                                         PdxFieldTypes::SHORT_ARRAY);
   PdxLocalWriter::writeShortArray(fieldName, array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeIntArray(const char* fieldName,
@@ -255,7 +255,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeIntArray(const char* fieldName,
   m_pdxType->addVariableLengthTypeField(fieldName, "int[]",
                                         PdxFieldTypes::INT_ARRAY);
   PdxLocalWriter::writeIntArray(fieldName, array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeLongArray(const char* fieldName,
@@ -264,7 +264,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeLongArray(const char* fieldName,
   m_pdxType->addVariableLengthTypeField(fieldName, "long[]",
                                         PdxFieldTypes::LONG_ARRAY);
   PdxLocalWriter::writeLongArray(fieldName, array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeFloatArray(const char* fieldName,
@@ -273,7 +273,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeFloatArray(const char* fieldName,
   m_pdxType->addVariableLengthTypeField(fieldName, "float[]",
                                         PdxFieldTypes::FLOAT_ARRAY);
   PdxLocalWriter::writeFloatArray(fieldName, array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeDoubleArray(const char* fieldName,
@@ -282,7 +282,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeDoubleArray(const char* fieldName,
   m_pdxType->addVariableLengthTypeField(fieldName, "double[]",
                                         PdxFieldTypes::DOUBLE_ARRAY);
   PdxLocalWriter::writeDoubleArray(fieldName, array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeStringArray(const char* fieldName,
@@ -291,7 +291,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeStringArray(const char* fieldName,
   m_pdxType->addVariableLengthTypeField(fieldName, "String[]",
                                         PdxFieldTypes::STRING_ARRAY);
   PdxLocalWriter::writeStringArray(fieldName, array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeWideStringArray(
@@ -299,7 +299,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeWideStringArray(
   m_pdxType->addVariableLengthTypeField(fieldName, "String[]",
                                         PdxFieldTypes::STRING_ARRAY);
   PdxLocalWriter::writeWideStringArray(fieldName, array, length);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeObjectArray(
@@ -307,7 +307,7 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeObjectArray(
   m_pdxType->addVariableLengthTypeField(fieldName, "Object[]",
                                         PdxFieldTypes::OBJECT_ARRAY);
   PdxLocalWriter::writeObjectArray(fieldName, array);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::writeArrayOfByteArrays(
@@ -317,19 +317,19 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeArrayOfByteArrays(
                                         PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS);
   PdxLocalWriter::writeArrayOfByteArrays(fieldName, byteArrays, arrayLength,
                                          elementLength);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 
 PdxWriterPtr PdxWriterWithTypeCollector::markIdentityField(
     const char* fieldName) {
   PdxFieldTypePtr pft = m_pdxType->getPdxField(fieldName);
-  if (pft == NULLPTR) {
+  if (pft == nullptr) {
     throw IllegalStateException(
         "Field, must be written to PdxWriter before calling "
         "MarkIdentityField ");
   }
   pft->setIdentityField(true);
-  return PdxWriterPtr(this);
+  return shared_from_this();
 }
 }  // namespace client
 }  // namespace geode

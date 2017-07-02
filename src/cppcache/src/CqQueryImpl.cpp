@@ -27,10 +27,12 @@
 #include "ThinClientRegion.hpp"
 using namespace apache::geode::client;
 
-CqQueryImpl::CqQueryImpl(CqServicePtr& cqService, std::string& cqName,
-                         std::string& queryString,
-                         CqAttributesPtr& cqAttributes, bool isDurable,
-                         UserAttributesPtr userAttributesPtr)
+CqQueryImpl::CqQueryImpl(const CqServicePtr& cqService,
+                         const std::string& cqName,
+                         const std::string& queryString,
+                         const CqAttributesPtr& cqAttributes,
+                         const bool isDurable,
+                         const UserAttributesPtr& userAttributesPtr)
     : m_cqName(cqName),
       m_queryString(queryString),
       m_cqService(cqService),
@@ -47,11 +49,11 @@ CqQueryImpl::CqQueryImpl(CqServicePtr& cqService, std::string& cqName,
   CqAttributesFactory cqAf(cqAttributes);
   m_cqAttributes = cqAf.create();
   m_cqAttributesMutator =
-      new CqAttributesMutatorImpl(CqAttributesPtr(m_cqAttributes));
-  if (userAttributesPtr != NULLPTR) {
+      std::make_shared<CqAttributesMutatorImpl>(m_cqAttributes);
+  if (userAttributesPtr != nullptr) {
     m_proxyCache = userAttributesPtr->getProxyCache();
   } else {
-    m_proxyCache = NULLPTR;
+    m_proxyCache = nullptr;
   }
 }
 
@@ -80,7 +82,7 @@ void CqQueryImpl::initCq() {
   // Initialize the VSD statistics
 
   // Update statistics with CQ creation.
-  CqServiceVsdStats& stats = m_cqService->getCqServiceVsdStats();
+  auto& stats = m_cqService->getCqServiceVsdStats();
   // stats.incNumCqsStopped();
   stats.incNumCqsCreated();
   // stats.incNumCqsOnClient();
@@ -110,7 +112,7 @@ void CqQueryImpl::close(bool sendRequestToServer) {
   }
 
   GuardUserAttribures gua;
-  if (m_proxyCache != NULLPTR) {
+  if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);
   }
   LOGFINE("Started closing CQ CqName : %s", m_cqName.c_str());
@@ -118,7 +120,7 @@ void CqQueryImpl::close(bool sendRequestToServer) {
   // bool isClosed = false;
 
   // Stat update.
-  CqServiceVsdStats& stats = m_cqService->getCqServiceVsdStats();
+  auto& stats = m_cqService->getCqServiceVsdStats();
   /*
   if (isRunning()) {
       stats.decNumCqsActive();
@@ -141,19 +143,19 @@ void CqQueryImpl::close(bool sendRequestToServer) {
   stats.incNumCqsClosed();
 
   // Invoke close on Listeners if any.
-  if (m_cqAttributes != NULLPTR) {
-    VectorOfCqListener cqListeners;
+  if (m_cqAttributes) {
+    CqAttributes::listener_container_type cqListeners;
     m_cqAttributes->getCqListeners(cqListeners);
 
     if (!cqListeners.empty()) {
       LOGFINE(
           "Invoking CqListeners close() api for the CQ, CqName : %s  Number of "
           "CqListeners : %d",
-          m_cqName.c_str(), cqListeners.length());
+          m_cqName.c_str(), cqListeners.size());
 
-      for (int32_t lCnt = 0; lCnt < cqListeners.length(); lCnt++) {
+      for (auto& l : cqListeners) {
         try {
-          cqListeners[lCnt]->close();
+          l->close();
           // Handle client side exceptions.
         } catch (Exception& ex) {
           LOGWARN(
@@ -179,7 +181,7 @@ void CqQueryImpl::addToCqMap() {
   try {
     LOGFINE("Adding to CQ Repository. CqName : %s Server CqName : %s",
             m_cqName.c_str(), m_serverCqName.c_str());
-    CqQueryPtr cq(this);
+    CqQueryPtr cq = shared_from_this();
     m_cqService->addCq(m_cqName, cq);
   } catch (Exception& ex) {
     std::string errMsg =
@@ -239,7 +241,8 @@ void CqQueryImpl::cleanup() { removeFromCqMap(); }
 /**
  * @return Returns the cqListeners.
  */
-void CqQueryImpl::getCqListeners(VectorOfCqListener& cqListener) {
+void CqQueryImpl::getCqListeners(
+    CqAttributes::listener_container_type& cqListener) {
   m_cqAttributes->getCqListeners(cqListener);
 }
 
@@ -250,7 +253,7 @@ GfErrType CqQueryImpl::execute(TcrEndpoint* endpoint) {
   }
 
   GuardUserAttribures gua;
-  if (m_proxyCache != NULLPTR) {
+  if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);
   }
 
@@ -299,7 +302,7 @@ void CqQueryImpl::executeAfterFailover() {
 
 void CqQueryImpl::execute() {
   GuardUserAttribures gua;
-  if (m_proxyCache != NULLPTR) {
+  if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);
   }
 
@@ -312,10 +315,11 @@ void CqQueryImpl::execute() {
   }
   executeCq(TcrMessage::EXECUTECQ_MSG_TYPE);
 }
+
 // for          EXECUTE_REQUEST or REDUNDANT_EXECUTE_REQUEST
 bool CqQueryImpl::executeCq(TcrMessage::MsgType requestType) {
   GuardUserAttribures gua;
-  if (m_proxyCache != NULLPTR) {
+  if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);
   }
 
@@ -351,7 +355,7 @@ bool CqQueryImpl::executeCq(TcrMessage::MsgType requestType) {
 // for EXECUTE_INITIAL_RESULTS_REQUEST :
 CqResultsPtr CqQueryImpl::executeWithInitialResults(uint32_t timeout) {
   GuardUserAttribures gua;
-  if (m_proxyCache != NULLPTR) {
+  if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);
   }
 
@@ -367,7 +371,7 @@ CqResultsPtr CqQueryImpl::executeWithInitialResults(uint32_t timeout) {
   TcrMessageExecuteCqWithIr msg(m_cqName, m_queryString, CqState::RUNNING,
                                 isDurable(), m_tccdm);
   TcrMessageReply reply(true, m_tccdm);
-  ChunkedQueryResponse* resultCollector = (new ChunkedQueryResponse(reply));
+  auto resultCollector = (new ChunkedQueryResponse(reply));
   reply.setChunkedResultHandler(
       static_cast<TcrChunkedResult*>(resultCollector));
   reply.setTimeout(timeout);
@@ -395,14 +399,15 @@ CqResultsPtr CqQueryImpl::executeWithInitialResults(uint32_t timeout) {
   m_cqState = CqState::RUNNING;
   updateStats();
   CqResultsPtr sr;
-  CacheableVectorPtr values = resultCollector->getQueryResults();
+  auto values = resultCollector->getQueryResults();
   const std::vector<CacheableStringPtr>& fieldNameVec =
       resultCollector->getStructFieldNames();
   int32_t sizeOfFieldNamesVec = static_cast<int32_t>(fieldNameVec.size());
   if (sizeOfFieldNamesVec == 0) {
     LOGFINEST("Query::execute: creating ResultSet for query: %s",
               m_queryString.c_str());
-    sr = new ResultSetImpl(values);
+    sr = std::dynamic_pointer_cast<CqResults>(
+        std::make_shared<ResultSetImpl>(values));
   } else {
     if (values->size() % fieldNameVec.size() != 0) {
       throw MessageException(
@@ -411,7 +416,8 @@ CqResultsPtr CqQueryImpl::executeWithInitialResults(uint32_t timeout) {
     } else {
       LOGFINEST("Query::execute: creating StructSet for query: %s",
                 m_queryString.c_str());
-      sr = new StructSetImpl(values, fieldNameVec);
+      sr = std::dynamic_pointer_cast<CqResults>(
+          std::make_shared<StructSetImpl>(values, fieldNameVec));
     }
   }
   delete resultCollector;
@@ -427,7 +433,7 @@ void CqQueryImpl::stop() {
   }
 
   GuardUserAttribures gua;
-  if (m_proxyCache != NULLPTR) {
+  if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);
   }
 
@@ -517,7 +523,7 @@ void CqQueryImpl::setCqOperation(CqOperation::CqOperationType cqOperation) {
  * @param cqEvent object
  */
 void CqQueryImpl::updateStats(CqEvent& cqEvent) {
-  CqQueryVsdStats* stats = dynamic_cast<CqQueryVsdStats*>(m_stats.ptr());
+  auto stats = std::static_pointer_cast<CqQueryVsdStats>(m_stats);
   stats->incNumEvents();
   switch (cqEvent.getQueryOperation()) {
     case CqOperation::OP_TYPE_CREATE:
@@ -550,7 +556,7 @@ bool CqQueryImpl::isRunning() {
 bool CqQueryImpl::isStopped() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
   return m_cqState == CqState::STOPPED ||
-         (m_proxyCache != NULLPTR && m_proxyCache->isClosed());
+         (m_proxyCache && m_proxyCache->isClosed());
 }
 
 /**
@@ -560,7 +566,7 @@ bool CqQueryImpl::isStopped() {
 bool CqQueryImpl::isClosed() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
   return m_cqState == CqState::CLOSED ||
-         (m_proxyCache != NULLPTR && m_proxyCache->isClosed());
+         (m_proxyCache && m_proxyCache->isClosed());
 }
 
 /**

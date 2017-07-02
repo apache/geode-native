@@ -15,51 +15,81 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
 #include "SelectResultsIterator.hpp"
-
 #include "impl/SafeConvert.hpp"
 
-using namespace System;
 namespace Apache
 {
   namespace Geode
   {
     namespace Client
     {
+      using namespace System;
 
       generic<class TResult>
-      /*Apache::Geode::Client::IGeodeSerializable^*/TResult SelectResultsIterator<TResult>::Current::get( )
+      TResult SelectResultsIterator<TResult>::Current::get( )
       {
-        //return SafeUMSerializableConvertGeneric( NativePtr->current( ).ptr( ) ); 
-        return Serializable::GetManagedValueGeneric<TResult>(NativePtr->current( ));
+        try
+        {
+          return Serializable::GetManagedValueGeneric<TResult>(m_nativeptr->get()->current( ));
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TResult>
       bool SelectResultsIterator<TResult>::MoveNext( )
       {
-        return NativePtr->moveNext( );
+        try
+        {
+          return m_nativeptr->get()->moveNext( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TResult>
       void SelectResultsIterator<TResult>::Reset( )
       {
-        NativePtr->reset( );
+        try
+        {
+          m_nativeptr->get()->reset( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TResult>
-      /*Apache::Geode::Client::IGeodeSerializable^*/TResult SelectResultsIterator<TResult>::Next( )
+      TResult SelectResultsIterator<TResult>::Next( )
       {
-        //return SafeUMSerializableConvertGeneric( NativePtr->next( ).ptr( ) );
-        return Serializable::GetManagedValueGeneric<TResult>(NativePtr->next( ));
+        try
+        {
+          return Serializable::GetManagedValueGeneric<TResult>(m_nativeptr->get()->next( ));
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TResult>
-      bool SelectResultsIterator<TResult>::HasNext::get( )
+      bool SelectResultsIterator<TResult>::HasNext::get()
       {
-        return NativePtr->hasNext( );
+        try
+        {
+          return m_nativeptr->get()->hasNext();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
- } //namespace 

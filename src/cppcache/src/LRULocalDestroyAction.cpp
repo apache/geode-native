@@ -30,7 +30,7 @@ bool LRULocalDestroyAction::evict(const MapEntryImplPtr& mePtr) {
   LOGDEBUG("LRULocalDestroy: evicting entry with key [%s]",
            Utils::getCacheableKeyString(keyPtr)->asChar());
   GfErrType err = m_regionPtr->destroyNoThrow(
-      keyPtr, NULLPTR, -1, CacheEventFlags::EVICTION | CacheEventFlags::LOCAL,
+      keyPtr, nullptr, -1, CacheEventFlags::EVICTION | CacheEventFlags::LOCAL,
       versionTag);
   return (err == GF_NOERR);
 }

@@ -36,7 +36,9 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class CPPCACHE_EXPORT ResultSetImpl : public ResultSet {
+class CPPCACHE_EXPORT ResultSetImpl
+    : public ResultSet,
+      public std::enable_shared_from_this<ResultSetImpl> {
  public:
   ResultSetImpl(const CacheableVectorPtr& response);
 

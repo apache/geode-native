@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
 #include "Properties.hpp"
 #include "impl/ManagedVisitor.hpp"
 #include "impl/ManagedString.hpp"
@@ -32,6 +31,8 @@ namespace Apache
   {
     namespace Client
     {
+
+      namespace native = apache::geode::client;
 
       // Visitor class to get string representations of a property object
       ref class PropertyToString
@@ -62,351 +63,80 @@ namespace Apache
       generic<class TPropKey, class TPropValue>
       TPropValue Properties<TPropKey, TPropValue>::Find( TPropKey key)
       {
-        //ManagedString mg_key( key );
-        apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TPropKey>( key ) );
-
-        //_GF_MG_EXCEPTION_TRY2
-
-          apache::geode::client::CacheablePtr nativeptr(NativePtr->find( keyptr ));
-          TPropValue returnVal = Serializable::GetManagedValueGeneric<TPropValue>( nativeptr );
-          return returnVal;
-
-          //apache::geode::client::CacheablePtr& value = NativePtr->find( keyptr );
-          //return SafeUMSerializableConvert( value.ptr( ) );
-
-          //apache::geode::client::CacheableStringPtr value = NativePtr->find( mg_key.CharPtr );
-          //return CacheableString::GetString( value.ptr( ) );
-
-       // _GF_MG_EXCEPTION_CATCH_ALL2
+        try
+        {
+          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key);
+          auto nativeptr = m_nativeptr->get()->find(keyptr);
+          return Serializable::GetManagedValueGeneric<TPropValue>(nativeptr);
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
-
-      /*IGeodeSerializable^ Properties::Find( Apache::Geode::Client::ICacheableKey^ key)
-      {
-        CacheableString^ cStr = dynamic_cast<CacheableString ^>(key);
-
-        if ( key != nullptr) {
-          _GF_MG_EXCEPTION_TRY2
-          
-          apache::geode::client::CacheableStringPtr csPtr;
-          
-          CacheableString::GetCacheableString(cStr->Value, csPtr);
-
-          apache::geode::client::CacheablePtr& value = NativePtr->find( csPtr );
-
-          return ConvertCacheableString(value);
-
-          _GF_MG_EXCEPTION_CATCH_ALL2
-        }
-        else {
-          apache::geode::client::CacheableKeyPtr keyptr( SafeMKeyConvert( key ) );
-
-          _GF_MG_EXCEPTION_TRY2
-
-            apache::geode::client::CacheablePtr& value = NativePtr->find( keyptr );
-            return SafeUMSerializableConvert( value.ptr( ) );
-
-          _GF_MG_EXCEPTION_CATCH_ALL2
-        }
-				return nullptr;
-      }*/
-
-      /*
-       generic<class TPropKey, class TPropValue>
-       IGeodeSerializable^ Properties<TPropKey, TPropValue>::ConvertCacheableString(apache::geode::client::CacheablePtr& value)
-       {
-         apache::geode::client::CacheableString * cs =  dynamic_cast<apache::geode::client::CacheableString *>( value.ptr() );
-          if ( cs == NULL) {
-            return SafeUMSerializableConvert( value.ptr( ) );
-          } 
-          else {
-            if(cs->typeId() == (int8_t)apache::geode::client::GeodeTypeIds::CacheableASCIIString
-              || cs->typeId() == (int8_t)apache::geode::client::GeodeTypeIds::CacheableASCIIStringHuge) {
-              String^ str = gcnew String(cs->asChar());
-              return CacheableString::Create(str);
-            }
-            else {
-              String^ str = gcnew String(cs->asWChar());
-              return CacheableString::Create(str);
-            }
-          }
-				 return nullptr;
-        }
-      */
-
-      /*IGeodeSerializable^ Properties::Find( CacheableKey^ key)
-      {
-        CacheableString^ cStr = dynamic_cast<CacheableString ^>(key);
-
-        if ( key != nullptr) {
-          _GF_MG_EXCEPTION_TRY2
-          
-          apache::geode::client::CacheableStringPtr csPtr;
-          
-          CacheableString::GetCacheableString(cStr->Value, csPtr);
-
-          apache::geode::client::CacheablePtr& value = NativePtr->find( csPtr );
-
-          return ConvertCacheableString(value);
-
-          _GF_MG_EXCEPTION_CATCH_ALL2
-        }
-        else {
-          apache::geode::client::CacheableKeyPtr keyptr(
-            (apache::geode::client::CacheableKey*)GetNativePtr<apache::geode::client::Cacheable>( key ) );
-
-          _GF_MG_EXCEPTION_TRY2
-
-            apache::geode::client::CacheablePtr& value = NativePtr->find( keyptr );
-            return SafeUMSerializableConvert( value.ptr( ) );
-
-          _GF_MG_EXCEPTION_CATCH_ALL2        
-        }
-				return nullptr;
-      }*/
 
       generic<class TPropKey, class TPropValue>
       void Properties<TPropKey, TPropValue>::Insert( TPropKey key, TPropValue value )
       {
-        apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TPropKey>( key, true ) );
-        apache::geode::client::CacheablePtr valueptr( Serializable::GetUnmanagedValueGeneric<TPropValue>( value, true ) );
-
-        //ManagedString mg_key( key );
-        //ManagedString mg_value( value );
+        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key, true);
+        native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TPropValue>(value, true);
 
         _GF_MG_EXCEPTION_TRY2
 
-          //NativePtr->insert( mg_key.CharPtr, mg_value.CharPtr );
-          NativePtr->insert( keyptr, valueptr );
+          try
+          {
+            m_nativeptr->get()->insert(keyptr, valueptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
-
-      /*void Properties::Insert( String^ key, const System::Int32 value)
-      {
-        //TODO::
-        ManagedString mg_key( key );
-
-        _GF_MG_EXCEPTION_TRY2
-
-          NativePtr->insert( mg_key.CharPtr, value );
-
-        _GF_MG_EXCEPTION_CATCH_ALL2
-      }*/
-
-      /*void Properties::Insert( Apache::Geode::Client::ICacheableKey^ key, IGeodeSerializable^ value)
-      {
-        CacheableString^ cStr = dynamic_cast<CacheableString ^>(key);
-        if (cStr != nullptr) {
-           _GF_MG_EXCEPTION_TRY2
-          apache::geode::client::CacheableKeyPtr keyptr(ConvertCacheableStringKey(cStr));
-          CacheableString^ cValueStr = dynamic_cast<CacheableString ^>(value);
-
-          if (cValueStr != nullptr) {
-            apache::geode::client::CacheablePtr valueptr(ConvertCacheableStringKey(cValueStr));
-            NativePtr->insert( keyptr, valueptr );
-          }
-          else {
-            apache::geode::client::CacheablePtr valueptr( SafeMSerializableConvert( value ) );
-            NativePtr->insert( keyptr, valueptr );
-          }
-          _GF_MG_EXCEPTION_CATCH_ALL2
-        }
-        else {
-          apache::geode::client::CacheableKeyPtr keyptr( SafeMKeyConvert( key ) );
-          apache::geode::client::CacheablePtr valueptr( SafeMSerializableConvert( value ) );
-
-          _GF_MG_EXCEPTION_TRY2
-
-            NativePtr->insert( keyptr, valueptr );
-
-          _GF_MG_EXCEPTION_CATCH_ALL2
-        }
-      }*/
-
-      /*void Properties::Insert( CacheableKey^ key, IGeodeSerializable^ value)
-      {
-        CacheableString^ cStr = dynamic_cast<CacheableString ^>(key);
-        if (cStr != nullptr) {
-           _GF_MG_EXCEPTION_TRY2
-          apache::geode::client::CacheableKeyPtr keyptr(ConvertCacheableStringKey(cStr));
-          CacheableString^ cValueStr = dynamic_cast<CacheableString ^>(value);
-
-          if (cValueStr != nullptr) {
-            apache::geode::client::CacheablePtr valueptr(ConvertCacheableStringKey(cValueStr));
-            NativePtr->insert( keyptr, valueptr );
-          }
-          else {
-            apache::geode::client::CacheablePtr valueptr( SafeMSerializableConvert( value ) );
-            NativePtr->insert( keyptr, valueptr );
-          }
-          _GF_MG_EXCEPTION_CATCH_ALL2
-        }
-        else {
-          apache::geode::client::CacheableKeyPtr keyptr(
-            (apache::geode::client::CacheableKey*)GetNativePtr<apache::geode::client::Cacheable>( key ) );
-          apache::geode::client::CacheablePtr valueptr( SafeMSerializableConvert( value ) );
-
-          _GF_MG_EXCEPTION_TRY2
-
-            NativePtr->insert( keyptr, valueptr );
-
-          _GF_MG_EXCEPTION_CATCH_ALL2
-        }
-      }*/
-
-      /*
-      generic<class TPropKey, class TPropValue>
-      apache::geode::client::CacheableKey * Properties<TPropKey, TPropValue>::ConvertCacheableStringKey(CacheableString^ cStr)
-      {
-        apache::geode::client::CacheableStringPtr csPtr;
-        CacheableString::GetCacheableString(cStr->Value, csPtr);
-
-        return csPtr.ptr();
-      }
-      */
-
-	  /*void Properties::Insert( Apache::Geode::Client::ICacheableKey^ key, Serializable^ value)
-      {
-        CacheableString^ cStr = dynamic_cast<CacheableString ^>(key);
-        if (cStr != nullptr) {
-           _GF_MG_EXCEPTION_TRY2
-          apache::geode::client::CacheableKeyPtr keyptr(ConvertCacheableStringKey(cStr));
-          CacheableString^ cValueStr = dynamic_cast<CacheableString ^>(value);
-
-          if (cValueStr != nullptr) {
-            apache::geode::client::CacheablePtr valueptr(ConvertCacheableStringKey(cValueStr));
-            NativePtr->insert( keyptr, valueptr );
-          }
-          else {
-            apache::geode::client::CacheablePtr valueptr(
-              GetNativePtr<apache::geode::client::Cacheable>( value ) );
-            NativePtr->insert( keyptr, valueptr );
-          }
-          _GF_MG_EXCEPTION_CATCH_ALL2
-        }
-        else {
-          apache::geode::client::CacheableKeyPtr keyptr( SafeMKeyConvert( key ) );
-          apache::geode::client::CacheablePtr valueptr(
-            GetNativePtr<apache::geode::client::Cacheable>( value ) );
-
-          _GF_MG_EXCEPTION_TRY2
-
-            NativePtr->insert( keyptr, valueptr );
-
-          _GF_MG_EXCEPTION_CATCH_ALL2
-        }
-      }*/
-
-      /*void Properties::Insert( CacheableKey^ key, Serializable^ value)
-      {
-        CacheableString^ cStr = dynamic_cast<CacheableString ^>(key);
-        if (cStr != nullptr) {
-           _GF_MG_EXCEPTION_TRY2
-          apache::geode::client::CacheableKeyPtr keyptr(ConvertCacheableStringKey(cStr));
-          CacheableString^ cValueStr = dynamic_cast<CacheableString ^>(value);
-
-          if (cValueStr != nullptr) {
-            apache::geode::client::CacheablePtr valueptr(ConvertCacheableStringKey(cValueStr));
-            NativePtr->insert( keyptr, valueptr );
-          }
-          else {
-            apache::geode::client::CacheablePtr valueptr(
-              GetNativePtr<apache::geode::client::Cacheable>( value ) );
-            NativePtr->insert( keyptr, valueptr );
-          }
-          _GF_MG_EXCEPTION_CATCH_ALL2
-        }
-        else {
-          apache::geode::client::CacheableKeyPtr keyptr(
-            (apache::geode::client::CacheableKey*)GetNativePtr<apache::geode::client::Cacheable>( key ) );
-          apache::geode::client::CacheablePtr valueptr(
-            GetNativePtr<apache::geode::client::Cacheable>( value ) );
-
-          _GF_MG_EXCEPTION_TRY2
-
-            NativePtr->insert( keyptr, valueptr );
-
-          _GF_MG_EXCEPTION_CATCH_ALL2
-        }
-      }*/
 
       generic<class TPropKey, class TPropValue>
       void Properties<TPropKey, TPropValue>::Remove( TPropKey key)
       {
-        //ManagedString mg_key( key );
-        apache::geode::client::CacheableKeyPtr keyptr( Serializable::GetUnmanagedValueGeneric<TPropKey>( key ) );
+        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key);
 
         _GF_MG_EXCEPTION_TRY2
 
-          //NativePtr->remove( mg_key.CharPtr );
-          NativePtr->remove( keyptr );
+          try
+          {
+            m_nativeptr->get()->remove( keyptr );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
-
-      /*void Properties::Remove( Apache::Geode::Client::ICacheableKey^ key)
-      {
-        CacheableString^ cStr = dynamic_cast<CacheableString ^>(key);
-        if (cStr != nullptr) {
-           _GF_MG_EXCEPTION_TRY2
-          
-             apache::geode::client::CacheableKeyPtr keyptr(ConvertCacheableStringKey(cStr));
-
-             NativePtr->remove( keyptr );
-          
-           _GF_MG_EXCEPTION_CATCH_ALL2
-        }
-        else {
-          apache::geode::client::CacheableKeyPtr keyptr( SafeMKeyConvert( key ) );
-
-          _GF_MG_EXCEPTION_TRY2
-
-            NativePtr->remove( keyptr );
-
-          _GF_MG_EXCEPTION_CATCH_ALL2
-        }
-      }*/
-
-      /*void Properties::Remove( CacheableKey^ key)
-      {
-        CacheableString^ cStr = dynamic_cast<CacheableString ^>(key);
-        if (cStr != nullptr) {
-           _GF_MG_EXCEPTION_TRY2
-          
-             apache::geode::client::CacheableKeyPtr keyptr(ConvertCacheableStringKey(cStr));
-
-             NativePtr->remove( keyptr );
-          
-           _GF_MG_EXCEPTION_CATCH_ALL2
-        }
-        else {
-          apache::geode::client::CacheableKeyPtr keyptr(
-            (apache::geode::client::CacheableKey*)GetNativePtr<apache::geode::client::Cacheable>( key ) );
-
-          _GF_MG_EXCEPTION_TRY2
-
-            NativePtr->remove( keyptr );
-
-          _GF_MG_EXCEPTION_CATCH_ALL2
-        }
-      }*/
 
       generic<class TPropKey, class TPropValue>
       void Properties<TPropKey, TPropValue>::ForEach( PropertyVisitorGeneric<TPropKey, TPropValue>^ visitor )
       {
        if (visitor != nullptr)
         {
-          apache::geode::client::ManagedVisitorGeneric mg_visitor( visitor );
+          native::ManagedVisitorGeneric mg_visitor( visitor );
 
-          PropertyVisitorProxy<TPropKey, TPropValue>^ proxy = gcnew PropertyVisitorProxy<TPropKey, TPropValue>();
+          auto proxy = gcnew PropertyVisitorProxy<TPropKey, TPropValue>();
           proxy->SetPropertyVisitorGeneric(visitor);
 
-          PropertyVisitor^ otherVisitor = gcnew PropertyVisitor(proxy, &PropertyVisitorProxy<TPropKey, TPropValue>::Visit);
+          auto otherVisitor = gcnew PropertyVisitor(proxy, &PropertyVisitorProxy<TPropKey, TPropValue>::Visit);
           mg_visitor.setptr(otherVisitor);
 
           _GF_MG_EXCEPTION_TRY2
 
-            NativePtr->foreach( mg_visitor );
+            try
+            {
+              m_nativeptr->get()->foreach( mg_visitor );
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
 
           _GF_MG_EXCEPTION_CATCH_ALL2
         }
@@ -417,7 +147,14 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          return NativePtr->getSize( );
+          try
+          {
+            return m_nativeptr->get()->getSize( );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -425,15 +162,16 @@ namespace Apache
       generic<class TPropKey, class TPropValue>
       void Properties<TPropKey, TPropValue>::AddAll( Properties<TPropKey, TPropValue>^ other )
       {
-        /*apache::geode::client::PropertiesPtr p_other(
-          GetNativePtr<apache::geode::client::Properties>( other ) );*/
-
-        apache::geode::client::PropertiesPtr p_other(
-          GetNativePtrFromSBWrapGeneric<apache::geode::client::Properties>( other ) );        
-
         _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->addAll( p_other );
+          try
+          {
+            m_nativeptr->get()->addAll( other->GetNative() );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -445,7 +183,14 @@ namespace Apache
 
         _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->load( mg_fname.CharPtr );
+          try
+          {
+            m_nativeptr->get()->load( mg_fname.CharPtr );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -453,11 +198,6 @@ namespace Apache
       generic<class TPropKey, class TPropValue>
       String^ Properties<TPropKey, TPropValue>::ToString( )
       {
-       /* PropertyToString^ propStr = gcnew PropertyToString( );
-        this->ForEach( gcnew PropertyVisitorGeneric( propStr,
-          &PropertyToString::Visit ) );
-        String^ str = propStr->ToString( );
-        return ( str + "}" );*/
 				return "";
       }
 
@@ -471,20 +211,26 @@ namespace Apache
           output->WriteBytesToUMDataOutput();          
         }
         
-         apache::geode::client::DataOutput* nativeOutput =
-            GetNativePtr<apache::geode::client::DataOutput>(output);
-        
-        if (nativeOutput != nullptr)
+        try
         {
-          _GF_MG_EXCEPTION_TRY2
+          auto nativeOutput = output->GetNative();
+          if (nativeOutput != nullptr)
+          {
+            _GF_MG_EXCEPTION_TRY2
 
-            NativePtr->toData( *nativeOutput );
+                m_nativeptr->get()->toData(*nativeOutput);
 
-          _GF_MG_EXCEPTION_CATCH_ALL2
+            _GF_MG_EXCEPTION_CATCH_ALL2
+          }
+
+          if (output->IsManagedObject()) {
+            output->SetBuffer();          
+          }
         }
-
-        if (output->IsManagedObject()) {
-          output->SetBuffer();          
+        finally
+        {
+          GC::KeepAlive(output);
+          GC::KeepAlive(m_nativeptr);
         }
       }
 
@@ -494,17 +240,11 @@ namespace Apache
         if(input->IsManagedObject()) {
           input->AdvanceUMCursor();
         }
-        //TODO::??
-        apache::geode::client::DataInput* nativeInput =
-          GetNativePtr<apache::geode::client::DataInput>( input );
+
+        auto nativeInput = input->GetNative();
         if (nativeInput != nullptr)
         {
-          _GF_MG_EXCEPTION_TRY2
-
-            AssignPtr( static_cast<apache::geode::client::Properties*>(
-              NativePtr->fromData( *nativeInput ) ) );
-
-          _GF_MG_EXCEPTION_CATCH_ALL2
+          FromData(*nativeInput);
         }
         
         if(input->IsManagedObject()) {
@@ -515,12 +255,39 @@ namespace Apache
       }
 
       generic<class TPropKey, class TPropValue>
+      void Properties<TPropKey, TPropValue>::FromData( native::DataInput& input )
+      {
+        _GF_MG_EXCEPTION_TRY2
+
+          try
+        {
+          auto p = static_cast<native::Properties*>(m_nativeptr->get()->fromData(input));
+          if (m_nativeptr->get() != p) {
+            m_nativeptr->get_shared_ptr().reset(p);
+          }
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+        _GF_MG_EXCEPTION_CATCH_ALL2
+      }
+
+      generic<class TPropKey, class TPropValue>
       System::UInt32 Properties<TPropKey, TPropValue>::ObjectSize::get( )
       {
         //TODO::
         _GF_MG_EXCEPTION_TRY2
 
-          return NativePtr->objectSize( );
+          try
+          {
+            return m_nativeptr->get()->objectSize( );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -531,29 +298,34 @@ namespace Apache
       void Properties<TPropKey, TPropValue>::GetObjectData( SerializationInfo^ info,
         StreamingContext context )
       {
-        if (_NativePtr != NULL) {
-          apache::geode::client::DataOutput output;
+        native::DataOutput output;
 
-          _GF_MG_EXCEPTION_TRY2
+        _GF_MG_EXCEPTION_TRY2
 
-            NativePtr->toData( output );
-
-          _GF_MG_EXCEPTION_CATCH_ALL2
-
-          array<Byte>^ bytes = gcnew array<Byte>( output.getBufferLength( ) );
+          try
           {
-            pin_ptr<const Byte> pin_bytes = &bytes[0];
-            memcpy( (System::Byte*)pin_bytes, output.getBuffer( ),
-              output.getBufferLength( ) );
+            m_nativeptr->get()->toData( output );
           }
-          info->AddValue( "bytes", bytes, array<Byte>::typeid );
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+
+        _GF_MG_EXCEPTION_CATCH_ALL2
+
+        auto bytes = gcnew array<Byte>( output.getBufferLength( ) );
+        {
+          pin_ptr<const Byte> pin_bytes = &bytes[0];
+          memcpy( (System::Byte*)pin_bytes, output.getBuffer( ),
+            output.getBufferLength( ) );
         }
+        info->AddValue( "bytes", bytes, array<Byte>::typeid );
       }
       
       generic<class TPropKey, class TPropValue>
       Properties<TPropKey, TPropValue>::Properties( SerializationInfo^ info,
         StreamingContext context )
-        : SBWrap( apache::geode::client::Properties::create( ).ptr( ) )
+        : Properties()
       {
         array<Byte>^ bytes = nullptr;
         try {
@@ -568,14 +340,11 @@ namespace Apache
 
           _GF_MG_EXCEPTION_TRY2
 
-            apache::geode::client::DataInput input( (System::Byte*)pin_bytes, bytes->Length );
-            AssignPtr( static_cast<apache::geode::client::Properties*>(
-              NativePtr->fromData( input ) ) );
-
+            native::DataInput input( (System::Byte*)pin_bytes, bytes->Length );
+            FromData(input);
           _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
-  }
-}

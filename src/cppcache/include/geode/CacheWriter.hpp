@@ -87,14 +87,14 @@ class RegionEvent;
  * @see RegionAttributes::getCacheWriter
  * @see AttributesMutator::setCacheWriter
  */
-class CPPCACHE_EXPORT CacheWriter : public SharedBase {
+class CPPCACHE_EXPORT CacheWriter  {
  public:
   /**
    * Called before an entry is updated. The entry update is initiated by a
    * <code>put</code>
    * or a <code>get</code> that causes the loader to update an existing entry.
    * The entry previously existed in the cache where the operation was
-   * initiated, although the old value may have been NULLPTR. The entry being
+   * initiated, although the old value may have been nullptr. The entry being
    * updated may or may not exist in the local cache where the CacheWriter is
    * installed.
    *

@@ -45,7 +45,7 @@ namespace client {
  * operate on the same <code>Query</code> object concurrently rather should
  * have their own <code>Query</code> objects.
  */
-class CPPCACHE_EXPORT Query : public SharedBase {
+class CPPCACHE_EXPORT Query {
  public:
   /**
    * Executes the OQL Query on the cache server and returns the results.

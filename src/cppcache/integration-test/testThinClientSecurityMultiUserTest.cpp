@@ -41,7 +41,7 @@ std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
   const char* path = ACE_OS::getenv("TESTSRC");
   printf(" getXMLPATH = %s \n", path);
-  ASSERT(path != NULL,
+  ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
   strcat(xmlPath, "xml/Security/");
@@ -67,8 +67,8 @@ void initCredentialGenerator() {
     }
   }
 
-  if (credentialGeneratorHandler == NULLPTR) {
-    FAIL("credentialGeneratorHandler is NULL");
+  if (credentialGeneratorHandler == nullptr) {
+    FAIL("credentialGeneratorHandler is nullptr");
   }
 
   loopNum++;
@@ -356,7 +356,7 @@ DUNIT_TASK_DEFINITION(CLIENT_1, StepOne)
     initClientAuth();
     try {
       LOG("Tying Region creation");
-      createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, NULLPTR,
+      createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, nullptr,
                               false, -1, true, 0);
       LOG("Region created successfully");
       PoolPtr pool = getPool(regionNamesAuth[0]);

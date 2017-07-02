@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
 #include "SystemProperties.hpp"
 #include "impl/SafeConvert.hpp"
 
@@ -27,216 +26,193 @@ namespace Apache
   {
     namespace Client
     {
-
-      SystemProperties::SystemProperties( Properties<String^, String^>^ properties )
-      {
-        _GF_MG_EXCEPTION_TRY2
-
-          SetPtr(new apache::geode::client::SystemProperties(apache::geode::client::PropertiesPtr(
-            GetNativePtr<apache::geode::client::Properties>(properties))), true);
-
-        _GF_MG_EXCEPTION_CATCH_ALL2
-      }
-
-      SystemProperties::SystemProperties( Properties<String^, String^>^ properties,
-        String^ configFile )
-      {
-        _GF_MG_EXCEPTION_TRY2
-
-          ManagedString mg_configFile( configFile );
-          apache::geode::client::PropertiesPtr propertiesptr(
-            GetNativePtr<apache::geode::client::Properties>( properties ) );
-          SetPtr( new apache::geode::client::SystemProperties( propertiesptr,
-            mg_configFile.CharPtr ), true );
-
-        _GF_MG_EXCEPTION_CATCH_ALL2
-      }
+      namespace native = apache::geode::client;
 
       void SystemProperties::LogSettings( )
       {
-        NativePtr->logSettings( );
+        m_nativeptr->logSettings( );
       }
 
       System::Int32 SystemProperties::StatisticsSampleInterval::get( )
       {
-        return NativePtr->statisticsSampleInterval( );
+        return m_nativeptr->statisticsSampleInterval( );
       }
 
       bool SystemProperties::StatisticsEnabled::get( )
       {
-        return NativePtr->statisticsEnabled( );
+        return m_nativeptr->statisticsEnabled( );
       }
 
       String^ SystemProperties::StatisticsArchiveFile::get( )
       {
-        return ManagedString::Get( NativePtr->statisticsArchiveFile( ) );
+        return ManagedString::Get( m_nativeptr->statisticsArchiveFile( ) );
       }
 
       String^ SystemProperties::LogFileName::get( )
       {
-        return ManagedString::Get( NativePtr->logFilename( ) );
+        return ManagedString::Get( m_nativeptr->logFilename( ) );
       }
 
       LogLevel SystemProperties::GFLogLevel::get( )
       {
-        return static_cast<LogLevel>( NativePtr->logLevel( ) );
+        return static_cast<LogLevel>( m_nativeptr->logLevel( ) );
       }
 
       bool SystemProperties::HeapLRULimitEnabled::get( )
       {
-        return NativePtr->heapLRULimitEnabled( );
+        return m_nativeptr->heapLRULimitEnabled( );
       }
       
       size_t SystemProperties::HeapLRULimit::get( )
       {
-        return NativePtr->heapLRULimit( );
+        return m_nativeptr->heapLRULimit( );
       }
       
       System::Int32 SystemProperties::HeapLRUDelta::get( )
       {
-        return NativePtr->heapLRUDelta( );
+        return m_nativeptr->heapLRUDelta( );
       }
       
       System::Int32 SystemProperties::MaxSocketBufferSize::get( )
       {
-        return NativePtr->maxSocketBufferSize( );
+        return m_nativeptr->maxSocketBufferSize( );
       }
       
       System::Int32 SystemProperties::PingInterval::get( )
       {
-        return NativePtr->pingInterval( );
+        return m_nativeptr->pingInterval( );
       }
       
       System::Int32 SystemProperties::RedundancyMonitorInterval::get( )
       {
-        return NativePtr->redundancyMonitorInterval( );
+        return m_nativeptr->redundancyMonitorInterval( );
       }
       
       System::Int32 SystemProperties::NotifyAckInterval::get( )
       {
-        return NativePtr->notifyAckInterval( );
+        return m_nativeptr->notifyAckInterval( );
       }
       
       System::Int32 SystemProperties::NotifyDupCheckLife::get( )
       {
-        return NativePtr->notifyDupCheckLife( );
+        return m_nativeptr->notifyDupCheckLife( );
       }
       
       bool SystemProperties::DebugStackTraceEnabled::get( )
       {
-        return NativePtr->debugStackTraceEnabled( );
+        return m_nativeptr->debugStackTraceEnabled( );
       }
 
       bool SystemProperties::CrashDumpEnabled::get( )
       {
-        return NativePtr->crashDumpEnabled();
+        return m_nativeptr->crashDumpEnabled();
       }
 
       bool SystemProperties::AppDomainEnabled::get( )
       {
-        return NativePtr->isAppDomainEnabled();
+        return m_nativeptr->isAppDomainEnabled();
       }
 
       String^ SystemProperties::Name::get( )
       {
-        return ManagedString::Get( NativePtr->name( ) );
+        return ManagedString::Get( m_nativeptr->name( ) );
       }
 
       String^ SystemProperties::CacheXmlFile::get( )
       {
-        return ManagedString::Get( NativePtr->cacheXMLFile( ) );
+        return ManagedString::Get( m_nativeptr->cacheXMLFile( ) );
       }
 
       System::Int32 SystemProperties::LogFileSizeLimit::get( )
       {
-        return NativePtr->logFileSizeLimit( );
+        return m_nativeptr->logFileSizeLimit( );
       }
 
 	  System::Int32 SystemProperties::LogDiskSpaceLimit::get( )
       {
-		  return NativePtr->logDiskSpaceLimit( );
+		  return m_nativeptr->logDiskSpaceLimit( );
       }
 
       System::Int32 SystemProperties::StatsFileSizeLimit::get( )
       {
-        return NativePtr->statsFileSizeLimit( );
+        return m_nativeptr->statsFileSizeLimit( );
       }
 
 	  System::Int32 SystemProperties::StatsDiskSpaceLimit::get( )
       {
-		  return NativePtr->statsDiskSpaceLimit( );
+		  return m_nativeptr->statsDiskSpaceLimit( );
       }
 
       System::UInt32 SystemProperties::MaxQueueSize::get( )
       {
-        return NativePtr->maxQueueSize( );
+        return m_nativeptr->maxQueueSize( );
       }
 
       bool SystemProperties::SSLEnabled::get( )
       {
-        return NativePtr->sslEnabled();
+        return m_nativeptr->sslEnabled();
       }
 
       String^ SystemProperties::SSLKeyStore::get()
       {
-        return ManagedString::Get(NativePtr->sslKeyStore());
+        return ManagedString::Get(m_nativeptr->sslKeyStore());
       }
 
       String^ SystemProperties::SSLTrustStore::get()
       {
-        return ManagedString::Get(NativePtr->sslTrustStore());
+        return ManagedString::Get(m_nativeptr->sslTrustStore());
       }
       
       // adongre
       String^ SystemProperties::SSLKeystorePassword::get()
       {
-        return ManagedString::Get(NativePtr->sslKeystorePassword());
+        return ManagedString::Get(m_nativeptr->sslKeystorePassword());
       }
 
 
       bool SystemProperties::IsSecurityOn::get( )
       {
-        return NativePtr->isSecurityOn( );
+        return m_nativeptr->isSecurityOn( );
       }
 
       Properties<String^, String^>^ SystemProperties::GetSecurityProperties::get( )
       {
-        return Properties<String^, String^>::Create<String^, String^>( NativePtr->getSecurityProperties( ).ptr( ) );
+        return Properties<String^, String^>::Create(m_nativeptr->getSecurityProperties());
       }
 
       String^ SystemProperties::DurableClientId::get( )
       {
-        return ManagedString::Get( NativePtr->durableClientId( ) );
+        return ManagedString::Get( m_nativeptr->durableClientId( ) );
       }
 
       System::UInt32 SystemProperties::DurableTimeout::get( )
       {
-        return NativePtr->durableTimeout( );
+        return m_nativeptr->durableTimeout( );
       }
 
       System::UInt32 SystemProperties::ConnectTimeout::get( )
       {
-        return NativePtr->connectTimeout( );
+        return m_nativeptr->connectTimeout( );
       }
 
       String^ SystemProperties::ConflateEvents::get( )
       {
-        return ManagedString::Get( NativePtr->conflateEvents( ) );
+        return ManagedString::Get( m_nativeptr->conflateEvents( ) );
       }
 
       System::UInt32 SystemProperties::SuspendedTxTimeout::get( )
       {
-        return NativePtr->suspendedTxTimeout( );
+        return m_nativeptr->suspendedTxTimeout( );
       }
 
       bool SystemProperties::ReadTimeoutUnitInMillis::get( )
       {
-        return NativePtr->readTimeoutUnitInMillis( );
+        return m_nativeptr->readTimeoutUnitInMillis( );
       }
 
        bool SystemProperties::OnClientDisconnectClearPdxTypeIds::get( )
       {
-        return NativePtr->onClientDisconnectClearPdxTypeIds( );
+        return m_nativeptr->onClientDisconnectClearPdxTypeIds( );
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

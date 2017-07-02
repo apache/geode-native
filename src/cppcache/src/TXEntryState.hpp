@@ -34,7 +34,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class TXEntryState : public apache::geode::client::SharedBase {
+class TXEntryState {
  public:
   TXEntryState();
   virtual ~TXEntryState();

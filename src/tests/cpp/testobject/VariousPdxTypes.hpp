@@ -77,7 +77,7 @@ class TESTOBJECT_EXPORT PdxTypes1 : public PdxSerializable {
   int32_t getm_i1() { return m_i1; }
   static PdxSerializable* createDeserializable() { return new PdxTypes1(); }
 };
-typedef SharedPtr<PdxTypes1> PdxTypes1Ptr;
+typedef std::shared_ptr<PdxTypes1> PdxTypes1Ptr;
 
 /************************************************************
  *  PdxTypes2
@@ -113,7 +113,7 @@ class TESTOBJECT_EXPORT PdxTypes2 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxTypes2(); }
 };
-typedef SharedPtr<PdxTypes2> PdxTypes2Ptr;
+typedef std::shared_ptr<PdxTypes2> PdxTypes2Ptr;
 
 /************************************************************
  *  PdxTypes3
@@ -149,7 +149,7 @@ class TESTOBJECT_EXPORT PdxTypes3 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxTypes3(); }
 };
-typedef SharedPtr<PdxTypes3> PdxTypes3Ptr;
+typedef std::shared_ptr<PdxTypes3> PdxTypes3Ptr;
 
 /************************************************************
  *  PdxTypes4
@@ -184,7 +184,7 @@ class TESTOBJECT_EXPORT PdxTypes4 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxTypes4(); }
 };
-typedef SharedPtr<PdxTypes4> PdxTypes4Ptr;
+typedef std::shared_ptr<PdxTypes4> PdxTypes4Ptr;
 
 /************************************************************
  *  PdxTypes5
@@ -220,7 +220,7 @@ class TESTOBJECT_EXPORT PdxTypes5 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxTypes5(); }
 };
-typedef SharedPtr<PdxTypes5> PdxTypes5Ptr;
+typedef std::shared_ptr<PdxTypes5> PdxTypes5Ptr;
 
 /************************************************************
  *  PdxTypes6
@@ -257,7 +257,7 @@ class TESTOBJECT_EXPORT PdxTypes6 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxTypes6(); }
 };
-typedef SharedPtr<PdxTypes6> PdxTypes6Ptr;
+typedef std::shared_ptr<PdxTypes6> PdxTypes6Ptr;
 
 /************************************************************
  *  PdxTypes7
@@ -294,7 +294,7 @@ class TESTOBJECT_EXPORT PdxTypes7 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxTypes7(); }
 };
-typedef SharedPtr<PdxTypes7> PdxTypes7Ptr;
+typedef std::shared_ptr<PdxTypes7> PdxTypes7Ptr;
 
 /************************************************************
  *  PdxTypes8
@@ -333,7 +333,7 @@ class TESTOBJECT_EXPORT PdxTypes8 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxTypes8(); }
 };
-typedef SharedPtr<PdxTypes8> PdxTypes8Ptr;
+typedef std::shared_ptr<PdxTypes8> PdxTypes8Ptr;
 
 /************************************************************
  *  PdxTypes9
@@ -369,7 +369,7 @@ class TESTOBJECT_EXPORT PdxTypes9 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxTypes9(); }
 };
-typedef SharedPtr<PdxTypes9> PdxTypes9Ptr;
+typedef std::shared_ptr<PdxTypes9> PdxTypes9Ptr;
 
 /************************************************************
  *  PdxTypes10
@@ -406,7 +406,7 @@ class TESTOBJECT_EXPORT PdxTypes10 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxTypes10(); }
 };
-typedef SharedPtr<PdxTypes10> PdxTypes10Ptr;
+typedef std::shared_ptr<PdxTypes10> PdxTypes10Ptr;
 
 /************************************************************
  *  NestedPdx
@@ -447,7 +447,7 @@ class TESTOBJECT_EXPORT NestedPdx : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new NestedPdx(); }
 };
-typedef SharedPtr<NestedPdx> NestedPdxPtr;
+typedef std::shared_ptr<NestedPdx> NestedPdxPtr;
 
 /************************************************************
  *  Mixed Version NestedPdx
@@ -491,7 +491,7 @@ class TESTOBJECT_EXPORT MixedVersionNestedPdx : public PdxSerializable {
     return new MixedVersionNestedPdx();
   }
 };
-typedef SharedPtr<MixedVersionNestedPdx> MixedVersionNestedPdxPtr;
+typedef std::shared_ptr<MixedVersionNestedPdx> MixedVersionNestedPdxPtr;
 
 /************************************************************
  *  PdxInsideIGeodeSerializable
@@ -534,7 +534,8 @@ class TESTOBJECT_EXPORT PdxInsideIGeodeSerializable : public Serializable {
     return new PdxInsideIGeodeSerializable();
   }
 };
-typedef SharedPtr<PdxInsideIGeodeSerializable> PdxInsideIGeodeSerializablePtr;
+typedef std::shared_ptr<PdxInsideIGeodeSerializable>
+    PdxInsideIGeodeSerializablePtr;
 
 } /* namespace PdxTests */
 

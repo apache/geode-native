@@ -45,7 +45,7 @@ using namespace testobject;
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
@@ -84,7 +84,7 @@ void initClient() {
   } catch (const IllegalStateException&) {
     // ignore reregistration exception
   }
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(true);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
@@ -96,7 +96,7 @@ void initClient( const bool isthinClient )
   Serializable::registerType( Portfolio::createDeserializable);
   Serializable::registerType( Position::createDeserializable);
 
-  if ( cacheHelper == NULL ) {
+  if ( cacheHelper == nullptr ) {
     cacheHelper = new CacheHelper(isthinClient);
   }
   ASSERT( cacheHelper, "Failed to create a CacheHelper client instance." );
@@ -104,14 +104,14 @@ void initClient( const bool isthinClient )
 */
 
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
@@ -120,10 +120,10 @@ void createRegion(const char* name, bool ackMode,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  char* endpoints = NULL;
+  char* endpoints = nullptr;
   RegionPtr regPtr = getHelper()->createRegion(
-      name, ackMode, false, NULLPTR, endpoints, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+      name, ackMode, false, nullptr, endpoints, clientNotificationEnabled);
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 
@@ -132,7 +132,7 @@ const char* regionNames[] = {"Portfolios", "Positions"};
 const bool USE_ACK = true;
 const bool NO_ACK ATTR_UNUSED = false;
 
-KillServerThread* kst = NULL;
+KillServerThread* kst = nullptr;
 
 void initClientAndRegion(int redundancy) {
   // PropertiesPtr pp  = Properties::create();
@@ -165,10 +165,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
 
     RegionPtr rptr = getHelper()->cachePtr->getRegion(regionNames[0]);
 
-    CacheablePtr port1(new Portfolio(1, 100));
-    CacheablePtr port2(new Portfolio(2, 200));
-    CacheablePtr port3(new Portfolio(3, 300));
-    CacheablePtr port4(new Portfolio(4, 400));
+    auto port1 = std::make_shared<Portfolio>(1, 100);
+    auto port2 = std::make_shared<Portfolio>(2, 200);
+    auto port3 = std::make_shared<Portfolio>(3, 300);
+    auto port4 = std::make_shared<Portfolio>(4, 400);
 
     rptr->put("1", port1);
     rptr->put("2", port2);
@@ -193,7 +193,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     try {
       kst = new KillServerThread();
 
-      QueryServicePtr qs = NULLPTR;
+      QueryServicePtr qs = nullptr;
 
       PoolPtr pool = PoolManager::find("__TESTPOOL1_");
       qs = pool->getQueryService();

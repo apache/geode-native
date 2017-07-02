@@ -50,8 +50,8 @@ class ThinClientBaseDM;
 class ThinClientRegion;
 
 /**
-* @brief transport data between caches
-*/
+ * @brief transport data between caches
+ */
 class CPPCACHE_EXPORT TcrConnectionManager {
  public:
   TcrConnectionManager(CacheImpl* cache);
@@ -112,8 +112,9 @@ class CPPCACHE_EXPORT TcrConnectionManager {
                               TcrHADistributionManager* theHADM);
   GfErrType sendSyncRequestRegisterInterest(
       TcrMessage& request, TcrMessageReply& reply, bool attemptFailover = true,
-      TcrEndpoint* endpoint = NULL, TcrHADistributionManager* theHADM = NULL,
-      ThinClientRegion* region = NULL);
+      TcrEndpoint* endpoint = nullptr,
+      TcrHADistributionManager* theHADM = nullptr,
+      ThinClientRegion* region = nullptr);
 
   inline void triggerRedundancyThread() { m_redundancySema.release(); }
 
@@ -155,7 +156,7 @@ class CPPCACHE_EXPORT TcrConnectionManager {
 
   bool removeRefToEndpoint(TcrEndpoint* ep, bool keepEndpoint = false);
   TcrEndpoint* addRefToTcrEndpoint(std::string endpointName,
-                                   ThinClientBaseDM* dm = NULL);
+                                   ThinClientBaseDM* dm = nullptr);
 
   void initializeHAEndpoints(const char* endpointsStr);
   void removeHAEndpoints();

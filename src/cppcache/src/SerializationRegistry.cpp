@@ -33,7 +33,6 @@
 #include "EventId.hpp"
 #include <geode/Properties.hpp>
 #include <geode/ExceptionTypes.hpp>
-#include "SpinLock.hpp"
 #include <geode/RegionAttributes.hpp>
 #include "CacheableObjectPartList.hpp"
 #include "ClientConnectionResponse.hpp"
@@ -59,6 +58,9 @@
 
 #include "NonCopyable.hpp"
 
+#include <mutex>
+#include "util/concurrent/spinlock_mutex.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -81,23 +83,23 @@ class TheTypeMap : private NonCopyable, private NonAssignable {
   IdToFactoryMap* m_map;
   IdToFactoryMap* m_map2;  // to hold Fixed IDs since GFE 5.7.
   StrToPdxFactoryMap* m_pdxTypemap;
-  SpinLock m_mapLock;
-  SpinLock m_map2Lock;
-  SpinLock m_pdxTypemapLock;
+  spinlock_mutex m_mapLock;
+  spinlock_mutex m_map2Lock;
+  spinlock_mutex m_pdxTypemapLock;
 
  public:
   TheTypeMap();
 
   virtual ~TheTypeMap() {
-    if (m_map != NULL) {
+    if (m_map != nullptr) {
       delete m_map;
     }
 
-    if (m_map2 != NULL) {
+    if (m_map2 != nullptr) {
       delete m_map2;
     }
 
-    if (m_pdxTypemap != NULL) {
+    if (m_pdxTypemap != nullptr) {
       delete m_pdxTypemap;
     }
   }
@@ -166,29 +168,29 @@ class TheTypeMap : private NonCopyable, private NonAssignable {
   }
 
   inline void clear() {
-    SpinLockGuard guard(m_mapLock);
+    std::lock_guard<spinlock_mutex> guard(m_mapLock);
     m_map->unbind_all();
 
-    SpinLockGuard guard2(m_map2Lock);
+    std::lock_guard<spinlock_mutex> guard2(m_map2Lock);
     m_map2->unbind_all();
 
-    SpinLockGuard guard3(m_pdxTypemapLock);
+    std::lock_guard<spinlock_mutex> guard3(m_pdxTypemapLock);
     m_pdxTypemap->unbind_all();
   }
 
   inline void find(int64_t id, TypeFactoryMethod& func) {
-    SpinLockGuard guard(m_mapLock);
+    std::lock_guard<spinlock_mutex> guard(m_mapLock);
     m_map->find(id, func);
   }
 
   inline void find2(int64_t id, TypeFactoryMethod& func) {
-    SpinLockGuard guard(m_map2Lock);
+    std::lock_guard<spinlock_mutex> guard(m_map2Lock);
     m_map2->find(id, func);
   }
 
   inline void bind(TypeFactoryMethod func) {
     Serializable* obj = func();
-    SpinLockGuard guard(m_mapLock);
+    std::lock_guard<spinlock_mutex> guard(m_mapLock);
     int64_t compId = static_cast<int64_t>(obj->typeId());
     if (compId == GeodeTypeIdsImpl::CacheableUserData ||
         compId == GeodeTypeIdsImpl::CacheableUserData2 ||
@@ -217,7 +219,7 @@ class TheTypeMap : private NonCopyable, private NonAssignable {
   }
 
   inline void rebind(int64_t compId, TypeFactoryMethod func) {
-    SpinLockGuard guard(m_mapLock);
+    std::lock_guard<spinlock_mutex> guard(m_mapLock);
     int bindRes = m_map->rebind(compId, func);
     if (bindRes == -1) {
       LOGERROR(
@@ -231,13 +233,13 @@ class TheTypeMap : private NonCopyable, private NonAssignable {
   }
 
   inline void unbind(int64_t compId) {
-    SpinLockGuard guard(m_mapLock);
+    std::lock_guard<spinlock_mutex> guard(m_mapLock);
     m_map->unbind(compId);
   }
 
   inline void bind2(TypeFactoryMethod func) {
     Serializable* obj = func();
-    SpinLockGuard guard(m_map2Lock);
+    std::lock_guard<spinlock_mutex> guard(m_map2Lock);
     int8_t dsfid = obj->DSFID();
 
     int64_t compId = 0;
@@ -268,18 +270,18 @@ class TheTypeMap : private NonCopyable, private NonAssignable {
   }
 
   inline void rebind2(int64_t compId, TypeFactoryMethod func) {
-    SpinLockGuard guard(m_map2Lock);
+    std::lock_guard<spinlock_mutex> guard(m_map2Lock);
     m_map2->rebind(compId, func);
   }
 
   inline void unbind2(int64_t compId) {
-    SpinLockGuard guard(m_map2Lock);
+    std::lock_guard<spinlock_mutex> guard(m_map2Lock);
     m_map2->unbind(compId);
   }
 
   inline void bindPdxType(TypeFactoryMethodPdx func) {
     PdxSerializable* obj = func();
-    SpinLockGuard guard(m_pdxTypemapLock);
+    std::lock_guard<spinlock_mutex> guard(m_pdxTypemapLock);
     const char* objFullName = obj->getClassName();
 
     int bindRes = m_pdxTypemap->bind(objFullName, func);
@@ -302,13 +304,14 @@ class TheTypeMap : private NonCopyable, private NonAssignable {
     }
   }
 
-  inline void findPdxType(char* objFullName, TypeFactoryMethodPdx& func) {
-    SpinLockGuard guard(m_pdxTypemapLock);
+  inline void findPdxType(const char* objFullName, TypeFactoryMethodPdx& func) {
+    std::lock_guard<spinlock_mutex> guard(m_pdxTypemapLock);
     m_pdxTypemap->find(objFullName, func);
   }
 
-  inline void rebindPdxType(char* objFullName, TypeFactoryMethodPdx func) {
-    SpinLockGuard guard(m_pdxTypemapLock);
+  inline void rebindPdxType(const char* objFullName,
+                            TypeFactoryMethodPdx func) {
+    std::lock_guard<spinlock_mutex> guard(m_pdxTypemapLock);
     int bindRes = m_pdxTypemap->rebind(objFullName, func);
     if (bindRes == -1) {
       LOGERROR(
@@ -321,8 +324,8 @@ class TheTypeMap : private NonCopyable, private NonAssignable {
     }
   }
 
-  inline void unbindPdxType(char* objFullName) {
-    SpinLockGuard guard(m_pdxTypemapLock);
+  inline void unbindPdxType(const char* objFullName) {
+    std::lock_guard<spinlock_mutex> guard(m_pdxTypemapLock);
     m_pdxTypemap->unbind(objFullName);
   }
 };
@@ -339,7 +342,7 @@ TheTypeMap::TheTypeMap() {
 
 typedef ACE_Singleton<TheTypeMap, ACE_Thread_Mutex> theTypeMap;
 
-PdxSerializerPtr SerializationRegistry::m_pdxSerializer = NULLPTR;
+PdxSerializerPtr SerializationRegistry::m_pdxSerializer = nullptr;
 
 /** This starts at reading the typeid.. assumes the length has been read. */
 SerializablePtr SerializationRegistry::deserialize(DataInput& input,
@@ -353,7 +356,7 @@ SerializablePtr SerializationRegistry::deserialize(DataInput& input,
   LOGDEBUG("SerializationRegistry::deserialize typeid = %d currentTypeId= %d ",
            typeId, currentTypeId);
   if (compId == GeodeTypeIds::NullObj) {
-    return NULLPTR;
+    return nullptr;
   } else if (compId == GeodeTypeIds::CacheableNullString) {
     return SerializablePtr(CacheableString::createDeserializable());
   } else if (compId == GeodeTypeIdsImpl::CacheableUserData) {
@@ -370,7 +373,7 @@ SerializablePtr SerializationRegistry::deserialize(DataInput& input,
     compId |= ((static_cast<int64_t>(classId)) << 32);
   }
 
-  TypeFactoryMethod createType = NULL;
+  TypeFactoryMethod createType = nullptr;
 
   if (compId == GeodeTypeIdsImpl::FixedIDByte) {
     int8_t fixedId;
@@ -394,7 +397,7 @@ SerializablePtr SerializationRegistry::deserialize(DataInput& input,
   } else {
     theTypeMap::instance()->find(compId, createType);
   }
-  if (createType == NULL) {
+  if (createType == nullptr) {
     if (findinternal) {
       LOGERROR(
           "Unregistered class ID %d during deserialization: Did the "
@@ -414,7 +417,11 @@ SerializablePtr SerializationRegistry::deserialize(DataInput& input,
   }
   SerializablePtr obj(createType());
   // This assignment allows the fromData method to return a different object.
-  return SerializablePtr(obj->fromData(input));
+  auto tmp = obj->fromData(input);
+  if (obj.get() == tmp) {
+    return obj;
+  }
+  return tmp->shared_from_this();
 }
 
 void SerializationRegistry::addType(TypeFactoryMethod func) {
@@ -452,13 +459,13 @@ void SerializationRegistry::init() {
   theTypeMap::instance()->setup();
 }
 
-PdxSerializablePtr SerializationRegistry::getPdxType(char* className) {
-  TypeFactoryMethodPdx objectType = NULL;
+PdxSerializablePtr SerializationRegistry::getPdxType(const char* className) {
+  TypeFactoryMethodPdx objectType = nullptr;
   theTypeMap::instance()->findPdxType(className, objectType);
   PdxSerializablePtr pdxObj;
-  if (objectType == NULL) {
+  if (nullptr == objectType) {
     try {
-      pdxObj = new PdxWrapper((const char*)className);
+      pdxObj = std::make_shared<PdxWrapper>(className);
     } catch (const Exception&) {
       LOGERROR(
           "Unregistered class %s during PDX deserialization: Did the "
@@ -468,7 +475,7 @@ PdxSerializablePtr SerializationRegistry::getPdxType(char* className) {
           "Unregistered class or serializer in PDX deserialization");
     }
   } else {
-    pdxObj = objectType();
+    pdxObj.reset(objectType());
   }
   return pdxObj;
 }
@@ -483,78 +490,66 @@ PdxSerializerPtr SerializationRegistry::getPdxSerializer() {
 
 int32_t SerializationRegistry::GetPDXIdForType(const char* poolName,
                                                SerializablePtr pdxType) {
-  PoolPtr pool = NULLPTR;
+  PoolPtr pool = nullptr;
 
-  if (poolName == NULL) {
-    const HashMapOfPools& pools = PoolManager::getAll();
-    if (pools.size() > 0) {
-      for (HashMapOfPools::Iterator iter = pools.begin(); iter != pools.end();
-           ++iter) {
-        PoolPtr currPool(iter.second());
-        pool = currPool;
-        break;
-      }
+  if (poolName == nullptr) {
+    for (const auto& iter : PoolManager::getAll()) {
+      pool = iter.second;
+      break;
     }
   } else {
     pool = PoolManager::find(poolName);
   }
 
-  if (pool == NULLPTR) {
+  if (pool == nullptr) {
     throw IllegalStateException("Pool not found, Pdx operation failed");
   }
 
-  return static_cast<ThinClientPoolDM*>(pool.ptr())->GetPDXIdForType(pdxType);
+  return static_cast<ThinClientPoolDM*>(pool.get())->GetPDXIdForType(pdxType);
 }
 
 SerializablePtr SerializationRegistry::GetPDXTypeById(const char* poolName,
                                                       int32_t typeId) {
-  PoolPtr pool = NULLPTR;
+  PoolPtr pool = nullptr;
 
-  if (poolName == NULL) {
-    const HashMapOfPools& pools = PoolManager::getAll();
-    if (pools.size() > 0) {
-      HashMapOfPools::Iterator iter = pools.begin();
-      PoolPtr currPool(iter.second());
-      pool = currPool;
+  if (poolName == nullptr) {
+    for (const auto& iter : PoolManager::getAll()) {
+      pool = iter.second;
+      break;
     }
   } else {
     pool = PoolManager::find(poolName);
   }
 
-  if (pool == NULLPTR) {
+  if (pool == nullptr) {
     throw IllegalStateException("Pool not found, Pdx operation failed");
   }
 
-  return static_cast<ThinClientPoolDM*>(pool.ptr())->GetPDXTypeById(typeId);
+  return static_cast<ThinClientPoolDM*>(pool.get())->GetPDXTypeById(typeId);
 }
 
 int32_t SerializationRegistry::GetEnumValue(SerializablePtr enumInfo) {
   PoolPtr pool = getPool();
-  if (pool == NULLPTR) {
+  if (pool == nullptr) {
     throw IllegalStateException("Pool not found, Pdx operation failed");
   }
 
-  return static_cast<ThinClientPoolDM*>(pool.ptr())->GetEnumValue(enumInfo);
+  return static_cast<ThinClientPoolDM*>(pool.get())->GetEnumValue(enumInfo);
 }
 SerializablePtr SerializationRegistry::GetEnum(int32_t val) {
   PoolPtr pool = getPool();
-  if (pool == NULLPTR) {
+  if (pool == nullptr) {
     throw IllegalStateException("Pool not found, Pdx operation failed");
   }
 
-  return static_cast<ThinClientPoolDM*>(pool.ptr())->GetEnum(val);
+  return static_cast<ThinClientPoolDM*>(pool.get())->GetEnum(val);
 }
 
 PoolPtr SerializationRegistry::getPool() {
-  PoolPtr pool = NULLPTR;
-  const HashMapOfPools& pools = PoolManager::getAll();
-  if (pools.size() > 0) {
-    for (HashMapOfPools::Iterator iter = pools.begin(); iter != pools.end();
-         ++iter) {
-      PoolPtr currPool(iter.second());
-      pool = currPool;
-      break;
-    }
+  PoolPtr pool = nullptr;
+  for (const auto& iter: PoolManager::getAll()) {
+    pool = iter.second;
+    break;
   }
   return pool;
 }

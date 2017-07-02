@@ -15,8 +15,11 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
+ //#include "geode_includes.hpp"
+#include "begin_native.hpp"
 #include <geode/Struct.hpp>
+#include "end_native.hpp"
+
 #include "Struct.hpp"
 #include "StructSet.hpp"
 #include "ExceptionTypes.hpp"
@@ -30,50 +33,85 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
-      Object^ Struct::default::get( size_t index )
+      Object^ Struct::default::get(size_t index)
       {
-       /*   return SafeUMSerializableConvertGeneric(static_cast<apache::geode::client::Struct*>(
-            NativePtr())->operator[](static_cast<System::Int32>(index)).ptr());*/
-          return (Serializable::GetManagedValueGeneric<Object^>(static_cast<apache::geode::client::Struct*>(
-            NativePtr())->operator[](static_cast<System::Int32>(index))));
+        try
+        {
+          return (Serializable::GetManagedValueGeneric<Object^>(
+            static_cast<native::Struct*>(m_nativeptr->get())->operator[](static_cast<System::Int32>(index))));
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
-      Object^ Struct::default::get( String^ fieldName )
+      Object^ Struct::default::get(String^ fieldName)
       {
-        ManagedString mg_fieldName( fieldName );
-        /*return SafeUMSerializableConvertGeneric(static_cast<apache::geode::client::Struct*>(
-            NativePtr())->operator[](mg_fieldName.CharPtr).ptr());*/
-
-        return (Serializable::GetManagedValueGeneric</*TResult*/Object^>(static_cast<apache::geode::client::Struct*>(
-            NativePtr())->operator[](mg_fieldName.CharPtr)));
+        ManagedString mg_fieldName(fieldName);
+        try
+        {
+          return (Serializable::GetManagedValueGeneric<Object^>(
+            static_cast<native::Struct*>(m_nativeptr->get())->operator[](mg_fieldName.CharPtr)));
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
-      StructSet<Object^>^ Struct::Set::get( )
+      StructSet<Object^>^ Struct::Set::get()
       {
-        return StructSet</*TResult*/Object^>::Create(static_cast<apache::geode::client::Struct*>(
-          NativePtr())->getStructSet().ptr());
+        try
+        {
+          return StructSet</*TResult*/Object^>::Create(
+            static_cast<native::Struct*>(m_nativeptr->get())->getStructSet());
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
-      
-      bool Struct/*<TResult>*/::HasNext( )
+
+      bool Struct/*<TResult>*/::HasNext()
       {
-        return static_cast<apache::geode::client::Struct*>(NativePtr())->hasNext();
+        try
+        {
+          return static_cast<native::Struct*>(m_nativeptr->get())->hasNext();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
-      size_t Struct/*<TResult>*/::Length::get( )
+      size_t Struct/*<TResult>*/::Length::get()
       {
-        return static_cast<apache::geode::client::Struct*>(NativePtr())->length();
+        try
+        {
+          return static_cast<native::Struct*>(m_nativeptr->get())->length();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
-      Object^ Struct/*<TResult>*/::Next( )
+      Object^ Struct/*<TResult>*/::Next()
       {
-        /*return SafeUMSerializableConvertGeneric(static_cast<apache::geode::client::Struct*>(
-          NativePtr())->next().ptr());*/
-        return (Serializable::GetManagedValueGeneric</*TResult*/Object^>(static_cast<apache::geode::client::Struct*>(
-          NativePtr())->next()));
+        try
+        {
+          return (Serializable::GetManagedValueGeneric<Object^>(
+            static_cast<native::Struct*>(m_nativeptr->get())->next()));
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
- } //namespace 

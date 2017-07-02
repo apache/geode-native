@@ -42,7 +42,7 @@
 using namespace apache::geode::client;
 
 // The Delta QuickStart example.
-typedef SharedPtr<DeltaExample> DeltaExamplePtr;
+typedef std::shared_ptr<DeltaExample> DeltaExamplePtr;
 int main(int argc, char** argv) {
   try {
     // Create a Geode Cache.
@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
     regPtr->localInvalidate("Key1");
 
     // Fetching the value from server.
-    DeltaExamplePtr retVal = dynCast<DeltaExamplePtr>(regPtr->get("Key1"));
+    auto retVal = std::dynamic_pointer_cast<DeltaExample>(regPtr->get("Key1"));
 
     // Verification
     if (retVal->getField1() != 9)

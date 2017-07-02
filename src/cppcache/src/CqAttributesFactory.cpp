@@ -21,37 +21,31 @@
 using namespace apache::geode::client;
 
 CqAttributesFactory::CqAttributesFactory() {
-  m_cqAttributes = new CqAttributesImpl();
+  m_cqAttributes = std::make_shared<CqAttributesImpl>();
 }
-CqAttributesFactory::CqAttributesFactory(CqAttributesPtr &cqAttributes) {
-  CqAttributesImpl *cqImpl = new CqAttributesImpl();
-  m_cqAttributes = cqImpl;
-  VectorOfCqListener vl;
-  CqAttributesImpl *cqAttr =
-      dynamic_cast<CqAttributesImpl *>(cqAttributes.ptr());
-  cqAttr->getCqListeners(vl);
-  cqImpl->setCqListeners(vl);
+CqAttributesFactory::CqAttributesFactory(const CqAttributesPtr &cqAttributes) {
+  m_cqAttributes = std::make_shared<CqAttributesImpl>();
+  CqAttributesImpl::listener_container_type vl;
+  std::static_pointer_cast<CqAttributesImpl>(cqAttributes)->getCqListeners(vl);
+  std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)
+      ->setCqListeners(vl);
 }
 
 void CqAttributesFactory::addCqListener(const CqListenerPtr &cqListener) {
-  if (cqListener == NULLPTR) {
+  if (cqListener == nullptr) {
     throw IllegalArgumentException("addCqListener parameter was null");
   }
-  CqAttributesImpl *cqImpl =
-      dynamic_cast<CqAttributesImpl *>(m_cqAttributes.ptr());
-  CqListenerPtr listener = dynCast<CqListenerPtr>(cqListener);
-  cqImpl->addCqListener(listener);
+  std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)
+      ->addCqListener(cqListener);
 }
 
-void CqAttributesFactory::initCqListeners(VectorOfCqListener &cqListeners) {
-  CqAttributesImpl *cqImpl =
-      dynamic_cast<CqAttributesImpl *>(m_cqAttributes.ptr());
-  cqImpl->setCqListeners(cqListeners);
+void CqAttributesFactory::initCqListeners(
+    const CqAttributesImpl::listener_container_type &cqListeners) {
+  std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)
+      ->setCqListeners(cqListeners);
 }
 
 CqAttributesPtr CqAttributesFactory::create() {
-  CqAttributesImpl *cqImpl =
-      dynamic_cast<CqAttributesImpl *>(m_cqAttributes.ptr());
-  CqAttributesPtr ptr(cqImpl->clone());
-  return ptr;
+  return CqAttributesPtr(
+      std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)->clone());
 }

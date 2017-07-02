@@ -80,7 +80,7 @@ class TESTOBJECT_EXPORT Parent : public GrandParent {
 };
 
 class Child;
-typedef SharedPtr<Child> ChildPtr;
+typedef std::shared_ptr<Child> ChildPtr;
 
 class TESTOBJECT_EXPORT Child : public Parent, public PdxSerializable {
  private:
@@ -131,12 +131,12 @@ class TESTOBJECT_EXPORT Child : public Parent, public PdxSerializable {
   static PdxSerializable* createDeserializable() { return new Child(); }
 
   bool equals(PdxSerializablePtr obj) {
-    if (obj == NULLPTR) return false;
+    if (obj == nullptr) return false;
 
-    ChildPtr pap = dynCast<ChildPtr>(obj);
-    if (pap == NULLPTR) return false;
+    auto pap = std::dynamic_pointer_cast<Child>(obj);
+    if (pap == nullptr) return false;
 
-    if (pap == this) return true;
+    if (pap.get() == this) return true;
 
     if (m_a == pap->m_a && m_b == pap->m_b && m_c == pap->m_c &&
         m_d == pap->m_d && m_e == pap->m_e && m_f == pap->m_f) {
@@ -242,7 +242,7 @@ class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new CharTypes(); }
 };
-typedef SharedPtr<CharTypes> CharTypesPtr;
+typedef std::shared_ptr<CharTypes> CharTypesPtr;
 
 /**********/
 class TESTOBJECT_EXPORT Address : public PdxSerializable {
@@ -315,14 +315,14 @@ class TESTOBJECT_EXPORT Address : public PdxSerializable {
 
   /*static AddressPtr create(int32_t aptN, char* street, char* city)
   {
-          AddressPtr str = NULLPTR;
+          AddressPtr str = nullptr;
     if (value != NULL) {
       str = new Address();
     }
     return str;
   }*/
 };
-typedef SharedPtr<Address> AddressPtr;
+typedef std::shared_ptr<Address> AddressPtr;
 enum pdxEnumTest { pdx1, pdx2, pdx3 };
 class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
  private:
@@ -507,13 +507,13 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
     m_linkedlist->push_back(CacheableInt32::create(2));
 
     m_map = CacheableHashMap::create();
-    m_map->insert(CacheableInt32::create(1), CacheableInt32::create(1));
-    m_map->insert(CacheableInt32::create(2), CacheableInt32::create(2));
+    m_map->emplace(CacheableInt32::create(1), CacheableInt32::create(1));
+    m_map->emplace(CacheableInt32::create(2), CacheableInt32::create(2));
 
     m_hashtable = CacheableHashTable::create();
-    m_hashtable->insert(CacheableInt32::create(1),
-                        CacheableString::create("1111111111111111"));
-    m_hashtable->insert(
+    m_hashtable->emplace(CacheableInt32::create(1),
+                         CacheableString::create("1111111111111111"));
+    m_hashtable->emplace(
         CacheableInt32::create(2),
         CacheableString::create("2222222222221111111111111111"));
 
@@ -556,17 +556,17 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
       keys.push_back(CacheableKey::create(key));
     }*/
 
-    m_objectArray = NULLPTR;
-    m_objectArrayEmptyPdxFieldName = NULLPTR;
+    m_objectArray = nullptr;
+    m_objectArrayEmptyPdxFieldName = nullptr;
     /*AddressPtr objectArray[3];
     objectArray[0] = new Address(1, "strt-1", "city-1");
     objectArray[1] = new Address(2, "strt-2", "city-2");
     objectArray[2] = new Address(3, "strt-3", "city-3");*/
 
     /*
-    AddressPtr addObj1(new Address(1, "abc", "ABC"));
-    AddressPtr addObj2(new Address(2, "def", "DEF"));
-    AddressPtr addObj3(new Address(3, "ghi", "GHI"));*/
+    auto addObj1 = std::make_shared<Address>(1, "abc", "ABC");
+    auto addObj2 = std::make_shared<Address>(2, "def", "DEF");
+    auto addObj3 = std::make_shared<Address>(3, "ghi", "GHI");*/
 
     m_objectArray = CacheableObjectArray::create();
     m_objectArray->push_back(AddressPtr(new Address(1, "street0", "city0")));
@@ -748,7 +748,9 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
     return m_objectArrayEmptyPdxFieldName;
   }
 
-  CacheableEnumPtr getEnum() { return m_pdxEnum; }
+  CacheableEnumPtr getEnum() {
+    return std::static_pointer_cast<CacheableEnum>(m_pdxEnum);
+  }
 
   int32_t getByteArrayLength() { return byteArrayLen; }
 
@@ -795,7 +797,7 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
   bool generic2DCompare(T1** value1, T2** value2, int length,
                         int* arrLengths) const;
 };
-typedef SharedPtr<PdxTests::PdxType> PdxTypePtr;
+typedef std::shared_ptr<PdxTests::PdxType> PdxTypePtr;
 }  // namespace PdxTests
 
 #endif  // GEODE_TESTOBJECT_PDXTYPE_H_

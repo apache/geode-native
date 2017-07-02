@@ -17,9 +17,7 @@
 
 #pragma once
 
-//#include "geode_includes.hpp"
 #include "RegionFactory.hpp"
-//#include "AttributesFactory.hpp"
 #include "RegionAttributes.hpp"
 #include "impl/SafeConvert.hpp"
 
@@ -49,6 +47,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       RegionFactory^ RegionFactory::SetCacheLoader( String^ libPath, String^ factoryFunctionName )
       {
@@ -56,8 +55,14 @@ namespace Apache
         ManagedString mg_libpath( libPath );
         ManagedString mg_factoryFunctionName( factoryFunctionName );
 
-        NativePtr->setCacheLoader( mg_libpath.CharPtr,
-          mg_factoryFunctionName.CharPtr );
+        try
+        {
+          m_nativeptr->get()->setCacheLoader( mg_libpath.CharPtr, mg_factoryFunctionName.CharPtr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
@@ -67,8 +72,14 @@ namespace Apache
         ManagedString mg_libpath( libPath );
         ManagedString mg_factoryFunctionName( factoryFunctionName );
 
-        NativePtr->setCacheWriter( mg_libpath.CharPtr,
-          mg_factoryFunctionName.CharPtr );
+        try
+        {
+          m_nativeptr->get()->setCacheWriter( mg_libpath.CharPtr, mg_factoryFunctionName.CharPtr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
@@ -78,8 +89,14 @@ namespace Apache
         ManagedString mg_libpath( libPath );
         ManagedString mg_factoryFunctionName( factoryFunctionName );
 
-        NativePtr->setCacheListener( mg_libpath.CharPtr,
-          mg_factoryFunctionName.CharPtr );
+        try
+        {
+          m_nativeptr->get()->setCacheListener( mg_libpath.CharPtr, mg_factoryFunctionName.CharPtr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
@@ -89,8 +106,14 @@ namespace Apache
         ManagedString mg_libpath( libPath );
         ManagedString mg_factoryFunctionName( factoryFunctionName );
 
-        NativePtr->setPartitionResolver( mg_libpath.CharPtr,
-          mg_factoryFunctionName.CharPtr );
+        try
+        {
+          m_nativeptr->get()->setPartitionResolver( mg_libpath.CharPtr, mg_factoryFunctionName.CharPtr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
@@ -98,29 +121,53 @@ namespace Apache
 
       RegionFactory^ RegionFactory::SetEntryIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout )
       {
-        NativePtr->setEntryIdleTimeout(
-          static_cast<apache::geode::client::ExpirationAction::Action>( action ), idleTimeout );
+        try
+        {
+          m_nativeptr->get()->setEntryIdleTimeout( static_cast<native::ExpirationAction::Action>( action ), idleTimeout );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
       RegionFactory^ RegionFactory::SetEntryTimeToLive( ExpirationAction action, System::UInt32 timeToLive )
       {
-        NativePtr->setEntryTimeToLive(
-          static_cast<apache::geode::client::ExpirationAction::Action>( action ), timeToLive );
+        try
+        {
+          m_nativeptr->get()->setEntryTimeToLive(static_cast<native::ExpirationAction::Action>( action ), timeToLive );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
       RegionFactory^ RegionFactory::SetRegionIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout )
       {
-        NativePtr->setRegionIdleTimeout(
-          static_cast<apache::geode::client::ExpirationAction::Action>( action ), idleTimeout );
+        try
+        {
+          m_nativeptr->get()->setRegionIdleTimeout(static_cast<native::ExpirationAction::Action>( action ), idleTimeout );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
       RegionFactory^ RegionFactory::SetRegionTimeToLive( ExpirationAction action, System::UInt32 timeToLive )
       {
-        NativePtr->setRegionTimeToLive(
-          static_cast<apache::geode::client::ExpirationAction::Action>( action ), timeToLive );
+        try
+        {
+          m_nativeptr->get()->setRegionTimeToLive(static_cast<native::ExpirationAction::Action>( action ), timeToLive );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
@@ -130,15 +177,21 @@ namespace Apache
       RegionFactory^ RegionFactory::SetPersistenceManager( Client::IPersistenceManager<TKey, TValue>^ persistenceManager, 
           Properties<String^, String^>^ config)
       {
-        apache::geode::client::PersistenceManagerPtr persistenceManagerptr;
+        native::PersistenceManagerPtr persistenceManagerptr;
         if ( persistenceManager != nullptr ) {
           PersistenceManagerGeneric<TKey, TValue>^ clg = gcnew PersistenceManagerGeneric<TKey, TValue>();
           clg->SetPersistenceManager(persistenceManager);
-          persistenceManagerptr = new apache::geode::client::ManagedPersistenceManagerGeneric( /*clg,*/ persistenceManager);
-          ((apache::geode::client::ManagedPersistenceManagerGeneric*)persistenceManagerptr.ptr())->setptr(clg);
+          persistenceManagerptr = std::shared_ptr<native::ManagedPersistenceManagerGeneric>(new native::ManagedPersistenceManagerGeneric(persistenceManager));
+          ((native::ManagedPersistenceManagerGeneric*)persistenceManagerptr.get())->setptr(clg);
         }
-        apache::geode::client::PropertiesPtr configptr(GetNativePtr<apache::geode::client::Properties>( config ) );
-        NativePtr->setPersistenceManager( persistenceManagerptr, configptr );
+        try
+        {
+          m_nativeptr->get()->setPersistenceManager( persistenceManagerptr, config->GetNative() );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
@@ -160,12 +213,15 @@ namespace Apache
       {        
         ManagedString mg_libpath( libPath );
         ManagedString mg_factoryFunctionName( factoryFunctionName );
-				//TODO:split
-        apache::geode::client::PropertiesPtr configptr(
-          GetNativePtr<apache::geode::client::Properties>( config ) );
 
-        NativePtr->setPersistenceManager( mg_libpath.CharPtr,
-          mg_factoryFunctionName.CharPtr, configptr );
+        try
+        {
+          m_nativeptr->get()->setPersistenceManager( mg_libpath.CharPtr, mg_factoryFunctionName.CharPtr, config->GetNative() );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
@@ -173,7 +229,14 @@ namespace Apache
       {
         ManagedString mg_poolName( poolName );
 
-        NativePtr->setPoolName( mg_poolName.CharPtr );
+        try
+        {
+          m_nativeptr->get()->setPoolName( mg_poolName.CharPtr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
@@ -183,7 +246,14 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setInitialCapacity( initialCapacity );
+          try
+          {
+            m_nativeptr->get()->setInitialCapacity( initialCapacity );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
         _GF_MG_EXCEPTION_CATCH_ALL2
@@ -193,7 +263,14 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setLoadFactor( loadFactor );
+          try
+          {
+            m_nativeptr->get()->setLoadFactor( loadFactor );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
         _GF_MG_EXCEPTION_CATCH_ALL2
@@ -203,7 +280,14 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->setConcurrencyLevel( concurrencyLevel );
+          try
+          {
+            m_nativeptr->get()->setConcurrencyLevel( concurrencyLevel );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           return this;
 
         _GF_MG_EXCEPTION_CATCH_ALL2
@@ -211,32 +295,66 @@ namespace Apache
 
       RegionFactory^ RegionFactory::SetLruEntriesLimit( System::UInt32 entriesLimit )
       {
-        NativePtr->setLruEntriesLimit( entriesLimit );
+        try
+        {
+          m_nativeptr->get()->setLruEntriesLimit( entriesLimit );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
       RegionFactory^ RegionFactory::SetDiskPolicy( DiskPolicyType diskPolicy )
       {
-        NativePtr->setDiskPolicy(
-          static_cast<apache::geode::client::DiskPolicyType::PolicyType>( diskPolicy ) );
+        try
+        {
+          m_nativeptr->get()->setDiskPolicy(static_cast<native::DiskPolicyType::PolicyType>( diskPolicy ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
       RegionFactory^ RegionFactory::SetCachingEnabled( bool cachingEnabled )
       {
-        NativePtr->setCachingEnabled( cachingEnabled );
+        try
+        {
+          m_nativeptr->get()->setCachingEnabled( cachingEnabled );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
       RegionFactory^ RegionFactory::SetCloningEnabled( bool cloningEnabled )
       {
-        NativePtr->setCloningEnabled( cloningEnabled );
+        try
+        {
+          m_nativeptr->get()->setCloningEnabled( cloningEnabled );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
       RegionFactory^ RegionFactory::SetConcurrencyChecksEnabled( bool concurrencyChecksEnabled )
       {
-        NativePtr->setConcurrencyChecksEnabled( concurrencyChecksEnabled );
+        try
+        {
+          m_nativeptr->get()->setConcurrencyChecksEnabled( concurrencyChecksEnabled );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
       // NEW GENERIC APIs:
@@ -246,11 +364,16 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-        ManagedString mg_name( regionName );
-          
-        apache::geode::client::RegionPtr& nativeptr( NativePtr->create(
-            mg_name.CharPtr ) );
-          return Client::Region<TKey,TValue>::Create( nativeptr.ptr( ) );
+          try
+          {
+            ManagedString mg_name( regionName );
+            auto nativeptr = m_nativeptr->get()->create( mg_name.CharPtr );
+            return Client::Region<TKey,TValue>::Create( nativeptr );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -258,73 +381,101 @@ namespace Apache
       generic <class TKey, class TValue>
       RegionFactory^ RegionFactory::SetCacheLoader( Client::ICacheLoader<TKey, TValue>^ cacheLoader )
       {
-        apache::geode::client::CacheLoaderPtr loaderptr;
+        native::CacheLoaderPtr loaderptr;
         if ( cacheLoader != nullptr ) {
           CacheLoaderGeneric<TKey, TValue>^ clg = gcnew CacheLoaderGeneric<TKey, TValue>();
           clg->SetCacheLoader(cacheLoader);
-          loaderptr = new apache::geode::client::ManagedCacheLoaderGeneric( /*clg,*/ cacheLoader );
-          ((apache::geode::client::ManagedCacheLoaderGeneric*)loaderptr.ptr())->setptr(clg);
+          loaderptr = std::shared_ptr<native::ManagedCacheLoaderGeneric>(new native::ManagedCacheLoaderGeneric(cacheLoader));
+          ((native::ManagedCacheLoaderGeneric*)loaderptr.get())->setptr(clg);
         }
-        NativePtr->setCacheLoader( loaderptr );
+        try
+        {
+          m_nativeptr->get()->setCacheLoader( loaderptr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
       generic <class TKey, class TValue>
       RegionFactory^ RegionFactory::SetCacheWriter( Client::ICacheWriter<TKey, TValue>^ cacheWriter )
       {
-        apache::geode::client::CacheWriterPtr writerptr;
+        native::CacheWriterPtr writerptr;
         if ( cacheWriter != nullptr ) {
           CacheWriterGeneric<TKey, TValue>^ cwg = gcnew CacheWriterGeneric<TKey, TValue>();
           cwg->SetCacheWriter(cacheWriter);
-          writerptr = new apache::geode::client::ManagedCacheWriterGeneric( /*cwg,*/ cacheWriter );
-          ((apache::geode::client::ManagedCacheWriterGeneric*)writerptr.ptr())->setptr(cwg);
+          writerptr = std::shared_ptr<native::ManagedCacheWriterGeneric>(new native::ManagedCacheWriterGeneric(cacheWriter));
+          ((native::ManagedCacheWriterGeneric*)writerptr.get())->setptr(cwg);
         }
-        NativePtr->setCacheWriter( writerptr );
+        try
+        {
+          m_nativeptr->get()->setCacheWriter( writerptr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
       generic <class TKey, class TValue>
       RegionFactory^ RegionFactory::SetCacheListener( Client::ICacheListener<TKey, TValue>^ cacheListener )
       {
-        apache::geode::client::CacheListenerPtr listenerptr;
+        native::CacheListenerPtr listenerptr;
         if ( cacheListener != nullptr ) {
           CacheListenerGeneric<TKey, TValue>^ clg = gcnew CacheListenerGeneric<TKey, TValue>();
           clg->SetCacheListener(cacheListener);
-          listenerptr = new apache::geode::client::ManagedCacheListenerGeneric( /*clg,*/ cacheListener );
-          ((apache::geode::client::ManagedCacheListenerGeneric*)listenerptr.ptr())->setptr(clg);
+          listenerptr = std::shared_ptr<native::ManagedCacheListenerGeneric>(new native::ManagedCacheListenerGeneric(cacheListener));
+          ((native::ManagedCacheListenerGeneric*)listenerptr.get())->setptr(clg);
           /*
-          listenerptr = new apache::geode::client::ManagedCacheListenerGeneric(
+          listenerptr = new native::ManagedCacheListenerGeneric(
             (Client::ICacheListener<Object^, Object^>^)cacheListener);
             */
         }
-        NativePtr->setCacheListener( listenerptr );
+        try
+        {
+          m_nativeptr->get()->setCacheListener( listenerptr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
       }
 
       generic <class TKey, class TValue>
-      RegionFactory^ RegionFactory::SetPartitionResolver( Client::IPartitionResolver<TKey, TValue>^ partitionresolver )
+      RegionFactory^ RegionFactory::SetPartitionResolver(Client::IPartitionResolver<TKey, TValue>^ partitionresolver)
       {
-        apache::geode::client::PartitionResolverPtr resolverptr;
-        if ( partitionresolver != nullptr ) {
-          Client::IFixedPartitionResolver<TKey, TValue>^ resolver = 
+        native::PartitionResolverPtr resolverptr;
+        if (partitionresolver != nullptr) {
+          Client::IFixedPartitionResolver<TKey, TValue>^ resolver =
             dynamic_cast<Client::IFixedPartitionResolver<TKey, TValue>^>(partitionresolver);
-          if (resolver != nullptr) {            
+          if (resolver != nullptr) {
             FixedPartitionResolverGeneric<TKey, TValue>^ prg = gcnew FixedPartitionResolverGeneric<TKey, TValue>();
             prg->SetPartitionResolver(resolver);
-            resolverptr = new apache::geode::client::ManagedFixedPartitionResolverGeneric( resolver ); 
-            ((apache::geode::client::ManagedFixedPartitionResolverGeneric*)resolverptr.ptr())->setptr(prg);
+            resolverptr = std::shared_ptr<native::ManagedFixedPartitionResolverGeneric>(new native::ManagedFixedPartitionResolverGeneric(resolver));
+            ((native::ManagedFixedPartitionResolverGeneric*)resolverptr.get())->setptr(prg);
           }
-          else {            
+          else {
             PartitionResolverGeneric<TKey, TValue>^ prg = gcnew PartitionResolverGeneric<TKey, TValue>();
             prg->SetPartitionResolver(partitionresolver);
-            resolverptr = new apache::geode::client::ManagedPartitionResolverGeneric( partitionresolver );
-            ((apache::geode::client::ManagedPartitionResolverGeneric*)resolverptr.ptr())->setptr(prg);            
-          }         
+            resolverptr = std::shared_ptr<native::ManagedPartitionResolverGeneric>(new native::ManagedPartitionResolverGeneric(partitionresolver));
+            ((native::ManagedPartitionResolverGeneric*)resolverptr.get())->setptr(prg);
+          }
         }
-        NativePtr->setPartitionResolver( resolverptr );
+        try
+        {
+          m_nativeptr->get()->setPartitionResolver(resolverptr);
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         return this;
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
 
-}

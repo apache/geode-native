@@ -29,6 +29,9 @@
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 
+#include <thread>
+#include <chrono>
+
 /* Testing Parameters              Param's Value
 Termination :                   Keepalive = true/ false, Client crash
 Restart Time:                   Before Timeout / After Timeout
@@ -56,29 +59,23 @@ class OperMonitor : public CacheListener {
     m_ops++;
 
     CacheableKeyPtr key = event.getKey();
-    CacheableInt32Ptr value = NULLPTR;
+    CacheableInt32Ptr value = nullptr;
     try {
-      value = dynCast<CacheableInt32Ptr>(event.getNewValue());
-    } catch (Exception) {
+      value = std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
+    } catch (Exception&) {
       //  do nothing.
     }
 
-    CacheableStringPtr keyPtr = dynCast<CacheableStringPtr>(key);
-    if (keyPtr != NULLPTR && value != NULLPTR) {
+    auto keyPtr = std::dynamic_pointer_cast<CacheableString>(key);
+    if (keyPtr != nullptr && value != nullptr) {
       char buf[256] = {'\0'};
       sprintf(buf, " Got Key: %s, Value: %d", keyPtr->toString(),
               value->value());
       LOG(buf);
     }
 
-    if (value != NULLPTR) {
-      HashMapOfCacheable::Iterator item = m_map.find(key);
-
-      if (item != m_map.end()) {
-        m_map.update(key, value);
-      } else {
-        m_map.insert(key, value);
-      }
+    if (value) {
+      m_map[key] = value;
     }
   }
 
@@ -92,7 +89,7 @@ class OperMonitor : public CacheListener {
     LOG("validate called");
     char buf[256] = {'\0'};
 
-    sprintf(buf, "Expected %d keys for the region, Actual = %d", keyCount,
+    sprintf(buf, "Expected %d keys for the region, Actual = %zd", keyCount,
             m_map.size());
     ASSERT(m_map.size() == keyCount, buf);
 
@@ -100,12 +97,11 @@ class OperMonitor : public CacheListener {
             m_ops);
     ASSERT(m_ops == eventcount, buf);
 
-    for (HashMapOfCacheable::Iterator item = m_map.begin(); item != m_map.end();
-         item++) {
-      CacheableStringPtr keyPtr = dynCast<CacheableStringPtr>(item.first());
-      CacheableInt32Ptr valuePtr = dynCast<CacheableInt32Ptr>(item.second());
+    for (const auto& item : m_map) {
+      auto keyPtr = std::dynamic_pointer_cast<CacheableString>(item.first);
+      auto valuePtr = std::dynamic_pointer_cast<CacheableInt32>(item.second);
 
-      if (strchr(keyPtr->toString(), 'D') == NULL) { /*Non Durable Key */
+      if (strchr(keyPtr->toString(), 'D') == nullptr) { /*Non Durable Key */
         sprintf(buf,
                 "Expected final value for nonDurable Keys = %d, Actual = %d",
                 nonDurableValue, valuePtr->value());
@@ -136,7 +132,7 @@ class OperMonitor : public CacheListener {
   virtual void afterRegionInvalidate(const RegionEvent& event){};
   virtual void afterRegionDestroy(const RegionEvent& event){};
 };
-typedef SharedPtr<OperMonitor> OperMonitorPtr;
+typedef std::shared_ptr<OperMonitor> OperMonitorPtr;
 
 void setCacheListener(const char* regName, OperMonitorPtr monitor) {
   RegionPtr reg = getHelper()->getRegion(regName);
@@ -144,8 +140,8 @@ void setCacheListener(const char* regName, OperMonitorPtr monitor) {
   attrMutator->setCacheListener(monitor);
 }
 
-OperMonitorPtr mon1 = NULLPTR;
-OperMonitorPtr mon2 = NULLPTR;
+OperMonitorPtr mon1 = nullptr;
+OperMonitorPtr mon2 = nullptr;
 
 #include "ThinClientDurableInit.hpp"
 #include "ThinClientTasks_C2S2.hpp"
@@ -158,8 +154,8 @@ void initClientCache(int redundancy, int durableTimeout, OperMonitorPtr& mon,
                      int sleepDuration = 0, int durableIdx = 0) {
   if (sleepDuration) SLEEP(sleepDuration);
 
-  if (mon == NULLPTR) {
-    mon = new OperMonitor();
+  if (mon == nullptr) {
+    mon = std::make_shared<OperMonitor>();
   }
 
   //  35 sec ack interval to ensure primary clears its Q only
@@ -177,21 +173,21 @@ void initClientCache(int redundancy, int durableTimeout, OperMonitorPtr& mon,
   // for R =1 it will get a redundancy error
   try {
     regPtr0->registerRegex(testRegex[0], true);
-  } catch (Exception) {
+  } catch (Exception&) {
     //  do nothing.
   }
   try {
     regPtr0->registerRegex(testRegex[1], false);
-  } catch (Exception) {
+  } catch (Exception&) {
     //  do nothing.
   }
 }
 
 void feederUpdate(int value) {
   createIntEntry(regionNames[0], mixKeys[0], value);
-  apache::geode::client::millisleep(10);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
   createIntEntry(regionNames[0], mixKeys[1], value);
-  apache::geode::client::millisleep(10);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
 /* Close Client 1 with option keep alive = true*/
@@ -226,7 +222,7 @@ DUNIT_TASK_DEFINITION(SERVER1, StartServer2)
     }
 
     //  sleep for 3 seconds to allow redundancy monitor to detect new server.
-    apache::geode::client::millisleep(3000);
+    std::this_thread::sleep_for(std::chrono::seconds(3));
     LOG("SERVER started");
   }
 END_TASK_DEFINITION
@@ -234,7 +230,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(FEEDER, FeederInit)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regionNames[0], USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
     LOG("FeederInit complete.");
@@ -254,7 +250,7 @@ DUNIT_TASK_DEFINITION(FEEDER, FeederUpdate1)
     feederUpdate(1);
 
     //  Wait 5 seconds for events to be removed from ha queues.
-    apache::geode::client::millisleep(5000);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     LOG("FeederUpdate1 complete.");
   }
@@ -265,7 +261,7 @@ DUNIT_TASK_DEFINITION(FEEDER, FeederUpdate2)
     feederUpdate(2);
 
     //  Wait 5 seconds for events to be removed from ha queues.
-    apache::geode::client::millisleep(5000);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     LOG("FeederUpdate2 complete.");
   }
@@ -304,7 +300,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, CloseClient1)
   {
-    mon1 = NULLPTR;
+    mon1 = nullptr;
     cleanProc();
     LOG("CLIENT1 closed");
   }
@@ -314,7 +310,7 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseServer1)
   {
     CacheHelper::closeServer(1);
     //  Wait 2 seconds to allow client failover.
-    apache::geode::client::millisleep(2000);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     LOG("SERVER closed");
   }
 END_TASK_DEFINITION

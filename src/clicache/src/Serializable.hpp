@@ -18,12 +18,15 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/CacheableKey.hpp>
 #include <geode/CacheableBuiltins.hpp>
+#include "end_native.hpp"
+
 #include "IGeodeSerializable.hpp"
 #include "IGeodeDelta.hpp"
 #include "impl/ManagedString.hpp"
-#include "impl/NativeWrapper.hpp"
+#include "native_shared_ptr.hpp"
 #include "impl/EnumInfo.hpp"
 #include "Log.hpp"
 #include <vcclr.h>
@@ -38,18 +41,19 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
 				interface class IPdxSerializable;
         interface class IPdxSerializer;
       /// <summary>
       /// Signature of native function delegates passed to native
-      /// <c>apache::geode::client::Serializable::registerType</c>.
+      /// <c>native::Serializable::registerType</c>.
       /// Such functions should return an empty instance of the type they
       /// represent. The instance will typically be initialized immediately
       /// after creation by a call to native
-      /// <c>apache::geode::client::Serializable::fromData</c>.
+      /// <c>native::Serializable::fromData</c>.
       /// </summary>
-      delegate apache::geode::client::Serializable* TypeFactoryNativeMethodGeneric();
+      delegate native::Serializable* TypeFactoryNativeMethodGeneric();
 
       /// <summary>
       /// Signature of function delegates passed to
@@ -62,13 +66,13 @@ namespace Apache
       /// </summary>
       public delegate Apache::Geode::Client::IGeodeSerializable^ TypeFactoryMethodGeneric();
       /// <summary>
-      /// Delegate to wrap a native <c>apache::geode::client::Serializable</c> type.
+      /// Delegate to wrap a native <c>native::Serializable</c> type.
       /// </summary>
       /// <remarks>
       /// This delegate should return an object of type <c>IGeodeSerializable</c>
       /// given a native object.
       /// </remarks>
-      delegate Apache::Geode::Client::IGeodeSerializable^ WrapperDelegateGeneric(apache::geode::client::Serializable* obj);
+      delegate Apache::Geode::Client::IGeodeSerializable^ WrapperDelegateGeneric(native::SerializablePtr obj);
 
 			/// <summary>
       /// Signature of function delegates passed to
@@ -80,12 +84,11 @@ namespace Apache
       public delegate Apache::Geode::Client::IPdxSerializable^ PdxTypeFactoryMethod();
       
       /// <summary>
-      /// This class wraps the native C++ <c>apache::geode::client::Serializable</c> objects
+      /// This class wraps the native C++ <c>native::Serializable</c> objects
       /// as managed <see cref="IGeodeSerializable" /> objects.
       /// </summary>
       public ref class Serializable
-        : public Apache::Geode::Client::Internal::SBWrap<apache::geode::client::Serializable>,
-        public Apache::Geode::Client::IGeodeSerializable
+        : public Apache::Geode::Client::IGeodeSerializable
       {
       public:
         /// <summary>
@@ -314,83 +317,83 @@ namespace Apache
          static Dictionary<String^, PdxTypeFactoryMethod^>^ PdxDelegateMap =
           gcnew Dictionary<String^, PdxTypeFactoryMethod^>();
        
-        static String^ GetString(apache::geode::client::CacheableStringPtr cStr);//apache::geode::client::CacheableString*
+        static String^ GetString(native::CacheableStringPtr cStr);//native::CacheableString*
         
         // These are the new static methods to get/put data from c++
 
         //byte
-        static Byte getByte(apache::geode::client::SerializablePtr nativeptr);
+        static Byte getByte(native::SerializablePtr nativeptr);
         
-        static apache::geode::client::CacheableKeyPtr getCacheableByte(SByte val);
+        static native::CacheableKeyPtr getCacheableByte(SByte val);
         
         //boolean
-        static bool getBoolean(apache::geode::client::SerializablePtr nativeptr);
+        static bool getBoolean(native::SerializablePtr nativeptr);
         
-        static apache::geode::client::CacheableKeyPtr getCacheableBoolean(bool val);
+        static native::CacheableKeyPtr getCacheableBoolean(bool val);
         
         //widechar
-        static Char getChar(apache::geode::client::SerializablePtr nativeptr);
+        static Char getChar(native::SerializablePtr nativeptr);
         
-        static apache::geode::client::CacheableKeyPtr getCacheableWideChar(Char val);
+        static native::CacheableKeyPtr getCacheableWideChar(Char val);
         
         //double
-        static double getDouble(apache::geode::client::SerializablePtr nativeptr);
+        static double getDouble(native::SerializablePtr nativeptr);
         
-        static apache::geode::client::CacheableKeyPtr getCacheableDouble(double val);
+        static native::CacheableKeyPtr getCacheableDouble(double val);
         
         //float
-        static float getFloat(apache::geode::client::SerializablePtr nativeptr);
+        static float getFloat(native::SerializablePtr nativeptr);
         
-        static apache::geode::client::CacheableKeyPtr getCacheableFloat(float val);
+        static native::CacheableKeyPtr getCacheableFloat(float val);
         
         //int16
-        static System::Int16 getInt16(apache::geode::client::SerializablePtr nativeptr);
+        static System::Int16 getInt16(native::SerializablePtr nativeptr);
         
-        static apache::geode::client::CacheableKeyPtr getCacheableInt16(int val);
+        static native::CacheableKeyPtr getCacheableInt16(int val);
         
         //int32
-        static System::Int32 getInt32(apache::geode::client::SerializablePtr nativeptr);
+        static System::Int32 getInt32(native::SerializablePtr nativeptr);
         
-        static apache::geode::client::CacheableKeyPtr getCacheableInt32(System::Int32 val);
+        static native::CacheableKeyPtr getCacheableInt32(System::Int32 val);
         
         //int64
-        static System::Int64 getInt64(apache::geode::client::SerializablePtr nativeptr);
+        static System::Int64 getInt64(native::SerializablePtr nativeptr);
         
-        static apache::geode::client::CacheableKeyPtr getCacheableInt64(System::Int64 val);
+        static native::CacheableKeyPtr getCacheableInt64(System::Int64 val);
         
         //cacheable ascii string
-        static String^ getASCIIString(apache::geode::client::SerializablePtr nativeptr);        
+        static String^ getASCIIString(native::SerializablePtr nativeptr);        
 
-        static apache::geode::client::CacheableKeyPtr getCacheableASCIIString(String^ val);
+        static native::CacheableKeyPtr getCacheableASCIIString(String^ val);
 
-        static apache::geode::client::CacheableKeyPtr getCacheableASCIIString2(String^ val);
+        static native::CacheableKeyPtr getCacheableASCIIString2(String^ val);
         
         //cacheable ascii string huge
-        static String^ getASCIIStringHuge(apache::geode::client::SerializablePtr nativeptr);
+        static String^ getASCIIStringHuge(native::SerializablePtr nativeptr);
         
-        static apache::geode::client::CacheableKeyPtr getCacheableASCIIStringHuge(String^ val);        
+        static native::CacheableKeyPtr getCacheableASCIIStringHuge(String^ val);        
 
         //cacheable string
-        static String^ getUTFString(apache::geode::client::SerializablePtr nativeptr);        
+        static String^ getUTFString(native::SerializablePtr nativeptr);        
 
-        static apache::geode::client::CacheableKeyPtr getCacheableUTFString(String^ val);
+        static native::CacheableKeyPtr getCacheableUTFString(String^ val);
         
 
         //cacheable string huge
-        static String^ getUTFStringHuge(apache::geode::client::SerializablePtr nativeptr);
+        static String^ getUTFStringHuge(native::SerializablePtr nativeptr);
         
 
-        static apache::geode::client::CacheableKeyPtr getCacheableUTFStringHuge(String^ val);
+        static native::CacheableKeyPtr getCacheableUTFStringHuge(String^ val);
         
 
-       static apache::geode::client::CacheableStringPtr GetCacheableString(String^ value);       
+       static native::CacheableStringPtr GetCacheableString(String^ value);       
 
-       static apache::geode::client::CacheableStringPtr GetCacheableString2(String^ value); 
+       static native::CacheableStringPtr GetCacheableString2(String^ value); 
 
        /*
-        static String^ GetString(apache::geode::client::CacheableStringPtr cStr)//apache::geode::client::CacheableString*
+        static String^ GetString(native::CacheableStringPtr cStr)//native::CacheableString*
         {
-          if (cStr == NULLPTR) {
+          if (cStr == nullptr) {
             return nullptr;
           }
           else if (cStr->isWideString()) {
@@ -415,14 +418,16 @@ namespace Apache
         /// Default constructor.
         /// </summary>
         inline Apache::Geode::Client::Serializable()
-          : Apache::Geode::Client::Internal::SBWrap<apache::geode::client::Serializable>() { }
+        :Serializable(__nullptr) { }
 
         /// <summary>
         /// Internal constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline Apache::Geode::Client::Serializable(apache::geode::client::Serializable* nativeptr)
-          : Client::Internal::SBWrap<apache::geode::client::Serializable>(nativeptr) { }
+        inline Apache::Geode::Client::Serializable(native::SerializablePtr nativeptr)
+        {
+          m_nativeptr = gcnew native_shared_ptr<native::Serializable>(nativeptr);
+        }
 
         /// <summary>
         /// Register an instance factory method for a given type and typeId.
@@ -446,20 +451,20 @@ namespace Apache
         static void UnregisterTypeGeneric(Byte typeId);
 
         generic<class TValue>
-        static TValue GetManagedValueGeneric(apache::geode::client::SerializablePtr val);
+        static TValue GetManagedValueGeneric(native::SerializablePtr val);
 
         generic<class TKey>
-        static apache::geode::client::CacheableKeyPtr GetUnmanagedValueGeneric(TKey key);
+        static native::CacheableKeyPtr GetUnmanagedValueGeneric(TKey key);
 
         generic<class TKey>
-        static apache::geode::client::CacheableKeyPtr GetUnmanagedValueGeneric(TKey key, bool isAciiChar);
+        static native::CacheableKeyPtr GetUnmanagedValueGeneric(TKey key, bool isAciiChar);
 
         generic<class TKey>
-        static apache::geode::client::CacheableKeyPtr GetUnmanagedValueGeneric(
+        static native::CacheableKeyPtr GetUnmanagedValueGeneric(
           Type^ managedType, TKey key);
 
         generic<class TKey>
-        static apache::geode::client::CacheableKeyPtr GetUnmanagedValueGeneric(
+        static native::CacheableKeyPtr GetUnmanagedValueGeneric(
           Type^ managedType, TKey key, bool isAsciiChar);
 
         /// <summary>
@@ -474,29 +479,6 @@ namespace Apache
           Byte retVal = 0;
           ManagedTypeMappingGeneric->TryGetValue(type, retVal);
           return retVal;
-        }
-
-        /// <summary>
-        /// Used to assign the native Serializable pointer to a new object.
-        /// </summary>
-        /// <remarks>
-        /// Note the order of preserveSB() and releaseSB(). This handles the
-        /// corner case when <c>m_nativeptr</c> is same as <c>nativeptr</c>.
-        /// </remarks>
-        inline void AssignSP(apache::geode::client::Serializable* nativeptr)
-        {
-          AssignPtr(nativeptr);
-        }
-
-        /// <summary>
-        /// Used to assign the native Serializable pointer to a new object.
-        /// </summary>
-        inline void SetSP(apache::geode::client::Serializable* nativeptr)
-        {
-          if (nativeptr != nullptr) {
-            nativeptr->preserveSB();
-          }
-          _SetNativePtr(nativeptr);
         }
 
         /// <summary>
@@ -608,7 +590,7 @@ namespace Apache
 
         /// <summary>
         /// Static method to register a managed wrapper for a native
-        /// <c>apache::geode::client::Serializable</c> type.
+        /// <c>native::Serializable</c> type.
         /// </summary>
         /// <param name="wrapperMethod">
         /// A factory delegate of the managed wrapper class that returns the
@@ -630,7 +612,7 @@ namespace Apache
         /// Static method to lookup the wrapper delegate for a given typeId.
         /// </summary>
         /// <param name="typeId">
-        /// The typeId of the native <c>apache::geode::client::Serializable</c> type.
+        /// The typeId of the native <c>native::Serializable</c> type.
         /// </param>
         /// <returns>
         /// If a managed wrapper is registered for the given typeId then the
@@ -651,55 +633,58 @@ namespace Apache
 
           {
           Dictionary<Object^, Object^>^ dic = gcnew Dictionary<Object^, Object^>();
-          ManagedTypeMappingGeneric[dic->GetType()] = apache::geode::client::GeodeTypeIds::CacheableHashMap;
-          ManagedTypeMappingGeneric[dic->GetType()->GetGenericTypeDefinition()] = apache::geode::client::GeodeTypeIds::CacheableHashMap;
+          ManagedTypeMappingGeneric[dic->GetType()] = native::GeodeTypeIds::CacheableHashMap;
+          ManagedTypeMappingGeneric[dic->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableHashMap;
           }
 
           {
           System::Collections::ArrayList^ arr = gcnew System::Collections::ArrayList();
-          ManagedTypeMappingGeneric[arr->GetType()] = apache::geode::client::GeodeTypeIds::CacheableVector;
+          ManagedTypeMappingGeneric[arr->GetType()] = native::GeodeTypeIds::CacheableVector;
           }
 		  
           {
           System::Collections::Generic::LinkedList<Object^>^ linketList = gcnew  System::Collections::Generic::LinkedList<Object^>();
-          ManagedTypeMappingGeneric[linketList->GetType()] = apache::geode::client::GeodeTypeIds::CacheableLinkedList;
-          ManagedTypeMappingGeneric[linketList->GetType()->GetGenericTypeDefinition()] = apache::geode::client::GeodeTypeIds::CacheableLinkedList;
+          ManagedTypeMappingGeneric[linketList->GetType()] = native::GeodeTypeIds::CacheableLinkedList;
+          ManagedTypeMappingGeneric[linketList->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableLinkedList;
           }
 		  
           {
           System::Collections::Generic::IList<Object^>^ iList = gcnew System::Collections::Generic::List<Object^>();
-          ManagedTypeMappingGeneric[iList->GetType()] = apache::geode::client::GeodeTypeIds::CacheableArrayList;
-          ManagedTypeMappingGeneric[iList->GetType()->GetGenericTypeDefinition()] = apache::geode::client::GeodeTypeIds::CacheableArrayList;
+          ManagedTypeMappingGeneric[iList->GetType()] = native::GeodeTypeIds::CacheableArrayList;
+          ManagedTypeMappingGeneric[iList->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableArrayList;
           }
 
           //TODO: Linked list, non generic stack, some other map types and see if more
 
           {
             System::Collections::Generic::Stack<Object^>^ stack = gcnew System::Collections::Generic::Stack<Object^>();
-            ManagedTypeMappingGeneric[stack->GetType()] = apache::geode::client::GeodeTypeIds::CacheableStack;
-            ManagedTypeMappingGeneric[stack->GetType()->GetGenericTypeDefinition()] = apache::geode::client::GeodeTypeIds::CacheableStack;
+            ManagedTypeMappingGeneric[stack->GetType()] = native::GeodeTypeIds::CacheableStack;
+            ManagedTypeMappingGeneric[stack->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableStack;
           }
           {
-            ManagedTypeMappingGeneric[SByte::typeid] = apache::geode::client::GeodeTypeIds::CacheableByte;
-            ManagedTypeMappingGeneric[Boolean::typeid] = apache::geode::client::GeodeTypeIds::CacheableBoolean;
-            ManagedTypeMappingGeneric[Char::typeid] = apache::geode::client::GeodeTypeIds::CacheableWideChar;
-            ManagedTypeMappingGeneric[Double::typeid] = apache::geode::client::GeodeTypeIds::CacheableDouble;
-            ManagedTypeMappingGeneric[String::typeid] = apache::geode::client::GeodeTypeIds::CacheableASCIIString;
-            ManagedTypeMappingGeneric[float::typeid] = apache::geode::client::GeodeTypeIds::CacheableFloat;
-            ManagedTypeMappingGeneric[Int16::typeid] = apache::geode::client::GeodeTypeIds::CacheableInt16;
-            ManagedTypeMappingGeneric[Int32::typeid] = apache::geode::client::GeodeTypeIds::CacheableInt32;
-            ManagedTypeMappingGeneric[Int64::typeid] = apache::geode::client::GeodeTypeIds::CacheableInt64;
-            ManagedTypeMappingGeneric[Type::GetType("System.Byte[]")] = apache::geode::client::GeodeTypeIds::CacheableBytes;
-            ManagedTypeMappingGeneric[Type::GetType("System.Double[]")] = apache::geode::client::GeodeTypeIds::CacheableDoubleArray;
-            ManagedTypeMappingGeneric[Type::GetType("System.Single[]")] = apache::geode::client::GeodeTypeIds::CacheableFloatArray;
-            ManagedTypeMappingGeneric[Type::GetType("System.Int16[]")] = apache::geode::client::GeodeTypeIds::CacheableInt16Array;
-            ManagedTypeMappingGeneric[Type::GetType("System.Int32[]")] = apache::geode::client::GeodeTypeIds::CacheableInt32Array;
-            ManagedTypeMappingGeneric[Type::GetType("System.Int64[]")] = apache::geode::client::GeodeTypeIds::CacheableInt64Array;
-            ManagedTypeMappingGeneric[Type::GetType("System.String[]")] = apache::geode::client::GeodeTypeIds::CacheableStringArray;
-            ManagedTypeMappingGeneric[Type::GetType("System.DateTime")] = apache::geode::client::GeodeTypeIds::CacheableDate;
-            ManagedTypeMappingGeneric[Type::GetType("System.Collections.Hashtable")] = apache::geode::client::GeodeTypeIds::CacheableHashTable;
+            ManagedTypeMappingGeneric[SByte::typeid] = native::GeodeTypeIds::CacheableByte;
+            ManagedTypeMappingGeneric[Boolean::typeid] = native::GeodeTypeIds::CacheableBoolean;
+            ManagedTypeMappingGeneric[Char::typeid] = native::GeodeTypeIds::CacheableWideChar;
+            ManagedTypeMappingGeneric[Double::typeid] = native::GeodeTypeIds::CacheableDouble;
+            ManagedTypeMappingGeneric[String::typeid] = native::GeodeTypeIds::CacheableASCIIString;
+            ManagedTypeMappingGeneric[float::typeid] = native::GeodeTypeIds::CacheableFloat;
+            ManagedTypeMappingGeneric[Int16::typeid] = native::GeodeTypeIds::CacheableInt16;
+            ManagedTypeMappingGeneric[Int32::typeid] = native::GeodeTypeIds::CacheableInt32;
+            ManagedTypeMappingGeneric[Int64::typeid] = native::GeodeTypeIds::CacheableInt64;
+            ManagedTypeMappingGeneric[Type::GetType("System.Byte[]")] = native::GeodeTypeIds::CacheableBytes;
+            ManagedTypeMappingGeneric[Type::GetType("System.Double[]")] = native::GeodeTypeIds::CacheableDoubleArray;
+            ManagedTypeMappingGeneric[Type::GetType("System.Single[]")] = native::GeodeTypeIds::CacheableFloatArray;
+            ManagedTypeMappingGeneric[Type::GetType("System.Int16[]")] = native::GeodeTypeIds::CacheableInt16Array;
+            ManagedTypeMappingGeneric[Type::GetType("System.Int32[]")] = native::GeodeTypeIds::CacheableInt32Array;
+            ManagedTypeMappingGeneric[Type::GetType("System.Int64[]")] = native::GeodeTypeIds::CacheableInt64Array;
+            ManagedTypeMappingGeneric[Type::GetType("System.String[]")] = native::GeodeTypeIds::CacheableStringArray;
+            ManagedTypeMappingGeneric[Type::GetType("System.DateTime")] = native::GeodeTypeIds::CacheableDate;
+            ManagedTypeMappingGeneric[Type::GetType("System.Collections.Hashtable")] = native::GeodeTypeIds::CacheableHashTable;
           }
         }
+
+        protected:
+          native_shared_ptr<native::Serializable>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

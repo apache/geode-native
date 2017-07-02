@@ -78,11 +78,11 @@ void runWithUserRoot(CachePtr cachePtr) {
   CacheableVectorPtr executeFunctionResult =
       exc->withArgs(args)->execute(getFuncIName, getResult)->getResult();
   CacheableVectorPtr resultList = CacheableVector::create();
-  if (executeFunctionResult == NULLPTR) {
+  if (executeFunctionResult == nullptr) {
     LOGINFO("get executeFunctionResult is NULL");
   } else {
     for (int item = 0; item < executeFunctionResult->size(); item++) {
-      CacheableArrayListPtr arrayList = dynCast<CacheableArrayListPtr>(
+      auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
           executeFunctionResult->operator[](item));
       for (int pos = 0; pos < arrayList->size(); pos++) {
         resultList->push_back(arrayList->operator[](pos));
@@ -93,7 +93,7 @@ void runWithUserRoot(CachePtr cachePtr) {
 
     for (int i = 0; i < resultList->size(); i++) {
       sprintf(buf, "get result[%d]=%s", i,
-              dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar());
+              std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))->asChar());
       LOGINFO(buf);
     }
   }

@@ -214,7 +214,7 @@ class PdxLocalReader : public PdxReader {
 
   virtual PdxUnreadFieldsPtr readUnreadFields();
 };
-typedef SharedPtr<PdxLocalReader> PdxLocalReaderPtr;
+typedef std::shared_ptr<PdxLocalReader> PdxLocalReaderPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

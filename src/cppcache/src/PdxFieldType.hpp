@@ -31,7 +31,7 @@ namespace apache {
 namespace geode {
 namespace client {
 class PdxFieldType;
-typedef SharedPtr<PdxFieldType> PdxFieldTypePtr;
+typedef std::shared_ptr<PdxFieldType> PdxFieldTypePtr;
 class CPPCACHE_EXPORT PdxFieldType : public Serializable {
  private:
   std::string m_fieldName;

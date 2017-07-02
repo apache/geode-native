@@ -30,15 +30,15 @@ class TrackedMapEntry : public MapEntry {
  public:
   // Constructor should be invoked only when starting the tracking
   // of a MapEntry, so m_trackingNumber is initialized with 1.
-  inline TrackedMapEntry(const MapEntryImpl* entry, int trackingNumber,
+  inline TrackedMapEntry(const MapEntryImplPtr& entry, int trackingNumber,
                          int updateCount)
-      : m_entry(entry),
+      : m_entry(const_cast<MapEntryImplPtr&>(entry)),
         m_trackingNumber(trackingNumber),
         m_updateCount(updateCount) {}
 
   virtual ~TrackedMapEntry() {}
 
-  virtual MapEntryImpl* getImplPtr() { return m_entry.ptr(); }
+  virtual MapEntryImplPtr getImplPtr() { return m_entry; }
 
   virtual int addTracker(MapEntryPtr& newEntry) {
     ++m_trackingNumber;

@@ -24,7 +24,13 @@
 #include "Utils.hpp"
 #include "DistributedSystemImpl.hpp"
 
-using namespace apache::geode::client;
+#include <thread>
+#include <chrono>
+
+namespace apache {
+namespace geode {
+namespace client {
+
 #define throwException(ex)                              \
   {                                                     \
     LOGFINEST("%s: %s", ex.getName(), ex.getMessage()); \
@@ -193,10 +199,10 @@ GfErrType TcrEndpoint::createNewConnection(
       "m_needToConnectInLock=%d appThreadRequest =%d",
       connectTimeout, m_needToConnectInLock, appThreadRequest);
   GfErrType err = GF_NOERR;
-  newConn = NULL;
+  newConn = nullptr;
   while (timeoutRetries-- >= 0) {
     try {
-      if (newConn == NULL) {
+      if (newConn == nullptr) {
         if (!needtoTakeConnectLock() || !appThreadRequest) {
           newConn = new TcrConnection(m_connected);
           bool authenticate = newConn->InitTcrConnection(
@@ -236,7 +242,7 @@ GfErrType TcrEndpoint::createNewConnection(
       LOGINFO("Timeout in handshake with endpoint[%s]", m_name.c_str());
       err = GF_TIMOUT;
       m_needToConnectInLock = true;  // while creating the connection
-      apache::geode::client::millisleep(50);
+      std::this_thread::sleep_for(std::chrono::milliseconds(50));
     } catch (const GeodeIOException& ex) {
       LOGINFO("IO error[%d] in handshake with endpoint[%s]: %s",
               ACE_OS::last_error(), m_name.c_str(), ex.getMessage());
@@ -274,7 +280,7 @@ GfErrType TcrEndpoint::createNewConnection(
       break;
     }
   }
-  if (err != GF_NOERR && newConn != NULL) {
+  if (err != GF_NOERR && newConn != nullptr) {
     GF_SAFE_DELETE(newConn);
   }
   return err;
@@ -291,7 +297,7 @@ void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
     GfErrType err = GF_NOERR;
     PropertiesPtr creds = this->getCredentials();
 
-    if (creds != NULLPTR) {
+    if (creds != nullptr) {
       LOGDEBUG("TcrEndpoint::authenticateEndpoint got creds from app = %d",
                creds->getSize());
     } else {
@@ -338,7 +344,7 @@ PropertiesPtr TcrEndpoint::getCredentials() {
 
   AuthInitializePtr authInitialize = DistributedSystem::m_impl->getAuthLoader();
 
-  if (authInitialize != NULLPTR) {
+  if (authInitialize != nullptr) {
     LOGFINER(
         "Acquired handle to AuthInitialize plugin, "
         "getting credentials for %s",
@@ -357,7 +363,7 @@ PropertiesPtr TcrEndpoint::getCredentials() {
     LOGFINER("Done getting credentials");
     return tmpAuthIniSecurityProperties;
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 ServerQueueStatus TcrEndpoint::getFreshServerQueueStatus(
@@ -454,7 +460,7 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
 
   if (m_connected || connected) {
     if (clientNotification) {
-      if (distMgr != NULL) {
+      if (distMgr != nullptr) {
         ACE_Guard<ACE_Recursive_Thread_Mutex> guardDistMgrs(m_distMgrsLock);
         m_distMgrs.push_back(distMgr);
       }
@@ -496,7 +502,7 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
   int numConnections = m_opConnections.size();
   if (!m_isActiveEndpoint && !isActiveEndpoint && m_connected &&
       (numConnections != 1 || m_numRegionListener <= 0 ||
-       m_notifyReceiver == NULL)) {
+       m_notifyReceiver == nullptr)) {
     LOGWARN(
         "Inactive connected endpoint does not have exactly one "
         "connection. Number of connections: %d, number of region listeners: "
@@ -523,7 +529,7 @@ void TcrEndpoint::unregisterDM(bool clientNotification,
     }
     LOGFINEST("Decremented subscription region count for endpoint %s to %d",
               m_name.c_str(), m_numRegionListener);
-    if (distMgr != NULL) {
+    if (distMgr != nullptr) {
       ACE_Guard<ACE_Recursive_Thread_Mutex> guardDistMgrs(m_distMgrsLock);
       m_distMgrs.remove(distMgr);
     }
@@ -540,10 +546,10 @@ void TcrEndpoint::pingServer(ThinClientPoolDM* poolDM) {
 
   if (!m_msgSent && !m_pingSent) {
     TcrMessagePing* pingMsg = TcrMessage::getPingMessage();
-    TcrMessageReply reply(true, NULL);
+    TcrMessageReply reply(true, nullptr);
     LOGFINEST("Sending ping message to endpoint %s", m_name.c_str());
     GfErrType error;
-    if (poolDM != NULL) {
+    if (poolDM != nullptr) {
       error = poolDM->sendRequestToEP(*pingMsg, reply, this);
     } else {
       error = send(*pingMsg, reply);
@@ -586,7 +592,7 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
 
   LOGFINE("Started subscription channel for endpoint %s", m_name.c_str());
   while (isRunning) {
-    TcrMessageReply* msg = NULL;
+    TcrMessageReply* msg = nullptr;
     try {
       size_t dataLen;
       ConnErrType opErr = CONN_NOERR;
@@ -610,11 +616,11 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
       }
 
       if (data) {
-        msg = new TcrMessageReply(true, NULL);
+        msg = new TcrMessageReply(true, nullptr);
         msg->initCqMap();
         msg->setData(data, static_cast<int32_t>(dataLen),
                      this->getDistributedMemberID());
-        data = NULL;  // memory is released by TcrMessage setData().
+        data = nullptr;  // memory is released by TcrMessage setData().
         handleNotificationStats(static_cast<int64_t>(dataLen));
         LOGDEBUG("receive notification %d", msg->getMessageType());
 
@@ -639,8 +645,8 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
             const std::string& regionFullPath1 = msg->getRegionName();
             RegionPtr region1;
             m_cache->getRegion(regionFullPath1.c_str(), region1);
-            if (region1 != NULLPTR &&
-                !static_cast<ThinClientRegion*>(region1.ptr())
+            if (region1 != nullptr &&
+                !static_cast<ThinClientRegion*>(region1.get())
                      ->getDistMgr()
                      ->isEndpointAttached(this)) {
               // drop event before even processing the eventid for duplicate
@@ -673,8 +679,8 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
             const std::string& regionFullPath = msg->getRegionName();
             RegionPtr region;
             m_cache->getRegion(regionFullPath.c_str(), region);
-            if (region != NULLPTR) {
-              static_cast<ThinClientRegion*>(region.ptr())
+            if (region != nullptr) {
+              static_cast<ThinClientRegion*>(region.get())
                   ->receiveNotification(msg);
             } else {
               LOGWARN(
@@ -685,8 +691,8 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
           } else {
             LOGDEBUG("receive cq notification %d", msg->getMessageType());
             QueryServicePtr queryService = getQueryService();
-            if (queryService != NULLPTR) {
-              static_cast<RemoteQueryService*>(queryService.ptr())
+            if (queryService != nullptr) {
+              static_cast<RemoteQueryService*>(queryService.get())
                   ->receiveNotification(msg);
             }
           }
@@ -774,7 +780,7 @@ inline bool TcrEndpoint::handleIOException(const std::string& message,
     m_needToConnectInLock = true;
     return false;
   }
-  apache::geode::client::millisleep(10);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
   return true;
 }
 
@@ -789,7 +795,7 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
            m_name.c_str(), conn);
   // TcrMessage * req = const_cast<TcrMessage *>(&request);
   LOGDEBUG("TcrEndpoint::sendRequestConn  = %d", m_baseDM);
-  if (m_baseDM != NULL) m_baseDM->beforeSendingRequest(request, conn);
+  if (m_baseDM != nullptr) m_baseDM->beforeSendingRequest(request, conn);
   if (((type == TcrMessage::EXECUTE_FUNCTION ||
         type == TcrMessage::EXECUTE_REGION_FUNCTION) &&
        (request.hasResult() & 2))) {
@@ -875,7 +881,8 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
     error = GF_NOTCON;
   }
   if (error == GF_NOERR) {
-    if (m_baseDM != NULL) m_baseDM->afterSendingRequest(request, reply, conn);
+    if (m_baseDM != nullptr)
+      m_baseDM->afterSendingRequest(request, reply, conn);
   }
 
   return error;
@@ -916,8 +923,9 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
           LOGFINE(
               "Creating a new connection when connection-pool-size system "
               "property set to 0");
-          if ((error = createNewConnection(
-                   conn, false, false, DistributedSystem::getSystemProperties()
+          if ((error =
+                   createNewConnection(conn, false, false,
+                                       DistributedSystem::getSystemProperties()
                                            ->connectTimeout())) != GF_NOERR) {
             epFailure = true;
             continue;
@@ -940,7 +948,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
         epFailure = true;
         continue;
       }
-    } else if (conn == NULL && useEPPool) {
+    } else if (conn == nullptr && useEPPool) {
       LOGFINER(
           "sendRequestWithRetry:: looking for connection in queue timeout = "
           "%d ",
@@ -951,7 +959,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
     if (!m_connected) {
       return GF_NOTCON;
     }
-    if (conn != NULL) {
+    if (conn != nullptr) {
       LOGDEBUG("TcrEndpoint::send() obtained a connection for endpoint %s",
                m_name.c_str());
       int reqTransId = request.getTransId();
@@ -987,7 +995,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
         connection only when not a sticky connection.
           closeConnection( conn );
         }*/
-        apache::geode::client::millisleep(10);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
         int32_t type = request.getMessageType();
         epFailure = (type != TcrMessage::QUERY && type != TcrMessage::PUTALL &&
                      type != TcrMessage::PUT_ALL_WITH_CALLBACK &&
@@ -1110,7 +1118,7 @@ GfErrType TcrEndpoint::send(const TcrMessage& request, TcrMessageReply& reply) {
   uint32_t requestedTimeout = reply.getTimeout();
   setRetryAndTimeout(request, maxSendRetries, requestedTimeout);
 
-  TcrConnection* conn = NULL;
+  TcrConnection* conn = nullptr;
   bool epFailure;
   std::string failReason;
   //  TODO: remove sendRetryCount as parameter.
@@ -1226,7 +1234,7 @@ void TcrEndpoint::closeConnections() {
 /*
 void TcrEndpoint::sendNotificationCloseMsg()
 {
-  if (m_notifyConnection != NULL) {
+  if (m_notifyConnection != nullptr) {
     m_notifyReceiver->stop();
     m_notifyConnection->close();
   }
@@ -1250,7 +1258,7 @@ void TcrEndpoint::closeNotification() {
 }
 
 void TcrEndpoint::stopNoBlock() {
-  if (m_notifyReceiver != NULL) {
+  if (m_notifyReceiver != nullptr) {
     m_notifyConnection->close();
     m_notifyReceiver->stopNoblock();
   }
@@ -1260,7 +1268,7 @@ void TcrEndpoint::stopNotifyReceiverAndCleanup() {
   LOGFINER("Stopping subscription receiver and cleaning up");
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notifyReceiverLock);
 
-  if (m_notifyReceiver != NULL) {
+  if (m_notifyReceiver != nullptr) {
     LOGFINER("Waiting for notification thread...");
     // m_notifyReceiver->stopNoblock();
     m_notifyReceiver->wait();
@@ -1334,3 +1342,7 @@ void TcrEndpoint::sendRequestForChunkedResponse(const TcrMessage& request,
 void TcrEndpoint::closeFailedConnection(TcrConnection*& conn) {
   closeConnection(conn);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

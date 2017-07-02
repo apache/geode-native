@@ -18,8 +18,11 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/ResultSet.hpp>
-#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
+#include "native_shared_ptr.hpp"
 #include "ISelectResults.hpp"
 
 
@@ -31,6 +34,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       interface class IGeodeSerializable;
 
@@ -43,7 +47,7 @@ namespace Apache
       /// </summary>
       generic<class TResult>
       public ref class ResultSet sealed
-        : public Internal::SBWrap<apache::geode::client::ResultSet>, public ISelectResults<TResult>
+        : public ISelectResults<TResult>
       {
       public:
 
@@ -97,9 +101,10 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static ResultSet<TResult>^ Create(apache::geode::client::ResultSet* nativeptr)
+        inline static ResultSet<TResult>^ Create(native::ResultSetPtr nativeptr)
         {
-          return (nativeptr != nullptr ? gcnew ResultSet(nativeptr) : nullptr);
+          return __nullptr == nativeptr ? nullptr :
+            gcnew ResultSet<TResult>( nativeptr );
         }
 
 
@@ -112,8 +117,12 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline ResultSet(apache::geode::client::ResultSet* nativeptr)
-          : SBWrap(nativeptr) { }
+        inline ResultSet(native::ResultSetPtr nativeptr)
+        {
+          m_nativeptr = gcnew native_shared_ptr<native::ResultSet>(nativeptr);
+        }
+
+        native_shared_ptr<native::ResultSet>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

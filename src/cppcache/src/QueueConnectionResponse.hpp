@@ -48,7 +48,7 @@ class QueueConnectionResponse : public ServerLocationResponse {
   std::list<ServerLocation> m_list;
   bool m_durableQueueFound;
 };
-typedef SharedPtr<QueueConnectionResponse> QueueConnectionResponsePtr;
+typedef std::shared_ptr<QueueConnectionResponse> QueueConnectionResponsePtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

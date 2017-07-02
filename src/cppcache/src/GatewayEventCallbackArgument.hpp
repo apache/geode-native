@@ -57,7 +57,7 @@ class GatewayEventCallbackArgument : public Serializable {
       // input.readObject(ignored);// Changed
       input.readNativeString(ignored);
     }
-    return m_callback.ptr();
+    return m_callback.get();
   }
 
  public:

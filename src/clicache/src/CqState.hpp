@@ -18,8 +18,11 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/CqState.hpp>
-#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
+
 
 using namespace System;
 
@@ -29,6 +32,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       /// <summary>
       /// Enumerated type for cq state
@@ -50,7 +54,6 @@ namespace Apache
       /// Static class containing convenience methods for <c>CqState</c>.
       /// </summary>
       public ref class CqState sealed
-        : public Internal::UMWrap<apache::geode::client::CqState>
       {
       public:
 
@@ -66,7 +69,7 @@ namespace Apache
 
         /// <summary>
         /// Returns true if the CQ is in Stopped state.
-	/// </summary>
+	      /// </summary>
         bool IsStopped();
 
         /// <summary>
@@ -76,20 +79,24 @@ namespace Apache
 
         /// <summary>
         /// Returns true if the CQ is in Closing state.
-	/// </summary>
+	      /// </summary>
         bool IsClosing();
-	void SetState(CqStateType state);
-	CqStateType GetState();
-
-        internal:
+	      void SetState(CqStateType state);
+	      CqStateType GetState();
+  
+      internal:
 
         /// <summary>
         /// Internal constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CqState( apache::geode::client::CqState* nativeptr )
-		            : UMWrap( nativeptr, false ) { }
-
+        inline CqState( native::CqState* nativeptr )
+          : m_nativeptr(nativeptr)
+        {
+        }
+              
+      private:
+        native::CqState* m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

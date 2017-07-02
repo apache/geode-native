@@ -18,16 +18,16 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/Cache.hpp>
-#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
+
 #include "IRegion.hpp"
-//#include "Log.hpp"
-//#include "ExceptionTypes.hpp"
 #include "ISubscriptionService.hpp"
+#include "native_shared_ptr.hpp"
 
 using namespace System;
-//using namespace System::Collections;
-//using namespace System::Collections::Generic;
 
 namespace Apache
 {
@@ -36,11 +36,10 @@ namespace Apache
     namespace Client
     {
 
-      //generic<class TKey, class TValue>
-     // ref class AttributesMutator;
+      namespace native = apache::geode::client;
 
       generic<class TKey, class TValue>
-			public ref class Region : public Internal::SBWrap<apache::geode::client::Region>,
+			public ref class Region :
         public IRegion<TKey, TValue>,
         public ISubscriptionService<TKey>
       {
@@ -270,11 +269,16 @@ namespace Apache
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
         //generic<class TKey, class TValue>
-        inline static Apache::Geode::Client::IRegion<TKey, TValue>^
-        Create( apache::geode::client::Region* nativeptr )
+        inline static IRegion<TKey, TValue>^
+        Create( native::RegionPtr nativeptr )
         {
-          return ( nativeptr != nullptr ?
-            gcnew Region<TKey, TValue>( nativeptr ) : nullptr );
+          return __nullptr == nativeptr ? nullptr :
+            gcnew Region<TKey, TValue>( nativeptr );
+        }
+
+        std::shared_ptr<native::Region> GetNative()
+        {
+          return m_nativeptr->get_shared_ptr();
         }
 
 
@@ -283,14 +287,20 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline Region( apache::geode::client::Region* nativeptr )
-					: SBWrap<apache::geode::client::Region>( nativeptr ) { }
+        inline Region( native::RegionPtr nativeptr )
+				{
+          m_nativeptr = gcnew native_shared_ptr<native::Region>(nativeptr);
+        }
 
         inline apache::geode::client::SerializablePtr get(apache::geode::client::CacheableKeyPtr& key, apache::geode::client::SerializablePtr& callbackArg);
         inline apache::geode::client::SerializablePtr get(apache::geode::client::CacheableKeyPtr& key);
         bool AreValuesEqual(apache::geode::client::CacheablePtr& val1, apache::geode::client::CacheablePtr& val2);
         bool isPoolInMultiuserMode();
+        
+        native_shared_ptr<native::Region>^ m_nativeptr;
+
       };
+
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

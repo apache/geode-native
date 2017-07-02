@@ -48,18 +48,18 @@ namespace unitTests {
 class TestUtils {
  public:
   static RegionInternal* getRegionInternal(RegionPtr& rptr) {
-    return dynamic_cast<RegionInternal*>(rptr.ptr());
+    return dynamic_cast<RegionInternal*>(rptr.get());
   }
 
   static CacheImpl* getCacheImpl(const CachePtr& cptr) {
-    return CacheRegionHelper::getCacheImpl(cptr.ptr());
+    return CacheRegionHelper::getCacheImpl(cptr.get());
   }
 
-  static int testGetNumberOfPdxIds() {
+  static size_t testGetNumberOfPdxIds() {
     return PdxTypeRegistry::testGetNumberOfPdxIds();
   }
 
-  static int testNumberOfPreservedData() {
+  static size_t testNumberOfPreservedData() {
     return PdxTypeRegistry::testNumberOfPreservedData();
   }
 
@@ -102,7 +102,7 @@ class TestUtils {
     int tries = 0;
     bool found = false;
     // @TODO: ? How will valPtr every point to something else in this loop?
-    while ((found = (valPtr == NULLPTR)) && (tries < maxTry)) {
+    while ((found = (valPtr == nullptr)) && (tries < maxTry)) {
       SLEEP(msleepTime);
       tries++;
     }
@@ -115,8 +115,8 @@ class TestUtils {
     int tries = 0;
     int val = 0;
     do {
-      valPtr = dynCast<CacheableStringPtr>(rptr->get(keyPtr));
-      ASSERT(valPtr != NULLPTR, "value should not be null.");
+      valPtr = std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr));
+      ASSERT(valPtr != nullptr, "value should not be null.");
       val = atoi(valPtr->asChar());
       SLEEP(msleepTime);
       tries++;
@@ -125,64 +125,64 @@ class TestUtils {
   }
   static void showKeys(RegionPtr& rptr) {
     char buf[2048];
-    if (rptr == NULLPTR) {
+    if (rptr == nullptr) {
       sprintf(buf, "this region does not exist!\n");
       LOG(buf);
       return;
     }
     VectorOfCacheableKey v;
     rptr->keys(v);
-    uint32_t len = v.size();
-    sprintf(buf, "Total keys in region %s : %u\n", rptr->getName(), len);
+    auto len = v.size();
+    sprintf(buf, "Total keys in region %s : %zu\n", rptr->getName(), len);
     LOG(buf);
     for (uint32_t i = 0; i < len; i++) {
       char keyText[100];
       v[i]->logString(keyText, 100);
       sprintf(buf, "key[%u] = '%s'\n", i,
-              (v[i] == NULLPTR) ? "NULL KEY" : keyText);
+              (v[i] == nullptr) ? "nullptr KEY" : keyText);
       LOG(buf);
     }
   }
   static void showKeyValues(RegionPtr& rptr) {
     char buf[2048];
-    if (rptr == NULLPTR) {
+    if (rptr == nullptr) {
       sprintf(buf, "this region does not exist!\n");
       LOG(buf);
       return;
     }
     VectorOfCacheableKey v;
     rptr->keys(v);
-    uint32_t len = v.size();
-    sprintf(buf, "Total keys in region %s : %u\n", rptr->getName(), len);
+    auto len = v.size();
+    sprintf(buf, "Total keys in region %s : %zu\n", rptr->getName(), len);
     LOG(buf);
     for (uint32_t i = 0; i < len; i++) {
       CacheableKeyPtr keyPtr = v[i];
       char keyText[100];
       keyPtr->logString(keyText, 100);
-      CacheableStringPtr valPtr =
-          dynCast<CacheableStringPtr>(rptr->get(keyPtr));
+      auto valPtr =
+          std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr));
       sprintf(buf, "key[%u] = '%s', value[%u]='%s'\n", i,
-              (keyPtr == NULLPTR) ? "NULL KEY" : keyText, i,
-              (valPtr == NULLPTR) ? "NULL_VALUE" : valPtr->asChar());
+              (keyPtr == nullptr) ? "nullptr KEY" : keyText, i,
+              (valPtr == nullptr) ? "NULL_VALUE" : valPtr->asChar());
       LOG(buf);
     }
   }
   static void showValues(RegionPtr& rptr) {
     char buf[2048];
-    if (rptr == NULLPTR) {
+    if (rptr == nullptr) {
       sprintf(buf, "this region does not exist!\n");
       LOG(buf);
       return;
     }
     VectorOfCacheable v;
     rptr->values(v);
-    uint32_t len = v.size();
-    sprintf(buf, "Total values in region %s : %u\n", rptr->getName(), len);
+    auto len = v.size();
+    sprintf(buf, "Total values in region %s : %zu\n", rptr->getName(), len);
     LOG(buf);
-    for (uint32_t i = 0; i < len; i++) {
-      CacheableStringPtr value = dynCast<CacheableStringPtr>(v[i]);
-      sprintf(buf, "value[%u] = '%s'\n", i,
-              (value == NULLPTR) ? "NULL VALUE" : value->asChar());
+    for (size_t i = 0; i < len; i++) {
+      auto value = std::dynamic_pointer_cast<CacheableString>(v[i]);
+      sprintf(buf, "value[%zu] = '%s'\n", i,
+              (value == nullptr) ? "nullptr VALUE" : value->asChar());
       LOG(buf);
     }
   }

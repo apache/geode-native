@@ -18,12 +18,13 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/DataInput.hpp>
-#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
+#include "native_conditional_unique_ptr.hpp"
 #include "Log.hpp"
 #include "ExceptionTypes.hpp"
-//#include "../../CacheableDate.hpp"
-
 
 using namespace System;
 using namespace System::Collections::Generic;
@@ -35,6 +36,8 @@ namespace Apache
     namespace Client
     {
 
+      namespace native = apache::geode::client;
+
       interface class IGeodeSerializable;
 
       /// <summary>
@@ -42,7 +45,6 @@ namespace Apache
       /// strings, <c>IGeodeSerializable</c> objects from a byte stream.
       /// </summary>
       public ref class DataInput sealed
-				: public Client::Internal::UMWrap<apache::geode::client::DataInput>
       {
       public:
 
@@ -211,17 +213,6 @@ namespace Apache
         /// Reset the cursor to the start of buffer.
         /// </summary>
         void Reset();
-
-        /// <summary>
-        /// Get the underlying native unmanaged pointer.
-        /// </summary>
-        property IntPtr NativeIntPtr
-        {
-          inline IntPtr get()
-          {
-            return IntPtr(_NativePtr);
-          }
-        }
         
         /// <summary>
         /// Read a dictionary from the stream in a given dictionary instance.
@@ -287,6 +278,11 @@ namespace Apache
 
       internal:
 
+        native::DataInput* GetNative()
+        {
+          return m_nativeptr->get();
+        }
+
         void setPdxdeserialization(bool val)
         {
           m_ispdxDesrialization = true;
@@ -307,7 +303,13 @@ namespace Apache
 
         const char * GetPoolName()
         {
-          return _NativePtr->getPoolName();
+          try
+          {
+            return m_nativeptr->get()->getPoolName();
+          }
+          finally {
+            GC::KeepAlive(m_nativeptr);
+          }
         }
 
         Object^ ReadDotNetTypes(int8_t typeId);
@@ -504,13 +506,26 @@ namespace Apache
 
         System::Byte* GetBytes(System::Byte* src, System::UInt32 size)
         {
-          return NativePtr->getBufferCopyFrom(src, size);
+          try
+          {
+            return m_nativeptr->get()->getBufferCopyFrom(src, size);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         }
 
         
         void AdvanceUMCursor()
         {
-					NativePtr->advanceCursor(m_cursor);
+          try {
+            m_nativeptr->get()->advanceCursor(m_cursor);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           m_cursor = 0;
           m_bufferLength = 0;
         }
@@ -532,7 +547,14 @@ namespace Apache
 
         void ResetPdx(int offset)
         {
-          NativePtr->reset(offset);
+          try
+          {
+            m_nativeptr->get()->reset(offset);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           SetBuffer();
         }
 
@@ -540,9 +562,16 @@ namespace Apache
 
         void SetBuffer()
         {
-          m_buffer = const_cast<System::Byte*> (NativePtr->currentBufferPosition());
-          m_cursor = 0;
-          m_bufferLength = NativePtr->getBytesRemaining();   
+          try
+          {
+            m_buffer = const_cast<System::Byte*> (m_nativeptr->get()->currentBufferPosition());
+            m_cursor = 0;
+            m_bufferLength = m_nativeptr->get()->getBytesRemaining();   
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         }
 
         String^ DecodeBytes(int length)
@@ -628,8 +657,8 @@ namespace Apache
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
         inline DataInput( apache::geode::client::DataInput* nativeptr, bool managedObject )
-          : UMWrap(nativeptr, false)
         { 
+          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(nativeptr);
           m_ispdxDesrialization = false;
           m_isRootObjectPdx = false;
           m_cursor = 0;
@@ -645,20 +674,6 @@ namespace Apache
         }
 
         DataInput( System::Byte* buffer, int size );
-
-       /* inline DataInput( apache::geode::client::DataInput* nativeptr )
-          : UMWrap(nativeptr, false)
-        { 
-          m_cursor = 0;
-          m_isManagedObject = false;
-          m_buffer = const_cast<System::Byte*>(nativeptr->currentBufferPosition());
-          if ( m_buffer != NULL) {
-            m_bufferLength = nativeptr->getBytesRemaining();            
-          }
-          else {
-            m_bufferLength = 0;
-          }
-        }*/
 
         bool IsManagedObject()
         {
@@ -683,6 +698,8 @@ namespace Apache
         int m_cursor;
         bool m_isManagedObject;
         array<Char>^ m_forStringDecode;
+
+        native_conditional_unique_ptr<native::DataInput>^ m_nativeptr;
       
         void Cleanup( );
       };

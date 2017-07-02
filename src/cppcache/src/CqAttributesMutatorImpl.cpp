@@ -18,24 +18,20 @@
 #include "CqAttributesImpl.hpp"
 using namespace apache::geode::client;
 CqAttributesMutatorImpl::CqAttributesMutatorImpl(const CqAttributesPtr& impl)
-    : m_cqAttributes(const_cast<CqAttributes*>(impl.ptr())) {}
+    : m_cqAttributes(impl) {}
 
 void CqAttributesMutatorImpl::addCqListener(const CqListenerPtr& aListener) {
-  CqAttributesImpl* cqImpl =
-      dynamic_cast<CqAttributesImpl*>(m_cqAttributes.ptr());
-  CqListenerPtr listener = dynCast<CqListenerPtr>(aListener);
-  cqImpl->addCqListener(listener);
+  std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)
+      ->addCqListener(aListener);
 }
 
 void CqAttributesMutatorImpl::removeCqListener(const CqListenerPtr& aListener) {
-  CqAttributesImpl* cqImpl =
-      dynamic_cast<CqAttributesImpl*>(m_cqAttributes.ptr());
-  CqListenerPtr listener = dynCast<CqListenerPtr>(aListener);
-  cqImpl->removeCqListener(listener);
+  std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)
+      ->removeCqListener(aListener);
 }
 
-void CqAttributesMutatorImpl::setCqListeners(VectorOfCqListener& newListeners) {
-  CqAttributesImpl* cqImpl =
-      dynamic_cast<CqAttributesImpl*>(m_cqAttributes.ptr());
-  cqImpl->setCqListeners(newListeners);
+void CqAttributesMutatorImpl::setCqListeners(
+    const CqAttributesImpl::listener_container_type& newListeners) {
+  std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)
+      ->setCqListeners(newListeners);
 }

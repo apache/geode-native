@@ -66,7 +66,7 @@ class CPPCACHE_EXPORT SerializationRegistry {
    */
   inline static void serialize(const Serializable* obj, DataOutput& output,
                                bool isDelta = false) {
-    if (obj == NULL) {
+    if (obj == nullptr) {
       output.write(static_cast<int8_t>(GeodeTypeIds::NullObj));
     } else {
       int8_t typeId = obj->typeId();
@@ -107,7 +107,7 @@ class CPPCACHE_EXPORT SerializationRegistry {
   }
 
   inline static void serialize(const SerializablePtr& obj, DataOutput& output) {
-    serialize(obj.ptr(), output);
+    serialize(obj.get(), output);
   }
 
   /**
@@ -146,7 +146,7 @@ class CPPCACHE_EXPORT SerializationRegistry {
   static int32_t GetEnumValue(SerializablePtr enumInfo);
   static SerializablePtr GetEnum(int32_t val);
 
-  static PdxSerializablePtr getPdxType(char* className);
+  static PdxSerializablePtr getPdxType(const char* className);
 
  private:
   static PoolPtr getPool();

@@ -19,16 +19,19 @@
 
 #include "geode_defs.hpp"
 
-//#include "impl/NativeWrapper.hpp"
+#include "begin_native.hpp"
+#include <geode/Properties.hpp>
+#include "end_native.hpp"
+
 #include "IGeodeSerializable.hpp"
 #include "ICacheableKey.hpp"
 #include "DataInput.hpp"
 #include "DataOutput.hpp"
 #include "CacheableString.hpp"
-
-#include "geode/Properties.hpp"
+#include "native_shared_ptr.hpp"
 #include "impl/SafeConvert.hpp"
 #include "Serializable.hpp"
+#include "native_shared_ptr.hpp"
 
 using namespace System;
 using namespace System::Runtime::Serialization;
@@ -40,6 +43,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       delegate void PropertyVisitor(Apache::Geode::Client::ICacheableKey^ key, Apache::Geode::Client::IGeodeSerializable^ value);
 
@@ -67,7 +71,7 @@ namespace Apache
       /// or an integer.
       /// </summary>
       public ref class Properties sealed
-        : public Internal::SBWrap<apache::geode::client::Properties>, public IGeodeSerializable,
+        : public IGeodeSerializable,
         public ISerializable
       {
       public:
@@ -76,7 +80,8 @@ namespace Apache
         /// Default constructor: returns an empty collection.
         /// </summary>
         inline Properties( )
-          : SBWrap( apache::geode::client::Properties::create( ).ptr( ) ) { }
+        : Properties(native::Properties::create())
+        {}
 
         /// <summary>
         /// Factory method to create an empty collection of properties.
@@ -204,40 +209,6 @@ namespace Apache
 
         // End: ISerializable members
 
-        /// <summary>
-        /// Get the underlying native unmanaged pointer.
-        /// </summary>
-        property void* NativeIntPtr
-        {
-          inline void* get()
-          {
-            return _NativePtr;
-          }
-        }
-
-        /*
-        inline static IGeodeSerializable^ ConvertCacheableString(apache::geode::client::CacheablePtr& value);
-        inline static apache::geode::client::CacheableKey *  ConvertCacheableStringKey(CacheableString^ cStr);
-        */
-        
-
-        /// <summary>
-        /// Internal factory function to wrap a native object pointer inside
-        /// this managed class with null pointer check.
-        /// </summary>
-        /// <param name="ptr">The native IntPtr pointer</param>
-        /// <returns>
-        /// The managed wrapper object; null if the native pointer is null.
-        /// </returns>
-        generic<class TPropKey, class TPropValue>
-        static Properties<TPropKey, TPropValue>^ CreateFromVoidPtr(void* ptr)
-        {
-          apache::geode::client::Properties* nativeptr = (apache::geode::client::Properties*)ptr;
-          return ( nativeptr != nullptr ?
-            gcnew Properties<TPropKey, TPropValue>( nativeptr ) : nullptr );
-        }
-
-
       protected:
 
         // For deserialization using the .NET serialization (ISerializable)
@@ -254,35 +225,37 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        generic<class TPropKey, class TPropValue>
-        static Properties<TPropKey, TPropValue>^ Create( apache::geode::client::Serializable* nativeptr )
+        //generic<class TPropKey, class TPropValue>
+        static Properties<TPropKey, TPropValue>^ Create( native::PropertiesPtr nativeptr )
         {
-          return ( nativeptr != nullptr ?
-            gcnew Properties<TPropKey, TPropValue>( nativeptr ) : nullptr );
+          return __nullptr == nativeptr ? nullptr :
+            gcnew Properties<TPropKey, TPropValue>( nativeptr );
+        }
+
+        std::shared_ptr<native::Properties> GetNative()
+        {
+          return m_nativeptr->get_shared_ptr();
         }
 
         inline static IGeodeSerializable^ CreateDeserializable( )
         {
-          return Create<String^, String^>(  );
+          return Create<String^, String^>();
         }
 
-        /// <summary>
-        /// Factory function to register wrapper
-        /// </summary>
-        inline static IGeodeSerializable^ CreateDeserializable(
-          apache::geode::client::Serializable* nativeptr )
-        {
-          return Create<String^, String^>( nativeptr );
-        }
-
-      internal:
+      private:
 
         /// <summary>
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline Properties( apache::geode::client::Serializable* nativeptr )
-          : SBWrap( (apache::geode::client::Properties*)nativeptr ) { }
+        inline Properties( native::PropertiesPtr nativeptr )
+        {
+          m_nativeptr = gcnew native_shared_ptr<native::Properties>(nativeptr);
+        }
+
+        native_shared_ptr<native::Properties>^ m_nativeptr;
+
+        void FromData(native::DataInput & input);
       };
 
       generic <class TPropKey, class TPropValue>

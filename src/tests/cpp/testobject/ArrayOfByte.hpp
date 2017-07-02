@@ -77,7 +77,7 @@ class TESTOBJECT_EXPORT ArrayOfByte {
   }
 
   static int64_t getTimestamp(CacheableBytesPtr bytes) {
-    if (bytes == NULLPTR) {
+    if (bytes == nullptr) {
       throw apache::geode::client::IllegalArgumentException(
           "the bytes arg was null");
     }

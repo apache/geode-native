@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
 #include "AttributesMutator.hpp"
-//#include "Region.hpp"
+
 #include "impl/ManagedCacheListener.hpp"
 #include "impl/ManagedCacheLoader.hpp"
 #include "impl/ManagedCacheWriter.hpp"
@@ -33,85 +32,156 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       generic<class TKey, class TValue>
       System::Int32 AttributesMutator<TKey, TValue>::SetEntryIdleTimeout( System::Int32 idleTimeout )
       {
-        return NativePtr->setEntryIdleTimeout( idleTimeout );
+        try
+        {
+          return m_nativeptr->get()->setEntryIdleTimeout( idleTimeout );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TValue>
       ExpirationAction AttributesMutator<TKey, TValue>::SetEntryIdleTimeoutAction(
         ExpirationAction action )
       {
-        return static_cast<ExpirationAction>(
-          NativePtr->setEntryIdleTimeoutAction(
-          static_cast<apache::geode::client::ExpirationAction::Action>( action ) ) );
+        try
+        {
+          return static_cast<ExpirationAction>(
+            m_nativeptr->get()->setEntryIdleTimeoutAction(
+              static_cast<native::ExpirationAction::Action>(action)));
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TValue>
       System::Int32 AttributesMutator<TKey, TValue>::SetEntryTimeToLive( System::Int32 timeToLive )
       {
-        return NativePtr->setEntryTimeToLive( timeToLive );
+        try
+        {
+          return m_nativeptr->get()->setEntryTimeToLive( timeToLive );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TValue>
       ExpirationAction AttributesMutator<TKey, TValue>::SetEntryTimeToLiveAction(
         ExpirationAction action )
       {
-        return static_cast<ExpirationAction>(
-          NativePtr->setEntryTimeToLiveAction(
-          static_cast<apache::geode::client::ExpirationAction::Action>( action ) ) );
-      }
+        try
+        {
+          return static_cast<ExpirationAction>(
+            m_nativeptr->get()->setEntryTimeToLiveAction(
+              static_cast<native::ExpirationAction::Action>(action)));
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+     }
 
       generic<class TKey, class TValue>
       System::Int32 AttributesMutator<TKey, TValue>::SetRegionIdleTimeout( System::Int32 idleTimeout )
       {
-        return NativePtr->setRegionIdleTimeout( idleTimeout );
+        try
+        {
+          return m_nativeptr->get()->setRegionIdleTimeout( idleTimeout );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TValue>
       ExpirationAction AttributesMutator<TKey, TValue>::SetRegionIdleTimeoutAction(
         ExpirationAction action )
       {
-        return static_cast<ExpirationAction>(
-          NativePtr->setRegionIdleTimeoutAction(
-          static_cast<apache::geode::client::ExpirationAction::Action>( action ) ) );
+        try
+        {
+          return static_cast<ExpirationAction>(
+            m_nativeptr->get()->setRegionIdleTimeoutAction(
+              static_cast<native::ExpirationAction::Action>(action)));
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TValue>
       System::Int32 AttributesMutator<TKey, TValue>::SetRegionTimeToLive( System::Int32 timeToLive )
       {
-        return NativePtr->setRegionTimeToLive( timeToLive );
+        try
+        {
+          return m_nativeptr->get()->setRegionTimeToLive( timeToLive );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TValue>
       ExpirationAction AttributesMutator<TKey, TValue>::SetRegionTimeToLiveAction(
         ExpirationAction action )
       {
-        return static_cast<ExpirationAction>(
-          NativePtr->setRegionTimeToLiveAction(
-          static_cast<apache::geode::client::ExpirationAction::Action>( action ) ) );
+        try
+        {
+          return static_cast<ExpirationAction>(
+            m_nativeptr->get()->setRegionTimeToLiveAction(
+              static_cast<native::ExpirationAction::Action>(action)));
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TValue>
       System::UInt32 AttributesMutator<TKey, TValue>::SetLruEntriesLimit( System::UInt32 entriesLimit )
       {
-        return NativePtr->setLruEntriesLimit( entriesLimit );
+        try
+        {
+          return m_nativeptr->get()->setLruEntriesLimit( entriesLimit );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TValue>
       void AttributesMutator<TKey, TValue>::SetCacheListener( ICacheListener<TKey, TValue>^ cacheListener )
       {
-        apache::geode::client::CacheListenerPtr listenerptr;
+        native::CacheListenerPtr listenerptr;
         if (cacheListener != nullptr)
         {
-          CacheListenerGeneric<TKey, TValue>^ clg = gcnew CacheListenerGeneric<TKey, TValue>();
+          auto clg = gcnew CacheListenerGeneric<TKey, TValue>();
           clg->SetCacheListener(cacheListener);
-          listenerptr = new apache::geode::client::ManagedCacheListenerGeneric( /*clg,*/ cacheListener );
-          ((apache::geode::client::ManagedCacheListenerGeneric*)listenerptr.ptr())->setptr(clg);
+          listenerptr = std::shared_ptr<native::ManagedCacheListenerGeneric>( new native::ManagedCacheListenerGeneric(cacheListener) );
+          ((native::ManagedCacheListenerGeneric*)listenerptr.get())->setptr(clg);
         }
-        NativePtr->setCacheListener( listenerptr );
+        try
+        {
+          m_nativeptr->get()->setCacheListener( listenerptr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TValue>
@@ -119,25 +189,27 @@ namespace Apache
         String^ factoryFunctionName )
       {
         throw gcnew System::NotSupportedException;
-        ManagedString mg_libpath( libPath );
-        ManagedString mg_factoryFunctionName( factoryFunctionName );
-
-        NativePtr->setCacheListener( mg_libpath.CharPtr,
-          mg_factoryFunctionName.CharPtr );
       }
 
       generic<class TKey, class TValue>
       void AttributesMutator<TKey, TValue>::SetCacheLoader( ICacheLoader<TKey, TValue>^ cacheLoader )
       {
-        apache::geode::client::CacheLoaderPtr loaderptr;
+        native::CacheLoaderPtr loaderptr;
         if (cacheLoader != nullptr)
         {
-          CacheLoaderGeneric<TKey, TValue>^ clg = gcnew CacheLoaderGeneric<TKey, TValue>();
+          auto clg = gcnew CacheLoaderGeneric<TKey, TValue>();
           clg->SetCacheLoader(cacheLoader);
-          loaderptr = new apache::geode::client::ManagedCacheLoaderGeneric( /*clg,*/ cacheLoader );
-          ((apache::geode::client::ManagedCacheLoaderGeneric*)loaderptr.ptr())->setptr(clg);
+          loaderptr = std::shared_ptr<native::ManagedCacheLoaderGeneric>( new native::ManagedCacheLoaderGeneric(cacheLoader) );
+          ((native::ManagedCacheLoaderGeneric*)loaderptr.get())->setptr(clg);
         }
-        NativePtr->setCacheLoader( loaderptr );
+        try
+        {
+          m_nativeptr->get()->setCacheLoader( loaderptr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TValue>
@@ -145,25 +217,27 @@ namespace Apache
         String^ factoryFunctionName )
       {
         throw gcnew System::NotSupportedException;
-        ManagedString mg_libpath( libPath );
-        ManagedString mg_factoryFunctionName( factoryFunctionName );
-
-        NativePtr->setCacheLoader( mg_libpath.CharPtr,
-          mg_factoryFunctionName.CharPtr );
       }
 
       generic<class TKey, class TValue>
       void AttributesMutator<TKey, TValue>::SetCacheWriter( ICacheWriter<TKey, TValue>^ cacheWriter )
       {
-        apache::geode::client::CacheWriterPtr writerptr;
+        native::CacheWriterPtr writerptr;
         if (cacheWriter != nullptr)
         {
-          CacheWriterGeneric<TKey, TValue>^ cwg = gcnew CacheWriterGeneric<TKey, TValue>();
+          auto cwg = gcnew CacheWriterGeneric<TKey, TValue>();
           cwg->SetCacheWriter(cacheWriter);
-          writerptr = new apache::geode::client::ManagedCacheWriterGeneric( /*cwg,*/ cacheWriter );
-          ((apache::geode::client::ManagedCacheWriterGeneric*)writerptr.ptr())->setptr(cwg);
+          writerptr = std::shared_ptr<native::ManagedCacheWriterGeneric>( new native::ManagedCacheWriterGeneric(cacheWriter) );
+          ((native::ManagedCacheWriterGeneric*)writerptr.get())->setptr(cwg);
         }
-        NativePtr->setCacheWriter( writerptr );
+        try
+        {
+          m_nativeptr->get()->setCacheWriter( writerptr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TKey, class TValue>
@@ -171,11 +245,6 @@ namespace Apache
         String^ factoryFunctionName )
       {
         throw gcnew System::NotSupportedException;
-        ManagedString mg_libpath( libPath );
-        ManagedString mg_factoryFunctionName( factoryFunctionName );
-
-        NativePtr->setCacheWriter( mg_libpath.CharPtr,
-          mg_factoryFunctionName.CharPtr );
       }
     }  // namespace Client
   }  // namespace Geode

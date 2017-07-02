@@ -20,12 +20,14 @@
  * limitations under the License.
  */
 
+#include <atomic>
+
 #include <geode/geode_globals.hpp>
 #include <geode/Cacheable.hpp>
 #include <geode/CacheableKey.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 #include <geode/ExceptionTypes.hpp>
-#include "HostAsm.hpp"
+
 #include "CacheImpl.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "RegionInternal.hpp"
@@ -38,9 +40,9 @@ namespace apache {
 namespace geode {
 namespace client {
 class CPPCACHE_EXPORT MapEntry;
-typedef SharedPtr<MapEntry> MapEntryPtr;
+typedef std::shared_ptr<MapEntry> MapEntryPtr;
 class CPPCACHE_EXPORT MapEntryImpl;
-typedef SharedPtr<MapEntryImpl> MapEntryImplPtr;
+typedef std::shared_ptr<MapEntryImpl> MapEntryImplPtr;
 
 class CPPCACHE_EXPORT LRUEntryProperties;
 
@@ -65,16 +67,16 @@ class CPPCACHE_EXPORT ExpEntryProperties {
   // the costly gettimeofday call in MapSegment spinlock
   inline void initStartTime() {
     uint32_t currTime = static_cast<uint32_t>(ACE_OS::gettimeofday().sec());
-    HostAsm::atomicSet(m_lastModifiedTime, currTime);
-    HostAsm::atomicSet(m_lastAccessTime, currTime);
+    m_lastModifiedTime = currTime;
+    m_lastAccessTime = currTime;
   }
 
   inline void updateLastAccessTime(uint32_t currTime) {
-    HostAsm::atomicSet(m_lastAccessTime, currTime);
+    m_lastAccessTime = currTime;
   }
 
   inline void updateLastModifiedTime(uint32_t currTime) {
-    HostAsm::atomicSet(m_lastModifiedTime, currTime);
+    m_lastModifiedTime = currTime;
   }
 
   inline void setExpiryTaskId(long id) { m_expiryTaskId = id; }
@@ -93,9 +95,9 @@ class CPPCACHE_EXPORT ExpEntryProperties {
 
  private:
   /** last access time in secs, 32bit.. */
-  volatile uint32_t m_lastAccessTime;
+  std::atomic<uint32_t> m_lastAccessTime;
   /** last modified time in secs, 32bit.. */
-  volatile uint32_t m_lastModifiedTime;
+  std::atomic<uint32_t> m_lastModifiedTime;
   /** The expiry task id for this particular entry.. **/
   long m_expiryTaskId;
 };
@@ -103,7 +105,7 @@ class CPPCACHE_EXPORT ExpEntryProperties {
 /**
  * @brief Interface class for region mapped entry value.
  */
-class CPPCACHE_EXPORT MapEntry : public SharedBase {
+class CPPCACHE_EXPORT MapEntry {
  public:
   static MapEntryPtr MapEntry_NullPointer;
 
@@ -112,7 +114,7 @@ class CPPCACHE_EXPORT MapEntry : public SharedBase {
   virtual void getKey(CacheableKeyPtr& result) const = 0;
   virtual void getValue(CacheablePtr& result) const = 0;
   virtual void setValue(const CacheablePtr& value) = 0;
-  virtual MapEntryImpl* getImplPtr() = 0;
+  virtual MapEntryImplPtr getImplPtr() = 0;
 
   virtual LRUEntryProperties& getLRUProperties() = 0;
   virtual ExpEntryProperties& getExpProperties() = 0;
@@ -178,23 +180,24 @@ class CPPCACHE_EXPORT MapEntry : public SharedBase {
  protected:
   inline MapEntry() {}
 
-  inline explicit MapEntry(bool noInit) : SharedBase(noInit) {}
+  inline explicit MapEntry(bool noInit) {}
 };
 
 /**
  * @brief Hold region mapped entry value. subclass will hold lru flags.
  * Another holds expiration timestamps.
  */
-class MapEntryImpl : public MapEntry {
+class MapEntryImpl : public MapEntry,
+                     public std::enable_shared_from_this<MapEntryImpl> {
  public:
   virtual ~MapEntryImpl() {}
 
   inline void getKeyI(CacheableKeyPtr& result) const { result = m_key; }
 
   inline void getValueI(CacheablePtr& result) const {
-    // If value is destroyed, then this returns NULLPTR
+    // If value is destroyed, then this returns nullptr
     if (CacheableToken::isDestroyed(m_value)) {
-      result = NULLPTR;
+      result = nullptr;
     } else {
       result = m_value;
     }
@@ -208,7 +211,7 @@ class MapEntryImpl : public MapEntry {
 
   virtual void setValue(const CacheablePtr& value) { setValueI(value); }
 
-  virtual MapEntryImpl* getImplPtr() { return this; }
+  virtual MapEntryImplPtr getImplPtr() { return shared_from_this(); }
 
   virtual LRUEntryProperties& getLRUProperties() {
     throw FatalInternalException(
@@ -231,7 +234,7 @@ class MapEntryImpl : public MapEntry {
 
  protected:
   inline explicit MapEntryImpl(bool noInit)
-      : MapEntry(true), m_value(true), m_key(true) {}
+      : MapEntry(true), m_value(nullptr), m_key(nullptr) {}
 
   inline MapEntryImpl(const CacheableKeyPtr& key) : MapEntry(), m_key(key) {}
 
@@ -263,7 +266,7 @@ class CPPCACHE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
   VersionedMapEntryImpl& operator=(const VersionedMapEntryImpl&);
 };
 
-typedef SharedPtr<VersionedMapEntryImpl> VersionedMapEntryImplPtr;
+typedef std::shared_ptr<VersionedMapEntryImpl> VersionedMapEntryImplPtr;
 
 class CPPCACHE_EXPORT EntryFactory {
  public:

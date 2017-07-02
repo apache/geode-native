@@ -29,7 +29,7 @@ namespace apache {
 namespace geode {
 namespace client {
 class PutAllPartialResult;
-typedef SharedPtr<PutAllPartialResult> PutAllPartialResultPtr;
+typedef std::shared_ptr<PutAllPartialResult> PutAllPartialResultPtr;
 
 class PutAllPartialResult : public Serializable {
  private:
@@ -57,11 +57,11 @@ class PutAllPartialResult : public Serializable {
   void addKeys(VectorOfCacheableKeyPtr m_keys);
 
   void saveFailedKey(CacheableKeyPtr key, ExceptionPtr cause) {
-    if (key == NULLPTR) {
+    if (key == nullptr) {
       return;
     }
     // TODO:: Do we need to handle server cancelException.
-    if (m_firstFailedKey == NULLPTR /*|| cause instanceof CaccelException */) {
+    if (m_firstFailedKey == nullptr /*|| cause instanceof CaccelException */) {
       m_firstFailedKey = key;
       m_firstCauseOfFailure = cause;
     }
@@ -73,14 +73,14 @@ class PutAllPartialResult : public Serializable {
   CacheableKeyPtr getFirstFailedKey() { return m_firstFailedKey; }
 
   // Returns there's failedKeys
-  bool hasFailure() { return m_firstFailedKey != NULLPTR; }
+  bool hasFailure() { return m_firstFailedKey != nullptr; }
 
   // Returns there's saved succeed keys
   bool hasSucceededKeys();
 
   virtual CacheableStringPtr toString() const {
     char msgStr1[1024];
-    if (m_firstFailedKey != NULLPTR) {
+    if (m_firstFailedKey != nullptr) {
       ACE_OS::snprintf(msgStr1, 1024, "[ Key =%s ]",
                        m_firstFailedKey->toString()->asChar());
     }
@@ -116,7 +116,7 @@ class PutAllPartialResult : public Serializable {
   Serializable* fromData(DataInput& input) {
     throw IllegalStateException(
         "PutAllPartialResult::fromData is not intended for use.");
-    return NULL;
+    return nullptr;
   }
 
   int32_t classId() const {

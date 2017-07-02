@@ -62,17 +62,17 @@ class TimeBomb : public ACE_Task_Base {
   // UNUSED int m_numberOfClient;
   void (*m_cleanupCallback)();
   void callClientCleanup() {
-    if (m_cleanupCallback != NULL) m_cleanupCallback();
+    if (m_cleanupCallback != nullptr) m_cleanupCallback();
   }
 
  public:
   ACE_Time_Value m_sleep;
 
-  TimeBomb(void (*cleanupFunc)() = NULL)
+  TimeBomb(void (*cleanupFunc)() = nullptr)
       : m_sleep(0) /* UNUSED , m_numberOfClient( -1 )*/
   {
     char* sleepEnv = ACE_OS::getenv("TIMEBOMB");
-    if (sleepEnv != NULL) {
+    if (sleepEnv != nullptr) {
       m_sleep.sec(atol(sleepEnv));
     }
     m_cleanupCallback = cleanupFunc;

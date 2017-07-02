@@ -28,49 +28,69 @@ namespace Apache
     namespace Client
     {
 
-        // IGeodeSerializable methods
+      // IGeodeSerializable methods
 
-        void UserFunctionExecutionException::ToData( DataOutput^ output )
+      void UserFunctionExecutionException::ToData(DataOutput^ output)
+      {
+        throw gcnew IllegalStateException("UserFunctionExecutionException::ToData is not intended for use.");
+      }
+
+      IGeodeSerializable^ UserFunctionExecutionException::FromData(DataInput^ input)
+      {
+        throw gcnew IllegalStateException("UserFunctionExecutionException::FromData is not intended for use.");
+        return this;
+      }
+
+      System::UInt32 UserFunctionExecutionException::ObjectSize::get()
+      {
+        _GF_MG_EXCEPTION_TRY2
+          throw gcnew IllegalStateException("UserFunctionExecutionException::ObjectSize is not intended for use.");
+        try
         {
-          throw gcnew IllegalStateException("UserFunctionExecutionException::ToData is not intended for use.");
+          return m_nativeptr->get()->objectSize();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
         }
 
-        IGeodeSerializable^ UserFunctionExecutionException::FromData( DataInput^ input )
+        _GF_MG_EXCEPTION_CATCH_ALL2
+      }
+
+      String^ UserFunctionExecutionException::Message::get()
+      {
+        _GF_MG_EXCEPTION_TRY2
+
+        try
         {
-          throw gcnew IllegalStateException("UserFunctionExecutionException::FromData is not intended for use.");
-          return this;
-        } 
-
-        System::UInt32 UserFunctionExecutionException::ObjectSize::get( )
-        {        
-          _GF_MG_EXCEPTION_TRY2
-            throw gcnew IllegalStateException("UserFunctionExecutionException::ObjectSize is not intended for use.");
-            return NativePtr->objectSize( );
-
-          _GF_MG_EXCEPTION_CATCH_ALL2
+          auto value = m_nativeptr->get()->getMessage();
+          return CacheableString::GetString(value.get());
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
         }
 
-       String^ UserFunctionExecutionException::Message::get() 
+        _GF_MG_EXCEPTION_CATCH_ALL2
+      }
+
+      String^ UserFunctionExecutionException::Name::get()
+      {
+        _GF_MG_EXCEPTION_TRY2
+
+        try
         {
-          _GF_MG_EXCEPTION_TRY2
-
-            apache::geode::client::CacheableStringPtr value = NativePtr->getMessage(  );
-            return CacheableString::GetString( value.ptr( ) );          
-
-          _GF_MG_EXCEPTION_CATCH_ALL2
+          auto value = m_nativeptr->get()->getName();
+          return CacheableString::GetString(value.get());
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
         }
 
-       String^ UserFunctionExecutionException::Name::get() 
-        {
-          _GF_MG_EXCEPTION_TRY2
-
-            apache::geode::client::CacheableStringPtr value = NativePtr->getName(  );
-            return CacheableString::GetString( value.ptr( ) );          
-
-          _GF_MG_EXCEPTION_CATCH_ALL2
+        _GF_MG_EXCEPTION_CATCH_ALL2
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
-}
 

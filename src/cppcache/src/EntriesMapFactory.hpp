@@ -33,7 +33,7 @@ class CPPCACHE_EXPORT EntriesMapFactory {
   /** @brief used internally by Region implementation to create the appropriate
    * type of entries map.
    */
-  static EntriesMap* createMap(RegionInternal*,
+  static EntriesMap* createMap(RegionInternal* region,
                                const RegionAttributesPtr& attrs);
 
  private:

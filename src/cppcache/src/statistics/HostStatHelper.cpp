@@ -16,7 +16,7 @@
  */
 
 #include <geode/geode_globals.hpp>
-
+#include "config.h"
 #include <ace/OS_NS_sys_utsname.h>
 #include "HostStatHelper.hpp"
 #include "GeodeStatisticsFactory.hpp"
@@ -33,7 +33,7 @@ int32_t HostStatHelper::PROCESS_STAT_FLAG = 1;
 int32_t HostStatHelper::SYSTEM_STAT_FLAG = 2;
 GFS_OSTYPES HostStatHelper::osCode =
     static_cast<GFS_OSTYPES>(0);  // Default OS is Linux
-ProcessStats* HostStatHelper::processStats = NULL;
+ProcessStats* HostStatHelper::processStats = nullptr;
 
 /**
  * Determine the OS and creates Process Statistics Type for that OS
@@ -64,7 +64,7 @@ void HostStatHelper::initOSCode() {
  * Refresh statistics of the process through operating system specific calls
  */
 void HostStatHelper::refresh() {
-  if (processStats != NULL) {
+  if (processStats != nullptr) {
 #if defined(_WIN32)
     HostStatHelperWin::refreshProcess(processStats);
 #elif defined(_SOLARIS)
@@ -105,7 +105,7 @@ void HostStatHelper::newProcessStats(int64_t pid, const char* name) {
       throw IllegalArgumentException(
           "HostStatHelper::newProcess:unhandled osCodem");
   }
-  GF_D_ASSERT(processStats != NULL);
+  GF_D_ASSERT(processStats != nullptr);
 }
 
 void HostStatHelper::close() {
@@ -123,25 +123,25 @@ void HostStatHelper::cleanup() {
 #endif
   if (processStats) {
     delete processStats;
-    processStats = NULL;
+    processStats = nullptr;
   }
 }
 
 int32_t HostStatHelper::getCpuUsage() {
-  if (HostStatHelper::processStats != NULL) {
+  if (HostStatHelper::processStats != nullptr) {
     return HostStatHelper::processStats->getCpuUsage();
   }
   return 0;
 }
 
 int64_t HostStatHelper::getCpuTime() {
-  if (HostStatHelper::processStats != NULL) {
+  if (HostStatHelper::processStats != nullptr) {
     return HostStatHelper::processStats->getAllCpuTime();
   }
   return 0;
 }
 int32_t HostStatHelper::getNumThreads() {
-  if (HostStatHelper::processStats != NULL) {
+  if (HostStatHelper::processStats != nullptr) {
     return HostStatHelper::processStats->getNumThreads();
   }
   return 0;

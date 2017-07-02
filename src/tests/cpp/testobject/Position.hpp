@@ -62,7 +62,7 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
   int32_t pid;
 
   inline uint32_t getObjectSize(const SerializablePtr& obj) const {
-    return (obj == NULLPTR ? 0 : obj->objectSize());
+    return (obj == nullptr ? 0 : obj->objectSize());
   }
 
  public:
@@ -105,7 +105,7 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
   void init();
 };
 
-typedef apache::geode::client::SharedPtr<Position> PositionPtr;
+typedef std::shared_ptr<Position> PositionPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_POSITION_H_

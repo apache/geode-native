@@ -27,26 +27,14 @@ using namespace apache::geode::client;
 
 //---- statics
 
-CacheableTokenPtr* CacheableToken::invalidToken = 0;
-CacheableTokenPtr* CacheableToken::destroyedToken = 0;
-CacheableTokenPtr* CacheableToken::overflowedToken = 0;
-CacheableTokenPtr* CacheableToken::tombstoneToken = 0;
-
-void CacheableToken::init() {
-  if (CacheableToken::invalidToken == 0) {
-    CacheableToken::invalidToken = new CacheableTokenPtr();
-    *CacheableToken::invalidToken = new CacheableToken(CacheableToken::INVALID);
-    CacheableToken::destroyedToken = new CacheableTokenPtr();
-    *CacheableToken::destroyedToken =
-        new CacheableToken(CacheableToken::DESTROYED);
-    CacheableToken::overflowedToken = new CacheableTokenPtr();
-    *CacheableToken::overflowedToken =
-        new CacheableToken(CacheableToken::OVERFLOWED);
-    CacheableToken::tombstoneToken = new CacheableTokenPtr();
-    *CacheableToken::tombstoneToken =
-        new CacheableToken(CacheableToken::TOMBSTONE);
-  }
-}
+CacheableTokenPtr CacheableToken::invalidToken =
+    std::make_shared<CacheableToken>(CacheableToken::INVALID);
+CacheableTokenPtr CacheableToken::destroyedToken =
+    std::make_shared<CacheableToken>(CacheableToken::DESTROYED);
+CacheableTokenPtr CacheableToken::overflowedToken =
+    std::make_shared<CacheableToken>(CacheableToken::OVERFLOWED);
+CacheableTokenPtr CacheableToken::tombstoneToken =
+    std::make_shared<CacheableToken>(CacheableToken::TOMBSTONE);
 
 //----- serialization
 
@@ -60,22 +48,7 @@ void CacheableToken::toData(DataOutput& output) const {
 
 Serializable* CacheableToken::fromData(DataInput& input) {
   input.readInt(reinterpret_cast<int32_t*>(&m_value));
-  switch (m_value) {
-    case INVALID:
-      return invalidToken->ptr();
-    case DESTROYED:
-      return destroyedToken->ptr();
-    case OVERFLOWED:
-      return overflowedToken->ptr();
-    case TOMBSTONE:
-      return tombstoneToken->ptr();
-
-    default:
-      GF_D_ASSERT(false);
-      // we really can't be returning new instances all the time..
-      // because we wish to test tokens with pointer identity.
-      return this;
-  }
+  return this;
 }
 
 int32_t CacheableToken::classId() const { return 0; }

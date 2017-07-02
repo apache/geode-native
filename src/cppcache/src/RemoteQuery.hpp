@@ -23,7 +23,7 @@
 #include <geode/geode_globals.hpp>
 #include <geode/geode_types.hpp>
 #include <geode/ExceptionTypes.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 
 #include <geode/Query.hpp>
 #include <geode/SelectResults.hpp>
@@ -51,7 +51,7 @@ class CPPCACHE_EXPORT RemoteQuery : public Query {
 
  public:
   RemoteQuery(const char* querystr, const RemoteQueryServicePtr& queryService,
-              ThinClientBaseDM* tccdmptr, ProxyCachePtr proxyCache = NULLPTR);
+              ThinClientBaseDM* tccdmptr, ProxyCachePtr proxyCache = nullptr);
 
   //@TODO check the return type, is it ok. second option could be to pass
   // SelectResults by reference as a parameter.
@@ -59,7 +59,7 @@ class CPPCACHE_EXPORT RemoteQuery : public Query {
 
   //@TODO check the return type, is it ok. second option could be to pass
   // SelectResults by reference as a parameter.
-  SelectResultsPtr execute(CacheableVectorPtr paramList = NULLPTR,
+  SelectResultsPtr execute(CacheableVectorPtr paramList = nullptr,
                            uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   // executes a query using a given distribution manager
@@ -80,7 +80,7 @@ class CPPCACHE_EXPORT RemoteQuery : public Query {
   bool isCompiled();
 };
 
-typedef SharedPtr<RemoteQuery> RemoteQueryPtr;
+typedef std::shared_ptr<RemoteQuery> RemoteQueryPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -20,32 +20,32 @@
  * limitations under the License.
  */
 
+#include <atomic>
+
 #include <geode/geode_globals.hpp>
-#include <geode/SharedPtr.hpp>
-#include "SpinLock.hpp"
+#include <memory>
+
+#include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 // Bit mask for recently used
-#define RECENTLY_USED_BITS 1ul
+#define RECENTLY_USED_BITS 1u
 // Bit mask for evicted
-#define EVICTED_BITS 2ul
+#define EVICTED_BITS 2u
 
 /**
  * @brief This class encapsulates LRU specific properties for a LRUList node.
  */
 class CPPCACHE_EXPORT LRUEntryProperties {
  public:
-  inline LRUEntryProperties() : m_bits(0), m_persistenceInfo(NULL) {}
+  inline LRUEntryProperties() : m_bits(0), m_persistenceInfo(nullptr) {}
 
-  inline void setRecentlyUsed() {
-    HostAsm::atomicSetBits(m_bits, RECENTLY_USED_BITS);
-  }
+  inline void setRecentlyUsed() { m_bits |= RECENTLY_USED_BITS; }
 
-  inline void clearRecentlyUsed() {
-    HostAsm::atomicClearBits(m_bits, RECENTLY_USED_BITS);
-  }
+  inline void clearRecentlyUsed() { m_bits &= ~RECENTLY_USED_BITS; }
 
   inline bool testRecentlyUsed() const {
     return (m_bits & RECENTLY_USED_BITS) == RECENTLY_USED_BITS;
@@ -55,9 +55,9 @@ class CPPCACHE_EXPORT LRUEntryProperties {
     return (m_bits & EVICTED_BITS) == EVICTED_BITS;
   }
 
-  inline void setEvicted() { HostAsm::atomicSetBits(m_bits, EVICTED_BITS); }
+  inline void setEvicted() { m_bits |= EVICTED_BITS; }
 
-  inline void clearEvicted() { HostAsm::atomicClearBits(m_bits, EVICTED_BITS); }
+  inline void clearEvicted() { m_bits &= ~EVICTED_BITS; }
 
   inline void* getPersistenceInfo() const { return m_persistenceInfo; }
 
@@ -70,9 +70,11 @@ class CPPCACHE_EXPORT LRUEntryProperties {
   inline LRUEntryProperties(bool noInit) {}
 
  private:
-  volatile uint32_t m_bits;
+  std::atomic<uint32_t> m_bits;
   void* m_persistenceInfo;
 };
+
+using util::concurrent::spinlock_mutex;
 
 /**
  * @brief Maintains a list of entries returning them through head in
@@ -83,7 +85,7 @@ class CPPCACHE_EXPORT LRUEntryProperties {
 template <typename TEntry, typename TCreateEntry>
 class LRUList {
  protected:
-  typedef SharedPtr<TEntry> LRUListEntryPtr;
+  typedef std::shared_ptr<TEntry> LRUListEntryPtr;
 
   /**
    * @brief The entries in the LRU List are instances of LRUListNode.
@@ -92,7 +94,7 @@ class LRUList {
   class LRUListNode {
    public:
     inline LRUListNode(const LRUListEntryPtr& entry)
-        : m_entry(entry), m_nextLRUListNode(NULL) {}
+        : m_entry(entry), m_nextLRUListNode(nullptr) {}
 
     inline ~LRUListNode() {}
 
@@ -104,7 +106,7 @@ class LRUList {
       m_nextLRUListNode = next;
     }
 
-    inline void clearNextLRUListNode() { m_nextLRUListNode = NULL; }
+    inline void clearNextLRUListNode() { m_nextLRUListNode = nullptr; }
 
    private:
     LRUListEntryPtr m_entry;
@@ -142,8 +144,8 @@ class LRUList {
    */
   LRUListNode* getHeadNode(bool& isLast);
 
-  SpinLock m_headLock;
-  SpinLock m_tailLock;
+  spinlock_mutex m_headLock;
+  spinlock_mutex m_tailLock;
 
   LRUListNode* m_headNode;
   LRUListNode* m_tailNode;

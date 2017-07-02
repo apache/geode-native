@@ -19,8 +19,11 @@
 
 #include "../geode_defs.hpp"
 #include <vcclr.h>
+#include "begin_native.hpp"
 #include <geode/CacheableKey.hpp>
 #include <GeodeTypeIdsImpl.hpp>
+#include "end_native.hpp"
+
 #include "../IGeodeSerializable.hpp"
 
 using namespace System;

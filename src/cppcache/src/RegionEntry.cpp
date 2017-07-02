@@ -19,18 +19,30 @@
 #include <geode/CacheableKey.hpp>
 #include <CacheableToken.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 RegionEntry::RegionEntry(const RegionPtr& region, const CacheableKeyPtr& key,
                          const CacheablePtr& value)
     : m_region(region), m_key(key), m_value(value), m_destroyed(false) {}
+
 RegionEntry::~RegionEntry() {}
+
 CacheableKeyPtr RegionEntry::getKey() { return m_key; }
+
 CacheablePtr RegionEntry::getValue() {
-  return CacheableToken::isInvalid(m_value) ? NULLPTR : m_value;
+  return CacheableToken::isInvalid(m_value) ? nullptr : m_value;
 }
-void RegionEntry::getRegion(RegionPtr& region) { region = m_region; }
+
+RegionPtr RegionEntry::getRegion() { return m_region; }
+
 void RegionEntry::getStatistics(CacheStatisticsPtr& csptr) {
   csptr = m_statistics;
 }
+
 bool RegionEntry::isDestroyed() const { return m_destroyed; }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

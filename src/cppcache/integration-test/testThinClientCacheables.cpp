@@ -36,7 +36,7 @@ using namespace test;
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 bool isLocalServer = false;
 
 #if defined(WIN32)
@@ -49,20 +49,20 @@ bool isLocalServer = false;
 #define VALUESIZE 1024
 
 void initClient(const bool isthinClient) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
@@ -71,9 +71,9 @@ void createRegion(const char* name, bool ackMode,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, true, NULLPTR,
+  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
                                                clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 
@@ -82,21 +82,21 @@ void checkGets(int maxKeys, int8_t keyTypeId, int8_t valTypeId,
   for (int i = 0; i < maxKeys; i++) {
     CacheableWrapper* tmpkey =
         CacheableWrapperFactory::createInstance(keyTypeId);
-    ASSERT(tmpkey != NULL, "tmpkey is NULL");
+    ASSERT(tmpkey != nullptr, "tmpkey is nullptr");
     CacheableWrapper* tmpval =
         CacheableWrapperFactory::createInstance(valTypeId);
-    ASSERT(tmpval != NULL, "tmpval is NULL");
+    ASSERT(tmpval != nullptr, "tmpval is nullptr");
     tmpkey->initKey(i, KEYSIZE);
-    CacheableKeyPtr key = dynCast<CacheableKeyPtr>(tmpkey->getCacheable());
+    auto key = std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable());
     CacheablePtr val = dataReg->get(key);
     // also check that value is in local cache
     RegionEntryPtr entry = dataReg->getEntry(key);
-    ASSERT(entry != NULLPTR, "entry is NULL");
+    ASSERT(entry != nullptr, "entry is nullptr");
     CacheablePtr localVal = entry->getValue();
     uint32_t keychksum = tmpkey->getCheckSum();
-    CacheableInt32Ptr int32val = dynCast<CacheableInt32Ptr>(
+    auto int32val = std::dynamic_pointer_cast<CacheableInt32>(
         verifyReg->get(static_cast<int32_t>(keychksum)));
-    if (int32val == NULLPTR) {
+    if (int32val == nullptr) {
       printf("GetsTask::keychksum: %u, key: %s\n", keychksum,
              Utils::getCacheableKeyString(key)->asChar());
       FAIL("Could not find the checksum for the given key.");
@@ -179,30 +179,33 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
           CacheableWrapperFactory::createInstance(valTypeId);
       tmpkey->initKey(i, KEYSIZE);
       tmpval->initRandomValue(CacheableHelper::random(VALUESIZE) + 1);
-      ASSERT(tmpkey->getCacheable() != NULLPTR,
-             "tmpkey->getCacheable() is NULL");
-      // we can have NULL values now after fix for bug #294
-      if (tmpval->getCacheable() != NULLPTR) {
-        dataReg->put(dynCast<CacheableKeyPtr>(tmpkey->getCacheable()),
-                     tmpval->getCacheable());
+      ASSERT(tmpkey->getCacheable() != nullptr,
+             "tmpkey->getCacheable() is nullptr");
+      // we can have nullptr values now after fix for bug #294
+      if (tmpval->getCacheable() != nullptr) {
+        dataReg->put(
+            std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable()),
+            tmpval->getCacheable());
       } else {
         try {
-          dataReg->destroy(dynCast<CacheableKeyPtr>(tmpkey->getCacheable()));
+          dataReg->destroy(
+              std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable()));
         } catch (const EntryNotFoundException&) {
           // expected
         }
-        dataReg->create(dynCast<CacheableKeyPtr>(tmpkey->getCacheable()),
-                        tmpval->getCacheable());
+        dataReg->create(
+            std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable()),
+            tmpval->getCacheable());
       }
       uint32_t keychksum = tmpkey->getCheckSum();
       uint32_t valchksum = tmpval->getCheckSum();
       verifyReg->put(static_cast<int32_t>(keychksum),
                      static_cast<int32_t>(valchksum));
       // also check that value is in local cache
-      RegionEntryPtr entry =
-          dataReg->getEntry(dynCast<CacheableKeyPtr>(tmpkey->getCacheable()));
+      RegionEntryPtr entry = dataReg->getEntry(
+          std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable()));
       CacheablePtr localVal;
-      if (entry != NULLPTR) {
+      if (entry != nullptr) {
         localVal = entry->getValue();
       }
       uint32_t localValChkSum = tmpval->getCheckSum(localVal);

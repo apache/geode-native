@@ -22,8 +22,8 @@ TcrConnection* ThinClientPoolStickyDM::getConnectionFromQueueW(
     GfErrType* error, std::set<ServerLocation>& excludeServers, bool isBGThread,
     TcrMessage& request, int8_t& version, bool& match, bool& connFound,
     const BucketServerLocationPtr& serverLocation) {
-  TcrConnection* conn = NULL;
-  TcrEndpoint* ep = NULL;
+  TcrConnection* conn = nullptr;
+  TcrEndpoint* ep = nullptr;
   bool maxConnLimit = false;
   if (isBGThread || request.getMessageType() == TcrMessage::GET_ALL_70 ||
       request.getMessageType() == TcrMessage::GET_ALL_WITH_CALLBACK) {
@@ -32,14 +32,14 @@ TcrConnection* ThinClientPoolStickyDM::getConnectionFromQueueW(
         serverLocation);
     return conn;
   }
-  BucketServerLocationPtr slTmp = NULLPTR;
+  BucketServerLocationPtr slTmp = nullptr;
   if (m_attrs->getPRSingleHopEnabled() && !request.forTransaction()) {
-    if (serverLocation != NULLPTR) {
+    if (serverLocation != nullptr) {
       ep = getEndPoint(serverLocation, version, excludeServers);
     } else if (request.forSingleHop()) {
       ep = getSingleHopServer(request, version, slTmp, excludeServers);
     }
-    if (ep != NULL /*&& ep->connected()*/) {
+    if (ep != nullptr /*&& ep->connected()*/) {
       // LOGINFO(" getSingleHopServer returns ep");
       m_manager->getSingleHopStickyConnection(ep, conn);
       if (!conn) {
@@ -49,7 +49,7 @@ TcrConnection* ThinClientPoolStickyDM::getConnectionFromQueueW(
               createPoolConnectionToAEndPoint(conn, ep, maxConnLimit, true);
           if (*error == GF_CLIENT_WAIT_TIMEOUT ||
               *error == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA) {
-            return NULL;
+            return nullptr;
           }
         }
         if (!conn) {
@@ -57,7 +57,7 @@ TcrConnection* ThinClientPoolStickyDM::getConnectionFromQueueW(
           if (!conn) createPoolConnection(conn, excludeServers, maxConnLimit);
         }
       }
-    } else if (conn == NULL) {
+    } else if (conn == nullptr) {
       // LOGINFO(" ep is null");
       m_manager->getAnyConnection(conn);
       if (!conn) {
@@ -94,15 +94,16 @@ TcrConnection* ThinClientPoolStickyDM::getConnectionFromQueueW(
 
   if (request.forTransaction()) {
     TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
-    if (*error == GF_NOERR && !cf && (txState == NULL || txState->isDirty())) {
+    if (*error == GF_NOERR && !cf &&
+        (txState == nullptr || txState->isDirty())) {
       *error = doFailover(conn);
     }
 
     if (*error != GF_NOERR) {
-      return NULL;
+      return nullptr;
     }
 
-    if (txState != NULL) {
+    if (txState != nullptr) {
       txState->setDirty();
     }
   }
@@ -122,7 +123,7 @@ void ThinClientPoolStickyDM::putInQueue(TcrConnection* conn, bool isBGThread,
 }
 void ThinClientPoolStickyDM::setStickyNull(bool isBGThread) {
   if (!isBGThread && !m_attrs->getPRSingleHopEnabled()) {
-    m_manager->setStickyConnection(NULL, false);
+    m_manager->setStickyConnection(nullptr, false);
   }
 }
 

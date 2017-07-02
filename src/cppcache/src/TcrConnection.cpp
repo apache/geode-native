@@ -49,7 +49,7 @@ const int64_t INITIAL_CONNECTION_ID = 26739;
 bool TcrConnection::InitTcrConnection(
     TcrEndpoint* endpointObj, const char* endpoint, Set<uint16_t>& ports,
     bool isClientNotification, bool isSecondary, uint32_t connectTimeout) {
-  m_conn = NULL;
+  m_conn = nullptr;
   m_endpointObj = endpointObj;
   m_poolDM = dynamic_cast<ThinClientPoolDM*>(m_endpointObj->getPoolHADM());
   // add to the connection reference counter of the endpoint
@@ -57,7 +57,7 @@ bool TcrConnection::InitTcrConnection(
   // m_connected = isConnected;
   m_hasServerQueue = NON_REDUNDANT_SERVER;
   m_queueSize = 0;
-  m_dh = NULL;
+  m_dh = nullptr;
   // m_chunksProcessSema = 0;
   m_creationTime = ACE_OS::gettimeofday();
   connectionId = INITIAL_CONNECTION_ID;
@@ -70,7 +70,7 @@ bool TcrConnection::InitTcrConnection(
       m_endpointObj->getConnRefCounter());
   bool isPool = false;
   m_isBeingUsed = false;
-  GF_DEV_ASSERT(endpoint != NULL);
+  GF_DEV_ASSERT(endpoint != nullptr);
   m_endpoint = endpoint;
   // Precondition:
   // 1. isSecondary ==> isClientNotification
@@ -90,7 +90,7 @@ bool TcrConnection::InitTcrConnection(
     m_conn = createConnection(m_endpoint, connectTimeout, 0);
   }
 
-  GF_DEV_ASSERT(m_conn != NULL);
+  GF_DEV_ASSERT(m_conn != nullptr);
 
   DataOutput handShakeMsg;
   bool isNotificationChannel = false;
@@ -161,9 +161,9 @@ bool TcrConnection::InitTcrConnection(
     SystemProperties* sysProp = DistributedSystem::getSystemProperties();
 
     const char* durableId =
-        (sysProp != NULL) ? sysProp->durableClientId() : NULL;
+        (sysProp != nullptr) ? sysProp->durableClientId() : nullptr;
     const uint32_t durableTimeOut =
-        (sysProp != NULL) ? sysProp->durableTimeout() : 0;
+        (sysProp != nullptr) ? sysProp->durableTimeout() : 0;
 
     // Write ClientProxyMembershipID serialized object.
     uint32_t memIdBufferLength;
@@ -198,7 +198,7 @@ bool TcrConnection::InitTcrConnection(
     LOGDEBUG("TcrConnection this->m_endpointObj->isMultiUserMode() = %d ",
              this->m_endpointObj->isMultiUserMode());
     if (this->m_endpointObj->isMultiUserMode()) {
-      if (dhalgo != NULLPTR && dhalgo->length() > 0) isDhOn = true;
+      if (dhalgo != nullptr && dhalgo->length() > 0) isDhOn = true;
     }
   }
 
@@ -233,7 +233,7 @@ bool TcrConnection::InitTcrConnection(
       LOGFINER("TcrConnection: about to invoke authloader");
       PropertiesPtr tmpSecurityProperties =
           tmpSystemProperties->getSecurityProperties();
-      if (tmpSecurityProperties == NULLPTR) {
+      if (tmpSecurityProperties == nullptr) {
         LOGWARN("TcrConnection: security properties not found.");
       }
       // AuthInitializePtr authInitialize =
@@ -242,7 +242,7 @@ bool TcrConnection::InitTcrConnection(
       if (isClientNotification) {
         AuthInitializePtr authInitialize =
             DistributedSystem::m_impl->getAuthLoader();
-        if (authInitialize != NULLPTR) {
+        if (authInitialize != nullptr) {
           LOGFINER(
               "TcrConnection: acquired handle to authLoader, "
               "invoking getCredentials");
@@ -266,7 +266,7 @@ bool TcrConnection::InitTcrConnection(
       if (isDhOn) {
         CacheableStringPtr ksPath =
             tmpSecurityProperties->find("security-client-kspath");
-        requireServerAuth = (ksPath != NULLPTR && ksPath->length() > 0);
+        requireServerAuth = (ksPath != nullptr && ksPath->length() > 0);
         handShakeMsg.writeBoolean(requireServerAuth);
         LOGFINE(
             "HandShake: Server authentication using RSA signature %s required",
@@ -323,9 +323,9 @@ bool TcrConnection::InitTcrConnection(
   if (error == CONN_NOERR) {
     CacheableBytesPtr acceptanceCode = readHandshakeData(1, connectTimeout);
 
-    LOGDEBUG(" Handshake: Got Accept Code %d", acceptanceCode[0]);
+    LOGDEBUG(" Handshake: Got Accept Code %d", (*acceptanceCode)[0]);
     /* adongre */
-    if (acceptanceCode[0] == REPLY_SSL_ENABLED &&
+    if ((*acceptanceCode)[0] == REPLY_SSL_ENABLED &&
         !tmpSystemProperties->sslEnabled()) {
       LOGERROR("SSL is enabled on server, enable SSL in client as well");
       AuthenticationRequiredException ex(
@@ -335,7 +335,7 @@ bool TcrConnection::InitTcrConnection(
     }
 
     // if diffie-hellman based credential encryption is enabled
-    if (isDhOn && acceptanceCode[0] == REPLY_OK) {
+    if (isDhOn && (*acceptanceCode)[0] == REPLY_OK) {
       // read the server's DH public key
       CacheableBytesPtr pubKeyBytes = readHandshakeByteArray(connectTimeout);
       LOGDEBUG(" Handshake: Got pubKeySize %d", pubKeyBytes->length());
@@ -387,7 +387,8 @@ bool TcrConnection::InitTcrConnection(
 
       if (error == CONN_NOERR) {
         acceptanceCode = readHandshakeData(1, connectTimeout);
-        LOGDEBUG("Handshake: Got acceptanceCode Finally %d", acceptanceCode[0]);
+        LOGDEBUG("Handshake: Got acceptanceCode Finally %d",
+                 (*acceptanceCode)[0]);
       } else {
         int32_t lastError = ACE_OS::last_error();
         LOGERROR("Handshake failed, errno: %d, server may not be running",
@@ -409,9 +410,9 @@ bool TcrConnection::InitTcrConnection(
 
     //  TESTING: Durable clients - set server queue status.
     // 0 - Non-Redundant , 1- Redundant , 2- Primary
-    if (serverQueueStatus[0] == 1) {
+    if ((*serverQueueStatus)[0] == 1) {
       m_hasServerQueue = REDUNDANT_SERVER;
-    } else if (serverQueueStatus[0] == 2) {
+    } else if ((*serverQueueStatus)[0] == 2) {
       m_hasServerQueue = PRIMARY_SERVER;
     } else {
       m_hasServerQueue = NON_REDUNDANT_SERVER;
@@ -432,7 +433,7 @@ bool TcrConnection::InitTcrConnection(
     ///////////////////////////////////
     ////////////////////////// 3. Only when handshake is for subscription
     ///////////////////////////////////
-    if (m_poolDM != NULL) {
+    if (m_poolDM != nullptr) {
       if ((m_hasServerQueue == PRIMARY_SERVER ||
            m_hasServerQueue == NON_REDUNDANT_SERVER) &&
           isClientNotification) {
@@ -443,16 +444,16 @@ bool TcrConnection::InitTcrConnection(
     if (!isClientNotification) {
       // Read and ignore the DistributedMember object
       CacheableBytesPtr arrayLenHeader = readHandshakeData(1, connectTimeout);
-      int32_t recvMsgLen = static_cast<int32_t>(arrayLenHeader[0]);
+      int32_t recvMsgLen = static_cast<int32_t>((*arrayLenHeader)[0]);
       // now check for array length headers - since GFE 5.7
-      if (static_cast<int8_t>(arrayLenHeader[0]) == -2) {
+      if (static_cast<int8_t>((*arrayLenHeader)[0]) == -2) {
         CacheableBytesPtr recvMsgLenBytes =
             readHandshakeData(2, connectTimeout);
         DataInput dI2(recvMsgLenBytes->value(), recvMsgLenBytes->length());
         int16_t recvMsgLenShort = 0;
         dI2.readInt(&recvMsgLenShort);
         recvMsgLen = recvMsgLenShort;
-      } else if (static_cast<int8_t>(arrayLenHeader[0]) == -3) {
+      } else if (static_cast<int8_t>((*arrayLenHeader)[0]) == -3) {
         CacheableBytesPtr recvMsgLenBytes =
             readHandshakeData(4, connectTimeout);
         DataInput dI2(recvMsgLenBytes->value(), recvMsgLenBytes->length());
@@ -488,11 +489,11 @@ bool TcrConnection::InitTcrConnection(
       ThinClientBaseDM::setDeltaEnabledOnServer(isDeltaEnabledOnServer);
     }
 
-    switch (acceptanceCode[0]) {
+    switch ((*acceptanceCode)[0]) {
       case REPLY_OK:
       case SUCCESSFUL_SERVER_TO_CLIENT:
-        LOGFINER("Handshake reply: %u,%u,%u", acceptanceCode[0],
-                 serverQueueStatus[0], recvMsgLen2);
+        LOGFINER("Handshake reply: %u,%u,%u", (*acceptanceCode)[0],
+                 (*serverQueueStatus)[0], recvMsgLen2);
         if (isClientNotification) readHandshakeInstantiatorMsg(connectTimeout);
         break;
       case REPLY_AUTHENTICATION_FAILED: {
@@ -532,7 +533,7 @@ bool TcrConnection::InitTcrConnection(
         LOGERROR(
             "Unknown error[%d] received from server [%s] in handshake: "
             "%s",
-            acceptanceCode[0], m_endpointObj->name().c_str(),
+            (*acceptanceCode)[0], m_endpointObj->name().c_str(),
             recvMessage->value());
         MessageException ex(
             "TcrConnection::TcrConnection: Unknown error"
@@ -577,7 +578,7 @@ bool TcrConnection::InitTcrConnection(
 Connector* TcrConnection::createConnection(const char* endpoint,
                                            uint32_t connectTimeout,
                                            int32_t maxBuffSizePool) {
-  Connector* socket = NULL;
+  Connector* socket = nullptr;
   if (DistributedSystem::getSystemProperties()->sslEnabled()) {
     socket = new TcpSslConn(endpoint, connectTimeout, maxBuffSizePool);
   } else {
@@ -590,23 +591,23 @@ Connector* TcrConnection::createConnection(const char* endpoint,
 }
 
 /* The timeout behaviour for different methods is as follows:
-* receive():
-*   Header: default timeout
-*   Body: default timeout
-* sendRequest()/sendRequestForChunkedResponse():
-*  default timeout during send; for receive:
-*   Header: default timeout * default timeout retries to handle large payload
-*           if a timeout other than default timeout is specified then
-*           that is used instead
-*   Body: default timeout
-*/
+ * receive():
+ *   Header: default timeout
+ *   Body: default timeout
+ * sendRequest()/sendRequestForChunkedResponse():
+ *  default timeout during send; for receive:
+ *   Header: default timeout * default timeout retries to handle large payload
+ *           if a timeout other than default timeout is specified then
+ *           that is used instead
+ *   Body: default timeout
+ */
 inline ConnErrType TcrConnection::receiveData(char* buffer, int32_t length,
                                               uint32_t receiveTimeoutSec,
                                               bool checkConnected,
                                               bool isNotificationMessage,
                                               int32_t notPublicApiWithTimeout) {
-  GF_DEV_ASSERT(buffer != NULL);
-  GF_DEV_ASSERT(m_conn != NULL);
+  GF_DEV_ASSERT(buffer != nullptr);
+  GF_DEV_ASSERT(m_conn != nullptr);
 
   // if gfcpp property unit set then sendTimeoutSec will be in millisecond
   // otherwise it will be in second
@@ -660,7 +661,7 @@ inline ConnErrType TcrConnection::receiveData(char* buffer, int32_t length,
     */
     LOGDEBUG("TcrConnection::receiveData length = %d defaultWaitSecs = %d",
              length, defaultWaitSecs);
-    if (m_poolDM != NULL) {
+    if (m_poolDM != nullptr) {
       LOGDEBUG("TcrConnection::receiveData readBytes = %d", readBytes);
       m_poolDM->getStats().incReceivedBytes(static_cast<int64_t>(readBytes));
     }
@@ -688,8 +689,8 @@ inline ConnErrType TcrConnection::sendData(uint32_t& timeSpent,
                                            uint32_t sendTimeoutSec,
                                            bool checkConnected,
                                            int32_t notPublicApiWithTimeout) {
-  GF_DEV_ASSERT(buffer != NULL);
-  GF_DEV_ASSERT(m_conn != NULL);
+  GF_DEV_ASSERT(buffer != nullptr);
+  GF_DEV_ASSERT(m_conn != nullptr);
   bool isPublicApiTimeout = false;
   // if gfcpp property unit set then sendTimeoutSec will be in millisecond
   // otherwise it will be in second
@@ -861,7 +862,7 @@ void TcrConnection::send(const char* buffer, int len, uint32_t sendTimeoutSec,
 void TcrConnection::send(uint32_t& timeSpent, const char* buffer, int len,
                          uint32_t sendTimeoutSec, bool checkConnected,
                          int32_t notPublicApiWithTimeout) {
-  GF_DEV_ASSERT(m_conn != NULL);
+  GF_DEV_ASSERT(m_conn != nullptr);
 
   // LOGINFO("TcrConnection::send: [%p] sending request to endpoint %s;",
   //:  this, m_endpoint);
@@ -891,7 +892,7 @@ void TcrConnection::send(uint32_t& timeSpent, const char* buffer, int len,
 
 char* TcrConnection::receive(size_t* recvLen, ConnErrType* opErr,
                              uint32_t receiveTimeoutSec) {
-  GF_DEV_ASSERT(m_conn != NULL);
+  GF_DEV_ASSERT(m_conn != nullptr);
 
   return readMessage(recvLen, receiveTimeoutSec, false, opErr, true);
 }
@@ -926,7 +927,7 @@ char* TcrConnection::readMessage(size_t* recvLen, uint32_t receiveTimeoutSec,
       if (isNotificationMessage) {
         // fix #752 - do not throw periodic TimeoutException for subscription
         // channels to avoid frequent stack trace processing.
-        return NULL;
+        return nullptr;
       } else {
         throwException(TimeoutException(
             "TcrConnection::readMessage: "
@@ -935,7 +936,7 @@ char* TcrConnection::readMessage(size_t* recvLen, uint32_t receiveTimeoutSec,
     } else {
       if (isNotificationMessage) {
         *opErr = CONN_IOERR;
-        return NULL;
+        return nullptr;
       }
       throwException(GeodeIOException(
           "TcrConnection::readMessage: "
@@ -989,7 +990,7 @@ char* TcrConnection::readMessage(size_t* recvLen, uint32_t receiveTimeoutSec,
     } else {
       if (isNotificationMessage) {
         *opErr = CONN_IOERR;
-        return NULL;
+        return nullptr;
       }
       throwException(
           GeodeIOException("TcrConnection::readMessage: "
@@ -1090,8 +1091,8 @@ void TcrConnection::readMessageChunked(TcrMessageReply& reply,
     FinalizeProcessChunk(TcrMessageReply& reply, uint16_t endpointmemId)
         : m_reply(reply), m_endpointmemId(endpointmemId) {}
     ~FinalizeProcessChunk() {
-      // Enqueue a NULL chunk indicating a wait for processing to complete.
-      m_reply.processChunk(NULL, 0, m_endpointmemId);
+      // Enqueue a nullptr chunk indicating a wait for processing to complete.
+      m_reply.processChunk(nullptr, 0, m_endpointmemId);
     }
   } endProcessChunk(reply, m_endpointObj->getDistributedMemberID());
   bool first = true;
@@ -1231,7 +1232,7 @@ CacheableBytesPtr TcrConnection::readHandshakeData(int32_t msgLength,
     return CacheableBytes::createNoCopy(reinterpret_cast<uint8_t*>(recvMessage),
                                         msgLength + 1);
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 // read just the bytes without the trailing null terminator
@@ -1247,7 +1248,7 @@ CacheableBytesPtr TcrConnection::readHandshakeRawData(int32_t msgLength,
     msgLength = 0;
   }
   if (msgLength == 0) {
-    return NULLPTR;
+    return nullptr;
   }
   char* recvMessage;
   GF_NEW(recvMessage, char[msgLength]);
@@ -1267,7 +1268,7 @@ CacheableBytesPtr TcrConnection::readHandshakeRawData(int32_t msgLength,
                            "Handshake failure"));
     }
     // not expected to be reached
-    return NULLPTR;
+    return nullptr;
   } else {
     return CacheableBytes::createNoCopy(reinterpret_cast<uint8_t*>(recvMessage),
                                         msgLength);
@@ -1424,7 +1425,7 @@ CacheableStringPtr TcrConnection::readHandshakeString(uint32_t connectTimeout) {
   uint32_t length = 0;
   switch (static_cast<int8_t>(cstypeid)) {
     case GeodeTypeIds::CacheableNullString: {
-      return NULLPTR;
+      return nullptr;
       break;
     }
     case GF_STRING: {
@@ -1446,7 +1447,7 @@ CacheableStringPtr TcrConnection::readHandshakeString(uint32_t connectTimeout) {
   LOGDEBUG(" Received string len %d", length);
 
   if (length == 0) {
-    return NULLPTR;
+    return nullptr;
   }
 
   char* recvMessage;
@@ -1471,7 +1472,7 @@ CacheableStringPtr TcrConnection::readHandshakeString(uint32_t connectTimeout) {
                            "Handshake failure reading string bytes"));
     }
     // not expected to be reached
-    return NULLPTR;
+    return nullptr;
   } else {
     LOGDEBUG(" Received string data [%s]", recvMessage);
     CacheableStringPtr retval =
@@ -1514,7 +1515,7 @@ ACE_Time_Value TcrConnection::getLastAccessed() { return m_lastAccessed; }
 uint8_t TcrConnection::getOverrides(SystemProperties* props) {
   const char* conflate = props->conflateEvents();
   uint8_t conflateByte = 0;
-  if (conflate != NULL) {
+  if (conflate != nullptr) {
     if (ACE_OS::strcasecmp(conflate, "true") == 0) {
       conflateByte = 1;
     } else if (ACE_OS::strcasecmp(conflate, "false") == 0) {
@@ -1524,7 +1525,7 @@ uint8_t TcrConnection::getOverrides(SystemProperties* props) {
   /*
   const char * removeUnresponsive = props->removeUnresponsiveClientOverride();
   uint8_t removeByte = 0;
-  if (removeUnresponsive != NULL ) {
+  if (removeUnresponsive != nullptr ) {
   if ( ACE_OS::strcasecmp(removeUnresponsive, "true") == 0 ) {
   removeByte = 1;
   } else if ( ACE_OS::strcasecmp(removeUnresponsive, "false") == 0 ) {
@@ -1533,7 +1534,7 @@ uint8_t TcrConnection::getOverrides(SystemProperties* props) {
   }
   const char * notify = props->notifyBySubscriptionOverride();
   uint8_t notifyByte = 0;
-  if (notify != NULL ) {
+  if (notify != nullptr ) {
   if ( ACE_OS::strcasecmp(notify, "true") == 0 ) {
   notifyByte = 1;
   } else if ( ACE_OS::strcasecmp(notify, "false") == 0 ) {
@@ -1554,13 +1555,13 @@ TcrConnection::~TcrConnection() {
   LOGDEBUG("Tcrconnection destructor %p . conn ref to endopint %d", this,
            m_endpointObj->getConnRefCounter());
   m_endpointObj->addConnRefCounter(-1);
-  if (m_conn != NULL) {
+  if (m_conn != nullptr) {
     LOGDEBUG("closing the connection");
     m_conn->close();
     GF_SAFE_DELETE_CON(m_conn);
   }
 
-  if (m_dh != NULL) {
+  if (m_dh != nullptr) {
     m_dh->clearDhKeys();
     GF_SAFE_DELETE(m_dh);
   }
@@ -1574,8 +1575,7 @@ bool TcrConnection::setAndGetBeingUsed(volatile bool isBeingUsed,
   if (!forTransaction) {
     if (isBeingUsed) {
       if (m_isUsed == 1 || m_isUsed == 2) return false;
-      retVal = HostAsm::atomicCompareAndExchange(m_isUsed, 1, currentValue);
-      if (retVal == currentValue) return true;
+      if (m_isUsed.compare_exchange_strong(currentValue, 1)) return true;
       return false;
     } else {
       m_isUsed = 0;
@@ -1589,9 +1589,8 @@ bool TcrConnection::setAndGetBeingUsed(volatile bool isBeingUsed,
       if (m_isUsed == 2) {  // transaction thread has set, reused it
         return true;
       }
-      retVal = HostAsm::atomicCompareAndExchange(
-          m_isUsed, 2 /*for transaction*/, currentValue);
-      if (retVal == currentValue) return true;
+      if (m_isUsed.compare_exchange_strong(currentValue, 2 /*for transaction*/))
+        return true;
       return false;
     } else {
       // m_isUsed = 0;//this will done by releasing the connection by

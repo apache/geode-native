@@ -57,7 +57,7 @@ class QueryService;
  *
  */
 
-class CPPCACHE_EXPORT RegionService : public SharedBase {
+class CPPCACHE_EXPORT RegionService {
   /**
    * @brief public methods
    */
@@ -87,7 +87,7 @@ class CPPCACHE_EXPORT RegionService : public SharedBase {
   /** Look up a region with the name.
    *
    * @param name the region's name, such as <code>root</code>.
-   * @returns region, or NULLPTR if no such region exists.
+   * @returns region, or nullptr if no such region exists.
    */
   virtual RegionPtr getRegion(const char* name) = 0;
 

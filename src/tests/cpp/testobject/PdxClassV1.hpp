@@ -83,7 +83,7 @@ class TESTOBJECT_EXPORT PdxType1V1 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxType1V1(); }
 };
-typedef SharedPtr<PdxType1V1> PdxType1V1Ptr;
+typedef std::shared_ptr<PdxType1V1> PdxType1V1Ptr;
 
 /************************************************************
  *  PdxType2V1
@@ -122,7 +122,7 @@ class TESTOBJECT_EXPORT PdxType2V1 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxType2V1(); }
 };
-typedef SharedPtr<PdxType2V1> PdxType2V1Ptr;
+typedef std::shared_ptr<PdxType2V1> PdxType2V1Ptr;
 
 /************************************************************
  *  PdxType3V1
@@ -166,7 +166,7 @@ class TESTOBJECT_EXPORT PdxType3V1 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxType3V1(); }
 };
-typedef SharedPtr<PdxType3V1> PdxType3V1Ptr;
+typedef std::shared_ptr<PdxType3V1> PdxType3V1Ptr;
 
 /************************************************************
  *  PdxTypesV1R1
@@ -205,7 +205,7 @@ class TESTOBJECT_EXPORT PdxTypesV1R1 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxTypesV1R1(); }
 };
-typedef SharedPtr<PdxTypesV1R1> PdxTypesV1R1Ptr;
+typedef std::shared_ptr<PdxTypesV1R1> PdxTypesV1R1Ptr;
 
 /************************************************************
  *  PdxTypesV1R2
@@ -244,7 +244,7 @@ class TESTOBJECT_EXPORT PdxTypesV1R2 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxTypesV1R2(); }
 };
-typedef SharedPtr<PdxTypesV1R2> PdxTypesV1R2Ptr;
+typedef std::shared_ptr<PdxTypesV1R2> PdxTypesV1R2Ptr;
 
 /************************************************************
  *  PdxTypesIgnoreUnreadFieldsV1
@@ -287,7 +287,8 @@ class TESTOBJECT_EXPORT PdxTypesIgnoreUnreadFieldsV1 : public PdxSerializable {
     return new PdxTypesIgnoreUnreadFieldsV1();
   }
 };
-typedef SharedPtr<PdxTypesIgnoreUnreadFieldsV1> PdxTypesIgnoreUnreadFieldsV1Ptr;
+typedef std::shared_ptr<PdxTypesIgnoreUnreadFieldsV1>
+    PdxTypesIgnoreUnreadFieldsV1Ptr;
 
 /************************************************************
  *  PdxVersionedV1
@@ -348,7 +349,7 @@ class TESTOBJECT_EXPORT PdxVersionedV1 : public PdxSerializable {
     return new PdxVersionedV1();
   }
 };
-typedef SharedPtr<PdxVersionedV1> PdxVersionedV1Ptr;
+typedef std::shared_ptr<PdxVersionedV1> PdxVersionedV1Ptr;
 
 /************************************************************
  *  TestKey

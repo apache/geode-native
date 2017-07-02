@@ -173,22 +173,22 @@ const bool DefaultReadTimeoutUnitInMillis = false;
 const bool DefaultOnClientDisconnectClearPdxTypeIds = false;
 }  // namespace
 
-LibraryAuthInitializeFn SystemProperties::managedAuthInitializeFn = NULL;
+LibraryAuthInitializeFn SystemProperties::managedAuthInitializeFn = nullptr;
 
 SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
                                    const char* configFile)
     : m_statisticsSampleInterval(DefaultSamplingInterval),
       m_statisticsEnabled(DefaultSamplingEnabled),
       m_appDomainEnabled(DefaultAppDomainEnabled),
-      m_statisticsArchiveFile(NULL),
-      m_logFilename(NULL),
+      m_statisticsArchiveFile(nullptr),
+      m_logFilename(nullptr),
       m_logLevel(DefaultLogLevel),
       m_sessions(0 /* setup  later in processProperty */),
-      m_name(NULL),
+      m_name(nullptr),
       m_debugStackTraceEnabled(DefaultDebugStackTraceEnabled),
       m_crashDumpEnabled(DefaultCrashDumpEnabled),
       m_disableShufflingEndpoint(false),
-      m_cacheXMLFile(NULL),
+      m_cacheXMLFile(nullptr),
       m_logFileSizeLimit(DefaultLogFileSizeLimit),
       m_logDiskSpaceLimit(DefaultLogDiskSpaceLimit),
       m_statsFileSizeLimit(DefaultStatsFileSizeLimit),
@@ -202,12 +202,12 @@ SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
       m_redundancyMonitorInterval(DefaultRedundancyMonitorInterval),
       m_notifyAckInterval(DefaultNotifyAckInterval),
       m_notifyDupCheckLife(DefaultNotifyDupCheckLife),
-      m_AuthIniLoaderLibrary(NULLPTR),
-      m_AuthIniLoaderFactory(NULLPTR),
-      m_securityClientDhAlgo(NULLPTR),
-      m_securityClientKsPath(NULLPTR),
-      m_authInitializer(NULLPTR),
-      m_durableClientId(NULL),
+      m_AuthIniLoaderLibrary(nullptr),
+      m_AuthIniLoaderFactory(nullptr),
+      m_securityClientDhAlgo(nullptr),
+      m_securityClientKsPath(nullptr),
+      m_authInitializer(nullptr),
+      m_durableClientId(nullptr),
       m_durableTimeout(DefaultDurableTimeout),
       m_connectTimeout(DefaultConnectTimeout),
       m_connectWaitTimeout(DefaultConnectWaitTimeout),
@@ -216,10 +216,10 @@ SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
       m_autoReadyForEvents(DefaultAutoReadyForEvents),
       m_sslEnabled(DefaultSslEnabled),
       m_timestatisticsEnabled(DefaultTimeStatisticsEnabled),
-      m_sslKeyStore(NULL),
-      m_sslTrustStore(NULL),
-      m_sslKeystorePassword(NULL),  // adongre: Added for Ticket #758
-      m_conflateEvents(NULL),
+      m_sslKeyStore(nullptr),
+      m_sslTrustStore(nullptr),
+      m_sslKeystorePassword(nullptr),  // adongre: Added for Ticket #758
+      m_conflateEvents(nullptr),
       m_threadPoolSize(DefaultThreadPoolSize),
       m_suspendedTxTimeout(DefaultSuspendedTxTimeout),
       m_tombstoneTimeoutInMSec(DefaultTombstoneTimeout),
@@ -252,7 +252,7 @@ SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
     void visit(CacheableKeyPtr& key, CacheablePtr& value) {
       CacheableStringPtr prop = key->toString();
       CacheableStringPtr val;
-      if (value != NULLPTR) {
+      if (value != nullptr) {
         val = value->toString();
       }
       m_sysProps->processProperty(prop->asChar(), val->asChar());
@@ -274,7 +274,7 @@ SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
   }
 
   // Load the file from current directory.
-  if (configFile == NULL) {
+  if (configFile == nullptr) {
     givenConfigPtr->load("./geode.properties");
   } else {
     givenConfigPtr->load(configFile);
@@ -283,7 +283,7 @@ SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
   givenConfigPtr->foreach (processPropsVisitor);
 
   // Now consume any properties provided by the Properties object in code.
-  if (propertiesPtr != NULLPTR) {
+  if (propertiesPtr != nullptr) {
     propertiesPtr->foreach (processPropsVisitor);
   }
 
@@ -514,7 +514,7 @@ void SystemProperties::processProperty(const char* property,
     }
 
   } else if (prop == StatisticsArchiveFile) {
-    if (m_statisticsArchiveFile != NULL) {
+    if (m_statisticsArchiveFile != nullptr) {
       delete[] m_statisticsArchiveFile;
     }
     size_t len = strlen(value) + 1;
@@ -522,10 +522,10 @@ void SystemProperties::processProperty(const char* property,
     ACE_OS::strncpy(m_statisticsArchiveFile, value, len);
 
   } else if (prop == LogFilename) {
-    if (m_logFilename != NULL) {
+    if (m_logFilename != nullptr) {
       delete[] m_logFilename;
     }
-    if (value != NULL) {
+    if (value != nullptr) {
       size_t len = strlen(value) + 1;
       m_logFilename = new char[len];
       ACE_OS::strncpy(m_logFilename, value, len);
@@ -551,61 +551,61 @@ void SystemProperties::processProperty(const char* property,
     }
 
   } else if (prop == Name) {
-    if (m_name != NULL) {
+    if (m_name != nullptr) {
       delete[] m_name;
     }
-    if (value != NULL) {
+    if (value != nullptr) {
       size_t len = strlen(value) + 1;
       m_name = new char[len];
       ACE_OS::strncpy(m_name, value, len);
     }
   } else if (prop == DurableClientId) {
-    if (m_durableClientId != NULL) {
+    if (m_durableClientId != nullptr) {
       delete[] m_durableClientId;
-      m_durableClientId = NULL;
+      m_durableClientId = nullptr;
     }
-    if (value != NULL) {
+    if (value != nullptr) {
       size_t len = strlen(value) + 1;
       m_durableClientId = new char[len];
       ACE_OS::strncpy(m_durableClientId, value, len);
     }
   } else if (prop == SslKeyStore) {
-    if (m_sslKeyStore != NULL) {
+    if (m_sslKeyStore != nullptr) {
       delete[] m_sslKeyStore;
-      m_sslKeyStore = NULL;
+      m_sslKeyStore = nullptr;
     }
-    if (value != NULL) {
+    if (value != nullptr) {
       size_t len = strlen(value) + 1;
       m_sslKeyStore = new char[len];
       ACE_OS::strncpy(m_sslKeyStore, value, len);
     }
   } else if (prop == SslTrustStore) {
-    if (m_sslTrustStore != NULL) {
+    if (m_sslTrustStore != nullptr) {
       delete[] m_sslTrustStore;
-      m_sslTrustStore = NULL;
+      m_sslTrustStore = nullptr;
     }
-    if (value != NULL) {
+    if (value != nullptr) {
       size_t len = strlen(value) + 1;
       m_sslTrustStore = new char[len];
       ACE_OS::strncpy(m_sslTrustStore, value, len);
     }
     // adongre: Added for Ticket #758
   } else if (prop == SslKeystorePassword) {
-    if (m_sslKeystorePassword != NULL) {
+    if (m_sslKeystorePassword != nullptr) {
       delete[] m_sslKeystorePassword;
-      m_sslKeystorePassword = NULL;
+      m_sslKeystorePassword = nullptr;
     }
-    if (value != NULL) {
+    if (value != nullptr) {
       size_t len = strlen(value) + 1;
       m_sslKeystorePassword = new char[len];
       ACE_OS::strncpy(m_sslKeystorePassword, value, len);
     }
   } else if (prop == ConflateEvents) {
-    if (m_conflateEvents != NULL) {
+    if (m_conflateEvents != nullptr) {
       delete[] m_conflateEvents;
-      m_conflateEvents = NULL;
+      m_conflateEvents = nullptr;
     }
-    if (value != NULL) {
+    if (value != nullptr) {
       size_t len = strlen(value) + 1;
       m_conflateEvents = new char[len];
       ACE_OS::strncpy(m_conflateEvents, value, len);
@@ -615,10 +615,10 @@ void SystemProperties::processProperty(const char* property,
   } else if (prop == LicenseType) {
     // ignore license-type
   } else if (prop == CacheXMLFile) {
-    if (m_cacheXMLFile != NULL) {
+    if (m_cacheXMLFile != nullptr) {
       delete[] m_cacheXMLFile;
     }
-    if (value != NULL) {
+    if (value != nullptr) {
       size_t len = strlen(value) + 1;
       m_cacheXMLFile = new char[len];
       ACE_OS::strncpy(m_cacheXMLFile, value, len);
@@ -925,25 +925,25 @@ void SystemProperties::logSettings() {
 }
 
 AuthInitializePtr SystemProperties::getAuthLoader() {
-  if ((m_authInitializer == NULLPTR) && (m_AuthIniLoaderLibrary != NULLPTR &&
-                                         m_AuthIniLoaderFactory != NULLPTR)) {
-    if (managedAuthInitializeFn != NULL &&
-        strchr(m_AuthIniLoaderFactory->asChar(), '.') != NULL) {
+  if ((m_authInitializer == nullptr) && (m_AuthIniLoaderLibrary != nullptr &&
+                                         m_AuthIniLoaderFactory != nullptr)) {
+    if (managedAuthInitializeFn != nullptr &&
+        strchr(m_AuthIniLoaderFactory->asChar(), '.') != nullptr) {
       // this is a managed library
-      m_authInitializer = (*managedAuthInitializeFn)(
-          m_AuthIniLoaderLibrary->asChar(), m_AuthIniLoaderFactory->asChar());
+      m_authInitializer.reset((*managedAuthInitializeFn)(
+          m_AuthIniLoaderLibrary->asChar(), m_AuthIniLoaderFactory->asChar()));
     } else {
       AuthInitialize* (*funcptr)();
       funcptr = reinterpret_cast<AuthInitialize* (*)()>(getFactoryFunc(
           m_AuthIniLoaderLibrary->asChar(), m_AuthIniLoaderFactory->asChar()));
-      if (funcptr == NULL) {
+      if (funcptr == nullptr) {
         LOGERROR("Failed to acquire handle to AuthInitialize library");
-        return NULLPTR;
+        return nullptr;
       }
       AuthInitialize* p = funcptr();
-      m_authInitializer = p;
+      m_authInitializer.reset(p);
     }
-  } else if (m_authInitializer == NULLPTR) {
+  } else if (m_authInitializer == nullptr) {
     LOGFINE("No AuthInitialize library or factory configured");
   }
   return m_authInitializer;

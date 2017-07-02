@@ -81,9 +81,9 @@ bool genericValCompare(T1 value1, T2 value2) /*const*/
 }
 
 void initClient(const bool isthinClient, bool isPdxIgnoreUnreadFields,
-                const PropertiesPtr& configPtr = NULLPTR) {
+                const PropertiesPtr& configPtr = nullptr) {
   LOGINFO("isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, isPdxIgnoreUnreadFields, false,
                                   configPtr, false);
   }
@@ -94,9 +94,9 @@ void initClient(const bool isthinClient, bool isPdxIgnoreUnreadFields,
 
 void initClientN(const bool isthinClient, bool isPdxIgnoreUnreadFields,
                  bool isPdxReadSerialized = false,
-                 const PropertiesPtr& configPtr = NULLPTR) {
+                 const PropertiesPtr& configPtr = nullptr) {
   LOGINFO("isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, isPdxIgnoreUnreadFields,
                                   isPdxReadSerialized, configPtr, false);
   }
@@ -105,7 +105,7 @@ void initClientN(const bool isthinClient, bool isPdxIgnoreUnreadFields,
 
 void stepOneN(bool isPdxIgnoreUnreadFields = false,
               bool isPdxReadSerialized = false,
-              PropertiesPtr config = NULLPTR) {
+              PropertiesPtr config = nullptr) {
   try {
     // Serializable::registerType(Position::createDeserializable);
     // Serializable::registerType(Portfolio::createDeserializable);
@@ -116,7 +116,7 @@ void stepOneN(bool isPdxIgnoreUnreadFields = false,
   initClientN(true, isPdxIgnoreUnreadFields, isPdxReadSerialized, config);
 
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0, true);
+  createPool(poolNames[0], locHostPort, nullptr, 0, true);
   createRegionAndAttachPool("DistRegionAck", USE_ACK, poolNames[0],
                             false /*Caching disabled*/);
 
@@ -126,23 +126,23 @@ void stepOneN(bool isPdxIgnoreUnreadFields = false,
 DUNIT_TASK_DEFINITION(CLIENT1, StepOnePoolLoc1)
   {
     LOG("Starting Step One with Pool + Locator lists");
-    stepOneN(false, true, NULLPTR);
+    stepOneN(false, true, nullptr);
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwoPoolLoc1)
   {
     LOG("Starting Step Two with Pool + Locator");
-    stepOneN(false, true, NULLPTR);
+    stepOneN(false, true, nullptr);
   }
 END_TASK_DEFINITION
 ///////////////
 
 void initClient1WithClientName(const bool isthinClient,
-                               const PropertiesPtr& configPtr = NULLPTR) {
-  if (cacheHelper == NULL) {
+                               const PropertiesPtr& configPtr = nullptr) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr config = configPtr;
-    if (config == NULLPTR) {
+    if (config == nullptr) {
       config = Properties::create();
     }
     config->insert("name", "Client-1");
@@ -152,10 +152,10 @@ void initClient1WithClientName(const bool isthinClient,
 }
 
 void initClient2WithClientName(const bool isthinClient,
-                               const PropertiesPtr& configPtr = NULLPTR) {
-  if (cacheHelper == NULL) {
+                               const PropertiesPtr& configPtr = nullptr) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr config = configPtr;
-    if (config == NULLPTR) {
+    if (config == nullptr) {
       config = Properties::create();
     }
     config->insert("name", "Client-2");
@@ -169,7 +169,7 @@ void stepOneForClient1(bool isPdxIgnoreUnreadFields = false) {
   initClient1WithClientName(true);
 
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0, true);
+  createPool(poolNames[0], locHostPort, nullptr, 0, true);
   createRegionAndAttachPool("DistRegionAck", USE_ACK, poolNames[0],
                             false /*Caching disabled*/);
   LOG("StepOne complete.");
@@ -180,13 +180,13 @@ void stepOneForClient2(bool isPdxIgnoreUnreadFields = false) {
   initClient2WithClientName(true);
 
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0, true);
+  createPool(poolNames[0], locHostPort, nullptr, 0, true);
   createRegionAndAttachPool("DistRegionAck", USE_ACK, poolNames[0],
                             false /*Caching disabled*/);
   LOG("StepOne complete.");
 }
 void stepOne(bool isPdxIgnoreUnreadFields = false,
-             PropertiesPtr config = NULLPTR) {
+             PropertiesPtr config = nullptr) {
   try {
     // Serializable::registerType(Position::createDeserializable);
     // Serializable::registerType(Portfolio::createDeserializable);
@@ -196,7 +196,7 @@ void stepOne(bool isPdxIgnoreUnreadFields = false,
   // Create just one pool and attach all regions to that.
   initClient(true, isPdxIgnoreUnreadFields, config);
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0, true);
+  createPool(poolNames[0], locHostPort, nullptr, 0, true);
   createRegionAndAttachPool("DistRegionAck", USE_ACK, poolNames[0],
                             false /*Caching disabled*/);
   LOG("StepOne complete.");
@@ -206,7 +206,7 @@ void initClient1(bool isPdxIgnoreUnreadFields = false) {
   // Create just one pool and attach all regions to that.
   initClient(true, isPdxIgnoreUnreadFields);
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0, false);
+  createPool(poolNames[0], locHostPort, nullptr, 0, false);
   createRegionAndAttachPool("DistRegionAck", USE_ACK, poolNames[0],
                             true /*Caching enabled*/);
   LOG("StepOne complete.");
@@ -216,7 +216,7 @@ void initClient2(bool isPdxIgnoreUnreadFields = false) {
   // Create just one pool and attach all regions to that.
   initClient(true, isPdxIgnoreUnreadFields);
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0,
+  createPool(poolNames[0], locHostPort, nullptr, 0,
              true /*ClientNotification enabled*/);
   createRegionAndAttachPool("DistRegionAck", USE_ACK, poolNames[0],
                             true /*Caching enabled*/);
@@ -227,7 +227,7 @@ void initClient3(bool isPdxIgnoreUnreadFields = false) {
   // Create just one pool and attach all regions to that.
   initClient(true, isPdxIgnoreUnreadFields);
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0,
+  createPool(poolNames[0], locHostPort, nullptr, 0,
              true /*ClientNotification enabled*/);
   createRegionAndAttachPool("DistRegionAck", USE_ACK, poolNames[0],
                             true /*Caching enabled*/);
@@ -385,8 +385,8 @@ END_TASK_DEFINITION
 
 void checkPdxInstanceToStringAtServer(RegionPtr regionPtr) {
   CacheableKeyPtr keyport = CacheableKey::create("success");
-  CacheableBooleanPtr boolPtr =
-      dynCast<CacheableBooleanPtr>(regionPtr->get(keyport));
+  auto boolPtr =
+      std::dynamic_pointer_cast<CacheableBoolean>(regionPtr->get(keyport));
   bool val = boolPtr->value();
   // TODO::Enable asser and disable LOGINFO
   ASSERT(val == true, "checkPdxInstanceToStringAtServer: Val should be true");
@@ -414,12 +414,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, testPdxWriterAPIsWithInvalidArgs)
 
     // Put operation
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    CacheablePtr pdxobj(new PdxTests::InvalidPdxUsage());
+    auto pdxobj = std::make_shared<PdxTests::InvalidPdxUsage>();
     regPtr0->put(keyport, pdxobj);
 
     // Check the exception count:: expected is 41.
-    expectedExceptionCount = (dynCast<PdxTests::InvalidPdxUsagePtr>(pdxobj))
-                                 ->gettoDataExceptionCount();
+    expectedExceptionCount =
+        (std::dynamic_pointer_cast<PdxTests::InvalidPdxUsage>(pdxobj))
+            ->gettoDataExceptionCount();
     // LOGINFO("TASK::testPdxWriterAPIsWithInvalidArgs:: toData ExceptionCount
     // ::
     // %d ", expectedExceptionCount);
@@ -429,7 +430,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, testPdxWriterAPIsWithInvalidArgs)
 
     // Get Operation and check fromDataExceptionCount, Expected is 41.
     PdxTests::InvalidPdxUsagePtr obj2 =
-        dynCast<PdxTests::InvalidPdxUsagePtr>(regPtr0->get(keyport));
+        std::dynamic_pointer_cast<PdxTests::InvalidPdxUsage>(
+            regPtr0->get(keyport));
     // LOGINFO("TASK::testPdxWriterAPIsWithInvalidArgs:: fromData ExceptionCOunt
     // :: %d ", obj2->getfromDataExceptionCount());
     expectedExceptionCount = obj2->getfromDataExceptionCount();
@@ -460,7 +462,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, testPdxReaderAPIsWithInvalidArgs)
     // Get Operation. Check fromDataExceptionCount. Expected is 41.
     CacheableKeyPtr keyport1 = CacheableKey::create(1);
     PdxTests::InvalidPdxUsagePtr obj1 =
-        dynCast<PdxTests::InvalidPdxUsagePtr>(regPtr0->get(keyport1));
+        std::dynamic_pointer_cast<PdxTests::InvalidPdxUsage>(
+            regPtr0->get(keyport1));
 
     // Check the exception count:: expected is 41.
     // LOGINFO("TASK::testPdxReaderAPIsWithInvalidArgs:: fromDataExceptionCount
@@ -488,18 +491,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, testPutWithMultilevelInheritance)
 
     // Put operation
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    CacheablePtr pdxobj(new PdxTests::Child());
+    auto pdxobj = std::make_shared<PdxTests::Child>();
     regPtr0->put(keyport, pdxobj);
     LOGINFO("TASK::testPutWithMultilevelInheritance:: Put successful");
 
     // Get Operation and check fromDataExceptionCount, Expected is 41.
     PdxTests::ChildPtr obj2 =
-        dynCast<PdxTests::ChildPtr>(regPtr0->get(keyport));
+        std::dynamic_pointer_cast<PdxTests::Child>(regPtr0->get(keyport));
     // LOGINFO("Task: testPutWithMultilevelInheritance: got members :: %d %d %d
     // %d
     // %d %d ", obj2->getMember_a(), obj2->getMember_b(), obj2->getMember_c(),
     // obj2->getMember_d(), obj2->getMember_e(), obj2->getMember_f());
-    bool isEqual = (dynCast<PdxTests::ChildPtr>(pdxobj))->equals(obj2);
+    bool isEqual =
+        (std::dynamic_pointer_cast<PdxTests::Child>(pdxobj))->equals(obj2);
     LOGINFO("testPutWithMultilevelInheritance:.. isEqual = %d", isEqual);
     ASSERT(isEqual == true, "Objects of type class Child should be equal");
 
@@ -519,10 +523,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, testGetWithMultilevelInheritance)
 
     CacheableKeyPtr keyport1 = CacheableKey::create(1);
     PdxTests::ChildPtr obj1 =
-        dynCast<PdxTests::ChildPtr>(regPtr0->get(keyport1));
+        std::dynamic_pointer_cast<PdxTests::Child>(regPtr0->get(keyport1));
 
-    CacheablePtr pdxobj(new PdxTests::Child());
-    bool isEqual = (dynCast<PdxTests::ChildPtr>(pdxobj))->equals(obj1);
+    auto pdxobj = std::make_shared<PdxTests::Child>();
+    bool isEqual =
+        (std::dynamic_pointer_cast<PdxTests::Child>(pdxobj))->equals(obj1);
     LOGINFO("testPutWithMultilevelInheritance:.. isEqual = %d", isEqual);
     ASSERT(isEqual == true, "Objects of type class Child should be equal");
     // LOGINFO("Task: testGetWithMultilevelInheritance: got members :: %d %d %d
@@ -544,35 +549,36 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet1)
     CacheableInt32Ptr valPtr = CacheableInt32::create(123);
     regPtr0->put(keyport, valPtr);
 
-    CacheableInt32Ptr getVal =
-        dynCast<CacheableInt32Ptr>(regPtr0->get(keyport));
+    auto getVal =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr0->get(keyport));
 
-    CacheableBooleanPtr boolPtr =
-        dynCast<CacheableBooleanPtr>(regPtr0->get("success"));
+    auto boolPtr =
+        std::dynamic_pointer_cast<CacheableBoolean>(regPtr0->get("success"));
 
-    bool isEqual = boolPtr.ptr()->value();
+    bool isEqual = boolPtr.get()->value();
     ASSERT(isEqual == true,
            "Task JavaPutGet:Objects of type PdxType should be equal");
 
     LOGINFO("Task:JavaPutGet PDX-ON read-serialized = %d",
             cacheHelper->getCache()->getPdxReadSerialized());
-    PdxInstancePtr jsonDoc = dynCast<PdxInstancePtr>(regPtr0->get("jsondoc1"));
+    auto jsonDoc =
+        std::dynamic_pointer_cast<PdxInstance>(regPtr0->get("jsondoc1"));
     CacheableStringPtr toString = jsonDoc->toString();
     LOGINFO("Task:JavaPutGet: Result = %s ", toString->asChar());
     /*
     int16_t age = 0;
     jsonDoc->getField("age", age);
 
-    char* stringVal = NULL;
+    char* stringVal = nullptr;
     jsonDoc->getField("firstName", &stringVal);
 
-    char* stringVal1 = NULL;
+    char* stringVal1 = nullptr;
     jsonDoc->getField("lastName", &stringVal1);
     */
 
-    CacheablePtr object2 = NULLPTR;
+    CacheablePtr object2 = nullptr;
     jsonDoc->getField("kids", object2);
-    CacheableLinkedListPtr listPtr = dynCast<CacheableLinkedListPtr>(object2);
+    auto listPtr = std::dynamic_pointer_cast<CacheableLinkedList>(object2);
     LOGINFO("Task:JavaPutGet: list size = %d", listPtr->size());
 
     CacheableLinkedListPtr m_linkedlist = CacheableLinkedList::create();
@@ -608,29 +614,29 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    CacheablePtr pdxobj(new PdxTests::PdxType());
+    auto pdxobj = std::make_shared<PdxTests::PdxType>();
     regPtr0->put(keyport, pdxobj);
 
     PdxTests::PdxTypePtr obj2 =
-        dynCast<PdxTests::PdxTypePtr>(regPtr0->get(keyport));
+        std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr0->get(keyport));
 
-    CacheableBooleanPtr boolPtr =
-        dynCast<CacheableBooleanPtr>(regPtr0->get("success"));
-    bool isEqual = boolPtr.ptr()->value();
+    auto boolPtr =
+        std::dynamic_pointer_cast<CacheableBoolean>(regPtr0->get("success"));
+    bool isEqual = boolPtr.get()->value();
     LOGDEBUG("Task:JavaPutGet: isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Task JavaPutGet:Objects of type PdxType should be equal");
     /*
     LOGINFO("NILKATH JavaPutGet new test.");
-    dynamic_cast<CacheImpl*>(cacheHelper->getCache().ptr())->setPdxReadSerialized(true);
+    dynamic_cast<CacheImpl*>(cacheHelper->getCache().get())->setPdxReadSerialized(true);
     LOGINFO("NILKATH JavaPutGet PDX-ON read-serialized = %d",
     cacheHelper->getCache()->getPdxReadSerialized());
-    PdxInstancePtr jsonDoc = dynCast<PdxInstancePtr>(regPtr0->get("jsondoc1"));
-    int age = 0;
-    jsonDoc->getField("age", age);
-    LOGINFO("NILKATH:: Task:JavaPutGet: age = %d", age);
+    auto jsonDoc =
+    std::dynamic_pointer_cast<PdxInstance>(regPtr0->get("jsondoc1")); int age =
+    0; jsonDoc->getField("age", age); LOGINFO("NILKATH:: Task:JavaPutGet: age =
+    %d", age);
 
-    dynamic_cast<CacheImpl*>(cacheHelper->getCache().ptr())->setPdxReadSerialized(false);
+    dynamic_cast<CacheImpl*>(cacheHelper->getCache().get())->setPdxReadSerialized(false);
     LOGINFO("NILKATH JavaPutGet PDX-OFF read-serialized = %d",
     cacheHelper->getCache()->getPdxReadSerialized());
     */
@@ -653,15 +659,15 @@ DUNIT_TASK_DEFINITION(CLIENT2, JavaGet)
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     CacheableKeyPtr keyport1 = CacheableKey::create(1);
-    CacheablePtr pdxobj(new PdxTests::PdxType());
+    auto pdxobj = std::make_shared<PdxTests::PdxType>();
     LOGDEBUG("JavaGet-2 Line_314");
     PdxTests::PdxTypePtr obj1 =
-        dynCast<PdxTests::PdxTypePtr>(regPtr0->get(keyport1));
+        std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr0->get(keyport1));
     LOGDEBUG("JavaGet-3 Line_316");
     CacheableKeyPtr keyport2 = CacheableKey::create("putFromjava");
     LOGDEBUG("JavaGet-4 Line_316");
     PdxTests::PdxTypePtr obj2 =
-        dynCast<PdxTests::PdxTypePtr>(regPtr0->get(keyport2));
+        std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr0->get(keyport2));
     LOGDEBUG("JavaGet-5 Line_320");
   }
 END_TASK_DEFINITION
@@ -678,11 +684,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, putAtVersionTwoR21)
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxTypesR2V2Ptr np(new PdxTypesR2V2());
+    auto np = std::make_shared<PdxTypesR2V2>();
 
     regPtr0->put(keyport, np);
 
-    PdxTypesR2V2Ptr pRet = dynCast<PdxTypesR2V2Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypesR2V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("putAtVersionTwoR21:.. isEqual = %d", isEqual);
@@ -704,9 +710,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOneR22)
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxTypesV1R2Ptr np(new PdxTypesV1R2());
+    auto np = std::make_shared<PdxTypesV1R2>();
 
-    PdxTypesV1R2Ptr pRet = dynCast<PdxTypesV1R2Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypesV1R2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("getPutAtVersionOneR22:.. isEqual = %d", isEqual);
@@ -724,9 +730,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwoR23)
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    PdxTypesR2V2Ptr np(new PdxTypesR2V2());
+    auto np = std::make_shared<PdxTypesR2V2>();
 
-    PdxTypesR2V2Ptr pRet = dynCast<PdxTypesR2V2Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypesR2V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("getPutAtVersionTwoR23:.. isEqual = %d", isEqual);
@@ -743,9 +749,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOneR24)
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxTypesV1R2Ptr np(new PdxTypesV1R2());
+    auto np = std::make_shared<PdxTypesV1R2>();
 
-    PdxTypesV1R2Ptr pRet = dynCast<PdxTypesV1R2Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypesV1R2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("getPutAtVersionOneR24:.. isEqual = %d", isEqual);
@@ -768,11 +774,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, putAtVersionOne31)
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxType3V1Ptr np(new PdxType3V1());
+    auto np = std::make_shared<PdxType3V1>();
 
     regPtr0->put(keyport, np);
 
-    PdxType3V1Ptr pRet = dynCast<PdxType3V1Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxType3V1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("Task:putAtVersionOne31: isEqual = %d", isEqual);
@@ -791,11 +797,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo32)
     }
 
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxTypes3V2Ptr np(new PdxTypes3V2());
+    auto np = std::make_shared<PdxTypes3V2>();
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    PdxTypes3V2Ptr pRet = dynCast<PdxTypes3V2Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypes3V2>(regPtr0->get(keyport));
     bool isEqual = np->equals(pRet);
     LOGDEBUG("Task:getPutAtVersionTwo32.. isEqual = %d", isEqual);
     ASSERT(
@@ -811,9 +817,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne33)
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxType3V1Ptr np(new PdxType3V1());
+    auto np = std::make_shared<PdxType3V1>();
 
-    PdxType3V1Ptr pRet = dynCast<PdxType3V1Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxType3V1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("getPutAtVersionOne33:.. isEqual = %d", isEqual);
@@ -829,11 +835,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo34)
   {
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    PdxTypes3V2Ptr np(new PdxTypes3V2());
+    auto np = std::make_shared<PdxTypes3V2>();
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    PdxTypes3V2Ptr pRet = dynCast<PdxTypes3V2Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypes3V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("Task:getPutAtVersionTwo34: isEqual = %d", isEqual);
@@ -855,11 +861,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, putAtVersionOne21)
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxType2V1Ptr np(new PdxType2V1());
+    auto np = std::make_shared<PdxType2V1>();
 
     regPtr0->put(keyport, np);
 
-    PdxType2V1Ptr pRet = dynCast<PdxType2V1Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxType2V1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("Task:putAtVersionOne21:.. isEqual = %d", isEqual);
@@ -878,11 +884,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo22)
     }
 
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxTypes2V2Ptr np(new PdxTypes2V2());
+    auto np = std::make_shared<PdxTypes2V2>();
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    PdxTypes2V2Ptr pRet = dynCast<PdxTypes2V2Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypes2V2>(regPtr0->get(keyport));
     bool isEqual = np->equals(pRet);
     LOGDEBUG("Task:getPutAtVersionTwo22.. isEqual = %d", isEqual);
     ASSERT(
@@ -897,11 +903,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne23)
   {
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    PdxType2V1Ptr np(new PdxType2V1());
+    auto np = std::make_shared<PdxType2V1>();
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    PdxType2V1Ptr pRet = dynCast<PdxType2V1Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxType2V1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("Task:getPutAtVersionOne23: isEqual = %d", isEqual);
@@ -916,10 +922,10 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo24)
   {
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxTypes2V2Ptr np(new PdxTypes2V2());
+    auto np = std::make_shared<PdxTypes2V2>();
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    PdxTypes2V2Ptr pRet = dynCast<PdxTypes2V2Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypes2V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("Task:getPutAtVersionTwo24.. isEqual = %d", isEqual);
@@ -942,12 +948,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, putAtVersionOne11)
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxTests::PdxType1V1Ptr np(new PdxTests::PdxType1V1());
+    auto np = std::make_shared<PdxTests::PdxType1V1>();
 
     regPtr0->put(keyport, np);
 
     PdxTests::PdxType1V1Ptr pRet =
-        dynCast<PdxTests::PdxType1V1Ptr>(regPtr0->get(keyport));
+        std::dynamic_pointer_cast<PdxTests::PdxType1V1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("NIL:putAtVersionOne11:.. isEqual = %d", isEqual);
@@ -971,11 +977,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, putAtVersionTwo1)
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxTypesR1V2Ptr np(new PdxTypesR1V2());
+    auto np = std::make_shared<PdxTypesR1V2>();
 
     regPtr0->put(keyport, np);
 
-    PdxTypesR1V2Ptr pRet = dynCast<PdxTypesR1V2Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypesR1V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("NIL:putAtVersionTwo1:.. isEqual = %d", isEqual);
@@ -995,11 +1001,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne2)
 
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    PdxTypesV1R1Ptr np(new PdxTypesV1R1());
+    auto np = std::make_shared<PdxTypesV1R1>();
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    PdxTypesV1R1Ptr pRet = dynCast<PdxTypesV1R1Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypesV1R1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("NIL:getPutAtVersionOne2:.. isEqual = %d", isEqual);
@@ -1014,11 +1020,11 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo3)
   {
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxTypesR1V2Ptr np(new PdxTypesR1V2());
+    auto np = std::make_shared<PdxTypesR1V2>();
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    PdxTypesR1V2Ptr pRet = dynCast<PdxTypesR1V2Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypesR1V2>(regPtr0->get(keyport));
     bool isEqual = np->equals(pRet);
     LOGDEBUG("NIL:getPutAtVersionTwo3.. isEqual = %d", isEqual);
     ASSERT(
@@ -1032,10 +1038,10 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne4)
   {
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxTypesV1R1Ptr np(new PdxTypesV1R1());
+    auto np = std::make_shared<PdxTypesV1R1>();
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxTypesV1R1Ptr pRet = dynCast<PdxTypesV1R1Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypesV1R1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("getPutAtVersionOne4: isEqual = %d", isEqual);
@@ -1050,12 +1056,12 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo5)
   {
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxTypesR1V2Ptr np(new PdxTypesR1V2());
+    auto np = std::make_shared<PdxTypesR1V2>();
 
     // GET
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    PdxTypesR1V2Ptr pRet = dynCast<PdxTypesR1V2Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypesR1V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("Task:getPutAtVersionTwo5.. isEqual = %d", isEqual);
@@ -1070,10 +1076,10 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne6)
   {
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxTypesV1R1Ptr np(new PdxTypesV1R1());
+    auto np = std::make_shared<PdxTypesV1R1>();
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxTypesV1R1Ptr pRet = dynCast<PdxTypesV1R1Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypesV1R1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("Task getPutAtVersionOne6:.. isEqual = %d", isEqual);
@@ -1096,12 +1102,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, putV2PdxUI)
     // PdxTests::PdxTypesIgnoreUnreadFieldsV2::reset(false);
 
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxTypesIgnoreUnreadFieldsV2Ptr np(new PdxTypesIgnoreUnreadFieldsV2());
+    auto np = std::make_shared<PdxTypesIgnoreUnreadFieldsV2>();
     CacheableKeyPtr keyport = CacheableKey::create(1);
     regPtr0->put(keyport, np);
 
-    PdxTypesIgnoreUnreadFieldsV2Ptr pRet =
-        dynCast<PdxTypesIgnoreUnreadFieldsV2Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypesIgnoreUnreadFieldsV2>(
+        regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("NIL:putV2PdxUI:.. isEqual = %d", isEqual);
@@ -1125,8 +1131,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, putV1PdxUI)
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    PdxTypesIgnoreUnreadFieldsV1Ptr pRet =
-        dynCast<PdxTypesIgnoreUnreadFieldsV1Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypesIgnoreUnreadFieldsV1>(
+        regPtr0->get(keyport));
     regPtr0->put(keyport, pRet);
   }
 END_TASK_DEFINITION
@@ -1134,11 +1140,11 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, getV2PdxUI)
   {
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxTypesIgnoreUnreadFieldsV2Ptr np(new PdxTypesIgnoreUnreadFieldsV2());
+    auto np = std::make_shared<PdxTypesIgnoreUnreadFieldsV2>();
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxTypesIgnoreUnreadFieldsV2Ptr pRet =
-        dynCast<PdxTypesIgnoreUnreadFieldsV2Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypesIgnoreUnreadFieldsV2>(
+        regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("Task:getV2PdxUI:.. isEqual = %d", isEqual);
@@ -1159,11 +1165,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo12)
 
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    PdxTypes1V2Ptr np(new PdxTypes1V2());
+    auto np = std::make_shared<PdxTypes1V2>();
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    PdxTypes1V2Ptr pRet = dynCast<PdxTypes1V2Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypes1V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("NIL:getPutAtVersionTwo12:.. isEqual = %d", isEqual);
@@ -1178,11 +1184,11 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne13)
   {
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxType1V1Ptr np(new PdxType1V1());
+    auto np = std::make_shared<PdxType1V1>();
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    PdxType1V1Ptr pRet = dynCast<PdxType1V1Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxType1V1>(regPtr0->get(keyport));
     bool isEqual = np->equals(pRet);
 
     LOGDEBUG("NIL:getPutAtVersionOne13:221.. isEqual = %d", isEqual);
@@ -1198,10 +1204,10 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo14)
   {
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxTypes1V2Ptr np(new PdxTypes1V2());
+    auto np = std::make_shared<PdxTypes1V2>();
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxTypes1V2Ptr pRet = dynCast<PdxTypes1V2Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypes1V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("NIL:getPutAtVersionTwo14:241.. isEqual = %d", isEqual);
@@ -1217,12 +1223,12 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne15)
   {
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxType1V1Ptr np(new PdxType1V1());
+    auto np = std::make_shared<PdxType1V1>();
 
     // GET
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    PdxType1V1Ptr pRet = dynCast<PdxType1V1Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxType1V1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("NIL:getPutAtVersionOne15:784.. isEqual = %d", isEqual);
@@ -1249,10 +1255,10 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo16)
   {
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxTypes1V2Ptr np(new PdxTypes1V2());
+    auto np = std::make_shared<PdxTypes1V2>();
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxTypes1V2Ptr pRet = dynCast<PdxTypes1V2Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypes1V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
     LOGDEBUG("NIL:getPutAtVersionTwo14:.. isEqual = %d", isEqual);
@@ -1286,13 +1292,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, Puts2)
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    CacheablePtr pdxobj(new PdxTests::PdxTypes1());
+    auto pdxobj = std::make_shared<PdxTests::PdxTypes1>();
 
     regPtr0->put(keyport, pdxobj);
 
     CacheableKeyPtr keyport2 = CacheableKey::create(2);
 
-    CacheablePtr pdxobj2(new PdxTests::PdxTypes2());
+    auto pdxobj2 = std::make_shared<PdxTests::PdxTypes2>();
 
     regPtr0->put(keyport2, pdxobj2);
 
@@ -1314,7 +1320,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, forCleanup)
 
       CacheableKeyPtr keyport = CacheableKey::create(1);
 
-      CacheablePtr pdxobj(new PdxTests::PdxTypes1());
+      auto pdxobj = std::make_shared<PdxTests::PdxTypes1>();
 
       regPtr0->put(keyport, pdxobj);
     } catch (...) {
@@ -1330,13 +1336,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, Puts22)
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    CacheablePtr pdxobj(new PdxTests::PdxTypes1());
+    auto pdxobj = std::make_shared<PdxTests::PdxTypes1>();
 
     regPtr0->put(keyport, pdxobj);
 
     CacheableKeyPtr keyport2 = CacheableKey::create(2);
 
-    CacheablePtr pdxobj2(new PdxTests::PdxTypes2());
+    auto pdxobj2 = std::make_shared<PdxTests::PdxTypes2>();
 
     regPtr0->put(keyport2, pdxobj2);
 
@@ -1362,7 +1368,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, Get2)
 
     CacheableKeyPtr keyport = CacheableKey::create(2);
     PdxTests::PdxTypes2Ptr obj2 =
-        dynCast<PdxTests::PdxTypes2Ptr>(regPtr0->get(keyport));
+        std::dynamic_pointer_cast<PdxTests::PdxTypes2>(regPtr0->get(keyport));
 
     LOG("Get2 complete.\n");
   }
@@ -1386,19 +1392,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGet)
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    CacheablePtr pdxobj(new PdxTests::PdxType());
+    auto pdxobj = std::make_shared<PdxTests::PdxType>();
 
     regPtr0->put(keyport, pdxobj);
 
     PdxTests::PdxTypePtr obj2 =
-        dynCast<PdxTests::PdxTypePtr>(regPtr0->get(keyport));
+        std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr0->get(keyport));
 
     checkPdxInstanceToStringAtServer(regPtr0);
 
     ASSERT(cacheHelper->getCache()->getPdxReadSerialized() == false,
            "Pdx read serialized property should be false.");
 
-    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
     LOGINFO("PdxSerializations = %d ",
             lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
     LOGINFO("PdxDeSerializations = %d ",
@@ -1444,14 +1450,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyNestedPdxInGet)
       // ignore exception
     }
 
-    NestedPdxPtr p1(new NestedPdx());
+    auto p1 = std::make_shared<NestedPdx>();
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
     regPtr0->put(keyport, p1);
 
-    NestedPdxPtr obj2 = dynCast<NestedPdxPtr>(regPtr0->get(keyport));
+    auto obj2 = std::dynamic_pointer_cast<NestedPdx>(regPtr0->get(keyport));
 
     ASSERT(obj2->equals(p1) == true, "Nested pdx objects should be equal");
 
@@ -1482,10 +1488,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutMixedVersionNestedPdx)
       // ignore exception
     }
 
-    LOG("MixedVersionNestedPdxPtr p1(new MixedVersionNestedPdx());	");
-    MixedVersionNestedPdxPtr p1(new MixedVersionNestedPdx());
-    MixedVersionNestedPdxPtr p2(new MixedVersionNestedPdx());
-    MixedVersionNestedPdxPtr p3(new MixedVersionNestedPdx());
+    LOG("auto p1 = std::make_shared<MixedVersionNestedPdx>();	");
+    auto p1 = std::make_shared<MixedVersionNestedPdx>();
+    auto p2 = std::make_shared<MixedVersionNestedPdx>();
+    auto p3 = std::make_shared<MixedVersionNestedPdx>();
     LOG("RegionPtr regPtr0 = getHelper()->getRegion(\"DistRegionAck\");");
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
@@ -1565,14 +1571,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGFSInGet)
     }
 
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxInsideIGeodeSerializablePtr np(new PdxInsideIGeodeSerializable());
+    auto np = std::make_shared<PdxInsideIGeodeSerializable>();
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
     regPtr0->put(keyport, np);
 
     // GET
-    PdxInsideIGeodeSerializablePtr pRet =
-        dynCast<PdxInsideIGeodeSerializablePtr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxInsideIGeodeSerializable>(
+        regPtr0->get(keyport));
     ASSERT(
         pRet->equals(np) == true,
         "TASK PutAndVerifyPdxInIGFSInGet: PdxInsideIGeodeSerializable objects "
@@ -1641,12 +1647,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyPdxInGFSGetOnly)
     }
 
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    PdxInsideIGeodeSerializablePtr orig(new PdxInsideIGeodeSerializable());
+    auto orig = std::make_shared<PdxInsideIGeodeSerializable>();
 
     // GET
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxInsideIGeodeSerializablePtr pRet =
-        dynCast<PdxInsideIGeodeSerializablePtr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxInsideIGeodeSerializable>(
+        regPtr0->get(keyport));
     ASSERT(pRet->equals(orig) == true,
            "TASK:VerifyPdxInIGFSGetOnly, PdxInsideIGeodeSerializable objects "
            "should "
@@ -1677,19 +1683,19 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyMixedVersionNestedGetOnly)
       // ignore exception
     }
 
-    MixedVersionNestedPdxPtr p1(new MixedVersionNestedPdx());
+    auto p1 = std::make_shared<MixedVersionNestedPdx>();
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     CacheableKeyPtr keyport1 = CacheableKey::create(1);
     CacheableKeyPtr keyport2 = CacheableKey::create(2);
     CacheableKeyPtr keyport3 = CacheableKey::create(3);
 
-    MixedVersionNestedPdxPtr obj1 =
-        dynCast<MixedVersionNestedPdxPtr>(regPtr0->get(keyport1));
-    MixedVersionNestedPdxPtr obj2 =
-        dynCast<MixedVersionNestedPdxPtr>(regPtr0->get(keyport2));
-    MixedVersionNestedPdxPtr obj3 =
-        dynCast<MixedVersionNestedPdxPtr>(regPtr0->get(keyport3));
+    auto obj1 = std::dynamic_pointer_cast<MixedVersionNestedPdx>(
+        regPtr0->get(keyport1));
+    auto obj2 = std::dynamic_pointer_cast<MixedVersionNestedPdx>(
+        regPtr0->get(keyport2));
+    auto obj3 = std::dynamic_pointer_cast<MixedVersionNestedPdx>(
+        regPtr0->get(keyport3));
 
     ASSERT(obj1->equals(p1) == true, "Nested pdx objects should be equal");
 
@@ -1719,12 +1725,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyNestedGetOnly)
       // ignore exception
     }
 
-    NestedPdxPtr p1(new NestedPdx());
+    auto p1 = std::make_shared<NestedPdx>();
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
-    NestedPdxPtr obj2 = dynCast<NestedPdxPtr>(regPtr0->get(keyport));
+    auto obj2 = std::dynamic_pointer_cast<NestedPdx>(regPtr0->get(keyport));
 
     ASSERT(obj2->equals(p1) == true, "Nested pdx objects should be equal");
 
@@ -1750,11 +1756,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyGetOnly)
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
     PdxTests::PdxTypePtr obj2 =
-        dynCast<PdxTests::PdxTypePtr>(regPtr0->get(keyport));
+        std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr0->get(keyport));
 
     checkPdxInstanceToStringAtServer(regPtr0);
 
-    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
     LOGINFO("PdxSerializations = %d ",
             lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
     LOGINFO("PdxDeSerializations = %d ",
@@ -1844,17 +1850,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
     bool flag = false;
     {
-      PdxTypes1Ptr p1(new PdxTypes1());
+      auto p1 = std::make_shared<PdxTypes1>();
       CacheableKeyPtr keyport = CacheableKey::create(11);
       regPtr0->put(keyport, p1);
-      PdxTypes1Ptr pRet = dynCast<PdxTypes1Ptr>(regPtr0->get(keyport));
+      auto pRet = std::dynamic_pointer_cast<PdxTypes1>(regPtr0->get(keyport));
 
       flag = p1->equals(pRet);
       LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes1 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -1879,17 +1885,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
     }
 
     {
-      PdxTypes2Ptr p2(new PdxTypes2());
+      auto p2 = std::make_shared<PdxTypes2>();
       CacheableKeyPtr keyport2 = CacheableKey::create(12);
       regPtr0->put(keyport2, p2);
-      PdxTypes2Ptr pRet2 = dynCast<PdxTypes2Ptr>(regPtr0->get(keyport2));
+      auto pRet2 = std::dynamic_pointer_cast<PdxTypes2>(regPtr0->get(keyport2));
 
       flag = p2->equals(pRet2);
       LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes2 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -1914,17 +1920,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
     }
 
     {
-      PdxTypes3Ptr p3(new PdxTypes3());
+      auto p3 = std::make_shared<PdxTypes3>();
       CacheableKeyPtr keyport3 = CacheableKey::create(13);
       regPtr0->put(keyport3, p3);
-      PdxTypes3Ptr pRet3 = dynCast<PdxTypes3Ptr>(regPtr0->get(keyport3));
+      auto pRet3 = std::dynamic_pointer_cast<PdxTypes3>(regPtr0->get(keyport3));
 
       flag = p3->equals(pRet3);
       LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes3 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -1949,17 +1955,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
     }
 
     {
-      PdxTypes4Ptr p4(new PdxTypes4());
+      auto p4 = std::make_shared<PdxTypes4>();
       CacheableKeyPtr keyport4 = CacheableKey::create(14);
       regPtr0->put(keyport4, p4);
-      PdxTypes4Ptr pRet4 = dynCast<PdxTypes4Ptr>(regPtr0->get(keyport4));
+      auto pRet4 = std::dynamic_pointer_cast<PdxTypes4>(regPtr0->get(keyport4));
 
       flag = p4->equals(pRet4);
       LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes4 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -1984,17 +1990,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
     }
 
     {
-      PdxTypes5Ptr p5(new PdxTypes5());
+      auto p5 = std::make_shared<PdxTypes5>();
       CacheableKeyPtr keyport5 = CacheableKey::create(15);
       regPtr0->put(keyport5, p5);
-      PdxTypes5Ptr pRet5 = dynCast<PdxTypes5Ptr>(regPtr0->get(keyport5));
+      auto pRet5 = std::dynamic_pointer_cast<PdxTypes5>(regPtr0->get(keyport5));
 
       flag = p5->equals(pRet5);
       LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes5 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -2019,17 +2025,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
     }
 
     {
-      PdxTypes6Ptr p6(new PdxTypes6());
+      auto p6 = std::make_shared<PdxTypes6>();
       CacheableKeyPtr keyport6 = CacheableKey::create(16);
       regPtr0->put(keyport6, p6);
-      PdxTypes6Ptr pRet6 = dynCast<PdxTypes6Ptr>(regPtr0->get(keyport6));
+      auto pRet6 = std::dynamic_pointer_cast<PdxTypes6>(regPtr0->get(keyport6));
 
       flag = p6->equals(pRet6);
       LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes6 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -2054,17 +2060,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
     }
 
     {
-      PdxTypes7Ptr p7(new PdxTypes7());
+      auto p7 = std::make_shared<PdxTypes7>();
       CacheableKeyPtr keyport7 = CacheableKey::create(17);
       regPtr0->put(keyport7, p7);
-      PdxTypes7Ptr pRet7 = dynCast<PdxTypes7Ptr>(regPtr0->get(keyport7));
+      auto pRet7 = std::dynamic_pointer_cast<PdxTypes7>(regPtr0->get(keyport7));
 
       flag = p7->equals(pRet7);
       LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes7 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -2089,17 +2095,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
     }
 
     {
-      PdxTypes8Ptr p8(new PdxTypes8());
+      auto p8 = std::make_shared<PdxTypes8>();
       CacheableKeyPtr keyport8 = CacheableKey::create(18);
       regPtr0->put(keyport8, p8);
-      PdxTypes8Ptr pRet8 = dynCast<PdxTypes8Ptr>(regPtr0->get(keyport8));
+      auto pRet8 = std::dynamic_pointer_cast<PdxTypes8>(regPtr0->get(keyport8));
 
       flag = p8->equals(pRet8);
       LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes8 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -2124,17 +2130,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
     }
 
     {
-      PdxTypes9Ptr p9(new PdxTypes9());
+      auto p9 = std::make_shared<PdxTypes9>();
       CacheableKeyPtr keyport9 = CacheableKey::create(19);
       regPtr0->put(keyport9, p9);
-      PdxTypes9Ptr pRet9 = dynCast<PdxTypes9Ptr>(regPtr0->get(keyport9));
+      auto pRet9 = std::dynamic_pointer_cast<PdxTypes9>(regPtr0->get(keyport9));
 
       flag = p9->equals(pRet9);
       LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes9 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -2159,17 +2165,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
     }
 
     {
-      PdxTypes10Ptr p10(new PdxTypes10());
+      auto p10 = std::make_shared<PdxTypes10>();
       CacheableKeyPtr keyport10 = CacheableKey::create(20);
       regPtr0->put(keyport10, p10);
-      PdxTypes10Ptr pRet10 = dynCast<PdxTypes10Ptr>(regPtr0->get(keyport10));
+      auto pRet10 =
+          std::dynamic_pointer_cast<PdxTypes10>(regPtr0->get(keyport10));
 
       flag = p10->equals(pRet10);
       LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes10 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -2212,19 +2219,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
     ResultCollectorPtr collector = funcExec->withArgs(args)
                                        ->withFilter(routingObj)
                                        ->execute("ComparePdxTypes", true);
-    ASSERT(collector != NULLPTR, "onRegion collector NULL");
+    ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     CacheableVectorPtr result = collector->getResult();
     LOGINFO("NIL:: testTCPDXTests: result->size = %d ", result->size());
-    if (result == NULLPTR) {
-      ASSERT(false, "echo String : result is NULL");
+    if (result == nullptr) {
+      ASSERT(false, "echo String : result is nullptr");
     } else {
       //
       bool gotResult = false;
       for (int i = 0; i < result->size(); i++) {
         try {
-          CacheableBooleanPtr boolValue =
-              dynCast<CacheableBooleanPtr>(result->operator[](i));
+          auto boolValue = std::dynamic_pointer_cast<CacheableBoolean>(
+              result->operator[](i));
           LOGINFO("NIL:: boolValue is %d ", boolValue->value());
           bool resultVal = boolValue->value();
           ASSERT(resultVal == true,
@@ -2242,9 +2249,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
           LOG("exFuncNameSendException now casting to "
               "UserFunctionExecutionExceptionPtr for arrayList arguement "
               "exception.");
-          UserFunctionExecutionExceptionPtr uFEPtr =
-              dynCast<UserFunctionExecutionExceptionPtr>(result->operator[](i));
-          ASSERT(uFEPtr != NULLPTR, "uFEPtr exception is NULL");
+          auto uFEPtr =
+              std::dynamic_pointer_cast<UserFunctionExecutionException>(
+                  result->operator[](i));
+          ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
           LOGINFO("Done casting to uFEPtr");
           LOGINFO("Read expected uFEPtr exception %s ",
                   uFEPtr->getMessage()->asChar());
@@ -2318,43 +2326,43 @@ DUNIT_TASK_DEFINITION(CLIENT1, putAllPdxTypes)
 
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    PdxTypes1Ptr p1(new PdxTypes1());
+    auto p1 = std::make_shared<PdxTypes1>();
     CacheableKeyPtr keyport1 = CacheableKey::create(p1->getClassName());
     regPtr0->put(keyport1, p1);
 
-    PdxTypes2Ptr p2(new PdxTypes2());
+    auto p2 = std::make_shared<PdxTypes2>();
     CacheableKeyPtr keyport2 = CacheableKey::create(p2->getClassName());
     regPtr0->put(keyport2, p2);
 
-    PdxTypes3Ptr p3(new PdxTypes3());
+    auto p3 = std::make_shared<PdxTypes3>();
     CacheableKeyPtr keyport3 = CacheableKey::create(p3->getClassName());
     regPtr0->put(keyport3, p3);
 
-    PdxTypes4Ptr p4(new PdxTypes4());
+    auto p4 = std::make_shared<PdxTypes4>();
     CacheableKeyPtr keyport4 = CacheableKey::create(p4->getClassName());
     regPtr0->put(keyport4, p4);
 
-    PdxTypes5Ptr p5(new PdxTypes5());
+    auto p5 = std::make_shared<PdxTypes5>();
     CacheableKeyPtr keyport5 = CacheableKey::create(p5->getClassName());
     regPtr0->put(keyport5, p5);
 
-    PdxTypes6Ptr p6(new PdxTypes6());
+    auto p6 = std::make_shared<PdxTypes6>();
     CacheableKeyPtr keyport6 = CacheableKey::create(p6->getClassName());
     regPtr0->put(keyport6, p6);
 
-    PdxTypes7Ptr p7(new PdxTypes7());
+    auto p7 = std::make_shared<PdxTypes7>();
     CacheableKeyPtr keyport7 = CacheableKey::create(p7->getClassName());
     regPtr0->put(keyport7, p7);
 
-    PdxTypes8Ptr p8(new PdxTypes8());
+    auto p8 = std::make_shared<PdxTypes8>();
     CacheableKeyPtr keyport8 = CacheableKey::create(p8->getClassName());
     regPtr0->put(keyport8, p8);
 
-    PdxTypes9Ptr p9(new PdxTypes9());
+    auto p9 = std::make_shared<PdxTypes9>();
     CacheableKeyPtr keyport9 = CacheableKey::create(p9->getClassName());
     regPtr0->put(keyport9, p9);
 
-    PdxTypes10Ptr p10(new PdxTypes10());
+    auto p10 = std::make_shared<PdxTypes10>();
     CacheableKeyPtr keyport10 = CacheableKey::create(p10->getClassName());
     regPtr0->put(keyport10, p10);
 
@@ -2376,19 +2384,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
     ResultCollectorPtr collector = funcExec->withArgs(args)
                                        ->withFilter(routingObj)
                                        ->execute("ComparePdxTypes", true);
-    ASSERT(collector != NULLPTR, "onRegion collector NULL");
+    ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     CacheableVectorPtr result = collector->getResult();
     LOGINFO("NIL:: testTCPDXTests:verifyDotNetPdxTypes result->size = %d ",
             result->size());
-    if (result == NULLPTR) {
-      ASSERT(false, "echo String : result is NULL");
+    if (result == nullptr) {
+      ASSERT(false, "echo String : result is nullptr");
     } else {
       bool gotResult = false;
       for (int i = 0; i < result->size(); i++) {
         try {
-          CacheableBooleanPtr boolValue =
-              dynCast<CacheableBooleanPtr>(result->operator[](i));
+          auto boolValue = std::dynamic_pointer_cast<CacheableBoolean>(
+              result->operator[](i));
           LOGINFO("NIL::verifyDotNetPdxTypes boolValue is %d ",
                   boolValue->value());
           bool resultVal = boolValue->value();
@@ -2407,9 +2415,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
           LOG("exFuncNameSendException now casting to "
               "UserFunctionExecutionExceptionPtr for arrayList arguement "
               "exception.");
-          UserFunctionExecutionExceptionPtr uFEPtr =
-              dynCast<UserFunctionExecutionExceptionPtr>(result->operator[](i));
-          ASSERT(uFEPtr != NULLPTR, "uFEPtr exception is NULL");
+          auto uFEPtr =
+              std::dynamic_pointer_cast<UserFunctionExecutionException>(
+                  result->operator[](i));
+          ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
           LOGINFO("Done casting to uFEPtr");
           LOGINFO("Read expected uFEPtr exception %s ",
                   uFEPtr->getMessage()->asChar());
@@ -2438,7 +2447,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, client1PutsV1Object)
     PdxTests::PdxType3V1::reset(false);
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxType3V1Ptr np(new PdxType3V1());
+    auto np = std::make_shared<PdxType3V1>();
 
     regPtr0->put(keyport, np);
   }
@@ -2457,10 +2466,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, client2GetsV1ObjectAndPutsV2Object)
 
     // get v1 object
     CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxTypes3V2Ptr pRet = dynCast<PdxTypes3V2Ptr>(regPtr0->get(keyport));
+    auto pRet = std::dynamic_pointer_cast<PdxTypes3V2>(regPtr0->get(keyport));
 
     // now put v2 object
-    PdxTypes3V2Ptr np(new PdxTypes3V2());
+    auto np = std::make_shared<PdxTypes3V2>();
     regPtr0->put(keyport, np);
 
     LOGDEBUG("Task:client2GetsV1ObjectAndPutsV2Object Done successfully ");
@@ -2478,19 +2487,19 @@ DUNIT_TASK_DEFINITION(CLIENT3, client3GetsV2Object)
     ExecutionPtr funcExec = FunctionService::onRegion(regPtr0);
 
     ResultCollectorPtr collector = funcExec->execute("IterateRegion", true);
-    ASSERT(collector != NULLPTR, "onRegion collector NULL");
+    ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     CacheableVectorPtr result = collector->getResult();
     LOGINFO("NIL:: testTCPDXTests:verifyDotNetPdxTypes result->size = %d ",
             result->size());
-    if (result == NULLPTR) {
-      ASSERT(false, "echo String : result is NULL");
+    if (result == nullptr) {
+      ASSERT(false, "echo String : result is nullptr");
     } else {
       bool gotResult = false;
       for (int i = 0; i < result->size(); i++) {
         try {
-          CacheableBooleanPtr boolValue =
-              dynCast<CacheableBooleanPtr>(result->operator[](i));
+          auto boolValue = std::dynamic_pointer_cast<CacheableBoolean>(
+              result->operator[](i));
           LOGINFO("NIL::verifyDotNetPdxTypes boolValue is %d ",
                   boolValue->value());
           bool resultVal = boolValue->value();
@@ -2509,9 +2518,10 @@ DUNIT_TASK_DEFINITION(CLIENT3, client3GetsV2Object)
           LOG("exFuncNameSendException now casting to "
               "UserFunctionExecutionExceptionPtr for arrayList arguement "
               "exception.");
-          UserFunctionExecutionExceptionPtr uFEPtr =
-              dynCast<UserFunctionExecutionExceptionPtr>(result->operator[](i));
-          ASSERT(uFEPtr != NULLPTR, "uFEPtr exception is NULL");
+          auto uFEPtr =
+              std::dynamic_pointer_cast<UserFunctionExecutionException>(
+                  result->operator[](i));
+          ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
           LOGINFO("Done casting to uFEPtr");
           LOGINFO("Read expected uFEPtr exception %s ",
                   uFEPtr->getMessage()->asChar());
@@ -2586,9 +2596,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
     bool flag = false;
     {
-      PdxTypes1Ptr p1(new PdxTypes1());
+      auto p1 = std::make_shared<PdxTypes1>();
       CacheableKeyPtr keyport = CacheableKey::create(11);
-      PdxTypes1Ptr pRet = dynCast<PdxTypes1Ptr>(regPtr0->get(keyport));
+      auto pRet = std::dynamic_pointer_cast<PdxTypes1>(regPtr0->get(keyport));
 
       flag = p1->equals(pRet);
       LOGDEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
@@ -2596,7 +2606,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes1 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -2620,9 +2630,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
     }
 
     {
-      PdxTypes2Ptr p2(new PdxTypes2());
+      auto p2 = std::make_shared<PdxTypes2>();
       CacheableKeyPtr keyport2 = CacheableKey::create(12);
-      PdxTypes2Ptr pRet2 = dynCast<PdxTypes2Ptr>(regPtr0->get(keyport2));
+      auto pRet2 = std::dynamic_pointer_cast<PdxTypes2>(regPtr0->get(keyport2));
 
       flag = p2->equals(pRet2);
       LOGDEBUG("VerifyVariousPdxGets:. flag = %d", flag);
@@ -2630,7 +2640,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes2 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -2654,9 +2664,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
     }
 
     {
-      PdxTypes3Ptr p3(new PdxTypes3());
+      auto p3 = std::make_shared<PdxTypes3>();
       CacheableKeyPtr keyport3 = CacheableKey::create(13);
-      PdxTypes3Ptr pRet3 = dynCast<PdxTypes3Ptr>(regPtr0->get(keyport3));
+      auto pRet3 = std::dynamic_pointer_cast<PdxTypes3>(regPtr0->get(keyport3));
 
       flag = p3->equals(pRet3);
       LOGDEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
@@ -2664,7 +2674,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes3 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -2688,9 +2698,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
     }
 
     {
-      PdxTypes4Ptr p4(new PdxTypes4());
+      auto p4 = std::make_shared<PdxTypes4>();
       CacheableKeyPtr keyport4 = CacheableKey::create(14);
-      PdxTypes4Ptr pRet4 = dynCast<PdxTypes4Ptr>(regPtr0->get(keyport4));
+      auto pRet4 = std::dynamic_pointer_cast<PdxTypes4>(regPtr0->get(keyport4));
 
       flag = p4->equals(pRet4);
       LOGDEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
@@ -2698,7 +2708,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes4 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -2722,9 +2732,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
     }
 
     {
-      PdxTypes5Ptr p5(new PdxTypes5());
+      auto p5 = std::make_shared<PdxTypes5>();
       CacheableKeyPtr keyport5 = CacheableKey::create(15);
-      PdxTypes5Ptr pRet5 = dynCast<PdxTypes5Ptr>(regPtr0->get(keyport5));
+      auto pRet5 = std::dynamic_pointer_cast<PdxTypes5>(regPtr0->get(keyport5));
 
       flag = p5->equals(pRet5);
       LOGDEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
@@ -2732,7 +2742,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes5 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -2756,9 +2766,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
     }
 
     {
-      PdxTypes6Ptr p6(new PdxTypes6());
+      auto p6 = std::make_shared<PdxTypes6>();
       CacheableKeyPtr keyport6 = CacheableKey::create(16);
-      PdxTypes6Ptr pRet6 = dynCast<PdxTypes6Ptr>(regPtr0->get(keyport6));
+      auto pRet6 = std::dynamic_pointer_cast<PdxTypes6>(regPtr0->get(keyport6));
 
       flag = p6->equals(pRet6);
       LOGDEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
@@ -2766,7 +2776,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes6 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -2790,9 +2800,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
     }
 
     {
-      PdxTypes7Ptr p7(new PdxTypes7());
+      auto p7 = std::make_shared<PdxTypes7>();
       CacheableKeyPtr keyport7 = CacheableKey::create(17);
-      PdxTypes7Ptr pRet7 = dynCast<PdxTypes7Ptr>(regPtr0->get(keyport7));
+      auto pRet7 = std::dynamic_pointer_cast<PdxTypes7>(regPtr0->get(keyport7));
 
       flag = p7->equals(pRet7);
       LOGDEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
@@ -2800,7 +2810,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes7 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -2824,9 +2834,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
     }
 
     {
-      PdxTypes8Ptr p8(new PdxTypes8());
+      auto p8 = std::make_shared<PdxTypes8>();
       CacheableKeyPtr keyport8 = CacheableKey::create(18);
-      PdxTypes8Ptr pRet8 = dynCast<PdxTypes8Ptr>(regPtr0->get(keyport8));
+      auto pRet8 = std::dynamic_pointer_cast<PdxTypes8>(regPtr0->get(keyport8));
 
       flag = p8->equals(pRet8);
       LOGDEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
@@ -2834,7 +2844,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes8 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -2858,9 +2868,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
     }
 
     {
-      PdxTypes9Ptr p9(new PdxTypes9());
+      auto p9 = std::make_shared<PdxTypes9>();
       CacheableKeyPtr keyport9 = CacheableKey::create(19);
-      PdxTypes9Ptr pRet9 = dynCast<PdxTypes9Ptr>(regPtr0->get(keyport9));
+      auto pRet9 = std::dynamic_pointer_cast<PdxTypes9>(regPtr0->get(keyport9));
 
       flag = p9->equals(pRet9);
       LOGDEBUG("VerifyVariousPdxGets:. flag = %d", flag);
@@ -2868,7 +2878,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes9 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -2892,9 +2902,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
     }
 
     {
-      PdxTypes10Ptr p10(new PdxTypes10());
+      auto p10 = std::make_shared<PdxTypes10>();
       CacheableKeyPtr keyport10 = CacheableKey::create(20);
-      PdxTypes10Ptr pRet10 = dynCast<PdxTypes10Ptr>(regPtr0->get(keyport10));
+      auto pRet10 =
+          std::dynamic_pointer_cast<PdxTypes10>(regPtr0->get(keyport10));
 
       flag = p10->equals(pRet10);
       LOGDEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
@@ -2902,7 +2913,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes10 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
       LOGINFO("PdxSerializations = %d ",
               lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
       LOGINFO("PdxDeSerializations = %d ",
@@ -2938,7 +2949,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putOperation)
     // RegionPtr testReg = getHelper()->getRegion("testregion");
     CacheablePtr valuePtr1 = regPtr0->get("clientName1");
     const char* clientName1 =
-        (dynCast<CacheableStringPtr>(valuePtr1))->asChar();
+        (std::dynamic_pointer_cast<CacheableString>(valuePtr1))->asChar();
     LOGINFO(" C1.putOperation Got ClientName1 = %s ", clientName1);
     ASSERT(strcmp(clientName1, "Client-1") == 0,
            "ClientName for Client-1 is not set");
@@ -2955,7 +2966,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getOperation)
     // Verify Client Name for C2
     CacheablePtr valuePtr2 = regPtr0->get("clientName2");
     const char* clientName2 =
-        (dynCast<CacheableStringPtr>(valuePtr2))->asChar();
+        (std::dynamic_pointer_cast<CacheableString>(valuePtr2))->asChar();
     LOGINFO(" C2.getOperation Got ClientName2 = %s ", clientName2);
     ASSERT(strcmp(clientName2, "Client-2") == 0,
            "ClientName for Client-2 is not set");
@@ -2975,7 +2986,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putCharTypes)
     LOG("PdxTests::CharTypes Registered Successfully....");
 
     LOG("Trying to populate PDX objects.....\n");
-    CacheablePtr pdxobj(new PdxTests::CharTypes());
+    auto pdxobj = std::make_shared<PdxTests::CharTypes>();
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
     // PUT Operation
@@ -3002,17 +3013,17 @@ DUNIT_TASK_DEFINITION(CLIENT2, getCharTypes)
       // ignore exception
     }
 
-    PdxTests::CharTypesPtr localPdxptr(new PdxTests::CharTypes());
+    auto localPdxptr = std::make_shared<PdxTests::CharTypes>();
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
     LOG("Client-2 PdxTests::CharTypes GET OP Start....");
     PdxTests::CharTypesPtr remotePdxptr =
-        dynCast<PdxTests::CharTypesPtr>(regPtr0->get(keyport));
+        std::dynamic_pointer_cast<PdxTests::CharTypes>(regPtr0->get(keyport));
     LOG("Client-2 PdxTests::CharTypes GET OP Done....");
 
-    PdxTests::CharTypes* localPdx = localPdxptr.ptr();
+    PdxTests::CharTypes* localPdx = localPdxptr.get();
     PdxTests::CharTypes* remotePdx =
-        dynamic_cast<PdxTests::CharTypes*>(remotePdxptr.ptr());
+        dynamic_cast<PdxTests::CharTypes*>(remotePdxptr.get());
 
     LOGINFO("testThinClientPdxTests:StepFour before equal() check");
     ASSERT(remotePdx->equals(*localPdx) == true,
@@ -3050,7 +3061,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     LOG("PdxClassV1 Registered Successfully....");
 
     LOG("Trying to populate PDX objects.....\n");
-    CacheablePtr pdxobj(new PdxTests::PdxType());
+    auto pdxobj = std::make_shared<PdxTests::PdxType>();
     CacheableKeyPtr keyport = CacheableKey::create(1);
 
     // PUT Operation
@@ -3086,7 +3097,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     regPtr0->get(keyport);
     regPtr0->get(keyport2);
 
-    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
     LOGINFO("PdxSerializations = %d ",
             lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
     LOGINFO("PdxDeSerializations = %d ",
@@ -3171,8 +3182,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
     // Get remote CacheableObjectArray on key 2
     CacheableKeyPtr keyport2 = CacheableKey::create(2);
     LOGINFO("Client-2 PdxTests::PdxType GET OP Start....");
-    CacheableObjectArrayPtr remoteCObjArray =
-        dynCast<CacheableObjectArrayPtr>(regPtr0->get(keyport2));
+    auto remoteCObjArray =
+        std::dynamic_pointer_cast<CacheableObjectArray>(regPtr0->get(keyport2));
 
     LOGINFO(
         "Client-2 PdxTests::PdxType GET OP Done.. Received CObjeArray Size = "
@@ -3185,8 +3196,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
     // Compare local vs remote CacheableObjectArray elements.
     bool isEqual = true;
     for (int i = 0; i < remoteCObjArray->size(); i++) {
-      Address* rAddr1 = dynamic_cast<Address*>(remoteCObjArray->at(i).ptr());
-      Address* lAddr1 = dynamic_cast<Address*>(m_localObjectArray->at(i).ptr());
+      Address* rAddr1 = dynamic_cast<Address*>(remoteCObjArray->at(i).get());
+      Address* lAddr1 = dynamic_cast<Address*>(m_localObjectArray->at(i).get());
       LOGINFO("Remote Address:: %d th element  AptNum=%d  street=%s  city=%s ",
               i, rAddr1->getAptNum(), rAddr1->getStreet(), rAddr1->getCity());
       if (!rAddr1->equals(*lAddr1)) {
@@ -3197,18 +3208,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
     ASSERT(isEqual == true,
            "PdxTests StepFour: CacheableObjectArray elements are not matched");
 
-    PdxTests::PdxTypePtr localPdxptr(new PdxTests::PdxType());
+    auto localPdxptr = std::make_shared<PdxTests::PdxType>();
 
     CacheableKeyPtr keyport = CacheableKey::create(1);
     LOG("Client-2 PdxTests::PdxType GET OP Start....");
     PdxTests::PdxTypePtr remotePdxptr =
-        dynCast<PdxTests::PdxTypePtr>(regPtr0->get(keyport));
+        std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr0->get(keyport));
     LOG("Client-2 PdxTests::PdxType GET OP Done....");
 
     //
-    PdxTests::PdxType* localPdx = localPdxptr.ptr();
+    PdxTests::PdxType* localPdx = localPdxptr.get();
     PdxTests::PdxType* remotePdx =
-        dynamic_cast<PdxTests::PdxType*>(remotePdxptr.ptr());
+        dynamic_cast<PdxTests::PdxType*>(remotePdxptr.get());
 
     // ToDo open this equals check
     LOGINFO("testThinClientPdxTests:StepFour before equal() check");
@@ -3226,17 +3237,15 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
             remotePdx->getArrayOfByteArrays()[1][1]);
 
     CacheableInt32* element =
-        dynamic_cast<CacheableInt32*>(remotePdx->getArrayList()->at(0).ptr());
+        dynamic_cast<CacheableInt32*>(remotePdx->getArrayList()->at(0).get());
     LOGINFO("GET OP Result_1233: Array List element Value =%d",
             element->value());
 
-    CacheableInt32* remoteKey = NULL;
-    CacheableString* remoteVal = NULL;
-
-    for (CacheableHashTable::Iterator iter = remotePdx->getHashTable()->begin();
-         iter != remotePdx->getHashTable()->end(); ++iter) {
-      remoteKey = dynamic_cast<CacheableInt32*>(iter.first().ptr());
-      remoteVal = dynamic_cast<CacheableString*>(iter.second().ptr());
+    for (const auto& iter : *(remotePdx->getHashTable())) {
+      const auto remoteKey =
+          std::dynamic_pointer_cast<CacheableInt32>(iter.first);
+      const auto remoteVal =
+          std::dynamic_pointer_cast<CacheableString>(iter.second);
       LOGINFO("HashTable Key Val = %d", remoteKey->value());
       LOGINFO("HashTable Val = %s", remoteVal->asChar());
       //(*iter1).first.value();
@@ -3244,7 +3253,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
     }
 
     // Now get values for key3 and 4 to asset against stats of this client
-    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.ptr()));
+    const auto lregPtr = std::dynamic_pointer_cast<LocalRegion>(regPtr0);
     LOGINFO("PdxSerializations = %d ",
             lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
     LOGINFO("PdxDeSerializations = %d ",
@@ -3257,10 +3266,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
 
     CacheableKeyPtr keyport3 = CacheableKey::create(3);
     CacheableKeyPtr keyport4 = CacheableKey::create(4);
-    CacheableInt32Ptr int32Ptr =
-        dynCast<CacheableInt32Ptr>(regPtr0->get(keyport3));
-    CacheableInt64Ptr int64Ptr =
-        dynCast<CacheableInt64Ptr>(regPtr0->get(keyport4));
+    auto int32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr0->get(keyport3));
+    auto int64Ptr =
+        std::dynamic_pointer_cast<CacheableInt64>(regPtr0->get(keyport4));
     ASSERT(int32Ptr->value() ==
                lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
            "Total pdxDeserializations should be equal to Total "
@@ -3945,96 +3954,95 @@ void enableWeakHashMapC1BMR2() { CALL_TASK(SetWeakHashMapToTrueC1BMR2) }
 void enableWeakHashMapC2BMR2() { CALL_TASK(SetWeakHashMapToTrueC2BMR2) }
 
 void disableWeakHashMapC1BMR2() { CALL_TASK(setWeakHashMapToFlaseC1BMR2) }
-void disableWeakHashMapC2BMR2() { CALL_TASK(SetWeakHashMapToFalseC2BMR2) }
+void disableWeakHashMapC2BMR2(){CALL_TASK(SetWeakHashMapToFalseC2BMR2)}
 
-DUNIT_MAIN
+DUNIT_MAIN {
+  { runPdxLongRunningClientTest(); }
+  // NON PDX UnitTest for Ticket#866 on NC OR SR#13306117704. Set client name
+  // via native client API
+  testBug866();
+
+  runPdxTestForCharTypes();
+
+  // PUT-GET Test with values of type CacheableObjectArray and PdxType object
+  runPdxPutGetTest();
+
+  // PdxDistOps-PdxTests::PdxType PUT/GET Test across clients
+  { runPdxDistOps(); }
+
+  // BasicMergeOps
   {
-    { runPdxLongRunningClientTest(); }
-    // NON PDX UnitTest for Ticket#866 on NC OR SR#13306117704. Set client name
-    // via native client API
-    testBug866();
-
-    runPdxTestForCharTypes();
-
-    // PUT-GET Test with values of type CacheableObjectArray and PdxType object
-    runPdxPutGetTest();
-
-    // PdxDistOps-PdxTests::PdxType PUT/GET Test across clients
-    { runPdxDistOps(); }
-
-    // BasicMergeOps
-    {
-      enableWeakHashMapC1BM();
-      enableWeakHashMapC2BM();
-      runBasicMergeOps();
-    }
-
-    // BasicMergeOps2
-    {
-      enableWeakHashMapC1BM2();
-      enableWeakHashMapC2BM2();
-      runBasicMergeOps2();
-    }
-
-    // BasicMergeOps3
-    {
-      enableWeakHashMapC1BM3();
-      enableWeakHashMapC2BM3();
-      runBasicMergeOps3();
-    }
-
-    // BasicMergeOpsR1
-    {
-      enableWeakHashMapC1BMR1();
-      enableWeakHashMapC2BMR1();
-      runBasicMergeOpsR1();
-    }
-
-    // BasicMergeOpsR2
-    {
-      enableWeakHashMapC1BMR2();
-      enableWeakHashMapC2BMR2();
-      runBasicMergeOpsR2();
-    }
-
-    // JavaInteroperableOps
-    { runJavaInteroperableOps(); }
-
-    // PDXReaderWriterInvalidUsage
-    {
-        // disable see bug 999 for more details.
-        // testReaderWriterInvalidUsage();
-    }
-
-    // Test LinkedList
-    {
-      runJavaInterOpsUsingLinkedList();
-    }
-
-    // NestedPdxOps
-    { runNestedPdxOps(); }
-
-    // MixedVersionNestedPdxOps
-    { runNestedPdxOpsWithVersioning(); }
-
-    // Pdxobject In Geode Serializable Ops
-    //{
-    //  runPdxInGFSOps();
-    //}
-
-    {
-      enableWeakHashMapC1();
-      enableWeakHashMapC2();
-      runPdxIgnoreUnreadFieldTest();
-    }
-
-    // PdxMetadataCheckTest
-    { runPdxMetadataCheckTest(); }
-
-    // PdxBankTest
-    { runPdxBankTest(); }
-
-    // Polymorphic-multilevel inheritance
-    { testPolymorphicUseCase(); }
+    enableWeakHashMapC1BM();
+    enableWeakHashMapC2BM();
+    runBasicMergeOps();
   }
+
+  // BasicMergeOps2
+  {
+    enableWeakHashMapC1BM2();
+    enableWeakHashMapC2BM2();
+    runBasicMergeOps2();
+  }
+
+  // BasicMergeOps3
+  {
+    enableWeakHashMapC1BM3();
+    enableWeakHashMapC2BM3();
+    runBasicMergeOps3();
+  }
+
+  // BasicMergeOpsR1
+  {
+    enableWeakHashMapC1BMR1();
+    enableWeakHashMapC2BMR1();
+    runBasicMergeOpsR1();
+  }
+
+  // BasicMergeOpsR2
+  {
+    enableWeakHashMapC1BMR2();
+    enableWeakHashMapC2BMR2();
+    runBasicMergeOpsR2();
+  }
+
+  // JavaInteroperableOps
+  { runJavaInteroperableOps(); }
+
+  // PDXReaderWriterInvalidUsage
+  {
+      // disable see bug 999 for more details.
+      // testReaderWriterInvalidUsage();
+  }
+
+  // Test LinkedList
+  {
+    runJavaInterOpsUsingLinkedList();
+  }
+
+  // NestedPdxOps
+  { runNestedPdxOps(); }
+
+  // MixedVersionNestedPdxOps
+  { runNestedPdxOpsWithVersioning(); }
+
+  // Pdxobject In Geode Serializable Ops
+  //{
+  //  runPdxInGFSOps();
+  //}
+
+  {
+    enableWeakHashMapC1();
+    enableWeakHashMapC2();
+    runPdxIgnoreUnreadFieldTest();
+  }
+
+  // PdxMetadataCheckTest
+  { runPdxMetadataCheckTest(); }
+
+  // PdxBankTest
+  { runPdxBankTest(); }
+
+  // Polymorphic-multilevel inheritance
+  { testPolymorphicUseCase(); }
+}
 END_MAIN

@@ -24,7 +24,7 @@
 #include "ThinClientCacheDistributionManager.hpp"
 #include "ReadWriteLock.hpp"
 #include <geode/Serializable.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 //#include <statistics/HostStatSampler.hpp>
 
 #include "NonCopyable.hpp"
@@ -40,22 +40,9 @@ namespace apache {
 namespace geode {
 namespace client {
 class CacheImpl;
-/* adongre
- * CID 28724: Other violation (MISSING_COPY)
- * Class "apache::geode::client::AdminRegion" owns resources that are managed in
- * its
- * constructor and destructor but has no user-written copy constructor.
- *
- * CID 28710: Other violation (MISSING_ASSIGN)
- * Class "apache::geode::client::AdminRegion" owns resources that are managed in
- * its
- * constructor and destructor but has no user-written assignment operator.
- *
- * FIX : Make the class noncopyabl3
- */
-class AdminRegion : public SharedBase,
-                    private NonCopyable,
-                    private NonAssignable {
+class AdminRegion : private NonCopyable,
+                    private NonAssignable,
+                    public std::enable_shared_from_this<AdminRegion> {
  private:
   ThinClientBaseDM* m_distMngr;
   std::string m_fullPath;
@@ -67,18 +54,28 @@ class AdminRegion : public SharedBase,
                        const CacheablePtr& valuePtr);
   TcrConnectionManager* getConnectionManager();
 
+  AdminRegion()
+      : m_distMngr(nullptr),
+        m_fullPath("/__ADMIN_CLIENT_HEALTH_MONITORING__"),
+        m_connectionMgr(nullptr),
+        m_destroyPending(false) {}
+
+  ~AdminRegion();
+
+  FRIEND_STD_SHARED_PTR(AdminRegion)
+
  public:
+  static std::shared_ptr<AdminRegion> create(
+      CacheImpl* cache, ThinClientBaseDM* distMan = nullptr);
   ACE_RW_Thread_Mutex& getRWLock();
   const bool& isDestroyed();
   void close();
   void init();
   void put(const CacheableKeyPtr& keyPtr, const CacheablePtr& valuePtr);
-  AdminRegion(CacheImpl* cache, ThinClientBaseDM* distMan = NULL);
-  ~AdminRegion();
   friend class apache::geode::statistics::HostStatSampler;
 };
 
-typedef SharedPtr<AdminRegion> AdminRegionPtr;
+typedef std::shared_ptr<AdminRegion> AdminRegionPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

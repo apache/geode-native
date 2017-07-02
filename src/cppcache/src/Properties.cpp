@@ -42,7 +42,7 @@ class ACE_Equal_To<apache::geode::client::CacheableKeyPtr> {
  public:
   int operator()(const apache::geode::client::CacheableKeyPtr& lhs,
                  const apache::geode::client::CacheableKeyPtr& rhs) const {
-    return (*lhs.ptr() == *rhs.ptr());
+    return (*lhs.get() == *rhs.get());
   }
 };
 ACE_END_VERSIONED_NAMESPACE_DECL
@@ -79,15 +79,15 @@ Properties::Properties() : Serializable() {
   MAP->open();
 }
 Properties::~Properties() {
-  if (m_map != NULL) {
+  if (m_map != nullptr) {
     delete MAP;
-    m_map = NULL;
+    m_map = nullptr;
   }
 }
 
 /** this return value must be stored in a CacheableStringPtr. */
 CacheableStringPtr Properties::find(const char* key) {
-  if (key == NULL) {
+  if (key == nullptr) {
     throw NullPointerException("Properties::find: Null key given.");
   }
   CacheableStringPtr keyptr = CacheableString::create(key);
@@ -95,39 +95,40 @@ CacheableStringPtr Properties::find(const char* key) {
   CacheablePtr value;
   int status = MAP->find(keyptr, value);
   if (status != 0) {
-    return NULLPTR;
+    return nullptr;
   }
-  if (value == NULLPTR) {
-    return NULLPTR;
+  if (value == nullptr) {
+    return nullptr;
   }
   return value->toString();
 }
 
 CacheablePtr Properties::find(const CacheableKeyPtr& key) {
-  if (key == NULLPTR) {
+  if (key == nullptr) {
     throw NullPointerException("Properties::find: Null key given.");
   }
   CacheableKeyCacheableMapGuard guard(MAP->mutex());
   CacheablePtr value;
   int status = MAP->find(key, value);
   if (status != 0) {
-    return NULLPTR;
+    return nullptr;
   }
   return value;
 }
 
 void Properties::insert(const char* key, const char* value) {
-  if (key == NULL) {
+  if (key == nullptr) {
     throw NullPointerException("Properties::insert: Null key given.");
   }
   CacheableStringPtr keyptr = CacheableString::create(key);
-  CacheableStringPtr valptr = (value == NULL ? CacheableString::create("")
-                                             : CacheableString::create(value));
+  CacheableStringPtr valptr =
+      (value == nullptr ? CacheableString::create("")
+                        : CacheableString::create(value));
   MAP->rebind(keyptr, valptr);
 }
 
 void Properties::insert(const char* key, const int value) {
-  if (key == NULL) {
+  if (key == nullptr) {
     throw NullPointerException("Properties::insert: Null key given.");
   }
   char temp[64];
@@ -138,14 +139,14 @@ void Properties::insert(const char* key, const int value) {
 }
 
 void Properties::insert(const CacheableKeyPtr& key, const CacheablePtr& value) {
-  if (key == NULLPTR) {
+  if (key == nullptr) {
     throw NullPointerException("Properties::insert: Null key given.");
   }
   MAP->rebind(key, value);
 }
 
 void Properties::remove(const char* key) {
-  if (key == NULL) {
+  if (key == nullptr) {
     throw NullPointerException("Properties::remove: Null key given.");
   }
   CacheableStringPtr keyptr = CacheableString::create(key);
@@ -153,7 +154,7 @@ void Properties::remove(const char* key) {
 }
 
 void Properties::remove(const CacheableKeyPtr& key) {
-  if (key == NULLPTR) {
+  if (key == nullptr) {
     throw NullPointerException("Properties::remove: Null key given.");
   }
   MAP->unbind(key);
@@ -175,7 +176,7 @@ void Properties::foreach (Visitor& visitor) const {
 }
 
 void Properties::addAll(const PropertiesPtr& other) {
-  if (other == NULLPTR) return;
+  if (other == nullptr) return;
 
   class Copier : public Visitor {
     Properties& m_lhs;
@@ -191,7 +192,7 @@ void Properties::addAll(const PropertiesPtr& other) {
 }
 
 void Properties::load(const char* fileName) {
-  GF_R_ASSERT(fileName != NULL);
+  GF_R_ASSERT(fileName != nullptr);
   PropertiesFile pf(*this);
   pf.readFile(fileName);
 }
@@ -201,7 +202,7 @@ PropertiesFile::PropertiesFile(Properties& props) : m_props(props) {}
 void PropertiesFile::readFile(const std::string& fileName) {
   char buf[8192];
   FILE* fp = fopen(fileName.c_str(), "r");
-  if (fp != NULL) {
+  if (fp != nullptr) {
     size_t len = 0;
     while ((len = fread(buf, 1, 8192, fp)) != 0) {
       /* adongre
@@ -211,7 +212,7 @@ void PropertiesFile::readFile(const std::string& fileName) {
       buf[len] = '\0';
       char* tmp = buf;
       char* line = 0;
-      while ((line = nextBufferLine(&tmp, buf, len)) != NULL) {
+      while ((line = nextBufferLine(&tmp, buf, len)) != nullptr) {
         parseLine(line);
       }
     }
@@ -290,15 +291,15 @@ void Properties::toData(DataOutput& output) const {
   while (iter != MAP->end()) {
     // changed
     CacheableString* csPtr =
-        dynamic_cast<CacheableString*>(((*iter).ext_id_).ptr());
-    if (csPtr == NULL) {
+        dynamic_cast<CacheableString*>(((*iter).ext_id_).get());
+    if (csPtr == nullptr) {
       output.writeObject((*iter).ext_id_);  // changed
     } else {
       output.writeNativeString(csPtr->asChar());
     }
 
-    csPtr = dynamic_cast<CacheableString*>(((*iter).int_id_).ptr());
-    if (csPtr == NULL) {
+    csPtr = dynamic_cast<CacheableString*>(((*iter).int_id_).get());
+    if (csPtr == nullptr) {
       output.writeObject((*iter).int_id_);  // changed
     } else {
       output.writeNativeString(csPtr->asChar());

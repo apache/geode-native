@@ -65,7 +65,7 @@ void ThinClientDistributionManager::destroy(bool keepAlive) {
     m_endpoints[m_activeEndpoint]->unregisterDM(m_clientNotification, this);
   }
   LOGFINEST("ThinClientDistributionManager:: starting destroy for region %s",
-            (m_region != NULL ? m_region->getFullPath() : "(null)"));
+            (m_region != nullptr ? m_region->getFullPath() : "(null)"));
   destroyAction();
   // stop the chunk processing thread
   stopChunkProcessor();
@@ -83,7 +83,7 @@ void ThinClientDistributionManager::destroy(bool keepAlive) {
   }
   m_connManager.disconnect(this, m_endpoints, keepAlive);
   LOGFINEST("ThinClientDistributionManager: completed destroy for region %s",
-            (m_region != NULL ? m_region->getFullPath() : "(null)"));
+            (m_region != nullptr ? m_region->getFullPath() : "(null)"));
   m_initDone = false;
 }
 
@@ -204,7 +204,7 @@ void ThinClientDistributionManager::failover() {
   std::vector<int> randIndex;
   bool doRand = true;
   LOGFINEST("DM: invoked select endpoint via failover thread for region %s",
-            (m_region != NULL ? m_region->getFullPath() : "(null)"));
+            (m_region != nullptr ? m_region->getFullPath() : "(null)"));
   selectEndpoint(randIndex, doRand);
 }
 
@@ -311,7 +311,7 @@ PropertiesPtr ThinClientDistributionManager::getCredentials(TcrEndpoint* ep) {
 
   AuthInitializePtr authInitialize = DistributedSystem::m_impl->getAuthLoader();
 
-  if (authInitialize != NULLPTR) {
+  if (authInitialize != nullptr) {
     LOGFINER(
         "ThinClientDistributionManager::getCredentials: acquired handle to "
         "authLoader, "
@@ -331,7 +331,7 @@ PropertiesPtr ThinClientDistributionManager::getCredentials(TcrEndpoint* ep) {
         tmpSecurityProperties, /*tmpEndpoint*/ ep->name().c_str());
     return tmpAuthIniSecurityProperties;
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 GfErrType ThinClientDistributionManager::sendUserCredentials(

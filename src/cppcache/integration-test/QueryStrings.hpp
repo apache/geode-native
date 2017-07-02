@@ -123,9 +123,9 @@ const QueryStrings resultsetQueries[RS_ARRAY_SIZE] = {
 
     // 9 idx
     ,
-    QRY(constants, "select distinct * from /Portfolios where ID = NULL"),
+    QRY(constants, "select distinct * from /Portfolios where ID = nullptr"),
     QRY(constants, "select distinct * from /Portfolios where ID = UNDEFINED"),
-    QRY(constants, "select distinct * from /Portfolios where NULL"),
+    QRY(constants, "select distinct * from /Portfolios where nullptr"),
     QRY(constants, "select distinct * from /Portfolios where UNDEFINED"),
     QRY(constants, "select distinct * from /Portfolios where TRUE"),
     QRY(constants, "select distinct * from /Portfolios where 1=1"),
@@ -153,7 +153,7 @@ const QueryStrings resultsetQueries[RS_ARRAY_SIZE] = {
          "where element(select distinct * from /Portfolios.keySet p_k "
          "where p_k = this.key ) = 'port1-3' and this.value.status = "
          "'inactive'"),
-    QRY(functions, "select distinct nvl(NULL, 'foundNull') from /Portfolios")
+    QRY(functions, "select distinct nvl(nullptr, 'foundNull') from /Portfolios")
     //, QRY(functions   , "select distinct nvl('notNull', 'foundNull')
     //= 'notNull' from /Portfolios" )
     ,
@@ -223,7 +223,7 @@ const QueryStrings resultsetQueries[RS_ARRAY_SIZE] = {
         "remove('5')!= null")
     //, QRY(unsupported, "element(select distinct * from /Portfolios
     // where ID =1).status")
-    //, QRY(unsupported, "select distinct * from NULL")
+    //, QRY(unsupported, "select distinct * from nullptr")
     //, QRY(unsupported, "select distinct * from UNDEFINED")
 
     ,
@@ -313,7 +313,7 @@ const int constantExpectedRowsPQRS[6] = {5, 7, 8, 10, 11, 12};
 
 const QueryStrings resultsetQueriesOPL[RSOPL_ARRAY_SIZE] =
     {  // queries returning result sets via ObjectPartList
-        // 0 idx
+       // 0 idx
         QRY(singleRegion, "select * from /Portfolios2"),
         QRY(singleRegion, "select * from /Portfolios2 limit 5"),
         QRY(singleRegion, "select count(*) from /Portfolios2"),
@@ -363,7 +363,7 @@ const QueryStrings structsetQueries[SS_ARRAY_SIZE] = {
     // 5 idx
     ,
     QRY(constants,
-        "select distinct id, positions from /Portfolios where ID = NULL"),
+        "select distinct id, positions from /Portfolios where ID = nullptr"),
     QRY(constants,
         "select distinct pkid, getPk() from /Portfolios where ID = UNDEFINED"),
     QRY(constants,
@@ -401,7 +401,8 @@ const QueryStrings structsetQueries[SS_ARRAY_SIZE] = {
          "where element(select distinct p.ID, p.status, p.getType from "
          "/Portfolios p where p.ID = oP.ID).status = 'inactive'"),
     QRY(functions,
-        "select distinct nvl(NULL, 'foundNull')='foundNull', 'dummy Col' from "
+        "select distinct nvl(nullptr, 'foundNull')='foundNull', 'dummy Col' "
+        "from "
         "/Portfolios"),
     QRY(functions,
         "select distinct nvl('notNull', 'foundNull') as NtNul , 'dummy Col' as "
@@ -535,7 +536,7 @@ const QueryStrings structsetParamQueries[SSP_ARRAY_SIZE] = {
          "where element(select distinct p.ID, p.status, p.getType from "
          "/Portfolios p where p.ID = oP.ID).status = $1"),
     QRY(functions,
-        "select distinct nvl(NULL, $1)=$2, 'dummy Col' from /Portfolios"),
+        "select distinct nvl(nullptr, $1)=$2, 'dummy Col' from /Portfolios"),
     QRY(functions,
         "select distinct nvl($1, $2) as NtNul , $3 as Dumbo from /Portfolios"),
     QRY(functions,
@@ -610,17 +611,22 @@ const int constantExpectedRowsSSPQ[10] = {2, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 
 const QueryStrings regionQueries[RQ_ARRAY_SIZE] =
     {  // intended to be run on the /Portfolios region.query API
-        // 0 idx
-        QRY(regionQuery, "ID = 2"), QRY(regionQuery, "ID != 2"),
-        QRY(regionQuery, "ID = NULL"), QRY(unsupported, "ID = UNDEFINED")
+       // 0 idx
+        QRY(regionQuery, "ID = 2"),
+        QRY(regionQuery, "ID != 2"),
+        QRY(regionQuery, "ID = nullptr"),
+        QRY(unsupported, "ID = UNDEFINED")
         // 4 idx
         ,
-        QRY(regionQuery, "NULL"), QRY(regionQuery, "UNDEFINED"),
+        QRY(regionQuery, "nullptr"),
+        QRY(regionQuery, "UNDEFINED"),
         QRY(regionQuery, "UNDEFINED = 1"),
         QRY(regionQuery, "IS_UNDEFINED(UNDEFINED)"),
         QRY(regionQuery, "IS_DEFINED(TRUE)"),
-        QRY(regionQuery, "IS_UNDEFINED(ID)"), QRY(regionQuery, "TRUE"),
-        QRY(regionQuery, "FALSE"), QRY(regionQuery, "1=1"),
+        QRY(regionQuery, "IS_UNDEFINED(ID)"),
+        QRY(regionQuery, "TRUE"),
+        QRY(regionQuery, "FALSE"),
+        QRY(regionQuery, "1=1"),
         QRY(regionQuery, "'a' <> 'a'")
         // 14 idx
         ,
@@ -663,9 +669,9 @@ const QueryStrings cqResultsetQueries[CQRS_ARRAY_SIZE] = {
 
     // 3 idx
     ,
-    QRY(constants, "select  * from /Portfolios where ID = NULL"),
+    QRY(constants, "select  * from /Portfolios where ID = nullptr"),
     QRY(constants, "select  * from /Portfolios where ID = UNDEFINED"),
-    QRY(constants, "select  * from /Portfolios where NULL"),
+    QRY(constants, "select  * from /Portfolios where nullptr"),
     QRY(constants, "select  * from /Portfolios where UNDEFINED"),
     QRY(constants, "select  * from /Portfolios where TRUE"),
     QRY(constants, "select  * from /Portfolios where 1=1"),
@@ -715,7 +721,7 @@ const QueryStrings cqResultsetQueries[CQRS_ARRAY_SIZE] = {
     //, QRY(unsupported, "element(select  * from /Portfolios where ID
     //=1).status")
     ,
-    QRY(unsupported, "select  * from NULL"),
+    QRY(unsupported, "select  * from nullptr"),
     QRY(unsupported, "select  * from UNDEFINED"),
     LQRY(misc,
          "select  * from /Portfolios WHERE NOT (select  * from "

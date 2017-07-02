@@ -95,7 +95,7 @@ class TESTOBJECT_EXPORT DeltaTestObj : public DeltaTestImpl {
   }
 };
 
-typedef apache::geode::client::SharedPtr<DeltaTestObj> DeltaTestObjPtr;
-}
+typedef std::shared_ptr<DeltaTestObj> DeltaTestObjPtr;
+}  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_DELTATESTOBJ_H_

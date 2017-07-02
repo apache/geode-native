@@ -68,8 +68,8 @@ void DistributedSystemImpl::releaseDisconnectLock() {
 int DistributedSystemImpl::currentInstances() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
 
-  if (DistributedSystem::getInstance() != NULLPTR &&
-      DistributedSystem::getInstance()->getSystemProperties() != NULL &&
+  if (DistributedSystem::getInstance() != nullptr &&
+      DistributedSystem::getInstance()->getSystemProperties() != nullptr &&
       !DistributedSystem::getInstance()
            ->getSystemProperties()
            ->isAppDomainEnabled()) {
@@ -82,7 +82,7 @@ int DistributedSystemImpl::currentInstances() {
 void DistributedSystemImpl::connectInstance() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
 
-  if (DistributedSystem::getInstance()->getSystemProperties() != NULL &&
+  if (DistributedSystem::getInstance()->getSystemProperties() != nullptr &&
       DistributedSystem::getInstance()
           ->getSystemProperties()
           ->isAppDomainEnabled()) {
@@ -93,7 +93,7 @@ void DistributedSystemImpl::connectInstance() {
 void DistributedSystemImpl::disconnectInstance() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
 
-  if (DistributedSystem::getInstance()->getSystemProperties() != NULL &&
+  if (DistributedSystem::getInstance()->getSystemProperties() != nullptr &&
       DistributedSystem::getInstance()
           ->getSystemProperties()
           ->isAppDomainEnabled()) {

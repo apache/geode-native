@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_FUNCTIONSERVICE_H_
-#define GEODE_FUNCTIONSERVICE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,10 +15,10 @@
  * limitations under the License.
  */
 
-/*
- * The specification of function behaviors is found in the corresponding
- * .cpp file.
- */
+#pragma once
+
+#ifndef GEODE_FUNCTIONSERVICE_H_
+#define GEODE_FUNCTIONSERVICE_H_
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
@@ -33,23 +28,16 @@
  * @file
  */
 
-// macros to resolve ambiguity between PoolPtr and RegionServicePtr
-#define GF_TYPE_IS_POOL(T)                          \
-  apache::geode::client::TypeHelper::SuperSubclass< \
-      apache::geode::client::Pool, T>::result
-#define GF_TYPE_IS_POOL_TYPE(T) \
-  apache::geode::client::TypeHelper::YesNoType<GF_TYPE_IS_POOL(T)>::value
-
 namespace apache {
 namespace geode {
 namespace client {
+
 /**
  * @class FunctionService FunctionService.hpp
  * entry point for function execution
  * @see Execution
  */
-
-class CPPCACHE_EXPORT FunctionService : public SharedBase {
+class CPPCACHE_EXPORT FunctionService {
  public:
   /**
    * Returns a {@link Execution} object that can be used to execute a data
@@ -67,7 +55,7 @@ class CPPCACHE_EXPORT FunctionService : public SharedBase {
    *
    * @return Execution
    * @throws NullPointerException
-   *                 if the region passed in is NULLPTR
+   *                 if the region passed in is nullptr
    */
   static ExecutionPtr onRegion(RegionPtr region);
 
@@ -80,7 +68,7 @@ class CPPCACHE_EXPORT FunctionService : public SharedBase {
    * @param pool from which to chose a server for execution
    * @return Execution
    * @throws NullPointerException
-   *                 if Pool instance passed in is NULLPTR
+   *                 if Pool instance passed in is nullptr
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
@@ -98,17 +86,12 @@ class CPPCACHE_EXPORT FunctionService : public SharedBase {
    *        cache from which to chose a server for execution
    * @return Execution
    * @throws NullPointerException
-   *                 if Pool instance passed in is NULLPTR
+   *                 if Pool instance passed in is nullptr
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
   inline static ExecutionPtr onServer(const RegionServicePtr& cache) {
     return onServerWithCache(cache);
-  }
-
-  template <typename T>
-  static ExecutionPtr onServer(const SharedPtr<T>& poolOrCache) {
-    return onServer(poolOrCache, GF_TYPE_IS_POOL_TYPE(T));
   }
 
   /**
@@ -120,7 +103,7 @@ class CPPCACHE_EXPORT FunctionService : public SharedBase {
    * @param pool the set of servers to execute the function
    * @return Execution
    * @throws NullPointerException
-   *                 if Pool instance passed in is NULLPTR
+   *                 if Pool instance passed in is nullptr
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
@@ -129,26 +112,21 @@ class CPPCACHE_EXPORT FunctionService : public SharedBase {
   }
 
   /**
-  * Returns a {@link Execution} object that can be used to execute a data
-  * independent function on all the servers where Cache is attached.
-  * If one of the servers goes down while dispatching or executing the function
-  * on the server, an Exception will be thrown.
-  *
-  * @param cache
-  *        the {@link Cache} where function need to execute.
-  * @return Execution
-  * @throws NullPointerException
-  *                 if Pool instance passed in is NULLPTR
-  * @throws UnsupportedOperationException
-  *                 if Pool is in multiusersecure Mode
-  */
+   * Returns a {@link Execution} object that can be used to execute a data
+   * independent function on all the servers where Cache is attached.
+   * If one of the servers goes down while dispatching or executing the function
+   * on the server, an Exception will be thrown.
+   *
+   * @param cache
+   *        the {@link Cache} where function need to execute.
+   * @return Execution
+   * @throws NullPointerException
+   *                 if Pool instance passed in is nullptr
+   * @throws UnsupportedOperationException
+   *                 if Pool is in multiusersecure Mode
+   */
   inline static ExecutionPtr onServers(const RegionServicePtr& cache) {
     return onServersWithCache(cache);
-  }
-
-  template <typename T>
-  static ExecutionPtr onServers(const SharedPtr<T>& poolOrCache) {
-    return onServers(poolOrCache, GF_TYPE_IS_POOL_TYPE(T));
   }
 
   virtual ~FunctionService() {}
@@ -161,30 +139,6 @@ class CPPCACHE_EXPORT FunctionService : public SharedBase {
   static ExecutionPtr onServersWithPool(const PoolPtr& pool);
 
   static ExecutionPtr onServersWithCache(const RegionServicePtr& cache);
-
-  template <typename T>
-  static ExecutionPtr onServer(const SharedPtr<T>& pool,
-                               TypeHelper::yes_type isPool) {
-    return onServerWithPool(pool);
-  }
-
-  template <typename T>
-  static ExecutionPtr onServer(const SharedPtr<T>& cache,
-                               TypeHelper::no_type isPool) {
-    return onServerWithCache(cache);
-  }
-
-  template <typename T>
-  static ExecutionPtr onServers(const SharedPtr<T>& pool,
-                                TypeHelper::yes_type isPool) {
-    return onServersWithPool(pool);
-  }
-
-  template <typename T>
-  static ExecutionPtr onServers(const SharedPtr<T>& cache,
-                                TypeHelper::no_type isPool) {
-    return onServersWithCache(cache);
-  }
 };
 }  // namespace client
 }  // namespace geode

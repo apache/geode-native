@@ -27,7 +27,7 @@
  */
 
 #include <geode/CacheTransactionManager.hpp>
-#include <geode/HashSetOfSharedBase.hpp>
+
 #include "TXCommitMessage.hpp"
 #include <geode/Log.hpp>
 #include "SuspendedTxExpiryHandler.hpp"
@@ -60,19 +60,14 @@ class CacheTransactionManagerImpl
 
   virtual TransactionIdPtr getTransactionId();
 
-  //    virtual void setWriter(TransactionWriterPtr writer);
-  //    virtual TransactionWriterPtr getWriter();
 
-  //    virtual void addListener(TransactionListenerPtr aListener);
-  //    virtual void removeListener(TransactionListenerPtr aListener);
-
-  inline static int32_t hasher(const SharedBasePtr& p) {
-    return static_cast<int32_t>(reinterpret_cast<intptr_t>(p.ptr()));
-  }
-
-  inline static bool equal_to(const SharedBasePtr& x, const SharedBasePtr& y) {
-    return x.ptr() == y.ptr();
-  }
+//  inline static int32_t hasher(const SharedBasePtr& p) {
+//    return static_cast<int32_t>(reinterpret_cast<intptr_t>(p.get()));
+//  }
+//
+//  inline static bool equal_to(const SharedBasePtr& x, const SharedBasePtr& y) {
+//    return x.get() == y.get();
+//  }
   TXState* getSuspendedTx(int32_t txId);
 
  protected:
@@ -81,14 +76,7 @@ class CacheTransactionManagerImpl
 
  private:
   Cache* m_cache;
-  // TransactionListenerPtr m_listener;
 
-  //    void noteCommitFailure(TXState* txState, const TXCommitMessagePtr&
-  //    commitMessage);
-  //    void noteCommitSuccess(TXState* txState, const TXCommitMessagePtr&
-  //    commitMessage);
-  //    void noteRollbackSuccess(TXState* txState, const TXCommitMessagePtr&
-  //    commitMessage);
   void resumeTxUsingTxState(TXState* txState, bool cancelExpiryTask = true);
   GfErrType rollback(TXState* txState, bool callListener);
   void addSuspendedTx(int32_t txId, TXState* txState);

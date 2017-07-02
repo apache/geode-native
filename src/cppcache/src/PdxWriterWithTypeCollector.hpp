@@ -204,7 +204,7 @@ class PdxWriterWithTypeCollector : public PdxLocalWriter {
    *Write a string array to the PdxWriter.
    *@param fieldName The name of the field associated with the value.
    *@param value The string array value to write
-  */
+   */
   virtual PdxWriterPtr writeStringArray(const char* fieldName, char** array,
                                         int length);
 
@@ -223,7 +223,8 @@ class PdxWriterWithTypeCollector : public PdxLocalWriter {
 
   virtual PdxWriterPtr writeUnreadFields(PdxUnreadFieldsPtr unread);
 };
-typedef SharedPtr<PdxWriterWithTypeCollector> PdxWriterWithTypeCollectorPtr;
+typedef std::shared_ptr<PdxWriterWithTypeCollector>
+    PdxWriterWithTypeCollectorPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

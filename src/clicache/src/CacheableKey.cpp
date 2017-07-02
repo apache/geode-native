@@ -29,10 +29,19 @@ namespace Apache
     namespace Client
     {
 
+      namespace native = apache::geode::client;
+
      // generic<class TKey>
       System::Int32 CacheableKey::GetHashCode()
       {
-        return static_cast<apache::geode::client::CacheableKey*>(NativePtr())->hashcode();
+        try
+        {
+          return static_cast<native::CacheableKey*>(m_nativeptr->get())->hashcode();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
      // generic<class TKey>
@@ -41,22 +50,23 @@ namespace Apache
         if (other == nullptr || other->ClassId != ClassId) {
           return false;
         }
-        return static_cast<apache::geode::client::CacheableKey*>(NativePtr())->operator==(
-          *static_cast<apache::geode::client::CacheableKey*>(
-            ((Client::CacheableKey^)other)->NativePtr()));
+        try
+        {
+          return static_cast<native::CacheableKey*>(m_nativeptr->get())->operator==(
+            *static_cast<native::CacheableKey*>(
+            ((Client::CacheableKey^)other)->m_nativeptr->get()));
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+          GC::KeepAlive(((Client::CacheableKey^)other)->m_nativeptr);
+        }
       }
 
       //generic<class TKey>
       bool CacheableKey::Equals(Object^ obj)
       {
-        CacheableKey^ otherKey =
-          dynamic_cast<CacheableKey^>(obj);
-
-        if (otherKey != nullptr) {
-          return static_cast<apache::geode::client::CacheableKey*>(NativePtr())->operator==(
-            *static_cast<apache::geode::client::CacheableKey*>(otherKey->NativePtr()));
-        }
-        return false;
+        return Equals(dynamic_cast<CacheableKey^>(obj));
       }
 
       //generic<class TKey>
@@ -108,11 +118,10 @@ namespace Apache
       }
 
       //generic<class TKey>
-      CacheableKey::operator CacheableKey^ (String^ value)
+      CacheableKey::operator CacheableKey ^ (String^ value)
       {
         return dynamic_cast<CacheableKey^>(CacheableString::Create(value));
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
-} //namespace 

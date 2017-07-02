@@ -34,44 +34,67 @@ namespace Apache
       generic<class TResult>
       bool ResultSet<TResult>::IsModifiable::get( )
       {
-        return NativePtr->isModifiable( );
+        try
+        {
+          return m_nativeptr->get()->isModifiable( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TResult>
       System::Int32 ResultSet<TResult>::Size::get( )
       {
-        return NativePtr->size( );
+        try
+        {
+          return m_nativeptr->get()->size( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TResult>
-      /*IGeodeSerializable^*/TResult ResultSet<TResult>::default::get( size_t index )
+      TResult ResultSet<TResult>::default::get( size_t index )
       {
-          //return SafeUMSerializableConvertGeneric(NativePtr->operator[](static_cast<System::Int32>(index)).ptr());
-           return (Serializable::GetManagedValueGeneric<TResult>(NativePtr->operator[](static_cast<System::Int32>(index))));
+        try
+        {
+          return (Serializable::GetManagedValueGeneric<TResult>(m_nativeptr->get()->operator[](static_cast<System::Int32>(index))));
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TResult>
-      SelectResultsIterator<TResult>^ ResultSet<TResult>::GetIterator( )
+      SelectResultsIterator<TResult>^ ResultSet<TResult>::GetIterator()
       {
-        apache::geode::client::SelectResultsIterator* nativeptr =
-          new apache::geode::client::SelectResultsIterator( NativePtr->getIterator( ) );
-
-        return SelectResultsIterator<TResult>::Create( nativeptr );
+        try
+        {
+          return SelectResultsIterator<TResult>::Create(std::make_unique<apache::geode::client::SelectResultsIterator>(
+            m_nativeptr->get()->getIterator()));
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic<class TResult>
-      System::Collections::Generic::IEnumerator</*IGeodeSerializable^*/TResult>^
-        ResultSet<TResult>::GetEnumerator( )
+      System::Collections::Generic::IEnumerator<TResult>^ ResultSet<TResult>::GetEnumerator( )
       {
         return GetIterator( );
       }
 
       generic<class TResult>
-      System::Collections::IEnumerator^ ResultSet<TResult>::GetIEnumerator( )
+      System::Collections::IEnumerator^ ResultSet<TResult>::GetIEnumerator()
       {
-        return GetIterator( );
+        return GetIterator();
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
- } //namespace 

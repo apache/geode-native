@@ -18,16 +18,9 @@
 #pragma once
 
 #include "geode_defs.hpp"
-//#include <geode/Cache.hpp>
-//#include "impl/NativeWrapper.hpp"
 #include "RegionShortcut.hpp"
-//#include "RegionFactory.hpp"
 #include "IGeodeCache.hpp"
-//#include "IRegionService.hpp"
 #include "IRegion.hpp"
-//#include "QueryService.hpp"
-
-
 #include "RegionAttributes.hpp"
 
 using namespace System;
@@ -38,6 +31,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       generic<class TKey, class TResult>
       ref class QueryService;
@@ -63,7 +57,7 @@ namespace Apache
       /// </para>
       /// </remarks>
       public ref class Cache sealed
-        : public IGeodeCache, Internal::SBWrap<apache::geode::client::Cache>
+        : public IGeodeCache
       {
       public:
 
@@ -268,12 +262,16 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static Cache^ Create(apache::geode::client::Cache* nativeptr)
+        inline static Cache^ Create(native::CachePtr nativeptr)
         {
-          return (nativeptr != nullptr ?
-                  gcnew Cache(nativeptr) : nullptr);
+          return __nullptr == nativeptr ? nullptr :
+            gcnew Cache( nativeptr );
         }
 
+        std::shared_ptr<native::Cache> GetNative()
+        {
+          return m_nativeptr->get_shared_ptr();
+        }
 
       private:
 
@@ -281,8 +279,12 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline Cache(apache::geode::client::Cache* nativeptr)
-          : SBWrap(nativeptr) { }
+        inline Cache(native::CachePtr nativeptr)
+        {
+          m_nativeptr = gcnew native_shared_ptr<native::Cache>(nativeptr);
+        }
+
+        native_shared_ptr<native::Cache>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

@@ -34,7 +34,7 @@ using namespace apache::geode::client;
  */
 EntriesMap* EntriesMapFactory::createMap(RegionInternal* region,
                                          const RegionAttributesPtr& attrs) {
-  EntriesMap* result = NULL;
+  EntriesMap* result = nullptr;
   uint32_t initialCapacity = attrs->getInitialCapacity();
   uint8_t concurrency = attrs->getConcurrencyLevel();
   /** @TODO will need a statistics entry factory... */
@@ -56,7 +56,7 @@ EntriesMap* EntriesMapFactory::createMap(RegionInternal* region,
       lruEvictionAction = LRUAction::LOCAL_DESTROY;
       if (prop && prop->heapLRULimitEnabled()) heapLRUEnabled = true;
     } else {
-      return NULL;
+      return nullptr;
     }
     if (ttl != 0 || idle != 0) {
       EntryFactory* entryFactory = LRUExpEntryFactory::singleton;

@@ -37,7 +37,7 @@ using namespace test;
 
 bool isLocalServer = false;
 const char *endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
-CacheHelper *cacheHelper = NULL;
+CacheHelper *cacheHelper = nullptr;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -49,20 +49,20 @@ const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #include "LocatorHelper.hpp"
 void initClient(const bool isthinClient) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 CacheHelper *getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
@@ -86,7 +86,7 @@ void _verifyEntry(const char *name, const char *key, const char *val,
   free(buf);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   CacheableKeyPtr keyPtr = createKey(key);
 
@@ -110,7 +110,7 @@ void _verifyEntry(const char *name, const char *key, const char *val,
       }
       ASSERT(containsKeyCnt < MAX, "Key found in region.");
     }
-    if (val == NULL) {
+    if (val == nullptr) {
       if (regPtr->containsValueForKey(keyPtr)) {
         containsValueCnt++;
       } else {
@@ -119,11 +119,11 @@ void _verifyEntry(const char *name, const char *key, const char *val,
       ASSERT(containsValueCnt < MAX, "Value found in region.");
     }
 
-    if (val != NULL) {
-      CacheableStringPtr checkPtr =
-          dynCast<CacheableStringPtr>(regPtr->get(keyPtr));
+    if (val != nullptr) {
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
-      ASSERT(checkPtr != NULLPTR, "Value Ptr should not be null.");
+      ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
       char buf[1024];
       sprintf(buf, "In verify loop, get returned %s for key %s",
               checkPtr->asChar(), key);
@@ -160,7 +160,7 @@ void createPooledRegion(const char *name, bool ackMode, const char *locators,
   RegionPtr regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }
 void createEntry(const char *name, const char *key, const char *value) {
@@ -173,7 +173,7 @@ void createEntry(const char *name, const char *key, const char *value) {
   CacheableStringPtr valPtr = CacheableString::create(value);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
          "Key should not have been found in region.");
@@ -198,7 +198,7 @@ void updateEntry(const char *name, const char *key, const char *value) {
   CacheableStringPtr valPtr = CacheableString::create(value);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
 
@@ -222,19 +222,19 @@ void doNetsearch(const char *name, const char *key, const char *value) {
   RegionPtr regPtr = getHelper()->getRegion(name);
   fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
   fflush(stdout);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
-  CacheableStringPtr checkPtr =
-      dynCast<CacheableStringPtr>(regPtr->get(keyPtr));  // force a netsearch
+  auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
+      regPtr->get(keyPtr));  // force a netsearch
 
-  if (checkPtr != NULLPTR) {
+  if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
     char buf[1024];
     sprintf(buf, "In net search, get returned %s for key %s",
             checkPtr->asChar(), key);
     LOG(buf);
   } else {
-    LOG("checkPtr is NULL");
+    LOG("checkPtr is nullptr");
   }
   verifyEntry(name, key, value);
   LOG("Netsearch complete.");
@@ -242,12 +242,12 @@ void doNetsearch(const char *name, const char *key, const char *value) {
 
 std::vector<char *> storeEndPoints(const char *points) {
   std::vector<char *> endpointNames;
-  if (points != NULL) {
+  if (points != nullptr) {
     char *ep = strdup(points);
     char *token = strtok(ep, ",");
     while (token) {
       endpointNames.push_back(token);
-      token = strtok(NULL, ",");
+      token = strtok(nullptr, ",");
     }
   }
   ASSERT(endpointNames.size() == 3, "There should be 3 end points");

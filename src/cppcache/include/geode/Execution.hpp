@@ -28,7 +28,7 @@
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 #include "VectorT.hpp"
-#include "SharedPtr.hpp"
+#include <memory>
 #include "CacheableBuiltins.hpp"
 #include "ResultCollector.hpp"
 
@@ -45,7 +45,7 @@ namespace client {
  * @see FunctionService
  */
 
-class CPPCACHE_EXPORT Execution : public SharedBase {
+class CPPCACHE_EXPORT Execution {
  public:
   /**
    * Specifies a data filter of routing objects for selecting the Geode
@@ -57,7 +57,7 @@ class CPPCACHE_EXPORT Execution : public SharedBase {
    * @param routingObj Set defining the data filter to be used for executing the
    * function
    * @return an Execution with the filter
-   * @throws IllegalArgumentException if filter passed is NULLPTR.
+   * @throws IllegalArgumentException if filter passed is nullptr.
    * @throws UnsupportedOperationException if not called after
    *    FunctionService::onRegion(Region).
    */
@@ -66,7 +66,7 @@ class CPPCACHE_EXPORT Execution : public SharedBase {
    * Specifies the user data passed to the function when it is executed.
    * @param args user data passed to the function execution
    * @return an Execution with args
-   * @throws IllegalArgumentException if the input parameter is NULLPTR
+   * @throws IllegalArgumentException if the input parameter is nullptr
    *
    */
   virtual ExecutionPtr withArgs(CacheablePtr args) = 0;
@@ -74,7 +74,7 @@ class CPPCACHE_EXPORT Execution : public SharedBase {
    * Specifies the {@link ResultCollector} that will receive the results after
    * the function has been executed.
    * @return an Execution with a collector
-   * @throws IllegalArgumentException if {@link ResultCollector} is NULLPTR
+   * @throws IllegalArgumentException if {@link ResultCollector} is nullptr
    * @see ResultCollector
    */
   virtual ExecutionPtr withCollector(ResultCollectorPtr rs) = 0;

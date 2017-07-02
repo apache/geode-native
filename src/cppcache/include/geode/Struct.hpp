@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STRUCT_H_
-#define GEODE_STRUCT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,14 +15,22 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_STRUCT_H_
+#define GEODE_STRUCT_H_
+
+#include <unordered_map>
+#include <vector>
+
+#include <geode/utils.hpp>
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 #include "CacheableBuiltins.hpp"
 #include "StructSet.hpp"
 #include "SelectResults.hpp"
 #include "Serializable.hpp"
-#include "VectorT.hpp"
-#include "HashMapT.hpp"
 
 /**
  * @file
@@ -50,7 +53,7 @@ class CPPCACHE_EXPORT Struct : public Serializable {
   /**
    * Constructor - meant only for internal use.
    */
-  Struct(StructSet* ssPtr, VectorT<SerializablePtr>& fieldValues);
+  Struct(StructSet* ssPtr, std::vector<SerializablePtr>& fieldValues);
 
   /**
    * Factory function for registration of <code>Struct</code>.
@@ -61,7 +64,7 @@ class CPPCACHE_EXPORT Struct : public Serializable {
    * Get the field value for the given index number.
    *
    * @param index the index number of the field value to get.
-   * @returns A smart pointer to the field value or NULLPTR if index out of
+   * @returns A smart pointer to the field value or nullptr if index out of
    * bounds.
    */
   const SerializablePtr operator[](int32_t index) const;
@@ -100,7 +103,7 @@ class CPPCACHE_EXPORT Struct : public Serializable {
   /**
    * Get the next field value item available in this Struct.
    *
-   * @returns A smart pointer to the next item in the Struct or NULLPTR if no
+   * @returns A smart pointer to the next item in the Struct or nullptr if no
    * more available.
    */
   const SerializablePtr next();
@@ -135,7 +138,7 @@ class CPPCACHE_EXPORT Struct : public Serializable {
    * Returns the name of the field corresponding to the index number in the
    * Struct
    */
-  virtual const char* getFieldName(int32_t index);
+  virtual const char* getFieldName(const int32_t index) const;
 
   /**
    * always returns 0
@@ -149,8 +152,12 @@ class CPPCACHE_EXPORT Struct : public Serializable {
 
   Struct();
 
-  HashMapT<CacheableStringPtr, CacheableInt32Ptr> m_fieldNames;
-  VectorT<SerializablePtr> m_fieldValues;
+  typedef std::unordered_map<CacheableStringPtr, CacheableInt32Ptr,
+                             dereference_hash<CacheableStringPtr>,
+                             dereference_equal_to<CacheableStringPtr>>
+      FieldNames;
+  FieldNames m_fieldNames;
+  std::vector<SerializablePtr> m_fieldValues;
 
   StructSet* m_parent;
 

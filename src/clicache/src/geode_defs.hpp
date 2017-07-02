@@ -39,9 +39,6 @@
 /// This namespace contains all the Geode .NET classes and utility classes.
 
 /// @namespace Apache::Geode::Client
-/// This namespace contains all the Geode .NET API classes and enumerations.
-
-/// @namespace Apache::Geode::Client
 /// This namespace contains all the Geode .NET Generics API classes and enumerations.
 
 /// @namespace Apache::Geode::Client::Internal

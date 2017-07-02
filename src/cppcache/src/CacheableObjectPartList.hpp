@@ -62,13 +62,13 @@ class CacheableObjectPartList : public Cacheable {
   bool m_addToLocalCache;
 
   inline CacheableObjectPartList()
-      : m_keys(NULL),
-        m_keysOffset(NULL),
-        m_values(NULLPTR),
-        m_exceptions(NULLPTR),
-        m_resultKeys(NULLPTR),
-        m_region(NULL),
-        m_updateCountMap(NULL),
+      : m_keys(nullptr),
+        m_keysOffset(nullptr),
+        m_values(nullptr),
+        m_exceptions(nullptr),
+        m_resultKeys(nullptr),
+        m_region(nullptr),
+        m_updateCountMap(nullptr),
         m_destroyTracker(0),
         m_addToLocalCache(false) {}
 
@@ -141,7 +141,7 @@ class CacheableObjectPartList : public Cacheable {
   virtual uint32_t objectSize() const;
 };
 
-typedef SharedPtr<CacheableObjectPartList> CacheableObjectPartListPtr;
+typedef std::shared_ptr<CacheableObjectPartList> CacheableObjectPartListPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

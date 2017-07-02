@@ -56,16 +56,16 @@ class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
   uint64_t timestamp;
 
   inline uint32_t getObjectSize(const SerializablePtr& obj) const {
-    return (obj == NULLPTR ? 0 : obj->objectSize());
+    return (obj == nullptr ? 0 : obj->objectSize());
   }
 
  public:
   FastAssetAccount()
       : encodeTimestamp(0),
         acctId(0),
-        customerName(NULLPTR),
+        customerName(nullptr),
         netWorth(0.0),
-        assets(NULLPTR),
+        assets(nullptr),
         timestamp(0) {}
   FastAssetAccount(int index, bool encodeTimestp, int maxVal, int asstSize = 0);
   virtual ~FastAssetAccount();
@@ -120,7 +120,7 @@ class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
   }
 };
 
-typedef apache::geode::client::SharedPtr<FastAssetAccount> FastAssetAccountPtr;
+typedef std::shared_ptr<FastAssetAccount> FastAssetAccountPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_FASTASSETACCOUNT_H_

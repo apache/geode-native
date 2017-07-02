@@ -236,7 +236,7 @@ class PdxRemoteWriter : public PdxLocalWriter {
                                               int8_t** array, int arrayLength,
                                               int* elementLength);
 };
-typedef SharedPtr<PdxRemoteWriter> PdxRemoteWriterPtr;
+typedef std::shared_ptr<PdxRemoteWriter> PdxRemoteWriterPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

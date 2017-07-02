@@ -47,7 +47,7 @@ using namespace apache::geode::client;
 using namespace testframework;
 namespace testobject {
 class FastAsset;
-typedef apache::geode::client::SharedPtr<FastAsset> FastAssetPtr;
+typedef std::shared_ptr<FastAsset> FastAssetPtr;
 
 class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
  private:
@@ -55,7 +55,7 @@ class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
   double value;
 
   inline uint32_t getObjectSize(const SerializablePtr& obj) const {
-    return (obj == NULLPTR ? 0 : obj->objectSize());
+    return (obj == nullptr ? 0 : obj->objectSize());
   }
 
  public:
@@ -92,7 +92,7 @@ class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
    * Makes a copy of this asset.
    */
   FastAssetPtr copy() {
-    FastAssetPtr asset(new FastAsset());
+    auto asset = std::make_shared<FastAsset>();
     asset->setAssetId(getAssetId());
     asset->setValue(getValue());
     return asset;
@@ -113,7 +113,7 @@ class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
   }
 };
 
-// typedef apache::geode::client::SharedPtr<FastAsset> FastAssetPtr;
+// typedef std::shared_ptr<FastAsset> FastAssetPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_FASTASSET_H_

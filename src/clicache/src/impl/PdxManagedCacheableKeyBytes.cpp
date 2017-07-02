@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-//#include "../geode_includes.hpp"
+#include "begin_native.hpp"
+#include <GeodeTypeIdsImpl.hpp>
+#include "end_native.hpp"
+
 #include "PdxManagedCacheableKeyBytes.hpp"
 #include "../DataInput.hpp"
 #include "../DataOutput.hpp"
 #include "../Serializable.hpp"
 #include "../CacheableString.hpp"
-#include <GeodeTypeIdsImpl.hpp>
 #include "../ExceptionTypes.hpp"
 #include "ManagedString.hpp"
 #include "SafeConvert.hpp"
@@ -36,7 +38,7 @@ namespace apache
     {
       void PdxManagedCacheableKeyBytes::toData(apache::geode::client::DataOutput& output) const
       {
-        // Apache::Geode::Client::Log::Debug("PdxManagedCacheableKeyBytes::toData: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((int)this) + " with its domain ID: " + m_domainId );
+        // Apache::Geode::Client::Log::Debug("PdxManagedCacheableKeyBytes::toData: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((uint64_t) this) + " with its domain ID: " + m_domainId );
         try {
           //TODO: I think this should work as it is
           output.writeBytesOnly(m_bytes, m_size);
@@ -176,7 +178,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULLPTR;
+        return nullptr;
       }
 
       bool PdxManagedCacheableKeyBytes::operator ==(const apache::geode::client::CacheableKey& other) const
@@ -222,7 +224,7 @@ namespace apache
           bool ret = obj->Equals(other.ptr());
           // Apache::Geode::Client::Log::Debug("PdxManagedCacheableKeyBytes::equal return VAL = " + ret);
           return ret;
-          //return obj->Equals(other.ptr());
+          //return obj->Equals(other.get());
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();
@@ -289,7 +291,7 @@ namespace apache
       void PdxManagedCacheableKeyBytes::toDelta(DataOutput& output) const
       {
         try {
-          Apache::Geode::Client::Log::Debug("PdxManagedCacheableKeyBytes::toDelta: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((int)this) + " with its domain ID: " + m_domainId);
+          Apache::Geode::Client::Log::Debug("PdxManagedCacheableKeyBytes::toDelta: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((uint64_t) this) + " with its domain ID: " + m_domainId);
           Apache::Geode::Client::IGeodeDelta^ deltaObj = dynamic_cast<Apache::Geode::Client::IGeodeDelta^>(this->getManagedObject());
           Apache::Geode::Client::DataOutput mg_output(&output, true);
           deltaObj->ToDelta(%mg_output);
@@ -315,7 +317,7 @@ namespace apache
             dynamic_cast <Apache::Geode::Client::IPdxSerializable^> (deltaObj);
           // if(managedptr != nullptr)
           {
-            Apache::Geode::Client::Log::Debug("PdxManagedCacheableKeyBytes::fromDelta: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((int)this) + " with its domain ID: " + m_domainId);
+            Apache::Geode::Client::Log::Debug("PdxManagedCacheableKeyBytes::fromDelta: current domain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((uint64_t) this) + " with its domain ID: " + m_domainId);
             //Apache::Geode::Client::Log::Debug("PdxManagedCacheableKeyBytes::fromDelta: classid " + managedptr->ClassId + " : " + managedptr->ToString());
             apache::geode::client::DataOutput dataOut;
             Apache::Geode::Client::DataOutput mg_output(&dataOut, true);
@@ -364,7 +366,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULLPTR;
+        return nullptr;
       }
 
     }  // namespace client

@@ -39,7 +39,7 @@ CredentialGeneratorPtr credentialGeneratorHandler;
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
   const char* path = ACE_OS::getenv("TESTSRC");
-  ASSERT(path != NULL,
+  ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
   strcat(xmlPath, "xml/Security/");
@@ -65,8 +65,8 @@ void initCredentialGenerator() {
     }
   }
 
-  if (credentialGeneratorHandler == NULLPTR) {
-    FAIL("credentialGeneratorHandler is NULL");
+  if (credentialGeneratorHandler == nullptr) {
+    FAIL("credentialGeneratorHandler is nullptr");
   }
 
   loopNum++;
@@ -118,26 +118,29 @@ void initClientAuth(char UserType) {
   credentialGeneratorHandler->getAuthInit(config);
   switch (UserType) {
     case 'W':
-      credentialGeneratorHandler->getAllowedCredentialsForOps(wr, config, NULL);
+      credentialGeneratorHandler->getAllowedCredentialsForOps(wr, config,
+                                                              nullptr);
       printf("User is %s Pass is %s ",
              config->find("security-username")->asChar(),
-             (config->find("security-password") != NULLPTR
+             (config->find("security-password") != nullptr
                   ? config->find("security-password")->asChar()
                   : " not set"));
       break;
     case 'R':
-      credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config, NULL);
+      credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config,
+                                                              nullptr);
       printf("User is %s Pass is %s ",
              config->find("security-username")->asChar(),
-             (config->find("security-password") != NULLPTR
+             (config->find("security-password") != nullptr
                   ? config->find("security-password")->asChar()
                   : " not set"));
       break;
     case 'A':
-      credentialGeneratorHandler->getAllowedCredentialsForOps(ad, config, NULL);
+      credentialGeneratorHandler->getAllowedCredentialsForOps(ad, config,
+                                                              nullptr);
       printf("User is %s Pass is %s ",
              config->find("security-username")->asChar(),
-             (config->find("security-password") != NULLPTR
+             (config->find("security-password") != nullptr
                   ? config->find("security-password")->asChar()
                   : " not set"));
     default:
@@ -199,7 +202,7 @@ class putThread : public ACE_Task_Base {
     char buf[20];
     char valbuf[20];
     if (m_regInt) {
-      m_reg->registerAllKeys(false, NULLPTR, true);
+      m_reg->registerAllKeys(false, nullptr, true);
     }
     if (m_waitTime != 0) {
       ACE_OS::sleep(m_waitTime);
@@ -230,7 +233,7 @@ class putThread : public ACE_Task_Base {
           m_reg->registerKeys(keys0, false, true);
         }
       } else if (m_opcode == 6) {
-        m_reg->registerRegex("key-[1-3]", false, NULLPTR, true);
+        m_reg->registerRegex("key-[1-3]", false, nullptr, true);
       } else {
         try {
           if (m_isCallBack) {

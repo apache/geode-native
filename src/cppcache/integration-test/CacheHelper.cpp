@@ -68,7 +68,7 @@ extern ClientCleanup gClientCleanup;
 CachePtr CacheHelper::getCache() { return cachePtr; }
 
 CacheHelper& CacheHelper::getHelper() {
-  if (singleton == NULL) {
+  if (singleton == nullptr) {
     singleton = new CacheHelper();
   }
   return *singleton;
@@ -77,7 +77,7 @@ CacheHelper& CacheHelper::getHelper() {
 CacheHelper::CacheHelper(const char* member_id, const PropertiesPtr& configPtr,
                          const bool noRootRegion) {
   PropertiesPtr pp = configPtr;
-  if (pp == NULLPTR) {
+  if (pp == nullptr) {
     pp = Properties::create();
   }
 
@@ -102,10 +102,10 @@ CacheHelper::CacheHelper(const char* member_id, const PropertiesPtr& configPtr,
 CacheHelper::CacheHelper(const char* member_id, const char* cachexml,
                          const PropertiesPtr& configPtr) {
   PropertiesPtr pp = configPtr;
-  if (pp == NULLPTR) {
+  if (pp == nullptr) {
     pp = Properties::create();
   }
-  if (cachexml != NULL) {
+  if (cachexml != nullptr) {
     std::string tmpXmlFile(cachexml);
     std::string newFile;
     CacheHelper::createDuplicateXMLFile(newFile, tmpXmlFile);
@@ -119,7 +119,7 @@ CacheHelper::CacheHelper(const char* member_id, const char* cachexml,
 CacheHelper::CacheHelper(const PropertiesPtr& configPtr,
                          const bool noRootRegion) {
   PropertiesPtr pp = configPtr;
-  if (pp == NULLPTR) {
+  if (pp == nullptr) {
     pp = Properties::create();
   }
 
@@ -144,7 +144,7 @@ CacheHelper::CacheHelper(const bool isThinclient,
                          const PropertiesPtr& configPtr,
                          const bool noRootRegion) {
   PropertiesPtr pp = configPtr;
-  if (pp == NULLPTR) {
+  if (pp == nullptr) {
     pp = Properties::create();
   }
   try {
@@ -163,7 +163,7 @@ CacheHelper::CacheHelper(const bool isThinclient, bool pdxIgnoreUnreadFields,
                          bool pdxReadSerialized, const PropertiesPtr& configPtr,
                          const bool noRootRegion) {
   PropertiesPtr pp = configPtr;
-  if (pp == NULLPTR) {
+  if (pp == nullptr) {
     pp = Properties::create();
   }
   try {
@@ -190,7 +190,7 @@ CacheHelper::CacheHelper(const bool isthinClient, const char* poolName,
                          bool isMultiuserMode, bool prSingleHop,
                          bool threadLocal) {
   PropertiesPtr pp = configPtr;
-  if (pp == NULLPTR) {
+  if (pp == nullptr) {
     pp = Properties::create();
   }
 
@@ -233,7 +233,7 @@ CacheHelper::CacheHelper(const bool isthinClient, const char* poolName,
 CacheHelper::CacheHelper(const int redundancyLevel,
                          const PropertiesPtr& configPtr) {
   PropertiesPtr pp = configPtr;
-  if (pp == NULLPTR) {
+  if (pp == nullptr) {
     pp = Properties::create();
   }
 
@@ -253,7 +253,7 @@ void CacheHelper::closePool(const char* poolName, bool keepAlive) {
 }
 
 void CacheHelper::disconnect(bool keepalive) {
-  if (cachePtr == NULLPTR) {
+  if (cachePtr == nullptr) {
     return;
   }
 
@@ -265,11 +265,11 @@ void CacheHelper::disconnect(bool keepalive) {
   }
 
   // rootRegionPtr->localDestroyRegion();
-  rootRegionPtr = NULLPTR;
+  rootRegionPtr = nullptr;
   LOG("Destroyed root region.");
   try {
     LOG("Closing cache.");
-    if (cachePtr != NULLPTR) {
+    if (cachePtr != nullptr) {
       cachePtr->close(keepalive);
     }
     LOG("Closing cache complete.");
@@ -280,7 +280,7 @@ void CacheHelper::disconnect(bool keepalive) {
     LOG("exception throw while closing cache");
   }
 
-  cachePtr = NULLPTR;
+  cachePtr = nullptr;
   LOG("Closed cache.");
   try {
     if (m_doDisconnect) {
@@ -291,7 +291,7 @@ void CacheHelper::disconnect(bool keepalive) {
   } catch (...) {
     LOG("Throwing exception while disconnecting....");
   }
-  singleton = NULL;
+  singleton = nullptr;
   LOG("Finished cleanup after CacheHelper.");
 }
 
@@ -312,7 +312,7 @@ void CacheHelper::createPlainRegion(const char* regionName,
   showRegionAttributes(*regAttrs);
   // This is using subregions (deprecated) so not placing the new cache API here
   regionPtr = rootRegionPtr->createSubregion(regionName, regAttrs);
-  ASSERT(regionPtr != NULLPTR, "failed to create region.");
+  ASSERT(regionPtr != nullptr, "failed to create region.");
 }
 
 void CacheHelper::createLRURegion(const char* regionName,
@@ -331,7 +331,7 @@ void CacheHelper::createLRURegion(const char* regionName, RegionPtr& regionPtr,
   showRegionAttributes(*regAttrs);
   // This is using subregions (deprecated) so not placing the new cache API here
   regionPtr = rootRegionPtr->createSubregion(regionName, regAttrs);
-  ASSERT(regionPtr != NULLPTR, "failed to create region.");
+  ASSERT(regionPtr != nullptr, "failed to create region.");
 }
 
 void CacheHelper::createDistRegion(const char* regionName,
@@ -351,7 +351,7 @@ void CacheHelper::createDistRegion(const char* regionName, RegionPtr& regionPtr,
   showRegionAttributes(*regAttrs);
   // This is using subregions (deprecated) so not placing the new cache API here
   regionPtr = rootRegionPtr->createSubregion(regionName, regAttrs);
-  ASSERT(regionPtr != NULLPTR, "failed to create region.");
+  ASSERT(regionPtr != nullptr, "failed to create region.");
 }
 
 RegionPtr CacheHelper::getRegion(const char* name) {
@@ -366,7 +366,7 @@ RegionPtr CacheHelper::createRegion(const char* name, bool ack, bool caching,
                                     int32_t tombstonetimeout) {
   AttributesFactory af;
   af.setCachingEnabled(caching);
-  if (listener != NULLPTR) {
+  if (listener != nullptr) {
     af.setCacheListener(listener);
   }
   if (concurrencyCheckEnabled) {
@@ -375,7 +375,7 @@ RegionPtr CacheHelper::createRegion(const char* name, bool ack, bool caching,
 
   RegionAttributesPtr rattrsPtr = af.createRegionAttributes();
 
-  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.ptr());
+  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   RegionPtr regionPtr;
   cacheImpl->createRegion(name, rattrsPtr, regionPtr);
   return regionPtr;
@@ -396,7 +396,7 @@ RegionPtr CacheHelper::createRegion(const char* name, bool ack, bool caching,
 
   RegionAttributesPtr rattrsPtr = af.createRegionAttributes();
 
-  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.ptr());
+  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   RegionPtr regionPtr;
   cacheImpl->createRegion(name, rattrsPtr, regionPtr);
   return regionPtr;
@@ -507,7 +507,7 @@ void CacheHelper::createPoolWithLocators(const char* name, const char* locators,
       createPool(name, locators, serverGroup, subscriptionRedundancy,
                  clientNotificationEnabled, subscriptionAckInterval,
                  connections, -1, isMultiuserMode);
-  ASSERT(poolPtr != NULLPTR, "Failed to create pool.");
+  ASSERT(poolPtr != nullptr, "Failed to create pool.");
   logPoolAttributes(poolPtr);
   LOG("Pool created.");
 }
@@ -528,7 +528,7 @@ RegionPtr CacheHelper::createRegionAndAttachPool(
   regionFactoryPtr->setEntryTimeToLive(action, ettl);
   regionFactoryPtr->setRegionIdleTimeout(action, rit);
   regionFactoryPtr->setRegionTimeToLive(action, rttl);
-  if (poolName != NULL) {
+  if (poolName != nullptr) {
     regionFactoryPtr->setPoolName(poolName);
   }
   return regionFactoryPtr->create(name);
@@ -612,7 +612,7 @@ RegionPtr CacheHelper::createPooledRegion(
   }
 
   if ((PoolManager::find(poolName)) ==
-      NULLPTR) {  // Pool does not exist with the same name.
+      nullptr) {  // Pool does not exist with the same name.
     PoolPtr pptr = poolFacPtr->create(poolName);
   }
 
@@ -630,7 +630,7 @@ RegionPtr CacheHelper::createPooledRegion(
   regionFactoryPtr->setRegionIdleTimeout(action, rit);
   regionFactoryPtr->setRegionTimeToLive(action, rttl);
   regionFactoryPtr->setPoolName(poolName);
-  if (cacheListener != NULLPTR) {
+  if (cacheListener != nullptr) {
     regionFactoryPtr->setCacheListener(cacheListener);
   }
   return regionFactoryPtr->create(name);
@@ -648,7 +648,7 @@ RegionPtr CacheHelper::createPooledRegionConcurrencyCheckDisabled(
   addServerLocatorEPs(locators, poolFacPtr);
 
   if ((PoolManager::find(poolName)) ==
-      NULLPTR) {  // Pool does not exist with the same name.
+      nullptr) {  // Pool does not exist with the same name.
     PoolPtr pptr = poolFacPtr->create(poolName);
   }
 
@@ -667,7 +667,7 @@ RegionPtr CacheHelper::createPooledRegionConcurrencyCheckDisabled(
   regionFactoryPtr->setRegionTimeToLive(action, rttl);
   regionFactoryPtr->setConcurrencyChecksEnabled(concurrencyCheckEnabled);
   regionFactoryPtr->setPoolName(poolName);
-  if (cacheListener != NULLPTR) {
+  if (cacheListener != nullptr) {
     regionFactoryPtr->setCacheListener(cacheListener);
   }
   return regionFactoryPtr->create(name);
@@ -697,7 +697,7 @@ RegionPtr CacheHelper::createRegionDiscOverFlow(
   }
 
   RegionAttributesPtr rattrsPtr = af.createRegionAttributes();
-  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.ptr());
+  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   RegionPtr regionPtr;
   cacheImpl->createRegion(name, rattrsPtr, regionPtr);
   return regionPtr;
@@ -717,7 +717,7 @@ RegionPtr CacheHelper::createPooledRegionDiscOverFlow(
     addServerLocatorEPs(locators, poolFacPtr);
   }
   if ((PoolManager::find(poolName)) ==
-      NULLPTR) {  // Pool does not exist with the same name.
+      nullptr) {  // Pool does not exist with the same name.
     PoolPtr pptr = poolFacPtr->create(poolName);
   }
 
@@ -752,7 +752,7 @@ RegionPtr CacheHelper::createPooledRegionDiscOverFlow(
     regionFactoryPtr->setPersistenceManager(
         "SqLiteImpl", "createSqLiteInstance", sqLiteProps);
   }
-  if (cacheListener != NULLPTR) {
+  if (cacheListener != nullptr) {
     regionFactoryPtr->setCacheListener(cacheListener);
   }
   return regionFactoryPtr->create(name);
@@ -772,7 +772,7 @@ RegionPtr CacheHelper::createPooledRegionSticky(
   addServerLocatorEPs(locators, poolFacPtr);
 
   if ((PoolManager::find(poolName)) ==
-      NULLPTR) {  // Pool does not exist with the same name.
+      nullptr) {  // Pool does not exist with the same name.
     PoolPtr pptr = poolFacPtr->create(poolName);
     LOG("createPooledRegionSticky logPoolAttributes");
     logPoolAttributes(pptr);
@@ -792,7 +792,7 @@ RegionPtr CacheHelper::createPooledRegionSticky(
   regionFactoryPtr->setRegionIdleTimeout(action, rit);
   regionFactoryPtr->setRegionTimeToLive(action, rttl);
   regionFactoryPtr->setPoolName(poolName);
-  if (cacheListener != NULLPTR) {
+  if (cacheListener != nullptr) {
     regionFactoryPtr->setCacheListener(cacheListener);
   }
   return regionFactoryPtr->create(name);
@@ -812,7 +812,7 @@ RegionPtr CacheHelper::createPooledRegionStickySingleHop(
   addServerLocatorEPs(locators, poolFacPtr);
 
   if ((PoolManager::find(poolName)) ==
-      NULLPTR) {  // Pool does not exist with the same name.
+      nullptr) {  // Pool does not exist with the same name.
     PoolPtr pptr = poolFacPtr->create(poolName);
     LOG("createPooledRegionStickySingleHop logPoolAttributes");
     logPoolAttributes(pptr);
@@ -832,7 +832,7 @@ RegionPtr CacheHelper::createPooledRegionStickySingleHop(
   regionFactoryPtr->setRegionIdleTimeout(action, rit);
   regionFactoryPtr->setRegionTimeToLive(action, rttl);
   regionFactoryPtr->setPoolName(poolName);
-  if (cacheListener != NULLPTR) {
+  if (cacheListener != nullptr) {
     regionFactoryPtr->setCacheListener(cacheListener);
   }
   return regionFactoryPtr->create(name);
@@ -843,7 +843,7 @@ RegionPtr CacheHelper::createSubregion(RegionPtr& parent, const char* name,
                                        const CacheListenerPtr& listener) {
   AttributesFactory af;
   af.setCachingEnabled(caching);
-  if (listener != NULLPTR) {
+  if (listener != nullptr) {
     af.setCacheListener(listener);
   }
   RegionAttributesPtr rattrsPtr = af.createRegionAttributes();
@@ -856,7 +856,7 @@ CacheableStringPtr CacheHelper::createCacheable(const char* value) {
 }
 
 void CacheHelper::showKeys(VectorOfCacheableKey& vecKeys) {
-  fprintf(stdout, "vecKeys.size() = %d\n", vecKeys.size());
+  fprintf(stdout, "vecKeys.size() = %zd\n", vecKeys.size());
   for (uint32_t i = 0; i < static_cast<uint32_t>(vecKeys.size()); i++) {
     char msg[1024];
     size_t wrote = vecKeys.at(i)->logString(msg, 1023);
@@ -875,8 +875,8 @@ void CacheHelper::showRegionAttributes(RegionAttributes& attributes) {
   printf("Initial Capacity = %d\n", attributes.getInitialCapacity());
   printf("Load Factor = %f\n", attributes.getLoadFactor());
   printf("End Points = %s\n",
-         (attributes.getEndpoints() != NULL ? attributes.getEndpoints()
-                                            : "(null)"));
+         (attributes.getEndpoints() != nullptr ? attributes.getEndpoints()
+                                               : "(null)"));
 }
 
 QueryServicePtr CacheHelper::getQueryService() {
@@ -891,10 +891,10 @@ const char* CacheHelper::getTcrEndpoints(bool& isLocalServer,
   char tmp[100];
 
   if (gfendpoints.empty()) {
-    ASSERT(gfjavaenv != NULL,
+    ASSERT(gfjavaenv != nullptr,
            "Environment variable GFJAVA for java build directory is not set.");
-    if ((ACE_OS::strchr(gfjavaenv, '\\') != NULL) ||
-        (ACE_OS::strchr(gfjavaenv, '/') != NULL)) {
+    if ((ACE_OS::strchr(gfjavaenv, '\\') != nullptr) ||
+        (ACE_OS::strchr(gfjavaenv, '/') != nullptr)) {
       gflocalserver = true;
       /* Support for multiple servers Max = 10*/
       switch (numberOfServers) {
@@ -992,8 +992,8 @@ const char* CacheHelper::getTcrEndpoints2(bool& isLocalServer,
   char tmp[128];
 
   if (gfendpoints.empty()) {
-    if ((ACE_OS::strchr(gfjavaenv, '\\') != NULL) ||
-        (ACE_OS::strchr(gfjavaenv, '/') != NULL)) {
+    if ((ACE_OS::strchr(gfjavaenv, '\\') != nullptr) ||
+        (ACE_OS::strchr(gfjavaenv, '/') != nullptr)) {
       gflocalserver = true;
       /* Support for multiple servers Max = 10*/
       switch (numberOfServers) {
@@ -1063,7 +1063,7 @@ const char* CacheHelper::getTcrEndpoints2(bool& isLocalServer,
       gfendpoints = gfjavaenv;
     }
   }
-  ASSERT(gfjavaenv != NULL,
+  ASSERT(gfjavaenv != nullptr,
          "Environment variable GFJAVA for java build directory is not set.");
   isLocalServer = gflocalserver;
   return (new std::string(gfendpoints.c_str()))->c_str();
@@ -1079,8 +1079,8 @@ const char* CacheHelper::getLocatorHostPort(bool& isLocator,
   char tmp[100];
 
   if (gflchostport.empty()) {
-    if ((ACE_OS::strchr(gfjavaenv, '\\') != NULL) ||
-        (ACE_OS::strchr(gfjavaenv, '/') != NULL)) {
+    if ((ACE_OS::strchr(gfjavaenv, '\\') != nullptr) ||
+        (ACE_OS::strchr(gfjavaenv, '/') != nullptr)) {
       gflocator = true;
       gflocalserver = true;
       switch (numberOfLocators) {
@@ -1122,7 +1122,7 @@ const char* CacheHelper::getLocatorHostPort(bool& isLocator,
       gflchostport = "";
     }
   }
-  ASSERT(gfjavaenv != NULL,
+  ASSERT(gfjavaenv != nullptr,
          "Environment variable GFJAVA for java build directory is not set.");
   isLocator = gflocator;
   isLocalServer = gflocalserver;
@@ -1151,10 +1151,10 @@ void CacheHelper::initServer(int instance, const char* xml,
     printf("TimeBomb registered server cleanupcallback \n");
   }
   printf("Inside initServer added\n");
-  if (authParam != NULL) {
+  if (authParam != nullptr) {
     printf("Inside initServer with authParam = %s\n", authParam);
   } else {
-    printf("Inside initServer with authParam as NULL\n");
+    printf("Inside initServer with authParam as nullptr\n");
     authParam = "";
   }
   static const char* gfjavaenv = ACE_OS::getenv("GFJAVA");
@@ -1171,25 +1171,25 @@ void CacheHelper::initServer(int instance, const char* xml,
   int portNum;
   std::string currDir = ACE_OS::getcwd(currWDPath, 2048);
 
-  ASSERT(gfjavaenv != NULL,
+  ASSERT(gfjavaenv != nullptr,
          "Environment variable GFJAVA for java build directory is not set.");
-  ASSERT(path != NULL,
+  ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
-  ASSERT(mcastPort != NULL,
+  ASSERT(mcastPort != nullptr,
          "Environment variable MCAST_PORT for multicast port is not set.");
-  ASSERT(mcastAddr != NULL,
+  ASSERT(mcastAddr != nullptr,
          "Environment variable MCAST_ADDR for multicast address is not set.");
   ASSERT(!currDir.empty(),
          "Current working directory could not be determined.");
-  if (gfLogLevel == NULL || gfLogLevel[0] == '\0') {
+  if (gfLogLevel == nullptr || gfLogLevel[0] == '\0') {
     gfLogLevel = "config";
   }
-  if (gfSecLogLevel == NULL || gfSecLogLevel[0] == '\0') {
+  if (gfSecLogLevel == nullptr || gfSecLogLevel[0] == '\0') {
     gfSecLogLevel = "config";
   }
 
-  if ((ACE_OS::strchr(gfjavaenv, '\\') == NULL) &&
-      (ACE_OS::strchr(gfjavaenv, '/') == NULL)) {
+  if ((ACE_OS::strchr(gfjavaenv, '\\') == nullptr) &&
+      (ACE_OS::strchr(gfjavaenv, '/') == nullptr)) {
     return;
   }
 
@@ -1253,8 +1253,8 @@ void CacheHelper::initServer(int instance, const char* xml,
       break;
     default: /* Support for any number of servers Max 10*/
       ASSERT((instance <= 10), " More than 10 servers not supported");
-      ASSERT(xml != NULL,
-             "xml == NULL : For server instance > 3 xml file is must");
+      ASSERT(xml != nullptr,
+             "xml == nullptr : For server instance > 3 xml file is must");
       char temp[8];
       portNum = CacheHelper::staticHostPort4;
       sname += ACE_OS::itoa(CacheHelper::staticHostPort4, temp, 10);
@@ -1263,7 +1263,7 @@ void CacheHelper::initServer(int instance, const char* xml,
 
   currDir += sname;
 
-  if (xml != NULL) {
+  if (xml != nullptr) {
     /*
     xmlFile = path;
     xmlFile += PATH_SEP;
@@ -1308,8 +1308,9 @@ void CacheHelper::initServer(int instance, const char* xml,
     ACE_OS::mkdir("backupDirectory4");
   }
 
-  if (locHostport != NULL) {  // check number of locator host port.
-    std::string geodeProperties = generateGeodeProperties(currDir, ssl, -1, 0,untrustedCert);
+  if (locHostport != nullptr) {  // check number of locator host port.
+    std::string geodeProperties =
+        generateGeodeProperties(currDir, ssl, -1, 0, untrustedCert);
 
     sprintf(
         cmd,
@@ -1372,7 +1373,7 @@ void CacheHelper::createDuplicateXMLFile(std::string& originalFile,
   std::string s(cmd);
   CacheHelper::staticConfigFileList.push_back(s);
 
-  printf("createDuplicateXMLFile added file %s %ld", cmd,
+  printf("createDuplicateXMLFile added file %s %zd", cmd,
          CacheHelper::staticConfigFileList.size());
 }
 
@@ -1386,7 +1387,8 @@ void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
   std::ifstream in(inFile, std::ios::in | std::ios::binary);
   if (in) {
     std::string contents;
-    contents.assign(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
+    contents.assign(std::istreambuf_iterator<char>(in),
+                    std::istreambuf_iterator<char>());
     in.close();
 
     replaceInPlace(contents, "HOST_PORT1", std::to_string(hostPort1));
@@ -1402,13 +1404,14 @@ void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
   }
 }
 
-void CacheHelper::replaceInPlace(std::string& searchStr, const std::string& matchStr,
+void CacheHelper::replaceInPlace(std::string& searchStr,
+                                 const std::string& matchStr,
                                  const std::string& replaceStr) {
-    size_t pos = 0;
-    while ((pos = searchStr.find(matchStr, pos)) != std::string::npos) {
-      searchStr.replace(pos, matchStr.length(), replaceStr);
-      pos += replaceStr.length();
-    }
+  size_t pos = 0;
+  while ((pos = searchStr.find(matchStr, pos)) != std::string::npos) {
+    searchStr.replace(pos, matchStr.length(), replaceStr);
+    pos += replaceStr.length();
+  }
 }
 #else
 void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
@@ -1418,15 +1421,22 @@ void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
   std::ifstream in(inFile, std::ios::in | std::ios::binary);
   if (in) {
     std::string contents;
-    contents.assign(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
+    contents.assign(std::istreambuf_iterator<char>(in),
+                    std::istreambuf_iterator<char>());
     in.close();
 
-    contents = std::regex_replace(contents, std::regex("HOST_PORT1"), std::to_string(hostPort1));
-    contents = std::regex_replace(contents, std::regex("HOST_PORT2"), std::to_string(hostPort2));
-    contents = std::regex_replace(contents, std::regex("HOST_PORT3"), std::to_string(hostPort3));
-    contents = std::regex_replace(contents, std::regex("HOST_PORT4"), std::to_string(hostPort4));
-    contents = std::regex_replace(contents, std::regex("LOC_PORT1"), std::to_string(locPort1));
-    contents = std::regex_replace(contents, std::regex("LOC_PORT2"), std::to_string(locPort2));
+    contents = std::regex_replace(contents, std::regex("HOST_PORT1"),
+                                  std::to_string(hostPort1));
+    contents = std::regex_replace(contents, std::regex("HOST_PORT2"),
+                                  std::to_string(hostPort2));
+    contents = std::regex_replace(contents, std::regex("HOST_PORT3"),
+                                  std::to_string(hostPort3));
+    contents = std::regex_replace(contents, std::regex("HOST_PORT4"),
+                                  std::to_string(hostPort4));
+    contents = std::regex_replace(contents, std::regex("LOC_PORT1"),
+                                  std::to_string(locPort1));
+    contents = std::regex_replace(contents, std::regex("LOC_PORT2"),
+                                  std::to_string(locPort2));
 
     std::ofstream out(outFile, std::ios::out);
     out << contents;
@@ -1460,13 +1470,13 @@ void CacheHelper::closeServer(int instance) {
 
   std::string currDir = ACE_OS::getcwd(currWDPath, 2048);
 
-  ASSERT(gfjavaenv != NULL,
+  ASSERT(gfjavaenv != nullptr,
          "Environment variable GFJAVA for java build directory is not set.");
   ASSERT(!currDir.empty(),
          "Current working directory could not be determined.");
 
-  if ((ACE_OS::strchr(gfjavaenv, '\\') == NULL) &&
-      (ACE_OS::strchr(gfjavaenv, '/') == NULL)) {
+  if ((ACE_OS::strchr(gfjavaenv, '\\') == nullptr) &&
+      (ACE_OS::strchr(gfjavaenv, '/') == nullptr)) {
     return;
   }
 
@@ -1517,12 +1527,12 @@ void CacheHelper::closeLocator(int instance, bool ssl) {
   std::string currDir = ACE_OS::getcwd(currWDPath, 2048);
   std::string keystore = std::string(ACE_OS::getenv("TESTSRC")) + "/keystore";
 
-  ASSERT(gfjavaenv != NULL,
+  ASSERT(gfjavaenv != nullptr,
          "Environment variable GFJAVA for java build directory is not set.");
   ASSERT(!currDir.empty(),
          "Current working directory could not be determined.");
-  if ((ACE_OS::strchr(gfjavaenv, '\\') == NULL) &&
-      (ACE_OS::strchr(gfjavaenv, '/') == NULL)) {
+  if ((ACE_OS::strchr(gfjavaenv, '\\') == nullptr) &&
+      (ACE_OS::strchr(gfjavaenv, '/') == nullptr)) {
     return;
   }
 
@@ -1595,8 +1605,8 @@ void CacheHelper::terminate_process_file(
             std::chrono::system_clock::now() - start);
         LOG("CacheHelper::terminate_process_file: process exited. "
             "pidFileName=" +
-            pidFileName + ", pid=" + pid + ", elapsed=" +
-            std::to_string(elapsed.count()) + "ms");
+            pidFileName + ", pid=" + pid +
+            ", elapsed=" + std::to_string(elapsed.count()) + "ms");
         return;
       }
       std::this_thread::yield();
@@ -1663,13 +1673,13 @@ void CacheHelper::initLocator(int instance, bool ssl, bool multiDS, int dsId,
   //    std::string keystore = std::string(ACE_OS::getenv("TESTSRC")) +
   //    "/keystore";
 
-  ASSERT(gfjavaenv != NULL,
+  ASSERT(gfjavaenv != nullptr,
          "Environment variable GFJAVA for java build directory is not set.");
   ASSERT(!currDir.empty(),
          "Current working directory could not be determined.");
 
-  if ((ACE_OS::strchr(gfjavaenv, '\\') == NULL) &&
-      (ACE_OS::strchr(gfjavaenv, '/') == NULL)) {
+  if ((ACE_OS::strchr(gfjavaenv, '\\') == nullptr) &&
+      (ACE_OS::strchr(gfjavaenv, '/') == nullptr)) {
     return;
   }
   std::string locDirname = "GFELOC";
@@ -1750,7 +1760,7 @@ bool CacheHelper::setSeed() {
 }
 
 int CacheHelper::hashcode(char* str) {
-  if (str == NULL) {
+  if (str == nullptr) {
     return 0;
   }
   int localHash = 0;
@@ -1811,7 +1821,7 @@ int CacheHelper::getNumLocatorListUpdates(const char* s) {
   std::string searchStr(s);
   std::string testFile = CacheHelper::unitTestOutputFile();
   FILE* fp = fopen(testFile.c_str(), "r");
-  ASSERT(NULL != fp, "Failed to open log file.");
+  ASSERT(nullptr != fp, "Failed to open log file.");
 
   char buf[512];
   int numMatched = 0;
@@ -1824,7 +1834,8 @@ int CacheHelper::getNumLocatorListUpdates(const char* s) {
 
 std::string CacheHelper::generateGeodeProperties(const std::string& path,
                                                  const bool ssl, const int dsId,
-                                                 const int remoteLocator, const bool untrustedCert) {
+                                                 const int remoteLocator,
+                                                 const bool untrustedCert) {
   char cmd[2048];
   std::string keystore = std::string(ACE_OS::getenv("TESTSRC")) + "/keystore";
 
@@ -1852,14 +1863,13 @@ std::string CacheHelper::generateGeodeProperties(const std::string& path,
   std::string password;
 
   if (ssl) {
-    if (untrustedCert){
+    if (untrustedCert) {
       serverKeystore += "untrusted_server_keystore.jks";
-      serverTruststore += "untrusted_server_truststore.jks"; 
+      serverTruststore += "untrusted_server_truststore.jks";
       password += "secret";
-    }
-    else {
+    } else {
       serverKeystore += "server_keystore.jks";
-      serverTruststore += "server_truststore.jks"; 
+      serverTruststore += "server_truststore.jks";
       password += "gemstone";
     }
     msg += "jmx-manager-ssl-enabled=false\n";
@@ -1867,9 +1877,11 @@ std::string CacheHelper::generateGeodeProperties(const std::string& path,
     msg += "cluster-ssl-require-authentication=true\n";
     msg += "cluster-ssl-ciphers=TLS_RSA_WITH_AES_128_CBC_SHA\n";
     msg += "cluster-ssl-keystore-type=jks\n";
-    msg += "cluster-ssl-keystore=" + keystore + "/" + serverKeystore.c_str() + "\n";
+    msg += "cluster-ssl-keystore=" + keystore + "/" + serverKeystore.c_str() +
+           "\n";
     msg += "cluster-ssl-keystore-password=" + password + "\n";
-    msg += "cluster-ssl-truststore=" + keystore + "/" + serverTruststore.c_str() + "\n";
+    msg += "cluster-ssl-truststore=" + keystore + "/" +
+           serverTruststore.c_str() + "\n";
     msg += "cluster-ssl-truststore-password=" + password + "\n";
     msg += "security-username=xxxx\n";
     msg += "security-userPassword=yyyy \n";

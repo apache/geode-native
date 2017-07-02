@@ -23,8 +23,12 @@
 #include <ace/Thread_Mutex.h>
 #include <ace/Singleton.h>
 
-const char* statsName = (const char*)"RegionStatistics";
-const char* statsDesc = (const char*)"Statistics for this region";
+#include <mutex>
+
+#include "util/concurrent/spinlock_mutex.hpp"
+
+const char* statsName = "RegionStatistics";
+const char* statsDesc = "Statistics for this region";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -32,31 +36,32 @@ namespace apache {
 namespace geode {
 namespace client {
 
-using namespace apache::geode::statistics;
+using statistics::StatisticsFactory;
+using util::concurrent::spinlock_mutex;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-RegionStatType* RegionStatType::single = NULL;
-SpinLock RegionStatType::m_singletonLock;
-SpinLock RegionStatType::m_statTypeLock;
+RegionStatType* RegionStatType::single = nullptr;
+spinlock_mutex RegionStatType::m_singletonLock;
+spinlock_mutex RegionStatType::m_statTypeLock;
 
 void RegionStatType::clean() {
-  SpinLockGuard guard(m_singletonLock);
-  if (single != NULL) {
+  std::lock_guard<spinlock_mutex> guard(m_singletonLock);
+  if (single) {
     delete single;
-    single = NULL;
+    single = nullptr;
   }
 }
 
 StatisticsType* RegionStatType::getStatType() {
   const bool largerIsBetter = true;
-  SpinLockGuard guard(m_statTypeLock);
+  std::lock_guard<spinlock_mutex> guard(m_statTypeLock);
   StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
   GF_D_ASSERT(!!factory);
 
   StatisticsType* statsType = factory->findType("RegionStatistics");
 
-  if (statsType == NULL) {
+  if (statsType == nullptr) {
     m_stats[0] = factory->createIntCounter(
         "creates", "The total number of cache creates for this region",
         "entries", largerIsBetter);
@@ -185,14 +190,39 @@ StatisticsType* RegionStatType::getStatType() {
 }
 
 RegionStatType* RegionStatType::getInstance() {
-  SpinLockGuard guard(m_singletonLock);
-  if (single == NULL) {
+  std::lock_guard<spinlock_mutex> guard(m_singletonLock);
+  if (!single) {
     single = new RegionStatType();
   }
   return single;
 }
 
-RegionStatType::RegionStatType() {}
+RegionStatType::RegionStatType()
+    : m_destroysId(0),
+      m_createsId(0),
+      m_putsId(0),
+      m_putTimeId(0),
+      m_putAllId(0),
+      m_putAllTimeId(0),
+      m_removeAllId(0),
+      m_removeAllTimeId(0),
+      m_getsId(0),
+      m_getTimeId(0),
+      m_getAllId(0),
+      m_getAllTimeId(0),
+      m_hitsId(0),
+      m_missesId(0),
+      m_entriesId(0),
+      m_overflowsId(0),
+      m_retrievesId(0),
+      m_metaDataRefreshId(0),
+      m_LoaderCallsCompletedId(0),
+      m_LoaderCallTimeId(0),
+      m_WriterCallsCompletedId(0),
+      m_WriterCallTimeId(0),
+      m_ListenerCallsCompletedId(0),
+      m_ListenerCallTimeId(0),
+      m_clearsId(0) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -205,7 +235,7 @@ RegionStats::RegionStats(const char* regionName) {
 
   StatisticsType* statsType = regStatType->getStatType();
 
-  GF_D_ASSERT(statsType != NULL);
+  GF_D_ASSERT(statsType != nullptr);
 
   StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
 
@@ -266,10 +296,10 @@ RegionStats::RegionStats(const char* regionName) {
 }
 
 RegionStats::~RegionStats() {
-  if (m_regionStats != NULL) {
-    // Don't Delete, Already closed, Just set NULL
+  if (m_regionStats != nullptr) {
+    // Don't Delete, Already closed, Just set nullptr
     // delete m_regionStats;
-    m_regionStats = NULL;
+    m_regionStats = nullptr;
   }
 }
 }  // namespace client

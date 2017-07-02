@@ -21,13 +21,12 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include <geode/SharedPtr.hpp>
+#include <memory>
 
 #include <geode/Cache.hpp>
 #include <geode/CacheAttributes.hpp>
 #include <geode/DistributedSystem.hpp>
 #include "MapWithLock.hpp"
-#include "SpinLock.hpp"
 #include <ace/ACE.h>
 #include <ace/Condition_Recursive_Thread_Mutex.h>
 #include <ace/Time_Value.h>
@@ -81,14 +80,6 @@ class ExpiryTaskManager;
  *
  */
 
-/* adongre
- * CID 28711: Other violation (MISSING_ASSIGN)
- * Class "apache::geode::client::CacheImpl" owns resources that are managed
- * in its constructor and destructor but has no user-written assignment
- * operator.
- *
- * Fix : Make the class Non copyable and non assignable
- */
 class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   /**
    * @brief public methods
@@ -163,7 +154,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
    * @todo change return to param for regionPtr...
    * @param regionPtr the pointer object pointing to the returned region object
    * when the function returns
-   * @throws InvalidArgumentException if the attributePtr is NULL.
+   * @throws InvalidArgumentException if the attributePtr is nullptr.
    * @throws RegionExistsException if a region is already in
    * this cache
    * @throws CacheClosedException if the cache is closed
@@ -209,8 +200,8 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   CacheTransactionManagerPtr getCacheTransactionManager();
 
   /**
-    * @brief destructor
-    */
+   * @brief destructor
+   */
   virtual ~CacheImpl();
   /**
    * @brief constructors
@@ -235,11 +226,11 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
 
   QueryServicePtr getQueryService(const char* poolName);
 
-  RegionInternal* createRegion_internal(const std::string& name,
-                                        RegionInternal* rootRegion,
-                                        const RegionAttributesPtr& attrs,
-                                        const CacheStatisticsPtr& csptr,
-                                        bool shared);
+  std::shared_ptr<RegionInternal> createRegion_internal(
+      const std::string& name,
+      const std::shared_ptr<RegionInternal>& rootRegion,
+      const RegionAttributesPtr& attrs, const CacheStatisticsPtr& csptr,
+      bool shared);
 
   /**
    * Send the "client ready" message to the server.
@@ -260,7 +251,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   static inline CacheImpl* getInstance() { return s_instance; };
 
   bool getCacheMode() {
-    return m_attributes == NULLPTR ? false : m_attributes->m_cacheMode;
+    return m_attributes == nullptr ? false : m_attributes->m_cacheMode;
   }
 
   bool getPdxIgnoreUnreadFields() { return m_ignorePdxUnreadFields; }
@@ -286,7 +277,6 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   static volatile bool s_networkhop;
   static volatile int s_blacklistBucketTimeout;
   static volatile int8_t s_serverGroupFlag;
-  static MemberListForVersionStampPtr s_versionStampMemIdList;
   PoolPtr m_defaultPool;
   bool m_ignorePdxUnreadFields;
   bool m_readPdxSerialized;

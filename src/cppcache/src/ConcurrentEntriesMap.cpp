@@ -17,7 +17,6 @@
 #include "ConcurrentEntriesMap.hpp"
 #include "RegionInternal.hpp"
 #include "TableOfPrimes.hpp"
-#include "HostAsm.hpp"
 
 #include <algorithm>
 
@@ -39,7 +38,7 @@ ConcurrentEntriesMap::ConcurrentEntriesMap(EntryFactory* entryFactory,
        * CID 28929: Uninitialized pointer field (UNINIT_CTOR)
        */
       m_concurrencyChecksEnabled(concurrencyChecksEnabled) {
-  GF_DEV_ASSERT(entryFactory != NULL);
+  GF_DEV_ASSERT(entryFactory != nullptr);
 
   uint8_t maxConcurrency = TableOfPrimes::getMaxPrimeForConcurrency();
   if (concurrency > maxConcurrency) {
@@ -81,7 +80,7 @@ GfErrType ConcurrentEntriesMap::create(const CacheableKeyPtr& key,
   GfErrType err = GF_NOERR;
   if ((err = segmentFor(key)->create(key, newValue, me, oldValue, updateCount,
                                      destroyTracker, versionTag)) == GF_NOERR &&
-      oldValue == NULLPTR) {
+      oldValue == nullptr) {
     ++m_size;
   }
   return err;
@@ -170,7 +169,7 @@ void ConcurrentEntriesMap::values(VectorOfCacheable& result) const {
   }
 }
 
-uint32_t ConcurrentEntriesMap::size() const { return m_size.value(); }
+uint32_t ConcurrentEntriesMap::size() const { return m_size; }
 
 int ConcurrentEntriesMap::addTrackerForEntry(const CacheableKeyPtr& key,
                                              CacheablePtr& oldValue,
@@ -200,7 +199,7 @@ int ConcurrentEntriesMap::addTrackerForAllEntries(
     m_segments[index].addTrackerForAllEntries(updateCounterMap);
   }
   if (addDestroyTracking) {
-    return HostAsm::atomicAdd(m_numDestroyTrackers, 1);
+    return ++m_numDestroyTrackers;
   }
   return 0;
 }
@@ -209,7 +208,7 @@ void ConcurrentEntriesMap::removeDestroyTracking() {
   // This function is disabled if concurrency checks are enabled. The versioning
   // changes takes care of the version and no need for tracking the entry
   if (m_concurrencyChecksEnabled) return;
-  if (HostAsm::atomicAdd(m_numDestroyTrackers, -1) == 0) {
+  if (--m_numDestroyTrackers == 0) {
     for (int index = 0; index < m_concurrency; ++index) {
       m_segments[index].removeDestroyTracking();
     }

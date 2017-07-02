@@ -83,13 +83,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
     demangle
     kstat
   )
-  if (CMAKE_SYSTEM_PROCESSOR STREQUAL "sparc")
-    set(CMAKE_ASM_COMPILER fbe)
-    set(CMAKE_ASM_SOURCE_FILE_EXTENSIONS asm)
-    set(CMAKE_ASM_COMPILE_OBJECT "<CMAKE_ASM_COMPILER> -m64 -K PIC -L -s -P -o <OBJECT> <SOURCE>")
-    enable_language(ASM)
-    set(SOURCES_ALL ${SOURCES_ALL} hostsolaris.asm)
-  endif()
 endif()
 if (${WIN32})
   target_link_libraries(_apache-geode INTERFACE

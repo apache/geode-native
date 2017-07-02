@@ -20,9 +20,12 @@
 #pragma once
 
 #include "geode_defs.hpp"
-#include "impl/NativeWrapper.hpp"
+#include "begin_native.hpp"
 #include <geode/statistics/StatisticsType.hpp>
 #include <geode/statistics/StatisticDescriptor.hpp>
+#include "end_native.hpp"
+
+using namespace System;
 
 namespace Apache
 {
@@ -30,7 +33,6 @@ namespace Apache
   {
     namespace Client
     {
-
       ref class StatisticDescriptor;
 
       /// <summary>
@@ -41,13 +43,7 @@ namespace Apache
       /// To get an instance of this interface use an instance of
       /// <see cref="StatisticsFactory" /> class.
       /// </para>
-      /// <para>
-      /// The class is purposefully inherited from UMWrapN and not UMWrap as the destructor
-      /// of the class is protected, and so it is now not called from inside the InternalCleanup
-      /// method.
-      /// </para>
       public ref class StatisticsType sealed
-        : public Internal::UMWrap<apache::geode::statistics::StatisticsType>
       {
       public:
         /// <summary>
@@ -119,8 +115,13 @@ namespace Apache
         inline static StatisticsType^ Create(
           apache::geode::statistics::StatisticsType* nativeptr )
         {
-          return ( nativeptr != nullptr ?
-            gcnew StatisticsType( nativeptr ) : nullptr );
+          return __nullptr == nativeptr ? nullptr :
+            gcnew StatisticsType( nativeptr );
+        }
+
+        apache::geode::statistics::StatisticsType* GetNative()
+        {
+          return m_nativeptr;
         }
 
       private:
@@ -129,7 +130,11 @@ namespace Apache
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
         inline StatisticsType( apache::geode::statistics::StatisticsType* nativeptr )
-          : UMWrap( nativeptr, false ) { }
+          : m_nativeptr( nativeptr )
+        {
+        }
+
+        apache::geode::statistics::StatisticsType* m_nativeptr;
 
       };
     }  // namespace Client

@@ -42,18 +42,18 @@ Serializable* CacheableObjectPartList::fromData(DataInput& input) {
     CacheableStringPtr exMsgPtr;
     ExceptionPtr ex;
     // bool isException;
-    int32_t keysOffset = (m_keysOffset != NULL ? *m_keysOffset : 0);
+    int32_t keysOffset = (m_keysOffset != nullptr ? *m_keysOffset : 0);
     for (int32_t index = keysOffset; index < keysOffset + len; ++index) {
       if (hasKeys) {
         input.readObject(key, true);
-      } else if (m_keys != NULL) {
+      } else if (m_keys != nullptr) {
         key = m_keys->operator[](index);
       } else {
         throw FatalInternalException(
             "CacheableObjectPartList: "
-            "hasKeys is false and m_keys is also NULL");
+            "hasKeys is false and m_keys is also nullptr");
       }
-      if (m_resultKeys != NULLPTR) {
+      if (m_resultKeys != nullptr) {
         m_resultKeys->push_back(key);
       }
       // input.readBoolean(&isException);
@@ -66,17 +66,18 @@ Serializable* CacheableObjectPartList::fromData(DataInput& input) {
         input.advanceCursor(skipLen);
         // input.readObject(exMsgPtr, true);// Changed
         input.readNativeString(exMsgPtr);
-        if (m_exceptions != NULLPTR) {
+        if (m_exceptions != nullptr) {
           const char* exMsg = exMsgPtr->asChar();
           if (strstr(exMsg,
                      "org.apache.geode.security."
-                     "NotAuthorizedException") != NULL) {
-            ex = new NotAuthorizedException(
+                     "NotAuthorizedException") != nullptr) {
+            ex = std::make_shared<NotAuthorizedException>(
                 "Authorization exception at server:", exMsg);
           } else {
-            ex = new CacheServerException("Exception at remote server:", exMsg);
+            ex = std::make_shared<CacheServerException>(
+                "Exception at remote server:", exMsg);
           }
-          m_exceptions->insert(key, ex);
+          m_exceptions->emplace(key, ex);
         }
       } else {
         input.readObject(value);
@@ -108,15 +109,15 @@ Serializable* CacheableObjectPartList::fromData(DataInput& input) {
         }
         // if value has already been received via notification or put by
         // another thread, then return that
-        if (oldValue != NULLPTR && !CacheableToken::isInvalid(oldValue)) {
+        if (oldValue != nullptr && !CacheableToken::isInvalid(oldValue)) {
           value = oldValue;
         }
-        if (m_values != NULLPTR) {
-          m_values->insert(key, value);
+        if (m_values != nullptr) {
+          m_values->emplace(key, value);
         }
       }
     }
-    if (m_keysOffset != NULL) {
+    if (m_keysOffset != nullptr) {
       *m_keysOffset += len;
     }
   }

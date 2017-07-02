@@ -24,7 +24,7 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 #include <geode/CacheListener.hpp>
-// CacheHelper* cacheHelper = NULL;
+// CacheHelper* cacheHelper = nullptr;
 static bool isLocator = false;
 static bool isLocalServer = true;
 static int numberOfLocators = 1;
@@ -50,10 +50,10 @@ class DisconnectCacheListioner : public CacheListener {
   }
 };
 
-CacheListenerPtr cptr1(new DisconnectCacheListioner(0));
-CacheListenerPtr cptr2(new DisconnectCacheListioner(1));
-CacheListenerPtr cptr3(new DisconnectCacheListioner(2));
-CacheListenerPtr cptr4(new DisconnectCacheListioner(3));
+auto cptr1 = std::make_shared<DisconnectCacheListioner>(0);
+auto cptr2 = std::make_shared<DisconnectCacheListioner>(1);
+auto cptr3 = std::make_shared<DisconnectCacheListioner>(2);
+auto cptr4 = std::make_shared<DisconnectCacheListioner>(3);
 
 #include "LocatorHelper.hpp"
 
@@ -62,7 +62,7 @@ void createPooledRegionMine(bool callReadyForEventsAPI = false) {
   poolFacPtr->setSubscriptionEnabled(true);
   getHelper()->addServerLocatorEPs(locatorsG, poolFacPtr);
   if ((PoolManager::find("__TEST_POOL1__")) ==
-      NULLPTR) {  // Pool does not exist with the same name.
+      nullptr) {  // Pool does not exist with the same name.
     PoolPtr pptr = poolFacPtr->create("__TEST_POOL1__");
   }
   SLEEP(10000);
@@ -85,7 +85,7 @@ void createPooledRegionMine(bool callReadyForEventsAPI = false) {
   af.setCacheListener(cptr4);
   RegionAttributesPtr rattrsPtr4 = af.createRegionAttributes();
   CacheImpl* cacheImpl =
-      CacheRegionHelper::getCacheImpl(getHelper()->cachePtr.ptr());
+      CacheRegionHelper::getCacheImpl(getHelper()->cachePtr.get());
   RegionPtr region1;
   cacheImpl->createRegion(regionNames[0], rattrsPtr1, region1);
   RegionPtr region2;

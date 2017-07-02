@@ -27,9 +27,7 @@
  */
 
 #include <geode/geode_types.hpp>
-#include <geode/SharedBase.hpp>
 #include <geode/DataInput.hpp>
-#include <geode/VectorOfSharedBase.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/Cache.hpp>
 #include <vector>
@@ -41,10 +39,10 @@ namespace client {
 
 _GF_PTR_DEF_(RegionCommit, RegionCommitPtr);
 
-class RegionCommit : public apache::geode::client::SharedBase {
+class RegionCommit {
  public:
-  RegionCommit();
-  virtual ~RegionCommit();
+  RegionCommit(){};
+  virtual ~RegionCommit(){};
 
   void fromData(DataInput& input);
   void apply(Cache* cache);
@@ -56,7 +54,7 @@ class RegionCommit : public apache::geode::client::SharedBase {
  private:
   CacheableStringPtr m_regionPath;
   CacheableStringPtr m_parentRegionPath;
-  VectorOfSharedBase m_farSideEntryOps;
+  std::vector< std::shared_ptr<FarSideEntryOp> > m_farSideEntryOps;
 };
 }  // namespace client
 }  // namespace geode

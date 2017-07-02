@@ -37,8 +37,8 @@ END_TASK(CreateLocator1)
 DUNIT_TASK(SERVER12, CreateServer12)
   {
     // starting servers
-    if (isLocalServer) CacheHelper::initServer(1, NULL, locHostPort);
-    if (isLocalServer) CacheHelper::initServer(2, NULL, locHostPort);
+    if (isLocalServer) CacheHelper::initServer(1, nullptr, locHostPort);
+    if (isLocalServer) CacheHelper::initServer(2, nullptr, locHostPort);
     LOG("Server12 started");
   }
 END_TASK(CreateServer12)
@@ -46,7 +46,7 @@ DUNIT_TASK(CLIENT1, StepOne)
   {
     // starting client 1
     initClientWithPool(true, "__TEST_POOL1__", locHostPort, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regionNames[0], USE_ACK, locHostPort,
                                     "__TEST_POOL1__", true, true);
     getHelper()->createPooledRegion(regionNames[1], NO_ACK, locHostPort,
@@ -57,7 +57,7 @@ END_TASK(StepOne)
 DUNIT_TASK(CLIENT2, StepTwo)
   {
     initClientWithPool(true, "__TEST_POOL1__", locHostPort, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regionNames[0], USE_ACK, locHostPort,
                                     "__TEST_POOL1__", true, true);
     getHelper()->createPooledRegion(regionNames[1], NO_ACK, locHostPort,

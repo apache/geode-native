@@ -61,6 +61,8 @@ class CPPCACHE_EXPORT FunctionServiceImpl : public FunctionService {
 
   ProxyCachePtr m_proxyCache;
   friend class ProxyCache;
+
+  FRIEND_STD_SHARED_PTR(FunctionServiceImpl)
 };
 }  // namespace client
 }  // namespace geode

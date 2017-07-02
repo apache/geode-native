@@ -39,17 +39,17 @@ class ThinClientLocatorHelper {
  public:
   ThinClientLocatorHelper(std::vector<std::string> locHostPort,
                           const ThinClientPoolDM* poolDM);
-  GfErrType getEndpointForNewFwdConn(ServerLocation& outEndpoint,
-                                     std::string& additionalLoc,
-                                     const std::set<ServerLocation>& exclEndPts,
-                                     const std::string& serverGrp = "",
-                                     const TcrConnection* currentServer = NULL);
+  GfErrType getEndpointForNewFwdConn(
+      ServerLocation& outEndpoint, std::string& additionalLoc,
+      const std::set<ServerLocation>& exclEndPts,
+      const std::string& serverGrp = "",
+      const TcrConnection* currentServer = nullptr);
   GfErrType getEndpointForNewCallBackConn(
       ClientProxyMembershipID& memId, std::list<ServerLocation>& outEndpoint,
       std::string& additionalLoc, int redundancy,
       const std::set<ServerLocation>& exclEndPts,
-      /*const std::set<TcrEndpoint*>& exclEndPts,*/ const std::string&
-          serverGrp);
+      /*const std::set<TcrEndpoint*>& exclEndPts,*/
+      const std::string& serverGrp);
   GfErrType getAllServers(std::vector<ServerLocation>& servers,
                           const std::string& serverGrp);
   int32_t getCurLocatorsNum() {

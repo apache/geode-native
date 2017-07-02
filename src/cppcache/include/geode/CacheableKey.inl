@@ -37,7 +37,7 @@ inline CacheableKeyPtr CacheableKey::create( const PRIM value )
 }
 
 template <class TKEY>
-inline CacheableKeyPtr createKey( const SharedPtr< TKEY >& value )
+inline CacheableKeyPtr createKey( const std::shared_ptr< TKEY >& value )
 {
   return CacheableKeyPtr( value );
 }

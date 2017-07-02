@@ -17,14 +17,16 @@
 
 #include <geode/geode_globals.hpp>
 
-#include <ace/Atomic_Op_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
+#include <atomic>
+
 #include <ace/OS_NS_stdio.h>
 #include "AtomicStatisticsImpl.hpp"
 #include "StatisticsTypeImpl.hpp"
 #include "StatisticDescriptorImpl.hpp"
 
-using namespace apache::geode::statistics;
+namespace apache {
+namespace geode {
+namespace statistics {
 /**
  * An implementation of {@link Statistics} that stores its statistics
  * in local  memory and supports atomic operations.
@@ -33,7 +35,7 @@ using namespace apache::geode::statistics;
 //////////////////////  Static Methods  //////////////////////
 
 int64_t AtomicStatisticsImpl::calcNumericId(StatisticsFactory* system,
-                                          int64_t userValue) {
+                                            int64_t userValue) {
   int64_t result;
   if (userValue != 0) {
     result = userValue;
@@ -45,10 +47,10 @@ int64_t AtomicStatisticsImpl::calcNumericId(StatisticsFactory* system,
 
 const char* AtomicStatisticsImpl::calcTextId(StatisticsFactory* system,
                                              const char* userValue) {
-  if (userValue != NULL && strcmp(userValue, "") != 0) {
+  if (userValue != nullptr && strcmp(userValue, "") != 0) {
     return userValue;
   } else {
-    if (system != NULL) {
+    if (system != nullptr) {
       return system->getName();
     } else {
       return "";
@@ -88,59 +90,56 @@ AtomicStatisticsImpl::AtomicStatisticsImpl(StatisticsType* typeArg,
     this->uniqueId = uniqueIdArg;
     this->closed = false;
     this->statsType = dynamic_cast<StatisticsTypeImpl*>(typeArg);
-    GF_D_ASSERT(this->statsType != NULL);
+    GF_D_ASSERT(this->statsType != nullptr);
     int32_t intCount = statsType->getIntStatCount();
     int32_t longCount = statsType->getLongStatCount();
     int32_t doubleCount = statsType->getDoubleStatCount();
 
     if (intCount > 0) {
-      intStorage =
-          new ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, int32_t>[ intCount ];
+      intStorage = new std::atomic<int32_t>[ intCount ];
       for (int32_t i = 0; i < intCount; i++) {
         intStorage[i] = 0;  // Un-initialized state
       }
 
     } else {
-      intStorage = NULL;
+      intStorage = nullptr;
     }
     if (longCount > 0) {
-      longStorage =
-          new ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, int64_t>[ longCount ];
+      longStorage = new std::atomic<int64_t>[ longCount ];
       for (int32_t i = 0; i < longCount; i++) {
         longStorage[i] = 0;  // Un-initialized state
       }
 
     } else {
-      longStorage = NULL;
+      longStorage = nullptr;
     }
     if (doubleCount > 0) {
-      doubleStorage =
-          new ACE_Atomic_Op<ACE_Recursive_Thread_Mutex, double>[ doubleCount ];
+      doubleStorage = new std::atomic<double>[ doubleCount ];
       for (int32_t i = 0; i < doubleCount; i++) {
         doubleStorage[i] = 0;  // Un-initialized state
       }
     } else {
-      doubleStorage = NULL;
+      doubleStorage = nullptr;
     }
   } catch (...) {
-    statsType = NULL;  // Will be deleted by the class who calls this ctor
+    statsType = nullptr;  // Will be deleted by the class who calls this ctor
   }
 }
 
 AtomicStatisticsImpl::~AtomicStatisticsImpl() {
   try {
-    statsType = NULL;
-    if (intStorage != NULL) {
+    statsType = nullptr;
+    if (intStorage != nullptr) {
       delete[] intStorage;
-      intStorage = NULL;
+      intStorage = nullptr;
     }
-    if (longStorage != NULL) {
+    if (longStorage != nullptr) {
       delete[] longStorage;
-      longStorage = NULL;
+      longStorage = nullptr;
     }
-    if (doubleStorage != NULL) {
+    if (doubleStorage != nullptr) {
       delete[] doubleStorage;
-      doubleStorage = NULL;
+      doubleStorage = nullptr;
     }
   } catch (...) {
   }
@@ -176,18 +175,7 @@ void AtomicStatisticsImpl::_setInt(int32_t offset, int32_t value) {
 void AtomicStatisticsImpl::_setLong(int32_t offset, int64_t value) {
   if (offset >= statsType->getLongStatCount()) {
     char s[128] = {'\0'};
-    /* adongre  - Coverity II
-     * CID 29273: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    // sprintf(s, "setLong:The id (%d) of the Statistic Descriptor is not valid
-    // ", offset);
+
     ACE_OS::snprintf(
         s, 128, "setLong:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
@@ -221,7 +209,7 @@ int32_t AtomicStatisticsImpl::_getInt(int32_t offset) {
     throw IllegalArgumentException(s);
   }
 
-  return intStorage[offset].value();
+  return intStorage[offset];
 }
 
 int64_t AtomicStatisticsImpl::_getLong(int32_t offset) {
@@ -232,7 +220,7 @@ int64_t AtomicStatisticsImpl::_getLong(int32_t offset) {
         offset);
     throw IllegalArgumentException(s);
   }
-  return longStorage[offset].value();
+  return longStorage[offset];
 }
 
 double AtomicStatisticsImpl::_getDouble(int32_t offset) {
@@ -244,7 +232,7 @@ double AtomicStatisticsImpl::_getDouble(int32_t offset) {
         offset);
     throw IllegalArgumentException(s);
   }
-  return doubleStorage[offset].value();
+  return doubleStorage[offset];
 }
 
 int64_t AtomicStatisticsImpl::_getRawBits(StatisticDescriptor* statDscp) {
@@ -330,7 +318,13 @@ double AtomicStatisticsImpl::_incDouble(int32_t offset, double delta) {
     throw IllegalArgumentException(s);
   }
 
-  return (doubleStorage[offset] += delta);
+  double expected = doubleStorage[offset];
+  double value;
+  do {
+    value = expected + delta;
+  } while (!doubleStorage[offset].compare_exchange_weak(expected, value));
+
+  return value;
 }
 
 /**************************Base class methods ********************/
@@ -472,7 +466,7 @@ int32_t AtomicStatisticsImpl::incInt(char* name, int32_t delta) {
 }
 
 int32_t AtomicStatisticsImpl::incInt(StatisticDescriptor* descriptor,
-                                   int32_t delta) {
+                                     int32_t delta) {
   int32_t id = getIntId(descriptor);
   return incInt(id, delta);
 }
@@ -494,7 +488,7 @@ int64_t AtomicStatisticsImpl::incLong(char* name, int64_t delta) {
 }
 
 int64_t AtomicStatisticsImpl::incLong(StatisticDescriptor* descriptor,
-                                    int64_t delta) {
+                                      int64_t delta) {
   return incLong(getLongId(descriptor), delta);
 }
 
@@ -544,3 +538,7 @@ int32_t AtomicStatisticsImpl::getDoubleId(StatisticDescriptor* descriptor) {
       dynamic_cast<StatisticDescriptorImpl*>(descriptor);
   return realDescriptor->checkDouble();
 }
+
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache

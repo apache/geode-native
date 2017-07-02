@@ -39,7 +39,7 @@ END_TASK(CreateLocator_All)
 DUNIT_TASK(SERVERS, CreateServer1_All)
   {
     // starting servers
-    if (isLocalServer) CacheHelper::initServer(1, NULL, locatorsG);
+    if (isLocalServer) CacheHelper::initServer(1, nullptr, locatorsG);
     LOG("Server One started");
   }
 END_TASK(CreateServer1_All)
@@ -80,7 +80,7 @@ END_TASK(ConnectC2_All)
 DUNIT_TASK(SERVERS, CreateServer2_All)
   {
     if (isLocalServer) {
-      CacheHelper::initServer(2, NULL, locatorsG);
+      CacheHelper::initServer(2, nullptr, locatorsG);
       LOG("Server 2 started");
     }
   }
@@ -133,7 +133,7 @@ END_TASK(SwapLocators)
 DUNIT_TASK(SERVERS, Re_CreateServer1_All)
   {
     if (isLocalServer) {
-      CacheHelper::initServer(1, NULL, locatorsG);
+      CacheHelper::initServer(1, nullptr, locatorsG);
       LOG("Server 1 started");
       SLEEP(30000);
     }
@@ -197,7 +197,7 @@ END_TASK(Re_Close1_All_All)
 DUNIT_TASK(SERVERS, StartServer2_All)
   {
     if (isLocalServer) {
-      CacheHelper::initServer(2, NULL, NULL);
+      CacheHelper::initServer(2, nullptr, nullptr);
       LOG("SERVER2 Started");
       SLEEP(30000);
     }
@@ -214,20 +214,13 @@ DUNIT_TASK(CLIENT1, AgainAgainFailoverC1_All)
           "No locator exception should "
           "have been raised");
     } catch (const NotConnectedException& ex) {
-      try {
-        ExceptionPtr exCause =
-            dynCast<SharedPtr<NoAvailableLocatorsException> >(ex.getCause());
-        LOG("Expected "
-            "NoAvailableLocatorsExcepti"
-            "on");
-      } catch (ClassCastException&) {
-        FAIL(
-            "NotConnectedException "
-            "with cause "
-            "NoAvailableLocatorsExcepti"
-            "on should have been "
-            "raised");
-      }
+      ASSERT(std::dynamic_pointer_cast<NoAvailableLocatorsException>(
+                 ex.getCause()),
+             "NotConnectedException "
+             "with cause "
+             "NoAvailableLocatorsExcepti"
+             "on should have been "
+             "raised");
     }
   }
 END_TASK(AgainAgainFailoverC1_All)

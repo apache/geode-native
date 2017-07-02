@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
+#include <string>
+#include <iostream>
+#include <vector>
+
 #include "fw_dunit.hpp"
 
 #include <geode/GeodeCppCache.hpp>
-
-#include <string>
-#include <vector>
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -32,7 +33,7 @@
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
-const char* endPoints = (const char*)NULL;
+const char* endPoints = (const char*)nullptr;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
@@ -55,9 +56,9 @@ bool findString(string& item, CacheableStringArrayPtr array) {
 }
 
 bool checkStringArray(SLIST& first, CacheableStringArrayPtr second) {
-  if (second == NULLPTR && first.size() > 0) return false;
+  if (second == nullptr && first.size() > 0) return false;
 
-  if (second == NULLPTR && first.size() == 0) return true;
+  if (second == nullptr && first.size() == 0) return true;
 
   if (first.size() != second->length()) return false;
 
@@ -82,16 +83,16 @@ bool checkPoolAttribs(PoolPtr pool, SLIST& locators, SLIST& servers,
                       bool prSingleHopEnabled, int updateLocatorListInterval) {
   char logmsg[500] = {0};
 
-  if (pool == NULLPTR) {
-    LOG("checkPoolAttribs: PoolPtr is NULL");
+  if (pool == nullptr) {
+    LOG("checkPoolAttribs: PoolPtr is nullptr");
     return false;
   }
 
-  test::cout << "Checking pool " << pool->getName() << test::endl;
+  std::cout << "Checking pool " << pool->getName() << std::endl;
 
   if (strcmp(pool->getName(), name)) {
     sprintf(logmsg, "checkPoolAttribs: Pool name expected [%s], actual [%s]",
-            name, pool->getName() == NULL ? "null" : pool->getName());
+            name, pool->getName() == nullptr ? "null" : pool->getName());
     LOG(logmsg);
     return false;
   }
@@ -162,10 +163,10 @@ bool checkPoolAttribs(PoolPtr pool, SLIST& locators, SLIST& servers,
     return false;
   }
   if (strcmp(serverGroup, pool->getServerGroup())) {
-    sprintf(logmsg,
-            "checkPoolAttribs: Pool serverGroup expected [%s], actual [%s]",
-            serverGroup,
-            pool->getServerGroup() == NULL ? "null" : pool->getServerGroup());
+    sprintf(
+        logmsg, "checkPoolAttribs: Pool serverGroup expected [%s], actual [%s]",
+        serverGroup,
+        pool->getServerGroup() == nullptr ? "null" : pool->getServerGroup());
     LOG(logmsg);
     return false;
   }
@@ -244,7 +245,7 @@ int testXmlCacheCreationWithPools() {
   CacheFactoryPtr cacheFactory;
   CachePtr cptr;
 
-  test::cout << "create DistributedSytem with name=" << host_name << test::endl;
+  std::cout << "create DistributedSytem with name=" << host_name << std::endl;
   try {
     cacheFactory = CacheFactory::createCacheFactory();
   } catch (Exception& ex) {
@@ -253,9 +254,9 @@ int testXmlCacheCreationWithPools() {
     return -1;
   }
 
-  test::cout
+  std::cout
       << "Create cache with the configurations provided in valid_cache_pool.xml"
-      << test::endl;
+      << std::endl;
 
   try {
     std::string filePath = "valid_cache_pool.xml";
@@ -263,11 +264,11 @@ int testXmlCacheCreationWithPools() {
     CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
     cptr = cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create();
     if (cptr->getPdxIgnoreUnreadFields() != true) {
-      test::cout << "getPdxIgnoreUnreadFields should return true."
-                 << test::endl;
+      std::cout << "getPdxIgnoreUnreadFields should return true."
+                 << std::endl;
       return -1;
     } else {
-      test::cout << "getPdxIgnoreUnreadFields returned true." << test::endl;
+      std::cout << "getPdxIgnoreUnreadFields returned true." << std::endl;
     }
   } catch (Exception& ex) {
     ex.showMessage();
@@ -279,40 +280,40 @@ int testXmlCacheCreationWithPools() {
   }
 
   VectorOfRegion vrp;
-  test::cout << "Test if number of root regions are correct" << test::endl;
+  std::cout << "Test if number of root regions are correct" << std::endl;
   cptr->rootRegions(vrp);
-  test::cout << "  vrp.size=" << vrp.size() << test::endl;
+  std::cout << "  vrp.size=" << vrp.size() << std::endl;
 
   if (vrp.size() != 2) {
-    test::cout << "Number of root regions does not match" << test::endl;
+    std::cout << "Number of root regions does not match" << std::endl;
     return -1;
   }
 
-  test::cout << "Root regions in Cache :" << test::endl;
+  std::cout << "Root regions in Cache :" << std::endl;
   for (int32_t i = 0; i < vrp.size(); i++) {
-    test::cout << "vc[" << i << "].m_regionPtr=" << vrp.at(i).ptr()
-               << test::endl;
-    test::cout << "vc[" << i << "]=" << vrp.at(i)->getName() << test::endl;
+    std::cout << "vc[" << i << "].m_regionPtr=" << vrp.at(i).get()
+               << std::endl;
+    std::cout << "vc[" << i << "]=" << vrp.at(i)->getName() << std::endl;
   }
   RegionPtr regPtr1 = vrp.at(0);
 
   VectorOfRegion vr;
-  test::cout << "Test if the number of sub regions with the root region Root1 "
+  std::cout << "Test if the number of sub regions with the root region Root1 "
                 "are correct"
-             << test::endl;
+             << std::endl;
   regPtr1->subregions(true, vr);
-  test::cout << "  vr.size=" << vr.size() << test::endl;
+  std::cout << "  vr.size=" << vr.size() << std::endl;
   if (vr.size() != 1) {
-    test::cout << "Number of Subregions does not match" << test::endl;
+    std::cout << "Number of Subregions does not match" << std::endl;
     return -1;
   }
 
-  test::cout << "get subregions from the root region :" << vrp.at(0)->getName()
-             << test::endl;
+  std::cout << "get subregions from the root region :" << vrp.at(0)->getName()
+             << std::endl;
   for (int32_t i = 0; i < vr.size(); i++) {
-    test::cout << "vc[" << i << "].m_regionPtr=" << vr.at(i).ptr()
-               << test::endl;
-    test::cout << "vc[" << i << "]=" << vr.at(i)->getName() << test::endl;
+    std::cout << "vc[" << i << "].m_regionPtr=" << vr.at(i).get()
+               << std::endl;
+    std::cout << "vc[" << i << "]=" << vr.at(i)->getName() << std::endl;
   }
 
   RegionPtr subRegPtr = vr.at(0);
@@ -320,35 +321,35 @@ int testXmlCacheCreationWithPools() {
 
   RegionPtr regPtr2 = vrp.at(1);
 
-  test::cout << "Test if the number of sub regions with the root region Root2 "
+  std::cout << "Test if the number of sub regions with the root region Root2 "
                 "are correct"
-             << test::endl;
+             << std::endl;
   regPtr2->subregions(true, vr);
-  test::cout << "  vr.size=" << vr.size() << test::endl;
+  std::cout << "  vr.size=" << vr.size() << std::endl;
   if (vr.size() != 0) {
-    test::cout << "Number of Subregions does not match" << test::endl;
+    std::cout << "Number of Subregions does not match" << std::endl;
     return -1;
   }
 
   vr.clear();
   vrp.clear();
 
-  test::cout << "Test the attributes of region" << test::endl;
+  std::cout << "Test the attributes of region" << std::endl;
 
   const char* poolNameReg1 = regPtr1->getAttributes()->getPoolName();
   const char* poolNameSubReg = subRegPtr->getAttributes()->getPoolName();
   const char* poolNameReg2 = regPtr2->getAttributes()->getPoolName();
 
   if (strcmp(poolNameReg1, "test_pool_1")) {
-    test::cout << "Wrong pool name for region 1" << test::endl;
+    std::cout << "Wrong pool name for region 1" << std::endl;
     return -1;
   }
   if (strcmp(poolNameReg2, "test_pool_2")) {
-    test::cout << "Wrong pool name for region 2" << test::endl;
+    std::cout << "Wrong pool name for region 2" << std::endl;
     return -1;
   }
   if (strcmp(poolNameSubReg, "test_pool_2")) {
-    test::cout << "Wrong pool name for sub region" << test::endl;
+    std::cout << "Wrong pool name for sub region" << std::endl;
     return -1;
   }
 
@@ -389,78 +390,78 @@ int testXmlCacheCreationWithPools() {
 
   if (!cptr->isClosed()) {
     cptr->close();
-    cptr = NULLPTR;
+    cptr = nullptr;
   }
 
   if (!check1 || !check2 || !check3) {
-    test::cout << "Property check failed" << test::endl;
+    std::cout << "Property check failed" << std::endl;
     return -1;
   }
   ////////////////////////////testing of cache.xml completed///////////////////
 
   try {
-    test::cout << "Testing invalid pool xml 1" << test::endl;
+    std::cout << "Testing invalid pool xml 1" << std::endl;
     std::string filePath = "invalid_cache_pool.xml";
     std::string duplicateFile;
     CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
     cptr = cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create();
     return -1;
   } catch (Exception& ex) {
-    test::cout << "EXPECTED EXCEPTION" << test::endl;
+    std::cout << "EXPECTED EXCEPTION" << std::endl;
     ex.showMessage();
     ex.printStackTrace();
   }
 
   try {
-    test::cout << "Testing invalid pool xml 2" << test::endl;
+    std::cout << "Testing invalid pool xml 2" << std::endl;
     std::string filePath = "invalid_cache_pool2.xml";
     std::string duplicateFile;
     CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
     cptr = cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create();
     return -1;
   } catch (Exception& ex) {
-    test::cout << "EXPECTED EXCEPTION" << test::endl;
+    std::cout << "EXPECTED EXCEPTION" << std::endl;
     ex.showMessage();
     ex.printStackTrace();
   }
 
   try {
-    test::cout << "Testing invalid pool xml 3" << test::endl;
+    std::cout << "Testing invalid pool xml 3" << std::endl;
     std::string filePath = "invalid_cache_pool3.xml";
     std::string duplicateFile;
     CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
     cptr = cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create();
     return -1;
   } catch (Exception& ex) {
-    test::cout << "EXPECTED EXCEPTION" << test::endl;
+    std::cout << "EXPECTED EXCEPTION" << std::endl;
     ex.showMessage();
     ex.printStackTrace();
   }
 
   try {
-    test::cout << "Testing invalid pool xml 4" << test::endl;
+    std::cout << "Testing invalid pool xml 4" << std::endl;
     std::string filePath = "invalid_cache_pool4.xml";
     std::string duplicateFile;
     CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
     cptr = cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create();
     return -1;
   } catch (Exception& ex) {
-    test::cout << "EXPECTED EXCEPTION" << test::endl;
+    std::cout << "EXPECTED EXCEPTION" << std::endl;
     ex.showMessage();
     ex.printStackTrace();
   }
 
-  test::cout << "disconnecting..." << test::endl;
+  std::cout << "disconnecting..." << std::endl;
   try {
-    test::cout << "just before disconnecting..." << test::endl;
-    if (cptr != NULLPTR) cptr->close();
+    std::cout << "just before disconnecting..." << std::endl;
+    if (cptr != nullptr) cptr->close();
   } catch (Exception& ex) {
     ex.showMessage();
     ex.printStackTrace();
     return -1;
   }
-  test::cout << "done with test" << test::endl;
-  test::cout << "Test successful!" << test::endl;
+  std::cout << "done with test" << std::endl;
+  std::cout << "Test successful!" << std::endl;
   return 0;
 }
 
@@ -472,7 +473,7 @@ int testXmlDeclarativeCacheCreation() {
   char* path = ACE_OS::getenv("TESTSRC");
   std::string directory(path);
 
-  test::cout << "create DistributedSytem with name=" << host_name << test::endl;
+  std::cout << "create DistributedSytem with name=" << host_name << std::endl;
   try {
     cacheFactory = CacheFactory::createCacheFactory();
   } catch (Exception& ex) {
@@ -495,47 +496,47 @@ int testXmlDeclarativeCacheCreation() {
   }
 
   VectorOfRegion vrp;
-  test::cout << "Test if number of root regions are correct" << test::endl;
+  std::cout << "Test if number of root regions are correct" << std::endl;
   cptr->rootRegions(vrp);
-  test::cout << "  vrp.size=" << vrp.size() << test::endl;
+  std::cout << "  vrp.size=" << vrp.size() << std::endl;
 
   if (vrp.size() != 1) {
-    test::cout << "Number of root regions does not match" << test::endl;
+    std::cout << "Number of root regions does not match" << std::endl;
     return -1;
   }
 
-  test::cout << "Root regions in Cache :" << test::endl;
+  std::cout << "Root regions in Cache :" << std::endl;
   for (int32_t i = 0; i < vrp.size(); i++) {
-    test::cout << "vc[" << i << "].m_reaPtr=" << vrp.at(i).ptr() << test::endl;
-    test::cout << "vc[" << i << "]=" << vrp.at(i)->getName() << test::endl;
+    std::cout << "vc[" << i << "].m_reaPtr=" << vrp.at(i).get() << std::endl;
+    std::cout << "vc[" << i << "]=" << vrp.at(i)->getName() << std::endl;
   }
   RegionPtr regPtr1 = vrp.at(0);
 
   RegionAttributesPtr raPtr = regPtr1->getAttributes();
-  RegionAttributes* regAttr = raPtr.ptr();
-  test::cout << "Test Attributes of root region Root1 " << test::endl;
-  test::cout << "Region name " << regPtr1->getName() << test::endl;
+  RegionAttributes* regAttr = raPtr.get();
+  std::cout << "Test Attributes of root region Root1 " << std::endl;
+  std::cout << "Region name " << regPtr1->getName() << std::endl;
 
-  if (regAttr->getCacheLoader() == NULLPTR) {
-    test::cout << "Cache Loader not initialized." << test::endl;
+  if (regAttr->getCacheLoader() == nullptr) {
+    std::cout << "Cache Loader not initialized." << std::endl;
     return -1;
   }
 
-  if (regAttr->getCacheListener() == NULLPTR) {
-    test::cout << "Cache Listener not initialized." << test::endl;
+  if (regAttr->getCacheListener() == nullptr) {
+    std::cout << "Cache Listener not initialized." << std::endl;
     return -1;
   }
 
-  if (regAttr->getCacheWriter() == NULLPTR) {
-    test::cout << "Cache Writer not initialized." << test::endl;
+  if (regAttr->getCacheWriter() == nullptr) {
+    std::cout << "Cache Writer not initialized." << std::endl;
     return -1;
   }
 
-  test::cout << "Attributes of Root1 are correctly set" << test::endl;
+  std::cout << "Attributes of Root1 are correctly set" << std::endl;
 
   if (!cptr->isClosed()) {
     cptr->close();
-    cptr = NULLPTR;
+    cptr = nullptr;
   }
 
   return 0;

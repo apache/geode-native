@@ -61,7 +61,7 @@ void stepOne() {
   // Create just one pool and attach all regions to that.
   initClient(true);
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0, true);
+  createPool(poolNames[0], locHostPort, nullptr, 0, true);
   createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
   createRegionAndAttachPool(qRegionNames[1], USE_ACK, poolNames[0]);
   createRegionAndAttachPool(qRegionNames[2], USE_ACK, poolNames[0]);
@@ -169,7 +169,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     bool doAnyErrorOccured = false;
     QueryHelper* qh = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = NULLPTR;
+    QueryServicePtr qs = nullptr;
     if (isPoolConfig) {
       PoolPtr pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
@@ -188,7 +188,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
         continue;
       }
 
-      ResultSetPtr rsptr = dynCast<ResultSetPtr>(results);
+      auto rsptr = std::dynamic_pointer_cast<ResultSet>(results);
       SelectResultsIterator iter = rsptr->getIterator();
       for (int32_t rows = 0; rows < rsptr->size(); rows++) {
         if (rows > (int32_t)QueryHelper::getHelper().getPortfolioSetSize()) {
@@ -197,20 +197,22 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
 
         if (!m_isPdx) {
           SerializablePtr ser = (*rsptr)[rows];
-          if (instanceOf<PortfolioPtr>(ser)) {
-            PortfolioPtr portfolio = staticCast<PortfolioPtr>(ser);
+          if (std::dynamic_pointer_cast<Portfolio>(ser)) {
+            PortfolioPtr portfolio =
+                std::static_pointer_cast<Portfolio>(ser);
             printf(
                 "   query idx %d pulled portfolio object ID %d, pkid  :: %s\n",
                 i, portfolio->getID(), portfolio->getPkid()->asChar());
-          } else if (instanceOf<PositionPtr>(ser)) {
-            PositionPtr position = staticCast<PositionPtr>(ser);
+          } else if (std::dynamic_pointer_cast<Position>(ser)) {
+            PositionPtr position =
+                std::static_pointer_cast<Position>(ser);
             printf(
                 "   query idx %d pulled position object secId %s, shares  :: "
                 "%d\n",
                 i, position->getSecId()->asChar(),
                 position->getSharesOutstanding());
           } else {
-            if (ser != NULLPTR) {
+            if (ser != nullptr) {
               printf(" query idx %d pulled object %s \n", i,
                      ser->toString()->asChar());
             } else {
@@ -220,14 +222,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
           }
         } else {
           SerializablePtr pdxser = (*rsptr)[rows];
-          if (instanceOf<PortfolioPdxPtr>(pdxser)) {
-            PortfolioPdxPtr portfoliopdx = staticCast<PortfolioPdxPtr>(pdxser);
+          if (std::dynamic_pointer_cast<PortfolioPdx>(pdxser)) {
+            PortfolioPdxPtr portfoliopdx =
+                std::static_pointer_cast<PortfolioPdx>(pdxser);
             printf(
                 "   query idx %d pulled portfolioPdx object ID %d, pkid %s  :: "
                 "\n",
                 i, portfoliopdx->getID(), portfoliopdx->getPkid());
-          } else if (instanceOf<PositionPdxPtr>(pdxser)) {
-            PositionPdxPtr positionpdx = staticCast<PositionPdxPtr>(pdxser);
+          } else if (std::dynamic_pointer_cast<PositionPdx>(pdxser)) {
+            PositionPdxPtr positionpdx =
+                std::static_pointer_cast<PositionPdx>(pdxser);
             printf(
                 "   query idx %d pulled positionPdx object secId %s, shares %d "
                 " "
@@ -235,7 +239,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
                 i, positionpdx->getSecId(),
                 positionpdx->getSharesOutstanding());
           } else {
-            if (pdxser != NULLPTR) {
+            if (pdxser != nullptr) {
               if (pdxser->toString()->isWideString()) {
                 printf(" query idx %d pulled object %S  :: \n", i,
                        pdxser->toString()->asWChar());
@@ -268,7 +272,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
     bool doAnyErrorOccured = false;
     QueryHelper* qh = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = NULLPTR;
+    QueryServicePtr qs = nullptr;
     if (isPoolConfig) {
       PoolPtr pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
@@ -300,7 +304,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
           continue;
         }
 
-        ResultSetPtr rsptr = dynCast<ResultSetPtr>(results);
+        auto rsptr = std::dynamic_pointer_cast<ResultSet>(results);
         SelectResultsIterator iter = rsptr->getIterator();
         for (int32_t rows = 0; rows < rsptr->size(); rows++) {
           if (rows > (int32_t)QueryHelper::getHelper().getPortfolioSetSize()) {
@@ -309,21 +313,23 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
 
           if (!m_isPdx) {
             SerializablePtr ser = (*rsptr)[rows];
-            if (instanceOf<PortfolioPtr>(ser)) {
-              PortfolioPtr portfolio = staticCast<PortfolioPtr>(ser);
+            if (std::dynamic_pointer_cast<Portfolio>(ser)) {
+              PortfolioPtr portfolio =
+                  std::static_pointer_cast<Portfolio>(ser);
               printf(
                   "   query idx %d pulled portfolio object ID %d, pkid  :: "
                   "%s\n",
                   i, portfolio->getID(), portfolio->getPkid()->asChar());
-            } else if (instanceOf<PositionPtr>(ser)) {
-              PositionPtr position = staticCast<PositionPtr>(ser);
+            } else if (std::dynamic_pointer_cast<Position>(ser)) {
+              PositionPtr position =
+                  std::static_pointer_cast<Position>(ser);
               printf(
                   "   query idx %d pulled position object secId %s, shares  :: "
                   "%d\n",
                   i, position->getSecId()->asChar(),
                   position->getSharesOutstanding());
             } else {
-              if (ser != NULLPTR) {
+              if (ser != nullptr) {
                 printf(" query idx %d pulled object %s \n", i,
                        ser->toString()->asChar());
               } else {
@@ -333,16 +339,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
             }
           } else {
             SerializablePtr pdxser = (*rsptr)[rows];
-            if (instanceOf<PortfolioPdxPtr>(pdxser)) {
+            if (std::dynamic_pointer_cast<PortfolioPdx>(pdxser)) {
               PortfolioPdxPtr portfoliopdx =
-                  staticCast<PortfolioPdxPtr>(pdxser);
+                  std::static_pointer_cast<PortfolioPdx>(
+                      pdxser);
               printf(
                   "   query idx %d pulled portfolioPdx object ID %d, pkid %s  "
                   ":: "
                   "\n",
                   i, portfoliopdx->getID(), portfoliopdx->getPkid());
-            } else if (instanceOf<PositionPdxPtr>(pdxser)) {
-              PositionPdxPtr positionpdx = staticCast<PositionPdxPtr>(pdxser);
+            } else if (std::dynamic_pointer_cast<PositionPdx>(pdxser)) {
+              PositionPdxPtr positionpdx =
+                  std::static_pointer_cast<PositionPdx>(
+                      pdxser);
               printf(
                   "   query idx %d pulled positionPdx object secId %s, shares "
                   "%d "
@@ -350,7 +359,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
                   i, positionpdx->getSecId(),
                   positionpdx->getSharesOutstanding());
             } else {
-              if (pdxser != NULLPTR) {
+              if (pdxser != nullptr) {
                 if (pdxser->toString()->isWideString()) {
                   printf(" query idx %d pulled object %S  :: \n", i,
                          pdxser->toString()->asWChar());
@@ -384,7 +393,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
     bool doAnyErrorOccured = false;
     QueryHelper* qh = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = NULLPTR;
+    QueryServicePtr qs = nullptr;
     if (isPoolConfig) {
       PoolPtr pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
@@ -422,7 +431,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
           continue;
         }
 
-        ResultSetPtr rsptr = dynCast<ResultSetPtr>(results);
+        auto rsptr = std::dynamic_pointer_cast<ResultSet>(results);
         SelectResultsIterator iter = rsptr->getIterator();
         for (int32_t rows = 0; rows < rsptr->size(); rows++) {
           if (rows > (int32_t)QueryHelper::getHelper().getPortfolioSetSize()) {
@@ -431,13 +440,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
 
           if (!m_isPdx) {
             SerializablePtr ser = (*rsptr)[rows];
-            if (instanceOf<PortfolioPtr>(ser)) {
-              PortfolioPtr portfolio = staticCast<PortfolioPtr>(ser);
+            if (std::dynamic_pointer_cast<Portfolio>(ser)) {
+              PortfolioPtr portfolio =
+                  std::static_pointer_cast<Portfolio>(ser);
               printf(
                   "   query idx %d pulled portfolio object ID %d, pkid %s : \n",
                   i, portfolio->getID(), portfolio->getPkid()->asChar());
-            } else if (instanceOf<PositionPtr>(ser)) {
-              PositionPtr position = staticCast<PositionPtr>(ser);
+            } else if (std::dynamic_pointer_cast<Position>(ser)) {
+              PositionPtr position =
+                  std::static_pointer_cast<Position>(ser);
               printf(
                   "   query idx %d pulled position object secId %s, shares %d  "
                   ": "
@@ -445,7 +456,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
                   i, position->getSecId()->asChar(),
                   position->getSharesOutstanding());
             } else {
-              if (ser != NULLPTR) {
+              if (ser != nullptr) {
                 printf(" query idx %d pulled object %s  : \n", i,
                        ser->toString()->asChar());
               } else {
@@ -455,15 +466,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
             }
           } else {
             SerializablePtr ser = (*rsptr)[rows];
-            if (instanceOf<PortfolioPdxPtr>(ser)) {
-              PortfolioPdxPtr portfoliopdx = staticCast<PortfolioPdxPtr>(ser);
+            if (std::dynamic_pointer_cast<PortfolioPdx>(ser)) {
+              PortfolioPdxPtr portfoliopdx =
+                  std::static_pointer_cast<PortfolioPdx>(ser);
               printf(
                   "   query idx %d pulled portfolioPdx object ID %d, pkid %s  "
                   ": "
                   "\n",
                   i, portfoliopdx->getID(), portfoliopdx->getPkid());
-            } else if (instanceOf<PositionPdxPtr>(ser)) {
-              PositionPdxPtr positionpdx = staticCast<PositionPdxPtr>(ser);
+            } else if (std::dynamic_pointer_cast<PositionPdx>(ser)) {
+              PositionPdxPtr positionpdx =
+                  std::static_pointer_cast<PositionPdx>(ser);
               printf(
                   "   query idx %d pulled positionPdx object secId %s, shares "
                   "%d "
@@ -471,7 +484,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
                   i, positionpdx->getSecId(),
                   positionpdx->getSharesOutstanding());
             } else {
-              if (ser != NULLPTR) {
+              if (ser != nullptr) {
                 printf(" query idx %d pulled object %s : \n", i,
                        ser->toString()->asChar());
               } else {
@@ -496,7 +509,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, DoQueryRSError)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = NULLPTR;
+    QueryServicePtr qs = nullptr;
     if (isPoolConfig) {
       PoolPtr pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
@@ -572,13 +585,12 @@ void runRemoteQueryRSTest() {
 
 void setPortfolioPdxType() { CALL_TASK(SetPortfolioTypeToPdx) }
 
-void UnsetPortfolioType() { CALL_TASK(UnsetPortfolioTypeToPdx) }
+void UnsetPortfolioType(){CALL_TASK(UnsetPortfolioTypeToPdx)}
 
-DUNIT_MAIN
-  {
-    for (int i = 0; i < 2; i++) {
-      runRemoteQueryRSTest();
-      setPortfolioPdxType();
-    }
+DUNIT_MAIN {
+  for (int i = 0; i < 2; i++) {
+    runRemoteQueryRSTest();
+    setPortfolioPdxType();
   }
+}
 END_MAIN

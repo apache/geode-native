@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 /*
-* PdxLocalReader.cpp
-* Created on: Nov 3, 2011
-*      Author: npatel
-*/
+ * PdxLocalReader.cpp
+ * Created on: Nov 3, 2011
+ *      Author: npatel
+ */
 
 #include "PdxLocalReader.hpp"
 #include "PdxTypeRegistry.hpp"
@@ -28,16 +28,16 @@ namespace geode {
 namespace client {
 
 PdxLocalReader::PdxLocalReader()
-    : m_dataInput(NULL),
-      m_startBuffer(NULL),
+    : m_dataInput(nullptr),
+      m_startBuffer(nullptr),
       m_startPosition(0),
       m_serializedLength(0),
       m_serializedLengthWithOffsets(0),
       m_offsetSize(0),
-      m_offsetsBuffer(NULL),
+      m_offsetsBuffer(nullptr),
       m_isDataNeedToPreserve(false),
-      m_localToRemoteMap(NULL),
-      m_remoteToLocalMap(NULL),
+      m_localToRemoteMap(nullptr),
+      m_remoteToLocalMap(nullptr),
       m_remoteToLocalMapSize(0) {}
 
 PdxLocalReader::PdxLocalReader(DataInput& input, PdxTypePtr remoteType,
@@ -50,7 +50,7 @@ PdxLocalReader::PdxLocalReader(DataInput& input, PdxTypePtr remoteType,
   m_remoteToLocalMap = remoteType->getRemoteToLocalMap();
   m_remoteToLocalMapSize = remoteType->getTotalFields();
 
-  m_pdxRemotePreserveData = new PdxRemotePreservedData();
+  m_pdxRemotePreserveData = std::make_shared<PdxRemotePreservedData>();
   m_isDataNeedToPreserve = true;
   initialize();
 }
@@ -92,7 +92,7 @@ void PdxLocalReader::MoveStream() {
 }
 
 void PdxLocalReader::checkEmptyFieldName(const char* fieldName) {
-  if (fieldName == NULL) {
+  if (fieldName == nullptr) {
     throw IllegalStateException("Field name is null");
   }
 }
@@ -178,10 +178,10 @@ SerializablePtr PdxLocalReader::readObject(const char* fieldName) {
   checkEmptyFieldName(fieldName);
   SerializablePtr ptr;
   m_dataInput->readObject(ptr);
-  if (ptr != NULLPTR) {
+  if (ptr != nullptr) {
     return ptr;
   } else {
-    return NULLPTR;
+    return nullptr;
   }
 }
 
@@ -190,7 +190,7 @@ char* PdxLocalReader::readCharArray(const char* fieldName,
                                                         // Length to user for
                                                         // all primitive arrays
   checkEmptyFieldName(fieldName);
-  char* charArray = NULL;
+  char* charArray = nullptr;
   m_dataInput->readCharArray(&charArray, length);
   return charArray;
 }
@@ -200,20 +200,20 @@ wchar_t* PdxLocalReader::readWideCharArray(
     int32_t& length) {  // TODO:: need to return Length to user for all
                         // primitive arrays
   checkEmptyFieldName(fieldName);
-  wchar_t* charArray = NULL;
+  wchar_t* charArray = nullptr;
   m_dataInput->readWideCharArray(&charArray, length);
   return charArray;
 }
 bool* PdxLocalReader::readBooleanArray(const char* fieldName, int32_t& length) {
   checkEmptyFieldName(fieldName);
-  bool* boolArray = NULL;
+  bool* boolArray = nullptr;
   m_dataInput->readBooleanArray(&boolArray, length);
   return boolArray;
 }
 
 int8_t* PdxLocalReader::readByteArray(const char* fieldName, int32_t& length) {
   checkEmptyFieldName(fieldName);
-  int8_t* byteArray = NULL;
+  int8_t* byteArray = nullptr;
   m_dataInput->readByteArray(&byteArray, length);
   return byteArray;
 }
@@ -221,28 +221,28 @@ int8_t* PdxLocalReader::readByteArray(const char* fieldName, int32_t& length) {
 int16_t* PdxLocalReader::readShortArray(const char* fieldName,
                                         int32_t& length) {
   checkEmptyFieldName(fieldName);
-  int16_t* shortArray = NULL;
+  int16_t* shortArray = nullptr;
   m_dataInput->readShortArray(&shortArray, length);
   return shortArray;
 }
 
 int32_t* PdxLocalReader::readIntArray(const char* fieldName, int32_t& length) {
   checkEmptyFieldName(fieldName);
-  int32_t* intArray = NULL;
+  int32_t* intArray = nullptr;
   m_dataInput->readIntArray(&intArray, length);
   return intArray;
 }
 
 int64_t* PdxLocalReader::readLongArray(const char* fieldName, int32_t& length) {
   checkEmptyFieldName(fieldName);
-  int64_t* longArray = NULL;
+  int64_t* longArray = nullptr;
   m_dataInput->readLongArray(&longArray, length);
   return longArray;
 }
 
 float* PdxLocalReader::readFloatArray(const char* fieldName, int32_t& length) {
   checkEmptyFieldName(fieldName);
-  float* floatArray = NULL;
+  float* floatArray = nullptr;
   m_dataInput->readFloatArray(&floatArray, length);
   return floatArray;
 }
@@ -250,14 +250,14 @@ float* PdxLocalReader::readFloatArray(const char* fieldName, int32_t& length) {
 double* PdxLocalReader::readDoubleArray(const char* fieldName,
                                         int32_t& length) {
   checkEmptyFieldName(fieldName);
-  double* doubleArray = NULL;
+  double* doubleArray = nullptr;
   m_dataInput->readDoubleArray(&doubleArray, length);
   return doubleArray;
 }
 
 char** PdxLocalReader::readStringArray(const char* fieldName, int32_t& length) {
   checkEmptyFieldName(fieldName);
-  char** stringArray = NULL;
+  char** stringArray = nullptr;
   m_dataInput->readStringArray(&stringArray, length);
   return stringArray;
 }
@@ -265,7 +265,7 @@ char** PdxLocalReader::readStringArray(const char* fieldName, int32_t& length) {
 wchar_t** PdxLocalReader::readWideStringArray(const char* fieldName,
                                               int32_t& length) {
   checkEmptyFieldName(fieldName);
-  wchar_t** stringArray = NULL;
+  wchar_t** stringArray = nullptr;
   m_dataInput->readWideStringArray(&stringArray, length);
   return stringArray;
 }
@@ -276,7 +276,7 @@ CacheableObjectArrayPtr PdxLocalReader::readObjectArray(const char* fieldName) {
   coa->fromData(*m_dataInput);
   LOGDEBUG("PdxLocalReader::readObjectArray coa->size() = %d", coa->size());
   if (coa->size() <= 0) {
-    coa = NULLPTR;
+    coa = nullptr;
   }
   return coa;
 }
@@ -285,7 +285,7 @@ int8_t** PdxLocalReader::readArrayOfByteArrays(const char* fieldName,
                                                int32_t& arrayLength,
                                                int32_t** elementLength) {
   checkEmptyFieldName(fieldName);
-  int8_t** arrofBytearr = NULL;
+  int8_t** arrofBytearr = nullptr;
   m_dataInput->readArrayOfByteArrays(&arrofBytearr, arrayLength, elementLength);
   return arrofBytearr;
 }
@@ -306,7 +306,7 @@ PdxRemotePreservedDataPtr PdxLocalReader::getPreservedData(
       nFieldExtra, PdxTypeRegistry::getPdxIgnoreUnreadFields());
   if (nFieldExtra > 0 && PdxTypeRegistry::getPdxIgnoreUnreadFields() == false) {
     m_pdxRemotePreserveData->initialize(
-        m_pdxType != NULLPTR ? m_pdxType->getTypeId() : 0,
+        m_pdxType != nullptr ? m_pdxType->getTypeId() : 0,
         mergedVersion->getTypeId(), nFieldExtra, pdxObject);
     LOGDEBUG("PdxLocalReader::getPreservedData - 1");
 
@@ -355,16 +355,16 @@ PdxRemotePreservedDataPtr PdxLocalReader::getPreservedData(
           "PdxLocalReader::GetPreservedData m_isDataNeedToPreserve is false");
     }
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 bool PdxLocalReader::hasField(const char* fieldName) {
-  return m_pdxType->getPdxField(fieldName) != NULLPTR;
+  return m_pdxType->getPdxField(fieldName) != nullptr;
 }
 
 bool PdxLocalReader::isIdentityField(const char* fieldName) {
   PdxFieldTypePtr pft = m_pdxType->getPdxField(fieldName);
-  return (pft != NULLPTR) && (pft->getIdentityField());
+  return (pft != nullptr) && (pft->getIdentityField());
 }
 
 void PdxLocalReader::readCollection(const char* fieldName,
@@ -375,7 +375,7 @@ void PdxLocalReader::readCollection(const char* fieldName,
 PdxUnreadFieldsPtr PdxLocalReader::readUnreadFields() {
   LOGDEBUG("readUnreadFields:: %d ignore property %d", m_isDataNeedToPreserve,
            PdxTypeRegistry::getPdxIgnoreUnreadFields());
-  if (PdxTypeRegistry::getPdxIgnoreUnreadFields() == true) return NULLPTR;
+  if (PdxTypeRegistry::getPdxIgnoreUnreadFields() == true) return nullptr;
   m_isDataNeedToPreserve = false;
   return m_pdxRemotePreserveData;
 }

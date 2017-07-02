@@ -70,7 +70,7 @@ StatisticDescriptor* StatisticDescriptorImpl::createIntCounter(
   FieldType fieldType = INT_TYPE;
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       statName, fieldType, description, units, true, isLargerBetter);
-  if (sdi == NULL) {
+  if (sdi == nullptr) {
     throw OutOfMemoryException(
         "StatisticDescriptorImpl::createIntCounter: out of memory");
   }
@@ -83,7 +83,7 @@ StatisticDescriptor* StatisticDescriptorImpl::createLongCounter(
   FieldType fieldType = LONG_TYPE;
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       name, fieldType, description, units, true, isLargerBetter);
-  if (sdi == NULL) {
+  if (sdi == nullptr) {
     throw OutOfMemoryException(
         "StatisticDescriptorImpl::createLongCounter: out of memory");
   }
@@ -96,7 +96,7 @@ StatisticDescriptor* StatisticDescriptorImpl::createDoubleCounter(
   FieldType fieldType = DOUBLE_TYPE;
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       name, fieldType, description, units, true, isLargerBetter);
-  if (sdi == NULL) {
+  if (sdi == nullptr) {
     throw OutOfMemoryException(
         "StatisticDescriptorImpl::createDoubleCounter: out of memory");
   }
@@ -109,7 +109,7 @@ StatisticDescriptor* StatisticDescriptorImpl::createIntGauge(
   FieldType fieldType = INT_TYPE;
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       name, fieldType, description, units, false, isLargerBetter);
-  if (sdi == NULL) {
+  if (sdi == nullptr) {
     throw OutOfMemoryException(
         "StatisticDescriptorImpl::createIntGauge: out of memory");
   }
@@ -123,7 +123,7 @@ StatisticDescriptor* StatisticDescriptorImpl::createLongGauge(
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       name, fieldType, description, units, false, isLargerBetter);
 
-  if (sdi == NULL) {
+  if (sdi == nullptr) {
     throw OutOfMemoryException(
         "StatisticDescriptorImpl::createLongGauge: out of memory");
   }
@@ -136,7 +136,7 @@ StatisticDescriptor* StatisticDescriptorImpl::createDoubleGauge(
   FieldType fieldType = DOUBLE_TYPE;
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       name, fieldType, description, units, false, isLargerBetter);
-  if (sdi == NULL) {
+  if (sdi == nullptr) {
     throw OutOfMemoryException(
         "StatisticDescriptorImpl::createDoubleGauge: out of memory");
   }

@@ -112,10 +112,8 @@ class MapEntryT : public TBase {
 
   virtual int getUpdateCount() const { return UPDATE_COUNT; }
 
-  inline static MapEntryT* create(const CacheableKeyPtr& key) {
-    MapEntryT* entry;
-    GF_NEW(entry, MapEntryT(key));
-    return entry;
+  inline static std::shared_ptr<MapEntryT> create(const CacheableKeyPtr& key) {
+    return std::make_shared<MapEntryT>(key);
   }
 
  protected:
@@ -125,6 +123,8 @@ class MapEntryT : public TBase {
   // disabled
   MapEntryT(const MapEntryT&);
   MapEntryT& operator=(const MapEntryT&);
+
+  FRIEND_STD_SHARED_PTR(MapEntryT)
 };
 
 // specialization of MapEntryT to terminate the recursive template definition
@@ -148,7 +148,8 @@ class MapEntryT<TBase, NUM_TRACKERS, GF_UPDATE_MAX> : public TBase {
 
   virtual int incrementUpdateCount(MapEntryPtr& newEntry) {
     // fallback to TrackedMapEntry
-    GF_NEW(newEntry, TrackedMapEntry(this, NUM_TRACKERS, GF_UPDATE_MAX + 1));
+    newEntry = std::make_shared<TrackedMapEntry>(
+        this->shared_from_this(), NUM_TRACKERS, GF_UPDATE_MAX + 1);
     return (GF_UPDATE_MAX + 1);
   }
 
@@ -173,7 +174,8 @@ class MapEntryT<TBase, GF_TRACK_MAX, UPDATE_COUNT> : public TBase {
 
   virtual int addTracker(MapEntryPtr& newEntry) {
     // fallback to TrackedMapEntry
-    GF_NEW(newEntry, TrackedMapEntry(this, GF_TRACK_MAX + 1, UPDATE_COUNT));
+    newEntry = std::make_shared<TrackedMapEntry>(
+        this->shared_from_this(), GF_TRACK_MAX + 1, UPDATE_COUNT);
     return UPDATE_COUNT;
   }
 
@@ -208,7 +210,8 @@ class MapEntryT<TBase, GF_TRACK_MAX, GF_UPDATE_MAX> : public TBase {
 
   virtual int addTracker(MapEntryPtr& newEntry) {
     // fallback to TrackedMapEntry
-    GF_NEW(newEntry, TrackedMapEntry(this, GF_TRACK_MAX + 1, GF_UPDATE_MAX));
+    newEntry = std::make_shared<TrackedMapEntry>(
+        this->shared_from_this(), GF_TRACK_MAX + 1, GF_UPDATE_MAX);
     return GF_UPDATE_MAX;
   }
 
@@ -220,7 +223,8 @@ class MapEntryT<TBase, GF_TRACK_MAX, GF_UPDATE_MAX> : public TBase {
 
   virtual int incrementUpdateCount(MapEntryPtr& newEntry) {
     // fallback to TrackedMapEntry
-    GF_NEW(newEntry, TrackedMapEntry(this, GF_TRACK_MAX, GF_UPDATE_MAX + 1));
+    newEntry = std::make_shared<TrackedMapEntry>(
+        this->shared_from_this(), GF_TRACK_MAX, GF_UPDATE_MAX + 1);
     return (GF_UPDATE_MAX + 1);
   }
 

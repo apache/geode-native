@@ -34,7 +34,7 @@ using namespace test;
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 bool isLocalServer = false;
 
 static bool isLocator = false;
@@ -43,7 +43,7 @@ const char* locatorsG =
 #include "LocatorHelper.hpp"
 static int clientWithRedundancy = 0;
 void initClient(int redundancyLevel) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr config = Properties::create();
     if (clientWithRedundancy > 0) config->insert("grid-client", "true");
     clientWithRedundancy += 1;
@@ -54,7 +54,7 @@ void initClient(int redundancyLevel) {
 
 static int clientWithNothing = 0;
 void initClient() {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr config = Properties::create();
     if (clientWithNothing > 1) config->insert("grid-client", "true");
     clientWithNothing += 1;
@@ -65,24 +65,24 @@ void initClient() {
 
 static int clientWithXml = 0;
 void initClient(const char* clientXmlFile) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     PropertiesPtr config = Properties::create();
     if (clientWithXml > 2) config->insert("grid-client", "true");
     clientWithXml += 1;
-    cacheHelper = new CacheHelper(NULL, clientXmlFile, config);
+    cacheHelper = new CacheHelper(nullptr, clientXmlFile, config);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }
 
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
@@ -106,7 +106,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   free(buf);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   CacheableKeyPtr keyPtr = createKey(key);
 
@@ -114,7 +114,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   if (noKey == false) {  // need to find the key!
     ASSERT(regPtr->containsKey(keyPtr), "Key not found in region.");
   }
-  if (val != NULL) {  // need to have a value!
+  if (val != nullptr) {  // need to have a value!
     ASSERT(regPtr->containsValueForKey(keyPtr), "Value not found in region.");
   }
 
@@ -134,7 +134,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
       }
       ASSERT(containsKeyCnt < MAX, "Key found in region.");
     }
-    if (val == NULL) {
+    if (val == nullptr) {
       if (regPtr->containsValueForKey(keyPtr)) {
         containsValueCnt++;
       } else {
@@ -143,11 +143,11 @@ void _verifyEntry(const char* name, const char* key, const char* val,
       ASSERT(containsValueCnt < MAX, "Value found in region.");
     }
 
-    if (val != NULL) {
-      CacheableStringPtr checkPtr =
-          dynCast<CacheableStringPtr>(regPtr->get(keyPtr));
+    if (val != nullptr) {
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
-      ASSERT(checkPtr != NULLPTR, "Value Ptr should not be null.");
+      ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
       char buf[1024];
       sprintf(buf, "In verify loop, get returned %s for key %s",
               checkPtr->asChar(), key);
@@ -202,7 +202,7 @@ void destroyEntry(const char* name, const char* key) {
   CacheableKeyPtr keyPtr = CacheableKey::create(key);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
 
@@ -218,10 +218,10 @@ void createRegion(const char* name, bool ackMode,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  char* endpoints = NULL;
+  char* endpoints = nullptr;
   RegionPtr regPtr = getHelper()->createRegion(
-      name, ackMode, true, NULLPTR, endpoints, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+      name, ackMode, true, nullptr, endpoints, clientNotificationEnabled);
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 
@@ -233,10 +233,10 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   PoolPtr poolPtr = getHelper()->createPool(
-      poolname, locators, NULL, reduendency, clientNotificationEnabled);
+      poolname, locators, nullptr, reduendency, clientNotificationEnabled);
   RegionPtr regPtr = getHelper()->createRegionAndAttachPool(
       name, ackMode, poolname, cachingEnable);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }
 void createEntry(const char* name, const char* key, const char* value) {
@@ -249,7 +249,7 @@ void createEntry(const char* name, const char* key, const char* value) {
   CacheableStringPtr valPtr = CacheableString::create(value);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
          "Key should not have been found in region.");
@@ -274,7 +274,7 @@ void updateEntry(const char* name, const char* key, const char* value) {
   CacheableStringPtr valPtr = CacheableString::create(value);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
   ASSERT(regPtr->containsValueForKey(keyPtr),
@@ -299,19 +299,19 @@ void doGetAgain(const char* name, const char* key, const char* value) {
   RegionPtr regPtr = getHelper()->getRegion(name);
   fprintf(stdout, "get  region name%s\n", regPtr->getName());
   fflush(stdout);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
-  CacheableStringPtr checkPtr =
-      dynCast<CacheableStringPtr>(regPtr->get(keyPtr));  // force a netsearch
+  auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
+      regPtr->get(keyPtr));  // force a netsearch
 
-  if (checkPtr != NULLPTR) {
+  if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
     char buf[1024];
     sprintf(buf, "In doGetAgain, get returned %s for key %s",
             checkPtr->asChar(), key);
     LOG(buf);
   } else {
-    LOG("checkPtr is NULL");
+    LOG("checkPtr is nullptr");
   }
   verifyEntry(name, key, value);
   LOG("GetAgain complete.");
@@ -331,7 +331,7 @@ void doNetsearch(const char* name, const char* key, const char* value) {
   RegionPtr regPtr = getHelper()->getRegion(name);
   fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
   fflush(stdout);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   if (count == 0) {
     ASSERT(!regPtr->containsKey(keyPtr),
@@ -340,17 +340,17 @@ void doNetsearch(const char* name, const char* key, const char* value) {
            "Value should not have been found in region.");
     count++;
   }
-  CacheableStringPtr checkPtr =
-      dynCast<CacheableStringPtr>(regPtr->get(keyPtr));  // force a netsearch
+  auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
+      regPtr->get(keyPtr));  // force a netsearch
 
-  if (checkPtr != NULLPTR) {
+  if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
     char buf[1024];
     sprintf(buf, "In net search, get returned %s for key %s",
             checkPtr->asChar(), key);
     LOG(buf);
   } else {
-    LOG("checkPtr is NULL");
+    LOG("checkPtr is nullptr");
   }
   verifyEntry(name, key, value);
   LOG("Netsearch complete.");

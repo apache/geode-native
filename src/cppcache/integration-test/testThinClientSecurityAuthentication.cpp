@@ -37,7 +37,7 @@ CredentialGeneratorPtr credentialGeneratorHandler;
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
   const char* path = ACE_OS::getenv("TESTSRC");
-  ASSERT(path != NULL,
+  ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
   strcat(xmlPath, "xml/Security/");
@@ -63,8 +63,8 @@ void initCredentialGenerator() {
     }
   }
 
-  if (credentialGeneratorHandler == NULLPTR) {
-    FAIL("credentialGeneratorHandler is NULL");
+  if (credentialGeneratorHandler == nullptr) {
+    FAIL("credentialGeneratorHandler is nullptr");
   }
 
   loopNum++;
@@ -73,8 +73,8 @@ void initCredentialGenerator() {
 
 void initClientAuth(char credentialsType) {
   PropertiesPtr config = Properties::create();
-  if (credentialGeneratorHandler == NULLPTR) {
-    FAIL("credentialGeneratorHandler is NULL");
+  if (credentialGeneratorHandler == nullptr) {
+    FAIL("credentialGeneratorHandler is nullptr");
   }
   bool insertAuthInit = true;
   switch (credentialsType) {
@@ -128,8 +128,8 @@ DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateServer1)
   {
     initCredentialGenerator();
     std::string cmdServerAuthenticator;
-    if (credentialGeneratorHandler == NULLPTR) {
-      FAIL("credentialGeneratorHandler is NULL");
+    if (credentialGeneratorHandler == nullptr) {
+      FAIL("credentialGeneratorHandler is nullptr");
     }
 
     try {
@@ -139,7 +139,7 @@ DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateServer1)
         printf("Input to server cmd is -->  %s",
                cmdServerAuthenticator.c_str());
         CacheHelper::initServer(
-            1, NULL, locHostPort,
+            1, nullptr, locHostPort,
             const_cast<char*>(cmdServerAuthenticator.c_str()));
         LOG("Server1 started");
       }
@@ -257,16 +257,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFive)
       createRegionForSecurity(regionNamesAuth[1], USE_ACK, true);
       RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
       CacheableKeyPtr keyPtr = CacheableKey::create(keys[0]);
-      CacheableStringPtr checkPtr =
-          dynCast<CacheableStringPtr>(regPtr0->get(keyPtr));
-      if (checkPtr != NULLPTR && !strcmp(nvals[0], checkPtr->asChar())) {
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
+      if (checkPtr != nullptr && !strcmp(nvals[0], checkPtr->asChar())) {
         LOG("checkPtr is not null");
         char buf[1024];
         sprintf(buf, "In net search, get returned %s for key %s",
                 checkPtr->asChar(), keys[0]);
         LOG(buf);
       } else {
-        LOG("checkPtr is NULL");
+        LOG("checkPtr is nullptr");
       }
     } catch (const apache::geode::client::Exception& other) {
       other.printStackTrace();
@@ -306,7 +306,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSeven)
     CacheHelper::setJavaConnectionPoolSize(0);
     SLEEP(500);
     try {
-      createRegionForSecurity(regionNamesAuth[0], USE_ACK, true, NULLPTR, true,
+      createRegionForSecurity(regionNamesAuth[0], USE_ACK, true, nullptr, true,
                               0);
       FAIL("Should have thrown AuthenticationFailedException.");
     } catch (
@@ -332,7 +332,7 @@ void createEntryTx(const char* name, const char* key, const char* value) {
   CacheableStringPtr valPtr = CacheableString::create(value);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   // ASSERT( !regPtr->containsKey( keyPtr ), "Key should not have been found in
   // region." );
@@ -357,7 +357,7 @@ void updateEntryTx(const char* name, const char* key, const char* value) {
   CacheableStringPtr valPtr = CacheableString::create(value);
 
   RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != NULLPTR, "Region not found.");
+  ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
   ASSERT(regPtr->containsValueForKey(keyPtr),
@@ -387,19 +387,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       LOG("txManager commit done");
 
       CacheableKeyPtr keyPtr = CacheableKey::create("TxKey");
-      CacheableStringPtr checkPtr =
-          dynCast<CacheableStringPtr>(regPtr0->get(keyPtr));
-      ASSERT(checkPtr != NULLPTR, "Value not found.");
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
+      ASSERT(checkPtr != nullptr, "Value not found.");
       LOGINFO("checkPtr->asChar() = %s ", checkPtr->asChar());
       ASSERT(strcmp("TxValue", checkPtr->asChar()) == 0, "Value not correct.");
-      if (checkPtr != NULLPTR && !strcmp("TxValue", checkPtr->asChar())) {
+      if (checkPtr != nullptr && !strcmp("TxValue", checkPtr->asChar())) {
         LOG("checkPtr is not null");
         char buf[1024];
         sprintf(buf, "In net search, get returned %s for key %s",
                 checkPtr->asChar(), "TxKey");
         LOG(buf);
       } else {
-        LOG("checkPtr is NULL");
+        LOG("checkPtr is nullptr");
       }
 
       txManager->begin();
@@ -409,17 +409,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       txManager->rollback();
       LOG("txManager rollback done");
 
-      checkPtr = dynCast<CacheableStringPtr>(regPtr0->get(keyPtr));
-      ASSERT(checkPtr != NULLPTR, "Value not found.");
+      checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
+      ASSERT(checkPtr != nullptr, "Value not found.");
       ASSERT(strcmp("TxValue", checkPtr->asChar()) == 0, "Value not correct.");
-      if (checkPtr != NULLPTR && !strcmp("TxValue", checkPtr->asChar())) {
+      if (checkPtr != nullptr && !strcmp("TxValue", checkPtr->asChar())) {
         LOG("checkPtr is not null");
         char buf[1024];
         sprintf(buf, "In net search, get returned %s for key %s",
                 checkPtr->asChar(), "TxKey");
         LOG(buf);
       } else {
-        LOG("checkPtr is NULL");
+        LOG("checkPtr is nullptr");
       }
 
     } catch (const apache::geode::client::Exception& other) {

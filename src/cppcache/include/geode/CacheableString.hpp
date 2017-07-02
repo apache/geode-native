@@ -49,6 +49,8 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
   uint32_t m_len;
   mutable int m_hashcode;
 
+  FRIEND_STD_SHARED_PTR(CacheableString)
+
  public:
   /**
    *@brief serialize this object
@@ -111,11 +113,12 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
    * This should be used only for ASCII strings.
    */
   static CacheableStringPtr create(const char* value, int32_t len = 0) {
-    CacheableStringPtr str = NULLPTR;
-    if (value != NULL) {
-      str = new CacheableString();
-      str->initString(value, len);
+    if (nullptr == value) {
+      return nullptr;
     }
+
+    CacheableStringPtr str = std::make_shared<CacheableString>();
+    str->initString(value, len);
     return str;
   }
 
@@ -130,11 +133,12 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
    * CAUTION: use this only when you really know what you are doing.
    */
   static CacheableStringPtr createNoCopy(char* value, int32_t len = 0) {
-    CacheableStringPtr str = NULLPTR;
-    if (value != NULL) {
-      str = new CacheableString();
-      str->initStringNoCopy(value, len);
+    if (nullptr == value) {
+      return nullptr;
     }
+
+    CacheableStringPtr str = std::make_shared<CacheableString>();
+    str->initStringNoCopy(value, len);
     return str;
   }
 
@@ -145,11 +149,12 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
    * This should be used for non-ASCII strings.
    */
   static CacheableStringPtr create(const wchar_t* value, int32_t len = 0) {
-    CacheableStringPtr str = NULLPTR;
-    if (value != NULL) {
-      str = new CacheableString();
-      str->initString(value, len);
+    if (nullptr == value) {
+      return nullptr;
     }
+
+    CacheableStringPtr str = std::make_shared<CacheableString>();
+    str->initString(value, len);
     return str;
   }
 
@@ -164,11 +169,12 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
    * CAUTION: use this only when you really know what you are doing.
    */
   static CacheableStringPtr createNoCopy(wchar_t* value, int32_t len = 0) {
-    CacheableStringPtr str = NULLPTR;
-    if (value != NULL) {
-      str = new CacheableString();
-      str->initStringNoCopy(value, len);
+    if (nullptr == value) {
+      return nullptr;
     }
+
+    CacheableStringPtr str = std::make_shared<CacheableString>();
+    str->initStringNoCopy(value, len);
     return str;
   }
 
@@ -235,7 +241,9 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
   const char* toString() { return reinterpret_cast<const char*>(m_str); }
 
   virtual CacheableStringPtr toString() const {
-    return CacheableStringPtr(this);
+    // TODO this cast seems odd
+    return std::const_pointer_cast<CacheableString>(
+        std::static_pointer_cast<const CacheableString>(shared_from_this()));
   }
 
   /** get the name of the class of this object for logging purpose */
@@ -272,7 +280,7 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
   char* getASCIIString(const wchar_t* value, int32_t& len, int32_t& encodedLen);
   /** Default constructor. */
   inline CacheableString(int8_t type = GF_STRING)
-      : m_str(NULL), m_type(type), m_len(0), m_hashcode(0) {}
+      : m_str(nullptr), m_type(type), m_len(0), m_hashcode(0) {}
 
  private:
   // never implemented.
@@ -282,29 +290,33 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
 
 /** overload of apache::geode::client::createKeyArr to pass char* */
 inline CacheableKeyPtr createKeyArr(const char* value) {
-  return (value != NULL ? CacheableKeyPtr(CacheableString::create(value).ptr())
-                        : NULLPTR);
+  return CacheableString::create(value);
 }
 
 /** overload of apache::geode::client::createKeyArr to pass wchar_t* */
 inline CacheableKeyPtr createKeyArr(const wchar_t* value) {
-  return (value != NULL ? CacheableKeyPtr(CacheableString::create(value).ptr())
-                        : NULLPTR);
+  return CacheableString::create(value);
 }
 
 /** overload of apache::geode::client::createValueArr to pass char* */
 inline CacheablePtr createValueArr(const char* value) {
-  return (value != NULL ? CacheablePtr(CacheableString::create(value).ptr())
-                        : NULLPTR);
+  return CacheableString::create(value);
 }
 
 /** overload of apache::geode::client::createValueArr to pass wchar_t* */
 inline CacheablePtr createValueArr(const wchar_t* value) {
-  return (value != NULL ? CacheablePtr(CacheableString::create(value).ptr())
-                        : NULLPTR);
+  return CacheableString::create(value);
 }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
+
+namespace std {
+
+template <>
+struct hash<apache::geode::client::CacheableString>
+    : hash<apache::geode::client::CacheableKey> {};
+
+}  // namespace std
 
 #endif  // GEODE_CACHEABLESTRING_H_

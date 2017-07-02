@@ -35,10 +35,10 @@ RegionAttributes::RegionAttributes()
       m_entryTimeToLiveExpirationAction(ExpirationAction::INVALIDATE),
       m_entryIdleTimeoutExpirationAction(ExpirationAction::INVALIDATE),
       m_lruEvictionAction(ExpirationAction::LOCAL_DESTROY),
-      m_cacheWriter(NULLPTR),
-      m_cacheLoader(NULLPTR),
-      m_cacheListener(NULLPTR),
-      m_partitionResolver(NULLPTR),
+      m_cacheWriter(nullptr),
+      m_cacheLoader(nullptr),
+      m_cacheListener(nullptr),
+      m_partitionResolver(nullptr),
       m_lruEntriesLimit(0),
       m_caching(true),
       m_maxValueDistLimit(100 * 1024),
@@ -49,22 +49,22 @@ RegionAttributes::RegionAttributes()
       m_initialCapacity(10000),
       m_loadFactor(0.75),
       m_concurrencyLevel(16),
-      m_cacheLoaderLibrary(NULL),
-      m_cacheWriterLibrary(NULL),
-      m_cacheListenerLibrary(NULL),
-      m_partitionResolverLibrary(NULL),
-      m_cacheLoaderFactory(NULL),
-      m_cacheWriterFactory(NULL),
-      m_cacheListenerFactory(NULL),
-      m_partitionResolverFactory(NULL),
+      m_cacheLoaderLibrary(nullptr),
+      m_cacheWriterLibrary(nullptr),
+      m_cacheListenerLibrary(nullptr),
+      m_partitionResolverLibrary(nullptr),
+      m_cacheLoaderFactory(nullptr),
+      m_cacheWriterFactory(nullptr),
+      m_cacheListenerFactory(nullptr),
+      m_partitionResolverFactory(nullptr),
       m_diskPolicy(DiskPolicyType::NONE),
-      m_endpoints(NULL),
+      m_endpoints(nullptr),
       m_clientNotificationEnabled(false),
-      m_persistenceLibrary(NULL),
-      m_persistenceFactory(NULL),
-      m_persistenceProperties(NULLPTR),
-      m_persistenceManager(NULLPTR),
-      m_poolName(NULL),
+      m_persistenceLibrary(nullptr),
+      m_persistenceFactory(nullptr),
+      m_persistenceProperties(nullptr),
+      m_persistenceManager(nullptr),
+      m_poolName(nullptr),
       m_isClonable(false),
       m_isConcurrencyChecksEnabled(true) {}
 
@@ -97,99 +97,99 @@ RegionAttributes::RegionAttributes(const RegionAttributes& rhs)
       m_persistenceManager(rhs.m_persistenceManager),
       m_isClonable(rhs.m_isClonable),
       m_isConcurrencyChecksEnabled(rhs.m_isConcurrencyChecksEnabled) {
-  if (rhs.m_cacheLoaderLibrary != NULL) {
+  if (rhs.m_cacheLoaderLibrary != nullptr) {
     size_t len = strlen(rhs.m_cacheLoaderLibrary) + 1;
     m_cacheLoaderLibrary = new char[len];
     ACE_OS::strncpy(m_cacheLoaderLibrary, rhs.m_cacheLoaderLibrary, len);
   } else {
-    m_cacheLoaderLibrary = NULL;
+    m_cacheLoaderLibrary = nullptr;
   }
-  if (rhs.m_cacheWriterLibrary != NULL) {
+  if (rhs.m_cacheWriterLibrary != nullptr) {
     size_t len = strlen(rhs.m_cacheWriterLibrary) + 1;
     m_cacheWriterLibrary = new char[len];
     ACE_OS::strncpy(m_cacheWriterLibrary, rhs.m_cacheWriterLibrary, len);
   } else {
-    m_cacheWriterLibrary = NULL;
+    m_cacheWriterLibrary = nullptr;
   }
-  if (rhs.m_cacheListenerLibrary != NULL) {
+  if (rhs.m_cacheListenerLibrary != nullptr) {
     size_t len = strlen(rhs.m_cacheListenerLibrary) + 1;
     m_cacheListenerLibrary = new char[len];
     ACE_OS::strncpy(m_cacheListenerLibrary, rhs.m_cacheListenerLibrary, len);
   } else {
-    m_cacheListenerLibrary = NULL;
+    m_cacheListenerLibrary = nullptr;
   }
-  if (rhs.m_partitionResolverLibrary != NULL) {
+  if (rhs.m_partitionResolverLibrary != nullptr) {
     size_t len = strlen(rhs.m_partitionResolverLibrary) + 1;
     m_partitionResolverLibrary = new char[len];
     ACE_OS::strncpy(m_partitionResolverLibrary, rhs.m_partitionResolverLibrary,
                     len);
   } else {
-    m_partitionResolverLibrary = NULL;
+    m_partitionResolverLibrary = nullptr;
   }
-  if (rhs.m_cacheLoaderFactory != NULL) {
+  if (rhs.m_cacheLoaderFactory != nullptr) {
     size_t len = strlen(rhs.m_cacheLoaderFactory) + 1;
     m_cacheLoaderFactory = new char[len];
     ACE_OS::strncpy(m_cacheLoaderFactory, rhs.m_cacheLoaderFactory, len);
   } else {
-    m_cacheLoaderFactory = NULL;
+    m_cacheLoaderFactory = nullptr;
   }
-  if (rhs.m_cacheWriterFactory != NULL) {
+  if (rhs.m_cacheWriterFactory != nullptr) {
     size_t len = strlen(rhs.m_cacheWriterFactory) + 1;
     m_cacheWriterFactory = new char[len];
     ACE_OS::strncpy(m_cacheWriterFactory, rhs.m_cacheWriterFactory, len);
   } else {
-    m_cacheWriterFactory = NULL;
+    m_cacheWriterFactory = nullptr;
   }
-  if (rhs.m_cacheListenerFactory != NULL) {
+  if (rhs.m_cacheListenerFactory != nullptr) {
     size_t len = strlen(rhs.m_cacheListenerFactory) + 1;
     m_cacheListenerFactory = new char[len];
     ACE_OS::strncpy(m_cacheListenerFactory, rhs.m_cacheListenerFactory, len);
   } else {
-    m_cacheListenerFactory = NULL;
+    m_cacheListenerFactory = nullptr;
   }
-  if (rhs.m_partitionResolverFactory != NULL) {
+  if (rhs.m_partitionResolverFactory != nullptr) {
     size_t len = strlen(rhs.m_partitionResolverFactory) + 1;
     m_partitionResolverFactory = new char[len];
     ACE_OS::strncpy(m_partitionResolverFactory, rhs.m_partitionResolverFactory,
                     len);
   } else {
-    m_partitionResolverFactory = NULL;
+    m_partitionResolverFactory = nullptr;
   }
-  if (rhs.m_endpoints != NULL) {
+  if (rhs.m_endpoints != nullptr) {
     size_t len = strlen(rhs.m_endpoints) + 1;
     m_endpoints = new char[len];
     ACE_OS::strncpy(m_endpoints, rhs.m_endpoints, len);
   } else {
-    m_endpoints = NULL;
+    m_endpoints = nullptr;
   }
-  if (rhs.m_poolName != NULL) {
+  if (rhs.m_poolName != nullptr) {
     size_t len = strlen(rhs.m_poolName) + 1;
     m_poolName = new char[len];
     ACE_OS::strncpy(m_poolName, rhs.m_poolName, len);
   } else {
-    m_poolName = NULL;
+    m_poolName = nullptr;
   }
-  if (rhs.m_persistenceLibrary != NULL) {
+  if (rhs.m_persistenceLibrary != nullptr) {
     size_t len = strlen(rhs.m_persistenceLibrary) + 1;
     m_persistenceLibrary = new char[len];
     ACE_OS::strncpy(m_persistenceLibrary, rhs.m_persistenceLibrary, len);
   } else {
-    m_persistenceLibrary = NULL;
+    m_persistenceLibrary = nullptr;
   }
-  if (rhs.m_persistenceFactory != NULL) {
+  if (rhs.m_persistenceFactory != nullptr) {
     size_t len = strlen(rhs.m_persistenceFactory) + 1;
     m_persistenceFactory = new char[len];
     ACE_OS::strncpy(m_persistenceFactory, rhs.m_persistenceFactory, len);
   } else {
-    m_persistenceFactory = NULL;
+    m_persistenceFactory = nullptr;
   }
 }
 
 #define RA_DELSTRING(x) \
-  if (x != NULL) {      \
+  if (x != nullptr) {   \
     delete[] x;         \
   }                     \
-  x = NULL
+  x = nullptr
 
 RegionAttributes::~RegionAttributes() {
   RA_DELSTRING(m_cacheLoaderLibrary);
@@ -226,7 +226,7 @@ void* getFactoryFunc(const char* lib, const char* funcName) {
     throw IllegalArgumentException(msg);
   }
   void* func = dll.symbol(funcName);
-  if (func == NULL) {
+  if (func == nullptr) {
     char msg[1000];
     ACE_OS::snprintf(msg, 1000, "cannot find factory function %s in library %s",
                      funcName, lib);
@@ -240,98 +240,98 @@ void* getFactoryFunc(const char* lib, const char* funcName) {
 }  // namespace apache
 
 CacheLoaderPtr RegionAttributes::getCacheLoader() {
-  if ((m_cacheLoader == NULLPTR) && (m_cacheLoaderLibrary != NULL)) {
-    if (CacheXmlParser::managedCacheLoaderFn != NULL &&
-        strchr(m_cacheLoaderFactory, '.') != NULL) {
+  if ((m_cacheLoader == nullptr) && (m_cacheLoaderLibrary != nullptr)) {
+    if (CacheXmlParser::managedCacheLoaderFn != nullptr &&
+        strchr(m_cacheLoaderFactory, '.') != nullptr) {
       // this is a managed library
-      m_cacheLoader = (*CacheXmlParser::managedCacheLoaderFn)(
-          m_cacheLoaderLibrary, m_cacheLoaderFactory);
+      m_cacheLoader.reset((*CacheXmlParser::managedCacheLoaderFn)(
+          m_cacheLoaderLibrary, m_cacheLoaderFactory));
     } else {
       CacheLoader* (*funcptr)();
       funcptr = reinterpret_cast<CacheLoader* (*)()>(
           apache::geode::client::impl::getFactoryFunc(m_cacheLoaderLibrary,
                                                       m_cacheLoaderFactory));
-      m_cacheLoader = funcptr();
+      m_cacheLoader.reset(funcptr());
     }
   }
   return m_cacheLoader;
 }
 
 CacheWriterPtr RegionAttributes::getCacheWriter() {
-  if ((m_cacheWriter == NULLPTR) && (m_cacheWriterLibrary != NULL)) {
-    if (CacheXmlParser::managedCacheWriterFn != NULL &&
-        strchr(m_cacheWriterFactory, '.') != NULL) {
+  if ((m_cacheWriter == nullptr) && (m_cacheWriterLibrary != nullptr)) {
+    if (CacheXmlParser::managedCacheWriterFn != nullptr &&
+        strchr(m_cacheWriterFactory, '.') != nullptr) {
       // this is a managed library
-      m_cacheWriter = (*CacheXmlParser::managedCacheWriterFn)(
-          m_cacheWriterLibrary, m_cacheWriterFactory);
+      m_cacheWriter.reset((*CacheXmlParser::managedCacheWriterFn)(
+          m_cacheWriterLibrary, m_cacheWriterFactory));
     } else {
       CacheWriter* (*funcptr)();
       funcptr = reinterpret_cast<CacheWriter* (*)()>(
           apache::geode::client::impl::getFactoryFunc(m_cacheWriterLibrary,
                                                       m_cacheWriterFactory));
-      m_cacheWriter = funcptr();
+      m_cacheWriter.reset(funcptr());
     }
   }
   return m_cacheWriter;
 }
 
 CacheListenerPtr RegionAttributes::getCacheListener() {
-  if ((m_cacheListener == NULLPTR) && (m_cacheListenerLibrary != NULL)) {
-    if (CacheXmlParser::managedCacheListenerFn != NULL &&
-        strchr(m_cacheListenerFactory, '.') != NULL) {
+  if ((m_cacheListener == nullptr) && (m_cacheListenerLibrary != nullptr)) {
+    if (CacheXmlParser::managedCacheListenerFn != nullptr &&
+        strchr(m_cacheListenerFactory, '.') != nullptr) {
       // LOGDEBUG( "RegionAttributes::getCacheListener: Trying to create
       // instance from managed library." );
       // this is a managed library
-      m_cacheListener = (*CacheXmlParser::managedCacheListenerFn)(
-          m_cacheListenerLibrary, m_cacheListenerFactory);
+      m_cacheListener.reset((*CacheXmlParser::managedCacheListenerFn)(
+          m_cacheListenerLibrary, m_cacheListenerFactory));
     } else {
       CacheListener* (*funcptr)();
       funcptr = reinterpret_cast<CacheListener* (*)()>(
           apache::geode::client::impl::getFactoryFunc(m_cacheListenerLibrary,
                                                       m_cacheListenerFactory));
-      m_cacheListener = funcptr();
+      m_cacheListener.reset(funcptr());
     }
   }
   return m_cacheListener;
 }
 
 PartitionResolverPtr RegionAttributes::getPartitionResolver() {
-  if ((m_partitionResolver == NULLPTR) &&
-      (m_partitionResolverLibrary != NULL)) {
-    if (CacheXmlParser::managedPartitionResolverFn != NULL &&
-        strchr(m_partitionResolverFactory, '.') != NULL) {
+  if ((m_partitionResolver == nullptr) &&
+      (m_partitionResolverLibrary != nullptr)) {
+    if (CacheXmlParser::managedPartitionResolverFn != nullptr &&
+        strchr(m_partitionResolverFactory, '.') != nullptr) {
       // LOGDEBUG( "RegionAttributes::getCacheListener: Trying to create
       // instance from managed library." );
       // this is a managed library
-      m_partitionResolver = (*CacheXmlParser::managedPartitionResolverFn)(
-          m_partitionResolverLibrary, m_partitionResolverFactory);
+      m_partitionResolver.reset((*CacheXmlParser::managedPartitionResolverFn)(
+          m_partitionResolverLibrary, m_partitionResolverFactory));
     } else {
       PartitionResolver* (*funcptr)();
       funcptr = reinterpret_cast<PartitionResolver* (*)()>(
           apache::geode::client::impl::getFactoryFunc(
               m_partitionResolverLibrary, m_partitionResolverFactory));
-      m_partitionResolver = funcptr();
+      m_partitionResolver.reset(funcptr());
     }
   }
   return m_partitionResolver;
 }
 
 PersistenceManagerPtr RegionAttributes::getPersistenceManager() {
-  if ((m_persistenceManager == NULLPTR) && (m_persistenceLibrary != NULL)) {
-    if (CacheXmlParser::managedPartitionResolverFn != NULL &&
-        strchr(m_persistenceFactory, '.') != NULL) {
+  if ((m_persistenceManager == nullptr) && (m_persistenceLibrary != nullptr)) {
+    if (CacheXmlParser::managedPartitionResolverFn != nullptr &&
+        strchr(m_persistenceFactory, '.') != nullptr) {
       LOGDEBUG(
           "RegionAttributes::getPersistenceManager: Trying to create instance "
           "from managed library.");
       // this is a managed library
-      m_persistenceManager = (*CacheXmlParser::managedPersistenceManagerFn)(
-          m_persistenceLibrary, m_persistenceFactory);
+      m_persistenceManager.reset((*CacheXmlParser::managedPersistenceManagerFn)(
+          m_persistenceLibrary, m_persistenceFactory));
     } else {
       PersistenceManager* (*funcptr)();
       funcptr = reinterpret_cast<PersistenceManager* (*)()>(
           apache::geode::client::impl::getFactoryFunc(m_persistenceLibrary,
                                                       m_persistenceFactory));
-      m_persistenceManager = funcptr();
+      m_persistenceManager.reset(funcptr());
     }
   }
   return m_persistenceManager;
@@ -453,7 +453,7 @@ void readBool(DataInput& in, bool* field) {
 }
 
 void writeCharStar(DataOutput& out, const char* field) {
-  if (field == NULL) {
+  if (field == nullptr) {
     out.writeBytes(reinterpret_cast<const int8_t*>(""),
                    static_cast<uint32_t>(0));
   } else {
@@ -463,7 +463,7 @@ void writeCharStar(DataOutput& out, const char* field) {
 
 /** this one allocates the memory and modifies field to point to it. */
 void readCharStar(DataInput& in, char** field) {
-  GF_D_ASSERT(*field == NULL);
+  GF_D_ASSERT(*field == nullptr);
   int32_t memlen = 0;
   in.readArrayLen(&memlen);
   if (memlen != 0) {
@@ -635,11 +635,11 @@ bool RegionAttributes::operator==(const RegionAttributes& other) const {
 
 int32_t RegionAttributes::compareStringAttribute(char* attributeA,
                                                  char* attributeB) {
-  if (attributeA == NULL && attributeB == NULL) {
+  if (attributeA == nullptr && attributeB == nullptr) {
     return 0;
-  } else if (attributeA == NULL && attributeB != NULL) {
+  } else if (attributeA == nullptr && attributeB != nullptr) {
     return -1;
-  } else if (attributeA != NULL && attributeB == NULL) {
+  } else if (attributeA != nullptr && attributeB == nullptr) {
     return -1;
   }
   return (strcmp(attributeA, attributeB));
@@ -653,27 +653,27 @@ bool RegionAttributes::operator!=(const RegionAttributes& other) const {
 /* Throws IllegalStateException when attributes targetted for use on a server do
  * not meet requirements. */
 void RegionAttributes::validateSerializableAttributes() {
-  if (m_cacheLoader != NULLPTR) {
+  if (m_cacheLoader != nullptr) {
     throw IllegalStateException(
         "CacheLoader must be set with setCacheLoader(library, factory) in "
         "members of type SERVER");
   }
-  if (m_cacheWriter != NULLPTR) {
+  if (m_cacheWriter != nullptr) {
     throw IllegalStateException(
         "CacheWriter must be set with setCacheWriter(library, factory) in "
         "members of type SERVER");
   }
-  if (m_cacheListener != NULLPTR) {
+  if (m_cacheListener != nullptr) {
     throw IllegalStateException(
         "CacheListener must be set with setCacheListener(library, factory) in "
         "members of type SERVER");
   }
-  if (m_partitionResolver != NULLPTR) {
+  if (m_partitionResolver != nullptr) {
     throw IllegalStateException(
         "PartitionResolver must be set with setPartitionResolver(library, "
         "factory) in members of type SERVER");
   }
-  if (m_persistenceManager != NULLPTR) {
+  if (m_persistenceManager != nullptr) {
     throw IllegalStateException(
         "persistenceManager must be set with setPersistenceManager(library, "
         "factory,config) in members of type SERVER");
@@ -681,37 +681,37 @@ void RegionAttributes::validateSerializableAttributes() {
 }
 
 void RegionAttributes::setCacheListener(const char* lib, const char* func) {
-  GF_R_ASSERT(lib != NULL);
-  GF_R_ASSERT(func != NULL);
+  GF_R_ASSERT(lib != nullptr);
+  GF_R_ASSERT(func != nullptr);
   copyStringAttribute(m_cacheListenerLibrary, lib);
   copyStringAttribute(m_cacheListenerFactory, func);
 }
 
 void RegionAttributes::setPartitionResolver(const char* lib, const char* func) {
-  GF_R_ASSERT(lib != NULL);
-  GF_R_ASSERT(func != NULL);
+  GF_R_ASSERT(lib != nullptr);
+  GF_R_ASSERT(func != nullptr);
   copyStringAttribute(m_partitionResolverLibrary, lib);
   copyStringAttribute(m_partitionResolverFactory, func);
 }
 
 void RegionAttributes::setCacheLoader(const char* lib, const char* func) {
-  GF_R_ASSERT(lib != NULL);
-  GF_R_ASSERT(func != NULL);
+  GF_R_ASSERT(lib != nullptr);
+  GF_R_ASSERT(func != nullptr);
   copyStringAttribute(m_cacheLoaderLibrary, lib);
   copyStringAttribute(m_cacheLoaderFactory, func);
 }
 
 void RegionAttributes::setCacheWriter(const char* lib, const char* func) {
-  GF_R_ASSERT(lib != NULL);
-  GF_R_ASSERT(func != NULL);
+  GF_R_ASSERT(lib != nullptr);
+  GF_R_ASSERT(func != nullptr);
   copyStringAttribute(m_cacheWriterLibrary, lib);
   copyStringAttribute(m_cacheWriterFactory, func);
 }
 
 void RegionAttributes::setPersistenceManager(const char* lib, const char* func,
                                              const PropertiesPtr& config) {
-  GF_R_ASSERT(lib != NULL);
-  GF_R_ASSERT(func != NULL);
+  GF_R_ASSERT(lib != nullptr);
+  GF_R_ASSERT(func != nullptr);
   copyStringAttribute(m_persistenceLibrary, lib);
   copyStringAttribute(m_persistenceFactory, func);
   m_persistenceProperties = config;
@@ -735,7 +735,7 @@ void RegionAttributes::setDiskPolicy(DiskPolicyType::PolicyType diskPolicy) {
 }
 
 void RegionAttributes::copyStringAttribute(char*& lhs, const char* rhs) {
-  if (lhs != NULL) {
+  if (lhs != nullptr) {
     delete[] lhs;
   }
   lhs = Utils::copyString(rhs);

@@ -37,7 +37,7 @@ LinuxProcessStats::LinuxProcessStats(int64_t pid, const char* name) {
 
   // Create Statistics
   this->stats = statFactory->createOsStatistics(m_statsType, name, pid);
-  GF_D_ASSERT(this->stats != NULL);
+  GF_D_ASSERT(this->stats != nullptr);
 
 // Refresh Stats Values
 #if defined(_LINUX)
@@ -84,7 +84,7 @@ void LinuxProcessStats::createType(StatisticsFactory* statFactory) {
     } catch (Exception&) {
       m_statsType = statFactory->findType("LinuxProcessStats");
     }
-    if (m_statsType == NULL) {
+    if (m_statsType == nullptr) {
       throw OutOfMemoryException("LinuxProcessStats::createType: out memory");
     }
     imageSizeINT = m_statsType->nameToId("imageSize");
@@ -113,12 +113,12 @@ int64_t LinuxProcessStats::getAllCpuTime() {
 }
 
 void LinuxProcessStats::close() {
-  if (stats != NULL) {
+  if (stats != nullptr) {
     stats->close();
   }
 }
 
 LinuxProcessStats::~LinuxProcessStats() {
-  m_statsType = NULL;
-  stats = NULL;
+  m_statsType = nullptr;
+  stats = nullptr;
 }

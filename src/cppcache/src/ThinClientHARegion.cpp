@@ -27,7 +27,8 @@ namespace geode {
 namespace client {
 
 ThinClientHARegion::ThinClientHARegion(const std::string& name,
-                                       CacheImpl* cache, RegionInternal* rPtr,
+                                       CacheImpl* cache,
+                                       const RegionInternalPtr& rPtr,
                                        const RegionAttributesPtr& attributes,
                                        const CacheStatisticsPtr& stats,
                                        bool shared, bool enableNotification)
@@ -40,7 +41,7 @@ ThinClientHARegion::ThinClientHARegion(const std::string& name,
 
 void ThinClientHARegion::initTCR() {
   try {
-    bool isPool = m_attribute->getPoolName() != NULL &&
+    bool isPool = m_attribute->getPoolName() != nullptr &&
                   strlen(m_attribute->getPoolName()) > 0;
     if (DistributedSystem::getSystemProperties()->isGridClient()) {
       LOGWARN(
@@ -51,7 +52,7 @@ void ThinClientHARegion::initTCR() {
           isPool);
     }
 
-    if (m_attribute->getPoolName() == NULL ||
+    if (m_attribute->getPoolName() == nullptr ||
         strlen(m_attribute->getPoolName()) == 0) {
       m_poolDM = false;
       m_tcrdm = new TcrHADistributionManager(
@@ -60,7 +61,7 @@ void ThinClientHARegion::initTCR() {
       m_tcrdm->init();
     } else {
       m_tcrdm = dynamic_cast<ThinClientPoolHADM*>(
-          PoolManager::find(m_attribute->getPoolName()).ptr());
+          PoolManager::find(m_attribute->getPoolName()).get());
       if (m_tcrdm) {
         m_poolDM = true;
         // Pool DM should only be inited once and it
@@ -106,8 +107,8 @@ void ThinClientHARegion::handleMarker() {
     return;
   }
 
-  if (m_listener != NULLPTR && !m_processedMarker) {
-    RegionEvent event(RegionPtr(this), NULLPTR, false);
+  if (m_listener != nullptr && !m_processedMarker) {
+    RegionEvent event(shared_from_this(), nullptr, false);
     int64_t sampleStartNanos = Utils::startStatOpTime();
     try {
       m_listener->afterRegionLive(event);
@@ -164,7 +165,7 @@ GfErrType ThinClientHARegion::getNoThrow_FullObject(EventIdPtr eventId,
                                                     CacheablePtr& fullObject,
                                                     VersionTagPtr& versionTag) {
   TcrMessageRequestEventValue fullObjectMsg(eventId);
-  TcrMessageReply reply(true, NULL);
+  TcrMessageReply reply(true, nullptr);
 
   ThinClientPoolHADM* poolHADM = dynamic_cast<ThinClientPoolHADM*>(m_tcrdm);
   GfErrType err = GF_NOTCON;

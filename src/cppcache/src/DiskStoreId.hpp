@@ -63,10 +63,12 @@ class DiskStoreId : public DSMemberForVersionStamp {
     return static_cast<int8_t>(GeodeTypeIdsImpl::DiskStoreId);
   }
 
-  virtual int16_t compareTo(DSMemberForVersionStampPtr tagID) {
-    int64_t result = m_mostSig - ((DiskStoreId*)tagID.ptr())->m_mostSig;
+  virtual int16_t compareTo(const DSMemberForVersionStamp& tagID) const {
+    const DiskStoreId& otherDiskStoreId =
+        static_cast<const DiskStoreId&>(tagID);
+    int64_t result = m_mostSig - otherDiskStoreId.m_mostSig;
     if (result == 0) {
-      result = m_leastSig - ((DiskStoreId*)tagID.ptr())->m_leastSig;
+      result = m_leastSig - otherDiskStoreId.m_leastSig;
     }
     if (result < 0) {
       return -1;
@@ -90,19 +92,8 @@ class DiskStoreId : public DSMemberForVersionStamp {
   }
 
   virtual bool operator==(const CacheableKey& other) const {
-    CacheableKey& otherCopy = const_cast<CacheableKey&>(other);
-    DSMemberForVersionStamp& temp =
-        dynamic_cast<DSMemberForVersionStamp&>(otherCopy);
-    DSMemberForVersionStampPtr otherObjPtr = NULLPTR;
-    otherObjPtr = DSMemberForVersionStampPtr(&temp);
-
-    DSMemberForVersionStampPtr callerPtr = NULLPTR;
-    callerPtr = DSMemberForVersionStampPtr(this);
-    if (callerPtr->compareTo(otherObjPtr) == 0) {
-      return true;
-    } else {
-      return false;
-    }
+    return (this->compareTo(
+                dynamic_cast<const DSMemberForVersionStamp&>(other)) == 0);
   }
 
  private:

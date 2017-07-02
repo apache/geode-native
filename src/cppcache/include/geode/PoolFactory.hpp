@@ -21,7 +21,6 @@
  */
 
 #include "geode_globals.hpp"
-#include "SharedBase.hpp"
 #include "geode_types.hpp"
 #include "Pool.hpp"
 
@@ -63,7 +62,7 @@ class PoolAttributes;
  * </ul>
  *
  */
-class CPPCACHE_EXPORT PoolFactory : public SharedBase {
+class CPPCACHE_EXPORT PoolFactory  {
  public:
   /**
    * The default amount of time, in milliseconds, which we will wait for a free

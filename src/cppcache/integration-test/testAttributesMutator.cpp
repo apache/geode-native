@@ -44,7 +44,7 @@ DUNIT_TASK(A, Init)
     af.setEntryTimeToLive(ExpirationAction::LOCAL_INVALIDATE, 5);
     RegionAttributesPtr attrs = af.createRegionAttributes();
 
-    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(Test.m_cache.ptr());
+    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(Test.m_cache.get());
     cacheImpl->createRegion("Local_ETTL_LI", attrs, Test.m_region);
   }
 ENDTASK
@@ -58,13 +58,12 @@ DUNIT_TASK(A, CreateAndVerifyExpiry)
 
     // countdown begins... it is ttl so access should not play into it..
     SLEEP(3000);  // sleep for a second, expect value to still be there.
-    CacheableInt32Ptr res =
-        dynCast<CacheableInt32Ptr>(Test.m_region->get("one"));
+    auto res = std::dynamic_pointer_cast<CacheableInt32>(Test.m_region->get("one"));
     ASSERT(res->value() == 1, "Expected to find value 1.");
     fflush(stdout);
     SLEEP(5000);  // sleep for 5 more seconds, expect value to be invalid.
     fflush(stdout);
-    res = NULLPTR;
+    res = nullptr;
     ASSERT(Test.m_region->containsValueForKey("one") == false,
            "should not contain value.");
   }
@@ -75,7 +74,7 @@ DUNIT_TASK(A, Close)
   {
     Test.m_region->destroyRegion();
     Test.m_cache->close();
-    Test.m_cache = NULLPTR;
-    Test.m_region = NULLPTR;
+    Test.m_cache = nullptr;
+    Test.m_region = nullptr;
   }
 ENDTASK

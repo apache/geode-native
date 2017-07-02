@@ -45,7 +45,7 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
   }
   ServerLocation()
       : Serializable(),
-        m_serverName(NULLPTR),
+        m_serverName(nullptr),
         m_port(-1)  // Default constructor for deserialiozation.
   {}
 
@@ -62,7 +62,7 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
   }
 
   std::string getServerName() const {
-    if (m_serverName != NULLPTR) {
+    if (m_serverName != nullptr) {
       return m_serverName->asChar();
     }
     return "";
@@ -70,7 +70,7 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
   void setServername(CacheableStringPtr sn) { m_serverName = sn; }
   int getPort() const { return m_port; }
   void toData(DataOutput& output) const {
-    if (m_serverName != NULLPTR) {
+    if (m_serverName != nullptr) {
       // output.writeObject( m_serverName );
       output.writeNativeString(m_serverName->asChar());  // changed
     }
@@ -84,7 +84,7 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
     return this;
   }
   uint32_t objectSize() const {
-    if (m_serverName != NULLPTR) {
+    if (m_serverName != nullptr) {
       return static_cast<uint32_t>(sizeof(int)) +
              (m_serverName->length()) * static_cast<uint32_t>(sizeof(char));
     }
@@ -129,27 +129,12 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
   }
 
   bool operator==(const ServerLocation& rhs) const {
-    /*char server1[256];
-    char server2[256];
-    size_t len = 0;
-     if (m_serverName != NULLPTR && rhs.getServerName( ).c_str() != NULL) {
-      ACE_INET_Addr addr1( m_port, m_serverName->asChar() );
-      len = strlen(addr1.get_host_addr());
-      memcpy(server1, addr1.get_host_addr(), len);
-      server1[len] = '\0';
-
-      ACE_INET_Addr addr2( rhs.getPort( ), rhs.getServerName( ).c_str());
-      len = strlen(addr2.get_host_addr());
-      memcpy(server2, addr2.get_host_addr(), len);
-      server2[len] = '\0';
-    }*/
-
     return (!strcmp(m_serverName->asChar(), rhs.getServerName().c_str()) &&
             (m_port == rhs.getPort()));
   }
 
   inline bool isValid() const {
-    if (m_serverName == NULLPTR) return false;
+    if (m_serverName == nullptr) return false;
     return m_serverName->length() > 0 && m_port >= 0;
   }
 
@@ -160,7 +145,7 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
     return m_epString;
   }
 
-  inline int hashcode() {
+  inline int hashcode() const {
     int prime = 31;
     int result = 1;
     // result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
@@ -178,5 +163,18 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
+
+namespace std {
+
+template <>
+struct hash<apache::geode::client::ServerLocation> {
+  typedef apache::geode::client::ServerLocation argument_type;
+  typedef size_t result_type;
+  size_t operator()(const apache::geode::client::ServerLocation& val) const {
+    return val.hashcode();
+  }
+};
+
+}  // namespace std
 
 #endif  // GEODE_SERVERLOCATION_H_

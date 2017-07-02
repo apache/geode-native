@@ -43,7 +43,7 @@ Portfolio::Portfolio(int32_t i, uint32_t size, CacheableStringArrayPtr nm)
     position2 =
         new Position(secIds[Position::cnt % numSecIds], Position::cnt * 1000);
   } else {
-    position2 = NULLPTR;
+    position2 = nullptr;
   }
   positions = CacheableHashMap::create();
   positions->insert(CacheableString::create(secIds[Position::cnt % numSecIds]),
@@ -104,7 +104,7 @@ CacheableStringPtr Portfolio::toString() const {
   char idbuf[1024];
   sprintf(idbuf, "PortfolioObject: [ ID=%d", ID);
   char pkidbuf[1024];
-  if (pkid != NULLPTR) {
+  if (pkid != nullptr) {
     sprintf(pkidbuf, " status=%s type=%s pkid=%s\n", this->status,
             this->type->toString(), this->pkid->asChar());
   } else {
@@ -112,19 +112,19 @@ CacheableStringPtr Portfolio::toString() const {
             this->type->toString(), this->pkid->asChar());
   }
   char position1buf[2048];
-  if (position1 != NULLPTR) {
+  if (position1 != nullptr) {
     sprintf(position1buf, "\t\t\t  P1: %s", position1->toString()->asChar());
   } else {
     sprintf(position1buf, "\t\t\t  P1: %s", "NULL");
   }
   char position2buf[2048];
-  if (position2 != NULLPTR) {
+  if (position2 != nullptr) {
     sprintf(position2buf, " P2: %s", position2->toString()->asChar());
   } else {
     sprintf(position2buf, " P2: %s ]", "NULL");
   }
   char creationdatebuf[2048];
-  if (creationDate != NULLPTR) {
+  if (creationDate != nullptr) {
     sprintf(creationdatebuf, "creation Date %s",
             creationDate->toString()->asChar());
   } else {

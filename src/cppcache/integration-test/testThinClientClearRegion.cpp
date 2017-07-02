@@ -68,13 +68,13 @@ END_TASK(StartServer)
 DUNIT_TASK(CLIENT1, SetupClient1)
   {
     initClientWithPool(true, "__TEST_POOL1__", locHostPort, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regionNames[0], false, locHostPort,
                                     "__TEST_POOL1__", true, true);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
     AttributesMutatorPtr mtor = regPtr->getAttributesMutator();
-    CacheListenerPtr lster(new MyCacheListener());
-    CacheWriterPtr wter(new MyCacheWriter());
+    auto lster = std::make_shared<MyCacheListener>();
+    auto wter = std::make_shared<MyCacheWriter>();
     mtor->setCacheListener(lster);
     mtor->setCacheWriter(wter);
     regPtr->registerAllKeys();
@@ -84,7 +84,7 @@ END_TASK(SetupClient1)
 DUNIT_TASK(CLIENT2, SetupClient2)
   {
     initClientWithPool(true, "__TEST_POOL1__", locHostPort, "ServerGroup1",
-                       NULLPTR, 0, true);
+                       nullptr, 0, true);
     getHelper()->createPooledRegion(regionNames[0], false, locHostPort,
                                     "__TEST_POOL1__", true, true);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
@@ -131,13 +131,13 @@ DUNIT_TASK(CLIENT1, VerifyClear1)
     ASSERT(regPtr->containsKeyOnServer(keyPtr), "key should be there");
     RegionAttributesPtr attr = regPtr->getAttributes();
     CacheListenerPtr clp = attr->getCacheListener();
-    MyCacheListener* mcl = dynamic_cast<MyCacheListener*>(clp.ptr());
+    MyCacheListener* mcl = dynamic_cast<MyCacheListener*>(clp.get());
     char buf[1024];
     sprintf(buf, "listener clear count=%d", mcl->getClearCnt());
     LOG(buf);
     ASSERT(mcl->getClearCnt() == 2, buf);
     CacheWriterPtr cwp = attr->getCacheWriter();
-    MyCacheWriter* mcw = dynamic_cast<MyCacheWriter*>(cwp.ptr());
+    MyCacheWriter* mcw = dynamic_cast<MyCacheWriter*>(cwp.get());
     sprintf(buf, "writer clear count=%d", mcw->getClearCnt());
     LOG(buf);
     ASSERT(mcw->getClearCnt() == 2, buf);

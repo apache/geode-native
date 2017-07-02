@@ -49,43 +49,35 @@ bool isPoolConfig = false;  // To track if pool case is running
 const char* qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
                               "Portfolios3"};
 const char* checkNullString(const char* str) {
-  return ((str == NULL) ? "(null)" : str);
+  return ((str == nullptr) ? "(null)" : str);
 }
 
 const wchar_t* checkNullString(const wchar_t* str) {
-  return ((str == NULL) ? L"(null)" : str);
+  return ((str == nullptr) ? L"(null)" : str);
 }
 
 void _printFields(CacheablePtr field, Struct* ssptr, int32_t& fields) {
-  PortfolioPtr portfolio = NULLPTR;
-  PositionPtr position = NULLPTR;
-  PortfolioPdxPtr portfolioPdx = NULLPTR;
-  PositionPdxPtr positionPdx = NULLPTR;
-  CacheableStringPtr str = NULLPTR;
-  CacheableBooleanPtr boolptr = NULLPTR;
-
-  if ((portfolio = dynamic_cast<Portfolio*>(field.ptr())) != NULLPTR) {
+  if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(field)) {
     printf("   pulled %s :- ID %d, pkid %s\n",
            checkNullString(ssptr->getFieldName(fields)), portfolio->getID(),
            checkNullString(portfolio->getPkid()->asChar()));
-  } else if ((position = dynamic_cast<Position*>(field.ptr())) != NULLPTR) {
+  } else if (auto position = std::dynamic_pointer_cast<Position>(field)) {
     printf("   pulled %s :- secId %s, shares %d\n",
            checkNullString(ssptr->getFieldName(fields)),
            checkNullString(position->getSecId()->asChar()),
            position->getSharesOutstanding());
-  } else if ((portfolioPdx = dynamic_cast<PortfolioPdx*>(field.ptr())) !=
-             NULLPTR) {
+  } else if (auto portfolioPdx =
+                 std::dynamic_pointer_cast<PortfolioPdx>(field)) {
     printf("   pulled %s :- ID %d, pkid %s\n",
            checkNullString(ssptr->getFieldName(fields)), portfolioPdx->getID(),
            checkNullString(portfolioPdx->getPkid()));
-  } else if ((positionPdx = dynamic_cast<PositionPdx*>(field.ptr())) !=
-             NULLPTR) {
+  } else if (auto positionPdx = std::dynamic_pointer_cast<PositionPdx>(field)) {
     printf("   pulled %s :- secId %s, shares %d\n",
            checkNullString(ssptr->getFieldName(fields)),
            checkNullString(positionPdx->getSecId()),
            positionPdx->getSharesOutstanding());
   } else {
-    if ((str = dynamic_cast<CacheableString*>(field.ptr())) != NULLPTR) {
+    if (auto str = std::dynamic_pointer_cast<CacheableString>(field)) {
       if (str->isWideString()) {
         printf("   pulled %s :- %S\n",
                checkNullString(ssptr->getFieldName(fields)),
@@ -95,24 +87,19 @@ void _printFields(CacheablePtr field, Struct* ssptr, int32_t& fields) {
                checkNullString(ssptr->getFieldName(fields)),
                checkNullString(str->asChar()));
       }
-    } else if ((boolptr = dynamic_cast<CacheableBoolean*>(field.ptr())) !=
-               NULLPTR) {
+    } else if (auto boolptr =
+                   std::dynamic_pointer_cast<CacheableBoolean>(field)) {
       printf("   pulled %s :- %s\n",
              checkNullString(ssptr->getFieldName(fields)),
              boolptr->toString()->asChar());
     } else {
-      CacheableKeyPtr ptr = NULLPTR;
-      CacheableStringArrayPtr strArr = NULLPTR;
-      CacheableHashMapPtr map = NULLPTR;
-      StructPtr structimpl = NULLPTR;
-
-      if ((ptr = dynamic_cast<CacheableKey*>(field.ptr())) != NULLPTR) {
+      if (auto ptr = std::dynamic_pointer_cast<CacheableKey>(field)) {
         char buff[1024] = {'\0'};
         ptr->logString(&buff[0], 1024);
         printf("   pulled %s :- %s \n",
                checkNullString(ssptr->getFieldName(fields)), buff);
-      } else if ((strArr = dynamic_cast<CacheableStringArray*>(field.ptr())) !=
-                 NULLPTR) {
+      } else if (auto strArr =
+                     std::dynamic_pointer_cast<CacheableStringArray>(field)) {
         printf(" string array object printing \n\n");
         for (int stri = 0; stri < strArr->length(); stri++) {
           if (strArr->operator[](stri)->isWideString()) {
@@ -125,28 +112,27 @@ void _printFields(CacheablePtr field, Struct* ssptr, int32_t& fields) {
                    checkNullString(strArr->operator[](stri)->asChar()));
           }
         }
-      } else if ((map = dynamic_cast<CacheableHashMap*>(field.ptr())) !=
-                 NULLPTR) {
+      } else if (auto map =
+                     std::dynamic_pointer_cast<CacheableHashMap>(field)) {
         int index = 0;
-        for (CacheableHashMap::Iterator iter = map->begin(); iter != map->end();
-             iter++) {
-          printf("   hashMap %d of %d ... \n", ++index, map->size());
-          _printFields(iter.first(), ssptr, fields);
-          _printFields(iter.second(), ssptr, fields);
+        for (const auto& iter : *map) {
+          printf("   hashMap %d of %zd ... \n", ++index, map->size());
+          _printFields(iter.first, ssptr, fields);
+          _printFields(iter.second, ssptr, fields);
         }
         printf("   end of map \n");
-      } else if ((structimpl = dynamic_cast<Struct*>(field.ptr())) != NULLPTR) {
+      } else if (auto structimpl = std::dynamic_pointer_cast<Struct>(field)) {
         printf("   structImpl %s {\n",
                checkNullString(ssptr->getFieldName(fields)));
         for (int32_t inner_fields = 0; inner_fields < structimpl->length();
              inner_fields++) {
           SerializablePtr field = (*structimpl)[inner_fields];
-          if (field == NULLPTR) {
-            printf("we got null fields here, probably we have NULL data\n");
+          if (field == nullptr) {
+            printf("we got null fields here, probably we have nullptr data\n");
             continue;
           }
 
-          _printFields(field, structimpl.ptr(), inner_fields);
+          _printFields(field, structimpl.get(), inner_fields);
 
         }  // end of field iterations
         printf("   } //end of %s\n",
@@ -168,17 +154,17 @@ void _verifyStructSet(StructSetPtr& ssptr, int i) {
       continue;
     }
 
-    Struct* siptr = dynamic_cast<Struct*>(((*ssptr)[rows]).ptr());
-    if (siptr == NULL) {
-      printf("siptr is NULL \n\n");
+    Struct* siptr = dynamic_cast<Struct*>(((*ssptr)[rows]).get());
+    if (siptr == nullptr) {
+      printf("siptr is nullptr \n\n");
       continue;
     }
 
     printf("   Row : %d \n", rows);
     for (int32_t fields = 0; fields < siptr->length(); fields++) {
       SerializablePtr field = (*siptr)[fields];
-      if (field == NULLPTR) {
-        printf("we got null fields here, probably we have NULL data\n");
+      if (field == nullptr) {
+        printf("we got null fields here, probably we have nullptr data\n");
         continue;
       }
 
@@ -192,29 +178,30 @@ void compareMaps(HashMapOfCacheable& map, HashMapOfCacheable& expectedMap) {
   ASSERT(expectedMap.size() == map.size(),
          "Unexpected number of entries in map");
   LOGINFO("Got expected number of %d entries in map", map.size());
-  for (HashMapOfCacheable::Iterator iter = map.begin(); iter != map.end();
-       ++iter) {
-    const CacheableKeyPtr& key = iter.first();
-    const CacheablePtr& val = iter.second();
-    HashMapOfCacheable::Iterator expectedIter = expectedMap.find(key);
+  for (const auto& iter : map) {
+    const auto& key = iter.first;
+    const auto& val = iter.second;
+    const auto& expectedIter = expectedMap.find(key);
     if (expectedIter == expectedMap.end()) {
       FAIL("Could not find expected key in map");
     }
-    const CacheablePtr& expectedVal = expectedIter.second();
+    const auto& expectedVal = expectedIter->second;
 
-    if (instanceOf<PositionPdxPtr>(expectedVal)) {
-      const PositionPdxPtr& posVal = dynCast<PositionPdxPtr>(val);
+    if (std::dynamic_pointer_cast<PositionPdx>(expectedVal)) {
+      const PositionPdxPtr& posVal =
+          std::dynamic_pointer_cast<PositionPdx>(val);
       const PositionPdxPtr& expectedPosVal =
-          staticCast<PositionPdxPtr>(expectedVal);
+          std::static_pointer_cast<PositionPdx>(expectedVal);
       ASSERT(*expectedPosVal->getSecId() == *posVal->getSecId(),
              "Expected the secIDs to be equal in PositionPdx");
       ASSERT(expectedPosVal->getSharesOutstanding() ==
                  posVal->getSharesOutstanding(),
              "Expected the sharesOutstanding to be equal in PositionPdx");
     } else {
-      const PortfolioPdxPtr& portVal = dynCast<PortfolioPdxPtr>(val);
+      const PortfolioPdxPtr& portVal =
+          std::dynamic_pointer_cast<PortfolioPdx>(val);
       const PortfolioPdxPtr& expectedPortVal =
-          dynCast<PortfolioPdxPtr>(expectedVal);
+          std::dynamic_pointer_cast<PortfolioPdx>(expectedVal);
       ASSERT(expectedPortVal->getID() == portVal->getID(),
              "Expected the IDs to be equal in PortfolioPdx");
       ASSERT(expectedPortVal->getNewValSize() == portVal->getNewValSize(),
@@ -237,7 +224,7 @@ void stepOne() {
   initGridClient(true);
 
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0, true);
+  createPool(poolNames[0], locHostPort, nullptr, 0, true);
   createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
   createRegionAndAttachPool(qRegionNames[1], USE_ACK, poolNames[0]);
   createRegionAndAttachPool(qRegionNames[2], USE_ACK, poolNames[0]);
@@ -289,14 +276,14 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(qRegionNames[0]);
-    RegionPtr regPtr1 = regPtr0->getSubregion("Positions");
-    RegionPtr regPtr2 = getHelper()->getRegion(qRegionNames[1]);
+    auto regPtr0 = getHelper()->getRegion(qRegionNames[0]);
+    auto regPtr1 = regPtr0->getSubregion("Positions");
+    auto regPtr2 = getHelper()->getRegion(qRegionNames[1]);
 
-    RegionPtr regPtr3 = getHelper()->getRegion(qRegionNames[2]);
-    RegionPtr regPtr4 = getHelper()->getRegion(qRegionNames[3]);
+    auto regPtr3 = getHelper()->getRegion(qRegionNames[2]);
+    auto regPtr4 = getHelper()->getRegion(qRegionNames[3]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+    auto* qh = &QueryHelper::getHelper();
 
     qh->populatePortfolioPdxData(regPtr0, qh->getPortfolioSetSize(),
                                  qh->getPortfolioNumSets());
@@ -323,20 +310,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
     SLEEP(100);
     bool doAnyErrorOccured = false;
-    QueryHelper* qh = &QueryHelper::getHelper();
+    auto* qh = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = NULLPTR;
+    QueryServicePtr qs = nullptr;
     if (isPoolConfig) {
-      PoolPtr pool1 = findPool(poolNames[0]);
+      auto pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
 
     for (int i = 0; i < QueryStrings::SSOPLsize(); i++) {
-      QueryPtr qry =
-          qs->newQuery(const_cast<char*>(structsetQueriesOPL[i].query()));
-      SelectResultsPtr results = qry->execute();
+      auto qry = qs->newQuery(structsetQueriesOPL[i].query());
+      auto results = qry->execute();
       if (!qh->verifySS(results, structsetRowCountsOPL[i],
                         structsetFieldCountsOPL[i])) {
         char failmsg[100] = {0};
@@ -345,9 +331,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
         continue;
       }
 
-      StructSetPtr ssptr =
-          StructSetPtr(dynamic_cast<StructSet*>(results.ptr()));
-      if ((ssptr) == NULLPTR) {
+      auto ssptr = std::dynamic_pointer_cast<StructSet>(results);
+      if ((ssptr) == nullptr) {
         LOG("Zero records were expected and found. Moving onto next. ");
         continue;
       }
@@ -365,11 +350,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
     SLEEP(100);
     bool doAnyErrorOccured = false;
-    QueryHelper* qh = &QueryHelper::getHelper();
+    auto qh = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = NULLPTR;
+    QueryServicePtr qs = nullptr;
     if (isPoolConfig) {
-      PoolPtr pool1 = findPool(poolNames[0]);
+      auto pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
@@ -382,23 +367,22 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
       }
 
       if (structsetQueries[i].category != unsupported) {
-        QueryPtr qry =
-            qs->newQuery(const_cast<char*>(structsetQueries[i].query()));
-        SelectResultsPtr results = qry->execute();
-        if (!qh->verifySS(results, (qh->isExpectedRowsConstantSS(i)
-                                        ? structsetRowCounts[i]
-                                        : structsetRowCounts[i] *
-                                              qh->getPortfolioNumSets()),
-                          structsetFieldCounts[i])) {
+        auto qry = qs->newQuery(structsetQueries[i].query());
+        auto results = qry->execute();
+        if (!qh->verifySS(
+                results,
+                (qh->isExpectedRowsConstantSS(i)
+                     ? structsetRowCounts[i]
+                     : structsetRowCounts[i] * qh->getPortfolioNumSets()),
+                structsetFieldCounts[i])) {
           char failmsg[100] = {0};
           ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
           ASSERT(false, failmsg);
           continue;
         }
 
-        StructSetPtr ssptr =
-            StructSetPtr(dynamic_cast<StructSet*>(results.ptr()));
-        if ((ssptr) == NULLPTR) {
+        auto ssptr = std::dynamic_pointer_cast<StructSet>(results);
+        if ((ssptr) == nullptr) {
           LOG("Zero records were expected and found. Moving onto next. ");
           continue;
         }
@@ -417,11 +401,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
   {
     SLEEP(100);
     bool doAnyErrorOccured = false;
-    QueryHelper* qh = &QueryHelper::getHelper();
+    auto* qh = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = NULLPTR;
+    QueryServicePtr qs = nullptr;
     if (isPoolConfig) {
-      PoolPtr pool1 = findPool(poolNames[0]);
+      auto pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
@@ -434,9 +418,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
       }
 
       if (structsetParamQueries[i].category != unsupported) {
-        QueryPtr qry =
-            qs->newQuery(const_cast<char*>(structsetParamQueries[i].query()));
-        CacheableVectorPtr paramList = CacheableVector::create();
+        auto qry = qs->newQuery(structsetParamQueries[i].query());
+        auto paramList = CacheableVector::create();
 
         for (int j = 0; j < numSSQueryParam[i]; j++) {
           // LOGINFO("NIL::SSPQ::328: queryparamSetSS[%d][%d] = %s", i, j,
@@ -449,21 +432,21 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
           }
         }
 
-        SelectResultsPtr results = qry->execute(paramList);
-        if (!qh->verifySS(results, (qh->isExpectedRowsConstantSSPQ(i)
-                                        ? structsetRowCountsPQ[i]
-                                        : structsetRowCountsPQ[i] *
-                                              qh->getPortfolioNumSets()),
-                          structsetFieldCountsPQ[i])) {
+        auto results = qry->execute(paramList);
+        if (!qh->verifySS(
+                results,
+                (qh->isExpectedRowsConstantSSPQ(i)
+                     ? structsetRowCountsPQ[i]
+                     : structsetRowCountsPQ[i] * qh->getPortfolioNumSets()),
+                structsetFieldCountsPQ[i])) {
           char failmsg[100] = {0};
           ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
           ASSERT(false, failmsg);
           continue;
         }
 
-        StructSetPtr ssptr =
-            StructSetPtr(dynamic_cast<StructSet*>(results.ptr()));
-        if ((ssptr) == NULLPTR) {
+        auto ssptr = std::dynamic_pointer_cast<StructSet>(results);
+        if ((ssptr) == nullptr) {
           LOG("Zero records were expected and found. Moving onto next. ");
           continue;
         }
@@ -479,11 +462,11 @@ END_TASK_DEFINITION
 // on the server
 DUNIT_TASK_DEFINITION(CLIENT1, GetAll)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(qRegionNames[0]);
-    RegionPtr regPtr1 = regPtr0->getSubregion("Positions");
-    RegionPtr regPtr2 = getHelper()->getRegion(qRegionNames[1]);
-    RegionPtr regPtr3 = getHelper()->getRegion(qRegionNames[2]);
-    RegionPtr regPtr4 = getHelper()->getRegion(qRegionNames[3]);
+    auto regPtr0 = getHelper()->getRegion(qRegionNames[0]);
+    auto regPtr1 = regPtr0->getSubregion("Positions");
+    auto regPtr2 = getHelper()->getRegion(qRegionNames[1]);
+    auto regPtr3 = getHelper()->getRegion(qRegionNames[2]);
+    auto regPtr4 = getHelper()->getRegion(qRegionNames[3]);
 
     // reset the counter for uniform population of position objects
     PositionPdx::resetCounter();
@@ -495,7 +478,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetAll)
     HashMapOfCacheable expectedPosMap;
     HashMapOfCacheable expectedPortMap;
 
-    QueryHelper& qh = QueryHelper::getHelper();
+    auto& qh = QueryHelper::getHelper();
     int setSize = qh.getPositionSetSize();
     int numSets = qh.getPositionNumSets();
 
@@ -504,13 +487,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetAll)
         char posname[100] = {0};
         ACE_OS::sprintf(posname, "pos%d-%d", set, current);
 
-        CacheableKeyPtr posKey(CacheableKey::create(posname));
-        CacheablePtr pos = NULLPTR;
-        pos = CacheablePtr(
-            new PositionPdx(secIds[current % numSecIds], current * 100));
+        auto posKey(CacheableKey::create(posname));
+        auto pos = std::make_shared<PositionPdx>(secIds[current % numSecIds],
+                                                 current * 100);
 
         posKeys.push_back(posKey);
-        expectedPosMap.insert(posKey, pos);
+        expectedPosMap.emplace(posKey, pos);
       }
     }
 
@@ -524,17 +506,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetAll)
         char portname[100] = {0};
         ACE_OS::sprintf(portname, "port%d-%d", set, current);
 
-        CacheableKeyPtr portKey(CacheableKey::create(portname));
-        CacheablePtr port = NULLPTR;
-        port = CacheablePtr(new PortfolioPdx(current, 1));
+        auto portKey = CacheableKey::create(portname);
+        auto port = std::make_shared<PortfolioPdx>(current, 1);
 
         portKeys.push_back(portKey);
-        expectedPortMap.insert(portKey, port);
+        expectedPortMap.emplace(portKey, port);
       }
     }
 
-    HashMapOfCacheablePtr resMap(new HashMapOfCacheable());
-    HashMapOfExceptionPtr exMap(new HashMapOfException());
+    auto resMap = std::make_shared<HashMapOfCacheable>();
+    auto exMap = std::make_shared<HashMapOfException>();
 
     // execute getAll for different regions and verify results
     regPtr0->getAll(portKeys, resMap, exMap);
@@ -566,11 +547,11 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, DoQuerySSError)
   {
-    QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+    auto* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = NULLPTR;
+    QueryServicePtr qs = nullptr;
     if (isPoolConfig) {
-      PoolPtr pool1 = findPool(poolNames[0]);
+      auto pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
@@ -578,11 +559,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, DoQuerySSError)
 
     for (int i = 0; i < QueryStrings::SSsize(); i++) {
       if (structsetQueries[i].category == unsupported) {
-        QueryPtr qry =
-            qs->newQuery(const_cast<char*>(structsetQueries[i].query()));
+        auto qry = qs->newQuery(structsetQueries[i].query());
 
         try {
-          SelectResultsPtr results = qry->execute();
+          auto results = qry->execute();
 
           char failmsg[100] = {0};
           ACE_OS::sprintf(failmsg, "Query exception didnt occur for index %d",
@@ -628,18 +608,8 @@ DUNIT_TASK_DEFINITION(LOCATOR, CloseLocator)
 END_TASK_DEFINITION
 
 DUNIT_MAIN
-  {
-    CALL_TASK(StartLocator)
-    CALL_TASK(CreateServerWithLocator)
-    CALL_TASK(StepOnePoolLoc)
-    CALL_TASK(StepThree)
-    CALL_TASK(StepFour)
-    CALL_TASK(StepFive)
-    CALL_TASK(StepSix)
-    CALL_TASK(GetAll)
-    CALL_TASK(DoQuerySSError)
-    CALL_TASK(CloseCache1)
-    CALL_TASK(CloseServer1)
-    CALL_TASK(CloseLocator)
-  }
-END_MAIN
+{CALL_TASK(StartLocator) CALL_TASK(CreateServerWithLocator)
+     CALL_TASK(StepOnePoolLoc) CALL_TASK(StepThree) CALL_TASK(StepFour)
+         CALL_TASK(StepFive) CALL_TASK(StepSix) CALL_TASK(GetAll)
+             CALL_TASK(DoQuerySSError) CALL_TASK(CloseCache1)
+                 CALL_TASK(CloseServer1) CALL_TASK(CloseLocator)} END_MAIN

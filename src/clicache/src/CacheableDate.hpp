@@ -17,11 +17,8 @@
 
 #pragma once
 
-
-
 #include "geode_defs.hpp"
 #include "ICacheableKey.hpp"
-
 
 using namespace System;
 

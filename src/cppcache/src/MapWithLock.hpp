@@ -31,38 +31,16 @@
 #include <unordered_map>
 #include <string>
 
-namespace std {
-/** @brief Template specialization of hash<T> for CacheableKeyPtr
- * to enable using CacheableKeyPtr's in std::unordered_map/hash_map.
- */
-template <>
-struct hash<apache::geode::client::CacheableKeyPtr> {
-  size_t operator()(const apache::geode::client::CacheableKeyPtr& key) const {
-    return key->hashcode();
-  }
-};
-
-/** @brief Template specialization of equal_to<T> for CacheableKeyPtr
- * to enable using CacheableKeyPtr's in std::unordered_map/hash_map.
- */
-template <>
-struct equal_to<apache::geode::client::CacheableKeyPtr> {
-  size_t operator()(const apache::geode::client::CacheableKeyPtr& key1,
-                    const apache::geode::client::CacheableKeyPtr& key2) const {
-    return (*key1.ptr() == *key2.ptr());
-  }
-};
-}  // namespace std
-
-typedef std::unordered_map<apache::geode::client::CacheableKeyPtr, int>
-    MapOfUpdateCounters;
-
 namespace apache {
 namespace geode {
 namespace client {
 
+typedef std::unordered_map<CacheableKeyPtr, int, CacheableKey::hash,
+                           CacheableKey::equal_to>
+    MapOfUpdateCounters;
+
 class Region;
-typedef SharedPtr<Region> RegionPtr;
+typedef std::shared_ptr<Region> RegionPtr;
 
 /** Map type used to hold root regions in the Cache, and subRegions. */
 typedef ACE_Hash_Map_Manager_Ex<std::string, RegionPtr, ACE_Hash<std::string>,

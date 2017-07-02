@@ -44,74 +44,22 @@
 using namespace apache::geode::client;
 using namespace apache::geode::statistics;
 
-DistributedSystemPtr* DistributedSystem::m_instance_ptr = NULL;
+DistributedSystemPtr* DistributedSystem::m_instance_ptr = nullptr;
 bool DistributedSystem::m_connected = false;
-DistributedSystemImpl* DistributedSystem::m_impl = NULL;
+DistributedSystemImpl* DistributedSystem::m_impl = nullptr;
 
 ACE_Recursive_Thread_Mutex* g_disconnectLock = new ACE_Recursive_Thread_Mutex();
 
 namespace {
 
-StatisticsManager* g_statMngr = NULL;
+StatisticsManager* g_statMngr = nullptr;
 
-SystemProperties* g_sysProps = NULL;
+SystemProperties* g_sysProps = nullptr;
 }  // namespace
 
-namespace apache {
-namespace geode {
-namespace client {
-void setLFH() {
-#ifdef _WIN32
-  static HINSTANCE kernelMod = NULL;
-  if (kernelMod == NULL) {
-    kernelMod = GetModuleHandle("kernel32");
-    if (kernelMod != NULL) {
-      typedef BOOL(WINAPI * PHSI)(
-          HANDLE HeapHandle, HEAP_INFORMATION_CLASS HeapInformationClass,
-          PVOID HeapInformation, SIZE_T HeapInformationLength);
-      typedef HANDLE(WINAPI * PGPH)();
-      PHSI pHSI = NULL;
-      PGPH pGPH = NULL;
-      if ((pHSI = (PHSI)GetProcAddress(kernelMod, "HeapSetInformation")) !=
-          NULL) {
-        // The LFH API is available
-        /* Only set LFH for process heap; causes problems in C++ framework if
-        set for all heaps
-        HANDLE hProcessHeapHandles[1024];
-        DWORD dwRet;
-        ULONG heapFragValue = 2;
-
-        dwRet= GetProcessHeaps( 1024, hProcessHeapHandles );
-        for (DWORD i = 0; i < dwRet; i++)
-        {
-          HeapSetInformation( hProcessHeapHandles[i],
-            HeapCompatibilityInformation, &heapFragValue, sizeof(heapFragValue)
-        );
-        }
-        */
-        HANDLE hProcessHeapHandle;
-        ULONG heapFragValue = 2;
-        if ((pGPH = (PGPH)GetProcAddress(kernelMod, "GetProcessHeap")) !=
-            NULL) {
-          hProcessHeapHandle = pGPH();
-          LOGCONFIG(
-              "Setting Microsoft Windows' low-fragmentation heap for use as "
-              "the main process heap.");
-          pHSI(hProcessHeapHandle, HeapCompatibilityInformation, &heapFragValue,
-               sizeof(heapFragValue));
-        }
-      }
-    }
-  }
-#endif
-}
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
-
-DistributedSystem::DistributedSystem(const char* name) : m_name(NULL) {
+DistributedSystem::DistributedSystem(const char* name) : m_name(nullptr) {
   LOGDEBUG("DistributedSystem::DistributedSystem");
-  if (name != NULL) {
+  if (name != nullptr) {
     size_t len = strlen(name) + 1;
     m_name = new char[len];
     ACE_OS::strncpy(m_name, name, len);
@@ -125,7 +73,6 @@ DistributedSystem::~DistributedSystem() { GF_SAFE_DELETE_ARRAY(m_name); }
 DistributedSystemPtr DistributedSystem::connect(
     const char* name, const PropertiesPtr& configPtr) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
-  setLFH();
   if (m_connected == true) {
     throw AlreadyConnectedException(
         "DistributedSystem::connect: already connected, call getInstance to "
@@ -133,20 +80,20 @@ DistributedSystemPtr DistributedSystem::connect(
   }
 
   // make sure statics are initialized.
-  if (m_instance_ptr == NULL) {
+  if (m_instance_ptr == nullptr) {
     m_instance_ptr = new DistributedSystemPtr();
   }
-  if (g_sysProps == NULL) {
-    g_sysProps = new SystemProperties(configPtr, NULL);
+  if (g_sysProps == nullptr) {
+    g_sysProps = new SystemProperties(configPtr, nullptr);
   }
   Exception::setStackTraces(g_sysProps->debugStackTraceEnabled());
 
-  if (name == NULL) {
+  if (name == nullptr) {
     delete g_sysProps;
-    g_sysProps = NULL;
+    g_sysProps = nullptr;
     throw IllegalArgumentException(
         "DistributedSystem::connect: "
-        "name cannot be NULL");
+        "name cannot be nullptr");
   }
   if (name[0] == '\0') {
     name = "NativeDS";
@@ -155,7 +102,7 @@ DistributedSystemPtr DistributedSystem::connect(
   // Fix for Ticket#866 on NC OR SR#13306117704
   // Set client name via native client API
   const char* propName = g_sysProps->name();
-  if (propName != NULL && strlen(propName) > 0) {
+  if (propName != nullptr && strlen(propName) > 0) {
     name = propName;
   }
 
@@ -169,7 +116,7 @@ DistributedSystemPtr DistributedSystem::connect(
   }
 
   const char* logFilename = g_sysProps->logFilename();
-  if (logFilename != NULL) {
+  if (logFilename != nullptr) {
     try {
       Log::close();
       Log::init(g_sysProps->logLevel(), logFilename,
@@ -180,8 +127,8 @@ DistributedSystemPtr DistributedSystem::connect(
       TcrMessage::cleanup();
       CppCacheLibrary::closeLib();
       delete g_sysProps;
-      g_sysProps = NULL;
-      *m_instance_ptr = NULLPTR;
+      g_sysProps = nullptr;
+      *m_instance_ptr = nullptr;
       // delete g_disconnectLock;
       throw;
     }
@@ -221,11 +168,7 @@ DistributedSystemPtr DistributedSystem::connect(
 #ifndef _WIN32
   const char* ld_libpath = ACE_OS::getenv("LD_LIBRARY_PATH");
   LOGCONFIG("Current library path: %s",
-            ld_libpath == NULL ? "NULL" : ld_libpath);
-#else
-  if (Utils::s_setNewAndDelete) {
-    LOGCONFIG("Operators new and delete have been set.");
-  }
+            ld_libpath == nullptr ? "nullptr" : ld_libpath);
 #endif
   // Log the Geode system properties
   g_sysProps->logSettings();
@@ -242,7 +185,7 @@ DistributedSystemPtr DistributedSystem::connect(
         g_sysProps->statsFileSizeLimit(), g_sysProps->statsDiskSpaceLimit());
   } catch (const NullPointerException&) {
     // close all open handles, delete whatever was newed.
-    g_statMngr = NULL;
+    g_statMngr = nullptr;
     //:Merge issue
     /*if (strlen(g_sysProps->securityClientDhAlgo())>0) {
       DiffieHellman::clearDhKeys();
@@ -251,12 +194,12 @@ DistributedSystemPtr DistributedSystem::connect(
     TcrMessage::cleanup();
     CppCacheLibrary::closeLib();
     delete g_sysProps;
-    g_sysProps = NULL;
-    *m_instance_ptr = NULLPTR;
+    g_sysProps = nullptr;
+    *m_instance_ptr = nullptr;
     // delete g_disconnectLock;
     throw;
   }
-  GF_D_ASSERT(g_statMngr != NULL);
+  GF_D_ASSERT(g_statMngr != nullptr);
 
   CacheImpl::expiryTaskManager = new ExpiryTaskManager();
   CacheImpl::expiryTaskManager->begin();
@@ -287,7 +230,7 @@ DistributedSystemPtr DistributedSystem::connect(
   }
 
   m_connected = true;
-  dptr = dp;
+  dptr.reset(dp);
   *m_instance_ptr = dptr;
   LOGCONFIG("Starting the Geode Native Client");
 
@@ -308,21 +251,21 @@ void DistributedSystem::disconnect() {
 
   try {
     CachePtr cache = CacheFactory::getAnyInstance();
-    if (cache != NULLPTR && !cache->isClosed()) {
+    if (cache != nullptr && !cache->isClosed()) {
       cache->close();
     }
   } catch (const apache::geode::client::Exception& e) {
     LOGWARN("Exception while closing: %s: %s", e.getName(), e.getMessage());
   }
 
-  if (CacheImpl::expiryTaskManager != NULL) {
+  if (CacheImpl::expiryTaskManager != nullptr) {
     CacheImpl::expiryTaskManager->stopExpiryTaskManager();
   }
 
   if (m_impl) {
     m_impl->disconnect();
     delete m_impl;
-    m_impl = NULL;
+    m_impl = nullptr;
   }
 
   LOGFINEST("Deleted DistributedSystemImpl");
@@ -338,13 +281,13 @@ void DistributedSystem::disconnect() {
 
   GF_D_ASSERT(!!g_sysProps);
   delete g_sysProps;
-  g_sysProps = NULL;
+  g_sysProps = nullptr;
 
   LOGFINEST("Deleted SystemProperties");
 
-  if (CacheImpl::expiryTaskManager != NULL) {
+  if (CacheImpl::expiryTaskManager != nullptr) {
     delete CacheImpl::expiryTaskManager;
-    CacheImpl::expiryTaskManager = NULL;
+    CacheImpl::expiryTaskManager = nullptr;
   }
 
   LOGFINEST("Deleted ExpiryTaskManager");
@@ -355,7 +298,7 @@ void DistributedSystem::disconnect() {
 
   GF_D_ASSERT(!!g_statMngr);
   g_statMngr->clean();
-  g_statMngr = NULL;
+  g_statMngr = nullptr;
 
   LOGFINEST("Cleaned StatisticsManager");
 
@@ -367,7 +310,7 @@ void DistributedSystem::disconnect() {
 
   LOGFINEST("Cleaned PoolStatType");
 
-  *m_instance_ptr = NULLPTR;
+  *m_instance_ptr = nullptr;
 
   // Free up library resources
   CppCacheLibrary::closeLib();
@@ -392,8 +335,8 @@ bool DistributedSystem::isConnected() {
 
 DistributedSystemPtr DistributedSystem::getInstance() {
   CppCacheLibrary::initLib();
-  if (m_instance_ptr == NULL) {
-    return NULLPTR;
+  if (m_instance_ptr == nullptr) {
+    return nullptr;
   }
   return *m_instance_ptr;
 }

@@ -32,7 +32,7 @@ using namespace apache::geode::statistics;
 //////////////////////  Static Methods  //////////////////////
 
 int64_t OsStatisticsImpl::calcNumericId(StatisticsFactory* system,
-                                      int64_t userValue) {
+                                        int64_t userValue) {
   int64_t result;
   if (userValue != 0) {
     result = userValue;
@@ -44,10 +44,10 @@ int64_t OsStatisticsImpl::calcNumericId(StatisticsFactory* system,
 
 const char* OsStatisticsImpl::calcTextId(StatisticsFactory* system,
                                          const char* userValue) {
-  if (userValue != NULL && strcmp(userValue, "") != 0) {
+  if (userValue != nullptr && strcmp(userValue, "") != 0) {
     return userValue;
   } else {
-    if (system != NULL) {
+    if (system != nullptr) {
       return system->getName();
     } else {
       return "";
@@ -74,7 +74,8 @@ const char* OsStatisticsImpl::calcTextId(StatisticsFactory* system,
  */
 OsStatisticsImpl::OsStatisticsImpl(StatisticsType* typeArg,
                                    const char* textIdArg, int64_t numericIdArg,
-                                   int64_t uniqueIdArg, StatisticsFactory* system)
+                                   int64_t uniqueIdArg,
+                                   StatisticsFactory* system)
 
 {
   this->textId = calcTextId(system, textIdArg);
@@ -89,7 +90,7 @@ OsStatisticsImpl::OsStatisticsImpl(StatisticsType* typeArg,
   intStorage = (int32_t*)0;
   longStorage = (int64_t*)0;
 
-  if (statsType != NULL) {
+  if (statsType != nullptr) {
     int32_t intCount = statsType->getIntStatCount();
     int32_t longCount = statsType->getLongStatCount();
     int32_t doubleCount = statsType->getDoubleStatCount();
@@ -99,7 +100,7 @@ OsStatisticsImpl::OsStatisticsImpl(StatisticsType* typeArg,
         intStorage[i] = 0;  // Un-initialized state
       }
     } else {
-      intStorage = NULL;
+      intStorage = nullptr;
     }
     if (longCount > 0) {
       longStorage = new int64_t[longCount];
@@ -107,7 +108,7 @@ OsStatisticsImpl::OsStatisticsImpl(StatisticsType* typeArg,
         longStorage[i] = 0;  // Un-initialized state
       }
     } else {
-      longStorage = NULL;
+      longStorage = nullptr;
     }
     if (doubleCount > 0) {
       doubleStorage = new double[doubleCount];
@@ -115,25 +116,25 @@ OsStatisticsImpl::OsStatisticsImpl(StatisticsType* typeArg,
         doubleStorage[i] = 0;  // Un-initialized state
       }
     } else {
-      doubleStorage = NULL;
+      doubleStorage = nullptr;
     }
-  }  // if(statsType == NULL)
+  }  // if(statsType == nullptr)
 }
 
 OsStatisticsImpl::~OsStatisticsImpl() {
   try {
-    statsType = NULL;
-    if (intStorage != NULL) {
+    statsType = nullptr;
+    if (intStorage != nullptr) {
       delete[] intStorage;
-      intStorage = NULL;
+      intStorage = nullptr;
     }
-    if (longStorage != NULL) {
+    if (longStorage != nullptr) {
       delete[] longStorage;
-      longStorage = NULL;
+      longStorage = nullptr;
     }
-    if (doubleStorage != NULL) {
+    if (doubleStorage != nullptr) {
       delete[] doubleStorage;
-      doubleStorage = NULL;
+      doubleStorage = nullptr;
     }
   } catch (...) {
     LOGERROR("Exception in ~OsStatisticsImpl");
@@ -462,7 +463,8 @@ int32_t OsStatisticsImpl::incInt(char* name, int32_t delta) {
   return incInt(nameToDescriptor(name), delta);
 }
 
-int32_t OsStatisticsImpl::incInt(StatisticDescriptor* descriptor, int32_t delta) {
+int32_t OsStatisticsImpl::incInt(StatisticDescriptor* descriptor,
+                                 int32_t delta) {
   return incInt(getIntId(descriptor), delta);
 }
 
@@ -480,7 +482,8 @@ int64_t OsStatisticsImpl::incLong(char* name, int64_t delta) {
   return incLong(nameToDescriptor(name), delta);
 }
 
-int64_t OsStatisticsImpl::incLong(StatisticDescriptor* descriptor, int64_t delta) {
+int64_t OsStatisticsImpl::incLong(StatisticDescriptor* descriptor,
+                                  int64_t delta) {
   return incLong(getLongId(descriptor), delta);
 }
 

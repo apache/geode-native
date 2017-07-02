@@ -39,7 +39,7 @@ class CPPCACHE_EXPORT CachePerfStats {
 
     StatisticsType* statsType = factory->findType("CachePerfStats");
 
-    if (statsType == NULL) {
+    if (statsType == nullptr) {
       const bool largerIsBetter = true;
       StatisticDescriptor** statDescArr = new StatisticDescriptor*[24];
 
@@ -140,7 +140,7 @@ class CPPCACHE_EXPORT CachePerfStats {
                                       "Statistics about native client cache",
                                       statDescArr, 24);
     }
-    GF_D_ASSERT(statsType != NULL);
+    GF_D_ASSERT(statsType != nullptr);
     // Create Statistics object
     m_cachePerfStats =
         factory->createAtomicStatistics(statsType, "CachePerfStats");
@@ -201,7 +201,7 @@ class CPPCACHE_EXPORT CachePerfStats {
     m_cachePerfStats->setLong(m_pdxDeserializedBytesId, 0);
   }
 
-  virtual ~CachePerfStats() { m_cachePerfStats = NULL; }
+  virtual ~CachePerfStats() { m_cachePerfStats = nullptr; }
 
   void close() {
     /*StatisticDescriptor** statDescArr =

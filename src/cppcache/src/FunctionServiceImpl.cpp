@@ -27,6 +27,5 @@ FunctionServiceImpl::FunctionServiceImpl(ProxyCachePtr proxyCache) {
 
 FunctionServicePtr FunctionServiceImpl::getFunctionService(
     ProxyCachePtr proxyCache) {
-  FunctionServicePtr fPtr(new FunctionServiceImpl(proxyCache));
-  return fPtr;
+  return std::make_shared<FunctionServiceImpl>(proxyCache);
 }

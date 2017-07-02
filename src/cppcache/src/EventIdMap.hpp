@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_EVENTIDMAP_H_
-#define GEODE_EVENTIDMAP_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,31 +15,37 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_EVENTIDMAP_H_
+#define GEODE_EVENTIDMAP_H_
+
+#include <functional>
+#include <memory>
+#include <unordered_map>
+#include <vector>
+#include <utility>
+
 #include <ace/ACE.h>
 #include <ace/Time_Value.h>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Guard_T.h>
 
-#include "EventId.hpp"
-#include <geode/HashMapT.hpp>
-#include <geode/SharedPtr.hpp>
+#include <geode/utils.hpp>
+#include <memory>
 
-#include <vector>
-#include <utility>
+#include "EventId.hpp"
+#include "EventSource.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class EventSource;
 class EventSequence;
 class EventIdMap;
 
-typedef SharedPtr<EventSource> EventSourcePtr;
-typedef SharedPtr<EventSequence> EventSequencePtr;
-typedef SharedPtr<EventIdMap> EventIdMapPtr;
-
-typedef HashMapT<EventSourcePtr, EventSequencePtr> EventIdMapType;
+typedef std::shared_ptr<EventSequence> EventSequencePtr;
+typedef std::shared_ptr<EventIdMap> EventIdMapPtr;
 
 typedef std::pair<EventSourcePtr, EventSequencePtr> EventIdMapEntry;
 typedef std::vector<EventIdMapEntry> EventIdMapEntryList;
@@ -59,9 +60,15 @@ typedef ACE_Guard<ACE_Recursive_Thread_Mutex> MapGuard;
  * provides the operations for duplicate checking and
  * expiry of idle event IDs from notifications.
  */
-class CPPCACHE_EXPORT EventIdMap : public SharedBase {
+class CPPCACHE_EXPORT EventIdMap {
+ private:
+  typedef std::unordered_map<EventSourcePtr, EventSequencePtr,
+                             dereference_hash<EventSourcePtr>,
+                             dereference_equal_to<EventSourcePtr>>
+      map_type;
+
   int32_t m_expiry;
-  EventIdMapType m_map;
+  map_type m_map;
   ACE_Recursive_Thread_Mutex m_lock;
 
   // hidden
@@ -69,11 +76,7 @@ class CPPCACHE_EXPORT EventIdMap : public SharedBase {
   EventIdMap &operator=(const EventIdMap &);
 
  public:
-  EventIdMap()
-      : /* adongre
-         * CID 28935: Uninitialized scalar field (UNINIT_CTOR)
-         */
-        m_expiry(0){};
+  EventIdMap() : m_expiry(0){};
 
   void clear();
 
@@ -126,48 +129,12 @@ class CPPCACHE_EXPORT EventIdMap : public SharedBase {
   uint32_t expire(bool onlyacked);
 };
 
-/** @class EventSource
- *
- * EventSource is the combination of MembershipId and ThreadId from the EventId
- */
-class CPPCACHE_EXPORT EventSource : public SharedBase {
-  char *m_srcId;
-  int32_t m_srcIdLen;
-  int64_t m_thrId;
-
-  uint32_t m_hash;
-
-  void init();
-
-  // hide copy ctor and assignment operator
-  EventSource();
-  EventSource(const EventSource &);
-  EventSource &operator=(const EventSource &);
-
- public:
-  void clear();
-
-  EventSource(const char *memId, int32_t memIdLen, int64_t thrId);
-  ~EventSource();
-
-  int32_t hashcode();
-  bool operator==(const EventSource &rhs) const;
-
-  // Accessors
-
-  char *getSrcId();
-  int32_t getSrcIdLen();
-  char *getMemId();
-  int32_t getMemIdLen();
-  int64_t getThrId();
-};
-
 /** @class EventSequence
  *
  * EventSequence is the combination of SequenceNum from EventId, a timestamp and
  * a flag indicating whether or not it is ACKed
  */
-class CPPCACHE_EXPORT EventSequence : public SharedBase {
+class CPPCACHE_EXPORT EventSequence {
   int64_t m_seqNum;
   bool m_acked;
   ACE_Time_Value m_deadline;  // current time plus the expiration delay (age)
@@ -202,5 +169,4 @@ class CPPCACHE_EXPORT EventSequence : public SharedBase {
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
-
 #endif  // GEODE_EVENTIDMAP_H_

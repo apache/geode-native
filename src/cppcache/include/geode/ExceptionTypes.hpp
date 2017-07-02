@@ -31,30 +31,30 @@ namespace apache {
 namespace geode {
 namespace client {
 
-#define _GF_EXCEPTION_DEF(x)                                              \
-  const char _exception_name_##x[] = "apache::geode::client::" #x;        \
-  class x;                                                                \
-  typedef SharedPtr<x> x##Ptr;                                            \
-  class CPPCACHE_EXPORT x : public apache::geode::client::Exception {     \
-   public:                                                                \
-    x(const char* msg1, const char* msg2 = NULL, bool forceStack = false, \
-      const ExceptionPtr& cause = NULLPTR)                                \
-        : Exception(msg1, msg2, forceStack, cause) {}                     \
-    x(const x& other) : Exception(other) {}                               \
-    virtual Exception* clone() const {                                    \
-      return new x(m_message, m_stack, m_cause);                          \
-    }                                                                     \
-    virtual ~x() {}                                                       \
-    virtual const char* getName() const { return _exception_name_##x; }   \
-    virtual void raise() { throw * this; }                                \
-                                                                          \
-   protected:                                                             \
-    x(const CacheableStringPtr& message, const StackTracePtr& stack,      \
-      const ExceptionPtr& cause)                                          \
-        : Exception(message, stack, cause) {}                             \
-                                                                          \
-   private:                                                               \
-    const x& operator=(const x&);                                         \
+#define _GF_EXCEPTION_DEF(x)                                                 \
+  const char _exception_name_##x[] = "apache::geode::client::" #x;           \
+  class x;                                                                   \
+  typedef std::shared_ptr<x> x##Ptr;                                         \
+  class CPPCACHE_EXPORT x : public apache::geode::client::Exception {        \
+   public:                                                                   \
+    x(const char* msg1, const char* msg2 = nullptr, bool forceStack = false, \
+      const ExceptionPtr& cause = nullptr)                                   \
+        : Exception(msg1, msg2, forceStack, cause) {}                        \
+    x(const x& other) : Exception(other) {}                                  \
+    virtual Exception* clone() const {                                       \
+      return new x(m_message, m_stack, m_cause);                             \
+    }                                                                        \
+    virtual ~x() {}                                                          \
+    virtual const char* getName() const { return _exception_name_##x; }      \
+    virtual void raise() { throw * this; }                                   \
+                                                                             \
+   protected:                                                                \
+    x(const CacheableStringPtr& message, const StackTracePtr& stack,         \
+      const ExceptionPtr& cause)                                             \
+        : Exception(message, stack, cause) {}                                \
+                                                                             \
+   private:                                                                  \
+    const x& operator=(const x&);                                            \
   }
 
 /*
@@ -241,7 +241,7 @@ _GF_EXCEPTION_DEF(RegionCreationFailedException);
 
 /**
  *@brief Thrown when there is a fatal internal exception in geode.
-  */
+ */
 _GF_EXCEPTION_DEF(FatalInternalException);
 
 /**
@@ -358,38 +358,38 @@ _GF_EXCEPTION_DEF(InvalidDeltaException);
  **/
 _GF_EXCEPTION_DEF(KeyNotFoundException);
 /**
-* @brief This is for all Exceptions that may be thrown
-* by a Geode transaction.
-**/
+ * @brief This is for all Exceptions that may be thrown
+ * by a Geode transaction.
+ **/
 _GF_EXCEPTION_DEF(TransactionException);
 /**
-* @brief The RollbackException exception indicates that either the transaction
-* has been rolled back or an operation cannot complete because the
-* transaction is marked for rollback only.
-**/
+ * @brief The RollbackException exception indicates that either the transaction
+ * has been rolled back or an operation cannot complete because the
+ * transaction is marked for rollback only.
+ **/
 _GF_EXCEPTION_DEF(RollbackException);
 /**
-* @brief Thrown when a commit fails due to a write conflict.
-* @see CacheTransactionManager#commit
-**/
+ * @brief Thrown when a commit fails due to a write conflict.
+ * @see CacheTransactionManager#commit
+ **/
 _GF_EXCEPTION_DEF(CommitConflictException);
 /**
-* @brief Thrown when the transactional data host has shutdown or no longer has
-*the data
-* being modified by the transaction.
-* This can be thrown while doing transactional operations or during commit.
-**/
+ * @brief Thrown when the transactional data host has shutdown or no longer has
+ *the data
+ * being modified by the transaction.
+ * This can be thrown while doing transactional operations or during commit.
+ **/
 _GF_EXCEPTION_DEF(TransactionDataNodeHasDepartedException);
 /**
-* @brief Thrown when a {@link RebalanceOperation} occurs concurrently with a
-*transaction.
-* This can be thrown while doing transactional operations or during commit.
-**/
+ * @brief Thrown when a {@link RebalanceOperation} occurs concurrently with a
+ *transaction.
+ * This can be thrown while doing transactional operations or during commit.
+ **/
 _GF_EXCEPTION_DEF(TransactionDataRebalancedException);
 
 /**
-* @brief Thrown if putAll operation with single hop succeeded partially.
-**/
+ * @brief Thrown if putAll operation with single hop succeeded partially.
+ **/
 _GF_EXCEPTION_DEF(PutAllPartialResultException);
 
 /**

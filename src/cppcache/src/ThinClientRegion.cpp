@@ -79,24 +79,24 @@ class PutAllWork : public PooledWork<GfErrType>,
         m_serverLocation(serverLocation),
         m_attemptFailover(attemptFailover),
         m_isBGThread(isBGThread),
-        m_userAttribute(NULLPTR),
+        m_userAttribute(nullptr),
         m_region(region),
         m_keys(keys),
         m_map(map),
         m_timeout(timeout),
-        m_papException(NULLPTR),
+        m_papException(nullptr),
         m_isPapeReceived(false)
   // UNUSED , m_aCallbackArgument(aCallbackArgument)
   {
-    m_request = new TcrMessagePutAll(m_region.ptr(), *m_map.ptr(),
+    m_request = new TcrMessagePutAll(m_region.get(), *m_map.get(),
                                      static_cast<int>(m_timeout * 1000),
                                      m_poolDM, aCallbackArgument);
     m_reply = new TcrMessageReply(true, m_poolDM);
 
     // create new instanceof VCOPL
     ACE_Recursive_Thread_Mutex responseLock;
-    m_verObjPartListPtr =
-        new VersionedCacheableObjectPartList(keys.ptr(), responseLock);
+    m_verObjPartListPtr = std::make_shared<VersionedCacheableObjectPartList>(
+        keys.get(), responseLock);
 
     if (m_poolDM->isMultiUserMode()) {
       m_userAttribute = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
@@ -136,7 +136,7 @@ class PutAllWork : public PooledWork<GfErrType>,
   GfErrType execute(void) {
     GuardUserAttribures gua;
 
-    if (m_userAttribute != NULLPTR) {
+    if (m_userAttribute != nullptr) {
       gua.setProxyCache(m_userAttribute->getProxyCache());
     }
 
@@ -222,19 +222,19 @@ class RemoveAllWork : public PooledWork<GfErrType>,
         m_serverLocation(serverLocation),
         m_attemptFailover(attemptFailover),
         m_isBGThread(isBGThread),
-        m_userAttribute(NULLPTR),
+        m_userAttribute(nullptr),
         m_region(region),
         m_aCallbackArgument(aCallbackArgument),
         m_keys(keys),
-        m_papException(NULLPTR),
+        m_papException(nullptr),
         m_isPapeReceived(false) {
-    m_request = new TcrMessageRemoveAll(m_region.ptr(), *keys,
+    m_request = new TcrMessageRemoveAll(m_region.get(), *keys,
                                         m_aCallbackArgument, m_poolDM);
     m_reply = new TcrMessageReply(true, m_poolDM);
     // create new instanceof VCOPL
     ACE_Recursive_Thread_Mutex responseLock;
-    m_verObjPartListPtr =
-        new VersionedCacheableObjectPartList(keys.ptr(), responseLock);
+    m_verObjPartListPtr = std::make_shared<VersionedCacheableObjectPartList>(
+        keys.get(), responseLock);
 
     if (m_poolDM->isMultiUserMode()) {
       m_userAttribute = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
@@ -270,7 +270,7 @@ class RemoveAllWork : public PooledWork<GfErrType>,
   GfErrType execute(void) {
     GuardUserAttribures gua;
 
-    if (m_userAttribute != NULLPTR) {
+    if (m_userAttribute != nullptr) {
       gua.setProxyCache(m_userAttribute->getProxyCache());
     }
 
@@ -328,7 +328,7 @@ class RemoveAllWork : public PooledWork<GfErrType>,
 };
 
 ThinClientRegion::ThinClientRegion(const std::string& name, CacheImpl* cache,
-                                   RegionInternal* rPtr,
+                                   const RegionInternalPtr& rPtr,
                                    const RegionAttributesPtr& attributes,
                                    const CacheStatisticsPtr& stats, bool shared)
     : LocalRegion(name, cache, rPtr, attributes, stats, shared),
@@ -344,7 +344,7 @@ ThinClientRegion::ThinClientRegion(const std::string& name, CacheImpl* cache,
 void ThinClientRegion::initTCR() {
   bool subscription = false;
   PoolPtr pool = PoolManager::find(getAttributes()->getPoolName());
-  if (pool != NULLPTR) {
+  if (pool != nullptr) {
     subscription = pool->getSubscriptionEnabled();
   }
   bool notificationEnabled =
@@ -375,7 +375,7 @@ void ThinClientRegion::registerKeys(const VectorOfCacheableKey& keys,
                                     bool isDurable, bool getInitialValues,
                                     bool receiveValues) {
   PoolPtr pool = PoolManager::find(getAttributes()->getPoolName());
-  if (pool != NULLPTR) {
+  if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
           "Registering keys is supported "
@@ -406,7 +406,7 @@ void ThinClientRegion::registerKeys(const VectorOfCacheableKey& keys,
   LOGDEBUG("ThinClientRegion::registerKeys : interestpolicy is %d",
            interestPolicy.ordinal);
 
-  GfErrType err = registerKeysNoThrow(keys, true, NULL, isDurable,
+  GfErrType err = registerKeysNoThrow(keys, true, nullptr, isDurable,
                                       interestPolicy, receiveValues);
 
   if (m_tcrdm->isFatalError(err)) {
@@ -418,7 +418,7 @@ void ThinClientRegion::registerKeys(const VectorOfCacheableKey& keys,
 
 void ThinClientRegion::unregisterKeys(const VectorOfCacheableKey& keys) {
   PoolPtr pool = PoolManager::find(getAttributes()->getPoolName());
-  if (pool != NULLPTR) {
+  if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
           "Unregister keys is supported "
@@ -453,7 +453,7 @@ void ThinClientRegion::registerAllKeys(bool isDurable,
                                        bool getInitialValues,
                                        bool receiveValues) {
   PoolPtr pool = PoolManager::find(getAttributes()->getPoolName());
-  if (pool != NULLPTR) {
+  if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
           "Register all keys is supported only "
@@ -473,7 +473,7 @@ void ThinClientRegion::registerAllKeys(bool isDurable,
   }
 
   bool isresultKeys = true;
-  if (resultKeys == NULLPTR) {
+  if (resultKeys == nullptr) {
     resultKeys = VectorOfCacheableKeyPtr(new VectorOfCacheableKey());
     isresultKeys = false;
   }
@@ -491,8 +491,9 @@ void ThinClientRegion::registerAllKeys(bool isDurable,
   //  if we need to fetch initial data, then we get the keys in
   // that call itself using the special GET_ALL message and do not need
   // to get the keys in the initial  register interest  call
-  GfErrType err = registerRegexNoThrow(".*", true, NULL, isDurable, resultKeys,
-                                       interestPolicy, receiveValues);
+  GfErrType err =
+      registerRegexNoThrow(".*", true, nullptr, isDurable, resultKeys,
+                           interestPolicy, receiveValues);
 
   if (m_tcrdm->isFatalError(err)) {
     GfErrTypeToException("Region::registerAllKeys", err);
@@ -500,7 +501,7 @@ void ThinClientRegion::registerAllKeys(bool isDurable,
 
   // Get the entries from the server using a special GET_ALL message
   if (isresultKeys == false) {
-    resultKeys = NULLPTR;
+    resultKeys = nullptr;
   }
   GfErrTypeToException("Region::registerAllKeys", err);
 }
@@ -510,7 +511,7 @@ void ThinClientRegion::registerRegex(const char* regex, bool isDurable,
                                      bool getInitialValues,
                                      bool receiveValues) {
   PoolPtr pool = PoolManager::find(getAttributes()->getPoolName());
-  if (pool != NULLPTR) {
+  if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
           "Register regex is supported only if "
@@ -527,7 +528,7 @@ void ThinClientRegion::registerRegex(const char* regex, bool isDurable,
         "Durable flag only applicable for durable clients");
   }
 
-  if (regex == NULL || regex[0] == '\0') {
+  if (regex == nullptr || regex[0] == '\0') {
     throw IllegalArgumentException(
         "Region::registerRegex: Regex string is empty");
   }
@@ -537,8 +538,8 @@ void ThinClientRegion::registerRegex(const char* regex, bool isDurable,
   bool isresultKeys = true;
 
   // if we need initial values then use resultKeys to get the keys from server
-  if (resultKeys == NULLPTR) {
-    resultKeys = new VectorOfCacheableKey();
+  if (resultKeys == nullptr) {
+    resultKeys = std::make_shared<VectorOfCacheableKey>();
     isresultKeys = false;
   }
 
@@ -555,22 +556,23 @@ void ThinClientRegion::registerRegex(const char* regex, bool isDurable,
   //  if we need to fetch initial data for "allKeys" case, then we
   // get the keys in that call itself using the special GET_ALL message and
   // do not need to get the keys in the initial  register interest  call
-  GfErrType err = registerRegexNoThrow(
-      sregex, true, NULL, isDurable, resultKeys, interestPolicy, receiveValues);
+  GfErrType err =
+      registerRegexNoThrow(sregex, true, nullptr, isDurable, resultKeys,
+                           interestPolicy, receiveValues);
 
   if (m_tcrdm->isFatalError(err)) {
     GfErrTypeToException("Region::registerRegex", err);
   }
 
   if (isresultKeys == false) {
-    resultKeys = NULLPTR;
+    resultKeys = nullptr;
   }
   GfErrTypeToException("Region::registerRegex", err);
 }
 
 void ThinClientRegion::unregisterRegex(const char* regex) {
   PoolPtr pool = PoolManager::find(getAttributes()->getPoolName());
-  if (pool != NULLPTR) {
+  if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
           "Unregister regex is supported only if "
@@ -582,7 +584,7 @@ void ThinClientRegion::unregisterRegex(const char* regex) {
     }
   }
 
-  if (regex == NULL || regex[0] == '\0') {
+  if (regex == nullptr || regex[0] == '\0') {
     LOGERROR("Unregister regex string is empty");
     throw IllegalArgumentException("Unregister regex string is empty");
   }
@@ -595,7 +597,7 @@ void ThinClientRegion::unregisterRegex(const char* regex) {
 
 void ThinClientRegion::unregisterAllKeys() {
   PoolPtr pool = PoolManager::find(getAttributes()->getPoolName());
-  if (pool != NULLPTR) {
+  if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
           "Unregister all keys is supported only if "
@@ -614,7 +616,7 @@ SelectResultsPtr ThinClientRegion::query(const char* predicate,
                                          uint32_t timeout) {
   CHECK_DESTROY_PENDING(TryReadGuard, Region::query);
 
-  if (predicate == NULL || predicate[0] == '\0') {
+  if (predicate == nullptr || predicate[0] == '\0') {
     LOGERROR("Region query predicate string is empty");
     throw IllegalArgumentException("Region query predicate string is empty");
   }
@@ -665,20 +667,20 @@ SelectResultsPtr ThinClientRegion::query(const char* predicate,
   ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
 
   if (poolDM) {
-    queryPtr = dynCast<RemoteQueryPtr>(
+    queryPtr = std::dynamic_pointer_cast<RemoteQuery>(
         poolDM->getQueryServiceWithoutCheck()->newQuery(squery.c_str()));
   } else {
-    queryPtr = dynCast<RemoteQueryPtr>(
+    queryPtr = std::dynamic_pointer_cast<RemoteQuery>(
         m_cacheImpl->getQueryService()->newQuery(squery.c_str()));
   }
 
-  return queryPtr->execute(timeout, "Region::query", m_tcrdm, NULLPTR);
+  return queryPtr->execute(timeout, "Region::query", m_tcrdm, nullptr);
 }
 
 bool ThinClientRegion::existsValue(const char* predicate, uint32_t timeout) {
   SelectResultsPtr results = query(predicate, timeout);
 
-  if (results == NULLPTR) {
+  if (results == nullptr) {
     return false;
   }
 
@@ -687,7 +689,7 @@ bool ThinClientRegion::existsValue(const char* predicate, uint32_t timeout) {
 
 GfErrType ThinClientRegion::unregisterKeysBeforeDestroyRegion() {
   PoolPtr pool = PoolManager::find(getAttributes()->getPoolName());
-  if (pool != NULLPTR) {
+  if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
       LOGDEBUG(
           "pool subscription-enabled attribute is false, No need to Unregister "
@@ -739,8 +741,8 @@ SerializablePtr ThinClientRegion::selectValue(const char* predicate,
                                               uint32_t timeout) {
   SelectResultsPtr results = query(predicate, timeout);
 
-  if (results == NULLPTR || results->size() == 0) {
-    return NULLPTR;
+  if (results == nullptr || results->size() == 0) {
+    return nullptr;
   }
 
   if (results->size() > 1) {
@@ -798,9 +800,9 @@ bool ThinClientRegion::containsKeyOnServer(
   bool ret = false;
   TXState* txState = getTXState();
 
-  if (txState != NULL) {
+  if (txState != nullptr) {
     //		if (!txState->isReplay()) {
-    //			VectorOfCacheablePtr args(new VectorOfCacheable());
+    //			auto args = std::make_shared<VectorOfCacheable>();
     //			txState->recordTXOperation(GF_CONTAINS_KEY,
     // getFullPath(),
     // keyPtr,
@@ -810,7 +812,7 @@ bool ThinClientRegion::containsKeyOnServer(
 
   /** @brief Create message and send to bridge server */
 
-  TcrMessageContainsKey request(this, keyPtr, static_cast<UserDataPtr>(NULLPTR),
+  TcrMessageContainsKey request(this, keyPtr, static_cast<UserDataPtr>(nullptr),
                                 true, m_tcrdm);
   TcrMessageReply reply(true, m_tcrdm);
   reply.setMessageTypeRequest(TcrMessage::CONTAINS_KEY);
@@ -843,7 +845,7 @@ bool ThinClientRegion::containsKeyOnServer(
 
   CacheableBooleanPtr rptr = CacheableBoolean::create(ret);
 
-  rptr = handleReplay(err, rptr);
+  rptr = std::static_pointer_cast<CacheableBoolean>(handleReplay(err, rptr));
   GfErrTypeToException("Region::containsKeyOnServer ", err);
   return rptr->value();
 }
@@ -854,9 +856,9 @@ bool ThinClientRegion::containsValueForKey_remote(
   bool ret = false;
   TXState* txState = getTXState();
 
-  if (txState != NULL) {
+  if (txState != nullptr) {
     //		if (!txState->isReplay()) {
-    //			VectorOfCacheablePtr args(new VectorOfCacheable());
+    //			auto args = std::make_shared<VectorOfCacheable>();
     //			txState->recordTXOperation(GF_CONTAINS_VALUE_FOR_KEY,
     //					getFullPath(), keyPtr, args);
     //		}
@@ -864,7 +866,7 @@ bool ThinClientRegion::containsValueForKey_remote(
 
   /** @brief Create message and send to bridge server */
 
-  TcrMessageContainsKey request(this, keyPtr, static_cast<UserDataPtr>(NULLPTR),
+  TcrMessageContainsKey request(this, keyPtr, static_cast<UserDataPtr>(nullptr),
                                 false, m_tcrdm);
   TcrMessageReply reply(true, m_tcrdm);
   reply.setMessageTypeRequest(TcrMessage::CONTAINS_KEY);
@@ -897,7 +899,7 @@ bool ThinClientRegion::containsValueForKey_remote(
 
   CacheableBooleanPtr rptr = CacheableBoolean::create(ret);
 
-  rptr = handleReplay(err, rptr);
+  rptr = std::static_pointer_cast<CacheableBoolean>(handleReplay(err, rptr));
 
   GfErrTypeToException("Region::containsValueForKey ", err);
   return rptr->value();
@@ -1030,10 +1032,10 @@ GfErrType ThinClientRegion::putNoThrow_remote(
   bool delta = false;
   const char* conFlationValue =
       DistributedSystem::getSystemProperties()->conflateEvents();
-  if (checkDelta && valuePtr != NULLPTR && conFlationValue != NULL &&
+  if (checkDelta && valuePtr != nullptr && conFlationValue != nullptr &&
       strcmp(conFlationValue, "true") != 0 &&
       ThinClientBaseDM::isDeltaEnabledOnServer()) {
-    Delta* temp = dynamic_cast<Delta*>(valuePtr.ptr());
+    Delta* temp = dynamic_cast<Delta*>(valuePtr.get());
     delta = (temp && temp->hasDelta());
   }
   TcrMessagePut request(this, keyPtr, valuePtr, aCallbackArgument, delta,
@@ -1077,7 +1079,7 @@ GfErrType ThinClientRegion::putNoThrow_remote(
     }
   }
   delete reply;
-  reply = NULL;
+  reply = nullptr;
   return err;
 }
 
@@ -1094,7 +1096,7 @@ GfErrType ThinClientRegion::destroyNoThrow_remote(
   GfErrType err = GF_NOERR;
 
   // do TCR destroy
-  TcrMessageDestroy request(this, keyPtr, NULLPTR, aCallbackArgument, m_tcrdm);
+  TcrMessageDestroy request(this, keyPtr, nullptr, aCallbackArgument, m_tcrdm);
   TcrMessageReply reply(true, m_tcrdm);
   err = m_tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) return err;
@@ -1176,7 +1178,7 @@ GfErrType ThinClientRegion::removeNoThrowEX_remote(
   GfErrType err = GF_NOERR;
 
   // do TCR remove
-  TcrMessageDestroy request(this, keyPtr, NULLPTR, aCallbackArgument, m_tcrdm);
+  TcrMessageDestroy request(this, keyPtr, nullptr, aCallbackArgument, m_tcrdm);
   TcrMessageReply reply(true, m_tcrdm);
   err = m_tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) {
@@ -1222,7 +1224,7 @@ GfErrType ThinClientRegion::getAllNoThrow_remote(
   addToLocalCache = addToLocalCache && m_regionAttributes->getCachingEnabled();
   if (addToLocalCache && !m_regionAttributes->getConcurrencyChecksEnabled()) {
     // start tracking the entries
-    if (keys == NULL) {
+    if (keys == nullptr) {
       // track all entries with destroy tracking for non-existent entries
       destroyTracker = m_entries->addTrackerForAllEntries(updateCountMap, true);
     } else {
@@ -1301,106 +1303,32 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
     const UserDataPtr& aCallbackArgument) {
   LOGDEBUG(" ThinClientRegion::singleHopPutAllNoThrow_remote map size = %d",
            map.size());
-  RegionPtr region(this);
+  RegionPtr region = shared_from_this();
 
   GfErrType error = GF_NOERR;
   /*Step-1::
    * populate the keys vector from the user Map and pass it to the
    * getServerToFilterMap to generate locationMap
-   * If locationMap is NULL try the old, existing putAll impl that may take
+   * If locationMap is nullptr try the old, existing putAll impl that may take
    * multiple n/w hops
    */
-  VectorOfCacheableKey* userKeys = new VectorOfCacheableKey();
-  for (HashMapOfCacheable::Iterator iter = map.begin(); iter != map.end();
-       ++iter) {
-    userKeys->push_back(iter.first());
+  VectorOfCacheableKey userKeys = VectorOfCacheableKey();
+  for (const auto& iter : map) {
+    userKeys.push_back(iter.first);
   }
   // last param in getServerToFilterMap() is false for putAll
 
   // LOGDEBUG("ThinClientRegion::singleHopPutAllNoThrow_remote keys.size() = %d
   // ", userKeys->size());
-  HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>* locationMap =
-      tcrdm->getClientMetaDataService()->getServerToFilterMap(userKeys, region,
-                                                              true);
-  if (locationMap == NULL) {
+  auto locationMap = tcrdm->getClientMetaDataService()->getServerToFilterMap(
+      userKeys, region, true);
+  if (!locationMap) {
     // putAll with multiple hop implementation
     LOGDEBUG("locationMap is Null or Empty");
-    /*
-    ==24194== 7,825,919 (24 direct, 7,825,895 indirect) bytes in 2 blocks are
-    definitely lost in loss record 598 of 598
-    ==24194==    at 0x4007D75: operator new(unsigned int)
-    (vg_replace_malloc.c:313)
-    ==24194==    by 0x43B5C5F:
-    apache::geode::client::ThinClientRegion::singleHopPutAllNoThrow_remote(apache::geode::client::ThinClientPoolDM*,
-    apache::geode::client::HashMapOfCacheable const&,
-    apache::geode::client::SharedPtr<apache::geode::client::VersionedCacheableObjectPartList>&,
-    unsigned
-    int) (ThinClientRegion.cpp:1180)
-    ==24194==    by 0x43B8B65:
-    apache::geode::client::ThinClientRegion::putAllNoThrow_remote(apache::geode::client::HashMapOfCacheable
-    const&,
-    apache::geode::client::SharedPtr<apache::geode::client::VersionedCacheableObjectPartList>&,
-    unsigned int) (ThinClientRegion.cpp:1500)
-    ==24194==    by 0x42E55F5:
-    apache::geode::client::LocalRegion::putAllNoThrow(apache::geode::client::HashMapOfCacheable
-    const&,
-    unsigned int) (LocalRegion.cpp:1956)
-    ==24194==    by 0x42DC797:
-    apache::geode::client::LocalRegion::putAll(apache::geode::client::HashMapOfCacheable
-    const&, unsigned
-    int) (LocalRegion.cpp:366)
-    ==24194==    by 0x806FF8D: Task_StepEight::doTask() (in
-    /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPutAll)
-    ==24194==    by 0x807CE2A: dunit::TestSlave::begin() (in
-    /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPutAll)
-    ==24194==    by 0x8078F57: dunit::dmain(int, char**) (in
-    /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPutAll)
-    ==24194==    by 0x805D7EA: main (in
-    /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPutAll)
-    ==24194==
-    */
-    delete userKeys;
-    userKeys = NULL;
 
     return multiHopPutAllNoThrow_remote(map, versionedObjPartList, timeout,
                                         aCallbackArgument);
   }
-  /*
-  ==24194== 7,825,919 (24 direct, 7,825,895 indirect) bytes in 2 blocks are
-  definitely lost in loss record 598 of 598
-  ==24194==    at 0x4007D75: operator new(unsigned int)
-  (vg_replace_malloc.c:313)
-  ==24194==    by 0x43B5C5F:
-  apache::geode::client::ThinClientRegion::singleHopPutAllNoThrow_remote(apache::geode::client::ThinClientPoolDM*,
-  apache::geode::client::HashMapOfCacheable const&,
-  apache::geode::client::SharedPtr<apache::geode::client::VersionedCacheableObjectPartList>&,
-  unsigned int)
-  (ThinClientRegion.cpp:1180)
-  ==24194==    by 0x43B8B65:
-  apache::geode::client::ThinClientRegion::putAllNoThrow_remote(apache::geode::client::HashMapOfCacheable
-  const&,
-  apache::geode::client::SharedPtr<apache::geode::client::VersionedCacheableObjectPartList>&,
-  unsigned int) (ThinClientRegion.cpp:1500)
-  ==24194==    by 0x42E55F5:
-  apache::geode::client::LocalRegion::putAllNoThrow(apache::geode::client::HashMapOfCacheable
-  const&,
-  unsigned int) (LocalRegion.cpp:1956)
-  ==24194==    by 0x42DC797:
-  apache::geode::client::LocalRegion::putAll(apache::geode::client::HashMapOfCacheable
-  const&, unsigned int)
-  (LocalRegion.cpp:366)
-  ==24194==    by 0x806FF8D: Task_StepEight::doTask() (in
-  /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPutAll)
-  ==24194==    by 0x807CE2A: dunit::TestSlave::begin() (in
-  /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPutAll)
-  ==24194==    by 0x8078F57: dunit::dmain(int, char**) (in
-  /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPutAll)
-  ==24194==    by 0x805D7EA: main (in
-  /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPutAll)
-  ==24194==
-  */
-  delete userKeys;
-  userKeys = NULL;
 
   // set this flag that indicates putAll on PR is invoked with singlehop
   // enabled.
@@ -1421,24 +1349,20 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
   std::vector<PutAllWork*> putAllWorkers;
   ThreadPool* threadPool = TPSingleton::instance();
   int locationMapIndex = 0;
-  for (HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>::Iterator
-           locationIter = locationMap->begin();
-       locationIter != locationMap->end(); locationIter++) {
-    BucketServerLocationPtr serverLocation = locationIter.first();
-    if (serverLocation == NULLPTR) {
-      LOGDEBUG("serverLocation is NULLPTR");
+  for (const auto& locationIter : *locationMap) {
+    const auto& serverLocation = locationIter.first;
+    if (serverLocation == nullptr) {
+      LOGDEBUG("serverLocation is nullptr");
     }
-    VectorOfCacheableKeyPtr keys = locationIter.second();
+    const auto& keys = locationIter.second;
 
     // Create server specific Sub-Map by iterating over keys.
-    HashMapOfCacheablePtr filteredMap(new HashMapOfCacheable());
-    if (keys != NULLPTR && keys->size() > 0) {
-      for (int32_t index = 0; index < keys->size(); index++) {
-        HashMapOfCacheable::Iterator iter = map.find(keys->at(index));
+    auto filteredMap = std::make_shared<HashMapOfCacheable>();
+    if (keys != nullptr && keys->size() > 0) {
+      for (const auto& key : *keys) {
+        const auto& iter = map.find(key);
         if (iter != map.end()) {
-          filteredMap->insert(iter.first(), iter.second());
-        } else {
-          LOGDEBUG("DEBUG:: KEY not found in user MAP");
+          filteredMap->emplace(iter->first, iter->second);
         }
       }
     }
@@ -1446,12 +1370,11 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
     // TEST-CODE :: PRINT each sub-Map entries
     /*
     LOGDEBUG("Printing map at %d locationMapindex ", locationMapIndex);
-    for (HashMapOfCacheable::Iterator filteredMapIter = filteredMap->begin();
-    filteredMapIter != filteredMap->end(); ++filteredMapIter) {
-      CacheableInt32Ptr kPtr =
-    dynCast<CacheableInt32Ptr>(filteredMapIter.first()) ;
-      CacheableInt32Ptr vPtr =
-    dynCast<CacheableInt32Ptr>(filteredMapIter.second());
+    for (const auto& filteredMapIter : *filteredMap){
+      auto kPtr =
+    std::dynamic_pointer_cast<CacheableInt32>(filteredMapIter.first()) ;
+      auto vPtr =
+    std::dynamic_pointer_cast<CacheableInt32>(filteredMapIter.second());
       LOGDEBUG("Key = %d  Value = %d ", kPtr->value(), vPtr->value() );
     }
     */
@@ -1480,36 +1403,31 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
    * Value is a ErrorCode.
    * b. delete the worker
    */
-  HashMapT<BucketServerLocationPtr, SerializablePtr>* resultMap =
-      new HashMapT<BucketServerLocationPtr, SerializablePtr>();
-  HashMapT<BucketServerLocationPtr, CacheableInt32Ptr>* failedServers =
-      new HashMapT<BucketServerLocationPtr, CacheableInt32Ptr>();
+  auto resultMap = ResultMap();
+  auto failedServers = FailedServersMap();
 
-  for (std::vector<PutAllWork*>::iterator iter = putAllWorkers.begin();
-       iter != putAllWorkers.end(); iter++) {
-    PutAllWork* worker = *iter;
-
-    GfErrType err =
+  for (const auto& worker : putAllWorkers) {
+    auto err =
         worker->getResult();  // wait() or blocking call for worker thread.
     LOGDEBUG("Error code :: %s:%d err = %d ", __FILE__, __LINE__, err);
 
-    if (err != GF_NOERR) {
+    if (GF_NOERR == err) {
+      // No Exception from server
+      resultMap.emplace(worker->getServerLocation(),
+                        worker->getResultCollector()->getList());
+    } else {
       error = err;
 
       if (error == GF_PUTALL_PARTIAL_RESULT_EXCEPTION) {
-        resultMap->insert(worker->getServerLocation(),
+        resultMap.emplace(worker->getServerLocation(),
                           worker->getPaPResultException());
       } else if (error == GF_NOTCON) {
         // Refresh the metadata in case of GF_NOTCON.
         tcrdm->getClientMetaDataService()->enqueueForMetadataRefresh(
             region->getFullPath(), 0);
       }
-      failedServers->insert(worker->getServerLocation(),
+      failedServers.emplace(worker->getServerLocation(),
                             CacheableInt32::create(error));
-    } else {
-      // No Exception from server
-      resultMap->insert(worker->getServerLocation(),
-                        worker->getResultCollector()->getList());
     }
 
     LOGDEBUG("worker->getPutAllMap()->size() = %d ",
@@ -1539,50 +1457,36 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
    * PutAllPartialResultServerException
    */
   ACE_Recursive_Thread_Mutex responseLock;
-  PutAllPartialResultPtr result(
-      new PutAllPartialResult(map.size(), responseLock));
+  auto result = std::make_shared<PutAllPartialResult>(
+      static_cast<int>(map.size()), responseLock);
   LOGDEBUG(
       " TCRegion:: %s:%d  "
       "result->getSucceededKeysAndVersions()->getVersionedTagsize() = %d ",
       __FILE__, __LINE__,
       result->getSucceededKeysAndVersions()->getVersionedTagsize());
   LOGDEBUG(" TCRegion:: %s:%d resultMap->size() ", __FILE__, __LINE__,
-           resultMap->size());
-  for (HashMapT<BucketServerLocationPtr, SerializablePtr>::Iterator
-           resultMapIter = resultMap->begin();
-       resultMapIter != resultMap->end(); resultMapIter++) {
-    SerializablePtr value = resultMapIter.second();
-    PutAllPartialResultServerException* papException = NULL;
-    VersionedCacheableObjectPartListPtr list = NULLPTR;
+           resultMap.size());
+  for (const auto& resultMapIter : resultMap) {
+    const auto& value = resultMapIter.second;
 
-    papException =
-        dynamic_cast<PutAllPartialResultServerException*>(value.ptr());
-    // LOGDEBUG(" TCRegion:: %s:%d
-    // result->getSucceededKeysAndVersions()->getVersionedTagsize() = %d ",
-    // __FILE__, __LINE__,
-    // result->getSucceededKeysAndVersions()->getVersionedTagsize());
-    if (papException != NULL) {
+    if (const auto papException =
+            std::dynamic_pointer_cast<PutAllPartialResultServerException>(
+                value)) {
       // PutAllPartialResultServerException CASE:: value in resultMap is of type
       // PutAllPartialResultServerException.
       // TODO:: Add failedservers.keySet= all fialed servers, i.e list out all
       // keys in map failedServers,
       //       that is set view of the keys contained in failedservers map.
-      // LOGDEBUG("TCRegion:: PutAll SingleHop encountered
-      // PutAllPartialResultServerException exception: %s , failedServers are:
-      // ", papException->getMessage()->asChar());
       // TODO:: need to read  papException and populate PutAllPartialResult.
       result->consolidate(papException->getResult());
-    } else if (value != NULLPTR &&
-               (list = dynCast<VersionedCacheableObjectPartListPtr>(value)) !=
-                   NULLPTR) {
+    } else if (const auto list =
+                   std::dynamic_pointer_cast<VersionedCacheableObjectPartList>(
+                       value)) {
       // value in resultMap is of type VCOPL.
-      // LOGDEBUG("TCRegion::  %s:%d :: list->getSucceededKeys()->size()=%d
-      // list->getVersionedTagsize() = %d", __FILE__, __LINE__,
-      // list->getSucceededKeys()->size(), list->getVersionedTagsize());
       result->addKeysAndVersions(list);
     } else {
       // ERROR CASE
-      if (value != NULLPTR) {
+      if (value) {
         LOGERROR(
             "ERROR:: ThinClientRegion::singleHopPutAllNoThrow_remote value "
             "could not Cast to either VCOPL or "
@@ -1591,7 +1495,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
       } else {
         LOGERROR(
             "ERROR:: ThinClientRegion::singleHopPutAllNoThrow_remote value is "
-            "NULL");
+            "nullptr");
       }
     }
   }
@@ -1605,21 +1509,19 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
    */
 
   LOGDEBUG("ThinClientRegion:: %s:%d failedServers->size() = %d", __FILE__,
-           __LINE__, failedServers->size());
+           __LINE__, failedServers.size());
 
   // if the partial result set doesn't already have keys (for tracking version
   // tags)
   // then we need to gather up the keys that we know have succeeded so far and
   // add them to the partial result set (See bug Id #955)
-  if (failedServers->size() > 0) {
-    VectorOfCacheableKeyPtr succeedKeySet(new VectorOfCacheableKey());
+  if (!failedServers.empty()) {
+    auto succeedKeySet = std::make_shared<VectorOfCacheableKey>();
     if (result->getSucceededKeysAndVersions()->size() == 0) {
-      for (HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>::Iterator
-               locationIter = locationMap->begin();
-           locationIter != locationMap->end(); locationIter++) {
-        if (!failedServers->contains(locationIter.first())) {
-          for (int32_t i = 0; i < locationIter.second()->size(); i++) {
-            succeedKeySet->push_back(locationIter.second()->at(i));
+      for (const auto& locationIter : *locationMap) {
+        if (failedServers.find(locationIter.first) != failedServers.end()) {
+          for (const auto& i : *(locationIter.second)) {
+            succeedKeySet->push_back(i);
           }
         }
       }
@@ -1637,10 +1539,8 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
    */
   error = GF_NOERR;
   bool oneSubMapRetryFailed = false;
-  for (HashMapT<BucketServerLocationPtr, CacheableInt32Ptr>::Iterator
-           failedServerIter = failedServers->begin();
-       failedServerIter != failedServers->end(); failedServerIter++) {
-    if (failedServerIter.second()->value() ==
+  for (const auto& failedServerIter : failedServers) {
+    if (failedServerIter.second->value() ==
         GF_PUTALL_PARTIAL_RESULT_EXCEPTION) {  // serverLocation
       // will not retry for PutAllPartialResultException
       // but it means at least one sub map ever failed
@@ -1648,25 +1548,26 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
       error = GF_PUTALL_PARTIAL_RESULT_EXCEPTION;
       continue;
     }
-    HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>::Iterator
-        failedSerInLocMapIter = locationMap->find(failedServerIter.first());
-    VectorOfCacheableKeyPtr failedKeys = NULLPTR;
+
+    VectorOfCacheableKeyPtr failedKeys = nullptr;
+    const auto& failedSerInLocMapIter =
+        locationMap->find(failedServerIter.first);
     if (failedSerInLocMapIter != locationMap->end()) {
-      failedKeys = failedSerInLocMapIter.second();
+      failedKeys = failedSerInLocMapIter->second;
     }
 
-    if (failedKeys == NULLPTR) {
+    if (failedKeys == nullptr) {
       LOGERROR(
-          "TCRegion::singleHopPutAllNoThrow_remote :: failedKeys are NULL that "
-          "is not valid");
+          "TCRegion::singleHopPutAllNoThrow_remote :: failedKeys are nullptr "
+          "that is not valid");
     }
 
-    HashMapOfCacheablePtr newSubMap(new HashMapOfCacheable());
-    if (failedKeys != NULLPTR && failedKeys->size() > 0) {
-      for (int32_t index = 0; index < failedKeys->size(); index++) {
-        HashMapOfCacheable::Iterator iter = map.find(failedKeys->at(index));
+    auto newSubMap = std::make_shared<HashMapOfCacheable>();
+    if (failedKeys && !failedKeys->empty()) {
+      for (const auto& key : *failedKeys) {
+        const auto& iter = map.find(key);
         if (iter != map.end()) {
-          newSubMap->insert(iter.first(), iter.second());
+          newSubMap->emplace(iter->first, iter->second);
         } else {
           LOGERROR(
               "DEBUG:: TCRegion.cpp singleHopPutAllNoThrow_remote KEY not "
@@ -1676,21 +1577,20 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
     }
 
     VersionedCacheableObjectPartListPtr vcopListPtr;
-    PutAllPartialResultServerExceptionPtr papResultServerExc = NULLPTR;
     GfErrType errCode = multiHopPutAllNoThrow_remote(
-        *newSubMap.ptr(), vcopListPtr, timeout, aCallbackArgument);
+        *newSubMap.get(), vcopListPtr, timeout, aCallbackArgument);
     if (errCode == GF_NOERR) {
       result->addKeysAndVersions(vcopListPtr);
     } else if (errCode == GF_PUTALL_PARTIAL_RESULT_EXCEPTION) {
       oneSubMapRetryFailed = true;
-      // TODO:: Commented it as papResultServerExc is NULLPTR this time
+      // TODO:: Commented it as papResultServerExc is nullptr this time
       //       UnComment it once you read papResultServerExc.
       // result->consolidate(papResultServerExc->getResult());
       error = errCode;
     } else /*if(errCode != GF_NOERR)*/ {
       oneSubMapRetryFailed = true;
-      CacheableKeyPtr firstKey = newSubMap->begin().first();
-      ExceptionPtr excptPtr = NULLPTR;
+      const auto& firstKey = newSubMap->begin()->first;
+      ExceptionPtr excptPtr = nullptr;
       // TODO:: formulat excptPtr from the errCode
       result->saveFailedKey(firstKey, excptPtr);
       error = errCode;
@@ -1703,9 +1603,6 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
   versionedObjPartList = result->getSucceededKeysAndVersions();
   LOGDEBUG("singlehop versionedObjPartList = %d error=%d",
            versionedObjPartList->size(), error);
-  delete locationMap;
-  delete failedServers;
-  delete resultMap;
 
   return error;
 }
@@ -1726,10 +1623,11 @@ GfErrType ThinClientRegion::multiHopPutAllNoThrow_remote(
   reply.setTimeout(timeout);
 
   ACE_Recursive_Thread_Mutex responseLock;
-  versionedObjPartList = new VersionedCacheableObjectPartList(responseLock);
+  versionedObjPartList =
+      std::make_shared<VersionedCacheableObjectPartList>(responseLock);
   // need to check
   ChunkedPutAllResponse* resultCollector(new ChunkedPutAllResponse(
-      RegionPtr(this), reply, responseLock, versionedObjPartList));
+      shared_from_this(), reply, responseLock, versionedObjPartList));
   reply.setChunkedResultHandler(resultCollector);
 
   err = m_tcrdm->sendSyncRequest(request, reply);
@@ -1782,10 +1680,10 @@ GfErrType ThinClientRegion::putAllNoThrow_remote(
   ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
   TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
 
-  if (poolDM != NULL) {
+  if (poolDM != nullptr) {
     if (poolDM->getPRSingleHopEnabled() &&
-        poolDM->getClientMetaDataService() != NULL &&
-        txState == NULL /*For Tx use multi-hop*/) {
+        poolDM->getClientMetaDataService() != nullptr &&
+        txState == nullptr /*For Tx use multi-hop*/) {
       return singleHopPutAllNoThrow_remote(poolDM, map, versionedObjPartList,
                                            timeout, aCallbackArgument);
     } else {
@@ -1804,13 +1702,12 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
     const UserDataPtr& aCallbackArgument) {
   LOGDEBUG(" ThinClientRegion::singleHopRemoveAllNoThrow_remote keys size = %d",
            keys.size());
-  RegionPtr region(this);
+  RegionPtr region = shared_from_this();
   GfErrType error = GF_NOERR;
 
-  HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>* locationMap =
-      tcrdm->getClientMetaDataService()->getServerToFilterMap(&keys, region,
-                                                              true);
-  if (locationMap == NULL) {
+  auto locationMap = tcrdm->getClientMetaDataService()->getServerToFilterMap(
+      keys, region, true);
+  if (!locationMap) {
     // removeAll with multiple hop implementation
     LOGDEBUG("locationMap is Null or Empty");
     return multiHopRemoveAllNoThrow_remote(keys, versionedObjPartList,
@@ -1836,15 +1733,13 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
   std::vector<RemoveAllWork*> removeAllWorkers;
   ThreadPool* threadPool = TPSingleton::instance();
   int locationMapIndex = 0;
-  for (HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>::Iterator
-           locationIter = locationMap->begin();
-       locationIter != locationMap->end(); locationIter++) {
-    BucketServerLocationPtr serverLocation = locationIter.first();
-    if (serverLocation == NULLPTR) {
-      LOGDEBUG("serverLocation is NULLPTR");
+  for (const auto& locationIter : *locationMap) {
+    const auto& serverLocation = locationIter.first;
+    if (serverLocation == nullptr) {
+      LOGDEBUG("serverLocation is nullptr");
     }
-    VectorOfCacheableKeyPtr mappedkeys = locationIter.second();
-    RemoveAllWork* worker = new RemoveAllWork(
+    const auto& mappedkeys = locationIter.second;
+    auto worker = new RemoveAllWork(
         tcrdm, serverLocation, region, true /*attemptFailover*/,
         false /*isBGThread*/, mappedkeys, aCallbackArgument);
     threadPool->perform(worker);
@@ -1867,35 +1762,30 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
    * Value is a ErrorCode.
    * b. delete the worker
    */
-  HashMapT<BucketServerLocationPtr, SerializablePtr>* resultMap =
-      new HashMapT<BucketServerLocationPtr, SerializablePtr>();
-  HashMapT<BucketServerLocationPtr, CacheableInt32Ptr>* failedServers =
-      new HashMapT<BucketServerLocationPtr, CacheableInt32Ptr>();
-  for (std::vector<RemoveAllWork*>::iterator iter = removeAllWorkers.begin();
-       iter != removeAllWorkers.end(); iter++) {
-    RemoveAllWork* worker = *iter;
-
-    GfErrType err =
+  auto resultMap = ResultMap();
+  auto failedServers = FailedServersMap();
+  for (const auto& worker : removeAllWorkers) {
+    auto err =
         worker->getResult();  // wait() or blocking call for worker thread.
     LOGDEBUG("Error code :: %s:%d err = %d ", __FILE__, __LINE__, err);
 
-    if (err != GF_NOERR) {
+    if (GF_NOERR == err) {
+      // No Exception from server
+      resultMap.emplace(worker->getServerLocation(),
+                        worker->getResultCollector()->getList());
+    } else {
       error = err;
 
       if (error == GF_PUTALL_PARTIAL_RESULT_EXCEPTION) {
-        resultMap->insert(worker->getServerLocation(),
+        resultMap.emplace(worker->getServerLocation(),
                           worker->getPaPResultException());
       } else if (error == GF_NOTCON) {
         // Refresh the metadata in case of GF_NOTCON.
         tcrdm->getClientMetaDataService()->enqueueForMetadataRefresh(
             region->getFullPath(), 0);
       }
-      failedServers->insert(worker->getServerLocation(),
+      failedServers.emplace(worker->getServerLocation(),
                             CacheableInt32::create(error));
-    } else {
-      // No Exception from server
-      resultMap->insert(worker->getServerLocation(),
-                        worker->getResultCollector()->getList());
     }
 
     LOGDEBUG(
@@ -1914,46 +1804,38 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
    * PutAllPartialResultServerException
    */
   ACE_Recursive_Thread_Mutex responseLock;
-  PutAllPartialResultPtr result(
-      new PutAllPartialResult(keys.size(), responseLock));
+  auto result = std::make_shared<PutAllPartialResult>(
+      static_cast<int>(keys.size()), responseLock);
   LOGDEBUG(
       " TCRegion:: %s:%d  "
       "result->getSucceededKeysAndVersions()->getVersionedTagsize() = %d ",
       __FILE__, __LINE__,
       result->getSucceededKeysAndVersions()->getVersionedTagsize());
   LOGDEBUG(" TCRegion:: %s:%d resultMap->size() ", __FILE__, __LINE__,
-           resultMap->size());
-  for (HashMapT<BucketServerLocationPtr, SerializablePtr>::Iterator
-           resultMapIter = resultMap->begin();
-       resultMapIter != resultMap->end(); resultMapIter++) {
-    SerializablePtr value = resultMapIter.second();
-    PutAllPartialResultServerException* papException = NULL;
-    VersionedCacheableObjectPartListPtr list = NULLPTR;
+           resultMap.size());
+  for (const auto& resultMapIter : resultMap) {
+    const auto& value = resultMapIter.second;
+    PutAllPartialResultServerException* papException = nullptr;
+    VersionedCacheableObjectPartListPtr list = nullptr;
 
-    papException =
-        dynamic_cast<PutAllPartialResultServerException*>(value.ptr());
-    if (papException != NULL) {
+    if (const auto papException =
+            std::dynamic_pointer_cast<PutAllPartialResultServerException>(
+                value)) {
       // PutAllPartialResultServerException CASE:: value in resultMap is of type
       // PutAllPartialResultServerException.
       // TODO:: Add failedservers.keySet= all fialed servers, i.e list out all
       // keys in map failedServers,
       //       that is set view of the keys contained in failedservers map.
-      // LOGDEBUG("TCRegion:: PutAll SingleHop encountered
-      // PutAllPartialResultServerException exception: %s , failedServers are:
-      // ", papException->getMessage()->asChar());
       // TODO:: need to read  papException and populate PutAllPartialResult.
       result->consolidate(papException->getResult());
-    } else if (value != NULLPTR &&
-               (list = dynCast<VersionedCacheableObjectPartListPtr>(value)) !=
-                   NULLPTR) {
+    } else if (const auto list =
+                   std::dynamic_pointer_cast<VersionedCacheableObjectPartList>(
+                       value)) {
       // value in resultMap is of type VCOPL.
-      // LOGDEBUG("TCRegion::  %s:%d :: list->getSucceededKeys()->size()=%d
-      // list->getVersionedTagsize() = %d", __FILE__, __LINE__,
-      // list->getSucceededKeys()->size(), list->getVersionedTagsize());
       result->addKeysAndVersions(list);
     } else {
       // ERROR CASE
-      if (value != NULLPTR) {
+      if (value) {
         LOGERROR(
             "ERROR:: ThinClientRegion::singleHopRemoveAllNoThrow_remote value "
             "could not Cast to either VCOPL or "
@@ -1962,7 +1844,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
       } else {
         LOGERROR(
             "ERROR:: ThinClientRegion::singleHopRemoveAllNoThrow_remote value "
-            "is NULL");
+            "is nullptr");
       }
     }
   }
@@ -1976,21 +1858,19 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
    */
 
   LOGDEBUG("ThinClientRegion:: %s:%d failedServers->size() = %d", __FILE__,
-           __LINE__, failedServers->size());
+           __LINE__, failedServers.size());
 
   // if the partial result set doesn't already have keys (for tracking version
   // tags)
   // then we need to gather up the keys that we know have succeeded so far and
   // add them to the partial result set (See bug Id #955)
-  if (failedServers->size() > 0) {
-    VectorOfCacheableKeyPtr succeedKeySet(new VectorOfCacheableKey());
+  if (!failedServers.empty()) {
+    auto succeedKeySet = std::make_shared<VectorOfCacheableKey>();
     if (result->getSucceededKeysAndVersions()->size() == 0) {
-      for (HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>::Iterator
-               locationIter = locationMap->begin();
-           locationIter != locationMap->end(); locationIter++) {
-        if (!failedServers->contains(locationIter.first())) {
-          for (int32_t i = 0; i < locationIter.second()->size(); i++) {
-            succeedKeySet->push_back(locationIter.second()->at(i));
+      for (const auto& locationIter : *locationMap) {
+        if (failedServers.find(locationIter.first) != failedServers.end()) {
+          for (const auto& i : *(locationIter.second)) {
+            succeedKeySet->push_back(i);
           }
         }
       }
@@ -2008,10 +1888,8 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
    */
   error = GF_NOERR;
   bool oneSubMapRetryFailed = false;
-  for (HashMapT<BucketServerLocationPtr, CacheableInt32Ptr>::Iterator
-           failedServerIter = failedServers->begin();
-       failedServerIter != failedServers->end(); failedServerIter++) {
-    if (failedServerIter.second()->value() ==
+  for (const auto& failedServerIter : failedServers) {
+    if (failedServerIter.second->value() ==
         GF_PUTALL_PARTIAL_RESULT_EXCEPTION) {  // serverLocation
       // will not retry for PutAllPartialResultException
       // but it means at least one sub map ever failed
@@ -2019,21 +1897,23 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
       error = GF_PUTALL_PARTIAL_RESULT_EXCEPTION;
       continue;
     }
-    HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>::Iterator
-        failedSerInLocMapIter = locationMap->find(failedServerIter.first());
-    VectorOfCacheableKeyPtr failedKeys = NULLPTR;
+
+    VectorOfCacheableKeyPtr failedKeys = nullptr;
+    const auto& failedSerInLocMapIter =
+        locationMap->find(failedServerIter.first);
     if (failedSerInLocMapIter != locationMap->end()) {
-      failedKeys = failedSerInLocMapIter.second();
+      failedKeys = failedSerInLocMapIter->second;
     }
 
-    if (failedKeys == NULLPTR) {
+    if (failedKeys == nullptr) {
       LOGERROR(
-          "TCRegion::singleHopRemoveAllNoThrow_remote :: failedKeys are NULL "
+          "TCRegion::singleHopRemoveAllNoThrow_remote :: failedKeys are "
+          "nullptr "
           "that is not valid");
     }
 
     VersionedCacheableObjectPartListPtr vcopListPtr;
-    PutAllPartialResultServerExceptionPtr papResultServerExc = NULLPTR;
+    PutAllPartialResultServerExceptionPtr papResultServerExc = nullptr;
     GfErrType errCode = multiHopRemoveAllNoThrow_remote(
         *failedKeys, vcopListPtr, aCallbackArgument);
     if (errCode == GF_NOERR) {
@@ -2043,7 +1923,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
       error = errCode;
     } else /*if(errCode != GF_NOERR)*/ {
       oneSubMapRetryFailed = true;
-      ExceptionPtr excptPtr = NULLPTR;
+      ExceptionPtr excptPtr = nullptr;
       result->saveFailedKey(failedKeys->at(0), excptPtr);
       error = errCode;
     }
@@ -2055,9 +1935,6 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
   versionedObjPartList = result->getSucceededKeysAndVersions();
   LOGDEBUG("singlehop versionedObjPartList = %d error=%d",
            versionedObjPartList->size(), error);
-  delete locationMap;
-  delete failedServers;
-  delete resultMap;
   return error;
 }
 
@@ -2074,10 +1951,11 @@ GfErrType ThinClientRegion::multiHopRemoveAllNoThrow_remote(
   TcrMessageReply reply(true, m_tcrdm);
 
   ACE_Recursive_Thread_Mutex responseLock;
-  versionedObjPartList = new VersionedCacheableObjectPartList(responseLock);
+  versionedObjPartList =
+      std::make_shared<VersionedCacheableObjectPartList>(responseLock);
   // need to check
   ChunkedRemoveAllResponse* resultCollector(new ChunkedRemoveAllResponse(
-      RegionPtr(this), reply, responseLock, versionedObjPartList));
+      shared_from_this(), reply, responseLock, versionedObjPartList));
   reply.setChunkedResultHandler(resultCollector);
 
   err = m_tcrdm->sendSyncRequest(request, reply);
@@ -2123,10 +2001,10 @@ GfErrType ThinClientRegion::removeAllNoThrow_remote(
   ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
   TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
 
-  if (poolDM != NULL) {
+  if (poolDM != nullptr) {
     if (poolDM->getPRSingleHopEnabled() &&
-        poolDM->getClientMetaDataService() != NULL &&
-        txState == NULL /*For Tx use multi-hop*/) {
+        poolDM->getClientMetaDataService() != nullptr &&
+        txState == nullptr /*For Tx use multi-hop*/) {
       return singleHopRemoveAllNoThrow_remote(
           poolDM, keys, versionedObjPartList, aCallbackArgument);
     } else {
@@ -2155,7 +2033,9 @@ uint32_t ThinClientRegion::size_remote() {
 
   switch (reply.getMessageType()) {
     case TcrMessage::RESPONSE: {
-      CacheableInt32Ptr size = staticCast<CacheableInt32Ptr>(reply.getValue());
+      CacheableInt32Ptr size =
+          std::static_pointer_cast<CacheableInt32>(
+              reply.getValue());
       return size->value();
       // LOGINFO("Map is written into remote server at region %s",
       // m_fullPath.c_str());
@@ -2189,7 +2069,7 @@ GfErrType ThinClientRegion::registerStoredRegex(
   for (std::unordered_map<std::string, InterestResultPolicy>::iterator it =
            interestListRegex.begin();
        it != interestListRegex.end(); ++it) {
-    opErr = registerRegexNoThrow(it->first, false, endpoint, isDurable, NULLPTR,
+    opErr = registerRegexNoThrow(it->first, false, endpoint, isDurable, nullptr,
                                  it->second, receiveValues);
     if (opErr != GF_NOERR) {
       retVal = opErr;
@@ -2244,20 +2124,20 @@ GfErrType ThinClientRegion::registerKeys(TcrEndpoint* endpoint,
                               endpoint, true, interestPolicy, false);
   err = opErr != GF_NOERR ? opErr : err;
 
-  if (request != NULL && request->getRegionName() == m_fullPath &&
+  if (request != nullptr && request->getRegionName() == m_fullPath &&
       (request->getMessageType() == TcrMessage::REGISTER_INTEREST ||
        request->getMessageType() == TcrMessage::REGISTER_INTEREST_LIST)) {
     const VectorOfCacheableKey* newKeysVec = request->getKeys();
     bool isDurable = request->isDurable();
     bool receiveValues = request->receiveValues();
-    if (newKeysVec == NULL || newKeysVec->empty()) {
+    if (newKeysVec == nullptr || newKeysVec->empty()) {
       const std::string& newRegex = request->getRegex();
       if (!newRegex.empty()) {
         if (request->getRegionName() != m_fullPath) {
-          reply = NULL;
+          reply = nullptr;
         }
         opErr = registerRegexNoThrow(
-            newRegex, false, endpoint, isDurable, NULLPTR,
+            newRegex, false, endpoint, isDurable, nullptr,
             request->getInterestResultPolicy(), receiveValues, reply);
         err = opErr != GF_NOERR ? opErr : err;
       }
@@ -2394,7 +2274,7 @@ GfErrType ThinClientRegion::registerKeysNoThrow(
 
   TcrMessageReply replyLocal(true, m_tcrdm);
   bool needToCreateRC = true;
-  if (reply == NULL) {
+  if (reply == nullptr) {
     reply = &replyLocal;
   } else {
     needToCreateRC = false;
@@ -2407,21 +2287,21 @@ GfErrType ThinClientRegion::registerKeysNoThrow(
       this, keys, isDurable, getAttributes()->getCachingEnabled(),
       receiveValues, interestPolicy, m_tcrdm);
   ACE_Recursive_Thread_Mutex responseLock;
-  TcrChunkedResult* resultCollector = NULL;
+  TcrChunkedResult* resultCollector = nullptr;
   if (interestPolicy.ordinal == InterestResultPolicy::KEYS_VALUES.ordinal) {
-    HashMapOfCacheablePtr values(new HashMapOfCacheable());
-    HashMapOfExceptionPtr exceptions(new HashMapOfException());
+    auto values = std::make_shared<HashMapOfCacheable>();
+    auto exceptions = std::make_shared<HashMapOfException>();
     MapOfUpdateCounters trackers;
     int32_t destroyTracker = 1;
     if (needToCreateRC) {
       resultCollector = (new ChunkedGetAllResponse(
-          request, this, &keys, values, exceptions, NULLPTR, trackers,
+          request, this, &keys, values, exceptions, nullptr, trackers,
           destroyTracker, true, responseLock));
       reply->setChunkedResultHandler(resultCollector);
     }
   } else {
     if (needToCreateRC) {
-      resultCollector = (new ChunkedInterestResponse(request, NULLPTR, *reply));
+      resultCollector = (new ChunkedInterestResponse(request, nullptr, *reply));
       reply->setChunkedResultHandler(resultCollector);
     }
   }
@@ -2473,12 +2353,11 @@ GfErrType ThinClientRegion::unregisterKeysNoThrow(
   err = m_tcrdm->sendSyncRequestRegisterInterest(request, reply);
   if (err == GF_NOERR /*|| err == GF_CACHE_REDUNDANCY_FAILURE*/) {
     if (attemptFailover) {
-      for (VectorOfCacheableKey::Iterator iter = keys.begin();
-           iter != keys.end(); ++iter) {
-        m_interestList.erase(*iter);
-        m_durableInterestList.erase(*iter);
-        m_interestListForUpdatesAsInvalidates.erase(*iter);
-        m_durableInterestListForUpdatesAsInvalidates.erase(*iter);
+      for (const auto& key : keys) {
+        m_interestList.erase(key);
+        m_durableInterestList.erase(key);
+        m_interestListForUpdatesAsInvalidates.erase(key);
+        m_durableInterestListForUpdatesAsInvalidates.erase(key);
       }
     }
   }
@@ -2508,12 +2387,11 @@ GfErrType ThinClientRegion::unregisterKeysNoThrowLocalDestroy(
   err = m_tcrdm->sendSyncRequestRegisterInterest(request, reply);
   if (err == GF_NOERR) {
     if (attemptFailover) {
-      for (VectorOfCacheableKey::Iterator iter = keys.begin();
-           iter != keys.end(); ++iter) {
-        m_interestList.erase(*iter);
-        m_durableInterestList.erase(*iter);
-        m_interestListForUpdatesAsInvalidates.erase(*iter);
-        m_durableInterestListForUpdatesAsInvalidates.erase(*iter);
+      for (const auto& key : keys) {
+        m_interestList.erase(key);
+        m_durableInterestList.erase(key);
+        m_interestListForUpdatesAsInvalidates.erase(key);
+        m_durableInterestListForUpdatesAsInvalidates.erase(key);
       }
     }
   }
@@ -2557,13 +2435,13 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
   }
 
   TcrMessageReply replyLocal(true, m_tcrdm);
-  ChunkedInterestResponse* resultCollector = NULL;
-  ChunkedGetAllResponse* getAllResultCollector = NULL;
-  if (reply != NULL) {
+  ChunkedInterestResponse* resultCollector = nullptr;
+  ChunkedGetAllResponse* getAllResultCollector = nullptr;
+  if (reply != nullptr) {
     // need to check
     resultCollector = dynamic_cast<ChunkedInterestResponse*>(
         reply->getChunkedResultHandler());
-    if (resultCollector != NULL) {
+    if (resultCollector != nullptr) {
       resultKeys = resultCollector->getResultKeys();
     } else {
       getAllResultCollector = dynamic_cast<ChunkedGetAllResponse*>(
@@ -2581,19 +2459,19 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
       m_fullPath, regex.c_str(), interestPolicy, isDurable,
       getAttributes()->getCachingEnabled(), receiveValues, m_tcrdm);
   ACE_Recursive_Thread_Mutex responseLock;
-  if (reply == NULL) {
+  if (reply == nullptr) {
     reply = &replyLocal;
     if (interestPolicy.ordinal == InterestResultPolicy::KEYS_VALUES.ordinal) {
-      HashMapOfCacheablePtr values(new HashMapOfCacheable());
-      HashMapOfExceptionPtr exceptions(new HashMapOfException());
+      auto values = std::make_shared<HashMapOfCacheable>();
+      auto exceptions = std::make_shared<HashMapOfException>();
       MapOfUpdateCounters trackers;
       int32_t destroyTracker = 1;
-      if (resultKeys == NULLPTR) {
+      if (resultKeys == nullptr) {
         resultKeys = VectorOfCacheableKeyPtr(new VectorOfCacheableKey());
       }
       // need to check
       getAllResultCollector = (new ChunkedGetAllResponse(
-          request, this, NULL, values, exceptions, resultKeys, trackers,
+          request, this, nullptr, values, exceptions, resultKeys, trackers,
           destroyTracker, true, responseLock));
       reply->setChunkedResultHandler(getAllResultCollector);
       isRCCreatedLocally = true;
@@ -2620,9 +2498,10 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
           localInvalidateRegion_internal();
         } else {
           const VectorOfCacheableKeyPtr& keys =
-              resultCollector != NULL ? resultCollector->getResultKeys()
-                                      : getAllResultCollector->getResultKeys();
-          if (keys != NULLPTR) {
+              resultCollector != nullptr
+                  ? resultCollector->getResultKeys()
+                  : getAllResultCollector->getResultKeys();
+          if (keys != nullptr) {
             localInvalidateForRegisterInterest(*keys);
           }
         }
@@ -2631,8 +2510,8 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
   }
 
   if (isRCCreatedLocally == true) {
-    if (resultCollector != NULL) delete resultCollector;
-    if (getAllResultCollector != NULL) delete getAllResultCollector;
+    if (resultCollector != nullptr) delete resultCollector;
+    if (getAllResultCollector != nullptr) delete getAllResultCollector;
   }
   return err;
 }
@@ -2716,10 +2595,9 @@ void ThinClientRegion::addKeys(const VectorOfCacheableKey& keys, bool isDurable,
                 : (receiveValues ? m_interestList
                                  : m_interestListForUpdatesAsInvalidates);
 
-  for (VectorOfCacheableKey::Iterator iter = keys.begin(); iter != keys.end();
-       ++iter) {
-    interestList.insert(std::pair<CacheableKeyPtr, InterestResultPolicy>(
-        *iter, interestpolicy));
+  for (const auto& key : keys) {
+    interestList.insert(
+        std::pair<CacheableKeyPtr, InterestResultPolicy>(key, interestpolicy));
   }
 }
 
@@ -2806,12 +2684,11 @@ GfErrType ThinClientRegion::clientNotificationHandler(TcrMessage& msg) {
       LOGDEBUG("remote clear region event for reigon[%s]",
                msg.getRegionName().c_str());
       err = localClearNoThrow(
-          NULLPTR, CacheEventFlags::NOTIFICATION | CacheEventFlags::LOCAL);
+          nullptr, CacheEventFlags::NOTIFICATION | CacheEventFlags::LOCAL);
       break;
     }
     case TcrMessage::LOCAL_DESTROY_REGION: {
       m_notifyRelease = true;
-      preserveSB();
       err = LocalRegion::destroyRegionNoThrow(
           msg.getCallbackArgument(), true,
           CacheEventFlags::NOTIFICATION | CacheEventFlags::LOCAL);
@@ -2869,36 +2746,37 @@ GfErrType ThinClientRegion::handleServerException(const char* func,
   GfErrType error = GF_NOERR;
   setTSSExceptionMessage(exceptionMsg);
   if (strstr(exceptionMsg,
-             "org.apache.geode.security.NotAuthorizedException") != NULL) {
+             "org.apache.geode.security.NotAuthorizedException") != nullptr) {
     error = GF_NOT_AUTHORIZED_EXCEPTION;
   } else if (strstr(exceptionMsg,
-                    "org.apache.geode.cache.CacheWriterException") != NULL) {
+                    "org.apache.geode.cache.CacheWriterException") != nullptr) {
     error = GF_CACHE_WRITER_EXCEPTION;
   } else if (strstr(
                  exceptionMsg,
                  "org.apache.geode.security.AuthenticationFailedException") !=
-             NULL) {
+             nullptr) {
     error = GF_AUTHENTICATION_FAILED_EXCEPTION;
   } else if (strstr(exceptionMsg,
                     "org.apache.geode.internal.cache.execute."
-                    "InternalFunctionInvocationTargetException") != NULL) {
+                    "InternalFunctionInvocationTargetException") != nullptr) {
     error = GF_FUNCTION_EXCEPTION;
   } else if (strstr(exceptionMsg,
-                    "org.apache.geode.cache.CommitConflictException") != NULL) {
+                    "org.apache.geode.cache.CommitConflictException") !=
+             nullptr) {
     error = GF_COMMIT_CONFLICT_EXCEPTION;
   } else if (strstr(exceptionMsg,
                     "org.apache.geode.cache."
-                    "TransactionDataNodeHasDepartedException") != NULL) {
+                    "TransactionDataNodeHasDepartedException") != nullptr) {
     error = GF_TRANSACTION_DATA_NODE_HAS_DEPARTED_EXCEPTION;
   } else if (strstr(
                  exceptionMsg,
                  "org.apache.geode.cache.TransactionDataRebalancedException") !=
-             NULL) {
+             nullptr) {
     error = GF_TRANSACTION_DATA_REBALANCED_EXCEPTION;
   } else if (strstr(
                  exceptionMsg,
                  "org.apache.geode.security.AuthenticationRequiredException") !=
-             NULL) {
+             nullptr) {
     error = GF_AUTHENTICATION_REQUIRED_EXCEPTION;
   } else {
     error = GF_CACHESERVER_EXCEPTION;
@@ -2942,10 +2820,9 @@ void ThinClientRegion::localInvalidateRegion_internal() {
 
   VectorOfCacheableKey keysVec;
   keys_internal(keysVec);
-  for (VectorOfCacheableKey::Iterator iter = keysVec.begin();
-       iter != keysVec.end(); ++iter) {
+  for (const auto& key : keysVec) {
     VersionTagPtr versionTag;
-    m_entries->invalidate(*iter, me, oldValue, versionTag);
+    m_entries->invalidate(key, me, oldValue, versionTag);
   }
 }
 
@@ -2957,11 +2834,9 @@ void ThinClientRegion::invalidateInterestList(
   if (!m_regionAttributes->getCachingEnabled()) {
     return;
   }
-  for (std::unordered_map<CacheableKeyPtr, InterestResultPolicy>::iterator
-           iter = interestList.begin();
-       iter != interestList.end(); ++iter) {
+  for (const auto& iter : interestList) {
     VersionTagPtr versionTag;
-    m_entries->invalidate(iter->first, me, oldValue, versionTag);
+    m_entries->invalidate(iter.first, me, oldValue, versionTag);
   }
 }
 
@@ -2990,11 +2865,9 @@ void ThinClientRegion::localInvalidateForRegisterInterest(
   CacheablePtr oldValue;
   MapEntryImplPtr me;
 
-  for (VectorOfCacheableKey::Iterator iter = keys.begin(); iter != keys.end();
-       ++iter) {
+  for (const auto& key : keys) {
     VersionTagPtr versionTag;
-    m_entries->invalidate(*iter, me, oldValue, versionTag);
-    // KN: New
+    m_entries->invalidate(key, me, oldValue, versionTag);
     updateAccessAndModifiedTimeForEntry(me, true);
   }
 }
@@ -3017,29 +2890,28 @@ void ThinClientRegion::registerInterestGetValues(
     const char* method, const VectorOfCacheableKey* keys,
     const VectorOfCacheableKeyPtr& resultKeys) {
   try {
-    HashMapOfExceptionPtr exceptions(new HashMapOfException());
-    GfErrType err = getAllNoThrow_remote(keys, NULLPTR, exceptions, resultKeys,
-                                         true, NULLPTR);
+    auto exceptions = std::make_shared<HashMapOfException>();
+    GfErrType err = getAllNoThrow_remote(keys, nullptr, exceptions, resultKeys,
+                                         true, nullptr);
     GfErrTypeToException(method, err);
     // log any exceptions here
-    for (HashMapOfException::Iterator iter = exceptions->begin();
-         iter != exceptions->end(); ++iter) {
+    for (const auto& iter : *exceptions) {
       LOGWARN("%s Exception for key %s:: %s: %s", method,
-              Utils::getCacheableKeyString(iter.first())->asChar(),
-              iter.second()->getName(), iter.second()->getMessage());
+              Utils::getCacheableKeyString(iter.first)->asChar(),
+              iter.second->getName(), iter.second->getMessage());
     }
   } catch (const Exception& ex) {
     LOGWARN("%s Exception while getting values: %s: %s", method, ex.getName(),
             ex.getMessage());
     std::string msg(method);
     msg += " failed in getting values";
-    throw EntryNotFoundException(msg.c_str(), NULL, false,
+    throw EntryNotFoundException(msg.c_str(), nullptr, false,
                                  ExceptionPtr(ex.clone()));
   }
 }
 
 void ThinClientRegion::destroyDM(bool keepEndpoints) {
-  if (m_tcrdm != NULL) {
+  if (m_tcrdm != nullptr) {
     m_tcrdm->destroy(keepEndpoints);
   }
 }
@@ -3092,14 +2964,14 @@ void ThinClientRegion::releaseGlobals(bool isFailover) {
 //		uint8_t getResult, ResultCollectorPtr rc, int32_t retryAttempts,
 //		uint32_t timeout) {
 //	int32_t attempt = 0;
-//	CacheableHashSetPtr failedNodes = NULLPTR;
+//	CacheableHashSetPtr failedNodes = nullptr;
 //
 //	//CacheableStringArrayPtr csArray = poolDM->getServers();
 //
-//	//if (csArray != NULLPTR && csArray->length() != 0) {
+//	//if (csArray != nullptr && csArray->length() != 0) {
 //	//	for (int i = 0; i < csArray->length(); i++) {
 //	//		CacheableStringPtr cs = csArray[i];
-//	//		TcrEndpoint *ep = NULL;
+//	//		TcrEndpoint *ep = nullptr;
 // //     /*
 //	//		std::string endpointStr =
 // Utils::convertHostToCanonicalForm(
@@ -3157,7 +3029,7 @@ void ThinClientRegion::releaseGlobals(bool isFailover) {
 //				resultCollector->getFunctionExecutionResults();
 //		return values;
 //	}
-//	return NULLPTR;
+//	return nullptr;
 //}
 
 void ThinClientRegion::executeFunction(const char* func,
@@ -3215,15 +3087,12 @@ void ThinClientRegion::executeFunction(const char* func,
         rc->clearResults();
         CacheableHashSetPtr failedNodesIds(reply.getFailedNode());
         failedNodes->clear();
-        if (failedNodesIds != NULLPTR && failedNodesIds->size() > 0) {
+        if (failedNodesIds) {
           LOGDEBUG(
               "ThinClientRegion::executeFunction with GF_FUNCTION_EXCEPTION "
               "failedNodesIds size = %d ",
               failedNodesIds->size());
-          for (CacheableHashSet::Iterator itr = failedNodesIds->begin();
-               itr != failedNodesIds->end(); ++itr) {
-            failedNodes->insert(*itr);
-          }
+          failedNodes->insert(failedNodesIds->begin(), failedNodesIds->end());
         }
       } else if (err == GF_NOTCON) {
         attempt++;
@@ -3310,20 +3179,19 @@ CacheableVectorPtr ThinClientRegion::reExecuteFunction(
         rc->clearResults();
         CacheableHashSetPtr failedNodesIds(reply.getFailedNode());
         failedNodes->clear();
-        if (failedNodesIds != NULLPTR && failedNodesIds->size() > 0) {
+        if (failedNodesIds) {
           LOGDEBUG(
               "ThinClientRegion::reExecuteFunction with GF_FUNCTION_EXCEPTION "
               "failedNodesIds size = %d ",
               failedNodesIds->size());
-          for (CacheableHashSet::Iterator itr = failedNodesIds->begin();
-               itr != failedNodesIds->end(); ++itr) {
-            failedNodes->insert(*itr);
-          }
+          failedNodes->insert(failedNodesIds->begin(), failedNodesIds->end());
         }
-      } else if ((err == GF_NOTCON) || (err == GF_CLIENT_WAIT_TIMEOUT) || (err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA)) {
+      } else if ((err == GF_NOTCON) || (err == GF_CLIENT_WAIT_TIMEOUT) ||
+                 (err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA)) {
         attempt++;
         LOGDEBUG(
-            "ThinClientRegion::reExecuteFunction with GF_NOTCON OR TIMEOUT retry attempt "
+            "ThinClientRegion::reExecuteFunction with GF_NOTCON OR TIMEOUT "
+            "retry attempt "
             "= %d ",
             attempt);
         if (attempt > retryAttempts) {
@@ -3341,42 +3209,35 @@ CacheableVectorPtr ThinClientRegion::reExecuteFunction(
       }
     }
   } while (reExecute);
-  return NULLPTR;
+  return nullptr;
 }
 
 bool ThinClientRegion::executeFunctionSH(
     const char* func, const CacheablePtr& args, uint8_t getResult,
     ResultCollectorPtr rc,
-    HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>* locationMap,
+    const ClientMetadataService::ServerToKeysMapPtr& locationMap,
     CacheableHashSetPtr& failedNodes, uint32_t timeout, bool allBuckets) {
   bool reExecute = false;
   auto resultCollectorLock = std::make_shared<ACE_Recursive_Thread_Mutex>();
-  UserAttributesPtr userAttr =
+  const auto& userAttr =
       TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
   std::vector<OnRegionFunctionExecution*> feWorkers;
-  ThreadPool* threadPool = TPSingleton::instance();
+  auto threadPool = TPSingleton::instance();
 
-  for (HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>::Iterator
-           locationIter = locationMap->begin();
-       locationIter != locationMap->end(); ++locationIter) {
-    BucketServerLocationPtr serverLocation = locationIter.first();
-    CacheableHashSetPtr buckets = locationIter.second();
-    OnRegionFunctionExecution* worker = new OnRegionFunctionExecution(
-        func, this, args, buckets, getResult, timeout,
+  for (const auto& locationIter : *locationMap) {
+    const auto& serverLocation = locationIter.first;
+    const auto& routingObj = locationIter.second;
+    auto worker = new OnRegionFunctionExecution(
+        func, this, args, routingObj, getResult, timeout,
         dynamic_cast<ThinClientPoolDM*>(m_tcrdm), resultCollectorLock, rc,
         userAttr, false, serverLocation, allBuckets);
     threadPool->perform(worker);
     feWorkers.push_back(worker);
   }
 
-  for (std::vector<OnRegionFunctionExecution*>::iterator iter =
-           feWorkers.begin();
-       iter != feWorkers.end(); ++iter) {
-    OnRegionFunctionExecution* worker = *iter;
-    GfErrType err = worker->getResult();
-    TcrMessage* currentReply = worker->getReply();
-
-
+  for (const auto& worker : feWorkers) {
+    auto err = worker->getResult();
+    auto currentReply = worker->getReply();
 
     if (err == GF_NOERR &&
         (currentReply->getMessageType() == TcrMessage::EXCEPTION ||
@@ -3387,14 +3248,13 @@ bool ThinClientRegion::executeFunctionSH(
     }
 
     if (err != GF_NOERR) {
-
       if (err == GF_FUNCTION_EXCEPTION) {
-
         reExecute = true;
-        ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
-        if ((poolDM != NULL) && (poolDM->getClientMetaDataService() != NULL)) {
-          poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
-              this->getFullPath(), 0);
+        if (auto poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm)) {
+          if (poolDM->getClientMetaDataService()) {
+            poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
+                this->getFullPath(), 0);
+          }
         }
         worker->getResultCollector()->reset();
         {
@@ -3402,24 +3262,24 @@ bool ThinClientRegion::executeFunctionSH(
           rc->clearResults();
         }
         CacheableHashSetPtr failedNodeIds(currentReply->getFailedNode());
-        if (failedNodeIds != NULLPTR && failedNodeIds->size() > 0) {
+        if (failedNodeIds) {
           LOGDEBUG(
               "ThinClientRegion::executeFunctionSH with GF_FUNCTION_EXCEPTION "
               "failedNodeIds size = %d ",
               failedNodeIds->size());
-          for (CacheableHashSet::Iterator itr = failedNodeIds->begin();
-               itr != failedNodeIds->end(); ++itr) {
-            failedNodes->insert(*itr);
-          }
+          failedNodes->insert(failedNodeIds->begin(), failedNodeIds->end());
         }
-      } else if ((err == GF_NOTCON) || (err == GF_CLIENT_WAIT_TIMEOUT) || (err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA)) {
-
+      } else if ((err == GF_NOTCON) || (err == GF_CLIENT_WAIT_TIMEOUT) ||
+                 (err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA)) {
         reExecute = true;
-        LOGINFO("ThinClientRegion::executeFunctionSH with GF_NOTCON or GF_CLIENT_WAIT_TIMEOUT ");
-        ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
-        if ((poolDM != NULL) && (poolDM->getClientMetaDataService() != NULL)) {
-          poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
-              this->getFullPath(), 0);
+        LOGINFO(
+            "ThinClientRegion::executeFunctionSH with GF_NOTCON or "
+            "GF_CLIENT_WAIT_TIMEOUT ");
+        if (auto poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm)) {
+          if (poolDM->getClientMetaDataService()) {
+            poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
+                this->getFullPath(), 0);
+          }
         }
         worker->getResultCollector()->reset();
         {
@@ -3427,24 +3287,20 @@ bool ThinClientRegion::executeFunctionSH(
           rc->clearResults();
         }
       } else {
-
         if (ThinClientBaseDM::isFatalClientError(err)) {
           LOGERROR("ThinClientRegion::executeFunctionSH: Fatal Exception");
-            }
-        else
-        {
+        } else {
           LOGWARN("ThinClientRegion::executeFunctionSH: Unexpected Exception");
         }
 
         for (std::vector<OnRegionFunctionExecution*>::iterator iter2 =
-                  feWorkers.begin();
-              iter2 != feWorkers.end(); ++iter2)
-        {
+                 feWorkers.begin();
+             iter2 != feWorkers.end(); ++iter2) {
           OnRegionFunctionExecution* worker = *iter2;
           delete worker;
         }
-        LOGDEBUG("ThinClientRegion::executeFunctionSH: Cleaned out the workers ");
-
+        LOGDEBUG(
+            "ThinClientRegion::executeFunctionSH: Cleaned out the workers ");
 
         GfErrTypeToException("ExecuteOnRegion:", err);
       }
@@ -3490,7 +3346,7 @@ GfErrType ThinClientRegion::getNoThrow_FullObject(EventIdPtr eventId,
                                                   CacheablePtr& fullObject,
                                                   VersionTagPtr& versionTag) {
   TcrMessageRequestEventValue fullObjectMsg(eventId);
-  TcrMessageReply reply(true, NULL);
+  TcrMessageReply reply(true, nullptr);
 
   GfErrType err = GF_NOTCON;
   err = m_tcrdm->sendSyncRequest(fullObjectMsg, reply, false, true);
@@ -3532,7 +3388,7 @@ void ThinClientRegion::txPut(const CacheableKeyPtr& key,
 }
 
 void ChunkedInterestResponse::reset() {
-  if (m_resultKeys != NULLPTR && m_resultKeys->size() > 0) {
+  if (m_resultKeys != nullptr && m_resultKeys->size() > 0) {
     m_resultKeys->clear();
   }
 }
@@ -3555,8 +3411,8 @@ void ChunkedInterestResponse::handleChunk(const uint8_t* chunk,
     return;
   }
 
-  if (m_resultKeys == NULLPTR) {
-    GF_NEW(m_resultKeys, VectorOfCacheableKey);
+  if (m_resultKeys == nullptr) {
+    m_resultKeys = std::make_shared<VectorOfCacheableKey>();
   }
   serializer::readObject(input, *m_resultKeys);
   m_replyMsg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
@@ -3684,7 +3540,7 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
   }
 
   uint8_t classByte;
-  char* isStructTypeImpl = NULL;
+  char* isStructTypeImpl = nullptr;
   uint16_t stiLen = 0;
   // soubhik: ignoring parent classes for now
   // we will require to look at it once CQ is to be implemented.
@@ -3834,8 +3690,8 @@ void ChunkedFunctionExecutionResponse::handleChunk(
 
   if (static_cast<TcrMessageHelper::ChunkObjectType>(arrayType) ==
       TcrMessageHelper::NULL_OBJECT) {
-    LOGDEBUG("ChunkedFunctionExecutionResponse::handleChunk NULL object");
-    //	m_functionExecutionResults->push_back(NULLPTR);
+    LOGDEBUG("ChunkedFunctionExecutionResponse::handleChunk nullptr object");
+    //	m_functionExecutionResults->push_back(nullptr);
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
     return;
   }
@@ -3924,14 +3780,13 @@ void ChunkedFunctionExecutionResponse::handleChunk(
   } else {
     value = CacheableString::create("Function exception result.");
   }
-  if (m_rc != NULLPTR) {
-    CacheablePtr result = NULLPTR;
+  if (m_rc != nullptr) {
+    CacheablePtr result = nullptr;
     if (isExceptionPart) {
-      UserFunctionExecutionExceptionPtr uFEPtr(
-          new UserFunctionExecutionException(value->toString()));
-      result = dynCast<CacheablePtr>(uFEPtr);
+      result =
+          std::make_shared<UserFunctionExecutionException>(value->toString());
     } else {
-      result = dynCast<CacheablePtr>(value);
+      result = std::dynamic_pointer_cast<Cacheable>(value);
     }
     if (m_resultCollectorLock.get() != 0) {
       ACE_Guard<ACE_Recursive_Thread_Mutex> guard(*m_resultCollectorLock);
@@ -3947,7 +3802,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
 
 void ChunkedGetAllResponse::reset() {
   m_keysOffset = 0;
-  if (m_resultKeys != NULLPTR && m_resultKeys->size() > 0) {
+  if (m_resultKeys != nullptr && m_resultKeys->size() > 0) {
     m_resultKeys->clear();
   }
 }
@@ -3978,35 +3833,29 @@ void ChunkedGetAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
 }
 
 void ChunkedGetAllResponse::add(const ChunkedGetAllResponse* other) {
-  if (m_values != NULLPTR) {
-    for (HashMapOfCacheable::Iterator iter = other->m_values->begin();
-         iter != other->m_values->end(); iter++) {
-      m_values->insert(iter.first(), iter.second());
+  if (m_values) {
+    for (const auto& iter : *m_values) {
+      m_values->emplace(iter.first, iter.second);
     }
   }
 
-  if (m_exceptions != NULLPTR) {
-    for (HashMapOfException::Iterator iter = other->m_exceptions->begin();
-         iter != other->m_exceptions->end(); iter++) {
-      m_exceptions->insert(iter.first(), iter.second());
-    }
+  if (m_exceptions) {
+    m_exceptions->insert(other->m_exceptions->begin(),
+                         other->m_exceptions->end());
   }
 
-  for (MapOfUpdateCounters::iterator iter = other->m_trackerMap.begin();
-       iter != other->m_trackerMap.end(); iter++) {
-    m_trackerMap[iter->first] = iter->second;
+  for (const auto& iter : other->m_trackerMap) {
+    m_trackerMap[iter.first] = iter.second;
   }
 
-  if (m_resultKeys != NULLPTR) {
-    for (VectorOfCacheableKey::Iterator iter = other->m_resultKeys->begin();
-         iter != other->m_resultKeys->end(); iter++) {
-      m_resultKeys->push_back(*iter);
-    }
+  if (m_resultKeys) {
+    m_resultKeys->insert(m_resultKeys->end(), other->m_resultKeys->begin(),
+                         other->m_resultKeys->end());
   }
 }
 
 void ChunkedPutAllResponse::reset() {
-  if (m_list != NULLPTR && m_list->size() > 0) {
+  if (m_list != nullptr && m_list->size() > 0) {
     m_list->getVersionedTagptr().clear();
   }
 }
@@ -4024,7 +3873,7 @@ void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
                GeodeTypeIdsImpl::VersionedObjectPartList,
                "ChunkedPutAllResponse", partLen, isLastChunkWithSecurity)) ==
       TcrMessageHelper::NULL_OBJECT) {
-    LOGDEBUG("ChunkedPutAllResponse::handleChunk NULL object");
+    LOGDEBUG("ChunkedPutAllResponse::handleChunk nullptr object");
     // No issues it will be empty in case of disabled caching.
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
     return;
@@ -4034,9 +3883,8 @@ void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
       TcrMessageHelper::OBJECT) {
     LOGDEBUG("ChunkedPutAllResponse::handleChunk object");
     ACE_Recursive_Thread_Mutex responseLock;
-    VersionedCacheableObjectPartListPtr vcObjPart(
-        new VersionedCacheableObjectPartList(
-            m_msg.getChunkedResultHandler()->getEndpointMemId(), responseLock));
+    auto vcObjPart = std::make_shared<VersionedCacheableObjectPartList>(
+        m_msg.getChunkedResultHandler()->getEndpointMemId(), responseLock);
     vcObjPart->fromData(input);
     m_list->addAll(vcObjPart);
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
@@ -4051,11 +3899,11 @@ void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
 
     PoolPtr pool = PoolManager::find(m_msg.getPoolName());
-    if (pool != NULLPTR && !pool->isDestroyed() &&
+    if (pool != nullptr && !pool->isDestroyed() &&
         pool->getPRSingleHopEnabled()) {
-      ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(pool.ptr());
-      if ((poolDM != NULL) && (poolDM->getClientMetaDataService() != NULL) &&
-          (byte0 != 0)) {
+      ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(pool.get());
+      if ((poolDM != nullptr) &&
+          (poolDM->getClientMetaDataService() != nullptr) && (byte0 != 0)) {
         LOGFINE(
             "enqueued region %s for metadata refresh for singlehop for PUTALL "
             "operation.",
@@ -4068,7 +3916,7 @@ void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
 }
 
 void ChunkedRemoveAllResponse::reset() {
-  if (m_list != NULLPTR && m_list->size() > 0) {
+  if (m_list != nullptr && m_list->size() > 0) {
     m_list->getVersionedTagptr().clear();
   }
 }
@@ -4087,7 +3935,7 @@ void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
                GeodeTypeIdsImpl::VersionedObjectPartList,
                "ChunkedRemoveAllResponse", partLen, isLastChunkWithSecurity)) ==
       TcrMessageHelper::NULL_OBJECT) {
-    LOGDEBUG("ChunkedRemoveAllResponse::handleChunk NULL object");
+    LOGDEBUG("ChunkedRemoveAllResponse::handleChunk nullptr object");
     // No issues it will be empty in case of disabled caching.
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
     return;
@@ -4097,9 +3945,8 @@ void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
       TcrMessageHelper::OBJECT) {
     LOGDEBUG("ChunkedRemoveAllResponse::handleChunk object");
     ACE_Recursive_Thread_Mutex responseLock;
-    VersionedCacheableObjectPartListPtr vcObjPart(
-        new VersionedCacheableObjectPartList(
-            m_msg.getChunkedResultHandler()->getEndpointMemId(), responseLock));
+    auto vcObjPart = std::make_shared<VersionedCacheableObjectPartList>(
+        m_msg.getChunkedResultHandler()->getEndpointMemId(), responseLock);
     vcObjPart->fromData(input);
     m_list->addAll(vcObjPart);
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
@@ -4115,11 +3962,11 @@ void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
 
     PoolPtr pool = PoolManager::find(m_msg.getPoolName());
-    if (pool != NULLPTR && !pool->isDestroyed() &&
+    if (pool != nullptr && !pool->isDestroyed() &&
         pool->getPRSingleHopEnabled()) {
-      ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(pool.ptr());
-      if ((poolDM != NULL) && (poolDM->getClientMetaDataService() != NULL) &&
-          (byte0 != 0)) {
+      ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(pool.get());
+      if ((poolDM != nullptr) &&
+          (poolDM->getClientMetaDataService() != nullptr) && (byte0 != 0)) {
         LOGFINE(
             "enqueued region %s for metadata refresh for singlehop for "
             "REMOVEALL operation.",
@@ -4132,7 +3979,7 @@ void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
 }
 
 void ChunkedDurableCQListResponse::reset() {
-  if (m_resultList != NULLPTR && m_resultList->length() > 0) {
+  if (m_resultList) {
     m_resultList->clear();
   }
 }

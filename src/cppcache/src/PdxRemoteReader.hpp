@@ -97,7 +97,7 @@ class PdxRemoteReader : public PdxLocalReader {
    * @param value value of the field which needs to serialize
 
   virtual void readASCII(const char* fieldName, char** value, uint16_t* len =
-  NULL);
+  nullptr);
 
   *
    * Read a ASCII Huge string from the <code>PdxReader</code>.
@@ -105,7 +105,7 @@ class PdxRemoteReader : public PdxLocalReader {
    * @param value value of the field which needs to serialize
 
   virtual void readASCIIHuge(const char* fieldName, char** value, uint32_t* len
-  = NULL);
+  = nullptr);
 
   *
   * Read a UTF string from the <code>PdxReader</code>.
@@ -113,7 +113,7 @@ class PdxRemoteReader : public PdxLocalReader {
   * @param value value of the field which needs to serialize
 
   virtual void readUTF(const char* fieldName, char** value, uint16_t* len =
-  NULL);
+  nullptr);
 
   *
   * Read a string from the <code>PdxReader</code>.
@@ -121,7 +121,7 @@ class PdxRemoteReader : public PdxLocalReader {
   * Returns String value
 
   virtual void readUTFHuge(const char* fieldName, char** value, uint32_t* len =
-  NULL);
+  nullptr);
 */
   virtual char* readString(const char* fieldName);
 
@@ -209,7 +209,7 @@ class PdxRemoteReader : public PdxLocalReader {
   virtual void readCollection(const char* fieldName,
                               CacheableArrayListPtr& collection);
 };
-typedef SharedPtr<PdxRemoteReader> PdxRemoteReaderPtr;
+typedef std::shared_ptr<PdxRemoteReader> PdxRemoteReaderPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

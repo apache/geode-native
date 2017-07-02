@@ -26,13 +26,13 @@ namespace geode {
 namespace client {
 
 void CacheableObjectArray::toData(DataOutput& output) const {
-  int32_t len = size();
+  int32_t len = static_cast<int32_t>(size());
   output.writeArrayLen(len);
   output.write(static_cast<int8_t>(GeodeTypeIdsImpl::Class));
   output.write(static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
   output.writeASCII("java.lang.Object");
-  for (Iterator iter = begin(); iter != end(); ++iter) {
-    output.writeObject(*iter);
+  for (const auto& iter : *this) {
+    output.writeObject(iter);
   }
 }
 
@@ -63,8 +63,8 @@ int8_t CacheableObjectArray::typeId() const {
 
 uint32_t CacheableObjectArray::objectSize() const {
   uint32_t size = sizeof(CacheableObjectArray);
-  for (Iterator iter = begin(); iter != end(); ++iter) {
-    size += (*iter)->objectSize();
+  for (const auto& iter : *this) {
+    size += iter->objectSize();
   }
   return size;
 }

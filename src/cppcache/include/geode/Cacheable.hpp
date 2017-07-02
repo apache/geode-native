@@ -35,7 +35,7 @@ typedef SerializablePtr CacheablePtr;
 typedef Serializable Cacheable;
 
 template <typename TVALUE>
-inline CacheablePtr createValue(const SharedPtr<TVALUE>& value);
+inline CacheablePtr createValue(const std::shared_ptr<TVALUE>& value);
 
 template <typename TVALUE>
 inline CacheablePtr createValue(const TVALUE* value);

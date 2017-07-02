@@ -36,7 +36,7 @@ UserAttributes::~UserAttributes() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_listLock);
   for (it = m_connectionAttr.begin(); it != m_connectionAttr.end(); it++) {
     UserConnectionAttributes* uca = (*it).second;
-    if (uca != NULL) {
+    if (uca != nullptr) {
       GF_SAFE_DELETE(uca);
     }
   }
@@ -44,7 +44,7 @@ UserAttributes::~UserAttributes() {
 
 UserConnectionAttributes* UserAttributes::getConnectionAttribute() {
   LOGDEBUG("UserConnectionAttributes* getConnectionAttribute().");
-  if (m_connectionAttr.size() == 0) return NULL;
+  if (m_connectionAttr.size() == 0) return nullptr;
 
   //  std::map<std::string, UserConnectionAttributes*>::iterator it;
 
@@ -57,7 +57,7 @@ UserConnectionAttributes* UserAttributes::getConnectionAttribute() {
     else
       uca->setUnAuthenticated();
   }*/
-  return NULL;
+  return nullptr;
 }
 
 void UserAttributes::unAuthenticateEP(TcrEndpoint* endpoint) {
@@ -70,7 +70,7 @@ void UserAttributes::unAuthenticateEP(TcrEndpoint* endpoint) {
 
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_listLock);
   UserConnectionAttributes* uca = m_connectionAttr[endpoint->name()];
-  if (uca != NULL) {
+  if (uca != nullptr) {
     m_connectionAttr.erase(endpoint->name());
     GF_SAFE_DELETE(uca);
   }
@@ -87,7 +87,7 @@ PoolPtr UserAttributes::getPool() { return m_pool; }
 UserConnectionAttributes* UserAttributes::getConnectionAttribute(
     TcrEndpoint* ep) {
   LOGDEBUG("UserConnectionAttributes* getConnectionAttribute with EP.");
-  if (m_connectionAttr.size() == 0) return NULL;
+  if (m_connectionAttr.size() == 0) return nullptr;
 
   // std::map<std::string, UserConnectionAttributes>::iterator it;
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_listLock);
@@ -108,7 +108,7 @@ bool UserAttributes::isEndpointAuthenticated(TcrEndpoint* ep) {
 
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_listLock);
   UserConnectionAttributes* uca = m_connectionAttr[ep->name()];
-  if (uca != NULL && uca->isAuthenticated() && (uca->getEndpoint() == ep)) {
+  if (uca != nullptr && uca->isAuthenticated() && (uca->getEndpoint() == ep)) {
     return true;
   }
   return false;
@@ -117,7 +117,7 @@ PropertiesPtr UserAttributes::getCredentials() {
   if (m_proxyCache->isClosed()) {
     throw IllegalStateException("User cache has been closed");
   }
-  if (m_credentials == NULLPTR) {
+  if (m_credentials == nullptr) {
     LOGDEBUG("getCredentials");
   } else {
     LOGDEBUG("getCredentials not null ");
@@ -137,7 +137,7 @@ GuardUserAttribures::GuardUserAttribures(ProxyCachePtr proxyCache) {
 void GuardUserAttribures::setProxyCache(ProxyCachePtr proxyCache) {
   m_proxyCache = proxyCache;
   LOGDEBUG("GuardUserAttribures::GuardUserAttribures:");
-  if (m_proxyCache != NULLPTR && !proxyCache->isClosed()) {
+  if (m_proxyCache != nullptr && !proxyCache->isClosed()) {
     TSSUserAttributesWrapper::s_geodeTSSUserAttributes->setUserAttributes(
         proxyCache->m_userAttributes);
   } else {
@@ -145,11 +145,11 @@ void GuardUserAttribures::setProxyCache(ProxyCachePtr proxyCache) {
   }
 }
 
-GuardUserAttribures::GuardUserAttribures() { m_proxyCache = NULLPTR; }
+GuardUserAttribures::GuardUserAttribures() { m_proxyCache = nullptr; }
 
 GuardUserAttribures::~GuardUserAttribures() {
-  if (m_proxyCache != NULLPTR) {
+  if (m_proxyCache != nullptr) {
     TSSUserAttributesWrapper::s_geodeTSSUserAttributes->setUserAttributes(
-        NULLPTR);
+        nullptr);
   }
 }

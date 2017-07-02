@@ -17,21 +17,20 @@
 
 #define ROOT_NAME "testFWHelper"
 
-#include "fw_helper.hpp"
+#include <iostream>
 
-using test::cout;
-using test::endl;
+#include "fw_helper.hpp"
 
 /**
  * @brief Test a test runs.
  */
 BEGIN_TEST(TestOne)
-  cout << "test 1." << endl;
+  std::cout << "test 1." << std::endl;
 END_TEST(TestOne)
 
 /**
  * @brief Test a test runs.
  */
 BEGIN_TEST(TestTwo)
-  cout << "test 2." << endl;
+  std::cout << "test 2." << std::endl;
 END_TEST(TestTwo)

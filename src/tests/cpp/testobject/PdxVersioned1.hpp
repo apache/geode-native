@@ -205,7 +205,9 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
 
   CacheableDatePtr getDate() { return m_date; }
 
-  CacheableEnumPtr getEnum() { return m_pdxEnum; }
+  CacheableEnumPtr getEnum() {
+    return std::static_pointer_cast<CacheableEnum>(m_pdxEnum);
+  }
 
   int32_t getByteArrayLength() { return byteArrayLen; }
 
@@ -252,7 +254,7 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
   bool generic2DCompare(T1** value1, T2** value2, int length,
                         int* arrLengths) const;
 };
-typedef SharedPtr<PdxTests::PdxVersioned1> PdxVersioned1Ptr;
+typedef std::shared_ptr<PdxTests::PdxVersioned1> PdxVersioned1Ptr;
 }  // namespace PdxTests
 
 #endif  // GEODE_TESTOBJECT_PDXVERSIONED1_H_

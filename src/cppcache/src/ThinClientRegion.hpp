@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_THINCLIENTREGION_H_
-#define GEODE_THINCLIENTREGION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,18 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_THINCLIENTREGION_H_
+#define GEODE_THINCLIENTREGION_H_
+
+#include <unordered_map>
+
+#include <ace/Task.h>
+
+#include <geode/utils.hpp>
+#include <geode/ResultCollector.hpp>
+
 #include "LocalRegion.hpp"
 #include "TcrMessage.hpp"
 #include "TcrEndpoint.hpp"
@@ -27,13 +34,11 @@
 #include "Queue.hpp"
 #include "TcrChunkedContext.hpp"
 #include "CacheableObjectPartList.hpp"
-#include <geode/ResultCollector.hpp>
-
-#include <ace/Task.h>
+#include "ClientMetadataService.hpp"
 
 /**
-* @file
-*/
+ * @file
+ */
 
 namespace apache {
 namespace geode {
@@ -42,12 +47,12 @@ namespace client {
 class ThinClientBaseDM;
 
 /**
-* @class ThinClientRegion ThinClientRegion.hpp
-*
-* This class manages all the functionalities related with thin client
-* region. It will inherit from DistributedRegion and overload some methods
-*
-*/
+ * @class ThinClientRegion ThinClientRegion.hpp
+ *
+ * This class manages all the functionalities related with thin client
+ * region. It will inherit from DistributedRegion and overload some methods
+ *
+ */
 
 class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
  public:
@@ -55,7 +60,8 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
    * @brief constructor/initializer/destructor
    */
   ThinClientRegion(const std::string& name, CacheImpl* cache,
-                   RegionInternal* rPtr, const RegionAttributesPtr& attributes,
+                   const RegionInternalPtr& rPtr,
+                   const RegionAttributesPtr& attributes,
                    const CacheStatisticsPtr& stats, bool shared = false);
   virtual void initTCR();
   virtual ~ThinClientRegion();
@@ -70,17 +76,17 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
                             bool receiveValues = true);
   virtual void unregisterKeys(const VectorOfCacheableKey& keys);
   virtual void registerAllKeys(bool isDurable = false,
-                               VectorOfCacheableKeyPtr resultKeys = NULLPTR,
+                               VectorOfCacheableKeyPtr resultKeys = nullptr,
                                bool getInitialValues = false,
                                bool receiveValues = true);
   virtual void unregisterAllKeys();
   virtual void registerRegex(const char* regex, bool isDurable = false,
-                             VectorOfCacheableKeyPtr resultKeys = NULLPTR,
+                             VectorOfCacheableKeyPtr resultKeys = nullptr,
                              bool getInitialValues = false,
                              bool receiveValues = true);
   virtual void unregisterRegex(const char* regex);
   virtual void serverKeys(VectorOfCacheableKey& v);
-  virtual void clear(const UserDataPtr& aCallbackArgument = NULLPTR);
+  virtual void clear(const UserDataPtr& aCallbackArgument = nullptr);
 
   virtual SelectResultsPtr query(
       const char* predicate, uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
@@ -96,14 +102,14 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
       const HashMapOfCacheable& map,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
       uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-      const UserDataPtr& aCallbackArgument = NULLPTR);
+      const UserDataPtr& aCallbackArgument = nullptr);
   GfErrType removeAllNoThrow_remote(
       const VectorOfCacheableKey& keys,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
-      const UserDataPtr& aCallbackArgument = NULLPTR);
-  GfErrType registerKeys(TcrEndpoint* endpoint = NULL,
-                         const TcrMessage* request = NULL,
-                         TcrMessageReply* reply = NULL);
+      const UserDataPtr& aCallbackArgument = nullptr);
+  GfErrType registerKeys(TcrEndpoint* endpoint = nullptr,
+                         const TcrMessage* request = nullptr,
+                         TcrMessageReply* reply = nullptr);
   GfErrType unregisterKeys();
   void addKeys(const VectorOfCacheableKey& keys, bool isDurable,
                bool receiveValues, InterestResultPolicy interestpolicy);
@@ -131,7 +137,7 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
 
   void localInvalidateFailover();
 
-  inline ThinClientBaseDM* getDistMgr() { return m_tcrdm; }
+  inline ThinClientBaseDM* getDistMgr() const { return m_tcrdm; }
 
   CacheableVectorPtr reExecuteFunction(
       const char* func, const CacheablePtr& args, CacheableVectorPtr routingObj,
@@ -141,7 +147,7 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
   bool executeFunctionSH(
       const char* func, const CacheablePtr& args, uint8_t getResult,
       ResultCollectorPtr rc,
-      HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>* locationMap,
+      const ClientMetadataService::ServerToKeysMapPtr& locationMap,
       CacheableHashSetPtr& failedNodes,
       uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT,
       bool allBuckets = false);
@@ -207,19 +213,19 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
   GfErrType destroyRegionNoThrow_remote(const UserDataPtr& aCallbackArgument);
   GfErrType registerKeysNoThrow(
       const VectorOfCacheableKey& keys, bool attemptFailover = true,
-      TcrEndpoint* endpoint = NULL, bool isDurable = false,
+      TcrEndpoint* endpoint = nullptr, bool isDurable = false,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
-      bool receiveValues = true, TcrMessageReply* reply = NULL);
+      bool receiveValues = true, TcrMessageReply* reply = nullptr);
   GfErrType unregisterKeysNoThrow(const VectorOfCacheableKey& keys,
                                   bool attemptFailover = true);
   GfErrType unregisterKeysNoThrowLocalDestroy(const VectorOfCacheableKey& keys,
                                               bool attemptFailover = true);
   GfErrType registerRegexNoThrow(
       const std::string& regex, bool attemptFailover = true,
-      TcrEndpoint* endpoint = NULL, bool isDurable = false,
-      VectorOfCacheableKeyPtr resultKeys = NULLPTR,
+      TcrEndpoint* endpoint = nullptr, bool isDurable = false,
+      VectorOfCacheableKeyPtr resultKeys = nullptr,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
-      bool receiveValues = true, TcrMessageReply* reply = NULL);
+      bool receiveValues = true, TcrMessageReply* reply = nullptr);
   GfErrType unregisterRegexNoThrow(const std::string& regex,
                                    bool attemptFailover = true);
   GfErrType unregisterRegexNoThrowLocalDestroy(const std::string& regex,
@@ -300,24 +306,33 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
       ThinClientPoolDM* tcrdm, const HashMapOfCacheable& map,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
       uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-      const UserDataPtr& aCallbackArgument = NULLPTR);
+      const UserDataPtr& aCallbackArgument = nullptr);
   GfErrType multiHopPutAllNoThrow_remote(
       const HashMapOfCacheable& map,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
       uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-      const UserDataPtr& aCallbackArgument = NULLPTR);
+      const UserDataPtr& aCallbackArgument = nullptr);
 
   GfErrType singleHopRemoveAllNoThrow_remote(
       ThinClientPoolDM* tcrdm, const VectorOfCacheableKey& keys,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
-      const UserDataPtr& aCallbackArgument = NULLPTR);
+      const UserDataPtr& aCallbackArgument = nullptr);
   GfErrType multiHopRemoveAllNoThrow_remote(
       const VectorOfCacheableKey& keys,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
-      const UserDataPtr& aCallbackArgument = NULLPTR);
+      const UserDataPtr& aCallbackArgument = nullptr);
 
   ACE_RW_Thread_Mutex m_RegionMutex;
   bool m_isMetaDataRefreshed;
+
+  typedef std::unordered_map<BucketServerLocationPtr, SerializablePtr,
+                             dereference_hash<BucketServerLocationPtr>,
+                             dereference_equal_to<BucketServerLocationPtr>>
+      ResultMap;
+  typedef std::unordered_map<BucketServerLocationPtr, CacheableInt32Ptr,
+                             dereference_hash<BucketServerLocationPtr>,
+                             dereference_equal_to<BucketServerLocationPtr>>
+      FailedServersMap;
 };
 
 // Chunk processing classes
@@ -355,7 +370,7 @@ class ChunkedInterestResponse : public TcrChunkedResult {
   virtual void reset();
 };
 
-typedef SharedPtr<ChunkedInterestResponse> ChunkedInterestResponsePtr;
+typedef std::shared_ptr<ChunkedInterestResponse> ChunkedInterestResponsePtr;
 
 /**
  * Handle each chunk of the chunked query response.
@@ -395,7 +410,7 @@ class ChunkedQueryResponse : public TcrChunkedResult {
   void readObjectPartList(DataInput& input, bool isResultSet);
 };
 
-typedef SharedPtr<ChunkedQueryResponse> ChunkedQueryResponsePtr;
+typedef std::shared_ptr<ChunkedQueryResponse> ChunkedQueryResponsePtr;
 /**
  * Handle each chunk of the chunked function execution response.
  *
@@ -443,7 +458,7 @@ class ChunkedFunctionExecutionResponse : public TcrChunkedResult {
                            uint8_t isLastChunkWithSecurity);
   virtual void reset();
 };
-typedef SharedPtr<ChunkedFunctionExecutionResponse>
+typedef std::shared_ptr<ChunkedFunctionExecutionResponse>
     ChunkedFunctionExecutionResponsePtr;
 
 /**
@@ -503,11 +518,11 @@ class ChunkedGetAllResponse : public TcrChunkedResult {
   ACE_Recursive_Thread_Mutex& getResponseLock() { return m_responseLock; }
 };
 
-typedef SharedPtr<ChunkedGetAllResponse> ChunkedGetAllResponsePtr;
+typedef std::shared_ptr<ChunkedGetAllResponse> ChunkedGetAllResponsePtr;
 
 /**
-* Handle each chunk of the chunked putAll response.
-*/
+ * Handle each chunk of the chunked putAll response.
+ */
 class ChunkedPutAllResponse : public TcrChunkedResult {
  private:
   TcrMessage& m_msg;
@@ -535,11 +550,11 @@ class ChunkedPutAllResponse : public TcrChunkedResult {
   ACE_Recursive_Thread_Mutex& getResponseLock() { return m_responseLock; }
 };
 
-typedef SharedPtr<ChunkedPutAllResponse> ChunkedPutAllResponsePtr;
+typedef std::shared_ptr<ChunkedPutAllResponse> ChunkedPutAllResponsePtr;
 
 /**
-* Handle each chunk of the chunked removeAll response.
-*/
+ * Handle each chunk of the chunked removeAll response.
+ */
 class ChunkedRemoveAllResponse : public TcrChunkedResult {
  private:
   TcrMessage& m_msg;
@@ -567,7 +582,7 @@ class ChunkedRemoveAllResponse : public TcrChunkedResult {
   ACE_Recursive_Thread_Mutex& getResponseLock() { return m_responseLock; }
 };
 
-typedef SharedPtr<ChunkedRemoveAllResponse> ChunkedRemoveAllResponsePtr;
+typedef std::shared_ptr<ChunkedRemoveAllResponse> ChunkedRemoveAllResponsePtr;
 
 /**
  * Handle each chunk of the chunked interest registration response.
@@ -598,7 +613,7 @@ class ChunkedKeySetResponse : public TcrChunkedResult {
   virtual void reset();
 };
 
-typedef SharedPtr<ChunkedKeySetResponse> ChunkedKeySetResponsePtr;
+typedef std::shared_ptr<ChunkedKeySetResponse> ChunkedKeySetResponsePtr;
 
 class ChunkedDurableCQListResponse : public TcrChunkedResult {
  private:
@@ -621,7 +636,8 @@ class ChunkedDurableCQListResponse : public TcrChunkedResult {
   virtual void reset();
 };
 
-typedef SharedPtr<ChunkedDurableCQListResponse> ChunkedDurableCQListResponsePtr;
+typedef std::shared_ptr<ChunkedDurableCQListResponse>
+    ChunkedDurableCQListResponsePtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

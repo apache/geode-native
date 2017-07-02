@@ -86,7 +86,7 @@ class TESTOBJECT_EXPORT PdxTypes1V2 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxTypes1V2(); }
 };
-typedef SharedPtr<PdxTypes1V2> PdxTypes1V2Ptr;
+typedef std::shared_ptr<PdxTypes1V2> PdxTypes1V2Ptr;
 
 /************************************************************
  *  PdxTypes2V2
@@ -129,7 +129,7 @@ class TESTOBJECT_EXPORT PdxTypes2V2 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxTypes2V2(); }
 };
-typedef SharedPtr<PdxTypes2V2> PdxTypes2V2Ptr;
+typedef std::shared_ptr<PdxTypes2V2> PdxTypes2V2Ptr;
 
 /************************************************************
  *  PdxTypes3V2
@@ -173,7 +173,7 @@ class TESTOBJECT_EXPORT PdxTypes3V2 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxTypes3V2(); }
 };
-typedef SharedPtr<PdxTypes3V2> PdxTypes3V2Ptr;
+typedef std::shared_ptr<PdxTypes3V2> PdxTypes3V2Ptr;
 
 /************************************************************
  *  PdxTypesR1V2
@@ -218,7 +218,7 @@ class TESTOBJECT_EXPORT PdxTypesR1V2 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxTypesR1V2(); }
 };
-typedef SharedPtr<PdxTypesR1V2> PdxTypesR1V2Ptr;
+typedef std::shared_ptr<PdxTypesR1V2> PdxTypesR1V2Ptr;
 
 /************************************************************
  *  PdxTypesR2V2
@@ -263,7 +263,7 @@ class TESTOBJECT_EXPORT PdxTypesR2V2 : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PdxTypesR2V2(); }
 };
-typedef SharedPtr<PdxTypesR2V2> PdxTypesR2V2Ptr;
+typedef std::shared_ptr<PdxTypesR2V2> PdxTypesR2V2Ptr;
 
 /************************************************************
  *  PdxTypesIgnoreUnreadFieldsV2
@@ -312,7 +312,8 @@ class TESTOBJECT_EXPORT PdxTypesIgnoreUnreadFieldsV2 : public PdxSerializable {
     return new PdxTypesIgnoreUnreadFieldsV2();
   }
 };
-typedef SharedPtr<PdxTypesIgnoreUnreadFieldsV2> PdxTypesIgnoreUnreadFieldsV2Ptr;
+typedef std::shared_ptr<PdxTypesIgnoreUnreadFieldsV2>
+    PdxTypesIgnoreUnreadFieldsV2Ptr;
 
 /************************************************************
  *  PdxVersionedV2
@@ -374,7 +375,7 @@ class TESTOBJECT_EXPORT PdxVersionedV2 : public PdxSerializable {
     return new PdxVersionedV2();
   }
 };
-typedef SharedPtr<PdxVersionedV2> PdxVersionedV2Ptr;
+typedef std::shared_ptr<PdxVersionedV2> PdxVersionedV2Ptr;
 
 /************************************************************
  *  TestKey

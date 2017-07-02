@@ -35,7 +35,7 @@ using namespace test;
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 bool isLocalServer = false;
 
 static bool isLocator = false;
@@ -52,20 +52,20 @@ TallyListenerPtr regListener;
 TallyWriterPtr regWriter;
 bool registerKey = true;
 void initClient(const bool isthinClient) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 void printAttribute(RegionAttributesPtr& attr) {
@@ -109,7 +109,7 @@ void getRegionAttr(const char* name) {
 
 void ValidateDestroyRegion(const char* name) {
   RegionPtr rptr = getHelper()->getRegion(name);
-  if (rptr == NULLPTR) {
+  if (rptr == nullptr) {
     return;
   }
   try {
@@ -133,13 +133,14 @@ void createRegion(const char* name, bool ackMode, int ettl, int eit, int rttl,
                   ExpirationAction::Action action = ExpirationAction::DESTROY) {
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr =  // getHelper()->createRegion( name, ackMode, true,
-      // ettl,eit,rttl,rit,lel,action,endpoints,clientNotificationEnabled
-      // );
+  RegionPtr
+      regPtr =  // getHelper()->createRegion( name, ackMode, true,
+                // ettl,eit,rttl,rit,lel,action,endpoints,clientNotificationEnabled
+                // );
       getHelper()->createRegionAndAttachPool(name, ackMode, "LRUPool", true,
                                              ettl, eit, rttl, rit, lel, action);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
-  if (registerKey) regPtr->registerAllKeys(false, NULLPTR, false, false);
+  ASSERT(regPtr != nullptr, "Failed to create region.");
+  if (registerKey) regPtr->registerAllKeys(false, nullptr, false, false);
   LOG("Region created.");
 }
 
@@ -151,10 +152,10 @@ void doRgnOperations(const char* name, int n, int rgnOpt = 0) {
     buf[15] = '\0';
     memcpy(buf, "Value - ", 8);
     value = CacheableString::create(buf);
-    ASSERT(value != NULLPTR, "Failed to create value.");
+    ASSERT(value != nullptr, "Failed to create value.");
   }
   RegionPtr rptr = getHelper()->getRegion(name);
-  ASSERT(rptr != NULLPTR, "Region not found.");
+  ASSERT(rptr != nullptr, "Region not found.");
   for (int i = 0; i < n; i++) {
     sprintf(buf, "KeyA - %d", i + 1);
     CacheableKeyPtr key = CacheableKey::create(buf);
@@ -184,14 +185,14 @@ void doRgnOperations(const char* name, int n, int rgnOpt = 0) {
 void dumpCounters(const char* regName) {
   RegionPtr rptr = getHelper()->getRegion(regName);
   printf("Region size: %d\n", rptr->size());
-  if (regListener != NULLPTR) {
+  if (regListener != nullptr) {
     printf("counts:: creates: %d, updates: %d, invalidates: %d, destroys: %d\n",
            regListener->getCreates(), regListener->getUpdates(),
            regListener->getInvalidates(), regListener->getDestroys());
   }
 }
 
-int getNumOfEntries(const char* regName, bool isValue = false) {
+size_t getNumOfEntries(const char* regName, bool isValue = false) {
   static bool useRegionSize = false;
 
   useRegionSize = !useRegionSize;
@@ -200,12 +201,12 @@ int getNumOfEntries(const char* regName, bool isValue = false) {
   if (isValue) {
     VectorOfCacheable v;
     rptr->values(v);
-    printf("Region value size: %d\n", v.size());
+    printf("Region value size: %zd\n", v.size());
     return v.size();
   } else if (!useRegionSize) {
     VectorOfCacheableKey v;
     rptr->keys(v);
-    printf("Region key size: %d\n", v.size());
+    printf("Region key size: %zd\n", v.size());
     return v.size();
   } else {
     return rptr->size();
@@ -275,7 +276,7 @@ DUNIT_TASK(CLIENT1, StepThreeCase1)
   {
     doRgnOperations(regionNames[0], 100);
     ACE_OS::sleep(1);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 100, "Expected 100 entries");
     LOG("StepThree complete.");
   }
@@ -283,7 +284,7 @@ END_TASK(StepThreeCase1)
 DUNIT_TASK(CLIENT2, StepFourCase1)
   {
     doRgnOperations(regionNames[0], 100, 5);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 100, "Expected 100 entries");
     LOG("StepFour complete.");
   }
@@ -292,7 +293,7 @@ DUNIT_TASK(CLIENT1, StepFiveCase1)
   {
     // wair 5 sec so all enteries gone
     ACE_OS::sleep(5);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 0, "Expected 0 entries");
     LOG("StepFive complete.");
   }
@@ -302,7 +303,7 @@ DUNIT_TASK(CLIENT2, StepSixCase1)
     ACE_OS::sleep(5);
     // all enteris has been deleted
     // int n = getNumOfEntries(regionNames[0],true);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 0, "Expected 0 entries");
     LOG("StepSix complete.");
   }
@@ -335,7 +336,7 @@ DUNIT_TASK(CLIENT1, StepThreeCase2)
   {
     doRgnOperations(regionNames[0], 100);
     // 100 entry with invalidate
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 100, "Expected 100 entries");
     LOG("StepThreeCase2 complete.");
   }
@@ -344,7 +345,7 @@ DUNIT_TASK(CLIENT2, StepFourCase2)
   {
     doRgnOperations(regionNames[0], 100, 5);
     // should have 100
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 100, "Expected 100 entries");
     LOG("StepFourCase2 complete.");
   }
@@ -352,7 +353,7 @@ END_TASK(StepFourCase2)
 DUNIT_TASK(CLIENT1, StepFiveCase2)
   {
     ACE_OS::sleep(2);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 100, "Expected 100 entries");
     ACE_OS::sleep(5);
     // value should be invalidate as passing true
@@ -364,7 +365,7 @@ END_TASK(StepFiveCase2)
 DUNIT_TASK(CLIENT2, StepSixCase2)
   {
     ACE_OS::sleep(2);
-    int n = getNumOfEntries(regionNames[0], true);
+    auto n = getNumOfEntries(regionNames[0], true);
     ASSERT(n == 100, "Expected 100 entries");
     LOG("StepSixCase2 complete.");
   }
@@ -394,7 +395,7 @@ END_TASK(StepTwoCase3)
 DUNIT_TASK(CLIENT1, StepThreeCase3)
   {
     doRgnOperations(regionNames[0], 10);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 5, "Expected 5 entries");
     LOG("StepThreeCase3 complete.");
   }
@@ -402,14 +403,14 @@ END_TASK(StepThreeCase3)
 DUNIT_TASK(CLIENT2, StepFourCase3)
   {
     doRgnOperations(regionNames[0], 10, 5);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 10, "Expected 10 entries");
     LOG("StepFourCase3 complete.");
   }
 END_TASK(StepFourCase3)
 DUNIT_TASK(CLIENT1, StepFiveCase3)
   {
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 5, "Expected 5 entries");
     n = getNumOfEntries(regionNames[0], true);
     ASSERT(n == 5, "Expected 5 entries");
@@ -419,7 +420,7 @@ END_TASK(StepFiveCase3)
 DUNIT_TASK(CLIENT2, StepSixCase3)
   {
     ACE_OS::sleep(2);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 10, "Expected 10 entries");
     n = getNumOfEntries(regionNames[0], true);
     ASSERT(n == 10, "Expected 10 entries");
@@ -456,7 +457,7 @@ END_TASK(StepTwoCase4)
 DUNIT_TASK(CLIENT1, StepThreeCase4)
   {
     doRgnOperations(regionNames[0], 10);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 5, "Expected 5 entries");
     LOG("StepThreeCase4 complete.");
   }
@@ -464,7 +465,7 @@ END_TASK(StepThreeCase4)
 DUNIT_TASK(CLIENT2, StepFourCase4)
   {
     doRgnOperations(regionNames[0], 10, 5);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 10, "Expected 10 entries");
     LOG("StepFourCase4 complete.");
   }
@@ -472,7 +473,7 @@ END_TASK(StepFourCase4)
 DUNIT_TASK(CLIENT1, StepFiveCase4)
   {
     ACE_OS::sleep(2);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 5, "Expected 5 entries");
     n = getNumOfEntries(regionNames[0], true);
     ASSERT(n == 5, "Expected 5 entries");
@@ -486,7 +487,7 @@ END_TASK(StepFiveCase4)
 DUNIT_TASK(CLIENT2, StepSixCase4)
   {
     ACE_OS::sleep(1);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 10, "Expected 10 entries");
     n = getNumOfEntries(regionNames[0], true);
     ASSERT(n == 10, "Expected 10 entries");
@@ -529,7 +530,7 @@ END_TASK(StepTwoCase5)
 DUNIT_TASK(CLIENT1, StepThreeCase5)
   {
     doRgnOperations(regionNames[0], 10);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 5,
            "Expected 5 "
            "entries");
@@ -540,7 +541,7 @@ END_TASK(StepThreeCase5)
 DUNIT_TASK(CLIENT2, StepFourCase5)
   {
     doRgnOperations(regionNames[0], 10, 5);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 10,
            "Expected "
            "10 "
@@ -552,7 +553,7 @@ END_TASK(StepFourCase5)
 DUNIT_TASK(CLIENT1, StepFiveCase5)
   {
     ACE_OS::sleep(2);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 5,
            "Expected "
            "5 "
@@ -576,7 +577,7 @@ END_TASK(StepFiveCase5)
 DUNIT_TASK(CLIENT2, StepSixCase5)
   {
     ACE_OS::sleep(2);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 5,
            "Expecte"
            "d 5 "
@@ -635,7 +636,7 @@ END_TASK(StepTwoCase6)
 DUNIT_TASK(CLIENT1, StepThreeCase6)
   {
     doRgnOperations(regionNames[0], 10);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 5,
            "Expe"
            "cted"
@@ -655,7 +656,7 @@ END_TASK(StepThreeCase6)
 DUNIT_TASK(CLIENT2, StepFourCase6)
   {
     doRgnOperations(regionNames[0], 10, 5);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 10,
            "Ex"
            "pe"
@@ -684,7 +685,7 @@ END_TASK(StepFourCase6)
 DUNIT_TASK(CLIENT1, StepFiveCase6)
   {
     ACE_OS::sleep(2);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 5, "Expected 5 entries");
     n = getNumOfEntries(regionNames[0], true);
     ASSERT(n == 5, "Expected 5 entries");
@@ -697,7 +698,7 @@ END_TASK(StepFiveCase6)
 DUNIT_TASK(CLIENT2, StepSixCase6)
   {
     ACE_OS::sleep(1);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 10, "Expected 10 entries");
     n = getNumOfEntries(regionNames[0], true);
     ASSERT(n == 10, "Expected 10 entries");
@@ -724,7 +725,7 @@ END_TASK(StepTwoCase7)
 DUNIT_TASK(CLIENT1, StepThreeCase7)
   {
     doRgnOperations(regionNames[0], 10);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 10, "Expected 10 entries");
     LOG("StepThreeCase7 complete.");
   }
@@ -732,7 +733,7 @@ END_TASK(StepThreeCase7)
 DUNIT_TASK(CLIENT2, StepFourCase7)
   {
     doRgnOperations(regionNames[0], 10, 5);
-    int n = getNumOfEntries(regionNames[0]);
+    auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 10, "Expected 10 entries");
     LOG("StepFourCase7 complete.");
   }
@@ -772,7 +773,7 @@ END_TASK(StepTwoCase8)
 DUNIT_TASK(CLIENT1, StepThreeCase8)
   {
     doRgnOperations(regionNames[1], 10);
-    int n = getNumOfEntries(regionNames[1]);
+    auto n = getNumOfEntries(regionNames[1]);
     ASSERT(n == 10, "Expected 10 entries");
     LOG("StepThreeCase8 complete.");
   }
@@ -780,7 +781,7 @@ END_TASK(StepThreeCase8)
 DUNIT_TASK(CLIENT2, StepFourCase8)
   {
     doRgnOperations(regionNames[1], 10, 5);
-    int n = getNumOfEntries(regionNames[1]);
+    auto n = getNumOfEntries(regionNames[1]);
     ASSERT(n == 10, "Expected 10 entries");
     LOG("StepFourCase8 complete.");
   }
@@ -788,7 +789,7 @@ END_TASK(StepFourCase8)
 DUNIT_TASK(CLIENT1, StepFiveCase8)
   {
     ACE_OS::sleep(5);
-    int n = getNumOfEntries(regionNames[1]);
+    auto n = getNumOfEntries(regionNames[1]);
     ASSERT(n == 10, "Expected 0 entries");
     ACE_OS::sleep(10);
     ValidateDestroyRegion(regionNames[1]);
@@ -823,7 +824,7 @@ DUNIT_TASK(CLIENT1, StepThreeCase9)
   {
     ACE_OS::sleep(2);
     doRgnOperations(regionNames[2], 10);
-    int n = getNumOfEntries(regionNames[2]);
+    auto n = getNumOfEntries(regionNames[2]);
     ASSERT(n == 5, "Expected 5 entries");
     LOG("StepThreeCase9 complete.");
   }
@@ -831,7 +832,7 @@ END_TASK(StepThreeCase9)
 DUNIT_TASK(CLIENT2, StepFourCase9)
   {
     doRgnOperations(regionNames[2], 10, 5);
-    int n = getNumOfEntries(regionNames[2]);
+    auto n = getNumOfEntries(regionNames[2]);
     ASSERT(n == 10, "Expected 10 entries");
     LOG("StepFourCase9 complete.");
   }
@@ -839,7 +840,7 @@ END_TASK(StepFourCase9)
 DUNIT_TASK(CLIENT1, StepFiveCase9)
   {
     ACE_OS::sleep(5);
-    int n = getNumOfEntries(regionNames[2]);
+    auto n = getNumOfEntries(regionNames[2]);
     ASSERT(n == 0, "Expected 0 entries");
     ACE_OS::sleep(8);
     ValidateDestroyRegion(regionNames[2]);
@@ -873,7 +874,7 @@ END_TASK(StepTwoCase10)
 DUNIT_TASK(CLIENT1, StepThreeCase10)
   {
     doRgnOperations(regionNames[3], 10);
-    int n = getNumOfEntries(regionNames[3]);
+    auto n = getNumOfEntries(regionNames[3]);
     ASSERT(n == 5, "Expected 5 entries");
     LOG("StepThreeCase10 complete.");
   }
@@ -881,7 +882,7 @@ END_TASK(StepThreeCase10)
 DUNIT_TASK(CLIENT2, StepFourCase10)
   {
     doRgnOperations(regionNames[3], 10, 5);
-    int n = getNumOfEntries(regionNames[3]);
+    auto n = getNumOfEntries(regionNames[3]);
     ASSERT(n == 10, "Expected 10 entries");
     LOG("StepFourCase10 complete.");
   }
@@ -889,7 +890,7 @@ END_TASK(StepFourCase10)
 DUNIT_TASK(CLIENT1, StepFiveCase10)
   {
     ACE_OS::sleep(5);
-    int n = getNumOfEntries(regionNames[3]);
+    auto n = getNumOfEntries(regionNames[3]);
     ASSERT(n == 0, "Expected 0 entries");
     ACE_OS::sleep(10);
     ValidateDestroyRegion(regionNames[3]);
@@ -911,8 +912,8 @@ DUNIT_TASK(CLIENT1, StepOneCase11)
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
     // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
     createThinClientRegion(regionNames[4], 4, 0, 0, 0, 5, 0, 6, false);
-    regListener = new TallyListener();
-    regWriter = new TallyWriter();
+    regListener = std::make_shared<TallyListener>();
+    regWriter = std::make_shared<TallyWriter>();
     setCacheListener(regionNames[4], regListener);
     setCacheWriter(regionNames[4], regWriter);
   }
@@ -924,8 +925,8 @@ DUNIT_TASK(CLIENT2, StepTwoCase11)
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
     // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
     createThinClientRegion(regionNames[4], 0, 0, 0, 0, 0, 0, 6, false);
-    regListener = new TallyListener();
-    regWriter = new TallyWriter();
+    regListener = std::make_shared<TallyListener>();
+    regWriter = std::make_shared<TallyWriter>();
     setCacheListener(regionNames[4], regListener);
     setCacheWriter(regionNames[4], regWriter);
   }
@@ -933,7 +934,7 @@ END_TASK(StepTwoCase11)
 DUNIT_TASK(CLIENT1, StepThreeCase11)
   {
     doRgnOperations(regionNames[4], 10);
-    int n = getNumOfEntries(regionNames[4]);
+    auto n = getNumOfEntries(regionNames[4]);
     regListener->showTallies();
     ASSERT(regWriter->isWriterInvoked() == true, "Writer Should be invoked");
     ASSERT(regListener->isListenerInvoked() == true,
@@ -949,7 +950,7 @@ DUNIT_TASK(CLIENT1, StepThreeCase11)
 END_TASK(StepThreeCase11)
 DUNIT_TASK(CLIENT2, StepFourCase11)
   {
-    int n = getNumOfEntries(regionNames[4]);
+    auto n = getNumOfEntries(regionNames[4]);
     regListener->showTallies();
     ASSERT(regWriter->isWriterInvoked() == false,
            "Writer Should not be invoked");
@@ -974,7 +975,7 @@ END_TASK(StepFourCase11)
 DUNIT_TASK(CLIENT1, StepFiveCase11)
   {
     ACE_OS::sleep(5);
-    int n = getNumOfEntries(regionNames[4]);
+    auto n = getNumOfEntries(regionNames[4]);
 
     ASSERT(regWriter->isWriterInvoked() == true, "Writer Should be invoked");
     ASSERT(regListener->isListenerInvoked() == true,
@@ -991,7 +992,7 @@ DUNIT_TASK(CLIENT1, StepFiveCase11)
 END_TASK(StepFiveCase11)
 DUNIT_TASK(CLIENT2, StepSixCase11)
   {
-    int n = getNumOfEntries(regionNames[4]);
+    auto n = getNumOfEntries(regionNames[4]);
     ASSERT(regWriter->isWriterInvoked() == false,
            "Writer Should not be invoked");
     ASSERT(regListener->isListenerInvoked() == true,
@@ -1046,8 +1047,8 @@ DUNIT_TASK(CLIENT1, StepOneCase12)
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
     // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
     createThinClientRegion(regionNames[5], 4, 0, 0, 0, 5, 0, 6, false);
-    regListener = new TallyListener();
-    regWriter = new TallyWriter();
+    regListener = std::make_shared<TallyListener>();
+    regWriter = std::make_shared<TallyWriter>();
     setCacheListener(regionNames[5], regListener);
     setCacheWriter(regionNames[5], regWriter);
   }
@@ -1059,8 +1060,8 @@ DUNIT_TASK(CLIENT2, StepTwoCase12)
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
     // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
     createThinClientRegion(regionNames[5], 0, 0, 0, 0, 0, 0, 6, false);
-    regListener = new TallyListener();
-    regWriter = new TallyWriter();
+    regListener = std::make_shared<TallyListener>();
+    regWriter = std::make_shared<TallyWriter>();
     setCacheListener(regionNames[5], regListener);
     setCacheWriter(regionNames[5], regWriter);
   }
@@ -1068,7 +1069,7 @@ END_TASK(StepTwoCase12)
 DUNIT_TASK(CLIENT1, StepThreeCase12)
   {
     doRgnOperations(regionNames[5], 10);
-    int n = getNumOfEntries(regionNames[5]);
+    auto n = getNumOfEntries(regionNames[5]);
     regListener->showTallies();
     ASSERT(regWriter->isWriterInvoked() == true, "Writer Should be invoked");
     ASSERT(regListener->isListenerInvoked() == true,
@@ -1085,7 +1086,7 @@ DUNIT_TASK(CLIENT1, StepThreeCase12)
 END_TASK(StepThreeCase12)
 DUNIT_TASK(CLIENT2, StepFourCase12)
   {
-    int n = getNumOfEntries(regionNames[5]);
+    auto n = getNumOfEntries(regionNames[5]);
     ASSERT(regWriter->isWriterInvoked() == false,
            "Writer Should not be invoked");
     ASSERT(regListener->isListenerInvoked() == false,
@@ -1098,7 +1099,7 @@ END_TASK(StepFourCase12)
 DUNIT_TASK(CLIENT1, StepFiveCase12)
   {
     ACE_OS::sleep(5);
-    int n = getNumOfEntries(regionNames[5]);
+    auto n = getNumOfEntries(regionNames[5]);
 
     ASSERT(regWriter->isWriterInvoked() == true, "Writer Should be invoked");
     ASSERT(regListener->isListenerInvoked() == true,
@@ -1117,7 +1118,7 @@ END_TASK(StepFiveCase12)
 DUNIT_TASK(CLIENT2, StepSixCase12)
   {
     ACE_OS::sleep(3);
-    int n = getNumOfEntries(regionNames[5]);
+    auto n = getNumOfEntries(regionNames[5]);
     ASSERT(regWriter->isWriterInvoked() == false,
            "Writer Should not be invoked");
     ASSERT(regListener->isListenerInvoked() == false,
@@ -1142,8 +1143,8 @@ DUNIT_TASK(CLIENT1, StepOneCase13)
     initClient(true);
     getHelper()->createPoolWithLocators("LRUPool", locatorsG, true);
     createThinClientRegion(regionNames[5], 4, 0, 0, 0, 5, 0, 6, false);
-    regListener = new TallyListener();
-    regWriter = new TallyWriter();
+    regListener = std::make_shared<TallyListener>();
+    regWriter = std::make_shared<TallyWriter>();
     setCacheListener(regionNames[5], regListener);
     setCacheWriter(regionNames[5], regWriter);
   }
@@ -1157,8 +1158,8 @@ DUNIT_TASK(CLIENT2, StepTwoCase13)
     initClient(true);
     getHelper()->createPoolWithLocators("LRUPool", locatorsG, true);
     createThinClientRegion(regionNames[5], 0, 0, 0, 0, 0, 0, 6, false);
-    regListener = new TallyListener();
-    regWriter = new TallyWriter();
+    regListener = std::make_shared<TallyListener>();
+    regWriter = std::make_shared<TallyWriter>();
     setCacheListener(regionNames[5], regListener);
     setCacheWriter(regionNames[5], regWriter);
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[5]);
@@ -1169,7 +1170,7 @@ END_TASK(StepTwoCase13)
 DUNIT_TASK(CLIENT1, StepThreeCase13)
   {
     doRgnOperations(regionNames[5], 10);
-    int n = getNumOfEntries(regionNames[5]);
+    auto n = getNumOfEntries(regionNames[5]);
     regListener->showTallies();
     ASSERT(regWriter->isWriterInvoked() == true, "Writer Should be invoked");
     ASSERT(regListener->isListenerInvoked() == true,
@@ -1186,7 +1187,7 @@ DUNIT_TASK(CLIENT1, StepThreeCase13)
 END_TASK(StepThreeCase13)
 DUNIT_TASK(CLIENT2, StepFourCase13)
   {
-    int n = getNumOfEntries(regionNames[5]);
+    auto n = getNumOfEntries(regionNames[5]);
     ASSERT(regWriter->isWriterInvoked() == false,
            "Writer Should not be invoked");
     ASSERT(regListener->isListenerInvoked() == true,
@@ -1207,7 +1208,7 @@ END_TASK(StepFourCase13)
 DUNIT_TASK(CLIENT1, StepFiveCase13)
   {
     ACE_OS::sleep(5);
-    int n = getNumOfEntries(regionNames[5]);
+    auto n = getNumOfEntries(regionNames[5]);
 
     ASSERT(regWriter->isWriterInvoked() == true, "Writer Should be invoked");
     ASSERT(regListener->isListenerInvoked() == true,
@@ -1226,7 +1227,7 @@ END_TASK(StepFiveCase13)
 DUNIT_TASK(CLIENT2, StepSixCase13)
   {
     ACE_OS::sleep(3);
-    int n = getNumOfEntries(regionNames[5]);
+    auto n = getNumOfEntries(regionNames[5]);
     ASSERT(regWriter->isWriterInvoked() == false,
            "Writer Should not be invoked");
     ASSERT(regListener->isListenerInvoked() == true,

@@ -18,8 +18,10 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/SystemProperties.hpp>
-#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
 #include "Log.hpp"
 #include "Properties.hpp"
 
@@ -31,6 +33,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       /// <summary>
       /// A class for internal use, that encapsulates the properties that can be
@@ -38,32 +41,8 @@ namespace Apache
       /// or a geode.properties file.
       /// </summary>
       public ref class SystemProperties sealed
-        : public Internal::UMWrap<apache::geode::client::SystemProperties>
       {
       public:
-
-        /// <summary>
-        /// Constructor. Sets the default (hard-coded) values first, and then overwrites those with
-        /// any values found in the given properties.
-        /// </summary>
-        /// <param name="properties">initialize with the given properties</param>
-        //generic <class TPropKey, class TPropValue>
-        SystemProperties(Properties<String^, String^>^ properties);
-
-        /// <summary>
-        /// Constructor.
-        /// <ol>
-        /// <li>Sets the default (hard-coded) values.</li>
-        /// <li>Overwrites those with any values from <c>systemDefault/geode.properties</c></li>
-        /// <li>Overwrites those with any values from the given file (if it exists)
-        /// or the local <c>./geode.properties</c> (if the given file does not exist).</li>
-        /// <li>Overwrites those with any values found in the given properties.</li>
-        /// </ol>
-        /// </summary>
-        /// <param name="properties">these overwrite any other values already set</param>
-        /// <param name="configFile">see summary</param>
-        //generic <class TPropKey, class TPropValue>
-        SystemProperties(Properties<String^, String^>^ properties, String^ configFile);
 
         /// <summary>
         /// Prints all settings to the process log.
@@ -423,7 +402,7 @@ namespace Apache
         /// the managed wrapper object, or null if the native pointer is null.
         /// </returns>
         inline static SystemProperties^ Create(
-          apache::geode::client::SystemProperties* nativeptr)
+          native::SystemProperties* nativeptr)
         {
           return (nativeptr != nullptr ?
                   gcnew SystemProperties(nativeptr) : nullptr);
@@ -436,8 +415,12 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline SystemProperties(apache::geode::client::SystemProperties* nativeptr)
-          : UMWrap(nativeptr, false) { }
+        inline SystemProperties(native::SystemProperties* nativeptr)
+          : m_nativeptr(nativeptr)
+        {
+        }
+
+        native::SystemProperties* m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

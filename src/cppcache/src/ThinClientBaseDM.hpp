@@ -49,7 +49,7 @@ class ThinClientBaseDM {
 
   virtual GfErrType sendSyncRequestRegisterInterest(
       TcrMessage& request, TcrMessageReply& reply, bool attemptFailover = true,
-      ThinClientRegion* theRegion = NULL, TcrEndpoint* endpoint = NULL);
+      ThinClientRegion* theRegion = nullptr, TcrEndpoint* endpoint = nullptr);
 
   virtual GfErrType sendSyncRequestRegisterInterestEP(TcrMessage& request,
                                                       TcrMessageReply& reply,
@@ -107,7 +107,7 @@ class ThinClientBaseDM {
                                     TcrMessageReply& reply,
                                     TcrEndpoint* currentEndpoint) = 0;
 
-  virtual TcrEndpoint* getActiveEndpoint() { return NULL; }
+  virtual TcrEndpoint* getActiveEndpoint() { return nullptr; }
 
   virtual bool checkDupAndAdd(EventIdPtr eventid) {
     return m_connManager.checkDupAndAdd(eventid);
@@ -127,9 +127,9 @@ class ThinClientBaseDM {
   TcrConnectionManager& getConnectionManager() { return m_connManager; }
   virtual size_t getNumberOfEndPoints() const { return 0; }
   bool isNotAuthorizedException(const char* exceptionMsg) {
-    if (exceptionMsg != NULL &&
+    if (exceptionMsg != nullptr &&
         strstr(exceptionMsg,
-               "org.apache.geode.security.NotAuthorizedException") != NULL) {
+               "org.apache.geode.security.NotAuthorizedException") != nullptr) {
       LOGDEBUG(
           "isNotAuthorizedException() An exception (%s) happened at remote "
           "server.",
@@ -139,11 +139,11 @@ class ThinClientBaseDM {
     return false;
   }
   bool isPutAllPartialResultException(const char* exceptionMsg) {
-    if (exceptionMsg != NULL &&
+    if (exceptionMsg != nullptr &&
         strstr(
             exceptionMsg,
             "org.apache.geode.internal.cache.PutAllPartialResultException") !=
-            NULL) {
+            nullptr) {
       LOGDEBUG(
           "isNotAuthorizedException() An exception (%s) happened at remote "
           "server.",
@@ -155,10 +155,10 @@ class ThinClientBaseDM {
 
  protected:
   bool isAuthRequireException(const char* exceptionMsg) {
-    if (exceptionMsg != NULL &&
+    if (exceptionMsg != nullptr &&
         strstr(exceptionMsg,
                "org.apache.geode.security.AuthenticationRequiredException") !=
-            NULL) {
+            nullptr) {
       LOGDEBUG(
           "isAuthRequireExcep() An exception (%s) happened at remote server.",
           exceptionMsg);

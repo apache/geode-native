@@ -19,7 +19,10 @@
 
 #include "geode_defs.hpp"
 #include "ISubscriptionService.hpp"
+#include "begin_native.hpp"
 #include <geode/DataOutput.hpp>
+#include "end_native.hpp"
+
 //#include "ExceptionTypes.hpp"
 
 using namespace System;

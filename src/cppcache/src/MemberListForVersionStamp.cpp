@@ -50,5 +50,5 @@ DSMemberForVersionStampPtr MemberListForVersionStamp::getDSMember(
   std::unordered_map<uint32_t, DSMemberForVersionStampPtr>::iterator it =
       m_members1.find(memberId);
   if (it != m_members1.end()) return (*it).second;
-  return NULLPTR;
+  return nullptr;
 }

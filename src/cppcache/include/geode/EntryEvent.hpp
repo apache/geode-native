@@ -34,7 +34,7 @@ namespace client {
 
 /** Represents an entry event affecting an entry, including its identity and the
  * the circumstances of the event. */
-class CPPCACHE_EXPORT EntryEvent : public apache::geode::client::SharedBase {
+class CPPCACHE_EXPORT EntryEvent {
  protected:
   RegionPtr m_region;      /**< Region */
   CacheableKeyPtr m_key;   /**< Cacheable key */
@@ -63,13 +63,13 @@ class CPPCACHE_EXPORT EntryEvent : public apache::geode::client::SharedBase {
   inline CacheableKeyPtr getKey() const { return m_key; }
 
   /** If the prior state of the entry was invalid, or non-existent/destroyed,
-   * then the old value will be NULLPTR.
+   * then the old value will be nullptr.
    * @return the old value in the cache.
    */
   inline CacheablePtr getOldValue() const { return m_oldValue; }
 
   /** If the event is a destroy or invalidate operation, then the new value
-   * will be NULLPTR.
+   * will be nullptr.
    * @return the updated value from this event
    */
   inline CacheablePtr getNewValue() const { return m_newValue; }

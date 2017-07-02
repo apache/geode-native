@@ -17,11 +17,15 @@
  */
 
 #pragma once
+
+#include "begin_native.hpp"
+#include <GeodeTypeIdsImpl.hpp>
+#include "end_native.hpp"
+
 #include "PdxManagedCacheableKey.hpp"
 #include "../DataInput.hpp"
 #include "../DataOutput.hpp"
 #include "../CacheableString.hpp"
-#include <GeodeTypeIdsImpl.hpp>
 #include "../ExceptionTypes.hpp"
 #include "ManagedString.hpp"
 #include "PdxHelper.hpp"
@@ -153,7 +157,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULLPTR;
+        return nullptr;
       }
 
       bool PdxManagedCacheableKey::operator ==(const apache::geode::client::CacheableKey& other) const
@@ -295,7 +299,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULLPTR;
+        return nullptr;
       }
     }  // namespace client
   }  // namespace geode

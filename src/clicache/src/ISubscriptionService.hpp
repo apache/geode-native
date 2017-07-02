@@ -18,7 +18,8 @@
 #pragma once
 
 #include "geode_defs.hpp"
-//#include "ExceptionTypes.hpp"
+#include "ExceptionTypes.hpp"
+
 using namespace System;
 namespace Apache
 {

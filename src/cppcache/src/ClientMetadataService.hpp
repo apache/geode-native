@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CLIENTMETADATASERVICE_H_
-#define GEODE_CLIENTMETADATASERVICE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,17 +15,27 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CLIENTMETADATASERVICE_H_
+#define GEODE_CLIENTMETADATASERVICE_H_
+
+#include <unordered_map>
+#include <memory>
+#include <string>
+
 #include <ace/Task.h>
-#include "ClientMetadata.hpp"
-#include "ServerLocation.hpp"
-#include "BucketServerLocation.hpp"
-#include <geode/HashMapT.hpp>
-#include <geode/SharedPtr.hpp>
+
+#include <geode/utils.hpp>
+#include <memory>
 #include <geode/CacheableKey.hpp>
 #include <geode/Cacheable.hpp>
 #include <geode/Region.hpp>
+
+#include "ClientMetadata.hpp"
+#include "ServerLocation.hpp"
+#include "BucketServerLocation.hpp"
 #include "Queue.hpp"
-#include <string>
 #include "DistributedSystemImpl.hpp"
 #include "NonCopyable.hpp"
 
@@ -106,7 +111,7 @@ class ClientMetadataService : public ACE_Task_Base,
                               private NonAssignable {
  public:
   ~ClientMetadataService();
-  ClientMetadataService(PoolPtr pool);
+  ClientMetadataService(Pool* pool);
 
   inline void start() {
     m_run = true;
@@ -138,9 +143,14 @@ class ClientMetadataService : public ACE_Task_Base,
   void enqueueForMetadataRefresh(const char* regionFullPath,
                                  int8_t serverGroupFlag);
 
-  HashMapT<BucketServerLocationPtr, VectorOfCacheableKeyPtr>*
-  getServerToFilterMap(const VectorOfCacheableKey* keys,
-                       const RegionPtr& region, bool isPrimary);
+  typedef std::unordered_map<BucketServerLocationPtr, VectorOfCacheableKeyPtr,
+                             dereference_hash<BucketServerLocationPtr>,
+                             dereference_equal_to<BucketServerLocationPtr>>
+      ServerToFilterMap;
+  typedef std::shared_ptr<ServerToFilterMap> ServerToFilterMapPtr;
+  ServerToFilterMapPtr getServerToFilterMap(const VectorOfCacheableKey& keys,
+                                            const RegionPtr& region,
+                                            bool isPrimary);
 
   void markPrimaryBucketForTimeout(
       const RegionPtr& region, const CacheableKeyPtr& key,
@@ -154,31 +164,44 @@ class ClientMetadataService : public ACE_Task_Base,
 
   bool isBucketMarkedForTimeout(const char* regionFullPath, int32_t bucketid);
 
-  bool AreBucketSetsEqual(CacheableHashSetPtr& currentBucketSet,
-                          CacheableHashSetPtr& bucketSet);
+  typedef std::unordered_set<int32_t> BucketSet;
+  typedef std::shared_ptr<BucketSet> BucketSetPtr;
+  typedef std::unordered_map<BucketServerLocationPtr, BucketSetPtr,
+                             dereference_hash<BucketServerLocationPtr>,
+                             dereference_equal_to<BucketServerLocationPtr>>
+      ServerToBucketsMap;
+  typedef std::shared_ptr<ServerToBucketsMap> ServerToBucketsMapPtr;
+  // bool AreBucketSetsEqual(const BucketSet& currentBucketSet,
+  //                        const BucketSet& bucketSet);
 
   BucketServerLocationPtr findNextServer(
-      HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>*
-          serverToBucketsMap,
-      CacheableHashSetPtr& currentBucketSet);
+      const ServerToBucketsMap& serverToBucketsMap,
+      const BucketSet& currentBucketSet);
 
-  HashMapT<CacheableInt32Ptr, CacheableHashSetPtr>* groupByBucketOnClientSide(
-      const RegionPtr& region, CacheableVectorPtr* keySet,
-      ClientMetadataPtr& metadata);
+  typedef std::unordered_map<int32_t, CacheableHashSetPtr> BucketToKeysMap;
+  typedef std::shared_ptr<BucketToKeysMap> BucketToKeysMapPtr;
+  BucketToKeysMapPtr groupByBucketOnClientSide(
+      const RegionPtr& region, const CacheableVectorPtr& keySet,
+      const ClientMetadataPtr& metadata);
 
-  HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>*
-  getServerToFilterMapFESHOP(CacheableVectorPtr* keySet,
-                             const RegionPtr& region, bool isPrimary);
+  typedef std::unordered_map<BucketServerLocationPtr, CacheableHashSetPtr,
+                             dereference_hash<BucketServerLocationPtr>,
+                             dereference_equal_to<BucketServerLocationPtr>>
+      ServerToKeysMap;
+  typedef std::shared_ptr<ServerToKeysMap> ServerToKeysMapPtr;
+  ServerToKeysMapPtr getServerToFilterMapFESHOP(
+      const CacheableVectorPtr& keySet, const RegionPtr& region,
+      bool isPrimary);
 
-  HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>*
-  groupByServerToAllBuckets(const RegionPtr& region, bool optimizeForWrite);
+  ClientMetadataService::ServerToBucketsMapPtr groupByServerToAllBuckets(
+      const RegionPtr& region, bool optimizeForWrite);
 
-  HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>*
-  groupByServerToBuckets(ClientMetadataPtr& metadata,
-                         CacheableHashSetPtr& bucketSet, bool optimizeForWrite);
+  ClientMetadataService::ServerToBucketsMapPtr groupByServerToBuckets(
+      const ClientMetadataPtr& metadata, const BucketSet& bucketSet,
+      bool optimizeForWrite);
 
-  HashMapT<BucketServerLocationPtr, CacheableHashSetPtr>* pruneNodes(
-      ClientMetadataPtr& metadata, CacheableHashSetPtr& totalBuckets);
+  ClientMetadataService::ServerToBucketsMapPtr pruneNodes(
+      const ClientMetadataPtr& metadata, const BucketSet& buckets);
 
  private:
   // const PartitionResolverPtr& getResolver(const RegionPtr& region, const
@@ -191,6 +214,8 @@ class ClientMetadataService : public ACE_Task_Base,
   ClientMetadataPtr SendClientPRMetadata(const char* regionPath,
                                          ClientMetadataPtr cptr);
 
+  ClientMetadataPtr getClientMetadata(const RegionPtr& region);
+
  private:
   // ACE_Recursive_Thread_Mutex m_regionMetadataLock;
   ACE_RW_Thread_Mutex m_regionMetadataLock;
@@ -198,7 +223,7 @@ class ClientMetadataService : public ACE_Task_Base,
   ACE_Semaphore m_regionQueueSema;
   RegionMetadataMapType m_regionMetaDataMap;
   volatile bool m_run;
-  PoolPtr m_pool;
+  Pool* m_pool;
   Queue<std::string>* m_regionQueue;
 
   ACE_RW_Thread_Mutex m_PRbucketStatusLock;

@@ -40,17 +40,18 @@ char* OnServerHAExceptionFunction = (char*)"OnServerHAExceptionFunction";
 char* OnServerHAShutdownFunction = (char*)"OnServerHAShutdownFunction";
 
 char* RegionOperationsHAFunction = (char*)"RegionOperationsHAFunction";
-#define verifyGetResults()                                                 \
-  bool found = false;                                                      \
-  for (int j = 0; j < 34; j++) {                                           \
-    if (j % 2 == 0) continue;                                              \
-    sprintf(buf, "VALUE--%d", j);                                          \
-    if (strcmp(buf, dynCast<CacheableStringPtr>(resultList->operator[](i)) \
-                        ->asChar()) == 0) {                                \
-      found = true;                                                        \
-      break;                                                               \
-    }                                                                      \
-  }                                                                        \
+#define verifyGetResults()                                      \
+  bool found = false;                                           \
+  for (int j = 0; j < 34; j++) {                                \
+    if (j % 2 == 0) continue;                                   \
+    sprintf(buf, "VALUE--%d", j);                               \
+    if (strcmp(buf, std::dynamic_pointer_cast<CacheableString>( \
+                        resultList->operator[](i))              \
+                        ->asChar()) == 0) {                     \
+      found = true;                                             \
+      break;                                                    \
+    }                                                           \
+  }                                                             \
   ASSERT(found, "this returned value is invalid");
 
 #define verifyPutResults()                   \
@@ -90,8 +91,8 @@ class MyResultCollector : public ResultCollector {
 
   void addResult(CacheablePtr& resultItem) {
     m_addResultCount++;
-    if (resultItem == NULLPTR) return;
-    CacheableArrayListPtr result = dynCast<CacheableArrayListPtr>(resultItem);
+    if (resultItem == nullptr) return;
+    auto result = std::dynamic_pointer_cast<CacheableArrayList>(resultItem);
     for (int32_t i = 0; i < result->size(); i++) {
       m_resultList->push_back(result->operator[](i));
     }
@@ -123,7 +124,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER, StartS12)
   {
-    const char* lhp = NULL;
+    const char* lhp = nullptr;
     if (!isPoolWithEndpoint) lhp = locHostPort;
     if (isLocalServer) {
       CacheHelper::initServer(1, "func_cacheserver1_pool.xml", lhp);
@@ -136,7 +137,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER, StartS13)
   {
-    const char* lhp = NULL;
+    const char* lhp = nullptr;
     if (!isPoolWithEndpoint) lhp = locHostPort;
     if (isLocalServer) {
       CacheHelper::initServer(1, "func_cacheserver1_pool.xml", lhp);
@@ -152,13 +153,13 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
   {
-    initClientWithPool(true, NULL, locHostPort, serverGroup, NULLPTR, 0, true,
-                       -1, 5, 60000);
-    // createPool(poolName, locHostPort,serverGroup, NULL, 0, true );
+    initClientWithPool(true, nullptr, locHostPort, serverGroup, nullptr, 0,
+                       true, -1, 5, 60000);
+    // createPool(poolName, locHostPort,serverGroup, nullptr, 0, true );
     // createRegionAndAttachPool(poolRegNames[0],USE_ACK, poolName);
 
     RegionPtr regPtr0 =
-        createRegionAndAttachPool(poolRegNames[0], USE_ACK, NULL);
+        createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
     ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
     regPtr0->registerAllKeys();
 
@@ -181,42 +182,39 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+    auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     char buf[128];
 
     for (int i = 0; i < 34; i++) {
       sprintf(buf, "VALUE--%d", i);
-      CacheablePtr value(CacheableString::create(buf));
+      auto value = CacheableString::create(buf);
 
       sprintf(buf, "KEY--%d", i);
-      CacheableKeyPtr key = CacheableKey::create(buf);
+      auto key = CacheableKey::create(buf);
       regPtr0->put(key, value);
     }
     SLEEP(10000);  // let the put finish
     try {
-      CacheablePtr args = CacheableBoolean::create(1);
-      CacheableVectorPtr routingObj = CacheableVector::create();
+      auto routingObj = CacheableVector::create();
       for (int i = 0; i < 34; i++) {
         if (i % 2 == 0) continue;
         sprintf(buf, "KEY--%d", i);
         CacheableKeyPtr key = CacheableKey::create(buf);
         routingObj->push_back(key);
       }
-      args = routingObj;
       // UNUSED bool getResult = true;
-      ExecutionPtr exc = FunctionService::onRegion(regPtr0);
-      ASSERT(exc != NULLPTR, "onRegion Returned NULL");
-      CacheableVectorPtr resultList = CacheableVector::create();
+      auto exc = FunctionService::onRegion(regPtr0);
+      ASSERT(exc != nullptr, "onRegion Returned nullptr");
+      auto resultList = CacheableVector::create();
 
-      CacheableVectorPtr executeFunctionResult =
-          exc->withArgs(args)
-              ->execute(RegionOperationsHAFunction, 15)
-              ->getResult();
+      auto executeFunctionResult = exc->withArgs(routingObj)
+                                       ->execute(RegionOperationsHAFunction, 15)
+                                       ->getResult();
 
-      if (executeFunctionResult == NULLPTR) {
-        ASSERT(false, "get executeFunctionResult is NULL");
+      if (executeFunctionResult == nullptr) {
+        ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
-        sprintf(buf, "echo String : result count = %d",
+        sprintf(buf, "echo String : result count = %zd",
                 executeFunctionResult->size());
         LOG(buf);
         resultList->clear();
@@ -224,23 +222,24 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         for (unsigned item = 0;
              item < static_cast<uint32_t>(executeFunctionResult->size());
              item++) {
-          CacheableArrayListPtr arrayList = dynCast<CacheableArrayListPtr>(
+          auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
               executeFunctionResult->operator[](item));
           for (unsigned pos = 0; pos < static_cast<uint32_t>(arrayList->size());
                pos++) {
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "get result count = %d", resultList->size());
+        sprintf(buf, "get result count = %zd", resultList->size());
         LOG(buf);
         ASSERT(resultList->size() == 17,
                "get executeFunctionResult count is not 17");
         for (int32_t i = 0; i < resultList->size(); i++) {
           sprintf(buf, "result[%d] is null\n", i);
-          ASSERT(resultList->operator[](i) != NULLPTR, buf);
-          sprintf(
-              buf, "get result[%d]=%s", i,
-              dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar());
+          ASSERT(resultList->operator[](i) != nullptr, buf);
+          sprintf(buf, "get result[%d]=%s", i,
+                  std::dynamic_pointer_cast<CacheableString>(
+                      resultList->operator[](i))
+                      ->asChar());
           LOG(buf);
           verifyGetResults()
         }
@@ -248,18 +247,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
       /*-------------------------------onRegion with single filter
        * key---------------------------------------*/
-      CacheableVectorPtr filter = CacheableVector::create();
+      auto filter = CacheableVector::create();
       const char* key = "KEY--10";
       filter->push_back(CacheableString::create(key));
-      executeFunctionResult = exc->withArgs(args)
+      executeFunctionResult = exc->withArgs(routingObj)
                                   ->withFilter(filter)
                                   ->execute(RegionOperationsHAFunction, 15)
                                   ->getResult();
 
-      if (executeFunctionResult == NULLPTR) {
-        ASSERT(false, "get executeFunctionResult is NULL");
+      if (executeFunctionResult == nullptr) {
+        ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
-        sprintf(buf, "echo String : result count = %d",
+        sprintf(buf, "echo String : result count = %zd",
                 executeFunctionResult->size());
         LOG(buf);
         resultList->clear();
@@ -267,23 +266,24 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         for (unsigned item = 0;
              item < static_cast<uint32_t>(executeFunctionResult->size());
              item++) {
-          CacheableArrayListPtr arrayList = dynCast<CacheableArrayListPtr>(
+          auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
               executeFunctionResult->operator[](item));
           for (unsigned pos = 0; pos < static_cast<uint32_t>(arrayList->size());
                pos++) {
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "get result count = %d", resultList->size());
+        sprintf(buf, "get result count = %zd", resultList->size());
         LOG(buf);
         ASSERT(resultList->size() == 17,
                "get executeFunctionResult count is not 17");
         for (int32_t i = 0; i < resultList->size(); i++) {
           sprintf(buf, "result[%d] is null\n", i);
-          ASSERT(resultList->operator[](i) != NULLPTR, buf);
-          sprintf(
-              buf, "get result[%d]=%s", i,
-              dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar());
+          ASSERT(resultList->operator[](i) != nullptr, buf);
+          sprintf(buf, "get result[%d]=%s", i,
+                  std::dynamic_pointer_cast<CacheableString>(
+                      resultList->operator[](i))
+                      ->asChar());
           LOG(buf);
           verifyGetResults()
         }
@@ -305,107 +305,107 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+    auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     char buf[128];
 
     for (int i = 0; i < 34; i++) {
       sprintf(buf, "VALUE--%d", i);
-      CacheablePtr value(CacheableString::create(buf));
+      auto value = CacheableString::create(buf);
 
       sprintf(buf, "KEY--%d", i);
-      CacheableKeyPtr key = CacheableKey::create(buf);
+      auto key = CacheableKey::create(buf);
       regPtr0->put(key, value);
     }
     SLEEP(10000);  // let the put finish
     try {
-      CacheablePtr args = CacheableBoolean::create(1);
-      CacheableVectorPtr routingObj = CacheableVector::create();
+      auto routingObj = CacheableVector::create();
       for (int i = 0; i < 34; i++) {
         if (i % 2 == 0) continue;
         sprintf(buf, "KEY--%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+        auto key = CacheableKey::create(buf);
         routingObj->push_back(key);
       }
 
       // UNUSED bool getResult = true;
-      PoolPtr pool = apache::geode::client::PoolManager::find("__TEST_POOL1__");
-      ExecutionPtr exc = FunctionService::onServer(pool);
-      ASSERT(exc != NULLPTR, "onServer Returned NULL");
+      auto pool = apache::geode::client::PoolManager::find("__TEST_POOL1__");
+      auto exc = FunctionService::onServer(pool);
+      ASSERT(exc != nullptr, "onServer Returned nullptr");
 
-      args = routingObj;
-      CacheableVectorPtr resultList = CacheableVector::create();
+      auto resultList = CacheableVector::create();
 
       // Test with HA exception
-      CacheableVectorPtr executeFunctionResult =
-          exc->withArgs(args)
+      auto executeFunctionResult =
+          exc->withArgs(routingObj)
               ->execute(OnServerHAExceptionFunction, 15)
               ->getResult();
 
-      if (executeFunctionResult == NULLPTR) {
-        ASSERT(false, "get executeFunctionResult is NULL");
+      if (executeFunctionResult == nullptr) {
+        ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
-        sprintf(buf, "echo String : result count = %d",
+        sprintf(buf, "echo String : result count = %zd",
                 executeFunctionResult->size());
         LOG(buf);
         resultList->clear();
         for (unsigned item = 0;
              item < static_cast<uint32_t>(executeFunctionResult->size());
              item++) {
-          CacheableArrayListPtr arrayList = dynCast<CacheableArrayListPtr>(
+          auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
               executeFunctionResult->operator[](item));
           for (unsigned pos = 0; pos < static_cast<uint32_t>(arrayList->size());
                pos++) {
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "get result count = %d", resultList->size());
+        sprintf(buf, "get result count = %zd", resultList->size());
         LOG(buf);
         ASSERT(resultList->size() == 17,
                "get executeFunctionResult count is not 17");
         for (int32_t i = 0; i < resultList->size(); i++) {
           sprintf(buf, "result[%d] is null\n", i);
-          ASSERT(resultList->operator[](i) != NULLPTR, buf);
-          sprintf(
-              buf, "get result[%d]=%s", i,
-              dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar());
+          ASSERT(resultList->operator[](i) != nullptr, buf);
+          sprintf(buf, "get result[%d]=%s", i,
+                  std::dynamic_pointer_cast<CacheableString>(
+                      resultList->operator[](i))
+                      ->asChar());
           LOG(buf);
           verifyGetResults()
         }
       }
 
       // Test with HA server shutdown
-      CacheableVectorPtr executeFunctionResult1 =
-          exc->withArgs(args)
+      auto executeFunctionResult1 =
+          exc->withArgs(routingObj)
               ->execute(OnServerHAShutdownFunction, 15)
               ->getResult();
 
-      if (executeFunctionResult1 == NULLPTR) {
-        ASSERT(false, "get executeFunctionResult1 is NULL");
+      if (executeFunctionResult1 == nullptr) {
+        ASSERT(false, "get executeFunctionResult1 is nullptr");
       } else {
-        sprintf(buf, "echo String : result count = %d",
+        sprintf(buf, "echo String : result count = %zd",
                 executeFunctionResult1->size());
         LOG(buf);
         resultList->clear();
         for (unsigned item = 0;
              item < static_cast<uint32_t>(executeFunctionResult1->size());
              item++) {
-          CacheableArrayListPtr arrayList = dynCast<CacheableArrayListPtr>(
+          auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
               executeFunctionResult1->operator[](item));
           for (unsigned pos = 0; pos < static_cast<uint32_t>(arrayList->size());
                pos++) {
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "get result count = %d", resultList->size());
+        sprintf(buf, "get result count = %zd", resultList->size());
         LOG(buf);
         ASSERT(resultList->size() == 17,
                "get executeFunctionResult1 count is not 17");
         for (int32_t i = 0; i < resultList->size(); i++) {
           sprintf(buf, "result[%d] is null\n", i);
-          ASSERT(resultList->operator[](i) != NULLPTR, buf);
-          sprintf(
-              buf, "get result[%d]=%s", i,
-              dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar());
+          ASSERT(resultList->operator[](i) != nullptr, buf);
+          sprintf(buf, "get result[%d]=%s", i,
+                  std::dynamic_pointer_cast<CacheableString>(
+                      resultList->operator[](i))
+                      ->asChar());
           LOG(buf);
           verifyGetResults()
         }

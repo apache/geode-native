@@ -20,6 +20,7 @@
  * limitations under the License.
  */
 
+#include <atomic>
 #include <geode/geode_globals.hpp>
 #include "LRUAction.hpp"
 #include "RegionInternal.hpp"

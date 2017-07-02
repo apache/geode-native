@@ -28,7 +28,10 @@
 
 #ifdef _WIN32
 #include <Windows.h>
+#pragma warning(push)
+#pragma warning(disable : 4091)
 #include <DbgHelp.h>
+#pragma warning(pop)
 #else
 // Since we dont compile with g++ on Sun
 #ifdef _SOLARIS
@@ -76,7 +79,7 @@ class StackFrame {
     m_string[0] = 0;
     int status = 0;
     char* symbol = extractSymbol(btline);
-    char* demangled = NULL;
+    char* demangled = nullptr;
 #ifdef _SOLARIS
     demangled = new char[DEMANGLED_SYMBOL_BUFSIZE];
     status = cplus_demangle(symbol, demangled, DEMANGLED_SYMBOL_BUFSIZE);
@@ -129,8 +132,8 @@ class StackFrame {
     } else {
       sscanf(btline, "%[^ ] [%[x01-9a-f]]", m_module, m_offset);
     }
-    char* shortmodule = NULL;
-    if (NULL != (shortmodule = strrchr(m_module, '/'))) {
+    char* shortmodule = nullptr;
+    if (nullptr != (shortmodule = strrchr(m_module, '/'))) {
       char* tmp =
           new char[btlen + 1];  // COVERTY --> 30298 Out-of-bounds access
       ACE_OS::strncpy(tmp, shortmodule + 1, btlen);

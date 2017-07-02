@@ -17,6 +17,12 @@
 
 #pragma once
 
+#include "begin_native.hpp"
+#include <CacheImpl.hpp>
+#include <CacheRegionHelper.hpp>
+#include <geode/Cache.hpp>
+#include "end_native.hpp"
+
 #include "PdxHelper.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "PdxWriterWithTypeCollector.hpp"
@@ -27,9 +33,7 @@
 #include "PdxWrapper.hpp"
 #include "../Log.hpp"
 #include "PdxInstanceImpl.hpp"
-#include <CacheImpl.hpp>
-#include <CacheRegionHelper.hpp>
-#include <geode/Cache.hpp>
+
 using namespace System;
 
 namespace Apache
@@ -45,7 +49,7 @@ namespace Apache
         CacheImpl* getCacheImpl()
         {
           CachePtr cache = CacheFactory::getAnyInstance();
-          if (cache == NULLPTR)
+          if (cache == nullptr)
           {
             throw gcnew IllegalStateException("cache has not been created yet.");;
           }
@@ -53,7 +57,7 @@ namespace Apache
           {
             throw gcnew IllegalStateException("cache has been closed. ");
           }      
-          return CacheRegionHelper::getCacheImpl(cache.ptr());
+          return CacheRegionHelper::getCacheImpl(cache.get());
         }
         
         void PdxHelper::SerializePdx(DataOutput^ dataOutput, IPdxSerializable^ pdxObject)

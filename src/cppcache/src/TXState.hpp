@@ -27,7 +27,6 @@
  */
 
 #include "TXId.hpp"
-#include "TXRegionState.hpp"
 #include "TransactionalOperation.hpp"
 #include <string>
 
@@ -83,7 +82,7 @@ class TXState {
   std::string epNameStr;
   int32_t nextModSerialNum();
   bool m_replay;
-  VectorOfSharedBase m_operations;
+  std::vector<TransactionalOperationPtr> m_operations;
   Cache* m_cache;
   ThinClientPoolDM* m_pooldm;
   long m_suspendedExpiryTaskId;

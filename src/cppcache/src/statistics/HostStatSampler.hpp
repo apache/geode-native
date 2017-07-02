@@ -22,6 +22,7 @@
 
 #include <string>
 #include <vector>
+#include <chrono>
 #include <ace/Task.h>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <geode/geode_globals.hpp>
@@ -49,6 +50,8 @@ using namespace apache::geode::client;
 namespace apache {
 namespace geode {
 namespace statistics {
+
+using std::chrono::system_clock;
 
 class StatArchiveWriter;
 class StatisticsManager;
@@ -145,7 +148,7 @@ class CPPCACHE_EXPORT HostStatSampler : public ACE_Task_Base,
   /**
    * Returns the time this sampler's system was started.
    */
-  int64_t getSystemStartTime();
+  system_clock::time_point getSystemStartTime();
   /**
    * Returns the path to this sampler's system directory; if it has one.
    */
@@ -212,7 +215,8 @@ class CPPCACHE_EXPORT HostStatSampler : public ACE_Task_Base,
   StatisticsManager* m_statMngr;
 
   int64_t m_pid;
-  int64_t m_startTime;
+  system_clock::time_point m_startTime;
+
   std::string initStatFileWithExt();
   /**
    * The archiveFile, after it exceeds archiveFileSizeLimit should be rolled

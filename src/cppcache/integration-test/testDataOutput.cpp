@@ -17,29 +17,33 @@
 
 #define ROOT_NAME "testDataOutput"
 
-#include "fw_helper.hpp"
+#include <string>
+#include <iostream>
+
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 
+#include "fw_helper.hpp"
+
 using namespace apache::geode::client;
-using namespace test;
 
 void dumpnbytes(const uint8_t* buf, uint32_t length) {
   for (uint32_t i = 0; i < length; i++) {
-    cout << "buf[" << i << "] = " << hex << static_cast<int16_t>(buf[i]) << dec
-         << " " << static_cast<char>(buf[i]) << endl;
+    std::cout << "buf[" << i << "] = " << std::hex
+              << static_cast<int16_t>(buf[i]) << std::dec << " "
+              << static_cast<char>(buf[i]) << std::endl;
   }
 }
 void dumpnshorts(const uint16_t* buf, uint32_t length) {
   for (uint32_t i = 0; i < length; i++) {
-    cout << "buf[" << i << "] = " << hex << static_cast<uint16_t>(buf[i]) << dec
-         << endl;
+    std::cout << "buf[" << i << "] = " << std::hex
+              << static_cast<uint16_t>(buf[i]) << std::dec << std::endl;
   }
 }
 void dumpnwords(const uint32_t* buf, uint32_t length) {
   for (uint32_t i = 0; i < length; i++) {
-    cout << "buf[" << i << "] = " << hex << static_cast<uint32_t>(buf[i]) << dec
-         << endl;
+    std::cout << "buf[" << i << "] = " << std::hex
+              << static_cast<uint32_t>(buf[i]) << std::dec << std::endl;
   }
 }
 
@@ -208,7 +212,7 @@ BEGIN_TEST(NarrowStrings)
     dataOutput.writeASCII(strOrig);
 
     const uint8_t* buffer = dataOutput.getBuffer();
-    cout << "Wrote to buffer..." << endl;
+    std::cout << "Wrote to buffer..." << std::endl;
     dumpnbytes(buffer, 14);
 
     ASSERT(buffer[0] == 0x00, "wrong utf encoding.");
@@ -227,11 +231,11 @@ BEGIN_TEST(NarrowStrings)
     ASSERT(buffer[13] == '.', "wrong utf encoding.");
 
     DataInput dataInput(buffer, dataOutput.getBufferLength());
-    char* str = NULL;
+    char* str = nullptr;
     uint16_t res_length;
     dataInput.readASCII(&str, &res_length);
-    cout << "Read from buffer..." << endl;
-    ASSERT(str != NULL, "expected non-null str");
+    std::cout << "Read from buffer..." << std::endl;
+    ASSERT(str != nullptr, "expected non-null str");
     ASSERT(res_length == 12, "expected length 12.");
     dumpnbytes(reinterpret_cast<uint8_t*>(str), 12);
     int res = strncmp(str, strOrig, 12);
@@ -255,7 +259,7 @@ BEGIN_TEST(WideStrings)
     dataOutput.writeUTF(strOrig, 5);
 
     const uint8_t* buffer = dataOutput.getBuffer();
-    cout << "Wrote to buffer..." << endl;
+    std::cout << "Wrote to buffer..." << std::endl;
     dumpnbytes(buffer, 12);
 
     ASSERT(buffer[0] == 0x00, "wrong utf encoding.");
@@ -270,14 +274,14 @@ BEGIN_TEST(WideStrings)
     ASSERT(buffer[9] == 0xef, "wrong utf encoding.");
     ASSERT(buffer[10] == 0xbf, "wrong utf encoding.");
     ASSERT(buffer[11] == 0xbf, "wrong utf encoding.");
-    cout << "sizeof wchar_t " << sizeof(wchar_t) << endl;
+    std::cout << "sizeof wchar_t " << sizeof(wchar_t) << std::endl;
     DataInput dataInput(buffer, dataOutput.getBufferLength());
-    wchar_t* str = NULL;
+    wchar_t* str = nullptr;
     uint16_t res_length;
     dataInput.readUTF(&str, &res_length);
-    ASSERT(str != NULL, "expected non-null str");
+    ASSERT(str != nullptr, "expected non-null str");
     ASSERT(res_length == 5, "expected length 5.");
-    cout << "Read from buffer..." << endl;
+    std::cout << "Read from buffer..." << std::endl;
     dumpnshorts(reinterpret_cast<uint16_t*>(str), 5);
 
     ASSERT(str[0] == 0x00, "wrong decoded value");

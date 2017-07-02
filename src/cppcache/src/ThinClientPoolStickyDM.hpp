@@ -33,7 +33,7 @@ class ThinClientPoolStickyDM : public ThinClientPoolDM {
   }
   virtual ~ThinClientPoolStickyDM() {
     // m_manager->closeAllStickyConnections();
-    // delete m_manager; m_manager = NULL;
+    // delete m_manager; m_manager = nullptr;
   }
   virtual bool canItBeDeletedNoImpl(TcrConnection* conn);
 
@@ -42,7 +42,7 @@ class ThinClientPoolStickyDM : public ThinClientPoolDM {
   virtual TcrConnection* getConnectionFromQueueW(
       GfErrType* error, std::set<ServerLocation>&, bool isBGThread,
       TcrMessage& request, int8_t& version, bool& match, bool& connFound,
-      const BucketServerLocationPtr& serverLocation = NULLPTR);
+      const BucketServerLocationPtr& serverLocation = nullptr);
   virtual void putInQueue(TcrConnection* conn, bool isBGThread,
                           bool isTransaction = false);
   virtual void setStickyNull(bool isBGThread);
@@ -52,7 +52,7 @@ class ThinClientPoolStickyDM : public ThinClientPoolDM {
 
   // virtual void cleanStickyConnections(volatile bool& isRunning);
 };
-typedef SharedPtr<ThinClientPoolStickyDM> ThinClientPoolStickyDMPtr;
+typedef std::shared_ptr<ThinClientPoolStickyDM> ThinClientPoolStickyDMPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

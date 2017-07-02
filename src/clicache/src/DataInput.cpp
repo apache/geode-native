@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
-#include "DataInput.hpp"
+#include "begin_native.hpp"
 #include <geode/Cache.hpp>
-//#include "CacheFactory.hpp"
-#include "Cache.hpp"
-#include <vcclr.h>
-//#include <geode/GeodeTypeIds.hpp>
 #include <GeodeTypeIdsImpl.hpp>
+#include "end_native.hpp"
+
+#include <vcclr.h>
+
+#include "DataInput.hpp"
+#include "Cache.hpp"
 #include "CacheableString.hpp"
 #include "CacheableHashMap.hpp"
 #include "CacheableStack.hpp"
@@ -31,7 +32,6 @@
 #include "CacheableIDentityHashMap.hpp"
 #include "CacheableDate.hpp"
 #include "CacheableObjectArray.hpp"
-
 #include "Serializable.hpp"
 #include "impl/PdxHelper.hpp"
 
@@ -45,6 +45,7 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       DataInput::DataInput(System::Byte* buffer, int size)
       {
@@ -53,13 +54,20 @@ namespace Apache
         if (buffer != nullptr && size > 0) {
           _GF_MG_EXCEPTION_TRY2
 
-            SetPtr(new apache::geode::client::DataInput(buffer, size), true);
+          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(std::make_unique<native::DataInput>(buffer, size));
           m_cursor = 0;
           m_isManagedObject = false;
           m_forStringDecode = gcnew array<Char>(100);
 
-          m_buffer = const_cast<System::Byte*>(NativePtr->currentBufferPosition());
-          m_bufferLength = NativePtr->getBytesRemaining();
+          try
+          {
+            m_buffer = const_cast<System::Byte*>(m_nativeptr->get()->currentBufferPosition());
+            m_bufferLength = m_nativeptr->get()->getBytesRemaining();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
           _GF_MG_EXCEPTION_CATCH_ALL2
         }
@@ -80,14 +88,21 @@ namespace Apache
           GF_NEW(m_buffer, System::Byte[len]);
           pin_ptr<const Byte> pin_buffer = &buffer[0];
           memcpy(m_buffer, (void*)pin_buffer, len);
-          SetPtr(new apache::geode::client::DataInput(m_buffer, len), true);
+          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(std::unique_ptr<native::DataInput>(new native::DataInput(m_buffer, len)));
 
           m_cursor = 0;
           m_isManagedObject = false;
           m_forStringDecode = gcnew array<Char>(100);
 
-          m_buffer = const_cast<System::Byte*>(NativePtr->currentBufferPosition());
-          m_bufferLength = NativePtr->getBytesRemaining();
+          try
+          {
+            m_buffer = const_cast<System::Byte*>(m_nativeptr->get()->currentBufferPosition());
+            m_bufferLength = m_nativeptr->get()->getBytesRemaining();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
           _GF_MG_EXCEPTION_CATCH_ALL2
         }
@@ -114,10 +129,17 @@ namespace Apache
             GF_NEW(m_buffer, System::Byte[len]);
           pin_ptr<const Byte> pin_buffer = &buffer[0];
           memcpy(m_buffer, (void*)pin_buffer, len);
-          SetPtr(new apache::geode::client::DataInput(m_buffer, len), true);
+          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(std::unique_ptr<native::DataInput>(new native::DataInput(m_buffer, len)));
 
-          m_buffer = const_cast<System::Byte*>(NativePtr->currentBufferPosition());
-          m_bufferLength = NativePtr->getBytesRemaining();
+          try
+          {
+            m_buffer = const_cast<System::Byte*>(m_nativeptr->get()->currentBufferPosition());
+            m_bufferLength = m_nativeptr->get()->getBytesRemaining();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
           _GF_MG_EXCEPTION_CATCH_ALL2
         }
@@ -619,6 +641,8 @@ namespace Apache
 
       Object^ DataInput::ReadInternalObject()
       {
+        try
+        {
         //Log::Debug("DataInput::ReadInternalObject m_cursor " + m_cursor);
         bool findinternal = false;
         int8_t typeId = ReadByte();
@@ -635,11 +659,11 @@ namespace Apache
           System::Byte* cacheBuffer = m_buffer;
           unsigned int cacheBufferLength = m_bufferLength;
           Object^ ret = Internal::PdxHelper::DeserializePdx(this, false);
-          int tmp = NativePtr->getBytesRemaining();
+          int tmp = m_nativeptr->get()->getBytesRemaining();
           m_cursor = cacheBufferLength - tmp;
           m_buffer = cacheBuffer;
           m_bufferLength = cacheBufferLength;
-          NativePtr->rewindCursor(m_cursor);
+          m_nativeptr->get()->rewindCursor(m_cursor);
 
           if (ret != nullptr)
           {
@@ -735,6 +759,11 @@ namespace Apache
         newObj->FromData(this);
         m_ispdxDesrialization = isPdxDeserialization;
         return newObj;
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       Object^ DataInput::readDotNetObjectArray()
@@ -850,7 +879,14 @@ namespace Apache
         AdvanceUMCursor();
         SetBuffer();
 
-        return NativePtr->getBytesRead();
+        try
+        {
+          return m_nativeptr->get()->getBytesRead();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       System::UInt32 DataInput::BytesReadInternally::get()
@@ -862,8 +898,14 @@ namespace Apache
       {
         AdvanceUMCursor();
         SetBuffer();
-        return NativePtr->getBytesRemaining();
-        //return m_bufferLength - m_cursor;
+        try
+        {
+          return m_nativeptr->get()->getBytesRemaining();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       void DataInput::AdvanceCursor(System::Int32 offset)
@@ -874,24 +916,35 @@ namespace Apache
       void DataInput::RewindCursor(System::Int32 offset)
       {
         AdvanceUMCursor();
-        NativePtr->rewindCursor(offset);
+        try
+        {
+          m_nativeptr->get()->rewindCursor(offset);
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         SetBuffer();
-        //m_cursor -= offset;
       }
 
       void DataInput::Reset()
       {
         AdvanceUMCursor();
-        NativePtr->reset();
+        try
+        {
+          m_nativeptr->get()->reset();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         SetBuffer();
-        //  m_cursor = 0;
       }
 
       void DataInput::Cleanup()
       {
         //TODO:
         //GF_SAFE_DELETE_ARRAY(m_buffer);
-        InternalCleanup();
       }
 
       void DataInput::ReadDictionary(System::Collections::IDictionary^ dict)

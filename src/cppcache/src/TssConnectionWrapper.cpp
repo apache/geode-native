@@ -18,11 +18,12 @@
 #include "TcrConnection.hpp"
 #include "ThinClientPoolDM.hpp"
 using namespace apache::geode::client;
-ACE_TSS<TssConnectionWrapper> TssConnectionWrapper::s_geodeTSSConn;
+ACE_TSS<TssConnectionWrapper>* TssConnectionWrapper::s_geodeTSSConn =
+    new ACE_TSS<TssConnectionWrapper>();
 TssConnectionWrapper::TssConnectionWrapper() {
-  PoolPtr p = NULLPTR;
+  PoolPtr p = nullptr;
   m_pool = p;
-  m_tcrConn = NULL;
+  m_tcrConn = nullptr;
 }
 TssConnectionWrapper::~TssConnectionWrapper() {
   // if cache close happening during this then we should NOT call this..
@@ -31,8 +32,8 @@ TssConnectionWrapper::~TssConnectionWrapper() {
     // but still race-condition is there if now cache-close starts happens
     // m_tcrConn->close();
     m_pool->releaseThreadLocalConnection();
-    // delete m_tcrConn; m_tcrConn = NULL;
-    m_tcrConn = NULL;
+    // delete m_tcrConn; m_tcrConn = nullptr;
+    m_tcrConn = nullptr;
   }
 }
 
@@ -40,7 +41,7 @@ void TssConnectionWrapper::setSHConnection(TcrEndpoint* ep,
                                            TcrConnection* conn) {
   std::string pn(ep->getPoolHADM()->getName());
   poolVsEndpointConnMap::iterator iter = m_poolVsEndpointConnMap.find(pn);
-  PoolWrapper* pw = NULL;
+  PoolWrapper* pw = nullptr;
   if (iter == m_poolVsEndpointConnMap.end()) {
     pw = new PoolWrapper();
     m_poolVsEndpointConnMap[pn] = pw;
@@ -55,9 +56,9 @@ TcrConnection* TssConnectionWrapper::getSHConnection(TcrEndpoint* ep,
                                                      const char* poolname) {
   std::string pn(poolname);
   poolVsEndpointConnMap::iterator iter = m_poolVsEndpointConnMap.find(pn);
-  PoolWrapper* pw = NULL;
+  PoolWrapper* pw = nullptr;
   if (iter == m_poolVsEndpointConnMap.end()) {
-    return NULL;
+    return nullptr;
   } else {
     pw = iter->second;
   }
@@ -68,7 +69,7 @@ TcrConnection* TssConnectionWrapper::getSHConnection(TcrEndpoint* ep,
 void TssConnectionWrapper::releaseSHConnections(PoolPtr pool) {
   std::string pn(pool->getName());
   poolVsEndpointConnMap::iterator iter = m_poolVsEndpointConnMap.find(pn);
-  PoolWrapper* pw = NULL;
+  PoolWrapper* pw = nullptr;
   if (iter == m_poolVsEndpointConnMap.end()) {
     return;
   } else {
@@ -83,9 +84,9 @@ void TssConnectionWrapper::releaseSHConnections(PoolPtr pool) {
 TcrConnection* TssConnectionWrapper::getAnyConnection(const char* poolname) {
   std::string pn(poolname);
   poolVsEndpointConnMap::iterator iter = m_poolVsEndpointConnMap.find(pn);
-  PoolWrapper* pw = NULL;
+  PoolWrapper* pw = nullptr;
   if (iter == m_poolVsEndpointConnMap.end()) {
-    return NULL;
+    return nullptr;
   } else {
     pw = iter->second;
   }
@@ -100,7 +101,7 @@ TcrConnection* PoolWrapper::getSHConnection(TcrEndpoint* ep) {
     m_EpnameVsConnection.erase(iter);
     return tmp;
   }
-  return NULL;
+  return nullptr;
 }
 
 void PoolWrapper::setSHConnection(TcrEndpoint* ep, TcrConnection* conn) {
@@ -117,8 +118,8 @@ void PoolWrapper::releaseSHConnections(PoolPtr pool) {
        iter != m_EpnameVsConnection.end(); iter++) {
     TcrConnection* tmp = iter->second;
     tmp->setAndGetBeingUsed(false, false);  // now this can be used by next one
-    ThinClientPoolDM* dm = dynamic_cast<ThinClientPoolDM*>(pool.ptr());
-    if (dm != NULL) {
+    ThinClientPoolDM* dm = dynamic_cast<ThinClientPoolDM*>(pool.get());
+    if (dm != nullptr) {
       dm->put(tmp, false);
     }
   }
@@ -132,5 +133,5 @@ TcrConnection* PoolWrapper::getAnyConnection() {
     m_EpnameVsConnection.erase(iter);
     return tmp;
   }
-  return NULL;
+  return nullptr;
 }

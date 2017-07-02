@@ -150,9 +150,7 @@ UDPMessageClient::UDPMessageClient(std::string server)
   int32_t tries = 100;
   ACE_INET_Addr* client = new ACE_INET_Addr();
   while ((result < 0) && (tries > 0)) {
-    uint32_t port = GsRandom::random(static_cast<uint32_t>(1111),
-                                     static_cast<uint32_t>(31111)) +
-                    tries;
+    uint32_t port = GsRandom::random(1111u, 31111u) + tries;
     client->set(port, "localhost");
     result = m_io.open(*client);
   }
@@ -254,7 +252,7 @@ int32_t Receiver::doTask() {
 
 void Receiver::initialize() {
   int32_t tries = 100;
-  int32_t port = m_basePort;
+  uint16_t port = m_basePort;
   int32_t lockResult = m_mutex.tryacquire();
   int32_t result = -1;
   if (lockResult != -1) {  // The listener thread
@@ -358,7 +356,7 @@ void Responder::initialize() {
   int32_t result = -1;
   int32_t tries = 100;
   while ((result < 0) && (--tries > 0)) {
-    int32_t port = ++m_offset + 111 + m_basePort;
+    uint16_t port = ++m_offset + 111 + m_basePort;
     result = m_io->open(ACE_INET_Addr(port, "localhost"));
     if (result < 0) {
       FWKWARN("Server failed to open io, " << errno << ", on port " << port);

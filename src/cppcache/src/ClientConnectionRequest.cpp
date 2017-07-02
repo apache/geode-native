@@ -28,8 +28,8 @@ void ClientConnectionRequest::toData(DataOutput& output) const {
   writeSetOfServerLocation(output);
 }
 Serializable* ClientConnectionRequest::fromData(DataInput& input) {
-  return NULL;  // not needed as of now and my guess is  it will never be
-                // needed.
+  return nullptr;  // not needed as of now and my guess is  it will never be
+                   // needed.
 }
 uint32_t ClientConnectionRequest::objectSize() const { return 0; }
 int8_t ClientConnectionRequest::typeId() const {

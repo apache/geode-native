@@ -55,11 +55,11 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
     VectorOfCacheableKey keys0;
     keys0.push_back(keyPtr0);
-    regPtr0->registerKeys(keys0, NULLPTR);
+    regPtr0->registerKeys(keys0);
     CacheableKeyPtr keyPtr1 = CacheableString::create(keys[1]);
     VectorOfCacheableKey keys1;
     keys1.push_back(keyPtr1);
-    regPtr0->registerKeys(keys1, NULLPTR);
+    regPtr0->registerKeys(keys1);
     regPtr0->registerRegex(testregex[0]);
     regPtr0->registerRegex(testregex[1]);
     CacheableKeyPtr keyPtr2 = CacheableString::create(keys[2]);
@@ -68,21 +68,22 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     keyPtr2 = CacheableString::create(keys[3]);
     keys2.push_back(keyPtr2);
     // durable
-    regPtr0->registerKeys(keys2, NULLPTR, true);
+    regPtr0->registerKeys(keys2, false, true);
     regPtr0->registerRegex(testregex[2], true);
 
     VectorOfCacheableKey vkey;
     VectorOfCacheableString vreg;
     regPtr0->getInterestList(vkey);
     regPtr0->getInterestListRegex(vreg);
-    for (int32_t i = 0; i < vkey.length(); i++) {
+    for (int32_t i = 0; i < vkey.size(); i++) {
       char buf[1024];
-      const char* key = dynCast<CacheableStringPtr>(vkey[i])->asChar();
+      const char* key =
+          std::dynamic_pointer_cast<CacheableString>(vkey[i])->asChar();
       sprintf(buf, "key[%d]=%s", i, key);
       LOG(buf);
       bool found = false;
-      for (int32_t j = 0; j < vkey.length(); j++) {
-        if (!strcmp(key, keys[j])) {
+      for (const auto& k : vkey) {
+        if (!strcmp(key, k->toString()->asChar())) {
           found = true;
           break;
         }
@@ -90,14 +91,14 @@ DUNIT_TASK(CLIENT1, SetupClient1)
       sprintf(buf, "key[%d]=%s not found!", i, key);
       ASSERT(found, buf);
     }
-    for (int32_t i = 0; i < vreg.length(); i++) {
+    for (int32_t i = 0; i < vreg.size(); i++) {
       char buf[1024];
       CacheableStringPtr ptr = vreg[i];
       const char* reg = ptr->asChar();
       sprintf(buf, "regex[%d]=%s", i, reg);
       LOG(buf);
       bool found = false;
-      for (int32_t j = 0; j < vreg.length(); j++) {
+      for (int32_t j = 0; j < vreg.size(); j++) {
         if (!strcmp(reg, testregex[j])) {
           found = true;
           break;
@@ -109,7 +110,7 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     regPtr0->registerAllKeys(true);
     VectorOfCacheableString vreg1;
     regPtr0->getInterestListRegex(vreg1);
-    for (int32_t i = 0; i < vreg1.length(); i++) {
+    for (int32_t i = 0; i < vreg1.size(); i++) {
       char buf[1024];
       CacheableStringPtr ptr = vreg1[i];
       sprintf(buf, "regex[%d]=%s", i, ptr->asChar());

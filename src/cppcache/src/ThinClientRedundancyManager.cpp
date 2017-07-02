@@ -54,9 +54,9 @@ ThinClientRedundancyManager::ThinClientRedundancyManager(
       m_loggedRedundancyWarning(false),
       m_poolHADM(poolHADM),
       m_theTcrConnManager(theConnManager),
-      m_locators(NULLPTR),
-      m_servers(NULLPTR),
-      m_periodicAckTask(NULL),
+      m_locators(nullptr),
+      m_servers(nullptr),
+      m_periodicAckTask(nullptr),
       m_processEventIdMapTaskId(-1),
       m_nextAckInc(0),
       m_HAenabled(false) {}
@@ -89,7 +89,7 @@ std::list<ServerLocation> ThinClientRedundancyManager::selectServers(
         m_server = 0;
       }
       ServerLocation location(
-          Utils::convertHostToCanonicalForm(m_servers[m_server++]->asChar())
+          Utils::convertHostToCanonicalForm((*m_servers)[m_server++]->asChar())
               .c_str());
       if (exclEndPts.find(location) != exclEndPts.end()) {
         // exclude this one
@@ -217,8 +217,8 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
 
     m_nonredundantEndpoints.clear();
     int howMany = -1;
-    if (m_locators != NULLPTR && m_locators->length() > 0 &&
-        m_servers != NULLPTR && m_servers->length() == 0) {
+    if (m_locators != nullptr && m_locators->length() > 0 &&
+        m_servers != nullptr && m_servers->length() == 0) {
       // if we are using locators only request the required number of servers.
       howMany = m_redundancyLevel - static_cast<int>(exclEndPts.size()) + 1;
     }
@@ -296,7 +296,7 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
   // B. secondaryCount <= redundancy level.
 
   // 38196: Prefer Primary conversion from oldHA .
-  TcrEndpoint* convertedPrimary = NULL;
+  TcrEndpoint* convertedPrimary = nullptr;
   if (init && !isRedundancySatisfied && !isPrimaryConnected) {
     bool oldHAEndPointPresent = false;
     for (std::vector<TcrEndpoint*>::iterator it =
@@ -366,7 +366,7 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
   removeEndpointsInOrder(m_nonredundantEndpoints, tempRedundantEndpoints);
 
   // 38196:for DurableReconnect case, primary may be in between, put it @ start.
-  if (init && !isPrimaryAtBack && convertedPrimary != NULL) {
+  if (init && !isPrimaryAtBack && convertedPrimary != nullptr) {
     moveEndpointToLast(tempRedundantEndpoints, convertedPrimary);
     isPrimaryAtBack = true;
   }
@@ -405,10 +405,10 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
   RemoteQueryServicePtr queryServicePtr;
   ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_poolHADM);
   if (poolDM) {
-    queryServicePtr =
-        dynCast<RemoteQueryServicePtr>(poolDM->getQueryServiceWithoutCheck());
+    queryServicePtr = std::dynamic_pointer_cast<RemoteQueryService>(
+        poolDM->getQueryServiceWithoutCheck());
   }
-  if (queryServicePtr != NULLPTR) {
+  if (queryServicePtr != nullptr) {
     if (isPrimaryConnected) {
       // call CqStatusListener connect
       LOGDEBUG(
@@ -550,9 +550,9 @@ GfErrType ThinClientRedundancyManager::createQueueEP(TcrEndpoint* ep,
     } else {
       // recover CQs
       CacheImpl* cache = m_theTcrConnManager->getCacheImpl();
-      RemoteQueryServicePtr rqsService =
-          dynCast<RemoteQueryServicePtr>(cache->getQueryService(true));
-      if (rqsService != NULLPTR) {
+      auto rqsService = std::dynamic_pointer_cast<RemoteQueryService>(
+          cache->getQueryService(true));
+      if (rqsService != nullptr) {
         try {
           err = rqsService->executeAllCqs(ep);
         } catch (const Exception& excp) {
@@ -590,9 +590,9 @@ GfErrType ThinClientRedundancyManager::createPoolQueueEP(
       }
     } else {
       // recover CQs
-      RemoteQueryServicePtr rqsService = dynCast<RemoteQueryServicePtr>(
+      auto rqsService = std::dynamic_pointer_cast<RemoteQueryService>(
           m_poolHADM->getQueryServiceWithoutCheck());
-      if (rqsService != NULLPTR) {
+      if (rqsService != nullptr) {
         try {
           err = rqsService->executeAllCqs(ep);
         } catch (const Exception& excp) {
@@ -637,8 +637,8 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
       "ThinClientRedundancyManager::initialize(): initializing redundancy "
       "manager.");
   LOGFINE("Subscription redundancy level set to %d %s %s", redundancyLevel,
-          m_poolHADM != NULL ? "for pool" : "",
-          m_poolHADM != NULL ? m_poolHADM->getName() : "");
+          m_poolHADM != nullptr ? "for pool" : "",
+          m_poolHADM != nullptr ? m_poolHADM->getName() : "");
   m_redundancyLevel = redundancyLevel;
   m_HAenabled = (redundancyLevel > 0 || m_theTcrConnManager->isDurable() ||
                  ThinClientBaseDM::isDeltaEnabledOnServer());
@@ -676,8 +676,8 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
       std::vector<std::string> locators;
       for (int item = 0; item < m_locators->length(); item++) {
         LOGDEBUG("ThinClientRedundancyManager::initialize: adding locator %s",
-                 m_locators[item]->asChar());
-        locators.push_back(m_locators[item]->asChar());
+                 (*m_locators)[item]->asChar());
+        locators.push_back((*m_locators)[item]->asChar());
       }
 
     } else if (m_servers->length() > 0) {
@@ -739,7 +739,7 @@ void ThinClientRedundancyManager::close() {
 
   m_redundantEndpoints.clear();
   m_nonredundantEndpoints.clear();
-  m_theTcrConnManager = NULL;
+  m_theTcrConnManager = nullptr;
   m_globalProcessedMarker = false;
   m_sentReadyForEvents = false;
 }
@@ -751,7 +751,7 @@ bool ThinClientRedundancyManager::readyForEvents(
   }
 
   TcrMessageClientReady request;
-  TcrMessageReply reply(true, NULL);
+  TcrMessageReply reply(true, nullptr);
 
   GfErrType err = GF_NOTCON;
   if (m_poolHADM) {
@@ -770,7 +770,7 @@ bool ThinClientRedundancyManager::readyForEvents(
 void ThinClientRedundancyManager::moveEndpointToLast(
     std::vector<TcrEndpoint*>& epVector, TcrEndpoint* targetEp) {
   // Pre-condition
-  GF_DEV_ASSERT(epVector.size() > 0 && targetEp != NULL);
+  GF_DEV_ASSERT(epVector.size() > 0 && targetEp != nullptr);
 
   // Remove Ep
   for (std::vector<TcrEndpoint*>::iterator it = epVector.begin();
@@ -789,7 +789,7 @@ bool ThinClientRedundancyManager::sendMakePrimaryMesg(
   if (!ep->connected()) {
     return false;
   }
-  TcrMessageReply reply(false, NULL);
+  TcrMessageReply reply(false, nullptr);
   const TcrMessageMakePrimary makePrimaryRequest(
       ThinClientRedundancyManager::m_sentReadyForEvents);
 
@@ -805,10 +805,10 @@ bool ThinClientRedundancyManager::sendMakePrimaryMesg(
     /*  this causes keys to be added to the region even if the reg interest
      * is supposed to fail due to notauthorized exception then causing
      * subsequent maintainredundancy calls to fail for other ops like CQ
-    if ( request != NULL && region != NULL ) {
+    if ( request != nullptr && region != nullptr ) {
       const VectorOfCacheableKey* keys = request->getKeys( );
       bool isDurable = request->isDurable( );
-      if ( keys == NULL || keys->empty( ) ) {
+      if ( keys == nullptr || keys->empty( ) ) {
         const std::string& regex = request->getRegex( );
         if ( !regex.empty( ) ) {
           region->addRegex( regex, isDurable );
@@ -832,7 +832,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
 
   GfErrType err = GF_NOERR;
   GfErrType opErr;
-  TcrEndpoint* primaryEndpoint = NULL;
+  TcrEndpoint* primaryEndpoint = nullptr;
 
   if (m_redundantEndpoints.size() >= 1) {
     LOGDEBUG(
@@ -869,14 +869,14 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
                  ? 5
                  : attempts;  // at least 5 attempts if ep lists are small.
 
-  ProxyCachePtr proxyCache = NULLPTR;
+  ProxyCachePtr proxyCache = nullptr;
 
   while (attempts--) {
     if (err != GF_NOERR || m_redundantEndpoints.empty()) {
       UserAttributesPtr userAttr =
           TSSUserAttributesWrapper::s_geodeTSSUserAttributes
               ->getUserAttributes();
-      if (userAttr != NULLPTR) proxyCache = userAttr->getProxyCache();
+      if (userAttr != nullptr) proxyCache = userAttr->getProxyCache();
       err = maintainRedundancyLevel();
       // we continue on fatal error because MRL only tries a handshake without
       // sending a request (no params passed) so no need to check
@@ -894,7 +894,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
           "ThinClientRedundancyManager::sendSyncRequestCq: to primary [%s]",
           primaryEndpoint->name().c_str());
       GuardUserAttribures gua;
-      if (proxyCache != NULLPTR) {
+      if (proxyCache != nullptr) {
         gua.setProxyCache(proxyCache);
       }
       err = theHADM->sendRequestToEP(request, reply, primaryEndpoint);
@@ -918,12 +918,12 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
     TcrEndpoint* endpoint, ThinClientBaseDM* theHADM,
     ThinClientRegion* region) {
   LOGDEBUG("ThinClientRedundancyManager::sendSyncRequestRegisterInterest ");
-  if (endpoint == NULL) {
+  if (endpoint == nullptr) {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
 
     GfErrType err = GF_NOERR;
     GfErrType opErr = GF_NOERR;
-    TcrEndpoint* primaryEndpoint = NULL;
+    TcrEndpoint* primaryEndpoint = nullptr;
 
     if (m_redundantEndpoints.size() >= 1) {
       std::vector<TcrEndpoint*>::iterator iter = m_redundantEndpoints.begin();
@@ -1014,8 +1014,8 @@ void ThinClientRedundancyManager::getAllEndpoints(
     tempContainer = &m_theTcrConnManager->m_endpoints;
   }
 
-  TcrEndpoint* maxQEp = NULL;
-  TcrEndpoint* primaryEp = NULL;
+  TcrEndpoint* maxQEp = nullptr;
+  TcrEndpoint* primaryEp = nullptr;
 
   for (ACE_Map_Manager<std::string, TcrEndpoint*,
                        ACE_Recursive_Thread_Mutex>::iterator currItr =
@@ -1024,14 +1024,14 @@ void ThinClientRedundancyManager::getAllEndpoints(
     if (isDurable()) {
       TcrEndpoint* ep = (*currItr).int_id_;
       int32_t queueSize = 0;
-      TcrConnection* statusConn = NULL;
+      TcrConnection* statusConn = nullptr;
       ServerQueueStatus status =
           ep->getFreshServerQueueStatus(queueSize, !m_poolHADM, statusConn);
       if (m_poolHADM && status != NON_REDUNDANT_SERVER) {
         m_poolHADM->addConnection(statusConn);
       }
       if (status == REDUNDANT_SERVER) {
-        if (maxQEp == NULL) {
+        if (maxQEp == nullptr) {
           maxQEp = ep;
         } else if (ep->getServerQueueSize() > maxQEp->getServerQueueSize()) {
           insertEPInQueueSizeOrder(maxQEp, endpoints);
@@ -1044,7 +1044,7 @@ void ThinClientRedundancyManager::getAllEndpoints(
             "endpoints, found redundant endpoint.");
       } else if (status == PRIMARY_SERVER) {
         // Primary should be unique
-        GF_DEV_ASSERT(primaryEp == NULL);
+        GF_DEV_ASSERT(primaryEp == nullptr);
         primaryEp = ep;
         LOGDEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
@@ -1063,14 +1063,14 @@ void ThinClientRedundancyManager::getAllEndpoints(
 
   // Add Endpoint with Max Queuesize at the last and Primary at first position
   if (isDurable()) {
-    if (maxQEp != NULL) {
+    if (maxQEp != nullptr) {
       endpoints.push_back(maxQEp);
       LOGDEBUG(
           "ThinClientRedundancyManager::getAllEndpoints(): sorting endpoints, "
           "pushing max-q endpoint at back.");
     }
-    if (primaryEp != NULL) {
-      if (m_redundancyLevel == 0 || maxQEp == NULL) {
+    if (primaryEp != nullptr) {
+      if (m_redundancyLevel == 0 || maxQEp == nullptr) {
         endpoints.push_back(primaryEp);
         LOGDEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
@@ -1110,7 +1110,7 @@ bool ThinClientRedundancyManager::isDurable() {
 
 void ThinClientRedundancyManager::readyForEvents() {
   TcrMessageClientReady request;
-  TcrMessageReply reply(true, NULL);
+  TcrMessageReply reply(true, nullptr);
   GfErrType result = GF_NOTCON;
   unsigned int epCount = 0;
 
@@ -1120,7 +1120,7 @@ void ThinClientRedundancyManager::readyForEvents() {
     throw IllegalStateException("Already called readyForEvents");
   }
 
-  TcrEndpoint* primary = NULL;
+  TcrEndpoint* primary = nullptr;
   if (m_redundantEndpoints.size() > 0) {
     primary = m_redundantEndpoints[0];
     if (m_poolHADM) {
@@ -1132,10 +1132,9 @@ void ThinClientRedundancyManager::readyForEvents() {
 
   epCount++;
 
-  while (result != GF_NOERR &&
-         epCount <=
-             m_redundantEndpoints.size() + m_nonredundantEndpoints.size()) {
-    TcrMessageReply reply(true, NULL);
+  while (result != GF_NOERR && epCount <= m_redundantEndpoints.size() +
+                                              m_nonredundantEndpoints.size()) {
+    TcrMessageReply reply(true, nullptr);
     maintainRedundancyLevel();
     if (m_redundantEndpoints.size() > 0) {
       primary = m_redundantEndpoints[0];
@@ -1196,7 +1195,7 @@ void ThinClientRedundancyManager::doPeriodicAck() {
 
       if (endpoint != m_redundantEndpoints.end()) {
         TcrMessagePeriodicAck request(entries);
-        TcrMessageReply reply(true, NULL);
+        TcrMessageReply reply(true, nullptr);
 
         GfErrType result = GF_NOERR;
         if (m_poolHADM) {
@@ -1286,7 +1285,7 @@ void ThinClientRedundancyManager::netDown() {
 void ThinClientRedundancyManager::removeCallbackConnection(TcrEndpoint* ep) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
 
-  ep->unregisterDM(false, NULL, true);
+  ep->unregisterDM(false, nullptr, true);
 }
 GfErrType ThinClientRedundancyManager::sendRequestToPrimary(
     TcrMessage& request, TcrMessageReply& reply) {

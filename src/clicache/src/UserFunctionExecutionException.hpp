@@ -19,7 +19,12 @@
 #pragma once
 
 #include "geode_defs.hpp"
-#include "geode/UserFunctionExecutionException.hpp"
+
+#include "begin_native.hpp"
+#include <geode/UserFunctionExecutionException.hpp>
+#include "end_native.hpp"
+
+#include "native_shared_ptr.hpp"
 #include "IGeodeSerializable.hpp"
 #include "DataInput.hpp"
 #include "DataOutput.hpp"
@@ -32,12 +37,13 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       /// <summary>
       /// UserFunctionExecutionException class is used to encapsulate geode sendException in case of Function execution. 
       /// </summary>
       public ref class UserFunctionExecutionException sealed
-        : public Internal::SBWrap<apache::geode::client::UserFunctionExecutionException>, public IGeodeSerializable
+        : public IGeodeSerializable
       {
       public:
         // IGeodeSerializable members
@@ -123,8 +129,12 @@ namespace Apache
         /// Private constructor to wrap a native object pointer.
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline UserFunctionExecutionException(apache::geode::client::UserFunctionExecutionException* nativeptr)
-          : SBWrap(nativeptr) { }
+        inline UserFunctionExecutionException(apache::geode::client::UserFunctionExecutionExceptionPtr nativeptr)
+				{
+          m_nativeptr = gcnew native_shared_ptr<native::UserFunctionExecutionException>(nativeptr);
+        }
+        
+        native_shared_ptr<native::UserFunctionExecutionException>^ m_nativeptr;   
       };
     }  // namespace Client
   }  // namespace Geode

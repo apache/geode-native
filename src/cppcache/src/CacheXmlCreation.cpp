@@ -58,9 +58,7 @@ void CacheXmlCreation::setPdxReadSerialized(bool val) {
 }
 
 CacheXmlCreation::CacheXmlCreation()
-    /* adongre
-     * CID 28926: Uninitialized pointer field (UNINIT_CTOR)
-     */
+
     : m_cache((Cache*)0) {
   m_pdxIgnoreUnreadFields = false;
   m_readPdxSerialized = false;
@@ -70,13 +68,13 @@ CacheXmlCreation::~CacheXmlCreation() {
   std::vector<RegionXmlCreation*>::iterator start = rootRegions.begin();
   while (start != rootRegions.end()) {
     delete *start;
-    *start = NULL;
+    *start = nullptr;
     ++start;
   }
   std::vector<PoolXmlCreation*>::iterator pool = pools.begin();
   while (pool != pools.end()) {
     delete *pool;
-    *pool = NULL;
+    *pool = nullptr;
     ++pool;
   }
 }

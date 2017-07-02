@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 
-#include <geode/SharedBase.hpp>
 #include <geode/Properties.hpp>
 
 #include "typedefs.hpp"
@@ -50,9 +49,10 @@ const stringList::value_type QRArr[] = {"Portfolios", "Positions"};
 const char* PRiUsnm = "%s%d";
 
 class XmlAuthzCredentialGenerator;
-typedef SharedPtr<XmlAuthzCredentialGenerator> XmlAuthzCredentialGeneratorPtr;
+typedef std::shared_ptr<XmlAuthzCredentialGenerator>
+    XmlAuthzCredentialGeneratorPtr;
 
-class XmlAuthzCredentialGenerator : public SharedBase {
+class XmlAuthzCredentialGenerator {
  private:
   ID m_id;
   opCodeList* m_opCode;
@@ -189,7 +189,7 @@ class XmlAuthzCredentialGenerator : public SharedBase {
     FWKINFO("inserted " << validity << " dummy security-username "
                         << (*m_prop)->find("security-username")->asChar()
                         << " password "
-                        << ((*m_prop)->find("security-password") != NULLPTR
+                        << ((*m_prop)->find("security-password") != nullptr
                                 ? (*m_prop)->find("security-password")->asChar()
                                 : "not set"));
   }
@@ -242,7 +242,7 @@ class XmlAuthzCredentialGenerator : public SharedBase {
 
     FWKINFO("inserted  ldap security-username "
             << (*m_prop)->find("security-username")->asChar() << " password "
-            << ((*m_prop)->find("security-password") != NULLPTR
+            << ((*m_prop)->find("security-password") != nullptr
                     ? (*m_prop)->find("security-password")->asChar()
                     : "not set"));
   }
@@ -254,7 +254,7 @@ class XmlAuthzCredentialGenerator : public SharedBase {
 
     FWKINFO("inserted  PKCS security-alias"
             << (*m_prop)->find("security-alias")->asChar() << " password "
-            << ((*m_prop)->find("security-keystorepass") != NULLPTR
+            << ((*m_prop)->find("security-keystorepass") != nullptr
                     ? (*m_prop)->find("security-keystorepass")->asChar()
                     : "not set"));
   }

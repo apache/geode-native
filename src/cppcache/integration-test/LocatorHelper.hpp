@@ -41,21 +41,22 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1_With_Locator)
   {
     // starting servers
-    if (isLocalServer) CacheHelper::initServer(1, NULL, locatorsG);
+    if (isLocalServer) CacheHelper::initServer(1, nullptr, locatorsG);
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1_With_Locator_And_SSL)
   {
     // starting servers
-    if (isLocalServer) CacheHelper::initServer(1, NULL, locatorsG, NULL, true);
+    if (isLocalServer)
+      CacheHelper::initServer(1, nullptr, locatorsG, nullptr, true);
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer2_With_Locator)
   {
     // starting servers
-    if (isLocalServer) CacheHelper::initServer(2, NULL, locatorsG);
+    if (isLocalServer) CacheHelper::initServer(2, nullptr, locatorsG);
   }
 END_TASK_DEFINITION
 

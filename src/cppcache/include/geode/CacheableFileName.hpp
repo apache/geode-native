@@ -75,9 +75,9 @@ class CPPCACHE_EXPORT CacheableFileName : public CacheableString {
    * C string optionally given the length.
    */
   static CacheableFileNamePtr create(const char* value, int32_t len = 0) {
-    CacheableFileNamePtr str = NULLPTR;
-    if (value != NULL) {
-      str = new CacheableFileName();
+    CacheableFileNamePtr str = nullptr;
+    if (value != nullptr) {
+      str = std::make_shared<CacheableFileName>();
       str->initString(value, len);
     }
     return str;
@@ -88,9 +88,9 @@ class CPPCACHE_EXPORT CacheableFileName : public CacheableString {
    * wide-character C string optionally given the length.
    */
   static CacheableFileNamePtr create(const wchar_t* value, int32_t len = 0) {
-    CacheableFileNamePtr str = NULLPTR;
-    if (value != NULL) {
-      str = new CacheableFileName();
+    CacheableFileNamePtr str = nullptr;
+    if (value != nullptr) {
+      str = std::make_shared<CacheableFileName>();
       str->initString(value, len);
     }
     return str;
@@ -103,6 +103,8 @@ class CPPCACHE_EXPORT CacheableFileName : public CacheableString {
   virtual int32_t hashcode() const;
 
  protected:
+  FRIEND_STD_SHARED_PTR(CacheableFileName)
+
   /** Default constructor. */
   inline CacheableFileName() : CacheableString(), m_hashcode(0) {}
 

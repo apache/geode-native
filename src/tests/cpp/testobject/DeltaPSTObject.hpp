@@ -53,9 +53,13 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
   int32_t field1;
   int8_t field2;
   CacheableBytesPtr valueData;
+  std::shared_ptr<DeltaPSTObject> shared_from_this() {
+    return std::static_pointer_cast<DeltaPSTObject>(
+        Serializable::shared_from_this());
+  }
 
  public:
-  DeltaPSTObject() : timestamp(0), valueData(NULLPTR) {}
+  DeltaPSTObject() : timestamp(0), valueData(nullptr) {}
   DeltaPSTObject(int size, bool encodeKey, bool encodeTimestamp);
   virtual ~DeltaPSTObject() {}
   void toData(apache::geode::client::DataOutput& output) const;
@@ -86,13 +90,13 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
     timestamp = tusec * 1000;
   }
   DeltaPtr clone() {
-    DeltaPtr clonePtr(this);
-    return clonePtr;
+    // TODO shared_ptr - this isn't actually cloning.
+    return shared_from_this();
   }
 
   static Serializable* createDeserializable() { return new DeltaPSTObject(); }
 };
-typedef apache::geode::client::SharedPtr<DeltaPSTObject> DeltaPSTObjectPtr;
+typedef std::shared_ptr<DeltaPSTObject> DeltaPSTObjectPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_DELTAPSTOBJECT_H_

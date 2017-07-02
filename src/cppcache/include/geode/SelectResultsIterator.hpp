@@ -44,7 +44,7 @@ class StructSetImpl;
  * A SelectResultsIterator is obtained from a ResultSet or StructSet and
  * is used to iterate over the items available in them.
  */
-class CPPCACHE_EXPORT SelectResultsIterator : public SharedBase {
+class CPPCACHE_EXPORT SelectResultsIterator {
  public:
   /**
    * Check whether the SelectResultsIterator has another item to get.
@@ -56,7 +56,7 @@ class CPPCACHE_EXPORT SelectResultsIterator : public SharedBase {
   /**
    * Get the next item from the SelectResultsIterator.
    *
-   * @returns a smart pointer to the next item from the iterator or NULLPTR if
+   * @returns a smart pointer to the next item from the iterator or nullptr if
    * no further items are available.
    */
   const SerializablePtr next();

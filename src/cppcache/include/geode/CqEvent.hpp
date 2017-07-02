@@ -79,14 +79,14 @@ class CPPCACHE_EXPORT CqEvent {
   /**
    * Get the key relating to the event.
    * In case of REGION_CLEAR and REGION_INVALIDATE operation, the key will be
-   * NULLPTR.
+   * nullptr.
    * @return Object key.
    */
   virtual CacheableKeyPtr getKey() const = 0;
 
   /**
    * Get the new value of the modification.
-   * If there is no new value returns NULLPTR, this will happen during delete
+   * If there is no new value returns nullptr, this will happen during delete
    * operation.
    * @return Object new/modified value.
    */

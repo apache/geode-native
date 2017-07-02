@@ -41,33 +41,57 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       String^ Cache::Name::get( )
       {
-        return ManagedString::Get( NativePtr->getName( ) );
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getName( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       bool Cache::IsClosed::get( )
       {
-        return NativePtr->isClosed( );
+        try
+        {
+          return m_nativeptr->get()->isClosed( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       DistributedSystem^ Cache::DistributedSystem::get( )
       {
-        apache::geode::client::DistributedSystemPtr& nativeptr(
-          NativePtr->getDistributedSystem( ) );
-
-        return Apache::Geode::Client::DistributedSystem::Create(
-          nativeptr.ptr( ) );
+        try
+        {
+          return Client::DistributedSystem::Create(m_nativeptr->get()->getDistributedSystem());
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       CacheTransactionManager^ Cache::CacheTransactionManager::get( )
       {
-        apache::geode::client::InternalCacheTransactionManager2PCPtr& nativeptr = static_cast<InternalCacheTransactionManager2PCPtr>(
-          NativePtr->getCacheTransactionManager( ) );
-
-        return Apache::Geode::Client::CacheTransactionManager::Create(
-          nativeptr.ptr( ) );
+        // TODO shared_ptr this should be checking the return type for which tx mgr
+        try
+        {
+          auto nativeptr = std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
+            m_nativeptr->get()->getCacheTransactionManager());
+          return Apache::Geode::Client::CacheTransactionManager::Create(nativeptr);
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       void Cache::Close( )
@@ -81,10 +105,17 @@ namespace Apache
 
           Apache::Geode::Client::DistributedSystem::acquireDisconnectLock();
 
-        Apache::Geode::Client::DistributedSystem::disconnectInstance();
+          Apache::Geode::Client::DistributedSystem::disconnectInstance();
           CacheFactory::m_connected = false;
 
-          NativePtr->close( keepalive );
+          try
+          {
+            m_nativeptr->get()->close( keepalive );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
           // If DS automatically disconnected due to the new bootstrap API, then cleanup the C++/CLI side
           //if (!apache::geode::client::DistributedSystem::isConnected())
@@ -106,7 +137,14 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          NativePtr->readyForEvents( );
+          try
+          {
+            m_nativeptr->get()->readyForEvents( );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -117,10 +155,14 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
           ManagedString mg_path( path );
-          apache::geode::client::RegionPtr& nativeptr(
-            NativePtr->getRegion( mg_path.CharPtr ) );
-
-          return Client::Region<TKey,TValue>::Create( nativeptr.ptr( ) );
+          try
+          {
+            return Client::Region<TKey, TValue>::Create(m_nativeptr->get()->getRegion(mg_path.CharPtr));
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -129,14 +171,21 @@ namespace Apache
       array<Client::IRegion<TKey, TValue>^>^ Cache::RootRegions( )
       {
         apache::geode::client::VectorOfRegion vrr;
-        NativePtr->rootRegions( vrr );
+        try
+        {
+          m_nativeptr->get()->rootRegions( vrr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
         array<Client::IRegion<TKey, TValue>^>^ rootRegions =
           gcnew array<Client::IRegion<TKey, TValue>^>( vrr.size( ) );
 
         for( System::Int32 index = 0; index < vrr.size( ); index++ )
         {
           apache::geode::client::RegionPtr& nativeptr( vrr[ index ] );
-          rootRegions[ index ] = Client::Region<TKey, TValue>::Create( nativeptr.ptr( ) );
+          rootRegions[ index ] = Client::Region<TKey, TValue>::Create( nativeptr );
         }
         return rootRegions;
       }
@@ -146,7 +195,14 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          return Client::QueryService<TKey, TResult>::Create( NativePtr->getQueryService( ).ptr( ) );
+          try
+          {
+            return Client::QueryService<TKey, TResult>::Create(m_nativeptr->get()->getQueryService());
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -157,7 +213,14 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2
 
           ManagedString mg_poolName( poolName );
-          return QueryService<TKey, TResult>::Create( NativePtr->getQueryService(mg_poolName.CharPtr).ptr( ) );
+          try
+          {
+            return QueryService<TKey, TResult>::Create(m_nativeptr->get()->getQueryService(mg_poolName.CharPtr));
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -187,26 +250,30 @@ namespace Apache
               break;          
           }
 
-          return RegionFactory::Create(NativePtr->createRegionFactory(preDefineRegionAttr).ptr());
+          try
+          {
+            return RegionFactory::Create(m_nativeptr->get()->createRegionFactory(preDefineRegionAttr));
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
           
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
       IRegionService^ Cache::CreateAuthenticatedView(Properties<String^, Object^>^ credentials)
-      {
-        //  TODO:
-				//TODO::split
-        apache::geode::client::Properties* prop = NULL;
-
-        if (credentials != nullptr)
-          prop = GetNativePtr<apache::geode::client::Properties>( credentials );
-
-        apache::geode::client::PropertiesPtr credPtr(prop);
-        
-        
+      {        
         _GF_MG_EXCEPTION_TRY2
 
-          return AuthenticatedCache::Create( (NativePtr->createAuthenticatedView(credPtr)).ptr());
+          try
+          {
+            return AuthenticatedCache::Create((m_nativeptr->get()->createAuthenticatedView(credentials->GetNative())));
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2   
       }
@@ -215,7 +282,14 @@ namespace Apache
 			{
 				_GF_MG_EXCEPTION_TRY2
 
-					return	NativePtr->getPdxIgnoreUnreadFields();
+					try
+					{
+					  return	m_nativeptr->get()->getPdxIgnoreUnreadFields();
+					}
+					finally
+					{
+					  GC::KeepAlive(m_nativeptr);
+					}
 
 				_GF_MG_EXCEPTION_CATCH_ALL2   
 			}
@@ -224,28 +298,32 @@ namespace Apache
 			{
 				_GF_MG_EXCEPTION_TRY2
 
-					return	NativePtr->getPdxReadSerialized();
+					try
+					{
+					  return	m_nativeptr->get()->getPdxReadSerialized();
+					}
+					finally
+					{
+					  GC::KeepAlive(m_nativeptr);
+					}
 
 				_GF_MG_EXCEPTION_CATCH_ALL2   
 			}
 
       IRegionService^ Cache::CreateAuthenticatedView(Properties<String^, Object^>^ credentials, String^ poolName)
       {
-         // TODO:
-				//TODO::split
-        apache::geode::client::Properties* prop = NULL;
-
-        if (credentials != nullptr)
-          prop = GetNativePtr<apache::geode::client::Properties>( credentials );
-
-        apache::geode::client::PropertiesPtr credPtr(prop);
-
         ManagedString mg_poolName( poolName );
-        
-        
+
         _GF_MG_EXCEPTION_TRY2
 
-          return AuthenticatedCache::Create( (NativePtr->createAuthenticatedView(credPtr, mg_poolName.CharPtr)).ptr());
+          try
+          {
+            return AuthenticatedCache::Create( (m_nativeptr->get()->createAuthenticatedView(credentials->GetNative(), mg_poolName.CharPtr)));
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         _GF_MG_EXCEPTION_CATCH_ALL2   
       }
@@ -253,14 +331,21 @@ namespace Apache
 			 void Cache::InitializeDeclarativeCache( String^ cacheXml )
       {
         ManagedString mg_cacheXml( cacheXml );
-        NativePtr->initializeDeclarativeCache( mg_cacheXml.CharPtr );
+        try
+        {
+          m_nativeptr->get()->initializeDeclarativeCache( mg_cacheXml.CharPtr );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
-        IPdxInstanceFactory^ Cache::CreatePdxInstanceFactory(String^ className)
-        {
-          return gcnew Internal::PdxInstanceFactoryImpl(className);
+       IPdxInstanceFactory^ Cache::CreatePdxInstanceFactory(String^ className)
+       {
+         return gcnew Internal::PdxInstanceFactoryImpl(className);
+       }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
 
-}

@@ -18,10 +18,11 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/EntryEvent.hpp>
-#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
 #include "IRegion.hpp"
-//#include "Region.hpp"
 
 using namespace System;
 
@@ -31,8 +32,9 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
-        interface class IGeodeSerializable;
+      interface class IGeodeSerializable;
 
      // ref class Region;
       //interface class ICacheableKey;
@@ -42,16 +44,8 @@ namespace Apache
       /// </summary>
       generic<class TKey, class TValue>
       public ref class EntryEvent sealed
-        : public Internal::UMWrap<apache::geode::client::EntryEvent>
       {
       public:
-
-        /// <summary>
-        /// Constructor to create an <c>EntryEvent</c> for the given region.
-        /// </summary>
-        EntryEvent(IRegion<TKey, TValue>^ region, TKey key, TValue oldValue,
-          TValue newValue, Object^ aCallbackArgument,
-          bool remoteOrigin );
 
         /// <summary>
         /// Return the region this event occurred in.
@@ -106,16 +100,22 @@ namespace Apache
           bool get( );
         }
 
-
       internal:
+        const native::EntryEvent* GetNative()
+        {
+          return m_nativeptr;
+        }
 
         /// <summary>
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline EntryEvent<TKey, TValue>( const apache::geode::client::EntryEvent* nativeptr )
-          : Internal::UMWrap<apache::geode::client::EntryEvent>(
-            const_cast<apache::geode::client::EntryEvent*>( nativeptr ), false ) { }
+        inline EntryEvent<TKey, TValue>( const native::EntryEvent* nativeptr )
+          : m_nativeptr( nativeptr )
+        {
+        }
+      private:
+        const native::EntryEvent* m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

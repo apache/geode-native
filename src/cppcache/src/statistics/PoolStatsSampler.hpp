@@ -24,17 +24,19 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 class CacheImpl;
 class ThinClientBaseDM;
 class AdminRegion;
 class ThinClientPoolDM;
+
 }  // namespace client
-}  // namespace geode
-}  // namespace apache
-using namespace apache::geode::client;
-namespace apache {
-namespace geode {
 namespace statistics {
+
+using client::CacheImpl;
+using client::ThinClientPoolDM;
+using client::AdminRegion;
+
 class StatisticsManager;
 class CPPCACHE_EXPORT PoolStatsSampler : public ACE_Task_Base {
  public:
@@ -54,12 +56,12 @@ class CPPCACHE_EXPORT PoolStatsSampler : public ACE_Task_Base {
   volatile bool m_running;
   volatile bool m_stopRequested;
   int64_t m_sampleRate;
-  AdminRegion* m_adminRegion;
+  std::shared_ptr<AdminRegion> m_adminRegion;
   ThinClientPoolDM* m_distMan;
   ACE_Recursive_Thread_Mutex m_lock;
   static const char* NC_PSS_Thread;
 };
-}  // namespace client
+}  // namespace statistics
 }  // namespace geode
 }  // namespace apache
 

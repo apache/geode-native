@@ -37,6 +37,9 @@ namespace apache {
 namespace geode {
 namespace client {
 
+template <typename Target, int8_t TYPEID>
+class CacheableArrayType;
+
 /** sprintf implementation. */
 extern int gf_sprintf(char* buffer, const char* fmt, ...);
 
@@ -139,10 +142,6 @@ class CacheableKeyType : public CacheableKey {
   virtual uint32_t objectSize() const { return sizeof(CacheableKeyType); }
 };
 
-// Forward declaration for SharedArrayPtr
-template <typename TObj, int8_t TYPEID>
-class SharedArrayPtr;
-
 /** Function to copy an array from source to destination. */
 template <typename TObj>
 inline void copyArray(TObj* dest, const TObj* src, int32_t length) {
@@ -150,24 +149,27 @@ inline void copyArray(TObj* dest, const TObj* src, int32_t length) {
 }
 
 /**
- * Function to copy an array of <code>SharedPtr</code>s from
+ * Function to copy an array of <code>std::shared_ptr</code>s from
  * source to destination.
  */
 template <typename TObj>
-inline void copyArray(SharedPtr<TObj>* dest, const SharedPtr<TObj>* src,
-                      int32_t length) {
+inline void copyArray(std::shared_ptr<TObj>* dest,
+                      const std::shared_ptr<TObj>* src, int32_t length) {
   for (int32_t index = 0; index < length; index++) {
     dest[index] = src[index];
   }
 }
 
 /**
- * Function to copy an array of <code>SharedArrayPtr</code>s from
- * source to destination.
+ * Function to copy an array of
+ * <code>std::shared_ptr<CacheableArrayType<>></code>s from source to
+ * destination.
  */
 template <typename TObj, int8_t TYPEID>
-inline void copyArray(SharedArrayPtr<TObj, TYPEID>* dest,
-                      const SharedArrayPtr<TObj, TYPEID>* src, int32_t length) {
+inline void copyArray(
+    std::shared_ptr<CacheableArrayType<TObj, TYPEID>>* dest,
+    const std::shared_ptr<CacheableArrayType<TObj, TYPEID>>* src,
+    int32_t length) {
   for (int32_t index = 0; index < length; index++) {
     dest[index] = src[index];
   }
@@ -180,7 +182,7 @@ class CacheableArrayType : public Cacheable {
   TObj* m_value;
   int32_t m_length;
 
-  inline CacheableArrayType() : m_value(NULL), m_length(0) {}
+  inline CacheableArrayType() : m_value(nullptr), m_length(0) {}
 
   inline CacheableArrayType(int32_t length) : m_length(length) {
     if (length > 0) {
@@ -192,7 +194,7 @@ class CacheableArrayType : public Cacheable {
       : m_value(value), m_length(length) {}
 
   inline CacheableArrayType(const TObj* value, int32_t length, bool copy)
-      : m_value(NULL), m_length(length) {
+      : m_value(nullptr), m_length(length) {
     if (length > 0) {
       GF_NEW(m_value, TObj[length]);
       copyArray(m_value, value, length);
@@ -200,6 +202,8 @@ class CacheableArrayType : public Cacheable {
   }
 
   virtual ~CacheableArrayType() { GF_SAFE_DELETE_ARRAY(m_value); }
+
+  FRIEND_STD_SHARED_PTR(CacheableArrayType)
 
  private:
   // Private to disable copy constructor and assignment operator.
@@ -268,52 +272,6 @@ class CacheableArrayType : public Cacheable {
     return static_cast<uint32_t>(
         sizeof(CacheableArrayType) +
         apache::geode::client::serializer::objectSize(m_value, m_length));
-  }
-};
-
-/**
- * Template class for CacheableArrayType SharedPtr's that adds [] operator
- */
-template <typename TObj, int8_t TYPEID>
-class SharedArrayPtr : public SharedPtr<CacheableArrayType<TObj, TYPEID> > {
- private:
-  typedef CacheableArrayType<TObj, TYPEID> TArray;
-
- public:
-  /** Default constructor. */
-  inline SharedArrayPtr() : SharedPtr<CacheableArrayType<TObj, TYPEID> >() {}
-
-  /** Constructor, given a pointer to array. */
-  inline SharedArrayPtr(const TArray* ptr)
-      : SharedPtr<CacheableArrayType<TObj, TYPEID> >(ptr) {}
-
-  /** Constructor, given a null SharedBase. */
-  inline SharedArrayPtr(const NullSharedBase* ptr)
-      : SharedPtr<CacheableArrayType<TObj, TYPEID> >(ptr) {}
-
-  /** Constructor, given another SharedArrayPtr. */
-  inline SharedArrayPtr(const SharedArrayPtr& other)
-      : SharedPtr<CacheableArrayType<TObj, TYPEID> >(other) {}
-
-  /** Constructor, given another kind of SharedArrayPtr. */
-  template <typename TOther, int8_t OTHERID>
-  inline SharedArrayPtr(const SharedArrayPtr<TOther, OTHERID>& other)
-      : SharedPtr<CacheableArrayType<TObj, TYPEID> >(other) {}
-
-  /** Constructor, given another SharedPtr. */
-  template <typename TOther>
-  inline SharedArrayPtr(const SharedPtr<TOther>& other)
-      : SharedPtr<CacheableArrayType<TObj, TYPEID> >(other) {}
-
-  /** Get the element at given index. */
-  inline TObj operator[](uint32_t index) const {
-    return SharedPtr<CacheableArrayType<TObj, TYPEID> >::ptr()->operator[](
-        index);
-  }
-
-  /** Deserialize self */
-  inline Serializable* fromData(DataInput& input) {
-    return SharedPtr<CacheableArrayType<TObj, TYPEID> >::ptr()->fromData(input);
   }
 };
 
@@ -392,7 +350,7 @@ class CacheableContainerType : public Cacheable, public TBase {
   CacheableKeyType<p, GeodeTypeIds::k, tName_##k, tStr_##k, sz>;              \
   typedef CacheableKeyType<p, GeodeTypeIds::k, tName_##k, tStr_##k, sz> _##k; \
   class CPPCACHE_EXPORT k;                                                    \
-  typedef SharedPtr<k> k##Ptr;
+  typedef std::shared_ptr<k> k##Ptr;
 
 // use a class instead of typedef for bug #283
 #define _GF_CACHEABLE_KEY_TYPE_(p, k, sz)                                      \
@@ -400,15 +358,16 @@ class CacheableContainerType : public Cacheable, public TBase {
    protected:                                                                  \
     inline k() : _##k() {}                                                     \
     inline k(const p value) : _##k(value) {}                                   \
+    FRIEND_STD_SHARED_PTR(k)                                                   \
                                                                                \
    public:                                                                     \
     /** Factory function registered with serialization registry. */            \
     static Serializable* createDeserializable() { return new k(); }            \
     /** Factory function to create a new default instance. */                  \
-    inline static k##Ptr create() { return k##Ptr(new k()); }                  \
+    inline static k##Ptr create() { return std::make_shared<k>(); }            \
     /** Factory function to create an instance with the given value. */        \
     inline static k##Ptr create(const p value) {                               \
-      return k##Ptr(new k(value));                                             \
+      return std::make_shared<k>(value);                                       \
     }                                                                          \
   };                                                                           \
   inline CacheableKeyPtr createKey(const p value) { return k::create(value); } \
@@ -418,85 +377,76 @@ class CacheableContainerType : public Cacheable, public TBase {
   TEMPLATE_EXPORT CacheableArrayType<p, GeodeTypeIds::c>; \
   typedef CacheableArrayType<p, GeodeTypeIds::c> _##c;    \
   class CPPCACHE_EXPORT c;                                \
-  typedef SharedArrayPtr<p, GeodeTypeIds::c> c##Ptr;
+  typedef std::shared_ptr<CacheableArrayType<p, GeodeTypeIds::c>> c##Ptr;
 
 // use a class instead of typedef for bug #283
-#define _GF_CACHEABLE_ARRAY_TYPE_(p, c)                                        \
-  class CPPCACHE_EXPORT c : public _##c {                                      \
-   protected:                                                                  \
-    inline c() : _##c() {}                                                     \
-    inline c(int32_t length) : _##c(length) {}                                 \
-    inline c(p* value, int32_t length) : _##c(value, length) {}                \
-    inline c(const p* value, int32_t length, bool copy)                        \
-        : _##c(value, length, true) {}                                         \
-                                                                               \
-   private:                                                                    \
-    /* Private to disable copy constructor and assignment operator. */         \
-    c(const c& other);                                                         \
-    c& operator=(const c& other);                                              \
-                                                                               \
-   public:                                                                     \
-    /** Factory function registered with serialization registry. */            \
-    static Serializable* createDeserializable() { return new c(); }            \
-    /** Factory function to create a new default instance. */                  \
-    inline static c##Ptr create() { return c##Ptr(new c()); }                  \
-    /** Factory function to create a cacheable array of given size. */         \
-    inline static c##Ptr create(int32_t length) {                              \
-      return c##Ptr(new c(length));                                            \
-    }                                                                          \
-    /** Create a cacheable array copying from the given array. */              \
-    inline static c##Ptr create(const p* value, int32_t length) {              \
-      return (value != NULL ? c##Ptr(new c(value, length, true)) : NULLPTR);   \
-    }                                                                          \
-    /**                                                                      \ \
-     * \                                                                       \
-     * \ \                                                                     \
-     * Create a cacheable array taking ownership of the given array          \ \
-     * \                                                                       \
-     * \ \                                                                     \
-     * without creating a copy.                                              \ \
-     * \                                                                       \
-     * \ \                                                                     \
-     *                                                                       \ \
-     * \                                                                       \
-     * \ \                                                                     \
-     * Note that the application has to ensure that the given array is       \ \
-     * \                                                                       \
-     * \ \                                                                     \
-     * not deleted (apart from this class) and is allocated on the heap      \ \
-     * \                                                                       \
-     * \ \                                                                     \
-     * using the "new" operator.                                             \ \
-     * \                                                                       \
-     * \ \                                                                     \
-     */                                                                        \
-    inline static c##Ptr createNoCopy(p* value, int32_t length) {              \
-      return (value != NULL ? c##Ptr(new c(value, length)) : NULLPTR);         \
-    }                                                                          \
+#define _GF_CACHEABLE_ARRAY_TYPE_(p, c)                                          \
+  class CPPCACHE_EXPORT c : public _##c {                                        \
+   protected:                                                                    \
+    inline c() : _##c() {}                                                       \
+    inline c(int32_t length) : _##c(length) {}                                   \
+    inline c(p* value, int32_t length) : _##c(value, length) {}                  \
+    inline c(const p* value, int32_t length, bool copy)                          \
+        : _##c(value, length, true) {}                                           \
+                                                                                 \
+   private:                                                                      \
+    /* Private to disable copy constructor and assignment operator. */           \
+    c(const c& other);                                                           \
+    c& operator=(const c& other);                                                \
+                                                                                 \
+    FRIEND_STD_SHARED_PTR(c)                                                     \
+                                                                                 \
+   public:                                                                       \
+    /** Factory function registered with serialization registry. */              \
+    static Serializable* createDeserializable() { return new c(); }              \
+    /** Factory function to create a new default instance. */                    \
+    inline static c##Ptr create() { return std::make_shared<c>(); }              \
+    /** Factory function to create a cacheable array of given size. */           \
+    inline static c##Ptr create(int32_t length) {                                \
+      return std::make_shared<c>(length);                                        \
+    }                                                                            \
+    /** Create a cacheable array copying from the given array. */                \
+    inline static c##Ptr create(const p* value, int32_t length) {                \
+      return nullptr == value ? nullptr                                          \
+                              : std::make_shared<c>(value, length, true);        \
+    }                                                                            \
+    /**                                                                          \
+     * Create a cacheable array taking ownership of the given array              \
+     * without creating a copy.                                                  \
+     *                                                                           \
+     * Note that the application has to ensure that the given array is           \
+     * not deleted (apart from this class) and is allocated on the heap          \
+     * using the "new" operator.                                                 \
+     */                                                                          \
+    inline static c##Ptr createNoCopy(p* value, int32_t length) {                \
+      return nullptr == value ? nullptr : std::make_shared<c>(value, length);    \
+    }                                                                            \
   };
 
 #define _GF_CACHEABLE_CONTAINER_TYPE_DEF_(p, c)               \
   TEMPLATE_EXPORT CacheableContainerType<p, GeodeTypeIds::c>; \
   typedef CacheableContainerType<p, GeodeTypeIds::c> _##c;    \
   class CPPCACHE_EXPORT c;                                    \
-  typedef SharedPtr<c> c##Ptr;
+  typedef std::shared_ptr<c> c##Ptr;
 
 // use a class instead of typedef for bug #283
-#define _GF_CACHEABLE_CONTAINER_TYPE_(p, c)                                   \
-  class CPPCACHE_EXPORT c : public _##c {                                     \
-   protected:                                                                 \
-    inline c() : _##c() {}                                                    \
-    inline c(const int32_t n) : _##c(n) {}                                    \
-                                                                              \
-   public:                                                                    \
-    /** Iterator for this type. */                                            \
-    typedef p::Iterator Iterator;                                             \
-    /** Factory function registered with serialization registry. */           \
-    static Serializable* createDeserializable() { return new c(); }           \
-    /** Factory function to create a default instance. */                     \
-    inline static c##Ptr create() { return c##Ptr(new c()); }                 \
-    /** Factory function to create an instance with the given size. */        \
-    inline static c##Ptr create(const int32_t n) { return c##Ptr(new c(n)); } \
+#define _GF_CACHEABLE_CONTAINER_TYPE_(p, c)                            \
+  class CPPCACHE_EXPORT c : public _##c {                              \
+   protected:                                                          \
+    inline c() : _##c() {}                                             \
+    inline c(const int32_t n) : _##c(n) {}                             \
+                                                                       \
+    FRIEND_STD_SHARED_PTR(c)                                           \
+                                                                       \
+   public:                                                             \
+    /** Factory function registered with serialization registry. */    \
+    static Serializable* createDeserializable() { return new c(); }    \
+    /** Factory function to create a default instance. */              \
+    inline static c##Ptr create() { return std::make_shared<c>(); }    \
+    /** Factory function to create an instance with the given size. */ \
+    inline static c##Ptr create(const int32_t n) {                     \
+      return std::make_shared<c>(n);                                   \
+    }                                                                  \
   };
 
 // Instantiations for the built-in CacheableKeys
@@ -624,58 +574,57 @@ _GF_CACHEABLE_ARRAY_TYPE_(CacheableStringPtr, CacheableStringArray);
 
 // Instantiations for container types (Vector/HashMap/HashSet) Cacheables
 
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_VectorOfCacheable, CacheableVector);
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(VectorOfCacheable, CacheableVector);
 /**
  * A mutable <code>Cacheable</code> vector wrapper that can serve as
  * a distributable object for caching.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_VectorOfCacheable, CacheableVector);
+_GF_CACHEABLE_CONTAINER_TYPE_(VectorOfCacheable, CacheableVector);
 
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_HashMapOfCacheable, CacheableHashMap);
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable, CacheableHashMap);
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
  * hash map that can serve as a distributable object for caching.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_HashMapOfCacheable, CacheableHashMap);
+_GF_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableHashMap);
 
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_HashSetOfCacheableKey, CacheableHashSet);
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey, CacheableHashSet);
 /**
  * A mutable <code>CacheableKey</code> hash set wrapper that can serve as
  * a distributable object for caching.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_HashSetOfCacheableKey, CacheableHashSet);
+_GF_CACHEABLE_CONTAINER_TYPE_(HashSetOfCacheableKey, CacheableHashSet);
 
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_VectorOfCacheable, CacheableArrayList);
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(VectorOfCacheable, CacheableArrayList);
 /**
  * A mutable <code>Cacheable</code> array list wrapper that can serve as
  * a distributable object for caching.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_VectorOfCacheable, CacheableArrayList);
+_GF_CACHEABLE_CONTAINER_TYPE_(VectorOfCacheable, CacheableArrayList);
 
 // linketlist for JSON formattor issue
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_VectorOfCacheable, CacheableLinkedList);
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(VectorOfCacheable, CacheableLinkedList);
 /**
  * A mutable <code>Cacheable</code> array list wrapper that can serve as
  * a distributable object for caching.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_VectorOfCacheable, CacheableLinkedList);
+_GF_CACHEABLE_CONTAINER_TYPE_(VectorOfCacheable, CacheableLinkedList);
 
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_VectorOfCacheable, CacheableStack);
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(VectorOfCacheable, CacheableStack);
 /**
  * A mutable <code>Cacheable</code> stack wrapper that can serve as
  * a distributable object for caching.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_VectorOfCacheable, CacheableStack);
+_GF_CACHEABLE_CONTAINER_TYPE_(VectorOfCacheable, CacheableStack);
 
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_HashMapOfCacheable, CacheableHashTable);
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable, CacheableHashTable);
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
  * hash map that can serve as a distributable object for caching.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_HashMapOfCacheable, CacheableHashTable);
+_GF_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableHashTable);
 
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_HashMapOfCacheable,
-                                  CacheableIdentityHashMap);
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable, CacheableIdentityHashMap);
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
  * hash map that can serve as a distributable object for caching. This is
@@ -683,9 +632,9 @@ _GF_CACHEABLE_CONTAINER_TYPE_DEF_(_HashMapOfCacheable,
  * to <code>CacheableHashMap</code> i.e. does not provide the semantics of
  * java <code>IdentityHashMap</code>.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_HashMapOfCacheable, CacheableIdentityHashMap);
+_GF_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableIdentityHashMap);
 
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(_HashSetOfCacheableKey,
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey,
                                   CacheableLinkedHashSet);
 /**
  * A mutable <code>CacheableKey</code> hash set wrapper that can serve as
@@ -694,7 +643,7 @@ _GF_CACHEABLE_CONTAINER_TYPE_DEF_(_HashSetOfCacheableKey,
  * <code>CacheableHashSet</code> i.e. does not provide the predictable
  * iteration semantics of java <code>LinkedHashSet</code>.
  */
-_GF_CACHEABLE_CONTAINER_TYPE_(_HashSetOfCacheableKey, CacheableLinkedHashSet);
+_GF_CACHEABLE_CONTAINER_TYPE_(HashSetOfCacheableKey, CacheableLinkedHashSet);
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

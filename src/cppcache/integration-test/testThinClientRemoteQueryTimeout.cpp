@@ -62,7 +62,7 @@ void stepOne() {
   }
   initClient(true);
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, NULL, 0, true);
+  createPool(poolNames[0], locHostPort, nullptr, 0, true);
   createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
 
   RegionPtr regptr = getHelper()->getRegion(qRegionNames[0]);
@@ -134,7 +134,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = NULLPTR;
+    QueryServicePtr qs = nullptr;
     if (isPoolConfig) {
       PoolPtr pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
@@ -178,7 +178,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = NULLPTR;
+    QueryServicePtr qs = nullptr;
     if (isPoolConfig) {
       PoolPtr pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
@@ -218,7 +218,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = NULLPTR;
+    QueryServicePtr qs = nullptr;
     if (isPoolConfig) {
       PoolPtr pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
@@ -262,7 +262,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = NULLPTR;
+    QueryServicePtr qs = nullptr;
     if (isPoolConfig) {
       PoolPtr pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
@@ -302,7 +302,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSeven)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = NULLPTR;
+    QueryServicePtr qs = nullptr;
     if (isPoolConfig) {
       PoolPtr pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
@@ -355,7 +355,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = NULLPTR;
+    QueryServicePtr qs = nullptr;
     if (isPoolConfig) {
       PoolPtr pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
@@ -405,7 +405,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyNegativeValueTimeout)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = NULLPTR;
+    QueryServicePtr qs = nullptr;
     if (isPoolConfig) {
       PoolPtr pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
@@ -451,7 +451,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyLargeValueTimeout)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = NULLPTR;
+    QueryServicePtr qs = nullptr;
     if (isPoolConfig) {
       PoolPtr pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
@@ -550,18 +550,17 @@ void runRemoteQueryTimeoutTest() {
 
 void setPortfolioPdxType() { CALL_TASK(SetPortfolioTypeToPdx) }
 
-void UnsetPortfolioType() { CALL_TASK(UnsetPortfolioTypeToPdx) }
+void UnsetPortfolioType(){CALL_TASK(UnsetPortfolioTypeToPdx)}
 
-DUNIT_MAIN
-  {
-    // Basic Old Test
+DUNIT_MAIN {
+  // Basic Old Test
+  runRemoteQueryTimeoutTest();
+
+  UnsetPortfolioType();
+  for (int runIdx = 1; runIdx <= 2; ++runIdx) {
+    // New Test with Pool + EP
     runRemoteQueryTimeoutTest();
-
-    UnsetPortfolioType();
-    for (int runIdx = 1; runIdx <= 2; ++runIdx) {
-      // New Test with Pool + EP
-      runRemoteQueryTimeoutTest();
-      setPortfolioPdxType();
-    }
+    setPortfolioPdxType();
   }
+}
 END_MAIN

@@ -68,12 +68,12 @@ const char *endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
 
 std::vector<char *> storeEndPoints(const char *points) {
   std::vector<char *> endpointNames;
-  if (points != NULL) {
+  if (points != nullptr) {
     char *ep = strdup(points);
     char *token = strtok(ep, ",");
     while (token) {
       endpointNames.push_back(token);
-      token = strtok(NULL, ",");
+      token = strtok(nullptr, ",");
     }
   }
   ASSERT(endpointNames.size() == 3, "There should be 3 end points");
@@ -104,7 +104,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreatePoolAndRegions)
     sprintf(endpoints, "%s,%s,%s", endpointNames.at(0), endpointNames.at(1),
             endpointNames.at(2));
 
-    getHelper()->createPoolWithLocators("__TEST_POOL1__", NULL);
+    getHelper()->createPoolWithLocators("__TEST_POOL1__", nullptr);
     getHelper()->createRegionAndAttachPool2(regionNames[0], USE_ACK,
                                             "__TEST_POOL1__", cptr);
     // getHelper()->createRegionAndAttachPool2(regionNames[1], NO_ACK,
@@ -121,8 +121,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutThroughPartitionResolver)
     for (int i = 0; i < 100; i++) {
       // RegionPtr dataReg = getHelper()->getRegion("LocalRegion");
       RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
-      CacheableKeyPtr keyPtr =
-          dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
+      auto keyPtr =
+          std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
       dataReg->put(keyPtr, keyPtr->hashcode());
     }
     SLEEP(5000);

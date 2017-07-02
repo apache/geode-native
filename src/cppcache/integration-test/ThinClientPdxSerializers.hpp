@@ -71,7 +71,7 @@ class TestPdxSerializer : public PdxSerializer {
       npa->_city = pr->readString("_city");
       return (void *)npa;
     } catch (...) {
-      return NULL;
+      return nullptr;
     }
   }
 
@@ -106,21 +106,27 @@ class TestPdxSerializer : public PdxSerializer {
       npt->m_byteArray = pr->readByteArray("m_byteArray", npt->byteArrayLen);
       npt->m_charArray = pr->readCharArray("m_charArray", npt->charArrayLen);
 
-      npt->m_arraylist = pr->readObject("m_arraylist");
+      npt->m_arraylist = std::dynamic_pointer_cast<CacheableArrayList>(
+          pr->readObject("m_arraylist"));
 
-      npt->m_map = dynCast<CacheableHashMapPtr>(pr->readObject("m_map"));
+      npt->m_map =
+          std::dynamic_pointer_cast<CacheableHashMap>(pr->readObject("m_map"));
       // TODO:Check for the size
 
-      npt->m_hashtable = pr->readObject("m_hashtable");
+      npt->m_hashtable = std::dynamic_pointer_cast<CacheableHashTable>(
+          pr->readObject("m_hashtable"));
       // TODO:Check for the size
 
-      npt->m_vector = pr->readObject("m_vector");
+      npt->m_vector = std::dynamic_pointer_cast<CacheableVector>(
+          pr->readObject("m_vector"));
       // TODO::Check for size
 
-      npt->m_chs = pr->readObject("m_chs");
+      npt->m_chs =
+          std::dynamic_pointer_cast<CacheableHashSet>(pr->readObject("m_chs"));
       // TODO::Size check
 
-      npt->m_clhs = pr->readObject("m_clhs");
+      npt->m_clhs = std::dynamic_pointer_cast<CacheableLinkedHashSet>(
+          pr->readObject("m_clhs"));
       // TODO:Size check
 
       npt->m_string = pr->readString("m_string");  // GenericValCompare
@@ -166,7 +172,7 @@ class TestPdxSerializer : public PdxSerializer {
 
       LOGINFO("TestPdxSerializer: NonPdxType fromData() Done.");
     } catch (...) {
-      return NULL;
+      return nullptr;
     }
     return (void *)npt;
   }

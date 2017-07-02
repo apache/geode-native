@@ -112,20 +112,20 @@ class CacheEventFlags {
 };
 
 class TombstoneList;
-typedef SharedPtr<TombstoneList> TombstoneListPtr;
+typedef std::shared_ptr<TombstoneList> TombstoneListPtr;
 class VersionTag;
-typedef SharedPtr<VersionTag> VersionTagPtr;
+typedef std::shared_ptr<VersionTag> VersionTagPtr;
 _GF_PTR_DEF_(MapEntryImpl, MapEntryImplPtr);
 /**
-* @class RegionInternal RegionInternal.hpp
-*
-* This class specifies internal common interface for all regions.
-*/
+ * @class RegionInternal RegionInternal.hpp
+ *
+ * This class specifies internal common interface for all regions.
+ */
 class RegionInternal : public Region {
  public:
   /**
-  * @brief destructor
-  */
+   * @brief destructor
+   */
   virtual ~RegionInternal();
   /** @brief Default implementation of Public Methods from Region
    */
@@ -135,13 +135,13 @@ class RegionInternal : public Region {
                             bool receiveValues = true);
   virtual void unregisterKeys(const VectorOfCacheableKey& keys);
   virtual void registerAllKeys(bool isDurable = false,
-                               VectorOfCacheableKeyPtr resultKeys = NULLPTR,
+                               VectorOfCacheableKeyPtr resultKeys = nullptr,
                                bool getInitialValues = false,
                                bool receiveValues = true);
   virtual void unregisterAllKeys();
 
   virtual void registerRegex(const char* regex, bool isDurable = false,
-                             VectorOfCacheableKeyPtr resultKeys = NULLPTR,
+                             VectorOfCacheableKeyPtr resultKeys = nullptr,
                              bool getInitialValues = false,
                              bool receiveValues = true);
   virtual void unregisterRegex(const char* regex);
@@ -154,7 +154,7 @@ class RegionInternal : public Region {
       const char* predicate, uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   /** @brief Public Methods
-  */
+   */
   virtual PersistenceManagerPtr getPersistenceManager() = 0;
   virtual void setPersistenceManager(PersistenceManagerPtr& pmPtr) = 0;
 
@@ -171,8 +171,8 @@ class RegionInternal : public Region {
                                CacheablePtr& oldValue, int updateCount,
                                const CacheEventFlags eventFlags,
                                VersionTagPtr versionTag,
-                               DataInput* delta = NULL,
-                               EventIdPtr eventId = NULLPTR) = 0;
+                               DataInput* delta = nullptr,
+                               EventIdPtr eventId = nullptr) = 0;
   virtual GfErrType createNoThrow(const CacheableKeyPtr& key,
                                   const CacheablePtr& value,
                                   const UserDataPtr& aCallbackArgument,
@@ -227,7 +227,7 @@ class RegionInternal : public Region {
   virtual bool cacheEnabled() = 0;
   virtual bool isDestroyed() const = 0;
   virtual void evict(int32_t percentage) = 0;
-  virtual CacheImpl* getCacheImpl() = 0;
+  virtual CacheImpl* getCacheImpl() const = 0;
   virtual TombstoneListPtr getTombstoneList();
 
   // KN: added now.
@@ -252,8 +252,8 @@ class RegionInternal : public Region {
 
  protected:
   /**
-  * @brief constructor
-  */
+   * @brief constructor
+   */
   RegionInternal(const RegionAttributesPtr& attributes);
 
   void setLruEntriesLimit(uint32_t limit);
@@ -292,7 +292,7 @@ class RegionInternal : public Region {
   RegionInternal& operator=(const RegionInternal&);
 };
 
-typedef SharedPtr<RegionInternal> RegionInternalPtr;
+typedef std::shared_ptr<RegionInternal> RegionInternalPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

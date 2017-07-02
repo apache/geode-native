@@ -216,8 +216,6 @@ int main(int argc, char* argv[])
 }
 }
 
-#include "no_cout.hpp"
-
 #define BEGIN_TEST(x)                      \
   class Test_##x : virtual public TestOp { \
    public:                                 \

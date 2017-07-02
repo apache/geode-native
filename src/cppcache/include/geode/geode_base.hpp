@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_BASE_H_
-#define GEODE_BASE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_BASE_H_
+#define GEODE_BASE_H_
 
 #if defined(_WIN32)
 /** Library Export */
@@ -269,26 +269,6 @@ typedef enum {
 
 #include <new>
 
-#ifdef _WIN32
-
-typedef void *(*pNew)(size_t);
-typedef void (*pDelete)(void *);
-
-namespace apache {
-namespace geode {
-namespace client {
-extern void setDefaultNewAndDelete();
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
-
-void *operator new(size_t size);
-void operator delete(void *p);
-void *operator new[](size_t size);
-void operator delete[](void *p);
-
-#endif  // _WIN32
-
 /** Allocates x and throws OutOfMemoryException if it fails */
 #define GF_NEW(v, stmt)                                                 \
   {                                                                     \
@@ -304,14 +284,40 @@ void operator delete[](void *p);
 #define GF_SAFE_DELETE(x) \
   {                       \
     delete x;             \
-    x = NULL;             \
+    x = nullptr;          \
   }
 
 /** Deletes array x only if it exists */
 #define GF_SAFE_DELETE_ARRAY(x) \
   {                             \
     delete[] x;                 \
-    x = NULL;                   \
+    x = nullptr;                \
   }
+
+// TODO shared_ptr - Consider making con/destructors public.
+/*
+ * Allows std::shared_ptr to access protected constructors and destructors.
+ */
+#if defined(__clang__)
+#define FRIEND_STD_SHARED_PTR(_T)                                      \
+  friend std::__libcpp_compressed_pair_imp<std::allocator<_T>, _T, 1>; \
+  friend std::__shared_ptr_emplace<_T, std::allocator<_T> >;           \
+  friend std::default_delete<_T>;
+#elif defined(__GNUC__) || defined(__SUNPRO_CC)
+#define FRIEND_STD_SHARED_PTR(_T) friend __gnu_cxx::new_allocator<_T>;
+#elif defined(_MSC_VER)
+#if defined(_MANAGED)
+#define FRIEND_STD_SHARED_PTR(_T) \
+  friend std::_Ref_count_obj<_T>; \
+  friend std::_Ref_count<_T>;     \
+  friend std::_Ptr_base<_T>;      \
+  friend std::default_delete<_T>; \
+  friend std::shared_ptr<_T>;
+#else
+#define FRIEND_STD_SHARED_PTR(_T) friend std::_Ref_count_obj<_T>;
+#endif
+#else
+#define FRIEND_STD_SHARED_PTR(_T)
+#endif
 
 #endif  // GEODE_BASE_H_

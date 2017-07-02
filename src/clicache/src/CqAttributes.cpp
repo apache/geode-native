@@ -23,7 +23,9 @@
 #include "impl/ManagedCqStatusListener.hpp"
 #include "ICqStatusListener.hpp"
 
-using namespace System;
+#include "begin_native.hpp"
+#include <geode/CqAttributes.hpp>
+#include "end_native.hpp"
 
 namespace Apache
 {
@@ -31,37 +33,42 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace System;
+
+      namespace native = apache::geode::client;
 
       generic<class TKey, class TResult>
       array<ICqListener<TKey, TResult>^>^ CqAttributes<TKey, TResult>::getCqListeners( )
       {
-        apache::geode::client::VectorOfCqListener vrr;
-        NativePtr->getCqListeners( vrr );
-        array<ICqListener<TKey, TResult>^>^ listners = gcnew array<ICqListener<TKey, TResult>^>( vrr.size( ) );
-
-        for( System::Int32 index = 0; index < vrr.size( ); index++ )
+        native::CqAttributes::listener_container_type vrr;
+        try
         {
-          apache::geode::client::CqListenerPtr& nativeptr( vrr[ index ] );
-          apache::geode::client::ManagedCqListenerGeneric* mg_listener =
-            dynamic_cast<apache::geode::client::ManagedCqListenerGeneric*>( nativeptr.ptr( ) );
-          if (mg_listener != nullptr)
+          m_nativeptr->get()->getCqListeners(vrr);
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+        auto listners = gcnew array<ICqListener<TKey, TResult>^>(vrr.size());
+
+        for (System::Int32 index = 0; index < vrr.size(); index++)
+        {
+          auto nativeptr = vrr[index];
+          if (auto mg_listener = std::dynamic_pointer_cast<native::ManagedCqListenerGeneric>(nativeptr))
           {
-            listners[ index ] =  (ICqListener<TKey, TResult>^) mg_listener->userptr( );
-          }else 
+            listners[index] = (ICqListener<TKey, TResult>^) mg_listener->userptr();
+          }
+          else  if (auto mg_statuslistener = std::dynamic_pointer_cast<native::ManagedCqStatusListenerGeneric>(nativeptr))
           {
-            apache::geode::client::ManagedCqStatusListenerGeneric* mg_statuslistener =
-              dynamic_cast<apache::geode::client::ManagedCqStatusListenerGeneric*>( nativeptr.ptr( ) );
-            if (mg_statuslistener != nullptr) {
-              listners[ index ] =  (ICqStatusListener<TKey, TResult>^) mg_statuslistener->userptr( );
-            }
-            else {
-              listners[ index ] =  nullptr;
-            }
+            listners[index] = (ICqStatusListener<TKey, TResult>^) mg_statuslistener->userptr();
+          }
+          else
+          {
+            listners[index] = nullptr;
           }
         }
         return listners;
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
-} //namespace 

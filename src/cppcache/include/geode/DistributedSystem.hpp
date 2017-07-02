@@ -47,7 +47,7 @@ class CacheRegionHelper;
 class DiffieHellman;
 class TcrConnection;
 
-class CPPCACHE_EXPORT DistributedSystem : public SharedBase {
+class CPPCACHE_EXPORT DistributedSystem {
   /**
    * @brief public methods
    */
@@ -59,12 +59,12 @@ class CPPCACHE_EXPORT DistributedSystem : public SharedBase {
    * @throws LicenseException if no valid license is found.
    * @throws IllegalStateException if GFCPP variable is not set and
    *   product installation directory cannot be determined
-   * @throws IllegalArgument exception if DS name is NULL
+   * @throws IllegalArgument exception if DS name is nullptr
    * @throws AlreadyConnectedException if this call has succeeded once before
    *for this process
    **/
   static DistributedSystemPtr connect(const char* name,
-                                      const PropertiesPtr& configPtr = NULLPTR);
+                                      const PropertiesPtr& configPtr = nullptr);
 
   /**
    *@brief disconnect from the distributed system

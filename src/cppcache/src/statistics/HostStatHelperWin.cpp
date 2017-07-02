@@ -31,12 +31,12 @@
 #if defined(_WIN32)
 using namespace apache::geode::statistics;
 
-PPERF_DATA_BLOCK HostStatHelperWin::PerfData = NULL;
-PPERF_OBJECT_TYPE HostStatHelperWin::ProcessObj = NULL;
-PPERF_OBJECT_TYPE HostStatHelperWin::ProcessorObj = NULL;
-PPERF_OBJECT_TYPE HostStatHelperWin::MemoryObj = NULL;
-PPERF_OBJECT_TYPE HostStatHelperWin::SystemObj = NULL;
-PPERF_OBJECT_TYPE HostStatHelperWin::ObjectsObj = NULL;
+PPERF_DATA_BLOCK HostStatHelperWin::PerfData = nullptr;
+PPERF_OBJECT_TYPE HostStatHelperWin::ProcessObj = nullptr;
+PPERF_OBJECT_TYPE HostStatHelperWin::ProcessorObj = nullptr;
+PPERF_OBJECT_TYPE HostStatHelperWin::MemoryObj = nullptr;
+PPERF_OBJECT_TYPE HostStatHelperWin::SystemObj = nullptr;
+PPERF_OBJECT_TYPE HostStatHelperWin::ObjectsObj = nullptr;
 DWORD HostStatHelperWin::BufferSize = 65536;
 int32_t HostStatHelperWin::pidCtrOffset = -1;
 
@@ -104,14 +104,14 @@ PPERF_COUNTER_DEFINITION HostStatHelperWin::NextCounter(
 
 void HostStatHelperWin::HostStatsFetchData() {
   DWORD o;
-  PPERF_OBJECT_TYPE objPtr = NULL;
+  PPERF_OBJECT_TYPE objPtr = nullptr;
   DWORD res;
   PPERF_COUNTER_DEFINITION PerfCntr;
   DWORD oldBufferSize = BufferSize;
   const char* qstr;
   qstr = LEVEL1_QUERY_STRING;
 
-  while ((res = RegQueryValueEx(HKEY_PERFORMANCE_DATA, qstr, NULL, NULL,
+  while ((res = RegQueryValueEx(HKEY_PERFORMANCE_DATA, qstr, nullptr, nullptr,
                                 (LPBYTE)PerfData, &BufferSize)) ==
          ERROR_MORE_DATA) {
     oldBufferSize += 4096;
@@ -122,11 +122,11 @@ void HostStatHelperWin::HostStatsFetchData() {
 #ifdef NTDBG
   LOGDEBUG("HostStatHeleperWin: buffersize is %ld\n", BufferSize);
 #endif
-  ProcessObj = NULL;
-  ProcessorObj = NULL;
-  MemoryObj = NULL;
-  SystemObj = NULL;
-  ObjectsObj = NULL;
+  ProcessObj = nullptr;
+  ProcessorObj = nullptr;
+  MemoryObj = nullptr;
+  SystemObj = nullptr;
+  ObjectsObj = nullptr;
 
   if (res != ERROR_SUCCESS) {
     LOGDEBUG(
@@ -519,13 +519,13 @@ void HostStatHelperWin::HostStatsFetchData() {
 }
 
 int32_t HostStatHelperWin::getPid(int32_t pidCtrOffset,
-                                PPERF_COUNTER_BLOCK PerfCntrBlk) {
+                                  PPERF_COUNTER_BLOCK PerfCntrBlk) {
   int32_t* result = (int32_t*)((char*)PerfCntrBlk + pidCtrOffset);
   return *result;
 }
 
 uint32_t HostStatHelperWin::getInt32Value(PPERF_COUNTER_DEFINITION PerfCntr,
-                                        PPERF_COUNTER_BLOCK PerfCntrBlk) {
+                                          PPERF_COUNTER_BLOCK PerfCntrBlk) {
   if (PerfCntr->CounterOffset == 0) {
 #ifdef FLG_DEBUG
     LOGDEBUG("HostStatHeleperWin: missing counter id=%d\n",
@@ -567,8 +567,8 @@ uint32_t HostStatHelperWin::getInt32Value(PPERF_COUNTER_DEFINITION PerfCntr,
 }
 
 int64_t HostStatHelperWin::getInt64Value(PPERF_COUNTER_DEFINITION PerfCntr,
-                                       PPERF_COUNTER_BLOCK PerfCntrBlk,
-                                       bool convertMS) {
+                                         PPERF_COUNTER_BLOCK PerfCntrBlk,
+                                         bool convertMS) {
   if (PerfCntr->CounterOffset == 0) {
 #ifdef FLG_DEBUG
     LOGDEBUG("HostStatHeleperWin: missing counter id=%d\n",
@@ -656,7 +656,7 @@ void HostStatHelperWin::refreshProcess(ProcessStats* processStats) {
   // Get pid, WindowsProcessStats
   WindowsProcessStats* winProcessStat =
       dynamic_cast<WindowsProcessStats*>(processStats);
-  if (winProcessStat == NULL) {
+  if (winProcessStat == nullptr) {
     LOGFINE("HostStatHelperWin::refreshProcess failed due to null processStat");
     return;
   }
@@ -785,7 +785,7 @@ int HostStatHelperWin::calculateCpuUsage(PPERF_COUNTER_BLOCK& ctrBlk) {
 void HostStatHelperWin::closeHostStatHelperWin() {
   if (PerfData) {
     free((char*)PerfData);
-    PerfData = NULL;
+    PerfData = nullptr;
   }
   RegCloseKey(HKEY_PERFORMANCE_DATA);
   firstTime = true;

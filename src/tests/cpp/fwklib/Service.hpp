@@ -21,7 +21,7 @@
  */
 
 #include <geode/geode_base.hpp>
-#include <AtomicInc.hpp>
+#include <atomic>
 #include "fwklib/FwkLog.hpp"
 
 #include "ace/Task.h"
@@ -64,7 +64,7 @@ class Service : public ACE_Task_Base {
  private:
   uint32_t m_ThreadCount;
   volatile bool m_run;
-  AtomicInc m_busy;
+  std::atomic<uint32_t> m_busy;
   ACE_Thread_Mutex m_Mutex;
   ACE_DLList<ServiceTask> m_TaskQueue;
 
@@ -88,12 +88,8 @@ class Service : public ACE_Task_Base {
 
   int32_t runThreaded(ServiceTask* task, uint32_t threads);
 
-  inline uint32_t getBusyCount() {
-    return static_cast<uint32_t>(m_busy.value());
-  }
-  inline uint32_t getIdleCount() {
-    return m_ThreadCount - static_cast<uint32_t>(m_busy.value());
-  }
+  inline uint32_t getBusyCount() { return m_busy; }
+  inline uint32_t getIdleCount() { return m_ThreadCount - m_busy; }
 
   inline void stopThreads() {
     m_run = false;

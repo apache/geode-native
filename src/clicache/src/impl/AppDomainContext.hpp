@@ -19,7 +19,9 @@
 
 #include <functional>
 #include <vcclr.h>
+#include "begin_native.hpp"
 #include <AppDomainContext.hpp>
+#include "end_native.hpp"
 
 namespace Apache
 {

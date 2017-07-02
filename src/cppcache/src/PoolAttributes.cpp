@@ -44,8 +44,7 @@ PoolAttributes::PoolAttributes()
       m_serverGrp(PoolFactory::DEFAULT_SERVER_GROUP) {}
 
 PoolAttributesPtr PoolAttributes::clone() {
-  PoolAttributesPtr ptr(new PoolAttributes(*this));
-  return ptr;
+  return std::make_shared<PoolAttributes>(*this);
 }
 
 /** Return true if all the attributes are equal to those of other. */
@@ -118,11 +117,11 @@ bool PoolAttributes::compareVectorOfStrings(
 
 int32_t PoolAttributes::compareStringAttribute(const char* attributeA,
                                                const char* attributeB) {
-  if (attributeA == NULL && attributeB == NULL) {
+  if (attributeA == nullptr && attributeB == nullptr) {
     return 0;
-  } else if (attributeA == NULL && attributeB != NULL) {
+  } else if (attributeA == nullptr && attributeB != nullptr) {
     return -1;
-  } else if (attributeA != NULL && attributeB == NULL) {
+  } else if (attributeA != nullptr && attributeB == nullptr) {
     return -1;
   }
   return (strcmp(attributeA, attributeB));

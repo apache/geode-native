@@ -26,7 +26,7 @@ ThinClientPoolHADM::ThinClientPoolHADM(const char* name,
     : ThinClientPoolDM(name, poolAttr, connManager),
       m_theTcrConnManager(connManager),
       m_redundancySema(0),
-      m_redundancyTask(NULL),
+      m_redundancyTask(nullptr),
       m_servermonitorTaskId(-1) {
   m_redundancyManager = new ThinClientRedundancyManager(
       &connManager, poolAttr->getSubscriptionRedundancy(), this);
@@ -115,7 +115,7 @@ GfErrType ThinClientPoolHADM::sendSyncRequestRegisterInterestEP(
     TcrMessage& request, TcrMessageReply& reply, bool attemptFailover,
     TcrEndpoint* endpoint) {
   return ThinClientBaseDM::sendSyncRequestRegisterInterest(
-      request, reply, attemptFailover, NULL, endpoint);
+      request, reply, attemptFailover, nullptr, endpoint);
 }
 
 GfErrType ThinClientPoolHADM::sendSyncRequestRegisterInterest(
@@ -162,9 +162,9 @@ void ThinClientPoolHADM::destroy(bool keepAlive) {
   if (!m_isDestroyed && !m_destroyPending) {
     checkRegions();
 
-    if (m_remoteQueryServicePtr != NULLPTR) {
+    if (m_remoteQueryServicePtr != nullptr) {
       m_remoteQueryServicePtr->close();
-      m_remoteQueryServicePtr = NULLPTR;
+      m_remoteQueryServicePtr = nullptr;
     }
 
     stopPingThread();
@@ -255,7 +255,7 @@ void ThinClientPoolHADM::readyForEvents() {
   const char* durable =
       DistributedSystem::getSystemProperties()->durableClientId();
 
-  if (durable != NULL && strlen(durable) > 0) {
+  if (durable != nullptr && strlen(durable) > 0) {
     m_redundancyManager->readyForEvents();
   }
 }

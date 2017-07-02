@@ -35,21 +35,21 @@ namespace Apache
 
       String^ StatisticsType::Name::get()
       {
-        return ManagedString::Get( NativePtr->getName() );
+        return ManagedString::Get( m_nativeptr->getName() );
       }
 
       String^ StatisticsType::Description::get()
       {
-        return ManagedString::Get( NativePtr->getDescription() );
+        return ManagedString::Get( m_nativeptr->getDescription() );
       }
 
       array<StatisticDescriptor^>^ StatisticsType::Statistics::get()
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          apache::geode::statistics::StatisticDescriptor ** nativedescriptors = NativePtr->getStatistics();
-          array<StatisticDescriptor^>^ descriptors = gcnew array<StatisticDescriptor^>(NativePtr->getDescriptorsCount());
-          for (int item = 0; item < NativePtr->getDescriptorsCount(); item++)
+          apache::geode::statistics::StatisticDescriptor ** nativedescriptors = m_nativeptr->getStatistics();
+          array<StatisticDescriptor^>^ descriptors = gcnew array<StatisticDescriptor^>(m_nativeptr->getDescriptorsCount());
+          for (int item = 0; item < m_nativeptr->getDescriptorsCount(); item++)
           {
             descriptors[item] = StatisticDescriptor::Create(nativedescriptors[item]);
           }
@@ -62,7 +62,7 @@ namespace Apache
       {
         ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return NativePtr->nameToId(mg_name.CharPtr);
+          return m_nativeptr->nameToId(mg_name.CharPtr);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -70,13 +70,13 @@ namespace Apache
       {
         ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return StatisticDescriptor::Create(NativePtr->nameToDescriptor(mg_name.CharPtr));
+          return StatisticDescriptor::Create(m_nativeptr->nameToDescriptor(mg_name.CharPtr));
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       System::Int32 StatisticsType::DescriptorsCount::get()
       {
-        return NativePtr->getDescriptorsCount();
+        return m_nativeptr->getDescriptorsCount();
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

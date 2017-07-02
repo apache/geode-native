@@ -356,7 +356,7 @@ class PersistManager {
 
  public:
   PersistManager(const DOMNode* node);
-  ~PersistManager() { m_properties = NULLPTR; }
+  ~PersistManager() { m_properties = nullptr; }
 
   const char* getLibraryName() { return m_libraryName.c_str(); }
   const char* getLibraryFunctionName() { return m_libraryFunctionName.c_str(); }
@@ -574,7 +574,7 @@ class FwkPool {
  public:
   FwkPool(const DOMNode* node);
   ~FwkPool() {
-    if (m_poolFactory != NULLPTR) {
+    if (m_poolFactory != nullptr) {
       // TODO:Close factory
     }
   }
@@ -608,7 +608,7 @@ class FwkPool {
     } else {
       return m_poolFactory->create(m_name.c_str());
     }
-    return NULLPTR;
+    return nullptr;
   }
   const std::string& getName() const { return m_name; }
   void print() const { FWKINFO("FwkPool " << m_name); }

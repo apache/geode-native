@@ -25,12 +25,12 @@ void Statistics::close() {}
 int32_t Statistics::nameToId(const char* name) { return 0; }
 
 StatisticDescriptor* Statistics::nameToDescriptor(const char* name) {
-  return NULL;
+  return nullptr;
 }
 
 int64_t Statistics::getUniqueId() { return 0; }
 
-StatisticsType* Statistics::getType() { return NULL; }
+StatisticsType* Statistics::getType() { return nullptr; }
 
 const char* Statistics::getTextId() { return ""; }
 

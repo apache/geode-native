@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
 #include "RegionAttributes.hpp"
-//#include "Region.hpp"
 #include "impl/ManagedCacheLoader.hpp"
 #include "impl/ManagedCacheWriter.hpp"
 #include "impl/ManagedCacheListener.hpp"
@@ -44,16 +42,23 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
       generic <class TKey, class TValue>
       void Client::RegionAttributes<TKey, TValue>::ToData(
         Apache::Geode::Client::DataOutput^ output )
       {
-        apache::geode::client::DataOutput* nativeOutput =
-          Apache::Geode::Client::GetNativePtrFromUMWrapGeneric<apache::geode::client::DataOutput>( output );
+        auto nativeOutput = output->GetNative();
         if (nativeOutput != nullptr)
         {
-          NativePtr->toData( *nativeOutput );
+          try
+          {
+            m_nativeptr->get()->toData(*nativeOutput);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         }
       }
 
@@ -61,12 +66,21 @@ namespace Apache
       Apache::Geode::Client::IGeodeSerializable^ Client::RegionAttributes<TKey, TValue>::FromData(
         Apache::Geode::Client::DataInput^ input )
       {
-        apache::geode::client::DataInput* nativeInput =
-          Apache::Geode::Client::GetNativePtrFromUMWrapGeneric<apache::geode::client::DataInput>( input );
+        auto nativeInput = input->GetNative();
         if (nativeInput != nullptr)
         {
-          AssignPtr( static_cast<apache::geode::client::RegionAttributes*>(
-            NativePtr->fromData( *nativeInput ) ) );
+          try
+          {
+            auto temp = static_cast<native::RegionAttributes*>(m_nativeptr->get()->fromData(*nativeInput));
+            if (temp != m_nativeptr->get())
+            {
+              m_nativeptr->get_shared_ptr().reset(temp);
+            }
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         }
         return this;
       }
@@ -74,286 +88,517 @@ namespace Apache
       generic <class TKey, class TValue>
       ICacheLoader<TKey, TValue>^ Client::RegionAttributes<TKey, TValue>::CacheLoader::get()
       {
-        apache::geode::client::CacheLoaderPtr& loaderptr( NativePtr->getCacheLoader( ) );
-        apache::geode::client::ManagedCacheLoaderGeneric* mg_loader =
-          dynamic_cast<apache::geode::client::ManagedCacheLoaderGeneric*>( loaderptr.ptr( ) );
-
-        if (mg_loader != nullptr)
+        try
         {
-          return (ICacheLoader<TKey, TValue>^) mg_loader->userptr( );
+          auto loaderptr = m_nativeptr->get()->getCacheLoader();
+          if (auto mg_loader = std::dynamic_pointer_cast<native::ManagedCacheLoaderGeneric>(loaderptr))
+          {
+            return (ICacheLoader<TKey, TValue>^) mg_loader->userptr();
+          }
+          return nullptr;
         }
-        return nullptr;
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       ICacheWriter<TKey, TValue>^ Client::RegionAttributes<TKey, TValue>::CacheWriter::get()
       {
-        apache::geode::client::CacheWriterPtr& writerptr( NativePtr->getCacheWriter( ) );
-        apache::geode::client::ManagedCacheWriterGeneric* mg_writer =
-          dynamic_cast<apache::geode::client::ManagedCacheWriterGeneric*>( writerptr.ptr( ) );
-
-        if (mg_writer != nullptr)
+        try
         {
-          return (ICacheWriter<TKey, TValue>^)mg_writer->userptr( );
+          auto writerptr = m_nativeptr->get()->getCacheWriter();
+          if (auto mg_writer = std::dynamic_pointer_cast<native::ManagedCacheWriterGeneric>(writerptr))
+          {
+            return (ICacheWriter<TKey, TValue>^)mg_writer->userptr();
+          }
+          return nullptr;
         }
-        return nullptr;
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       ICacheListener<TKey, TValue>^ Client::RegionAttributes<TKey, TValue>::CacheListener::get()
       {
-        apache::geode::client::CacheListenerPtr& listenerptr( NativePtr->getCacheListener( ) );
-        apache::geode::client::ManagedCacheListenerGeneric* mg_listener =
-          dynamic_cast<apache::geode::client::ManagedCacheListenerGeneric*>( listenerptr.ptr( ) );
-
-        if (mg_listener != nullptr)
+        try
         {
-          /*
-          CacheListenerGeneric<TKey, TValue>^ clg = gcnew CacheListenerGeneric<TKey, TValue>();
-          clg->SetCacheListener((ICacheListener<TKey, TValue>^)mg_listener->userptr());
-          mg_listener->setptr(clg);
-          */
-          return (ICacheListener<TKey, TValue>^)mg_listener->userptr( );
+          auto listenerptr = m_nativeptr->get()->getCacheListener();
+          if (auto mg_listener = std::dynamic_pointer_cast<native::ManagedCacheListenerGeneric>(listenerptr))
+          {
+            return (ICacheListener<TKey, TValue>^)mg_listener->userptr();
+          }
+          return nullptr;
         }
-        return nullptr;
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       IPartitionResolver<TKey, TValue>^ Client::RegionAttributes<TKey, TValue>::PartitionResolver::get()
       {
-        apache::geode::client::PartitionResolverPtr& resolverptr( NativePtr->getPartitionResolver( ) );
-        apache::geode::client::ManagedPartitionResolverGeneric* mg_resolver =
-          dynamic_cast<apache::geode::client::ManagedPartitionResolverGeneric*>( resolverptr.ptr( ) );
-
-        if (mg_resolver != nullptr)
+        try
         {
-          return (IPartitionResolver<TKey, TValue>^)mg_resolver->userptr( );
+          auto resolverptr = m_nativeptr->get()->getPartitionResolver();
+          if (auto mg_resolver = std::dynamic_pointer_cast<native::ManagedPartitionResolverGeneric>(resolverptr))
+          {
+            return (IPartitionResolver<TKey, TValue>^)mg_resolver->userptr();
+          }
+
+          if (auto mg_fixedResolver = std::dynamic_pointer_cast<native::ManagedFixedPartitionResolverGeneric>(resolverptr))
+          {
+            return (IPartitionResolver<TKey, TValue>^)mg_fixedResolver->userptr();
+          }
+
+          return nullptr;
         }
-
-        apache::geode::client::ManagedFixedPartitionResolverGeneric* mg_fixedResolver =
-          dynamic_cast<apache::geode::client::ManagedFixedPartitionResolverGeneric*>( resolverptr.ptr( ) );
-
-        if (mg_fixedResolver != nullptr)
+        finally
         {
-          return (IPartitionResolver<TKey, TValue>^)mg_fixedResolver->userptr( );
+          GC::KeepAlive(m_nativeptr);
         }
-
-        return nullptr;
       }
 
       generic <class TKey, class TValue>
       System::Int32 Client::RegionAttributes<TKey, TValue>::RegionTimeToLive::get()
       {
-        return NativePtr->getRegionTimeToLive( );
+        try
+        {
+          return m_nativeptr->get()->getRegionTimeToLive( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       ExpirationAction Client::RegionAttributes<TKey, TValue>::RegionTimeToLiveAction::get()
       {
-        return static_cast<ExpirationAction>( NativePtr->getRegionTimeToLiveAction( ) );
+        try
+        {
+          return static_cast<ExpirationAction>( m_nativeptr->get()->getRegionTimeToLiveAction( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       System::Int32 Client::RegionAttributes<TKey, TValue>::RegionIdleTimeout::get()
       {
-        return NativePtr->getRegionIdleTimeout( );
+        try
+        {
+          return m_nativeptr->get()->getRegionIdleTimeout( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       ExpirationAction Client::RegionAttributes<TKey, TValue>::RegionIdleTimeoutAction::get()
       {
-        return static_cast<ExpirationAction>( NativePtr->getRegionIdleTimeoutAction( ) );
+        try
+        {
+          return static_cast<ExpirationAction>( m_nativeptr->get()->getRegionIdleTimeoutAction( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       System::Int32 Client::RegionAttributes<TKey, TValue>::EntryTimeToLive::get()
       {
-        return NativePtr->getEntryTimeToLive( );
+        try
+        {
+          return m_nativeptr->get()->getEntryTimeToLive( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       ExpirationAction Client::RegionAttributes<TKey, TValue>::EntryTimeToLiveAction::get()
       {
-        return static_cast<ExpirationAction>( NativePtr->getEntryTimeToLiveAction( ) );
+        try
+        {
+          return static_cast<ExpirationAction>( m_nativeptr->get()->getEntryTimeToLiveAction( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       System::Int32 Client::RegionAttributes<TKey, TValue>::EntryIdleTimeout::get()
       {
-        return NativePtr->getEntryIdleTimeout( );
+        try
+        {
+          return m_nativeptr->get()->getEntryIdleTimeout( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       ExpirationAction Client::RegionAttributes<TKey, TValue>::EntryIdleTimeoutAction::get()
       {
-        return static_cast<ExpirationAction>( NativePtr->getEntryIdleTimeoutAction( ) );
+        try
+        {
+          return static_cast<ExpirationAction>( m_nativeptr->get()->getEntryIdleTimeoutAction( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       bool Client::RegionAttributes<TKey, TValue>::CachingEnabled::get()
       {
-        return NativePtr->getCachingEnabled( );
+        try
+        {
+          return m_nativeptr->get()->getCachingEnabled( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       bool Client::RegionAttributes<TKey, TValue>::CloningEnabled::get()
       {
-        return NativePtr->getCloningEnabled( );
+        try
+        {
+          return m_nativeptr->get()->getCloningEnabled( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       System::Int32 Client::RegionAttributes<TKey, TValue>::InitialCapacity::get()
       {
-        return NativePtr->getInitialCapacity( );
+        try
+        {
+          return m_nativeptr->get()->getInitialCapacity( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       Single Client::RegionAttributes<TKey, TValue>::LoadFactor::get()
       {
-        return NativePtr->getLoadFactor( );
+        try
+        {
+          return m_nativeptr->get()->getLoadFactor( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
         System::Int32 Client::RegionAttributes<TKey, TValue>::ConcurrencyLevel::get()
       {
-        return NativePtr->getConcurrencyLevel( );
+        try
+        {
+          return m_nativeptr->get()->getConcurrencyLevel( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       System::UInt32 Client::RegionAttributes<TKey, TValue>::LruEntriesLimit::get()
       {
-        return NativePtr->getLruEntriesLimit( );
+        try
+        {
+          return m_nativeptr->get()->getLruEntriesLimit( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       DiskPolicyType Client::RegionAttributes<TKey, TValue>::DiskPolicy::get()
       {
-        return static_cast<DiskPolicyType>( NativePtr->getDiskPolicy( ) );
+        try
+        {
+          return static_cast<DiskPolicyType>( m_nativeptr->get()->getDiskPolicy( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       ExpirationAction Client::RegionAttributes<TKey, TValue>::LruEvictionAction::get()
       {
-        return static_cast<ExpirationAction>( NativePtr->getLruEvictionAction( ) );
+        try
+        {
+          return static_cast<ExpirationAction>( m_nativeptr->get()->getLruEvictionAction( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       String^ Client::RegionAttributes<TKey, TValue>::CacheLoaderLibrary::get()
       {
-        return ManagedString::Get( NativePtr->getCacheLoaderLibrary( ) );
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getCacheLoaderLibrary( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       String^ Client::RegionAttributes<TKey, TValue>::CacheLoaderFactory::get()
       {
-        return ManagedString::Get( NativePtr->getCacheLoaderFactory( ) );
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getCacheLoaderFactory( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       String^ Client::RegionAttributes<TKey, TValue>::CacheListenerLibrary::get()
       {
-        return ManagedString::Get( NativePtr->getCacheListenerLibrary( ) );
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getCacheListenerLibrary( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       String^ Client::RegionAttributes<TKey, TValue>::PartitionResolverLibrary::get()
       {
-        return ManagedString::Get( NativePtr->getPartitionResolverLibrary( ) );
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getPartitionResolverLibrary( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       String^ Client::RegionAttributes<TKey, TValue>::PartitionResolverFactory::get()
       {
-        return ManagedString::Get( NativePtr->getPartitionResolverFactory( ) );
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getPartitionResolverFactory( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       String^ Client::RegionAttributes<TKey, TValue>::CacheListenerFactory::get()
       {
-        return ManagedString::Get( NativePtr->getCacheListenerFactory( ) );
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getCacheListenerFactory( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       String^ Client::RegionAttributes<TKey, TValue>::CacheWriterLibrary::get()
       {
-        return ManagedString::Get( NativePtr->getCacheWriterLibrary( ) );
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getCacheWriterLibrary( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       String^ Client::RegionAttributes<TKey, TValue>::CacheWriterFactory::get()
       {
-        return ManagedString::Get( NativePtr->getCacheWriterFactory( ) );
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getCacheWriterFactory( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       bool Client::RegionAttributes<TKey, TValue>::Equals(Client::RegionAttributes<TKey, TValue>^ other)
       {
-        apache::geode::client::RegionAttributes* otherPtr =
-          GetNativePtrFromSBWrapGeneric<apache::geode::client::RegionAttributes>( other );
-        if (_NativePtr != nullptr && otherPtr != nullptr) {
-          return NativePtr->operator==(*otherPtr);
+        auto otherPtr = other->GetNative();
+        try
+        {
+          if (GetNative() != __nullptr && otherPtr != __nullptr) {
+            return m_nativeptr->get()->operator==(*otherPtr);
+          }
+          return (GetNative() == otherPtr);
         }
-        return (_NativePtr == otherPtr);
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       bool Client::RegionAttributes<TKey, TValue>::Equals(Object^ other)
       {
-        apache::geode::client::RegionAttributes* otherPtr = GetNativePtrFromSBWrapGeneric<apache::geode::client::
-          RegionAttributes>( dynamic_cast<Client::RegionAttributes<TKey, TValue>^>( other ) );
-        if (_NativePtr != nullptr && otherPtr != nullptr) {
-          return NativePtr->operator==(*otherPtr);
-        }
-        return (_NativePtr == otherPtr);
+        return Equals(dynamic_cast<Client::RegionAttributes<TKey, TValue>^>(other));
       }
 
       generic <class TKey, class TValue>
       void Client::RegionAttributes<TKey, TValue>::ValidateSerializableAttributes()
       {
-        NativePtr->validateSerializableAttributes( );
+        try
+        {
+          m_nativeptr->get()->validateSerializableAttributes( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       String^ Client::RegionAttributes<TKey, TValue>::Endpoints::get()
       {
-        return ManagedString::Get( NativePtr->getEndpoints( ) );
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getEndpoints( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       String^ Client::RegionAttributes<TKey, TValue>::PoolName::get()
       {
-        return ManagedString::Get( NativePtr->getPoolName( ) );
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getPoolName( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       Boolean Client::RegionAttributes<TKey, TValue>::ClientNotificationEnabled::get()
       {
-        return NativePtr->getClientNotificationEnabled( );
+        try
+        {
+          return m_nativeptr->get()->getClientNotificationEnabled( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       String^ Client::RegionAttributes<TKey, TValue>::PersistenceLibrary::get()
       {
-        return ManagedString::Get( NativePtr->getPersistenceLibrary( ) );
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getPersistenceLibrary( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       String^ Client::RegionAttributes<TKey, TValue>::PersistenceFactory::get()
       {
-        return ManagedString::Get( NativePtr->getPersistenceFactory( ) );
+        try
+        {
+          return ManagedString::Get( m_nativeptr->get()->getPersistenceFactory( ) );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
       generic <class TKey, class TValue>
       bool Client::RegionAttributes<TKey, TValue>::ConcurrencyChecksEnabled::get()
       {
-        return NativePtr->getConcurrencyChecksEnabled( );
+        try
+        {
+          return m_nativeptr->get()->getConcurrencyChecksEnabled( );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
 
       generic <class TKey, class TValue>
       Properties<String^, String^>^Client::RegionAttributes<TKey, TValue>::PersistenceProperties::get()
       {
-        apache::geode::client::PropertiesPtr& nativeptr(
-          NativePtr->getPersistenceProperties());
-        return Properties<String^, String^>::Create<String^, String^>(nativeptr.ptr());
+        try
+        {
+          return Properties<String^, String^>::Create(m_nativeptr->get()->getPersistenceProperties());
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
       }
     }  // namespace Client
   }  // namespace Geode

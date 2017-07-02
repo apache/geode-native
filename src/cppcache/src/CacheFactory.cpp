@@ -53,28 +53,29 @@ ACE_Recursive_Thread_Mutex g_cfLock;
 
 typedef std::map<std::string, CachePtr> StringToCachePtrMap;
 
-void* CacheFactory::m_cacheMap = (void*)NULL;
+void* CacheFactory::m_cacheMap = (void*)nullptr;
 
-CacheFactoryPtr CacheFactory::default_CacheFactory = NULLPTR;
+CacheFactoryPtr* CacheFactory::default_CacheFactory = nullptr;
 
 PoolPtr CacheFactory::createOrGetDefaultPool() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
 
   CachePtr cache = CacheFactory::getAnyInstance();
 
-  if (cache != NULLPTR && cache->isClosed() == false &&
-      cache->m_cacheImpl->getDefaultPool() != NULLPTR) {
+  if (cache != nullptr && cache->isClosed() == false &&
+      cache->m_cacheImpl->getDefaultPool() != nullptr) {
     return cache->m_cacheImpl->getDefaultPool();
   }
 
   PoolPtr pool = PoolManager::find(DEFAULT_POOL_NAME);
 
   // if default_poolFactory is null then we are not using latest API....
-  if (pool == NULLPTR && Cache_CreatedFromCacheFactory) {
-    if (default_CacheFactory != NULLPTR) {
-      pool = default_CacheFactory->determineDefaultPool(cache);
+  if (pool == nullptr && Cache_CreatedFromCacheFactory) {
+    if (default_CacheFactory && (*default_CacheFactory)) {
+      pool = (*default_CacheFactory)->determineDefaultPool(cache);
     }
-    default_CacheFactory = NULLPTR;
+    (*default_CacheFactory) = nullptr;
+    default_CacheFactory = nullptr;
   }
 
   return pool;
@@ -82,13 +83,11 @@ PoolPtr CacheFactory::createOrGetDefaultPool() {
 
 CacheFactoryPtr CacheFactory::createCacheFactory(
     const PropertiesPtr& configPtr) {
-  // need to create PoolFactory instance
-  CacheFactoryPtr cf(new CacheFactory(configPtr));
-  return cf;
+  return std::make_shared<CacheFactory>(configPtr);
 }
 
 void CacheFactory::init() {
-  if (m_cacheMap == (void*)NULL) {
+  if (m_cacheMap == (void*)nullptr) {
     m_cacheMap = (void*)new StringToCachePtrMap();
   }
   if (!reinterpret_cast<StringToCachePtrMap*>(m_cacheMap)) {
@@ -101,33 +100,29 @@ void CacheFactory::create_(const char* name, DistributedSystemPtr& system,
                            bool ignorePdxUnreadFields, bool readPdxSerialized) {
   CppCacheLibrary::initLib();
 
-  cptr = NULLPTR;
+  cptr = nullptr;
   if (!reinterpret_cast<StringToCachePtrMap*>(m_cacheMap)) {
     throw IllegalArgumentException(
         "CacheFactory::create: cache map is not initialized");
   }
-  if (system == NULLPTR) {
+  if (system == nullptr) {
     throw IllegalArgumentException(
         "CacheFactory::create: system uninitialized");
   }
-  if (name == NULL) {
-    throw IllegalArgumentException("CacheFactory::create: name is NULL");
+  if (name == nullptr) {
+    throw IllegalArgumentException("CacheFactory::create: name is nullptr");
   }
   if (name[0] == '\0') {
     name = "NativeCache";
   }
 
-  CachePtr cp = NULLPTR;
+  CachePtr cp = nullptr;
   basicGetInstance(system, true, cp);
-  if ((cp == NULLPTR) || (cp->isClosed() == true)) {
-    Cache* cep = new Cache(name, system, id_data, ignorePdxUnreadFields,
-                           readPdxSerialized);
-    if (!cep) {
-      throw OutOfMemoryException("Out of Memory");
-    }
-    cptr = cep;
+  if ((cp == nullptr) || (cp->isClosed() == true)) {
+    cptr = std::make_shared<Cache>(name, system, id_data, ignorePdxUnreadFields,
+                                   readPdxSerialized);
     std::string key(system->getName());
-    if (cp != NULLPTR) {
+    if (cp != nullptr) {
       ACE_Guard<ACE_Recursive_Thread_Mutex> guard(g_cfLock);
       (reinterpret_cast<StringToCachePtrMap*>(m_cacheMap))
           ->erase(
@@ -144,7 +139,7 @@ void CacheFactory::create_(const char* name, DistributedSystemPtr& system,
 CachePtr CacheFactory::getInstance(const DistributedSystemPtr& system) {
   CachePtr cptr;
   CppCacheLibrary::initLib();
-  if (system == NULLPTR) {
+  if (system == nullptr) {
     throw IllegalArgumentException(
         "CacheFactory::getInstance: system uninitialized");
   }
@@ -156,7 +151,7 @@ CachePtr CacheFactory::getInstance(const DistributedSystemPtr& system) {
 CachePtr CacheFactory::getInstanceCloseOk(const DistributedSystemPtr& system) {
   CachePtr cptr;
   CppCacheLibrary::initLib();
-  if (system == NULLPTR) {
+  if (system == nullptr) {
     throw IllegalArgumentException(
         "CacheFactory::getInstanceClosedOK: system uninitialized");
   }
@@ -176,7 +171,7 @@ CachePtr CacheFactory::getAnyInstance(bool throwException) {
       throw EntryNotFoundException(
           "CacheFactory::getAnyInstance: not found, no cache created yet");
     } else {
-      return NULLPTR;
+      return nullptr;
     }
   }
   for (StringToCachePtrMap::iterator p =
@@ -187,7 +182,7 @@ CachePtr CacheFactory::getAnyInstance(bool throwException) {
       return cptr;
     }
   }
-  return NULLPTR;
+  return nullptr;
 }
 
 const char* CacheFactory::getVersion() { return PRODUCT_VERSION; }
@@ -200,15 +195,15 @@ const char* CacheFactory::getProductDescription() {
 CacheFactory::CacheFactory() {
   ignorePdxUnreadFields = false;
   pdxReadSerialized = false;
-  dsProp = NULLPTR;
-  pf = NULLPTR;
+  dsProp = nullptr;
+  pf = nullptr;
 }
 
 CacheFactory::CacheFactory(const PropertiesPtr dsProps) {
   ignorePdxUnreadFields = false;
   pdxReadSerialized = false;
   this->dsProp = dsProps;
-  this->pf = NULLPTR;
+  this->pf = nullptr;
 }
 
 CachePtr CacheFactory::create() {
@@ -216,7 +211,7 @@ CachePtr CacheFactory::create() {
   // bool pdxReadSerialized = false;
 
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
-  DistributedSystemPtr dsPtr = NULLPTR;
+  DistributedSystemPtr dsPtr = nullptr;
 
   // should we compare deafult DS properties here??
   if (DistributedSystem::isConnected()) {
@@ -226,27 +221,27 @@ CachePtr CacheFactory::create() {
     LOGFINE("CacheFactory called DistributedSystem::connect");
   }
 
-  CachePtr cache = NULLPTR;
+  CachePtr cache = nullptr;
 
   cache = getAnyInstance(false);
 
-  if (cache == NULLPTR) {
-    CacheFactoryPtr cacheFac(this);
-    default_CacheFactory = cacheFac;
+  if (cache == nullptr) {
+    default_CacheFactory = new CacheFactoryPtr(shared_from_this());
     Cache_CreatedFromCacheFactory = true;
     cache = create(DEFAULT_CACHE_NAME, dsPtr,
-                   dsPtr->getSystemProperties()->cacheXMLFile(), NULLPTR);
-    // if(cache->m_cacheImpl->getDefaultPool() == NULLPTR)
+                   dsPtr->getSystemProperties()->cacheXMLFile(), nullptr);
+    // if(cache->m_cacheImpl->getDefaultPool() == nullptr)
     // determineDefaultPool(cache);
   } else {
-    if (cache->m_cacheImpl->getDefaultPool() != NULLPTR) {
+    if (cache->m_cacheImpl->getDefaultPool() != nullptr) {
       // we already choose or created deafult pool
       determineDefaultPool(cache);
     } else {
       // not yet created, create from first cacheFactory instance
-      if (default_CacheFactory != NULLPTR) {
-        default_CacheFactory->determineDefaultPool(cache);
-        default_CacheFactory = NULLPTR;
+      if (default_CacheFactory && (*default_CacheFactory)) {
+        (*default_CacheFactory)->determineDefaultPool(cache);
+        (*default_CacheFactory) = nullptr;
+        default_CacheFactory = nullptr;
       }
       determineDefaultPool(cache);
     }
@@ -265,9 +260,9 @@ CachePtr CacheFactory::create() {
 }
 
 CachePtr CacheFactory::create(const char* name,
-                              DistributedSystemPtr system /*= NULLPTR*/,
+                              DistributedSystemPtr system /*= nullptr*/,
                               const char* cacheXml /*= 0*/,
-                              const CacheAttributesPtr& attrs /*= NULLPTR*/) {
+                              const CacheAttributesPtr& attrs /*= nullptr*/) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
 
   CachePtr cptr;
@@ -290,13 +285,13 @@ CachePtr CacheFactory::create(const char* name,
   } catch (const apache::geode::client::Exception&) {
     if (!cptr->isClosed()) {
       cptr->close();
-      cptr = NULLPTR;
+      cptr = nullptr;
     }
     throw;
   } catch (...) {
     if (!cptr->isClosed()) {
       cptr->close();
-      cptr = NULLPTR;
+      cptr = nullptr;
     }
     throw apache::geode::client::UnknownException(
         "Exception thrown in CacheFactory::create");
@@ -306,12 +301,12 @@ CachePtr CacheFactory::create(const char* name,
 }
 
 PoolPtr CacheFactory::determineDefaultPool(CachePtr cachePtr) {
-  PoolPtr pool = NULLPTR;
-  HashMapOfPools allPools = PoolManager::getAll();
+  PoolPtr pool = nullptr;
+  auto allPools = PoolManager::getAll();
   size_t currPoolSize = allPools.size();
 
   // means user has not set any pool attributes
-  if (this->pf == NULLPTR) {
+  if (this->pf == nullptr) {
     this->pf = getPoolFactory();
     if (currPoolSize == 0) {
       if (!this->pf->m_addedServerOrLocator) {
@@ -324,13 +319,13 @@ PoolPtr CacheFactory::determineDefaultPool(CachePtr cachePtr) {
       cachePtr->m_cacheImpl->setDefaultPool(pool);
       return pool;
     } else if (currPoolSize == 1) {
-      pool = allPools.begin().second();
+      pool = allPools.begin()->second;
       LOGINFO("Set default pool from existing pool.");
       cachePtr->m_cacheImpl->setDefaultPool(pool);
       return pool;
     } else {
       // can't set anything as deafult pool
-      return NULLPTR;
+      return nullptr;
     }
   } else {
     PoolPtr defaulPool = cachePtr->m_cacheImpl->getDefaultPool();
@@ -339,7 +334,7 @@ PoolPtr CacheFactory::determineDefaultPool(CachePtr cachePtr) {
       this->pf->addServer(DEFAULT_SERVER_HOST, DEFAULT_SERVER_PORT);
     }
 
-    if (defaulPool != NULLPTR) {
+    if (defaulPool != nullptr) {
       // once default pool is created, we will not create
       if (*(defaulPool->m_attrs) == *(this->pf->m_attrs)) {
         return defaulPool;
@@ -349,21 +344,20 @@ PoolPtr CacheFactory::determineDefaultPool(CachePtr cachePtr) {
       }
     }
 
-    pool = NULLPTR;
+    pool = nullptr;
 
     // return any existing pool if it matches
-    for (HashMapOfPools::Iterator iter = allPools.begin();
-         iter != allPools.end(); ++iter) {
-      PoolPtr currPool(iter.second());
+    for (const auto& iter : allPools) {
+      auto currPool = iter.second;
       if (*(currPool->m_attrs) == *(this->pf->m_attrs)) {
         return currPool;
       }
     }
 
     // defaul pool is null
-    GF_DEV_ASSERT(defaulPool == NULLPTR);
+    GF_DEV_ASSERT(defaulPool == nullptr);
 
-    if (defaulPool == NULLPTR) {
+    if (defaulPool == nullptr) {
       pool = this->pf->create(DEFAULT_POOL_NAME);
       LOGINFO("Created default pool");
       // creating default so setting this as defaul pool
@@ -375,7 +369,7 @@ PoolPtr CacheFactory::determineDefaultPool(CachePtr cachePtr) {
 }
 
 PoolFactoryPtr CacheFactory::getPoolFactory() {
-  if (this->pf == NULLPTR) {
+  if (this->pf == nullptr) {
     this->pf = PoolManager::createFactory();
   }
   return this->pf;
@@ -383,22 +377,22 @@ PoolFactoryPtr CacheFactory::getPoolFactory() {
 
 CacheFactory::~CacheFactory() {}
 void CacheFactory::cleanup() {
-  if (m_cacheMap != NULL) {
+  if (m_cacheMap != nullptr) {
     if ((reinterpret_cast<StringToCachePtrMap*>(m_cacheMap))->empty() == true) {
       (reinterpret_cast<StringToCachePtrMap*>(m_cacheMap))->clear();
     }
     delete (reinterpret_cast<StringToCachePtrMap*>(m_cacheMap));
-    m_cacheMap = NULL;
+    m_cacheMap = nullptr;
   }
 }
 
 GfErrType CacheFactory::basicGetInstance(const DistributedSystemPtr& system,
                                          const bool closeOk, CachePtr& cptr) {
   GfErrType err = GF_NOERR;
-  if (system == NULLPTR) {
+  if (system == nullptr) {
     return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
   }
-  cptr = NULLPTR;
+  cptr = nullptr;
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(g_cfLock);
   if ((reinterpret_cast<StringToCachePtrMap*>(m_cacheMap))->empty() == true) {
     return GF_CACHE_ENTRY_NOT_FOUND;
@@ -448,135 +442,111 @@ void CacheFactory::handleXML(CachePtr& cachePtr, const char* cachexml,
 }
 
 CacheFactoryPtr CacheFactory::set(const char* name, const char* value) {
-  if (this->dsProp == NULLPTR) this->dsProp = Properties::create();
+  if (this->dsProp == nullptr) this->dsProp = Properties::create();
   this->dsProp->insert(name, value);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 
 CacheFactoryPtr CacheFactory::setFreeConnectionTimeout(int connectionTimeout) {
   getPoolFactory()->setFreeConnectionTimeout(connectionTimeout);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::setLoadConditioningInterval(
     int loadConditioningInterval) {
   getPoolFactory()->setLoadConditioningInterval(loadConditioningInterval);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::setSocketBufferSize(int bufferSize) {
   getPoolFactory()->setSocketBufferSize(bufferSize);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::setThreadLocalConnections(
     bool threadLocalConnections) {
   getPoolFactory()->setThreadLocalConnections(threadLocalConnections);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::setReadTimeout(int timeout) {
   getPoolFactory()->setReadTimeout(timeout);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::setMinConnections(int minConnections) {
   getPoolFactory()->setMinConnections(minConnections);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::setMaxConnections(int maxConnections) {
   getPoolFactory()->setMaxConnections(maxConnections);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::setIdleTimeout(long idleTimeout) {
   getPoolFactory()->setIdleTimeout(idleTimeout);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::setRetryAttempts(int retryAttempts) {
   getPoolFactory()->setRetryAttempts(retryAttempts);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::setPingInterval(long pingInterval) {
   getPoolFactory()->setPingInterval(pingInterval);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::setUpdateLocatorListInterval(
     long updateLocatorListInterval) {
   getPoolFactory()->setUpdateLocatorListInterval(updateLocatorListInterval);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::setStatisticInterval(int statisticInterval) {
   getPoolFactory()->setStatisticInterval(statisticInterval);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::setServerGroup(const char* group) {
   getPoolFactory()->setServerGroup(group);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::addLocator(const char* host, int port) {
   getPoolFactory()->addLocator(host, port);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::addServer(const char* host, int port) {
   getPoolFactory()->addServer(host, port);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::setSubscriptionEnabled(bool enabled) {
   getPoolFactory()->setSubscriptionEnabled(enabled);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::setSubscriptionRedundancy(int redundancy) {
   getPoolFactory()->setSubscriptionRedundancy(redundancy);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::setSubscriptionMessageTrackingTimeout(
     int messageTrackingTimeout) {
   getPoolFactory()->setSubscriptionMessageTrackingTimeout(
       messageTrackingTimeout);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::setSubscriptionAckInterval(int ackInterval) {
   getPoolFactory()->setSubscriptionAckInterval(ackInterval);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 CacheFactoryPtr CacheFactory::setMultiuserAuthentication(
     bool multiuserAuthentication) {
   getPoolFactory()->setMultiuserAuthentication(multiuserAuthentication);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 
 CacheFactoryPtr CacheFactory::setPRSingleHopEnabled(bool enabled) {
   getPoolFactory()->setPRSingleHopEnabled(enabled);
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 
 CacheFactoryPtr CacheFactory::setPdxIgnoreUnreadFields(bool ignore) {
   ignorePdxUnreadFields = ignore;
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 
 CacheFactoryPtr CacheFactory::setPdxReadSerialized(bool prs) {
   pdxReadSerialized = prs;
-  CacheFactoryPtr cfPtr(this);
-  return cfPtr;
+  return shared_from_this();
 }
 }  // namespace client
 }  // namespace geode

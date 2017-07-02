@@ -25,7 +25,7 @@ using namespace apache::geode::client;
 LRUAction* LRUAction::newLRUAction(const LRUAction::Action& actionType,
                                    RegionInternal* regionPtr,
                                    LRUEntriesMap* entriesMapPtr) {
-  LRUAction* result = NULL;
+  LRUAction* result = nullptr;
 
   switch (actionType) {
     case LRUAction::INVALIDATE:
@@ -59,7 +59,7 @@ bool LRUOverFlowToDiskAction::evict(const MapEntryImplPtr& mePtr) {
   CacheablePtr valuePtr;
   mePtr->getKeyI(keyPtr);
   mePtr->getValueI(valuePtr);
-  if (valuePtr == NULLPTR) {
+  if (valuePtr == nullptr) {
     LOGERROR(
         "[internal error]:: OverflowAction: destroyed entry added to "
         "LRU list");
@@ -70,7 +70,7 @@ bool LRUOverFlowToDiskAction::evict(const MapEntryImplPtr& mePtr) {
   LRUEntryProperties& lruProps = mePtr->getLRUProperties();
   void* persistenceInfo = lruProps.getPersistenceInfo();
   bool setInfo = false;
-  if (persistenceInfo == NULL) {
+  if (persistenceInfo == nullptr) {
     setInfo = true;
   }
   PersistenceManagerPtr pmPtr = m_regionPtr->getPersistenceManager();
@@ -91,7 +91,7 @@ bool LRUOverFlowToDiskAction::evict(const MapEntryImplPtr& mePtr) {
   // set value after write on disk to indicate that it is on disk.
   mePtr->setValueI(CacheableToken::overflowed());
 
-  if (m_entriesMapPtr != NULL) {
+  if (m_entriesMapPtr != nullptr) {
     int64_t newSize =
         CacheableToken::overflowed()->objectSize() - valuePtr->objectSize();
     m_entriesMapPtr->updateMapSize(newSize);
@@ -110,7 +110,7 @@ bool LRULocalInvalidateAction::evict(const MapEntryImplPtr& mePtr) {
   GfErrType err = GF_NOERR;
   if (!m_regionPtr->isDestroyed()) {
     err = m_regionPtr->invalidateNoThrow(
-        keyPtr, NULLPTR, -1, CacheEventFlags::EVICTION | CacheEventFlags::LOCAL,
+        keyPtr, nullptr, -1, CacheEventFlags::EVICTION | CacheEventFlags::LOCAL,
         versionTag);
   }
   return (err == GF_NOERR);

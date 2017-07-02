@@ -19,7 +19,10 @@
 
 #include "../geode_defs.hpp"
 #include <vcclr.h>
+#include "begin_native.hpp"
 #include <geode/Properties.hpp>
+#include "end_native.hpp"
+
 #include "../Properties.hpp"
 
 //using namespace apache::geode::client;

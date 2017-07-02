@@ -49,38 +49,37 @@ namespace Apache
 
           virtual bool BeforeUpdate( Apache::Geode::Client::EntryEvent<Object^, Object^>^ ev ) override
           {
-            EntryEvent<TKey, TValue> gevent(Client::GetNativePtr<apache::geode::client::EntryEvent>(ev));
+            EntryEvent<TKey, TValue> gevent(ev->GetNative());
             return m_writer->BeforeUpdate(%gevent);
           }
 
           virtual bool BeforeCreate(Apache::Geode::Client::EntryEvent<Object^, Object^>^ ev) override
           {
-            EntryEvent<TKey, TValue> gevent(Client::GetNativePtr<apache::geode::client::EntryEvent>(ev));
+            EntryEvent<TKey, TValue> gevent(ev->GetNative());
             return m_writer->BeforeCreate(%gevent);
           }
 
           virtual bool BeforeDestroy(Apache::Geode::Client::EntryEvent<Object^, Object^>^ ev) override
           {
-            EntryEvent<TKey, TValue> gevent(Client::GetNativePtr<apache::geode::client::EntryEvent>(ev));
+            EntryEvent<TKey, TValue> gevent(ev->GetNative());
             return m_writer->BeforeDestroy(%gevent);
           }
 
           virtual bool BeforeRegionClear( Apache::Geode::Client::RegionEvent<Object^, Object^>^ ev ) override
           {
-            RegionEvent<TKey, TValue> gevent(Client::GetNativePtr<apache::geode::client::RegionEvent>(ev));
+            RegionEvent<TKey, TValue> gevent(ev->GetNative());
             return m_writer->BeforeRegionClear(%gevent);
           }
 
           virtual bool BeforeRegionDestroy(Apache::Geode::Client::RegionEvent<Object^, Object^>^ ev) override
           {
-            RegionEvent<TKey, TValue> gevent(Client::GetNativePtr<apache::geode::client::RegionEvent>(ev));
+            RegionEvent<TKey, TValue> gevent(ev->GetNative());
             return m_writer->BeforeRegionDestroy(%gevent);
           }
           
           virtual void Close(Apache::Geode::Client::Region<Object^, Object^>^ region) override
           {
-            IRegion<TKey, TValue>^ gregion = Apache::Geode::Client::Region<TKey, TValue>::Create(Client::GetNativePtr<apache::geode::client::Region>(region));
-            m_writer->Close(gregion);
+            m_writer->Close((IRegion<TKey, TValue>^) region);
           }
       };
     }  // namespace Client

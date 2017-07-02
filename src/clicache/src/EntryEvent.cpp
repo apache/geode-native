@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
 #include "EntryEvent.hpp"
 #include "Region.hpp"
 #include "impl/SafeConvert.hpp"
@@ -30,65 +29,46 @@ namespace Apache
     {
 
       generic<class TKey, class TValue>
-      EntryEvent<TKey, TValue>::EntryEvent(IRegion<TKey, TValue>^ region,
-        TKey key, TValue oldValue,
-        TValue newValue, Object^ aCallbackArgument,
-        bool remoteOrigin)
-        : UMWrap( )
-      {
-        //TODO:: from where this gets called
-        /*apache::geode::client::RegionPtr regionptr( GetNativePtr<apache::geode::client::Region>( region ) );
-        apache::geode::client::CacheableKeyPtr keyptr( SafeMKeyConvert( key ) );
-        apache::geode::client::CacheablePtr oldptr( SafeMSerializableConvert( oldValue ) );
-        apache::geode::client::CacheablePtr newptr( SafeMSerializableConvert( newValue ) );
-        apache::geode::client::UserDataPtr callbackptr(SafeMSerializableConvert(
-            aCallbackArgument));
-
-        SetPtr(new apache::geode::client::EntryEvent(regionptr, keyptr,
-          oldptr, newptr, callbackptr, remoteOrigin), true);*/
-      }
-
-      generic<class TKey, class TValue>
       IRegion<TKey, TValue>^ EntryEvent<TKey, TValue>::Region::get( )
       {
-        apache::geode::client::RegionPtr& regionptr( NativePtr->getRegion( ) );
-        return Client::Region<TKey, TValue>::Create( regionptr.ptr( ) );
+        apache::geode::client::RegionPtr regionptr = m_nativeptr->getRegion();
+        return Client::Region<TKey, TValue>::Create( regionptr );
       }
 
       generic<class TKey, class TValue>
       TKey EntryEvent<TKey, TValue>::Key::get( )
       {
-        apache::geode::client::CacheableKeyPtr& keyptr( NativePtr->getKey( ) );
+        apache::geode::client::CacheableKeyPtr& keyptr( m_nativeptr->getKey( ) );
         return Serializable::GetManagedValueGeneric<TKey>( keyptr );
       }
 
       generic<class TKey, class TValue>
       TValue EntryEvent<TKey, TValue>::OldValue::get( )
       {
-        apache::geode::client::CacheablePtr& valptr( NativePtr->getOldValue( ) );
+        apache::geode::client::CacheablePtr& valptr( m_nativeptr->getOldValue( ) );
         return Serializable::GetManagedValueGeneric<TValue>( valptr );
       }
 
       generic<class TKey, class TValue>
       TValue EntryEvent<TKey, TValue>::NewValue::get( )
       {
-        apache::geode::client::CacheablePtr& valptr( NativePtr->getNewValue( ) );
+        apache::geode::client::CacheablePtr& valptr( m_nativeptr->getNewValue( ) );
         return Serializable::GetManagedValueGeneric<TValue>( valptr );
       }
 
       generic<class TKey, class TValue>
       Object^ EntryEvent<TKey, TValue>::CallbackArgument::get()
       {
-        apache::geode::client::UserDataPtr& valptr(NativePtr->getCallbackArgument());
+        apache::geode::client::UserDataPtr& valptr(m_nativeptr->getCallbackArgument());
         return Serializable::GetManagedValueGeneric<Object^>( valptr );
       }
 
       generic<class TKey, class TValue>
-      bool EntryEvent<TKey, TValue>::RemoteOrigin::get( )
+      bool EntryEvent<TKey, TValue>::RemoteOrigin::get()
       {
-        return NativePtr->remoteOrigin( );
+        return m_nativeptr->remoteOrigin();
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
 
- } //namespace 

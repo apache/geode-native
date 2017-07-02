@@ -23,7 +23,7 @@
 
 using namespace apache::geode::client;
 CacheAttributes::CacheAttributes()
-    : m_redundancyLevel(0), m_endpoints(NULL), m_cacheMode(false) {}
+    : m_redundancyLevel(0), m_endpoints(nullptr), m_cacheMode(false) {}
 
 CacheAttributes::CacheAttributes(const CacheAttributes& rhs)
     : m_redundancyLevel(rhs.m_redundancyLevel) {
@@ -47,11 +47,11 @@ bool CacheAttributes::operator==(const CacheAttributes& other) const {
 
 int32_t CacheAttributes::compareStringAttribute(char* attributeA,
                                                 char* attributeB) const {
-  if (attributeA == NULL && attributeB == NULL) {
+  if (attributeA == nullptr && attributeB == nullptr) {
     return 0;
-  } else if (attributeA == NULL && attributeB != NULL) {
+  } else if (attributeA == nullptr && attributeB != nullptr) {
     return -1;
-  } else if (attributeA != NULL && attributeB == NULL) {
+  } else if (attributeA != nullptr && attributeB == nullptr) {
     return -1;
   }
   return (strcmp(attributeA, attributeB));
@@ -63,11 +63,11 @@ bool CacheAttributes::operator!=(const CacheAttributes& other) const {
 }
 
 void CacheAttributes::copyStringAttribute(char*& lhs, const char* rhs) {
-  if (lhs != NULL) {
+  if (lhs != nullptr) {
     delete[] lhs;
   }
-  if (rhs == NULL) {
-    lhs = NULL;
+  if (rhs == nullptr) {
+    lhs = nullptr;
   } else {
     size_t len = strlen(rhs) + 1;
     lhs = new char[len];

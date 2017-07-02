@@ -53,42 +53,50 @@ char* exFuncNameSendException = (char*)"executeFunction_SendException";
 char* exFuncNamePdxType = (char*)"PdxFunctionTest";
 char* FETimeOut = (char*)"FunctionExecutionTimeOut";
 
-#define verifyGetResults()                                                    \
-  bool found = false;                                                         \
-  for (int j = 0; j < 34; j++) {                                              \
-    if (j % 2 == 0) continue;                                                 \
-    sprintf(buf, "VALUE--%d", j);                                             \
-    if (strcmp(buf, dynCast<CacheableStringPtr>(resultList->operator[](i))    \
-                        ->asChar()) == 0) {                                   \
-      LOGINFO(                                                                \
-          "buf = %s "                                                         \
-          "dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar() " \
-          "= %s ",                                                            \
-          buf,                                                                \
-          dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar());  \
-      found = true;                                                           \
-      break;                                                                  \
-    }                                                                         \
-  }                                                                           \
+#define verifyGetResults()                                                     \
+  bool found = false;                                                          \
+  for (int j = 0; j < 34; j++) {                                               \
+    if (j % 2 == 0) continue;                                                  \
+    sprintf(buf, "VALUE--%d", j);                                              \
+    if (strcmp(buf, std::dynamic_pointer_cast<CacheableString>(                \
+                        resultList->operator[](i))                             \
+                        ->asChar()) == 0) {                                    \
+      LOGINFO(                                                                 \
+          "buf = %s "                                                          \
+          "std::dynamic_pointer_cast<CacheableString>(resultList->operator[](" \
+          "i))->asChar() "                                                     \
+          "= %s ",                                                             \
+          buf,                                                                 \
+          std::dynamic_pointer_cast<CacheableString>(                          \
+              resultList->operator[](i))                                       \
+              ->asChar());                                                     \
+      found = true;                                                            \
+      break;                                                                   \
+    }                                                                          \
+  }                                                                            \
   ASSERT(found, "this returned value is invalid");
 
-#define verifyGetKeyResults()                                                 \
-  bool found = false;                                                         \
-  for (int j = 0; j < 34; j++) {                                              \
-    if (j % 2 == 0) continue;                                                 \
-    sprintf(buf, "KEY--%d", j);                                               \
-    if (strcmp(buf, dynCast<CacheableStringPtr>(resultList->operator[](i))    \
-                        ->asChar()) == 0) {                                   \
-      LOGINFO(                                                                \
-          "buf = %s "                                                         \
-          "dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar() " \
-          "= %s ",                                                            \
-          buf,                                                                \
-          dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar());  \
-      found = true;                                                           \
-      break;                                                                  \
-    }                                                                         \
-  }                                                                           \
+#define verifyGetKeyResults()                                                  \
+  bool found = false;                                                          \
+  for (int j = 0; j < 34; j++) {                                               \
+    if (j % 2 == 0) continue;                                                  \
+    sprintf(buf, "KEY--%d", j);                                                \
+    if (strcmp(buf, std::dynamic_pointer_cast<CacheableString>(                \
+                        resultList->operator[](i))                             \
+                        ->asChar()) == 0) {                                    \
+      LOGINFO(                                                                 \
+          "buf = %s "                                                          \
+          "std::dynamic_pointer_cast<CacheableString>(resultList->operator[](" \
+          "i))->asChar() "                                                     \
+          "= %s ",                                                             \
+          buf,                                                                 \
+          std::dynamic_pointer_cast<CacheableString>(                          \
+              resultList->operator[](i))                                       \
+              ->asChar());                                                     \
+      found = true;                                                            \
+      break;                                                                   \
+    }                                                                          \
+  }                                                                            \
   ASSERT(found, "this returned KEY is invalid");
 
 #define verifyPutResults()                   \
@@ -128,18 +136,18 @@ class MyResultCollector : public ResultCollector {
 
   void addResult(CacheablePtr& resultItem) {
     m_addResultCount++;
-    if (resultItem == NULLPTR) {
+    if (resultItem == nullptr) {
       return;
     }
-    try {
-      CacheableArrayListPtr result = dynCast<CacheableArrayListPtr>(resultItem);
+    if (auto result =
+            std::dynamic_pointer_cast<CacheableArrayList>(resultItem)) {
       for (int32_t i = 0; i < result->size(); i++) {
         m_resultList->push_back(result->operator[](i));
       }
-    } catch (ClassCastException) {
-      UserFunctionExecutionExceptionPtr result =
-          dynCast<UserFunctionExecutionExceptionPtr>(resultItem);
-      m_resultList->push_back(result);
+    } else {
+      auto ex =
+          std::dynamic_pointer_cast<UserFunctionExecutionException>(resultItem);
+      m_resultList->push_back(ex);
     }
   }
   void endResults() {
@@ -159,6 +167,49 @@ class MyResultCollector : public ResultCollector {
 };
 _GF_PTR_DEF_(MyResultCollector, MyResultCollectorPtr)
 
+template <class _T>
+bool validateResultTypeAndAllowUserFunctionExecutionException(
+    const int32_t index, const CacheablePtr& result) {
+  if (auto intValue = std::dynamic_pointer_cast<_T>(result)) {
+    LOGINFO("%s is %d ", typeid(_T).name(), intValue->value());
+    return true;
+  } else {
+    if (auto uFEPtr =
+            std::dynamic_pointer_cast<UserFunctionExecutionException>(result)) {
+      LOGINFO("Done casting to uFEPtr");
+      LOGINFO("Read expected uFEPtr exception %s ",
+              uFEPtr->getMessage()->asChar());
+      return true;
+    } else {
+      LOGINFO("Unexpected result type %s for index %d.",
+              result->toString()->asChar(), index);
+    }
+  }
+
+  return false;
+}
+
+bool validateResultTypeIsUserFunctionExecutionException(
+    const int32_t index, const CacheablePtr& result) {
+  if (auto uFEPtr =
+          std::dynamic_pointer_cast<UserFunctionExecutionException>(result)) {
+    LOGINFO("Done casting to uFEPtr");
+    LOGINFO("Read expected uFEPtr exception %s ",
+            uFEPtr->getMessage()->asChar());
+    return true;
+  } else {
+    LOGINFO("Unexpected result type %s for index %d.",
+            result->toString()->asChar(), index);
+  }
+
+  return false;
+}
+
+template <class _T>
+bool validateResultType(const int32_t index, const CacheablePtr& result) {
+  return false;
+}
+
 DUNIT_TASK_DEFINITION(LOCATOR1, StartLocator1)
   {
     // starting locator
@@ -171,7 +222,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER, StartS12)
   {
-    const char* lhp = NULL;
+    const char* lhp = nullptr;
     if (!isPoolWithEndpoint) lhp = locHostPort;
     if (isLocalServer) {
       CacheHelper::initServer(1, "func_cacheserver1_pool.xml", lhp);
@@ -184,7 +235,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER, startServer2)
   {
-    const char* lhp = NULL;
+    const char* lhp = nullptr;
     if (!isPoolWithEndpoint) lhp = locHostPort;
     if (isLocalServer) {
       CacheHelper::initServer(2, "func_cacheserver2_pool.xml", lhp);
@@ -194,14 +245,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
   {
-    // initClient(true);
-    initClientWithPool(true, NULL, locHostPort, serverGroup, NULLPTR, 0, true);
-    // createPool(poolName, locHostPort,serverGroup, NULL, 0, true );
-    // createRegionAndAttachPool(poolRegNames[0],USE_ACK, poolName);
+    initClientWithPool(true, nullptr, locHostPort, serverGroup, nullptr, 0,
+                       true);
 
-    RegionPtr regPtr0 =
-        createRegionAndAttachPool(poolRegNames[0], USE_ACK, NULL);
-    ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
+    auto regPtr0 = createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
     regPtr0->registerAllKeys();
 
     LOG("Clnt1Init complete.");
@@ -210,65 +257,53 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+    auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     char buf[128];
 
     for (int i = 0; i < 34; i++) {
       sprintf(buf, "VALUE--%d", i);
-      CacheablePtr value(CacheableString::create(buf));
+      auto value = CacheableString::create(buf);
 
       sprintf(buf, "KEY--%d", i);
-      CacheableKeyPtr key = CacheableKey::create(buf);
+      auto key = CacheableKey::create(buf);
       regPtr0->put(key, value);
     }
     SLEEP(10000);  // let the put finish
     try {
       CacheablePtr args = CacheableBoolean::create(1);
       bool getResult = true;
-      CacheableVectorPtr routingObj = CacheableVector::create();
+      auto routingObj = CacheableVector::create();
       for (int i = 0; i < 34; i++) {
         if (i % 2 == 0) continue;
         sprintf(buf, "KEY--%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+        auto key = CacheableKey::create(buf);
         routingObj->push_back(key);
       }
 
       // test data dependant function
       //     test get function with result
-      ExecutionPtr exc = FunctionService::onRegion(regPtr0);
-      ASSERT(exc != NULLPTR, "onRegion Returned NULL");
+      auto exc = FunctionService::onRegion(regPtr0);
+      ASSERT(exc != nullptr, "onRegion Returned nullptr");
       args = CacheableKey::create("echoString");
       CacheablePtr args1 = CacheableKey::create("echoBoolean");
-      ExecutionPtr exe1 = exc->withArgs(args);
-      ExecutionPtr exe2 = exe1->withArgs(args1);
+      auto exe1 = exc->withArgs(args);
+      auto exe2 = exe1->withArgs(args1);
 
-      CacheableVectorPtr resultList = CacheableVector::create();
-      CacheableVectorPtr executeFunctionResult =
-          exe1->execute(rjFuncName, 15)->getResult();
-      if (executeFunctionResult == NULLPTR) {
-        ASSERT(false, "echo String : executeFunctionResult is NULL");
+      auto resultList = CacheableVector::create();
+      auto executeFunctionResult = exe1->execute(rjFuncName, 15)->getResult();
+      if (executeFunctionResult == nullptr) {
+        ASSERT(false, "echo String : executeFunctionResult is nullptr");
       } else {
-        sprintf(buf, "echo String : result count = %d",
+        sprintf(buf, "echo String : result count = %zd",
                 executeFunctionResult->size());
         LOG(buf);
-        try {
-          CacheableStringPtr csp =
-              dynCast<CacheableStringPtr>(executeFunctionResult->operator[](0));
+        if (auto csp = std::dynamic_pointer_cast<CacheableString>(
+                executeFunctionResult->operator[](0))) {
           sprintf(buf, "echo String : cast successful, echoed string= %s",
                   csp->asChar());
           LOG(buf);
-        } catch (ClassCastException& ex) {
-          std::string logmsg = "";
-          logmsg += ex.getName();
-          logmsg += ": ";
-          logmsg += ex.getMessage();
-          LOG(logmsg.c_str());
-          ex.printStackTrace();
-          LOG("cast to string failed, now cast to boolean:");
-          bool b ATTR_UNUSED =
-              dynCast<CacheableBooleanPtr>(executeFunctionResult->operator[](0))
-                  ->value();
-          ASSERT(false, "echo String : wrong argument type");
+        } else {
+          FAIL("echo String : wrong argument type");
         }
       }
       executeFunctionResult = exc->withFilter(routingObj)
@@ -280,15 +315,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
                                   ->withArgs(args)
                                   ->execute(rjFuncName, 15)
                                   ->getResult();
-      if (executeFunctionResult == NULLPTR) {
-        ASSERT(false, "echo String : executeFunctionResult is NULL");
+      if (executeFunctionResult == nullptr) {
+        ASSERT(false, "echo String : executeFunctionResult is nullptr");
       } else {
-        sprintf(buf, "echo String : result count = %d",
+        sprintf(buf, "echo String : result count = %zd",
                 executeFunctionResult->size());
         LOG(buf);
-        const char* str =
-            dynCast<CacheableStringPtr>(executeFunctionResult->operator[](0))
-                ->asChar();
+        const char* str = std::dynamic_pointer_cast<CacheableString>(
+                              executeFunctionResult->operator[](0))
+                              ->asChar();
         LOG(str);
         ASSERT(strcmp("echoString", str) == 0, "echoString is not eched back");
       }
@@ -297,15 +332,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
                                   ->withArgs(args)
                                   ->execute(rjFuncName, 15)
                                   ->getResult();
-      if (executeFunctionResult == NULLPTR) {
-        ASSERT(false, "echo Boolean: executeFunctionResult is NULL");
+      if (executeFunctionResult == nullptr) {
+        ASSERT(false, "echo Boolean: executeFunctionResult is nullptr");
       } else {
-        sprintf(buf, "echo Boolean: result count = %d",
+        sprintf(buf, "echo Boolean: result count = %zd",
                 executeFunctionResult->size());
         LOG(buf);
-        bool b =
-            dynCast<CacheableBooleanPtr>(executeFunctionResult->operator[](0))
-                ->value();
+        bool b = std::dynamic_pointer_cast<CacheableBoolean>(
+                     executeFunctionResult->operator[](0))
+                     ->value();
         LOG(b == true ? "true" : "false");
         ASSERT(b == true, "true is not eched back");
       }
@@ -317,43 +352,44 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       /****
        **decomposed from above long expression:
       exc =  exc->withFilter(routingObj);
-      ASSERT(exc!=NULLPTR, "withFilter Returned NULL");
+      ASSERT(exc!=nullptr, "withFilter Returned nullptr");
       exc = exc->withArgs(args);
-      ASSERT(exc!=NULLPTR, "withArgs Returned NULL");
+      ASSERT(exc!=nullptr, "withArgs Returned nullptr");
       ResultCollectorPtr rc = exc->execute(getFuncName, getResult);
-      ASSERT(rc!=NULLPTR, "execute Returned NULL");
+      ASSERT(rc!=nullptr, "execute Returned nullptr");
       CacheableVectorPtr executeFunctionResult = rc->getResult();
       */
-      if (executeFunctionResult == NULLPTR) {
-        ASSERT(false, "region get: executeFunctionResult is NULL");
+      if (executeFunctionResult == nullptr) {
+        ASSERT(false, "region get: executeFunctionResult is nullptr");
       } else {
         for (unsigned item = 0;
              item < static_cast<uint32_t>(executeFunctionResult->size());
              item++) {
-          CacheableArrayListPtr arrayList = dynCast<CacheableArrayListPtr>(
+          auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
               executeFunctionResult->operator[](item));
           for (unsigned pos = 0; pos < static_cast<uint32_t>(arrayList->size());
                pos++) {
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "Region get: result count = %d", resultList->size());
+        sprintf(buf, "Region get: result count = %zd", resultList->size());
         LOG(buf);
         ASSERT(resultList->size() == 34,
                "region get: resultList count is not 34");
         for (int32_t i = 0; i < resultList->size(); i++) {
-          CacheableStringPtr csPtr =
-              dynCast<CacheableStringPtr>(resultList->operator[](i));
+          auto csPtr = std::dynamic_pointer_cast<CacheableString>(
+              resultList->operator[](i));
           //  printf(" in csPtr = %u \n",csPtr);
-          if (csPtr != NULLPTR) {
+          if (csPtr != nullptr) {
             sprintf(buf, "Region get: result[%d]=%s", i,
-                    dynCast<CacheableStringPtr>(resultList->operator[](i))
+                    std::dynamic_pointer_cast<CacheableString>(
+                        resultList->operator[](i))
                         ->asChar());
             LOG(buf);
             verifyGetResults()
           } else {
             CacheablePtr tmp = resultList->operator[](i);
-            if (tmp != NULLPTR) {
+            if (tmp != nullptr) {
               printf(" in typeid = %d  \n", tmp->typeId());
 
             } else {
@@ -363,7 +399,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         }
       }
       //     test get function with customer collector
-      MyResultCollectorPtr myRC(new MyResultCollector());
+      auto myRC = std::make_shared<MyResultCollector>();
       executeFunctionResult = exc->withFilter(routingObj)
                                   ->withArgs(args)
                                   ->withCollector(myRC)
@@ -375,9 +411,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       LOG(buf);
       sprintf(buf, "get result count = %d", myRC->getGetResultCount());
       LOG(buf);
-      if (executeFunctionResult == NULLPTR) {
+      if (executeFunctionResult == nullptr) {
         ASSERT(false,
-               "region get new collector: executeFunctionResult is NULL");
+               "region get new collector: executeFunctionResult is nullptr");
       } else {
         resultList->clear();
         for (unsigned item = 0;
@@ -385,19 +421,20 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
              item++) {
           resultList->push_back(executeFunctionResult->operator[](item));
         }
-        sprintf(buf, "Region get new collector: result list count = %d",
+        sprintf(buf, "Region get new collector: result list count = %zd",
                 resultList->size());
         LOG(buf);
-        sprintf(buf, "Region get new collector: result count = %d",
+        sprintf(buf, "Region get new collector: result count = %zd",
                 executeFunctionResult->size());
         LOG(buf);
         ASSERT(
             executeFunctionResult->size() == resultList->size(),
             "region get new collector: executeFunctionResult count is not 34");
         for (int32_t i = 0; i < executeFunctionResult->size(); i++) {
-          sprintf(
-              buf, "Region get new collector: result[%d]=%s", i,
-              dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar());
+          sprintf(buf, "Region get new collector: result[%d]=%s", i,
+                  std::dynamic_pointer_cast<CacheableString>(
+                      resultList->operator[](i))
+                      ->asChar());
           LOG(buf);
           verifyGetResults()
         }
@@ -410,8 +447,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         if (i % 2 == 0) continue;
         sprintf(buf, "KEY--%d", i);
         CacheableKeyPtr key = CacheableKey::create(buf);
-        CacheableStringPtr value =
-            dynCast<CacheableStringPtr>(regPtr0->get(key));
+        auto value =
+            std::dynamic_pointer_cast<CacheableString>(regPtr0->get(key));
         sprintf(buf, "Region put: result[%d]=%s", i, value->asChar());
         LOG(buf);
         verifyPutResults()
@@ -424,10 +461,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
                                   ->execute(getFuncName, 15)
                                   ->getResult();
 
-      if (executeFunctionResult == NULLPTR) {
-        ASSERT(false, "get executeFunctionResult is NULL");
+      if (executeFunctionResult == nullptr) {
+        ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
-        sprintf(buf, "echo String : result count = %d",
+        sprintf(buf, "echo String : result count = %zd",
                 executeFunctionResult->size());
         LOGINFO(buf);
         resultList->clear();
@@ -435,23 +472,24 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         for (unsigned item = 0;
              item < static_cast<uint32_t>(executeFunctionResult->size());
              item++) {
-          CacheableArrayListPtr arrayList = dynCast<CacheableArrayListPtr>(
+          auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
               executeFunctionResult->operator[](item));
           for (unsigned pos = 0; pos < static_cast<uint32_t>(arrayList->size());
                pos++) {
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "get result count = %d", resultList->size());
+        sprintf(buf, "get result count = %zd", resultList->size());
         LOGINFO(buf);
         ASSERT(resultList->size() == 34,
                "get executeFunctionResult count is not 34");
         for (int32_t i = 0; i < resultList->size(); i++) {
           sprintf(buf, "result[%d] is null\n", i);
-          ASSERT(resultList->operator[](i) != NULLPTR, buf);
-          sprintf(
-              buf, "get result[%d]=%s", i,
-              dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar());
+          ASSERT(resultList->operator[](i) != nullptr, buf);
+          sprintf(buf, "get result[%d]=%s", i,
+                  std::dynamic_pointer_cast<CacheableString>(
+                      resultList->operator[](i))
+                      ->asChar());
           LOGINFO(buf);
           verifyGetKeyResults()
         }
@@ -460,26 +498,26 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       //-----------------------Test with sendException
       // onRegion-------------------------------//
       for (int i = 1; i <= 200; i++) {
-        CacheablePtr value(CacheableInt32::create(i));
+        auto value = CacheableInt32::create(i);
 
         sprintf(buf, "execKey-%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+        auto key = CacheableKey::create(buf);
         regPtr0->put(key, value);
       }
       LOG("Put for execKey's on region complete.");
 
       LOG("Adding filter");
-      CacheableArrayListPtr arrList = CacheableArrayList::create();
+      auto arrList = CacheableArrayList::create();
       for (int i = 100; i < 120; i++) {
         sprintf(buf, "execKey-%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+        auto key = CacheableKey::create(buf);
         arrList->push_back(key);
       }
 
-      CacheableVectorPtr filter = CacheableVector::create();
+      auto filter = CacheableVector::create();
       for (int i = 100; i < 120; i++) {
         sprintf(buf, "execKey-%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+        auto key = CacheableKey::create(buf);
         filter->push_back(key);
       }
       LOG("Adding filter done.");
@@ -487,88 +525,42 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       args = CacheableBoolean::create(1);
       getResult = true;
 
-      ExecutionPtr funcExec = FunctionService::onRegion(regPtr0);
-      ASSERT(funcExec != NULLPTR, "onRegion Returned NULL");
+      auto funcExec = FunctionService::onRegion(regPtr0);
+      ASSERT(funcExec != nullptr, "onRegion Returned nullptr");
 
-      ResultCollectorPtr collector =
-          funcExec->withArgs(args)->withFilter(filter)->execute(
-              exFuncNameSendException, 15);
-      ASSERT(collector != NULLPTR, "onRegion collector NULL");
+      auto collector = funcExec->withArgs(args)->withFilter(filter)->execute(
+          exFuncNameSendException, 15);
+      ASSERT(collector != nullptr, "onRegion collector nullptr");
 
-      CacheableVectorPtr result = collector->getResult();
+      auto result = collector->getResult();
 
-      if (result == NULLPTR) {
-        ASSERT(false, "echo String : result is NULL");
+      if (result == nullptr) {
+        ASSERT(false, "echo String : result is nullptr");
       } else {
-        try {
-          for (int i = 0; i < result->size(); i++) {
-            UserFunctionExecutionExceptionPtr uFEPtr =
-                dynCast<UserFunctionExecutionExceptionPtr>(
-                    result->operator[](i));
-            ASSERT(uFEPtr != NULLPTR, "uFEPtr exception is NULL");
-            LOGINFO("Done casting to uFEPtr");
-            LOGINFO("Read expected uFEPtr exception %s ",
-                    uFEPtr->getMessage()->asChar());
-          }
-        } catch (ClassCastException& ex) {
-          std::string logmsg = "";
-          logmsg += ex.getName();
-          logmsg += ": ";
-          logmsg += ex.getMessage();
-          LOG(logmsg.c_str());
-          ex.printStackTrace();
-          FAIL(
-              "exFuncNameSendException casting to string for bool arguement "
-              "exception.");
-        } catch (...) {
-          FAIL(
-              "exFuncNameSendException casting to string for bool arguement "
-              "Unknown exception.");
+        for (int i = 0; i < result->size(); i++) {
+          ASSERT(validateResultTypeIsUserFunctionExecutionException(
+                     i, result->operator[](i)),
+                 "exFuncNameSendException casting to string for bool "
+                 "arguement exception.");
         }
       }
-
       LOG("exFuncNameSendException done for bool arguement.");
 
       collector = funcExec->withArgs(arrList)->withFilter(filter)->execute(
           exFuncNameSendException, 15);
-      ASSERT(collector != NULLPTR, "onRegion collector for arrList NULL");
+      ASSERT(collector != nullptr, "onRegion collector for arrList nullptr");
 
       result = collector->getResult();
       LOGINFO("result->size() = %d & arrList->size()  = %d ", result->size(),
               arrList->size() + 1);
       ASSERT(
-          (result->size() == arrList->size() + 1),
+          result->size() == arrList->size() + 1,
           "region get: resultList count is not as arrayList count + exception");
 
       for (int i = 0; i < result->size(); i++) {
-        try {
-          CacheableInt32Ptr intValue =
-              dynCast<CacheableInt32Ptr>(result->operator[](i));
-          ASSERT(intValue != NULLPTR, "int value is NULL");
-          LOGINFO("intValue is %d ", intValue->value());
-        } catch (ClassCastException& ex) {
-          LOG("exFuncNameSendException casting to int for arrayList arguement "
-              "exception.");
-          std::string logmsg = "";
-          logmsg += ex.getName();
-          logmsg += ": ";
-          logmsg += ex.getMessage();
-          LOG(logmsg.c_str());
-          ex.printStackTrace();
-          LOG("exFuncNameSendException now casting to "
-              "UserFunctionExecutionExceptionPtr for arrayList arguement "
-              "exception.");
-          UserFunctionExecutionExceptionPtr uFEPtr =
-              dynCast<UserFunctionExecutionExceptionPtr>(result->operator[](i));
-          ASSERT(uFEPtr != NULLPTR, "uFEPtr exception is NULL");
-          LOGINFO("Done casting to uFEPtr");
-          LOGINFO("Read expected uFEPtr exception %s ",
-                  uFEPtr->getMessage()->asChar());
-        } catch (...) {
-          FAIL(
-              "exFuncNameSendException casting to string for bool arguement "
-              "Unknown exception.");
-        }
+        ASSERT(validateResultTypeAndAllowUserFunctionExecutionException<
+                   CacheableInt32>(i, result->operator[](i)),
+               "Unexpected result type.");
       }
 
       LOG("exFuncNameSendException done for arrayList arguement.");
@@ -578,38 +570,20 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       args = CacheableString::create("Multiple");
       collector = funcExec->withArgs(args)->withFilter(filter)->execute(
           exFuncNameSendException, 15);
-      ASSERT(collector != NULLPTR, "onRegion collector for string NULL");
+      ASSERT(collector != nullptr, "onRegion collector for string nullptr");
       result = collector->getResult();
       LOGINFO("result->size() for Multiple String = %d ", result->size());
       ASSERT(result->size() == 1,
              "region get: resultList count is not as string exception");
 
-      try {
-        for (int i = 0; i < result->size(); i++) {
-          LOG("exFuncNameSendException now casting to "
-              "UserFunctionExecutionExceptionPtr for arrayList arguement "
-              "exception.");
-          UserFunctionExecutionExceptionPtr uFEPtr =
-              dynCast<UserFunctionExecutionExceptionPtr>(result->operator[](i));
-          ASSERT(uFEPtr != NULLPTR, "uFEPtr exception is NULL");
-          LOGINFO("Done casting to uFEPtr");
-          LOGINFO("Read expected uFEPtr exception %s ",
-                  uFEPtr->getMessage()->asChar());
-        }
-      } catch (ClassCastException& ex) {
-        std::string logmsg = "";
-        logmsg += ex.getName();
-        logmsg += ": ";
-        logmsg += ex.getMessage();
-        LOG(logmsg.c_str());
-        ex.printStackTrace();
-        FAIL(
-            "exFuncNameSendException casting to string for string arguement "
+      for (int i = 0; i < result->size(); i++) {
+        LOG("exFuncNameSendException now casting to "
+            "UserFunctionExecutionExceptionPtr for arrayList arguement "
             "exception.");
-      } catch (...) {
-        FAIL(
-            "exFuncNameSendException casting to string for string arguement "
-            "Unknown exception.");
+        ASSERT(validateResultTypeIsUserFunctionExecutionException(
+                   i, result->operator[](i)),
+               "exFuncNameSendException casting to string for string "
+               "arguement exception.");
       }
 
       LOG("exFuncNameSendException for string arguement done.");
@@ -618,7 +592,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
           "test exFuncNameSendException function with customer collector with "
           "bool as arguement using onRegion.");
 
-      MyResultCollectorPtr myRC1(new MyResultCollector());
+      auto myRC1 = std::make_shared<MyResultCollector>();
       result = funcExec->withArgs(args)
                    ->withFilter(filter)
                    ->withCollector(myRC1)
@@ -630,8 +604,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       ASSERT(1 == myRC1->getAddResultCount(), "add result count is not 1");
       ASSERT(1 == myRC1->getEndResultCount(), "end result count is not 1");
       ASSERT(1 == myRC1->getGetResultCount(), "get result count is not 1");
-      if (result == NULLPTR) {
-        ASSERT(false, "region get new collector: result is NULL");
+      if (result == nullptr) {
+        ASSERT(false, "region get new collector: result is nullptr");
       } else {
         LOGINFO("Region get new collector: result count = %d", result->size());
         ASSERT(1 == result->size(),
@@ -648,10 +622,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       // restore the data set
       for (int i = 0; i < 34; i++) {
         sprintf(buf, "VALUE--%d", i);
-        CacheablePtr value(CacheableString::create(buf));
+        auto value = CacheableString::create(buf);
 
         sprintf(buf, "KEY--%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+        auto key = CacheableKey::create(buf);
         regPtr0->put(key, value);
       }
 
@@ -660,37 +634,38 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       getResult = true;
       //    PoolPtr pptr = PoolManager::find(poolName);
       args = routingObj;
-      // ExecutionPtr exc=NULLPTR;
-      // CacheableVectorPtr executeFunctionResult = NULLPTR;
+      // ExecutionPtr exc=nullptr;
+      // CacheableVectorPtr executeFunctionResult = nullptr;
       // test data independant function on one server
       LOG("test data independant get function on one server");
       exc = FunctionService::onServer(getHelper()->cachePtr);
       executeFunctionResult =
           exc->withArgs(args)->execute(getFuncIName, getResult)->getResult();
-      if (executeFunctionResult == NULLPTR) {
-        ASSERT(false, "get executeFunctionResult is NULL");
+      if (executeFunctionResult == nullptr) {
+        ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
         resultList->clear();
         for (unsigned item = 0;
              item < static_cast<uint32_t>(executeFunctionResult->size());
              item++) {
-          CacheableArrayListPtr arrayList = dynCast<CacheableArrayListPtr>(
+          auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
               executeFunctionResult->operator[](item));
           for (unsigned pos = 0; pos < static_cast<uint32_t>(arrayList->size());
                pos++) {
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "get result count = %d", resultList->size());
+        sprintf(buf, "get result count = %zd", resultList->size());
         LOG(buf);
         ASSERT(resultList->size() == 17,
                "get executeFunctionResult count is not 17");
         for (int32_t i = 0; i < resultList->size(); i++) {
           sprintf(buf, "result[%d] is null\n", i);
-          ASSERT(resultList->operator[](i) != NULLPTR, buf);
-          sprintf(
-              buf, "get result[%d]=%s", i,
-              dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar());
+          ASSERT(resultList->operator[](i) != nullptr, buf);
+          sprintf(buf, "get result[%d]=%s", i,
+                  std::dynamic_pointer_cast<CacheableString>(
+                      resultList->operator[](i))
+                      ->asChar());
           LOG(buf);
           verifyGetResults()
         }
@@ -703,9 +678,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       for (int i = 0; i < 34; i++) {
         if (i % 2 == 0) continue;
         sprintf(buf, "KEY--%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
-        CacheableStringPtr value =
-            dynCast<CacheableStringPtr>(regPtr0->get(key));
+        auto key = CacheableKey::create(buf);
+        auto value =
+            std::dynamic_pointer_cast<CacheableString>(regPtr0->get(key));
         sprintf(buf, "put: result[%d]=%s", i, value->asChar());
         LOG(buf);
         verifyPutResults()
@@ -725,40 +700,40 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         // ignore exception
       }
 
-      PdxTypes8Ptr pdxobj(new PdxTests::PdxTypes8());
+      auto pdxobj = std::make_shared<PdxTests::PdxTypes8>();
       for (int i = 0; i < 34; i++) {
         sprintf(buf, "KEY--pdx%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+        auto key = CacheableKey::create(buf);
         regPtr0->put(key, pdxobj);
       }
       LOGINFO("put on pdxObject done");
 
-      CacheableVectorPtr pdxRoutingObj = CacheableVector::create();
+      auto pdxRoutingObj = CacheableVector::create();
       for (int i = 0; i < 34; i++) {
         if (i % 2 == 0) continue;
         sprintf(buf, "KEY--pdx%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+        auto key = CacheableKey::create(buf);
         pdxRoutingObj->push_back(key);
       }
 
-      ExecutionPtr pdxExc = FunctionService::onServers(getHelper()->cachePtr);
-      CacheableVectorPtr executeFunctionResultPdx =
+      auto pdxExc = FunctionService::onServers(getHelper()->cachePtr);
+      auto executeFunctionResultPdx =
           pdxExc->withArgs(pdxRoutingObj)
               ->execute(exFuncNamePdxType, getResult)
               ->getResult();
       LOGINFO("FE on pdxObject done");
-      if (executeFunctionResultPdx == NULLPTR) {
-        ASSERT(false, "get executeFunctionResultPdx is NULL");
+      if (executeFunctionResultPdx == nullptr) {
+        ASSERT(false, "get executeFunctionResultPdx is nullptr");
       } else {
         LOGINFO("executeFunctionResultPdx size for PdxObject = %d ",
                 executeFunctionResultPdx->size());
         ASSERT(2 == executeFunctionResultPdx->size(),
                "executeFunctionResultPdx->size() is not 2");
-        CacheableVectorPtr resultListPdx = CacheableVector::create();
+        auto resultListPdx = CacheableVector::create();
         for (unsigned item = 0;
              item < static_cast<uint32_t>(executeFunctionResultPdx->size());
              item++) {
-          CacheableArrayListPtr arrayList = dynCast<CacheableArrayListPtr>(
+          auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
               executeFunctionResultPdx->operator[](item));
           for (unsigned pos = 0; pos < static_cast<uint32_t>(arrayList->size());
                pos++) {
@@ -768,23 +743,23 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         LOGINFO("resultlistPdx size: %d", resultListPdx->size());
         for (int32_t i = 0; i < resultListPdx->size(); i++) {
           sprintf(buf, "result[%d] is null\n", i);
-          ASSERT(resultListPdx->operator[](i) != NULLPTR, buf);
+          ASSERT(resultListPdx->operator[](i) != nullptr, buf);
           LOG("resultPdx item is not null");
-          LOGINFO("get result[%d]=%s", i,
-                  dynCast<PdxTypes8Ptr>(resultListPdx->operator[](i))
-                      ->toString()
-                      ->asChar());
-          PdxTypes8Ptr pdxObj2 =
-              dynCast<PdxTypes8Ptr>(resultListPdx->operator[](i));
+          LOGINFO(
+              "get result[%d]=%s", i,
+              std::dynamic_pointer_cast<PdxTypes8>(resultListPdx->operator[](i))
+                  ->toString()
+                  ->asChar());
+          auto pdxObj2 = std::dynamic_pointer_cast<PdxTypes8>(
+              resultListPdx->operator[](i));
           ASSERT(pdxobj->equals(pdxObj2) == true,
                  "Pdx Object not equals original object.");
         }
       }
       LOG("test pdx data function on all servers done");
 
-      PdxInstanceFactoryPtr pifPtr =
-          cacheHelper->getCache()->createPdxInstanceFactory(
-              "PdxTests.PdxTypes8");
+      auto pifPtr = cacheHelper->getCache()->createPdxInstanceFactory(
+          "PdxTests.PdxTypes8");
       LOG("PdxInstanceFactoryPtr created....");
 
       pifPtr->writeInt("i1", 1);
@@ -794,7 +769,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       pifPtr->writeInt("i3", 3);
       pifPtr->writeInt("i4", 4);
 
-      PdxInstancePtr ret = pifPtr->create();
+      auto ret = pifPtr->create();
       LOG("PdxInstancePtr created");
 
       for (int i = 0; i < 34; i++) {
@@ -804,7 +779,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       }
       LOGINFO("put on pdxObject done");
 
-      CacheableVectorPtr pdxInstanceRoutingObj = CacheableVector::create();
+      auto pdxInstanceRoutingObj = CacheableVector::create();
       for (int i = 0; i < 34; i++) {
         if (i % 2 == 0) continue;
         sprintf(buf, "KEY--pdx%d", i);
@@ -812,26 +787,25 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         pdxInstanceRoutingObj->push_back(key);
       }
 
-      ExecutionPtr pdxInstanceExc =
-          FunctionService::onServers(getHelper()->cachePtr);
-      CacheableVectorPtr executeFunctionResultPdxInstance =
+      auto pdxInstanceExc = FunctionService::onServers(getHelper()->cachePtr);
+      auto executeFunctionResultPdxInstance =
           pdxInstanceExc->withArgs(pdxInstanceRoutingObj)
               ->execute(exFuncNamePdxType, getResult)
               ->getResult();
       LOGINFO("FE on pdxObject done");
-      if (executeFunctionResultPdxInstance == NULLPTR) {
-        ASSERT(false, "get executeFunctionResultPdxInstance is NULL");
+      if (executeFunctionResultPdxInstance == nullptr) {
+        ASSERT(false, "get executeFunctionResultPdxInstance is nullptr");
       } else {
         LOGINFO("executeFunctionResultPdxInstance size for PdxObject = %d ",
                 executeFunctionResultPdxInstance->size());
         ASSERT(2 == executeFunctionResultPdx->size(),
                "executeFunctionResultPdxInstance->size() is not 2");
-        CacheableVectorPtr resultListPdxInstance = CacheableVector::create();
+        auto resultListPdxInstance = CacheableVector::create();
         for (unsigned item = 0;
              item <
              static_cast<uint32_t>(executeFunctionResultPdxInstance->size());
              item++) {
-          CacheableArrayListPtr arrayList = dynCast<CacheableArrayListPtr>(
+          auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
               executeFunctionResultPdxInstance->operator[](item));
           for (unsigned pos = 0; pos < static_cast<uint32_t>(arrayList->size());
                pos++) {
@@ -842,14 +816,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
                 resultListPdxInstance->size());
         for (int32_t i = 0; i < resultListPdxInstance->size(); i++) {
           sprintf(buf, "result[%d] is null\n", i);
-          ASSERT(resultListPdxInstance->operator[](i) != NULLPTR, buf);
+          ASSERT(resultListPdxInstance->operator[](i) != nullptr, buf);
           LOG("resultPdx item is not null");
           LOGINFO("get result[%d]=%s", i,
-                  dynCast<PdxTypes8Ptr>(resultListPdxInstance->operator[](i))
+                  std::dynamic_pointer_cast<PdxTypes8>(
+                      resultListPdxInstance->operator[](i))
                       ->toString()
                       ->asChar());
-          PdxTypes8Ptr pdxObj2 =
-              dynCast<PdxTypes8Ptr>(resultListPdxInstance->operator[](i));
+          auto pdxObj2 = std::dynamic_pointer_cast<PdxTypes8>(
+              resultListPdxInstance->operator[](i));
 
           ASSERT(pdxobj->equals(pdxObj2) == true,
                  "Pdx Object not equals original object.");
@@ -863,10 +838,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       // repopulate with the original values
       for (int i = 0; i < 34; i++) {
         sprintf(buf, "VALUE--%d", i);
-        CacheablePtr value(CacheableString::create(buf));
+        auto value = CacheableString::create(buf);
 
         sprintf(buf, "KEY--%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+        auto key = CacheableKey::create(buf);
         regPtr0->put(key, value);
       }
       SLEEP(10000);  // let the put finish
@@ -874,12 +849,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       // adding one more server, this should be return by locator and then
       // function should be executed on all the 3 servers
 
-      const char* lhp = NULL;
+      const char* lhp = nullptr;
       if (!isPoolWithEndpoint) lhp = locHostPort;
 
       if (isLocalServer) {
         CacheHelper::initServer(3, "func_cacheserver3_pool.xml", lhp);
       }
+      LOGINFO("Sleeping for 60s...");
       SLEEP(60000);  // let this servers gets all the data
 
       //---------------------------------------------------------------------
@@ -887,31 +863,32 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       exc = FunctionService::onServers(getHelper()->cachePtr);
       executeFunctionResult =
           exc->withArgs(args)->execute(getFuncIName, getResult)->getResult();
-      if (executeFunctionResult == NULLPTR) {
-        ASSERT(false, "get executeFunctionResult is NULL");
+      if (executeFunctionResult == nullptr) {
+        ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
         resultList->clear();
         for (unsigned item = 0;
              item < static_cast<uint32_t>(executeFunctionResult->size());
              item++) {
-          CacheableArrayListPtr arrayList = dynCast<CacheableArrayListPtr>(
+          auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
               executeFunctionResult->operator[](item));
           for (unsigned pos = 0; pos < static_cast<uint32_t>(arrayList->size());
                pos++) {
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "get result count = %d", resultList->size());
+        sprintf(buf, "get result count = %zd", resultList->size());
         LOG(buf);
-        printf("resultlist size: %d", resultList->size());
+        printf("resultlist size: %zd", resultList->size());
         ASSERT(resultList->size() == 51,
                "get executeFunctionResult on all servers count is not 51");
         for (int32_t i = 0; i < resultList->size(); i++) {
           sprintf(buf, "result[%d] is null\n", i);
-          ASSERT(resultList->operator[](i) != NULLPTR, buf);
-          sprintf(
-              buf, "get result[%d]=%s", i,
-              dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar());
+          ASSERT(resultList->operator[](i) != nullptr, buf);
+          sprintf(buf, "get result[%d]=%s", i,
+                  std::dynamic_pointer_cast<CacheableString>(
+                      resultList->operator[](i))
+                      ->asChar());
           LOG(buf);
           verifyGetResults()
         }
@@ -925,9 +902,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       for (int i = 0; i < 34; i++) {
         if (i % 2 == 0) continue;
         sprintf(buf, "KEY--%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
-        CacheableStringPtr value =
-            dynCast<CacheableStringPtr>(regPtr0->get(key));
+        auto key = CacheableKey::create(buf);
+        auto value =
+            std::dynamic_pointer_cast<CacheableString>(regPtr0->get(key));
         sprintf(buf, "put: result[%d]=%s", i, value->asChar());
         LOG(buf);
         verifyPutResults()
@@ -941,44 +918,25 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
       collector =
           funcExec->withArgs(args)->execute(exFuncNameSendException, 15);
-      ASSERT(collector != NULLPTR, "onServers collector for bool NULL");
+      ASSERT(collector != nullptr, "onServers collector for bool nullptr");
 
       result = collector->getResult();
       ASSERT(result->size() == 3,
              "Should have got 3 exception strings for sendException.");
-      if (result == NULLPTR) {
-        ASSERT(false, "echo String : result is NULL");
+      if (result == nullptr) {
+        ASSERT(false, "echo String : result is nullptr");
       } else {
-        try {
-          for (int i = 0; i < result->size(); i++) {
-            UserFunctionExecutionExceptionPtr uFEPtr =
-                dynCast<UserFunctionExecutionExceptionPtr>(
-                    result->operator[](i));
-            ASSERT(uFEPtr != NULLPTR, "uFEPtr exception is NULL");
-            LOGINFO("Done casting to uFEPtr");
-            LOGINFO("Read expected uFEPtr exception %s ",
-                    uFEPtr->getMessage()->asChar());
-          }
-        } catch (ClassCastException& ex) {
-          std::string logmsg = "";
-          logmsg += ex.getName();
-          logmsg += ": ";
-          logmsg += ex.getMessage();
-          LOG(logmsg.c_str());
-          ex.printStackTrace();
-          FAIL(
-              "exFuncNameSendException casting to string for bool arguement "
-              "exception.");
-        } catch (...) {
-          FAIL(
-              "exFuncNameSendException casting to string for bool arguement "
-              "Unknown exception.");
+        for (int i = 0; i < result->size(); i++) {
+          ASSERT(validateResultTypeIsUserFunctionExecutionException(
+                     i, result->operator[](i)),
+                 "exFuncNameSendException casting to string for bool arguement "
+                 "Unknown exception.");
         }
       }
 
       collector =
           funcExec->withArgs(arrList)->execute(exFuncNameSendException, 15);
-      ASSERT(collector != NULLPTR, "onServers collector for arrList NULL");
+      ASSERT(collector != nullptr, "onServers collector for arrList nullptr");
 
       result = collector->getResult();
       ASSERT(result->size() == (arrList->size() + 1) * 3,
@@ -988,60 +946,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       LOG("Printing only string exception results for onServers with "
           "sendException");
       for (int i = 0; i < result->size(); i++) {
-        try {
-          CacheableInt32Ptr intValue =
-              dynCast<CacheableInt32Ptr>(result->operator[](i));
-          ASSERT(intValue != NULLPTR, "int value is NULL");
-          LOGINFO("intValue is %d ", intValue->value());
-        } catch (ClassCastException& ex) {
-          std::string logmsg = "";
-          logmsg += ex.getName();
-          logmsg += ": ";
-          logmsg += ex.getMessage();
-          LOG(logmsg.c_str());
-          ex.printStackTrace();
-          UserFunctionExecutionExceptionPtr uFEPtr =
-              dynCast<UserFunctionExecutionExceptionPtr>(result->operator[](i));
-          ASSERT(uFEPtr != NULLPTR, "uFEPtr exception is NULL");
-          LOGINFO("Done casting to uFEPtr");
-          LOGINFO("Read expected uFEPtr exception %s ",
-                  uFEPtr->getMessage()->asChar());
-        } catch (...) {
-          FAIL(
-              "exFuncNameSendException casting to string for arrList arguement "
-              "for onServers Unknown exception.");
-        }
+        ASSERT(validateResultTypeAndAllowUserFunctionExecutionException<
+                   CacheableInt32>(i, result->operator[](i)),
+               "Unexpected result type.");
       }
 
       LOG("Printing all results for onServers with sendException");
       for (int i = 0; i < result->size(); i++) {
-        try {
-          CacheableInt32Ptr intValue =
-              dynCast<CacheableInt32Ptr>(result->operator[](i));
-          ASSERT(intValue != NULLPTR, "int value is NULL");
-          LOGINFO("intValue is %d ", intValue->value());
-        } catch (ClassCastException& ex) {
-          LOG("exFuncNameSendException casting to int for arrayList arguement "
-              "exception.");
-          std::string logmsg = "";
-          logmsg += ex.getName();
-          logmsg += ": ";
-          logmsg += ex.getMessage();
-          LOG(logmsg.c_str());
-          ex.printStackTrace();
-          LOG("exFuncNameSendException now casting to string for arrayList "
-              "arguement exception.");
-          UserFunctionExecutionExceptionPtr uFEPtr =
-              dynCast<UserFunctionExecutionExceptionPtr>(result->operator[](i));
-          ASSERT(uFEPtr != NULLPTR, "uFEPtr exception is NULL");
-          LOGINFO("Done casting to uFEPtr");
-          LOGINFO("Read expected uFEPtr exception %s ",
-                  uFEPtr->getMessage()->asChar());
-        } catch (...) {
-          FAIL(
-              "exFuncNameSendException casting to string for bool arguement "
-              "Unknown exception.");
-        }
+        ASSERT(validateResultTypeAndAllowUserFunctionExecutionException<
+                   CacheableInt32>(i, result->operator[](i)),
+               "Unexpected result type.");
       }
 
       LOG("exFuncNameSendException for string arguement.");
@@ -1049,35 +963,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       args = CacheableString::create("Multiple");
       collector =
           funcExec->withArgs(args)->execute(exFuncNameSendException, 15);
-      ASSERT(collector != NULLPTR, "onServers collector for string NULL");
+      ASSERT(collector != nullptr, "onServers collector for string nullptr");
 
       result = collector->getResult();
       ASSERT(result->size() == 3,
              "region get: resultList count is not as string exception");
 
-      try {
-        for (int i = 0; i < result->size(); i++) {
-          UserFunctionExecutionExceptionPtr uFEPtr =
-              dynCast<UserFunctionExecutionExceptionPtr>(result->operator[](i));
-          ASSERT(uFEPtr != NULLPTR, "uFEPtr exception is NULL");
-          LOGINFO("Done casting to uFEPtr");
-          LOGINFO("Read expected uFEPtr exception %s ",
-                  uFEPtr->getMessage()->asChar());
-        }
-      } catch (ClassCastException& ex) {
-        std::string logmsg = "";
-        logmsg += ex.getName();
-        logmsg += ": ";
-        logmsg += ex.getMessage();
-        LOG(logmsg.c_str());
-        ex.printStackTrace();
-        FAIL(
-            "exFuncNameSendException casting to string for string arguement "
-            "exception.");
-      } catch (...) {
-        FAIL(
-            "exFuncNameSendException casting to string for string arguement "
-            "Unknown exception.");
+      for (int i = 0; i < result->size(); i++) {
+        ASSERT(validateResultTypeIsUserFunctionExecutionException(
+                   i, result->operator[](i)),
+               "exFuncNameSendException casting to string for string arguement "
+               "exception.");
       }
 
       LOG("exFuncNameSendException for string arguement done.");
@@ -1086,7 +982,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
           "test exFuncNameSendException function with customer collector with "
           "bool as arguement using onServers.");
 
-      MyResultCollectorPtr myRC2(new MyResultCollector());
+      auto myRC2 = std::make_shared<MyResultCollector>();
       result = funcExec->withArgs(args)
                    ->withCollector(myRC2)
                    ->execute(exFuncNameSendException, getResult)
@@ -1097,8 +993,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       LOGINFO("add result count = %d", myRC2->getAddResultCount());
       LOGINFO("end result count = %d", myRC2->getEndResultCount());
       LOGINFO("get result count = %d", myRC2->getGetResultCount());
-      if (result == NULLPTR) {
-        ASSERT(false, "region get new collector: result is NULL");
+      if (result == nullptr) {
+        ASSERT(false, "region get new collector: result is nullptr");
       } else {
         LOGINFO("Region get new collector: result count = %d", result->size());
         ASSERT(3 == result->size(),
@@ -1135,23 +1031,24 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, Client2OpTest)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+    auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     char buf[128];
     SLEEP(10000);
     try {
       LOGINFO("FETimeOut begin onRegion");
-      ExecutionPtr RexecutionPtr = FunctionService::onRegion(regPtr0);
-      CacheableVectorPtr fe =
-          RexecutionPtr->withArgs(CacheableInt32::create(5000 * 1000))
-              ->execute(FETimeOut, 5000)
-              ->getResult();
-      if (fe == NULLPTR) {
-        ASSERT(false, "functionResult is NULL");
+      auto RexecutionPtr = FunctionService::onRegion(regPtr0);
+      auto fe = RexecutionPtr->withArgs(CacheableInt32::create(5000 * 1000))
+                    ->execute(FETimeOut, 5000)
+                    ->getResult();
+      if (fe == nullptr) {
+        ASSERT(false, "functionResult is nullptr");
       } else {
-        sprintf(buf, "result count = %d", fe->size());
+        sprintf(buf, "result count = %zd", fe->size());
         LOG(buf);
         for (int i = 0; i < fe->size(); i++) {
-          bool b = dynCast<CacheableBooleanPtr>(fe->operator[](i))->value();
+          bool b =
+              std::dynamic_pointer_cast<CacheableBoolean>(fe->operator[](i))
+                  ->value();
           LOG(b == true ? "true" : "false");
           ASSERT(b == true, "true is not eched back");
         }
@@ -1159,18 +1056,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client2OpTest)
       LOGINFO("FETimeOut done onRegion");
 
       LOGINFO("FETimeOut begin onServer");
-      ExecutionPtr serverExc = FunctionService::onServer(getHelper()->cachePtr);
-      CacheableVectorPtr vec =
-          serverExc->withArgs(CacheableInt32::create(5000 * 1000))
-              ->execute(FETimeOut, 5000)
-              ->getResult();
-      if (vec == NULLPTR) {
-        ASSERT(false, "functionResult is NULL");
+      auto serverExc = FunctionService::onServer(getHelper()->cachePtr);
+      auto vec = serverExc->withArgs(CacheableInt32::create(5000 * 1000))
+                     ->execute(FETimeOut, 5000)
+                     ->getResult();
+      if (vec == nullptr) {
+        ASSERT(false, "functionResult is nullptr");
       } else {
-        sprintf(buf, "result count = %d", vec->size());
+        sprintf(buf, "result count = %zd", vec->size());
         LOG(buf);
         for (int i = 0; i < vec->size(); i++) {
-          bool b = dynCast<CacheableBooleanPtr>(vec->operator[](i))->value();
+          bool b =
+              std::dynamic_pointer_cast<CacheableBoolean>(vec->operator[](i))
+                  ->value();
           LOG(b == true ? "true" : "false");
           ASSERT(b == true, "true is not eched back");
         }
@@ -1178,19 +1076,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client2OpTest)
       LOGINFO("FETimeOut done onServer");
 
       LOGINFO("FETimeOut begin onServers");
-      ExecutionPtr serversExc =
-          FunctionService::onServers(getHelper()->cachePtr);
-      CacheableVectorPtr vecs =
-          serversExc->withArgs(CacheableInt32::create(5000 * 1000))
-              ->execute(FETimeOut, 5000)
-              ->getResult();
-      if (vecs == NULLPTR) {
-        ASSERT(false, "functionResult is NULL");
+      auto serversExc = FunctionService::onServers(getHelper()->cachePtr);
+      auto vecs = serversExc->withArgs(CacheableInt32::create(5000 * 1000))
+                      ->execute(FETimeOut, 5000)
+                      ->getResult();
+      if (vecs == nullptr) {
+        ASSERT(false, "functionResult is nullptr");
       } else {
-        sprintf(buf, "result count = %d", vecs->size());
+        sprintf(buf, "result count = %zd", vecs->size());
         LOG(buf);
         for (int i = 0; i < vecs->size(); i++) {
-          bool b = dynCast<CacheableBooleanPtr>(vecs->operator[](i))->value();
+          bool b =
+              std::dynamic_pointer_cast<CacheableBoolean>(vecs->operator[](i))
+                  ->value();
           LOG(b == true ? "true" : "false");
           ASSERT(b == true, "true is not eched back");
         }
@@ -1262,19 +1160,18 @@ class putThread : public ACE_Task_Base {
 
   int svc(void) {
     bool networkhop ATTR_UNUSED = false;
-    CacheableKeyPtr keyPtr;
-    CacheablePtr args = NULLPTR;
-    ResultCollectorPtr rPtr = NULLPTR;
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+    CacheablePtr args = nullptr;
+    ResultCollectorPtr rPtr = nullptr;
+    auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     while (!m_stop) {
       for (int i = m_min; i < m_max; i++) {
         try {
           char buf[128];
           sprintf(buf, "am-%d", i);
-          CacheableKeyPtr key = CacheableKey::create(buf);
-          CacheableVectorPtr routingObj = CacheableVector::create();
+          auto key = CacheableKey::create(buf);
+          auto routingObj = CacheableVector::create();
           routingObj->push_back(key);
-          ExecutionPtr exc = FunctionService::onRegion(regPtr0);
+          auto exc = FunctionService::onRegion(regPtr0);
           exc->execute(routingObj, args, rPtr, getFuncName2, 300 /*in millis*/)
               ->getResult();
         } catch (const TimeoutException& te) {
@@ -1298,10 +1195,10 @@ class putThread : public ACE_Task_Base {
 };
 
 void executeFunction() {
-  RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+  auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
   TestUtils::getCacheImpl(getHelper()->cachePtr)->getAndResetNetworkHopFlag();
-  CacheablePtr args = NULLPTR;
-  ResultCollectorPtr rPtr = NULLPTR;
+  CacheablePtr args = nullptr;
+  ResultCollectorPtr rPtr = nullptr;
   int failureCount = 0;
   LOGINFO("executeFunction started");
   for (int i = 0; i < 300; i++) {
@@ -1313,10 +1210,10 @@ void executeFunction() {
     }
     char buf[128];
     sprintf(buf, "am-%d", i);
-    CacheableKeyPtr key = CacheableKey::create(buf);
-    CacheableVectorPtr routingObj = CacheableVector::create();
+    auto key = CacheableKey::create(buf);
+    auto routingObj = CacheableVector::create();
     routingObj->push_back(key);
-    ExecutionPtr exc = FunctionService::onRegion(regPtr0);
+    auto exc = FunctionService::onRegion(regPtr0);
     exc->execute(routingObj, args, rPtr, getFuncName2, 300 /*in millis*/)
         ->getResult();
   }
@@ -1356,7 +1253,5 @@ void runFunctionExecution() {
 }
 
 DUNIT_MAIN
-  {
-    runFunctionExecution();
-  }
+  { runFunctionExecution(); }
 END_MAIN

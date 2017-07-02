@@ -17,11 +17,14 @@
 
 #pragma once
 
+#include "native_shared_ptr.hpp"
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/CqEvent.hpp>
+#include "end_native.hpp"
+
 #include "CqQuery.hpp"
 #include "CqOperation.hpp"
-//#include "impl/NativeWrapper.hpp"
 
 #include "ICqEvent.hpp"
 #include "ICacheableKey.hpp"
@@ -34,17 +37,15 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
 			interface class IGeodeSerializable;
-      //interface class ICqEvent;
-      //interface class ICacheableKey;
-
+      
       /// <summary>
       /// This class encapsulates events that occur for cq.
       /// </summary>
       generic<class TKey, class TResult>
       public ref class CqEvent sealed
-        : public Internal::UMWrap<apache::geode::client::CqEvent>
       {
       public:
 
@@ -85,8 +86,18 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CqEvent( const apache::geode::client::CqEvent* nativeptr )
-          : UMWrap( const_cast<apache::geode::client::CqEvent*>( nativeptr ), false ) { }
+        inline CqEvent( const native::CqEvent* nativeptr )
+          : m_nativeptr(nativeptr)
+        {
+        }
+
+        const native::CqEvent* GetNative()
+        {
+          return m_nativeptr;
+        }
+
+      private:
+        const native::CqEvent* m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

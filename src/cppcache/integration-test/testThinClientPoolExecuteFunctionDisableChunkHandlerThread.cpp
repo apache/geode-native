@@ -56,7 +56,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER, StartS12)
   {
-    const char* lhp = NULL;
+    const char* lhp = nullptr;
     if (!isPoolWithEndpoint) lhp = locHostPort;
     if (isLocalServer) {
       CacheHelper::initServer(1, "func_cacheserver1_pool.xml", lhp);
@@ -69,7 +69,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER, startServer2)
   {
-    const char* lhp = NULL;
+    const char* lhp = nullptr;
     if (!isPoolWithEndpoint) lhp = locHostPort;
     if (isLocalServer) {
       CacheHelper::initServer(2, "func_cacheserver2_pool.xml", lhp);
@@ -80,12 +80,13 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
   {
     // initClient(true);
-    initClientWithPool(true, NULL, locHostPort, serverGroup, NULLPTR, 0, true);
-    // createPool(poolName, locHostPort,serverGroup, NULL, 0, true );
+    initClientWithPool(true, nullptr, locHostPort, serverGroup, nullptr, 0,
+                       true);
+    // createPool(poolName, locHostPort,serverGroup, nullptr, 0, true );
     // createRegionAndAttachPool(poolRegNames[0],USE_ACK, poolName);
 
     RegionPtr regPtr0 =
-        createRegionAndAttachPool(poolRegNames[0], USE_ACK, NULL);
+        createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
     ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
     regPtr0->registerAllKeys();
 
@@ -139,12 +140,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartTestClient)
     config->insert("bucket-wait-timeout", "2000");
     config->insert("connect-wait-timeout", "10");
 
-    initClientWithPool(true, NULL, locHostPort, serverGroup, config, 0, true,
+    initClientWithPool(true, nullptr, locHostPort, serverGroup, config, 0, true,
                        -1, -1, -1, true, false);
-    // createPool(poolName, locHostPort,serverGroup, NULL, 0, true );
+    // createPool(poolName, locHostPort,serverGroup, nullptr, 0, true );
 
     RegionPtr regPtr0 =
-        createRegionAndAttachPool(poolRegNames[0], USE_ACK, NULL);
+        createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
     ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
 
     LOG("StartTestClient complete.");
@@ -161,12 +162,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, StartTestClient2)
     config->insert("bucket-wait-timeout", "2000");
     config->insert("connect-wait-timeout", "10");
 
-    initClientWithPool(true, NULL, locHostPort, serverGroup, config, 0, true,
+    initClientWithPool(true, nullptr, locHostPort, serverGroup, config, 0, true,
                        -1, -1, -1, true, false);
-    // createPool(poolName, locHostPort,serverGroup, NULL, 0, true );
+    // createPool(poolName, locHostPort,serverGroup, nullptr, 0, true );
 
     RegionPtr regPtr0 =
-        createRegionAndAttachPool(poolRegNames[0], USE_ACK, NULL);
+        createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
     ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
 
     LOG("StartTestClient complete.");
@@ -213,8 +214,8 @@ class putThread : public ACE_Task_Base {
   int svc(void) {
     bool networkhop ATTR_UNUSED = false;
     CacheableKeyPtr keyPtr;
-    CacheablePtr args = NULLPTR;
-    ResultCollectorPtr rPtr = NULLPTR;
+    CacheablePtr args = nullptr;
+    ResultCollectorPtr rPtr = nullptr;
     RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     while (!m_stop) {
       for (int i = m_min; i < m_max; i++) {
@@ -250,8 +251,8 @@ class putThread : public ACE_Task_Base {
 void executeFunction() {
   RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
   TestUtils::getCacheImpl(getHelper()->cachePtr)->getAndResetNetworkHopFlag();
-  CacheablePtr args = NULLPTR;
-  ResultCollectorPtr rPtr = NULLPTR;
+  CacheablePtr args = nullptr;
+  ResultCollectorPtr rPtr = nullptr;
   int failureCount = 0;
   LOGINFO("executeFunction started");
   for (int i = 0; i < 300; i++) {
@@ -420,7 +421,5 @@ void runFunctionExecutionDisableChunkHandlerThread() {
 }
 
 DUNIT_MAIN
-  {
-    runFunctionExecutionDisableChunkHandlerThread();
-  }
+  { runFunctionExecutionDisableChunkHandlerThread(); }
 END_MAIN

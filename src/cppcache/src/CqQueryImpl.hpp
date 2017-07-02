@@ -54,7 +54,8 @@ namespace client {
  * Represents the CqQuery object. Implements CqQuery API and CqAttributeMutator.
  *
  */
-class CqQueryImpl : public CqQuery {
+class CqQueryImpl : public CqQuery,
+                    public std::enable_shared_from_this<CqQueryImpl> {
  protected:
   std::string m_cqName;
   std::string m_queryString;
@@ -91,10 +92,10 @@ class CqQueryImpl : public CqQuery {
    * Constructor.
    */
  public:
-  CqQueryImpl(CqServicePtr& cqService, std::string& cqName,
-              std::string& queryString, CqAttributesPtr& cqAttributes,
-              bool isDurable = false,
-              UserAttributesPtr userAttributesPtr = NULLPTR);
+  CqQueryImpl(const CqServicePtr& cqService, const std::string& cqName,
+              const std::string& queryString,
+              const CqAttributesPtr& cqAttributes, const bool isDurable = false,
+              const UserAttributesPtr& userAttributesPtr = nullptr);
 
   ~CqQueryImpl();
 
@@ -160,7 +161,7 @@ class CqQueryImpl : public CqQuery {
   const CqStatisticsPtr getStatistics() const;
 
   CqQueryVsdStats& getVsdStats() {
-    return *dynamic_cast<CqQueryVsdStats*>(m_stats.ptr());
+    return *dynamic_cast<CqQueryVsdStats*>(m_stats.get());
   }
 
   const CqAttributesPtr getCqAttributes() const;
@@ -176,7 +177,7 @@ class CqQueryImpl : public CqQuery {
   /**
    * @return Returns the cqListeners.
    */
-  void getCqListeners(VectorOfCqListener& cqListener);
+  void getCqListeners(std::vector<CqListenerPtr>& cqListener);
 
   /**
    * Start or resume executing the query.
@@ -270,6 +271,8 @@ class CqQueryImpl : public CqQuery {
   void sendStopOrClose(TcrMessage::MsgType requestType);
   ThinClientBaseDM* m_tccdm;
   ProxyCachePtr m_proxyCache;
+
+  FRIEND_STD_SHARED_PTR(CqQueryImpl)
 };
 }  // namespace client
 }  // namespace geode

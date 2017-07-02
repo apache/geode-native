@@ -26,7 +26,7 @@
 using namespace apache::geode::client;
 class TallyListener;
 
-typedef apache::geode::client::SharedPtr<TallyListener> TallyListenerPtr;
+typedef std::shared_ptr<TallyListener> TallyListenerPtr;
 
 class TallyListener : public CacheListener {
  private:
@@ -55,7 +55,7 @@ class TallyListener : public CacheListener {
         isCallbackCalled(false),
         m_lastKey(),
         m_lastValue(),
-        m_callbackArg(NULLPTR),
+        m_callbackArg(nullptr),
         m_ignoreTimeout(false),
         m_quiet(false) {
     LOG("TallyListener contructor called");
@@ -122,9 +122,9 @@ class TallyListener : public CacheListener {
   bool isCallBackArgCalled() { return isCallbackCalled; }
   void checkcallbackArg(const EntryEvent& event) {
     if (!isListnerInvoked) isListnerInvoked = true;
-    if (m_callbackArg != NULLPTR) {
-      CacheableKeyPtr callbkArg =
-          dynCast<CacheableKeyPtr>(event.getCallbackArgument());
+    if (m_callbackArg != nullptr) {
+      auto callbkArg =
+          std::dynamic_pointer_cast<CacheableKey>(event.getCallbackArgument());
       if (strcmp(m_callbackArg->toString()->asChar(),
                  callbkArg->toString()->asChar()) == 0) {
         isCallbackCalled = true;
@@ -170,7 +170,7 @@ void TallyListener::afterCreate(const EntryEvent& event) {
   m_lastValue = event.getNewValue();
   checkcallbackArg(event);
 
-  CacheableStringPtr strPtr = dynCast<CacheableStringPtr>(event.getNewValue());
+  auto strPtr = std::dynamic_pointer_cast<CacheableString>(event.getNewValue());
   char keytext[100];
   m_lastKey->logString(keytext, 100);
   if (!m_quiet) {
@@ -192,7 +192,7 @@ void TallyListener::afterUpdate(const EntryEvent& event) {
   m_lastKey = event.getKey();
   m_lastValue = event.getNewValue();
   checkcallbackArg(event);
-  CacheableStringPtr strPtr = dynCast<CacheableStringPtr>(event.getNewValue());
+  auto strPtr = std::dynamic_pointer_cast<CacheableString>(event.getNewValue());
   char keytext[100];
   m_lastKey->logString(keytext, 100);
   if (!m_quiet) {

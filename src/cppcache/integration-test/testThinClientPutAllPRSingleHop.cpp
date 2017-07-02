@@ -107,11 +107,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_EndpointTL)
     initClient(true);
 
     RegionPtr regPtr = getHelper()->createPooledRegionStickySingleHop(
-        regionNames[0], USE_ACK, NULL, "__TEST_POOL1__", false, false);
-    ASSERT(regPtr != NULLPTR, "Failed to create region.");
+        regionNames[0], USE_ACK, nullptr, "__TEST_POOL1__", false, false);
+    ASSERT(regPtr != nullptr, "Failed to create region.");
     regPtr = getHelper()->createPooledRegionStickySingleHop(
-        regionNames[1], NO_ACK, NULL, "__TEST_POOL1__", false, false);
-    ASSERT(regPtr != NULLPTR, "Failed to create region.");
+        regionNames[1], NO_ACK, nullptr, "__TEST_POOL1__", false, false);
+    ASSERT(regPtr != nullptr, "Failed to create region.");
 
     LOG("StepOne_Pooled_EndPointTL complete.");
   }
@@ -126,8 +126,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
 
     // This is to get MetaDataService going.
     for (int i = 3000; i < 8000; i++) {
-      CacheableKeyPtr keyPtr =
-          dynCast<CacheableKeyPtr>(CacheableInt32::create(i));
+      auto keyPtr =
+          std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
       try {
         LOGINFO("CPPTEST: put item %d", i);
         dataReg->put(keyPtr, keyPtr->hashcode());
@@ -208,13 +208,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         HashMapOfCacheable valMap;
 
         for (int j = 1000; j < 25000; j++) {
-          CacheableKeyPtr keyPtr =
-              dynCast<CacheableKeyPtr>(CacheableInt32::create(j));
-          CacheablePtr valPtr =
-              dynCast<CacheablePtr>(CacheableInt32::create(keyPtr->hashcode()));
+          auto keyPtr = std::dynamic_pointer_cast<CacheableKey>(
+              CacheableInt32::create(j));
+          auto valPtr = std::dynamic_pointer_cast<Cacheable>(
+              CacheableInt32::create(keyPtr->hashcode()));
           LOGINFO("CPPTEST: putALL CASE:: getting key %d with hashcode %d", j,
                   keyPtr->hashcode());
-          valMap.insert(keyPtr, valPtr);
+          valMap.emplace(keyPtr, valPtr);
         }
         LOGINFO("TEST-1");
         ACE_Time_Value startTime = ACE_OS::gettimeofday();
@@ -270,13 +270,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopRemoveAllForIntKeysTask)
         HashMapOfCacheable valMap;
         VectorOfCacheableKey keys;
         for (int j = 1000; j < 25000; j++) {
-          CacheableKeyPtr keyPtr =
-              dynCast<CacheableKeyPtr>(CacheableInt32::create(j));
-          CacheablePtr valPtr =
-              dynCast<CacheablePtr>(CacheableInt32::create(keyPtr->hashcode()));
+          auto keyPtr = CacheableInt32::create(j);
+          auto valPtr = CacheableInt32::create(keyPtr->hashcode());
           LOGINFO("CPPTEST: removeall CASE:: getting key %d with hashcode %d",
                   j, keyPtr->hashcode());
-          valMap.insert(keyPtr, valPtr);
+          valMap.emplace(keyPtr, valPtr);
           keys.push_back(keyPtr);
         }
         LOGINFO("TEST-1");

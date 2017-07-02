@@ -100,7 +100,7 @@ class TESTOBJECT_EXPORT EqStruct : public TimestampedObject {
   char* var9;
 
   inline uint32_t getObjectSize(const SerializablePtr& obj) const {
-    return (obj == NULLPTR ? 0 : obj->objectSize());
+    return (obj == nullptr ? 0 : obj->objectSize());
   }
 
  public:
@@ -149,7 +149,7 @@ class TESTOBJECT_EXPORT EqStruct : public TimestampedObject {
   }
 };
 
-typedef apache::geode::client::SharedPtr<EqStruct> EqStructPtr;
+typedef std::shared_ptr<EqStruct> EqStructPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_EQSTRUCT_H_

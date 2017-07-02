@@ -298,7 +298,7 @@ namespace apache
       {
         try {
           Apache::Geode::Client::IRegion<Object^, Object^>^ mregion =
-            Apache::Geode::Client::Region<Object^, Object^>::Create(rp.ptr());
+            Apache::Geode::Client::Region<Object^, Object^>::Create(rp);
 
           m_managedptr->Close(reinterpret_cast<Apache::Geode::Client::Region<Object^, Object^>^>(mregion));
         }

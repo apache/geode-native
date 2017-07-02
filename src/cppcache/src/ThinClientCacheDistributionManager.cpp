@@ -31,7 +31,7 @@ using namespace apache::geode::client;
 
 ThinClientCacheDistributionManager::ThinClientCacheDistributionManager(
     TcrConnectionManager& connManager)
-    : ThinClientDistributionManager(connManager, NULL) {}
+    : ThinClientDistributionManager(connManager, nullptr) {}
 
 void ThinClientCacheDistributionManager::init() {
   LOGDEBUG("ThinClientCacheDistributionManager::init");
@@ -178,13 +178,13 @@ bool ThinClientCacheDistributionManager::postFailoverAction(
 
   CacheImpl* cache = m_connManager.getCacheImpl();
 
-  if (cache == NULL) {
+  if (cache == nullptr) {
     LOGERROR("Client not initialized for failover");
     return false;
   }
   try {
-    RemoteQueryServicePtr rqsService =
-        dynCast<RemoteQueryServicePtr>(cache->getQueryService(true));
+    auto rqsService = std::dynamic_pointer_cast<RemoteQueryService>(
+        cache->getQueryService(true));
     rqsService->executeAllCqs(true);
   } catch (const Exception& excp) {
     LOGWARN("Failed to recover CQs during failover attempt to endpoint[%s]: %s",

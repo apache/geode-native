@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_GFCPP_GLOBALS_H_
-#define GEODE_GFCPP_GLOBALS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_GFCPP_GLOBALS_H_
+#define GEODE_GFCPP_GLOBALS_H_
 
 /**
  * @file
@@ -121,20 +121,6 @@
 #include "geode_base.hpp"
 
 #include <cstdint>
-
-namespace apache {
-namespace geode {
-namespace client {
-
-extern void CPPCACHE_EXPORT millisleep(uint32_t millis);
-
-#ifdef _WIN32
-extern void CPPCACHE_EXPORT setNewAndDelete(pNew, pDelete);
-#endif
-
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
 
 #include "Log.hpp"
 #include "Assert.hpp"

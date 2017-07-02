@@ -62,7 +62,7 @@ class MyListener : public CacheListener {
   int getNumEvents() { return m_events; }
 };
 
-typedef apache::geode::client::SharedPtr<MyListener> MyListenerPtr;
+typedef std::shared_ptr<MyListener> MyListenerPtr;
 
 void setCacheListener(const char* regName, TallyListenerPtr regListener) {
   RegionPtr reg = getHelper()->getRegion(regName);
@@ -70,8 +70,8 @@ void setCacheListener(const char* regName, TallyListenerPtr regListener) {
   attrMutator->setCacheListener(regListener);
 }
 
-const char* locHostPort1 = NULL;
-const char* locHostPort2 = NULL;
+const char* locHostPort1 = nullptr;
+const char* locHostPort2 = nullptr;
 DUNIT_TASK_DEFINITION(SERVER1, StartLocator1)
   {
     CacheHelper::initLocator(1, false, true, 1,
@@ -102,12 +102,12 @@ DUNIT_TASK_DEFINITION(SERVER2, StartServer2)
   }
 END_TASK_DEFINITION
 
-MyListenerPtr reg1Listener1 = NULLPTR;
+MyListenerPtr reg1Listener1 = nullptr;
 
 DUNIT_TASK_DEFINITION(SERVER2, SetupClient2)
   {
     // CacheHelper ch = getHelper();
-    reg1Listener1 = new MyListener();
+    reg1Listener1 = std::make_shared<MyListener>();
     RegionPtr regPtr = createPooledRegion("exampleRegion", false, locHostPort2,
                                           "poolName", true, reg1Listener1);
     regPtr->registerAllKeys();
@@ -116,8 +116,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER1, SetupClient)
   {
-    initClientWithPool(true, "poolName", locHostPort1, NULL);
-    RegionPtr regPtr = createRegionAndAttachPool("exampleRegion", true, NULL);
+    initClientWithPool(true, "poolName", locHostPort1, nullptr);
+    RegionPtr regPtr =
+        createRegionAndAttachPool("exampleRegion", true, nullptr);
     LOG(" region is created ");
     for (int i = 0; i < 100; i++) {
       LOG(" region is created put");

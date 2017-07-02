@@ -43,7 +43,7 @@ namespace client {
  * is an event satisfied by the CQ and the other called when there is an
  * error during CQ processing.
  */
-class CPPCACHE_EXPORT CqListener : public SharedBase {
+class CPPCACHE_EXPORT CqListener  {
  public:
   /**
    * This method is invoked when an event is occurred on the region
@@ -57,7 +57,7 @@ class CPPCACHE_EXPORT CqListener : public SharedBase {
    * The error can appear while applying query condition on the event.
    * e.g if the event doesn't has attributes as specified in the CQ query.
    * This event does contain an error. The newValue may or may not be
-   * available, and will be NULLPTR if not available.
+   * available, and will be nullptr if not available.
    */
   virtual void onError(const CqEvent& aCqEvent);
 

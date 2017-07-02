@@ -80,7 +80,7 @@ class CPPCACHE_EXPORT StructSet : public CqResults {
    * Get the field name of the StructSet from the specified index number.
    *
    * @param index the index number of the field name to get.
-   * @returns the field name from the specified index number or NULL if not
+   * @returns the field name from the specified index number or nullptr if not
    * found.
    */
   virtual const char* getFieldName(int32_t index) = 0;

@@ -196,22 +196,26 @@ void PdxTests::PdxType::fromData(PdxReaderPtr pr) {
   m_byteArray = pr->readByteArray("m_byteArray", byteArrayLen);
   m_charArray = pr->readWideCharArray("m_charArray", charArrayLen);
 
-  m_arraylist = pr->readObject("m_arraylist");
-  m_linkedlist =
-      dynCast<CacheableLinkedListPtr>(pr->readObject("m_linkedlist"));
-  m_map = dynCast<CacheableHashMapPtr>(pr->readObject("m_map"));
+  m_arraylist = std::static_pointer_cast<CacheableArrayList>(
+      pr->readObject("m_arraylist"));
+  m_linkedlist = std::static_pointer_cast<CacheableLinkedList>(
+      pr->readObject("m_linkedlist"));
+  m_map = std::static_pointer_cast<CacheableHashMap>(pr->readObject("m_map"));
   // TODO:Check for the size
 
-  m_hashtable = pr->readObject("m_hashtable");
+  m_hashtable = std::static_pointer_cast<CacheableHashTable>(
+      pr->readObject("m_hashtable"));
   // TODO:Check for the size
 
-  m_vector = pr->readObject("m_vector");
+  m_vector =
+      std::static_pointer_cast<CacheableVector>(pr->readObject("m_vector"));
   // TODO::Check for size
 
-  m_chs = pr->readObject("m_chs");
+  m_chs = std::static_pointer_cast<CacheableHashSet>(pr->readObject("m_chs"));
   // TODO::Size check
 
-  m_clhs = pr->readObject("m_clhs");
+  m_clhs = std::static_pointer_cast<CacheableLinkedHashSet>(
+      pr->readObject("m_clhs"));
   // TODO:Size check
 
   m_string = pr->readString("m_string");  // GenericValCompare
@@ -310,8 +314,8 @@ bool PdxTests::PdxType::equals(PdxTests::PdxType& other,
   if (!isPdxReadSerialized) {
     for (int i = 0; i < m_objectArray->size(); i++) {
       Address* otherAddr1 =
-          dynamic_cast<Address*>(ot->m_objectArray->at(i).ptr());
-      Address* myAddr1 = dynamic_cast<Address*>(m_objectArray->at(i).ptr());
+          dynamic_cast<Address*>(ot->m_objectArray->at(i).get());
+      Address* myAddr1 = dynamic_cast<Address*>(m_objectArray->at(i).get());
       if (!otherAddr1->equals(*myAddr1)) return false;
     }
     LOGINFO("PdxObject::equals isPdxReadSerialized = %d", isPdxReadSerialized);
@@ -321,16 +325,16 @@ bool PdxTests::PdxType::equals(PdxTests::PdxType& other,
   if (!isPdxReadSerialized) {
     for (int i = 0; i < m_objectArrayEmptyPdxFieldName->size(); i++) {
       Address* otherAddr1 =
-          dynamic_cast<Address*>(ot->m_objectArray->at(i).ptr());
-      Address* myAddr1 = dynamic_cast<Address*>(m_objectArray->at(i).ptr());
+          dynamic_cast<Address*>(ot->m_objectArray->at(i).get());
+      Address* myAddr1 = dynamic_cast<Address*>(m_objectArray->at(i).get());
       if (!otherAddr1->equals(*myAddr1)) return false;
     }
     LOGINFO("PdxObject::equals Empty Field Name isPdxReadSerialized = %d",
             isPdxReadSerialized);
   }
 
-  CacheableEnumPtr myenum = dynCast<CacheableEnumPtr>(m_pdxEnum);
-  CacheableEnumPtr otenum = dynCast<CacheableEnumPtr>(ot->m_pdxEnum);
+  auto myenum = std::dynamic_pointer_cast<CacheableEnum>(m_pdxEnum);
+  auto otenum = std::dynamic_pointer_cast<CacheableEnum>(ot->m_pdxEnum);
   if (myenum->getEnumOrdinal() != otenum->getEnumOrdinal()) return false;
   if (strcmp(myenum->getEnumClassName(), otenum->getEnumClassName()) != 0) {
     return false;

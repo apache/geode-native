@@ -29,7 +29,7 @@
 using namespace apache::geode::client;
 using namespace test;
 
-CacheHelper* cacheHelper = NULL;
+CacheHelper* cacheHelper = nullptr;
 bool isLocalServer = false;
 
 static bool isLocator = false;
@@ -52,7 +52,7 @@ int PdxDeltaEx::m_fromDataCount = 0;
 int PdxDeltaEx::m_cloneCount = 0;
 
 void initClient(const bool isthinClient) {
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
@@ -64,14 +64,14 @@ void initClientNoPools() {
 }
 
 void cleanProc() {
-  if (cacheHelper != NULL) {
+  if (cacheHelper != nullptr) {
     delete cacheHelper;
-    cacheHelper = NULL;
+    cacheHelper = nullptr;
   }
 }
 
 CacheHelper* getHelper() {
-  ASSERT(cacheHelper != NULL, "No cacheHelper initialized.");
+  ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
@@ -85,7 +85,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   RegionPtr regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }
 
@@ -93,7 +93,7 @@ void createPooledExpirationRegion(const char* name, const char* poolname) {
   LOG("createPooledExpirationRegion() entered.");
   // Entry time-to-live = 1 second.
   RegionPtr regPtr = getHelper()->createPooledRegionDiscOverFlow(
-      name, true, locatorsG, poolname, true, true, 1, 0, 0, 0, 0, NULL,
+      name, true, locatorsG, poolname, true, true, 1, 0, 0, 0, 0, nullptr,
       ExpirationAction::LOCAL_INVALIDATE);
 }
 
@@ -114,9 +114,9 @@ void createRegion(const char* name, bool ackMode,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   // ack, caching
-  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, true, NULLPTR,
+  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
                                                clientNotificationEnabled);
-  ASSERT(regPtr != NULLPTR, "Failed to create region.");
+  ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 
@@ -151,7 +151,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1)
     initClient(true);
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TESTPOOL1_",
                        true);  // without LRU
-    createPooledLRURegion(regionNames[1], USE_ACK, NULL, locatorsG,
+    createPooledLRURegion(regionNames[1], USE_ACK, nullptr, locatorsG,
                           "__TESTPOOL1_", true);  // with LRU
     createPooledExpirationRegion(regionNames[2], "__TESTPOOL1_");
   }
@@ -171,7 +171,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2)
     initClient(true);
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TESTPOOL1_",
                        true);
-    createPooledLRURegion(regionNames[1], USE_ACK, NULL, locatorsG,
+    createPooledLRURegion(regionNames[1], USE_ACK, nullptr, locatorsG,
                           "__TESTPOOL1_", true);  // with LRU
     createPooledExpirationRegion(regionNames[2], "__TESTPOOL1_");
   }
@@ -223,7 +223,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1_PdxPut)
   {
     CacheableKeyPtr keyPtr = createKey(keys[0]);
     PdxDeltaEx* ptr = new PdxDeltaEx();
-    // CacheablePtr pdxobj(new PdxDeltaEx());
+    // auto pdxobj = std::make_shared<PdxDeltaEx>();
     CacheablePtr valPtr(ptr);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->put(keyPtr, valPtr);

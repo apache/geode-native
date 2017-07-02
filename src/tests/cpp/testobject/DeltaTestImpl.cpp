@@ -37,7 +37,7 @@ DeltaTestImpl::DeltaTestImpl() {
   doubleVar = 1.1;
   uint8_t byte = 'A';
   byteArr = CacheableBytes::create(&byte, 1);
-  testObj = NULLPTR;
+  testObj = nullptr;
   m_hasDelta = false;
   deltaBits = 0;
   toDeltaCounter = 0;
@@ -53,12 +53,12 @@ DeltaTestImpl::DeltaTestImpl(DeltaTestImplPtr rhs) {
   intVar = rhs->intVar;
   str = CacheableString::create(rhs->str->asChar());
   doubleVar = rhs->doubleVar;
-  byteArr = (rhs->byteArr == NULLPTR ? NULLPTR : CacheableBytes::create(
+  byteArr = (rhs->byteArr == nullptr ? nullptr : CacheableBytes::create(
                                                      rhs->byteArr->value(),
                                                      rhs->byteArr->length()));
-  testObj = (rhs->testObj == NULLPTR
-                 ? NULLPTR
-                 : TestObject1Ptr(new TestObject1(*(rhs->testObj.ptr()))));
+  testObj = (rhs->testObj == nullptr
+                 ? nullptr
+                 : TestObject1Ptr(new TestObject1(*(rhs->testObj.get()))));
   toDeltaCounter = rhs->getToDeltaCounter();
   fromDeltaCounter = rhs->getFromDeltaCounter();
 }

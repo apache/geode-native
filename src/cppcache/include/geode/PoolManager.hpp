@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_POOLMANAGER_H_
-#define GEODE_POOLMANAGER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,8 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_POOLMANAGER_H_
+#define GEODE_POOLMANAGER_H_
+
+#include <unordered_map>
+#include <string>
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
+
 #include "Pool.hpp"
 #include "PoolFactory.hpp"
 #include "Region.hpp"
@@ -29,7 +34,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-typedef HashMapT<CacheableStringPtr, PoolPtr> HashMapOfPools;
+typedef std::unordered_map<std::string, PoolPtr> HashMapOfPools;
 
 /**
  * Manages creation and access to {@link Pool connection pools} for clients.
@@ -65,9 +70,9 @@ class CPPCACHE_EXPORT PoolManager {
 
   /**
    * Find by name an existing connection pool returning
-   * the existing pool or <code>NULLPTR</code> if it does not exist.
+   * the existing pool or <code>nullptr</code> if it does not exist.
    * @param name is the name of the connection pool
-   * @return the existing connection pool or <code>NULLPTR</code> if it does not
+   * @return the existing connection pool or <code>nullptr</code> if it does not
    * exist.
    */
   static PoolPtr find(const char* name);
@@ -75,7 +80,7 @@ class CPPCACHE_EXPORT PoolManager {
   /**
    * Find the pool used by the given region.
    * @param region is the region that is using the pool.
-   * @return the pool used by that region or <code> NULLPTR </code> if the
+   * @return the pool used by that region or <code> nullptr </code> if the
    * region does
    * not have a pool.
    */

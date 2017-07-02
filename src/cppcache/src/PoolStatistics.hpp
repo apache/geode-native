@@ -1,10 +1,26 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #pragma once
 
 #ifndef GEODE_POOLSTATISTICS_H_
 #define GEODE_POOLSTATISTICS_H_
 
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
@@ -24,13 +40,16 @@
 #include <geode/statistics/Statistics.hpp>
 #include <geode/statistics/StatisticsFactory.hpp>
 #include <statistics/StatisticsManager.hpp>
-#include "SpinLock.hpp"
+#include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-using namespace apache::geode::statistics;
+using statistics::StatisticDescriptor;
+using statistics::StatisticsType;
+using statistics::Statistics;
+using util::concurrent::spinlock_mutex;
 
 class PoolStats {
  public:
@@ -165,8 +184,8 @@ class PoolStats {
 class PoolStatType {
  private:
   static PoolStatType* single;
-  static SpinLock m_singletonLock;
-  static SpinLock m_statTypeLock;
+  static spinlock_mutex m_singletonLock;
+  static spinlock_mutex m_statTypeLock;
 
  public:
   static PoolStatType* getInstance();

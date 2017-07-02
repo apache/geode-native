@@ -48,7 +48,7 @@ class RegionInternal;
  * invocation, or an <code>EntryDestroyedException</code> if the entry has been
  * destroyed.
  */
-class CPPCACHE_EXPORT RegionEntry : public SharedBase {
+class CPPCACHE_EXPORT RegionEntry {
  public:
   /** Returns the key for this entry.
    *
@@ -59,7 +59,7 @@ class CPPCACHE_EXPORT RegionEntry : public SharedBase {
   /** Returns the value of this entry in the local cache. Does not invoke
    * a <code>CacheLoader</code>,
    *
-   * @return the value or <code>NULLPTR</code> if this entry is invalid
+   * @return the value or <code>nullptr</code> if this entry is invalid
    */
   CacheablePtr getValue();
 
@@ -67,7 +67,7 @@ class CPPCACHE_EXPORT RegionEntry : public SharedBase {
    *
    * @return the Region that contains this entry
    */
-  void getRegion(RegionPtr& region);
+  RegionPtr getRegion();
 
   /** Returns the statistics for this entry.
    *
@@ -103,6 +103,8 @@ class CPPCACHE_EXPORT RegionEntry : public SharedBase {
   CacheStatisticsPtr m_statistics;
   bool m_destroyed;
   friend class RegionInternal;
+
+  FRIEND_STD_SHARED_PTR(RegionEntry)
 };
 }  // namespace client
 }  // namespace geode

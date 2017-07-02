@@ -20,7 +20,7 @@
 
 #include "geode_defs.hpp"
 #include <cppcache/TransactionEvent.hpp>
-#include "impl/NativeWrapper.hpp"
+
 //#include "TransactionId.hpp"
 //#include "Cache.hpp"
 

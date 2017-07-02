@@ -39,7 +39,7 @@ typedef void (*UserDeallocator)(void*, const char*);
  */
 typedef uint32_t (*UserObjectSizer)(void*, const char*);
 
-class CPPCACHE_EXPORT PdxSerializer : public SharedBase {
+class CPPCACHE_EXPORT PdxSerializer  {
   /**
    * The PdxSerializer class allows domain classes to be
    * serialized and deserialized as PDXs without modification
@@ -82,7 +82,7 @@ class CPPCACHE_EXPORT PdxSerializer : public SharedBase {
    * @param className to help select an object sizer for the correct class
    */
   virtual UserObjectSizer getObjectSizer(const char* className) {
-    return NULL;
+    return nullptr;
   };
 };
 }  // namespace client

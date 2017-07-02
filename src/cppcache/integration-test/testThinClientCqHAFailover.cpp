@@ -117,13 +117,13 @@ void initClientCq(int redundancyLevel) {
     // ignore exception
   }
 
-  if (cacheHelper == NULL) {
+  if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(true);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }
 
-KillServerThread* kst = NULL;
+KillServerThread* kst = nullptr;
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateLocator)
   {
@@ -199,13 +199,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     try {
       PoolPtr pool = PoolManager::find(regionNamesCq[0]);
       QueryServicePtr qs;
-      if (pool != NULLPTR) {
+      if (pool != nullptr) {
         qs = pool->getQueryService();
       } else {
         qs = getHelper()->cachePtr->getQueryService();
       }
       CqAttributesFactory cqFac;
-      CqListenerPtr cqLstner(new MyCqListener());
+      auto cqLstner = std::make_shared<MyCqListener>();
       cqFac.addCqListener(cqLstner);
       CqAttributesPtr cqAttr = cqFac.create();
 
@@ -224,22 +224,22 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       while (iter.hasNext()) {
         count--;
         SerializablePtr ser = iter.next();
-        PortfolioPtr portfolio(dynamic_cast<Portfolio*>(ser.ptr()));
-        PositionPtr position(dynamic_cast<Position*>(ser.ptr()));
+        PortfolioPtr portfolio(dynamic_cast<Portfolio*>(ser.get()));
+        PositionPtr position(dynamic_cast<Position*>(ser.get()));
 
-        if (portfolio != NULLPTR) {
+        if (portfolio != nullptr) {
           printf("   query pulled portfolio object ID %d, pkid %s\n",
                  portfolio->getID(), portfolio->getPkid()->asChar());
         }
 
-        else if (position != NULLPTR) {
+        else if (position != nullptr) {
           printf("   query  pulled position object secId %s, shares %d\n",
                  position->getSecId()->asChar(),
                  position->getSharesOutstanding());
         }
 
         else {
-          if (ser != NULLPTR) {
+          if (ser != nullptr) {
             printf(" query pulled object %s\n", ser->toString()->asChar());
           } else {
             printf("   query pulled bad object\n");
@@ -280,7 +280,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepThree2)
     qh->populatePortfolioData(regPtr0, 150, 40, 10);
     qh->populatePositionData(subregPtr0, 150, 40);
     for (int i = 1; i < 150; i++) {
-      CacheablePtr port(new Portfolio(i, 20));
+      auto port = std::make_shared<Portfolio>(i, 20);
 
       CacheableKeyPtr keyport = CacheableKey::create((char*)"port1-1");
       regPtr0->put(keyport, port);
@@ -297,18 +297,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree3)
     // using region name as pool name
     PoolPtr pool = PoolManager::find(regionNamesCq[0]);
     QueryServicePtr qs;
-    if (pool != NULLPTR) {
+    if (pool != nullptr) {
       qs = pool->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
     CqQueryPtr qry = qs->getCq(cqName);
-    ASSERT(qry != NULLPTR, "failed to get CqQuery");
+    ASSERT(qry != nullptr, "failed to get CqQuery");
     CqAttributesPtr cqAttr = qry->getCqAttributes();
-    ASSERT(cqAttr != NULLPTR, "failed to get CqAttributes");
-    CqListenerPtr cqLstner = NULLPTR;
+    ASSERT(cqAttr != nullptr, "failed to get CqAttributes");
+    CqListenerPtr cqLstner = nullptr;
     try {
-      VectorOfCqListener vl;
+      std::vector<CqListenerPtr> vl;
       cqAttr->getCqListeners(vl);
       cqLstner = vl[0];
     } catch (Exception& excp) {
@@ -317,9 +317,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree3)
       LOG(excpmsg);
       ASSERT(false, "get listener failed");
     }
-    ASSERT(cqLstner != NULLPTR, "listener is NULL");
-    MyCqListener* myListener = dynamic_cast<MyCqListener*>(cqLstner.ptr());
-    ASSERT(myListener != NULL, "my listener is NULL<cast failed>");
+    ASSERT(cqLstner != nullptr, "listener is nullptr");
+    MyCqListener* myListener = dynamic_cast<MyCqListener*>(cqLstner.get());
+    ASSERT(myListener != nullptr, "my listener is nullptr<cast failed>");
     kst = new KillServerThread(myListener);
     char buf[1024];
     sprintf(buf, "before kill server 1, before=%d, after=%d",
@@ -338,7 +338,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree3)
     RegionPtr subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
     for(int i=1; i < 150; i++)
     {
-        CacheablePtr port(new Portfolio(i, 20));
+        auto port = std::make_shared<Portfolio>(i, 20);
 
         CacheableKeyPtr keyport = CacheableKey::create("port1-1");
         try {
@@ -367,7 +367,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepThree4)
     qh->populatePortfolioData(regPtr0, 150, 40, 10);
     qh->populatePositionData(subregPtr0, 150, 40);
     for (int i = 1; i < 150; i++) {
-      CacheablePtr port(new Portfolio(i, 20));
+      auto port = std::make_shared<Portfolio>(i, 20);
 
       CacheableKeyPtr keyport = CacheableKey::create("port1-1");
       regPtr0->put(keyport, port);
@@ -384,18 +384,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
     // using region name as pool name
     PoolPtr pool = PoolManager::find(regionNamesCq[0]);
     QueryServicePtr qs;
-    if (pool != NULLPTR) {
+    if (pool != nullptr) {
       qs = pool->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
     CqQueryPtr qry = qs->getCq(cqName);
-    ASSERT(qry != NULLPTR, "failed to get CqQuery");
+    ASSERT(qry != nullptr, "failed to get CqQuery");
     CqAttributesPtr cqAttr = qry->getCqAttributes();
-    ASSERT(cqAttr != NULLPTR, "failed to get CqAttributes");
-    CqListenerPtr cqLstner = NULLPTR;
+    ASSERT(cqAttr != nullptr, "failed to get CqAttributes");
+    CqListenerPtr cqLstner = nullptr;
     try {
-      VectorOfCqListener vl;
+      std::vector<CqListenerPtr> vl;
       cqAttr->getCqListeners(vl);
       cqLstner = vl[0];
     } catch (Exception& excp) {
@@ -404,9 +404,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
       LOG(excpmsg);
       ASSERT(false, "get listener failed");
     }
-    ASSERT(cqLstner != NULLPTR, "listener is NULL");
-    MyCqListener* myListener = dynamic_cast<MyCqListener*>(cqLstner.ptr());
-    ASSERT(myListener != NULL, "my listener is NULL<cast failed>");
+    ASSERT(cqLstner != nullptr, "listener is nullptr");
+    MyCqListener* myListener = dynamic_cast<MyCqListener*>(cqLstner.get());
+    ASSERT(myListener != nullptr, "my listener is nullptr<cast failed>");
     char buf[1024];
     sprintf(buf, "after failed over: before=%d, after=%d",
             myListener->getCountBefore(), myListener->getCountAfter());

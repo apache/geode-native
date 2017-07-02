@@ -72,9 +72,9 @@ m_processorId = -1;
   int32_t m_farsideBaseMembershipIdLen;
   input.readBytes(&m_farsideBaseMembershipId, &m_farsideBaseMembershipIdLen);
 
-  if (m_farsideBaseMembershipId != NULL) {
+  if (m_farsideBaseMembershipId != nullptr) {
     GF_SAFE_DELETE_ARRAY(m_farsideBaseMembershipId);
-    m_farsideBaseMembershipId = NULL;
+    m_farsideBaseMembershipId = nullptr;
   }
 
   int64_t tid;
@@ -88,7 +88,7 @@ m_processorId = -1;
   int32_t regionSize;
   input.readInt(&regionSize);
   for (int32_t i = 0; i < regionSize; i++) {
-    RegionCommitPtr rc(new RegionCommit(/*this*/));
+    auto rc = std::make_shared<RegionCommit>();
     rc->fromData(input);
     m_regions.push_back(rc);
   }
@@ -114,9 +114,9 @@ m_processorId = -1;
       // int8_t* bytes;
       // int32_t len;
       // input.readBytes(&bytes, &len);
-      // if ( bytes != NULL ) {
+      // if ( bytes != nullptr ) {
       // GF_SAFE_DELETE_ARRAY(bytes);
-      // bytes = NULL;
+      // bytes = nullptr;
       //}
       input.readInt(&len);
       // memId1.fromData(input);
@@ -162,36 +162,13 @@ int8_t TXCommitMessage::typeId() const {
 Serializable* TXCommitMessage::create() { return new TXCommitMessage(); }
 
 void TXCommitMessage::apply(Cache* cache) {
-  for (VectorOfSharedBase::Iterator iter = m_regions.begin();
+  for (std::vector<RegionCommitPtr>::iterator iter = m_regions.begin();
        m_regions.end() != iter; iter++) {
-    RegionCommitPtr regionCommit = staticCast<RegionCommitPtr>(*iter);
+    RegionCommitPtr regionCommit = std::static_pointer_cast<RegionCommit>(*iter);
     regionCommit->apply(cache);
   }
 }
-/*
-VectorOfEntryEvent TXCommitMessage::getEvents(Cache* cache)
-{
-        VectorOfEntryEvent events;
-        std::vector<FarSideEntryOpPtr> ops;
-        for(VectorOfSharedBase::Iterator iter = m_regions.begin();
-m_regions.end() != iter; iter++)
-        {
-                RegionCommitPtr regionCommit =
-staticCast<RegionCommitPtr>(*iter);
-                regionCommit->fillEvents(cache, ops);
-        }
 
-        std::sort(ops.begin(), ops.end(), FarSideEntryOp::cmp);
-
-        for(std::vector<FarSideEntryOpPtr>::iterator iter = ops.begin();
-ops.end() != iter; iter++)
-        {
-                events.push_back((*iter)->getEntryEvent(cache));
-        }
-
-        return events;
-}
-*/
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

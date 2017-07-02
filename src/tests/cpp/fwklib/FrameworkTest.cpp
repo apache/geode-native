@@ -23,20 +23,23 @@
 #include <geode/PoolFactory.hpp>
 #include "PoolAttributes.hpp"
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
+#include <util/concurrent/spinlock_mutex.hpp>
+
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
+
+using util::concurrent::spinlock_mutex;
 
 // ========================================================================
 
-SpinLock FrameworkTest::m_lck;
+spinlock_mutex FrameworkTest::m_lck;
 
 // ----------------------------------------------------------------------------
 
 FrameworkTest::FrameworkTest(const char* initArgs) {
-#ifdef WIN32
-  setNewAndDelete();
-#endif
-  txManager = NULLPTR;
+  txManager = nullptr;
   // parse args into variables,
   char xml[4096];   // xml file name
   char addr[1024];  // ip address, host:port
@@ -47,7 +50,9 @@ FrameworkTest::FrameworkTest(const char* initArgs) {
   }
   m_bbc = new FwkBBClient(addr);
   m_deltaMicros = 0;
-  m_timeSync = new TimeSync(port, (int32_t*)&m_deltaMicros);
+  m_timeSync = new TimeSync(
+      port, const_cast<int32_t*>(
+                reinterpret_cast<volatile int32_t*>(&m_deltaMicros)));
   m_coll = new TestDriver(xml);
   TestClient::createTestClient(50, m_id);
   incClientCount();
@@ -70,7 +75,7 @@ FrameworkTest::~FrameworkTest() {
     m_timeSync = NULL;
   }
 
-  if (m_cache != NULLPTR) {
+  if (m_cache != nullptr) {
     cacheFinalize();
   }
 }
@@ -225,12 +230,6 @@ const FwkPool* FrameworkTest::getPoolSnippet(const std::string& name) const {
 
 void FrameworkTest::cacheInitialize(PropertiesPtr& props,
                                     const CacheAttributesPtr& cAttrs) {
-#ifdef WIN32
-  if (!m_doneSetNewAndDelete) {
-    FWKEXCEPTION("SetNewAndDelete() not called via initArgs ctor");
-  }
-#endif
-
   CacheFactoryPtr cacheFactory;
   try {
     std::string name = getStringValue("systemName");
@@ -253,7 +252,7 @@ void FrameworkTest::cacheInitialize(PropertiesPtr& props,
     if (isPdxSerialized) {
       cacheFactory->setPdxReadSerialized(isPdxSerialized);
     }
-  } catch (Exception e) {
+  } catch (Exception& e) {
     FWKEXCEPTION(
         "DistributedSystem::connect encountered Exception: " << e.getMessage());
   }
@@ -264,14 +263,14 @@ void FrameworkTest::cacheInitialize(PropertiesPtr& props,
     if (m_istransaction) {
       txManager = m_cache->getCacheTransactionManager();
     }
-  } catch (CacheExistsException ignore) {
-    m_cache = NULLPTR;
-  } catch (Exception e) {
+  } catch (CacheExistsException& ignore) {
+    m_cache = nullptr;
+  } catch (Exception& e) {
     FWKEXCEPTION(
         "CacheFactory::create encountered Exception: " << e.getMessage());
   }
 
-  if (m_cache == NULLPTR) {
+  if (m_cache == nullptr) {
     FWKEXCEPTION("FrameworkTest: Failed to initialize cache.");
   }
 }
@@ -279,11 +278,11 @@ void FrameworkTest::cacheInitialize(PropertiesPtr& props,
 // ----------------------------------------------------------------------------
 
 void FrameworkTest::cacheFinalize() {
-  if (m_cache != NULLPTR) {
+  if (m_cache != nullptr) {
     try {
       destroyAllRegions();
       m_cache->close();
-    } catch (CacheClosedException ignore) {
+    } catch (CacheClosedException& ignore) {
     } catch (Exception& e) {
       FWKSEVERE("Caught an unexpected Exception during cache close: "
                 << e.getMessage());
@@ -291,7 +290,7 @@ void FrameworkTest::cacheFinalize() {
       FWKSEVERE("Caught an unexpected unknown exception during cache close.");
     }
   }
-  m_cache = NULLPTR;
+  m_cache = nullptr;
   FWKINFO("Cache closed.");
 }
 
@@ -317,9 +316,7 @@ void FrameworkTest::destroyAllRegions() {
   // destroy all root regions
   VectorOfRegion vec;
   m_cache->rootRegions(vec);
-  int32_t size = vec.size();
-  for (int32_t idx = 0; idx < size; idx++) {
-    RegionPtr region = vec.at(idx);
+  for (auto& region : vec) {
     localDestroyRegion(region);
   }
 }
@@ -401,23 +398,23 @@ void FrameworkTest::parseEndPoints(int32_t ep, std::string label,
   int32_t redundancyLevel = getIntValue("redundancyLevel");
   if (redundancyLevel > 0) pfPtr->setSubscriptionRedundancy(redundancyLevel);
   // create tag specific pools
-  PoolPtr pptr = NULLPTR;
+  PoolPtr pptr = nullptr;
   if (!tag.empty()) {
     poolName.append(tag);
     // check if pool already exists
     pptr = PoolManager::find(poolName.c_str());
-    if (pptr == NULLPTR) {
+    if (pptr == nullptr) {
       pptr = pfPtr->create(poolName.c_str());
     }
   }
   // create default pool
   else {
     pptr = PoolManager::find(poolName.c_str());
-    if (pptr == NULLPTR) {
+    if (pptr == nullptr) {
       pptr = pfPtr->create(poolName.c_str());
     }
   }
-  if (pptr != NULLPTR)
+  if (pptr != nullptr)
     FWKINFO(" Region Created with following Pool attributes :"
             << poolAttributesToString(pptr));
 }
@@ -525,17 +522,17 @@ std::string FrameworkTest::poolAttributesToString(PoolPtr& pool) {
   sString += "\nPRSingleHopEnabled: ";
   sString += pool->getPRSingleHopEnabled() ? "true" : "false";
   sString += "\nLocator: ";
-  CacheableStringArrayPtr str =
-      dynamic_cast<CacheableStringArray*>(pool->getLocators().ptr());
-  if (str != NULLPTR) {
+  auto str =
+      std::dynamic_pointer_cast<CacheableStringArray>(pool->getLocators());
+  if (str != nullptr) {
     for (int32_t stri = 0; stri < str->length(); stri++) {
       sString += str->operator[](stri)->asChar();
       sString += ",";
     }
   }
   sString += "\nServers: ";
-  str = dynamic_cast<CacheableStringArray*>(pool->getServers().ptr());
-  if (str != NULLPTR) {
+  str = std::dynamic_pointer_cast<CacheableStringArray>(pool->getServers());
+  if (str != nullptr) {
     for (int32_t stri = 0; stri < str->length(); stri++) {
       sString += str->operator[](stri)->asChar();
       sString += ",";
@@ -544,3 +541,7 @@ std::string FrameworkTest::poolAttributesToString(PoolPtr& pool) {
   sString += "\n";
   return sString;
 }
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

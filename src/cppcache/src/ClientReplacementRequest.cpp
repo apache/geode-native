@@ -25,8 +25,8 @@ void ClientReplacementRequest::toData(DataOutput& output) const {
   this->m_serverLocation.toData(output);
 }
 Serializable* ClientReplacementRequest::fromData(DataInput& input) {
-  return NULL;  // not needed as of now and my guess is  it will never be
-                // needed.
+  return nullptr;  // not needed as of now and my guess is  it will never be
+                   // needed.
 }
 int8_t ClientReplacementRequest::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::ClientReplacementRequest);

@@ -102,13 +102,13 @@ void FarSideEntryOp::fromData(DataInput& input, bool largeModCount,
         //			  public static final short TOKEN_REMOVED2 =
         // 145;
         if (fixedId >= 141 && fixedId < 146) {
-          m_value = NULLPTR;
+          m_value = nullptr;
         } else {
           input.rewindCursor(rewind);
           input.readObject(m_value);
         }
       } else {
-        // uint8_t* buf = NULL;
+        // uint8_t* buf = nullptr;
         int32_t len;
         input.readArrayLen(&len);
         input.readObject(m_value);
@@ -121,10 +121,10 @@ void FarSideEntryOp::fromData(DataInput& input, bool largeModCount,
 }
 
 void FarSideEntryOp::apply(RegionPtr& region) {
-  // LocalRegion* localRegion = static_cast<LocalRegion*>(region.ptr());
+  // LocalRegion* localRegion = static_cast<LocalRegion*>(region.get());
   // localRegion->acquireReadLock();
 
-  RegionInternalPtr ri = region;
+  RegionInternalPtr ri = std::static_pointer_cast<RegionInternal>(region);
   if (isDestroy(m_op)) {
     ri->txDestroy(m_key, m_callbackArg, m_versionTag);
   } else if (isInvalidate(m_op)) {
@@ -224,7 +224,7 @@ EntryEventPtr FarSideEntryOp::getEntryEvent(Cache* cache)
         return EntryEventPtr(new EntryEvent(
                         m_region->getRegion(cache),
                         m_key,
-                        NULLPTR,
+                        nullptr,
                         m_value,
                         m_callbackArg,
                         false));

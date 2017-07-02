@@ -31,7 +31,8 @@ namespace apache {
 namespace geode {
 namespace client {
 class CacheImpl;
-class CPPCACHE_EXPORT RegionFactory : public SharedBase {
+class CPPCACHE_EXPORT RegionFactory
+    : public std::enable_shared_from_this<RegionFactory> {
  public:
   /*
    * To create the (@link Region}.
@@ -44,26 +45,26 @@ class CPPCACHE_EXPORT RegionFactory : public SharedBase {
   RegionPtr create(const char* name);
 
   /** Sets the cache loader for the next <code>RegionAttributes</code> created.
-   * @param cacheLoader the cache loader or NULLPTR if no loader
+   * @param cacheLoader the cache loader or nullptr if no loader
    * @return a reference to <code>this</code>
    */
   RegionFactoryPtr setCacheLoader(const CacheLoaderPtr& cacheLoader);
 
   /** Sets the cache writer for the next <code>RegionAttributes</code> created.
-   * @param cacheWriter the cache writer or NULLPTR if no cache writer
+   * @param cacheWriter the cache writer or nullptr if no cache writer
    * @return a reference to <code>this</code>
    */
   RegionFactoryPtr setCacheWriter(const CacheWriterPtr& cacheWriter);
 
   /** Sets the CacheListener for the next <code>RegionAttributes</code> created.
-   * @param aListener a user defined CacheListener, NULLPTR if no listener
+   * @param aListener a user defined CacheListener, nullptr if no listener
    * @return a reference to <code>this</code>
    */
   RegionFactoryPtr setCacheListener(const CacheListenerPtr& aListener);
 
   /** Sets the PartitionResolver for the next <code>RegionAttributes</code>
    * created.
-   * @param aResolver a user defined PartitionResolver, NULLPTR if no resolver
+   * @param aResolver a user defined PartitionResolver, nullptr if no resolver
    * @return a reference to <code>this</code>
    */
   RegionFactoryPtr setPartitionResolver(const PartitionResolverPtr& aResolver);
@@ -149,17 +150,17 @@ class CPPCACHE_EXPORT RegionFactory : public SharedBase {
    */
   RegionFactoryPtr setPersistenceManager(const char* libpath,
                                          const char* factoryFuncName,
-                                         const PropertiesPtr& config = NULLPTR);
+                                         const PropertiesPtr& config = nullptr);
 
   /** Sets the PersistenceManager for the next <code>RegionAttributes</code>
   * created.
-  * @param persistenceManager a user defined PersistenceManager, NULLPTR if no
+  * @param persistenceManager a user defined PersistenceManager, nullptr if no
   * persistenceManager
   * @return a reference to <code>this</code>
   */
   RegionFactoryPtr setPersistenceManager(
       const PersistenceManagerPtr& persistenceManager,
-      const PropertiesPtr& config = NULLPTR);
+      const PropertiesPtr& config = nullptr);
 
   // MAP ATTRIBUTES
   /** Sets the entry initial capacity for the next <code>RegionAttributes</code>
@@ -263,6 +264,7 @@ class CPPCACHE_EXPORT RegionFactory : public SharedBase {
 
   ~RegionFactory();
   friend class CacheImpl;
+  FRIEND_STD_SHARED_PTR(RegionFactory)
 };
 }  // namespace client
 }  // namespace geode

@@ -95,7 +95,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
  protected:
   virtual GfErrType sendSyncRequestRegisterInterest(
       TcrMessage& request, TcrMessageReply& reply, bool attemptFailover = true,
-      ThinClientRegion* region = NULL, TcrEndpoint* endpoint = NULL);
+      ThinClientRegion* region = nullptr, TcrEndpoint* endpoint = nullptr);
 
   virtual GfErrType sendSyncRequestCq(TcrMessage& request,
                                       TcrMessageReply& reply);
@@ -144,7 +144,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   friend class ThinClientRedundancyManager;
   static const char* NC_Redundancy;
 };
-typedef SharedPtr<ThinClientPoolHADM> ThinClientPoolHADMPtr;
+typedef std::shared_ptr<ThinClientPoolHADM> ThinClientPoolHADMPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

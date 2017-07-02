@@ -50,7 +50,7 @@ class TESTOBJECT_EXPORT TestObject1 : public Cacheable {
  public:
   TestObject1();
   TestObject1(int32_t id)
-      : name(NULLPTR), arr(CacheableBytes::create(4 * 1024)), identifier(id) {}
+      : name(nullptr), arr(CacheableBytes::create(4 * 1024)), identifier(id) {}
   TestObject1(std::string& str, int32_t id);
   TestObject1(TestObject1& rhs);
   void toData(DataOutput& output) const;
@@ -65,7 +65,7 @@ class TESTOBJECT_EXPORT TestObject1 : public Cacheable {
   static Serializable* create();
 };
 
-typedef SharedPtr<TestObject1> TestObject1Ptr;
+typedef std::shared_ptr<TestObject1> TestObject1Ptr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_TESTOBJECT1_H_

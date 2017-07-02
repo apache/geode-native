@@ -64,12 +64,12 @@ CacheableKeyPtr CqEventImpl::getKey() const { return m_key; }
  *  return null.
  */
 CacheablePtr CqEventImpl::getNewValue() const {
-  if (m_deltaValue == NULLPTR) {
+  if (m_deltaValue == nullptr) {
     return m_newValue;
   } else {
     // Get full object for delta
     TcrMessageRequestEventValue fullObjectMsg(m_eventId);
-    TcrMessageReply reply(true, NULL);
+    TcrMessageReply reply(true, nullptr);
     ThinClientPoolHADM* poolHADM = dynamic_cast<ThinClientPoolHADM*>(m_tcrdm);
     GfErrType err = GF_NOTCON;
     if (poolHADM) {
@@ -78,7 +78,7 @@ CacheablePtr CqEventImpl::getNewValue() const {
       err = static_cast<ThinClientCacheDistributionManager*>(m_tcrdm)
                 ->sendRequestToPrimary(fullObjectMsg, reply);
     }
-    CacheablePtr fullObject = NULLPTR;
+    CacheablePtr fullObject = nullptr;
     if (err == GF_NOERR) {
       fullObject = reply.getValue();
     }

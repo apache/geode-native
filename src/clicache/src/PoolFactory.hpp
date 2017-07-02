@@ -18,8 +18,11 @@
 #pragma once
 
 #include "geode_defs.hpp"
+#include "begin_native.hpp"
 #include <geode/PoolFactory.hpp>
-//#include "impl/NativeWrapper.hpp"
+#include "end_native.hpp"
+
+#include "native_shared_ptr.hpp"
 
 using namespace System;
 
@@ -29,16 +32,16 @@ namespace Apache
   {
     namespace Client
     {
+      namespace native = apache::geode::client;
 
-      // generic<class TKey, class TValue>
+
       ref class Pool;
 
       /// <summary>
       /// This interface provides for the configuration and creation of instances of Pool.
       /// </summary>
-      // generic<class TKey, class TValue>
+
       public ref class PoolFactory sealed
-        : public Internal::SBWrap<apache::geode::client::PoolFactory>
       {
       public:
 
@@ -387,7 +390,7 @@ namespace Apache
         /// throws IllegalStateException if a pool with name already exists
         /// throws IllegalStateException if a locator or server has not been added.
         /// </exception>
-        Pool/*<TKey, TValue>*/^ Create(String^ name);
+        Pool^ Create(String^ name);
 
       internal:
 
@@ -399,10 +402,10 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static PoolFactory/*<TKey, TValue>*/^ Create(apache::geode::client::PoolFactory* nativeptr)
+        inline static PoolFactory^ Create(native::PoolFactoryPtr nativeptr)
         {
-          return (nativeptr != nullptr ?
-                  gcnew PoolFactory(nativeptr) : nullptr);
+          return __nullptr == nativeptr ? nullptr :
+            gcnew PoolFactory( nativeptr );
         }
 
       private:
@@ -411,8 +414,12 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline PoolFactory(apache::geode::client::PoolFactory* nativeptr)
-          : SBWrap(nativeptr) { }
+        inline PoolFactory(native::PoolFactoryPtr nativeptr)
+        {
+          m_nativeptr = gcnew native_shared_ptr<native::PoolFactory>(nativeptr);
+        }
+
+        native_shared_ptr<native::PoolFactory>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode
