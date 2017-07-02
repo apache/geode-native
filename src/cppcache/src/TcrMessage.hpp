@@ -44,6 +44,8 @@
 #include <map>
 #include <vector>
 
+//
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -171,7 +173,8 @@ class CPPCACHE_EXPORT TcrMessage {
     GET_DURABLE_CQS_DATA_ERROR = 106,
     GET_ALL_WITH_CALLBACK = 107,
     PUT_ALL_WITH_CALLBACK = 108,
-    REMOVE_ALL = 109
+	REMOVE_ALL = 109,
+	HANDSHAKE = 110
 
   } MsgType;
 
