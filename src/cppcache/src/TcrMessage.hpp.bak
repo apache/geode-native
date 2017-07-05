@@ -64,7 +64,7 @@ class CPPCACHE_EXPORT TcrMessage {
   typedef enum {
     /* Server couldn't read message; handle it like a server side
        exception that needs retries */
-    HANDSHAKE = -3,
+	HANDSHAKE = -3,
     NOT_PUBLIC_API_WITH_TIMEOUT = -2,
     INVALID = -1,
     REQUEST = 0,
