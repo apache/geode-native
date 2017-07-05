@@ -22,7 +22,7 @@ foreach(var CMAKE_CURRENT_SOURCE_DIR CMAKE_SOURCE_DIR CMAKE_BINARY_DIR CMAKE_CUR
   file(TO_NATIVE_PATH ${${var}} ${var}_NATIVE)
 endforeach()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/SQLiteCLI.csproj.in ${CMAKE_CURRENT_BINARY_DIR}/SQLiteCLI/SQLiteCLI.csproj)  
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/SQLiteCLI.csproj.in ${CMAKE_CURRENT_BINARY_DIR}/SQLiteCLI.csproj)  
 include_external_msproject(
-      SQLiteCLI  ${CMAKE_CURRENT_BINARY_DIR}/SQLiteCLI/SQLiteCLI.csproj
+      SQLiteCLI  ${CMAKE_CURRENT_BINARY_DIR}/SQLiteCLI.csproj
       TYPE FAE04EC0-301F-11D3-BF4B-00C04F79EFBC)

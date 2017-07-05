@@ -17,7 +17,7 @@ rem limitations under the License.
 
 setlocal
 
-set PATH=$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:apache-geode>>;%PATH%
+set PATH=$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:Apache.Geode>>;%PATH%
 set PATH=$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:framework>>;%PATH%
 set PATH=$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:testobject>>;%PATH%
 set PATH=$<SHELL_PATH:$<TARGET_LINKER_FILE_DIR:SqLiteImpl>>;%PATH%
@@ -29,34 +29,34 @@ set PATH=$<JOIN:$<SHELL_PATH:${PATH}>,;>;%PATH%
 
 set PATH=c:\Program Files (x86)\Nunit 2.6.4\bin;%PATH%
 
-rem TODO: Figure out why this is needed
-set GFCPP=c:\
+set TEST_DIR="$<SHELL_PATH:${TEST_DIR}>"
+set GFCPP="%TEST_DIR%"
 
-set TESTSRC=${CMAKE_CURRENT_SOURCE_DIR}
-set GF_JAVA=${Java_JAVA_EXECUTABLE}
-set GFJAVA=${Geode_PATH}
+set TESTSRC=$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}>
+set GF_JAVA=$<SHELL_PATH:${Java_JAVA_EXECUTABLE}>
+set GFJAVA=$<SHELL_PATH:${Geode_PATH}>
 set GFE_LOGLEVEL=config
 set GFE_SECLOGLEVEL=config
-set GFE_DIR=${Geode_PATH}
+set GFE_DIR=$<SHELL_PATH:${Geode_PATH}>
 set MCAST_ADDR=224.10.13.63
 set MCAST_PORT=${PORT}
 set TIMEBOMB=3600
-set GF_CLASSPATH=%GF_CLASSPATH%;${CMAKE_BINARY_DIR}/tests/javaobject/javaobject.jar
+set GF_CLASSPATH=%GF_CLASSPATH%;$<SHELL_PATH:${CMAKE_BINARY_DIR}>\tests\javaobject\javaobject.jar
 set PROFILERCMD=
 set BUG481=
 set TESTNAME=${TEST}
 set LOG=${TEST}.log
 
-rmdir /q /s "${TEST_DIR}" 2>nul
-mkdir "${TEST_DIR}"
+rmdir /q /s "%TEST_DIR%" 2>nul
+mkdir "%TEST_DIR%"
 if %errorlevel% neq 0 exit /b %errorlevel%
-pushd "${TEST_DIR}"
+pushd "%TEST_DIR%"
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 rem In Windows, pipes to tee return tee's exit code instead of executable's
 rem exit code. As a workaround we write exit codes to files.
 
-(${NUNIT_CONSOLE} /run:${NAMESPACE}.${TESTCLASS} ..\..\${CMAKE_BUILD_TYPE}\UnitTests.dll 2>&1 && echo 0 >${TEST}.errorlevel || echo 1 >${TEST}.errorlevel) | tee %LOG%
+(${NUNIT_CONSOLE} /run:${NAMESPACE}.${TESTCLASS} ..\..\$<CONFIG>\UnitTests.dll 2>&1 && echo 0 >${TEST}.errorlevel || echo 1 >${TEST}.errorlevel) | tee %LOG%
 
 set /p errorlevel= <${TEST}.errorlevel
 if %errorlevel% neq 0 exit /b %errorlevel%
