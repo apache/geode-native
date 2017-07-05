@@ -318,7 +318,7 @@ bool TcrConnection::InitTcrConnection(
   LOGFINE("Attempting handshake with endpoint %s for %s%s connection", endpoint,
           isClientNotification ? (isSecondary ? "secondary " : "primary ") : "",
           isClientNotification ? "subscription" : "client");
-  ConnErrType error = sendData( data, msgLengh, connectTimeout, false, TcrMessage::HANDSHAKE );
+  ConnErrType error = sendData(data, msgLengh, connectTimeout, false);
 
   if (error == CONN_NOERR) {
     CacheableBytesPtr acceptanceCode = readHandshakeData(1, connectTimeout);
@@ -383,7 +383,7 @@ bool TcrConnection::InitTcrConnection(
       uint32_t credLen;
       char* credData = (char*)sendCreds.getBuffer(&credLen);
       // send the encrypted bytes and check the response
-      error = sendData(credData, credLen, connectTimeout, false, TcrMessage::HANDSHAKE);
+      error = sendData(credData, credLen, connectTimeout, false);
 
       if (error == CONN_NOERR) {
         acceptanceCode = readHandshakeData(1, connectTimeout);
@@ -620,8 +620,8 @@ inline ConnErrType TcrConnection::receiveData(char* buffer, int32_t length,
            is not public yet*/
         notPublicApiWithTimeout == TcrMessage::EXECUTE_FUNCTION ||
         notPublicApiWithTimeout == TcrMessage::EXECUTE_REGION_FUNCTION ||
-        notPublicApiWithTimeout == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP ||
-        notPublicApiWithTimeout == TcrMessage::HANDSHAKE) {
+        notPublicApiWithTimeout ==
+            TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP) {
       // then app has set timeout in millis, change it to microSeconds
       receiveTimeoutSec = receiveTimeoutSec * 1000;
       LOGDEBUG("recieveData2 %d ", receiveTimeoutSec);
@@ -679,10 +679,9 @@ inline ConnErrType TcrConnection::receiveData(char* buffer, int32_t length,
 
 inline ConnErrType TcrConnection::sendData(const char* buffer, int32_t length,
                                            uint32_t sendTimeoutSec,
-                                           bool checkConnected, 
-										   int32_t notPublicApiWithTimeout ) {
+                                           bool checkConnected) {
   uint32_t dummy = 0;
-  return sendData(dummy, buffer, length, sendTimeoutSec, checkConnected, notPublicApiWithTimeout);
+  return sendData(dummy, buffer, length, sendTimeoutSec, checkConnected);
 }
 
 inline ConnErrType TcrConnection::sendData(uint32_t& timeSpent,
@@ -704,14 +703,14 @@ inline ConnErrType TcrConnection::sendData(uint32_t& timeSpent,
            is not public yet*/
         notPublicApiWithTimeout == TcrMessage::EXECUTE_FUNCTION ||
         notPublicApiWithTimeout == TcrMessage::EXECUTE_REGION_FUNCTION ||
-        notPublicApiWithTimeout == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP ||
-        notPublicApiWithTimeout == TcrMessage::HANDSHAKE) {
+        notPublicApiWithTimeout ==
+            TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP) {
       // then app has set timeout in millis, change it to microSeconds
       sendTimeoutSec = sendTimeoutSec * 1000;
       isPublicApiTimeout = true;
       LOGDEBUG("sendData2 %d ", sendTimeoutSec);
     } else {
-		sendTimeoutSec = sendTimeoutSec * 1000 * 1000;
+      sendTimeoutSec = sendTimeoutSec * 1000;
     }
   } else {  // it is set as seconds and change it to microsecond
     sendTimeoutSec = sendTimeoutSec * 1000 * 1000;
@@ -1214,7 +1213,7 @@ CacheableBytesPtr TcrConnection::readHandshakeData(int32_t msgLength,
     return CacheableBytes::createNoCopy(reinterpret_cast<uint8_t*>(recvMessage),
                                         1);
   }
-  if ((error = receiveData(recvMessage, msgLength, connectTimeout, false, false, TcrMessage::HANDSHAKE)) !=
+  if ((error = receiveData(recvMessage, msgLength, connectTimeout, false)) !=
       CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
       GF_SAFE_DELETE_ARRAY(recvMessage);
@@ -1253,7 +1252,7 @@ CacheableBytesPtr TcrConnection::readHandshakeRawData(int32_t msgLength,
   }
   char* recvMessage;
   GF_NEW(recvMessage, char[msgLength]);
-  if ((error = receiveData(recvMessage, msgLength, connectTimeout, false, false, TcrMessage::HANDSHAKE)) !=
+  if ((error = receiveData(recvMessage, msgLength, connectTimeout, false)) !=
       CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
       GF_SAFE_DELETE_ARRAY(recvMessage);
@@ -1353,7 +1352,7 @@ void TcrConnection::readHandShakeBytes(int numberOfBytes,
   GF_NEW(recvMessage, uint8_t[numberOfBytes]);
 
   if ((error = receiveData(reinterpret_cast<char*>(recvMessage), numberOfBytes,
-                           connectTimeout, false, false, TcrMessage::HANDSHAKE)) != CONN_NOERR) {
+                           connectTimeout, false)) != CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
       GF_SAFE_DELETE_ARRAY(recvMessage);
       GF_SAFE_DELETE_CON(m_conn);
@@ -1378,7 +1377,7 @@ int32_t TcrConnection::readHandShakeInt(uint32_t connectTimeout) {
   GF_NEW(recvMessage, uint8_t[4]);
 
   if ((error = receiveData(reinterpret_cast<char*>(recvMessage), 4,
-                           connectTimeout, false, false, TcrMessage::HANDSHAKE )) != CONN_NOERR) {
+                           connectTimeout, false)) != CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
       GF_SAFE_DELETE_ARRAY(recvMessage);
       GF_SAFE_DELETE_CON(m_conn);
@@ -1406,7 +1405,7 @@ CacheableStringPtr TcrConnection::readHandshakeString(uint32_t connectTimeout) {
   ConnErrType error = CONN_NOERR;
 
   char cstypeid;
-  if (receiveData(&cstypeid, 1, connectTimeout, false, false, TcrMessage::HANDSHAKE) != CONN_NOERR) {
+  if (receiveData(&cstypeid, 1, connectTimeout, false) != CONN_NOERR) {
     GF_SAFE_DELETE_CON(m_conn);
     if (error & CONN_TIMEOUT) {
       LOGFINE("Timeout receiving string typeid");
@@ -1455,7 +1454,7 @@ CacheableStringPtr TcrConnection::readHandshakeString(uint32_t connectTimeout) {
   GF_NEW(recvMessage, char[length + 1]);
   recvMessage[length] = '\0';
 
-  if ((error = receiveData(recvMessage, length, connectTimeout, false, false, TcrMessage::HANDSHAKE)) !=
+  if ((error = receiveData(recvMessage, length, connectTimeout, false)) !=
       CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
       GF_SAFE_DELETE_ARRAY(recvMessage);
