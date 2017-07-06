@@ -369,8 +369,10 @@ class CPPCACHE_EXPORT TcrConnection {
   /**
    * Send data to the connection till sendTimeoutSec
    */
-  ConnErrType sendData(const char* buffer, int32_t length,
-                       uint32_t sendTimeoutSec, bool checkConnected = true);
+  // GT GEODE-2891
+  ConnErrType sendData( const char* buffer, int32_t length,
+            uint32_t sendTimeoutSec, bool checkConnected = true, 
+			int32_t notPublicApiWithTimeout= -2/*NOT_PUBLIC_API_WITH_TIMEOUT*/ );
 
   ConnErrType sendData(
       uint32_t& timeSpent, const char* buffer, int32_t length,
