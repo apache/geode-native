@@ -25,49 +25,21 @@ This section describes how to configure OpenSSL, implement SSL-based communicati
 
 The open-source OpenSSL toolkit provides a full-strength general purpose cryptography library to operate along with the PKCS sample implementation for encrypted authentication of native client credentials.
 
-Follow these instructions to download and install OpenSSL for your specific operating system.
-
-The native client requires OpenSSL 1.0.1t or later. For Windows platforms, you can use either the regular or the OpenSSL 1.0.1t "Light" version.
+Download and install OpenSSL 1.0.2 for your specific operating system.
+For Windows platforms, you can use either the regular or the "Light" version.
 
 **Note for Windows users:** If you use Cygwin, do not use the OpenSSL library that comes with
 Cygwin, which is built with `cygwin.dll` as a dependency. Instead, download a fresh copy from
 OpenSSL as described in the following section.
 
-## Step 1. Download and install OpenSSL
-
-To install OpenSSL:
-
-1. Download the OpenSSL archive from the [OpenSSL web site](http://www.openssl.org/source/). 
-
-2. Extract the archive in a directory of your choice. For example:
-
-    ```
-    $ tar xvzf openssl-1.0.1u.tar.gz
-    x openssl-1.0.1u/ACKNOWLEDGMENTS
-    x openssl-1.0.1u/apps/
-    x openssl-1.0.1u/apps/app_rand.c
-    ...
-    ```
-
-3. Look in the top-level directory of the source distribution to identify the installation instructions for your operating system:
-
-    ```
-    $ cd openssl-1.0.1u
-    $ ls INSTALL*
-    INSTALL        INSTALL.DJGPP      INSTALL.MacOS      INSTALL.NW        INSTALL.OS2
-    INSTALL.VMS    INSTALL.W32        INSTALL.W64        INSTALL.WCE
-    ```
-
-4. Build the OpenSSL library by following the instructions for your operating system.
-
-## Step 2. Create keystores
+## Step 1. Create keystores
 
 The Geode server requires keys and keystores in the Java Key Store (JKS) format while the native client requires them in the clear PEM format. Thus you need to be able to generate private/public keypairs in either format and convert between the two using the `keytool` utility and the `openssl` command.
 
 There are public third party free tools and source code available to download such as the "KeyTool IUI" tool.
 
 
-## Step 3. Configure environment variables
+## Step 2. Configure environment variables
 
 Configure your system environment to build and run OpenSSL by adding the appropriate executable and library directories to your paths.
 For example, for Bourne and Korn shells (sh, ksh, bash), environment setup would look something like this:
@@ -93,7 +65,7 @@ For Windows, environment setup might resemble this:
 
 where _jdk-or-jre-path_ is the directory in which Java is installed.
 
-## Step 4. Configure SSL properties in client and server properties files
+## Step 3. Configure SSL properties in client and server properties files
 
 Configure SSL properties. For details on the SSL properties available, see "Managing > Security >
 SSL > Configuring SSL" in the server User Guide.  
