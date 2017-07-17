@@ -21,14 +21,12 @@
 #include <vcclr.h>
 #include "begin_native.hpp"
 #include <geode/CacheableKey.hpp>
+#include <geode/Delta.hpp>
 #include "end_native.hpp"
 
 #include "../Log.hpp"
 #include "../DataOutput.hpp"
 #include "PdxHelper.hpp"
-#include "begin_native.hpp"
-#include <geode/Delta.hpp>
-#include "end_native.hpp"
 
 
 using namespace System;

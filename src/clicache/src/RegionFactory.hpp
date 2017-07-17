@@ -20,25 +20,18 @@
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
 #include <geode/AttributesFactory.hpp>
-#include "end_native.hpp"
-
-
-#include "ExpirationAction.hpp"
-#include "DiskPolicyType.hpp"
-//#include "ScopeType.hpp"
-#include "begin_native.hpp"
 #include <geode/RegionFactory.hpp>
 #include "end_native.hpp"
 
+#include "ExpirationAction.hpp"
+#include "DiskPolicyType.hpp"
 #include "RegionShortcut.hpp"
-
 #include "ICacheLoader.hpp"
 #include "ICacheWriter.hpp"
 #include "ICacheListener.hpp"
 #include "IPartitionResolver.hpp"
 #include "IFixedPartitionResolver.hpp"
 #include "IPersistenceManager.hpp"
-
 #include "IRegion.hpp"
 #include "Properties.hpp"
 #include "Region.hpp"

@@ -126,6 +126,8 @@ target_link_libraries(apache-geode-static
   PUBLIC
     _apache-geode
 )
+# Remove this after fixing static initialization
+target_compile_options(apache-geode-static PRIVATE "/Od /Ob0")
 add_dependencies(client-libraries apache-geode-static)
 
 install(TARGETS apache-geode

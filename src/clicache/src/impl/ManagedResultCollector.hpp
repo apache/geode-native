@@ -22,13 +22,8 @@
 #include <geode/ResultCollector.hpp>
 #include "end_native.hpp"
 
-//#include "../ResultCollector.hpp"
-//#include "../IResultCollector.hpp"
-//#include "../../../IResultCollector.hpp"
 #include "ResultCollectorProxy.hpp"
 #include "SafeConvert.hpp"
-//#include "SafeConvert.hpp"
-//using namespace apache::geode::client;
 
 //using namespace apache::geode::client;
 namespace apache {
