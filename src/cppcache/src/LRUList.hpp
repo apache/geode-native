@@ -48,11 +48,11 @@ class CPPCACHE_EXPORT LRUEntryProperties {
   inline void clearRecentlyUsed() { m_bits &= ~RECENTLY_USED_BITS; }
 
   inline bool testRecentlyUsed() const {
-    return (m_bits & RECENTLY_USED_BITS) == RECENTLY_USED_BITS;
+    return (m_bits.load() & RECENTLY_USED_BITS) == RECENTLY_USED_BITS;
   }
 
   inline bool testEvicted() const {
-    return (m_bits & EVICTED_BITS) == EVICTED_BITS;
+    return (m_bits.load() & EVICTED_BITS) == EVICTED_BITS;
   }
 
   inline void setEvicted() { m_bits |= EVICTED_BITS; }

@@ -17,20 +17,18 @@
 
 set -x -e -o pipefail
 
-pkg change-facet \
-    facet.version-lock.consolidation/java-8/java-8-incorporation=false
+NCPU=4
 
-# Install required tools
-pkg install -v --accept \
-    system/header \
-    developer/assembler \
-    developer/java/jdk-8 \
-    developer/build/gnu-make \
-    archiver/gnu-tar \
-    text/gnu-patch
+pushd `mktemp -d`
+wget -O - https://cmake.org/files/v3.9/cmake-3.9.0.tar.gz | \
+    gtar --strip-components=1 -zxf -
+./bootstrap --system-curl --no-qt-gui --parallel=$NCPU -- -DBUILD_CursesDialog=off
+gmake -j$NCPU
+gmake install
+popd
 
-# too many conflicts with system libraries, use opencsw
-/opt/csw/bin/pkgutil -U
-/opt/csw/bin/pkgutil -i -y \
-    git \
-    doxygen
+p='PATH=$PATH:/usr/local/bin; export PATH'
+echo "$p" >> ~/.profile
+echo "$p" >> ~/.bashrc
+echo "$p" >> /etc/skel/.profile
+echo "$p" >> /etc/skel/.bashrc

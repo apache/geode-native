@@ -38,7 +38,8 @@
       "scripts":[
         "solaris/install-opencsw.sh",
         "solaris/install-build-tools.sh",
-        "solaris/install-solarisstudio.sh"
+        "solaris/install-solarisstudio.sh",
+        "solaris/install-cmake.sh"
       ]
     },
     {

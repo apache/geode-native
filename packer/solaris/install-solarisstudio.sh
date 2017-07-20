@@ -26,9 +26,9 @@ pkg set-publisher \
     -c /var/pkg/ssl/pkg.oracle.com.certificate.pem \
     -G '*' -g https://pkg.oracle.com/solarisstudio/release solarisstudio
 
-pkg install --accept -v developerstudio-125/c++  developerstudio-125/dbx
+pkg install --accept -v developerstudio-126/c++  developerstudio-126/dbx
 
-p='PATH=$PATH:/opt/developerstudio12.5/bin; export PATH'
+p='PATH=$PATH:/opt/developerstudio12.6/bin; export PATH'
 echo "$p" >> ~/.profile
 echo "$p" >> ~/.bashrc
 echo "$p" >> /etc/skel/.profile

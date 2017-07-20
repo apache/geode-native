@@ -17,13 +17,10 @@
 
 set -x -e -o pipefail
 
-# Remove meta-packages that prevent installation of updated tools
-pkg uninstall -v entire consolidation/userland/userland-incorporation
 pkg change-facet \
     facet.version-lock.consolidation/java-8/java-8-incorporation=false
 
 # Install required tools
 pkg install -v --accept \
     developer/java/jdk-8 \
-    developer/build/cmake \
     archiver/gnu-tar
