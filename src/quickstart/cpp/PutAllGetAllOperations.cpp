@@ -60,8 +60,7 @@ int main(int argc, char** argv) {
     for (int32_t item = 0; item < 100; item++) {
       sprintf(key, "key-%d", item);
       sprintf(value, "%d", item);
-      entryMap.insert(CacheableKey::create(key),
-                      CacheableString::create(value));
+      entryMap[CacheableKey::create(key)] = CacheableString::create(value);
     }
     regionPtr->putAll(entryMap);
 

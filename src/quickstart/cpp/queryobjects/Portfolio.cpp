@@ -16,6 +16,7 @@
  */
 
 #include "Portfolio.hpp"
+#include <memory>
 
 using namespace apache::geode::client;
 using namespace testobject;
@@ -38,16 +39,15 @@ Portfolio::Portfolio(int32_t i, uint32_t size, CacheableStringArrayPtr nm)
   type = CacheableString::create(buf);
   int numSecIds = sizeof(secIds) / sizeof(char*);
   position1 =
-      new Position(secIds[Position::cnt % numSecIds], Position::cnt * 1000);
+      std::make_shared<Position>(secIds[Position::cnt % numSecIds], Position::cnt * 1000);
   if (i % 2 != 0) {
     position2 =
-        new Position(secIds[Position::cnt % numSecIds], Position::cnt * 1000);
+        std::make_shared<Position>(secIds[Position::cnt % numSecIds], Position::cnt * 1000);
   } else {
     position2 = nullptr;
   }
   positions = CacheableHashMap::create();
-  positions->insert(CacheableString::create(secIds[Position::cnt % numSecIds]),
-                    position1);
+  (*positions)[CacheableString::create(secIds[Position::cnt % numSecIds])] = position1;
   newVal = new uint8_t[size + 1];
   memset(newVal, 'B', size);
   newVal[size] = '\0';

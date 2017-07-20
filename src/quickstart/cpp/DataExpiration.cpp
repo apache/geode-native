@@ -36,6 +36,8 @@
 
 // Include the Geode library.
 #include <geode/GeodeCppCache.hpp>
+#include <chrono>
+#include <thread>
 
 // Include the SimpleCacheListener plugin.
 #include "plugins/SimpleCacheListener.hpp"
@@ -85,8 +87,7 @@ int main(int argc, char** argv) {
     LOGINFO("Got Entry Idle Timeout as %d seconds", entryIdleTimeout);
 
     // Wait for half the Entry Idle Timeout duration, using
-    // apache::geode::client::millisleep().
-    millisleep(entryIdleTimeout * 1000 / 2);
+    std::this_thread::sleep_for(std::chrono::milliseconds(entryIdleTimeout * 1000 / 2));
 
     // Get the number of Keys remaining in the Region, should be all 3.
     VectorOfCacheableKey keys;
@@ -103,7 +104,7 @@ int main(int argc, char** argv) {
 
     // Wait for the entire Entry Idle Timeout duration, using
     // apache::geode::client::millisleep().
-    apache::geode::client::millisleep(entryIdleTimeout * 1000);
+    std::this_thread::sleep_for(std::chrono::milliseconds(entryIdleTimeout * 1000));
 
     // Get the number of Keys remaining in the Region, should be 0 now.
     regionPtr->keys(keys);

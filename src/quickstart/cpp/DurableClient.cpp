@@ -31,6 +31,8 @@
 
 // Include the Geode library.
 #include <geode/GeodeCppCache.hpp>
+#include <chrono>
+#include <thread>
 
 // Include cachelistener
 #include "plugins/DurableCacheListener.hpp"

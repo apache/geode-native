@@ -32,6 +32,8 @@
 
 // Include the Geode library.
 #include <geode/GeodeCppCache.hpp>
+#include <chrono>
+#include <thread>
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;
@@ -77,7 +79,7 @@ int main(int argc, char** argv) {
     LOGINFO("Called put() on Region");
 
     LOGINFO("Waiting for updates on keys");
-    millisleep(10000);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
 
     int count = 0;
 

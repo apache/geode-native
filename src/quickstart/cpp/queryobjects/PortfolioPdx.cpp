@@ -44,17 +44,16 @@ PortfolioPdx::PortfolioPdx(int32_t i, int32_t size, char** nm) : names(nm) {
   memcpy(type, buf, strSize2);
 
   int numSecIds = sizeof(secIds) / sizeof(char*);
-  position1 = new PositionPdx(secIds[PositionPdx::cnt % numSecIds],
+  position1 = std::make_shared<PositionPdx>(secIds[PositionPdx::cnt % numSecIds],
                               PositionPdx::cnt * 1000);
   if (i % 2 != 0) {
-    position2 = new PositionPdx(secIds[PositionPdx::cnt % numSecIds],
-                                PositionPdx::cnt * 1000);
+    position2 = std::make_shared<PositionPdx>(secIds[PositionPdx::cnt % numSecIds],
+                              PositionPdx::cnt * 1000);
   } else {
     position2 = nullptr;
   }
   positions = CacheableHashMap::create();
-  positions->insert(
-      CacheableString::create(secIds[PositionPdx::cnt % numSecIds]), position1);
+  (*positions)[CacheableString::create(secIds[PositionPdx::cnt % numSecIds])] = position1;
 
   if (size > 0) {
     newVal = new int8_t[size];

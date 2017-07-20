@@ -218,7 +218,7 @@ int main(int argc, char** argv) {
     LOGINFO("Region Query returned %d rows", resultsPtr->size());
 
     // Execute the Region selectValue() API.
-    PdxWrapperPtr pdxWrapperPtr = regionPtr->selectValue("m_id = 3");
+    PdxWrapperPtr pdxWrapperPtr = std::dynamic_pointer_cast<apache::geode::client::PdxWrapper>(regionPtr->selectValue("m_id = 3"));
     Person* per = reinterpret_cast<Person*>(pdxWrapperPtr->getObject());
 
     LOGINFO(

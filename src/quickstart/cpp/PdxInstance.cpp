@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
 
     LOGINFO("Populated PdxInstance Object");
 
-    PdxInstancePtr retPdxInstance = regionPtr->get("Key1");
+    PdxInstancePtr retPdxInstance = std::dynamic_pointer_cast<apache::geode::client::PdxInstance>(regionPtr->get("Key1"));
 
     LOGINFO("Got PdxInstance Object");
 

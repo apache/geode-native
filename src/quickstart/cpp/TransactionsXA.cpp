@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
     LOGINFO("Created the Region Programmatically.");
 
     InternalCacheTransactionManager2PCPtr txManager =
-        static_cast<InternalCacheTransactionManager2PCPtr>(
+        std::dynamic_pointer_cast<apache::geode::client::InternalCacheTransactionManager2PC>(
             cachePtr->getCacheTransactionManager());
 
     // start a transaction
