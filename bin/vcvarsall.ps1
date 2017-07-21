@@ -12,15 +12,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-$vs = "Microsoft Visual Studio 12.0"
-$arch = $args[0]
 
-pushd "c:\Program Files (x86)\$vs\VC\"
-cmd /c "vcvarsall.bat $arch & set" |
+$arch = $args[0]
+if ([string]::IsNullOrEmpty($arch)) {
+  $arch = "amd64"
+}
+
+$basedir = split-path $SCRIPT:MyInvocation.MyCommand.Path -parent
+
+cmd /c "$basedir\vcvarsall.bat $arch & set" |
 foreach {
   if ($_ -match "=") {
     $v = $_.split("="); set-item -force -path "ENV:\$($v[0])"  -value "$($v[1])"
   }
 }
-popd
-write-host "Environment setup for $vs $arch." -ForegroundColor Yellow
+
+write-host "Environment setup for VS $env:VisualStudioVersion $arch." -ForegroundColor Yellow
