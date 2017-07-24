@@ -21,8 +21,10 @@
         "version":"{{user `version`}}",
         "source_ami":"{{user `source_ami`}}"
       },
-      "communicator":"winrm",
-      "winrm_username":"Administrator",
+      "communicator":"ssh",
+      "ssh_username":"Administrator",
+      "ssh_handshake_attempts":100,
+      "ssh_timeout":"15m",
       "launch_block_device_mappings":[
         {
           "device_name":"/dev/sda1",
@@ -36,19 +38,13 @@
     {
       "pause_before":"30s",
       "type":"file",
-      "source":"windows/Packer.psm1",
-      "destination":"Documents/WindowsPowerShell/Modules/Packer/Packer.psm1"
-    },
-    {
-      "pause_before":"30s",
-      "type":"file",
       "source":"windows/vs-2015-admin.xml",
-      "destination":"C:/vs-2015-admin.xml"
+      "destination":"vs-2015-admin.xml"
     },
     {
       "type":"powershell",
-      "scripts":[
-        "windows/install-vs-2015-community.ps1"
+      "inline":[
+        "choco install visualstudio2015community -y --ignore-package-exit-codes --ia \"/AdminFile C:\\Users\\Administrator\\vs-2015-admin.xml\""
       ]
     },
     {
