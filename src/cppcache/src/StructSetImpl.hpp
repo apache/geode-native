@@ -53,9 +53,9 @@ class CPPCACHE_EXPORT StructSetImpl
 
   const SerializablePtr operator[](int32_t index) const;
 
-  int32_t getFieldIndex(const char* fieldname);
+  const int32_t getFieldIndex(const std::string& fieldname);
 
-  const char* getFieldName(int32_t index);
+  const std::string& getFieldName(int32_t index);
 
   SelectResultsIterator getIterator();
 

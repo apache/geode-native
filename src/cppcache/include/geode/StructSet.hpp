@@ -72,9 +72,9 @@ class CPPCACHE_EXPORT StructSet : public CqResults {
    *
    * @param fieldname the field name for which the index is required.
    * @returns the index number of the specified field name.
-   * @throws IllegalArgumentException if the field name is not found.
+   * @throws std::invalid_argument if the field name is not found.
    */
-  virtual int32_t getFieldIndex(const char* fieldname) = 0;
+  virtual const int32_t getFieldIndex(const std::string& fieldname) = 0;
 
   /**
    * Get the field name of the StructSet from the specified index number.
@@ -82,8 +82,9 @@ class CPPCACHE_EXPORT StructSet : public CqResults {
    * @param index the index number of the field name to get.
    * @returns the field name from the specified index number or nullptr if not
    * found.
+   * @throws std::out_of_range if index is not found
    */
-  virtual const char* getFieldName(int32_t index) = 0;
+  virtual const std::string& getFieldName(int32_t index) = 0;
 
   /**
    * Get a SelectResultsIterator with which to iterate over the items in the
