@@ -67,13 +67,13 @@ class TradeEventListener : public CqListener {
 ``` pre
 // CqListener class
 public class TradeEventListener : ICqListener {
-  public void onEvent(CqEvent cqEvent) {
+  void OnEvent(CqEvent<TKey, TResult>^ ev) {
      // Operation associated with the query op
-     CqOperationType queryOperation = cqEvent.getQueryOperation();
+     CqOperationType queryOperation = ev.getQueryOperation();
      // key and new value from the event
-     ICacheableKey key = cqEvent.getKey();
+     ICacheableKey key = ev.getKey();
      CacheableString keyStr = key as CacheableString;
-     IGeodeSerializable val = cqEvent.getNewValue();
+     IGeodeSerializable val = ev.getNewValue();
      TradeOrder tradeOrder = val as TradeOrder;
      if (queryOperation==CqOperationType.OP_TYPE_UPDATE) {
         // update data on the screen for the trade order
@@ -88,11 +88,11 @@ public class TradeEventListener : ICqListener {
         // . . .
      }
    }
-   public void onError(CqEvent cqEvent) {
+   public void OnError(CqEvent<TKey, TResult>^ ev) {
        // handle the error
    }
    // From CacheCallback
-   public void close() {
+   public void Close() {
       // close the output screen for the trades  
       // . . .
    }
