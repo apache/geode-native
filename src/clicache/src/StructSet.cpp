@@ -118,7 +118,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get(m_nativeptr->get()->getFieldName(static_cast<System::Int32> (index)));
+          return ManagedString::Get(m_nativeptr->get()->getFieldName(static_cast<System::Int32> (index)).c_str());
         }
         finally
         {
