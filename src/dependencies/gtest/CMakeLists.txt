@@ -40,7 +40,7 @@ set( gmock_SOURCE_DIR ${SOURCE_DIR}/googlemock )
 ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} INSTALL_DIR )
 set( ${PROJECT_NAME}_INSTALL_DIR ${INSTALL_DIR} )
 ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} BINARY_DIR )
-set( ${PROJECT_NAME}_BINARY_DIR ${BINARY_DIR}/${_DEBUG_OR_RELEASE}/googlemock/gtest/ )
+set( ${PROJECT_NAME}_BINARY_DIR ${BINARY_DIR}/googlemock/gtest//${_DEBUG_OR_RELEASE} )
 set( gmock_BINARY_DIR ${BINARY_DIR}/googlemock//${_DEBUG_OR_RELEASE} )
 set( DEPENDENCIES_${PROJECT_NAME}_DIR ${${PROJECT_NAME}_BINARY_DIR} PARENT_SCOPE)
 
