@@ -33,7 +33,7 @@ Be very careful if you choose to update your cache from your `CqListener`. If yo
 // CqListener class
 class TradeEventListener : public CqListener {
    public:
-  void onEvent(const CqEvent& cqEvent) {
+  void OnEvent(const CqEvent& cqEvent) {
     // Operation associated with the query op
     CqOperation::CqOperationType queryOperation = cqEvent.getQueryOperation();
     // key and new value from the event
@@ -52,10 +52,10 @@ class TradeEventListener : public CqListener {
       . . .
    }
  }
- void onError(const CqEvent& cqEvent) {
+ void OnError(const CqEvent& cqEvent) {
   // handle the error
  }
- void close() {
+ void Close() {
   // close the output screen for the trades
   . . .
  }
@@ -67,7 +67,7 @@ class TradeEventListener : public CqListener {
 ``` pre
 // CqListener class
 public class TradeEventListener : ICqListener {
-  public void onEvent(CqEvent cqEvent) {
+  public void OnEvent(CqEvent cqEvent) {
      // Operation associated with the query op
      CqOperationType queryOperation = cqEvent.getQueryOperation();
      // key and new value from the event
@@ -88,11 +88,11 @@ public class TradeEventListener : ICqListener {
         // . . .
      }
    }
-   public void onError(CqEvent cqEvent) {
+   public void OnError(CqEvent cqEvent) {
        // handle the error
    }
    // From CacheCallback
-   public void close() {
+   public void Close() {
       // close the output screen for the trades  
       // . . .
    }
@@ -181,23 +181,23 @@ class MyCqStatusListener : public CqStatusListener {
         break;
        }
   }
-  void onEvent(const CqEvent& cqe){
+  void OnEvent(const CqEvent& cqe){
     updateCount(cqe);
   }
-  void onError(const CqEvent& cqe){
+  void OnError(const CqEvent& cqe){
     updateCount(cqe);
   }
-  void close(){
+  void Close(){
   }
-  void onCqDisconnected() {
+  void OnCqDisconnected() {
     //This is called when the cq loses connection with all servers.
     m_cqsDisconnectedCount++;
   }
-  void onCqConnected() {
+  void OnCqConnected() {
     //This is called when the cq establishes a connection with a server.
     m_cqsConnectedCount++;
   }
-  void clear() {
+  void Clear() {
     m_numInserts = 0;
     m_numUpdates = 0;
     m_numDeletes = 0;
