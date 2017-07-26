@@ -33,7 +33,7 @@ Be very careful if you choose to update your cache from your `CqListener`. If yo
 // CqListener class
 class TradeEventListener : public CqListener {
    public:
-  void OnEvent(const CqEvent& cqEvent) {
+  void onEvent(const CqEvent& cqEvent) {
     // Operation associated with the query op
     CqOperation::CqOperationType queryOperation = cqEvent.getQueryOperation();
     // key and new value from the event
@@ -52,10 +52,10 @@ class TradeEventListener : public CqListener {
       . . .
    }
  }
- void OnError(const CqEvent& cqEvent) {
+ void onError(const CqEvent& cqEvent) {
   // handle the error
  }
- void Close() {
+ void close() {
   // close the output screen for the trades
   . . .
  }
@@ -67,13 +67,13 @@ class TradeEventListener : public CqListener {
 ``` pre
 // CqListener class
 public class TradeEventListener : ICqListener {
-  public void OnEvent(CqEvent cqEvent) {
+  void OnEvent(CqEvent<TKey, TResult>^ ev) {
      // Operation associated with the query op
-     CqOperationType queryOperation = cqEvent.getQueryOperation();
+     CqOperationType queryOperation = ev.getQueryOperation();
      // key and new value from the event
-     ICacheableKey key = cqEvent.getKey();
+     ICacheableKey key = ev.getKey();
      CacheableString keyStr = key as CacheableString;
-     IGeodeSerializable val = cqEvent.getNewValue();
+     IGeodeSerializable val = ev.getNewValue();
      TradeOrder tradeOrder = val as TradeOrder;
      if (queryOperation==CqOperationType.OP_TYPE_UPDATE) {
         // update data on the screen for the trade order
@@ -88,7 +88,7 @@ public class TradeEventListener : ICqListener {
         // . . .
      }
    }
-   public void OnError(CqEvent cqEvent) {
+   public void OnError(CqEvent<TKey, TResult>^ ev) {
        // handle the error
    }
    // From CacheCallback
@@ -181,23 +181,23 @@ class MyCqStatusListener : public CqStatusListener {
         break;
        }
   }
-  void OnEvent(const CqEvent& cqe){
+  void onEvent(const CqEvent& cqe){
     updateCount(cqe);
   }
-  void OnError(const CqEvent& cqe){
+  void onError(const CqEvent& cqe){
     updateCount(cqe);
   }
-  void Close(){
+  void close(){
   }
-  void OnCqDisconnected() {
+  void onCqDisconnected() {
     //This is called when the cq loses connection with all servers.
     m_cqsDisconnectedCount++;
   }
-  void OnCqConnected() {
+  void onCqConnected() {
     //This is called when the cq establishes a connection with a server.
     m_cqsConnectedCount++;
   }
-  void Clear() {
+  void clear() {
     m_numInserts = 0;
     m_numUpdates = 0;
     m_numDeletes = 0;
