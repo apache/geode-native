@@ -104,9 +104,9 @@ int main(int argc, char** argv) {
       rowCount++;
       Struct* psi = dynamic_cast<Struct*>(iter.next().get());
       LOGINFO("Row %d Column 1 is named %s, value is %s", rowCount,
-              psi->getFieldName(0), (*psi)[0]->toString()->asChar());
+              psi->getFieldName(0).c_str(), (*psi)[0]->toString()->asChar());
       LOGINFO("Row %d Column 2 is named %s, value is %s", rowCount,
-              psi->getFieldName(1), (*psi)[1]->toString()->asChar());
+              psi->getFieldName(1).c_str(), (*psi)[1]->toString()->asChar());
     }
 
     // Execute a Region Shortcut Query (convenience method).
@@ -147,9 +147,9 @@ int main(int argc, char** argv) {
       rowCount++;
       Struct* pst = dynamic_cast<Struct*>(itr.next().get());
       LOGINFO("Row %d Column 1 is named %s, value is %s", rowCount,
-              pst->getFieldName(0), (*pst)[0]->toString()->asChar());
+              pst->getFieldName(0).c_str(), (*pst)[0]->toString()->asChar());
       LOGINFO("Row %d Column 2 is named %s, value is %s", rowCount,
-              pst->getFieldName(1), (*pst)[1]->toString()->asChar());
+              pst->getFieldName(1).c_str(), (*pst)[1]->toString()->asChar());
     }
 
     // Close the Geode Cache.
