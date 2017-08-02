@@ -1,8 +1,9 @@
 {
   "variables":{
     "image_name":"build-solaris-x86",
-    "openstack_source_image":"c0df7ff9-fc8f-4220-ac1f-fd24924dfe7a",
-    "vmware_source_image_name":"X.vmx",
+    "openstack_source_image":"",
+    "openstack_flavor":"Oracle Solaris non-global zone - tiny",
+    "vmware_source_image_name":"",
     "gemfire_archive":"gemfire.tar.gz",
     "pkg_oracle_com_certificate":"pkg.oracle.com.certificate.pem",
     "pkg_oracle_com_key":"pkg.oracle.com.key.pem"
@@ -18,7 +19,7 @@
       "ssh_username":"root",
       "image_name":"native-{{user `version`}}-{{user `image_name`}} {{timestamp}}",
       "source_image":"{{user `openstack_source_image`}}",
-      "flavor":"Oracle Solaris non-global zone - tiny",
+      "flavor":"{{user `openstack_flavor`}}",
       "insecure":"true"
     }
   ],

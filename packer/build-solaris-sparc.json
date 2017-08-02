@@ -1,8 +1,9 @@
 {
   "variables":{
     "image_name":"build-solaris-sparc",
-    "openstack_source_image":"7e1e66f1-8256-4e29-a314-ee7f54b2f720",
-    "vmware_source_image_name":"X.vmx",
+    "openstack_source_image":"",
+    "openstack_flavor":"Oracle Solaris non-global zone - tiny",
+    "vmware_source_image_name":"",
     "gemfire_archive":"gemfire.tar.gz",
     "pkg_oracle_com_certificate":"pkg.oracle.com.certificate.pem",
     "pkg_oracle_com_key":"pkg.oracle.com.key.pem"
@@ -18,7 +19,7 @@
       "ssh_username":"root",
       "image_name":"native-{{user `version`}}-{{user `image_name`}} {{timestamp}}",
       "source_image":"{{user `openstack_source_image`}}",
-      "flavor":"Oracle Solaris non-global zone - tiny",
+      "flavor":"{{user `openstack_flavor`}}",
       "insecure":"true"
     }
   ],
@@ -38,7 +39,8 @@
       "scripts":[
         "solaris/install-opencsw.sh",
         "solaris/install-build-tools.sh",
-        "solaris/install-solarisstudio.sh"
+        "solaris/install-solarisstudio.sh",
+        "solaris/install-cmake.sh"
       ]
     },
     {

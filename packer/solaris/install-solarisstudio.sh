@@ -19,7 +19,6 @@ set -e
 
 pkg change-facet facet.version-lock.consolidation/sunpro/sunpro-incorporation=false
 pkg update sunpro-incorporation || true
-pkg change-facet facet.version-lock.consolidation/sunpro/sunpro-incorporation=true
 
 pkg set-publisher \
     -k /var/pkg/ssl/pkg.oracle.com.key.pem \
