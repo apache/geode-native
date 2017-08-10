@@ -24,6 +24,8 @@
 #include <geode/CacheableBuiltins.hpp>
 #include <map>
 #include "PdxType.hpp"
+#include "PdxTypeRegistry.hpp"
+#include "CachePerfStats.hpp"
 
 namespace apache {
 namespace geode {
@@ -446,13 +448,18 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    */
   virtual PdxInstanceFactoryPtr markIdentityField(const char* fieldName);
 
-  PdxInstanceFactoryImpl(const char* className);
+  PdxInstanceFactoryImpl(const char* className, CachePerfStats* cachePerfStats,
+                         PdxTypeRegistryPtr m_pdxTypeRegistry,
+                         const Cache* cache, bool enableTimeStatistics);
 
  private:
   bool m_created;
   PdxTypePtr m_pdxType;
   FieldVsValues m_FieldVsValues;
-
+  CachePerfStats* m_cachePerfStats;
+  PdxTypeRegistryPtr m_pdxTypeRegistry;
+  const Cache* m_cache;
+  bool m_enableTimeStatistics;
   void isFieldAdded(const char* fieldName);
 };
 }  // namespace client

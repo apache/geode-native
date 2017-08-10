@@ -25,19 +25,25 @@ using namespace apache::geode::client;
 const char* host_name = "Suds";
 DUNIT_TASK(s1p1, CreateRegionOne)
   {
+    CacheFactoryPtr factory = CacheFactory::createCacheFactory();
+    CachePtr cache = factory->create();
     try {
-      DistributedSystem::disconnect();
+      cache->getDistributedSystem().connect();
+      FAIL("Expected an exception.");
+    } catch (const AlreadyConnectedException& ex) {
+      LOG("Got expected exception.");
+      LOG(ex.getMessage());
+    }
+
+    cache->getDistributedSystem().disconnect();
+
+    try {
+      // doing second disconnect to force the exception
+      cache->getDistributedSystem().disconnect();
       FAIL("Expected an exception.");
     } catch (const NotConnectedException& ex) {
       LOG("Got expected exception.");
       LOG(ex.getMessage());
-    }
-    try {
-      DistributedSystemPtr dsys = DistributedSystem::connect(host_name);
-      if (!dsys->isConnected()) FAIL("Distributed system is not connected");
-    } catch (const Exception& ex) {
-      LOG(ex.getMessage());
-      ASSERT(false, "connect failed.");
     }
   }
 ENDTASK

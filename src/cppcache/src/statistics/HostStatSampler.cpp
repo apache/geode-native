@@ -39,6 +39,9 @@
 #include "GeodeStatisticsFactory.hpp"
 #include <ClientHealthStats.hpp>
 #include <ClientProxyMembershipID.hpp>
+#include "CacheImpl.hpp"
+using namespace apache::geode::statistics;
+using namespace apache::geode::client;
 
 namespace apache {
 namespace geode {
@@ -58,7 +61,9 @@ typedef std::vector<std::pair<std::string, int64_t> > g_fileInfo;
 }  // namespace geode
 }  // namespace apache
 
-extern "C" {
+using namespace apache::geode::statistics::globals;
+
+// extern "C" {
 
 int selector(const dirent* d) {
   std::string inputname(d->d_name);
@@ -110,7 +115,7 @@ int comparator(const dirent** d1, const dirent** d2) {
     return 0;
   }
 }
-}
+//}
 
 namespace apache {
 namespace geode {
@@ -124,26 +129,27 @@ using std::chrono::nanoseconds;
 const char* HostStatSampler::NC_HSS_Thread = "NC HSS Thread";
 
 HostStatSampler::HostStatSampler(const char* filePath, int64_t sampleIntervalMs,
-                                 StatisticsManager* statMngr,
+                                 StatisticsManager* statMngr, Cache* cache,
+                                 const char* durableClientId,
+                                 const uint32_t durableTimeout,
                                  int64_t statFileLimit,
-                                 int64_t statDiskSpaceLimit) {
+                                 int64_t statDiskSpaceLimit)
+    : m_cache(cache) {
   m_isStatDiskSpaceEnabled = false;
   m_adminError = false;
   m_running = false;
   m_stopRequested = false;
   m_archiver = nullptr;
-  m_samplerStats = new StatSamplerStats();
-
+  m_samplerStats = new StatSamplerStats(statMngr->getStatisticsFactory());
   m_startTime = system_clock::now();
-
   m_pid = ACE_OS::getpid();
   m_statMngr = statMngr;
   m_archiveFileName = filePath;
-  globals::g_statFile = filePath;
+  g_statFile = filePath;
   m_sampleRate = sampleIntervalMs;
   rollIndex = 0;
   m_archiveDiskSpaceLimit = statDiskSpaceLimit;
-  globals::g_spaceUsed = 0;
+  g_spaceUsed = 0;
 
   if (statDiskSpaceLimit != 0) {
     m_isStatDiskSpaceEnabled = true;
@@ -365,7 +371,7 @@ void HostStatSampler::changeArchive(std::string filename) {
   }
   filename = chkForGFSExt(filename);
   if (m_archiver != nullptr) {
-    globals::g_previoussamplesize = m_archiver->getSampleSize();
+    g_previoussamplesize = m_archiver->getSampleSize();
     m_archiver->closeFile();
   }
   // create new file only when tis file has some data; otherwise reuse it
@@ -385,7 +391,7 @@ void HostStatSampler::changeArchive(std::string filename) {
     m_archiver = nullptr;
   }
 
-  m_archiver = new StatArchiveWriter(filename, this);
+  m_archiver = new StatArchiveWriter(filename, this, m_cache);
 }
 
 std::string HostStatSampler::chkForGFSExt(std::string filename) {
@@ -500,7 +506,8 @@ int32_t HostStatSampler::rollArchive(std::string filename) {
 
 void HostStatSampler::initSpecialStats() {
   // After Special categories are decided initialize them here
-  HostStatHelper::newProcessStats(m_pid, "ProcessStats");
+  HostStatHelper::newProcessStats(m_statMngr->getStatisticsFactory(), m_pid,
+                                  "ProcessStats");
 }
 
 void HostStatSampler::sampleSpecialStats() { HostStatHelper::refresh(); }
@@ -537,10 +544,13 @@ void HostStatSampler::putStatsInAdminRegion() {
     static std::string clientId = "";
     AdminRegionPtr adminRgn = m_statMngr->getAdminRegion();
     if (adminRgn == nullptr) return;
+    auto conn_man = adminRgn->getConnectionManager();
+    if (conn_man->isNetDown()) {
+      return;
+    }
     TryReadGuard _guard(adminRgn->getRWLock(), adminRgn->isDestroyed());
     if (!adminRgn->isDestroyed()) {
-      TcrConnectionManager* m_conn_man = adminRgn->getConnectionManager();
-      if (m_conn_man->getNumEndPoints() > 0) {
+      if (conn_man->getNumEndPoints() > 0) {
         if (!initDone) {
           adminRgn->init();
           initDone = true;
@@ -548,8 +558,7 @@ void HostStatSampler::putStatsInAdminRegion() {
         int puts = 0, gets = 0, misses = 0, numListeners = 0, numThreads = 0,
             creates = 0;
         int64_t cpuTime = 0;
-        GeodeStatisticsFactory* gf =
-            GeodeStatisticsFactory::getExistingInstance();
+        auto gf = m_statMngr->getStatisticsFactory();
         if (gf) {
           StatisticsType* cacheStatType = gf->findType("CachePerfStats");
           if (cacheStatType) {
@@ -577,15 +586,12 @@ void HostStatSampler::putStatsInAdminRegion() {
           ACE_INET_Addr driver("", hostName, "tcp");
           uint32_t hostAddr = driver.get_ip_address();
           uint16_t hostPort = 0;
-          SystemProperties* sysProp = DistributedSystem::getSystemProperties();
-          const char* durableId =
-              (sysProp != nullptr) ? sysProp->durableClientId() : nullptr;
-          const uint32_t durableTimeOut =
-              (sysProp != nullptr) ? sysProp->durableTimeout() : 0;
 
-          ClientProxyMembershipID memId(hostName, hostAddr, hostPort, durableId,
-                                        durableTimeOut);
-          clientId = memId.getDSMemberIdForThinClientUse();
+          auto memId = conn_man->getCacheImpl()
+                           ->getClientProxyMembershipIDFactory()
+                           .create(hostName, hostAddr, hostPort,
+                                   m_durableClientId, m_durableTimeout);
+          clientId = memId->getDSMemberIdForThinClientUse();
         }
 
         CacheableKeyPtr keyPtr = CacheableString::create(clientId.c_str());
@@ -619,39 +625,40 @@ void HostStatSampler::doSample(std::string& archivefilename) {
   checkListeners();
 
   // Populate Admin Region for GFMon
-  if (isSamplingEnabled() && !m_adminError &&
-      !TcrConnectionManager::isNetDown) {
+  if (isSamplingEnabled() && !m_adminError) {
     putStatsInAdminRegion();
   }
 
-  m_archiver->sample();
+  if (m_archiver) {
+    m_archiver->sample();
 
-  if (m_archiveFileSizeLimit != 0) {
-    int64_t size = m_archiver->getSampleSize();
-    int64_t bytesWritten =
-        m_archiver->bytesWritten();  // + globals::g_previoussamplesize;
-    if (bytesWritten > (m_archiveFileSizeLimit - size)) {
-      // roll the archive
-      changeArchive(archivefilename);
+    if (m_archiveFileSizeLimit != 0) {
+      int64_t size = m_archiver->getSampleSize();
+      int64_t bytesWritten =
+          m_archiver->bytesWritten();  // + g_previoussamplesize;
+      if (bytesWritten > (m_archiveFileSizeLimit - size)) {
+        // roll the archive
+        changeArchive(archivefilename);
+      }
     }
-  }
-  globals::g_spaceUsed += m_archiver->bytesWritten();
-  // delete older stat files if disk limit is about to be exceeded.
-  if ((m_archiveDiskSpaceLimit != 0) &&
-      (globals::g_spaceUsed >=
-       (m_archiveDiskSpaceLimit - m_archiver->getSampleSize()))) {
-    checkDiskLimit();
-  }
+    g_spaceUsed += m_archiver->bytesWritten();
+    // delete older stat files if disk limit is about to be exceeded.
+    if ((m_archiveDiskSpaceLimit != 0) &&
+        (g_spaceUsed >=
+         (m_archiveDiskSpaceLimit - m_archiver->getSampleSize()))) {
+      checkDiskLimit();
+    }
 
-  // It will flush the contents to the archive file, in every
-  // sample run.
+    // It will flush the contents to the archive file, in every
+    // sample run.
 
-  m_archiver->flush();
+    m_archiver->flush();
+  }
 }
 
 void HostStatSampler::checkDiskLimit() {
-  globals::g_fileInfo fileInfo;
-  globals::g_spaceUsed = 0;
+  g_fileInfo fileInfo;
+  g_spaceUsed = 0;
   char fullpath[512] = {0};
   std::string dirname = ACE::dirname(globals::g_statFile.c_str());
   // struct dirent **resultArray;

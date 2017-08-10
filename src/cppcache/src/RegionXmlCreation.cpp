@@ -20,9 +20,9 @@
 #include "RegionXmlCreation.hpp"
 #include "CacheImpl.hpp"
 using namespace apache::geode::client;
-extern bool Cache_CreatedFromCacheFactory;
 
-void RegionXmlCreation::addSubregion(RegionXmlCreation* regionPtr) {
+void RegionXmlCreation::addSubregion(
+    std::shared_ptr<RegionXmlCreation> regionPtr) {
   subRegions.push_back(regionPtr);
 }
 
@@ -33,34 +33,14 @@ void RegionXmlCreation::setAttributes(RegionAttributesPtr attrsPtr) {
 RegionAttributesPtr RegionXmlCreation::getAttributes() { return regAttrs; }
 
 void RegionXmlCreation::fillIn(RegionPtr regionPtr) {
-  std::vector<RegionXmlCreation*>::iterator start = subRegions.begin();
-  while (start != subRegions.end()) {
-    RegionXmlCreation* regXmlCreation = *start;
+  for (const auto& regXmlCreation : subRegions) {
     regXmlCreation->create(regionPtr);
-    start++;
   }
 }
 
 void RegionXmlCreation::createRoot(Cache* cache) {
   GF_D_ASSERT(this->isRoot);
   RegionPtr rootRegPtr = nullptr;
-
-  if (Cache_CreatedFromCacheFactory) {
-    //  if(cache->m_cacheImpl->getDefaultPool() == nullptr)
-    {
-      // we may need to initialize default pool
-      if (regAttrs->getEndpoints() == nullptr) {
-        if (regAttrs->getPoolName() == nullptr) {
-          PoolPtr pool = CacheFactory::createOrGetDefaultPool();
-
-          if (pool == nullptr) {
-            throw IllegalStateException("Pool is not defined create region.");
-          }
-          regAttrs->setPoolName(pool->getName());
-        }
-      }
-    }
-  }
 
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache);
   cacheImpl->createRegion(regionName.c_str(), regAttrs, rootRegPtr);
@@ -81,15 +61,6 @@ RegionXmlCreation::RegionXmlCreation(char* name, bool isRootRegion)
   regionName = tempName;
   isRoot = isRootRegion;
   attrId = "";
-}
-
-RegionXmlCreation::~RegionXmlCreation() {
-  std::vector<RegionXmlCreation*>::iterator start = subRegions.begin();
-  while (start != subRegions.end()) {
-    delete *start;
-    *start = nullptr;
-    ++start;
-  }
 }
 
 std::string RegionXmlCreation::getAttrId() const { return attrId; }

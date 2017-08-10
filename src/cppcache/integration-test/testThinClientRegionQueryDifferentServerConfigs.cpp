@@ -29,6 +29,8 @@
 #include "QueryStrings.hpp"
 #include "QueryHelper.hpp"
 #include "ThinClientHelper.hpp"
+#include "SerializationRegistry.hpp"
+#include "CacheRegionHelper.hpp"
 
 using namespace apache::geode::client;
 using namespace test;
@@ -49,14 +51,16 @@ const char* qRegionNames[] = {"Portfolios", "Positions"};
 const char* sGNames[] = {"ServerGroup1", "ServerGroup2"};
 
 void initClient() {
-  try {
-    Serializable::registerType(Position::createDeserializable);
-    Serializable::registerType(Portfolio::createDeserializable);
-  } catch (const IllegalStateException&) {
-    // ignore exception
-  }
   initClient(true);
   ASSERT(getHelper() != nullptr, "null CacheHelper");
+  try {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    serializationRegistry->addType(Position::createDeserializable);
+    serializationRegistry->addType(Portfolio::createDeserializable);
+  }
+  catch (const IllegalStateException&) {
+    // ignore exception
+  }
 }
 
 DUNIT_TASK_DEFINITION(LOCATOR, StartLocator)

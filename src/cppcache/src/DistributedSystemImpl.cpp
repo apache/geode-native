@@ -33,13 +33,13 @@ DistributedSystemImpl::DistributedSystemImpl(const char* name,
                                              DistributedSystem* implementee)
     : m_name(name == 0 ? "" : name), m_implementee(implementee) {
   g_numInstances = 0;
-  if (m_implementee->getSystemProperties()->isDhOn()) {
+  if (m_implementee->getSystemProperties().isDhOn()) {
     // m_dh.initDhKeys(m_implementee->getSystemProperties()->getSecurityProperties());
   }
 }
 
 DistributedSystemImpl::~DistributedSystemImpl() {
-  if (m_implementee->getSystemProperties()->isDhOn()) {
+  if (m_implementee->getSystemProperties().isDhOn()) {
     // m_dh.clearDhKeys();
   }
   g_numInstances = 0;
@@ -48,7 +48,7 @@ DistributedSystemImpl::~DistributedSystemImpl() {
 
 AuthInitializePtr DistributedSystemImpl::getAuthLoader() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> authGuard(m_authLock);
-  return DistributedSystem::getSystemProperties()->getAuthLoader();
+  return m_implementee->getSystemProperties().getAuthLoader();
 }
 
 void DistributedSystemImpl::connect() {}
@@ -68,46 +68,28 @@ void DistributedSystemImpl::releaseDisconnectLock() {
 int DistributedSystemImpl::currentInstances() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
 
-  if (DistributedSystem::getInstance() != nullptr &&
-      DistributedSystem::getInstance()->getSystemProperties() != nullptr &&
-      !DistributedSystem::getInstance()
-           ->getSystemProperties()
-           ->isAppDomainEnabled()) {
-    return 0;
-  }
-
   return g_numInstances;
 }
 
 void DistributedSystemImpl::connectInstance() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
 
-  if (DistributedSystem::getInstance()->getSystemProperties() != nullptr &&
-      DistributedSystem::getInstance()
-          ->getSystemProperties()
-          ->isAppDomainEnabled()) {
-    g_numInstances++;
-  }
+  g_numInstances++;
 }
 
 void DistributedSystemImpl::disconnectInstance() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
 
-  if (DistributedSystem::getInstance()->getSystemProperties() != nullptr &&
-      DistributedSystem::getInstance()
-          ->getSystemProperties()
-          ->isAppDomainEnabled()) {
-    g_numInstances--;
-  }
+  g_numInstances--;
 }
 
-void DistributedSystemImpl::CallCliCallBack() {
+void DistributedSystemImpl::CallCliCallBack(Cache& cache) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(m_cliCallbackLock);
   if (m_isCliCallbackSet == true) {
     for (std::map<int, CliCallbackMethod>::iterator iter =
              m_cliCallbackMap.begin();
          iter != m_cliCallbackMap.end(); ++iter) {
-      (*iter).second();
+      (*iter).second(cache);
     }
   }
 }

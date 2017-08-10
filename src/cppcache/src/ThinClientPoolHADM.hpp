@@ -110,8 +110,8 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   // Disallow copy constructor and assignment operator.
   ThinClientRedundancyManager* m_redundancyManager;
   ThinClientPoolHADM(const ThinClientPoolHADM&);
-  ThinClientPoolHADM& operator=(const ThinClientPoolHADM&);
-  // const char* m_name; // COVERITY -> 30305 Uninitialized pointer field
+  ThinClientPoolHADM& operator=(const ThinClientPoolHADM&) = delete;
+
   TcrConnectionManager& m_theTcrConnManager;
   ACE_Semaphore m_redundancySema;
   Task<ThinClientPoolHADM>* m_redundancyTask;

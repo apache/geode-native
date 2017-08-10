@@ -60,7 +60,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
   * registered.
   * @return the deserialized domain object.
   *
-  * @see Serializable::registerPdxType
+  * @see serializationRegistry->addPdxType
   */
   virtual PdxSerializablePtr getObject() = 0;
 
@@ -83,7 +83,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
   * For deserialization C++ Native Client requires the domain class to be
   * registered.
   *
-  * @see Serializable::registerPdxType
+  * @see serializationRegistry->addPdxType
   * @see PdxInstance#hasField
   */
   virtual void getField(const char* fieldname, CacheablePtr& value) const = 0;
@@ -432,7 +432,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
   * @param value value of the field to be set with CacheableObjectArrayPtr type.
   * @throws IllegalStateException if PdxInstance doesn't has the named field.
   *
-  * @see Serializable::registerPdxType
+  * @see serializationRegistry->addPdxType
   * @see PdxInstance#hasField
   */
   virtual void getField(const char* fieldname,
@@ -476,7 +476,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
   * @throws IllegalStateException if the field contains an element that is not
   * of CacheableKey derived type.
   *
-  * @see Serializable::registerPdxType
+  * @see serializationRegistry->addPdxType
   */
   virtual int32_t hashcode() const = 0;
 
@@ -489,7 +489,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
   * For deserialization C++ Native Client requires the domain class to be
   * registered.
   *
-  * @see Serializable::registerPdxType
+  * @see serializationRegistry->addPdxType
   */
   virtual CacheableStringPtr toString() const = 0;
 
@@ -549,7 +549,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
   * @throws IllegalStateException if the field contains an element that is not
   * of CacheableKey derived type.
   *
-  * @see Serializable::registerPdxType
+  * @see serializationRegistry->addPdxType
   */
   virtual bool operator==(const CacheableKey& other) const = 0;
 

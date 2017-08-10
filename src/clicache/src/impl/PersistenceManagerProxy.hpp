@@ -72,7 +72,7 @@ namespace Apache
             virtual CacheablePtr read(const CacheableKeyPtr& key/*, void *& PersistenceInfo*/)
             {
               TKey gKey = Serializable::GetManagedValueGeneric<TKey>(key);
-              return Serializable::GetUnmanagedValueGeneric<TValue>(m_persistenceManager->Read(gKey));
+              return Serializable::GetUnmanagedValueGeneric<TValue>(m_persistenceManager->Read(gKey), nullptr);
             }
             
             virtual bool readAll()

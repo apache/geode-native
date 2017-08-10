@@ -20,6 +20,9 @@
 #include "DeltaEx.hpp"
 #include "fw_dunit.hpp"
 #include <string>
+#include "SerializationRegistry.hpp"
+#include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
 using namespace apache::geode::client;
 using namespace test;
 
@@ -108,7 +111,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
   {
     LOG("Step one entered");
     try {
-      Serializable::registerType(DeltaEx::create);
+      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      serializationRegistry->addType(DeltaEx::create);
     } catch (IllegalStateException&) {
       //  ignore exception caused by type reregistration.
     }
@@ -143,7 +147,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_DisableDelta)
     DeltaEx::toDeltaCount = 0;
     DeltaEx::toDataCount = 0;
     try {
-      Serializable::registerType(DeltaEx::create);
+      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
+      serializationRegistry->addType(DeltaEx::create);
     } catch (IllegalStateException&) {
       //  Ignore the exception caused by re-registration of DeltaEx.
     }

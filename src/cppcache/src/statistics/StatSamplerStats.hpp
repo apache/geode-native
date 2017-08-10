@@ -29,7 +29,7 @@
 using namespace apache::geode::client;
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
@@ -48,7 +48,7 @@ class CPPCACHE_EXPORT StatSamplerStats {
   StatisticDescriptor** statDescriptorArr;
 
  public:
-  StatSamplerStats();
+  StatSamplerStats(StatisticsFactory* statFactory);
   void tookSample(int64_t nanosSpentWorking);
   void close();
   void setInitialValues();

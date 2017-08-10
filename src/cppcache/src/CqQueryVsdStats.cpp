@@ -15,12 +15,6 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
-
-#include "CqQueryVsdStats.hpp"
-//#include "StatisticsFactory.hpp"
-
-#include <ace/Singleton.h>
 
 #include <mutex>
 
@@ -28,8 +22,12 @@
 
 const char* cqStatsName = "CqQueryStatistics";
 const char* cqStatsDesc = "Statistics for this cq query";
+#include <ace/Thread_Mutex.h>
+#include <ace/Singleton.h>
 
-////////////////////////////////////////////////////////////////////////////////
+#include <geode/geode_globals.hpp>
+
+#include "CqQueryVsdStats.hpp"
 
 namespace apache {
 namespace geode {
@@ -39,80 +37,38 @@ using statistics::StatisticsFactory;
 using util::concurrent::spinlock_mutex;
 using std::lock_guard;
 
-////////////////////////////////////////////////////////////////////////////////
+constexpr const char* CqQueryVsdStats::STATS_NAME;
+constexpr const char* CqQueryVsdStats::STATS_DESC;
 
-spinlock_mutex CqQueryStatType::m_statTypeLock;
-
-StatisticsType* CqQueryStatType::getStatType() {
-  const bool largerIsBetter = true;
-  lock_guard<spinlock_mutex> guard(m_statTypeLock);
-  StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
-  GF_D_ASSERT(!!factory);
-
-  StatisticsType* statsType = factory->findType("CqQueryStatistics");
-
-  if (statsType == nullptr) {
-    m_stats[0] = factory->createIntCounter(
+CqQueryVsdStats::CqQueryVsdStats(StatisticsFactory* factory,
+                                 const std::string& cqqueryName) {
+  auto statsType = factory->findType(STATS_NAME);
+  if (!statsType) {
+    const bool largerIsBetter = true;
+    auto stats = new StatisticDescriptor*[4];
+    stats[0] = factory->createIntCounter(
         "inserts", "The total number of inserts this cq qurey", "entries",
         largerIsBetter);
-    m_stats[1] = factory->createIntCounter(
+    stats[1] = factory->createIntCounter(
         "updates", "The total number of updates for this cq query", "entries",
         largerIsBetter);
-    m_stats[2] = factory->createIntCounter(
+    stats[2] = factory->createIntCounter(
         "deletes", "The total number of deletes for this cq query", "entries",
         largerIsBetter);
-    m_stats[3] = factory->createIntCounter(
+    stats[3] = factory->createIntCounter(
         "events", "The total number of events for this cq query", "entries",
         largerIsBetter);
 
-    statsType = factory->createType(cqStatsName, cqStatsDesc, m_stats, 4);
-
-    m_numInsertsId = statsType->nameToId("inserts");
-    m_numUpdatesId = statsType->nameToId("updates");
-    m_numDeletesId = statsType->nameToId("deletes");
-    m_numEventsId = statsType->nameToId("events");
+    statsType = factory->createType(STATS_NAME, STATS_DESC, stats, 4);
   }
 
-  return statsType;
-}
+  m_cqQueryVsdStats =
+      factory->createAtomicStatistics(statsType, cqqueryName.c_str());
 
-CqQueryStatType& CqQueryStatType::getInstance() {
-  // C++11 initializes statics threads safe
-  static CqQueryStatType instance;
-  return instance;
-}
-
-CqQueryStatType::CqQueryStatType()
-    : m_numInsertsId(0),
-      m_numUpdatesId(0),
-      m_numDeletesId(0),
-      m_numEventsId(0) {
-  memset(m_stats, 0, sizeof(m_stats));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-// typedef ACE_Singleton<CqQueryVsdStatsInit, ACE_Thread_Mutex>
-// TheCqQueryVsdStatsInit;
-
-////////////////////////////////////////////////////////////////////////////////
-
-CqQueryVsdStats::CqQueryVsdStats(const char* cqqueryName) {
-  auto& regStatType = CqQueryStatType::getInstance();
-
-  StatisticsType* statsType = regStatType.getStatType();
-
-  GF_D_ASSERT(statsType != nullptr);
-
-  StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
-
-  m_cqQueryVsdStats = factory->createAtomicStatistics(
-      statsType, const_cast<char*>(cqqueryName));
-
-  m_numInsertsId = regStatType.getNumInsertsId();
-  m_numUpdatesId = regStatType.getNumUpdatesId();
-  m_numDeletesId = regStatType.getNumDeletesId();
-  m_numEventsId = regStatType.getNumEventsId();
+  m_numInsertsId = statsType->nameToId("inserts");
+  m_numUpdatesId = statsType->nameToId("updates");
+  m_numDeletesId = statsType->nameToId("deletes");
+  m_numEventsId = statsType->nameToId("events");
 
   m_cqQueryVsdStats->setInt(m_numInsertsId, 0);
   m_cqQueryVsdStats->setInt(m_numUpdatesId, 0);

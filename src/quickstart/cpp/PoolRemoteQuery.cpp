@@ -67,8 +67,8 @@ int main(int argc, char** argv) {
 
     // Register our Serializable/Cacheable Query objects, viz. Portfolio and
     // Position.
-    Serializable::registerType(Portfolio::createDeserializable);
-    Serializable::registerType(Position::createDeserializable);
+    serializationRegistry->addType(Portfolio::createDeserializable);
+    serializationRegistry->addType(Position::createDeserializable);
 
     LOGINFO("Registered Serializable Query Objects");
 

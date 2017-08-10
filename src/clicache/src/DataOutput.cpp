@@ -17,6 +17,8 @@
 
 #include "begin_native.hpp"
 #include <GeodeTypeIdsImpl.hpp>
+#include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
 #include "end_native.hpp"
 
 #include <vcclr.h>
@@ -454,7 +456,7 @@ namespace Apache
         if (m_ispdxSerialization && obj->GetType()->IsEnum)
         {
           //need to set             
-          int enumVal = Internal::PdxHelper::GetEnumValue(obj->GetType()->FullName, Enum::GetName(obj->GetType(), obj), obj->GetHashCode());
+          int enumVal = Internal::PdxHelper::GetEnumValue(obj->GetType()->FullName, Enum::GetName(obj->GetType(), obj), obj->GetHashCode(), m_nativeptr->get()->getCache());
           WriteByte(GeodeClassIds::PDX_ENUM);
           WriteByte(enumVal >> 24);
           WriteArrayLen(enumVal & 0xFFFFFF);

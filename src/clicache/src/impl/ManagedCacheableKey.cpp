@@ -62,7 +62,7 @@ namespace apache
         try {
           int pos = input.getBytesRead();
           //Apache::Geode::Client::Log::Debug("ManagedCacheableKeyGeneric::fromData");      
-          Apache::Geode::Client::DataInput mg_input(&input, true);
+          Apache::Geode::Client::DataInput mg_input(&input, true, input.getCache());
           m_managedptr = m_managedptr->FromData(%mg_input);
 
           //this will move the cursor in c++ layer
@@ -102,28 +102,15 @@ namespace apache
 
       System::Int32 ManagedCacheableKeyGeneric::classId() const
       {
-        //Apache::Geode::Client::Log::Debug("ManagedCacheableKeyGeneric::classid " + m_classId);
-        /*System::UInt32 classId;
-        try {
-        classId = m_managedptr->ClassId;
-        }
-        catch (GeodeException^ ex) {
-        ex->ThrowNative();
-        }
-        catch (System::Exception^ ex) {
-        GeodeException::ThrowNative(ex);
-        }*/
         return (m_classId >= 0x80000000 ? 0 : m_classId);
       }
 
       int8_t ManagedCacheableKeyGeneric::typeId() const
       {
-        //Apache::Geode::Client::Log::Debug("ManagedCacheableKeyGeneric::typeId " + m_classId);
         if (m_classId >= 0x80000000) {
           return (int8_t)((m_classId - 0x80000000) % 0x20000000);
         }
         else if (m_classId <= 0x7F) {
-          //Apache::Geode::Client::Log::Debug("ManagedCacheableKeyGeneric::typeId inin"); 
           return (int8_t)GeodeTypeIdsImpl::CacheableUserData;
         }
         else if (m_classId <= 0x7FFF) {
@@ -136,12 +123,6 @@ namespace apache
 
       int8_t ManagedCacheableKeyGeneric::DSFID() const
       {
-        // convention that [0x8000000, 0xa0000000) is for FixedIDDefault,
-        // [0xa000000, 0xc0000000) is for FixedIDByte,
-        // [0xc0000000, 0xe0000000) is for FixedIDShort
-        // and [0xe0000000, 0xffffffff] is for FixedIDInt
-        // Note: depends on fact that FixedIDByte is 1, FixedIDShort is 2
-        // and FixedIDInt is 3; if this changes then correct this accordingly
         if (m_classId >= 0x80000000) {
           return (int8_t)((m_classId - 0x80000000) / 0x20000000);
         }

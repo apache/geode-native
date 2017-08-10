@@ -15,12 +15,16 @@
  * limitations under the License.
  */
 
+#include "begin_native.hpp"
+#include "CacheImpl.hpp"
+#include "SerializationRegistry.hpp"
+#include "end_native.hpp"
+
 #include "Properties.hpp"
 #include "impl/ManagedVisitor.hpp"
 #include "impl/ManagedString.hpp"
 #include "impl/SafeConvert.hpp"
 #include "ExceptionTypes.hpp"
-
 
 using namespace System;
 
@@ -65,7 +69,7 @@ namespace Apache
       {
         try
         {
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key);
+          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key, nullptr);
           auto nativeptr = m_nativeptr->get()->find(keyptr);
           return Serializable::GetManagedValueGeneric<TPropValue>(nativeptr);
         }
@@ -78,8 +82,8 @@ namespace Apache
       generic<class TPropKey, class TPropValue>
       void Properties<TPropKey, TPropValue>::Insert( TPropKey key, TPropValue value )
       {
-        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key, true);
-        native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TPropValue>(value, true);
+        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key, true, nullptr);
+        native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TPropValue>(value, true, nullptr);
 
         _GF_MG_EXCEPTION_TRY2
 
@@ -98,7 +102,7 @@ namespace Apache
       generic<class TPropKey, class TPropValue>
       void Properties<TPropKey, TPropValue>::Remove( TPropKey key)
       {
-        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key);
+        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key, nullptr);
 
         _GF_MG_EXCEPTION_TRY2
 
@@ -294,57 +298,59 @@ namespace Apache
 
       // ISerializable methods
 
-      generic<class TPropKey, class TPropValue>
-      void Properties<TPropKey, TPropValue>::GetObjectData( SerializationInfo^ info,
-        StreamingContext context )
-      {
-        native::DataOutput output;
+      //generic<class TPropKey, class TPropValue>
+      //void Properties<TPropKey, TPropValue>::GetObjectData( SerializationInfo^ info,
+      //  StreamingContext context )
+      //{
+      //  auto output = std::unique_ptr<native::DataOutput>(new native::DataOutput(*m_serializationRegistry->get_shared_ptr()));
 
-        _GF_MG_EXCEPTION_TRY2
+      //  _GF_MG_EXCEPTION_TRY2
 
-          try
-          {
-            m_nativeptr->get()->toData( output );
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+      //    try
+      //    {
+      //      m_nativeptr->get()->toData( *output );
+      //    }
+      //    finally
+      //    {
+      //      GC::KeepAlive(m_nativeptr);
+      //    }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+      //  _GF_MG_EXCEPTION_CATCH_ALL2
 
-        auto bytes = gcnew array<Byte>( output.getBufferLength( ) );
-        {
-          pin_ptr<const Byte> pin_bytes = &bytes[0];
-          memcpy( (System::Byte*)pin_bytes, output.getBuffer( ),
-            output.getBufferLength( ) );
-        }
-        info->AddValue( "bytes", bytes, array<Byte>::typeid );
-      }
-      
-      generic<class TPropKey, class TPropValue>
-      Properties<TPropKey, TPropValue>::Properties( SerializationInfo^ info,
-        StreamingContext context )
-        : Properties()
-      {
-        array<Byte>^ bytes = nullptr;
-        try {
-          bytes = dynamic_cast<array<Byte>^>( info->GetValue( "bytes",
-            array<Byte>::typeid ) );
-        }
-        catch ( System::Exception^ ) {
-          // could not find the header -- null value
-        }
-        if (bytes != nullptr) {
-          pin_ptr<const Byte> pin_bytes = &bytes[0];
+      //  auto bytes = gcnew array<Byte>( output->getBufferLength( ) );
+      //  {
+      //    pin_ptr<const Byte> pin_bytes = &bytes[0];
+      //    memcpy( (System::Byte*)pin_bytes, output->getBuffer( ),
+      //      output->getBufferLength( ) );
+      //  }
+      //  info->AddValue( "bytes", bytes, array<Byte>::typeid );
+      //}
+      //
+      //generic<class TPropKey, class TPropValue>
+      //Properties<TPropKey, TPropValue>::Properties( SerializationInfo^ info,
+      //  StreamingContext context, native::SerializationRegistryPtr serializationRegistry)
+      //  : Properties(serializationRegistry)
+      //{
+      //  array<Byte>^ bytes = nullptr;
+      //  try {
+      //    bytes = dynamic_cast<array<Byte>^>( info->GetValue( "bytes",
+      //      array<Byte>::typeid ) );
+      //  }
+      //  catch ( System::Exception^ ) {
+      //    // could not find the header -- null value
+      //  }
+      //  if (bytes != nullptr) {
+      //    pin_ptr<const Byte> pin_bytes = &bytes[0];
 
-          _GF_MG_EXCEPTION_TRY2
+      //    _GF_MG_EXCEPTION_TRY2
 
-            native::DataInput input( (System::Byte*)pin_bytes, bytes->Length );
-            FromData(input);
-          _GF_MG_EXCEPTION_CATCH_ALL2
-        }
-      }
+      //      native::DataInput input( (System::Byte*)pin_bytes, bytes->Length, *CacheImpl::getInstance()->getSerializationRegistry().get());
+      //      FromData(input);
+      //    _GF_MG_EXCEPTION_CATCH_ALL2
+      //  }
+      //}
+
+
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

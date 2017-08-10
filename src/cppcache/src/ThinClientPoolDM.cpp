@@ -35,9 +35,6 @@
 using namespace apache::geode::client;
 using namespace apache::geode::statistics;
 
-ExpiryTaskManager* getCacheImplExpiryTaskManager();
-void removePool(const char*);
-
 /* adongre
  * CID 28730: Other violation (MISSING_COPY)
  * Class "GetAllWork" owns resources that are managed in its constructor and
@@ -81,7 +78,8 @@ class GetAllWork : public PooledWork<GfErrType>,
         m_keys(keys),
         m_region(region),
         m_aCallbackArgument(aCallbackArgument) {
-    m_request = new TcrMessageGetAll(region.get(), m_keys.get(), m_poolDM,
+    m_request = new TcrMessageGetAll(region->getCache()->createDataOutput(),
+                                     region.get(), m_keys.get(), m_poolDM,
                                      m_aCallbackArgument);
     m_reply = new TcrMessageReply(true, m_poolDM);
     if (m_poolDM->isMultiUserMode()) {
@@ -159,17 +157,19 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
   if (firstGurd) ClientProxyMembershipID::increaseSynchCounter();
   firstGurd = true;
 
-  SystemProperties* sysProp = DistributedSystem::getSystemProperties();
+  auto& distributedSystem =
+      m_connManager.getCacheImpl()->getDistributedSystem();
+
+  auto& sysProp = distributedSystem.getSystemProperties();
   // to set security flag at pool level
-  this->m_isSecurityOn = sysProp->isSecurityOn();
+  this->m_isSecurityOn = sysProp.isSecurityOn();
 
   ACE_TCHAR hostName[256];
   ACE_OS::hostname(hostName, sizeof(hostName) - 1);
   ACE_INET_Addr driver(hostName);
   uint32_t hostAddr = driver.get_ip_address();
   uint16_t hostPort = 0;
-  const char* durableId =
-      (sysProp != nullptr) ? sysProp->durableClientId() : nullptr;
+  const char* durableId = sysProp.durableClientId();
 
   std::string poolSeparator = "_gem_";
   std::string clientDurableId =
@@ -179,10 +179,11 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
                              ? (poolSeparator + m_poolName)
                              : "");
 
-  const uint32_t durableTimeOut =
-      (sysProp != nullptr) ? sysProp->durableTimeout() : 0;
-  m_memId = new ClientProxyMembershipID(
-      hostName, hostAddr, hostPort, clientDurableId.c_str(), durableTimeOut);
+  const uint32_t durableTimeOut = sysProp.durableTimeout();
+  m_memId =
+      m_connManager.getCacheImpl()->getClientProxyMembershipIDFactory().create(
+          hostName, hostAddr, hostPort, clientDurableId.c_str(),
+          durableTimeOut);
 
   if (m_attrs->m_initLocList.size() == 0 &&
       m_attrs->m_initServList.size() == 0) {
@@ -193,9 +194,12 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
   reset();
   m_locHelper = new ThinClientLocatorHelper(m_attrs->m_initLocList, this);
 
-  m_stats = new PoolStats(m_poolName.c_str());
+  auto statisticsManager = distributedSystem.getStatisticsManager();
+  m_stats =
+      new PoolStats(statisticsManager->getStatisticsFactory(), m_poolName);
+  statisticsManager->forceSample();
 
-  if (!sysProp->isEndpointShufflingDisabled()) {
+  if (!sysProp.isEndpointShufflingDisabled()) {
     if (m_attrs->m_initServList.size() > 0) {
       RandGen randgen;
       m_server = randgen(static_cast<uint32_t>(m_attrs->m_initServList.size()));
@@ -210,26 +214,26 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
 void ThinClientPoolDM::init() {
   LOGDEBUG("ThinClientPoolDM::init: Starting pool initialization");
 
-  SystemProperties* sysProp = DistributedSystem::getSystemProperties();
+  auto& sysProp = m_connManager.getCacheImpl()
+                      ->getDistributedSystem()
+                      .getSystemProperties();
   m_isMultiUserMode = this->getMultiuserAuthentication();
   if (m_isMultiUserMode) {
     LOGINFO("Multiuser authentication is enabled for pool %s",
             m_poolName.c_str());
   }
   // to set security flag at pool level
-  this->m_isSecurityOn = sysProp->isSecurityOn();
+  this->m_isSecurityOn = sysProp.isSecurityOn();
 
   LOGDEBUG("ThinClientPoolDM::init: security in on/off = %d ",
            this->m_isSecurityOn);
 
   m_connManager.init(true);
 
-  SystemProperties* props = DistributedSystem::getSystemProperties();
-
   LOGDEBUG("ThinClientPoolDM::init: is grid client = %d ",
-           props->isGridClient());
+           sysProp.isGridClient());
 
-  if (!props->isGridClient()) {
+  if (!sysProp.isGridClient()) {
     ThinClientPoolDM::startBackgroundThreads();
   }
 
@@ -237,20 +241,22 @@ void ThinClientPoolDM::init() {
 }
 
 PropertiesPtr ThinClientPoolDM::getCredentials(TcrEndpoint* ep) {
-  PropertiesPtr tmpSecurityProperties =
-      DistributedSystem::getSystemProperties()->getSecurityProperties();
+  const auto& distributedSystem =
+      m_connManager.getCacheImpl()->getDistributedSystem();
+  const auto& tmpSecurityProperties =
+      distributedSystem.getSystemProperties().getSecurityProperties();
 
-  AuthInitializePtr authInitialize = DistributedSystem::m_impl->getAuthLoader();
-
-  if (authInitialize != nullptr) {
+  if (const auto& authInitialize = distributedSystem.m_impl->getAuthLoader()) {
     LOGFINER(
         "ThinClientPoolDM::getCredentials: acquired handle to authLoader, "
         "invoking getCredentials %s",
         ep->name().c_str());
-    PropertiesPtr tmpAuthIniSecurityProperties = authInitialize->getCredentials(
+    const auto& tmpAuthIniSecurityProperties = authInitialize->getCredentials(
         tmpSecurityProperties, ep->name().c_str());
+    LOGFINER("Done getting credentials");
     return tmpAuthIniSecurityProperties;
   }
+
   return nullptr;
 }
 
@@ -260,9 +266,11 @@ void ThinClientPoolDM::startBackgroundThreads() {
                                           NC_Ping_Thread);
   m_pingTask->start();
 
-  SystemProperties* props = DistributedSystem::getSystemProperties();
+  auto& props = m_connManager.getCacheImpl()
+                    ->getDistributedSystem()
+                    .getSystemProperties();
 
-  if (props->onClientDisconnectClearPdxTypeIds() == true) {
+  if (props.onClientDisconnectClearPdxTypeIds() == true) {
     m_cliCallbackTask =
         new Task<ThinClientPoolDM>(this, &ThinClientPoolDM::cliCallback);
     m_cliCallbackTask->start();
@@ -277,8 +285,9 @@ void ThinClientPoolDM::startBackgroundThreads() {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Scheduling ping task at %ld",
         pingInterval);
-    m_pingTaskId = getCacheImplExpiryTaskManager()->scheduleExpiryTask(
-        pingHandler, 1, pingInterval, false);
+    m_pingTaskId =
+        m_connManager.getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
+            pingHandler, 1, pingInterval, false);
   } else {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Not Scheduling ping task as "
@@ -306,7 +315,7 @@ void ThinClientPoolDM::startBackgroundThreads() {
         "task at %ld",
         updateLocatorListInterval);
     m_updateLocatorListTaskId =
-        getCacheImplExpiryTaskManager()->scheduleExpiryTask(
+        m_connManager.getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
             updateLocatorListHandler, 1, updateLocatorListInterval, false);
   }
 
@@ -337,8 +346,9 @@ void ThinClientPoolDM::startBackgroundThreads() {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Scheduling "
         "manageConnections task");
-    m_connManageTaskId = getCacheImplExpiryTaskManager()->scheduleExpiryTask(
-        connHandler, 1, idle / 1000 + 1, false);
+    m_connManageTaskId =
+        m_connManager.getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
+            connHandler, 1, idle / 1000 + 1, false);
   }
 
   LOGDEBUG(
@@ -352,7 +362,7 @@ void ThinClientPoolDM::startBackgroundThreads() {
   LOGDEBUG(
       "ThinClientPoolDM::startBackgroundThreads: Starting pool stat sampler");
   if (m_PoolStatsSampler == nullptr && getStatisticInterval() > -1 &&
-      DistributedSystem::getSystemProperties()->statisticsEnabled()) {
+      props.statisticsEnabled()) {
     m_PoolStatsSampler = new PoolStatsSampler(
         getStatisticInterval() / 1000 + 1, m_connManager.getCacheImpl(), this);
     m_PoolStatsSampler->start();
@@ -470,7 +480,7 @@ void ThinClientPoolDM::cleanStaleConnections(volatile bool& isRunning) {
     }
   }
   if (m_connManageTaskId >= 0 && isRunning &&
-      getCacheImplExpiryTaskManager()->resetTask(
+      m_connManager.getCacheImpl()->getExpiryTaskManager().resetTask(
           m_connManageTaskId, static_cast<uint32_t>(_nextIdle.sec() + 1))) {
     LOGERROR("Failed to reschedule connection manager");
   } else {
@@ -619,7 +629,7 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
 
   int feIndex = 0;
   FunctionExecution* fePtrList = new FunctionExecution[csArray->length()];
-  ThreadPool* threadPool = TPSingleton::instance();
+  auto* threadPool = m_connManager.getCacheImpl()->getThreadPool();
   UserAttributesPtr userAttr =
       TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
   for (int i = 0; i < csArray->length(); i++) {
@@ -746,7 +756,8 @@ void ThinClientPoolDM::stopPingThread() {
     m_pingTask->wait();
     GF_SAFE_DELETE(m_pingTask);
     if (m_pingTaskId >= 0) {
-      getCacheImplExpiryTaskManager()->cancelTask(m_pingTaskId);
+      m_connManager.getCacheImpl()->getExpiryTaskManager().cancelTask(
+          m_pingTaskId);
     }
   }
 }
@@ -759,7 +770,8 @@ void ThinClientPoolDM::stopUpdateLocatorListThread() {
     m_updateLocatorListTask->wait();
     GF_SAFE_DELETE(m_updateLocatorListTask);
     if (m_updateLocatorListTaskId >= 0) {
-      getCacheImplExpiryTaskManager()->cancelTask(m_updateLocatorListTaskId);
+      m_connManager.getCacheImpl()->getExpiryTaskManager().cancelTask(
+          m_updateLocatorListTaskId);
     }
   }
 }
@@ -798,7 +810,8 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
       m_connManageTask->wait();
       GF_SAFE_DELETE(m_connManageTask);
       if (m_connManageTaskId >= 0) {
-        getCacheImplExpiryTaskManager()->cancelTask(m_connManageTaskId);
+        m_connManager.getCacheImpl()->getExpiryTaskManager().cancelTask(
+            m_connManageTaskId);
       }
     }
 
@@ -827,12 +840,17 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
 
     // Close Stats
     getStats().close();
+    m_connManager.getCacheImpl()
+        ->getDistributedSystem()
+        .getStatisticsManager()
+        ->forceSample();
 
     if (m_clientMetadataService != nullptr) {
       GF_SAFE_DELETE(m_clientMetadataService);
     }
 
-    removePool(m_poolName.c_str());
+    m_connManager.getCacheImpl()->getCache()->getPoolManager().removePool(
+        m_poolName.c_str());
 
     stopChunkProcessor();
     m_manager->closeAllStickyConnections();
@@ -868,9 +886,11 @@ QueryServicePtr ThinClientPoolDM::getQueryServiceWithoutCheck() {
   if (!(m_remoteQueryServicePtr == nullptr)) {
     return m_remoteQueryServicePtr;
   }
-  SystemProperties* props = DistributedSystem::getSystemProperties();
+  auto& props = m_connManager.getCacheImpl()
+                    ->getDistributedSystem()
+                    .getSystemProperties();
 
-  if (props->isGridClient()) {
+  if (props.isGridClient()) {
     LOGWARN("Initializing query service while grid-client setting is enabled.");
     // Init Query Service
     m_remoteQueryServicePtr = std::make_shared<RemoteQueryService>(
@@ -895,7 +915,9 @@ void ThinClientPoolDM::sendUserCacheCloseMessage(bool keepAlive) {
   for (it = uca.begin(); it != uca.end(); it++) {
     UserConnectionAttributes* uca = (*it).second;
     if (uca->isAuthenticated() && uca->getEndpoint()->connected()) {
-      TcrMessageRemoveUserAuth request(keepAlive, this);
+      TcrMessageRemoveUserAuth request(
+          m_connManager.getCacheImpl()->getCache()->createDataOutput(),
+          keepAlive, this);
       TcrMessageReply reply(true, this);
 
       sendRequestToEP(request, reply, uca->getEndpoint());
@@ -927,7 +949,9 @@ int32_t ThinClientPoolDM::GetPDXIdForType(SerializablePtr pdxType) {
 
   GfErrType err = GF_NOERR;
 
-  TcrMessageGetPdxIdForType request(pdxType, this);
+  TcrMessageGetPdxIdForType request(
+      m_connManager.getCacheImpl()->getCache()->createDataOutput(), pdxType,
+      this);
 
   TcrMessageReply reply(true, this);
 
@@ -946,7 +970,9 @@ int32_t ThinClientPoolDM::GetPDXIdForType(SerializablePtr pdxType) {
 
   // need to broadcast this id to all other pool
   {
-    for (const auto& iter : PoolManager::getAll()) {
+    auto& poolManager =
+        m_connManager.getCacheImpl()->getCache()->getPoolManager();
+    for (const auto& iter : poolManager.getAll()) {
       auto currPool = static_cast<ThinClientPoolDM*>(iter.second.get());
 
       if (currPool != this) {
@@ -963,7 +989,9 @@ void ThinClientPoolDM::AddPdxType(SerializablePtr pdxType, int32_t pdxTypeId) {
 
   GfErrType err = GF_NOERR;
 
-  TcrMessageAddPdxType request(pdxType, this, pdxTypeId);
+  TcrMessageAddPdxType request(
+      m_connManager.getCacheImpl()->getCache()->createDataOutput(), pdxType,
+      this, pdxTypeId);
 
   TcrMessageReply reply(true, this);
 
@@ -983,7 +1011,9 @@ SerializablePtr ThinClientPoolDM::GetPDXTypeById(int32_t typeId) {
 
   GfErrType err = GF_NOERR;
 
-  TcrMessageGetPdxTypeById request(typeId, this);
+  TcrMessageGetPdxTypeById request(
+      m_connManager.getCacheImpl()->getCache()->createDataOutput(), typeId,
+      this);
 
   TcrMessageReply reply(true, this);
 
@@ -1005,7 +1035,9 @@ int32_t ThinClientPoolDM::GetEnumValue(SerializablePtr enumInfo) {
 
   GfErrType err = GF_NOERR;
 
-  TcrMessageGetPdxIdForEnum request(enumInfo, this);
+  TcrMessageGetPdxIdForEnum request(
+      m_connManager.getCacheImpl()->getCache()->createDataOutput(), enumInfo,
+      this);
 
   TcrMessageReply reply(true, this);
 
@@ -1024,7 +1056,9 @@ int32_t ThinClientPoolDM::GetEnumValue(SerializablePtr enumInfo) {
 
   // need to broadcast this id to all other pool
   {
-    for (const auto& iter : PoolManager::getAll()) {
+    auto& poolManager =
+        m_connManager.getCacheImpl()->getCache()->getPoolManager();
+    for (const auto& iter : poolManager.getAll()) {
       const auto& currPool =
           std::dynamic_pointer_cast<ThinClientPoolDM>(iter.second);
 
@@ -1042,7 +1076,8 @@ SerializablePtr ThinClientPoolDM::GetEnum(int32_t val) {
 
   GfErrType err = GF_NOERR;
 
-  TcrMessageGetPdxEnumById request(val, this);
+  TcrMessageGetPdxEnumById request(
+      m_connManager.getCacheImpl()->getCache()->createDataOutput(), val, this);
 
   TcrMessageReply reply(true, this);
 
@@ -1064,7 +1099,9 @@ void ThinClientPoolDM::AddEnum(SerializablePtr enumInfo, int enumVal) {
 
   GfErrType err = GF_NOERR;
 
-  TcrMessageAddPdxEnum request(enumInfo, this, enumVal);
+  TcrMessageAddPdxEnum request(
+      m_connManager.getCacheImpl()->getCache()->createDataOutput(), enumInfo,
+      this, enumVal);
 
   TcrMessageReply reply(true, this);
 
@@ -1087,7 +1124,9 @@ GfErrType ThinClientPoolDM::sendUserCredentials(PropertiesPtr credentials,
 
   GfErrType err = GF_NOERR;
 
-  TcrMessageUserCredential request(credentials, this);
+  TcrMessageUserCredential request(
+      m_connManager.getCacheImpl()->getCache()->createDataOutput(), credentials,
+      this);
 
   TcrMessageReply reply(true, this);
 
@@ -1257,7 +1296,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(TcrMessage& request,
                              nullptr);
     }
     std::vector<GetAllWork*> getAllWorkers;
-    ThreadPool* threadPool = TPSingleton::instance();
+    auto* threadPool = m_connManager.getCacheImpl()->getThreadPool();
     ChunkedGetAllResponse* responseHandler =
         static_cast<ChunkedGetAllResponse*>(reply.getChunkedResultHandler());
 
@@ -1719,10 +1758,12 @@ GfErrType ThinClientPoolDM::createPoolConnectionToAEndPoint(
       "connection to the endpoint %s",
       theEP->name().c_str());
   // if the pool size is within limits, create a new connection.
-  error = theEP->createNewConnection(
-      conn, false, false,
-      DistributedSystem::getSystemProperties()->connectTimeout(), false, true,
-      appThreadrequest);
+  error = theEP->createNewConnection(conn, false, false,
+                                     m_connManager.getCacheImpl()
+                                         ->getDistributedSystem()
+                                         .getSystemProperties()
+                                         .connectTimeout(),
+                                     false, true, appThreadrequest);
   if (conn == nullptr || error != GF_NOERR) {
     LOGFINE("2Failed to connect to %s", theEP->name().c_str());
     if (conn != nullptr) GF_SAFE_DELETE(conn);
@@ -1801,9 +1842,12 @@ GfErrType ThinClientPoolDM::createPoolConnection(
       conn->updateCreationTime();
       break;
     } else {
-      error = ep->createNewConnection(
-          conn, false, false,
-          DistributedSystem::getSystemProperties()->connectTimeout(), false);
+      error = ep->createNewConnection(conn, false, false,
+                                      m_connManager.getCacheImpl()
+                                          ->getDistributedSystem()
+                                          .getSystemProperties()
+                                          .connectTimeout(),
+                                      false);
     }
 
     if (conn == nullptr || error != GF_NOERR) {
@@ -1854,14 +1898,20 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueue(
   getStats().incWaitingConnections();
 
   /*get the start time for connectionWaitTime stat*/
-  int64_t sampleStartNanos = Utils::startStatOpTime();
+  bool enableTimeStatistics = m_connManager.getCacheImpl()
+                                  ->getDistributedSystem()
+                                  .getSystemProperties()
+                                  .getEnableTimeStatistics();
+  int64_t sampleStartNanos =
+      enableTimeStatistics ? Utils::startStatOpTime() : 0;
   TcrConnection* mp =
       getUntil(timeoutTime, error, excludeServers, maxConnLimit);
   /*Update the time stat for clientOpsTime */
-  Utils::updateStatOpTime(
-      getStats().getStats(),
-      PoolStatType::getInstance()->getTotalWaitingConnTimeId(),
-      sampleStartNanos);
+  if (enableTimeStatistics) {
+    Utils::updateStatOpTime(getStats().getStats(),
+                            getStats().getTotalWaitingConnTimeId(),
+                            sampleStartNanos);
+  }
   return mp;
 }
 
@@ -1892,9 +1942,13 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
         LOGDEBUG(
             "ThinClientPoolDM::sendRequestToEP(): couldnt create a pool "
             "connection, creating a temporary connection.");
-        error = currentEndpoint->createNewConnection(
-            conn, false, false,
-            DistributedSystem::getSystemProperties()->connectTimeout(), false);
+        error =
+            currentEndpoint->createNewConnection(conn, false, false,
+                                                 m_connManager.getCacheImpl()
+                                                     ->getDistributedSystem()
+                                                     .getSystemProperties()
+                                                     .connectTimeout(),
+                                                 false);
         putConnInPool = false;
         currentEndpoint->setConnectionStatus(true);
       }
@@ -2076,7 +2130,7 @@ int ThinClientPoolDM::updateLocatorList(volatile bool& isRunning) {
   LOGFINE("Starting updateLocatorList thread for pool %s", m_poolName.c_str());
   while (isRunning) {
     m_updateLocatorListSema.acquire();
-    if (isRunning && !TcrConnectionManager::isNetDown) {
+    if (isRunning && !m_connManager.isNetDown()) {
       ((ThinClientLocatorHelper*)m_locHelper)
           ->updateLocators(this->getServerGroup());
     }
@@ -2089,7 +2143,7 @@ int ThinClientPoolDM::pingServer(volatile bool& isRunning) {
   LOGFINE("Starting ping thread for pool %s", m_poolName.c_str());
   while (isRunning) {
     m_pingSema.acquire();
-    if (isRunning && !TcrConnectionManager::isNetDown) {
+    if (isRunning && !m_connManager.isNetDown()) {
       pingServerLocal();
       while (m_pingSema.tryacquire() != -1) {
         ;
@@ -2107,9 +2161,10 @@ int ThinClientPoolDM::cliCallback(volatile bool& isRunning) {
     if (isRunning) {
       LOGFINE("Clearing Pdx Type Registry");
       // this call for csharp client
-      DistributedSystemImpl::CallCliCallBack();
+      DistributedSystemImpl::CallCliCallBack(
+          *(m_connManager.getCacheImpl()->getCache()));
       // this call for cpp client
-      PdxTypeRegistry::clear();
+      m_connManager.getCacheImpl()->getPdxTypeRegistry()->clear();
       while (m_cliCallbackSema.tryacquire() != -1) {
         ;
       }
@@ -2317,7 +2372,8 @@ void ThinClientPoolDM::updateNotificationStats(bool isDeltaSuccess,
 
 GfErrType ThinClientPoolDM::doFailover(TcrConnection* conn) {
   m_manager->setStickyConnection(conn, true);
-  TcrMessageTxFailover request;
+  TcrMessageTxFailover request(
+      m_connManager.getCacheImpl()->getCache()->createDataOutput());
   TcrMessageReply reply(true, nullptr);
 
   GfErrType err = this->sendSyncRequest(request, reply);

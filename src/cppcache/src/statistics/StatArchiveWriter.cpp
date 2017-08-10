@@ -39,11 +39,14 @@ using std::chrono::nanoseconds;
 
 // Constructor and Member functions of StatDataOutput class
 
-StatDataOutput::StatDataOutput(std::string filename) {
+StatDataOutput::StatDataOutput(std::string filename, Cache *cache) {
   if (filename.length() == 0) {
     std::string s("undefined archive file name");
     throw IllegalArgumentException(s.c_str());
   }
+
+  SerializationRegistry serializationRegistry;
+  dataBuffer = cache->createDataOutput();
   outFile = filename;
   closed = false;
   bytesWritten = 0;
@@ -63,12 +66,12 @@ StatDataOutput::~StatDataOutput() {
 int64_t StatDataOutput::getBytesWritten() { return this->bytesWritten; }
 
 void StatDataOutput::flush() {
-  const uint8_t *buffBegin = dataBuffer.getBuffer();
+  const uint8_t *buffBegin = dataBuffer->getBuffer();
   if (buffBegin == nullptr) {
     std::string s("undefined stat data buffer beginning");
     throw NullPointerException(s.c_str());
   }
-  const uint8_t *buffEnd = dataBuffer.getCursor();
+  const uint8_t *buffEnd = dataBuffer->getCursor();
   if (buffEnd == nullptr) {
     std::string s("undefined stat data buffer end");
     throw NullPointerException(s.c_str());
@@ -90,41 +93,41 @@ void StatDataOutput::flush() {
 }
 
 void StatDataOutput::resetBuffer() {
-  dataBuffer.reset();
+  dataBuffer->reset();
   bytesWritten = 0;
 }
 
 void StatDataOutput::writeByte(int8_t v) {
-  dataBuffer.write((int8_t)v);
+  dataBuffer->write((int8_t)v);
   bytesWritten += 1;
 }
 
 void StatDataOutput::writeBoolean(int8_t v) { writeByte(v); }
 
 void StatDataOutput::writeShort(int16_t v) {
-  dataBuffer.writeInt(v);
+  dataBuffer->writeInt(v);
   bytesWritten += 2;
 }
 
 void StatDataOutput::writeInt(int32_t v) {
-  dataBuffer.writeInt(v);
+  dataBuffer->writeInt(v);
   bytesWritten += 4;
 }
 
 void StatDataOutput::writeLong(int64_t v) {
-  dataBuffer.writeInt(v);
+  dataBuffer->writeInt(v);
   bytesWritten += 8;
 }
 
 void StatDataOutput::writeString(std::string s) {
   size_t len = s.length();
-  dataBuffer.writeASCII(s.data(), static_cast<uint32_t>(len));
+  dataBuffer->writeASCII(s.data(), static_cast<uint32_t>(len));
   bytesWritten += len;
 }
 
 void StatDataOutput::writeUTF(std::wstring s) {
   size_t len = s.length();
-  dataBuffer.writeUTF(s.data(), static_cast<uint32_t>(len));
+  dataBuffer->writeUTF(s.data(), static_cast<uint32_t>(len));
   bytesWritten += len;
 }
 
@@ -311,7 +314,8 @@ void ResourceInst::writeResourceInst(StatDataOutput *dataOutArg,
 
 // Constructor and Member functions of StatArchiveWriter class
 StatArchiveWriter::StatArchiveWriter(std::string outfile,
-                                     HostStatSampler *samplerArg) {
+                                     HostStatSampler *samplerArg, Cache *cache)
+    : cache(cache) {
   resourceTypeId = 0;
   resourceInstId = 0;
   statResourcesModCount = 0;
@@ -323,7 +327,7 @@ StatArchiveWriter::StatArchiveWriter(std::string outfile,
    */
   m_samplesize = 0;
 
-  dataBuffer = new StatDataOutput(archiveFile);
+  dataBuffer = new StatDataOutput(archiveFile, cache);
   this->sampler = samplerArg;
 
   // write the time, system property etc.
@@ -426,14 +430,14 @@ void StatArchiveWriter::closeFile() { this->dataBuffer->close(); }
 void StatArchiveWriter::openFile(std::string filename) {
   // this->dataBuffer->openFile(filename, m_samplesize);
 
-  StatDataOutput *p_dataBuffer = new StatDataOutput(filename);
+  StatDataOutput *p_dataBuffer = new StatDataOutput(filename, cache);
 
-  const uint8_t *buffBegin = dataBuffer->dataBuffer.getBuffer();
+  const uint8_t *buffBegin = dataBuffer->dataBuffer->getBuffer();
   if (buffBegin == nullptr) {
     std::string s("undefined stat data buffer beginning");
     throw NullPointerException(s.c_str());
   }
-  const uint8_t *buffEnd = dataBuffer->dataBuffer.getCursor();
+  const uint8_t *buffEnd = dataBuffer->dataBuffer->getCursor();
   if (buffEnd == nullptr) {
     std::string s("undefined stat data buffer end");
     throw NullPointerException(s.c_str());

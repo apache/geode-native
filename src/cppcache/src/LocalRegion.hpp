@@ -131,7 +131,8 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   LocalRegion(const std::string& name, CacheImpl* cache,
               const RegionInternalPtr& rPtr,
               const RegionAttributesPtr& attributes,
-              const CacheStatisticsPtr& stats, bool shared = false);
+              const CacheStatisticsPtr& stats, bool shared = false,
+              bool enableTimeStatistics = true);
   virtual ~LocalRegion();
 
   const char* getName() const;
@@ -424,6 +425,10 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                             DataInput* delta = nullptr,
                             EventIdPtr eventId = nullptr);
 
+  int64_t startStatOpTime();
+  void updateStatOpTime(Statistics* m_regionStats, int32_t statId,
+                        int64_t start);
+
   /* protected attributes */
   std::string m_name;
   RegionPtr m_parentRegion;
@@ -442,6 +447,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   TombstoneListPtr m_tombstoneList;
   bool m_isPRSingleHopEnabled;
   PoolPtr m_attachedPool;
+  bool m_enableTimeStatistics;
 
   mutable ACE_RW_Thread_Mutex m_rwLock;
   void keys_internal(VectorOfCacheableKey& v);

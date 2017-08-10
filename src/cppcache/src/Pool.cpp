@@ -69,16 +69,14 @@ bool Pool::getThreadLocalConnections() const {
 bool Pool::getMultiuserAuthentication() const {
   return m_attrs->getMultiuserSecureModeEnabled();
 }
-RegionServicePtr Pool::createSecureUserCache(PropertiesPtr credentials) {
+RegionServicePtr Pool::createSecureUserCache(PropertiesPtr credentials,
+                                             CacheImpl* cacheImpl) {
   if (this->getMultiuserAuthentication()) {
-    CachePtr realCache = CacheFactory::getAnyInstance();
-
-    if (!(realCache != nullptr && realCache->m_cacheImpl != nullptr)) {
+    if (cacheImpl == nullptr) {
       throw IllegalStateException("cache has not been created yet.");
-      ;
     }
 
-    if (realCache->isClosed()) {
+    if (cacheImpl->isClosed()) {
       throw IllegalStateException("cache has been closed. ");
     }
 
@@ -88,7 +86,8 @@ RegionServicePtr Pool::createSecureUserCache(PropertiesPtr credentials) {
     }
 
     // TODO: this will return cache with userattribtes
-    return std::make_shared<ProxyCache>(credentials, shared_from_this());
+    return std::make_shared<ProxyCache>(credentials, shared_from_this(),
+                                        cacheImpl);
   }
 
   throw IllegalStateException(
@@ -102,18 +101,17 @@ bool Pool::getPRSingleHopEnabled() const {
 // void Pool::releaseThreadLocalConnection(){}
 
 int Pool::getPendingEventCount() const {
-  TcrConnectionManager& tccm = CacheImpl::getInstance()->tcrConnectionManager();
-  if (!tccm.isDurable()) {
-    LOGERROR("This operation should only be called by durable client.");
-    throw IllegalStateException(
-        "This operation should only be called by durable client");
-  }
   const auto poolHADM = dynamic_cast<const ThinClientPoolHADM*>(this);
   if (nullptr == poolHADM || poolHADM->isReadyForEvent()) {
     LOGERROR("This operation should only be called before readyForEvents.");
     throw IllegalStateException(
         "This operation should only be called before readyForEvents");
   }
-
+  TcrConnectionManager& tccm = poolHADM->getConnectionManager();
+  if (!tccm.isDurable()) {
+    LOGERROR("This operation should only be called by durable client.");
+    throw IllegalStateException(
+        "This operation should only be called by durable client");
+  }
   return poolHADM->getPrimaryServerQueueSize();
 }

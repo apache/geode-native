@@ -51,8 +51,8 @@ const char* locatorsG =
 #include "ThinClientTasks_C2S2.hpp"
 void initClient(const bool isthinClient) {
   if (cacheHelper == nullptr) {
-    cacheHelper = new CacheHelper(isthinClient, "__TEST_POOL1__", nullptr,
-                                  "ServerGroup1", nullptr, 0, true);
+    cacheHelper = new CacheHelper(isthinClient, "__TEST_POOL1__", locatorsG,
+                                  nullptr, nullptr, 0, true);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }

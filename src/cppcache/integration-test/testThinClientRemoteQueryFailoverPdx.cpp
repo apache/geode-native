@@ -34,7 +34,8 @@
 
 #include "testobject/Portfolio.hpp"
 #include "testobject/PortfolioPdx.hpp"
-
+#include "SerializationRegistry.hpp"
+#include "CacheRegionHelper.hpp"
 using namespace apache::geode::client;
 using namespace test;
 using namespace testobject;
@@ -109,17 +110,18 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, RegisterTypesAndCreatePoolAndRegion)
   {
     LOG("Starting Step One with Pool + Locator lists");
-    try {
-      Serializable::registerType(Position::createDeserializable);
-      Serializable::registerType(Portfolio::createDeserializable);
 
-      Serializable::registerPdxType(PositionPdx::createDeserializable);
-      Serializable::registerPdxType(PortfolioPdx::createDeserializable);
+    initClient(true);
+    try {
+      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      serializationRegistry->addType(Position::createDeserializable);
+      serializationRegistry->addType(Portfolio::createDeserializable);
+
+      serializationRegistry->addPdxType(PositionPdx::createDeserializable);
+      serializationRegistry->addPdxType(PortfolioPdx::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
-
-    initClient(true);
 
     isPoolConfig = true;
     createPool(poolNames[0], locHostPort, nullptr, 0, true);

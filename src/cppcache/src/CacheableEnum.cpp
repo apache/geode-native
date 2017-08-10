@@ -19,6 +19,7 @@
 #include <PdxHelper.hpp>
 #include <GeodeTypeIdsImpl.hpp>
 #include <EnumInfo.hpp>
+#include "CacheRegionHelper.hpp"
 
 namespace apache {
 namespace geode {
@@ -40,8 +41,9 @@ CacheableEnum::CacheableEnum(const char* enumClassName, const char* enumName,
 }
 
 void CacheableEnum::toData(apache::geode::client::DataOutput& output) const {
-  int enumVal = PdxHelper::getEnumValue(m_enumClassName->asChar(),
-                                        m_enumName->asChar(), m_ordinal);
+  int enumVal = PdxHelper::getEnumValue(
+      m_enumClassName->asChar(), m_enumName->asChar(), m_ordinal,
+      CacheRegionHelper::getCacheImpl(output.getCache())->getPdxTypeRegistry());
   output.write(static_cast<int8_t>(GeodeTypeIds::CacheableEnum));
   output.write(int8_t(enumVal >> 24));
   output.writeArrayLen(enumVal & 0xFFFFFF);
@@ -53,7 +55,9 @@ Serializable* CacheableEnum::fromData(apache::geode::client::DataInput& input) {
   int32_t arrLen;
   input.readArrayLen(&arrLen);
   int enumId = (dsId << 24) | (arrLen & 0xFFFFFF);
-  EnumInfoPtr enumVal = PdxHelper::getEnum(enumId);
+  EnumInfoPtr enumVal = PdxHelper::getEnum(
+      enumId,
+      CacheRegionHelper::getCacheImpl(input.getCache())->getPdxTypeRegistry());
 
   m_enumClassName = enumVal->getEnumClassName();
   m_enumName = enumVal->getEnumName();

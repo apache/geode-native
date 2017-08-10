@@ -265,7 +265,7 @@ namespace Apache.Geode.Client.FwkLib
         }
         catch (CacheExistsException)
         {
-          m_cache = CacheFactory.GetAnyInstance();
+          m_cache = CacheFactory.CreateCacheFactory(config).Create();
         }
       }
 
@@ -302,14 +302,7 @@ namespace Apache.Geode.Client.FwkLib
 
     public static void Close()
     {
-      if (DistributedSystem.IsConnected)
-      {
-        CloseCache();
-        if (m_doDisconnect)
-        {
-          DistributedSystem.Disconnect();
-        }
-      }
+      CloseCache();
       m_dsys = null;
     }
 
@@ -324,14 +317,7 @@ namespace Apache.Geode.Client.FwkLib
 
     public static void CloseKeepAlive()
     {
-      if (DistributedSystem.IsConnected)
-      {
-        CloseCacheKeepAlive();
-        if (m_doDisconnect)
-        {
-          DistributedSystem.Disconnect();
-        }
-      }
+      CloseCacheKeepAlive();
       m_dsys = null;
     }
 

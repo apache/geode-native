@@ -211,7 +211,7 @@ class CPPCACHE_EXPORT SystemProperties {
   /**
    * Returns client Queueconflation option
    */
-  char* conflateEvents() { return m_conflateEvents; }
+  char* conflateEvents() const { return m_conflateEvents; }
 
   /**
    * Returns  true if the stack trace is enabled ,false otherwise
@@ -312,14 +312,14 @@ class CPPCACHE_EXPORT SystemProperties {
   }
 
   /** Return the security diffie hellman secret key algo */
-  const char* securityClientDhAlgo() {
+  const char* securityClientDhAlgo() const {
     return (m_securityClientDhAlgo == nullptr
                 ? ""
                 : m_securityClientDhAlgo->asChar());
   }
 
   /** Return the keystore (.pem file ) path */
-  const char* securityClientKsPath() {
+  const char* securityClientKsPath() const {
     return (m_securityClientKsPath == nullptr
                 ? ""
                 : m_securityClientKsPath->asChar());
@@ -351,7 +351,7 @@ class CPPCACHE_EXPORT SystemProperties {
    * Check whether Diffie-Hellman based credentials encryption is on.
    * @return bool flag to indicate whether DH for credentials is on.
    */
-  bool isDhOn() {
+  bool isDhOn() const {
     return isSecurityOn() && m_securityClientDhAlgo != nullptr &&
            m_securityClientDhAlgo->length() > 0;
   }

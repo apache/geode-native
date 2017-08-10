@@ -68,7 +68,11 @@ CacheablePtr CqEventImpl::getNewValue() const {
     return m_newValue;
   } else {
     // Get full object for delta
-    TcrMessageRequestEventValue fullObjectMsg(m_eventId);
+    TcrMessageRequestEventValue fullObjectMsg(m_tcrdm->getConnectionManager()
+                                                  .getCacheImpl()
+                                                  ->getCache()
+                                                  ->createDataOutput(),
+                                              m_eventId);
     TcrMessageReply reply(true, nullptr);
     ThinClientPoolHADM* poolHADM = dynamic_cast<ThinClientPoolHADM*>(m_tcrdm);
     GfErrType err = GF_NOTCON;

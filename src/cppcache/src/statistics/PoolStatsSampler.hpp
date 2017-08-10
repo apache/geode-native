@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_POOLSTATSSAMPLER_H_
-#define GEODE_STATISTICS_POOLSTATSSAMPLER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,8 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_STATISTICS_POOLSTATSSAMPLER_H_
+#define GEODE_STATISTICS_POOLSTATSSAMPLER_H_
+
 #include <ace/Task.h>
 #include <geode/geode_globals.hpp>
+
+#include "statistics/GeodeStatisticsFactory.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -60,6 +64,7 @@ class CPPCACHE_EXPORT PoolStatsSampler : public ACE_Task_Base {
   ThinClientPoolDM* m_distMan;
   ACE_Recursive_Thread_Mutex m_lock;
   static const char* NC_PSS_Thread;
+  GeodeStatisticsFactory* m_statisticsFactory;
 };
 }  // namespace statistics
 }  // namespace geode

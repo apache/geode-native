@@ -48,8 +48,8 @@ class CPPCACHE_EXPORT ThinClientCacheDistributionManager
   GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply);
 
  protected:
-  bool preFailoverAction();
-  bool postFailoverAction(TcrEndpoint* endpoint);
+  virtual bool preFailoverAction();
+  virtual bool postFailoverAction(TcrEndpoint* endpoint);
 
  private:
   // Disallow default/copy constructor and assignment operator.

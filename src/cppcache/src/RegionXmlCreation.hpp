@@ -57,7 +57,7 @@ class CPPCACHE_EXPORT RegionXmlCreation {
   RegionAttributesPtr regAttrs;
 
   /** This region's subregions */
-  std::vector<RegionXmlCreation*> subRegions;
+  std::vector<std::shared_ptr<RegionXmlCreation>> subRegions;
 
  public:
   /**
@@ -69,7 +69,7 @@ class CPPCACHE_EXPORT RegionXmlCreation {
   void fillIn(RegionPtr region);
 
  public:
-  ~RegionXmlCreation();
+  ~RegionXmlCreation() = default;
   /**
    * Creates a new <code>RegionCreation</code> with the given name.
    */
@@ -78,7 +78,7 @@ class CPPCACHE_EXPORT RegionXmlCreation {
   /**
    * Adds a subregion with the given name to this region
    */
-  void addSubregion(RegionXmlCreation* regionPtr);
+  void addSubregion(std::shared_ptr<RegionXmlCreation> regionPtr);
 
   /**
    * Sets the attributes of this region

@@ -20,6 +20,7 @@
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
 #include <geode/DataOutput.hpp>
+#include <geode/Cache.hpp>
 #include "end_native.hpp"
 
 #include "native_conditional_unique_ptr.hpp"
@@ -66,9 +67,9 @@ namespace Apache
         /// <summary>
         /// Default constructor.
         /// </summary>
-        inline DataOutput( )
+        inline DataOutput(native::Cache* cache)
         { 
-          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataOutput>(std::make_unique<native::DataOutput>());
+          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataOutput>(cache->createDataOutput());
           m_isManagedObject = true;
           m_cursor = 0;
           try
@@ -530,10 +531,6 @@ namespace Apache
         void WriteObject(UInt32% obj);       
 
         void WriteObject(UInt64% obj);
-        
-       // void WriteObject(array<UInt16>^ objArray);
-        //void WriteObject(array<UInt32>^ objArray);
-        //void WriteObject(array<UInt64>^ objArray);
 
         
         template <typename mType>
@@ -556,7 +553,6 @@ namespace Apache
 
         bool IsManagedObject()
         {
-          //TODO::
           return m_isManagedObject;
         }
 

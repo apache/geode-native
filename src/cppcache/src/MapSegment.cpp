@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "MapSegment.hpp"
 #include "MapEntry.hpp"
 #include "TrackedMapEntry.hpp"
@@ -42,7 +43,8 @@ MapSegment::~MapSegment() {
 }
 
 void MapSegment::open(RegionInternal* region, const EntryFactory* entryFactory,
-                      uint32_t size, std::atomic<int32_t>* destroyTrackers,
+                      ExpiryTaskManager* expiryTaskManager, uint32_t size,
+                      std::atomic<int32_t>* destroyTrackers,
                       bool concurrencyChecksEnabled) {
   m_map = new CacheableKeyHashMap();
   uint32_t mapSize = TableOfPrimes::nextLargerPrime(size, m_primeIndex);
@@ -51,6 +53,9 @@ void MapSegment::open(RegionInternal* region, const EntryFactory* entryFactory,
   m_map->open(mapSize);
   m_entryFactory = entryFactory;
   m_region = region;
+  m_tombstoneList =
+      std::make_shared<TombstoneList>(this, m_region->getCacheImpl());
+  m_expiryTaskManager = expiryTaskManager;
   m_numDestroyTrackers = destroyTrackers;
   m_concurrencyChecksEnabled = concurrencyChecksEnabled;
 }
@@ -123,7 +128,7 @@ GfErrType MapSegment::create(const CacheableKeyPtr& key,
     }
   }
   if (taskid != -1) {
-    CacheImpl::expiryTaskManager->cancelTask(taskid);
+    m_expiryTaskManager->cancelTask(taskid);
     if (handler != nullptr) delete handler;
   }
   return err;
@@ -194,7 +199,7 @@ GfErrType MapSegment::put(const CacheableKeyPtr& key,
     }
   }
   if (taskid != -1) {
-    CacheImpl::expiryTaskManager->cancelTask(taskid);
+    m_expiryTaskManager->cancelTask(taskid);
     if (handler != nullptr) delete handler;
   }
   return err;
@@ -279,7 +284,7 @@ GfErrType MapSegment::removeWhenConcurrencyEnabled(
     if ((err = putForTrackedEntry(key, CacheableToken::tombstone(), entry,
                                   entryImpl, updateCount, versionStamp)) ==
         GF_NOERR) {
-      m_tombstoneList->add(m_region, entryImpl, handler, expiryTaskID);
+      m_tombstoneList->add(entryImpl, handler, expiryTaskID);
       expTaskSet = true;
     }
     if (CacheableToken::isTombstone(oldValue)) {
@@ -298,8 +303,7 @@ GfErrType MapSegment::removeWhenConcurrencyEnabled(
     if (_VERSION_TAG_NULL_CHK) {
       MapEntryImplPtr mapEntry;
       putNoEntry(key, CacheableToken::tombstone(), mapEntry, -1, 0, versionTag);
-      m_tombstoneList->add(m_region, mapEntry->getImplPtr(), handler,
-                           expiryTaskID);
+      m_tombstoneList->add(mapEntry->getImplPtr(), handler, expiryTaskID);
       expTaskSet = true;
     }
     oldValue = nullptr;
@@ -335,7 +339,7 @@ GfErrType MapSegment::remove(const CacheableKeyPtr& key, CacheablePtr& oldValue,
     }
 
     if (!expTaskSet) {
-      CacheImpl::expiryTaskManager->cancelTask(id);
+      m_expiryTaskManager->cancelTask(id);
       delete handler;
     }
     return err;
@@ -369,7 +373,7 @@ GfErrType MapSegment::remove(const CacheableKeyPtr& key, CacheablePtr& oldValue,
 bool MapSegment::unguardedRemoveActualEntry(const CacheableKeyPtr& key,
                                             bool cancelTask) {
   MapEntryPtr entry;
-  m_tombstoneList->eraseEntryFromTombstoneList(key, m_region, cancelTask);
+  m_tombstoneList->eraseEntryFromTombstoneList(key, cancelTask);
   if (m_map->unbind(key, entry) == -1) {
     return false;
   }
@@ -381,7 +385,7 @@ bool MapSegment::unguardedRemoveActualEntryWithoutCancelTask(
     int64_t& taskid) {
   MapEntryPtr entry;
   taskid = m_tombstoneList->eraseEntryFromTombstoneListWithoutCancelTask(
-      key, m_region, handler);
+      key, handler);
   if (m_map->unbind(key, entry) == -1) {
     return false;
   }
@@ -522,7 +526,7 @@ int MapSegment::addTrackerForEntry(const CacheableKeyPtr& key,
     if (addIfAbsent) {
       MapEntryImplPtr entryImpl;
       // add a new entry with value as destroyed
-      m_entryFactory->newMapEntry(key, entryImpl);
+      m_entryFactory->newMapEntry(m_expiryTaskManager, key, entryImpl);
       entryImpl->setValueI(CacheableToken::destroyed());
       entry = entryImpl;
       newEntry = entryImpl;

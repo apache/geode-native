@@ -62,7 +62,7 @@ class PoolAttributes;
  * </ul>
  *
  */
-class CPPCACHE_EXPORT PoolFactory  {
+class CPPCACHE_EXPORT PoolFactory {
  public:
   /**
    * The default amount of time, in milliseconds, which we will wait for a free
@@ -180,7 +180,7 @@ class CPPCACHE_EXPORT PoolFactory  {
    * The default server group.
    * <p>Current value: <code>""</code>.
    */
-  static const char* DEFAULT_SERVER_GROUP;
+  static constexpr const char* DEFAULT_SERVER_GROUP = "";
   /**
    * Whether thread local connection is enabled.
    * <p>Current value: <code>"false"</code>.
@@ -520,12 +520,14 @@ class CPPCACHE_EXPORT PoolFactory  {
   ~PoolFactory();
 
  private:
-  PoolFactory();
+  PoolFactory(const Cache& cache);
   PoolFactory(const PoolFactory&);
   void addCheck(const char* host, int port);
   PoolAttributesPtr m_attrs;
   bool m_isSubscriptionRedundancy;
   bool m_addedServerOrLocator;
+  const Cache& m_cache;
+
   friend class Cache;
   friend class PoolManager;
   friend class CacheFactory;

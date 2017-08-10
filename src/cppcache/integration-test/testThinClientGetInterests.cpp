@@ -47,8 +47,7 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     pp->insert("durable-timeout", 300);
     pp->insert("notify-ack-interval", 1);
 
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1", pp, 0,
-                       true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, pp, 0, true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
     CacheableKeyPtr keyPtr0 = CacheableString::create(keys[0]);

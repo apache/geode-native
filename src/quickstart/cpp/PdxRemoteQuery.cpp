@@ -67,8 +67,8 @@ int main(int argc, char** argv) {
 
     // Register our Serializable/Cacheable Query objects, viz. PortfolioPdx and
     // PositionPdx.
-    Serializable::registerPdxType(PortfolioPdx::createDeserializable);
-    Serializable::registerPdxType(PositionPdx::createDeserializable);
+    serializationRegistry->addPdxType(PortfolioPdx::createDeserializable);
+    serializationRegistry->addPdxType(PositionPdx::createDeserializable);
 
     LOGINFO("Registered PDX Type Query Objects");
 

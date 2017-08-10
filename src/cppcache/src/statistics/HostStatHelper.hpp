@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_HOSTSTATHELPER_H_
-#define GEODE_STATISTICS_HOSTSTATHELPER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_STATISTICS_HOSTSTATHELPER_H_
+#define GEODE_STATISTICS_HOSTSTATHELPER_H_
 
 #include <geode/geode_globals.hpp>
 #include <string>
@@ -42,7 +42,7 @@
 // TODO refactor - conditionally include os specific impl headers.
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
@@ -72,13 +72,14 @@ class CPPCACHE_EXPORT HostStatHelper {
 
   static void refresh();
 
-  static void newProcessStats(int64_t pid, const char* name);
+  static void newProcessStats(GeodeStatisticsFactory* statisticsFactory,
+                              int64_t pid, const char* name);
 
   static void close();
 
   static void cleanup();
 };
-}  // namespace client
+}  // namespace statistics
 }  // namespace geode
 }  // namespace apache
 

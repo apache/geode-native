@@ -49,7 +49,7 @@ namespace Apache
         
           for each(TFilter item in routingObj)
           {
-            rsptr->push_back(Serializable::GetUnmanagedValueGeneric<TFilter>( item ));
+            rsptr->push_back(Serializable::GetUnmanagedValueGeneric<TFilter>( item, nullptr ));
           }
           
           try
@@ -74,7 +74,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
           try
           {
-            auto argsptr = Serializable::GetUnmanagedValueGeneric<TArgs>( args );
+            auto argsptr = Serializable::GetUnmanagedValueGeneric<TArgs>( args, nullptr );
             return Execution<TResult>::Create(m_nativeptr->get()->withArgs(argsptr), this->m_rc);
           }
           finally

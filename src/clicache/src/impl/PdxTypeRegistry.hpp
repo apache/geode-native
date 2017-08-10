@@ -16,6 +16,9 @@
  */
 
 #pragma once
+#include "begin_native.hpp"
+#include "SerializationRegistry.hpp"
+#include "end_native.hpp"
 #include "PdxType.hpp"
 #include "PdxRemotePreservedData.hpp"
 #include "../IPdxSerializable.hpp"
@@ -37,33 +40,35 @@ namespace Apache
         public ref class PdxTypeRegistry
         {
         public:
+
+          PdxTypeRegistry(Cache^ cache) :m_cache(cache) {}
 					//test hook;
-					static int testGetNumberOfPdxIds();
+					 static int testGetNumberOfPdxIds();
 
 					//test hook
-					static int testNumberOfPreservedData();
+					 static int testNumberOfPreservedData();
 
-          static void AddPdxType(Int32 typeId, PdxType^ pdxType);
+           static void AddPdxType(Int32 typeId, PdxType^ pdxType);
 
-          static PdxType^ GetPdxType(Int32 typeId);
+           static PdxType^ GetPdxType(Int32 typeId);
 
-          static void AddLocalPdxType(String^ localType, PdxType^ pdxType);
+           static void AddLocalPdxType(String^ localType, PdxType^ pdxType);
 
-          static PdxType^ GetLocalPdxType(String^ localType);
+           static PdxType^ GetLocalPdxType(String^ localType);
 
-          static void SetMergedType(Int32 remoteTypeId, PdxType^ mergedType);
+           static void SetMergedType(Int32 remoteTypeId, PdxType^ mergedType);
 
-          static PdxType^ GetMergedType(Int32 remoteTypeId);
+           static PdxType^ GetMergedType(Int32 remoteTypeId);
 
-          static void SetPreserveData(IPdxSerializable^ obj, PdxRemotePreservedData^ preserveData);
+           static void SetPreserveData(IPdxSerializable^ obj, PdxRemotePreservedData^ preserveData);
 
-          static PdxRemotePreservedData^ GetPreserveData(IPdxSerializable^ obj);      
+           static PdxRemotePreservedData^ GetPreserveData(IPdxSerializable^ obj);      
 
-          static void clear();
+           void clear();
 
-          static Int32 GetPDXIdForType(Type^ type, const char* poolname, PdxType^ nType, bool checkIfThere);
+           static Int32 GetPDXIdForType(Type^ type, const char* poolname, PdxType^ nType, bool checkIfThere, const native::Cache* cache);
 
-          static Int32 GetPDXIdForType(PdxType^ type, const char* poolname);
+           static Int32 GetPDXIdForType(PdxType^ type, const char* poolname, const native::Cache* cache);
 
 					static property bool PdxIgnoreUnreadFields
 					{
@@ -71,25 +76,26 @@ namespace Apache
 						void set(bool value){pdxIgnoreUnreadFields = value;}
 					}
 
-          static property bool PdxReadSerialized
+           static property bool PdxReadSerialized
 					{
 						bool get() {return pdxReadSerialized;}
 						void set(bool value){pdxReadSerialized= value;}
 					}
 
-          static Int32 GetEnumValue(EnumInfo^ ei);
+           static Int32 GetEnumValue(EnumInfo^ ei, const native::Cache* cache);
 
-          static EnumInfo^ GetEnum(Int32 enumVal);
+           static EnumInfo^ GetEnum(Int32 enumVal, const native::Cache* cache);
 
         private:
+            Cache^ m_cache;
 
-          static IDictionary<Int32, PdxType^>^ typeIdToPdxType = gcnew Dictionary<Int32, PdxType^>();
+           static IDictionary<Int32, PdxType^>^ typeIdToPdxType = gcnew Dictionary<Int32, PdxType^>();
 
-          static IDictionary<PdxType^, Int32>^ pdxTypeToTypeId = gcnew Dictionary<PdxType^, Int32>();
+           static IDictionary<PdxType^, Int32>^ pdxTypeToTypeId = gcnew Dictionary<PdxType^, Int32>();
 
-          static IDictionary<Int32, PdxType^>^ remoteTypeIdToMergedPdxType = gcnew Dictionary<Int32, PdxType^>();
+           static IDictionary<Int32, PdxType^>^ remoteTypeIdToMergedPdxType = gcnew Dictionary<Int32, PdxType^>();
 
-          static IDictionary<String^, PdxType^>^ localTypeToPdxType = gcnew Dictionary<String^, PdxType^>();
+           static IDictionary<String^, PdxType^>^ localTypeToPdxType = gcnew Dictionary<String^, PdxType^>();
 
           static IDictionary<EnumInfo^, Int32>^ enumToInt = gcnew Dictionary<EnumInfo^, Int32>();
 
@@ -97,7 +103,7 @@ namespace Apache
 
           //TODO: this will be weak hashmap
           //static IDictionary<IPdxSerializable^ , PdxRemotePreservedData^>^ preserveData = gcnew Dictionary<IPdxSerializable^ , PdxRemotePreservedData^>();
-          static WeakHashMap^ preserveData = gcnew WeakHashMap();          
+           static WeakHashMap^ preserveData = gcnew WeakHashMap();          
 
           static ReaderWriterLock^ g_readerWriterLock = gcnew ReaderWriterLock();
 

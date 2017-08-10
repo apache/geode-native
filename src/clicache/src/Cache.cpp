@@ -15,15 +15,18 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
+#include "begin_native.hpp"
+#include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
+#include "end_native.hpp"
+
 #include "Cache.hpp"
 #include "ExceptionTypes.hpp"
 #include "DistributedSystem.hpp"
+#include "PoolFactory.hpp"
 #include "Region.hpp"
 #include "RegionAttributes.hpp"
 #include "QueryService.hpp"
-//#include "FunctionService.hpp"
-//#include "Execution.hpp"
 #include "CacheFactory.hpp"
 #include "impl/AuthenticatedCache.hpp"
 #include "impl/ManagedString.hpp"
@@ -47,7 +50,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getName( ) );
+          return ManagedString::Get( m_nativeptr->get()->getName( ).c_str() );
         }
         finally
         {
@@ -71,7 +74,7 @@ namespace Apache
       {
         try
         {
-          return Client::DistributedSystem::Create(m_nativeptr->get()->getDistributedSystem());
+          return Client::DistributedSystem::Create(&(m_nativeptr->get()->getDistributedSystem()));
         }
         finally
         {
@@ -120,13 +123,13 @@ namespace Apache
           // If DS automatically disconnected due to the new bootstrap API, then cleanup the C++/CLI side
           //if (!apache::geode::client::DistributedSystem::isConnected())
           {
-            Apache::Geode::Client::DistributedSystem::UnregisterBuiltinManagedTypes();
+            Apache::Geode::Client::DistributedSystem::UnregisterBuiltinManagedTypes(this);
           }
 
         _GF_MG_EXCEPTION_CATCH_ALL2
         finally
         {
-					Apache::Geode::Client::Internal::PdxTypeRegistry::clear();
+					CacheRegionHelper::getCacheImpl(m_nativeptr->get())->getPdxTypeRegistry()->clear();
           Serializable::Clear();
           Apache::Geode::Client::DistributedSystem::releaseDisconnectLock();
           Apache::Geode::Client::DistributedSystem::unregisterCliCallback();
@@ -343,8 +346,36 @@ namespace Apache
 
        IPdxInstanceFactory^ Cache::CreatePdxInstanceFactory(String^ className)
        {
-         return gcnew Internal::PdxInstanceFactoryImpl(className);
+    
+         return gcnew Internal::PdxInstanceFactoryImpl(className, (m_nativeptr->get()));
+
        }
+
+       DataInput^ Cache::CreateDataInput(array<Byte>^ buffer, System::Int32 len)
+       {
+         return gcnew DataInput(buffer, len,  m_nativeptr->get());
+       }
+
+       
+       DataInput^ Cache::CreateDataInput(array<Byte>^ buffer)
+       {
+         return gcnew DataInput(buffer, m_nativeptr->get());
+       }
+
+        DataOutput^ Cache::CreateDataOutput()
+       {
+         return gcnew DataOutput( m_nativeptr->get());
+       }
+
+        PoolFactory^ Cache::GetPoolFactory()
+        {
+          return PoolFactory::Create(m_nativeptr->get_shared_ptr()->getPoolManager().createFactory());
+        }
+
+        PoolManager^ Cache::GetPoolManager()
+        {
+          return gcnew PoolManager(m_nativeptr->get_shared_ptr()->getPoolManager());
+        }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

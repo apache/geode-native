@@ -38,10 +38,12 @@ namespace geode {
 namespace client {
 
 _GF_PTR_DEF_(RegionCommit, RegionCommitPtr);
+_GF_PTR_DEF_(FarSideEntryOp, FarSideEntryOpPtr);
 
 class RegionCommit {
  public:
-  RegionCommit(){};
+  RegionCommit(MemberListForVersionStamp& memberListForVersionStamp): m_memberListForVersionStamp(memberListForVersionStamp)
+  {};
   virtual ~RegionCommit(){};
 
   void fromData(DataInput& input);
@@ -55,6 +57,7 @@ class RegionCommit {
   CacheableStringPtr m_regionPath;
   CacheableStringPtr m_parentRegionPath;
   std::vector< std::shared_ptr<FarSideEntryOp> > m_farSideEntryOps;
+  MemberListForVersionStamp& m_memberListForVersionStamp;
 };
 }  // namespace client
 }  // namespace geode

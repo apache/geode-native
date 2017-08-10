@@ -57,7 +57,7 @@ void createRegionForSecurity(const char* name, bool ackMode,
   char buff[128] = {'\0'};
   const char* poolName = name;
 
-  if (PoolManager::find(name) != nullptr) {
+  if (getHelper()->getCache()->getPoolManager().find(name) != nullptr) {
     static unsigned int index = 0;
     sprintf(buff, "%s_%d", poolName, index++);
     poolName = buff;
@@ -70,11 +70,12 @@ void createRegionForSecurity(const char* name, bool ackMode,
   setCacheListener(name, listener);
 }
 
-PoolPtr getPool(const char* name) { return PoolManager::find(name); }
+PoolPtr getPool(const char* name) {
+  return getHelper()->getCache()->getPoolManager().find(name);
+}
 
 RegionServicePtr getVirtualCache(PropertiesPtr creds, PoolPtr pool) {
   CachePtr cachePtr = getHelper()->getCache();
-  // return pool->createSecureUserCache(creds);
   return cachePtr->createAuthenticatedView(creds, pool->getName());
 }
 

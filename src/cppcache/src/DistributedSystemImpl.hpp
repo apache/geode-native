@@ -126,7 +126,7 @@ class CPPCACHE_EXPORT DistributedSystemImpl {
 
   static void unregisterCliCallback(int appdomainId);
 
-  static void CallCliCallBack();
+  static void CallCliCallBack(Cache& cache);
 
  private:
   /**

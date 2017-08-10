@@ -25,13 +25,15 @@
 #include "CacheTransactionManagerImpl.hpp"
 #include <geode/TransactionId.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/PoolManager.hpp>
+
 #include "TSSTXStateWrapper.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientBaseDM.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
 #include "TssConnectionWrapper.hpp"
-#include <geode/PoolManager.hpp>
 #include "TXCleaner.hpp"
 
 namespace apache {
@@ -63,7 +65,7 @@ void CacheTransactionManagerImpl::commit() {
         GF_CACHE_ILLEGAL_STATE_EXCEPTION);
   }
 
-  TcrMessageCommit request;
+  TcrMessageCommit request(m_cache->createDataOutput());
   TcrMessageReply reply(true, nullptr);
 
   ThinClientPoolDM* tcr_dm = getDM();
@@ -112,8 +114,7 @@ void CacheTransactionManagerImpl::commit() {
   }
 
   TXCommitMessagePtr commit =
-      std::static_pointer_cast<TXCommitMessage>(
-          reply.getValue());
+      std::static_pointer_cast<TXCommitMessage>(reply.getValue());
   txCleaner.clean();
   commit->apply(m_cache);
 
@@ -277,7 +278,7 @@ void CacheTransactionManagerImpl::rollback() {
 
 GfErrType CacheTransactionManagerImpl::rollback(TXState* txState,
                                                 bool callListener) {
-  TcrMessageRollback request;
+  TcrMessageRollback request(m_cache->createDataOutput());
   TcrMessageReply reply(true, nullptr);
   GfErrType err = GF_NOERR;
   ThinClientPoolDM* tcr_dm = getDM();
@@ -360,11 +361,13 @@ TransactionIdPtr CacheTransactionManagerImpl::suspend() {
   txState->releaseStickyConnection();
 
   // set the expiry handler for the suspended transaction
-  SystemProperties* sysProp = DistributedSystem::getSystemProperties();
+  auto& sysProp = m_cache->getDistributedSystem().getSystemProperties();
   SuspendedTxExpiryHandler* handler = new SuspendedTxExpiryHandler(
-      this, txState->getTransactionId(), sysProp->suspendedTxTimeout());
-  long id = CacheImpl::expiryTaskManager->scheduleExpiryTask(
-      handler, sysProp->suspendedTxTimeout() * 60, 0, false);
+      this, txState->getTransactionId(), sysProp.suspendedTxTimeout());
+  long id = CacheRegionHelper::getCacheImpl(m_cache)
+                ->getExpiryTaskManager()
+                .scheduleExpiryTask(handler, sysProp.suspendedTxTimeout() * 60,
+                                    0, false);
   txState->setSuspendedExpiryTaskId(id);
 
   // add the transaction state to the list of suspended transactions
@@ -451,11 +454,11 @@ void CacheTransactionManagerImpl::resumeTxUsingTxState(TXState* txState,
 
   if (cancelExpiryTask) {
     // cancel the expiry task for the transaction
-    CacheImpl::expiryTaskManager->cancelTask(
+    CacheRegionHelper::getCacheImpl(m_cache)->getExpiryTaskManager().cancelTask(
         txState->getSuspendedExpiryTaskId());
   } else {
-    CacheImpl::expiryTaskManager->resetTask(txState->getSuspendedExpiryTaskId(),
-                                            0);
+    CacheRegionHelper::getCacheImpl(m_cache)->getExpiryTaskManager().resetTask(
+        txState->getSuspendedExpiryTaskId(), 0);
   }
 
   // set the current state as the state of the suspended transaction

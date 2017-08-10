@@ -46,6 +46,9 @@ namespace client {
 
 extern int gf_sprintf(char* buffer, const char* fmt, ...);
 
+class SerializationRegistry;
+class DataInputInternal;
+
 /**
  * Provide operations for reading primitive data values, byte arrays,
  * strings, <code>Serializable</code> objects from a byte stream.
@@ -891,13 +894,6 @@ class CPPCACHE_EXPORT DataInput {
     return decodedLen;
   }
 
-  /** constructor given a pre-allocated byte array with size */
-  DataInput(const uint8_t* m_buffer, int32_t len)
-      : m_buf(m_buffer),
-        m_bufHead(m_buffer),
-        m_bufLength(len),
-        m_poolName(nullptr) {}
-
   /** destructor */
   ~DataInput() {}
 
@@ -964,11 +960,25 @@ class CPPCACHE_EXPORT DataInput {
    */
   void setPoolName(const char* poolName) { m_poolName = poolName; }
 
+  virtual const Cache* getCache();
+
+ protected:
+  /** constructor given a pre-allocated byte array with size */
+  DataInput(const uint8_t* m_buffer, int32_t len, const Cache* cache)
+      : m_buf(m_buffer),
+        m_bufHead(m_buffer),
+        m_bufLength(len),
+        m_poolName(nullptr),
+        m_cache(cache) {}
+
+  virtual const SerializationRegistry& getSerializationRegistry() const;
+
  private:
   const uint8_t* m_buf;
   const uint8_t* m_bufHead;
   int32_t m_bufLength;
   const char* m_poolName;
+  const Cache* m_cache;
 
   void readObjectInternal(SerializablePtr& ptr, int8_t typeId = -1);
 
@@ -1072,9 +1082,12 @@ class CPPCACHE_EXPORT DataInput {
   }
 
   // disable other constructors and assignment
-  DataInput();
-  DataInput(const DataInput&);
-  DataInput& operator=(const DataInput&);
+  DataInput() = delete;
+  DataInput(const DataInput&) = delete;
+  DataInput& operator=(const DataInput&) = delete;
+
+  friend Cache;
+  friend DataInputInternal;
 };
 }  // namespace client
 }  // namespace geode

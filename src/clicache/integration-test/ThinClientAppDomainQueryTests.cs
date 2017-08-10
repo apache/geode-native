@@ -72,8 +72,8 @@ namespace Apache.Geode.Client.UnitTests
 
     public void InitClient()
     {
-      Serializable.RegisterTypeGeneric(Portfolio.CreateDeserializable);
-      Serializable.RegisterTypeGeneric(Position.CreateDeserializable);
+      Serializable.RegisterTypeGeneric(Portfolio.CreateDeserializable, CacheHelper.DCache);
+      Serializable.RegisterTypeGeneric(Position.CreateDeserializable, CacheHelper.DCache);
       Serializable.RegisterPdxType(Apache.Geode.Client.Tests.PortfolioPdx.CreateDeserializable);
       Serializable.RegisterPdxType(Apache.Geode.Client.Tests.PositionPdx.CreateDeserializable);
     }
@@ -102,7 +102,7 @@ namespace Apache.Geode.Client.UnitTests
       IRegion<object, object> region2 = CacheHelper.GetRegion<object, object>(QueryRegionNames[2]);
       IRegion<object, object> region3 = CacheHelper.GetRegion<object, object>(QueryRegionNames[3]);
 
-      QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper();
+      QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
       Util.Log("SetSize {0}, NumSets {1}.", qh.PortfolioSetSize,
         qh.PortfolioNumSets);
 
@@ -122,9 +122,9 @@ namespace Apache.Geode.Client.UnitTests
     {
       bool ErrorOccurred = false;
 
-      QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper();
+      QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
 
-      QueryService<object, object> qs = PoolManager/*<object, object>*/.Find("__TESTPOOL1_").GetQueryService<object, object>();
+      QueryService<object, object> qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
 
       int qryIdx = 0;
 
@@ -202,9 +202,9 @@ namespace Apache.Geode.Client.UnitTests
     {
       bool ErrorOccurred = false;
 
-      QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper();
+      QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
 
-      QueryService<object, object> qs = PoolManager/*<object, object>*/.Find("__TESTPOOL1_").GetQueryService<object, object>();
+      QueryService<object, object> qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
 
       int qryIdx = 0;
 

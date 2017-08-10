@@ -27,7 +27,9 @@
 #include "testobject/PdxType.hpp"
 #include "testobject/VariousPdxTypes.hpp"
 #include <string>
-
+#include "SerializationRegistry.hpp"
+#include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
 #define ROOT_NAME "ThinClientPutAll"
 #define ROOT_SCOPE DISTRIBUTED_ACK
 #include "CacheHelper.hpp"
@@ -396,11 +398,12 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
     try {
-      Serializable::registerPdxType(PdxTests::PdxType::createDeserializable);
-      Serializable::registerPdxType(PdxTests::PdxTypes1::createDeserializable);
-      Serializable::registerPdxType(PdxTests::PdxTypes2::createDeserializable);
-      Serializable::registerPdxType(PdxTests::Address::createDeserializable);
-      Serializable::registerPdxType(PdxTests::PdxTypes3::createDeserializable);
+      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::Address::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxTypes3::createDeserializable);
     } catch (Exception e) {
       LOG("Got expected Exception for Serialization, already registered");
     }
@@ -433,11 +436,12 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
   {
     try {
-      Serializable::registerPdxType(PdxTests::PdxType::createDeserializable);
-      Serializable::registerPdxType(PdxTests::PdxTypes1::createDeserializable);
-      Serializable::registerPdxType(PdxTests::PdxTypes2::createDeserializable);
-      Serializable::registerPdxType(PdxTests::Address::createDeserializable);
-      Serializable::registerPdxType(PdxTests::PdxTypes3::createDeserializable);
+      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::Address::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxTypes3::createDeserializable);
     } catch (Exception e) {
       LOG("Got expected Exception for Serialization, already registered");
     }

@@ -22,7 +22,7 @@
 #include <geode/DistributedSystem.hpp>
 #include "end_native.hpp"
 
-#include "native_shared_ptr.hpp"
+#include "native_conditional_unique_ptr.hpp"
 #include "SystemProperties.hpp"
 #include "Properties.hpp"
 #include "impl/CliCallbackDelgate.hpp"
@@ -64,7 +64,7 @@ namespace Apache
         /// An application can have one only one connection to a DistributedSystem.
         /// </exception>
         /// <exception cref="UnknownException">otherwise</exception>
-        static DistributedSystem^ Connect(String^ name);
+        DistributedSystem^ Connect(String^ name, Cache^ cache);
 
         /// <summary>
         /// Initializes the Native Client system to be able to connect to the
@@ -81,22 +81,22 @@ namespace Apache
         /// An application can have one only one connection to a DistributedSystem.
         /// </exception>
         /// <exception cref="UnknownException">otherwise</exception>
-        static DistributedSystem^ Connect(String^ name, Properties<String^, String^>^ config);
+        static DistributedSystem^ Connect(String^ name, Properties<String^, String^>^ config, Cache^ cache);
 
         /// <summary>
         /// Disconnect from the distributed system.
         /// </summary>
         /// <exception cref="IllegalStateException">if not connected</exception>
-        static void Disconnect();
+        void Disconnect(Cache^ cache);
 
         /// <summary>
         /// Returns the SystemProperties used to create this instance of a
         /// <c>DistributedSystem</c>.
         /// </summary>
         /// <returns>the SystemProperties</returns>
-        static property Apache::Geode::Client::SystemProperties^ SystemProperties
+        property Apache::Geode::Client::SystemProperties^ SystemProperties
         {
-          static Apache::Geode::Client::SystemProperties^ get();
+          Apache::Geode::Client::SystemProperties^ get();
         }
 
         /// <summary>
@@ -107,21 +107,6 @@ namespace Apache
         {
           String^ get();
         }
-
-        /// <summary>
-        /// The current connection status of this client to the <c>DistributedSystem</c>.
-        /// </summary>
-        /// <returns>true if connected, false otherwise</returns>
-        static property bool IsConnected
-        {
-          static bool get();
-        }
-
-        /// <summary>
-        /// Returns a reference to this DistributedSystem instance.
-        /// </summary>
-        /// <returns>the DistributedSystem instance</returns>
-        static DistributedSystem^ GetInstance();
 
 
       internal:
@@ -134,7 +119,9 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        static DistributedSystem^ Create(native::DistributedSystemPtr nativeptr);
+        static DistributedSystem^ Create(native::DistributedSystem* nativeptr);
+
+        DistributedSystem(std::unique_ptr<native::DistributedSystem> nativeptr);
 
         static void acquireDisconnectLock();
 
@@ -144,7 +131,7 @@ namespace Apache
 
         static void connectInstance();
 
-        delegate void cliCallback();
+        delegate void cliCallback(apache::geode::client::Cache& cache);
 
         static void registerCliCallback();
 
@@ -152,14 +139,13 @@ namespace Apache
         /// <summary>
         /// Stuff that needs to be done for Connect in each AppDomain.
         /// </summary>
-        static void AppDomainInstanceInitialization(
-          const native::PropertiesPtr& nativepropsptr);
+        static void AppDomainInstanceInitialization(Cache^ cache);
 
         /// <summary>
         /// Managed registrations and other stuff to be done for the manage
         /// layer after the first connect.
         /// </summary>
-        static void ManagedPostConnect();
+        static void ManagedPostConnect(Cache^ cache);
 
         /// <summary>
         /// Stuff that needs to be done for Connect in each AppDomain but
@@ -170,11 +156,11 @@ namespace Apache
         /// <summary>
         /// Unregister the builtin managed types like CacheableObject.
         /// </summary>
-        static void UnregisterBuiltinManagedTypes();
+        static void UnregisterBuiltinManagedTypes(Cache^ cache);
 
-        std::shared_ptr<native::DistributedSystem> GetNative()
+        native::DistributedSystem& GetNative()
         {
-          return m_nativeptr->get_shared_ptr();
+          return *(m_nativeptr->get());
         }
 
       private:
@@ -189,14 +175,14 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        DistributedSystem(native::DistributedSystemPtr nativeptr);
+        DistributedSystem(native::DistributedSystem* nativeptr);
 
         /// <summary>
         /// Finalizer for the singleton instance of this class.
         /// </summary>
         ~DistributedSystem();
 
-        native_shared_ptr<native::DistributedSystem>^ m_nativeptr;
+        native_conditional_unique_ptr<native::DistributedSystem>^ m_nativeptr;
 
 
         /// <summary>

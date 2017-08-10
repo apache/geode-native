@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CQQUERYVSDSTATS_H_
-#define GEODE_CQQUERYVSDSTATS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_CQQUERYVSDSTATS_H_
+#define GEODE_CQQUERYVSDSTATS_H_
+
+#include <string>
 
 #include <geode/geode_globals.hpp>
 #include <geode/statistics/Statistics.hpp>
@@ -39,7 +41,7 @@ using util::concurrent::spinlock_mutex;
 class CPPCACHE_EXPORT CqQueryVsdStats : public CqStatistics {
  public:
   /** hold statistics for a cq. */
-  CqQueryVsdStats(const char* cqName);
+  CqQueryVsdStats(statistics::StatisticsFactory* factory, const std::string& cqqueryName);
 
   /** disable stat collection for this item. */
   virtual ~CqQueryVsdStats();
@@ -74,39 +76,11 @@ class CPPCACHE_EXPORT CqQueryVsdStats : public CqStatistics {
   int32_t m_numUpdatesId;
   int32_t m_numDeletesId;
   int32_t m_numEventsId;
+
+  static constexpr const char* STATS_NAME = "CqQueryStatistics";
+  static constexpr const char* STATS_DESC = "Statistics for this cq query";
 };
 
-class CqQueryStatType {
- private:
-  static spinlock_mutex m_statTypeLock;
-
- public:
-  static CqQueryStatType& getInstance();
-
-  StatisticsType* getStatType();
-
- private:
-  CqQueryStatType();
-  ~CqQueryStatType() = default;
-  CqQueryStatType(const CqQueryStatType&) = delete;
-  CqQueryStatType& operator=(const CqQueryStatType&) = delete;
-
-  StatisticDescriptor* m_stats[4];
-
-  int32_t m_numInsertsId;
-  int32_t m_numUpdatesId;
-  int32_t m_numDeletesId;
-  int32_t m_numEventsId;
-
- public:
-  inline int32_t getNumInsertsId() { return m_numInsertsId; }
-
-  inline int32_t getNumUpdatesId() { return m_numUpdatesId; }
-
-  inline int32_t getNumDeletesId() { return m_numDeletesId; }
-
-  inline int32_t getNumEventsId() { return m_numEventsId; }
-};
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -25,6 +25,8 @@
 #include <cstdlib>
 #include <ace/ACE.h>
 #include <ace/OS.h>
+#include "DataOutputInternal.hpp"
+#include "SerializationRegistry.hpp"
 
 using namespace apache::geode::client;
 
@@ -196,7 +198,7 @@ char* CacheableString::getASCIIString(const wchar_t* value, int32_t& len,
     }
     len -= clen;
   } else {
-    DataOutput out;
+    DataOutputInternal out;
     const wchar_t* pvalue = value;
     while ((currentChar = *pvalue) != 0) {
       c = getASCIIChar(currentChar, isASCII, encodedLen);

@@ -69,7 +69,8 @@ void ProxyCache::close() {
     m_userAttributes->unSetCredentials();
     // send message to server
     PoolPtr userAttachedPool = m_userAttributes->getPool();
-    PoolPtr pool = PoolManager::find(userAttachedPool->getName());
+    PoolPtr pool = m_cacheImpl->getCache()->getPoolManager().find(
+        userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get()) {
       auto poolDM = std::static_pointer_cast<ThinClientPoolDM>(pool);
       if (!poolDM->isDestroyed()) {
@@ -86,15 +87,15 @@ RegionPtr ProxyCache::getRegion(const char* path) {
 
   if (!m_isProxyCacheClosed) {
     RegionPtr result;
-    CachePtr realCache = CacheFactory::getAnyInstance();
 
-    if (realCache != nullptr && !realCache->isClosed()) {
-      CacheRegionHelper::getCacheImpl(realCache.get())->getRegion(path, result);
+    if (m_cacheImpl != nullptr && !m_cacheImpl->isClosed()) {
+      m_cacheImpl->getRegion(path, result);
     }
 
     if (result != nullptr) {
       PoolPtr userAttachedPool = m_userAttributes->getPool();
-      PoolPtr pool = PoolManager::find(result->getAttributes()->getPoolName());
+      PoolPtr pool = m_cacheImpl->getCache()->getPoolManager().find(
+          result->getAttributes()->getPoolName());
       if (pool != nullptr && pool.get() == userAttachedPool.get() &&
           !pool->isDestroyed()) {
         return std::make_shared<ProxyRegion>(shared_from_this(), result);
@@ -134,13 +135,12 @@ void ProxyCache::rootRegions(VectorOfRegion& regions) {
 
   if (!m_isProxyCacheClosed) {
     RegionPtr result;
-    CachePtr realCache = CacheFactory::getAnyInstance();
 
-    if (realCache != nullptr && !realCache->isClosed()) {
+    if (m_cacheImpl != nullptr && !m_cacheImpl->isClosed()) {
       VectorOfRegion tmp;
       // this can cause issue when pool attached with region in multiuserSecure
       // mode
-      realCache->rootRegions(tmp);
+      m_cacheImpl->rootRegions(tmp);
 
       if (tmp.size() > 0) {
         for (int32_t i = 0; i < tmp.size(); i++) {
@@ -157,15 +157,22 @@ void ProxyCache::rootRegions(VectorOfRegion& regions) {
   }
 }
 
-ProxyCache::ProxyCache(PropertiesPtr credentials, PoolPtr pool) {
-  m_remoteQueryService = nullptr;
-  m_isProxyCacheClosed = false;
-  m_userAttributes = std::make_shared<UserAttributes>(credentials, pool, this);
-}
+ProxyCache::ProxyCache(PropertiesPtr credentials, PoolPtr pool,
+                       CacheImpl* cacheImpl)
+    : m_remoteQueryService(nullptr),
+      m_isProxyCacheClosed(false),
+      m_userAttributes(
+          std::make_shared<UserAttributes>(credentials, pool, this)),
+      m_cacheImpl(cacheImpl) {}
 
 ProxyCache::~ProxyCache() {}
 
 PdxInstanceFactoryPtr ProxyCache::createPdxInstanceFactory(
     const char* className) {
-  return std::make_shared<PdxInstanceFactoryImpl>(className);
+  return std::make_shared<PdxInstanceFactoryImpl>(
+      className, &(m_cacheImpl->getCachePerfStats()),
+      m_cacheImpl->getPdxTypeRegistry(), m_cacheImpl->getCache(),
+      m_cacheImpl->getDistributedSystem()
+          .getSystemProperties()
+          .getEnableTimeStatistics());
 }

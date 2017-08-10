@@ -160,22 +160,6 @@ namespace Apache.Geode.Client.UnitTests
 
       Assert.AreEqual(CacheHelper.DCache.GetPdxReadSerialized(), false, "Pdx read serialized property should be false.");
 
-      //Statistics chk for Pdx.
-      StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-      StatisticsType type = factory.FindType("CachePerfStats");
-      if (type != null) {
-        Statistics rStats = factory.FindFirstStatisticsByType(type);
-        if (rStats != null) {
-          Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-          Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-          Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-          Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-          Assert.AreEqual(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"), 
-            "Total pdxDeserializations should be equal to Total pdxSerializations.");
-          Assert.AreEqual(rStats.GetLong((string)"pdxSerializedBytes"), rStats.GetLong((string)"pdxDeserializedBytes"), 
-            "Total pdxDeserializedBytes should be equal to Total pdxSerializationsBytes");
-        }
-      }
     }
 
      void VerifyGetOnly()
@@ -187,22 +171,7 @@ namespace Apache.Geode.Client.UnitTests
        PdxType pRet = (PdxType)region0[1];
        checkPdxInstanceToStringAtServer(region0);
 
-       //Statistics chk for Pdx.
-       StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-       StatisticsType type = factory.FindType("CachePerfStats");
-       if (type != null) {
-         Statistics rStats = factory.FindFirstStatisticsByType(type);
-         if (rStats != null) {
-           Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-           Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-           Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-           Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-           Assert.Greater(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-             "Total pdxDeserializations should be greater than Total pdxSerializations.");
-           Assert.Greater(rStats.GetLong((string)"pdxDeserializedBytes"), rStats.GetLong((string)"pdxSerializedBytes"),
-             "Total pdxDeserializedBytes should be greater than Total pdxSerializationsBytes");
-         }
-       }
+
      }
 
     void PutAndVerifyVariousPdxTypes()
@@ -229,22 +198,7 @@ namespace Apache.Geode.Client.UnitTests
         PdxTypes1 pRet = (PdxTypes1)region0[11];
         Assert.AreEqual(p1, pRet);
         checkPdxInstanceToStringAtServer(region0);
-        //Statistics chk for Pdx.
-        StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-        StatisticsType type = factory.FindType("CachePerfStats");
-        if (type != null) {
-          Statistics rStats = factory.FindFirstStatisticsByType(type);
-          if (rStats != null) {
-            Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-            Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-            Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-            Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-            Assert.AreEqual(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-              "Total pdxDeserializations should be equal to Total pdxSerializations.");
-            Assert.AreEqual(rStats.GetLong((string)"pdxSerializedBytes"), rStats.GetLong((string)"pdxDeserializedBytes"),
-              "Total pdxDeserializedBytes should be equal to Total pdxSerializationsBytes");
-          }
-        }
+
       }
 
       {
@@ -253,22 +207,7 @@ namespace Apache.Geode.Client.UnitTests
         PdxTypes2 pRet2 = (PdxTypes2)region0[12];
         Assert.AreEqual(p2, pRet2);
         checkPdxInstanceToStringAtServer(region0);
-        //Statistics chk for Pdx.
-        StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-        StatisticsType type = factory.FindType("CachePerfStats");
-        if (type != null) {
-          Statistics rStats = factory.FindFirstStatisticsByType(type);
-          if (rStats != null) {
-            Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-            Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-            Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-            Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-            Assert.AreEqual(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-              "Total pdxDeserializations should be equal to Total pdxSerializations.");
-            Assert.AreEqual(rStats.GetLong((string)"pdxSerializedBytes"), rStats.GetLong((string)"pdxDeserializedBytes"),
-              "Total pdxDeserializedBytes should be equal to Total pdxSerializationsBytes");
-          }
-        }
+
       }
 
       {
@@ -277,22 +216,7 @@ namespace Apache.Geode.Client.UnitTests
         PdxTypes3 pRet3 = (PdxTypes3)region0[13];
         Assert.AreEqual(p3, pRet3);
         checkPdxInstanceToStringAtServer(region0);
-        //Statistics chk for Pdx.
-        StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-        StatisticsType type = factory.FindType("CachePerfStats");
-        if (type != null) {
-          Statistics rStats = factory.FindFirstStatisticsByType(type);
-          if (rStats != null) {
-            Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-            Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-            Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-            Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-            Assert.AreEqual(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-              "Total pdxDeserializations should be equal to Total pdxSerializations.");
-            Assert.AreEqual(rStats.GetLong((string)"pdxSerializedBytes"), rStats.GetLong((string)"pdxDeserializedBytes"),
-              "Total pdxDeserializedBytes should be equal to Total pdxSerializationsBytes");
-          }
-        }
+
       }
 
       {
@@ -301,22 +225,7 @@ namespace Apache.Geode.Client.UnitTests
         PdxTypes4 pRet4 = (PdxTypes4)region0[14];
         Assert.AreEqual(p4, pRet4);
         checkPdxInstanceToStringAtServer(region0);
-        //Statistics chk for Pdx.
-        StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-        StatisticsType type = factory.FindType("CachePerfStats");
-        if (type != null) {
-          Statistics rStats = factory.FindFirstStatisticsByType(type);
-          if (rStats != null) {
-            Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-            Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-            Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-            Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-            Assert.AreEqual(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-              "Total pdxDeserializations should be equal to Total pdxSerializations.");
-            Assert.AreEqual(rStats.GetLong((string)"pdxSerializedBytes"), rStats.GetLong((string)"pdxDeserializedBytes"),
-              "Total pdxDeserializedBytes should be equal to Total pdxSerializationsBytes");
-          }
-        }
+
       }
 
       {
@@ -325,22 +234,6 @@ namespace Apache.Geode.Client.UnitTests
         PdxTypes5 pRet5 = (PdxTypes5)region0[15];
         Assert.AreEqual(p5, pRet5);
         checkPdxInstanceToStringAtServer(region0);
-        //Statistics chk for Pdx.
-        StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-        StatisticsType type = factory.FindType("CachePerfStats");
-        if (type != null) {
-          Statistics rStats = factory.FindFirstStatisticsByType(type);
-          if (rStats != null) {
-            Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-            Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-            Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-            Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-            Assert.AreEqual(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-              "Total pdxDeserializations should be equal to Total pdxSerializations.");
-            Assert.AreEqual(rStats.GetLong((string)"pdxSerializedBytes"), rStats.GetLong((string)"pdxDeserializedBytes"),
-              "Total pdxDeserializedBytes should be equal to Total pdxSerializationsBytes");
-          }
-        }
       }
 
       {
@@ -349,22 +242,6 @@ namespace Apache.Geode.Client.UnitTests
         PdxTypes6 pRet6 = (PdxTypes6)region0[16];
         Assert.AreEqual(p6, pRet6);
         checkPdxInstanceToStringAtServer(region0);
-        //Statistics chk for Pdx.
-        StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-        StatisticsType type = factory.FindType("CachePerfStats");
-        if (type != null) {
-          Statistics rStats = factory.FindFirstStatisticsByType(type);
-          if (rStats != null) {
-            Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-            Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-            Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-            Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-            Assert.AreEqual(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-              "Total pdxDeserializations should be equal to Total pdxSerializations.");
-            Assert.AreEqual(rStats.GetLong((string)"pdxSerializedBytes"), rStats.GetLong((string)"pdxDeserializedBytes"),
-              "Total pdxDeserializedBytes should be equal to Total pdxSerializationsBytes");
-          }
-        }
       }
 
       {
@@ -373,22 +250,6 @@ namespace Apache.Geode.Client.UnitTests
         PdxTypes7 pRet7 = (PdxTypes7)region0[17];
         Assert.AreEqual(p7, pRet7);
         checkPdxInstanceToStringAtServer(region0);
-        //Statistics chk for Pdx.
-        StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-        StatisticsType type = factory.FindType("CachePerfStats");
-        if (type != null) {
-          Statistics rStats = factory.FindFirstStatisticsByType(type);
-          if (rStats != null) {
-            Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-            Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-            Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-            Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-            Assert.AreEqual(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-              "Total pdxDeserializations should be equal to Total pdxSerializations.");
-            Assert.AreEqual(rStats.GetLong((string)"pdxSerializedBytes"), rStats.GetLong((string)"pdxDeserializedBytes"),
-              "Total pdxDeserializedBytes should be equal to Total pdxSerializationsBytes");
-          }
-        }
       }
 
       {
@@ -397,22 +258,6 @@ namespace Apache.Geode.Client.UnitTests
         PdxTypes8 pRet8 = (PdxTypes8)region0[18];
         Assert.AreEqual(p8, pRet8);
         checkPdxInstanceToStringAtServer(region0);
-        //Statistics chk for Pdx.
-        StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-        StatisticsType type = factory.FindType("CachePerfStats");
-        if (type != null) {
-          Statistics rStats = factory.FindFirstStatisticsByType(type);
-          if (rStats != null) {
-            Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-            Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-            Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-            Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-            Assert.AreEqual(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-              "Total pdxDeserializations should be equal to Total pdxSerializations.");
-            Assert.AreEqual(rStats.GetLong((string)"pdxSerializedBytes"), rStats.GetLong((string)"pdxDeserializedBytes"),
-              "Total pdxDeserializedBytes should be equal to Total pdxSerializationsBytes");
-          }
-        }
       }
       {
         PdxTypes9 p9 = new PdxTypes9();
@@ -420,22 +265,6 @@ namespace Apache.Geode.Client.UnitTests
         PdxTypes9 pRet9 = (PdxTypes9)region0[19];
         Assert.AreEqual(p9, pRet9);
         checkPdxInstanceToStringAtServer(region0);
-        //Statistics chk for Pdx.
-        StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-        StatisticsType type = factory.FindType("CachePerfStats");
-        if (type != null) {
-          Statistics rStats = factory.FindFirstStatisticsByType(type);
-          if (rStats != null) {
-            Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-            Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-            Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-            Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-            Assert.AreEqual(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-              "Total pdxDeserializations should be equal to Total pdxSerializations.");
-            Assert.AreEqual(rStats.GetLong((string)"pdxSerializedBytes"), rStats.GetLong((string)"pdxDeserializedBytes"),
-              "Total pdxDeserializedBytes should be equal to Total pdxSerializationsBytes");
-          }
-        }
       }
 
       {
@@ -443,22 +272,6 @@ namespace Apache.Geode.Client.UnitTests
         region0[20] = pf;
         PortfolioPdx retpf = (PortfolioPdx)region0[20];
         checkPdxInstanceToStringAtServer(region0);
-        //Statistics chk for Pdx.
-        StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-        StatisticsType type = factory.FindType("CachePerfStats");
-        if (type != null) {
-          Statistics rStats = factory.FindFirstStatisticsByType(type);
-          if (rStats != null) {
-            Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-            Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-            Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-            Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-            Assert.AreEqual(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-              "Total pdxDeserializations should be equal to Total pdxSerializations.");
-            Assert.AreEqual(rStats.GetLong((string)"pdxSerializedBytes"), rStats.GetLong((string)"pdxDeserializedBytes"),
-              "Total pdxDeserializedBytes should be equal to Total pdxSerializationsBytes");
-          }
-        }
         //Assert.AreEqual(p9, pRet9);
       }
 
@@ -467,22 +280,6 @@ namespace Apache.Geode.Client.UnitTests
         region0[21] = pf;
         PortfolioPdx retpf = (PortfolioPdx)region0[21];
         checkPdxInstanceToStringAtServer(region0);
-        //Statistics chk for Pdx.
-        StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-        StatisticsType type = factory.FindType("CachePerfStats");
-        if (type != null) {
-          Statistics rStats = factory.FindFirstStatisticsByType(type);
-          if (rStats != null) {
-            Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-            Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-            Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-            Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-            Assert.AreEqual(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-              "Total pdxDeserializations should be equal to Total pdxSerializations.");
-            Assert.AreEqual(rStats.GetLong((string)"pdxSerializedBytes"), rStats.GetLong((string)"pdxDeserializedBytes"),
-              "Total pdxDeserializedBytes should be equal to Total pdxSerializationsBytes");
-          }
-        }
         //Assert.AreEqual(p9, pRet9);
       }
       {
@@ -491,22 +288,6 @@ namespace Apache.Geode.Client.UnitTests
         PdxTypes10 pRet10 = (PdxTypes10)region0[22];
         Assert.AreEqual(p10, pRet10);
         checkPdxInstanceToStringAtServer(region0);
-        //Statistics chk for Pdx.
-        StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-        StatisticsType type = factory.FindType("CachePerfStats");
-        if (type != null) {
-          Statistics rStats = factory.FindFirstStatisticsByType(type);
-          if (rStats != null) {
-            Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-            Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-            Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-            Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-            Assert.AreEqual(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-              "Total pdxDeserializations should be equal to Total pdxSerializations.");
-            Assert.AreEqual(rStats.GetLong((string)"pdxSerializedBytes"), rStats.GetLong((string)"pdxDeserializedBytes"),
-              "Total pdxDeserializedBytes should be equal to Total pdxSerializationsBytes");
-          }
-        }
       }
       {
         AllPdxTypes apt = new AllPdxTypes(true);
@@ -514,22 +295,6 @@ namespace Apache.Geode.Client.UnitTests
         AllPdxTypes aptRet = (AllPdxTypes)region0[23];
         Assert.AreEqual(apt, aptRet);
         checkPdxInstanceToStringAtServer(region0);
-        //Statistics chk for Pdx.
-        StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-        StatisticsType type = factory.FindType("CachePerfStats");
-        if (type != null) {
-          Statistics rStats = factory.FindFirstStatisticsByType(type);
-          if (rStats != null) {
-            Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-            Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-            Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-            Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-            Assert.AreEqual(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-              "Total pdxDeserializations should be equal to Total pdxSerializations.");
-            Assert.AreEqual(rStats.GetLong((string)"pdxSerializedBytes"), rStats.GetLong((string)"pdxDeserializedBytes"),
-              "Total pdxDeserializedBytes should be equal to Total pdxSerializationsBytes");
-          }
-        }
       }
     }
 
@@ -555,22 +320,6 @@ namespace Apache.Geode.Client.UnitTests
          PdxTypes1 pRet = (PdxTypes1)region0[11];
          Assert.AreEqual(p1, pRet);
          checkPdxInstanceToStringAtServer(region0);
-         //Statistics chk for Pdx.
-         StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-         StatisticsType type = factory.FindType("CachePerfStats");
-         if (type != null) {
-           Statistics rStats = factory.FindFirstStatisticsByType(type);
-           if (rStats != null) {
-             Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-             Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-             Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-             Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-             Assert.Greater(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-               "Total pdxDeserializations should be greater than Total pdxSerializations.");
-             Assert.Greater(rStats.GetLong((string)"pdxDeserializedBytes"), rStats.GetLong((string)"pdxSerializedBytes"),
-               "Total pdxDeserializedBytes should be greater than Total pdxSerializationsBytes");
-           }
-         }
        }
 
        {
@@ -578,22 +327,6 @@ namespace Apache.Geode.Client.UnitTests
          PdxTypes2 pRet2 = (PdxTypes2)region0[12];
          Assert.AreEqual(p2, pRet2);
          checkPdxInstanceToStringAtServer(region0);
-         //Statistics chk for Pdx.
-         StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-         StatisticsType type = factory.FindType("CachePerfStats");
-         if (type != null) {
-           Statistics rStats = factory.FindFirstStatisticsByType(type);
-           if (rStats != null) {
-             Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-             Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-             Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-             Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-             Assert.Greater(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-               "Total pdxDeserializations should be greater than Total pdxSerializations.");
-             Assert.Greater(rStats.GetLong((string)"pdxDeserializedBytes"), rStats.GetLong((string)"pdxSerializedBytes"),
-               "Total pdxDeserializedBytes should be greater than Total pdxSerializationsBytes");
-           }
-         }
        }
 
        {
@@ -601,22 +334,6 @@ namespace Apache.Geode.Client.UnitTests
          PdxTypes3 pRet3 = (PdxTypes3)region0[13];
          Assert.AreEqual(p3, pRet3);
          checkPdxInstanceToStringAtServer(region0);
-         //Statistics chk for Pdx.
-         StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-         StatisticsType type = factory.FindType("CachePerfStats");
-         if (type != null) {
-           Statistics rStats = factory.FindFirstStatisticsByType(type);
-           if (rStats != null) {
-             Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-             Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-             Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-             Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-             Assert.Greater(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-               "Total pdxDeserializations should be greater than Total pdxSerializations.");
-             Assert.Greater(rStats.GetLong((string)"pdxDeserializedBytes"), rStats.GetLong((string)"pdxSerializedBytes"),
-               "Total pdxDeserializedBytes should be greater than Total pdxSerializationsBytes");
-           }
-         }
        }
 
        {
@@ -624,22 +341,6 @@ namespace Apache.Geode.Client.UnitTests
          PdxTypes4 pRet4 = (PdxTypes4)region0[14];
          Assert.AreEqual(p4, pRet4);
          checkPdxInstanceToStringAtServer(region0);
-         //Statistics chk for Pdx.
-         StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-         StatisticsType type = factory.FindType("CachePerfStats");
-         if (type != null) {
-           Statistics rStats = factory.FindFirstStatisticsByType(type);
-           if (rStats != null) {
-             Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-             Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-             Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-             Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-             Assert.Greater(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-               "Total pdxDeserializations should be greater than Total pdxSerializations.");
-             Assert.Greater(rStats.GetLong((string)"pdxDeserializedBytes"), rStats.GetLong((string)"pdxSerializedBytes"),
-               "Total pdxDeserializedBytes should be greater than Total pdxSerializationsBytes");
-           }
-         }
        }
 
        {
@@ -647,22 +348,6 @@ namespace Apache.Geode.Client.UnitTests
          PdxTypes5 pRet5 = (PdxTypes5)region0[15];
          Assert.AreEqual(p5, pRet5);
          checkPdxInstanceToStringAtServer(region0);
-         //Statistics chk for Pdx.
-         StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-         StatisticsType type = factory.FindType("CachePerfStats");
-         if (type != null) {
-           Statistics rStats = factory.FindFirstStatisticsByType(type);
-           if (rStats != null) {
-             Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-             Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-             Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-             Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-             Assert.Greater(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-               "Total pdxDeserializations should be greater than Total pdxSerializations.");
-             Assert.Greater(rStats.GetLong((string)"pdxDeserializedBytes"), rStats.GetLong((string)"pdxSerializedBytes"),
-               "Total pdxDeserializedBytes should be greater than Total pdxSerializationsBytes");
-           }
-         }
        }
 
        {
@@ -670,22 +355,6 @@ namespace Apache.Geode.Client.UnitTests
          PdxTypes6 pRet6 = (PdxTypes6)region0[16];
          Assert.AreEqual(p6, pRet6);
          checkPdxInstanceToStringAtServer(region0);
-         //Statistics chk for Pdx.
-         StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-         StatisticsType type = factory.FindType("CachePerfStats");
-         if (type != null) {
-           Statistics rStats = factory.FindFirstStatisticsByType(type);
-           if (rStats != null) {
-             Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-             Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-             Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-             Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-             Assert.Greater(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-               "Total pdxDeserializations should be greater than Total pdxSerializations.");
-             Assert.Greater(rStats.GetLong((string)"pdxDeserializedBytes"), rStats.GetLong((string)"pdxSerializedBytes"),
-               "Total pdxDeserializedBytes should be greater than Total pdxSerializationsBytes");
-           }
-         }
        }
 
        {
@@ -693,22 +362,6 @@ namespace Apache.Geode.Client.UnitTests
          PdxTypes7 pRet7 = (PdxTypes7)region0[17];
          Assert.AreEqual(p7, pRet7);
          checkPdxInstanceToStringAtServer(region0);
-         //Statistics chk for Pdx.
-         StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-         StatisticsType type = factory.FindType("CachePerfStats");
-         if (type != null) {
-           Statistics rStats = factory.FindFirstStatisticsByType(type);
-           if (rStats != null) {
-             Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-             Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-             Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-             Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-             Assert.Greater(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-               "Total pdxDeserializations should be greater than Total pdxSerializations.");
-             Assert.Greater(rStats.GetLong((string)"pdxDeserializedBytes"), rStats.GetLong((string)"pdxSerializedBytes"),
-               "Total pdxDeserializedBytes should be greater than Total pdxSerializationsBytes");
-           }
-         }
        }
 
        {
@@ -716,128 +369,32 @@ namespace Apache.Geode.Client.UnitTests
          PdxTypes8 pRet8 = (PdxTypes8)region0[18];
          Assert.AreEqual(p8, pRet8);
          checkPdxInstanceToStringAtServer(region0);
-         //Statistics chk for Pdx.
-         StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-         StatisticsType type = factory.FindType("CachePerfStats");
-         if (type != null) {
-           Statistics rStats = factory.FindFirstStatisticsByType(type);
-           if (rStats != null) {
-             Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-             Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-             Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-             Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-             Assert.Greater(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-               "Total pdxDeserializations should be greater than Total pdxSerializations.");
-             Assert.Greater(rStats.GetLong((string)"pdxDeserializedBytes"), rStats.GetLong((string)"pdxSerializedBytes"),
-               "Total pdxDeserializedBytes should be greater than Total pdxSerializationsBytes");
-           }
-         }
        }
        {
          PdxTypes9 p9 = new PdxTypes9();
          PdxTypes9 pRet9 = (PdxTypes9)region0[19];
          Assert.AreEqual(p9, pRet9);
          checkPdxInstanceToStringAtServer(region0);
-         //Statistics chk for Pdx.
-         StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-         StatisticsType type = factory.FindType("CachePerfStats");
-         if (type != null) {
-           Statistics rStats = factory.FindFirstStatisticsByType(type);
-           if (rStats != null) {
-             Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-             Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-             Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-             Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-             Assert.Greater(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-               "Total pdxDeserializations should be greater than Total pdxSerializations.");
-             Assert.Greater(rStats.GetLong((string)"pdxDeserializedBytes"), rStats.GetLong((string)"pdxSerializedBytes"),
-               "Total pdxDeserializedBytes should be greater than Total pdxSerializationsBytes");
-           }
-         }
        }       
        {
          PortfolioPdx retpf = (PortfolioPdx)region0[20];
          checkPdxInstanceToStringAtServer(region0);
-         //Statistics chk for Pdx.
-         StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-         StatisticsType type = factory.FindType("CachePerfStats");
-         if (type != null) {
-           Statistics rStats = factory.FindFirstStatisticsByType(type);
-           if (rStats != null) {
-             Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-             Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-             Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-             Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-             Assert.Greater(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-               "Total pdxDeserializations should be greater than Total pdxSerializations.");
-             Assert.Greater(rStats.GetLong((string)"pdxDeserializedBytes"), rStats.GetLong((string)"pdxSerializedBytes"),
-               "Total pdxDeserializedBytes should be greater than Total pdxSerializationsBytes");
-           }
-         }
        }
        {
          PortfolioPdx retpf = (PortfolioPdx)region0[21];
          checkPdxInstanceToStringAtServer(region0);
-         //Statistics chk for Pdx.
-         StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-         StatisticsType type = factory.FindType("CachePerfStats");
-         if (type != null) {
-           Statistics rStats = factory.FindFirstStatisticsByType(type);
-           if (rStats != null) {
-             Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-             Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-             Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-             Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-             Assert.Greater(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-               "Total pdxDeserializations should be greater than Total pdxSerializations.");
-             Assert.Greater(rStats.GetLong((string)"pdxDeserializedBytes"), rStats.GetLong((string)"pdxSerializedBytes"),
-               "Total pdxDeserializedBytes should be greater than Total pdxSerializationsBytes");
-           }
-         }
        }
        {
          PdxTypes10 p10 = new PdxTypes10();
          PdxTypes10 pRet10 = (PdxTypes10)region0[22];
          Assert.AreEqual(p10, pRet10);
          checkPdxInstanceToStringAtServer(region0);
-         //Statistics chk for Pdx.
-         StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-         StatisticsType type = factory.FindType("CachePerfStats");
-         if (type != null) {
-           Statistics rStats = factory.FindFirstStatisticsByType(type);
-           if (rStats != null) {
-             Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-             Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-             Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-             Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-             Assert.Greater(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-               "Total pdxDeserializations should be greater than Total pdxSerializations.");
-             Assert.Greater(rStats.GetLong((string)"pdxDeserializedBytes"), rStats.GetLong((string)"pdxSerializedBytes"),
-               "Total pdxDeserializedBytes should be greater than Total pdxSerializationsBytes");
-           }
-         }
        }
        {
          AllPdxTypes apt = new AllPdxTypes(true);
          AllPdxTypes aptRet = (AllPdxTypes)region0[23];
          Assert.AreEqual(apt, aptRet);
          checkPdxInstanceToStringAtServer(region0);
-         //Statistics chk for Pdx.
-         StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-         StatisticsType type = factory.FindType("CachePerfStats");
-         if (type != null) {
-           Statistics rStats = factory.FindFirstStatisticsByType(type);
-           if (rStats != null) {
-             Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-             Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-             Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-             Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-             Assert.Greater(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-               "Total pdxDeserializations should be greater than Total pdxSerializations.");
-             Assert.Greater(rStats.GetLong((string)"pdxDeserializedBytes"), rStats.GetLong((string)"pdxSerializedBytes"),
-               "Total pdxDeserializedBytes should be greater than Total pdxSerializationsBytes");
-           }
-         }
        }
      }
 
@@ -1128,7 +685,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        try
        {
-         Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable);
+         Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable, CacheHelper.DCache);
          Serializable.RegisterPdxType(NestedPdx.CreateDeserializable);
          Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
          Serializable.RegisterPdxType(PdxTypes2.CreateDeserializable);
@@ -1156,7 +713,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        try
        {
-         Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable);
+         Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable, CacheHelper.DCache);
          Serializable.RegisterPdxType(NestedPdx.CreateDeserializable);
          Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
          Serializable.RegisterPdxType(PdxTypes2.CreateDeserializable);
@@ -1371,7 +928,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        try
        {
-         Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable);
+         Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable, CacheHelper.DCache);
          Serializable.RegisterPdxType(NestedPdx.CreateDeserializable);
          Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
          Serializable.RegisterPdxType(PdxTypes2.CreateDeserializable);
@@ -1438,25 +995,6 @@ namespace Apache.Geode.Client.UnitTests
          object origVal = all[key];
          Assert.AreEqual(kv.Value, origVal);
        }
-
-       
-
-       //Statistics chk for Pdx.
-       StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-       StatisticsType type = factory.FindType("CachePerfStats");
-       if (type != null) {
-         Statistics rStats = factory.FindFirstStatisticsByType(type);
-         if (rStats != null) {
-           Util.Log("pdxSerializations {0} ", rStats.GetInt((string)"pdxSerializations"));
-           Util.Log("pdxDeserializations = {0} ", rStats.GetInt((string)"pdxDeserializations"));
-           Util.Log("pdxSerializedBytes = {0} ", rStats.GetLong((string)"pdxSerializedBytes"));
-           Util.Log("pdxDeserializedBytes = {0} ", rStats.GetLong((string)"pdxDeserializedBytes"));
-           Assert.AreEqual(rStats.GetInt((string)"pdxDeserializations"), rStats.GetInt((string)"pdxSerializations"),
-             "Total pdxDeserializations should be equal to Total pdxSerializations.");
-           Assert.AreEqual(rStats.GetLong((string)"pdxSerializedBytes"), rStats.GetLong((string)"pdxDeserializedBytes"),
-             "Total pdxDeserializedBytes should be equal to Total pdxSerializationsBytes");
-         }
-       }
      }
 
      
@@ -1502,7 +1040,7 @@ namespace Apache.Geode.Client.UnitTests
      {
          try
          {
-             Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable);
+             Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable, CacheHelper.DCache);
              Serializable.RegisterPdxType(NestedPdx.CreateDeserializable);
              Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
              Serializable.RegisterPdxType(PdxTypes2.CreateDeserializable);
@@ -3487,20 +3025,6 @@ namespace Apache.Geode.Client.UnitTests
 
        Assert.AreEqual(pp, ppOrig, "Parent pdx should be equal ");
 
-       //Statistics chk for Pdx.
-       StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-       StatisticsType type = factory.FindType("CachePerfStats");
-       if (type != null) {
-         Statistics rStats = factory.FindFirstStatisticsByType(type);
-         if (rStats != null) {
-           Util.Log("pdxInstanceDeserializations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceDeserializations"));
-           Util.Log("pdxInstanceCreations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceCreations"));
-           Util.Log("pdxInstanceDeserializationTime for PdxInstance getObject = {0} ", rStats.GetLong((string)"pdxInstanceDeserializationTime"));
-           Assert.AreEqual(rStats.GetInt((string)"pdxInstanceDeserializations"), 2, "pdxInstanceDeserializations should be 2.");
-           Assert.AreEqual(rStats.GetInt((string)"pdxInstanceCreations"), 2, "pdxInstanceCreations should be 2");
-           Assert.Greater(rStats.GetLong((string)"pdxInstanceDeserializationTime"), 0, "pdxInstanceDeserializationTime should be greater than 0");
-         }
-       }
      }
 
      void verifyPdxInstanceEquals()
@@ -3519,21 +3043,6 @@ namespace Apache.Geode.Client.UnitTests
 
        ret = (IPdxInstance)region0["pdxput2"];
        ret2 = (IPdxInstance)region0["pdxput2"];
-
-       //Statistics chk for Pdx.
-       StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-       StatisticsType type = factory.FindType("CachePerfStats");
-       if (type != null) {
-         Statistics rStats = factory.FindFirstStatisticsByType(type);
-         if (rStats != null) {
-           Util.Log("pdxInstanceDeserializations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceDeserializations"));
-           Util.Log("pdxInstanceCreations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceCreations"));
-           Util.Log("pdxInstanceDeserializationTime for PdxInstance getObject = {0} ", rStats.GetLong((string)"pdxInstanceDeserializationTime"));
-           Assert.AreEqual(rStats.GetInt((string)"pdxInstanceDeserializations"), 2, "pdxInstanceDeserializations should be 2.");
-           Assert.Greater(rStats.GetInt((string)"pdxInstanceCreations"), 2, "pdxInstanceCreations should be greater than 2");
-           Assert.Greater(rStats.GetLong((string)"pdxInstanceDeserializationTime"), 0, "pdxInstanceDeserializationTime should be greater than 0");
-         }
-       }
 
        Assert.AreEqual(ret, ret2, "parent pdx equals are not matched.");
      }
@@ -3558,21 +3067,6 @@ namespace Apache.Geode.Client.UnitTests
        ret = (IPdxInstance)region0["pdxput2"];
        pdxInstHashcode = ret.GetHashCode();
        Assert.AreEqual(javaPdxHC, pdxInstHashcode, "Pdxhashcode hashcode not matched with java padx hash code for Parentpdx class.");
-
-       //Statistics chk for Pdx.
-       StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-       StatisticsType type = factory.FindType("CachePerfStats");
-       if (type != null) {
-         Statistics rStats = factory.FindFirstStatisticsByType(type);
-         if (rStats != null) {
-           Util.Log("pdxInstanceDeserializations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceDeserializations"));
-           Util.Log("pdxInstanceCreations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceCreations"));
-           Util.Log("pdxInstanceDeserializationTime for PdxInstance getObject = {0} ", rStats.GetLong((string)"pdxInstanceDeserializationTime"));
-           Assert.AreEqual(rStats.GetInt((string)"pdxInstanceDeserializations"), 2, "pdxInstanceDeserializations should be 2.");
-           Assert.Greater(rStats.GetInt((string)"pdxInstanceCreations"), 2, "pdxInstanceCreations should be greater than 2");
-           Assert.Greater(rStats.GetLong((string)"pdxInstanceDeserializationTime"), 0, "pdxInstanceDeserializationTime should be greater than 0");
-         }
-       }
      }
 
      void accessPdxInstance()
@@ -3992,21 +3486,6 @@ namespace Apache.Geode.Client.UnitTests
        Assert.AreNotEqual(pdxins, newpdxins, "parent pdx should be not equal");
        Assert.AreNotEqual(cpi, newpdxins.GetField("_childPdx"), "child pdx instance should be equal");
        Assert.AreEqual(new ChildPdx(2), ((IPdxInstance)(newpdxins.GetField("_childPdx"))).GetObject(), "child pdx instance should be equal");
-
-       //Statistics chk for Pdx.
-       StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-       StatisticsType type = factory.FindType("CachePerfStats");
-       if (type != null) {
-         Statistics rStats = factory.FindFirstStatisticsByType(type);
-         if (rStats != null) {
-           Util.Log("pdxInstanceDeserializations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceDeserializations"));
-           Util.Log("pdxInstanceCreations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceCreations"));
-           Util.Log("pdxInstanceDeserializationTime for PdxInstance getObject = {0} ", rStats.GetLong((string)"pdxInstanceDeserializationTime"));
-           Assert.AreEqual(rStats.GetInt((string)"pdxInstanceDeserializations"), 6, "pdxInstanceDeserializations should be 6.");
-           Assert.Greater(rStats.GetInt((string)"pdxInstanceCreations"), 2, "pdxInstanceCreations should be greater than 2");
-           Assert.Greater(rStats.GetLong((string)"pdxInstanceDeserializationTime"), 0, "pdxInstanceDeserializationTime should be greater than 0");
-         }
-       }
      }
 
      void runPdxInstanceTest()
@@ -4097,21 +3576,6 @@ namespace Apache.Geode.Client.UnitTests
        IPdxInstance pi2 = (IPdxInstance)region0[1];
 
        Assert.AreEqual(pi, pi2, "Both pdx instance should equal.");
-
-       //Statistics chk for Pdx.
-       StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-       StatisticsType type = factory.FindType("CachePerfStats");
-       if (type != null) {
-         Statistics rStats = factory.FindFirstStatisticsByType(type);
-         if (rStats != null) {
-           Util.Log("pdxInstanceDeserializations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceDeserializations"));
-           Util.Log("pdxInstanceCreations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceCreations"));
-           Util.Log("pdxInstanceDeserializationTime for PdxInstance getObject = {0} ", rStats.GetLong((string)"pdxInstanceDeserializationTime"));
-           Assert.AreEqual(rStats.GetInt((string)"pdxInstanceDeserializations"), 0, "pdxInstanceDeserializations should be 0.");
-           Assert.AreEqual(rStats.GetInt((string)"pdxInstanceCreations"), 2, "pdxInstanceCreations should be 2");
-           Assert.AreEqual(rStats.GetLong((string)"pdxInstanceDeserializationTime"), 0, "pdxInstanceDeserializationTime should be 0");
-         }
-       }
      }
 
      void putPdxWithNullIdentityFields()
@@ -4144,21 +3608,6 @@ namespace Apache.Geode.Client.UnitTests
        region0.GetAll(keys, values, null);
 
        Assert.AreEqual(values.Count, 2, "Getall count should be two");
-
-       //Statistics chk for Pdx.
-       StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-       StatisticsType type = factory.FindType("CachePerfStats");
-       if (type != null) {
-         Statistics rStats = factory.FindFirstStatisticsByType(type);
-         if (rStats != null) {
-           Util.Log("pdxInstanceDeserializations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceDeserializations"));
-           Util.Log("pdxInstanceCreations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceCreations"));
-           Util.Log("pdxInstanceDeserializationTime for PdxInstance getObject = {0} ", rStats.GetLong((string)"pdxInstanceDeserializationTime"));
-           Assert.AreEqual(rStats.GetInt((string)"pdxInstanceDeserializations"), 0, "pdxInstanceDeserializations should be 0.");
-           Assert.AreEqual(rStats.GetInt((string)"pdxInstanceCreations"), 6, "pdxInstanceCreations should be 6");
-           Assert.AreEqual(rStats.GetLong((string)"pdxInstanceDeserializationTime"), 0, "pdxInstanceDeserializationTime should be 0");
-         }
-       }
      }
 
      void runPdxReadSerializedTest()
@@ -4553,21 +4002,6 @@ namespace Apache.Geode.Client.UnitTests
        newpdxins = (IPdxInstance)lRegion["pdxput"];
        Assert.AreEqual((CacheableLinkedHashSet)newpdxins.GetField("m_clhs"), clhs, "CacheableLinkedHashSet is not equal");
        Assert.AreNotEqual(pdxins, newpdxins, "PdxInstance should not be equal");
-
-       //Statistics chk for Pdx.
-       StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-       StatisticsType type = factory.FindType("CachePerfStats");
-       if (type != null) {
-         Statistics rStats = factory.FindFirstStatisticsByType(type);
-         if (rStats != null) {
-           Util.Log("pdxInstanceDeserializations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceDeserializations"));
-           Util.Log("pdxInstanceCreations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceCreations"));
-           Util.Log("pdxInstanceDeserializationTime for PdxInstance getObject = {0} ", rStats.GetLong((string)"pdxInstanceDeserializationTime"));
-           Assert.AreEqual(rStats.GetInt((string)"pdxInstanceDeserializations"), 0, "pdxInstanceDeserializations should be 0.");
-           Assert.Greater(rStats.GetInt((string)"pdxInstanceCreations"), 0, "pdxInstanceCreations should be greater than 0");
-           Assert.AreEqual(rStats.GetLong((string)"pdxInstanceDeserializationTime"), 0, "pdxInstanceDeserializationTime should be 0");
-         }
-       }
      }
 
      void runPdxInstanceLocalTest()
@@ -4693,20 +4127,6 @@ namespace Apache.Geode.Client.UnitTests
        ret = region0["pp"];
 
        Assert.AreEqual(ret, pp, "parent pdx should be same");
-       //Statistics chk for Pdx.
-       StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-       StatisticsType type = factory.FindType("CachePerfStats");
-       if (type != null) {
-         Statistics rStats = factory.FindFirstStatisticsByType(type);
-         if (rStats != null) {
-           Util.Log("pdxInstanceDeserializations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceDeserializations"));
-           Util.Log("pdxInstanceCreations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceCreations"));
-           Util.Log("pdxInstanceDeserializationTime for PdxInstance getObject = {0} ", rStats.GetLong((string)"pdxInstanceDeserializationTime"));
-           Assert.AreEqual(rStats.GetInt((string)"pdxInstanceDeserializations"), 1, "pdxInstanceDeserializations should be 1.");
-           Assert.AreEqual(rStats.GetInt((string)"pdxInstanceCreations"), 0, "pdxInstanceCreations should be 0");
-           Assert.Greater(rStats.GetLong((string)"pdxInstanceDeserializationTime"), 0, "pdxInstanceDeserializationTime should be greater than 0");
-         }
-       }
      }
 
     //this test use write field Api
@@ -4795,21 +4215,6 @@ namespace Apache.Geode.Client.UnitTests
        ret = region0["ppwf"];
 
        Assert.AreEqual(ret, pp, "parent pdx should be same");
-
-       //Statistics chk for Pdx.
-       StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-       StatisticsType type = factory.FindType("CachePerfStats");
-       if (type != null) {
-         Statistics rStats = factory.FindFirstStatisticsByType(type);
-         if (rStats != null) {
-           Util.Log("pdxInstanceDeserializations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceDeserializations"));
-           Util.Log("pdxInstanceCreations for PdxInstance getObject = {0} ", rStats.GetInt((string)"pdxInstanceCreations"));
-           Util.Log("pdxInstanceDeserializationTime for PdxInstance getObject = {0} ", rStats.GetLong((string)"pdxInstanceDeserializationTime"));
-           Assert.AreEqual(rStats.GetInt((string)"pdxInstanceDeserializations"), 2, "pdxInstanceDeserializations should be 2.");
-           Assert.AreEqual(rStats.GetInt((string)"pdxInstanceCreations"), 0, "pdxInstanceCreations should be 0");
-           Assert.Greater(rStats.GetLong((string)"pdxInstanceDeserializationTime"), 0, "pdxInstanceDeserializationTime should be greater than 0");
-         }
-       }
      }
 
      public void runPdxInstanceFactoryTest()

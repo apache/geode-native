@@ -15,15 +15,7 @@
  * limitations under the License.
  */
 
-#include "GeodeStatisticsFactory.hpp"
-
-namespace apache {
-namespace geode {
-namespace statistics {
-
-StatisticsFactory* StatisticsFactory::getExistingInstance() {
-  return GeodeStatisticsFactory::getExistingInstance();
-}
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
+#include "ThinClientMultipleCaches.hpp"
+DUNIT_MAIN
+  { run(); }
+END_MAIN

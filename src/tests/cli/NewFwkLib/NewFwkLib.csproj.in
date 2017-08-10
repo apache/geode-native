@@ -230,48 +230,13 @@
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewFwkLib\ResumableTx\TxInfo.cs">
       <Link>ResumableTx\TxInfo.cs</Link>
     </Compile>
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewFwkLib\SmokePerf\ObjectHelper.cs">
-      <Link>SmokePerf\ObjectHelper.cs</Link>
-    </Compile>
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewFwkLib\SmokePerf\PerfStat.cs">
-      <Link>SmokePerf\PerfStat.cs</Link>
-    </Compile>
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewFwkLib\SmokePerf\SmokePerf.cs">
-      <Link>SmokePerf\SmokePerf.cs</Link>
-    </Compile>
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewFwkLib\SmokePerf\SmokeTasks.cs">
-      <Link>SmokePerf\SmokeTasks.cs</Link>
-    </Compile>
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewFwkLib\Utils.cs">
       <Link>Utils.cs</Link>
-    </Compile>
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewTestObject\ArrayOfByte.cs">
-      <Link>SmokePerf\ArrayOfByte.cs</Link>
-    </Compile>
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewTestObject\BatchObject.cs">
-      <Link>SmokePerf\BatchObject.cs</Link>
-    </Compile>
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewTestObject\DeltaFastAssetAccount.cs">
-      <Link>SmokePerf\DeltaFastAssetAccount.cs</Link>
-    </Compile>
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewTestObject\DeltaPSTObject.cs">
-      <Link>SmokePerf\DeltaPSTObject.cs</Link>
     </Compile>
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewTestObject\DeltaTestImpl.cs">
       <Link>DeltaTest\DeltaTestImpl.cs</Link>
     </Compile>
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewTestObject\EqStruct.cs">
-      <Link>SmokePerf\EqStruct.cs</Link>
-    </Compile>
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewTestObject\FastAsset.cs">
-      <Link>SmokePerf\FastAsset.cs</Link>
-    </Compile>
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewTestObject\FastAssetAccount.cs">
-      <Link>SmokePerf\FastAssetAccount.cs</Link>
-    </Compile>
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewTestObject\NoopAuthInit.cs">
-      <Link>SmokePerf\NoopAuthInit.cs</Link>
-    </Compile>
+
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewTestObject\PdxAutoSerializerObj.cs">
       <Link>PdxTest\PdxAutoSerializerObj.cs</Link>
     </Compile>
@@ -287,16 +252,10 @@
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewTestObject\PositionPdx.cs">
       <Link>QueryTest\PositionPdx.cs</Link>
     </Compile>
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewTestObject\PSTObject.cs">
-      <Link>SmokePerf\PSTObject.cs</Link>
-    </Compile>
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewTestObject\TestObject1.cs">
       <Link>DeltaTest\TestObject1.cs</Link>
     </Compile>
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\NewTestObject\TimeStampdObject.cs">
-      <Link>SmokePerf\TimeStampdObject.cs</Link>
-    </Compile>
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\QueryHelper\QueryHelperN.cs">
+   <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\QueryHelper\QueryHelperN.cs">
       <Link>QueryTest\QueryHelperN.cs</Link>
     </Compile>
   </ItemGroup>

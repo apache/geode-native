@@ -114,19 +114,6 @@ void AttributesFactory::setStatisticsEnabled( bool statisticsEnabled)
 
 std::unique_ptr<RegionAttributes> AttributesFactory::createRegionAttributes() {
   RegionAttributesPtr res;
-  /*
-  if( m_regionAttributes.m_poolName != nullptr )
-  {
-          PoolPtr pool= PoolManager::find( m_regionAttributes.m_poolName );
-    if (pool == nullptr) {
-      throw IllegalStateException("Pool not found while creating region
-  attributes");
-    }
-          setClientNotificationEnabled(pool->getSubscriptionEnabled());
-          if( pool->getSubscriptionRedundancy() >0 )
-  setClientNotificationEnabled(true);
-  }
-  */
   validateAttributes(m_regionAttributes);
   return std::unique_ptr<RegionAttributes>(
       new RegionAttributes(m_regionAttributes));

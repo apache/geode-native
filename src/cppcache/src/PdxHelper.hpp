@@ -77,9 +77,9 @@ class PdxHelper {
   static int32_t readInt(uint8_t* offsetPosition, int size);
 
   static int32_t getEnumValue(const char* enumClassName, const char* enumName,
-                              int hashcode);
+                              int hashcode, PdxTypeRegistryPtr pdxTypeRegistry);
 
-  static EnumInfoPtr getEnum(int enumId);
+  static EnumInfoPtr getEnum(int enumId, PdxTypeRegistryPtr pdxTypeRegistry);
 
   static CacheImpl* getCacheImpl();
 };

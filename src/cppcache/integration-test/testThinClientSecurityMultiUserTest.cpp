@@ -253,7 +253,6 @@ class UserThread : public ACE_Task_Base {
     creds->insert("security-password", tmp);
 
     m_numberOfOps = numberOfOps;
-    // m_userCache = pool->createSecureUserCache(creds);
     m_userCache = getVirtualCache(creds, pool);
     m_userRegion = m_userCache->getRegion(regionNamesAuth[0]);
     m_numberOfUsers = numberOfUsers;

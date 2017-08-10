@@ -18,7 +18,8 @@
 #define ROOT_NAME "testRegionTemplateArgs"
 
 #include <geode/GeodeCppCache.hpp>
-#include <CacheRegionHelper.hpp>
+#include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
 #include "fw_helper.hpp"
 
 using namespace apache::geode::client;
@@ -77,10 +78,12 @@ BEGIN_TEST(CheckTemplates)
     resValPtr = std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(keyPtr));
     ASSERT(CheckBytesEqual(resValPtr, valPtr),
            "put/get:: incorrect valPtr value");
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(stringPtr));
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(stringPtr));
     ASSERT(CheckBytesEqual(resValPtr, valPtr),
            "put/get:: incorrect valPtr value");
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(int32Ptr));
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(int32Ptr));
     ASSERT(CheckBytesEqual(resValPtr, valPtr),
            "put/get:: incorrect valPtr value");
     resValPtr = std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(intKey));
@@ -103,10 +106,12 @@ BEGIN_TEST(CheckTemplates)
     resValPtr = std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(keyPtr));
     ASSERT(CheckBytesEqual(resValPtr, bytesPtr),
            "put/get:: incorrect bytesPtr value");
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(stringPtr));
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(stringPtr));
     ASSERT(CheckBytesEqual(resValPtr, bytesPtr),
            "put/get:: incorrect bytesPtr value");
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(int32Ptr));
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(int32Ptr));
     ASSERT(CheckBytesEqual(resValPtr, bytesPtr),
            "put/get:: incorrect bytesPtr value");
     resValPtr = std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(intKey));
@@ -126,19 +131,24 @@ BEGIN_TEST(CheckTemplates)
     regPtr->put(charKey, stringPtr);
     regPtr->put(intKey, stringPtr);
 
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
     ASSERT(resStringPtr.get() == stringPtr.get(),
            "put/get:: incorrect stringPtr value");
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(stringPtr));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(stringPtr));
     ASSERT(resStringPtr.get() == stringPtr.get(),
            "put/get:: incorrect stringPtr value");
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(int32Ptr));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(int32Ptr));
     ASSERT(resStringPtr.get() == stringPtr.get(),
            "put/get:: incorrect stringPtr value");
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(intKey));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(intKey));
     ASSERT(resStringPtr.get() == stringPtr.get(),
            "put/get:: incorrect stringPtr value");
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(charKey));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(charKey));
     ASSERT(resStringPtr.get() == stringPtr.get(),
            "put/get:: incorrect stringPtr value");
 
@@ -152,19 +162,24 @@ BEGIN_TEST(CheckTemplates)
     regPtr->put(charKey, int32Ptr);
     regPtr->put(intKey, int32Ptr);
 
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(keyPtr));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(keyPtr));
     ASSERT(resInt32Ptr.get() == int32Ptr.get(),
            "put/get:: incorrect int32Ptr value");
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(stringPtr));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(stringPtr));
     ASSERT(resInt32Ptr.get() == int32Ptr.get(),
            "put/get:: incorrect int32Ptr value");
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(int32Ptr));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(int32Ptr));
     ASSERT(resInt32Ptr.get() == int32Ptr.get(),
            "put/get:: incorrect int32Ptr value");
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(intKey));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(intKey));
     ASSERT(resInt32Ptr.get() == int32Ptr.get(),
            "put/get:: incorrect int32Ptr value");
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(charKey));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(charKey));
     ASSERT(resInt32Ptr.get() == int32Ptr.get(),
            "put/get:: incorrect int32Ptr value");
 
@@ -178,19 +193,24 @@ BEGIN_TEST(CheckTemplates)
     regPtr->put(charKey, charVal);
     regPtr->put(intKey, charVal);
 
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
     ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
            "put/get:: incorrect charVal value");
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(stringPtr));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(stringPtr));
     ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
            "put/get:: incorrect charVal value");
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(int32Ptr));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(int32Ptr));
     ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
            "put/get:: incorrect charVal value");
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(intKey));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(intKey));
     ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
            "put/get:: incorrect charVal value");
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(charKey));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(charKey));
     ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
            "put/get:: incorrect charVal value");
 
@@ -204,15 +224,20 @@ BEGIN_TEST(CheckTemplates)
     regPtr->put(charKey, intVal);
     regPtr->put(intKey, intVal);
 
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(keyPtr));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(keyPtr));
     ASSERT(resInt32Ptr->value() == intVal, "put/get:: incorrect intVal value");
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(stringPtr));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(stringPtr));
     ASSERT(resInt32Ptr->value() == intVal, "put/get:: incorrect intVal value");
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(int32Ptr));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(int32Ptr));
     ASSERT(resInt32Ptr->value() == intVal, "put/get:: incorrect intVal value");
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(intKey));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(intKey));
     ASSERT(resInt32Ptr->value() == intVal, "put/get:: incorrect intVal value");
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(charKey));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(charKey));
     ASSERT(resInt32Ptr->value() == intVal, "put/get:: incorrect intVal value");
 
     // End with intVal
@@ -239,10 +264,12 @@ BEGIN_TEST(CheckTemplates)
     resValPtr = std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(keyPtr));
     ASSERT(CheckBytesEqual(resValPtr, valPtr),
            "create/get/localDestroy:: incorrect valPtr value");
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(stringPtr));
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(stringPtr));
     ASSERT(CheckBytesEqual(resValPtr, valPtr),
            "create/get/localDestroy:: incorrect valPtr value");
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(int32Ptr));
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(int32Ptr));
     ASSERT(CheckBytesEqual(resValPtr, valPtr),
            "create/get/localDestroy:: incorrect valPtr value");
     resValPtr = std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(intKey));
@@ -306,10 +333,12 @@ BEGIN_TEST(CheckTemplates)
     resValPtr = std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(keyPtr));
     ASSERT(CheckBytesEqual(resValPtr, bytesPtr),
            "create/get/localDestroy:: incorrect bytesPtr value");
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(stringPtr));
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(stringPtr));
     ASSERT(CheckBytesEqual(resValPtr, bytesPtr),
            "create/get/localDestroy:: incorrect bytesPtr value");
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(int32Ptr));
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(int32Ptr));
     ASSERT(CheckBytesEqual(resValPtr, bytesPtr),
            "create/get/localDestroy:: incorrect bytesPtr value");
     resValPtr = std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(intKey));
@@ -370,19 +399,24 @@ BEGIN_TEST(CheckTemplates)
     regPtr->create(charKey, stringPtr);
     regPtr->create(intKey, stringPtr);
 
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
     ASSERT(resStringPtr.get() == stringPtr.get(),
            "create/get/localDestroy:: incorrect stringPtr value");
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(stringPtr));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(stringPtr));
     ASSERT(resStringPtr.get() == stringPtr.get(),
            "create/get/localDestroy:: incorrect stringPtr value");
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(int32Ptr));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(int32Ptr));
     ASSERT(resStringPtr.get() == stringPtr.get(),
            "create/get/localDestroy:: incorrect stringPtr value");
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(intKey));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(intKey));
     ASSERT(resStringPtr.get() == stringPtr.get(),
            "create/get/localDestroy:: incorrect stringPtr value");
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(charKey));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(charKey));
     ASSERT(resStringPtr.get() == stringPtr.get(),
            "create/get/localDestroy:: incorrect stringPtr value");
 
@@ -437,19 +471,24 @@ BEGIN_TEST(CheckTemplates)
     regPtr->create(charKey, int32Ptr);
     regPtr->create(intKey, int32Ptr);
 
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(keyPtr));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(keyPtr));
     ASSERT(resInt32Ptr.get() == int32Ptr.get(),
            "create/get/localDestroy:: incorrect int32Ptr value");
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(stringPtr));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(stringPtr));
     ASSERT(resInt32Ptr.get() == int32Ptr.get(),
            "create/get/localDestroy:: incorrect int32Ptr value");
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(int32Ptr));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(int32Ptr));
     ASSERT(resInt32Ptr.get() == int32Ptr.get(),
            "create/get/localDestroy:: incorrect int32Ptr value");
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(intKey));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(intKey));
     ASSERT(resInt32Ptr.get() == int32Ptr.get(),
            "create/get/localDestroy:: incorrect int32Ptr value");
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(charKey));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(charKey));
     ASSERT(resInt32Ptr.get() == int32Ptr.get(),
            "create/get/localDestroy:: incorrect int32Ptr value");
 
@@ -504,19 +543,24 @@ BEGIN_TEST(CheckTemplates)
     regPtr->create(charKey, charVal);
     regPtr->create(intKey, charVal);
 
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
     ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
            "create/get/localDestroy:: incorrect charVal value");
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(stringPtr));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(stringPtr));
     ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
            "create/get/localDestroy:: incorrect charVal value");
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(int32Ptr));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(int32Ptr));
     ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
            "create/get/localDestroy:: incorrect charVal value");
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(intKey));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(intKey));
     ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
            "create/get/localDestroy:: incorrect charVal value");
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(regPtr->get(charKey));
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr->get(charKey));
     ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
            "create/get/localDestroy:: incorrect charVal value");
 
@@ -571,19 +615,24 @@ BEGIN_TEST(CheckTemplates)
     regPtr->create(charKey, intVal);
     regPtr->create(intKey, intVal);
 
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(keyPtr));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(keyPtr));
     ASSERT(resInt32Ptr->value() == intVal,
            "create/get/localDestroy:: incorrect intVal value");
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(stringPtr));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(stringPtr));
     ASSERT(resInt32Ptr->value() == intVal,
            "create/get/localDestroy:: incorrect intVal value");
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(int32Ptr));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(int32Ptr));
     ASSERT(resInt32Ptr->value() == intVal,
            "create/get/localDestroy:: incorrect intVal value");
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(intKey));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(intKey));
     ASSERT(resInt32Ptr->value() == intVal,
            "create/get/localDestroy:: incorrect intVal value");
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(charKey));
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(charKey));
     ASSERT(resInt32Ptr->value() == intVal,
            "create/get/localDestroy:: incorrect intVal value");
 
@@ -644,23 +693,28 @@ BEGIN_TEST(CheckTemplates)
     regPtr->create(intKey, valPtr);
 
     resEntryPtr = regPtr->getEntry(keyPtr);
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
     ASSERT(CheckBytesEqual(resValPtr, valPtr),
            "create/getEntry/destroy:: incorrect valPtr value");
     resEntryPtr = regPtr->getEntry(stringPtr);
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
     ASSERT(CheckBytesEqual(resValPtr, valPtr),
            "create/getEntry/destroy:: incorrect valPtr value");
     resEntryPtr = regPtr->getEntry(int32Ptr);
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
     ASSERT(CheckBytesEqual(resValPtr, valPtr),
            "create/getEntry/destroy:: incorrect valPtr value");
     resEntryPtr = regPtr->getEntry(charKey);
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
     ASSERT(CheckBytesEqual(resValPtr, valPtr),
            "create/getEntry/destroy:: incorrect valPtr value");
     resEntryPtr = regPtr->getEntry(intKey);
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
     ASSERT(CheckBytesEqual(resValPtr, valPtr),
            "create/getEntry/destroy:: incorrect valPtr value");
 
@@ -716,23 +770,28 @@ BEGIN_TEST(CheckTemplates)
     regPtr->create(intKey, bytesPtr);
 
     resEntryPtr = regPtr->getEntry(keyPtr);
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
     ASSERT(CheckBytesEqual(resValPtr, bytesPtr),
            "create/getEntry/destroy:: incorrect bytesPtr value");
     resEntryPtr = regPtr->getEntry(stringPtr);
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
     ASSERT(CheckBytesEqual(resValPtr, bytesPtr),
            "create/getEntry/destroy:: incorrect bytesPtr value");
     resEntryPtr = regPtr->getEntry(int32Ptr);
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
     ASSERT(CheckBytesEqual(resValPtr, bytesPtr),
            "create/getEntry/destroy:: incorrect bytesPtr value");
     resEntryPtr = regPtr->getEntry(charKey);
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
     ASSERT(CheckBytesEqual(resValPtr, bytesPtr),
            "create/getEntry/destroy:: incorrect bytesPtr value");
     resEntryPtr = regPtr->getEntry(intKey);
-    resValPtr = std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
+    resValPtr =
+        std::dynamic_pointer_cast<CacheableBytes>(resEntryPtr->getValue());
     ASSERT(CheckBytesEqual(resValPtr, bytesPtr),
            "create/getEntry/destroy:: incorrect bytesPtr value");
 
@@ -788,23 +847,28 @@ BEGIN_TEST(CheckTemplates)
     regPtr->create(intKey, stringPtr);
 
     resEntryPtr = regPtr->getEntry(keyPtr);
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
     ASSERT(resStringPtr.get() == stringPtr.get(),
            "create/getEntry/destroy:: incorrect stringPtr value");
     resEntryPtr = regPtr->getEntry(stringPtr);
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
     ASSERT(resStringPtr.get() == stringPtr.get(),
            "create/getEntry/destroy:: incorrect stringPtr value");
     resEntryPtr = regPtr->getEntry(int32Ptr);
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
     ASSERT(resStringPtr.get() == stringPtr.get(),
            "create/getEntry/destroy:: incorrect stringPtr value");
     resEntryPtr = regPtr->getEntry(intKey);
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
     ASSERT(resStringPtr.get() == stringPtr.get(),
            "create/getEntry/destroy:: incorrect stringPtr value");
     resEntryPtr = regPtr->getEntry(charKey);
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
     ASSERT(resStringPtr.get() == stringPtr.get(),
            "create/getEntry/destroy:: incorrect stringPtr value");
 
@@ -860,23 +924,28 @@ BEGIN_TEST(CheckTemplates)
     regPtr->create(intKey, int32Ptr);
 
     resEntryPtr = regPtr->getEntry(keyPtr);
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
     ASSERT(resInt32Ptr.get() == int32Ptr.get(),
            "create/getEntry/destroy:: incorrect int32Ptr value");
     resEntryPtr = regPtr->getEntry(stringPtr);
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
     ASSERT(resInt32Ptr.get() == int32Ptr.get(),
            "create/getEntry/destroy:: incorrect int32Ptr value");
     resEntryPtr = regPtr->getEntry(int32Ptr);
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
     ASSERT(resInt32Ptr.get() == int32Ptr.get(),
            "create/getEntry/destroy:: incorrect int32Ptr value");
     resEntryPtr = regPtr->getEntry(intKey);
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
     ASSERT(resInt32Ptr.get() == int32Ptr.get(),
            "create/getEntry/destroy:: incorrect int32Ptr value");
     resEntryPtr = regPtr->getEntry(charKey);
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
     ASSERT(resInt32Ptr.get() == int32Ptr.get(),
            "create/getEntry/destroy:: incorrect int32Ptr value");
 
@@ -932,23 +1001,28 @@ BEGIN_TEST(CheckTemplates)
     regPtr->create(intKey, charVal);
 
     resEntryPtr = regPtr->getEntry(keyPtr);
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
     ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
            "create/getEntry/destroy:: incorrect charVal value");
     resEntryPtr = regPtr->getEntry(stringPtr);
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
     ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
            "create/getEntry/destroy:: incorrect charVal value");
     resEntryPtr = regPtr->getEntry(int32Ptr);
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
     ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
            "create/getEntry/destroy:: incorrect charVal value");
     resEntryPtr = regPtr->getEntry(intKey);
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
     ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
            "create/getEntry/destroy:: incorrect charVal value");
     resEntryPtr = regPtr->getEntry(charKey);
-    resStringPtr = std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
+    resStringPtr =
+        std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
     ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
            "create/getEntry/destroy:: incorrect charVal value");
 
@@ -1004,23 +1078,28 @@ BEGIN_TEST(CheckTemplates)
     regPtr->create(intKey, intVal);
 
     resEntryPtr = regPtr->getEntry(keyPtr);
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
     ASSERT(resInt32Ptr->value() == intVal,
            "create/getEntry/destroy:: incorrect intVal value");
     resEntryPtr = regPtr->getEntry(stringPtr);
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
     ASSERT(resInt32Ptr->value() == intVal,
            "create/getEntry/destroy:: incorrect intVal value");
     resEntryPtr = regPtr->getEntry(int32Ptr);
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
     ASSERT(resInt32Ptr->value() == intVal,
            "create/getEntry/destroy:: incorrect intVal value");
     resEntryPtr = regPtr->getEntry(intKey);
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
     ASSERT(resInt32Ptr->value() == intVal,
            "create/getEntry/destroy:: incorrect intVal value");
     resEntryPtr = regPtr->getEntry(charKey);
-    resInt32Ptr = std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
+    resInt32Ptr =
+        std::dynamic_pointer_cast<CacheableInt32>(resEntryPtr->getValue());
     ASSERT(resInt32Ptr->value() == intVal,
            "create/getEntry/destroy:: incorrect intVal value");
 

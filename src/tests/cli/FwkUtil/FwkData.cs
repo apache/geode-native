@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml;
 
+
 #pragma warning disable 618
 
 namespace Apache.Geode.Client.FwkLib
@@ -189,172 +190,8 @@ namespace Apache.Geode.Client.FwkLib
     
     public static Dictionary<string, FwkData> ReadDataNodes(XmlNode node)
     {
-      XmlNodeList xmlNodes = node.SelectNodes("data");
-      // Console.WriteLine("Total number of data nodes found = " + xmlNodes.Count);
-      if (xmlNodes != null)
-      {
-        Dictionary<string, FwkData> dataNodes = new Dictionary<string, FwkData>();
-        foreach (XmlNode xmlNode in xmlNodes)
-        {
-          XmlAttribute tmpattr = xmlNode.Attributes["name"];
-          string name;
-          if (tmpattr != null)
-          {
-            name = tmpattr.Value;
-          }
-          else
-          {
-            throw new IllegalArgException("The xml file passed has an unknown format");
-          }
+    throw new Exception();
 
-          //Console.WriteLine("xmlNode.FirstChild.Name = " + xmlNode.FirstChild.Name);
-          if (xmlNode.FirstChild == null || xmlNode.FirstChild.NodeType == XmlNodeType.Text)
-          {
-            object data = xmlNode.InnerText;
-          //  Console.WriteLine("Going to construct FwkData with data = " + data.ToString() +
-           //   " data2 = null " + " datakind = " + DataKind.String.ToString());
-            FwkData td = new FwkData(data, null, DataKind.String);
-            dataNodes[name] = td;
-          }
-          else if (xmlNode.FirstChild.Name == "snippet")
-          {
-            string regionName;
-            if (xmlNode.FirstChild.FirstChild.Name == "region")
-            {
-              XmlAttribute nameattr = xmlNode.FirstChild.FirstChild.Attributes["name"];
-              regionName = nameattr.Value;
-
-              // Now collect the region atributes
-              XmlNode attrnode = xmlNode.FirstChild.FirstChild.FirstChild;
-              Apache.Geode.Client.Properties<string, string> rattr = Apache.Geode.Client.Properties<string, string>.Create<string, string>();
-              //AttributesFactory af = new AttributesFactory();
-              if (attrnode.Name == "region-attributes")
-              {
-                XmlAttributeCollection attrcoll = attrnode.Attributes;
-                if (attrcoll != null)
-                {
-                  foreach (XmlAttribute eachattr in attrcoll)
-                  {
-                    rattr.Insert(eachattr.Name, eachattr.Value);
-                    //SetThisAttribute(eachattr.Name, eachattr, af);
-                  }
-                }
-                if (attrnode.ChildNodes != null)
-                {
-                  foreach (XmlNode tmpnode in attrnode.ChildNodes)
-                  {
-                    rattr.Insert(tmpnode.Name, tmpnode.Value);
-                    //SetThisAttribute(tmpnode.Name, tmpnode, af);
-                  }
-                }
-                Apache.Geode.Client.DataOutput dout = new Apache.Geode.Client.DataOutput();
-                //RegionAttributes rattr = af.CreateRegionAttributes();
-                rattr.ToData(dout);
-                // Console.WriteLine("Going to construct FwkData with region = " + regionName +
-                // " data2 = region attributes" + " datakind = " + DataKind.Region.ToString());
-                FwkData td = new FwkData(regionName, dout.GetBuffer(), DataKind.Region);
-                dataNodes[name] = td;
-              }
-              else
-              {
-                throw new IllegalArgException("The xml file passed has an unknown format");
-              }
-            }
-            else if (xmlNode.FirstChild.FirstChild.Name == "pool")
-            {
-              XmlAttribute nameattr = xmlNode.FirstChild.FirstChild.Attributes["name"];
-              String poolName = nameattr.Value;
-              // Now collect the pool atributes
-              Apache.Geode.Client.Properties<string, string> prop = Apache.Geode.Client.Properties<string, string>.Create<string, string>();
-              XmlAttributeCollection attrcoll = xmlNode.FirstChild.FirstChild.Attributes;
-              if (attrcoll != null)
-              {
-                foreach (XmlAttribute eachattr in attrcoll)
-                {
-                  prop.Insert(eachattr.Name, eachattr.Value);
-                }
-                Apache.Geode.Client.DataOutput dout = new Apache.Geode.Client.DataOutput();
-                prop.ToData(dout);
-                FwkData td = new FwkData(poolName, dout.GetBuffer(), DataKind.Pool);
-                dataNodes[name] = td;
-              }
-              else
-              {
-                throw new IllegalArgException("The xml file passed has an unknown format");
-              }
-            }
-            else
-            {
-              throw new IllegalArgException("The xml file passed has an unknown format");
-            }
-          }
-          else if (xmlNode.FirstChild.Name == "list")
-          {
-            List<string> tmplist = new List<string>();
-            XmlNode listNode = xmlNode.FirstChild;
-            if (listNode.FirstChild != null)
-            {
-              bool isOneOf = false;
-              if (listNode.FirstChild.Name == "oneOf")
-              {
-                isOneOf = true;
-                listNode = listNode.FirstChild;
-              }
-              XmlNodeList tmpListNodes = listNode.ChildNodes;
-              foreach (XmlNode itemnode in tmpListNodes)
-              {
-                if (itemnode.Name == "item")
-                {
-                  tmplist.Add(itemnode.InnerText);
-                  //Console.WriteLine("Adding the value " + itemnode.InnerText + " to the list");
-                }
-                else
-                {
-                  throw new IllegalArgException("The xml file passed has an unknown node " +
-                    itemnode.Name + " in data-list");
-                }
-              }
-              //Console.WriteLine("Going to construct FwkData list data: oneof = " + isOneOf.ToString() + " datakind = " + DataKind.List.ToString());
-              FwkData td = new FwkData(tmplist, isOneOf, DataKind.List);
-              dataNodes[name] = td;
-            }
-          }
-          else if ( xmlNode.FirstChild.Name == "range" )
-          {
-            XmlAttributeCollection rangeAttr = xmlNode.FirstChild.Attributes;
-            string lowmarkstr = rangeAttr["low"].Value;
-            string highmarkstr = rangeAttr["high"].Value;
-            int lowmark = int.Parse(lowmarkstr);
-            int highmark = int.Parse(highmarkstr);
-            //Console.WriteLine("Going to construct FwkData Range datakind = " + DataKind.Range.ToString() + " high = " + highmark + " low = " + lowmark);
-            FwkData td = new FwkData(lowmark, highmark, DataKind.Range);
-            dataNodes[name] = td;
-          }
-          else if (xmlNode.FirstChild.Name == "oneof")
-          {
-            XmlNodeList itemlist = xmlNode.FirstChild.ChildNodes;
-            List<string> opItemList = new List<string>();
-            foreach (XmlNode tmpitem in itemlist)
-            {
-              if (tmpitem.Name == "item")
-              {
-                opItemList.Add(tmpitem.InnerText);
-              }
-            }
-            FwkData td = new FwkData(opItemList, true, DataKind.List);
-            dataNodes[name] = td;
-          }
-          else
-          {
-            throw new IllegalArgException("The xml file passed has an unknown child: " +
-              xmlNode.FirstChild.Name + " ; number of childnodes: " +
-              (xmlNode.ChildNodes == null ? XmlNodeType.None :
-              xmlNode.FirstChild.NodeType));
-          }
-        }
-        return dataNodes;
-      }
-      return null;
     }
 
     public static void SetThisAttribute(string name, XmlNode node, Apache.Geode.Client.AttributesFactory<string, string> af)
@@ -887,45 +724,6 @@ namespace Apache.Geode.Client.FwkLib
       return null;
     }
 
-    /// <summary>
-    /// Read the region attributes for the given key.
-    /// </summary>
-    /// <param name="key">The key of the region to read.</param>
-    /// <returns>The attributes of the region.</returns>
-    public Apache.Geode.Client.RegionAttributes<string, string> GetRegionAttributes(string key)
-    {
-      FwkData data = ReadData(key);
-      if (data != null && data.Kind == DataKind.Region)
-      {
-        Apache.Geode.Client.AttributesFactory<string, string> af = new Apache.Geode.Client.AttributesFactory<string, string>();
-        Apache.Geode.Client.RegionAttributes<string, string> attrs = af.CreateRegionAttributes();
-        byte[] attrsArr = data.Data2 as byte[];
-        if (attrsArr != null && attrsArr.Length > 0)
-        {
-          Apache.Geode.Client.DataInput dinp = new Apache.Geode.Client.DataInput(attrsArr);
-          attrs.FromData(dinp);
-        }
-        return attrs;
-      }
-      return null;
-    }
-    public Apache.Geode.Client.Properties<string, string> GetPoolAttributes(string key)
-    {
-      FwkData data = ReadData(key);
-      if (data != null && data.Kind == DataKind.Pool)
-      {
-        Apache.Geode.Client.Properties<string, string> prop = Apache.Geode.Client.Properties<string, string>.Create<string, string>();
-        //RegionAttributes attrs = af.CreateRegionAttributes();
-        byte[] attrsArr = data.Data2 as byte[];
-        if (attrsArr != null && attrsArr.Length > 0)
-        {
-          Apache.Geode.Client.DataInput dinp = new Apache.Geode.Client.DataInput(attrsArr);
-          prop.FromData(dinp);
-        }
-        return prop;
-      }
-      return null;
-    }
 
     /// <summary>
     /// Reset a key to the start.

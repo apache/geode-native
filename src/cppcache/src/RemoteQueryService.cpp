@@ -21,20 +21,23 @@
 #include "CqServiceVsdStats.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "UserAttributes.hpp"
+#include "statistics/StatisticsManager.hpp"
 
 using namespace apache::geode::client;
 
-RemoteQueryService::RemoteQueryService(CacheImpl* cptr,
+RemoteQueryService::RemoteQueryService(CacheImpl* cache,
                                        ThinClientPoolDM* poolDM)
-    : m_invalid(true), m_cqService(nullptr) {
+    : m_invalid(true),
+      m_cqService(nullptr),
+      m_statisticsFactory(cache->getDistributedSystem()
+                              .getStatisticsManager()
+                              ->getStatisticsFactory()) {
   if (poolDM) {
     m_tccdm = poolDM;
   } else {
     m_tccdm =
-        new ThinClientCacheDistributionManager(cptr->tcrConnectionManager());
+        new ThinClientCacheDistributionManager(cache->tcrConnectionManager());
   }
-  // m_cqService = new CqService(m_tccdm);
-  // m_tccdm->init();
   LOGFINEST("Initialized m_tccdm");
 }
 
@@ -242,10 +245,10 @@ CqServiceStatisticsPtr RemoteQueryService::getCqServiceStatistics() {
         "QueryService::getCqServiceStatistics: Cache has been closed.");
   }
   // If cqService has not started, then no cq exists
-  if (m_cqService != nullptr) {
+  if (m_cqService) {
     return m_cqService->getCqServiceStatistics();
   }
-  return std::make_shared<CqServiceVsdStats>();
+  return nullptr;
 }
 
 void RemoteQueryService::receiveNotification(TcrMessage* msg) {

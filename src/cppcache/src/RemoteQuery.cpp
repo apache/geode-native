@@ -70,7 +70,13 @@ SelectResultsPtr RemoteQuery::execute(uint32_t timeout, const char* func,
     pool->getStats().incQueryExecutionId();
   }
   /*get the start time for QueryExecutionTime stat*/
-  int64_t sampleStartNanos = Utils::startStatOpTime();
+  bool enableTimeStatistics = pool->getConnectionManager()
+                                  .getCacheImpl()
+                                  ->getDistributedSystem()
+                                  .getSystemProperties()
+                                  .getEnableTimeStatistics();
+  int64_t sampleStartNanos =
+      enableTimeStatistics ? Utils::startStatOpTime() : 0;
   TcrMessageReply reply(true, tcdm);
   ChunkedQueryResponse* resultCollector = (new ChunkedQueryResponse(reply));
   reply.setChunkedResultHandler(
@@ -105,11 +111,10 @@ SelectResultsPtr RemoteQuery::execute(uint32_t timeout, const char* func,
   }
 
   /*update QueryExecutionTime stat */
-  if (pool != nullptr) {
-    Utils::updateStatOpTime(
-        pool->getStats().getStats(),
-        PoolStatType::getInstance()->getQueryExecutionTimeId(),
-        sampleStartNanos);
+  if (pool != nullptr && enableTimeStatistics) {
+    Utils::updateStatOpTime(pool->getStats().getStats(),
+                            pool->getStats().getQueryExecutionTimeId(),
+                            sampleStartNanos);
   }
   delete resultCollector;
   return sr;
@@ -130,6 +135,10 @@ GfErrType RemoteQuery::executeNoThrow(uint32_t timeout, TcrMessageReply& reply,
   if (paramList != nullptr) {
     // QUERY_WITH_PARAMETERS
     TcrMessageQueryWithParameters msg(
+        m_tccdm->getConnectionManager()
+            .getCacheImpl()
+            ->getCache()
+            ->createDataOutput(),
         m_queryString, nullptr, paramList,
         static_cast<int>(timeout * 1000) /* in milli second */, tcdm);
     msg.setTimeout(timeout);
@@ -152,7 +161,11 @@ GfErrType RemoteQuery::executeNoThrow(uint32_t timeout, TcrMessageReply& reply,
     }
     return err;
   } else {
-    TcrMessageQuery msg(m_queryString,
+    TcrMessageQuery msg(m_tccdm->getConnectionManager()
+                            .getCacheImpl()
+                            ->getCache()
+                            ->createDataOutput(),
+                        m_queryString,
                         static_cast<int>(timeout * 1000) /* in milli second */,
                         tcdm);
     msg.setTimeout(timeout);

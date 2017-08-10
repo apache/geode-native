@@ -26,8 +26,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-typedef PdxSerializable* (*PdxTypeFactoryMethod)();
-
 class CPPCACHE_EXPORT PdxSerializable : public CacheableKey {
  public:
   PdxSerializable();

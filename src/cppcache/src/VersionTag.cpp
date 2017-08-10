@@ -22,27 +22,21 @@
 
 using namespace apache::geode::client;
 
-VersionTag::VersionTag() {
-  m_bits = 0;
-  m_entryVersion = 0;
-  m_regionVersionHighBytes = 0;
-  m_regionVersionLowBytes = 0;
-  m_timeStamp = 0;
-  m_internalMemId = 0;
-  m_previousMemId = 0;
-}
+VersionTag::VersionTag(MemberListForVersionStamp& memberListForVersionStamp)
+    : VersionTag(0, 0, 0, 0, 0, memberListForVersionStamp) {}
 
 VersionTag::VersionTag(int32_t entryVersion, int16_t regionVersionHighBytes,
                        int32_t regionVersionLowBytes, uint16_t internalMemId,
-                       uint16_t previousMemId) {
-  m_bits = 0;
-  m_entryVersion = entryVersion;
-  m_regionVersionHighBytes = regionVersionHighBytes;
-  m_regionVersionLowBytes = regionVersionLowBytes;
-  m_timeStamp = 0;
-  m_internalMemId = internalMemId;
-  m_previousMemId = previousMemId;
-}
+                       uint16_t previousMemId,
+                       MemberListForVersionStamp& memberListForVersionStamp)
+    : m_bits(0),
+      m_entryVersion(entryVersion),
+      m_regionVersionHighBytes(regionVersionHighBytes),
+      m_regionVersionLowBytes(regionVersionLowBytes),
+      m_timeStamp(0),
+      m_internalMemId(internalMemId),
+      m_previousMemId(previousMemId),
+      m_memberListForVersionStamp(memberListForVersionStamp) {}
 
 VersionTag::~VersionTag() {}
 
@@ -80,7 +74,11 @@ Serializable* VersionTag::fromData(DataInput& input) {
   return this;
 }
 
-Serializable* VersionTag::createDeserializable() { return new VersionTag(); }
+Serializable* VersionTag::createDeserializable(
+    MemberListForVersionStamp& memberListForVersionStamp) {
+  return new VersionTag(memberListForVersionStamp);
+}
+
 void VersionTag::replaceNullMemberId(uint16_t memId) {
   if (m_previousMemId == 0) {
     m_previousMemId = memId;
@@ -90,24 +88,19 @@ void VersionTag::replaceNullMemberId(uint16_t memId) {
   }
 }
 void VersionTag::readMembers(uint16_t flags, DataInput& input) {
-  ClientProxyMembershipIDPtr previousMemId, internalMemId;
-  MemberListForVersionStampPtr memberList =
-      CacheImpl::getMemberListForVersionStamp();
   if ((flags & HAS_MEMBER_ID) != 0) {
-    internalMemId = ClientProxyMembershipIDPtr(new ClientProxyMembershipID());
-
+    auto internalMemId = std::make_shared<ClientProxyMembershipID>();
     internalMemId->readEssentialData(input);
-    m_internalMemId =
-        memberList->add((DSMemberForVersionStampPtr)internalMemId);
+    m_internalMemId = m_memberListForVersionStamp.add(
+        (DSMemberForVersionStampPtr)internalMemId);
   }
   if ((flags & HAS_PREVIOUS_MEMBER_ID) != 0) {
     if ((flags & DUPLICATE_MEMBER_IDS) != 0) {
       m_previousMemId = m_internalMemId;
     } else {
-      previousMemId = ClientProxyMembershipIDPtr(new ClientProxyMembershipID());
+      auto previousMemId = std::make_shared<ClientProxyMembershipID>();
       previousMemId->readEssentialData(input);
-      m_previousMemId =
-          memberList->add((DSMemberForVersionStampPtr)previousMemId);
+      m_previousMemId = m_memberListForVersionStamp.add(previousMemId);
     }
   }
 }

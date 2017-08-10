@@ -20,6 +20,7 @@
 #include <memory>
 #include "native_shared_ptr.hpp"
 #include "PkcsAuthInit.hpp"
+//#include "IAuthInitialize.hpp"
 
 using namespace System;
 

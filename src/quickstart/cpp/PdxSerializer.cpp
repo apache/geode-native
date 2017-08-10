@@ -16,22 +16,22 @@
  */
 
 /*
-* The PdxSerializer QuickStart Example.
-* This example takes the following steps:
-*
-* This example shows PdxSerializer usage.
-*
-* 1. Create a Geode Cache.
-* 2. Get the Person from the Cache.
-* 3. Populate some query Person objects on the Region.
-* 4. Get the pool, get the Query Service from Pool. Pool is define in
-* clientPdxSerializer.xml.
-* 5. Execute a query that returns a Result Set.
-* 6. Execute a query that returns a Struct Set.
-* 7. Execute the region shortcut/convenience query methods.
-* 8. Close the Cache.
-*
-*/
+ * The PdxSerializer QuickStart Example.
+ * This example takes the following steps:
+ *
+ * This example shows PdxSerializer usage.
+ *
+ * 1. Create a Geode Cache.
+ * 2. Get the Person from the Cache.
+ * 3. Populate some query Person objects on the Region.
+ * 4. Get the pool, get the Query Service from Pool. Pool is define in
+ * clientPdxSerializer.xml.
+ * 5. Execute a query that returns a Result Set.
+ * 6. Execute a query that returns a Struct Set.
+ * 7. Execute the region shortcut/convenience query methods.
+ * 8. Close the Cache.
+ *
+ */
 
 // Include the Geode library.
 #include <geode/GeodeCppCache.hpp>
@@ -165,22 +165,22 @@ int main(int argc, char** argv) {
     LOGINFO("Registered Person Query Objects");
 
     // Populate the Region with some Person objects.
-    Person* p1 = new Person((char *)"John", 1 /*ID*/, 23 /*age*/);
+    Person* p1 = new Person((char*)"John", 1 /*ID*/, 23 /*age*/);
     PdxWrapperPtr pdxobj1(new PdxWrapper(p1, CLASSNAME));
     regionPtr->put("Key1", pdxobj1);
 
-    Person* p2 = new Person((char *)"Jack", 2 /*ID*/, 20 /*age*/);
+    Person* p2 = new Person((char*)"Jack", 2 /*ID*/, 20 /*age*/);
     PdxWrapperPtr pdxobj2(new PdxWrapper(p2, CLASSNAME));
     regionPtr->put("Key2", pdxobj2);
 
-    Person* p3 = new Person((char *)"Tony", 3 /*ID*/, 35 /*age*/);
+    Person* p3 = new Person((char*)"Tony", 3 /*ID*/, 35 /*age*/);
     PdxWrapperPtr pdxobj3(new PdxWrapper(p3, CLASSNAME));
     regionPtr->put("Key3", pdxobj3);
 
     LOGINFO("Populated some Person Objects through PdxWrapper");
 
     // find the pool
-    PoolPtr poolPtr = PoolManager::find("examplePool");
+    PoolPtr poolPtr = cachePtr->getPoolManager().find("examplePool");
 
     // Get the QueryService from the Pool.
     QueryServicePtr qrySvcPtr = poolPtr->getQueryService();
@@ -218,7 +218,9 @@ int main(int argc, char** argv) {
     LOGINFO("Region Query returned %d rows", resultsPtr->size());
 
     // Execute the Region selectValue() API.
-    PdxWrapperPtr pdxWrapperPtr = std::dynamic_pointer_cast<apache::geode::client::PdxWrapper>(regionPtr->selectValue("m_id = 3"));
+    PdxWrapperPtr pdxWrapperPtr =
+        std::dynamic_pointer_cast<apache::geode::client::PdxWrapper>(
+            regionPtr->selectValue("m_id = 3"));
     Person* per = reinterpret_cast<Person*>(pdxWrapperPtr->getObject());
 
     LOGINFO(

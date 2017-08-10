@@ -24,6 +24,7 @@
 #include "../Log.hpp"
 #include "PdxTypeRegistry.hpp"
 
+
 using namespace System;
 
 namespace Apache
@@ -32,7 +33,7 @@ namespace Apache
   {
     namespace Client
     {
-
+      ref class Cache;
       /// <summary>
       /// to get the callback from c++ layer
       /// </summary>
@@ -40,17 +41,12 @@ namespace Apache
       {
       public:
 
-        inline CliCallbackDelegate( )
-        { 
-        }
+        CliCallbackDelegate()
+        {}
 
-        void Callback( )
-        {
-          Apache::Geode::Client::Log::Fine("CliCallbackDelgate::Callback( ) ");
-          Apache::Geode::Client::Internal::PdxTypeRegistry::clear();
-        }
-
-
+        void Callback(apache::geode::client::Cache& cache);
+        
+        CliCallbackDelegate(const CliCallbackDelegate^ other){}
       private:
 
       };

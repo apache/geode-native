@@ -105,13 +105,13 @@ std::string dtd_prefix = R"(<?xml version="1.0" encoding="UTF-8"?>
 <client-cache>)";
 
 TEST(CacheXmlParser, CanParseRegionConfigFromAValidXsdCacheConfig) {
-  CacheXmlParser parser;
+  CacheXmlParser parser(nullptr);
   std::string xml = xsd_prefix + valid_cache_config_body;
   parser.parseMemory(xml.c_str(), static_cast<int>(xml.length()));
 }
 
 TEST(CacheXmlParser, CanParseRegionConfigFromAValidDtdCacheConfig) {
-  CacheXmlParser parser;
+  CacheXmlParser parser(nullptr);
   std::string xml = dtd_prefix + valid_cache_config_body;
   parser.parseMemory(xml.c_str(), static_cast<int>(xml.length()));
 }

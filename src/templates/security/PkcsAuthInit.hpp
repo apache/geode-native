@@ -85,7 +85,7 @@ class PKCSAuthInit : public AuthInitialize {
    * The format expected is "host:port".
    * @returns the credentials to be used for the given <code>server</code>
    */
-  PropertiesPtr getCredentials(PropertiesPtr& securityprops,
+  PropertiesPtr getCredentials(const PropertiesPtr& securityprops,
                                const char* server);
 
   /**

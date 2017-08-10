@@ -19,6 +19,10 @@
 
 #include "../geode_defs.hpp"
 
+#include "begin_native.hpp"
+#include "CacheImpl.hpp"
+#include "end_native.hpp"
+
 #include "ManagedCacheableKey.hpp"
 #include "ManagedCacheableDelta.hpp"
 #include "ManagedCacheableKeyBytes.hpp"
@@ -155,9 +159,9 @@ namespace Apache
           }
           else{
             if(!SafeConvertClassGeneric::isAppDomainEnabled)
-              return new ManagedWrapper(mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId);
+              return new ManagedWrapper(mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId, nullptr);
             else
-              return new native::ManagedCacheableKeyBytesGeneric( mg_obj, true);
+              return new native::ManagedCacheableKeyBytesGeneric(mg_obj, true);
           }
         }
          //if (mg_obj == nullptr) return NULL;
@@ -230,7 +234,7 @@ namespace Apache
       }
 
       generic<class TValue>
-      inline static native::Cacheable* SafeGenericM2UMConvert( TValue mg_val )
+      inline static native::Cacheable* SafeGenericM2UMConvert( TValue mg_val, native::Cache* cache )
       {
         if (mg_val == nullptr) return NULL;
 
@@ -254,7 +258,7 @@ namespace Apache
 					if(!SafeConvertClassGeneric::isAppDomainEnabled)
 						return new native::PdxManagedCacheableKey(pdxType);
 					else
-						return new native::PdxManagedCacheableKeyBytes(pdxType, true);
+						return new native::PdxManagedCacheableKeyBytes(pdxType, true, cache);
         }
       
 				Apache::Geode::Client::IGeodeDelta^ sDelta =
@@ -274,7 +278,7 @@ namespace Apache
 						{
 							if(!SafeConvertClassGeneric::isAppDomainEnabled)
 							{
-									return new native::ManagedCacheableKeyGeneric( tmpIGFS );
+									return new native::ManagedCacheableKeyGeneric( tmpIGFS, nullptr);
 							}
 							else
 							{
@@ -288,16 +292,16 @@ namespace Apache
 					    if(!SafeConvertClassGeneric::isAppDomainEnabled)
 					    	return new native::PdxManagedCacheableKey(gcnew PdxWrapper(mg_obj));
 					    else
-						    return new native::PdxManagedCacheableKeyBytes(gcnew PdxWrapper(mg_obj), true);
+						    return new native::PdxManagedCacheableKeyBytes(gcnew PdxWrapper(mg_obj), true, nullptr);
             }
             throw gcnew Apache::Geode::Client::IllegalStateException(String::Format("Unable to map object type {0}. Possible Object type may not be registered or PdxSerializer is not registered. ", mg_obj->GetType()));
           }	
       }
 
       generic<class TValue>
-      inline static native::Cacheable* SafeGenericMSerializableConvert( TValue mg_obj )
+      inline static native::Cacheable* SafeGenericMSerializableConvert( TValue mg_obj, native::Cache* cache )
       {
-        return SafeGenericM2UMConvert<TValue>( mg_obj );
+        return SafeGenericM2UMConvert<TValue>( mg_obj, cache );
       }
 
 			inline static IPdxSerializable^ SafeUMSerializablePDXConvert( native::SerializablePtr obj )
@@ -345,7 +349,7 @@ namespace Apache
       inline static native::CacheableKey* SafeGenericMKeyConvert( TKey mg_obj )
       {
         if (mg_obj == nullptr) return NULL;
-        auto obj = Apache::Geode::Client::Serializable::GetUnmanagedValueGeneric<TKey>( mg_obj );
+        auto obj = Apache::Geode::Client::Serializable::GetUnmanagedValueGeneric<TKey>( mg_obj, nullptr );
         if (obj.get() != nullptr)
         {
           return obj.get();
@@ -353,9 +357,9 @@ namespace Apache
         else
         {
           if(!SafeConvertClassGeneric::isAppDomainEnabled)
-            return new native::ManagedCacheableKeyGeneric( SafeUMSerializableConvertGeneric(obj) );
+            return new native::ManagedCacheableKeyGeneric(SafeUMSerializableConvertGeneric(obj), nullptr);
           else
-            return new native::ManagedCacheableKeyBytesGeneric( SafeUMSerializableConvertGeneric(obj), true );
+            return new native::ManagedCacheableKeyBytesGeneric(SafeUMSerializableConvertGeneric(obj), true);
         }
       }
 
@@ -369,7 +373,7 @@ namespace Apache
           if(!SafeConvertClassGeneric::isAppDomainEnabled)
             return new native::ManagedCacheableKeyGeneric( mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId );
           else
-            return new native::ManagedCacheableKeyBytesGeneric( mg_obj, true );
+            return new native::ManagedCacheableKeyBytesGeneric( mg_obj, true, nullptr);
         }
       }
 

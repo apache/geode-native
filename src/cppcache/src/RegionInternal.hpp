@@ -82,26 +82,40 @@ class CacheEventFlags {
     return (m_flags == flags.m_flags);
   }
 
-  inline bool isNormal() const { return (m_flags & GF_NORMAL); }
-
-  inline bool isLocal() const { return (m_flags & GF_LOCAL); }
-
-  inline bool isNotification() const { return (m_flags & GF_NOTIFICATION); }
-
-  inline bool isNotificationUpdate() const {
-    return (m_flags & GF_NOTIFICATION_UPDATE);
+  inline bool isNormal() const {
+    return (m_flags & GF_NORMAL) > 0 ? true : false;
   }
 
-  inline bool isEviction() const { return (m_flags & GF_EVICTION); }
+  inline bool isLocal() const {
+    return (m_flags & GF_LOCAL) > 0 ? true : false;
+  }
 
-  inline bool isExpiration() const { return (m_flags & GF_EXPIRATION); }
+  inline bool isNotification() const {
+    return (m_flags & GF_NOTIFICATION) > 0 ? true : false;
+  }
 
-  inline bool isCacheClose() const { return (m_flags & GF_CACHE_CLOSE); }
+  inline bool isNotificationUpdate() const {
+    return (m_flags & GF_NOTIFICATION_UPDATE) > 0 ? true : false;
+  }
 
-  inline bool isNoCacheWriter() const { return (m_flags & GF_NOCACHEWRITER); }
+  inline bool isEviction() const {
+    return (m_flags & GF_EVICTION) > 0 ? true : false;
+  }
+
+  inline bool isExpiration() const {
+    return (m_flags & GF_EXPIRATION) > 0 ? true : false;
+  }
+
+  inline bool isCacheClose() const {
+    return (m_flags & GF_CACHE_CLOSE) > 0 ? true : false;
+  }
+
+  inline bool isNoCacheWriter() const {
+    return (m_flags & GF_NOCACHEWRITER) > 0 ? true : false;
+  }
 
   inline bool isEvictOrExpire() const {
-    return (m_flags & (GF_EVICTION | GF_EXPIRATION));
+    return (m_flags & (GF_EVICTION | GF_EXPIRATION)) > 0 ? true : false;
   }
 
   // special optimized method for CacheWriter invocation condition
@@ -254,7 +268,7 @@ class RegionInternal : public Region {
   /**
    * @brief constructor
    */
-  RegionInternal(const RegionAttributesPtr& attributes);
+  RegionInternal(const CachePtr& cache, const RegionAttributesPtr& attributes);
 
   void setLruEntriesLimit(uint32_t limit);
   void setRegionTimeToLiveExpirationAction(ExpirationAction::Action action);
@@ -286,10 +300,8 @@ class RegionInternal : public Region {
     return m_regionAttributes->getRegionExpiryEnabled();
   }
 
- private:
-  // Disallow copy constructor and assignment operator.
-  RegionInternal(const RegionInternal&);
-  RegionInternal& operator=(const RegionInternal&);
+  RegionInternal(const RegionInternal&) = delete;
+  RegionInternal& operator=(const RegionInternal&) = delete;
 };
 
 typedef std::shared_ptr<RegionInternal> RegionInternalPtr;

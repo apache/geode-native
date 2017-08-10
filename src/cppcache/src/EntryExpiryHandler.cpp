@@ -68,7 +68,8 @@ int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
           "[%s]",
           -sec, Utils::getCacheableKeyString(key)->asChar(),
           m_regionPtr->getFullPath());
-      CacheImpl::expiryTaskManager->resetTask(expProps.getExpiryTaskId(), -sec);
+      m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
+          expProps.getExpiryTaskId(), -sec);
       return 0;
     }
   } catch (...) {
@@ -77,7 +78,8 @@ int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
   LOGDEBUG("Removing expiry task for key [%s] of region [%s]",
            Utils::getCacheableKeyString(key)->asChar(),
            m_regionPtr->getFullPath());
-  CacheImpl::expiryTaskManager->resetTask(expProps.getExpiryTaskId(), 0);
+  m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
+      expProps.getExpiryTaskId(), 0);
   //  we now delete the handler in GF_Timer_Heap_ImmediateReset_T
   // and always return success.
 

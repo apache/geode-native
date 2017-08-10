@@ -52,12 +52,12 @@ namespace Apache
         /// Construct <c>DataInput</c> using an given array of bytes.
         /// </summary>
         /// <param name="buffer">
-        /// The buffer to use for reading data values.
+        /// The buffer to use for reading data values
         /// </param>
         /// <exception cref="IllegalArgumentException">
         /// if the buffer is null
         /// </exception>
-        DataInput( array<Byte>^ buffer );
+        DataInput( array<Byte>^ buffer, const native::Cache* cache );
 
         /// <summary>
         /// Construct <c>DataInput</c> using a given length of an array of
@@ -72,7 +72,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if the buffer is null
         /// </exception>
-        DataInput( array<Byte>^ buffer, System::Int32 len );
+        DataInput( array<Byte>^ buffer, System::Int32 len, const native::Cache* cache );
 
         /// <summary>
         /// Dispose: frees the internal buffer.
@@ -656,11 +656,12 @@ namespace Apache
         /// Internal constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline DataInput( apache::geode::client::DataInput* nativeptr, bool managedObject )
+        inline DataInput( apache::geode::client::DataInput* nativeptr, bool managedObject, const native::Cache* cache )
         { 
           m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(nativeptr);
           m_ispdxDesrialization = false;
           m_isRootObjectPdx = false;
+          m_cache = cache;
           m_cursor = 0;
           m_isManagedObject = managedObject;
           m_forStringDecode = gcnew array<Char>(100);
@@ -673,7 +674,7 @@ namespace Apache
           }
         }
 
-        DataInput( System::Byte* buffer, int size );
+        DataInput( System::Byte* buffer, int size, const native::Cache* cache );
 
         bool IsManagedObject()
         {
@@ -693,6 +694,7 @@ namespace Apache
         /// </summary>
         bool m_ispdxDesrialization;
         bool m_isRootObjectPdx;
+        const native::Cache* m_cache;
         System::Byte* m_buffer;
         unsigned int m_bufferLength;
         int m_cursor;

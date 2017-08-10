@@ -25,8 +25,6 @@ namespace geode {
 namespace client {
 
 ACE_DLL DiffieHellman::m_dll;
-bool DiffieHellman::m_inited = false;
-ACE_Recursive_Thread_Mutex DiffieHellman::s_mutex;
 
 #define INIT_DH_FUNC_PTR(OrigName) \
   DiffieHellman::OrigName##_Type DiffieHellman::OrigName##_Ptr = nullptr;
@@ -53,7 +51,9 @@ void* DiffieHellman::getOpenSSLFuncPtr(const char* function_name) {
 }
 
 void DiffieHellman::initOpenSSLFuncPtrs() {
-  if (DiffieHellman::m_inited) {
+  static bool inited = false;
+
+  if (inited) {
     return;
   }
 
@@ -78,15 +78,14 @@ void DiffieHellman::initOpenSSLFuncPtrs() {
   ASSIGN_DH_FUNC_PTR(gf_decryptDH)
   ASSIGN_DH_FUNC_PTR(gf_verifyDH)
 
-  DiffieHellman::m_inited = true;
+  inited = true;
 }
 
 void DiffieHellman::initDhKeys(const PropertiesPtr& props) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(DiffieHellman::s_mutex);
   m_dhCtx = nullptr;
 
-  CacheableStringPtr dhAlgo = props->find(SecurityClientDhAlgo);
-  CacheableStringPtr ksPath = props->find(SecurityClientKsPath);
+  const auto& dhAlgo = props->find(SecurityClientDhAlgo);
+  const auto& ksPath = props->find(SecurityClientKsPath);
 
   // Null check only for DH Algo
   if (dhAlgo == nullptr) {
@@ -122,20 +121,6 @@ void DiffieHellman::clearDhKeys(void) {
   gf_clearDhKeys_Ptr(m_dhCtx);
 
   m_dhCtx = nullptr;
-
-  /*
-  //reset all pointers
-#define CLEAR_DH_FUNC_PTR(OrigName) \
-  OrigName##_Ptr = nullptr;
-
-  CLEAR_DH_FUNC_PTR(gf_initDhKeys)
-  CLEAR_DH_FUNC_PTR(gf_clearDhKeys)
-  CLEAR_DH_FUNC_PTR(gf_getPublicKey)
-  CLEAR_DH_FUNC_PTR(gf_setPublicKeyOther)
-  CLEAR_DH_FUNC_PTR(gf_computeSharedSecret)
-  CLEAR_DH_FUNC_PTR(gf_encryptDH)
-  CLEAR_DH_FUNC_PTR(gf_verifyDH)
-  */
 
   return;
 }

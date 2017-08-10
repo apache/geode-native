@@ -107,8 +107,8 @@ void stepOneN(bool isPdxIgnoreUnreadFields = false,
               bool isPdxReadSerialized = false,
               PropertiesPtr config = nullptr) {
   try {
-    // Serializable::registerType(Position::createDeserializable);
-    // Serializable::registerType(Portfolio::createDeserializable);
+    // serializationRegistry->addType(Position::createDeserializable);
+    // serializationRegistry->addType(Portfolio::createDeserializable);
   } catch (const IllegalStateException&) {
     // ignore exception
   }
@@ -188,8 +188,8 @@ void stepOneForClient2(bool isPdxIgnoreUnreadFields = false) {
 void stepOne(bool isPdxIgnoreUnreadFields = false,
              PropertiesPtr config = nullptr) {
   try {
-    // Serializable::registerType(Position::createDeserializable);
-    // Serializable::registerType(Portfolio::createDeserializable);
+    // serializationRegistry->addType(Position::createDeserializable);
+    // serializationRegistry->addType(Portfolio::createDeserializable);
   } catch (const IllegalStateException&) {
     // ignore exception
   }
@@ -396,14 +396,15 @@ void checkPdxInstanceToStringAtServer(RegionPtr regionPtr) {
 // testPdxWriterAPIsWithInvalidArgs
 DUNIT_TASK_DEFINITION(CLIENT1, testPdxWriterAPIsWithInvalidArgs)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
     try {
-      Serializable::registerPdxType(InvalidPdxUsage::createDeserializable);
+      serializationRegistry->addPdxType(InvalidPdxUsage::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(
+      serializationRegistry->addPdxType(
           AddressWithInvalidAPIUsage::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
@@ -445,13 +446,14 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, testPdxReaderAPIsWithInvalidArgs)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
     try {
-      Serializable::registerPdxType(InvalidPdxUsage::createDeserializable);
+      serializationRegistry->addPdxType(InvalidPdxUsage::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(
+      serializationRegistry->addPdxType(
           AddressWithInvalidAPIUsage::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
@@ -480,8 +482,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, testPutWithMultilevelInheritance)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(PdxTests::Child::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::Child::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -513,8 +517,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, testGetWithMultilevelInheritance)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(PdxTests::Child::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::Child::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -599,14 +605,16 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(Address::createDeserializable);
+      serializationRegistry->addPdxType(Address::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -626,32 +634,21 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
     LOGDEBUG("Task:JavaPutGet: isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Task JavaPutGet:Objects of type PdxType should be equal");
-    /*
-    LOGINFO("NILKATH JavaPutGet new test.");
-    dynamic_cast<CacheImpl*>(cacheHelper->getCache().get())->setPdxReadSerialized(true);
-    LOGINFO("NILKATH JavaPutGet PDX-ON read-serialized = %d",
-    cacheHelper->getCache()->getPdxReadSerialized());
-    auto jsonDoc =
-    std::dynamic_pointer_cast<PdxInstance>(regPtr0->get("jsondoc1")); int age =
-    0; jsonDoc->getField("age", age); LOGINFO("NILKATH:: Task:JavaPutGet: age =
-    %d", age);
 
-    dynamic_cast<CacheImpl*>(cacheHelper->getCache().get())->setPdxReadSerialized(false);
-    LOGINFO("NILKATH JavaPutGet PDX-OFF read-serialized = %d",
-    cacheHelper->getCache()->getPdxReadSerialized());
-    */
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, JavaGet)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(Address::createDeserializable);
+      serializationRegistry->addPdxType(Address::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -674,8 +671,10 @@ END_TASK_DEFINITION
 /***************************************************************/
 DUNIT_TASK_DEFINITION(CLIENT2, putAtVersionTwoR21)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(
+      serializationRegistry->addPdxType(
           PdxTests::PdxTypesR2V2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
@@ -700,8 +699,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOneR22)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(
+      serializationRegistry->addPdxType(
           PdxTests::PdxTypesV1R2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
@@ -765,8 +766,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, putAtVersionOne31)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(PdxTests::PdxType3V1::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxType3V1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -789,8 +792,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo32)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(
+      serializationRegistry->addPdxType(
           PdxTests::PdxTypes3V2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
@@ -853,8 +858,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, putAtVersionOne21)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(PdxTests::PdxType2V1::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxType2V1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -876,8 +883,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo22)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(
+      serializationRegistry->addPdxType(
           PdxTests::PdxTypes2V2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
@@ -939,8 +948,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, putAtVersionOne11)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(PdxTests::PdxType1V1::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxType1V1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -965,8 +976,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, putAtVersionTwo1)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(
+      serializationRegistry->addPdxType(
           PdxTests::PdxTypesR1V2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
@@ -992,8 +1005,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne2)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(
+      serializationRegistry->addPdxType(
           PdxTests::PdxTypesV1R1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
@@ -1093,8 +1108,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, putV2PdxUI)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(
+      serializationRegistry->addPdxType(
           PdxTests::PdxTypesIgnoreUnreadFieldsV2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
@@ -1121,8 +1138,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, putV1PdxUI)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(
+      serializationRegistry->addPdxType(
           PdxTests::PdxTypesIgnoreUnreadFieldsV1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
@@ -1156,8 +1175,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo12)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(
+      serializationRegistry->addPdxType(
           PdxTests::PdxTypes1V2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
@@ -1237,16 +1258,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne15)
            "Line_272");
 
     regPtr0->put(keyport, pRet);
+    auto testNumberOfPreservedData =
+        TestUtils::testNumberOfPreservedData(*CacheRegionHelper::getCacheImpl(
+            CacheHelper::getHelper().getCache().get()));
     LOGDEBUG(
         "NIL:getPutAtVersionOne15 m_useWeakHashMap = %d and "
         "TestUtils::testNumberOfPreservedData() = %d",
-        m_useWeakHashMap, TestUtils::testNumberOfPreservedData());
+        m_useWeakHashMap, testNumberOfPreservedData);
     if (m_useWeakHashMap == false) {
-      ASSERT(TestUtils::testNumberOfPreservedData() == 0,
+      ASSERT(testNumberOfPreservedData == 0,
              "testNumberOfPreservedData should be zero at Line_288");
     } else {
       ASSERT(
-          TestUtils::testNumberOfPreservedData() > 0,
+          testNumberOfPreservedData > 0,
           "testNumberOfPreservedData should be Greater than zero at Line_292");
     }
   }
@@ -1267,13 +1291,15 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo16)
         "Objects of type PdxTypes1V2 should be equal at getPutAtVersionTwo14");
 
     regPtr0->put(keyport, pRet);
-
+    auto testNumberOfPreservedData =
+        TestUtils::testNumberOfPreservedData(*CacheRegionHelper::getCacheImpl(
+            CacheHelper::getHelper().getCache().get()));
     if (m_useWeakHashMap == false) {
-      ASSERT(TestUtils::testNumberOfPreservedData() == 0,
+      ASSERT(testNumberOfPreservedData == 0,
              "getPutAtVersionTwo16:testNumberOfPreservedData should be zero");
     } else {
       // it has extra fields, so no need to preserve data
-      ASSERT(TestUtils::testNumberOfPreservedData() == 0,
+      ASSERT(testNumberOfPreservedData == 0,
              "getPutAtVersionTwo16:testNumberOfPreservedData should be zero");
     }
   }
@@ -1281,9 +1307,11 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, Puts2)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(PdxTests::PdxTypes1::createDeserializable);
-      Serializable::registerPdxType(PdxTests::PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1302,9 +1330,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, Puts2)
 
     regPtr0->put(keyport2, pdxobj2);
 
-    // ASSERT(lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes()
+    // ASSERT(lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializationBytes()
     // ==
-    // lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes(),
+    // lregPtr->getCacheImpl()->getCachePerfStats().getPdxDeSerializationBytes(),
     //"Total pdxDeserializationBytes should be equal to Total
     // pdxSerializationsBytes.");
 
@@ -1346,9 +1374,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, Puts22)
 
     regPtr0->put(keyport2, pdxobj2);
 
-    // ASSERT(lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes()
+    // ASSERT(lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializationBytes()
     // ==
-    // lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes(),
+    // lregPtr->getCacheImpl()->getCachePerfStats().getPdxDeSerializationBytes(),
     //"Total pdxDeserializationBytes should be equal to Total
     // pdxSerializationsBytes.");
 
@@ -1358,9 +1386,12 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, Get2)
   {
+
     try {
-      Serializable::registerPdxType(PdxTests::PdxTypes1::createDeserializable);
-      Serializable::registerPdxType(PdxTests::PdxTypes2::createDeserializable);
+      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
+      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1376,14 +1407,15 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGet)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
     try {
-      Serializable::registerPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(Address::createDeserializable);
+      serializationRegistry->addPdxType(Address::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1405,24 +1437,34 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGet)
            "Pdx read serialized property should be false.");
 
     LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-    LOGINFO("PdxSerializations = %d ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-    LOGINFO("PdxDeSerializations = %d ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
-    LOGINFO("PdxSerializationBytes = %ld ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
     LOGINFO(
-        "PdxDeSerializationBytes = %ld ",
-        lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
-    ASSERT(lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() ==
-               lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
-           "Total pdxDeserializations should be equal to Total "
-           "pdxSerializations.");
+        "PdxSerializations = %d ",
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+    LOGINFO(
+        "PdxDeSerializations = %d ",
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxDeSerializations());
+    LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                ->getCachePerfStats()
+                                                .getPdxSerializationBytes());
+    LOGINFO("PdxDeSerializationBytes = %ld ",
+            lregPtr->getCacheImpl()
+                ->getCachePerfStats()
+                .getPdxDeSerializationBytes());
     ASSERT(
-        lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() ==
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes(),
-        "Total pdxDeserializationBytes should be equal to Total "
-        "pdxSerializationsBytes.");
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() ==
+            lregPtr->getCacheImpl()
+                ->getCachePerfStats()
+                .getPdxDeSerializations(),
+        "Total pdxDeserializations should be equal to Total "
+        "pdxSerializations.");
+    ASSERT(lregPtr->getCacheImpl()
+                   ->getCachePerfStats()
+                   .getPdxSerializationBytes() ==
+               lregPtr->getCacheImpl()
+                   ->getCachePerfStats()
+                   .getPdxDeSerializationBytes(),
+           "Total pdxDeserializationBytes should be equal to Total "
+           "pdxSerializationsBytes.");
 
     LOG("StepThree complete.\n");
   }
@@ -1431,21 +1473,22 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyNestedPdxInGet)
   {
     LOG("PutAndVerifyNestedPdxInGet started.");
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
 
     try {
-      Serializable::registerPdxType(NestedPdx::createDeserializable);
+      serializationRegistry->addPdxType(NestedPdx::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTests::PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1468,22 +1511,23 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, PutMixedVersionNestedPdx)
   {
     LOG("PutMixedVersionNestedPdx started.");
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
 
     try {
-      Serializable::registerPdxType(
+      serializationRegistry->addPdxType(
           MixedVersionNestedPdx::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTests::PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1512,60 +1556,61 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGFSInGet)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
     try {
-      Serializable::registerType(
+      serializationRegistry->addType(
           PdxInsideIGeodeSerializable::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(NestedPdx::createDeserializable);
+      serializationRegistry->addPdxType(NestedPdx::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes1::createDeserializable);
-    } catch (const IllegalStateException&) {
-      // ignore exception
-    }
-
-    try {
-      Serializable::registerPdxType(PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTypes3::createDeserializable);
-    } catch (const IllegalStateException&) {
-      // ignore exception
-    }
-    try {
-      Serializable::registerPdxType(PdxTypes4::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTypes5::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes3::createDeserializable);
+    } catch (const IllegalStateException&) {
+      // ignore exception
+    }
+    try {
+      serializationRegistry->addPdxType(PdxTypes4::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTypes6::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes5::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTypes7::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes6::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTypes8::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes7::createDeserializable);
+    } catch (const IllegalStateException&) {
+      // ignore exception
+    }
+
+    try {
+      serializationRegistry->addPdxType(PdxTypes8::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1588,60 +1633,61 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, VerifyPdxInGFSGetOnly)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
     try {
-      Serializable::registerType(
+      serializationRegistry->addType(
           PdxInsideIGeodeSerializable::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(NestedPdx::createDeserializable);
+      serializationRegistry->addPdxType(NestedPdx::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes1::createDeserializable);
-    } catch (const IllegalStateException&) {
-      // ignore exception
-    }
-
-    try {
-      Serializable::registerPdxType(PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTypes3::createDeserializable);
-    } catch (const IllegalStateException&) {
-      // ignore exception
-    }
-    try {
-      Serializable::registerPdxType(PdxTypes4::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTypes5::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes3::createDeserializable);
+    } catch (const IllegalStateException&) {
+      // ignore exception
+    }
+    try {
+      serializationRegistry->addPdxType(PdxTypes4::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTypes6::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes5::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTypes7::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes6::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTypes8::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes7::createDeserializable);
+    } catch (const IllegalStateException&) {
+      // ignore exception
+    }
+
+    try {
+      serializationRegistry->addPdxType(PdxTypes8::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1664,21 +1710,22 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyMixedVersionNestedGetOnly)
   {
     LOG("VerifyMixedVersionNestedGetOnly started.");
 
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
     try {
-      Serializable::registerPdxType(
+      serializationRegistry->addPdxType(
           MixedVersionNestedPdx::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTests::PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1707,20 +1754,21 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyNestedGetOnly)
   {
     LOG("VerifyNestedGetOnly started.");
 
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
     try {
-      Serializable::registerPdxType(NestedPdx::createDeserializable);
+      serializationRegistry->addPdxType(NestedPdx::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTests::PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1740,14 +1788,15 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, VerifyGetOnly)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
     try {
-      Serializable::registerPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(Address::createDeserializable);
+      serializationRegistry->addPdxType(Address::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1761,22 +1810,31 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyGetOnly)
     checkPdxInstanceToStringAtServer(regPtr0);
 
     LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-    LOGINFO("PdxSerializations = %d ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-    LOGINFO("PdxDeSerializations = %d ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
-    LOGINFO("PdxSerializationBytes = %ld ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
     LOGINFO(
-        "PdxDeSerializationBytes = %ld ",
-        lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
-    ASSERT(lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() <
-               lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+        "PdxSerializations = %d ",
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+    LOGINFO(
+        "PdxDeSerializations = %d ",
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxDeSerializations());
+    LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                ->getCachePerfStats()
+                                                .getPdxSerializationBytes());
+    LOGINFO("PdxDeSerializationBytes = %ld ",
+            lregPtr->getCacheImpl()
+                ->getCachePerfStats()
+                .getPdxDeSerializationBytes());
+    ASSERT(lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() <
+               lregPtr->getCacheImpl()
+                   ->getCachePerfStats()
+                   .getPdxDeSerializations(),
            "Total pdxDeserializations should be less than Total "
            "pdxSerializations.");
     ASSERT(
-        lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() <
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes(),
+        lregPtr->getCacheImpl()
+                ->getCachePerfStats()
+                .getPdxSerializationBytes() < lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxDeSerializationBytes(),
         "Total pdxDeserializationBytes should be less than Total "
         "pdxSerializationsBytes.");
     LOG("StepFour complete.\n");
@@ -1785,65 +1843,66 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
     try {
-      Serializable::registerPdxType(PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTypes3::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes3::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes4::createDeserializable);
-    } catch (const IllegalStateException&) {
-      // ignore exception
-    }
-
-    try {
-      Serializable::registerPdxType(PdxTypes5::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes4::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTypes6::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes5::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTypes7::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes6::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(PdxTypes8::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes7::createDeserializable);
+    } catch (const IllegalStateException&) {
+      // ignore exception
+    }
+
+    try {
+      serializationRegistry->addPdxType(PdxTypes8::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes9::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes9::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes10::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes10::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     // TODO
-    // Serializable::registerPdxType(PdxTests.PortfolioPdx.CreateDeserializable);
-    // Serializable::registerPdxType(PdxTests.PositionPdx.CreateDeserializable);
+    // serializationRegistry->addPdxType(PdxTests.PortfolioPdx.CreateDeserializable);
+    // serializationRegistry->addPdxType(PdxTests.PositionPdx.CreateDeserializable);
 
     // Region region0 = CacheHelper.GetVerifyRegion<object,
     // object>(m_regionNames[0]);
@@ -1861,27 +1920,34 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() ==
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() ==
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be equal to Total "
           "pdxSerializations.");
-      ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() ==
-              lregPtr->getCacheImpl()
-                  ->m_cacheStats->getPdxDeSerializationBytes(),
-          "Total pdxDeserializationBytes should be equal to Total "
-          "pdxSerializationsBytes.");
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() ==
+                 lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
+             "Total pdxDeserializationBytes should be equal to Total "
+             "pdxSerializationsBytes.");
     }
 
     {
@@ -1896,27 +1962,34 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() ==
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() ==
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be equal to Total "
           "pdxSerializations.");
-      ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() ==
-              lregPtr->getCacheImpl()
-                  ->m_cacheStats->getPdxDeSerializationBytes(),
-          "Total pdxDeserializationBytes should be equal to Total "
-          "pdxSerializationsBytes.");
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() ==
+                 lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
+             "Total pdxDeserializationBytes should be equal to Total "
+             "pdxSerializationsBytes.");
     }
 
     {
@@ -1931,27 +2004,34 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() ==
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() ==
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be equal to Total "
           "pdxSerializations.");
-      ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() ==
-              lregPtr->getCacheImpl()
-                  ->m_cacheStats->getPdxDeSerializationBytes(),
-          "Total pdxDeserializationBytes should be equal to Total "
-          "pdxSerializationsBytes.");
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() ==
+                 lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
+             "Total pdxDeserializationBytes should be equal to Total "
+             "pdxSerializationsBytes.");
     }
 
     {
@@ -1966,27 +2046,34 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() ==
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() ==
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be equal to Total "
           "pdxSerializations.");
-      ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() ==
-              lregPtr->getCacheImpl()
-                  ->m_cacheStats->getPdxDeSerializationBytes(),
-          "Total pdxDeserializationBytes should be equal to Total "
-          "pdxSerializationsBytes.");
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() ==
+                 lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
+             "Total pdxDeserializationBytes should be equal to Total "
+             "pdxSerializationsBytes.");
     }
 
     {
@@ -2001,27 +2088,34 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() ==
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() ==
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be equal to Total "
           "pdxSerializations.");
-      ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() ==
-              lregPtr->getCacheImpl()
-                  ->m_cacheStats->getPdxDeSerializationBytes(),
-          "Total pdxDeserializationBytes should be equal to Total "
-          "pdxSerializationsBytes.");
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() ==
+                 lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
+             "Total pdxDeserializationBytes should be equal to Total "
+             "pdxSerializationsBytes.");
     }
 
     {
@@ -2036,27 +2130,34 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() ==
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() ==
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be equal to Total "
           "pdxSerializations.");
-      ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() ==
-              lregPtr->getCacheImpl()
-                  ->m_cacheStats->getPdxDeSerializationBytes(),
-          "Total pdxDeserializationBytes should be equal to Total "
-          "pdxSerializationsBytes.");
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() ==
+                 lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
+             "Total pdxDeserializationBytes should be equal to Total "
+             "pdxSerializationsBytes.");
     }
 
     {
@@ -2071,27 +2172,34 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() ==
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() ==
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be equal to Total "
           "pdxSerializations.");
-      ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() ==
-              lregPtr->getCacheImpl()
-                  ->m_cacheStats->getPdxDeSerializationBytes(),
-          "Total pdxDeserializationBytes should be equal to Total "
-          "pdxSerializationsBytes.");
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() ==
+                 lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
+             "Total pdxDeserializationBytes should be equal to Total "
+             "pdxSerializationsBytes.");
     }
 
     {
@@ -2106,27 +2214,34 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() ==
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() ==
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be equal to Total "
           "pdxSerializations.");
-      ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() ==
-              lregPtr->getCacheImpl()
-                  ->m_cacheStats->getPdxDeSerializationBytes(),
-          "Total pdxDeserializationBytes should be equal to Total "
-          "pdxSerializationsBytes.");
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() ==
+                 lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
+             "Total pdxDeserializationBytes should be equal to Total "
+             "pdxSerializationsBytes.");
     }
 
     {
@@ -2141,27 +2256,34 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() ==
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() ==
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be equal to Total "
           "pdxSerializations.");
-      ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() ==
-              lregPtr->getCacheImpl()
-                  ->m_cacheStats->getPdxDeSerializationBytes(),
-          "Total pdxDeserializationBytes should be equal to Total "
-          "pdxSerializationsBytes.");
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() ==
+                 lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
+             "Total pdxDeserializationBytes should be equal to Total "
+             "pdxSerializationsBytes.");
     }
 
     {
@@ -2177,27 +2299,34 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() ==
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() ==
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be equal to Total "
           "pdxSerializations.");
-      ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() ==
-              lregPtr->getCacheImpl()
-                  ->m_cacheStats->getPdxDeSerializationBytes(),
-          "Total pdxDeserializationBytes should be equal to Total "
-          "pdxSerializationsBytes.");
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() ==
+                 lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
+             "Total pdxDeserializationBytes should be equal to Total "
+             "pdxSerializationsBytes.");
     }
 
     LOG("NIL:329:StepFive complete.\n");
@@ -2270,59 +2399,61 @@ END_TASK_DEFINITION
 // C1.putAllPdxTypes
 DUNIT_TASK_DEFINITION(CLIENT1, putAllPdxTypes)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes3::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes3::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes4::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes4::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes5::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes5::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes6::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes6::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes7::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes7::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes8::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes8::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes9::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes9::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes10::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes10::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     // TODO::Uncomment it once PortfolioPdx/PositionPdx Classes are ready
-    // Serializable::registerPdxType(PdxTests.PortfolioPdx.CreateDeserializable);
-    // Serializable::registerPdxType(PdxTests.PositionPdx.CreateDeserializable);
+    // serializationRegistry->addPdxType(PdxTests.PortfolioPdx.CreateDeserializable);
+    // serializationRegistry->addPdxType(PdxTests.PositionPdx.CreateDeserializable);
 
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
@@ -2438,8 +2569,10 @@ END_TASK_DEFINITION
 // c1.client1PutsV1Object
 DUNIT_TASK_DEFINITION(CLIENT1, client1PutsV1Object)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(PdxTests::PdxType3V1::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxType3V1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -2455,8 +2588,10 @@ END_TASK_DEFINITION
 // c2.client2GetsV1ObjectAndPutsV2Object
 DUNIT_TASK_DEFINITION(CLIENT2, client2GetsV1ObjectAndPutsV2Object)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(
+      serializationRegistry->addPdxType(
           PdxTests::PdxTypes3V2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
@@ -2539,59 +2674,61 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
   {
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+
     try {
-      Serializable::registerPdxType(PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes3::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes3::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes4::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes4::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes5::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes5::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes6::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes6::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes7::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes7::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes8::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes8::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes9::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes9::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      Serializable::registerPdxType(PdxTypes10::createDeserializable);
+      serializationRegistry->addPdxType(PdxTypes10::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     // TODO::Uncomment it once PortfolioPdx/PositionPdx Classes are ready
-    // Serializable::registerPdxType(PdxTests.PortfolioPdx.CreateDeserializable);
-    // Serializable::registerPdxType(PdxTests.PositionPdx.CreateDeserializable);
+    // serializationRegistry->addPdxType(PdxTests.PortfolioPdx.CreateDeserializable);
+    // serializationRegistry->addPdxType(PdxTests.PositionPdx.CreateDeserializable);
 
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
     bool flag = false;
@@ -2607,24 +2744,32 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() <
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() <
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be less than Total "
           "pdxSerializations.");
-      ASSERT(lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() <
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() <
                  lregPtr->getCacheImpl()
-                     ->m_cacheStats->getPdxDeSerializationBytes(),
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
              "Total pdxDeserializationBytes should be less than Total "
              "pdxSerializationsBytes.");
     }
@@ -2641,24 +2786,32 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() <
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() <
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be less than Total "
           "pdxSerializations.");
-      ASSERT(lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() <
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() <
                  lregPtr->getCacheImpl()
-                     ->m_cacheStats->getPdxDeSerializationBytes(),
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
              "Total pdxDeserializationBytes should be less than Total "
              "pdxSerializationsBytes.");
     }
@@ -2675,24 +2828,32 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() <
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() <
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be less than Total "
           "pdxSerializations.");
-      ASSERT(lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() <
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() <
                  lregPtr->getCacheImpl()
-                     ->m_cacheStats->getPdxDeSerializationBytes(),
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
              "Total pdxDeserializationBytes should be less than Total "
              "pdxSerializationsBytes.");
     }
@@ -2709,24 +2870,32 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() <
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() <
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be less than Total "
           "pdxSerializations.");
-      ASSERT(lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() <
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() <
                  lregPtr->getCacheImpl()
-                     ->m_cacheStats->getPdxDeSerializationBytes(),
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
              "Total pdxDeserializationBytes should be less than Total "
              "pdxSerializationsBytes.");
     }
@@ -2743,24 +2912,32 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() <
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() <
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be less than Total "
           "pdxSerializations.");
-      ASSERT(lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() <
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() <
                  lregPtr->getCacheImpl()
-                     ->m_cacheStats->getPdxDeSerializationBytes(),
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
              "Total pdxDeserializationBytes should be less than Total "
              "pdxSerializationsBytes.");
     }
@@ -2777,24 +2954,32 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() <
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() <
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be less than Total "
           "pdxSerializations.");
-      ASSERT(lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() <
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() <
                  lregPtr->getCacheImpl()
-                     ->m_cacheStats->getPdxDeSerializationBytes(),
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
              "Total pdxDeserializationBytes should be less than Total "
              "pdxSerializationsBytes.");
     }
@@ -2811,24 +2996,32 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() <
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() <
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be less than Total "
           "pdxSerializations.");
-      ASSERT(lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() <
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() <
                  lregPtr->getCacheImpl()
-                     ->m_cacheStats->getPdxDeSerializationBytes(),
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
              "Total pdxDeserializationBytes should be less than Total "
              "pdxSerializationsBytes.");
     }
@@ -2845,24 +3038,32 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() <
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() <
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be less than Total "
           "pdxSerializations.");
-      ASSERT(lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() <
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() <
                  lregPtr->getCacheImpl()
-                     ->m_cacheStats->getPdxDeSerializationBytes(),
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
              "Total pdxDeserializationBytes should be less than Total "
              "pdxSerializationsBytes.");
     }
@@ -2879,24 +3080,32 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() <
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() <
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be less than Total "
           "pdxSerializations.");
-      ASSERT(lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() <
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() <
                  lregPtr->getCacheImpl()
-                     ->m_cacheStats->getPdxDeSerializationBytes(),
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
              "Total pdxDeserializationBytes should be less than Total "
              "pdxSerializationsBytes.");
     }
@@ -2914,24 +3123,32 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-      LOGINFO("PdxSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-      LOGINFO("PdxDeSerializations = %d ",
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
       LOGINFO(
-          "PdxSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
-      LOGINFO(
-          "PdxDeSerializationBytes = %ld ",
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+          "PdxSerializations = %d ",
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+                                               ->getCachePerfStats()
+                                               .getPdxDeSerializations());
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                  ->getCachePerfStats()
+                                                  .getPdxSerializationBytes());
+      LOGINFO("PdxDeSerializationBytes = %ld ",
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializationBytes());
       ASSERT(
-          lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() <
-              lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+          lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() <
+              lregPtr->getCacheImpl()
+                  ->getCachePerfStats()
+                  .getPdxDeSerializations(),
           "Total pdxDeserializations should be less than Total "
           "pdxSerializations.");
-      ASSERT(lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() <
+      ASSERT(lregPtr->getCacheImpl()
+                     ->getCachePerfStats()
+                     .getPdxSerializationBytes() <
                  lregPtr->getCacheImpl()
-                     ->m_cacheStats->getPdxDeSerializationBytes(),
+                     ->getCachePerfStats()
+                     .getPdxDeSerializationBytes(),
              "Total pdxDeserializationBytes should be less than Total "
              "pdxSerializationsBytes.");
     }
@@ -2976,9 +3193,10 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, putCharTypes)
   {
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
 
     try {
-      Serializable::registerPdxType(PdxTests::CharTypes::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::CharTypes::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -3005,10 +3223,11 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, getCharTypes)
   {
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
 
     LOG("Trying to GET PDX objects.....\n");
     try {
-      Serializable::registerPdxType(PdxTests::CharTypes::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::CharTypes::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -3044,16 +3263,17 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
 
     // QueryHelper * qh = &QueryHelper::getHelper();
     try {
-      Serializable::registerPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(Address::createDeserializable);
+      serializationRegistry->addPdxType(Address::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -3098,37 +3318,47 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     regPtr0->get(keyport2);
 
     LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
-    LOGINFO("PdxSerializations = %d ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-    LOGINFO("PdxDeSerializations = %d ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
-    LOGINFO("PdxSerializationBytes = %ld ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
     LOGINFO(
-        "PdxDeSerializationBytes = %ld ",
-        lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
-    ASSERT(lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations() ==
-               lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
-           "Total pdxDeserializations should be equal to Total "
-           "pdxSerializations.");
+        "PdxSerializations = %d ",
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+    LOGINFO(
+        "PdxDeSerializations = %d ",
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxDeSerializations());
+    LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                ->getCachePerfStats()
+                                                .getPdxSerializationBytes());
+    LOGINFO("PdxDeSerializationBytes = %ld ",
+            lregPtr->getCacheImpl()
+                ->getCachePerfStats()
+                .getPdxDeSerializationBytes());
     ASSERT(
-        lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes() ==
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes(),
-        "Total pdxDeserializationBytes should be equal to Total "
-        "pdxSerializationsBytes.");
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations() ==
+            lregPtr->getCacheImpl()
+                ->getCachePerfStats()
+                .getPdxDeSerializations(),
+        "Total pdxDeserializations should be equal to Total "
+        "pdxSerializations.");
+    ASSERT(lregPtr->getCacheImpl()
+                   ->getCachePerfStats()
+                   .getPdxSerializationBytes() ==
+               lregPtr->getCacheImpl()
+                   ->getCachePerfStats()
+                   .getPdxDeSerializationBytes(),
+           "Total pdxDeserializationBytes should be equal to Total "
+           "pdxSerializationsBytes.");
 
     // Now update new keys with updated stats values, so that other client can
     // verify these values with its stats.
     CacheableKeyPtr keyport3 = CacheableKey::create(3);
     CacheableKeyPtr keyport4 = CacheableKey::create(4);
-    regPtr0->put(
-        keyport3,
-        CacheableInt32::create(
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations()));
+    regPtr0->put(keyport3,
+                 CacheableInt32::create(lregPtr->getCacheImpl()
+                                            ->getCachePerfStats()
+                                            .getPdxDeSerializations()));
     regPtr0->put(keyport4,
-                 CacheableInt64::create(
-                     lregPtr->getCacheImpl()
-                         ->m_cacheStats->getPdxDeSerializationBytes()));
+                 CacheableInt64::create(lregPtr->getCacheImpl()
+                                            ->getCachePerfStats()
+                                            .getPdxDeSerializationBytes()));
 
     LOG("Done populating PDX objects.....Success\n");
     LOG("StepThree complete.\n");
@@ -3141,16 +3371,17 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
     RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     // QueryHelper * qh = &QueryHelper::getHelper();
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
 
     LOG("Trying to GET PDX objects.....\n");
     try {
-      Serializable::registerPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      Serializable::registerPdxType(Address::createDeserializable);
+      serializationRegistry->addPdxType(Address::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -3254,15 +3485,19 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
 
     // Now get values for key3 and 4 to asset against stats of this client
     const auto lregPtr = std::dynamic_pointer_cast<LocalRegion>(regPtr0);
-    LOGINFO("PdxSerializations = %d ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializations());
-    LOGINFO("PdxDeSerializations = %d ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations());
-    LOGINFO("PdxSerializationBytes = %ld ",
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxSerializationBytes());
     LOGINFO(
-        "PdxDeSerializationBytes = %ld ",
-        lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes());
+        "PdxSerializations = %d ",
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
+    LOGINFO(
+        "PdxDeSerializations = %d ",
+        lregPtr->getCacheImpl()->getCachePerfStats().getPdxDeSerializations());
+    LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+                                                ->getCachePerfStats()
+                                                .getPdxSerializationBytes());
+    LOGINFO("PdxDeSerializationBytes = %ld ",
+            lregPtr->getCacheImpl()
+                ->getCachePerfStats()
+                .getPdxDeSerializationBytes());
 
     CacheableKeyPtr keyport3 = CacheableKey::create(3);
     CacheableKeyPtr keyport4 = CacheableKey::create(4);
@@ -3270,15 +3505,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
         std::dynamic_pointer_cast<CacheableInt32>(regPtr0->get(keyport3));
     auto int64Ptr =
         std::dynamic_pointer_cast<CacheableInt64>(regPtr0->get(keyport4));
-    ASSERT(int32Ptr->value() ==
-               lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializations(),
+    ASSERT(int32Ptr->value() == lregPtr->getCacheImpl()
+                                    ->getCachePerfStats()
+                                    .getPdxDeSerializations(),
            "Total pdxDeserializations should be equal to Total "
            "pdxSerializations.");
-    ASSERT(
-        int64Ptr->value() ==
-            lregPtr->getCacheImpl()->m_cacheStats->getPdxDeSerializationBytes(),
-        "Total pdxDeserializationBytes should be equal to Total "
-        "pdxSerializationsBytes.");
+    ASSERT(int64Ptr->value() == lregPtr->getCacheImpl()
+                                    ->getCachePerfStats()
+                                    .getPdxDeSerializationBytes(),
+           "Total pdxDeserializationBytes should be equal to Total "
+           "pdxSerializationsBytes.");
 
     // LOGINFO("GET OP Result: IntVal1=%d", obj2->getInt1());
     // LOGINFO("GET OP Result: IntVal2=%d", obj2->getInt2());

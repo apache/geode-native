@@ -181,7 +181,7 @@ namespace Apache.Geode.Client.UnitTests
 
       Boolean getResult = true;
       //test data independant function execution with result onServer
-      Pool/*<TKey, TValue>*/ pool = PoolManager/*<TKey, TValue>*/.Find(poolName);
+      Pool/*<TKey, TValue>*/ pool = CacheHelper.DCache.GetPoolManager().Find(poolName);
 
       Apache.Geode.Client.Execution<object> exc = FunctionService<object>.OnServer(pool);
       Assert.IsTrue(exc != null, "onServer Returned NULL");

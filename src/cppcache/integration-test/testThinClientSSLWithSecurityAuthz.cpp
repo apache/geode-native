@@ -252,7 +252,8 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       }
       regPtr->query("1=1");
       LOG("Query completed successfully");
-      PoolPtr pool = PoolManager::find(regionNamesAuth[0]);
+      PoolPtr pool =
+          getHelper()->getCache()->getPoolManager().find(regionNamesAuth[0]);
       QueryServicePtr qs;
       if (pool != nullptr) {
         // Using region name as pool name
@@ -385,7 +386,8 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 
-    PoolPtr pool = PoolManager::find(regionNamesAuth[0]);
+    PoolPtr pool =
+        getHelper()->getCache()->getPoolManager().find(regionNamesAuth[0]);
 
     try {
       QueryServicePtr qs;
@@ -527,7 +529,8 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 
-    PoolPtr pool = PoolManager::find(regionNamesAuth[0]);
+    PoolPtr pool =
+        getHelper()->getCache()->getPoolManager().find(regionNamesAuth[0]);
 
     try {
       QueryServicePtr qs;

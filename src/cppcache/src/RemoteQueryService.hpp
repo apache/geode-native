@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_REMOTEQUERYSERVICE_H_
-#define GEODE_REMOTEQUERYSERVICE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,14 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/geode_globals.hpp>
-#include <memory>
-#include "CqService.hpp"
 
-#include <geode/QueryService.hpp>
-#include "ThinClientCacheDistributionManager.hpp"
+#pragma once
+
+#ifndef GEODE_REMOTEQUERYSERVICE_H_
+#define GEODE_REMOTEQUERYSERVICE_H_
 
 #include <ace/Recursive_Thread_Mutex.h>
+#include <geode/geode_globals.hpp>
+#include <memory>
+#include <geode/QueryService.hpp>
+
+#include "CqService.hpp"
+#include "ThinClientCacheDistributionManager.hpp"
+#include "statistics/StatisticsManager.hpp"
 
 namespace apache {
 namespace geode {
@@ -73,7 +74,7 @@ class CPPCACHE_EXPORT RemoteQueryService
   inline void initCqService() {
     if (m_cqService == nullptr) {
       LOGFINE("RemoteQueryService: starting cq service");
-      m_cqService = std::make_shared<CqService>(m_tccdm);
+      m_cqService = std::make_shared<CqService>(m_tccdm, m_statisticsFactory);
       LOGFINE("RemoteQueryService: started cq service");
     }
   }
@@ -85,6 +86,7 @@ class CPPCACHE_EXPORT RemoteQueryService
   ThinClientBaseDM* m_tccdm;
   CqServicePtr m_cqService;
   CqPoolsConnected m_CqPoolsConnected;
+  statistics::StatisticsFactory* m_statisticsFactory;
 };
 
 typedef std::shared_ptr<RemoteQueryService> RemoteQueryServicePtr;

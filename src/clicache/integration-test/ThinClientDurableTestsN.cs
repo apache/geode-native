@@ -127,13 +127,13 @@ namespace Apache.Geode.Client.UnitTests
         Assert.Fail("RegisterAllKeys threw unexpected exception: {0}", other.Message);
       }
 
-      Pool pool0 = PoolManager.Find(region0.Attributes.PoolName);
+      Pool pool0 = CacheHelper.DCache.GetPoolManager().Find(region0.Attributes.PoolName);
       int pendingEventCount0 = pool0.PendingEventCount;
       Util.Log("pendingEventCount0 for pool = {0} {1} ", pendingEventCount0, region0.Attributes.PoolName);
       string msg = string.Format("Expected Value ={0}, Actual = {1}", expectedQ0, pendingEventCount0);
       Assert.AreEqual(expectedQ0, pendingEventCount0, msg);
 
-      Pool pool1 = PoolManager.Find(region1.Attributes.PoolName);
+      Pool pool1 = CacheHelper.DCache.GetPoolManager().Find(region1.Attributes.PoolName);
       int pendingEventCount1 = pool1.PendingEventCount;
       Util.Log("pendingEventCount1 for pool = {0} {1} ", pendingEventCount1, region1.Attributes.PoolName);
       string msg1 = string.Format("Expected Value ={0}, Actual = {1}", expectedQ1, pendingEventCount1);
@@ -214,7 +214,7 @@ namespace Apache.Geode.Client.UnitTests
       if (poolName != null)
       {
         Util.Log("PendingEventCount poolName = {0} ", poolName);
-        Pool pool = PoolManager.Find(poolName);
+        Pool pool = CacheHelper.DCache.GetPoolManager().Find(poolName);
         if (exception)
         {
           try
@@ -796,10 +796,10 @@ namespace Apache.Geode.Client.UnitTests
       pp.Insert("durable-timeout", "30");
 
       CacheFactory cacheFactory = CacheFactory.CreateCacheFactory(pp);
-      Cache cache = cacheFactory.SetSubscriptionEnabled(true)
-                                .SetSubscriptionAckInterval(5000)
-                                .SetSubscriptionMessageTrackingTimeout(5000)
-                                .Create();
+      Cache cache = cacheFactory.Create();
+      cache.GetPoolFactory().SetSubscriptionEnabled(true);
+      cache.GetPoolFactory().SetSubscriptionAckInterval(5000);
+      cache.GetPoolFactory().SetSubscriptionMessageTrackingTimeout(5000);
       Util.Log("Created the Geode Cache Programmatically");
 
       RegionFactory regionFactory = cache.CreateRegionFactory(RegionShortcut.CACHING_PROXY);

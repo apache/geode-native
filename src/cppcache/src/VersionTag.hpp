@@ -40,6 +40,7 @@ class VersionTag : public Cacheable {
   uint16_t m_internalMemId;
   uint16_t m_previousMemId;
   int64_t m_timeStamp;
+  MemberListForVersionStamp& m_memberListForVersionStamp;
 
   static const uint8_t HAS_MEMBER_ID = 0x01;
   static const uint8_t HAS_PREVIOUS_MEMBER_ID = 0x02;
@@ -53,7 +54,7 @@ class VersionTag : public Cacheable {
   virtual void readMembers(uint16_t flags, DataInput& input);
 
  public:
-  VersionTag();
+  VersionTag(MemberListForVersionStamp& memberListForVersionStamp);
 
   virtual ~VersionTag();
 
@@ -65,7 +66,8 @@ class VersionTag : public Cacheable {
 
   virtual Serializable* fromData(DataInput& input);
 
-  static Serializable* createDeserializable();
+  static Serializable* createDeserializable(
+      MemberListForVersionStamp& memberListForVersionStamp);
 
   int32_t getEntryVersion() const { return m_entryVersion; }
   int16_t getRegionVersionHighBytes() const { return m_regionVersionHighBytes; }
@@ -83,7 +85,8 @@ class VersionTag : public Cacheable {
    */
   VersionTag(int32_t entryVersion, int16_t regionVersionHighBytes,
              int32_t regionVersionLowBytes, uint16_t internalMemId,
-             uint16_t previousMemId);
+             uint16_t previousMemId,
+             MemberListForVersionStamp& memberListForVersionStamp);
 };
 }  // namespace client
 }  // namespace geode

@@ -15,7 +15,12 @@
  * limitations under the License.
  */
 
-//#include "../geode_includes.hpp"
+
+#include "begin_native.hpp"
+#include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
+#include "end_native.hpp"
+
 #include "../Cache.hpp"
 #include "../DistributedSystem.hpp"
 #include "../Region.hpp"
@@ -25,6 +30,7 @@
 #include "../Execution.hpp"
 #include "AuthenticatedCache.hpp"
 #include "PdxInstanceFactoryImpl.hpp"
+
 using namespace System;
 
 namespace Apache
@@ -123,7 +129,7 @@ namespace Apache
 
       IPdxInstanceFactory^ AuthenticatedCache::CreatePdxInstanceFactory(String^ className)
       {
-        return gcnew Internal::PdxInstanceFactoryImpl(className);
+        return gcnew Internal::PdxInstanceFactoryImpl(className, native::CacheRegionHelper::getCacheImpl(m_nativeptr->get())->getCache());
       }
     }  // namespace Client
   }  // namespace Geode

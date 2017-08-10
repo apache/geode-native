@@ -43,53 +43,22 @@ PdxType::~PdxType() {
   GF_SAFE_DELETE_ARRAY(m_className);
 }
 
-PdxType::PdxType() : Serializable() {
-  // m_lockObj = nullptr;
-  m_className = nullptr;
-  m_isLocal = false;
-  m_numberOfVarLenFields = 0;
-  m_varLenFieldIdx = 0;  // start with 0
-  m_isVarLenFieldAdded = false;
-  // m_fieldNameVsPdxType = CacheableHashMap::create();
-  m_noJavaClass = false;
-  // m_pdxDomainType = nullptr;
-  m_pdxFieldTypes = new std::vector<PdxFieldTypePtr>();
-  m_localToRemoteFieldMap = nullptr;
-  m_remoteToLocalFieldMap = nullptr;
-  m_geodeTypeId = 0;
-  /* adongre
-   * Coverity - II
-   * CID 29288: Uninitialized scalar field (UNINIT_CTOR)
-   * Non-static class member "m_numberOfFieldsExtra" is not
-   * initialized in this constructor nor in any functions that it calls.
-   * Fix : Initialized the memeber
-   */
-  m_numberOfFieldsExtra = 0;
-}
+//PdxType::PdxType() : PdxType(nullptr, false) {}
 
-PdxType::PdxType(const char* pdxDomainClassName, bool isLocal)
-    : Serializable() {
-  // m_lockObj = nullptr;
-  m_className = Utils::copyString(pdxDomainClassName);
-  m_isLocal = isLocal;
-  m_numberOfVarLenFields = 0;
-  m_varLenFieldIdx = 0;  // start with 0
-  m_isVarLenFieldAdded = false;
-  // m_fieldNameVsPdxType = CacheableHashMap::create();
-  m_noJavaClass = false;
-  m_pdxFieldTypes = new std::vector<PdxFieldTypePtr>();
-  m_localToRemoteFieldMap = nullptr;
-  m_remoteToLocalFieldMap = nullptr;
-  m_geodeTypeId = 0;
-  /* adongre
-   * Coverity - II
-   * CID 29287: Uninitialized scalar field (UNINIT_CTOR)
-   * Non-static class member "m_numberOfFieldsExtra" is not
-   * initialized in this constructor nor in any functions that it calls.
-   * Fix : Initialized the memeber
-   */
-  m_numberOfFieldsExtra = 0;
-}
+PdxType::PdxType(PdxTypeRegistryPtr pdxTypeRegistryPtr, const char* pdxDomainClassName, bool isLocal)
+    : Serializable(),
+      m_className(Utils::copyString(pdxDomainClassName)),
+      m_isLocal(isLocal),
+      m_numberOfVarLenFields(0),
+      m_varLenFieldIdx(0),
+      m_isVarLenFieldAdded(false),
+      m_noJavaClass(false),
+      m_pdxFieldTypes(new std::vector<PdxFieldTypePtr>()),
+      m_localToRemoteFieldMap(nullptr),
+      m_remoteToLocalFieldMap(nullptr),
+      m_geodeTypeId(0),
+      m_numberOfFieldsExtra(0),
+      m_pdxTypeRegistryPtr(pdxTypeRegistryPtr) {}
 
 void PdxType::toData(DataOutput& output) const {
   output.write(static_cast<int8_t>(GeodeTypeIdsImpl::DataSerializable));  // 45
@@ -242,7 +211,7 @@ void PdxType::initRemoteToLocal() {
 
   PdxTypePtr localPdxType = nullptr;
   //[TODO - open this up once PdxTypeRegistry is done]
-  localPdxType = PdxTypeRegistry::getLocalPdxType(m_className);
+  localPdxType = m_pdxTypeRegistryPtr->getLocalPdxType(m_className);
   m_numberOfFieldsExtra = 0;
 
   if (localPdxType != nullptr) {
@@ -302,7 +271,7 @@ void PdxType::initLocalToRemote() {
   // 5. else if local field is not in remote type then -1
 
   PdxTypePtr localPdxType = nullptr;
-  localPdxType = PdxTypeRegistry::getLocalPdxType(m_className);
+  localPdxType = m_pdxTypeRegistryPtr->getLocalPdxType(m_className);
 
   if (localPdxType != nullptr) {
     std::vector<PdxFieldTypePtr>* localPdxFields =
@@ -478,7 +447,7 @@ PdxTypePtr PdxType::isContains(PdxTypePtr first, PdxTypePtr second) {
 }
 
 PdxTypePtr PdxType::clone() {
-  auto clone = std::make_shared<PdxType>(m_className, false);
+  auto clone = std::make_shared<PdxType>(m_pdxTypeRegistryPtr, m_className, false);
   clone->m_geodeTypeId = 0;
   clone->m_numberOfVarLenFields = m_numberOfVarLenFields;
 
@@ -628,6 +597,8 @@ bool PdxType::Equals(PdxTypePtr otherObj) {
 bool PdxType::operator<(const PdxType& other) const {
   return ACE_OS::strcmp(this->m_className, other.m_className) < 0;
 }
+
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -54,8 +54,12 @@ ClientMetadataService::ClientMetadataService(Pool* pool)
 {
   m_regionQueue = new Queue<std::string>(false);
   m_pool = pool;
-  m_bucketWaitTimeout =
-      DistributedSystem::getSystemProperties()->bucketWaitTimeout();
+
+  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
+  CacheImpl* cacheImpl = tcrdm->getConnectionManager().getCacheImpl();
+  m_bucketWaitTimeout = cacheImpl->getDistributedSystem()
+                            .getSystemProperties()
+                            .bucketWaitTimeout();
 }
 
 int ClientMetadataService::svc() {
@@ -128,7 +132,11 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
   ClientMetadataPtr newCptr = nullptr;
 
   if (cptr == nullptr) {
-    TcrMessageGetClientPartitionAttributes request(regionFullPath);
+    TcrMessageGetClientPartitionAttributes request(tcrdm->getConnectionManager()
+                                                       .getCacheImpl()
+                                                       ->getCache()
+                                                       ->createDataOutput(),
+                                                   regionFullPath);
     GfErrType err = tcrdm->sendSyncRequest(request, reply);
     if (err == GF_NOERR &&
         reply.getMessageType() ==
@@ -182,7 +190,11 @@ ClientMetadataPtr ClientMetadataService::SendClientPRMetadata(
     throw IllegalArgumentException(
         "ClientMetaData: pool cast to ThinClientPoolDM failed");
   }
-  TcrMessageGetClientPrMetadata request(regionPath);
+  TcrMessageGetClientPrMetadata request(tcrdm->getConnectionManager()
+                                            .getCacheImpl()
+                                            ->getCache()
+                                            ->createDataOutput(),
+                                        regionPath);
   TcrMessageReply reply(true, nullptr);
   // send this message to server and get metadata from server.
   LOGFINE("Now sending GET_CLIENT_PR_METADATA for getting from server: %s",
@@ -251,10 +263,9 @@ void ClientMetadataService::getBucketServerLocation(
             "The RoutingObject returned by PartitionResolver is null.");
       }
     }
-    FixedPartitionResolverPtr fpResolver(
-        dynamic_cast<FixedPartitionResolver*>(resolver.get()));
-    if (fpResolver != nullptr) {
-      const char* partition = fpResolver->getPartitionName(event);
+    if (const auto fpResolver =
+            std::dynamic_pointer_cast<FixedPartitionResolver>(resolver)) {
+      const auto partition = fpResolver->getPartitionName(event);
       if (partition == nullptr) {
         throw IllegalStateException(
             "partition name returned by Partition resolver is null.");
@@ -313,13 +324,13 @@ void ClientMetadataService::enqueueForMetadataRefresh(
         "ClientMetaData: pool cast to ThinClientPoolDM failed");
   }
   RegionPtr region;
-  tcrdm->getConnectionManager().getCacheImpl()->getRegion(regionFullPath,
-                                                          region);
-  LocalRegion* lregion = dynamic_cast<LocalRegion*>(region.get());
+
+  auto cache = tcrdm->getConnectionManager().getCacheImpl();
+  cache->getRegion(regionFullPath, region);
 
   std::string serverGroup = tcrdm->getServerGroup();
   if (serverGroup.length() != 0) {
-    CacheImpl::setServerGroupFlag(serverGroupFlag);
+    cache->setServerGroupFlag(serverGroupFlag);
     if (serverGroupFlag == 2) {
       LOGFINER(
           "Network hop but, from within same server-group, so no metadata "
@@ -337,7 +348,7 @@ void ClientMetadataService::enqueueForMetadataRefresh(
         return;
       }
       LOGFINE("Network hop so fetching single hop metadata from the server");
-      CacheImpl::setNetworkHopFlag(true);
+      cache->setNetworkHopFlag(true);
       tcrRegion->setMetaDataRefreshed(true);
       std::string* tempRegionPath = new std::string(regionFullPath);
       m_regionQueue->put(tempRegionPath);
@@ -855,15 +866,13 @@ bool ClientMetadataService::isBucketMarkedForTimeout(const char* regionFullPath,
 
   ReadGuard guard(m_PRbucketStatusLock);
 
-  std::map<std::string, PRbuckets*>::iterator bs =
-      m_bucketStatus.find(regionFullPath);
-
+  const auto& bs = m_bucketStatus.find(regionFullPath);
   if (bs != m_bucketStatus.end()) {
     bool m = bs->second->isBucketTimedOut(bucketid, m_bucketWaitTimeout);
-    if (m == true) {
+    if (m) {
       ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
       CacheImpl* cache = tcrdm->getConnectionManager().getCacheImpl();
-      cache->setBlackListBucketTimeouts();
+      cache->incBlackListBucketTimeouts();
     }
     LOGFINE("isBucketMarkedForTimeout:: for bucket %d returning = %d", bucketid,
             m);

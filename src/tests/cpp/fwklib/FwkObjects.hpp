@@ -21,14 +21,15 @@
  */
 
 /**
-  * @file    FwkObjects.hpp
-  * @since   1.0
-  * @version 1.0
-  * @see
-  */
+ * @file    FwkObjects.hpp
+ * @since   1.0
+ * @version 1.0
+ * @see
+ */
 
 // ----------------------------------------------------------------------------
 
+#include <geode/Cache.hpp>
 #include <geode/Properties.hpp>
 #include <geode/ExpirationAction.hpp>
 #include <geode/RegionAttributes.hpp>
@@ -124,10 +125,10 @@ class FwkObject {
 // ----------------------------------------------------------------------------
 
 /**
-  * @class TFwkSet
-  *
-  * @brief Framework base data object set template
-  */
+ * @class TFwkSet
+ *
+ * @brief Framework base data object set template
+ */
 
 template <class FWK_OBJECT>
 class TFwkSet {
@@ -157,8 +158,8 @@ class TFwkSet {
   }
 
   /** @brief Find a object in collection
-    * @param key Object key to find
-    */
+   * @param key Object key to find
+   */
   const FWK_OBJECT* find(const std::string& key) const {
     const FWK_OBJECT* obj = NULL;
     int32_t pos = findIdx(key);
@@ -209,8 +210,8 @@ class TFwkSet {
   }
 
   /** @brief Add an object
-    * @param obj Object to add
-    */
+   * @param obj Object to add
+   */
   void add(const FWK_OBJECT* obj) {
     if (obj != NULL) {
       m_vec.push_back(obj);
@@ -251,9 +252,9 @@ typedef std::vector<std::string> StringVector;
 // ----------------------------------------------------------------------------
 
 /** @class XMLStringConverter
-  * @brief  This is a simple class that lets us do easy (though not
-  * terribly efficient) trancoding of char* data to XMLCh data.
-  */
+ * @brief  This is a simple class that lets us do easy (though not
+ * terribly efficient) trancoding of char* data to XMLCh data.
+ */
 class XMLStringConverter {
  public:
   XMLStringConverter(const char* const toTranscode) {
@@ -492,6 +493,8 @@ class FwkRegion {
 
 class FwkPool {
   std::string m_name;
+  CachePtr m_cache;
+  PoolManager* m_poolManager;
   PoolFactoryPtr m_poolFactory;
   bool m_locators;
   bool m_servers;
@@ -600,16 +603,17 @@ class FwkPool {
     }
   }
 
-  PoolPtr createPoolForPerf() { return m_poolFactory->create(m_name.c_str()); }
+  //  PoolPtr createPoolForPerf() { return
+  //  m_poolFactory->create(m_name.c_str()); }
 
-  PoolPtr createPool() const {
-    if (m_name.empty()) {
-      FWKEXCEPTION("Pool name not specified.");
-    } else {
-      return m_poolFactory->create(m_name.c_str());
-    }
-    return nullptr;
-  }
+  //  PoolPtr createPool() const {
+  //    if (m_name.empty()) {
+  //      FWKEXCEPTION("Pool name not specified.");
+  //    } else {
+  //      return m_poolFactory->create(m_name.c_str());
+  //    }
+  //    return nullptr;
+  //  }
   const std::string& getName() const { return m_name; }
   void print() const { FWKINFO("FwkPool " << m_name); }
 };
@@ -899,11 +903,11 @@ class FwkData : public FwkObject {
 // ----------------------------------------------------------------------------
 
 /**
-  * @class FwkDataSet
-  *
-  * @brief Container to hold FwkData objects
-  * @see FwkData
-  */
+ * @class FwkDataSet
+ *
+ * @brief Container to hold FwkData objects
+ * @see FwkData
+ */
 class FwkDataSet : public TFwkSet<FwkData> {
  public:
   FwkDataSet() {}
@@ -913,10 +917,10 @@ class FwkDataSet : public TFwkSet<FwkData> {
 // ----------------------------------------------------------------------------
 
 /**
-  * @class FwkClient
-  *
-  * @brief FwkClient object
-  */
+ * @class FwkClient
+ *
+ * @brief FwkClient object
+ */
 class FwkClient : public FwkObject {
  public:
   FwkClient(const DOMNode* node);
@@ -973,11 +977,11 @@ class FwkClient : public FwkObject {
 // ----------------------------------------------------------------------------
 
 /**
-  * @class FwkClientSet
-  *
-  * @brief Container to hold FwkClient objects
-  * @see FwkClient
-  */
+ * @class FwkClientSet
+ *
+ * @brief Container to hold FwkClient objects
+ * @see FwkClient
+ */
 class FwkClientSet : public TFwkSet<FwkClient> {
   bool m_exclude;
   int32_t m_count;
@@ -1030,10 +1034,10 @@ typedef std::list<uint32_t> TaskClientIdxList;
 class FwkTest;
 
 /**
-  * @class FwkTask
-  *
-  * @brief FwkTask object
-  */
+ * @class FwkTask
+ *
+ * @brief FwkTask object
+ */
 class FwkTask : public FwkObject {
  public:
   FwkTask(const DOMNode* node);
@@ -1201,8 +1205,8 @@ class FwkTask : public FwkObject {
   }
 
   /** @brief Add ClientSet
-    * @param set ClientSet to add
-    */
+   * @param set ClientSet to add
+   */
   void addClientSet(FwkClientSet* set) {
     const FwkClient* client = set->getFirst();
     while (client != NULL) {
@@ -1253,21 +1257,21 @@ class FwkTask : public FwkObject {
 // ----------------------------------------------------------------------------
 
 /**
-* @class FwkTaskSet
-*
-* @brief Container to hold FwkTask objects
-* @see FwkTask
-*/
+ * @class FwkTaskSet
+ *
+ * @brief Container to hold FwkTask objects
+ * @see FwkTask
+ */
 class FwkTaskSet : public TFwkSet<FwkTask> {};
 
 // ----------------------------------------------------------------------------
 class TestDriver;
 
 /**
-  * @class FwkTest
-  *
-  * @brief FwkTest object
-  */
+ * @class FwkTest
+ *
+ * @brief FwkTest object
+ */
 class FwkTest : public FwkObject {
  public:
   FwkTest(const DOMNode* node);
@@ -1355,11 +1359,11 @@ class FwkTest : public FwkObject {
 // ----------------------------------------------------------------------------
 
 /**
-* @class FwkTestSet
-*
-* @brief Container to hold FwkTest objects
-* @see FwkTest
-*/
+ * @class FwkTestSet
+ *
+ * @brief Container to hold FwkTest objects
+ * @see FwkTest
+ */
 class FwkTestSet : public TFwkSet<FwkTest> {};
 
 // ----------------------------------------------------------------------------

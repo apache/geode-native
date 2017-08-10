@@ -37,8 +37,7 @@ namespace Apache.Geode.Client.FwkLib
 
       long currentTimeInMillies()
       {
-          DateTime startTime = DateTime.Now;
-          long curruntMillis = SmokePerf<TKey, TVal>.GetDateTimeMillis(startTime);
+          long curruntMillis = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
           return curruntMillis;
       }
     public override void AfterCreate(EntryEvent<TKey, TVal> ev)
@@ -966,7 +965,7 @@ namespace Apache.Geode.Client.FwkLib
     {
       ResetKey(ObjectType);
       string objectType = GetStringValue(ObjectType);
-      QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+      QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
       int numSet = 0;
       int setSize = 0;
       if (objectType != null && (objectType == "Portfolio" || objectType == "PortfolioPdx"))
@@ -991,7 +990,7 @@ namespace Apache.Geode.Client.FwkLib
       int numOfKeys = GetUIntValue(EntryCount);
       ResetKey(ValueSizes);
       int objSize = GetUIntValue(ValueSizes);
-      QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+      QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
       int numSet = 0;
       int setSize = 0;
       if (objType != null && objType == "Portfolio")
@@ -1122,7 +1121,7 @@ namespace Apache.Geode.Client.FwkLib
       {
         ResetKey(EntryCount);
         int numOfKeys = GetUIntValue(EntryCount);
-        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
         int setSize = qh.PortfolioSetSize;
         if (numOfKeys < setSize)
         {
@@ -1219,7 +1218,7 @@ namespace Apache.Geode.Client.FwkLib
       {
         Int32 numSet = 0;
         Int32 setSize = 0;
-        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+        QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
         TVal port;
         setSize = qh.PortfolioSetSize;
         numSet = 200 / setSize;
@@ -1339,7 +1338,7 @@ namespace Apache.Geode.Client.FwkLib
           FwkInfo("Sleeping for " + sleepTime + " millis");
           Thread.Sleep(sleepTime);
           region.GetSubscriptionService().RegisterAllKeys(isDurable, keys, isGetInitialValues, isReceiveValues);
-          String durableClientId = DistributedSystem.SystemProperties.DurableClientId;
+          String durableClientId = CacheHelper<TKey, TVal>.DCache.DistributedSystem.SystemProperties.DurableClientId;
           if (durableClientId.Length > 0)
           {
               CacheHelper<TKey, TVal>.DCache.ReadyForEvents();
@@ -2963,7 +2962,7 @@ namespace Apache.Geode.Client.FwkLib
               FwkInfo("Sleeping for " + sleepTime + " millis");
               Thread.Sleep(sleepTime);
               region.GetSubscriptionService().RegisterKeys(m_KeysA, isDurable, isGetInitialValues, isReceiveValues);
-              String durableClientId = DistributedSystem.SystemProperties.DurableClientId;
+              String durableClientId = CacheHelper<TKey, TVal>.DCache.DistributedSystem.SystemProperties.DurableClientId;
               if (durableClientId.Length > 0)
               {
                   CacheHelper<TKey, TVal>.DCache.ReadyForEvents();
@@ -3019,7 +3018,7 @@ namespace Apache.Geode.Client.FwkLib
                      verifyEntry(m_KeysA[i], expected);
                   templist.Clear();
               }
-              String durableClientId = DistributedSystem.SystemProperties.DurableClientId;
+              String durableClientId = CacheHelper<TKey, TVal>.DCache.DistributedSystem.SystemProperties.DurableClientId;
               if (durableClientId.Length > 0)
               {
                   CacheHelper<TKey, TVal>.DCache.ReadyForEvents();
@@ -4086,9 +4085,8 @@ private void checkUpdatedValue(TKey key, TVal value)
           int sleepMS = 2000;
           FwkInfo("Waiting for a period of silence for " + desiredSilenceSec + " seconds...");
           long desiredSilenceMS = desiredSilenceSec * 1000;
-          DateTime startTime = DateTime.Now;
-          long silenceStartTime = SmokePerf<TKey, TVal>.GetDateTimeMillis(startTime);
-          long currentTime = SmokePerf<TKey, TVal>.GetDateTimeMillis(startTime);
+          long silenceStartTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+          long currentTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
           long lastEventTime = (long)Util.BBGet("ListenerBB", "lastEventTime");
 
           while (currentTime - silenceStartTime < desiredSilenceMS)
@@ -4107,8 +4105,7 @@ private void checkUpdatedValue(TKey key, TVal value)
                   // restart the wait
                   silenceStartTime = lastEventTime;
               }
-              startTime = DateTime.Now;
-              currentTime = SmokePerf<TKey, TVal>.GetDateTimeMillis(startTime);
+              currentTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
           }
           long duration = currentTime - silenceStartTime;
           FwkInfo("Done waiting, clients have been silent for " + duration + " ms");
@@ -4263,7 +4260,7 @@ private void checkUpdatedValue(TKey key, TVal value)
 
           if (poolName != null)
           {
-            Pool pool = PoolManager.Find(poolName);
+            Pool pool = CacheHelper<TKey, TVal>.DCache.GetPoolManager().Find(poolName);
             if (pool.MultiuserAuthentication)
             {
               FwkInfo("pool is in multiuser mode and entering CreateMultiUserCacheAndRegion");
@@ -4372,7 +4369,7 @@ private void checkUpdatedValue(TKey key, TVal value)
           userProp.Insert(KeyStoreAliasProp, userName);
           userProp.Insert(KeyStorePasswordProp, "geode");
           //mu_cache = pool.CreateSecureUserCache(userProp);
-          //IRegionService mu_cache = CacheHelper.DCache.CreateAuthenticatedView(userProp, pool.Name);
+          //IRegionService mu_cache = CacheHelper<TKey, TVal>.DCache.CreateAuthenticatedView(userProp, pool.Name);
           IRegionService mu_cache = CacheHelper<TKey, TVal>.DCache.CreateAuthenticatedView(
             CacheHelper<TKey, TVal>.GetPkcsCredentialsForMU(
               pkcs.GetCredentials(userProp, "0:0")), pool.Name);

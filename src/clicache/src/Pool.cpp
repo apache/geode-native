@@ -20,7 +20,7 @@
 #include "QueryService.hpp"
 #include "CacheableString.hpp"
 #include "Cache.hpp"
-#include "Properties.hpp"
+//#include "Properties.hpp"
 #include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"

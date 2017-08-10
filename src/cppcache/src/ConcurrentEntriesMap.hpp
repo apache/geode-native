@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CONCURRENTENTRIESMAP_H_
-#define GEODE_CONCURRENTENTRIESMAP_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,7 +15,12 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CONCURRENTENTRIESMAP_H_
+#define GEODE_CONCURRENTENTRIESMAP_H_
 #include <atomic>
+
 #include <geode/geode_globals.hpp>
 #include "EntriesMap.hpp"
 #include "MapSegment.hpp"
@@ -38,6 +38,7 @@ class RegionInternal;
  */
 class CPPCACHE_EXPORT ConcurrentEntriesMap : public EntriesMap {
  protected:
+  ExpiryTaskManager* m_expiryTaskManager;
   uint8_t m_concurrency;
   MapSegment* m_segments;
   std::atomic<uint32_t> m_size;
@@ -70,7 +71,8 @@ class CPPCACHE_EXPORT ConcurrentEntriesMap : public EntriesMap {
   /**
    * @brief constructor, must call open before using map.
    */
-  ConcurrentEntriesMap(EntryFactory* entryFactory,
+  ConcurrentEntriesMap(ExpiryTaskManager* expiryTaskManager,
+                       std::unique_ptr<EntryFactory> entryFactory,
                        bool concurrencyChecksEnabled, RegionInternal* region,
                        uint8_t concurrency = 16);
 

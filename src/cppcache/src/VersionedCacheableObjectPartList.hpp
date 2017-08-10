@@ -126,6 +126,18 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     ;
   }
 
+  VersionedCacheableObjectPartList(ThinClientRegion* region, uint16_t dsmemId,
+                                   ACE_Recursive_Thread_Mutex& responseLock)
+      : CacheableObjectPartList(region),
+        m_responseLock(responseLock),
+        m_endpointMemId(dsmemId) {
+    m_regionIsVersioned = false;
+    m_serializeValues = false;
+    m_hasTags = false;
+    this->m_hasKeys = false;
+    ;
+  }
+
   VersionedCacheableObjectPartList(VectorOfCacheableKey* keys,
                                    ACE_Recursive_Thread_Mutex& responseLock)
       : m_tempKeys(keys), m_responseLock(responseLock) {
@@ -136,8 +148,12 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     this->m_hasKeys = false;
   }
 
-  VersionedCacheableObjectPartList(ACE_Recursive_Thread_Mutex& responseLock)
-      : m_responseLock(responseLock) {
+  VersionedCacheableObjectPartList(ThinClientRegion* region,
+                                   VectorOfCacheableKey* keys,
+                                   ACE_Recursive_Thread_Mutex& responseLock)
+      : CacheableObjectPartList(region),
+        m_tempKeys(keys),
+        m_responseLock(responseLock) {
     m_regionIsVersioned = false;
     m_serializeValues = false;
     m_hasTags = false;
@@ -145,12 +161,15 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     this->m_hasKeys = false;
   }
 
-  /*inline VersionedCacheableObjectPartList(bool serializeValues)
-  {
-      m_serializeValues = serializeValues;
-    GF_NEW(m_tempKeys, VectorOfCacheableKey);
-
-  }*/
+  VersionedCacheableObjectPartList(ThinClientRegion* region,
+                                   ACE_Recursive_Thread_Mutex& responseLock)
+      : m_responseLock(responseLock), CacheableObjectPartList(region) {
+    m_regionIsVersioned = false;
+    m_serializeValues = false;
+    m_hasTags = false;
+    m_endpointMemId = 0;
+    this->m_hasKeys = false;
+  }
 
   inline uint16_t getEndpointMemId() { return m_endpointMemId; }
 

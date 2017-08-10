@@ -66,14 +66,14 @@ namespace Apache
         /// Return a pre-existing statistics factory. Typically configured through
         /// creation of a distributed system.
         /// </summary>
-        static StatisticsFactory^ GetExistingInstance();
+        //static StatisticsFactory^ GetExistingInstance();
 
         /// <summary>
         /// Creates and returns an int counter  <see cref="StatisticDescriptor" />
         /// with the given <c>name</c>, <c>description</c>,
         /// <c>units</c>, and with larger values indicating better performance.
         /// </summary>
-        virtual StatisticDescriptor^ CreateIntCounter(String^ name, String^ description, String^ units, int8_t largerBetter);
+        virtual StatisticDescriptor^ CreateIntCounter(String^ name, String^ description, String^ units, bool largerBetter);
 
         /// <summary>
         /// Creates and returns an int counter  <see cref="StatisticDescriptor" />
@@ -87,7 +87,7 @@ namespace Apache
         /// with the given <c>name</c>, <c>description</c>,
         /// <c>units</c>, and with larger values indicating better performance.
         /// </summary>
-        virtual StatisticDescriptor^ CreateLongCounter(String^ name, String^ description, String^ units, int8_t largerBetter);
+        virtual StatisticDescriptor^ CreateLongCounter(String^ name, String^ description, String^ units, bool largerBetter);
 
         /// <summary>
         /// Creates and returns an long counter  <see cref="StatisticDescriptor" />
@@ -102,7 +102,7 @@ namespace Apache
         /// <c>units</c>, and with larger values indicating better performance.
         /// </summary>
 
-        virtual StatisticDescriptor^ CreateDoubleCounter(String^ name, String^ description, String^ units, int8_t largerBetter);
+        virtual StatisticDescriptor^ CreateDoubleCounter(String^ name, String^ description, String^ units, bool largerBetter);
 
         /// <summary>
         /// Creates and returns an double counter  <see cref="StatisticDescriptor" />
@@ -116,7 +116,7 @@ namespace Apache
         /// with the given <c>name</c>, <c>description</c>,
         /// <c>units</c>, and with smaller values indicating better performance.
         /// </summary>
-        virtual StatisticDescriptor^ CreateIntGauge(String^ name, String^ description, String^ units, int8_t largerBetter);
+        virtual StatisticDescriptor^ CreateIntGauge(String^ name, String^ description, String^ units, bool largerBetter);
 
         /// <summary>
         /// Creates and returns an int gauge  <see cref="StatisticDescriptor" />
@@ -130,7 +130,7 @@ namespace Apache
         /// with the given <c>name</c>, <c>description</c>,
         /// <c>units</c>, and with smaller values indicating better performance.
         /// </summary>
-        virtual StatisticDescriptor^ CreateLongGauge(String^ name, String^ description, String^ units, int8_t largerBetter);
+        virtual StatisticDescriptor^ CreateLongGauge(String^ name, String^ description, String^ units, bool largerBetter);
 
         /// <summary>
         /// Creates and returns an long gauge <see cref="StatisticDescriptor" />
@@ -144,7 +144,7 @@ namespace Apache
         /// with the given <c>name</c>, <c>description</c>,
         /// <c>units</c>, and with smaller values indicating better performance.
         /// </summary>
-        virtual StatisticDescriptor^ CreateDoubleGauge(String^ name, String^ description, String^ units, int8_t largerBetter);
+        virtual StatisticDescriptor^ CreateDoubleGauge(String^ name, String^ description, String^ units, bool largerBetter);
 
         /// <summary>
         /// Creates and returns an double gauge <see cref="StatisticDescriptor" />

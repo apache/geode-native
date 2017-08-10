@@ -72,6 +72,17 @@ class CacheableObjectPartList : public Cacheable {
         m_destroyTracker(0),
         m_addToLocalCache(false) {}
 
+  inline CacheableObjectPartList(ThinClientRegion* region)
+      : m_keys(nullptr),
+        m_keysOffset(nullptr),
+        m_values(nullptr),
+        m_exceptions(nullptr),
+        m_resultKeys(nullptr),
+        m_region(region),
+        m_updateCountMap(nullptr),
+        m_destroyTracker(0),
+        m_addToLocalCache(false) {}
+
   // never implemented.
   CacheableObjectPartList& operator=(const CacheableObjectPartList& other);
   CacheableObjectPartList(const CacheableObjectPartList& other);

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_LRUEXPMAPENTRY_H_
-#define GEODE_LRUEXPMAPENTRY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_LRUEXPMAPENTRY_H_
+#define GEODE_LRUEXPMAPENTRY_H_
 
 #include <geode/geode_globals.hpp>
 #include "MapEntry.hpp"
@@ -53,7 +53,9 @@ class CPPCACHE_EXPORT LRUExpMapEntry : public MapEntryImpl,
         LRUEntryProperties(true),
         ExpEntryProperties(true) {}
 
-  inline LRUExpMapEntry(const CacheableKeyPtr& key) : MapEntryImpl(key) {}
+  inline LRUExpMapEntry(ExpiryTaskManager* expiryTaskManager,
+                        const CacheableKeyPtr& key)
+      : MapEntryImpl(key), ExpEntryProperties(expiryTaskManager) {}
 
  private:
   // disabled
@@ -73,8 +75,9 @@ class CPPCACHE_EXPORT VersionedLRUExpMapEntry : public LRUExpMapEntry,
  protected:
   inline explicit VersionedLRUExpMapEntry(bool noInit) : LRUExpMapEntry(true) {}
 
-  inline VersionedLRUExpMapEntry(const CacheableKeyPtr& key)
-      : LRUExpMapEntry(key) {}
+  inline VersionedLRUExpMapEntry(ExpiryTaskManager* expiryTaskManager,
+                                 const CacheableKeyPtr& key)
+      : LRUExpMapEntry(expiryTaskManager, key) {}
 
  private:
   // disabled
@@ -86,14 +89,12 @@ typedef std::shared_ptr<VersionedLRUExpMapEntry> VersionedLRUExpMapEntryPtr;
 
 class CPPCACHE_EXPORT LRUExpEntryFactory : public EntryFactory {
  public:
-  static LRUExpEntryFactory* singleton;
-  static void init();
-
-  LRUExpEntryFactory() {}
+  using EntryFactory::EntryFactory;
 
   virtual ~LRUExpEntryFactory() {}
 
-  virtual void newMapEntry(const CacheableKeyPtr& key,
+  virtual void newMapEntry(ExpiryTaskManager* expiryTaskManager,
+                           const CacheableKeyPtr& key,
                            MapEntryImplPtr& result) const;
 };
 }  // namespace client

@@ -27,7 +27,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-PdxLocalReader::PdxLocalReader()
+PdxLocalReader::PdxLocalReader(PdxTypeRegistryPtr pdxTypeRegistry)
     : m_dataInput(nullptr),
       m_startBuffer(nullptr),
       m_startPosition(0),
@@ -38,20 +38,21 @@ PdxLocalReader::PdxLocalReader()
       m_isDataNeedToPreserve(false),
       m_localToRemoteMap(nullptr),
       m_remoteToLocalMap(nullptr),
-      m_remoteToLocalMapSize(0) {}
+      m_remoteToLocalMapSize(0),
+      m_pdxTypeRegistry(pdxTypeRegistry) {}
 
 PdxLocalReader::PdxLocalReader(DataInput& input, PdxTypePtr remoteType,
-                               int32_t pdxLen) {
-  m_dataInput = &input;
-  m_pdxType = remoteType;
-  m_serializedLengthWithOffsets = pdxLen;
-
-  m_localToRemoteMap = remoteType->getLocalToRemoteMap();
-  m_remoteToLocalMap = remoteType->getRemoteToLocalMap();
-  m_remoteToLocalMapSize = remoteType->getTotalFields();
-
-  m_pdxRemotePreserveData = std::make_shared<PdxRemotePreservedData>();
-  m_isDataNeedToPreserve = true;
+                               int32_t pdxLen,
+                               PdxTypeRegistryPtr pdxTypeRegistry)
+    : m_dataInput(&input),
+      m_pdxType(remoteType),
+      m_serializedLengthWithOffsets(pdxLen),
+      m_localToRemoteMap(remoteType->getLocalToRemoteMap()),
+      m_remoteToLocalMap(remoteType->getRemoteToLocalMap()),
+      m_remoteToLocalMapSize(remoteType->getTotalFields()),
+      m_pdxRemotePreserveData(std::make_shared<PdxRemotePreservedData>()),
+      m_isDataNeedToPreserve(true),
+      m_pdxTypeRegistry(pdxTypeRegistry) {
   initialize();
 }
 
@@ -303,8 +304,9 @@ PdxRemotePreservedDataPtr PdxLocalReader::getPreservedData(
   LOGDEBUG(
       "PdxLocalReader::getPreservedData::nFieldExtra = %d AND "
       "PdxTypeRegistry::getPdxIgnoreUnreadFields = %d ",
-      nFieldExtra, PdxTypeRegistry::getPdxIgnoreUnreadFields());
-  if (nFieldExtra > 0 && PdxTypeRegistry::getPdxIgnoreUnreadFields() == false) {
+      nFieldExtra, m_pdxTypeRegistry->getPdxIgnoreUnreadFields());
+  if (nFieldExtra > 0 &&
+      m_pdxTypeRegistry->getPdxIgnoreUnreadFields() == false) {
     m_pdxRemotePreserveData->initialize(
         m_pdxType != nullptr ? m_pdxType->getTypeId() : 0,
         mergedVersion->getTypeId(), nFieldExtra, pdxObject);
@@ -374,11 +376,12 @@ void PdxLocalReader::readCollection(const char* fieldName,
 
 PdxUnreadFieldsPtr PdxLocalReader::readUnreadFields() {
   LOGDEBUG("readUnreadFields:: %d ignore property %d", m_isDataNeedToPreserve,
-           PdxTypeRegistry::getPdxIgnoreUnreadFields());
-  if (PdxTypeRegistry::getPdxIgnoreUnreadFields() == true) return nullptr;
+           m_pdxTypeRegistry->getPdxIgnoreUnreadFields());
+  if (m_pdxTypeRegistry->getPdxIgnoreUnreadFields() == true) return nullptr;
   m_isDataNeedToPreserve = false;
   return m_pdxRemotePreserveData;
 }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

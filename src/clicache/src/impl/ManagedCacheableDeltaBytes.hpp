@@ -20,7 +20,10 @@
 #include "../geode_defs.hpp"
 #include <vcclr.h>
 #include "begin_native.hpp"
+#include "SerializationRegistry.hpp"
+#include <geode/Cache.hpp>
 #include <geode/Delta.hpp>
+#include <geode/DataOutput.hpp>
 #include "end_native.hpp"
 
 #include "../Log.hpp"
@@ -67,7 +70,7 @@ namespace apache
         /// </param>
         inline ManagedCacheableDeltaBytesGeneric(
           Apache::Geode::Client::IGeodeDelta^ managedDeltaptr, bool storeBytes)
-          : m_domainId(System::Threading::Thread::GetDomainID()),
+          :Delta(nullptr), m_domainId(System::Threading::Thread::GetDomainID()),
           m_classId(0),
           m_bytes(NULL),
           m_size(0),
@@ -85,48 +88,22 @@ namespace apache
             Apache::Geode::Client::Log::Finer("ManagedCacheableDeltaBytes::Constructor: class ID " + managedptr->ClassId + " : " + managedptr->ToString() + " storeBytes:" + storeBytes);
             if (storeBytes)
             {
-              apache::geode::client::DataOutput dataOut;
-              Apache::Geode::Client::DataOutput mg_output(&dataOut, true);
+              auto dataOut = m_cache->createDataOutput();
+              Apache::Geode::Client::DataOutput mg_output(dataOut.get(), true);
               managedptr->ToData(%mg_output);
 
               //move cursor
               //dataOut.advanceCursor(mg_output.BufferLength);
               mg_output.WriteBytesToUMDataOutput();
 
-              m_bytes = dataOut.getBufferCopy();
-              m_size = dataOut.getBufferLength();
+              m_bytes = dataOut->getBufferCopy();
+              m_size = dataOut->getBufferLength();
               m_hashCode = managedptr->GetHashCode();
               Apache::Geode::Client::Log::Finer("ManagedCacheableDeltaBytes::Constructor objectSize = " + m_size + " m_hashCode = " + m_hashCode);
             }
           }
         }
-        /*
-            inline ManagedCacheableDeltaBytes(
-            Apache::Geode::Client::IGeodeDelta^ managedDeltaptr,  bool storeBytes)
-            : m_domainId(System::Threading::Thread::GetDomainID()),
-            m_classId(0),
-            m_bytes(NULL),
-            m_size(0),
-            m_hashCode(0)
-            {
-            Apache::Geode::Client::Log::Fine("ManagedCacheableDeltaBytes::Constructor: not storing bytes ");
-            Apache::Geode::Client::IGeodeSerializable^ managedptr = dynamic_cast <Apache::Geode::Client::IGeodeSerializable^> ( managedDeltaptr );
-            if(managedptr != nullptr)
-            {
-            m_classId = managedptr->ClassId;
-            Apache::Geode::Client::Log::Fine("ManagedCacheableDeltaBytes::Constructor: current AppDomain ID: " + System::Threading::Thread::GetDomainID() + " for object: " + System::Convert::ToString((uint64_t) this) + " with its AppDomain ID: " + m_domainId);
-            Apache::Geode::Client::Log::Fine("ManagedCacheableDeltaBytes::Constructor: class ID " + managedptr->ClassId + " : " + managedptr->ToString());
-            apache::geode::client::DataOutput dataOut;
-            Apache::Geode::Client::DataOutput mg_output( &dataOut);
-            managedptr->ToData( %mg_output );
-            m_bytes = dataOut.getBufferCopy();
-            m_size = dataOut.getBufferLength();
-            Apache::Geode::Client::Log::Fine("ManagedCacheableDeltaBytes::Constructor objectSize = " + m_size + " m_hashCode = " + m_hashCode);
-            m_hashCode = managedptr->GetHashCode();
-            }
-            }*/
-
-
+        
         /// <summary>
         /// serialize this object
         /// </summary>

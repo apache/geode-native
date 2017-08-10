@@ -38,7 +38,11 @@ const char* PoolStatsSampler::NC_PSS_Thread = "NC PSS Thread";
 
 PoolStatsSampler::PoolStatsSampler(int64_t sampleRate, CacheImpl* cache,
                                    ThinClientPoolDM* distMan)
-    : m_sampleRate(sampleRate), m_distMan(distMan) {
+    : m_sampleRate(sampleRate),
+      m_distMan(distMan),
+      m_statisticsFactory(cache->getDistributedSystem()
+                              .getStatisticsManager()
+                              ->getStatisticsFactory()) {
   m_running = false;
   m_stopRequested = false;
   m_adminRegion = AdminRegion::create(cache, distMan);
@@ -91,13 +95,12 @@ void PoolStatsSampler::putStatsInAdminRegion() {
       int puts = 0, gets = 0, misses = 0, numListeners = 0, numThreads = 0,
           creates = 0;
       int64_t cpuTime = 0;
-      GeodeStatisticsFactory* gf =
-          GeodeStatisticsFactory::getExistingInstance();
-      if (gf) {
-        StatisticsType* cacheStatType = gf->findType("CachePerfStats");
+      if (m_statisticsFactory) {
+        StatisticsType* cacheStatType =
+            m_statisticsFactory->findType("CachePerfStats");
         if (cacheStatType) {
           Statistics* cachePerfStats =
-              gf->findFirstStatisticsByType(cacheStatType);
+              m_statisticsFactory->findFirstStatisticsByType(cacheStatType);
           if (cachePerfStats) {
             puts = cachePerfStats->getInt((char*)"puts");
             gets = cachePerfStats->getInt((char*)"gets");

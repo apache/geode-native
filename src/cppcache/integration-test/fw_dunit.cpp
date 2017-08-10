@@ -1034,8 +1034,6 @@ void PerfSuite::addRecord(std::string testName, const long ops,
                           const TimeStamp& start, const TimeStamp& stop) {
   Record tmp(testName, ops, start, stop);
   m_records[testName] = tmp;
-  int64_t elapsed ATTR_UNUSED = stop.msec() - start.msec();
-  int64_t opspersec ATTR_UNUSED = (1000 * ops) / elapsed;
   fprintf(stdout, "[PerfSuite] %s\n", tmp.asString().c_str());
   fflush(stdout);
 }

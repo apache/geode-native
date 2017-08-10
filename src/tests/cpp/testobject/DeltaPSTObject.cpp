@@ -22,7 +22,8 @@ using namespace apache::geode::client;
 using namespace testframework;
 using namespace testobject;
 
-DeltaPSTObject::DeltaPSTObject(int size, bool encodeKey, bool encodeTimestamp) {
+DeltaPSTObject::DeltaPSTObject(int size, bool encodeKey, bool encodeTimestamp)
+    : Delta(nullptr) {
   ACE_Time_Value startTime;
   startTime = ACE_OS::gettimeofday();
   ACE_UINT64 tusec = 0;

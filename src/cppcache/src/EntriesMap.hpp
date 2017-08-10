@@ -22,6 +22,8 @@
 
 // This needs to be ace free so that the region can include it.
 
+#include <memory>
+
 #include <geode/geode_globals.hpp>
 #include "MapEntry.hpp"
 #include <geode/CacheableKey.hpp>
@@ -40,7 +42,7 @@ namespace client {
  */
 class CPPCACHE_EXPORT EntriesMap {
  public:
-  EntriesMap(EntryFactory* entryFactory) : m_entryFactory(entryFactory) {}
+  EntriesMap(std::unique_ptr<EntryFactory> entryFactory) : m_entryFactory(std::move(entryFactory)) {}
   virtual ~EntriesMap() {}
 
   /**
@@ -168,10 +170,10 @@ class CPPCACHE_EXPORT EntriesMap {
   static bool boolVal;
 
  protected:
-  EntryFactory* m_entryFactory;
+  const std::unique_ptr<EntryFactory> m_entryFactory;
 
   /** @brief return the instance of EntryFactory for the segments to use. */
-  inline const EntryFactory* getEntryFactory() const { return m_entryFactory; }
+  inline const EntryFactory* getEntryFactory() const { return m_entryFactory.get(); }
 
 };  // class EntriesMap
 }  // namespace client

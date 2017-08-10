@@ -32,6 +32,9 @@ class TcpSslConn : public TcpConn {
  private:
   Ssl* m_ssl;
   ACE_DLL m_dll;
+  const char* m_pubkeyfile;
+  const char* m_privkeyfile;
+  const char* m_pemPassword;
   // adongre: Added for Ticket #758
   // Pass extra parameter for the password
   typedef void* (*gf_create_SslImpl)(ACE_SOCKET, const char*, const char*,
@@ -47,16 +50,23 @@ class TcpSslConn : public TcpConn {
   void createSocket(ACE_SOCKET sock);
 
  public:
-  TcpSslConn() : TcpConn(), m_ssl(nullptr){};
+  TcpSslConn(const char* hostname, int32_t port, uint32_t waitSeconds,
+             int32_t maxBuffSizePool, const char* pubkeyfile,
+             const char* privkeyfile, const char* pemPassword)
+      : TcpConn(hostname, port, waitSeconds, maxBuffSizePool),
+        m_ssl(nullptr),
+        m_pubkeyfile(pubkeyfile),
+        m_privkeyfile(privkeyfile),
+        m_pemPassword(pemPassword){};
 
-  TcpSslConn(const char* hostname, int32_t port,
-             uint32_t waitSeconds = DEFAULT_CONNECT_TIMEOUT,
-             int32_t maxBuffSizePool = 0)
-      : TcpConn(hostname, port, waitSeconds, maxBuffSizePool), m_ssl(nullptr){};
-
-  TcpSslConn(const char* ipaddr, uint32_t waitSeconds = DEFAULT_CONNECT_TIMEOUT,
-             int32_t maxBuffSizePool = 0)
-      : TcpConn(ipaddr, waitSeconds, maxBuffSizePool), m_ssl(nullptr){};
+  TcpSslConn(const char* ipaddr, uint32_t waitSeconds, int32_t maxBuffSizePool,
+             const char* pubkeyfile, const char* privkeyfile,
+             const char* pemPassword)
+      : TcpConn(ipaddr, waitSeconds, maxBuffSizePool),
+        m_ssl(nullptr),
+        m_pubkeyfile(pubkeyfile),
+        m_privkeyfile(privkeyfile),
+        m_pemPassword(pemPassword){};
 
   // TODO:  Watch out for virt dtor calling virt methods!
 

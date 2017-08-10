@@ -36,7 +36,7 @@ namespace Apache.Geode.Client.Tests
     private int m_portfolioNumSets;
     private int m_positionSetSize;
     private int m_positionNumSets;
-
+    private Cache m_cache;
     private static QueryHelper<TKey, TVal> m_instance = null;
 
     #endregion
@@ -77,19 +77,20 @@ namespace Apache.Geode.Client.Tests
 
     #endregion
 
-    private QueryHelper()
+    private QueryHelper(Cache cache)
     {
       m_portfolioSetSize = 20;
       m_portfolioNumSets = 1;
       m_positionSetSize = 20;
       m_positionNumSets = 1;
+      m_cache = cache;
     }
 
-    public static QueryHelper<TKey, TVal> GetHelper()
+    public static QueryHelper<TKey, TVal> GetHelper(Cache cache)
     {
       if (m_instance == null)
       {
-        m_instance = new QueryHelper<TKey,TVal>();
+        m_instance = new QueryHelper<TKey,TVal>(cache);
       }
       return m_instance;
     }
@@ -459,8 +460,8 @@ namespace Apache.Geode.Client.Tests
         return false;
       }
 
-      DataOutput o1 = new DataOutput();
-      DataOutput o2 = new DataOutput();
+      DataOutput o1 = m_cache.CreateDataOutput();
+      DataOutput o2 = m_cache.CreateDataOutput();
 
       p1.ToData(o1);
       p2.ToData(o2);

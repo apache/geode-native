@@ -178,8 +178,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
   {
-    initClientWithPool(true, nullptr, locHostPort, serverGroup, nullptr, 0,
-                       true, -1, -1, 60000, /*singlehop*/ true,
+    initClientWithPool(true, poolRegNames[0], locHostPort, serverGroup, nullptr,
+                       0, true, -1, -1, 60000, /*singlehop*/ true,
                        /*threadLocal*/ true);
 
     RegionPtr regPtr0 =
@@ -568,7 +568,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
       ExecutionPtr RexecutionPtr = FunctionService::onRegion(regPtr0);
       CacheableVectorPtr fe =
           RexecutionPtr->withArgs(CacheableInt32::create(5000 * 1000))
-              ->execute(FETimeOut, 5000)
+              ->execute(FETimeOut, 5000 * 1000)
               ->getResult();
       if (fe == nullptr) {
         ASSERT(false, "functionResult is nullptr");

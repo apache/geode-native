@@ -30,7 +30,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-FarSideEntryOp::FarSideEntryOp(RegionCommit* region)
+FarSideEntryOp::FarSideEntryOp(
+    RegionCommit* region, MemberListForVersionStamp& memberListForVersionStamp)
     :  // UNUSED m_region(region),
        /* adongre
         *
@@ -38,7 +39,8 @@ FarSideEntryOp::FarSideEntryOp(RegionCommit* region)
       m_op(0),
       m_modSerialNum(0),
       m_eventOffset(0),
-      m_didDestroy(false)
+      m_didDestroy(false),
+      m_memberListForVersionStamp(memberListForVersionStamp)
 
 {}
 
@@ -73,7 +75,8 @@ void FarSideEntryOp::fromData(DataInput& input, bool largeModCount,
   }
 
   skipFilterRoutingInfo(input);
-  m_versionTag = TcrMessage::readVersionTagPart(input, memId);
+  m_versionTag =
+      TcrMessage::readVersionTagPart(input, memId, m_memberListForVersionStamp);
   // SerializablePtr sPtr;
   // input.readObject(sPtr);
   input.readInt(&m_eventOffset);

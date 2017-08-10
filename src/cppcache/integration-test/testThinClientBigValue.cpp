@@ -108,8 +108,8 @@ END_TASK(StartServer)
 
 DUNIT_TASK(CLIENT1, SetupClient1)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locHostPort, "ServerGroup1",
-                       nullptr, 0, true);
+    initClientWithPool(true, "__TEST_POOL1__", locHostPort, nullptr, nullptr, 0,
+                       true);
     getHelper()->createPooledRegion(regionNames[0], false, locHostPort,
                                     "__TEST_POOL1__", true, true);
   }
@@ -117,8 +117,8 @@ END_TASK(SetupClient1)
 
 DUNIT_TASK(CLIENT2, SetupClient2)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locHostPort, "ServerGroup1",
-                       nullptr, 0, true);
+    initClientWithPool(true, "__TEST_POOL1__", locHostPort, nullptr, nullptr, 0,
+                       true);
     getHelper()->createPooledRegion(regionNames[0], false, locHostPort,
                                     "__TEST_POOL1__", true, true);
   }

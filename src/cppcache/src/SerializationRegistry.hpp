@@ -33,6 +33,10 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/Delta.hpp>
 #include <string>
+#include "util/concurrent/spinlock_mutex.hpp"
+#include "NonCopyable.hpp"
+#include <geode/PdxSerializable.hpp>
+#include "MemberListForVersionStamp.hpp"
 
 #if defined(_MACOSX)
 ACE_BEGIN_VERSIONED_NAMESPACE_DECL
@@ -58,14 +62,75 @@ typedef ACE_Hash_Map_Manager<int64_t, TypeFactoryMethod, ACE_Null_Mutex>
 typedef ACE_Hash_Map_Manager<std::string, TypeFactoryMethodPdx, ACE_Null_Mutex>
     StrToPdxFactoryMap;
 
+class TheTypeMap : private NonCopyable {
+ private:
+  IdToFactoryMap* m_map;
+  IdToFactoryMap* m_map2;  // to hold Fixed IDs since GFE 5.7.
+  StrToPdxFactoryMap* m_pdxTypemap;
+  mutable util::concurrent::spinlock_mutex m_mapLock;
+  mutable util::concurrent::spinlock_mutex m_map2Lock;
+  mutable util::concurrent::spinlock_mutex m_pdxTypemapLock;
+
+ public:
+  TheTypeMap() {
+    m_map = new IdToFactoryMap();
+
+    // second map to hold internal Data Serializable Fixed IDs - since GFE 5.7
+    m_map2 = new IdToFactoryMap();
+
+    // map to hold PDX types <string, funptr>.
+    m_pdxTypemap = new StrToPdxFactoryMap();
+
+    setup();
+  }
+
+  virtual ~TheTypeMap() {
+    if (m_map != nullptr) {
+      delete m_map;
+    }
+
+    if (m_map2 != nullptr) {
+      delete m_map2;
+    }
+
+    if (m_pdxTypemap != nullptr) {
+      delete m_pdxTypemap;
+    }
+  }
+
+  void setup();
+
+  void clear();
+
+  void find(int64_t id, TypeFactoryMethod& func) const;
+  void find2(int64_t id, TypeFactoryMethod& func) const;
+
+  void bind(TypeFactoryMethod func);
+
+  inline void rebind(int64_t compId, TypeFactoryMethod func);
+  inline void unbind(int64_t compId);
+  inline void bind2(TypeFactoryMethod func);
+
+  inline void rebind2(int64_t compId, TypeFactoryMethod func);
+
+  inline void unbind2(int64_t compId);
+  inline void bindPdxType(TypeFactoryMethodPdx func);
+  inline void findPdxType(char* objFullName, TypeFactoryMethodPdx& func);
+  inline void unbindPdxType(char* objFullName);
+
+  void rebindPdxType(char* objFullName, TypeFactoryMethodPdx func);
+};
+
 class CPPCACHE_EXPORT SerializationRegistry {
  public:
+  SerializationRegistry() : theTypeMap() {}
+
   /** write the length of the serialization, write the typeId of the object,
    * then write whatever the object's toData requires. The length at the
    * front is backfilled after the serialization.
    */
-  inline static void serialize(const Serializable* obj, DataOutput& output,
-                               bool isDelta = false) {
+  inline void serialize(const Serializable* obj, DataOutput& output,
+                        bool isDelta = false) const {
     if (obj == nullptr) {
       output.write(static_cast<int8_t>(GeodeTypeIds::NullObj));
     } else {
@@ -106,7 +171,7 @@ class CPPCACHE_EXPORT SerializationRegistry {
     }
   }
 
-  inline static void serialize(const SerializablePtr& obj, DataOutput& output) {
+  inline void serialize(const SerializablePtr& obj, DataOutput& output) const {
     serialize(obj.get(), output);
   }
 
@@ -114,45 +179,44 @@ class CPPCACHE_EXPORT SerializationRegistry {
    * Read the length, typeid, and run the objs fromData. Returns the New
    * object.
    */
-  static SerializablePtr deserialize(DataInput& input, int8_t typeId = -1);
+  SerializablePtr deserialize(DataInput& input, int8_t typeId = -1) const;
 
-  static void addType(TypeFactoryMethod func);
+  void addType(TypeFactoryMethod func);
 
-  static void addType(int64_t compId, TypeFactoryMethod func);
+  void addType(int64_t compId, TypeFactoryMethod func);
 
-  static void addPdxType(TypeFactoryMethodPdx func);
+  void addPdxType(TypeFactoryMethodPdx func);
 
-  static void setPdxSerializer(PdxSerializerPtr pdxSerializer);
+  void setPdxSerializer(PdxSerializerPtr pdxSerializer);
 
-  static PdxSerializerPtr getPdxSerializer();
+  PdxSerializerPtr getPdxSerializer();
 
-  static void removeType(int64_t compId);
-
-  static void init();
+  void removeType(int64_t compId);
 
   // following for internal types with Data Serializable Fixed IDs  - since GFE
   // 5.7
 
-  static void addType2(TypeFactoryMethod func);
+  void addType2(TypeFactoryMethod func);
 
-  static void addType2(int64_t compId, TypeFactoryMethod func);
+  void addType2(int64_t compId, TypeFactoryMethod func);
 
-  static void removeType2(int64_t compId);
+  void removeType2(int64_t compId);
 
-  static int32_t GetPDXIdForType(const char* poolName, SerializablePtr pdxType);
+  int32_t GetPDXIdForType(PoolPtr pool, SerializablePtr pdxType) const;
 
-  static SerializablePtr GetPDXTypeById(const char* poolName, int32_t typeId);
+  SerializablePtr GetPDXTypeById(PoolPtr pool, int32_t typeId) const;
 
-  static int32_t GetEnumValue(SerializablePtr enumInfo);
-  static SerializablePtr GetEnum(int32_t val);
+  int32_t GetEnumValue(PoolPtr pool, SerializablePtr enumInfo) const;
+  SerializablePtr GetEnum(PoolPtr pool, int32_t val) const;
 
-  static PdxSerializablePtr getPdxType(const char* className);
+  PdxSerializablePtr getPdxType(char* className);
 
  private:
-  static PoolPtr getPool();
-  static IdToFactoryMap* s_typeMap;
-  static PdxSerializerPtr m_pdxSerializer;
+  PdxSerializerPtr m_pdxSerializer;
+  TheTypeMap theTypeMap;
 };
+
+typedef std::shared_ptr<SerializationRegistry> SerializationRegistryPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

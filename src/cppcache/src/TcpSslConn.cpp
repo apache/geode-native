@@ -19,7 +19,7 @@
 #include <geode/SystemProperties.hpp>
 #include <geode/DistributedSystem.hpp>
 #include "../../cryptoimpl/Ssl.hpp"
-
+#include "CacheImpl.hpp"
 using namespace apache::geode::client;
 
 Ssl* TcpSslConn::getSSLImpl(ACE_SOCKET sock, const char* pubkeyfile,
@@ -42,20 +42,13 @@ Ssl* TcpSslConn::getSSLImpl(ACE_SOCKET sock, const char* pubkeyfile,
     LOGERROR(msg);
     throw IllegalStateException(msg);
   }
-  // adongre: Added for Ticket #758
-  const char* pemPassword =
-      DistributedSystem::getSystemProperties()->sslKeystorePassword();
-
   return reinterpret_cast<Ssl*>(
-      func(sock, pubkeyfile, privkeyfile, pemPassword));
+      func(sock, pubkeyfile, privkeyfile, m_pemPassword));
 }
 
 void TcpSslConn::createSocket(ACE_SOCKET sock) {
-  SystemProperties* props = DistributedSystem::getSystemProperties();
-  const char* pubkeyfile = props->sslTrustStore();
-  const char* privkeyfile = props->sslKeyStore();
   LOGDEBUG("Creating SSL socket stream");
-  m_ssl = getSSLImpl(sock, pubkeyfile, privkeyfile);
+  m_ssl = getSSLImpl(sock, m_pubkeyfile, m_privkeyfile);
 }
 
 void TcpSslConn::listen(ACE_INET_Addr addr, uint32_t waitSeconds) {
@@ -101,28 +94,21 @@ void TcpSslConn::connect() {
 
   // m_ssl->init();
 
-  uint32_t waitSeconds = m_waitSeconds;
+  uint32_t waitMicroSeconds = m_waitMilliSeconds * 1000;
 
-  // passing waittime as microseconds
-  if (DistributedSystem::getSystemProperties()->readTimeoutUnitInMillis()) {
-    waitSeconds = waitSeconds * 1000;
-  } else {
-    waitSeconds = waitSeconds * (1000 * 1000);
-  }
+  LOGDEBUG("Connecting SSL socket stream to %s:%d waiting %d micro sec",
+           m_addr.get_host_name(), m_addr.get_port_number(), waitMicroSeconds);
 
-  LOGDEBUG("Connecting SSL socket stream to %s:%d waiting %d sec",
-           m_addr.get_host_name(), m_addr.get_port_number(), m_waitSeconds);
-
-  int32_t retVal = m_ssl->connect(m_addr, waitSeconds);
+  int32_t retVal = m_ssl->connect(m_addr, waitMicroSeconds);
 
   if (retVal == -1) {
     char msg[256];
     int32_t lastError = ACE_OS::last_error();
     if (lastError == ETIME || lastError == ETIMEDOUT) {
-      ACE_OS::snprintf(
-          msg, 256,
-          "TcpSslConn::connect Attempt to connect timed out after %d seconds.",
-          m_waitSeconds);
+      ACE_OS::snprintf(msg, 256,
+                       "TcpSslConn::connect Attempt to connect timed out after "
+                       "%d micro-seconds.",
+                       waitMicroSeconds);
       // this is only called by constructor, so we must delete m_ssl
       GF_SAFE_DELETE(m_ssl);
       throw TimeoutException(msg);

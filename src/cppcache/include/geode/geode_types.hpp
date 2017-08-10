@@ -38,7 +38,6 @@ class CacheFactory;
   class CPPCACHE_EXPORT a; \
   typedef std::shared_ptr<a> b;
 
-_GF_PTR_DEF_(DistributedSystem, DistributedSystemPtr);
 _GF_PTR_DEF_(CacheFactory, CacheFactoryPtr);
 _GF_PTR_DEF_(RegionService, RegionServicePtr);
 _GF_PTR_DEF_(GeodeCache, GeodeCachePtr);

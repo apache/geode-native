@@ -87,8 +87,8 @@ namespace Apache.Geode.Client.QuickStart
         Console.WriteLine("Created the Region Programmatically.");
 
         // Register our Serializable/Cacheable Query objects, viz. Portfolio and Position.
-        Serializable.RegisterTypeGeneric(Portfolio.CreateDeserializable);
-        Serializable.RegisterTypeGeneric(Position.CreateDeserializable);
+        Serializable.RegisterTypeGeneric(Portfolio.CreateDeserializable, CacheHelper.DCache);
+        Serializable.RegisterTypeGeneric(Position.CreateDeserializable, CacheHelper.DCache);
 
         Console.WriteLine("Registered Serializable Query Objects");
 

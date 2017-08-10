@@ -25,7 +25,8 @@ ProxyRemoteQueryService::ProxyRemoteQueryService(ProxyCachePtr cptr)
 QueryPtr ProxyRemoteQueryService::newQuery(const char* querystring) {
   if (!m_proxyCache->isClosed()) {
     auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
-    auto pool = PoolManager::find(userAttachedPool->getName());
+    auto pool = m_proxyCache->m_cacheImpl->getCache()->getPoolManager().find(
+        userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       GuardUserAttribures gua(m_proxyCache);
@@ -53,7 +54,8 @@ CqQueryPtr ProxyRemoteQueryService::newCq(const char* querystr,
                                           bool isDurable) {
   if (!m_proxyCache->isClosed()) {
     auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
-    auto pool = PoolManager::find(userAttachedPool->getName());
+    auto pool = m_proxyCache->m_cacheImpl->getCache()->getPoolManager().find(
+        userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       GuardUserAttribures gua(m_proxyCache);
@@ -81,7 +83,8 @@ CqQueryPtr ProxyRemoteQueryService::newCq(const char* name,
                                           bool isDurable) {
   if (!m_proxyCache->isClosed()) {
     auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
-    auto pool = PoolManager::find(userAttachedPool->getName());
+    auto pool = m_proxyCache->m_cacheImpl->getCache()->getPoolManager().find(
+        userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       GuardUserAttribures gua(m_proxyCache);
@@ -114,12 +117,12 @@ void ProxyRemoteQueryService::closeCqs(bool keepAlive) {
         cqImpl->close(false);
       }
     } catch (QueryException& qe) {
-      Log::fine(("Failed to close the CQ, CqName : " + cqName + " Error : " +
-                 qe.getMessage())
+      Log::fine(("Failed to close the CQ, CqName : " + cqName +
+                 " Error : " + qe.getMessage())
                     .c_str());
     } catch (CqClosedException& cce) {
-      Log::fine(("Failed to close the CQ, CqName : " + cqName + " Error : " +
-                 cce.getMessage())
+      Log::fine(("Failed to close the CQ, CqName : " + cqName +
+                 " Error : " + cce.getMessage())
                     .c_str());
     }
   }
@@ -133,7 +136,8 @@ void ProxyRemoteQueryService::getCqs(query_container_type& vec) {
 CqQueryPtr ProxyRemoteQueryService::getCq(const char* name) {
   if (!m_proxyCache->isClosed()) {
     auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
-    auto pool = PoolManager::find(userAttachedPool->getName());
+    auto pool = m_proxyCache->m_cacheImpl->getCache()->getPoolManager().find(
+        userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       GuardUserAttribures gua(m_proxyCache);
@@ -155,12 +159,12 @@ void ProxyRemoteQueryService::executeCqs() {
     try {
       q->execute();
     } catch (QueryException& qe) {
-      Log::fine(("Failed to excecue the CQ, CqName : " + cqName + " Error : " +
-                 qe.getMessage())
+      Log::fine(("Failed to excecue the CQ, CqName : " + cqName +
+                 " Error : " + qe.getMessage())
                     .c_str());
     } catch (CqClosedException& cce) {
-      Log::fine(("Failed to excecue the CQ, CqName : " + cqName + " Error : " +
-                 cce.getMessage())
+      Log::fine(("Failed to excecue the CQ, CqName : " + cqName +
+                 " Error : " + cce.getMessage())
                     .c_str());
     }
   }
@@ -174,12 +178,12 @@ void ProxyRemoteQueryService::stopCqs() {
     try {
       q->stop();
     } catch (QueryException& qe) {
-      Log::fine(("Failed to stop the CQ, CqName : " + cqName + " Error : " +
-                 qe.getMessage())
+      Log::fine(("Failed to stop the CQ, CqName : " + cqName +
+                 " Error : " + qe.getMessage())
                     .c_str());
     } catch (CqClosedException& cce) {
-      Log::fine(("Failed to stop the CQ, CqName : " + cqName + " Error : " +
-                 cce.getMessage())
+      Log::fine(("Failed to stop the CQ, CqName : " + cqName +
+                 " Error : " + cce.getMessage())
                     .c_str());
     }
   }

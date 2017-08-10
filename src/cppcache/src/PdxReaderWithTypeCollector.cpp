@@ -25,19 +25,18 @@
 #include "PdxTypes.hpp"
 #include <ace/OS_NS_stdio.h>
 #include <geode/PdxFieldTypes.hpp>
+#include "CacheImpl.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-PdxReaderWithTypeCollector::PdxReaderWithTypeCollector(DataInput& dataInput,
-                                                       PdxTypePtr pdxType,
-                                                       int32_t pdxlen)
-    : PdxLocalReader(dataInput, pdxType, pdxlen) {
-  m_newPdxType = std::make_shared<PdxType>(pdxType->getPdxClassName(), true);
+PdxReaderWithTypeCollector::PdxReaderWithTypeCollector(
+    DataInput& dataInput, PdxTypePtr pdxType, int32_t pdxlen,
+    PdxTypeRegistryPtr pdxTypeRegistry)
+    : PdxLocalReader(dataInput, pdxType, pdxlen, pdxTypeRegistry) {
+  m_newPdxType = std::make_shared<PdxType>(m_pdxTypeRegistry ,pdxType->getPdxClassName(), true);
 }
-
-PdxReaderWithTypeCollector::PdxReaderWithTypeCollector() {}
 
 PdxReaderWithTypeCollector::~PdxReaderWithTypeCollector() {}
 

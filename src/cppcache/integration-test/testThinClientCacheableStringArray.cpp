@@ -33,6 +33,10 @@
 #include <geode/Query.hpp>
 #include <geode/QueryService.hpp>
 
+#include "SerializationRegistry.hpp"
+#include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
+
 using namespace apache::geode::client;
 using namespace test;
 using namespace testobject;
@@ -63,11 +67,15 @@ END_TASK(CreateServer1)
 
 DUNIT_TASK(CLIENT1, StepOne)
   {
-    Serializable::registerType(Position::createDeserializable);
-    Serializable::registerType(Portfolio::createDeserializable);
+    initClientWithPool(true, "__TEST_POOL1__", locHostPort, nullptr, nullptr, 0,
+                       true);
+    SerializationRegistryPtr serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
-    initClientWithPool(true, "__TEST_POOL1__", locHostPort, "ServerGroup1",
-                       nullptr, 0, true);
+    serializationRegistry->addType(Position::createDeserializable);
+    serializationRegistry->addType(Portfolio::createDeserializable);
+
     RegionPtr regptr = getHelper()->createPooledRegion(
         _regionNames[0], USE_ACK, locHostPort, "__TEST_POOL1__", true, true);
     RegionAttributesPtr lattribPtr = regptr->getAttributes();

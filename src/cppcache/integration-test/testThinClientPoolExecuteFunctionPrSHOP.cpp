@@ -21,6 +21,10 @@
 #include "ThinClientHelper.hpp"
 #include "testobject/VariousPdxTypes.hpp"
 
+#include "SerializationRegistry.hpp"
+#include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
+
 using namespace PdxTests;
 /* This is to test
 1- funtion execution on pool
@@ -235,8 +239,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
   {
-    initClientWithPool(true, nullptr, locHostPort, serverGroup, nullptr, 0,
-                       true, -1, -1, 60000, /*singlehop*/ true,
+    initClientWithPool(true, poolRegNames[0], locHostPort, serverGroup, nullptr,
+                       0, true, -1, -1, 60000, /*singlehop*/ true,
                        /*threadLocal*/ true);
 
     auto regPtr0 = createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
@@ -623,7 +627,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       // test data independant function
       //     test get function with result
       getResult = true;
-      //    PoolPtr pptr = PoolManager::find(poolName);
       args = routingObj;
       // ExecutionPtr exc=nullptr;
       // CacheableVectorPtr executeFunctionResult = nullptr;
@@ -685,7 +688,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
       getResult = true;
       try {
-        Serializable::registerPdxType(
+        SerializationRegistryPtr serializationRegistry =
+            CacheRegionHelper::getCacheImpl(getHelper()->getCache().get())
+                ->getSerializationRegistry();
+
+        serializationRegistry->addPdxType(
             PdxTests::PdxTypes8::createDeserializable);
       } catch (const IllegalStateException&) {
         // ignore exception
@@ -1064,7 +1071,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       LOGINFO("FETimeOut begin onRegion");
       auto RexecutionPtr = FunctionService::onRegion(regPtr0);
       auto fe = RexecutionPtr->withArgs(CacheableInt32::create(5000 * 1000))
-                    ->execute(FETimeOut, 5000)
+                    ->execute(FETimeOut, 5000 * 1000)
                     ->getResult();
       if (fe == nullptr) {
         ASSERT(false, "functionResult is nullptr");
@@ -1086,7 +1093,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       LOGINFO("FETimeOut begin onServer");
       auto serverExc = FunctionService::onServer(getHelper()->cachePtr);
       auto vec = serverExc->withArgs(CacheableInt32::create(5000 * 1000))
-                     ->execute(FETimeOut, 5000)
+                     ->execute(FETimeOut, 5000 * 1000)
                      ->getResult();
       if (vec == nullptr) {
         ASSERT(false, "functionResult is nullptr");
@@ -1107,7 +1114,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       LOGINFO("FETimeOut begin onServers");
       auto serversExc = FunctionService::onServers(getHelper()->cachePtr);
       auto vecs = serversExc->withArgs(CacheableInt32::create(5000 * 1000))
-                      ->execute(FETimeOut, 5000)
+                      ->execute(FETimeOut, 5000 * 1000)
                       ->getResult();
       if (vecs == nullptr) {
         ASSERT(false, "functionResult is nullptr");

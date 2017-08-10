@@ -44,45 +44,51 @@ EntriesMap* EntriesMapFactory::createMap(RegionInternal* region,
   bool concurrencyChecksEnabled = attrs->getConcurrencyChecksEnabled();
   bool heapLRUEnabled = false;
 
-  SystemProperties* prop = DistributedSystem::getSystemProperties();
-  if ((lruLimit != 0) ||
-      (prop && prop->heapLRULimitEnabled())) {  // create LRU map...
+  auto cache = region->getCacheImpl();
+  auto& prop = cache->getDistributedSystem().getSystemProperties();
+  auto& expiryTaskmanager = cache->getExpiryTaskManager();
+
+  if ((lruLimit != 0) || (prop.heapLRULimitEnabled())) {  // create LRU map...
     LRUAction::Action lruEvictionAction;
     DiskPolicyType::PolicyType dpType = attrs->getDiskPolicy();
     if (dpType == DiskPolicyType::OVERFLOWS) {
       lruEvictionAction = LRUAction::OVERFLOW_TO_DISK;
     } else if ((dpType == DiskPolicyType::NONE) ||
-               (prop && prop->heapLRULimitEnabled())) {
+               (prop.heapLRULimitEnabled())) {
       lruEvictionAction = LRUAction::LOCAL_DESTROY;
-      if (prop && prop->heapLRULimitEnabled()) heapLRUEnabled = true;
+      if (prop.heapLRULimitEnabled()) heapLRUEnabled = true;
     } else {
       return nullptr;
     }
     if (ttl != 0 || idle != 0) {
-      EntryFactory* entryFactory = LRUExpEntryFactory::singleton;
-      entryFactory->setConcurrencyChecksEnabled(concurrencyChecksEnabled);
-      result = new LRUEntriesMap(entryFactory, region, lruEvictionAction,
-                                 lruLimit, concurrencyChecksEnabled,
-                                 concurrency, heapLRUEnabled);
+      result = new LRUEntriesMap(
+          &expiryTaskmanager,
+          std::unique_ptr<LRUExpEntryFactory>(
+              new LRUExpEntryFactory(concurrencyChecksEnabled)),
+          region, lruEvictionAction, lruLimit, concurrencyChecksEnabled,
+          concurrency, heapLRUEnabled);
     } else {
-      EntryFactory* entryFactory = LRUEntryFactory::singleton;
-      entryFactory->setConcurrencyChecksEnabled(concurrencyChecksEnabled);
-      result = new LRUEntriesMap(entryFactory, region, lruEvictionAction,
-                                 lruLimit, concurrencyChecksEnabled,
-                                 concurrency, heapLRUEnabled);
+      result = new LRUEntriesMap(
+          &expiryTaskmanager,
+          std::unique_ptr<LRUEntryFactory>(
+              new LRUEntryFactory(concurrencyChecksEnabled)),
+          region, lruEvictionAction, lruLimit, concurrencyChecksEnabled,
+          concurrency, heapLRUEnabled);
     }
   } else if (ttl != 0 || idle != 0) {
     // create entries with a ExpEntryFactory.
-    EntryFactory* entryFactory = ExpEntryFactory::singleton;
-    entryFactory->setConcurrencyChecksEnabled(concurrencyChecksEnabled);
-    result = new ConcurrentEntriesMap(entryFactory, concurrencyChecksEnabled,
-                                      region, concurrency);
+    result = new ConcurrentEntriesMap(
+        &expiryTaskmanager,
+        std::unique_ptr<ExpEntryFactory>(
+            new ExpEntryFactory(concurrencyChecksEnabled)),
+        concurrencyChecksEnabled, region, concurrency);
   } else {
     // create plain concurrent map.
-    EntryFactory* entryFactory = EntryFactory::singleton;
-    entryFactory->setConcurrencyChecksEnabled(concurrencyChecksEnabled);
-    result = new ConcurrentEntriesMap(entryFactory, concurrencyChecksEnabled,
-                                      region, concurrency);
+    result = new ConcurrentEntriesMap(
+        &expiryTaskmanager,
+        std::unique_ptr<EntryFactory>(
+            new EntryFactory(concurrencyChecksEnabled)),
+        concurrencyChecksEnabled, region, concurrency);
   }
   result->open(initialCapacity);
   return result;

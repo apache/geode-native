@@ -29,15 +29,14 @@ AdminRegionPtr AdminRegion::create(CacheImpl* cache,
                                    ThinClientBaseDM* distMan) {
   auto adminRegion = std::make_shared<AdminRegion>();
 
-  SystemProperties* props =
-      cache->getCache()->getDistributedSystem()->getSystemProperties();
-  if (props && props->statisticsEnabled()) {
+  auto& props = cache->getDistributedSystem().getSystemProperties();
+  if (props.statisticsEnabled()) {
     // no need to create a region .. just create a cacheDistribution Manager
     adminRegion->m_connectionMgr = &(cache->tcrConnectionManager());
     if (!distMan) {
       adminRegion->m_distMngr =
           new ThinClientCacheDistributionManager(*adminRegion->m_connectionMgr);
-      StatisticsManager* mngr = StatisticsManager::getExistingInstance();
+      auto mngr = cache->getDistributedSystem().getStatisticsManager();
       if (mngr) {
         // Register it with StatisticsManager
         mngr->RegisterAdminRegion(adminRegion);
@@ -78,8 +77,10 @@ GfErrType AdminRegion::putNoThrow(const CacheableKeyPtr& keyPtr,
   // put obj to region
   GfErrType err = GF_NOERR;
 
-  TcrMessagePut request(nullptr, keyPtr, valuePtr, nullptr, false, m_distMngr,
-                        true, false, m_fullPath.c_str());
+  TcrMessagePut request(
+      m_connectionMgr->getCacheImpl()->getCache()->createDataOutput(), nullptr,
+      keyPtr, valuePtr, nullptr, false, m_distMngr, true, false,
+      m_fullPath.c_str());
   request.setMetaRegion(true);
   TcrMessageReply reply(true, m_distMngr);
   reply.setMetaRegion(true);

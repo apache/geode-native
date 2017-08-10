@@ -124,8 +124,10 @@ class ThinClientBaseDM {
     LOGFINE("Delta enabled on server: %s",
             s_isDeltaEnabledOnServer ? "true" : "false");
   }
-  TcrConnectionManager& getConnectionManager() { return m_connManager; }
+  TcrConnectionManager& getConnectionManager() const { return m_connManager; }
+
   virtual size_t getNumberOfEndPoints() const { return 0; }
+
   bool isNotAuthorizedException(const char* exceptionMsg) {
     if (exceptionMsg != nullptr &&
         strstr(exceptionMsg,
@@ -138,6 +140,7 @@ class ThinClientBaseDM {
     }
     return false;
   }
+
   bool isPutAllPartialResultException(const char* exceptionMsg) {
     if (exceptionMsg != nullptr &&
         strstr(

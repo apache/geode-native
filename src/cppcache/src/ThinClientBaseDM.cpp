@@ -43,19 +43,21 @@ ThinClientBaseDM::ThinClientBaseDM(TcrConnectionManager& connManager,
 ThinClientBaseDM::~ThinClientBaseDM() {}
 
 void ThinClientBaseDM::init() {
-  if (!DistributedSystem::getSystemProperties()->isGridClient()) {
-    // start the chunk processing thread
-    if (!DistributedSystem::getSystemProperties()
-             ->disableChunkHandlerThread()) {
-      startChunkProcessor();
-    }
+  const auto& systemProperties = m_connManager.getCacheImpl()
+                                     ->getDistributedSystem()
+                                     .getSystemProperties();
+  if (!(systemProperties.isGridClient() &&
+        systemProperties.disableChunkHandlerThread())) {
+    startChunkProcessor();
   }
   m_initDone = true;
 }
 
 bool ThinClientBaseDM::isSecurityOn() {
-  SystemProperties* sysProp = DistributedSystem::getSystemProperties();
-  return sysProp->isSecurityOn();
+  return m_connManager.getCacheImpl()
+      ->getDistributedSystem()
+      .getSystemProperties()
+      .isSecurityOn();
 }
 
 void ThinClientBaseDM::destroy(bool keepalive) {

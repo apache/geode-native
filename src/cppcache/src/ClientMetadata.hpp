@@ -20,6 +20,7 @@
  * limitations under the License.
  */
 
+#include <geode/Log.hpp>
 #include <geode/PartitionResolver.hpp>
 #include "ServerLocation.hpp"
 #include "BucketServerLocation.hpp"

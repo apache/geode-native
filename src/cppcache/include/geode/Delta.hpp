@@ -91,6 +91,10 @@ class Delta {
   virtual DeltaPtr clone();
 
   virtual ~Delta() {}
+
+ protected:
+  Delta(Cache* cache);
+  Cache* m_cache;
 };
 }  // namespace client
 }  // namespace geode

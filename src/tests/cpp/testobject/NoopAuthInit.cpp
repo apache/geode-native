@@ -31,7 +31,7 @@ LIBEXP AuthInitialize* createNoopAuthInitInstance() {
 }
 }
 
-PropertiesPtr NoopAuthInit::getCredentials(PropertiesPtr& securityprops,
+PropertiesPtr NoopAuthInit::getCredentials(const PropertiesPtr& securityprops,
                                            const char* server) {
   LOGINFO("rjk: calling NoopAuthInit::getCredentials");
   PropertiesPtr credentials = Properties::create();

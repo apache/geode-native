@@ -54,7 +54,7 @@ class CPPCACHE_EXPORT AuthInitialize {
    * @remarks This method can modify the given set of properties. For
    * example it may invoke external agents or even interact with the user.
    */
-  virtual PropertiesPtr getCredentials(PropertiesPtr& securityprops,
+  virtual PropertiesPtr getCredentials(const PropertiesPtr& securityprops,
                                        const char* server) = 0;
 
   /**@brief Invoked before the cache goes down. */

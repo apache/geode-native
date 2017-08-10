@@ -105,7 +105,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxEnumQuery)
     LOG("pdxEnumQuery started ");
 
     try {
-      Serializable::registerPdxType(PdxEnumTestClass::createDeserializable);
+      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      serializationRegistry->addPdxType(PdxEnumTestClass::createDeserializable);
       LOG("PdxEnumTestClass Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("PdxEnumTestClass IllegalStateException");

@@ -60,7 +60,7 @@ namespace Apache.Geode.Client.QuickStart
 
         Console.WriteLine("Obtained the Region from the Cache");
 
-        Serializable.RegisterTypeGeneric(DeltaExample.create);
+        Serializable.RegisterTypeGeneric(DeltaExample.create, CacheHelper.DCache);
 
         //Creating Delta Object.
         DeltaExample ptr = new DeltaExample(10, 15, 20);

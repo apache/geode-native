@@ -19,7 +19,8 @@
 
 #include "fw_helper.hpp"
 #include <geode/GeodeCppCache.hpp>
-#include <CacheRegionHelper.hpp>
+#include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
 
 using namespace apache::geode::client;
 

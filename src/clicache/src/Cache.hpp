@@ -22,6 +22,7 @@
 #include "IGeodeCache.hpp"
 #include "IRegion.hpp"
 #include "RegionAttributes.hpp"
+#include "PoolManager.hpp"
 
 using namespace System;
 
@@ -251,6 +252,15 @@ namespace Apache
         /// @return the factory
         /// </summary>
         virtual IPdxInstanceFactory^ CreatePdxInstanceFactory(String^ className);
+
+        virtual DataInput^ CreateDataInput(array<Byte>^ buffer, System::Int32 len);
+        virtual DataInput^ CreateDataInput(array<Byte>^ buffer);
+        
+        virtual DataOutput^ Cache::CreateDataOutput();
+
+        virtual PoolFactory^ GetPoolFactory();
+
+        virtual PoolManager^ GetPoolManager();
 
       internal:
 

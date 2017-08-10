@@ -45,15 +45,13 @@ int32_t g_classIdToReturn4 = 0x123456;
 template <class T>
 std::shared_ptr<T> duplicate(const std::shared_ptr<T>& orig) {
   std::shared_ptr<T> result;
-  DataOutput dout;
-  SerializationRegistry::serialize(orig, dout);
-  // dout.writeObject(orig);
+  auto dout = getHelper()->getCache()->createDataOutput();
+  dout->writeObject(orig);
 
   uint32_t length = 0;
-  const uint8_t* buffer = dout.getBuffer(&length);
-  DataInput din(buffer, length);
-  result = std::static_pointer_cast<T>(SerializationRegistry::deserialize(din));
-  // din.readObject(result);
+  const uint8_t* buffer = dout->getBuffer(&length);
+  auto din = getHelper()->getCache()->createDataInput(buffer, length);
+  din->readObject(result);
 
   return result;
 }
@@ -150,81 +148,6 @@ class OtherType : public Serializable {
 #define Sender s1p1
 #define Receiver s1p2
 
-DUNIT_TASK(NoDist, SerializeInMemory)
-  {
-    CppCacheLibrary::initLib();
-
-    CacheableStringPtr str = CacheableString::create("hello");
-    ASSERT(str->length() == 5, "expected length 5.");
-
-    CacheableStringPtr copy = duplicate(str);
-
-    ASSERT(*str == *copy, "expected copy to be hello.");
-    ASSERT(str != copy, "expected copy to be different object.");
-
-    str = CacheableString::create("");
-    copy = duplicate(str);
-    ASSERT(copy != nullptr, "error null copy.");
-    ASSERT(copy->length() == 0, "expected 0 length.");
-
-    CacheableInt32Ptr intkey = CacheableInt32::create(1);
-    CacheableInt32Ptr intcopy = duplicate(intkey);
-    ASSERT(intcopy->value() == 1, "expected value 1.");
-
-    CacheableInt64Ptr longkey = CacheableInt64::create(0x1122334455667788LL);
-    CacheableInt64Ptr longcopy = duplicate(longkey);
-    ASSERT(longcopy->value() == 0x1122334455667788LL,
-           "expected value 0x1122334455667788.");
-
-    struct blob {
-      int m_a;
-      bool m_b;
-      char m_name[100];
-    };
-    struct blob borig;
-    borig.m_a = 1;
-    borig.m_b = true;
-    strcpy(borig.m_name, "Joe Cool Coder");
-
-    CacheableBytesPtr bytes = CacheableBytes::create(
-        reinterpret_cast<uint8_t*>(&borig), sizeof(blob));
-    CacheableBytesPtr bytesCopy = duplicate(bytes);
-    struct blob* bcopy = (struct blob*)bytesCopy->value();
-    ASSERT(0 == strcmp(bcopy->m_name, borig.m_name), "expected Joe Cool Coder");
-    ASSERT(1 == bcopy->m_a, "expected value 1");
-  }
-ENDTASK
-
-DUNIT_TASK(NoDist, OtherTypeInMemory)
-  {
-    Serializable::registerType(OtherType::createDeserializable);
-    std::shared_ptr<OtherType> ot(new OtherType());
-    ot->m_struct.a = 1;
-    ot->m_struct.b = true;
-    ot->m_struct.c = 2;
-    ot->m_struct.d = 3.0;
-
-    std::shared_ptr<OtherType> copy = duplicate(ot);
-
-    ASSERT(copy->classId() == g_classIdToReturn, "unexpected classId");
-    if (copy->classId() > 0xFFFF) {
-      ASSERT(copy->typeId() == GeodeTypeIdsImpl::CacheableUserData4,
-             "typeId should be equal to GeodeTypeIdsImpl::CacheableUserData4.");
-    } else if (copy->classId() > 0xFF) {
-      ASSERT(copy->typeId() == GeodeTypeIdsImpl::CacheableUserData2,
-             "typeId should be equal to GeodeTypeIdsImpl::CacheableUserData2.");
-    } else {
-      ASSERT(copy->typeId() == GeodeTypeIdsImpl::CacheableUserData,
-             "typeId should be equal to GeodeTypeIdsImpl::CacheableUserData.");
-    }
-    ASSERT(copy != ot, "expected different instance.");
-    ASSERT(copy->m_struct.a == 1, "a == 1");
-    ASSERT(copy->m_struct.b == true, "b == true");
-    ASSERT(copy->m_struct.c == 2, "c == 2");
-    ASSERT(copy->m_struct.d == 3.0, "d == 3.0");
-  }
-ENDTASK
-
 RegionPtr regionPtr;
 
 DUNIT_TASK(Receiver, SetupR)
@@ -238,11 +161,15 @@ ENDTASK
 
 DUNIT_TASK(Sender, SetupAndPutInts)
   {
-    Serializable::registerType(OtherType::createDeserializable);
-    Serializable::registerType(OtherType::createDeserializable2);
-    Serializable::registerType(OtherType::createDeserializable4);
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1",
-                       nullptr, 0, true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, nullptr, 0,
+                       true);
+    SerializationRegistryPtr serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
+    serializationRegistry->addType(OtherType::createDeserializable);
+    serializationRegistry->addType(OtherType::createDeserializable2);
+    serializationRegistry->addType(OtherType::createDeserializable4);
+
     getHelper()->createPooledRegion("DistRegionAck", USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
     LOG("SenderInit complete.");

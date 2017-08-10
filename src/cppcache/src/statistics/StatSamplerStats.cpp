@@ -16,14 +16,14 @@
  */
 
 #include "StatSamplerStats.hpp"
+#include "statistics/StatisticsManager.hpp"
 using namespace apache::geode::statistics;
 
 /**
  * Statistics related to the statistic sampler.
  */
 
-StatSamplerStats::StatSamplerStats() {
-  StatisticsFactory* statFactory = StatisticsFactory::getExistingInstance();
+StatSamplerStats::StatSamplerStats(StatisticsFactory* statFactory) {
   statDescriptorArr = new StatisticDescriptor*[2];
   statDescriptorArr[0] = statFactory->createIntCounter(
       "sampleCount", "Total number of samples taken by this sampler.",

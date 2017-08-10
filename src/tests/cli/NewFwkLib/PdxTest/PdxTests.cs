@@ -39,8 +39,7 @@ namespace Apache.Geode.Client.FwkLib
     {
         long currentTimeInMillies()
         {
-            DateTime startTime = DateTime.Now;
-            long curruntMillis = SmokePerf<TKey, TVal>.GetDateTimeMillis(startTime);
+            long curruntMillis = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             return curruntMillis;
         }
         public override void AfterCreate(EntryEvent<TKey, TVal> ev)
@@ -1028,7 +1027,7 @@ namespace Apache.Geode.Client.FwkLib
         {
             FwkTest<TKey, TVal>.CurrentTest.ResetKey(ObjectType);
             string objectType = GetStringValue(ObjectType);
-            QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+            QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
             int numSet = 0;
             int setSize = 0;
             if (objectType != null && objectType == "Portfolio")
@@ -1053,7 +1052,7 @@ namespace Apache.Geode.Client.FwkLib
             int numOfKeys = GetUIntValue(EntryCount);
             FwkTest<TKey, TVal>.CurrentTest.ResetKey(ValueSizes);
             int objSize = GetUIntValue(ValueSizes);
-            QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+            QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
             int numSet = 0;
             int setSize = 0;
             if (objType != null && objType == "Portfolio")
@@ -1171,7 +1170,7 @@ namespace Apache.Geode.Client.FwkLib
             {
                 FwkTest<TKey, TVal>.CurrentTest.ResetKey(EntryCount);
                 int numOfKeys = GetUIntValue(EntryCount);
-                QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+                QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
                 int setSize = qh.PortfolioSetSize;
                 if (numOfKeys < setSize)
                 {
@@ -1251,7 +1250,7 @@ namespace Apache.Geode.Client.FwkLib
             {
                 Int32 numSet = 0;
                 Int32 setSize = 0;
-                QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper();
+                QueryHelper<TKey, TVal> qh = QueryHelper<TKey, TVal>.GetHelper(CacheHelper<TKey, TVal>.DCache);
                 TVal port;
                 setSize = qh.PortfolioSetSize;
                 numSet = 200 / setSize;
@@ -2177,9 +2176,8 @@ namespace Apache.Geode.Client.FwkLib
             int sleepMS = 2000;
             FwkInfo("Waiting for a period of silence for " + desiredSilenceSec + " seconds...");
             long desiredSilenceMS = desiredSilenceSec * 1000;
-            DateTime startTime = DateTime.Now;
-            long silenceStartTime = SmokePerf<TKey, TVal>.GetDateTimeMillis(startTime);
-            long currentTime = SmokePerf<TKey, TVal>.GetDateTimeMillis(startTime);
+            long silenceStartTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+            long currentTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             long lastEventTime = (long)Util.BBGet("ListenerBB", "lastEventTime");
 
             while (currentTime - silenceStartTime < desiredSilenceMS)
@@ -2198,8 +2196,7 @@ namespace Apache.Geode.Client.FwkLib
                     // restart the wait
                     silenceStartTime = lastEventTime;
                 }
-                startTime = DateTime.Now;
-                currentTime = SmokePerf<TKey, TVal>.GetDateTimeMillis(startTime);
+                currentTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             }
             long duration = currentTime - silenceStartTime;
             FwkInfo("Done waiting, clients have been silent for " + duration + " ms");

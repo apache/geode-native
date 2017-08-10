@@ -34,7 +34,6 @@ namespace client {
  * Enumerated type for Operation actions.
  */
 class CPPCACHE_EXPORT CqOperation {
-  // public static methods
  public:
   // types of operation CORESPONDING TO THE ONES in geode.cache.Operation
 

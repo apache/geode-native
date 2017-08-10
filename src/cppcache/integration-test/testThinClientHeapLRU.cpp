@@ -75,8 +75,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
     PropertiesPtr pp = Properties::create();
     pp->insert("heap-lru-limit", 1);
     pp->insert("heap-lru-delta", 10);
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1", pp, 0,
-                       true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, pp, 0, true);
     getHelper()->createPooledRegion(_regionNames[0], USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
     LOG("StepOne complete.");
@@ -88,8 +87,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo)
     PropertiesPtr pp = Properties::create();
     pp->insert("heap-lru-limit", 1);
     pp->insert("heap-lru-delta", 10);
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, "ServerGroup1", pp, 0,
-                       true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, pp, 0, true);
     getHelper()->createPooledRegion(_regionNames[0], USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
     LOG("StepTwo complete.");

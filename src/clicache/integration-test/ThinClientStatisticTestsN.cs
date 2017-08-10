@@ -247,33 +247,7 @@ namespace Apache.Geode.Client.UnitTests
 
     void statisticsTest()
     {
-    /* Create Statistics in right and wrong manner */
-      StatisticsFactory factory = StatisticsFactory.GetExistingInstance();
-    
-    /* Register a type */
-      TestStatisticsType testType = new TestStatisticsType();
-      createType(factory, testType);
-      Util.Log("Statistics Type TestStats Registered");
-    
-    /* Create a statistics */
-      Statistics testStat1 = factory.CreateStatistics(testType.testStatsType,"TestStatistics");
-      Assert.IsNotNull(testStat1, "Test Statistics Creation Failed");
-    
-    /* Tests Find Type , Find Statistics */
-      Statistics temp = factory.FindFirstStatisticsByType(testType.testStatsType);
-      Assert.IsNotNull(temp , "findFirstStatisticsByType Failed");
-      Util.Log("Statistics testStat1 Created Successfully.");
-    
-    /* Test Set Functions */
-      testGetSetIncFunctions( testStat1, testType );
-      Util.Log("Get / Set / Inc Functions Tested ");
-    
-    /* Close Statistics */ 
-      testStat1.Close();
-      Statistics temp2 = factory.FindFirstStatisticsByType(testType.testStatsType);
-      Assert.IsNull(temp2, "Statistics close() Failed");
-      
-      Util.Log("StatisticsTest Completed");
+
     }
 
     #endregion

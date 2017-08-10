@@ -53,7 +53,8 @@ class CPPCACHE_EXPORT PreservedDataExpiryHandler : public ACE_Event_Handler {
   /**
    * Constructor
    */
-  PreservedDataExpiryHandler(PdxSerializablePtr pdxObjectPtr,
+  PreservedDataExpiryHandler(const std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
+                             const PdxSerializablePtr& pdxObjectPtr,
                              uint32_t duration);
 
   /** This task object will be registered with the Timer Queue.
@@ -69,6 +70,7 @@ class CPPCACHE_EXPORT PreservedDataExpiryHandler : public ACE_Event_Handler {
   // Duration after which the task should be reset in case of
   // modification.
   // UNUSED uint32_t m_duration;
+  std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
   PdxSerializablePtr m_pdxObjectPtr;
 };
 }  // namespace client

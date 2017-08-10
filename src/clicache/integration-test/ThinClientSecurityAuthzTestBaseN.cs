@@ -406,7 +406,7 @@ namespace Apache.Geode.Client.UnitTests
               region.RemoveAll(keys);
               break;
             case OperationCode.ExecuteCQ:
-              Pool/*<object, object>*/ pool = PoolManager/*<object, object>*/.Find("__TESTPOOL1_");
+              Pool/*<object, object>*/ pool = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_");
               QueryService<object, object> qs;
               if (pool != null)
               {
@@ -429,7 +429,7 @@ namespace Apache.Geode.Client.UnitTests
             case OperationCode.ExecuteFunction:
               if (!isMultiuser)
               {
-                Pool/*<object, object>*/ pool2 = PoolManager/*<object, object>*/.Find("__TESTPOOL1_");
+                Pool/*<object, object>*/ pool2 = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_");
                 if (pool2 != null)
                 {
                   Client.FunctionService<object>.OnServer(pool2).Execute("securityTest");

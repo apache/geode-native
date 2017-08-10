@@ -21,6 +21,7 @@
  */
 
 #include "PdxLocalReader.hpp"
+#include "PdxTypeRegistry.hpp"
 
 namespace apache {
 namespace geode {
@@ -33,10 +34,8 @@ class PdxReaderWithTypeCollector : public PdxLocalReader {
   void checkType(const char* fieldName, int8_t typeId, const char* fieldType);
 
  public:
-  PdxReaderWithTypeCollector();
-
   PdxReaderWithTypeCollector(DataInput& dataInput, PdxTypePtr pdxType,
-                             int pdxlen);
+                             int pdxlen, PdxTypeRegistryPtr pdxTypeRegistry);
 
   virtual ~PdxReaderWithTypeCollector();
 

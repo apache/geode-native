@@ -72,10 +72,11 @@ typedef std::shared_ptr<TombstoneEntry> TombstoneEntryPtr;
 
 class TombstoneList {
  public:
-  TombstoneList(MapSegment* mapSegment) { m_mapSegment = mapSegment; }
+  TombstoneList(MapSegment* mapSegment, CacheImpl* cacheImpl)
+      : m_mapSegment(mapSegment), m_cacheImpl(cacheImpl) {}
   virtual ~TombstoneList() { cleanUp(); }
-  void add(RegionInternal* rptr, const MapEntryImplPtr& entry,
-           TombstoneExpiryHandler* handler, long taskID);
+  void add(const MapEntryImplPtr& entry, TombstoneExpiryHandler* handler,
+           long taskID);
 
   // Reaps the tombstones which have been gc'ed on server.
   // A map that has identifier for ClientProxyMembershipID as key
@@ -84,11 +85,9 @@ class TombstoneList {
   void reapTombstones(std::map<uint16_t, int64_t>& gcVersions);
   void reapTombstones(CacheableHashSetPtr removedKeys);
   void eraseEntryFromTombstoneList(const CacheableKeyPtr& key,
-                                   RegionInternal* region,
                                    bool cancelTask = true);
   long eraseEntryFromTombstoneListWithoutCancelTask(
-      const CacheableKeyPtr& key, RegionInternal* region,
-      TombstoneExpiryHandler*& handler);
+      const CacheableKeyPtr& key, TombstoneExpiryHandler*& handler);
   void cleanUp();
   long getExpiryTask(TombstoneExpiryHandler** handler);
   bool exists(const CacheableKeyPtr& key) const;
@@ -103,6 +102,7 @@ class TombstoneList {
   TombstoneMap m_tombstoneMap;
   ACE_Recursive_Thread_Mutex m_queueLock;
   MapSegment* m_mapSegment;
+  CacheImpl* m_cacheImpl;
   friend class TombstoneExpiryHandler;
 };
 typedef std::shared_ptr<TombstoneList> TombstoneListPtr;

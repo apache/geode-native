@@ -33,14 +33,16 @@
 using namespace apache::geode::client;
 
 PreservedDataExpiryHandler::PreservedDataExpiryHandler(
-    PdxSerializablePtr pdxObjectPtr, uint32_t duration)
+	const std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
+    const PdxSerializablePtr& pdxObjectPtr, uint32_t duration)
     :  // UNUSED m_duration(duration),
-      m_pdxObjectPtr(pdxObjectPtr) {}
+      m_pdxObjectPtr(pdxObjectPtr),
+	  m_pdxTypeRegistry(pdxTypeRegistry) {}
 
 int PreservedDataExpiryHandler::handle_timeout(
     const ACE_Time_Value& current_time, const void* arg) {
-  WriteGuard guard(PdxTypeRegistry::getPreservedDataLock());
-  auto map = PdxTypeRegistry::getPreserveDataMap();
+  WriteGuard guard(m_pdxTypeRegistry->getPreservedDataLock());
+  auto map = m_pdxTypeRegistry->getPreserveDataMap();
   LOGDEBUG(
       "Entered PreservedDataExpiryHandler "
       "PdxTypeRegistry::getPreserveDataMap().size() = %d",

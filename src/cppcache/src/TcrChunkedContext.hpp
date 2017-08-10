@@ -53,7 +53,8 @@ class TcrChunkedResult {
 
   /** handle a chunk of response message from server */
   virtual void handleChunk(const uint8_t* bytes, int32_t len,
-                           uint8_t isLastChunkWithSecurity) = 0;
+                           uint8_t isLastChunkWithSecurity,
+                           const Cache* cache) = 0;
 
  public:
   inline TcrChunkedResult()
@@ -75,13 +76,14 @@ class TcrChunkedResult {
   virtual void reset() = 0;
 
   void fireHandleChunk(const uint8_t* bytes, int32_t len,
-                       uint8_t isLastChunkWithSecurity) {
+                       uint8_t isLastChunkWithSecurity, const Cache* cache) {
     if (appDomainContext) {
-      appDomainContext->run([this, bytes, len, isLastChunkWithSecurity]() {
-        handleChunk(bytes, len, isLastChunkWithSecurity);
-      });
+      appDomainContext->run(
+          [this, bytes, len, isLastChunkWithSecurity, &cache]() {
+            handleChunk(bytes, len, isLastChunkWithSecurity, cache);
+          });
     } else {
-      handleChunk(bytes, len, isLastChunkWithSecurity);
+      handleChunk(bytes, len, isLastChunkWithSecurity, cache);
     }
   }
 
@@ -135,15 +137,17 @@ class TcrChunkedContext {
   const uint8_t* m_bytes;
   const int32_t m_len;
   const uint8_t m_isLastChunkWithSecurity;
+  const Cache* m_cache;
   TcrChunkedResult* m_result;
 
  public:
   inline TcrChunkedContext(const uint8_t* bytes, int32_t len,
                            TcrChunkedResult* result,
-                           uint8_t isLastChunkWithSecurity)
+                           uint8_t isLastChunkWithSecurity, const Cache* cache)
       : m_bytes(bytes),
         m_len(len),
         m_isLastChunkWithSecurity(isLastChunkWithSecurity),
+        m_cache(cache),
         m_result(result) {}
 
   inline ~TcrChunkedContext() { GF_SAFE_DELETE_ARRAY(m_bytes); }
@@ -158,7 +162,8 @@ class TcrChunkedContext {
       m_result->finalize(inSameThread);
     } else if (!m_result->exceptionOccurred()) {
       try {
-        m_result->fireHandleChunk(m_bytes, m_len, m_isLastChunkWithSecurity);
+        m_result->fireHandleChunk(m_bytes, m_len, m_isLastChunkWithSecurity,
+                                  m_cache);
       } catch (Exception& ex) {
         LOGERROR("HandleChunk error message %s, name = %s", ex.getMessage(),
                  ex.getName());

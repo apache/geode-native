@@ -34,6 +34,8 @@
 #include "testobject/PositionPdx.hpp"
 #include <geode/ResultSet.hpp>
 #include <geode/StructSet.hpp>
+#include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
 //#include <geode/Struct.hpp>
 
 //#ifndef ROOT_NAME
@@ -247,7 +249,9 @@ void QueryHelper::populatePositionPdxData(RegionPtr& rptr, int setSize,
 
 void QueryHelper::populatePDXObject(RegionPtr& rptr) {
   // Register PdxType Object
-  Serializable::registerPdxType(PdxTests::PdxType::createDeserializable);
+
+  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(rptr->getCache().get());
+  cacheImpl->getSerializationRegistry()->addPdxType(PdxTests::PdxType::createDeserializable);
   LOG("PdxObject Registered Successfully....");
 
   // Creating object of type PdxObject

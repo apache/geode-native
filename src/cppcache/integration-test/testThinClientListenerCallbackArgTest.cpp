@@ -25,6 +25,11 @@
 #include "TallyWriter.hpp"
 #include "testobject/PdxType.hpp"
 #include "testobject/VariousPdxTypes.hpp"
+
+#include "SerializationRegistry.hpp"
+#include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
+
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
@@ -222,9 +227,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1_Pool_Locator)
 
     createPooledRegion(regionNames[0], false /*ack mode*/, locatorsG,
                        "__TEST_POOL1__", true /*client notification*/);
-
-    Serializable::registerType(Portfolio::createDeserializable);
-    Serializable::registerType(Position::createDeserializable);
+    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    serializationRegistry->addType(Portfolio::createDeserializable);
+    serializationRegistry->addType(Position::createDeserializable);
     reg1Listener1 = std::make_shared<CallbackListener>();
     callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
 

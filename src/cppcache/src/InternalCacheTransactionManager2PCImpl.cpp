@@ -66,6 +66,10 @@ void InternalCacheTransactionManager2PCImpl::prepare() {
     }
 
     TcrMessageTxSynchronization requestCommitBefore(
+        tcr_dm->getConnectionManager()
+            .getCacheImpl()
+            ->getCache()
+            ->createDataOutput(),
         BEFORE_COMMIT, txState->getTransactionId()->getId(), STATUS_COMMITTED);
 
     TcrMessageReply replyCommitBefore(true, nullptr);
@@ -161,6 +165,10 @@ void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
     TXCleaner txCleaner(this);
 
     TcrMessageTxSynchronization requestCommitAfter(
+        tcr_dm->getConnectionManager()
+            .getCacheImpl()
+            ->getCache()
+            ->createDataOutput(),
         AFTER_COMMIT, txState->getTransactionId()->getId(), status);
 
     TcrMessageReply replyCommitAfter(true, nullptr);
@@ -172,9 +180,8 @@ void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
     } else {
       switch (replyCommitAfter.getMessageType()) {
         case TcrMessage::RESPONSE: {
-          TXCommitMessagePtr commit =
-              std::static_pointer_cast<TXCommitMessage>(
-                  replyCommitAfter.getValue());
+          TXCommitMessagePtr commit = std::static_pointer_cast<TXCommitMessage>(
+              replyCommitAfter.getValue());
           if (commit.get() !=
               nullptr)  // e.g. when afterCompletion(STATUS_ROLLEDBACK) called
           {

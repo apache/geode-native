@@ -40,9 +40,9 @@ namespace testframework {
 // ----------------------------------------------------------------------------
 
 /** @class PoolHelper
-  * @brief Class used to define a valid combination of attributes and
-  * specifications for a pool.
-  */
+ * @brief Class used to define a valid combination of attributes and
+ * specifications for a pool.
+ */
 class PoolHelper {
   const FwkPool* m_pool;
   std::string m_spec;
@@ -128,7 +128,7 @@ class PoolHelper {
 
   PoolPtr createPool() {
     const char* poolName = m_pool->getName().c_str();
-    PoolPtr pptr = PoolManager::find(poolName);
+    PoolPtr pptr = m_pool->m_poolManager.find(poolName);
     if (pptr == nullptr) {
       pptr = m_pool->createPool();
     }
@@ -143,9 +143,9 @@ class PoolHelper {
 };
 
 }  // namespace testframework
-}
-}
-}
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 // ----------------------------------------------------------------------------
 

@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <geode/Region.hpp>
+#include <geode/Cache.hpp>
 
 #include "SqLiteImpl.hpp"
 #ifdef _WIN32
@@ -31,6 +33,7 @@ void SqLiteImpl::init(const RegionPtr& region, PropertiesPtr& diskProperties) {
 
   int maxPageCount = 0;
   int pageSize = 0;
+  m_regionPtr = region;
   m_persistanceDir = g_default_persistence_directory;
   std::string regionName = region->getName();
   if (diskProperties != nullptr) {
@@ -108,14 +111,16 @@ void SqLiteImpl::init(const RegionPtr& region, PropertiesPtr& diskProperties) {
 void SqLiteImpl::write(const CacheableKeyPtr& key, const CacheablePtr& value,
                        void*& dbHandle) {
   // Serialize key and value.
-  DataOutput keyDataBuffer, valueDataBuffer;
+  auto* cache = m_regionPtr->getCache().get();
+  auto keyDataBuffer = cache->createDataOutput();
+  auto valueDataBuffer = cache->createDataOutput();
   uint32_t keyBufferSize, valueBufferSize;
 
-  keyDataBuffer.writeObject(key);
-  valueDataBuffer.writeObject(value);
-  void* keyData = const_cast<uint8_t*>(keyDataBuffer.getBuffer(&keyBufferSize));
+  keyDataBuffer->writeObject(key);
+  valueDataBuffer->writeObject(value);
+  void* keyData = const_cast<uint8_t*>(keyDataBuffer->getBuffer(&keyBufferSize));
   void* valueData =
-      const_cast<uint8_t*>(valueDataBuffer.getBuffer(&valueBufferSize));
+      const_cast<uint8_t*>(valueDataBuffer->getBuffer(&valueBufferSize));
 
   if (m_sqliteHelper->insertKeyValue(keyData, keyBufferSize, valueData,
                                      valueBufferSize) != 0) {
@@ -127,10 +132,10 @@ bool SqLiteImpl::writeAll() { return true; }
 
 CacheablePtr SqLiteImpl::read(const CacheableKeyPtr& key, void*& dbHandle) {
   // Serialize key.
-  DataOutput keyDataBuffer;
+  auto keyDataBuffer = m_regionPtr->getCache()->createDataOutput();
   uint32_t keyBufferSize;
-  keyDataBuffer.writeObject(key);
-  void* keyData = const_cast<uint8_t*>(keyDataBuffer.getBuffer(&keyBufferSize));
+  keyDataBuffer->writeObject(key);
+  void* keyData = const_cast<uint8_t*>(keyDataBuffer->getBuffer(&keyBufferSize));
   void* valueData;
   uint32_t valueBufferSize;
 
@@ -140,10 +145,10 @@ CacheablePtr SqLiteImpl::read(const CacheableKeyPtr& key, void*& dbHandle) {
   }
 
   // Deserialize object and return value.
-  DataInput valueDataBuffer(reinterpret_cast<uint8_t*>(valueData),
+  auto valueDataBuffer = m_regionPtr->getCache()->createDataInput(reinterpret_cast<uint8_t*>(valueData),
                             valueBufferSize);
   CacheablePtr retValue;
-  valueDataBuffer.readObject(retValue);
+  valueDataBuffer->readObject(retValue);
 
   // Free memory for serialized form of Cacheable object.
   free(valueData);
@@ -170,10 +175,10 @@ void SqLiteImpl::destroyRegion() {
 
 void SqLiteImpl::destroy(const CacheableKeyPtr& key, void*& dbHandle) {
   // Serialize key and value.
-  DataOutput keyDataBuffer;
+  auto keyDataBuffer = m_regionPtr->getCache()->createDataOutput();
   uint32_t keyBufferSize;
-  keyDataBuffer.writeObject(key);
-  void* keyData = const_cast<uint8_t*>(keyDataBuffer.getBuffer(&keyBufferSize));
+  keyDataBuffer->writeObject(key);
+  void* keyData = const_cast<uint8_t*>(keyDataBuffer->getBuffer(&keyBufferSize));
   if (m_sqliteHelper->removeKey(keyData, keyBufferSize) != 0) {
     throw IllegalStateException("Failed to destroy the key from SQLITE.");
   }

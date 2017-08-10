@@ -61,23 +61,27 @@ const char* durableCQNamesClient2[] = {
 static bool m_isPdx = false;
 
 void initClientWithId(int ClientIdx, bool typeRegistered = false) {
-  if (typeRegistered == false) {
-    try {
-      Serializable::registerType(Position::createDeserializable);
-      Serializable::registerType(Portfolio::createDeserializable);
-
-      Serializable::registerPdxType(PositionPdx::createDeserializable);
-      Serializable::registerPdxType(PortfolioPdx::createDeserializable);
-    } catch (const IllegalStateException&) {
-      // ignore exception
-    }
-  }
   PropertiesPtr pp = Properties::create();
   pp->insert("durable-client-id", durableIds[ClientIdx]);
   pp->insert("durable-timeout", 60);
   pp->insert("notify-ack-interval", 1);
 
   initClient(true, pp);
+
+  if (typeRegistered == false) {
+    try {
+      SerializationRegistryPtr serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
+      serializationRegistry->addType(Position::createDeserializable);
+      serializationRegistry->addType(Portfolio::createDeserializable);
+
+      serializationRegistry->addPdxType(PositionPdx::createDeserializable);
+      serializationRegistry->addPdxType(PortfolioPdx::createDeserializable);
+    } catch (const IllegalStateException&) {
+      // ignore exception
+    }
+  }
 }
 
 class MyCqListener1 : public CqListener {
@@ -188,10 +192,12 @@ void RunDurableCqClient() {
 
   // Create a Geode Cache Programmatically.
   CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory(pp);
-  CachePtr cachePtr = cacheFactory->setSubscriptionEnabled(true)
-                          ->setSubscriptionAckInterval(5000)
-                          ->setSubscriptionMessageTrackingTimeout(50000)
-                          ->create();
+  CachePtr cachePtr = cacheFactory->create();
+  auto poolFactory = cachePtr->getPoolManager().createFactory();
+  poolFactory->setSubscriptionEnabled(true);
+  poolFactory->setSubscriptionAckInterval(5000);
+  poolFactory->setSubscriptionMessageTrackingTimeout(50000);
+  poolFactory->create("");
 
   LOGINFO("Created the Geode Cache Programmatically");
 
@@ -369,7 +375,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    PoolPtr pool =
+        getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != nullptr) {
       qs = pool->getQueryService();
@@ -459,7 +466,11 @@ void client1Up() {
 
   QueryServicePtr qs;
 
-  qs = PoolManager::find(regionNamesCq[0])->getQueryService();
+  qs = getHelper()
+           ->getCache()
+           ->getPoolManager()
+           .find(regionNamesCq[0])
+           ->getQueryService();
   CqAttributesFactory cqFac;
   auto cqLstner = std::make_shared<MyCqListener>();
   cqFac.addCqListener(cqLstner);
@@ -522,7 +533,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    PoolPtr pool =
+        getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != nullptr) {
       qs = pool->getQueryService();
@@ -669,7 +681,8 @@ void doThinClientCqDurable() {
 
 DUNIT_TASK_DEFINITION(CLIENT1, RegisterCqs1)
   {
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    PoolPtr pool =
+        getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != nullptr) {
       qs = pool->getQueryService();
@@ -696,7 +709,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, RegisterCqsAfterClientup1)
   {
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    PoolPtr pool =
+        getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != nullptr) {
       qs = pool->getQueryService();
@@ -723,7 +737,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, RegisterCqs2)
   {
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    PoolPtr pool =
+        getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != nullptr) {
       qs = pool->getQueryService();
@@ -750,7 +765,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, RegisterCqsAfterClientup2)
   {
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    PoolPtr pool =
+        getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != nullptr) {
       qs = pool->getQueryService();
@@ -777,7 +793,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, VerifyCqs1)
   {
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    PoolPtr pool =
+        getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != nullptr) {
       qs = pool->getQueryService();
@@ -800,7 +817,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, VerifyCqsAfterClientup1)
   {
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    PoolPtr pool =
+        getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != nullptr) {
       qs = pool->getQueryService();
@@ -828,7 +846,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, VerifyCqs2)
   {
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    PoolPtr pool =
+        getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != nullptr) {
       qs = pool->getQueryService();
@@ -855,7 +874,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, VerifyCqsAfterClientup2)
   {
-    PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+    PoolPtr pool =
+        getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
     QueryServicePtr qs;
     if (pool != nullptr) {
       qs = pool->getQueryService();
@@ -893,7 +913,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyCqsAfterClientup2)
 END_TASK_DEFINITION
 
 void verifyEmptyDurableCQList() {
-  PoolPtr pool = PoolManager::find(regionNamesCq[0]);
+  PoolPtr pool =
+      getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
   QueryServicePtr qs;
   if (pool != nullptr) {
     qs = pool->getQueryService();

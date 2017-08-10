@@ -1,5 +1,4 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
@@ -20,27 +19,13 @@
 #ifndef GEODE_POOLSTATISTICS_H_
 #define GEODE_POOLSTATISTICS_H_
 
-/*
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+#include <string>
 
 #include <geode/geode_globals.hpp>
 #include <geode/statistics/Statistics.hpp>
 #include <geode/statistics/StatisticsFactory.hpp>
-#include <statistics/StatisticsManager.hpp>
-#include "util/concurrent/spinlock_mutex.hpp"
+
+#include "statistics/StatisticsManager.hpp"
 
 namespace apache {
 namespace geode {
@@ -54,15 +39,12 @@ using util::concurrent::spinlock_mutex;
 class PoolStats {
  public:
   /** hold statistics for a pool.. */
-  PoolStats(const char* poolName);
+  PoolStats(statistics::StatisticsFactory* factory, const std::string& poolName);
 
   /** disable stat collection for this item. */
   virtual ~PoolStats();
 
-  void close() {
-    getStats()->close();
-    statistics::StatisticsManager::getExistingInstance()->forceSample();
-  }
+  void close() { getStats()->close(); }
 
   void setLocators(int32_t curVal) { getStats()->setInt(m_locatorsId, curVal); }
 
@@ -147,6 +129,11 @@ class PoolStats {
   inline apache::geode::statistics::Statistics* getStats() {
     return m_poolStats;
   }
+  inline int32_t getTotalWaitingConnTimeId() {
+    return m_totalWaitingConnTimeId;
+  }
+
+  inline int32_t getQueryExecutionTimeId() { return m_queryExecutionTimeId; }
 
  private:
   // volatile apache::geode::statistics::Statistics* m_poolStats;
@@ -179,92 +166,9 @@ class PoolStats {
   int32_t m_processedDeltaMessagesTimeId;
   int32_t m_queryExecutionsId;
   int32_t m_queryExecutionTimeId;
-};
 
-class PoolStatType {
- private:
-  static PoolStatType* single;
-  static spinlock_mutex m_singletonLock;
-  static spinlock_mutex m_statTypeLock;
-
- public:
-  static PoolStatType* getInstance();
-
-  statistics::StatisticsType* getStatType();
-
-  static void clean();
-
- private:
-  PoolStatType();
-  statistics::StatisticDescriptor* m_stats[27];
-
-  int32_t m_locatorsId;
-  int32_t m_serversId;
-  int32_t m_subsServsId;
-  int32_t m_locReqsId;
-  int32_t m_locRespsId;
-  int32_t m_poolConnsId;
-  int32_t m_connectsId;
-  int32_t m_disconnectsId;
-  int32_t m_minPoolConnectsId;
-  int32_t m_loadCondConnectsId;
-  int32_t m_idleDisconnectsId;
-  int32_t m_loadCondDisconnectsId;
-  int32_t m_waitingConnectionsId;
-  int32_t m_totalWaitingConnsId;
-  int32_t m_totalWaitingConnTimeId;
-  int32_t m_curClientOpsId;
-  int32_t m_clientOpsSuccessId;
-  int32_t m_clientOpsSuccessTimeId;
-  int32_t m_clientOpsFailedId;
-  int32_t m_clientOpsTimeoutId;
-  int32_t m_receivedBytesId;
-  int32_t m_messagesBeingReceivedId;
-  int32_t m_processedDeltaMessagesId;
-  int32_t m_deltaMessageFailuresId;
-  int32_t m_processedDeltaMessagesTimeId;
-  int32_t m_queryExecutionsId;
-  int32_t m_queryExecutionTimeId;
-
- public:
-  int32_t getLocatorsId() { return m_locatorsId; }
-
-  int32_t getServersId() { return m_serversId; }
-
-  int32_t getSubscriptionServersId() { return m_subsServsId; }
-
-  int32_t getLocatorRequestsId() { return m_locReqsId; }
-
-  int32_t getLocatorResposesId() { return m_locRespsId; }
-
-  int32_t getPoolConnectionsId() { return m_poolConnsId; }
-
-  int32_t getConnectsId() { return m_connectsId; }
-
-  int32_t getDisconnectsId() { return m_disconnectsId; }
-
-  int32_t getMinPoolSizeConnectsId() { return m_minPoolConnectsId; }
-
-  int32_t getLoadCondConnectsId() { return m_loadCondConnectsId; }
-  int32_t getIdleDisconnectsId() { return m_idleDisconnectsId; }
-  int32_t getLoadCondDisconnectsId() { return m_loadCondDisconnectsId; }
-  int32_t getWaitingConnectionsId() { return m_waitingConnectionsId; }
-  int32_t getTotalWaitingConnsId() { return m_totalWaitingConnsId; }
-  int32_t getTotalWaitingConnTimeId() { return m_totalWaitingConnTimeId; }
-  int32_t getCurClientOpsId() { return m_curClientOpsId; }
-  int32_t getClientOpsSucceededId() { return m_clientOpsSuccessId; }
-  int32_t getClientOpsSucceededTimeId() { return m_clientOpsSuccessTimeId; }
-  int32_t getClientOpsFailedId() { return m_clientOpsFailedId; }
-  int32_t getClientOpsTimeoutId() { return m_clientOpsTimeoutId; }
-  int32_t getReceivedBytesId() { return m_receivedBytesId; }
-  int32_t getMessagesBeingReceivedId() { return m_messagesBeingReceivedId; }
-  int32_t getProcessedDeltaMessagesId() { return m_processedDeltaMessagesId; }
-  int32_t getDeltaMessageFailuresId() { return m_deltaMessageFailuresId; }
-  int32_t getProcessedDeltaMessagesTimeId() {
-    return m_processedDeltaMessagesTimeId;
-  }
-  int32_t getQueryExecutionId() { return m_queryExecutionsId; }
-  int32_t getQueryExecutionTimeId() { return m_queryExecutionTimeId; }
+  static constexpr const char* STATS_NAME = "PoolStatistics";
+  static constexpr const char* STATS_DESC = "Statistics for this pool";
 };
 }  // namespace client
 }  // namespace geode

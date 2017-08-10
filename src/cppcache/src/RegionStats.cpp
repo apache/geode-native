@@ -15,22 +15,13 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
-
-#include "RegionStats.hpp"
-//#include "StatisticsFactory.hpp"
-
 #include <ace/Thread_Mutex.h>
 #include <ace/Singleton.h>
 
-#include <mutex>
+#include <geode/geode_globals.hpp>
+#include <util/concurrent/spinlock_mutex.hpp>
 
-#include "util/concurrent/spinlock_mutex.hpp"
-
-const char* statsName = "RegionStatistics";
-const char* statsDesc = "Statistics for this region";
-
-////////////////////////////////////////////////////////////////////////////////
+#include "RegionStats.hpp"
 
 namespace apache {
 namespace geode {
@@ -39,124 +30,111 @@ namespace client {
 using statistics::StatisticsFactory;
 using util::concurrent::spinlock_mutex;
 
-////////////////////////////////////////////////////////////////////////////////
+constexpr const char* RegionStats::STATS_NAME;
+constexpr const char* RegionStats::STATS_DESC;
 
-RegionStatType* RegionStatType::single = nullptr;
-spinlock_mutex RegionStatType::m_singletonLock;
-spinlock_mutex RegionStatType::m_statTypeLock;
+RegionStats::RegionStats(StatisticsFactory* factory,
+                         const std::string& regionName) {
+  auto statsType = factory->findType(STATS_NAME);
 
-void RegionStatType::clean() {
-  std::lock_guard<spinlock_mutex> guard(m_singletonLock);
-  if (single) {
-    delete single;
-    single = nullptr;
-  }
-}
-
-StatisticsType* RegionStatType::getStatType() {
-  const bool largerIsBetter = true;
-  std::lock_guard<spinlock_mutex> guard(m_statTypeLock);
-  StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
-  GF_D_ASSERT(!!factory);
-
-  StatisticsType* statsType = factory->findType("RegionStatistics");
-
-  if (statsType == nullptr) {
-    m_stats[0] = factory->createIntCounter(
+  if (!statsType) {
+    const bool largerIsBetter = true;
+    auto stats = new StatisticDescriptor*[25];
+    stats[0] = factory->createIntCounter(
         "creates", "The total number of cache creates for this region",
         "entries", largerIsBetter);
-    m_stats[1] = factory->createIntCounter(
+    stats[1] = factory->createIntCounter(
         "puts", "The total number of cache puts for this region", "entries",
         largerIsBetter);
-    m_stats[2] = factory->createIntCounter(
+    stats[2] = factory->createIntCounter(
         "gets", "The total number of cache gets for this region", "entries",
         largerIsBetter);
-    m_stats[3] = factory->createIntCounter(
+    stats[3] = factory->createIntCounter(
         "hits", "The total number of cache hits for this region", "entries",
         largerIsBetter);
-    m_stats[4] = factory->createIntCounter(
+    stats[4] = factory->createIntCounter(
         "misses", "The total number of cache misses for this region", "entries",
         !largerIsBetter);
-    m_stats[5] = factory->createIntGauge(
+    stats[5] = factory->createIntGauge(
         "entries", "The current number of cache entries for this region",
         "entries", largerIsBetter);
-    m_stats[6] = factory->createIntCounter(
+    stats[6] = factory->createIntCounter(
         "destroys", "The total number of cache destroys for this region",
         "entries", largerIsBetter);
-    m_stats[7] =
+    stats[7] =
         factory->createIntCounter("overflows",
                                   "The total number of cache overflows for "
                                   "this region to persistence backup",
                                   "entries", largerIsBetter);
-    m_stats[8] =
+    stats[8] =
         factory->createIntCounter("retrieves",
                                   "The total number of cache entries fetched "
                                   "from persistence backup into the cache",
                                   "entries", largerIsBetter);
-    m_stats[9] =
+    stats[9] =
         factory->createIntCounter("metaDataRefreshCount",
                                   "The total number of times matadata is "
                                   "refreshed due to hoping observed",
                                   "entries", !largerIsBetter);
-    m_stats[10] = factory->createIntCounter(
+    stats[10] = factory->createIntCounter(
         "getAll", "The total number of cache getAll for this region", "entries",
         largerIsBetter);
-    m_stats[11] = factory->createIntCounter(
+    stats[11] = factory->createIntCounter(
         "putAll", "The total number of cache putAll for this region", "entries",
         largerIsBetter);
-    m_stats[12] = factory->createLongCounter(
+    stats[12] = factory->createLongCounter(
         "getTime", "Total time spent doing get operations for this region",
         "Nanoseconds", !largerIsBetter);
-    m_stats[13] = factory->createLongCounter(
+    stats[13] = factory->createLongCounter(
         "putTime", "Total time spent doing puts operations for this region",
         "Nanoseconds", !largerIsBetter);
-    m_stats[14] = factory->createLongCounter(
+    stats[14] = factory->createLongCounter(
         "putAllTime",
         "Total time spent doing putAlls operations for this region",
         "Nanoseconds", !largerIsBetter);
-    m_stats[15] = factory->createLongCounter(
+    stats[15] = factory->createLongCounter(
         "getAllTime",
         "Total time spent doing the getAlls operations for this region",
         "Nanoseconds", !largerIsBetter);
 
-    m_stats[16] = factory->createIntCounter(
+    stats[16] = factory->createIntCounter(
         "cacheLoaderCallsCompleted",
         "Total number of times a load has completed for this region", "entries",
         largerIsBetter);
-    m_stats[17] = factory->createLongCounter(
+    stats[17] = factory->createLongCounter(
         "cacheLoaderCallTIme",
         "Total time spent invoking the loaders for this region", "Nanoseconds",
         !largerIsBetter);
-    m_stats[18] =
+    stats[18] =
         factory->createIntCounter("cacheWriterCallsCompleted",
                                   "Total number of times a cache writer call "
                                   "has completed for this region",
                                   "entries", largerIsBetter);
-    m_stats[19] = factory->createLongCounter(
+    stats[19] = factory->createLongCounter(
         "cacheWriterCallTime", "Total time spent doing cache writer calls",
         "Nanoseconds", !largerIsBetter);
-    m_stats[20] =
+    stats[20] =
         factory->createIntCounter("cacheListenerCallsCompleted",
                                   "Total number of times a cache listener call "
                                   "has completed for this region",
                                   "entries", largerIsBetter);
-    m_stats[21] = factory->createLongCounter(
+    stats[21] = factory->createLongCounter(
         "cacheListenerCallTime",
         "Total time spent doing cache listener calls for this region",
         "Nanoseconds", !largerIsBetter);
-    m_stats[22] =
+    stats[22] =
         factory->createIntCounter("clears",
                                   "The total number of times a clear has been "
                                   "done on this cache for this region",
                                   "entries", !largerIsBetter);
-    m_stats[23] = factory->createIntCounter(
+    stats[23] = factory->createIntCounter(
         "removeAll", "The total number of cache removeAll for this region",
         "entries", largerIsBetter);
-    m_stats[24] = factory->createLongCounter(
+    stats[24] = factory->createLongCounter(
         "removeAllTime",
         "Total time spent doing removeAlls operations for this region",
         "Nanoseconds", !largerIsBetter);
-    statsType = factory->createType(statsName, statsDesc, m_stats, 25);
+    statsType = factory->createType(STATS_NAME, STATS_DESC, stats, 25);
   }
 
   m_destroysId = statsType->nameToId("destroys");
@@ -186,87 +164,8 @@ StatisticsType* RegionStatType::getStatType() {
   m_ListenerCallTimeId = statsType->nameToId("cacheListenerCallTime");
   m_clearsId = statsType->nameToId("clears");
 
-  return statsType;
-}
-
-RegionStatType* RegionStatType::getInstance() {
-  std::lock_guard<spinlock_mutex> guard(m_singletonLock);
-  if (!single) {
-    single = new RegionStatType();
-  }
-  return single;
-}
-
-RegionStatType::RegionStatType()
-    : m_destroysId(0),
-      m_createsId(0),
-      m_putsId(0),
-      m_putTimeId(0),
-      m_putAllId(0),
-      m_putAllTimeId(0),
-      m_removeAllId(0),
-      m_removeAllTimeId(0),
-      m_getsId(0),
-      m_getTimeId(0),
-      m_getAllId(0),
-      m_getAllTimeId(0),
-      m_hitsId(0),
-      m_missesId(0),
-      m_entriesId(0),
-      m_overflowsId(0),
-      m_retrievesId(0),
-      m_metaDataRefreshId(0),
-      m_LoaderCallsCompletedId(0),
-      m_LoaderCallTimeId(0),
-      m_WriterCallsCompletedId(0),
-      m_WriterCallTimeId(0),
-      m_ListenerCallsCompletedId(0),
-      m_ListenerCallTimeId(0),
-      m_clearsId(0) {}
-
-////////////////////////////////////////////////////////////////////////////////
-
-// typedef ACE_Singleton<RegionStatsInit, ACE_Thread_Mutex> TheRegionStatsInit;
-
-////////////////////////////////////////////////////////////////////////////////
-
-RegionStats::RegionStats(const char* regionName) {
-  RegionStatType* regStatType = RegionStatType::getInstance();
-
-  StatisticsType* statsType = regStatType->getStatType();
-
-  GF_D_ASSERT(statsType != nullptr);
-
-  StatisticsFactory* factory = StatisticsFactory::getExistingInstance();
-
-  m_regionStats =
-      factory->createAtomicStatistics(statsType, const_cast<char*>(regionName));
-
-  m_destroysId = regStatType->getDestroysId();
-  m_createsId = regStatType->getCreatesId();
-  m_putsId = regStatType->getPutsId();
-  m_putTimeId = regStatType->getPutTimeId();
-  m_getsId = regStatType->getGetsId();
-  m_getTimeId = regStatType->getGetTimeId();
-  m_getAllId = regStatType->getGetAllId();
-  m_getAllTimeId = regStatType->getGetAllTimeId();
-  m_putAllId = regStatType->getPutAllId();
-  m_putAllTimeId = regStatType->getPutAllTimeId();
-  m_removeAllId = regStatType->getRemoveAllId();
-  m_removeAllTimeId = regStatType->getRemoveAllTimeId();
-  m_hitsId = regStatType->getHitsId();
-  m_missesId = regStatType->getMissesId();
-  m_entriesId = regStatType->getEntriesId();
-  m_overflowsId = regStatType->getOverflowsId();
-  m_retrievesId = regStatType->getRetrievesId();
-  m_metaDataRefreshId = regStatType->getMetaDataRefreshCount();
-  m_LoaderCallsCompletedId = regStatType->getLoaderCallsCompletedId();
-  m_LoaderCallTimeId = regStatType->getLoaderCallTimeId();
-  m_WriterCallsCompletedId = regStatType->getWriterCallsCompletedId();
-  m_WriterCallTimeId = regStatType->getWriterCallTimeId();
-  m_ListenerCallsCompletedId = regStatType->getListenerCallsCompletedId();
-  m_ListenerCallTimeId = regStatType->getListenerCallTimeId();
-  m_clearsId = regStatType->getClearsId();
+  m_regionStats = factory->createAtomicStatistics(
+      statsType, const_cast<char*>(regionName.c_str()));
 
   m_regionStats->setInt(m_destroysId, 0);
   m_regionStats->setInt(m_createsId, 0);

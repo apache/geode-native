@@ -150,8 +150,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
   {
     // initClient(true);
-    initClientWithPool(true, nullptr, locHostPort, serverGroup, nullptr, 1,
-                       true, -1, 5, 60000, /*singlehop*/ true,
+    initClientWithPool(true, poolRegNames[0], locHostPort, serverGroup, nullptr,
+                       1, true, -1, 5, 60000, /*singlehop*/ true,
                        /*threadLocal*/ true);
     // createPool(poolName, locHostPort,serverGroup, nullptr, 0, true );
     // createRegionAndAttachPool(poolRegNames[0],USE_ACK, poolName);
@@ -279,7 +279,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
       }
 
       // UNUSED bool getResult = true;
-      auto pool = apache::geode::client::PoolManager::find("__TEST_POOL1__");
+      auto pool =
+          getHelper()->getCache()->getPoolManager().find("__TEST_POOL1__");
       auto exc = FunctionService::onServer(pool);
       ASSERT(exc != nullptr, "onServer Returned nullptr");
 

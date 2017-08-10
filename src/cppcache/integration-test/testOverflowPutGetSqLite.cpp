@@ -512,7 +512,7 @@ END_TEST(OverFlowTest_SqLiteFull)
 // BEGIN_TEST(OverFlowTest_LargeData)
 //{
 //  /** Connecting to a distributed system. */
-//  DistributedSystemPtr dsysPtr;
+//  DistributedSystem& dsysPtr;
 //
 //  /** Creating a cache to manage regions. */
 //  CachePtr cachePtr ;

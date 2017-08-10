@@ -92,19 +92,19 @@ namespace Apache.Geode.Client.UnitTests
     {
       CacheHelper.CreateTCRegion2<object, object>(RegionNames[0], true, false,
         null, locators, false);
-      Serializable.RegisterTypeGeneric(OtherType.CreateDeserializable);
-      Serializable.RegisterTypeGeneric(OtherType2.CreateDeserializable);
-      Serializable.RegisterTypeGeneric(OtherType22.CreateDeserializable);
-      Serializable.RegisterTypeGeneric(OtherType4.CreateDeserializable);
-      Serializable.RegisterTypeGeneric(OtherType42.CreateDeserializable);
-      Serializable.RegisterTypeGeneric(OtherType43.CreateDeserializable);
+      Serializable.RegisterTypeGeneric(OtherType.CreateDeserializable, CacheHelper.DCache);
+      Serializable.RegisterTypeGeneric(OtherType2.CreateDeserializable, CacheHelper.DCache);
+      Serializable.RegisterTypeGeneric(OtherType22.CreateDeserializable, CacheHelper.DCache);
+      Serializable.RegisterTypeGeneric(OtherType4.CreateDeserializable, CacheHelper.DCache);
+      Serializable.RegisterTypeGeneric(OtherType42.CreateDeserializable, CacheHelper.DCache);
+      Serializable.RegisterTypeGeneric(OtherType43.CreateDeserializable, CacheHelper.DCache);
     }
 
     public void DoNPuts(int n)
     {
       try
       {
-        Serializable.RegisterTypeGeneric(OtherType.CreateDeserializable);
+        Serializable.RegisterTypeGeneric(OtherType.CreateDeserializable, CacheHelper.DCache);
         Assert.Fail("Expected exception in registering the type again.");
       }
       catch (IllegalStateException ex)
@@ -126,7 +126,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        Serializable.RegisterTypeGeneric(OtherType.CreateDeserializable);
+        Serializable.RegisterTypeGeneric(OtherType.CreateDeserializable, CacheHelper.DCache);
         Assert.Fail("Expected exception in registering the type again.");
       }
       catch (IllegalStateException ex)
@@ -429,10 +429,11 @@ namespace Apache.Geode.Client.UnitTests
 
     public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
     {
-      DataOutput dout = new DataOutput();
+      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
       orig.ToData(dout);
 
-      DataInput din = new DataInput(dout.GetBuffer());
+      //DataInput din = new DataInput(dout.GetBuffer());
+      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
       IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
       return dup;
     }
@@ -577,10 +578,10 @@ namespace Apache.Geode.Client.UnitTests
 
     public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
     {
-      DataOutput dout = new DataOutput();
+      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
       orig.ToData(dout);
 
-      DataInput din = new DataInput(dout.GetBuffer());
+      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
       IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
       return dup;
     }
@@ -726,10 +727,10 @@ namespace Apache.Geode.Client.UnitTests
 
     public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
     {
-      DataOutput dout = new DataOutput();
+      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
       orig.ToData(dout);
 
-      DataInput din = new DataInput(dout.GetBuffer());
+      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
       IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
       return dup;
     }
@@ -874,10 +875,10 @@ namespace Apache.Geode.Client.UnitTests
 
     public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
     {
-      DataOutput dout = new DataOutput();
+      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
       orig.ToData(dout);
 
-      DataInput din = new DataInput(dout.GetBuffer());
+      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
       IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
       return dup;
     }
@@ -1023,10 +1024,10 @@ namespace Apache.Geode.Client.UnitTests
 
     public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
     {
-      DataOutput dout = new DataOutput();
+      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
       orig.ToData(dout);
 
-      DataInput din = new DataInput(dout.GetBuffer());
+      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
       IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
       return dup;
     }
@@ -1172,10 +1173,10 @@ namespace Apache.Geode.Client.UnitTests
 
     public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
     {
-      DataOutput dout = new DataOutput();
+      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
       orig.ToData(dout);
 
-      DataInput din = new DataInput(dout.GetBuffer());
+      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
       IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
       return dup;
     }

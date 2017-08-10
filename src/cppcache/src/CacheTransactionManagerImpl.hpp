@@ -60,14 +60,6 @@ class CacheTransactionManagerImpl
 
   virtual TransactionIdPtr getTransactionId();
 
-
-//  inline static int32_t hasher(const SharedBasePtr& p) {
-//    return static_cast<int32_t>(reinterpret_cast<intptr_t>(p.get()));
-//  }
-//
-//  inline static bool equal_to(const SharedBasePtr& x, const SharedBasePtr& y) {
-//    return x.get() == y.get();
-//  }
   TXState* getSuspendedTx(int32_t txId);
 
  protected:
@@ -86,6 +78,7 @@ class CacheTransactionManagerImpl
   void addTx(int32_t txId);
   bool removeTx(int32_t txId);
   bool findTx(int32_t txId);
+
   std::map<int32_t, TXState*> m_suspendedTXs;
   ACE_Recursive_Thread_Mutex m_suspendedTxLock;
   std::vector<int32_t> m_TXs;

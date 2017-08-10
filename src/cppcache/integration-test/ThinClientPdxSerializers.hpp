@@ -84,7 +84,10 @@ class TestPdxSerializer : public PdxSerializer {
       return fromDataForAddress(pr);
     }
 
-    PdxTests::NonPdxType *npt = new PdxTests::NonPdxType;
+    PdxTests::NonPdxType *npt =
+        new PdxTests::NonPdxType(CacheRegionHelper::getCacheImpl(getHelper()->getCache().get())
+                                     ->getSerializationRegistry()
+                                     ->getPdxSerializer());
 
     try {
       int32_t *Lengtharr;
