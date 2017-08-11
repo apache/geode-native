@@ -15,7 +15,7 @@
 cmake_minimum_required(VERSION 3.4)
 project(nativeclient)
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/../cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 if(CMAKE_GENERATOR MATCHES Win64*)
   if ((CMAKE_GENERATOR MATCHES "Visual Studio") AND (CMAKE_GENERATOR_TOOLSET STREQUAL ""))
@@ -69,7 +69,7 @@ list(GET PRODUCT_VERSION_LIST 3 PRODUCT_VERSION_BUILD)
 # development team. Setting it to a relative path appears to work.
 # To override the install location, CMAKE_INSTALL_PREFIX must be
 # specified at the time of generation, e.g.:
-# $ cmake -G Xcode -DCMAKE_INSTALL_PREFIX=/my/favorite/location ../src
+# $ cmake -G Xcode -DCMAKE_INSTALL_PREFIX=/my/favorite/location ..
 set(CMAKE_INSTALL_PREFIX "nativeclient" CACHE STRING "Install prefix")
 
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
@@ -97,7 +97,7 @@ set(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${PRODUCT_VERSION}-${CPACK_SYS
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
 set(CPACK_PACKAGING_INSTALL_PREFIX "/${CPACK_PACKAGE_NAME}")
 #set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/../dist/LICENSE")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/dist/LICENSE")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}")
 set(CPACK_GENERATOR TGZ;ZIP)
 
@@ -242,7 +242,7 @@ add_subdirectory(dhimpl)
 add_subdirectory(sqliteimpl)
 add_subdirectory(tests)
 add_subdirectory(templates/security)
-add_subdirectory(docs)
+add_subdirectory(docs/api)
 if (${BUILD_CLI})
   add_subdirectory(clicache)
   add_subdirectory(plugins/SQLiteCLI)
@@ -253,7 +253,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cppcache/integration-test/keystore
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/xsds/ DESTINATION xsds)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/defaultSystem/ DESTINATION defaultSystem)
 
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../dist/ DESTINATION .)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/dist/ DESTINATION .)
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/templates/ DESTINATION templates
   PATTERN "templates/security/CMakeLists.txt" EXCLUDE

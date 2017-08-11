@@ -35,8 +35,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version.cmake.in ${CMAKE_CURRENT_BINA
 list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 add_custom_command(OUTPUT version.h
     COMMAND ${CMAKE_COMMAND} -P version.cmake
-    DEPENDS ${CMAKE_SOURCE_DIR}/../.git/index ${CMAKE_CURRENT_BINARY_DIR}/version.cmake
-    MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/../.git/index
+    DEPENDS ${CMAKE_SOURCE_DIR}/.git/index ${CMAKE_CURRENT_BINARY_DIR}/version.cmake
+    MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/.git/index
 )
 # adds named target for version.h to avoid parallel generation under windows
 add_custom_target(version-header DEPENDS version.h)
