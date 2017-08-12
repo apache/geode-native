@@ -126,10 +126,6 @@ target_link_libraries(apache-geode-static
   PUBLIC
     _apache-geode
 )
-# Remove this after fixing static initialization
-if (${WIN32})
-target_compile_options(apache-geode-static PRIVATE "/Od /Ob0")
-endif()
 add_dependencies(client-libraries apache-geode-static)
 
 install(TARGETS apache-geode
