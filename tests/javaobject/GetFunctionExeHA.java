@@ -35,7 +35,7 @@ public class GetFunctionExeHA extends FunctionAdapter implements Declarable{
     RegionFunctionContext context = (RegionFunctionContext)fc;
     System.out.println("Data set :: " + context.getDataSet());
     Region region = PartitionRegionHelper.getLocalDataForContext(context);
-    Set keys = region.keys();
+    Set keys = region.keySet();
     Iterator itr = keys.iterator();
     ResultSender sender = context.getResultSender();
     Object k = null;
