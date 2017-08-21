@@ -26,17 +26,18 @@ using namespace apache::geode::client;
 TEST(ClientProxyMembershipIDFactoryTest, testCreate) {
   ClientProxyMembershipIDFactory factory("myDs");
 
-  auto id = factory.create("myHost", 1, 2, "myClientID", 3);
+  auto hostAddr = htonl(1);
+  auto id = factory.create("myHost", hostAddr, 2, "myClientID", 3);
   ASSERT_NE(nullptr, id);
 
   EXPECT_EQ("myDs", id->getDSName());
-  EXPECT_EQ(1, static_cast<uint32_t>(*id->getHostAddr()));
+  EXPECT_EQ(hostAddr, *reinterpret_cast<uint32_t*>(id->getHostAddr()));
   EXPECT_EQ(4, id->getHostAddrLen());
   EXPECT_EQ(2, id->getHostPort());
 
   auto uniqueTag = id->getUniqueTag();
   ASSERT_NE("", uniqueTag);
-  EXPECT_EQ(std::string(":1:0:0:0:2:myDs:").append(uniqueTag),
+  EXPECT_EQ(std::string(":0:0:0:1:2:myDs:").append(uniqueTag),
             id->getHashKey());
   EXPECT_TRUE(std::regex_search(
       id->getDSMemberIdForThinClientUse(),
