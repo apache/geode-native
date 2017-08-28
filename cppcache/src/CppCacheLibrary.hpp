@@ -30,13 +30,8 @@ namespace client {
 // initialize GEMFIRE runtime if it has not already been initialized.
 class CPPCACHE_EXPORT CppCacheLibrary {
  public:
-  // All real initialization happens here.
-  CppCacheLibrary();
-  // All cleanup goes here.
-  virtual ~CppCacheLibrary();
-
   // Call to this to trigger initialization.
-  static CppCacheLibrary* initLib(void);
+  static void initLib(void);
   // Call to this to trigger cleanup.  initLib and closeLib calls must be in
   // pairs.
   static void closeLib(void);

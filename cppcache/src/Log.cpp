@@ -78,7 +78,7 @@ size_t g_diskSpaceLimit = GEODE_MAX_LOG_DISK_LIMIT;
 
 char g_logFileNameBuffer[2048] = {0};
 
-ACE_Thread_Mutex* g_logMutex = nullptr;
+ACE_Thread_Mutex* g_logMutex = new ACE_Thread_Mutex("Log::logMutex");
 
 int g_rollIndex = 0;
 size_t g_spaceUsed = 0;
@@ -152,29 +152,6 @@ static int comparator(const dirent** d1, const dirent** d2) {
 }
 
 using namespace apache::geode::log::globals;
-
-namespace apache {
-namespace geode {
-namespace client {
-// this method is not thread-safe and expected to be invoked once
-// during initialization
-void gf_log_libinit() {
-  if (g_logMutex == nullptr) {
-    g_logFile = nullptr;
-    g_bytesWritten = 0;
-    g_fileSizeLimit = 0;
-    g_diskSpaceLimit = 0;
-    g_rollIndex = 0;
-    g_spaceUsed = 0;
-    g_logMutex = new ACE_Thread_Mutex("Log::logMutex");
-  }
-  if (g_logMutex == nullptr) {
-    throw IllegalStateException("Log not initialized successfully");
-  }
-}
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
 
 /*****************************************************************************/
 
