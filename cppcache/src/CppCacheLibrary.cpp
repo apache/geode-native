@@ -49,39 +49,12 @@ namespace apache {
 namespace geode {
 namespace client {
 
-void gf_log_libinit();
-
-CppCacheLibrary::CppCacheLibrary() {
-  // TODO: This should catch any exceptions, log it, and bail out..
-  // Put initialization code for statics and other such things here.
-  try {
-    gf_log_libinit();
-    // PdxTypeRegistry::init();
-    // log( "Finished initializing CppCacheLibrary." );
-  } catch (apache::geode::client::Exception& ge) {
-    ge.printStackTrace();
-    throw;
-  }
-}
-
-CppCacheLibrary::~CppCacheLibrary() {
-  // Put any global clean up code here.
-  //  PdxTypeRegistry::cleanup();
-
-  ACE::fini();
-}
-
-//---------------------------------------------------------------------
-
-typedef ACE_Singleton<CppCacheLibrary, ACE_Recursive_Thread_Mutex> TheLibrary;
-
 // expect this to be called from key Library entry points, or automatically
 // if we can... Probably safest to call from DistributedSystem factory method.
 // impl type Unit tests may need to call this themselves to ensure the
 // internals are prepared. fw_helper framework will handle this.
-CppCacheLibrary* CppCacheLibrary::initLib(void) {
+void CppCacheLibrary::initLib(void) {
   ACE::init();
-  return TheLibrary::instance();
 }
 
 // this closes ace and triggers the cleanup of the singleton CppCacheLibrary.

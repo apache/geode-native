@@ -55,8 +55,6 @@ CacheFactoryPtr CacheFactory::createCacheFactory(
 void CacheFactory::create_(const char* name,
                            const char* id_data, CachePtr& cptr,
                            bool readPdxSerialized) {
-  CppCacheLibrary::initLib();
-
   cptr = nullptr;
   if (name == nullptr) {
     throw IllegalArgumentException("CacheFactory::create: name is nullptr");
