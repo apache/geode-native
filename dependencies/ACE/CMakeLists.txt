@@ -15,8 +15,8 @@
 
 project( ACE )
 
-set( ${PROJECT_NAME}_VERSION 6.4.3 )
-set( ${PROJECT_NAME}_SHA265 164daf3e0cafa86a6a2b35a598eb42231bc6c71b55991fdaacbeade008ac5b8d )
+set( ${PROJECT_NAME}_VERSION 6.4.4 )
+set( ${PROJECT_NAME}_SHA265 95d6c36b7f5f410006e54fe47c8912cf88fe82738bf4baf4a370fac8c716213b )
 string(REPLACE "." "_" _VERSION_UNDERSCORE ${${PROJECT_NAME}_VERSION})
 set( ${PROJECT_NAME}_URL "https://github.com/DOCGroup/ACE_TAO/releases/download/ACE%2BTAO-${_VERSION_UNDERSCORE}/ACE.tar.gz" )
 set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
