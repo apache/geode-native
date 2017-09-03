@@ -25,7 +25,6 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
-using System.Runtime.Remoting.Channels.Ipc;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
@@ -103,8 +102,7 @@ namespace Apache.Geode.DUnitFramework
       // NOTE: This is required so that remote client receives custom exceptions
       RemotingConfiguration.CustomErrorsMode = CustomErrorsModes.Off;
 
-      RegisterChannel(true);
-      RegisterChannel(false);
+      RegisterChannel();
 
       RemotingConfiguration.RegisterWellKnownServiceType(typeof(DriverComm),
         CommConstants.DriverService, WellKnownObjectMode.SingleCall);
@@ -119,29 +117,19 @@ namespace Apache.Geode.DUnitFramework
 
     #region Private functions
 
-    private static void RegisterChannel(bool ipc)
+    private static void RegisterChannel()
     {
-      BinaryServerFormatterSinkProvider serverProvider =
-        new BinaryServerFormatterSinkProvider();
+      var serverProvider = new BinaryServerFormatterSinkProvider();
       serverProvider.TypeFilterLevel = TypeFilterLevel.Full;
-      BinaryClientFormatterSinkProvider clientProvider =
-        new BinaryClientFormatterSinkProvider();
-      Dictionary<string, string> properties = new Dictionary<string, string>();
-      IChannel channel;
 
-            if (ipc)
-            {
-                properties["portName"] = CommConstants.ServerIPC + Util.DriverPort.ToString();
-                properties["name"] = "GFIpcChannel";
-                channel = new IpcChannel(properties, clientProvider, serverProvider);
-            }
-            else
-            {
-                properties["port"] = Util.DriverPort.ToString();
-                properties["name"] = "GFTcpChannel";
-                channel = new TcpChannel(properties, clientProvider, serverProvider);
-            }
-            ChannelServices.RegisterChannel(channel, false);
+			var clientProvider = new BinaryClientFormatterSinkProvider();
+
+      var properties = new Dictionary<string, string>();
+      properties["port"] = Util.DriverPort.ToString();
+      properties["name"] = "GFTcpChannel";
+
+      var channel = new TcpChannel(properties, clientProvider, serverProvider);
+      ChannelServices.RegisterChannel(channel, false);
     }
 
     private void ExitClient(int waitMillis, bool force)
@@ -238,23 +226,23 @@ namespace Apache.Geode.DUnitFramework
 
     public UnitProcess(string clientId, string startDir)
     {
-      string clientIPC = CommConstants.ClientIPC + GetClientPort().ToString();
-      if (clientId == null)
+			int clientPort = GetClientPort();
+			if (clientId == null)
       {
         clientId = GetClientId().ToString();
       }
       this.ID = clientId;
-      string localArgs = "--id=" + clientId + " --driver=ipc://" +
-        CommConstants.ServerIPC + Util.DriverPort + '/' +
+      string localArgs = "--id=" + clientId + " --driver=tcp://" +
+				Util.IPAddressString + ':' + Util.DriverPort + '/' +
         CommConstants.DriverService + " --bbServer=";
       if (Util.ExternalBBServer != null)
       {
-        localArgs += Util.ExternalBBServer + ' ' + clientIPC;
+        localArgs += Util.ExternalBBServer + ' ' + clientPort;
       }
       else
       {
-        localArgs += "ipc://" + CommConstants.ServerIPC + Util.DriverPort +
-          '/' + CommConstants.BBService + ' ' + clientIPC;
+        localArgs += "tcp://" + Util.IPAddressString + ':' + Util.DriverPort +
+          '/' + CommConstants.BBService + ' ' + clientPort;
       }
       lock (((ICollection)ProcessIDMap).SyncRoot)
       {
@@ -281,8 +269,8 @@ namespace Apache.Geode.DUnitFramework
           ClientProcName);
       }
 
-      m_clientComm = ServerConnection<IClientComm>.Connect("ipc://" +
-        clientIPC + '/' + CommConstants.ClientService);
+      m_clientComm = ServerConnection<IClientComm>.Connect("tcp://" +
+				Util.IPAddressString + ':' + clientPort + '/' + CommConstants.ClientService);
       m_timeout = false;
       m_exiting = false;
       m_startDir = startDir;

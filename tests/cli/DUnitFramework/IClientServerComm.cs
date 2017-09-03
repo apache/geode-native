@@ -258,10 +258,7 @@ namespace Apache.Geode.DUnitFramework
   public static class CommConstants
   {
     public const string ClientService = "Client";
-    public const string ClientIPC = "localClientIPCPort";
-
     public const string DriverService = "Driver";
-    public const string ServerIPC = "localServerIPCPort";
     public const string BBService = "BlackBoard";
     public const string BBAddrEnvVar = "CSFWK_BBADDR";
     public const string DriverAddrEnvVar = "CSFWK_DRIVERADDR";
