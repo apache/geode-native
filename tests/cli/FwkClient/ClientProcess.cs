@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
-using System.Runtime.Remoting.Channels.Ipc;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Serialization.Formatters;
 
@@ -58,18 +57,9 @@ namespace Apache.Geode.Client.FwkClient
         #region Create the communication channel to receive commands from server
 
         properties = new Dictionary<string, string>();
-        if (clientPort.GetType() == typeof(int))
-        {
-          properties["port"] = clientPort.ToString();
-          clientChannel = new TcpChannel(properties, clientProvider, serverProvider);
-          //Util.Log("Registering TCP channel: " + clientPort);
-        }
-        else
-        {
-          properties["portName"] = clientPort.ToString();
-          clientChannel = new IpcChannel(properties, clientProvider, serverProvider);
-          //Util.Log("Registering IPC channel: " + clientPort);
-        }
+        properties["port"] = clientPort.ToString();
+        clientChannel = new TcpChannel(properties, clientProvider, serverProvider);
+        //Util.Log("Registering TCP channel: " + clientPort);
         ChannelServices.RegisterChannel(clientChannel, false);
 
         RemotingConfiguration.RegisterWellKnownServiceType(typeof(ClientComm),
@@ -103,7 +93,6 @@ namespace Apache.Geode.Client.FwkClient
       }
       string procName = Util.ProcessName;
       Util.Log("Usage: " + procName + " [OPTION] <client port>");
-      Util.Log("If <client port> is a string then IPC is used else TCP at the given port number");
       Util.Log("Options are:");
       Util.Log("  --id=ID \t\t ID of the client; process ID is used when not provided");
       Util.Log("  --driver=URL \t The URL (e.g. tcp://<host>:<port>/<service>) of the Driver");
