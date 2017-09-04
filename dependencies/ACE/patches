@@ -4,7 +4,7 @@ diff -ru a/ace/config-lite.h b/ace/config-lite.h
 @@ -115,7 +115,8 @@
  // adapters, we can drop this generator macro or at least drop the
  // MSVC++ or Sun Studio preprocessor conditional blocks.
- #if defined (__SUNPRO_CC) && __SUNPRO_CC <= 0x5130 \
+ #if defined (__SUNPRO_CC) && __SUNPRO_CC <= 0x5140 \
 -      && !defined (_STLPORT_VERSION)
 +      && !defined (_STLPORT_VERSION) \
 +      && __cplusplus < 201103L
