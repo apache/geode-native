@@ -18,8 +18,6 @@
 #define ROOT_NAME "testThinClientListenerCallbackArgTest"
 
 #include "fw_dunit.hpp"
-#ifndef _SPARC_SOLARIS
-// TODO performance - broken on SPARC
 #include "ThinClientHelper.hpp"
 #include "TallyListener.hpp"
 #include "TallyWriter.hpp"
@@ -357,4 +355,3 @@ DUNIT_MAIN
   }
 END_MAIN
 
-#endif
