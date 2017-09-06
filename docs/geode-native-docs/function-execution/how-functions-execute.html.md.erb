@@ -30,7 +30,7 @@ This section discusses the basic function execution process, how highly availabl
 
 ## <a id="how-functions-execute__section_08C66E4B3D934ADC8587DF1E3766C9FD" class="no-quick-link"></a>How Highly Available Functions Execute after a Failure
 
-If a failure occurs in function execution, the error is returned to the calling application. You can code for high availability for `onRegion` functions that return a result, so the function is automatically retried. For information on setting this up on the server side, see [Executing a Function in Apache Geode](geodeman/developing/function_exec/function_execution.html). To use a highly available function, the client must call the results collector `getResult` method. When an execution error occurs or a member crashes while executing, the system does the following:
+If a failure occurs in function execution, the error is returned to the calling application. You can code for high availability for `onRegion` functions that return a result, so the function is automatically retried. For information on setting this up on the server side, see [Executing a Function in <%=vars.product_name_long%>](geodeman/developing/function_exec/function_execution.html). To use a highly available function, the client must call the results collector `getResult` method. When an execution error occurs or a member crashes while executing, the system does the following:
 
 1.  Waits for all calls to return.
 2.  Sets a boolean indicating a reexecution is being done.

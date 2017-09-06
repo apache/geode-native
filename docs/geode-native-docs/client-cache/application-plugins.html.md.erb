@@ -263,7 +263,7 @@ void removeListener(RegionPtr& region)
 
 Keep your callback implementations lightweight and prevent situations that might cause them to hang. For example, do not perform distribution operations or disconnects inside event handlers.
 
-Your code should handle any exceptions that it generates. If not, Geode handles them as well as possible. Because C++ has no standard for exceptions, in many cases Geode can only print an `unknown error` message.
+Your code should handle any exceptions that it generates. If not, <%=vars.product_name%> handles them as well as possible. Because C++ has no standard for exceptions, in many cases <%=vars.product_name%> can only print an `unknown error` message.
 
 ## <a id="application-plugins__section_E81DB00AE0784BA2819DB3683C257647" class="no-quick-link"></a>Specifying Application Plug-In Attributes
 

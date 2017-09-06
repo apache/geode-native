@@ -83,7 +83,7 @@ Before you can run a transaction, you must configure your clients and servers, d
 
 When you commit a transaction, while the commit is taking place, the changes are visible in the cache. This is also known as transition commits. This provides better performance than locking everything to do the transaction updates, but it means that another process accessing data used in the transaction might get some data in the pre-transaction state and some in the post-transaction state.
 
-For example, keys 1 and 2 are written to in a transaction so both of their values change from A to B. In another thread, it is possible to read key 1 with value B and key 2 with value A, while the transaction is being committed. This can happen because of how Geode performs reads. This choice sacrifices atomic visibility in favor of performance. Reads do not block writes. Writes do not block reads.
+For example, keys 1 and 2 are written to in a transaction so both of their values change from A to B. In another thread, it is possible to read key 1 with value B and key 2 with value A, while the transaction is being committed. This can happen because of how <%=vars.product_name%> performs reads. This choice sacrifices atomic visibility in favor of performance. Reads do not block writes. Writes do not block reads.
 
 Because the client cache waits during transaction execution, and client regions are not distributed, the only activities that interact with a client transaction are those that occur on the server.
 

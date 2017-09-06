@@ -19,7 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-To install the Geode Client, you build the client libraries from a source distribution.
+To install the <%=vars.product_name%> Client, you build the client libraries from a source distribution.
 To build the client libraries:
 
   1. Download the source distribution.
@@ -28,7 +28,7 @@ To build the client libraries:
 
 # Download the Source Distribution
 
-Download Geode Client sources from the [Releases page of the Apache Geode
+Download <%=vars.product_name%> Client sources from the [Releases page of the <%=vars.product_name_long%>
 website](http://geode.apache.org/releases/) and unpack the archive in a location of your choice.
 For example, if your downloaded archive is named `apache-geode-src-1.1.0.tar.gz` and your target
 directory is represented by _geode-client-installdir_:
@@ -49,10 +49,10 @@ information and `README.md` for general information.
 
 # Prerequisites
 
-In order to build the Geode Client libraries, your system must provide certain prerequisites:
+In order to build the <%=vars.product_name%> Client libraries, your system must provide certain prerequisites:
 
   - Compatible operating system
-  - Apache Geode
+  - <%=vars.product_name_long%>
   - CMake
   - C++11 compiler
   - Doxygen
@@ -62,7 +62,7 @@ See the following sections for details.
 
 ## Operating Systems
 
-The following operating systems are known to be compatible with the Apache Geode Client. 
+The following operating systems are known to be compatible with the <%=vars.product_name_long%> Client. 
 The list is not exhaustive, others may also work.
 
 | Operating System | Version |
@@ -77,18 +77,18 @@ The list is not exhaustive, others may also work.
 |                  | Solaris 11 x86 |
 
 
-## Geode
+## <%=vars.product_name%>
 
-Building the client libraries requires access to an installation of Geode. Geode libraries are referenced during the
-client build process, and the Geode executables are needed if you wish to run examples and tests. 
+Building the client libraries requires access to an installation of <%=vars.product_name%>. <%=vars.product_name%> libraries are referenced during the
+client build process, and the <%=vars.product_name%> executables are needed if you wish to run examples and tests. 
 
-If the `GEODE` environment variable is defined, CMake uses it to determine the location of your Geode installation.
-Otherwise, CMake searches some system-specific default locations. To explicitly specify the location in which Geode
+If the `GEODE` environment variable is defined, CMake uses it to determine the location of your <%=vars.product_name%> installation.
+Otherwise, CMake searches some system-specific default locations. To explicitly specify the location in which <%=vars.product_name%>
 is installed, define `GEODE_ROOT=/path/to/geode` in your initial `cmake` configuration command.
 
 ## CMake
 
-CMake version 3.4 or newer is required to build the Geode client and its QuickStart examples. To download and install
+CMake version 3.4 or newer is required to build the <%=vars.product_name%> client and its QuickStart examples. To download and install
 CMake, follow the instructions on [cmake.org] (https://cmake.org).
 
 CMake uses a "generator" to produce configuration files for use by a variety of build tools, such as
@@ -156,12 +156,12 @@ You may find some optional tools to be helpful in certain environments. Here are
 
 # Build and Install
 
-The Geode source distribution comes with CMake files for building and installing the client libraries.
+The <%=vars.product_name%> source distribution comes with CMake files for building and installing the client libraries.
 
 CMake uses a default system-specific location as the destination of the `install` target, for
 example, `/usr/local` on Unix systems. (On Unix systems, you may need to execute your `cmake`
 commands using `sudo` to allow CMake to write output files to protected locations, such as
-`/usr/local`.) To explicitly specify the location in which the Geode Client will be installed,
+`/usr/local`.) To explicitly specify the location in which the <%=vars.product_name%> Client will be installed,
 define `CMAKE_INSTALL_PREFIX=/install-destination` in the initial `cmake` configuration command.
 
 **Note:** For consistent results, avoid using the "~" (tilde) abbreviation when specifying paths on the CMake command line.
@@ -185,7 +185,7 @@ To build and install the client libraries:
     $ cmake ../src
     ```
 
-    In this example, the command includes a pointer to Geode and an installation destination:
+    In this example, the command includes a pointer to <%=vars.product_name%> and an installation destination:
 
     
     ```

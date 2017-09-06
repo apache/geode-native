@@ -21,7 +21,7 @@ limitations under the License.
 
 This section describes how to build and run a client application on Linux.
 
-**Note:** When compiling external projects or applications that are used or referenced by the Geode client, make sure that you compile them for the same target architecture as your client installation. For example, if you installed the 64-bit (x86) version of the client, compile your external projects for 64-bit (x86) architecture.
+**Note:** When compiling external projects or applications that are used or referenced by the <%=vars.product_name%> client, make sure that you compile them for the same target architecture as your client installation. For example, if you installed the 64-bit (x86) version of the client, compile your external projects for 64-bit (x86) architecture.
 
 ## <a id="developing-linux__section_4AD6E18611AE42E9942C77DF91347768" class="no-quick-link"></a>Step 1. Set Environment Variables
 
@@ -35,9 +35,9 @@ PATH=$GEODE/bin:$PATH;export PATH<br />
 LD\_LIBRARY\_PATH=$GEODE/lib:$LD\_LIBRARY\_PATH;export LD\_LIBRARY\_PATH
 </code>
 
-## <a id="developing-linux__section_EFE9D42B05B44F2F958054224BCC5F76" class="no-quick-link"></a>Step 2. Compile C++ Clients and Dynamically Link Them to the Geode Library
+## <a id="developing-linux__section_EFE9D42B05B44F2F958054224BCC5F76" class="no-quick-link"></a>Step 2. Compile C++ Clients and Dynamically Link Them to the <%=vars.product_name%> Library
 
-On Linux, the `g++` compiler is supported. To build and link a C++ client to Geode on Linux, the compilation command line must include the arguments listed in the following table.
+On Linux, the `g++` compiler is supported. To build and link a C++ client to <%=vars.product_name%> on Linux, the compilation command line must include the arguments listed in the following table.
 
 <a id="developing-linux__compiler-arguments-linux"></a>
 
@@ -48,7 +48,7 @@ On Linux, the `g++` compiler is supported. To build and link a C++ client to Geo
 | `-I$GEODE/include` | Specifies the client `include` directory.         |
 
 
-The following table lists the linker switches that must be present on the command line when dynamically linking to the Geode library.
+The following table lists the linker switches that must be present on the command line when dynamically linking to the <%=vars.product_name%> library.
 
 <a id="developing-linux__table_216E9E87FBB44E39BE26388317F3ACE4"></a>
 
@@ -100,4 +100,4 @@ cpp/plugins/DurableCacheListener.cpp \
 
 When the C++ application is dynamically linked to the client library, the library must be dynamically loadable.
 
-To ensure that the client library is available for loading, make sure you have added the path *product-dir*`/lib` to the LD\_LIBRARY\_PATH environment variable, where *product-dir* is the path to the Geode product directory.
+To ensure that the client library is available for loading, make sure you have added the path *product-dir*`/lib` to the LD\_LIBRARY\_PATH environment variable, where *product-dir* is the path to the <%=vars.product_name%> product directory.

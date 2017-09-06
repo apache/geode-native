@@ -23,11 +23,11 @@ This glossary defines terms used in the documentation.
 
 ## API
 
-Application Programming Interface. Geode provides APIs to cached data for C++ and .NET applications.
+Application Programming Interface. <%=vars.product_name%> provides APIs to cached data for C++ and .NET applications.
 
 ## application program
 
-A program designed to perform a specific function directly for the user or, in some cases, for another application program. Geode applications use the Geode application programming interfaces (APIs) to modify cached data.
+A program designed to perform a specific function directly for the user or, in some cases, for another application program. <%=vars.product_name%> applications use the <%=vars.product_name%> application programming interfaces (APIs) to modify cached data.
 
 ## cache
 
@@ -35,7 +35,7 @@ A cache created by an application or cache server process. For the process, its 
 
 ## cache configuration file
 
-An XML file that declares the initial configuration of a cache, commonly named `cache.xml`. C++ and .NET applications can configure the cache additionally through the Geode programming APIs.
+An XML file that declares the initial configuration of a cache, commonly named `cache.xml`. C++ and .NET applications can configure the cache additionally through the <%=vars.product_name%> programming APIs.
 
 ## cache listener
 
@@ -55,7 +55,7 @@ User-implemented plug-in intended for synchronizing the cache with an outside da
 
 ## caching enabled
 
-Specifies whether data is cached in the region. Geode gives you the option of running applications without entry caching. For example, you can configure a distributed system as a simple messaging service.
+Specifies whether data is cached in the region. <%=vars.product_name%> gives you the option of running applications without entry caching. For example, you can configure a distributed system as a simple messaging service.
 
 ## client
 
@@ -67,7 +67,7 @@ An estimate of the number of threads expected to concurrently modify values in t
 
 ## connection
 
-What an application uses to access a Geode distributed system. An application can connect to a Geode system by calling the `DistributedSystem::connect` function with the appropriate parameter settings. An application must connect to a distributed system to gain access to Geode functionality.
+What an application uses to access a <%=vars.product_name%> distributed system. An application can connect to a <%=vars.product_name%> system by calling the `DistributedSystem::connect` function with the appropriate parameter settings. An application must connect to a distributed system to gain access to <%=vars.product_name%> functionality.
 
 ## destroy
 
@@ -83,7 +83,7 @@ Enables a region to automatically send entry value updates to remote caches and 
 
 ## distributed system
 
-One or more Geode system members that have been configured to communicate with each other, forming a single, logical system. Also used for the object that is instantiated to create the connection between the distributed system members.
+One or more <%=vars.product_name%> system members that have been configured to communicate with each other, forming a single, logical system. Also used for the object that is instantiated to create the connection between the distributed system members.
 
 ## DTD
 
@@ -159,11 +159,11 @@ A region attribute that sets the maximum number of entries to hold in a caching 
 
 ## membership
 
-Applications and cache servers connect to a Geode distributed system by invoking the static function `DistributedSystem::connect`. Through this connection, the application gains access to the APIs for distributed data caches. When a C++ or .NET application connects to a distributed system, it specifies the system it is connecting to by indicating the communication protocol and address to use to find other system members.
+Applications and cache servers connect to a <%=vars.product_name%> distributed system by invoking the static function `DistributedSystem::connect`. Through this connection, the application gains access to the APIs for distributed data caches. When a C++ or .NET application connects to a distributed system, it specifies the system it is connecting to by indicating the communication protocol and address to use to find other system members.
 
 ## <a id="nc_glossary_netSearch" class="no-quick-link"></a>netSearch
 
-The method used by Geode to search remote caches for a data entry that is not found in the local cache region. This operates only on distributed regions.
+The method used by <%=vars.product_name%> to search remote caches for a data entry that is not found in the local cache region. This operates only on distributed regions.
 
 ## <a id="nc_glossary_overflows" class="no-quick-link"></a>overflows
 

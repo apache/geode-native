@@ -44,13 +44,13 @@ The following components must be in place to run the QuickStart examples on any 
 
 **For all systems:**
 
-- **Geode**: Install and configure Geode. See the Geode User's Guide for instructions.
+- **<%=vars.product_name%>**: Install and configure <%=vars.product_name%>. See the <%=vars.product_name%> User's Guide for instructions.
 
 - **Cmake** is required to build the quickstart examples. If you have not already done so, download and install cmake, following the instructions on [cmake.org] (https://cmake.org).
 
 - **Java**: You must have a compatible JRE or JDK installed. See the [Sun Java website](http://java.sun.com)
 for the latest Java version for your operating system. See the installation information in the
-Geode User's Guide for the versions of Java that are compatible with Geode. 
+<%=vars.product_name%> User's Guide for the versions of Java that are compatible with <%=vars.product_name%>. 
 
 - **Security Toolkit** (optional): The QuickStart security examples rely on a security plugin, `securityImpl`, which is based on the OpenSSL toolkit.
 
@@ -58,8 +58,8 @@ Geode User's Guide for the versions of Java that are compatible with Geode.
 
 Follow these steps to prepare your Linux or Solaris environment to run the QuickStart examples.
 
-1. Start a terminal session. Set the `GEODE_ROOT` environment variable to point to your Geode product
-installation directory. Add the Geode libraries shown here to your `CLASSPATH`:
+1. Start a terminal session. Set the `GEODE_ROOT` environment variable to point to your <%=vars.product_name%> product
+installation directory. Add the <%=vars.product_name%> libraries shown here to your `CLASSPATH`:
 
     <code>
     % GEODE\_ROOT=_geode-install-dir_; export GEODE\_ROOT <br />
@@ -143,8 +143,8 @@ See <a href="#AboutQSE">About the QuickStart Examples</a> for instructions on ru
 Follow these steps to prepare your Windows environment to run the QuickStart examples.
 
 1. Run the Visual Studio Command Prompt to create a session with preset compiler environment
-configurations. Set the `GEODE_ROOT` environment variable to your Geode installation directory. 
-Add the `%GEODE_ROOT%\bin` directory to your `PATH`. Add the Geode libraries shown here to your `CLASSPATH`:
+configurations. Set the `GEODE_ROOT` environment variable to your <%=vars.product_name%> installation directory. 
+Add the `%GEODE_ROOT%\bin` directory to your `PATH`. Add the <%=vars.product_name%> libraries shown here to your `CLASSPATH`:
 
     <code>
     \>&nbsp;GEODE\_ROOT=_geode-install-dir_<br />
@@ -235,11 +235,11 @@ The examples are briefly described in this section. Each example performs the fo
 
 1. Starts the cache server with the example's server XML.
 
-2. Creates a Geode cache.
+2. Creates a <%=vars.product_name%> cache.
 
 3. Performs operations specific to the example.
 
-4. Closes the Geode cache.
+4. Closes the <%=vars.product_name%> cache.
 
 5. Shuts down the cache server.
 
@@ -334,7 +334,7 @@ The HA Cache example uses client and server XMLs configured to provide high avai
  
 ## Exceptions
 
-The Exceptions example performs some operations in incorrect ways, then logs the exceptions thrown by Geode to demonstrate error handling.
+The Exceptions example performs some operations in incorrect ways, then logs the exceptions thrown by <%=vars.product_name%> to demonstrate error handling.
 
  
 ## Durable Client
@@ -414,7 +414,7 @@ The Transactions example shows the use of the client-server transactions API.
  
 ## PdxRemoteQuery
 
-The PdxRemoteQuery example shows the use of PDX serialized objects with Geode querying.
+The PdxRemoteQuery example shows the use of PDX serialized objects with <%=vars.product_name%> querying.
 
  
 ## PdxSerializer
@@ -456,7 +456,7 @@ Start the C++ menu.
 
 ``` pre
 > runcpp
-Please select a Geode C++ QuickStart example to run.
+Please select a <%=vars.product_name%> C++ QuickStart example to run.
 
 1. BasicOperations
 2. DataExpiration
@@ -477,7 +477,7 @@ Start the C++ menu.
 
 ``` pre
 $ ./runcpp.sh
-Please select a Geode C++ QuickStart example to run.
+Please select a <%=vars.product_name%> C++ QuickStart example to run.
 
 1. BasicOperations
 2. DataExpiration
@@ -498,7 +498,7 @@ Start the C# menu.
 
 ``` pre
 > runcs
-Please select a Geode C# QuickStart example to run.
+Please select a <%=vars.product_name%> C# QuickStart example to run.
 
 1. BasicOperations
 2. DataExpiration
@@ -521,7 +521,7 @@ This section discusses problems you might encounter when you run the examples, a
  
 ## Error Messages
 
-`Exception ... Region:put not connected to Geode`
+`Exception ... Region:put not connected to <%=vars.product_name%>`
 
 Verify that the cache server has successfully started by reviewing the cacheserver.log file in the gfecs directory. The log may indicate why the cache server failed to start.
 
@@ -542,7 +542,7 @@ script so the example can find its XML files.
  
 ## Connection Problems
 
-Geode is a network-centric distributed system, so if you have a firewall running it could cause
+<%=vars.product_name%> is a network-centric distributed system, so if you have a firewall running it could cause
 connection problems. For example, your connections may fail if your firewall places restrictions on
 inbound or outbound permissions for sockets. You may need to modify your firewall configuration to
 permit traffic to applications running on your machine. The specific configuration depends on the
@@ -551,7 +551,7 @@ firewall you're using.
 If you experience port conflicts with other distributed systems, change the `localhost` and
 `bridge-server` port numbers for each of the XML files in the `quickstart/XMLs` directory. If you need
 to specify a non-default multicast port setting for the Java cache server, place a copy of the
-Geode `geode.properties` file in the `quickstart/gfecs` directory, then change the `mcast-port=`
+<%=vars.product_name%> `geode.properties` file in the `quickstart/gfecs` directory, then change the `mcast-port=`
 setting to a unique value for your network.
 
 

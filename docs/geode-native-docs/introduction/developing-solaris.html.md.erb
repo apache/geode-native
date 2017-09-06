@@ -50,7 +50,7 @@ To build and link a C++ client on Solaris, the compilation command line must inc
 | `-xarch=v9`                                                                                    | Enables 64-bit compilation.                                |
 | `-ldl`; `-lpthread`; `-lc`; `-lm`; `-lsocket`; `-lrt`; `-lnsl`; `-ldemangle`; `-lkstat`; `-lz` | Additional libraries.                                      |
 | `-library=stlport4`                                                                            | Solaris library compilation.                               |
-| `-I$ GEODE /include`                                                                           | Specifies the Geode include directory.                   |
+| `-I$ GEODE /include`                                                                           | Specifies the <%=vars.product_name%> include directory.                   |
 
 
 
@@ -58,4 +58,4 @@ To build and link a C++ client on Solaris, the compilation command line must inc
 
 When a C++ application is not statically linked to the client library, the library must be dynamically loadable.
 
-To verify that the client library is available for loading, make sure you have added the path *product-dir*`/lib` to the LD\_LIBRARY\_PATH environment variable, where *product-dir* is the path to the Geode product directory.
+To verify that the client library is available for loading, make sure you have added the path *product-dir*`/lib` to the LD\_LIBRARY\_PATH environment variable, where *product-dir* is the path to the <%=vars.product_name%> product directory.

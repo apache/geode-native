@@ -1,6 +1,4 @@
----
-title:  Apache Geode Client Configurations
----
+<% set_title(product_name_long, "Client Configurations") %>
 
 <!--
 Licensed to the Apache Software Foundation (ASF) under one or more
@@ -19,7 +17,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The Apache Geode client provides access for C++ and Microsoft® .NET™ clients to the Geode distributed system. 
+The <%=vars.product_name_long%> client provides access for C++ and Microsoft® .NET™ clients to the <%=vars.product_name%> distributed system. 
 As an open source project, the client (at least theoretically) can be built on nearly any system.
 In practical terms, the client is known to have been successfully built and used on platforms running Microsoft Windows, Linux (Intel), and Sun Solaris.
 
@@ -92,7 +90,7 @@ For your convenience, this table shows configuration guidelines for some familia
 
 ## Host Machine Configuration Guidelines
 
-Each machine that runs a Geode client should meet the following guidelines:
+Each machine that runs a <%=vars.product_name%> client should meet the following guidelines:
 
 -   A system clock set to the correct time and a time synchronization
 service such as Network Time Protocol (NTP).
@@ -123,16 +121,16 @@ and can be triggered by a running distributed system.
 
 **Runtime Library**
 
-The Geode client requires the [Microsoft Visual C++ 2013 Redistributable Package](https://www.microsoft.com/en-us/download/details.aspx?id=40784). 
+The <%=vars.product_name%> client requires the [Microsoft Visual C++ 2013 Redistributable Package](https://www.microsoft.com/en-us/download/details.aspx?id=40784). 
 This package contains runtime libraries needed by the client; install it for your platform architecture on all machines that will run the client.
 
 **.NET Framework Version Support**
 
-The Geode client is supported with Microsoft .NET Framework 4.5.2.
+The <%=vars.product_name%> client is supported with Microsoft .NET Framework 4.5.2.
 
 A Microsoft .NET Framework must be installed to support the C++/CLI (Common Language Infrastructure) library for the client.
 
-The Geode supports .NET 4.5.2 and Visual Studio 2013 (for compiling C++ applications on Windows). 
+The <%=vars.product_name%> supports .NET 4.5.2 and Visual Studio 2013 (for compiling C++ applications on Windows). 
 For more information on the features of .NET and Visual Studio Community Edition 2013 Update 5, see the [Visual Studio 2013 web page](https://msdn.microsoft.com/en-us/library/dd831853(v=vs.120).aspx).
 
 ## <a id="concept_7AE0C1CB11244095A50CCB52A09A09A1__section_C5848F353C504844BAFFD3EB2BE7DA23" class="no-quick-link"></a>Linux
@@ -142,7 +140,7 @@ For Linux, you can verify that you meet the client dependencies at the library l
 ``` pre
 prompt> ldd $client-installdir/lib/libgfcppcache.so
 ```
-where _client-installdir_ is the location in which you have installed the Geode client.
+where _client-installdir_ is the location in which you have installed the <%=vars.product_name%> client.
 
 The following libraries are external dependencies of the client library, `libgfcppcache.so`. Verify that the ldd tool output includes all of these:
 
@@ -155,7 +153,7 @@ The following libraries are external dependencies of the client library, `libgfc
 
 ## <a id="concept_7AE0C1CB11244095A50CCB52A09A09A1__ssl_requirements" class="no-quick-link"></a>Software Requirements for Using SSL
 
-If you plan on using SSL in your Geode client and server deployment, you will need to download and install OpenSSL.
+If you plan on using SSL in your <%=vars.product_name%> client and server deployment, you will need to download and install OpenSSL.
 
 The client requires OpenSSL version 1.0.2. For Windows platforms, you can use either the regular or the OpenSSL "Light" version.
 

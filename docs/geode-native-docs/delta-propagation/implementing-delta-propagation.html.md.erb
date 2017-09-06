@@ -30,7 +30,7 @@ For a complete delta propagation example, see
 -   Decide whether to enable cloning. Cloning is disabled by default. See [cloning-enabled](delta-propagation-properties.html#delta-propagation-properties).
 -   If you enable cloning, consider providing your own implementation, to optimize performance.
 -   If you do not enable cloning, be sure to synchronize your delta code.
--   If you do not enable cloning, review all associated listener code for dependencies on the entry event old value. Without cloning, Geode modifies the entry in place and so loses its reference to the old value. For delta events, the `EntryEvent` methods to retrieve the old and new values both return the new value.
+-   If you do not enable cloning, review all associated listener code for dependencies on the entry event old value. Without cloning, <%=vars.product_name%> modifies the entry in place and so loses its reference to the old value. For delta events, the `EntryEvent` methods to retrieve the old and new values both return the new value.
 
 **Procedure**
 
