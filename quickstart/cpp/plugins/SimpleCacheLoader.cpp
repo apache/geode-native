@@ -19,7 +19,7 @@
 
 CacheablePtr SimpleCacheLoader::load(const RegionPtr& region,
                                      const CacheableKeyPtr& key,
-                                     const UserDataPtr& aCallbackArgument) {
+                                     const SerializablePtr& aCallbackArgument) {
   LOGINFO("SimpleCacheLoader: Got a load event.");
 
   CacheablePtr value = CacheableString::create("LoaderValue");

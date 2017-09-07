@@ -23,7 +23,6 @@
 #include "geode_types.hpp"
 #include "Region.hpp"
 #include "CacheableKey.hpp"
-#include "UserData.hpp"
 
 /** @file
 */
@@ -40,7 +39,7 @@ class CPPCACHE_EXPORT EntryEvent {
   CacheableKeyPtr m_key;   /**< Cacheable key */
   CacheablePtr m_oldValue; /**< Old value */
   CacheablePtr m_newValue; /**< New value */
-  UserDataPtr
+  SerializablePtr
       m_callbackArgument; /**< Callback argument for this event, if any. */
   bool m_remoteOrigin;    /**< True if from a remote (non-local) process */
 
@@ -48,7 +47,7 @@ class CPPCACHE_EXPORT EntryEvent {
   /** Constructor, given all values. */
   EntryEvent(const RegionPtr& region, const CacheableKeyPtr& key,
              const CacheablePtr& oldValue, const CacheablePtr& newValue,
-             const UserDataPtr& aCallbackArgument, const bool remoteOrigin);
+             const SerializablePtr& aCallbackArgument, const bool remoteOrigin);
 
   /** Destructor. */
   virtual ~EntryEvent();
@@ -79,7 +78,7 @@ class CPPCACHE_EXPORT EntryEvent {
    * this event. See the {@link Region} interface methods that take
    * a callbackArgument parameter.
    */
-  inline UserDataPtr getCallbackArgument() const { return m_callbackArgument; }
+  inline SerializablePtr getCallbackArgument() const { return m_callbackArgument; }
 
   /** If the event originated in a remote process, returns true. */
   inline bool remoteOrigin() const { return m_remoteOrigin; }

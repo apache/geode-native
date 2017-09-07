@@ -21,7 +21,7 @@ namespace geode {
 namespace client {
 
 RegionEvent::RegionEvent(const RegionPtr& region,
-                         const UserDataPtr& aCallbackArgument,
+                         const SerializablePtr& aCallbackArgument,
                          const bool remoteOrigin)
     : m_region(region),
       m_callbackArgument(aCallbackArgument),

@@ -69,7 +69,6 @@
 #include "Serializable.hpp"
 #include <memory>
 #include "StructSet.hpp"
-#include "UserData.hpp"
 #include "VectorT.hpp"
 #include "TransactionId.hpp"
 #include "UserFunctionExecutionException.hpp"

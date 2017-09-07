@@ -662,7 +662,7 @@ class RegionOperations {
   RegionOperations(const char* name)
       : m_regionPtr(getHelper()->getRegion(name)) {}
 
-  void putOp(int keys = 1, const UserDataPtr& aCallbackArgument = nullptr) {
+  void putOp(int keys = 1, const SerializablePtr& aCallbackArgument = nullptr) {
     char keybuf[100];
     char valbuf[100];
     for (int i = 1; i <= keys; i++) {
@@ -673,7 +673,7 @@ class RegionOperations {
     }
   }
   void invalidateOp(int keys = 1,
-                    const UserDataPtr& aCallbackArgument = nullptr) {
+                    const SerializablePtr& aCallbackArgument = nullptr) {
     char keybuf[100];
     char valbuf[100];
     for (int i = 1; i <= keys; i++) {
@@ -682,7 +682,7 @@ class RegionOperations {
       m_regionPtr->localInvalidate(keybuf, aCallbackArgument);
     }
   }
-  void destroyOp(int keys = 1, const UserDataPtr& aCallbackArgument = nullptr) {
+  void destroyOp(int keys = 1, const SerializablePtr& aCallbackArgument = nullptr) {
     char keybuf[100];
     char valbuf[100];
     for (int i = 1; i <= keys; i++) {
@@ -691,7 +691,7 @@ class RegionOperations {
       m_regionPtr->destroy(keybuf, aCallbackArgument);
     }
   }
-  void removeOp(int keys = 1, const UserDataPtr& aCallbackArgument = nullptr) {
+  void removeOp(int keys = 1, const SerializablePtr& aCallbackArgument = nullptr) {
     char keybuf[100];
     char valbuf[100];
     for (int i = 1; i <= keys; i++) {

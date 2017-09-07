@@ -215,7 +215,7 @@ namespace apache
       }
 
       CacheablePtr ManagedCacheLoaderGeneric::load(const RegionPtr& region,
-                                                   const CacheableKeyPtr& key, const UserDataPtr& aCallbackArgument)
+                                                   const CacheableKeyPtr& key, const SerializablePtr& aCallbackArgument)
       {
         try {
           return m_managedptr->load(region, key, aCallbackArgument);

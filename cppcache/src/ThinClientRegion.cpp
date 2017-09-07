@@ -68,7 +68,7 @@ class PutAllWork : public PooledWork<GfErrType>,
   PutAllPartialResultServerExceptionPtr m_papException;
   bool m_isPapeReceived;
   ChunkedPutAllResponse* m_resultCollector;
-  // UNUSED const UserDataPtr& m_aCallbackArgument;
+  // UNUSED const SerializablePtr& m_aCallbackArgument;
 
  public:
   PutAllWork(ThinClientPoolDM* poolDM,
@@ -76,7 +76,7 @@ class PutAllWork : public PooledWork<GfErrType>,
              const RegionPtr& region, bool attemptFailover, bool isBGThread,
              const HashMapOfCacheablePtr map,
              const VectorOfCacheableKeyPtr keys, uint32_t timeout,
-             const UserDataPtr& aCallbackArgument)
+             const SerializablePtr& aCallbackArgument)
       : m_poolDM(poolDM),
         m_serverLocation(serverLocation),
         m_attemptFailover(attemptFailover),
@@ -207,7 +207,7 @@ class RemoveAllWork : public PooledWork<GfErrType>,
   bool m_isBGThread;
   UserAttributesPtr m_userAttribute;
   const RegionPtr m_region;
-  const UserDataPtr& m_aCallbackArgument;
+  const SerializablePtr& m_aCallbackArgument;
   VectorOfCacheableKeyPtr m_keys;
   VersionedCacheableObjectPartListPtr m_verObjPartListPtr;
   PutAllPartialResultServerExceptionPtr m_papException;
@@ -219,7 +219,7 @@ class RemoveAllWork : public PooledWork<GfErrType>,
                 const BucketServerLocationPtr& serverLocation,
                 const RegionPtr& region, bool attemptFailover, bool isBGThread,
                 const VectorOfCacheableKeyPtr keys,
-                const UserDataPtr& aCallbackArgument)
+                const SerializablePtr& aCallbackArgument)
       : m_poolDM(poolDM),
         m_serverLocation(serverLocation),
         m_attemptFailover(attemptFailover),
@@ -829,7 +829,7 @@ bool ThinClientRegion::containsKeyOnServer(
   /** @brief Create message and send to bridge server */
 
   TcrMessageContainsKey request(m_cache->createDataOutput(), this, keyPtr,
-                                static_cast<UserDataPtr>(nullptr), true,
+                                static_cast<SerializablePtr>(nullptr), true,
                                 m_tcrdm);
   TcrMessageReply reply(true, m_tcrdm);
   reply.setMessageTypeRequest(TcrMessage::CONTAINS_KEY);
@@ -884,7 +884,7 @@ bool ThinClientRegion::containsValueForKey_remote(
   /** @brief Create message and send to bridge server */
 
   TcrMessageContainsKey request(m_cache->createDataOutput(), this, keyPtr,
-                                static_cast<UserDataPtr>(nullptr), false,
+                                static_cast<SerializablePtr>(nullptr), false,
                                 m_tcrdm);
   TcrMessageReply reply(true, m_tcrdm);
   reply.setMessageTypeRequest(TcrMessage::CONTAINS_KEY);
@@ -923,7 +923,7 @@ bool ThinClientRegion::containsValueForKey_remote(
   return rptr->value();
 }
 
-void ThinClientRegion::clear(const UserDataPtr& aCallbackArgument) {
+void ThinClientRegion::clear(const SerializablePtr& aCallbackArgument) {
   GfErrType err = GF_NOERR;
   err = localClearNoThrow(aCallbackArgument, CacheEventFlags::NORMAL);
   if (err != GF_NOERR) GfErrTypeToException("Region::clear", err);
@@ -966,7 +966,7 @@ void ThinClientRegion::clear(const UserDataPtr& aCallbackArgument) {
 
 GfErrType ThinClientRegion::getNoThrow_remote(
     const CacheableKeyPtr& keyPtr, CacheablePtr& valPtr,
-    const UserDataPtr& aCallbackArgument, VersionTagPtr& versionTag) {
+    const SerializablePtr& aCallbackArgument, VersionTagPtr& versionTag) {
   GfErrType err = GF_NOERR;
 
   /** @brief Create message and send to bridge server */
@@ -1005,7 +1005,7 @@ GfErrType ThinClientRegion::getNoThrow_remote(
 }
 
 GfErrType ThinClientRegion::invalidateNoThrow_remote(
-    const CacheableKeyPtr& keyPtr, const UserDataPtr& aCallbackArgument,
+    const CacheableKeyPtr& keyPtr, const SerializablePtr& aCallbackArgument,
     VersionTagPtr& versionTag) {
   GfErrType err = GF_NOERR;
 
@@ -1045,7 +1045,7 @@ GfErrType ThinClientRegion::invalidateNoThrow_remote(
 
 GfErrType ThinClientRegion::putNoThrow_remote(
     const CacheableKeyPtr& keyPtr, const CacheablePtr& valuePtr,
-    const UserDataPtr& aCallbackArgument, VersionTagPtr& versionTag,
+    const SerializablePtr& aCallbackArgument, VersionTagPtr& versionTag,
     bool checkDelta) {
   GfErrType err = GF_NOERR;
   // do TCR put
@@ -1108,13 +1108,13 @@ GfErrType ThinClientRegion::putNoThrow_remote(
 
 GfErrType ThinClientRegion::createNoThrow_remote(
     const CacheableKeyPtr& keyPtr, const CacheablePtr& valuePtr,
-    const UserDataPtr& aCallbackArgument, VersionTagPtr& versionTag) {
+    const SerializablePtr& aCallbackArgument, VersionTagPtr& versionTag) {
   return putNoThrow_remote(keyPtr, valuePtr, aCallbackArgument, versionTag,
                            false);
 }
 
 GfErrType ThinClientRegion::destroyNoThrow_remote(
-    const CacheableKeyPtr& keyPtr, const UserDataPtr& aCallbackArgument,
+    const CacheableKeyPtr& keyPtr, const SerializablePtr& aCallbackArgument,
     VersionTagPtr& versionTag) {
   GfErrType err = GF_NOERR;
 
@@ -1157,7 +1157,7 @@ GfErrType ThinClientRegion::destroyNoThrow_remote(
 
 GfErrType ThinClientRegion::removeNoThrow_remote(
     const CacheableKeyPtr& keyPtr, const CacheablePtr& cvalue,
-    const UserDataPtr& aCallbackArgument, VersionTagPtr& versionTag) {
+    const SerializablePtr& aCallbackArgument, VersionTagPtr& versionTag) {
   GfErrType err = GF_NOERR;
 
   // do TCR remove
@@ -1198,7 +1198,7 @@ GfErrType ThinClientRegion::removeNoThrow_remote(
 }
 
 GfErrType ThinClientRegion::removeNoThrowEX_remote(
-    const CacheableKeyPtr& keyPtr, const UserDataPtr& aCallbackArgument,
+    const CacheableKeyPtr& keyPtr, const SerializablePtr& aCallbackArgument,
     VersionTagPtr& versionTag) {
   GfErrType err = GF_NOERR;
 
@@ -1243,7 +1243,7 @@ GfErrType ThinClientRegion::getAllNoThrow_remote(
     const VectorOfCacheableKey* keys, const HashMapOfCacheablePtr& values,
     const HashMapOfExceptionPtr& exceptions,
     const VectorOfCacheableKeyPtr& resultKeys, bool addToLocalCache,
-    const UserDataPtr& aCallbackArgument) {
+    const SerializablePtr& aCallbackArgument) {
   GfErrType err = GF_NOERR;
   MapOfUpdateCounters updateCountMap;
   int32_t destroyTracker = 0;
@@ -1326,7 +1326,7 @@ GfErrType ThinClientRegion::getAllNoThrow_remote(
 GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
     ThinClientPoolDM* tcrdm, const HashMapOfCacheable& map,
     VersionedCacheableObjectPartListPtr& versionedObjPartList, uint32_t timeout,
-    const UserDataPtr& aCallbackArgument) {
+    const SerializablePtr& aCallbackArgument) {
   LOGDEBUG(" ThinClientRegion::singleHopPutAllNoThrow_remote map size = %d",
            map.size());
   RegionPtr region = shared_from_this();
@@ -1637,7 +1637,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
 GfErrType ThinClientRegion::multiHopPutAllNoThrow_remote(
     const HashMapOfCacheable& map,
     VersionedCacheableObjectPartListPtr& versionedObjPartList, uint32_t timeout,
-    const UserDataPtr& aCallbackArgument) {
+    const SerializablePtr& aCallbackArgument) {
   // Multiple hop implementation
   LOGDEBUG("ThinClientRegion::multiHopPutAllNoThrow_remote ");
   GfErrType err = GF_NOERR;
@@ -1702,7 +1702,7 @@ GfErrType ThinClientRegion::multiHopPutAllNoThrow_remote(
 GfErrType ThinClientRegion::putAllNoThrow_remote(
     const HashMapOfCacheable& map,
     VersionedCacheableObjectPartListPtr& versionedObjPartList, uint32_t timeout,
-    const UserDataPtr& aCallbackArgument) {
+    const SerializablePtr& aCallbackArgument) {
   LOGDEBUG("ThinClientRegion::putAllNoThrow_remote");
 
   ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
@@ -1727,7 +1727,7 @@ GfErrType ThinClientRegion::putAllNoThrow_remote(
 GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
     ThinClientPoolDM* tcrdm, const VectorOfCacheableKey& keys,
     VersionedCacheableObjectPartListPtr& versionedObjPartList,
-    const UserDataPtr& aCallbackArgument) {
+    const SerializablePtr& aCallbackArgument) {
   LOGDEBUG(" ThinClientRegion::singleHopRemoveAllNoThrow_remote keys size = %d",
            keys.size());
   RegionPtr region = shared_from_this();
@@ -1970,7 +1970,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
 GfErrType ThinClientRegion::multiHopRemoveAllNoThrow_remote(
     const VectorOfCacheableKey& keys,
     VersionedCacheableObjectPartListPtr& versionedObjPartList,
-    const UserDataPtr& aCallbackArgument) {
+    const SerializablePtr& aCallbackArgument) {
   // Multiple hop implementation
   LOGDEBUG("ThinClientRegion::multiHopRemoveAllNoThrow_remote ");
   GfErrType err = GF_NOERR;
@@ -2025,7 +2025,7 @@ GfErrType ThinClientRegion::multiHopRemoveAllNoThrow_remote(
 GfErrType ThinClientRegion::removeAllNoThrow_remote(
     const VectorOfCacheableKey& keys,
     VersionedCacheableObjectPartListPtr& versionedObjPartList,
-    const UserDataPtr& aCallbackArgument) {
+    const SerializablePtr& aCallbackArgument) {
   LOGDEBUG("ThinClientRegion::removeAllNoThrow_remote");
 
   ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
@@ -2254,7 +2254,7 @@ GfErrType ThinClientRegion::unregisterKeys() {
 }
 
 GfErrType ThinClientRegion::destroyRegionNoThrow_remote(
-    const UserDataPtr& aCallbackArgument) {
+    const SerializablePtr& aCallbackArgument) {
   GfErrType err = GF_NOERR;
 
   // do TCR destroyRegion
@@ -3395,7 +3395,7 @@ GfErrType ThinClientRegion::getNoThrow_FullObject(EventIdPtr eventId,
 }
 
 void ThinClientRegion::txDestroy(const CacheableKeyPtr& key,
-                                 const UserDataPtr& aCallbackArgument,
+                                 const SerializablePtr& aCallbackArgument,
                                  VersionTagPtr versionTag) {
   GfErrType err = destroyNoThrowTX(key, aCallbackArgument, -1,
                                    CacheEventFlags::NORMAL, versionTag);
@@ -3403,7 +3403,7 @@ void ThinClientRegion::txDestroy(const CacheableKeyPtr& key,
 }
 
 void ThinClientRegion::txInvalidate(const CacheableKeyPtr& key,
-                                    const UserDataPtr& aCallbackArgument,
+                                    const SerializablePtr& aCallbackArgument,
                                     VersionTagPtr versionTag) {
   GfErrType err = invalidateNoThrowTX(key, aCallbackArgument, -1,
                                       CacheEventFlags::NORMAL, versionTag);
@@ -3412,7 +3412,7 @@ void ThinClientRegion::txInvalidate(const CacheableKeyPtr& key,
 
 void ThinClientRegion::txPut(const CacheableKeyPtr& key,
                              const CacheablePtr& value,
-                             const UserDataPtr& aCallbackArgument,
+                             const SerializablePtr& aCallbackArgument,
                              VersionTagPtr versionTag) {
   CacheablePtr oldValue;
   int64_t sampleStartNanos = startStatOpTime();

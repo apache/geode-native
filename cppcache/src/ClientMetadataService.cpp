@@ -231,7 +231,7 @@ ClientMetadataPtr ClientMetadataService::SendClientPRMetadata(
 
 void ClientMetadataService::getBucketServerLocation(
     const RegionPtr& region, const CacheableKeyPtr& key,
-    const CacheablePtr& value, const UserDataPtr& aCallbackArgument,
+    const CacheablePtr& value, const SerializablePtr& aCallbackArgument,
     bool isPrimary, BucketServerLocationPtr& serverLocation, int8_t& version) {
   // ACE_Guard< ACE_Recursive_Thread_Mutex > guard( m_regionMetadataLock );
   if (region != nullptr) {
@@ -461,7 +461,7 @@ ClientMetadataService::getServerToFilterMap(const VectorOfCacheableKey& keys,
 
 void ClientMetadataService::markPrimaryBucketForTimeout(
     const RegionPtr& region, const CacheableKeyPtr& key,
-    const CacheablePtr& value, const UserDataPtr& aCallbackArgument,
+    const CacheablePtr& value, const SerializablePtr& aCallbackArgument,
     bool isPrimary, BucketServerLocationPtr& serverLocation, int8_t& version) {
   if (m_bucketWaitTimeout == 0) return;
 
@@ -808,7 +808,7 @@ ClientMetadataService::groupByServerToBuckets(const ClientMetadataPtr& metadata,
 
 void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
     const RegionPtr& region, const CacheableKeyPtr& key,
-    const CacheablePtr& value, const UserDataPtr& aCallbackArgument,
+    const CacheablePtr& value, const SerializablePtr& aCallbackArgument,
     bool isPrimary, BucketServerLocationPtr& serverLocation, int8_t& version) {
   if (m_bucketWaitTimeout == 0) return;
 

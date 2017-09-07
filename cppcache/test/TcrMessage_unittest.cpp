@@ -65,7 +65,7 @@ TEST_F(TcrMessageTest, intializeDefaultConstructor) {
 
 TEST_F(TcrMessageTest, testConstructor1MessageDataContentWithDESTROY_REGION) {
   const Region *region = nullptr;
-  const UserDataPtr aCallbackArgument = nullptr;
+  const SerializablePtr aCallbackArgument = nullptr;
   int messageResponseTimeout = 1000;
   ThinClientBaseDM *connectionDM = nullptr;
 
@@ -84,7 +84,7 @@ TEST_F(TcrMessageTest, testConstructor1MessageDataContentWithDESTROY_REGION) {
 
 TEST_F(TcrMessageTest, testConstructor1MessageDataContentWithCLEAR_REGION) {
   const Region *region = nullptr;
-  const UserDataPtr aCallbackArgument = nullptr;
+  const SerializablePtr aCallbackArgument = nullptr;
   int messageResponseTimeout = 1000;
   ThinClientBaseDM *connectionDM = nullptr;
 
@@ -167,7 +167,7 @@ TEST_F(TcrMessageTest,
        testParameterizedQueryConstructorWithQUERY_WITH_PARAMETERS) {
   int messageResponseTimeout = 1000;
   ThinClientBaseDM *connectionDM = nullptr;
-  const UserDataPtr aCallbackArgument = nullptr;
+  const SerializablePtr aCallbackArgument = nullptr;
   CacheableVectorPtr paramList = CacheableVector::create();
 
   TcrMessageQueryWithParameters message(
@@ -189,7 +189,7 @@ TEST_F(TcrMessageTest, testConstructorWithCONTAINS_KEY) {
       static_cast<const Region *>(nullptr),
       CacheableString::create(
           "mykey"),  // static_cast<const CacheableKeyPtr>(nullptr),
-      static_cast<const UserDataPtr>(nullptr),
+      static_cast<const SerializablePtr>(nullptr),
       true,  // isContainsKey
       static_cast<ThinClientBaseDM *>(nullptr));
   EXPECT_EQ(TcrMessage::CONTAINS_KEY, message.getMessageType());
@@ -216,7 +216,7 @@ TEST_F(TcrMessageTest, testConstructor2WithREQUEST) {
       static_cast<const Region *>(nullptr),
       CacheableString::create(
           "mykey"),  // static_cast<const CacheableKeyPtr>(nullptr),
-      static_cast<const UserDataPtr>(nullptr),
+      static_cast<const SerializablePtr>(nullptr),
       static_cast<ThinClientBaseDM *>(nullptr));
 
   EXPECT_EQ(TcrMessage::REQUEST, message.getMessageType());
@@ -232,7 +232,7 @@ TEST_F(TcrMessageTest, testConstructor2WithDESTROY) {
       std::unique_ptr<DataOutputUnderTest>(new DataOutputUnderTest()),
       static_cast<const Region *>(nullptr), CacheableString::create("mykey"),
       static_cast<const CacheableKeyPtr>(nullptr),
-      static_cast<const UserDataPtr>(nullptr),
+      static_cast<const SerializablePtr>(nullptr),
       static_cast<ThinClientBaseDM *>(nullptr));
 
   EXPECT_EQ(TcrMessage::DESTROY, message.getMessageType());
@@ -250,7 +250,7 @@ TEST_F(TcrMessageTest, testConstructor2WithINVALIDATE) {
       static_cast<const Region *>(nullptr),
       CacheableString::create(
           "mykey"),  // static_cast<const CacheableKeyPtr>(nullptr),
-      static_cast<const UserDataPtr>(nullptr),
+      static_cast<const SerializablePtr>(nullptr),
       static_cast<ThinClientBaseDM *>(nullptr));
 
   EXPECT_EQ(TcrMessage::INVALIDATE, message.getMessageType());
@@ -267,7 +267,7 @@ TEST_F(TcrMessageTest, testConstructor3WithPUT) {
       std::unique_ptr<DataOutputUnderTest>(new DataOutputUnderTest()),
       static_cast<const Region *>(nullptr), CacheableString::create("mykey"),
       CacheableString::create("myvalue"),
-      static_cast<const UserDataPtr>(nullptr),
+      static_cast<const SerializablePtr>(nullptr),
       false,  // isDelta
       static_cast<ThinClientBaseDM *>(nullptr),
       false,  // isMetaRegion

@@ -97,7 +97,7 @@ namespace apache
         /// </returns>
         /// <seealso cref="Apache.Geode.Client.Region.Get" />
         virtual CacheablePtr load(const RegionPtr& region,
-          const CacheableKeyPtr& key, const UserDataPtr& aCallbackArgument);
+          const CacheableKeyPtr& key, const SerializablePtr& aCallbackArgument);
 
         /// <summary>
         /// Called when the region containing this callback is destroyed, when

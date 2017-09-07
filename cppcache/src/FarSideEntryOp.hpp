@@ -31,7 +31,6 @@
 #include <geode/Cacheable.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
-#include <geode/UserData.hpp>
 #include "LocalRegion.hpp"
 
 namespace apache {
@@ -114,7 +113,7 @@ class FarSideEntryOp {
   CacheableKeyPtr m_key;
   CacheablePtr m_value;
   bool m_didDestroy;
-  UserDataPtr m_callbackArg;
+  SerializablePtr m_callbackArg;
   VersionTagPtr m_versionTag;
   MemberListForVersionStamp& m_memberListForVersionStamp;
   // FilterRoutingInfo filterRoutingInfo;

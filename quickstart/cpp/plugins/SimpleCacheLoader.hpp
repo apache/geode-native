@@ -34,7 +34,7 @@ using namespace apache::geode::client;
 class SimpleCacheLoader : public CacheLoader {
  public:
   virtual CacheablePtr load(const RegionPtr& region, const CacheableKeyPtr& key,
-                            const UserDataPtr& aCallbackArgument);
+                            const SerializablePtr& aCallbackArgument);
 
   virtual void close(const RegionPtr& region);
 };

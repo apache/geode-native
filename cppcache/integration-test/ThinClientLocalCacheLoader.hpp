@@ -43,7 +43,7 @@ class ThinClientTallyLoader : public TallyLoader {
   virtual ~ThinClientTallyLoader() {}
 
   CacheablePtr load(const RegionPtr& rp, const CacheableKeyPtr& key,
-                    const UserDataPtr& aCallbackArgument) {
+                    const SerializablePtr& aCallbackArgument) {
     int32_t loadValue = std::dynamic_pointer_cast<CacheableInt32>(
                             TallyLoader::load(rp, key, aCallbackArgument))
                             ->value();

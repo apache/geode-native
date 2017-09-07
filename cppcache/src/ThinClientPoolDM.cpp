@@ -58,7 +58,7 @@ class GetAllWork : public PooledWork<GfErrType>,
   const VectorOfCacheableKeyPtr m_keys;
   const RegionPtr m_region;
   TcrChunkedResult* m_resultCollector;
-  const UserDataPtr& m_aCallbackArgument;
+  const SerializablePtr& m_aCallbackArgument;
 
  public:
   GetAllWork(ThinClientPoolDM* poolDM, const RegionPtr& region,
@@ -66,7 +66,7 @@ class GetAllWork : public PooledWork<GfErrType>,
              const VectorOfCacheableKeyPtr& keys, bool attemptFailover,
              bool isBGThread, bool addToLocalCache,
              ChunkedGetAllResponse* responseHandler,
-             const UserDataPtr& aCallbackArgument)
+             const SerializablePtr& aCallbackArgument)
       : m_poolDM(poolDM),
         m_serverLocation(serverLocation),
         m_attemptFailover(attemptFailover),

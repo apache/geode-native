@@ -234,14 +234,14 @@ void RegionInternal::setClientNotificationEnabled(
 }
 
 void RegionInternal::txDestroy(const CacheableKeyPtr& key,
-                               const UserDataPtr& callBack,
+                               const SerializablePtr& callBack,
                                VersionTagPtr versionTag) {
   throw UnsupportedOperationException(
       "txDestroy only supported by Thin Client Region.");
 }
 
 void RegionInternal::txInvalidate(const CacheableKeyPtr& key,
-                                  const UserDataPtr& callBack,
+                                  const SerializablePtr& callBack,
                                   VersionTagPtr versionTag) {
   throw UnsupportedOperationException(
       "txInvalidate only supported by Thin Client Region.");
@@ -249,7 +249,7 @@ void RegionInternal::txInvalidate(const CacheableKeyPtr& key,
 
 void RegionInternal::txPut(const CacheableKeyPtr& key,
                            const CacheablePtr& value,
-                           const UserDataPtr& callBack,
+                           const SerializablePtr& callBack,
                            VersionTagPtr versionTag) {
   throw UnsupportedOperationException(
       "txPut only supported by Thin Client Region.");
