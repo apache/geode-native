@@ -86,7 +86,7 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
                              bool receiveValues = true);
   virtual void unregisterRegex(const char* regex);
   virtual void serverKeys(VectorOfCacheableKey& v);
-  virtual void clear(const UserDataPtr& aCallbackArgument = nullptr);
+  virtual void clear(const SerializablePtr& aCallbackArgument = nullptr);
 
   virtual SelectResultsPtr query(
       const char* predicate, uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
@@ -102,11 +102,11 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
       const HashMapOfCacheable& map,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
       uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-      const UserDataPtr& aCallbackArgument = nullptr);
+      const SerializablePtr& aCallbackArgument = nullptr);
   GfErrType removeAllNoThrow_remote(
       const VectorOfCacheableKey& keys,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
-      const UserDataPtr& aCallbackArgument = nullptr);
+      const SerializablePtr& aCallbackArgument = nullptr);
   GfErrType registerKeys(TcrEndpoint* endpoint = nullptr,
                          const TcrMessage* request = nullptr,
                          TcrMessageReply* reply = nullptr);
@@ -168,49 +168,49 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
   uint32_t size_remote();
 
   virtual void txDestroy(const CacheableKeyPtr& key,
-                         const UserDataPtr& callBack, VersionTagPtr versionTag);
+                         const SerializablePtr& callBack, VersionTagPtr versionTag);
   virtual void txInvalidate(const CacheableKeyPtr& key,
-                            const UserDataPtr& callBack,
+                            const SerializablePtr& callBack,
                             VersionTagPtr versionTag);
   virtual void txPut(const CacheableKeyPtr& key, const CacheablePtr& value,
-                     const UserDataPtr& callBack, VersionTagPtr versionTag);
+                     const SerializablePtr& callBack, VersionTagPtr versionTag);
 
  protected:
   /** @brief the methods need to be overloaded in TCR
    */
   GfErrType getNoThrow_remote(const CacheableKeyPtr& keyPtr,
                               CacheablePtr& valPtr,
-                              const UserDataPtr& aCallbackArgument,
+                              const SerializablePtr& aCallbackArgument,
                               VersionTagPtr& versionTag);
   GfErrType putNoThrow_remote(const CacheableKeyPtr& keyPtr,
                               const CacheablePtr& cvalue,
-                              const UserDataPtr& aCallbackArgument,
+                              const SerializablePtr& aCallbackArgument,
                               VersionTagPtr& versionTag,
                               bool checkDelta = true);
   GfErrType createNoThrow_remote(const CacheableKeyPtr& keyPtr,
                                  const CacheablePtr& cvalue,
-                                 const UserDataPtr& aCallbackArgument,
+                                 const SerializablePtr& aCallbackArgument,
                                  VersionTagPtr& versionTag);
   GfErrType destroyNoThrow_remote(const CacheableKeyPtr& keyPtr,
-                                  const UserDataPtr& aCallbackArgument,
+                                  const SerializablePtr& aCallbackArgument,
                                   VersionTagPtr& versionTag);
   GfErrType removeNoThrow_remote(const CacheableKeyPtr& keyPtr,
                                  const CacheablePtr& cvalue,
-                                 const UserDataPtr& aCallbackArgument,
+                                 const SerializablePtr& aCallbackArgument,
                                  VersionTagPtr& versionTag);
   GfErrType removeNoThrowEX_remote(const CacheableKeyPtr& keyPtr,
-                                   const UserDataPtr& aCallbackArgument,
+                                   const SerializablePtr& aCallbackArgument,
                                    VersionTagPtr& versionTag);
   GfErrType invalidateNoThrow_remote(const CacheableKeyPtr& keyPtr,
-                                     const UserDataPtr& aCallbackArgument,
+                                     const SerializablePtr& aCallbackArgument,
                                      VersionTagPtr& versionTag);
   GfErrType getAllNoThrow_remote(const VectorOfCacheableKey* keys,
                                  const HashMapOfCacheablePtr& values,
                                  const HashMapOfExceptionPtr& exceptions,
                                  const VectorOfCacheableKeyPtr& resultKeys,
                                  bool addToLocalCache,
-                                 const UserDataPtr& aCallbackArgument);
-  GfErrType destroyRegionNoThrow_remote(const UserDataPtr& aCallbackArgument);
+                                 const SerializablePtr& aCallbackArgument);
+  GfErrType destroyRegionNoThrow_remote(const SerializablePtr& aCallbackArgument);
   GfErrType registerKeysNoThrow(
       const VectorOfCacheableKey& keys, bool attemptFailover = true,
       TcrEndpoint* endpoint = nullptr, bool isDurable = false,
@@ -291,7 +291,7 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
       std::unordered_map<CacheableKeyPtr, InterestResultPolicy>& interestList);
   GfErrType createOnServer(const CacheableKeyPtr& keyPtr,
                            const CacheablePtr& cvalue,
-                           const UserDataPtr& aCallbackArgument);
+                           const SerializablePtr& aCallbackArgument);
   // method to get the values for a register interest
   void registerInterestGetValues(const char* method,
                                  const VectorOfCacheableKey* keys,
@@ -306,21 +306,21 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
       ThinClientPoolDM* tcrdm, const HashMapOfCacheable& map,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
       uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-      const UserDataPtr& aCallbackArgument = nullptr);
+      const SerializablePtr& aCallbackArgument = nullptr);
   GfErrType multiHopPutAllNoThrow_remote(
       const HashMapOfCacheable& map,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
       uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-      const UserDataPtr& aCallbackArgument = nullptr);
+      const SerializablePtr& aCallbackArgument = nullptr);
 
   GfErrType singleHopRemoveAllNoThrow_remote(
       ThinClientPoolDM* tcrdm, const VectorOfCacheableKey& keys,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
-      const UserDataPtr& aCallbackArgument = nullptr);
+      const SerializablePtr& aCallbackArgument = nullptr);
   GfErrType multiHopRemoveAllNoThrow_remote(
       const VectorOfCacheableKey& keys,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
-      const UserDataPtr& aCallbackArgument = nullptr);
+      const SerializablePtr& aCallbackArgument = nullptr);
 
   ACE_RW_Thread_Mutex m_RegionMutex;
   bool m_isMetaDataRefreshed;

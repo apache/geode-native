@@ -83,7 +83,7 @@ BEGIN_TEST(LinkageTest)
   // Cache cache;
   ASSERT((!cachePtr->isClosed()), "cache shouldn't be closed.");
   RegionPtr rptr;
-  UserDataPtr callback;
+  SerializablePtr callback;
   //    CacheListener cl;
   CacheListenerPtr clPtr;
   //    CacheLoader cacheloader;

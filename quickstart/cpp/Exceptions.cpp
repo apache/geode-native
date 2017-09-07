@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
     LOGINFO("Obtained the second Entry from the Region");
 
     // Destroy exampleRegion2.
-    UserDataPtr userDataPtr = nullptr;
+    SerializablePtr userDataPtr = nullptr;
     regionPtr2->destroyRegion(userDataPtr);
 
     try {

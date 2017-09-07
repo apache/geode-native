@@ -59,7 +59,7 @@ namespace Apache
       generic<class TKey, class TValue>
       Object^ EntryEvent<TKey, TValue>::CallbackArgument::get()
       {
-        apache::geode::client::UserDataPtr& valptr(m_nativeptr->getCallbackArgument());
+        apache::geode::client::SerializablePtr& valptr(m_nativeptr->getCallbackArgument());
         return Serializable::GetManagedValueGeneric<Object^>( valptr );
       }
 

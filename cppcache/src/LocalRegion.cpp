@@ -138,25 +138,25 @@ CacheStatisticsPtr LocalRegion::getStatistics() const {
   return m_cacheStatistics;
 }
 
-void LocalRegion::invalidateRegion(const UserDataPtr& aCallbackArgument) {
+void LocalRegion::invalidateRegion(const SerializablePtr& aCallbackArgument) {
   GfErrType err =
       invalidateRegionNoThrow(aCallbackArgument, CacheEventFlags::NORMAL);
   GfErrTypeToException("Region::invalidateRegion", err);
 }
 
-void LocalRegion::localInvalidateRegion(const UserDataPtr& aCallbackArgument) {
+void LocalRegion::localInvalidateRegion(const SerializablePtr& aCallbackArgument) {
   GfErrType err =
       invalidateRegionNoThrow(aCallbackArgument, CacheEventFlags::LOCAL);
   GfErrTypeToException("Region::localInvalidateRegion", err);
 }
 
-void LocalRegion::destroyRegion(const UserDataPtr& aCallbackArgument) {
+void LocalRegion::destroyRegion(const SerializablePtr& aCallbackArgument) {
   GfErrType err =
       destroyRegionNoThrow(aCallbackArgument, true, CacheEventFlags::NORMAL);
   GfErrTypeToException("Region::destroyRegion", err);
 }
 
-void LocalRegion::localDestroyRegion(const UserDataPtr& aCallbackArgument) {
+void LocalRegion::localDestroyRegion(const SerializablePtr& aCallbackArgument) {
   GfErrType err =
       destroyRegionNoThrow(aCallbackArgument, true, CacheEventFlags::LOCAL);
   GfErrTypeToException("Region::localDestroyRegion", err);
@@ -309,7 +309,7 @@ void LocalRegion::getEntry(const CacheableKeyPtr& key, CacheablePtr& valuePtr) {
 }
 
 CacheablePtr LocalRegion::get(const CacheableKeyPtr& key,
-                              const UserDataPtr& aCallbackArgument) {
+                              const SerializablePtr& aCallbackArgument) {
   CacheablePtr rptr;
   int64_t sampleStartNanos = startStatOpTime();
   GfErrType err = getNoThrow(key, rptr, aCallbackArgument);
@@ -324,7 +324,7 @@ CacheablePtr LocalRegion::get(const CacheableKeyPtr& key,
 }
 
 void LocalRegion::put(const CacheableKeyPtr& key, const CacheablePtr& value,
-                      const UserDataPtr& aCallbackArgument) {
+                      const SerializablePtr& aCallbackArgument) {
   CacheablePtr oldValue;
   int64_t sampleStartNanos = startStatOpTime();
   VersionTagPtr versionTag;
@@ -338,7 +338,7 @@ void LocalRegion::put(const CacheableKeyPtr& key, const CacheablePtr& value,
 
 void LocalRegion::localPut(const CacheableKeyPtr& key,
                            const CacheablePtr& value,
-                           const UserDataPtr& aCallbackArgument) {
+                           const SerializablePtr& aCallbackArgument) {
   CacheablePtr oldValue;
   VersionTagPtr versionTag;
   GfErrType err = putNoThrow(key, value, aCallbackArgument, oldValue, -1,
@@ -347,7 +347,7 @@ void LocalRegion::localPut(const CacheableKeyPtr& key,
 }
 
 void LocalRegion::putAll(const HashMapOfCacheable& map, uint32_t timeout,
-                         const UserDataPtr& aCallbackArgument) {
+                         const SerializablePtr& aCallbackArgument) {
   if ((timeout * 1000) >= 0x7fffffff) {
     throw IllegalArgumentException(
         "Region::putAll: timeout parameter "
@@ -362,7 +362,7 @@ void LocalRegion::putAll(const HashMapOfCacheable& map, uint32_t timeout,
 }
 
 void LocalRegion::removeAll(const VectorOfCacheableKey& keys,
-                            const UserDataPtr& aCallbackArgument) {
+                            const SerializablePtr& aCallbackArgument) {
   if (keys.size() == 0) {
     throw IllegalArgumentException("Region::removeAll: zero keys provided");
   }
@@ -374,7 +374,7 @@ void LocalRegion::removeAll(const VectorOfCacheableKey& keys,
 }
 
 void LocalRegion::create(const CacheableKeyPtr& key, const CacheablePtr& value,
-                         const UserDataPtr& aCallbackArgument) {
+                         const SerializablePtr& aCallbackArgument) {
   VersionTagPtr versionTag;
   GfErrType err = createNoThrow(key, value, aCallbackArgument, -1,
                                 CacheEventFlags::NORMAL, versionTag);
@@ -384,7 +384,7 @@ void LocalRegion::create(const CacheableKeyPtr& key, const CacheablePtr& value,
 
 void LocalRegion::localCreate(const CacheableKeyPtr& key,
                               const CacheablePtr& value,
-                              const UserDataPtr& aCallbackArgument) {
+                              const SerializablePtr& aCallbackArgument) {
   VersionTagPtr versionTag;
   GfErrType err = createNoThrow(key, value, aCallbackArgument, -1,
                                 CacheEventFlags::LOCAL, versionTag);
@@ -392,7 +392,7 @@ void LocalRegion::localCreate(const CacheableKeyPtr& key,
 }
 
 void LocalRegion::invalidate(const CacheableKeyPtr& key,
-                             const UserDataPtr& aCallbackArgument) {
+                             const SerializablePtr& aCallbackArgument) {
   VersionTagPtr versionTag;
   GfErrType err = invalidateNoThrow(key, aCallbackArgument, -1,
                                     CacheEventFlags::NORMAL, versionTag);
@@ -401,7 +401,7 @@ void LocalRegion::invalidate(const CacheableKeyPtr& key,
 }
 
 void LocalRegion::localInvalidate(const CacheableKeyPtr& keyPtr,
-                                  const UserDataPtr& aCallbackArgument) {
+                                  const SerializablePtr& aCallbackArgument) {
   VersionTagPtr versionTag;
   GfErrType err = invalidateNoThrow(keyPtr, aCallbackArgument, -1,
                                     CacheEventFlags::LOCAL, versionTag);
@@ -409,7 +409,7 @@ void LocalRegion::localInvalidate(const CacheableKeyPtr& keyPtr,
 }
 
 void LocalRegion::destroy(const CacheableKeyPtr& key,
-                          const UserDataPtr& aCallbackArgument) {
+                          const SerializablePtr& aCallbackArgument) {
   VersionTagPtr versionTag;
 
   GfErrType err = destroyNoThrow(key, aCallbackArgument, -1,
@@ -419,7 +419,7 @@ void LocalRegion::destroy(const CacheableKeyPtr& key,
 }
 
 void LocalRegion::localDestroy(const CacheableKeyPtr& key,
-                               const UserDataPtr& aCallbackArgument) {
+                               const SerializablePtr& aCallbackArgument) {
   VersionTagPtr versionTag;
   GfErrType err = destroyNoThrow(key, aCallbackArgument, -1,
                                  CacheEventFlags::LOCAL, versionTag);
@@ -427,7 +427,7 @@ void LocalRegion::localDestroy(const CacheableKeyPtr& key,
 }
 
 bool LocalRegion::remove(const CacheableKeyPtr& key, const CacheablePtr& value,
-                         const UserDataPtr& aCallbackArgument) {
+                         const SerializablePtr& aCallbackArgument) {
   VersionTagPtr versionTag;
   GfErrType err = removeNoThrow(key, value, aCallbackArgument, -1,
                                 CacheEventFlags::NORMAL, versionTag);
@@ -444,7 +444,7 @@ bool LocalRegion::remove(const CacheableKeyPtr& key, const CacheablePtr& value,
 }
 
 bool LocalRegion::removeEx(const CacheableKeyPtr& key,
-                           const UserDataPtr& aCallbackArgument) {
+                           const SerializablePtr& aCallbackArgument) {
   VersionTagPtr versionTag;
   GfErrType err = removeNoThrowEx(key, aCallbackArgument, -1,
                                   CacheEventFlags::NORMAL, versionTag);
@@ -461,7 +461,7 @@ bool LocalRegion::removeEx(const CacheableKeyPtr& key,
 
 bool LocalRegion::localRemove(const CacheableKeyPtr& key,
                               const CacheablePtr& value,
-                              const UserDataPtr& aCallbackArgument) {
+                              const SerializablePtr& aCallbackArgument) {
   VersionTagPtr versionTag;
   GfErrType err = removeNoThrow(key, value, aCallbackArgument, -1,
                                 CacheEventFlags::LOCAL, versionTag);
@@ -478,7 +478,7 @@ bool LocalRegion::localRemove(const CacheableKeyPtr& key,
 }
 
 bool LocalRegion::localRemoveEx(const CacheableKeyPtr& key,
-                                const UserDataPtr& aCallbackArgument) {
+                                const SerializablePtr& aCallbackArgument) {
   VersionTagPtr versionTag;
   GfErrType err = removeNoThrowEx(key, aCallbackArgument, -1,
                                   CacheEventFlags::LOCAL, versionTag);
@@ -528,7 +528,7 @@ void LocalRegion::entries(VectorOfRegionEntry& me, bool recursive) {
 void LocalRegion::getAll(const VectorOfCacheableKey& keys,
                          HashMapOfCacheablePtr values,
                          HashMapOfExceptionPtr exceptions, bool addToLocalCache,
-                         const UserDataPtr& aCallbackArgument) {
+                         const SerializablePtr& aCallbackArgument) {
   if (keys.size() == 0) {
     throw IllegalArgumentException("Region::getAll: zero keys provided");
   }
@@ -787,7 +787,7 @@ void LocalRegion::subregions_internal(const bool recursive,
 
 GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
                                   CacheablePtr& value,
-                                  const UserDataPtr& aCallbackArgument) {
+                                  const SerializablePtr& aCallbackArgument) {
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
   GfErrType err = GF_NOERR;
 
@@ -967,7 +967,7 @@ GfErrType LocalRegion::getAllNoThrow(const VectorOfCacheableKey& keys,
                                      const HashMapOfCacheablePtr& values,
                                      const HashMapOfExceptionPtr& exceptions,
                                      bool addToLocalCache,
-                                     const UserDataPtr& aCallbackArgument) {
+                                     const SerializablePtr& aCallbackArgument) {
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
   GfErrType err = GF_NOERR;
   CacheablePtr value;
@@ -1087,7 +1087,7 @@ class PutActions {
 
   inline GfErrType remoteUpdate(const CacheableKeyPtr& key,
                                 const CacheablePtr& value,
-                                const UserDataPtr& aCallbackArgument,
+                                const SerializablePtr& aCallbackArgument,
                                 VersionTagPtr& versionTag) {
     //    	if(m_txState != nullptr && !m_txState->isReplay())
     //    	{
@@ -1172,7 +1172,7 @@ class CreateActions {
 
   inline GfErrType remoteUpdate(const CacheableKeyPtr& key,
                                 const CacheablePtr& value,
-                                const UserDataPtr& aCallbackArgument,
+                                const SerializablePtr& aCallbackArgument,
                                 VersionTagPtr& versionTag) {
     // propagate the create to remote server, if any
     //  	  if(m_txState != nullptr && !m_txState->isReplay())
@@ -1244,7 +1244,7 @@ class DestroyActions {
 
   inline GfErrType remoteUpdate(const CacheableKeyPtr& key,
                                 const CacheablePtr& value,
-                                const UserDataPtr& aCallbackArgument,
+                                const SerializablePtr& aCallbackArgument,
                                 VersionTagPtr& versionTag) {
     // propagate the destroy to remote server, if any
     //    	if(m_txState != nullptr && !m_txState->isReplay())
@@ -1364,7 +1364,7 @@ class RemoveActions {
 
   inline GfErrType remoteUpdate(const CacheableKeyPtr& key,
                                 const CacheablePtr& value,
-                                const UserDataPtr& aCallbackArgument,
+                                const SerializablePtr& aCallbackArgument,
                                 VersionTagPtr& versionTag) {
     // propagate the remove to remote server, if any
     CacheablePtr valuePtr;
@@ -1590,7 +1590,7 @@ class InvalidateActions {
 
   inline GfErrType remoteUpdate(const CacheableKeyPtr& key,
                                 const CacheablePtr& value,
-                                const UserDataPtr& aCallbackArgument,
+                                const SerializablePtr& aCallbackArgument,
                                 VersionTagPtr& versionTag) {
     //    	if(m_txState != nullptr && !m_txState->isReplay())
     //    	{
@@ -1622,7 +1622,7 @@ class InvalidateActions {
 template <typename TAction>
 GfErrType LocalRegion::updateNoThrow(const CacheableKeyPtr& key,
                                      const CacheablePtr& value,
-                                     const UserDataPtr& aCallbackArgument,
+                                     const SerializablePtr& aCallbackArgument,
                                      CacheablePtr& oldValue, int updateCount,
                                      const CacheEventFlags eventFlags,
                                      VersionTagPtr versionTag, DataInput* delta,
@@ -1764,7 +1764,7 @@ GfErrType LocalRegion::updateNoThrow(const CacheableKeyPtr& key,
 template <typename TAction>
 GfErrType LocalRegion::updateNoThrowTX(const CacheableKeyPtr& key,
                                        const CacheablePtr& value,
-                                       const UserDataPtr& aCallbackArgument,
+                                       const SerializablePtr& aCallbackArgument,
                                        CacheablePtr& oldValue, int updateCount,
                                        const CacheEventFlags eventFlags,
                                        VersionTagPtr versionTag,
@@ -1820,7 +1820,7 @@ GfErrType LocalRegion::updateNoThrowTX(const CacheableKeyPtr& key,
 
 GfErrType LocalRegion::putNoThrow(const CacheableKeyPtr& key,
                                   const CacheablePtr& value,
-                                  const UserDataPtr& aCallbackArgument,
+                                  const SerializablePtr& aCallbackArgument,
                                   CacheablePtr& oldValue, int updateCount,
                                   const CacheEventFlags eventFlags,
                                   VersionTagPtr versionTag, DataInput* delta,
@@ -1832,7 +1832,7 @@ GfErrType LocalRegion::putNoThrow(const CacheableKeyPtr& key,
 
 GfErrType LocalRegion::putNoThrowTX(const CacheableKeyPtr& key,
                                     const CacheablePtr& value,
-                                    const UserDataPtr& aCallbackArgument,
+                                    const SerializablePtr& aCallbackArgument,
                                     CacheablePtr& oldValue, int updateCount,
                                     const CacheEventFlags eventFlags,
                                     VersionTagPtr versionTag, DataInput* delta,
@@ -1844,7 +1844,7 @@ GfErrType LocalRegion::putNoThrowTX(const CacheableKeyPtr& key,
 
 GfErrType LocalRegion::createNoThrow(const CacheableKeyPtr& key,
                                      const CacheablePtr& value,
-                                     const UserDataPtr& aCallbackArgument,
+                                     const SerializablePtr& aCallbackArgument,
                                      int updateCount,
                                      const CacheEventFlags eventFlags,
                                      VersionTagPtr versionTag) {
@@ -1854,7 +1854,7 @@ GfErrType LocalRegion::createNoThrow(const CacheableKeyPtr& key,
 }
 
 GfErrType LocalRegion::destroyNoThrow(const CacheableKeyPtr& key,
-                                      const UserDataPtr& aCallbackArgument,
+                                      const SerializablePtr& aCallbackArgument,
                                       int updateCount,
                                       const CacheEventFlags eventFlags,
                                       VersionTagPtr versionTag) {
@@ -1865,7 +1865,7 @@ GfErrType LocalRegion::destroyNoThrow(const CacheableKeyPtr& key,
 }
 
 GfErrType LocalRegion::destroyNoThrowTX(const CacheableKeyPtr& key,
-                                        const UserDataPtr& aCallbackArgument,
+                                        const SerializablePtr& aCallbackArgument,
                                         int updateCount,
                                         const CacheEventFlags eventFlags,
                                         VersionTagPtr versionTag) {
@@ -1877,7 +1877,7 @@ GfErrType LocalRegion::destroyNoThrowTX(const CacheableKeyPtr& key,
 
 GfErrType LocalRegion::removeNoThrow(const CacheableKeyPtr& key,
                                      const CacheablePtr& value,
-                                     const UserDataPtr& aCallbackArgument,
+                                     const SerializablePtr& aCallbackArgument,
                                      int updateCount,
                                      const CacheEventFlags eventFlags,
                                      VersionTagPtr versionTag) {
@@ -1887,7 +1887,7 @@ GfErrType LocalRegion::removeNoThrow(const CacheableKeyPtr& key,
 }
 
 GfErrType LocalRegion::removeNoThrowEx(const CacheableKeyPtr& key,
-                                       const UserDataPtr& aCallbackArgument,
+                                       const SerializablePtr& aCallbackArgument,
                                        int updateCount,
                                        const CacheEventFlags eventFlags,
                                        VersionTagPtr versionTag) {
@@ -1898,7 +1898,7 @@ GfErrType LocalRegion::removeNoThrowEx(const CacheableKeyPtr& key,
 }
 
 GfErrType LocalRegion::invalidateNoThrow(const CacheableKeyPtr& key,
-                                         const UserDataPtr& aCallbackArgument,
+                                         const SerializablePtr& aCallbackArgument,
                                          int updateCount,
                                          const CacheEventFlags eventFlags,
                                          VersionTagPtr versionTag) {
@@ -1909,7 +1909,7 @@ GfErrType LocalRegion::invalidateNoThrow(const CacheableKeyPtr& key,
 }
 
 GfErrType LocalRegion::invalidateNoThrowTX(const CacheableKeyPtr& key,
-                                           const UserDataPtr& aCallbackArgument,
+                                           const SerializablePtr& aCallbackArgument,
                                            int updateCount,
                                            const CacheEventFlags eventFlags,
                                            VersionTagPtr versionTag) {
@@ -1921,7 +1921,7 @@ GfErrType LocalRegion::invalidateNoThrowTX(const CacheableKeyPtr& key,
 
 GfErrType LocalRegion::putAllNoThrow(const HashMapOfCacheable& map,
                                      uint32_t timeout,
-                                     const UserDataPtr& aCallbackArgument) {
+                                     const SerializablePtr& aCallbackArgument) {
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
   GfErrType err = GF_NOERR;
   // VersionTagPtr versionTag;
@@ -2097,7 +2097,7 @@ GfErrType LocalRegion::putAllNoThrow(const HashMapOfCacheable& map,
 }
 
 GfErrType LocalRegion::removeAllNoThrow(const VectorOfCacheableKey& keys,
-                                        const UserDataPtr& aCallbackArgument) {
+                                        const SerializablePtr& aCallbackArgument) {
   // 1. check destroy pending
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
   GfErrType err = GF_NOERR;
@@ -2179,18 +2179,18 @@ GfErrType LocalRegion::removeAllNoThrow(const VectorOfCacheableKey& keys,
   return err;
 }
 
-void LocalRegion::clear(const UserDataPtr& aCallbackArgument) {
+void LocalRegion::clear(const SerializablePtr& aCallbackArgument) {
   /*update the stats */
   int64_t sampleStartNanos = startStatOpTime();
   localClear(aCallbackArgument);
   updateStatOpTime(m_regionStats->getStat(), m_regionStats->getClearsId(),
                    sampleStartNanos);
 }
-void LocalRegion::localClear(const UserDataPtr& aCallbackArgument) {
+void LocalRegion::localClear(const SerializablePtr& aCallbackArgument) {
   GfErrType err = localClearNoThrow(aCallbackArgument, CacheEventFlags::LOCAL);
   if (err != GF_NOERR) GfErrTypeToException("LocalRegion::localClear", err);
 }
-GfErrType LocalRegion::localClearNoThrow(const UserDataPtr& aCallbackArgument,
+GfErrType LocalRegion::localClearNoThrow(const SerializablePtr& aCallbackArgument,
                                          const CacheEventFlags eventFlags) {
   bool cachingEnabled = m_regionAttributes->getCachingEnabled();
   /*Update the stats for clear*/
@@ -2278,7 +2278,7 @@ GfErrType LocalRegion::invalidateLocal(const char* name,
 }
 
 GfErrType LocalRegion::invalidateRegionNoThrow(
-    const UserDataPtr& aCallbackArgument, const CacheEventFlags eventFlags) {
+    const SerializablePtr& aCallbackArgument, const CacheEventFlags eventFlags) {
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
   GfErrType err = GF_NOERR;
 
@@ -2330,7 +2330,7 @@ GfErrType LocalRegion::invalidateRegionNoThrow(
 }
 
 GfErrType LocalRegion::destroyRegionNoThrow(
-    const UserDataPtr& aCallbackArgument, bool removeFromParent,
+    const SerializablePtr& aCallbackArgument, bool removeFromParent,
     const CacheEventFlags eventFlags) {
   // Get global locks to synchronize with failover thread.
   // TODO:  This should go into RegionGlobalLocks
@@ -2553,7 +2553,7 @@ int LocalRegion::removeRegion(const std::string& name) {
 
 bool LocalRegion::invokeCacheWriterForEntryEvent(
     const CacheableKeyPtr& key, CacheablePtr& oldValue,
-    const CacheablePtr& newValue, const UserDataPtr& aCallbackArgument,
+    const CacheablePtr& newValue, const SerializablePtr& aCallbackArgument,
     CacheEventFlags eventFlags, EntryEventType type) {
   // Check if we have a local cache writer. If so, invoke and return.
   bool bCacheWriterReturn = true;
@@ -2613,7 +2613,7 @@ bool LocalRegion::invokeCacheWriterForEntryEvent(
 }
 
 bool LocalRegion::invokeCacheWriterForRegionEvent(
-    const UserDataPtr& aCallbackArgument, CacheEventFlags eventFlags,
+    const SerializablePtr& aCallbackArgument, CacheEventFlags eventFlags,
     RegionEventType type) {
   // Check if we have a local cache writer. If so, invoke and return.
   bool bCacheWriterReturn = true;
@@ -2661,7 +2661,7 @@ bool LocalRegion::invokeCacheWriterForRegionEvent(
 
 GfErrType LocalRegion::invokeCacheListenerForEntryEvent(
     const CacheableKeyPtr& key, CacheablePtr& oldValue,
-    const CacheablePtr& newValue, const UserDataPtr& aCallbackArgument,
+    const CacheablePtr& newValue, const SerializablePtr& aCallbackArgument,
     CacheEventFlags eventFlags, EntryEventType type, bool isLocal) {
   GfErrType err = GF_NOERR;
 
@@ -2731,7 +2731,7 @@ GfErrType LocalRegion::invokeCacheListenerForEntryEvent(
 }
 
 GfErrType LocalRegion::invokeCacheListenerForRegionEvent(
-    const UserDataPtr& aCallbackArgument, CacheEventFlags eventFlags,
+    const SerializablePtr& aCallbackArgument, CacheEventFlags eventFlags,
     RegionEventType type) {
   GfErrType err = GF_NOERR;
 
@@ -2995,14 +2995,14 @@ GfErrType LocalRegion::unregisterKeysBeforeDestroyRegion() { return GF_NOERR; }
 
 GfErrType LocalRegion::getNoThrow_remote(const CacheableKeyPtr& keyPtr,
                                          CacheablePtr& valPtr,
-                                         const UserDataPtr& aCallbackArgument,
+                                         const SerializablePtr& aCallbackArgument,
                                          VersionTagPtr& versionTag) {
   return GF_NOERR;
 }
 
 GfErrType LocalRegion::putNoThrow_remote(const CacheableKeyPtr& keyPtr,
                                          const CacheablePtr& cvalue,
-                                         const UserDataPtr& aCallbackArgument,
+                                         const SerializablePtr& aCallbackArgument,
                                          VersionTagPtr& versionTag,
                                          bool checkDelta) {
   return GF_NOERR;
@@ -3011,43 +3011,43 @@ GfErrType LocalRegion::putNoThrow_remote(const CacheableKeyPtr& keyPtr,
 GfErrType LocalRegion::putAllNoThrow_remote(
     const HashMapOfCacheable& map,
     VersionedCacheableObjectPartListPtr& putAllResponse, uint32_t timeout,
-    const UserDataPtr& aCallbackArgument) {
+    const SerializablePtr& aCallbackArgument) {
   return GF_NOERR;
 }
 
 GfErrType LocalRegion::removeAllNoThrow_remote(
     const VectorOfCacheableKey& keys,
     VersionedCacheableObjectPartListPtr& versionedObjPartList,
-    const UserDataPtr& aCallbackArgument) {
+    const SerializablePtr& aCallbackArgument) {
   return GF_NOERR;
 }
 
 GfErrType LocalRegion::createNoThrow_remote(
     const CacheableKeyPtr& keyPtr, const CacheablePtr& cvalue,
-    const UserDataPtr& aCallbackArgument, VersionTagPtr& versionTag) {
+    const SerializablePtr& aCallbackArgument, VersionTagPtr& versionTag) {
   return GF_NOERR;
 }
 
 GfErrType LocalRegion::destroyNoThrow_remote(
-    const CacheableKeyPtr& keyPtr, const UserDataPtr& aCallbackArgument,
+    const CacheableKeyPtr& keyPtr, const SerializablePtr& aCallbackArgument,
     VersionTagPtr& versionTag) {
   return GF_NOERR;
 }
 
 GfErrType LocalRegion::removeNoThrow_remote(
     const CacheableKeyPtr& keyPtr, const CacheablePtr& cvalue,
-    const UserDataPtr& aCallbackArgument, VersionTagPtr& versionTag) {
+    const SerializablePtr& aCallbackArgument, VersionTagPtr& versionTag) {
   return GF_NOERR;
 }
 
 GfErrType LocalRegion::removeNoThrowEX_remote(
-    const CacheableKeyPtr& keyPtr, const UserDataPtr& aCallbackArgument,
+    const CacheableKeyPtr& keyPtr, const SerializablePtr& aCallbackArgument,
     VersionTagPtr& versionTag) {
   return GF_NOERR;
 }
 
 GfErrType LocalRegion::invalidateNoThrow_remote(
-    const CacheableKeyPtr& keyPtr, const UserDataPtr& aCallbackArgument,
+    const CacheableKeyPtr& keyPtr, const SerializablePtr& aCallbackArgument,
     VersionTagPtr& versionTag) {
   return GF_NOERR;
 }
@@ -3056,17 +3056,17 @@ GfErrType LocalRegion::getAllNoThrow_remote(
     const VectorOfCacheableKey* keys, const HashMapOfCacheablePtr& values,
     const HashMapOfExceptionPtr& exceptions,
     const VectorOfCacheableKeyPtr& resultKeys, bool addToLocalCache,
-    const UserDataPtr& aCallbackArgument) {
+    const SerializablePtr& aCallbackArgument) {
   return GF_NOERR;
 }
 
 GfErrType LocalRegion::invalidateRegionNoThrow_remote(
-    const UserDataPtr& aCallbackArgument) {
+    const SerializablePtr& aCallbackArgument) {
   return GF_NOERR;
 }
 
 GfErrType LocalRegion::destroyRegionNoThrow_remote(
-    const UserDataPtr& aCallbackArgument) {
+    const SerializablePtr& aCallbackArgument) {
   return GF_NOERR;
 }
 

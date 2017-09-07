@@ -41,7 +41,7 @@ namespace Apache
       {
       public:
         apache::geode::client::CacheablePtr load( const apache::geode::client::RegionPtr& region,
-          const apache::geode::client::CacheableKeyPtr& key, const apache::geode::client::UserDataPtr& helper );
+          const apache::geode::client::CacheableKeyPtr& key, const apache::geode::client::SerializablePtr& helper );
 
         void close( const apache::geode::client::RegionPtr& region );
       };
@@ -61,7 +61,7 @@ namespace Apache
           }
 
           virtual apache::geode::client::CacheablePtr load( const apache::geode::client::RegionPtr& region,
-            const apache::geode::client::CacheableKeyPtr& key, const apache::geode::client::UserDataPtr& helper )
+            const apache::geode::client::CacheableKeyPtr& key, const apache::geode::client::SerializablePtr& helper )
           {
             IRegion<TKey, TValue>^ gregion = Region<TKey, TValue>::Create(region);
 

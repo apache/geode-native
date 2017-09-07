@@ -23,7 +23,7 @@ namespace client {
 EntryEvent::EntryEvent(const RegionPtr& region, const CacheableKeyPtr& key,
                        const CacheablePtr& oldValue,
                        const CacheablePtr& newValue,
-                       const UserDataPtr& aCallbackArgument,
+                       const SerializablePtr& aCallbackArgument,
                        const bool remoteOrigin)
     : m_region(region),
       m_key(key),

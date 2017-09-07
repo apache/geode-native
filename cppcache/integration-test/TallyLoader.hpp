@@ -42,7 +42,7 @@ class TallyLoader : virtual public CacheLoader {
   virtual ~TallyLoader() {}
 
   CacheablePtr load(const RegionPtr& rp, const CacheableKeyPtr& key,
-                    const UserDataPtr& aCallbackArgument) {
+                    const SerializablePtr& aCallbackArgument) {
     LOGDEBUG("TallyLoader::load invoked for %d.", m_loads);
     char buf[1024];
     sprintf(buf, "TallyLoader state: (loads = %d)", m_loads);

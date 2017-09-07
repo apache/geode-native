@@ -130,7 +130,7 @@ class ClientMetadataService : public ACE_Task_Base,
 
   void getBucketServerLocation(
       const RegionPtr& region, const CacheableKeyPtr& key,
-      const CacheablePtr& value, const UserDataPtr& aCallbackArgument,
+      const CacheablePtr& value, const SerializablePtr& aCallbackArgument,
       bool isPrimary, BucketServerLocationPtr& serverLocation, int8_t& version);
 
   void removeBucketServerLocation(BucketServerLocation serverLocation);
@@ -154,12 +154,12 @@ class ClientMetadataService : public ACE_Task_Base,
 
   void markPrimaryBucketForTimeout(
       const RegionPtr& region, const CacheableKeyPtr& key,
-      const CacheablePtr& value, const UserDataPtr& aCallbackArgument,
+      const CacheablePtr& value, const SerializablePtr& aCallbackArgument,
       bool isPrimary, BucketServerLocationPtr& serverLocation, int8_t& version);
 
   void markPrimaryBucketForTimeoutButLookSecondaryBucket(
       const RegionPtr& region, const CacheableKeyPtr& key,
-      const CacheablePtr& value, const UserDataPtr& aCallbackArgument,
+      const CacheablePtr& value, const SerializablePtr& aCallbackArgument,
       bool isPrimary, BucketServerLocationPtr& serverLocation, int8_t& version);
 
   bool isBucketMarkedForTimeout(const char* regionFullPath, int32_t bucketid);
@@ -206,7 +206,7 @@ class ClientMetadataService : public ACE_Task_Base,
  private:
   // const PartitionResolverPtr& getResolver(const RegionPtr& region, const
   // CacheableKeyPtr& key,
-  // const UserDataPtr& aCallbackArgument);
+  // const SerializablePtr& aCallbackArgument);
 
   // BucketServerLocation getServerLocation(ClientMetadataPtr cptr, int
   // bucketId, bool isPrimary);

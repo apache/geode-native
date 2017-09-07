@@ -27,7 +27,6 @@
 #include <geode/CacheStatistics.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/CacheableString.hpp>
-#include <geode/UserData.hpp>
 #include <geode/CacheableBuiltins.hpp>
 
 /**
@@ -113,7 +112,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * This operation is not distributed.
    */
   virtual void invalidateRegion(
-      const UserDataPtr& aCallbackArgument = nullptr) {
+      const SerializablePtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.invalidateRegion()");
   }
 
@@ -137,7 +136,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
 
   */
   virtual void localInvalidateRegion(
-      const UserDataPtr& aCallbackArgument = nullptr) {
+      const SerializablePtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.localInvalidateRegion()");
   }
 
@@ -174,7 +173,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws TimeoutException if operation timed out
    * @see  invalidateRegion
    */
-  virtual void destroyRegion(const UserDataPtr& aCallbackArgument = nullptr) {
+  virtual void destroyRegion(const SerializablePtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->destroyRegion(aCallbackArgument);
   }
@@ -187,7 +186,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheListener#afterRegionClear
    * @see CacheWriter#beforeRegionClear
    */
-  virtual void clear(const UserDataPtr& aCallbackArgument = nullptr) {
+  virtual void clear(const SerializablePtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->clear(aCallbackArgument);
   }
@@ -199,7 +198,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheListener#afterRegionClear
    * @see CacheWriter#beforeRegionClear
    */
-  virtual void localClear(const UserDataPtr& aCallbackArgument = nullptr) {
+  virtual void localClear(const SerializablePtr& aCallbackArgument = nullptr) {
     unSupportedOperation("localClear()");
   }
 
@@ -223,7 +222,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see  localInvalidateRegion
    */
   virtual void localDestroyRegion(
-      const UserDataPtr& aCallbackArgument = nullptr) {
+      const SerializablePtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.localDestroyRegion()");
   }
 
@@ -326,7 +325,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    *region
    **/
   virtual CacheablePtr get(const CacheableKeyPtr& key,
-                           const UserDataPtr& aCallbackArgument = nullptr) {
+                           const SerializablePtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->get(key, aCallbackArgument);
   }
@@ -334,7 +333,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline CacheablePtr get(const KEYTYPE& key,
-                          const UserDataPtr& callbackArg = nullptr) {
+                          const SerializablePtr& callbackArg = nullptr) {
     return get(createKey(key), callbackArg);
   }
 
@@ -381,7 +380,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws OutOfMemoryException if  not enoough memory for the value
    */
   virtual void put(const CacheableKeyPtr& key, const CacheablePtr& value,
-                   const UserDataPtr& aCallbackArgument = nullptr) {
+                   const SerializablePtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->put(key, value, aCallbackArgument);
   }
@@ -389,21 +388,21 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void put(const KEYTYPE& key, const VALUETYPE& value,
-                  const UserDataPtr& arg = nullptr) {
+                  const SerializablePtr& arg = nullptr) {
     put(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void put(const KEYTYPE& key, const CacheablePtr& value,
-                  const UserDataPtr& arg = nullptr) {
+                  const SerializablePtr& arg = nullptr) {
     put(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline void put(const CacheableKeyPtr& key, const VALUETYPE& value,
-                  const UserDataPtr& arg = nullptr) {
+                  const SerializablePtr& arg = nullptr) {
     put(key, createValue(value), arg);
   }
 
@@ -430,7 +429,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    */
   virtual void putAll(const HashMapOfCacheable& map,
                       uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-                      const UserDataPtr& aCallbackArgument = nullptr) {
+                      const SerializablePtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->putAll(map, timeout, aCallbackArgument);
   }
@@ -460,28 +459,28 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws OutOfMemoryException if not enoough memory for the value
    */
   virtual void localPut(const CacheableKeyPtr& key, const CacheablePtr& value,
-                        const UserDataPtr& aCallbackArgument = nullptr) {
+                        const SerializablePtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.localPut()");
   }
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void localPut(const KEYTYPE& key, const VALUETYPE& value,
-                       const UserDataPtr& arg = nullptr) {
+                       const SerializablePtr& arg = nullptr) {
     localPut(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localPut(const KEYTYPE& key, const CacheablePtr& value,
-                       const UserDataPtr& arg = nullptr) {
+                       const SerializablePtr& arg = nullptr) {
     localPut(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline void localPut(const CacheableKeyPtr& key, const VALUETYPE& value,
-                       const UserDataPtr& arg = nullptr) {
+                       const SerializablePtr& arg = nullptr) {
     localPut(key, createValue(value), arg);
   }
 
@@ -529,7 +528,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws EntryExistsException if an entry with this key already exists
    */
   virtual void create(const CacheableKeyPtr& key, const CacheablePtr& value,
-                      const UserDataPtr& aCallbackArgument = nullptr) {
+                      const SerializablePtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->create(key, value, aCallbackArgument);
   }
@@ -537,21 +536,21 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void create(const KEYTYPE& key, const VALUETYPE& value,
-                     const UserDataPtr& arg = nullptr) {
+                     const SerializablePtr& arg = nullptr) {
     create(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void create(const KEYTYPE& key, const CacheablePtr& value,
-                     const UserDataPtr& arg = nullptr) {
+                     const SerializablePtr& arg = nullptr) {
     create(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline void create(const CacheableKeyPtr& key, const VALUETYPE& value,
-                     const UserDataPtr& arg = nullptr) {
+                     const SerializablePtr& arg = nullptr) {
     create(key, createValue(value), arg);
   }
 
@@ -582,28 +581,28 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    */
   virtual void localCreate(const CacheableKeyPtr& key,
                            const CacheablePtr& value,
-                           const UserDataPtr& aCallbackArgument = nullptr) {
+                           const SerializablePtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.localCreate()");
   }
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void localCreate(const KEYTYPE& key, const VALUETYPE& value,
-                          const UserDataPtr& arg = nullptr) {
+                          const SerializablePtr& arg = nullptr) {
     localCreate(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localCreate(const KEYTYPE& key, const CacheablePtr& value,
-                          const UserDataPtr& arg = nullptr) {
+                          const SerializablePtr& arg = nullptr) {
     localCreate(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline void localCreate(const CacheableKeyPtr& key, const VALUETYPE& value,
-                          const UserDataPtr& arg = nullptr) {
+                          const SerializablePtr& arg = nullptr) {
     localCreate(key, createValue(value), arg);
   }
 
@@ -630,14 +629,14 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheListener::afterInvalidate
    */
   virtual void invalidate(const CacheableKeyPtr& key,
-                          const UserDataPtr& aCallbackArgument = nullptr) {
+                          const SerializablePtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->invalidate(key, aCallbackArgument);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline void invalidate(const KEYTYPE& key, const UserDataPtr& arg = nullptr) {
+  inline void invalidate(const KEYTYPE& key, const SerializablePtr& arg = nullptr) {
     invalidate(createKey(key), arg);
   }
 
@@ -662,14 +661,14 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheListener::afterInvalidate
    */
   virtual void localInvalidate(const CacheableKeyPtr& key,
-                               const UserDataPtr& aCallbackArgument = nullptr) {
+                               const SerializablePtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.localInvalidate()");
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localInvalidate(const KEYTYPE& key,
-                              const UserDataPtr& arg = nullptr) {
+                              const SerializablePtr& arg = nullptr) {
     localInvalidate(createKey(key), arg);
   }
 
@@ -716,14 +715,14 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheWriter::beforeDestroy
    */
   virtual void destroy(const CacheableKeyPtr& key,
-                       const UserDataPtr& aCallbackArgument = nullptr) {
+                       const SerializablePtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->destroy(key, aCallbackArgument);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline void destroy(const KEYTYPE& key, const UserDataPtr& arg = nullptr) {
+  inline void destroy(const KEYTYPE& key, const SerializablePtr& arg = nullptr) {
     destroy(createKey(key), arg);
   }
 
@@ -752,14 +751,14 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheWriter::beforeDestroy
    */
   virtual void localDestroy(const CacheableKeyPtr& key,
-                            const UserDataPtr& aCallbackArgument = nullptr) {
+                            const SerializablePtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.localDestroy()");
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localDestroy(const KEYTYPE& key,
-                           const UserDataPtr& arg = nullptr) {
+                           const SerializablePtr& arg = nullptr) {
     localDestroy(createKey(key), arg);
   }
 
@@ -812,7 +811,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheWriter::beforeDestroy
    */
   virtual bool remove(const CacheableKeyPtr& key, const CacheablePtr& value,
-                      const UserDataPtr& aCallbackArgument = nullptr) {
+                      const SerializablePtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->remove(key, value, aCallbackArgument);
   }
@@ -820,21 +819,21 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline bool remove(const KEYTYPE& key, const VALUETYPE& value,
-                     const UserDataPtr& arg = nullptr) {
+                     const SerializablePtr& arg = nullptr) {
     return remove(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline bool remove(const KEYTYPE& key, const CacheablePtr& value,
-                     const UserDataPtr& arg = nullptr) {
+                     const SerializablePtr& arg = nullptr) {
     return remove(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline bool remove(const CacheableKeyPtr& key, const VALUETYPE& value,
-                     const UserDataPtr& arg = nullptr) {
+                     const SerializablePtr& arg = nullptr) {
     return remove(key, createValue(value), arg);
   }
 
@@ -886,14 +885,14 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    */
 
   virtual bool removeEx(const CacheableKeyPtr& key,
-                        const UserDataPtr& aCallbackArgument = nullptr) {
+                        const SerializablePtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->removeEx(key, aCallbackArgument);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline bool removeEx(const KEYTYPE& key, const UserDataPtr& arg = nullptr) {
+  inline bool removeEx(const KEYTYPE& key, const SerializablePtr& arg = nullptr) {
     return removeEx(createKey(key), arg);
   }
 
@@ -926,7 +925,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    */
   virtual bool localRemove(const CacheableKeyPtr& key,
                            const CacheablePtr& value,
-                           const UserDataPtr& aCallbackArgument = nullptr) {
+                           const SerializablePtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.localRemove()");
     return false;
   }
@@ -934,21 +933,21 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline bool localRemove(const KEYTYPE& key, const VALUETYPE& value,
-                          const UserDataPtr& arg = nullptr) {
+                          const SerializablePtr& arg = nullptr) {
     return localRemove(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline bool localRemove(const KEYTYPE& key, const CacheablePtr& value,
-                          const UserDataPtr& arg = nullptr) {
+                          const SerializablePtr& arg = nullptr) {
     return localRemove(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline bool localRemove(const CacheableKeyPtr& key, const VALUETYPE& value,
-                          const UserDataPtr& arg = nullptr) {
+                          const SerializablePtr& arg = nullptr) {
     return localRemove(key, createValue(value), arg);
   }
 
@@ -978,7 +977,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheWriter::beforeDestroy
    */
   virtual bool localRemoveEx(const CacheableKeyPtr& key,
-                             const UserDataPtr& aCallbackArgument = nullptr) {
+                             const SerializablePtr& aCallbackArgument = nullptr) {
     unSupportedOperation("Region.localRemoveEx()");
     return false;
   }
@@ -986,7 +985,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline bool localRemoveEx(const KEYTYPE& key,
-                            const UserDataPtr& arg = nullptr) {
+                            const SerializablePtr& arg = nullptr) {
     return localRemoveEx(createKey(key), arg);
   }
 
@@ -1362,7 +1361,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
                       HashMapOfCacheablePtr values,
                       HashMapOfExceptionPtr exceptions,
                       bool addToLocalCache = false,
-                      const UserDataPtr& aCallbackArgument = nullptr) {
+                      const SerializablePtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->getAll(keys, values, exceptions, false /*TODO:*/,
                          aCallbackArgument);
@@ -1482,7 +1481,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see destroy
    */
   virtual void removeAll(const VectorOfCacheableKey& keys,
-                         const UserDataPtr& aCallbackArgument = nullptr) {
+                         const SerializablePtr& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->removeAll(keys, aCallbackArgument);
   }

@@ -27,7 +27,6 @@
 #include <geode/Cacheable.hpp>
 #include <geode/CacheableKey.hpp>
 #include <geode/CacheableString.hpp>
-#include <geode/UserData.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/ExceptionTypes.hpp>
@@ -231,7 +230,7 @@ class CPPCACHE_EXPORT TcrMessage {
   //  = false, bool receiveValues = true, ThinClientBaseDM *connectionDM =
   //  nullptr);
 
-  void InitializeGetallMsg(const UserDataPtr& aCallbackArgument);
+  void InitializeGetallMsg(const SerializablePtr& aCallbackArgument);
   // for multiuser cache close
 
   // Updates the early ack byte of the message to reflect that it is a retry op
@@ -646,7 +645,7 @@ class TcrMessageDestroyRegion : public TcrMessage {
  public:
   TcrMessageDestroyRegion(std::unique_ptr<DataOutput> dataOutput,
                           const Region* region,
-                          const UserDataPtr& aCallbackArgument,
+                          const SerializablePtr& aCallbackArgument,
                           int messageResponsetimeout,
                           ThinClientBaseDM* connectionDM);
 
@@ -659,7 +658,7 @@ class TcrMessageClearRegion : public TcrMessage {
  public:
   TcrMessageClearRegion(std::unique_ptr<DataOutput> dataOutput,
                         const Region* region,
-                        const UserDataPtr& aCallbackArgument,
+                        const SerializablePtr& aCallbackArgument,
                         int messageResponsetimeout,
                         ThinClientBaseDM* connectionDM);
 
@@ -705,7 +704,7 @@ class TcrMessageQueryWithParameters : public TcrMessage {
  public:
   TcrMessageQueryWithParameters(std::unique_ptr<DataOutput> dataOutput,
                                 const std::string& regionName,
-                                const UserDataPtr& aCallbackArgument,
+                                const SerializablePtr& aCallbackArgument,
                                 CacheableVectorPtr paramList,
                                 int messageResponsetimeout,
                                 ThinClientBaseDM* connectionDM);
@@ -719,7 +718,7 @@ class TcrMessageContainsKey : public TcrMessage {
  public:
   TcrMessageContainsKey(std::unique_ptr<DataOutput> dataOutput,
                         const Region* region, const CacheableKeyPtr& key,
-                        const UserDataPtr& aCallbackArgument,
+                        const SerializablePtr& aCallbackArgument,
                         bool isContainsKey, ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageContainsKey() {}
@@ -741,7 +740,7 @@ class TcrMessageRequest : public TcrMessage {
  public:
   TcrMessageRequest(std::unique_ptr<DataOutput> dataOutput,
                     const Region* region, const CacheableKeyPtr& key,
-                    const UserDataPtr& aCallbackArgument,
+                    const SerializablePtr& aCallbackArgument,
                     ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageRequest() {}
@@ -753,7 +752,7 @@ class TcrMessageInvalidate : public TcrMessage {
  public:
   TcrMessageInvalidate(std::unique_ptr<DataOutput> dataOutput,
                        const Region* region, const CacheableKeyPtr& key,
-                       const UserDataPtr& aCallbackArgument,
+                       const SerializablePtr& aCallbackArgument,
                        ThinClientBaseDM* connectionDM = nullptr);
 
  private:
@@ -764,7 +763,7 @@ class TcrMessageDestroy : public TcrMessage {
   TcrMessageDestroy(std::unique_ptr<DataOutput> dataOutput,
                     const Region* region, const CacheableKeyPtr& key,
                     const CacheablePtr& value,
-                    const UserDataPtr& aCallbackArgument,
+                    const SerializablePtr& aCallbackArgument,
                     ThinClientBaseDM* connectionDM = nullptr);
 
  private:
@@ -802,7 +801,7 @@ class TcrMessagePut : public TcrMessage {
  public:
   TcrMessagePut(std::unique_ptr<DataOutput> dataOutput, const Region* region,
                 const CacheableKeyPtr& key, const CacheablePtr& value,
-                const UserDataPtr& aCallbackArgument, bool isDelta = false,
+                const SerializablePtr& aCallbackArgument, bool isDelta = false,
                 ThinClientBaseDM* connectionDM = nullptr,
                 bool isMetaRegion = false, bool fullValueAfterDeltaFail = false,
                 const char* regionName = nullptr);
@@ -915,7 +914,7 @@ class TcrMessagePutAll : public TcrMessage {
   TcrMessagePutAll(std::unique_ptr<DataOutput> dataOutput, const Region* region,
                    const HashMapOfCacheable& map, int messageResponsetimeout,
                    ThinClientBaseDM* connectionDM,
-                   const UserDataPtr& aCallbackArgument);
+                   const SerializablePtr& aCallbackArgument);
 
   virtual ~TcrMessagePutAll() {}
 
@@ -926,7 +925,7 @@ class TcrMessageRemoveAll : public TcrMessage {
  public:
   TcrMessageRemoveAll(std::unique_ptr<DataOutput> dataOutput,
                       const Region* region, const VectorOfCacheableKey& keys,
-                      const UserDataPtr& aCallbackArgument,
+                      const SerializablePtr& aCallbackArgument,
                       ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageRemoveAll() {}
@@ -1160,7 +1159,7 @@ class TcrMessageGetAll : public TcrMessage {
   TcrMessageGetAll(std::unique_ptr<DataOutput> dataOutput, const Region* region,
                    const VectorOfCacheableKey* keys,
                    ThinClientBaseDM* connectionDM = nullptr,
-                   const UserDataPtr& aCallbackArgument = nullptr);
+                   const SerializablePtr& aCallbackArgument = nullptr);
 
   virtual ~TcrMessageGetAll() {}
 

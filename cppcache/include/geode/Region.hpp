@@ -29,7 +29,6 @@
 #include "CacheStatistics.hpp"
 #include "ExceptionTypes.hpp"
 #include "CacheableString.hpp"
-#include "UserData.hpp"
 #include "CacheableBuiltins.hpp"
 
 /**
@@ -133,7 +132,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * This operation is not distributed.
    */
   virtual void invalidateRegion(
-      const UserDataPtr& aCallbackArgument = nullptr) = 0;
+      const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /** Invalidates this region. The invalidation will cascade to
   * all the subregions and cached entries. After
@@ -155,7 +154,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   */
   virtual void localInvalidateRegion(
-      const UserDataPtr& aCallbackArgument = nullptr) = 0;
+      const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /** Destroys the whole region and provides a user-defined parameter
    * object to any <code>CacheWriter</code> invoked in the process.
@@ -194,7 +193,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @see  invalidateRegion
    */
   virtual void destroyRegion(
-      const UserDataPtr& aCallbackArgument = nullptr) = 0;
+      const SerializablePtr& aCallbackArgument = nullptr) = 0;
   /**
    * Removes all entries from this region and provides a user-defined parameter
    * object to any <code>CacheWriter</code> or <code>CacheListener</code>
@@ -202,7 +201,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @see CacheListener#afterRegionClear
    * @see CacheWriter#beforeRegionClear
    */
-  virtual void clear(const UserDataPtr& aCallbackArgument = nullptr) = 0;
+  virtual void clear(const SerializablePtr& aCallbackArgument = nullptr) = 0;
   /**
    * Removes all entries from this region and provides a user-defined parameter
    * object to any <code>CacheWriter</code> or <code>CacheListener</code>
@@ -210,7 +209,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @see CacheListener#afterRegionClear
    * @see CacheWriter#beforeRegionClear
    */
-  virtual void localClear(const UserDataPtr& aCallbackArgument = nullptr) = 0;
+  virtual void localClear(const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /** Destroys the whole region and provides a user-defined parameter
    * object to any <code>CacheWriter</code> invoked in the process.
@@ -232,7 +231,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @see  localInvalidateRegion
    */
   virtual void localDestroyRegion(
-      const UserDataPtr& aCallbackArgument = nullptr) = 0;
+      const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /** Returns the subregion identified by the path, nullptr if no such subregion
    */
@@ -305,12 +304,12 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    *region
    **/
   virtual CacheablePtr get(const CacheableKeyPtr& key,
-                           const UserDataPtr& aCallbackArgument = nullptr) = 0;
+                           const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline CacheablePtr get(const KEYTYPE& key,
-                          const UserDataPtr& callbackArg = nullptr) {
+                          const SerializablePtr& callbackArg = nullptr) {
     return get(createKey(key), callbackArg);
   }
 
@@ -360,26 +359,26 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws OutOfMemoryException if  not enoough memory for the value
    */
   virtual void put(const CacheableKeyPtr& key, const CacheablePtr& value,
-                   const UserDataPtr& aCallbackArgument = nullptr) = 0;
+                   const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void put(const KEYTYPE& key, const VALUETYPE& value,
-                  const UserDataPtr& arg = nullptr) {
+                  const SerializablePtr& arg = nullptr) {
     put(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void put(const KEYTYPE& key, const CacheablePtr& value,
-                  const UserDataPtr& arg = nullptr) {
+                  const SerializablePtr& arg = nullptr) {
     put(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline void put(const CacheableKeyPtr& key, const VALUETYPE& value,
-                  const UserDataPtr& arg = nullptr) {
+                  const SerializablePtr& arg = nullptr) {
     put(key, createValue(value), arg);
   }
 
@@ -406,7 +405,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    */
   virtual void putAll(const HashMapOfCacheable& map,
                       uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-                      const UserDataPtr& aCallbackArgument = nullptr) = 0;
+                      const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /**
    * Places a new value into an entry in this region with the specified key
@@ -433,26 +432,26 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws OutOfMemoryException if not enoough memory for the value
    */
   virtual void localPut(const CacheableKeyPtr& key, const CacheablePtr& value,
-                        const UserDataPtr& aCallbackArgument = nullptr) = 0;
+                        const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void localPut(const KEYTYPE& key, const VALUETYPE& value,
-                       const UserDataPtr& arg = nullptr) {
+                       const SerializablePtr& arg = nullptr) {
     localPut(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localPut(const KEYTYPE& key, const CacheablePtr& value,
-                       const UserDataPtr& arg = nullptr) {
+                       const SerializablePtr& arg = nullptr) {
     localPut(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline void localPut(const CacheableKeyPtr& key, const VALUETYPE& value,
-                       const UserDataPtr& arg = nullptr) {
+                       const SerializablePtr& arg = nullptr) {
     localPut(key, createValue(value), arg);
   }
 
@@ -503,26 +502,26 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws EntryExistsException if an entry with this key already exists
    */
   virtual void create(const CacheableKeyPtr& key, const CacheablePtr& value,
-                      const UserDataPtr& aCallbackArgument = nullptr) = 0;
+                      const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void create(const KEYTYPE& key, const VALUETYPE& value,
-                     const UserDataPtr& arg = nullptr) {
+                     const SerializablePtr& arg = nullptr) {
     create(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void create(const KEYTYPE& key, const CacheablePtr& value,
-                     const UserDataPtr& arg = nullptr) {
+                     const SerializablePtr& arg = nullptr) {
     create(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline void create(const CacheableKeyPtr& key, const VALUETYPE& value,
-                     const UserDataPtr& arg = nullptr) {
+                     const SerializablePtr& arg = nullptr) {
     create(key, createValue(value), arg);
   }
 
@@ -553,26 +552,26 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    */
   virtual void localCreate(const CacheableKeyPtr& key,
                            const CacheablePtr& value,
-                           const UserDataPtr& aCallbackArgument = nullptr) = 0;
+                           const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void localCreate(const KEYTYPE& key, const VALUETYPE& value,
-                          const UserDataPtr& arg = nullptr) {
+                          const SerializablePtr& arg = nullptr) {
     localCreate(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localCreate(const KEYTYPE& key, const CacheablePtr& value,
-                          const UserDataPtr& arg = nullptr) {
+                          const SerializablePtr& arg = nullptr) {
     localCreate(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline void localCreate(const CacheableKeyPtr& key, const VALUETYPE& value,
-                          const UserDataPtr& arg = nullptr) {
+                          const SerializablePtr& arg = nullptr) {
     localCreate(key, createValue(value), arg);
   }
 
@@ -599,11 +598,11 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @see CacheListener::afterInvalidate
    */
   virtual void invalidate(const CacheableKeyPtr& key,
-                          const UserDataPtr& aCallbackArgument = nullptr) = 0;
+                          const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline void invalidate(const KEYTYPE& key, const UserDataPtr& arg = nullptr) {
+  inline void invalidate(const KEYTYPE& key, const SerializablePtr& arg = nullptr) {
     invalidate(createKey(key), arg);
   }
 
@@ -629,12 +628,12 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    */
   virtual void localInvalidate(
       const CacheableKeyPtr& key,
-      const UserDataPtr& aCallbackArgument = nullptr) = 0;
+      const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localInvalidate(const KEYTYPE& key,
-                              const UserDataPtr& arg = nullptr) {
+                              const SerializablePtr& arg = nullptr) {
     localInvalidate(createKey(key), arg);
   }
 
@@ -683,11 +682,11 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @see CacheWriter::beforeDestroy
    */
   virtual void destroy(const CacheableKeyPtr& key,
-                       const UserDataPtr& aCallbackArgument = nullptr) = 0;
+                       const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline void destroy(const KEYTYPE& key, const UserDataPtr& arg = nullptr) {
+  inline void destroy(const KEYTYPE& key, const SerializablePtr& arg = nullptr) {
     destroy(createKey(key), arg);
   }
 
@@ -716,12 +715,12 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @see CacheWriter::beforeDestroy
    */
   virtual void localDestroy(const CacheableKeyPtr& key,
-                            const UserDataPtr& aCallbackArgument = nullptr) = 0;
+                            const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localDestroy(const KEYTYPE& key,
-                           const UserDataPtr& arg = nullptr) {
+                           const SerializablePtr& arg = nullptr) {
     localDestroy(createKey(key), arg);
   }
 
@@ -774,26 +773,26 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @see CacheWriter::beforeDestroy
    */
   virtual bool remove(const CacheableKeyPtr& key, const CacheablePtr& value,
-                      const UserDataPtr& aCallbackArgument = nullptr) = 0;
+                      const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline bool remove(const KEYTYPE& key, const VALUETYPE& value,
-                     const UserDataPtr& arg = nullptr) {
+                     const SerializablePtr& arg = nullptr) {
     return remove(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline bool remove(const KEYTYPE& key, const CacheablePtr& value,
-                     const UserDataPtr& arg = nullptr) {
+                     const SerializablePtr& arg = nullptr) {
     return remove(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline bool remove(const CacheableKeyPtr& key, const VALUETYPE& value,
-                     const UserDataPtr& arg = nullptr) {
+                     const SerializablePtr& arg = nullptr) {
     return remove(key, createValue(value), arg);
   }
 
@@ -852,11 +851,11 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @see CacheWriter::beforeDestroy
    */
   virtual bool removeEx(const CacheableKeyPtr& key,
-                        const UserDataPtr& aCallbackArgument = nullptr) = 0;
+                        const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline bool removeEx(const KEYTYPE& key, const UserDataPtr& arg = nullptr) {
+  inline bool removeEx(const KEYTYPE& key, const SerializablePtr& arg = nullptr) {
     return removeEx(createKey(key), arg);
   }
 
@@ -889,26 +888,26 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    */
   virtual bool localRemove(const CacheableKeyPtr& key,
                            const CacheablePtr& value,
-                           const UserDataPtr& aCallbackArgument = nullptr) = 0;
+                           const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline bool localRemove(const KEYTYPE& key, const VALUETYPE& value,
-                          const UserDataPtr& arg = nullptr) {
+                          const SerializablePtr& arg = nullptr) {
     return localRemove(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline bool localRemove(const KEYTYPE& key, const CacheablePtr& value,
-                          const UserDataPtr& arg = nullptr) {
+                          const SerializablePtr& arg = nullptr) {
     return localRemove(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
   inline bool localRemove(const CacheableKeyPtr& key, const VALUETYPE& value,
-                          const UserDataPtr& arg = nullptr) {
+                          const SerializablePtr& arg = nullptr) {
     return localRemove(key, createValue(value), arg);
   }
 
@@ -940,12 +939,12 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   virtual bool localRemoveEx(
       const CacheableKeyPtr& key,
-      const UserDataPtr& aCallbackArgument = nullptr) = 0;
+      const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline bool localRemoveEx(const KEYTYPE& key,
-                            const UserDataPtr& arg = nullptr) {
+                            const SerializablePtr& arg = nullptr) {
     return localRemoveEx(createKey(key), arg);
   }
 
@@ -1310,7 +1309,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
                       HashMapOfCacheablePtr values,
                       HashMapOfExceptionPtr exceptions,
                       bool addToLocalCache = false,
-                      const UserDataPtr& aCallbackArgument = nullptr) = 0;
+                      const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /**
    * Executes the query on the server based on the predicate.
@@ -1427,7 +1426,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @see destroy
    */
   virtual void removeAll(const VectorOfCacheableKey& keys,
-                         const UserDataPtr& aCallbackArgument = nullptr) = 0;
+                         const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /**
    * Get the size of region. For native client regions, this will give the

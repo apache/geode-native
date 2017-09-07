@@ -173,15 +173,15 @@ class RegionInternal : public Region {
   virtual void setPersistenceManager(PersistenceManagerPtr& pmPtr) = 0;
 
   virtual GfErrType getNoThrow(const CacheableKeyPtr& key, CacheablePtr& value,
-                               const UserDataPtr& aCallbackArgument) = 0;
+                               const SerializablePtr& aCallbackArgument) = 0;
   virtual GfErrType getAllNoThrow(const VectorOfCacheableKey& keys,
                                   const HashMapOfCacheablePtr& values,
                                   const HashMapOfExceptionPtr& exceptions,
                                   bool addToLocalCache,
-                                  const UserDataPtr& aCallbackArgument) = 0;
+                                  const SerializablePtr& aCallbackArgument) = 0;
   virtual GfErrType putNoThrow(const CacheableKeyPtr& key,
                                const CacheablePtr& value,
-                               const UserDataPtr& aCallbackArgument,
+                               const SerializablePtr& aCallbackArgument,
                                CacheablePtr& oldValue, int updateCount,
                                const CacheEventFlags eventFlags,
                                VersionTagPtr versionTag,
@@ -189,30 +189,30 @@ class RegionInternal : public Region {
                                EventIdPtr eventId = nullptr) = 0;
   virtual GfErrType createNoThrow(const CacheableKeyPtr& key,
                                   const CacheablePtr& value,
-                                  const UserDataPtr& aCallbackArgument,
+                                  const SerializablePtr& aCallbackArgument,
                                   int updateCount,
                                   const CacheEventFlags eventFlags,
                                   VersionTagPtr versionTag) = 0;
   virtual GfErrType destroyNoThrow(const CacheableKeyPtr& key,
-                                   const UserDataPtr& aCallbackArgument,
+                                   const SerializablePtr& aCallbackArgument,
                                    int updateCount,
                                    const CacheEventFlags eventFlags,
                                    VersionTagPtr versionTag) = 0;
   virtual GfErrType removeNoThrow(const CacheableKeyPtr& key,
                                   const CacheablePtr& value,
-                                  const UserDataPtr& aCallbackArgument,
+                                  const SerializablePtr& aCallbackArgument,
                                   int updateCount,
                                   const CacheEventFlags eventFlags,
                                   VersionTagPtr versionTag) = 0;
   virtual GfErrType invalidateNoThrow(const CacheableKeyPtr& keyPtr,
-                                      const UserDataPtr& aCallbackArgument,
+                                      const SerializablePtr& aCallbackArgument,
                                       int updateCount,
                                       const CacheEventFlags eventFlags,
                                       VersionTagPtr versionTag) = 0;
   virtual GfErrType invalidateRegionNoThrow(
-      const UserDataPtr& aCallbackArgument,
+      const SerializablePtr& aCallbackArgument,
       const CacheEventFlags eventFlags) = 0;
-  virtual GfErrType destroyRegionNoThrow(const UserDataPtr& aCallbackArgument,
+  virtual GfErrType destroyRegionNoThrow(const SerializablePtr& aCallbackArgument,
                                          bool removeFromParent,
                                          const CacheEventFlags eventFlags) = 0;
 
@@ -253,12 +253,12 @@ class RegionInternal : public Region {
   virtual void addDisMessToQueue(){};
 
   virtual void txDestroy(const CacheableKeyPtr& key,
-                         const UserDataPtr& callBack, VersionTagPtr versionTag);
+                         const SerializablePtr& callBack, VersionTagPtr versionTag);
   virtual void txInvalidate(const CacheableKeyPtr& key,
-                            const UserDataPtr& callBack,
+                            const SerializablePtr& callBack,
                             VersionTagPtr versionTag);
   virtual void txPut(const CacheableKeyPtr& key, const CacheablePtr& value,
-                     const UserDataPtr& callBack, VersionTagPtr versionTag);
+                     const SerializablePtr& callBack, VersionTagPtr versionTag);
   inline bool isConcurrencyCheckEnabled() const {
     return m_regionAttributes->getConcurrencyChecksEnabled();
   }

@@ -23,7 +23,6 @@
 #include "geode_types.hpp"
 #include "Region.hpp"
 #include "CacheableKey.hpp"
-#include "UserData.hpp"
 
 /** @file
 */
@@ -38,7 +37,7 @@ namespace client {
 class CPPCACHE_EXPORT RegionEvent {
  protected:
   const RegionPtr m_region; /**< Region for this event. */
-  const UserDataPtr
+  const SerializablePtr
       m_callbackArgument;    /**< Callback argument for this event, if any. */
   const bool m_remoteOrigin; /**< True if from a remote process. */
 
@@ -46,7 +45,7 @@ class CPPCACHE_EXPORT RegionEvent {
   /** Constructor. */
   RegionEvent();
   /** Constructor, given the values. */
-  RegionEvent(const RegionPtr& region, const UserDataPtr& aCallbackArgument,
+  RegionEvent(const RegionPtr& region, const SerializablePtr& aCallbackArgument,
               const bool remoteOrigin);
 
   /** Destructor. */
@@ -60,7 +59,7 @@ class CPPCACHE_EXPORT RegionEvent {
    * this event. See the {@link Region} interface methods that take
    * a callbackArgument parameter.
    */
-  inline UserDataPtr getCallbackArgument() const { return m_callbackArgument; }
+  inline SerializablePtr getCallbackArgument() const { return m_callbackArgument; }
 
   /** If the event originated in a remote process, returns true. */
   inline bool remoteOrigin() const { return m_remoteOrigin; }

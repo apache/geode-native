@@ -28,7 +28,6 @@
 #include "geode_types.hpp"
 #include "CacheableKey.hpp"
 #include "Cacheable.hpp"
-#include "UserData.hpp"
 
 namespace apache {
 namespace geode {
@@ -69,7 +68,7 @@ class CPPCACHE_EXPORT CacheLoader  {
    *@see Region::get .
    */
   virtual CacheablePtr load(const RegionPtr& rp, const CacheableKeyPtr& key,
-                            const UserDataPtr& aCallbackArgument) = 0;
+                            const SerializablePtr& aCallbackArgument) = 0;
 
   /** Called when the region containing this callback is destroyed, when
    * the cache is closed.
