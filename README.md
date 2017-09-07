@@ -15,9 +15,6 @@ Native Client is a client implementation for [Apache Geode](http://geode.apache.
 
 Directions to build Native Client from source can be found in the source distribution in [BUILDING.md](BUILDING.md).
 
-## <a name="started"></a>Introduction
-Please refer to the [Native Client documentation](http://gemfire-native.docs.pivotal.io/gemfire/introduction/native-client-intro.html) for help in getting started with Native Client.
-
 ## <a name="development"></a>Application Development
 
 Native Client applications can be written in these client technologies:
