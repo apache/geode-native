@@ -39,33 +39,6 @@ namespace geode {
 namespace client {
 class SerializationRegistry;
 class DataOutputInternal;
-/**
- * C style memory allocation that throws OutOfMemoryException
- * if it fails
- */
-#define GF_ALLOC(v, t, s)                                                  \
-  {                                                                        \
-    v = (t*)malloc((s) * sizeof(t));                                       \
-    if ((v) == nullptr) {                                                  \
-      throw OutOfMemoryException(                                          \
-          "Out of Memory while allocating buffer for " #t " of size " #s); \
-    }                                                                      \
-  }
-
-/**
- * C style memory re-allocation that throws OutOfMemoryException
- * if it fails
- */
-#define GF_RESIZE(v, t, s)                                \
-  {                                                       \
-    v = (t*)realloc(v, (s) * sizeof(t));                  \
-    if ((v) == nullptr) {                                 \
-      throw OutOfMemoryException(                         \
-          "Out of Memory while resizing buffer for " #t); \
-    }                                                     \
-  }
-
-#define GF_FREE(v) free(v)
 
 /**
  * Provide operations for writing primitive data values, byte arrays,
@@ -652,7 +625,11 @@ class CPPCACHE_EXPORT DataOutput {
   inline uint8_t* getBufferCopy() {
     uint32_t size = static_cast<uint32_t>(m_buf - m_bytes);
     uint8_t* result;
-    GF_ALLOC(result, uint8_t, size);
+    result = (uint8_t *) std::malloc(size * sizeof(uint8_t));
+    if (result == nullptr) {
+      throw OutOfMemoryException(
+          "Out of Memory while resizing buffer");
+    }
     std::memcpy(result, m_bytes, size);
     return result;
   }
@@ -671,9 +648,13 @@ class CPPCACHE_EXPORT DataOutput {
   inline void reset() {
     if (m_haveBigBuffer) {
       // free existing buffer
-      GF_FREE(m_bytes);
+      std::free(m_bytes);
       // create smaller buffer
-      GF_ALLOC(m_bytes, uint8_t, m_lowWaterMark);
+      m_bytes = (uint8_t *) std::malloc(m_lowWaterMark* sizeof(uint8_t));
+      if (m_bytes == nullptr) {
+        throw OutOfMemoryException(
+            "Out of Memory while resizing buffer");
+      }
       m_size = m_lowWaterMark;
       // reset the flag
       m_haveBigBuffer = false;
@@ -695,7 +676,13 @@ class CPPCACHE_EXPORT DataOutput {
         m_haveBigBuffer = true;
       }
       m_size = newSize;
-      GF_RESIZE(m_bytes, uint8_t, m_size);
+
+      auto tmp = (uint8_t *) std::realloc(m_bytes, m_size * sizeof(uint8_t));
+      if (tmp == nullptr) {
+        throw OutOfMemoryException(
+            "Out of Memory while resizing buffer");
+      }
+      m_bytes = tmp;
       m_buf = m_bytes + offset;
     }
   }
