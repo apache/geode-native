@@ -79,7 +79,11 @@ class TSSDataOutput {
     } else {
       uint8_t* buf;
       *size = 8192;
-      GF_ALLOC(buf, uint8_t, 8192);
+      buf = (uint8_t *) std::malloc(8192 * sizeof(uint8_t));
+      if (buf == nullptr) {
+        throw OutOfMemoryException(
+            "Out of Memory while resizing buffer");
+      }
       return buf;
     }
   }
@@ -101,7 +105,7 @@ TSSDataOutput::~TSSDataOutput() {
   while (!m_buffers.empty()) {
     BufferDesc desc = m_buffers.back();
     m_buffers.pop_back();
-    GF_FREE(desc.m_buf);
+    std::free(desc.m_buf);
   }
 }
 

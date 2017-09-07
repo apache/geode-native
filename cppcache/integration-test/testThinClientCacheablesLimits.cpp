@@ -78,7 +78,11 @@ uint8_t* createRandByteArray(int size) {
 }
 char* createRandCharArray(int size) {
   char* ch;
-  GF_ALLOC(ch, char, size + 1);
+  ch = (char *) std::malloc((size + 1) * sizeof(char));
+  if (ch == nullptr) {
+    throw OutOfMemoryException(
+        "Out of Memory while resizing buffer");
+  }
   ch[size] = '\0';
   int length = sizeof(charArray) / sizeof(char);
   for (int i = 0; i < size; i++) {
