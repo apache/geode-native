@@ -15,10 +15,10 @@
 
 project( boost )
 
-set( ${PROJECT_NAME}_VERSION 1.64.0 )
-set( ${PROJECT_NAME}_SHA265 0445c22a5ef3bd69f5dfb48354978421a85ab395254a26b1ffb0aa1bfd63a108 )
+set( ${PROJECT_NAME}_VERSION 1.65.1 )
+set( ${PROJECT_NAME}_SHA265 a13de2c8fbad635e6ba9c8f8714a0e6b4264b60a29b964b940a22554705b6b60 )
 string(REPLACE "." "_" _VERSION_UNDERSCORE ${${PROJECT_NAME}_VERSION})
-set( ${PROJECT_NAME}_URL "https://dl.bintray.com/boostorg/release/${${PROJECT_NAME}_VERSION}/source/boost_${_VERSION_UNDERSCORE}.tar.gz" )
+set( ${PROJECT_NAME}_URL "https://sourceforge.net/projects/${PROJECT_NAME}/files/${PROJECT_NAME}/${${PROJECT_NAME}_VERSION}/boost_${_VERSION_UNDERSCORE}.tar.gz" )
 set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
 
 include(ProcessorCount)
