@@ -108,7 +108,7 @@ class CallbackListener : public CacheListener {
          LOGFINE("values are NOT same");
         }
       } catch (const ClassCastException& ex) {
-        LOGFINE(" in class cast exception %s ", ex.getMessage());
+        LOGFINE(" in class cast exception %s ", ex.what());
         try {
           auto fromCallback =
               std::dynamic_pointer_cast<CacheableString>(eventCallback);
@@ -125,7 +125,7 @@ class CallbackListener : public CacheListener {
             LOGFINE("values are NOT same");
           }
         } catch (const ClassCastException& ex2) {
-          LOGFINE(" in class cast second exception %s ", ex2.getMessage());
+          LOGFINE(" in class cast second exception %s ", ex2.what());
         }
       }
     }

@@ -66,8 +66,9 @@ namespace client {
 #define CHECK_DESTROY_PENDING(lock, function)                      \
   lock checkGuard(m_rwLock, m_destroyPending);                     \
   if (m_destroyPending) {                                          \
-    std::string err_msg = ": region " + m_fullPath + " destroyed"; \
-    throw RegionDestroyedException(#function, err_msg.c_str());    \
+    std::string err_msg = #function;                               \
+    err_msg += ": region " + m_fullPath + " destroyed";            \
+    throw RegionDestroyedException(err_msg.c_str());               \
   }
 #endif
 

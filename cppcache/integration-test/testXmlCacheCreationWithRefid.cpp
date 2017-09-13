@@ -39,8 +39,8 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
   try {
     cacheFactory = CacheFactory::createCacheFactory();
   } catch (Exception& ex) {
-    ex.showMessage();
-    ex.printStackTrace();
+    std::cout << "Exception: msg = " << ex.what() << std::endl;
+    LOG(ex.getStackTrace());
     return -1;
   }
 
@@ -58,8 +58,8 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
       std::cout << "getPdxIgnoreUnreadFields returned false." << std::endl;
     }
   } catch (CacheXmlException& ex) {
-    ex.showMessage();
-    ex.printStackTrace();
+    std::cout << "CacheXmlException: msg = " << ex.what() << std::endl;
+    LOG(ex.getStackTrace());
     return -1;
   }
 

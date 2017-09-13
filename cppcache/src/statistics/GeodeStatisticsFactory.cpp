@@ -161,10 +161,9 @@ StatisticsTypeImpl* GeodeStatisticsFactory::addType(StatisticsTypeImpl* st) {
   }
   if (status == 1) {
   } else if (status == -1) {
-    throw IllegalArgumentException(
-        "GeodeStatisticsFactory::addType: failed "
-        "to add new type %s",
-        temp.c_str());
+    auto message = std::string("GeodeStatisticsFactory::addType: failed ") +
+                   "to add new type " + temp.c_str();
+    throw IllegalArgumentException(message);
   }
   return st;
 }

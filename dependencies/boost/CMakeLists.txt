@@ -67,6 +67,7 @@ set( ${PROJECT_NAME}_INSTALL_DIR ${INSTALL_DIR} )
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE
   $<BUILD_INTERFACE:${${PROJECT_NAME}_INSTALL_DIR}/include>
+  $<BUILD_INTERFACE:${${PROJECT_NAME}_INSTALL_DIR}/src>
 )
 target_compile_definitions(${PROJECT_NAME} INTERFACE
 )

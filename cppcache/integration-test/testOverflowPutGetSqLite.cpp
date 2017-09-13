@@ -231,7 +231,7 @@ void testEntryDestroy(std::shared_ptr<Region>& regionPtr, uint32_t num) {
       std::cout << "try to destroy key" << i << std::endl;
       regionPtr->destroy(v.at(i));
     } catch (Exception& ex) {
-      std::cout << ex.getMessage() << std::endl;
+      std::cout << ex.what() << std::endl;
       ASSERT(false, (char*)"entry missing");
     }
   }
@@ -248,7 +248,7 @@ void testEntryInvalidate(std::shared_ptr<Region>& regionPtr, uint32_t num) {
       std::cout << "try to invalidate key" << i << std::endl;
       regionPtr->invalidate(v.at(i));
     } catch (Exception& ex) {
-      std::cout << ex.getMessage() << std::endl;
+      std::cout << ex.what() << std::endl;
       ASSERT(false, (char*)"entry missing");
     }
   }
@@ -492,7 +492,7 @@ BEGIN_TEST(OverFlowTest_SqLiteFull)
                         // have any specific sqlitefull exception
       char buffer[1024];
       sprintf(buffer, "Got expected exception %s: msg = %s", ex.getName(),
-              ex.getMessage());
+              ex.what());
       LOG(buffer);
     }
 

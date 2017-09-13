@@ -46,7 +46,7 @@ class GetRegionThread : public ACE_Task_Base {
           ASSERT(m_regionCreateDone == true, "regionCreate Not Done");
         }
       } catch (Exception& ex) {
-        LOG(ex.getMessage());
+        LOG(ex.what());
         continue;
       } catch (std::exception& ex) {
         LOG(ex.what());
@@ -63,7 +63,7 @@ class GetRegionThread : public ACE_Task_Base {
           return 0;
         }
       } catch (Exception& ex) {
-        LOG(ex.getMessage());
+        LOG(ex.what());
       } catch (std::exception& ex) {
         LOG(ex.what());
       } catch (...) {

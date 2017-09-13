@@ -21,7 +21,9 @@
 #define GEODE_EXCEPTION_H_
 
 #include <string>
+#include <stdexcept>
 #include <unordered_map>
+
 #include "geode_globals.hpp"
 #include "util/functional.hpp"
 
@@ -42,86 +44,48 @@ class StackTrace;
  * @class Exception Exception.hpp
  * A description of an exception that occurred during a cache operation.
  */
-class CPPCACHE_EXPORT Exception {
+class CPPCACHE_EXPORT Exception : public std::exception {
   /**
    * @brief public methods
    */
  public:
   /** Creates an exception.
    * @param  msg1 message pointer, this is copied into the exception.
-   * @param  msg2 optional extra message pointer, appended to msg1.
-   * @param  forceTrace enables a stacktrace for this exception regardless of
-   * stacktrace-enabled system property.
-   * @param  cause optional cause of the exception which can be later
-   *               retrieved using <code>getCause</code>
    **/
-  Exception(const char* msg1, const char* msg2 = nullptr,
-            bool forceTrace = false, const std::shared_ptr<Exception>& cause = nullptr);
+  Exception(const char* msg1);
 
-  explicit Exception(const std::string& msg1);
+  Exception(const std::string& msg1);
 
   /** Creates an exception as a copy of the given other exception.
    * @param  other the original exception.
    *
    **/
-  Exception(const Exception& other) noexcept = default;
+  Exception(const Exception& other) = default;
   Exception(Exception&& other) noexcept = default;
-
-  /** Create a clone of this exception. */
-  virtual Exception* clone() const;
 
   /**
    * @brief destructor
    */
-  virtual ~Exception();
+  virtual ~Exception() noexcept;
 
-  /** Returns the message pointer
-   *
-   * @return  message pointer
+  /** Get a stacktrace string from the location the exception was created.
    */
-  virtual const char* getMessage() const;
-  /** Show the message pointer
-   *
-   */
-  virtual void showMessage() const;
-
-  /** On some platforms, print a stacktrace from the location the exception
-   * was created.
-   */
-  virtual void printStackTrace() const;
-
-#ifndef _SOLARIS
-  /** On some platforms, get a stacktrace string from the location the
-   * exception was created.
-   */
-  virtual size_t getStackTrace(char* buffer, size_t maxLength) const;
-#endif
+  virtual std::string getStackTrace() const;
 
   /** Return the name of this exception type. */
   virtual const char* getName() const;
 
-  /**
-   * Throw polymorphically; this allows storing an exception object
-   * pointer and throwing it later.
-   */
-  virtual void raise() { throw *this; }
-
-  inline std::shared_ptr<Exception> getCause() const { return m_cause; }
+  virtual const char *what() const noexcept;
 
  protected:
-  /** internal constructor used to clone this exception */
-  Exception(const std::shared_ptr<CacheableString>& message,
-            const std::shared_ptr<StackTrace>& stack,
-            const std::shared_ptr<Exception>& cause);
-
   static bool s_exceptionStackTraceEnabled;
-
-  std::shared_ptr<CacheableString> m_message;  // error message
-  std::shared_ptr<StackTrace> m_stack;
-  std::shared_ptr<Exception> m_cause;
 
  private:
   static void setStackTraces(bool stackTraceEnabled);
+
+  std::shared_ptr<StackTrace> m_stack;
+
+  std::string message;
 
   friend class DistributedSystem;
 };

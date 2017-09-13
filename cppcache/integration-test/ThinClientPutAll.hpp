@@ -713,7 +713,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThirteen)
       logmsg += "expected exception ";
       logmsg += excp.getName();
       logmsg += ": ";
-      logmsg += excp.getMessage();
+      logmsg += excp.what();
       LOG(logmsg.c_str());
     }
     map0.clear();
@@ -731,7 +731,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThirteen)
       logmsg += "expected exception ";
       logmsg += excp.getName();
       logmsg += ": ";
-      logmsg += excp.getMessage();
+      logmsg += excp.what();
       LOG(logmsg.c_str());
     }
     map0.clear();

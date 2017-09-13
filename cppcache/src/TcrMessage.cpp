@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "TcrMessage.hpp"
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/DistributedSystem.hpp>
@@ -33,6 +34,7 @@
 #include "DiskStoreId.hpp"
 #include "DiskVersionTag.hpp"
 #include "CacheRegionHelper.hpp"
+#include <boost/stacktrace.hpp>
 
 using namespace apache::geode::client;
 static const uint32_t REGULAR_EXPRESSION =
@@ -510,7 +512,7 @@ void TcrMessage::writeObjectPart(
         return;
       }
     } catch (const apache::geode::client::Exception& ex) {
-      LOGDEBUG("Exception in writing EMPTY_BYTE_ARRAY : %s", ex.getMessage());
+      LOGDEBUG("Exception in writing EMPTY_BYTE_ARRAY : %s", ex.what());
     }
     isObject = 0;
   }
@@ -816,7 +818,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
           m_chunkedResult->waitFinalize();
          auto ex = m_chunkedResult->getException();
          if (ex != nullptr) {
-           ex->raise();
+           throw *ex;
           }
         }
         break;
@@ -847,7 +849,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
           // of populating cache with registerAllKeys(), so that should be
           // documented since rolling that back may not be a good idea either.
           if (const auto& ex = m_chunkedResult->getException()) {
-            ex->raise();
+            throw *ex;
           }
         }
       } else if (TcrMessage::CQ_EXCEPTION_TYPE == m_msgType ||
@@ -1404,8 +1406,9 @@ void TcrMessage::handleByteArrayResponse(
           "Unknown message type %d in response, possible serialization "
           "mismatch",
           m_msgType);
-      StackTrace st;
-      st.print();
+      std::stringstream ss;
+      ss << boost::stacktrace::stacktrace();
+      LOGERROR(ss.str().c_str());
       throw MessageException("handleByteArrayResponse: unknown message type");
   }
   LOGDEBUG("handleByteArrayResponse earlyack = %d ", earlyack);

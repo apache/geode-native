@@ -162,7 +162,7 @@ CacheHelper::CacheHelper(const bool isThinclient,
     m_doDisconnect = false;
   } catch (const Exception& excp) {
     LOG("Geode exception while creating cache, logged in following line");
-    LOG(excp.getMessage());
+    LOG(excp.what());
   } catch (...) {
     LOG("Throwing exception while creating cache....");
   }
@@ -181,7 +181,7 @@ CacheHelper::CacheHelper(const bool isThinclient,
     m_doDisconnect = false;
   } catch (const Exception& excp) {
     LOG("Geode exception while creating cache, logged in following line");
-    LOG(excp.getMessage());
+    LOG(excp.what());
   } catch (...) {
     LOG("Throwing exception while creating cache....");
   }
@@ -205,7 +205,7 @@ CacheHelper::CacheHelper(const bool isThinclient, bool pdxIgnoreUnreadFields,
     m_doDisconnect = false;
   } catch (const Exception& excp) {
     LOG("Geode exception while creating cache, logged in following line");
-    LOG(excp.getMessage());
+    LOG(excp.what());
   } catch (...) {
     LOG("Throwing exception while creating cache....");
   }
@@ -260,7 +260,7 @@ CacheHelper::CacheHelper(const bool isthinClient, const char* poolName,
 
   } catch (const Exception& excp) {
     LOG("Geode exception while creating cache, logged in following line");
-    LOG(excp.getMessage());
+    LOG(excp.what());
   } catch (...) {
     LOG("Throwing exception while creating cache....");
   }
@@ -306,7 +306,7 @@ void CacheHelper::disconnect(bool keepalive) {
     LOG("Closing cache complete.");
   } catch (Exception& ex) {
     LOG("Exception thrown while closing cache: ");
-    LOG(ex.getMessage());
+    LOG(ex.what());
   } catch (...) {
     LOG("exception throw while closing cache");
   }

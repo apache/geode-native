@@ -128,14 +128,14 @@ void CacheTransactionManagerImpl::commit() {
                   } catch(const TransactionWriterException& ex)
                   {
                           noteCommitFailure(txState, commit);
-                          GfErrTypeThrowException(ex.getMessage(),
+                          GfErrTypeThrowException(ex.what(),
      GF_COMMIT_CONFLICT_EXCEPTION);
                   }
                   catch (const Exception& ex)
                   {
                           noteCommitFailure(txState, commit);
                           LOGERROR("Unexpected exception during writer callback
-     %s", ex.getMessage());
+     %s", ex.what());
                           throw ex;
                   }
                   catch (...)
@@ -190,7 +190,7 @@ Failed", GF_MSG);
   catch (const Exception& ex)
   {
 //		noteCommitFailure(txState, commit);
-          LOGERROR("Unexpected exception during commit %s", ex.getMessage());
+          LOGERROR("Unexpected exception during commit %s", ex.what());
           throw ex;
   }
   catch (...)

@@ -2450,9 +2450,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
           std::string logmsg = "";
           logmsg += ex.getName();
           logmsg += ": ";
-          logmsg += ex.getMessage();
+          logmsg += ex.what();
           LOG(logmsg.c_str());
-          ex.printStackTrace();
+          LOG(ex.getStackTrace());
           LOG("exFuncNameSendException now casting to "
               "UserFunctionExecutionExceptionPtr for arrayList arguement "
               "exception.");
@@ -2620,9 +2620,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
           std::string logmsg = "";
           logmsg += ex.getName();
           logmsg += ": ";
-          logmsg += ex.getMessage();
+          logmsg += ex.what();
           LOG(logmsg.c_str());
-          ex.printStackTrace();
+          LOG(ex.getStackTrace());
           LOG("exFuncNameSendException now casting to "
               "UserFunctionExecutionExceptionPtr for arrayList arguement "
               "exception.");
@@ -2732,9 +2732,9 @@ DUNIT_TASK_DEFINITION(CLIENT3, client3GetsV2Object)
           std::string logmsg = "";
           logmsg += ex.getName();
           logmsg += ": ";
-          logmsg += ex.getMessage();
+          logmsg += ex.what();
           LOG(logmsg.c_str());
-          ex.printStackTrace();
+          LOG(ex.getStackTrace());
           LOG("exFuncNameSendException now casting to "
               "UserFunctionExecutionExceptionPtr for arrayList arguement "
               "exception.");

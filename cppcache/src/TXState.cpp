@@ -73,7 +73,7 @@ std::shared_ptr<Cacheable> TXState::replay(bool isRollback) {
         LOGFINE(
             "caught exception when rolling back before retrying transaction "
             "%s",
-            ex.getMessage());
+            ex.what());
       }
     }
     m_txId = std::shared_ptr<TXId>(new TXId());
@@ -86,11 +86,11 @@ std::shared_ptr<Cacheable> TXState::replay(bool isRollback) {
 
       return result;
     } catch (const TransactionDataNodeHasDepartedException& ex) {
-      LOGDEBUG("Transaction exception:%s", ex.getMessage());
+      LOGDEBUG("Transaction exception:%s", ex.what());
       isRollback = false;
       // try again
     } catch (const TransactionDataRebalancedException& ex) {
-      LOGDEBUG("Transaction exception:%s", ex.getMessage());
+      LOGDEBUG("Transaction exception:%s", ex.what());
       isRollback = true;
       // try again
     }

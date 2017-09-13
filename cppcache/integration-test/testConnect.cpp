@@ -32,7 +32,7 @@ DUNIT_TASK(s1p1, CreateRegionOne)
       FAIL("Expected an exception.");
     } catch (const AlreadyConnectedException& ex) {
       LOG("Got expected exception.");
-      LOG(ex.getMessage());
+      LOG(ex.what());
     }
 
     cache->getDistributedSystem().disconnect();
@@ -43,7 +43,7 @@ DUNIT_TASK(s1p1, CreateRegionOne)
       FAIL("Expected an exception.");
     } catch (const NotConnectedException& ex) {
       LOG("Got expected exception.");
-      LOG(ex.getMessage());
+      LOG(ex.what());
     }
   }
 ENDTASK

@@ -557,7 +557,7 @@ GfErrType ThinClientRedundancyManager::createQueueEP(TcrEndpoint* ep,
           err = rqsService->executeAllCqs(ep);
         } catch (const Exception& excp) {
           LOGFINE("Failed to recover CQs on endpoint[%s]: %s",
-                  ep->name().c_str(), excp.getMessage());
+                  ep->name().c_str(), excp.what());
           ep->unregisterDM(true);
           err = GF_NOTCON;
         } catch (...) {
@@ -597,7 +597,7 @@ GfErrType ThinClientRedundancyManager::createPoolQueueEP(
           err = rqsService->executeAllCqs(ep);
         } catch (const Exception& excp) {
           LOGFINE("Failed to recover CQs on endpoint[%s]: %s",
-                  ep->name().c_str(), excp.getMessage());
+                  ep->name().c_str(), excp.what());
           ep->unregisterDM(false);  // Argument is useless
           err = GF_NOTCON;
         } catch (...) {

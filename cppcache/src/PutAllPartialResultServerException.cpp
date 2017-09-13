@@ -42,33 +42,38 @@ void PutAllPartialResultServerException::consolidate(
     std::shared_ptr<PutAllPartialResult> otherResult) {
   m_result->consolidate(otherResult);
 }
+
 std::shared_ptr<PutAllPartialResult>
 PutAllPartialResultServerException::getResult() {
   return m_result;
 }
+
 std::shared_ptr<VersionedCacheableObjectPartList>
 PutAllPartialResultServerException::getSucceededKeysAndVersions() {
   return m_result->getSucceededKeysAndVersions();
 }
- std::shared_ptr<Exception> PutAllPartialResultServerException::getFailure() {
-   return m_result->getFailure();
- }
 
- bool PutAllPartialResultServerException::hasFailure() {
-   return m_result->hasFailure();
- }
- std::shared_ptr<CacheableKey>
- PutAllPartialResultServerException::getFirstFailedKey() {
-   return m_result->getFirstFailedKey();
- }
- std::shared_ptr<CacheableString>
- PutAllPartialResultServerException::getMessage() {
-   return m_result->toString();
- }
+std::shared_ptr<Exception> PutAllPartialResultServerException::getFailure() {
+  return m_result->getFailure();
+}
 
- void PutAllPartialResultServerException::toData(DataOutput& output) const {
-   throw IllegalStateException(
-       "PutAllPartialResultServerException::toData is not intended for use.");
+bool PutAllPartialResultServerException::hasFailure() {
+  return m_result->hasFailure();
+}
+
+std::shared_ptr<CacheableKey>
+PutAllPartialResultServerException::getFirstFailedKey() {
+  return m_result->getFirstFailedKey();
+}
+
+std::shared_ptr<CacheableString>
+PutAllPartialResultServerException::what() {
+  return m_result->toString();
+}
+
+void PutAllPartialResultServerException::toData(DataOutput& output) const {
+  throw IllegalStateException(
+      "PutAllPartialResultServerException::toData is not intended for use.");
 }
 
 void PutAllPartialResultServerException::fromData(DataInput& input) {

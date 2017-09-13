@@ -33,27 +33,20 @@ namespace client {
 class StackTrace;
 class CacheableString;
 
-#define _GF_EXCEPTION_DEF(x)                                            \
-  const char _exception_name_##x[] = "apache::geode::client::" #x;      \
-  class x;                                                              \
-  class CPPCACHE_EXPORT x : public apache::geode::client::Exception {   \
-   public:                                                              \
-    using Exception::Exception;                                         \
-    virtual Exception* clone() const {                                  \
-      return new x(m_message, m_stack, m_cause);                        \
-    }                                                                   \
-    virtual ~x() {}                                                     \
-    virtual const char* getName() const { return _exception_name_##x; } \
-    virtual void raise() { throw * this; }                              \
-                                                                        \
-   protected:                                                           \
-    x(const std::shared_ptr<CacheableString>& message,                  \
-      const std::shared_ptr<StackTrace>& stack,                         \
-      const std::shared_ptr<Exception>& cause)                          \
-        : Exception(message, stack, cause) {}                           \
-                                                                        \
-   private:                                                             \
-    const x& operator=(const x&);                                       \
+#define _GF_EXCEPTION_DEF(x)                                                 \
+  const char _exception_name_##x[] = "apache::geode::client::" #x;           \
+  class x;                                                                   \
+  class CPPCACHE_EXPORT x : public apache::geode::client::Exception {        \
+   public:                                                                   \
+    x(const char* msg1)                                                      \
+        : Exception(msg1) {}                                                 \
+    x(const std::string& msg1)                                               \
+        : Exception(msg1) {}                                                 \
+    virtual ~x() noexcept {}                                                 \
+    virtual const char* getName() const { return _exception_name_##x; }      \
+                                                                             \
+   private:                                                                  \
+    const x& operator=(const x&);                                            \
   }
 
 /*

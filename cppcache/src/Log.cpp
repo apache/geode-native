@@ -705,13 +705,13 @@ void Log::put(LogLevel level, const char* msg) {
 void Log::putThrow(LogLevel level, const char* msg, const Exception& ex) {
   char buf[128] = {0};
   ACE_OS::snprintf(buf, 128, "Geode exception %s thrown: ", ex.getName());
-  put(level, (std::string(buf) + ex.getMessage() + "\n" + msg).c_str());
+  put(level, (std::string(buf) + ex.what() + "\n" + msg).c_str());
 }
 
 void Log::putCatch(LogLevel level, const char* msg, const Exception& ex) {
   char buf[128] = {0};
   ACE_OS::snprintf(buf, 128, "Geode exception %s caught: ", ex.getName());
-  put(level, (std::string(buf) + ex.getMessage() + "\n" + msg).c_str());
+  put(level, (std::string(buf) + ex.what() + "\n" + msg).c_str());
 }
 
 void Log::enterFn(LogLevel level, const char* functionName) {

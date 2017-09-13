@@ -112,16 +112,12 @@ namespace Apache
       System::Exception^ GeodeException::Get(const apache::geode::client::Exception& nativeEx)
       {
         Exception^ innerException = nullptr;
-        const auto cause = nativeEx.getCause();
-        if (cause != nullptr) {
-          innerException = GeodeException::Get(*cause);
-        }
         String^ exName = gcnew String( nativeEx.getName( ) );
         CreateException2^ exDelegate;
         if (Native2ManagedExMap->TryGetValue(exName, exDelegate)) {
           return exDelegate(nativeEx, innerException);
         }
-        String^ exMsg = ManagedString::Get( nativeEx.getMessage( ) );
+        String^ exMsg = ManagedString::Get( nativeEx.what( ) );
         if ( exMsg->StartsWith( GeodeException::MgSysExPrefix ) ) {
           // Get the exception type
           String^ mgExStr = exMsg->Substring(

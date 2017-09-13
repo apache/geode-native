@@ -165,7 +165,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testTimeoutException)
       logmsg += "PutAll expected timeout exception ";
       logmsg += excp.getName();
       logmsg += ": ";
-      logmsg += excp.getMessage();
+      logmsg += excp.what();
       LOG(logmsg.c_str());
     }
     dunit::sleep(30000);
@@ -179,7 +179,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testTimeoutException)
       logmsg += "PutAll with CallBackArg expected timeout exception ";
       logmsg += excp.getName();
       logmsg += ": ";
-      logmsg += excp.getMessage();
+      logmsg += excp.what();
       LOG(logmsg.c_str());
     }
 
@@ -205,11 +205,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, testWithoutTimeoutException)
       logmsg += "Not expected timeout exception ";
       logmsg += excp.getName();
       logmsg += ": ";
-      logmsg += excp.getMessage();
+      logmsg += excp.what();
       LOG(logmsg.c_str());
     } catch (const Exception& ex) {
       printf("Exception while putALL :: %s : %s\n", ex.getName(),
-             ex.getMessage());
+             ex.what());
     }
     FAIL("Something is wrong while putAll");
   }
@@ -227,13 +227,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, testWithoutTimeoutWithCallBackArgException)
       logmsg += "Not expected timeout exception ";
       logmsg += excp.getName();
       logmsg += ": ";
-      logmsg += excp.getMessage();
+      logmsg += excp.what();
       LOG(logmsg.c_str());
     } catch (const Exception& ex) {
       printf(
           "Exception while putAllWithOneEntryTimeoutWithCallBackArg :: %s : "
           "%s\n",
-          ex.getName(), ex.getMessage());
+          ex.getName(), ex.what());
     }
     FAIL("Something is wrong while putAllWithOneEntryTimeoutWithCallBackArg");
   }

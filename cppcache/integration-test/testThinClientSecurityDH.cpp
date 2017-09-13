@@ -151,19 +151,19 @@ void InitIncorrectClients(const char* dhAlgo) {
   try {
     initClientAuth(INCORRECT_CREDENTIALS, dhAlgo);
   } catch (const apache::geode::client::Exception& other) {
-    other.printStackTrace();
-    LOG(other.getMessage());
+    LOG(other.getStackTrace());
+    LOG(other.what());
   }
 
   try {
     createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
     FAIL("Should have thrown AuthenticationFailedException.");
   } catch (const apache::geode::client::AuthenticationFailedException& other) {
-    other.printStackTrace();
-    LOG(other.getMessage());
+    LOG(other.getStackTrace());
+    LOG(other.what());
   } catch (const apache::geode::client::Exception& other) {
-    other.printStackTrace();
-    LOG(other.getMessage());
+    LOG(other.getStackTrace());
+    LOG(other.what());
     FAIL("Only AuthenticationFailedException is expected");
   }
   LOG("InitIncorrectClients Completed");
@@ -173,16 +173,16 @@ void InitCorrectClients(const char* dhAlgo) {
   try {
     initClientAuth(CORRECT_CREDENTIALS, dhAlgo);
   } catch (const apache::geode::client::Exception& other) {
-    other.printStackTrace();
-    LOG(other.getMessage());
+    LOG(other.getStackTrace());
+    LOG(other.what());
   }
   try {
     createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
     createEntry(regionNamesAuth[0], keys[0], vals[0]);
     updateEntry(regionNamesAuth[0], keys[0], nvals[0]);
   } catch (const apache::geode::client::Exception& other) {
-    other.printStackTrace();
-    FAIL(other.getMessage());
+    LOG(other.getStackTrace());
+    FAIL(other.what());
   }
   LOG("Handshake  and  Authentication successfully completed");
 }
@@ -204,8 +204,8 @@ void DoNetSearch() {
      LOG("checkPtr is nullptr");
     }
   } catch (const apache::geode::client::Exception& other) {
-    other.printStackTrace();
-    FAIL(other.getMessage());
+    LOG(other.getStackTrace());
+    FAIL(other.what());
   }
   LOG("Handshake  and  Authentication successfully completed after FailOver");
 }

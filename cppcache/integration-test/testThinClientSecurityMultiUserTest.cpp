@@ -80,8 +80,8 @@ void initCredentialGenerator() {
   }                                                              \
   catch (const apache::geode::client::Exception& other) {        \
     LOG("Got apache::geode::client::Exception& other ");         \
-    other.printStackTrace();                                     \
-    FAIL(other.getMessage());                                    \
+    LOG(other.getStackTrace().c_str());                          \
+    FAIL(other.what());                                          \
   }
 
 #define HANDLE_NOT_AUTHORIZED_EXCEPTION                          \
@@ -90,8 +90,8 @@ void initCredentialGenerator() {
     LOG("Success");                                              \
   }                                                              \
   catch (const apache::geode::client::Exception& other) {        \
-    other.printStackTrace();                                     \
-    FAIL(other.getMessage());                                    \
+    LOG(other.getStackTrace().c_str());                          \
+    FAIL(other.what());                                    \
   }
 
 #define CLIENT_1 s1p1
@@ -168,13 +168,13 @@ const char* regionNamesAuth[] = {"DistRegionAck"};
          m_failed = true;
        }
      } catch (const apache::geode::client::Exception& other) {
-       other.printStackTrace();
+       LOG(other.getStackTrace().c_str());
        m_failed = true;
        char tmp[256] = {'\0'};
        sprintf(tmp, "Some other geode exception got for user id = %d",
                m_userId);
        LOG(tmp);
-       LOG(other.getMessage());
+       LOG(other.what());
        m_failed = true;
      } catch (...) {
        m_failed = true;
@@ -210,13 +210,13 @@ const char* regionNamesAuth[] = {"DistRegionAck"};
          m_failed = true;
        }
      } catch (const apache::geode::client::Exception& other) {
-       other.printStackTrace();
+       LOG(other.getStackTrace().c_str());
        m_failed = true;
        char tmp[256] = {'\0'};
        sprintf(tmp, "Some other geode exception got for user id = %d",
                m_userId);
        LOG(tmp);
-       LOG(other.getMessage());
+       LOG(other.what());
        m_failed = true;
      } catch (...) {
        m_failed = true;

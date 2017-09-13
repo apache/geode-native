@@ -242,7 +242,7 @@ std::shared_ptr<CacheableString> getUString(int index) {
            str, static_cast<int32_t>(wcslen(str) + 1) * sizeof(wchar_t));
        const wchar_t* lRtnCd ATTR_UNUSED = lCStringP->asWChar();
      } catch (const Exception& geodeExcp) {
-       printf("%s: %s", geodeExcp.getName(), geodeExcp.getMessage());
+       printf("%s: %s", geodeExcp.getName(), geodeExcp.what());
        FAIL("Should not have got exception.");
      }
 
@@ -252,7 +252,7 @@ std::shared_ptr<CacheableString> getUString(int index) {
            str, static_cast<int32_t>(wcslen(str) + 1) * sizeof(wchar_t));
        const wchar_t* lRtnCd ATTR_UNUSED = lCStringP->asWChar();
      } catch (const Exception& geodeExcp) {
-       printf("%s: %s", geodeExcp.getName(), geodeExcp.getMessage());
+       printf("%s: %s", geodeExcp.getName(), geodeExcp.what());
        FAIL("Should not have got exception.");
      }
 

@@ -95,8 +95,8 @@ opCodeList::value_type tmpAArr[] = {OP_CREATE,       OP_UPDATE,
   }                                                              \
   catch (const apache::geode::client::Exception& other) {        \
     LOG("Got apache::geode::client::Exception& other ");         \
-    other.printStackTrace();                                     \
-    FAIL(other.getMessage());                                    \
+    LOG(other.getStackTrace().c_str());                          \
+    FAIL(other.what());                                          \
   }
 
 #define HANDLE_NOT_AUTHORIZED_EXCEPTION                          \
@@ -105,8 +105,8 @@ opCodeList::value_type tmpAArr[] = {OP_CREATE,       OP_UPDATE,
     LOG("Success");                                              \
   }                                                              \
   catch (const apache::geode::client::Exception& other) {        \
-    other.printStackTrace();                                     \
-    FAIL(other.getMessage());                                    \
+    LOG(other.getStackTrace().c_str());                          \
+    FAIL(other.what());                                          \
   }
 
 #define ADMIN_CLIENT s1p1
@@ -294,8 +294,8 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
             "multiusermode");
         LOG("Success");
       } catch (const apache::geode::client::Exception& other) {
-        other.printStackTrace();
-        FAIL(other.getMessage());
+        LOG(other.getStackTrace().c_str());
+        FAIL(other.what());
       }
 
       qs = virtualCache->getQueryService();
@@ -397,9 +397,9 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
             std::string logmsg = "";
             logmsg += ex.getName();
             logmsg += ": ";
-            logmsg += ex.getMessage();
+            logmsg += ex.what();
             LOG(logmsg.c_str());
-            ex.printStackTrace();
+            LOG(ex.getStackTrace().c_str());
             FAIL(
                 "exFuncNameSendException casting to string for bool arguement "
                 "exception.");
@@ -434,9 +434,9 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
             std::string logmsg = "";
             logmsg += ex.getName();
             logmsg += ": ";
-            logmsg += ex.getMessage();
+            logmsg += ex.what();
             LOG(logmsg.c_str());
-            ex.printStackTrace();
+            LOG(ex.getStackTrace().c_str());
             auto uFEPtr =
                 std::dynamic_pointer_cast<UserFunctionExecutionException>(
                     result->operator[](i));

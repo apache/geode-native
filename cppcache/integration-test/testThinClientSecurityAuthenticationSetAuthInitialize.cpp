@@ -138,8 +138,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, TestAuthentication)
      regPtr0->containsKeyOnServer(
          apache::geode::client::CacheableKey::create(keys[0]));
     } catch (const apache::geode::client::Exception& other) {
-      other.printStackTrace();
-      FAIL(other.getMessage());
+      LOG(other.getStackTrace());
+      FAIL(other.what());
     }
     LOG("Handshake  and  Authentication successfully completed");
     LOG("TestAuthentication Completed");

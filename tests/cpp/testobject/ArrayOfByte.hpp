@@ -62,7 +62,7 @@ class TESTOBJECT_EXPORT ArrayOfByte {
           dos.writeInt(timestamp);
         }
       } catch (Exception &e) {
-        FWKEXCEPTION("Unable to write to stream " << e.getMessage());
+        FWKEXCEPTION("Unable to write to stream " << e.what());
       }
       int32_t bufSize = size;
       char *buf = new char[bufSize];
@@ -94,7 +94,7 @@ class TESTOBJECT_EXPORT ArrayOfByte {
       }
       return timestamp;
     } catch (Exception &e) {
-      FWKEXCEPTION("Unable to read from stream " << e.getMessage());
+      FWKEXCEPTION("Unable to read from stream " << e.what());
     }
   }
 
@@ -109,7 +109,7 @@ class TESTOBJECT_EXPORT ArrayOfByte {
         return;
       }
     } catch (Exception &e) {
-      FWKEXCEPTION("Unable to read from stream " << e.getMessage());
+      FWKEXCEPTION("Unable to read from stream " << e.what());
     }
     DataOutputInternal dos;
     try {
@@ -121,7 +121,7 @@ class TESTOBJECT_EXPORT ArrayOfByte {
       int64_t timestamp = tusec * 1000;
       dos.writeInt(timestamp);
     } catch (Exception &e) {
-      FWKEXCEPTION("Unable to write to stream " << e.getMessage());
+      FWKEXCEPTION("Unable to write to stream " << e.what());
     }
   }
 };

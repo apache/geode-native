@@ -404,9 +404,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       std::string logmsg = "";
       logmsg += excp.getName();
       logmsg += ": ";
-      logmsg += excp.getMessage();
+      logmsg += excp.what();
       LOG(logmsg.c_str());
-      excp.printStackTrace();
+      LOG(excp.getStackTrace());
     }
 
     LOG("StepThree complete.");
@@ -486,9 +486,9 @@ void client1Up() {
     std::string logmsg = "";
     logmsg += excp.getName();
     logmsg += ": ";
-    logmsg += excp.getMessage();
+    logmsg += excp.what();
     LOG(logmsg.c_str());
-    excp.printStackTrace();
+    LOG(excp.getStackTrace());
   }
   try {
     getHelper()->cachePtr->readyForEvents();
@@ -572,10 +572,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       std::string failmsg = "";
       failmsg += excp.getName();
       failmsg += ": ";
-      failmsg += excp.getMessage();
+      failmsg += excp.what();
       LOG(failmsg.c_str());
       FAIL(failmsg.c_str());
-      excp.printStackTrace();
+      LOG(excp.getStackTrace());
     }
 
     LOG("StepFour complete.");

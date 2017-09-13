@@ -196,22 +196,17 @@ namespace Apache.Geode.Client.UnitTests
 
     protected virtual void CreateEntryWithLocatorException(string regionName, string key, string val)
     {
-      bool foundException = false;
       try
       {
         CreateEntry(regionName, key, val);
       }
       catch (Apache.Geode.Client.NotConnectedException ex)
       {
-        if (ex.InnerException is NoAvailableLocatorsException)
-        {
-          Util.Log("Got expected {0}: {1}", ex.GetType().Name, ex.Message);
-          foundException = true;
-        }
+        Util.Log("Got expected {0}: {1}", ex.GetType().Name, ex.Message);
       }
-      if (!foundException)
+      catch
       {
-        Assert.Fail("Expected NotConnectedException with inner exception NoAvailableLocatorsException");
+        Assert.Fail("Expected NotConnectedException");
       }
     }
 

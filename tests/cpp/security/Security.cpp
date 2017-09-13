@@ -65,7 +65,7 @@ TESTTASK initialize(const char *initArgs) {
     try {
       g_test = new Security(initArgs);
     } catch (const FwkException &ex) {
-      FWKSEVERE("initialize: caught exception: " << ex.getMessage());
+      FWKSEVERE("initialize: caught exception: " << ex.what());
       result = FWK_SEVERE;
     }
   }
@@ -184,7 +184,7 @@ TESTTASK doCreateRegion(const char *taskId) {
     result = g_test->createRegion();
   } catch (FwkException &ex) {
     result = FWK_SEVERE;
-    FWKSEVERE("doCreateRegion caught exception: " << ex.getMessage());
+    FWKSEVERE("doCreateRegion caught exception: " << ex.what());
   }
 
   return result;
@@ -198,7 +198,7 @@ TESTTASK doCheckValues(const char *taskId) {
     result = g_test->checkValues();
   } catch (FwkException &ex) {
     result = FWK_SEVERE;
-    FWKSEVERE("doCheckValues caught exception: " << ex.getMessage());
+    FWKSEVERE("doCheckValues caught exception: " << ex.what());
   }
 
   return result;
@@ -215,7 +215,7 @@ TESTTASK doEntryOperations(const char *taskId) {
     result = g_test->doEntryOperations();
   } catch (const FwkException &ex) {
     result = FWK_SEVERE;
-    FWKSEVERE("doEntryOperations caught exception: " << ex.getMessage());
+    FWKSEVERE("doEntryOperations caught exception: " << ex.what());
   }
   return result;
 }
@@ -228,7 +228,7 @@ TESTTASK doPopulateRegion( const char * taskId ) {
     result = g_test->populateRegion();
   } catch ( FwkException ex ) {
     result = FWK_SEVERE;
-    FWKSEVERE( "doPopulateRegion caught exception: " << ex.getMessage() );
+    FWKSEVERE( "doPopulateRegion caught exception: " << ex.what() );
   }
 
   return result;
@@ -243,7 +243,7 @@ TESTTASK doRegisterInterestList(const char *taskId) {
     result = g_test->registerInterestList();
   } catch (FwkException &ex) {
     result = FWK_SEVERE;
-    FWKSEVERE("doRegisterInterestList caught exception: " << ex.getMessage());
+    FWKSEVERE("doRegisterInterestList caught exception: " << ex.what());
   }
 
   return result;
@@ -257,7 +257,7 @@ TESTTASK doRegisterRegexList(const char *taskId) {
     result = g_test->registerRegexList();
   } catch (FwkException &ex) {
     result = FWK_SEVERE;
-    FWKSEVERE("doRegisterRegexList caught exception: " << ex.getMessage());
+    FWKSEVERE("doRegisterRegexList caught exception: " << ex.what());
   }
 
   return result;
@@ -270,7 +270,7 @@ TESTTASK doUnRegisterRegexList(const char *taskId) {
     result = g_test->unregisterRegexList();
   } catch (FwkException &ex) {
     result = FWK_SEVERE;
-    FWKSEVERE("doRegisterRegexList caught exception: " << ex.getMessage());
+    FWKSEVERE("doRegisterRegexList caught exception: " << ex.what());
   }
 
   return result;
@@ -283,7 +283,7 @@ TESTTASK doRegisterAllKeys(const char *taskId) {
     result = g_test->registerAllKeys();
   } catch (FwkException &ex) {
     result = FWK_SEVERE;
-    FWKSEVERE("doRegisterAllKeys caught exception: " << ex.getMessage());
+    FWKSEVERE("doRegisterAllKeys caught exception: " << ex.what());
   }
 
   return result;
@@ -298,7 +298,7 @@ TESTTASK doVerifyInterestList( const char * taskId ) {
     result = g_test->verifyInterestList();
   } catch ( FwkException ex ) {
     result = FWK_SEVERE;
-    FWKSEVERE( "doVerifyInterestList caught exception: " << ex.getMessage() );
+    FWKSEVERE( "doVerifyInterestList caught exception: " << ex.what() );
   }
 
   return result;
@@ -313,7 +313,7 @@ TESTTASK doServerKeys( const char * taskId ) {
     result = g_test->doServerKeys();
   } catch ( FwkException ex ) {
     result = FWK_SEVERE;
-    FWKSEVERE( "doServerKeys caught exception: " << ex.getMessage() );
+    FWKSEVERE( "doServerKeys caught exception: " << ex.what() );
   }
 
   return result;
@@ -337,7 +337,7 @@ on." );
   try {
     regionPtr->serverKeys( keysVec );
   } catch( Exception & e ) {
-    FWKEXCEPTION( "Exception thrown by serverKeys(): " << e.getMessage() );
+    FWKEXCEPTION( "Exception thrown by serverKeys(): " << e.what() );
   }
 
   int32_t keys = keysVec.size();
@@ -472,10 +472,10 @@ int32_t Security::createRegion() {
 
   } catch (Exception &e) {
     FWKSEVERE("Security::createRegion FAILED -- caught exception: "
-              << e.getMessage());
+              << e.what());
   } catch (FwkException &e) {
     FWKSEVERE("Security::createRegion FAILED -- caught test exception: "
-              << e.getMessage());
+              << e.what());
   } catch (...) {
     FWKSEVERE("Security::createRegion FAILED -- caught unknown exception.");
   }
@@ -527,10 +527,10 @@ numOfRegisterKeys);
 
   } catch ( Exception e ) {
     FWKSEVERE( "Security::verifyInterestList Caught Exception: " <<
-e.getMessage() );
+e.what() );
   } catch ( FwkException& e ) {
     FWKSEVERE( "Security::verifyInterestList Caught FwkException: " <<
-e.getMessage() );
+e.what() );
   } catch ( ... ) {
     FWKSEVERE( "Security::verifyInterestList Caught unknown exception." );
   }
@@ -561,11 +561,11 @@ int32_t Security::populateRegion()
     FWKSEVERE( "Security::populateRegion() Caught std::exception: " << e.what()
 );
   } catch ( Exception e ) {
-    FWKSEVERE( "Security::populateRegion() Caught Exception: " << e.getMessage()
+    FWKSEVERE( "Security::populateRegion() Caught Exception: " << e.what()
 );
   } catch ( FwkException& e ) {
     FWKSEVERE( "Security::populateRegion() Caught FwkException: " <<
-e.getMessage() );
+e.what() );
   } catch ( ... ) {
     FWKSEVERE( "Security::populateRegion() Caught unknown exception." );
   }
@@ -612,10 +612,10 @@ int32_t Security::registerInterestList() {
 
   } catch (Exception &e) {
     FWKEXCEPTION("Security::registerInterestList() Caught Exception: "
-                 << e.getMessage());
+                 << e.what());
   } catch (FwkException &e) {
     FWKEXCEPTION("Security::registerInterestList() Caught FwkException: "
-                 << e.getMessage());
+                 << e.what());
   } catch (...) {
     FWKEXCEPTION("Security::registerInterestList() Caught unknown exception.");
   }
@@ -638,10 +638,10 @@ int32_t Security::registerRegexList() {
 
   } catch (Exception &e) {
     FWKSEVERE(
-        "Security::registerRegexList() Caught Exception: " << e.getMessage());
+        "Security::registerRegexList() Caught Exception: " << e.what());
   } catch (FwkException &e) {
     FWKSEVERE("Security::registerRegexList() Caught FwkException: "
-              << e.getMessage());
+              << e.what());
   } catch (...) {
     FWKSEVERE("Security::registerRegexList() Caught unknown exception.");
   }
@@ -663,10 +663,10 @@ int32_t Security::unregisterRegexList() {
 
   } catch (Exception &e) {
     FWKSEVERE(
-        "Security::unregisterRegexList() Caught Exception: " << e.getMessage());
+        "Security::unregisterRegexList() Caught Exception: " << e.what());
   } catch (FwkException &e) {
     FWKSEVERE("Security::unregisterRegexList() Caught FwkException: "
-              << e.getMessage());
+              << e.what());
   } catch (...) {
     FWKSEVERE("Security::unregisterRegexList() Caught unknown exception.");
   }
@@ -687,10 +687,10 @@ int32_t Security::registerAllKeys() {
 
   } catch (Exception &e) {
     FWKSEVERE(
-        "Security::registerAllKeys() Caught Exception: " << e.getMessage());
+        "Security::registerAllKeys() Caught Exception: " << e.what());
   } catch (FwkException &e) {
     FWKSEVERE(
-        "Security::registerAllKeys() Caught FwkException: " << e.getMessage());
+        "Security::registerAllKeys() Caught FwkException: " << e.what());
   } catch (...) {
     FWKSEVERE("Security::registerAllKeys() Caught unknown exception.");
   }
@@ -728,10 +728,10 @@ int32_t Security::checkValues() {
     result = FWK_SUCCESS;
   } catch (Exception &e) {
     FWKSEVERE(
-        "Security::checkValues FAILED -- caught exception: " << e.getMessage());
+        "Security::checkValues FAILED -- caught exception: " << e.what());
   } catch (FwkException &e) {
     FWKSEVERE("Security::checkValues FAILED -- caught test exception: "
-              << e.getMessage());
+              << e.what());
   } catch (...) {
     FWKSEVERE("Security::checkValues FAILED -- caught unknown exception.");
   }
@@ -783,17 +783,17 @@ std::shared_ptr<Region> Security::getRegionPtr(const char *reg) {
     FWKEXCEPTION(
         "In Security::getRegionPtr()  CacheFactory::getInstance encountered "
         "CacheClosedException: "
-        << e.getMessage());
+        << e.what());
   } catch (EntryNotFoundException &e) {
     FWKEXCEPTION(
         "In Security::getRegionPtr()  CacheFactory::getInstance encountered "
         "EntryNotFoundException: "
-        << e.getMessage());
+        << e.what());
   } catch (IllegalArgumentException &e) {
     FWKEXCEPTION(
         "In Security::getRegionPtr()  CacheFactory::getInstance encountered "
         "IllegalArgumentException: "
-        << e.getMessage());
+        << e.what());
   }
   return region;
 }
@@ -932,10 +932,10 @@ void Security::runQuery(int32_t &queryCnt) {
     }
   } catch (Exception &e) {
     FWKEXCEPTION(
-        "CacheServerTest::runQuery Caught Exception: " << e.getMessage());
+        "CacheServerTest::runQuery Caught Exception: " << e.what());
   } catch (FwkException &e) {
     FWKEXCEPTION(
-        "CacheServerTest::runQuery Caught FwkException: " << e.getMessage());
+        "CacheServerTest::runQuery Caught FwkException: " << e.what());
   } catch (...) {
     FWKEXCEPTION("CacheServerTest::runQuery Caught unknown exception.");
   }
@@ -1050,19 +1050,19 @@ int32_t Security::doEntryOperations() {
    } catch (TimeoutException &e) {
      fwkResult = FWK_SEVERE;
      FWKSEVERE("Caught unexpected timeout exception during entry "
-               << opcode << " operation: " << e.getMessage()
+               << opcode << " operation: " << e.what()
                << " continuing with test.");
    } catch (EntryExistsException &ignore) {
-     ignore.getMessage();
+     ignore.what();
    } catch (EntryNotFoundException &ignore) {
-     ignore.getMessage();
+     ignore.what();
    } catch (EntryDestroyedException &ignore) {
-     ignore.getMessage();
+     ignore.what();
    } catch (Exception &e) {
      end = 0;
      fwkResult = FWK_SEVERE;
      FWKSEVERE("Caught unexpected exception during entry "
-               << opcode << " operation: " << e.getMessage()
+               << opcode << " operation: " << e.what()
                << " exiting task.");
    }
    meter.checkPace();

@@ -236,9 +236,9 @@ void DistributedSystem::connect() {
     m_impl->connect();
   } catch (const apache::geode::client::Exception& e) {
     LOGERROR("Exception caught during client initialization: %s",
-             e.getMessage());
+             e.what());
     std::string msg = "DistributedSystem::connect: caught exception: ";
-    msg.append(e.getMessage());
+    msg.append(e.what());
     throw NotConnectedException(msg.c_str());
   } catch (const std::exception& e) {
     LOGERROR("Exception caught during client initialization: %s", e.what());

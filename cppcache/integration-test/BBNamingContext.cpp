@@ -107,7 +107,7 @@ void BBNamingContextClientImpl::open() {
     fflush(stdout);
     m_bbc = new FwkBBClient(buf);
   } catch (FwkException& e) {
-    FWKEXCEPTION("create bb client encounted Exception: " << e.getMessage());
+    FWKEXCEPTION("create bb client encounted Exception: " << e.what());
   } catch (...) {
     FWKEXCEPTION("create bb client unknow exception\n");
   }
@@ -143,7 +143,7 @@ int BBNamingContextClientImpl::rebind(const char* key, const char* value,
       return 0;
     }
   } catch (FwkException& e) {
-    FWKEXCEPTION(" rebind encounted Exception: " << e.getMessage());
+    FWKEXCEPTION(" rebind encounted Exception: " << e.what());
     m_errCount++;
   } catch (...) {
     FWKEXCEPTION("rebind unknown exception\n");
@@ -166,7 +166,7 @@ void BBNamingContextClientImpl::dump() {
       m_errCount = 0;
     }
   } catch (FwkException& e) {
-    FWKEXCEPTION("create dump encounted Exception: " << e.getMessage());
+    FWKEXCEPTION("create dump encounted Exception: " << e.what());
     m_errCount++;
   } catch (...) {
     FWKEXCEPTION("dump unknown exception\n");
@@ -195,7 +195,7 @@ int BBNamingContextClientImpl::resolve(const char* key, char* value,
     }
     return v.length() == 0 ? -1 : 0;
   } catch (FwkException& e) {
-    FWKEXCEPTION("create resolve encounted Exception: " << e.getMessage());
+    FWKEXCEPTION("create resolve encounted Exception: " << e.what());
     m_errCount++;
   } catch (...) {
     FWKEXCEPTION("resolve unknown exception\n");
@@ -211,7 +211,7 @@ bool BBNamingContextClientImpl::checkValue(const std::string& k,
     std::string v = m_bbc->getString(k, k1);
     if (value == v) valid = true;
   } catch (FwkException& e) {
-    FWKEXCEPTION("create resolve encounted Exception: " << e.getMessage());
+    FWKEXCEPTION("create resolve encounted Exception: " << e.what());
   } catch (...) {
     FWKEXCEPTION("resolve unknown exception\n");
   }
@@ -237,7 +237,7 @@ BBNamingContextServerImpl::BBNamingContextServerImpl() {
     thrds = m_farm->runThreaded(m_serv, 1);
     thrds = m_farm->runThreaded(m_resp, 1);
   } catch (FwkException& e) {
-    FWKEXCEPTION("create bb server encounted Exception: " << e.getMessage());
+    FWKEXCEPTION("create bb server encounted Exception: " << e.what());
   } catch (...) {
     FWKSEVERE("create bb server unknown exception\n");
   }

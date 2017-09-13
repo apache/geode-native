@@ -17,6 +17,7 @@
 
 #include <cstdio>
 #include <string>
+#include <sstream>
 #include <geode/ExceptionTypes.hpp>
 #include <TXState.hpp>
 #include <TSSTXStateWrapper.hpp>
@@ -39,294 +40,338 @@ void GfErrTypeThrowException(const char* str, GfErrType err) {
   }
   switch (err) {
     case GF_NOTCON: {
-      NotConnectedException ex(
-          str, (exMsg != nullptr ? exMsg : ": not connected to Geode"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": not connected to Geode");
+      NotConnectedException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_MSG: {
-      MessageException ex(
-          str,
-          (exMsg != nullptr ? exMsg
-                            : ": message from server could not be handled"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg
+                    : ": message from server could not be handled");
+
+      MessageException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHESERVER_EXCEPTION: {
-      CacheServerException ex(
-          str,
-          (exMsg != nullptr ? exMsg : ": exception happened at cache server"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": exception happened at cache server");
+      CacheServerException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_NOTOWN: {
-      NotOwnerException ex(str,
-                           (exMsg != nullptr ? exMsg : ": not own the lock"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": not own the lock");
+      NotOwnerException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_REGION_NOT_FOUND: {
-      CacheServerException ex(
-          str, (exMsg != nullptr ? exMsg : ": region not found on server"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": region not found on server");
+      CacheServerException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_REGION_NOT_GLOBAL: {
-      IllegalStateException ex(
-          str, (exMsg != nullptr ? exMsg : ": region not global"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": region not global");
+      IllegalStateException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION: {
-      IllegalArgumentException ex(
-          str, (exMsg != nullptr ? exMsg : ": illegal argument"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": illegal argument");
+      IllegalArgumentException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_ILLEGAL_STATE_EXCEPTION: {
-      IllegalStateException ex(str,
-                               (exMsg != nullptr ? exMsg : ": illegal State"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": illegal State");
+      IllegalStateException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_WRITER_EXCEPTION: {
-      CacheWriterException ex(
-          str,
-          (exMsg != nullptr ? exMsg : ": exception on server during write"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": exception on server during write");
+      CacheWriterException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHEWRITER_ERROR: {
-      CacheWriterException ex(
-          str, (exMsg != nullptr ? exMsg : ": exception in CacheWriter"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": exception in CacheWriter");
+      CacheWriterException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_LOADER_EXCEPTION: {
-      CacheLoaderException ex(
-          str, (exMsg != nullptr ? exMsg : ": exception in CacheLoader"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": exception in CacheLoader");
+      CacheLoaderException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_LISTENER_EXCEPTION: {
-      CacheListenerException ex(
-          str, (exMsg != nullptr ? exMsg : ": exception in CacheListener"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": exception in CacheListener");
+      CacheListenerException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_REGION_INVALID: {
-      RegionDestroyedException ex(
-          str, (exMsg != nullptr ? exMsg : ": region not valid"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": region not valid");
+      RegionDestroyedException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_PROXY: {
-      CacheProxyException ex(
-          str, (exMsg != nullptr ? exMsg : ": error in Cache proxy"));
+      std::stringstream ss;
+      ss << str <<  (exMsg != nullptr ? exMsg : ": error in Cache proxy");
+      CacheProxyException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_IOERR: {
-      GeodeIOException ex(
-          str,
-          (exMsg != nullptr ? exMsg : ": Input/Output error in operation"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": Input/Output error in operation");
+      GeodeIOException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_ENOENT: {
-      NoSystemException ex(
-          str, (exMsg != nullptr ? exMsg : ": entity does not exist"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": entity does not exist");
+      NoSystemException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_REGION_KEYS_NOT_STRINGS: {
-      IllegalArgumentException ex(
-          str, (exMsg != nullptr ? exMsg
-                                 : ": region entries do not support C access"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg
+                    : ": region entries do not support C access");
+      IllegalArgumentException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_REGION_ENTRY_NOT_BYTES: {
-      IllegalArgumentException ex(
-          str, (exMsg != nullptr
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr
                     ? exMsg
-                    : ": existing non-null values was not a byte array"));
+                    : ": existing non-null values was not a byte array");
+      IllegalArgumentException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_TIMEOUT_EXCEPTION: {
-      TimeoutException ex(str, (exMsg != nullptr ? exMsg : ": timed out"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": timed out");
+      TimeoutException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_TIMOUT: {
-      TimeoutException ex(str, (exMsg != nullptr ? exMsg : ": timed out"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": timed out");
+      TimeoutException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CLIENT_WAIT_TIMEOUT: {
-      TimeoutException ex(
-          str, (exMsg != nullptr
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr
                     ? exMsg
-                    : ": timed out, possibly bucket is not available."));
+                    : ": timed out, possibly bucket is not available.");
+      TimeoutException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_ENOMEM: {
-      OutOfMemoryException ex(str,
-                              (exMsg != nullptr ? exMsg : ": Out of memory"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": Out of memory");
+      OutOfMemoryException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_ERANGE: {
-      BufferSizeExceededException ex(
-          str, (exMsg != nullptr ? exMsg : ": Buffer Size Exceeded"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": Buffer Size Exceeded");
+      BufferSizeExceededException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_LEASE_EXPIRED_EXCEPTION: {
-      LeaseExpiredException ex(
-          str, (exMsg != nullptr ? exMsg : ": lock Lease Expired On you"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": lock Lease Expired On you");
+      LeaseExpiredException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_REGION_EXISTS_EXCEPTION: {
-      RegionExistsException ex(
-          str, (exMsg != nullptr ? exMsg : ": Named Region Exists"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": Named Region Exists");
+      RegionExistsException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_ENTRY_NOT_FOUND: {
-      EntryNotFoundException ex(
-          str, (exMsg != nullptr ? exMsg : ": Entry not found"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": Entry not found");
+      EntryNotFoundException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_ENTRY_EXISTS: {
-      EntryExistsException ex(
-          str,
-          (exMsg != nullptr ? exMsg : ": Entry already exists in the region"));
+      std::stringstream ss;
+      ss << str
+         << (exMsg != nullptr ? exMsg : ": Entry already exists in the region");
+      EntryExistsException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_ENTRY_DESTROYED_EXCEPTION: {
-      EntryDestroyedException ex(
-          str, (exMsg != nullptr ? exMsg : ": Entry has been destroyed"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": Entry has been destroyed");
+      EntryDestroyedException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_REGION_DESTROYED_EXCEPTION: {
-      RegionDestroyedException ex(
-          str, (exMsg != nullptr ? exMsg : ": Named Region Destroyed"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": Named Region Destroyed");
+      RegionDestroyedException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_CLOSED_EXCEPTION: {
-      CacheClosedException ex(
-          str, (exMsg != nullptr ? exMsg : ": Cache has been closed"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": Cache has been closed");
+      CacheClosedException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_STATISTICS_DISABLED_EXCEPTION: {
-      StatisticsDisabledException ex(
-          str, (exMsg != nullptr
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr
                     ? exMsg
-                    : ": Statistics have been disabled for the region"));
+                    : ": Statistics have been disabled for the region");
+      StatisticsDisabledException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_CONCURRENT_MODIFICATION_EXCEPTION: {
-      ConcurrentModificationException ex(
-          str, (exMsg != nullptr ? exMsg
-                                 : ": Concurrent modification in the cache"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg
+                    : ": Concurrent modification in the cache");
+      ConcurrentModificationException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_NOT_AUTHORIZED_EXCEPTION: {
-      NotAuthorizedException ex(
-          str, (exMsg != nullptr ? exMsg : ": unauthorized operation"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": unauthorized operation");
+      NotAuthorizedException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_AUTHENTICATION_FAILED_EXCEPTION: {
-      AuthenticationFailedException ex(
-          str, (exMsg != nullptr ? exMsg : ": authentication failed"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": authentication failed");
+      AuthenticationFailedException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_AUTHENTICATION_REQUIRED_EXCEPTION: {
-      AuthenticationRequiredException ex(
-          str, (exMsg != nullptr ? exMsg : ": no authentication provided"));
+      std::stringstream ss;
+      ss << str <<  (exMsg != nullptr ? exMsg : ": no authentication provided");
+      AuthenticationRequiredException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_DUPLICATE_DURABLE_CLIENT: {
-      DuplicateDurableClientException ex(
-          str, (exMsg != nullptr ? exMsg : ": Duplicate Durable Client Id"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": Duplicate Durable Client Id");
+      DuplicateDurableClientException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_REMOTE_QUERY_EXCEPTION: {
-      QueryException ex(str, (exMsg != nullptr ? exMsg : ": Query failed"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": Query failed");
+      QueryException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_LOCATOR_EXCEPTION: {
-      auto exCause = std::make_shared<NoAvailableLocatorsException>(
-          str, (exMsg != nullptr ? exMsg : ": No locators available"));
-      NotConnectedException ex(
-          str, (exMsg != nullptr ? exMsg : ": No locators available"), false,
-          exCause);
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": No locators available");
+      NotConnectedException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_ALL_CONNECTIONS_IN_USE_EXCEPTION: {
-      AllConnectionsInUseException ex(
-          str, (exMsg != nullptr ? exMsg : ": All connections are in use"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": All connections are in use");
+      AllConnectionsInUseException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_FUNCTION_EXCEPTION: {
-      FunctionExecutionException ex(
-          str, (exMsg != nullptr ? exMsg : ": Function execution failed"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": Function execution failed");
+      FunctionExecutionException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_DISKFULL: {
-      DiskFailureException ex(str, (exMsg != nullptr ? exMsg : ": Disk full"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": Disk full");
+      DiskFailureException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_ROLLBACK_EXCEPTION: {
-      RollbackException ex(
-          str, (exMsg != nullptr ? exMsg : ": Transaction rolled back"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": Transaction rolled back");
+      RollbackException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_COMMIT_CONFLICT_EXCEPTION: {
-      CommitConflictException ex(
-          str, (exMsg != nullptr ? exMsg : ": Commit conflict exception"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": Commit conflict exception");
+      CommitConflictException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_TRANSACTION_DATA_REBALANCED_EXCEPTION: {
-      TransactionDataRebalancedException ex(
-          str, (exMsg != nullptr ? exMsg
-                                 : ": Transaction data rebalanced exception"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg
+                    : ": Transaction data rebalanced exception");
+      TransactionDataRebalancedException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_TRANSACTION_DATA_NODE_HAS_DEPARTED_EXCEPTION: {
-      TransactionDataNodeHasDepartedException ex(
-          str, (exMsg != nullptr
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr
                     ? exMsg
-                    : ": Transaction data node has departed exception"));
+                    : ": Transaction data node has departed exception");
+      TransactionDataNodeHasDepartedException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_PUTALL_PARTIAL_RESULT_EXCEPTION: {
-      PutAllPartialResultException ex(
-          str, (exMsg != nullptr ? exMsg : ": PutAll Partial exception"));
+      std::stringstream ss;
+      ss << str << (exMsg != nullptr ? exMsg : ": PutAll Partial exception");
+      PutAllPartialResultException ex(ss.str());
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
@@ -337,7 +382,8 @@ void GfErrTypeThrowException(const char* str, GfErrType err) {
         ACE_OS::snprintf(buf, 64, "Unknown error code[0x%X]", err);
         exMsg = buf;
       }
-      UnknownException ex(str, exMsg);
+      std::string message = std::string(str) + exMsg;
+      UnknownException ex(message);
       setTSSExceptionMessage(nullptr);
       throw ex;
     }

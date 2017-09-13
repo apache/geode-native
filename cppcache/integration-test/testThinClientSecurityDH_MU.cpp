@@ -157,8 +157,8 @@ void InitIncorrectClients(const char* dhAlgo) {
   try {
     initClientAuth(INCORRECT_CREDENTIALS, dhAlgo);
   } catch (const apache::geode::client::Exception& other) {
-    other.printStackTrace();
-    LOG(other.getMessage());
+    LOG(other.getStackTrace());
+    LOG(other.what());
   }
 
   try {
@@ -175,11 +175,11 @@ void InitIncorrectClients(const char* dhAlgo) {
    }
    FAIL("Should have thrown AuthenticationFailedException.");
   } catch (const apache::geode::client::AuthenticationFailedException& other) {
-    other.printStackTrace();
-    LOG(other.getMessage());
+    LOG(other.getStackTrace());
+    LOG(other.what());
   } catch (const apache::geode::client::Exception& other) {
-    other.printStackTrace();
-    LOG(other.getMessage());
+    LOG(other.getStackTrace());
+    LOG(other.what());
     FAIL("Only AuthenticationFailedException is expected");
   }
   LOG("InitIncorrectClients Completed");
@@ -189,8 +189,8 @@ void InitCorrectClients(const char* dhAlgo) {
   try {
     initClientAuth(CORRECT_CREDENTIALS, dhAlgo);
   } catch (const apache::geode::client::Exception& other) {
-    other.printStackTrace();
-    LOG(other.getMessage());
+    LOG(other.getStackTrace());
+    LOG(other.what());
   }
   try {
     createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, nullptr, false,
@@ -205,8 +205,8 @@ void InitCorrectClients(const char* dhAlgo) {
 
    for (int i = 0; i < 100; i++) regionPtr->put(keys[0], vals[0]);
   } catch (const apache::geode::client::Exception& other) {
-    other.printStackTrace();
-    FAIL(other.getMessage());
+    LOG(other.getStackTrace());
+    FAIL(other.what());
   }
   LOG("Handshake  and  Authentication successfully completed");
 }
@@ -236,8 +236,8 @@ void DoNetSearch() {
      LOG("checkPtr is nullptr");
     }
   } catch (const apache::geode::client::Exception& other) {
-    other.printStackTrace();
-    FAIL(other.getMessage());
+    LOG(other.getStackTrace());
+    FAIL(other.what());
   }
   LOG("Handshake  and  Authentication successfully completed after FailOver");
 }

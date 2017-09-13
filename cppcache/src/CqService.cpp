@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#include <sstream>
+
 #include "CqService.hpp"
 #include "ReadWriteLock.hpp"
 #include <geode/DistributedSystem.hpp>
@@ -261,11 +263,11 @@ void CqService::executeCqs(query_container_type& cqs, bool afterFailover) {
         }
       } catch (QueryException& qe) {
         LOGFINE("%s", ("Failed to execute the CQ, CqName : " + cqName +
-                       " Error : " + qe.getMessage())
+                       " Error : " + qe.what())
                           .c_str());
       } catch (CqClosedException& cce) {
         LOGFINE(("Failed to execute the CQ, CqName : " + cqName +
-                 " Error : " + cce.getMessage())
+                 " Error : " + cce.what())
                     .c_str());
       }
     }
@@ -297,11 +299,11 @@ void CqService::stopCqs(query_container_type& cqs) {
         cq->stop();
       } catch (QueryException& qe) {
         Log::fine(("Failed to stop the CQ, CqName : " + cqName +
-                   " Error : " + qe.getMessage())
+                   " Error : " + qe.what())
                       .c_str());
       } catch (CqClosedException& cce) {
         Log::fine(("Failed to stop the CQ, CqName : " + cqName +
-                   " Error : " + cce.getMessage())
+                   " Error : " + cce.what())
                       .c_str());
       }
     }
@@ -326,11 +328,11 @@ void CqService::closeCqs(query_container_type& cqs) {
         }
       } catch (QueryException& qe) {
         Log::fine(("Failed to close the CQ, CqName : " + cqName +
-                   " Error : " + qe.getMessage())
+                   " Error : " + qe.what())
                       .c_str());
       } catch (CqClosedException& cce) {
         Log::fine(("Failed to close the CQ, CqName : " + cqName +
-                   " Error : " + cce.getMessage())
+                   " Error : " + cce.what())
                       .c_str());
       }
     }
@@ -390,7 +392,7 @@ bool CqService::isCqExists(const std::string& cqName) {
     status = (0 == m_cqQueryMap->find(cqName, tmp));
   } catch (Exception& ex) {
     LOGFINE("Exception (%s) in isCQExists, ignored ",
-            ex.getMessage());  // Ignore.
+            ex.what());  // Ignore.
   }
   return status;
 }
@@ -435,7 +437,7 @@ void CqService::invokeCqListeners(const std::map<std::string, int>* cqs,
         cQueryImpl->close(false);
       } catch (Exception& ex) {
         // handle?
-        LOGFINE("Exception while invoking CQ listeners: %s", ex.getMessage());
+        LOGFINE("Exception while invoking CQ listeners: %s", ex.what());
       }
       continue;
     }
@@ -463,7 +465,7 @@ void CqService::invokeCqListeners(const std::map<std::string, int>* cqs,
         // Handle client side exceptions.
       } catch (Exception& ex) {
         LOGWARN(("Exception in the CqListener of the CQ named " + cqName +
-                 ", error: " + ex.getMessage())
+                 ", error: " + ex.what())
                     .c_str());
       }
     }
@@ -509,7 +511,7 @@ void CqService::invokeCqConnectedListeners(const std::string& poolName,
         // Handle client side exceptions.
       } catch (Exception& ex) {
         LOGWARN(("Exception in the CqStatusListener of the CQ named " + cqName +
-                 ", error: " + ex.getMessage())
+                 ", error: " + ex.what())
                     .c_str());
       }
     }
@@ -582,10 +584,11 @@ CqOperation::CqOperationType CqService::getOperation(int eventType) {
     err = ThinClientRegion::handleServerException(
         "CqService::getAllDurableCqsFromServer", reply.getException());
     if (err == GF_CACHESERVER_EXCEPTION) {
-      throw CqQueryException(
-          "CqService::getAllDurableCqsFromServer: exception "
-          "at the server side: ",
-          reply.getException());
+      std::stringstream message;
+      message << "CqService::getAllDurableCqsFromServer: exception "
+              << "at the server side: "
+              << reply.getException();
+      throw CqQueryException(message.str());
     } else {
       GfErrTypeToException("CqService::getAllDurableCqsFromServer", err);
     }

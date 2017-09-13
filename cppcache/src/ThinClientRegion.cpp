@@ -381,7 +381,7 @@ void ThinClientRegion::initTCR() {
   } catch (const Exception& ex) {
     GF_SAFE_DELETE(m_tcrdm);
     LOGERROR("Exception while initializing region: %s: %s", ex.getName(),
-             ex.getMessage());
+             ex.what());
     throw;
   }
 }
@@ -2943,25 +2943,15 @@ void ThinClientRegion::registerInterestGetValues(
     const char* method, const std::vector<std::shared_ptr<CacheableKey>>* keys,
     const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>&
         resultKeys) {
-  try {
-    auto values = std::make_shared<HashMapOfCacheable>();
-    auto exceptions = std::make_shared<HashMapOfException>();
-    GfErrType err = getAllNoThrow_remote(keys, values, exceptions, resultKeys,
-                                         true, nullptr);
-    GfErrTypeToException(method, err);
-    // log any exceptions here
-    for (const auto& iter : *exceptions) {
-      LOGWARN("%s Exception for key %s:: %s: %s", method,
-              Utils::getCacheableKeyString(iter.first)->asChar(),
-              iter.second->getName(), iter.second->getMessage());
-    }
-  } catch (const Exception& ex) {
-    LOGWARN("%s Exception while getting values: %s: %s", method, ex.getName(),
-            ex.getMessage());
-    std::string msg(method);
-    msg += " failed in getting values";
-    throw EntryNotFoundException(msg.c_str(), nullptr, false,
-                                 std::shared_ptr<Exception>(ex.clone()));
+  auto exceptions = std::make_shared<HashMapOfException>();
+  auto err = getAllNoThrow_remote(keys, nullptr, exceptions, resultKeys,
+                                       true, nullptr);
+  GfErrTypeToException(method, err);
+  // log any exceptions here
+  for (const auto& iter : *exceptions) {
+    LOGWARN("%s Exception for key %s:: %s: %s", method,
+            Utils::getCacheableKeyString(iter.first)->asChar(),
+            iter.second->getName(), iter.second->what());
   }
 }
 
