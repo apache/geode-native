@@ -36,7 +36,7 @@ void CacheableObjectArray::toData(DataOutput& output) const {
   }
 }
 
-Serializable* CacheableObjectArray::fromData(DataInput& input) {
+void CacheableObjectArray::fromData(DataInput& input) {
   int32_t len;
   input.readArrayLen(&len);
   if (len >= 0) {
@@ -52,7 +52,6 @@ Serializable* CacheableObjectArray::fromData(DataInput& input) {
       push_back(obj);
     }
   }
-  return this;
 }
 
 int32_t CacheableObjectArray::classId() const { return 0; }

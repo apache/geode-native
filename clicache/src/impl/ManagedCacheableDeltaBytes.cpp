@@ -50,7 +50,7 @@ namespace apache
         }
       }
 
-      Serializable* ManagedCacheableDeltaBytesGeneric::fromData(DataInput& input)
+      void ManagedCacheableDeltaBytesGeneric::fromData(DataInput& input)
       {
         try {
           Apache::Geode::Client::Log::Debug("ManagedCacheableDeltaBytes::fromData: classid " + m_classId);
@@ -77,7 +77,6 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return this;
       }
 
       System::UInt32 ManagedCacheableDeltaBytesGeneric::objectSize() const

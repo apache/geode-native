@@ -83,7 +83,7 @@ namespace apache
         /// deserialize this object, typical implementation should return
         /// the 'this' pointer.
         /// </summary>
-        virtual apache::geode::client::Serializable* fromData(apache::geode::client::DataInput& input);
+        virtual void fromData(apache::geode::client::DataInput& input);
 
 
         /// <summary>

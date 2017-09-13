@@ -85,7 +85,7 @@ class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
    *@brief deserialize this object, typical implementation should return
    * the 'this' pointer.
    **/
-  Serializable* fromData(DataInput& input);
+  void fromData(DataInput& input);
   /**
    *@brief return the classId of the instance being serialized.
    * This is used by deserialization to determine what instance

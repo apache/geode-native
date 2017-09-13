@@ -99,12 +99,7 @@ namespace Apache
 
         try
         {
-          auto temp = m_nativeptr->get()->fromData(*nativeInput);
-          if (temp != m_nativeptr->get())
-          {
-            m_nativeptr->get_shared_ptr().reset(temp);
-          }
-
+          m_nativeptr->get()->fromData(*nativeInput);
           if (input->IsManagedObject()) {
             input->SetBuffer();
           }

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_SERVERLOCATIONRESPONSE_H_
-#define GEODE_SERVERLOCATIONRESPONSE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,16 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_SERVERLOCATIONRESPONSE_H_
+#define GEODE_SERVERLOCATIONRESPONSE_H_
+
 #include <geode/Serializable.hpp>
 #include "GeodeTypeIdsImpl.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
+
 class ServerLocationResponse : public Serializable {
  public:
   ServerLocationResponse() : Serializable() {}
   virtual void toData(DataOutput& output) const {}  // Not needed as of now
-  virtual Serializable* fromData(
+  virtual void fromData(
       DataInput& input) = 0;  // Has to be implemented by concerte class
   virtual int32_t classId() const { return 0; }
   virtual int8_t typeId() const = 0;  // Has to be implemented by concrete class
@@ -39,6 +42,7 @@ class ServerLocationResponse : public Serializable {
       const = 0;  // Has to be implemented by concrete class
   virtual ~ServerLocationResponse() {}  // Virtual destructor
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

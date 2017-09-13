@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_VERSIONEDCACHEABLEOBJECTPARTLIST_H_
-#define GEODE_VERSIONEDCACHEABLEOBJECTPARTLIST_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,19 +15,13 @@
  * limitations under the License.
  */
 
-/*
-#include <geode/geode_globals.hpp>
-#include <geode/geode_types.hpp>
-#include <geode/DataOutput.hpp>
-#include <geode/DataInput.hpp>
-#include <geode/Cacheable.hpp>
-#include <geode/VectorT.hpp>
-#include <geode/HashMapT.hpp>
-#include "MapWithLock.hpp"
-*/
+#pragma once
+
+#ifndef GEODE_VERSIONEDCACHEABLEOBJECTPARTLIST_H_
+#define GEODE_VERSIONEDCACHEABLEOBJECTPARTLIST_H_
+
 #include "CacheableObjectPartList.hpp"
 #include "VersionTag.hpp"
-//#include "DiskVersionTag.hpp"
 #include <ace/Task.h>
 #include <vector>
 
@@ -42,6 +31,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 class ThinClientRegion;
 
 /**
@@ -267,7 +257,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   /**
    *@brief deserialize this object
    **/
-  virtual Serializable* fromData(DataInput& input);
+  virtual void fromData(DataInput& input);
 
   /**
    * @brief creation function for java Object[]
@@ -299,6 +289,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
 
   virtual uint32_t objectSize() const;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

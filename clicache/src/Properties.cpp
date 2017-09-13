@@ -263,12 +263,9 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          try
+        try
         {
-          auto p = static_cast<native::Properties*>(m_nativeptr->get()->fromData(input));
-          if (m_nativeptr->get() != p) {
-            m_nativeptr->get_shared_ptr().reset(p);
-          }
+          m_nativeptr->get()->fromData(input);
         }
         finally
         {

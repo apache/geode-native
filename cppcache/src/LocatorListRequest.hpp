@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_LOCATORLISTREQUEST_H_
-#define GEODE_LOCATORLISTREQUEST_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_LOCATORLISTREQUEST_H_
+#define GEODE_LOCATORLISTREQUEST_H_
+
 #include <string>
 #include "ServerLocationRequest.hpp"
 #include "GeodeTypeIdsImpl.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
+
 class DataOutput;
 class DataInput;
 class Serializable;
@@ -35,10 +38,11 @@ class LocatorListRequest : public ServerLocationRequest {
  public:
   LocatorListRequest(const std::string& servergroup = "");
   virtual void toData(DataOutput& output) const;
-  virtual Serializable* fromData(DataInput& input);
+  virtual void fromData(DataInput& input);
   virtual int8_t typeId() const;
   virtual uint32_t objectSize() const;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

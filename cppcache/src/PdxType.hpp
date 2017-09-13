@@ -41,7 +41,7 @@ typedef std::map<std::string, PdxFieldTypePtr> NameVsPdxType;
 class PdxType;
 typedef std::shared_ptr<PdxType> PdxTypePtr;
 class PdxTypeRegistry;
-typedef std::shared_ptr <PdxTypeRegistry> PdxTypeRegistryPtr;
+typedef std::shared_ptr<PdxTypeRegistry> PdxTypeRegistryPtr;
 
 class PdxType : public Serializable,
                 private NonCopyable,
@@ -100,18 +100,21 @@ class PdxType : public Serializable,
   }
 
  public:
-
-  PdxType(PdxTypeRegistryPtr pdxTypeRegistryPtr, const char* pdxDomainClassName, bool isLocal);
+  PdxType(PdxTypeRegistryPtr pdxTypeRegistryPtr, const char* pdxDomainClassName,
+          bool isLocal);
 
   virtual ~PdxType();
 
   virtual void toData(DataOutput& output) const;
 
-  virtual Serializable* fromData(DataInput& input);
+  virtual void fromData(DataInput& input);
 
   virtual int32_t classId() const { return GeodeTypeIds::PdxType; }
 
-  static Serializable* CreateDeserializable(PdxTypeRegistryPtr pdxTypeRegistryPtr) { return new PdxType(pdxTypeRegistryPtr, nullptr, false); }
+  static Serializable* CreateDeserializable(
+      PdxTypeRegistryPtr pdxTypeRegistryPtr) {
+    return new PdxType(pdxTypeRegistryPtr, nullptr, false);
+  }
 
   virtual uint32_t objectSize() const {
     uint32_t size = sizeof(PdxType);

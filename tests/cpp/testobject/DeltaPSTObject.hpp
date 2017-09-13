@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TESTOBJECT_DELTAPSTOBJECT_H_
-#define GEODE_TESTOBJECT_DELTAPSTOBJECT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_TESTOBJECT_DELTAPSTOBJECT_H_
+#define GEODE_TESTOBJECT_DELTAPSTOBJECT_H_
 
 /*
  * @brief User class for testing the put functionality for object.
@@ -63,8 +63,7 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
   DeltaPSTObject(int size, bool encodeKey, bool encodeTimestamp);
   virtual ~DeltaPSTObject() {}
   void toData(apache::geode::client::DataOutput& output) const;
-  apache::geode::client::Serializable* fromData(
-      apache::geode::client::DataInput& input);
+  void fromData(apache::geode::client::DataInput& input);
   void fromDelta(DataInput& input);
   void toDelta(DataOutput& output) const;
   CacheableStringPtr toString() const;

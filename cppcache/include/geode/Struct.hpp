@@ -111,7 +111,7 @@ class CPPCACHE_EXPORT Struct : public Serializable {
   /**
    * Deserializes the Struct object from the DataInput. @TODO KN: better comment
    */
-  virtual Serializable* fromData(DataInput& input);
+  virtual void fromData(DataInput& input);
 
   /**
    * Serializes this Struct object. @TODO KN: better comment
@@ -153,8 +153,7 @@ class CPPCACHE_EXPORT Struct : public Serializable {
 
   Struct();
 
-  typedef std::unordered_map<std::string, int32_t>
-      FieldNames;
+  typedef std::unordered_map<std::string, int32_t> FieldNames;
   FieldNames m_fieldNames;
   std::vector<SerializablePtr> m_fieldValues;
 

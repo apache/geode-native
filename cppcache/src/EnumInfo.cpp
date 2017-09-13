@@ -69,11 +69,10 @@ void EnumInfo::toData(apache::geode::client::DataOutput &output) const {
   output.writeInt(m_ordinal);
 }
 
-Serializable *EnumInfo::fromData(apache::geode::client::DataInput &input) {
+void EnumInfo::fromData(apache::geode::client::DataInput &input) {
   input.readObject(m_enumClassName);
   input.readObject(m_enumName);
   input.readInt(&m_ordinal);
-  return this;
 }
 
 int8_t EnumInfo::DSFID() const {

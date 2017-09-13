@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "EqStruct.hpp"
 
 using namespace apache::geode::client;
@@ -139,8 +140,7 @@ void EqStruct::toData(apache::geode::client::DataOutput &out) const {
   out.writeDouble(discretionOffset);
 }
 
-apache::geode::client::Serializable *EqStruct::fromData(
-    apache::geode::client::DataInput &in) {
+void EqStruct::fromData(apache::geode::client::DataInput &in) {
   // Strings
   in.readUTF(&state);
   in.readUTF(&demandInd);
@@ -198,8 +198,8 @@ apache::geode::client::Serializable *EqStruct::fromData(
   in.readDouble(&stopPx);
   in.readDouble(&pegDifference);
   in.readDouble(&discretionOffset);
-  return this;
 }
+
 CacheableStringPtr EqStruct::toString() const {
   char buf[102500];
   sprintf(buf, "EqStruct:[timestamp = %lld myIndex = %d cxlQty = %d ]",

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_SERVERLOCATION_H_
-#define GEODE_SERVERLOCATION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_SERVERLOCATION_H_
+#define GEODE_SERVERLOCATION_H_
+
 #include <geode/Serializable.hpp>
 #include <string>
 #include <geode/DataInput.hpp>
@@ -28,9 +29,11 @@
 #include "GeodeTypeIdsImpl.hpp"
 #include <ace/INET_Addr.h>
 #include <geode/CacheableBuiltins.hpp>
+
 namespace apache {
 namespace geode {
 namespace client {
+
 class CPPCACHE_EXPORT ServerLocation : public Serializable {
  public:
   ServerLocation(std::string serverName, int port)
@@ -71,17 +74,14 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
   int getPort() const { return m_port; }
   void toData(DataOutput& output) const {
     if (m_serverName != nullptr) {
-      // output.writeObject( m_serverName );
-      output.writeNativeString(m_serverName->asChar());  // changed
+      output.writeNativeString(m_serverName->asChar());
     }
     output.writeInt(m_port);
   }
-  ServerLocation* fromData(DataInput& input) {
-    // input.readObject(m_serverName);
+  void fromData(DataInput& input) {
     input.readNativeString(m_serverName);
     input.readInt((int32_t*)&m_port);
     makeEpString();
-    return this;
   }
   uint32_t objectSize() const {
     if (m_serverName != nullptr) {
@@ -160,6 +160,7 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
   int m_port;
   std::string m_epString;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

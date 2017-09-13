@@ -78,7 +78,7 @@ void PdxFieldType::toData(DataOutput& output) const {
   output.writeBoolean(m_isIdentityField);
 }
 
-Serializable* PdxFieldType::fromData(DataInput& input) {
+void PdxFieldType::fromData(DataInput& input) {
   int8_t typeId;
   input.read(&typeId);
   char* fname = nullptr;
@@ -98,7 +98,6 @@ Serializable* PdxFieldType::fromData(DataInput& input) {
   } else {
     m_isVariableLengthType = true;
   }
-  return this;
 }
 
 bool PdxFieldType::equals(PdxFieldTypePtr otherObj) {

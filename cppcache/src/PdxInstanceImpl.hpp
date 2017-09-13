@@ -959,7 +959,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @brief deserialize this object, typical implementation should return
    * the 'this' pointer. This is an internal method.
    */
-  virtual Serializable* fromData(DataInput& input) {
+  virtual void fromData(DataInput& input) {
     return PdxInstance::fromData(input);
   }
 

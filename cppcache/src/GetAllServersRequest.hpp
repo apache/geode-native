@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_GETALLSERVERSREQUEST_H_
-#define GEODE_GETALLSERVERSREQUEST_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_GETALLSERVERSREQUEST_H_
+#define GEODE_GETALLSERVERSREQUEST_H_
+
 #include <geode/Serializable.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
@@ -30,6 +30,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 class GetAllServersRequest : public Serializable {
   CacheableStringPtr m_serverGroup;
 
@@ -38,7 +39,7 @@ class GetAllServersRequest : public Serializable {
     m_serverGroup = CacheableString::create(serverGroup.c_str());
   }
   virtual void toData(DataOutput& output) const;
-  virtual Serializable* fromData(DataInput& input);
+  virtual void fromData(DataInput& input);
   virtual int32_t classId() const { return 0; }
   virtual int8_t typeId() const {
     return GeodeTypeIdsImpl::GetAllServersRequest;
@@ -49,6 +50,7 @@ class GetAllServersRequest : public Serializable {
   virtual uint32_t objectSize() const { return m_serverGroup->length(); }
   virtual ~GetAllServersRequest() {}
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
