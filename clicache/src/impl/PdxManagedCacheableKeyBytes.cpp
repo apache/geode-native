@@ -51,7 +51,7 @@ namespace apache
         }
       }
 
-      apache::geode::client::Serializable* PdxManagedCacheableKeyBytes::fromData(apache::geode::client::DataInput& input)
+      void PdxManagedCacheableKeyBytes::fromData(apache::geode::client::DataInput& input)
       {
         try {
 
@@ -75,7 +75,6 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return this;
       }
 
       System::UInt32 PdxManagedCacheableKeyBytes::objectSize() const

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_ENUMINFO_H_
-#define GEODE_ENUMINFO_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_ENUMINFO_H_
+#define GEODE_ENUMINFO_H_
 
 #include <geode/GeodeTypeIds.hpp>
 #include <geode/CacheableString.hpp>
@@ -40,7 +40,7 @@ class CPPCACHE_EXPORT EnumInfo : public CacheableKey {
   EnumInfo(const char* enumClassName, const char* enumName, int32_t m_ordinal);
   static Serializable* createDeserializable() { return new EnumInfo(); }
   virtual void toData(DataOutput& output) const;
-  virtual Serializable* fromData(DataInput& input);
+  virtual void fromData(DataInput& input);
   virtual uint32_t objectSize() const {
     uint32_t size = sizeof(EnumInfo);
     size += sizeof(int32_t);
@@ -62,6 +62,7 @@ class CPPCACHE_EXPORT EnumInfo : public CacheableKey {
   int32_t getEnumOrdinal() const { return m_ordinal; }
 };
 typedef std::shared_ptr<EnumInfo> EnumInfoPtr;
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_LOCATORLISTRESPONSE_H_
-#define GEODE_LOCATORLISTRESPONSE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,13 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_LOCATORLISTRESPONSE_H_
+#define GEODE_LOCATORLISTRESPONSE_H_
+
 #include <vector>
 #include "GeodeTypeIdsImpl.hpp"
 #include "ServerLocationResponse.hpp"
 #include "ServerLocation.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
+
 class DataInput;
 class LocatorListResponse : public ServerLocationResponse {
  private:
@@ -39,7 +42,7 @@ class LocatorListResponse : public ServerLocationResponse {
                                  * CID 28938: Uninitialized scalar field (UNINIT_CTOR) *
                                  */
         m_isBalanced(false) {}  // Default constru needed for de-serialization
-  virtual LocatorListResponse* fromData(DataInput& input);
+  virtual void fromData(DataInput& input);
   virtual int8_t typeId() const;
   virtual uint32_t objectSize() const;
   const std::vector<ServerLocation>& getLocators() const;
@@ -48,6 +51,7 @@ class LocatorListResponse : public ServerLocationResponse {
   static Serializable* create();
 };
 typedef std::shared_ptr<LocatorListResponse> LocatorListResponsePtr;
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

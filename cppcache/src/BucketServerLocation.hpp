@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_BUCKETSERVERLOCATION_H_
-#define GEODE_BUCKETSERVERLOCATION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,12 +15,18 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_BUCKETSERVERLOCATION_H_
+#define GEODE_BUCKETSERVERLOCATION_H_
+
 #include "ServerLocation.hpp"
 #include <string>
 
 namespace apache {
 namespace geode {
 namespace client {
+
 _GF_PTR_DEF_(BucketServerLocation, BucketServerLocationPtr)
 
 class BucketServerLocation : public ServerLocation {
@@ -109,9 +110,9 @@ class BucketServerLocation : public ServerLocation {
     }
   }
 
-  BucketServerLocation* fromData(apache::geode::client::DataInput& input) {
+  void fromData(apache::geode::client::DataInput& input) {
     ServerLocation::fromData(input);
-    input.readInt((int32_t*)&m_bucketId);
+    input.readInt(&m_bucketId);
     input.readBoolean(&m_isPrimary);
     input.read(&m_version);
     input.read((&m_numServerGroups));
@@ -126,7 +127,6 @@ class BucketServerLocation : public ServerLocation {
       m_serverGroups =
           CacheableStringArray::createNoCopy(serverGroups, m_numServerGroups);
     }
-    return this;
   }
 
   uint32_t objectSize() const {
@@ -173,6 +173,7 @@ class BucketServerLocation : public ServerLocation {
 
   inline CacheableStringArrayPtr getServerGroups() { return m_serverGroups; }
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "FastAssetAccount.hpp"
 #include "FastAsset.hpp"
 
@@ -44,8 +45,8 @@ FastAssetAccount::FastAssetAccount(int idx, bool encodeTimestp, int maxVal,
 }
 
 FastAssetAccount::~FastAssetAccount() {}
+
 void FastAssetAccount::toData(apache::geode::client::DataOutput& output) const {
-  // output.writeBoolean(encodeTimestamp);
   output.writeInt(static_cast<int32_t>(acctId));
   output.writeObject(customerName);
   output.writeDouble(netWorth);
@@ -53,16 +54,14 @@ void FastAssetAccount::toData(apache::geode::client::DataOutput& output) const {
   output.writeInt(static_cast<int64_t>(timestamp));
 }
 
-apache::geode::client::Serializable* FastAssetAccount::fromData(
-    apache::geode::client::DataInput& input) {
-  // input.readBoolean(&encodeTimestamp);
+void FastAssetAccount::fromData(apache::geode::client::DataInput& input) {
   input.readInt(&acctId);
   input.readObject(customerName);
   input.readDouble(&netWorth);
   input.readObject(assets);
   input.readInt(reinterpret_cast<int64_t*>(&timestamp));
-  return this;
 }
+
 CacheableStringPtr FastAssetAccount::toString() const {
   char buf[102500];
   sprintf(buf,

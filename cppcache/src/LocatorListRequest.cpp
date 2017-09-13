@@ -19,17 +19,19 @@
 #include <geode/DataOutput.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 #include <geode/CacheableString.hpp>
+
 using namespace apache::geode::client;
+
 LocatorListRequest::LocatorListRequest(const std::string& servergroup)
     : m_servergroup(servergroup) {}
 
 void LocatorListRequest::toData(DataOutput& output) const {
-  // CacheableStringPtr pxr = CacheableString::create( m_servergroup.c_str());
-  // output.writeObject(pxr);// changed
   output.writeNativeString(m_servergroup.c_str());
 }
-Serializable* LocatorListRequest::fromData(DataInput& input) { return nullptr; }
+void LocatorListRequest::fromData(DataInput& input) {}
+
 int8_t LocatorListRequest::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::LocatorListRequest);
 }
+
 uint32_t LocatorListRequest::objectSize() const { return 0; }

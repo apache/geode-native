@@ -144,7 +144,7 @@ void PdxWrapper::toData(DataOutput &output) const {
   PdxHelper::serializePdx(output, *this);
 }
 
-Serializable *PdxWrapper::fromData(DataInput &input) {
+void PdxWrapper::fromData(DataInput &input) {
   LOGERROR("PdxWrapper fromData should not have been called");
   throw IllegalStateException(
       "PdxWrapper fromData should not have been called");

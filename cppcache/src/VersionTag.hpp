@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_VERSIONTAG_H_
-#define GEODE_VERSIONTAG_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,15 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_VERSIONTAG_H_
+#define GEODE_VERSIONTAG_H_
+
 #include <geode/Cacheable.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 #include "MemberListForVersionStamp.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -64,7 +65,7 @@ class VersionTag : public Cacheable {
 
   virtual void toData(DataOutput& output) const;
 
-  virtual Serializable* fromData(DataInput& input);
+  virtual void fromData(DataInput& input);
 
   static Serializable* createDeserializable(
       MemberListForVersionStamp& memberListForVersionStamp);
@@ -75,7 +76,6 @@ class VersionTag : public Cacheable {
   uint16_t getInternalMemID() const { return m_internalMemId; }
   uint16_t getPreviousMemID() const { return m_previousMemId; }
   void replaceNullMemberId(uint16_t memId);
-  // DSMemberForVersionStampPtr getMemberID(uint16_t memID);
   void setInternalMemID(uint16_t internalMemId) {
     m_internalMemId = internalMemId;
   }
@@ -88,6 +88,7 @@ class VersionTag : public Cacheable {
              uint16_t previousMemId,
              MemberListForVersionStamp& memberListForVersionStamp);
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

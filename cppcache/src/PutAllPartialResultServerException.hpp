@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_PUTALLPARTIALRESULTSERVEREXCEPTION_H_
-#define GEODE_PUTALLPARTIALRESULTSERVEREXCEPTION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_PUTALLPARTIALRESULTSERVEREXCEPTION_H_
+#define GEODE_PUTALLPARTIALRESULTSERVEREXCEPTION_H_
 
 #include <geode/Serializable.hpp>
 #include <geode/CacheableString.hpp>
@@ -88,7 +88,7 @@ class CPPCACHE_EXPORT PutAllPartialResultServerException : public Serializable {
    * the 'this' pointer.
    * @throws IllegalStateException If this api is called from User code.
    **/
-  virtual Serializable* fromData(DataInput& input);
+  virtual void fromData(DataInput& input);
 
   /**
    *@brief Return the classId of the instance being serialized.
@@ -141,6 +141,7 @@ class CPPCACHE_EXPORT PutAllPartialResultServerException : public Serializable {
   CacheableStringPtr m_message;  // error message
   PutAllPartialResultPtr m_result;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

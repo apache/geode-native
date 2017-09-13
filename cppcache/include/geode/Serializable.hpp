@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_SERIALIZABLE_H_
-#define GEODE_SERIALIZABLE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_SERIALIZABLE_H_
+#define GEODE_SERIALIZABLE_H_
+
 /**
  * @file
  */
@@ -35,16 +35,16 @@ namespace client {
 class DataOutput;
 class DataInput;
 
-typedef void (*CliCallbackMethod)(Cache& cache);
+typedef void (*CliCallbackMethod)(Cache &cache);
 
 /** @brief signature of functions passed to registerType. Such functions
  * should return an empty instance of the type they represent. The instance
  * will typically be initialized immediately after creation by a call to
  * fromData().
  */
-using TypeFactoryMethod = std::function<Serializable*()>;
+using TypeFactoryMethod = std::function<Serializable *()>;
 
-typedef PdxSerializable* (*TypeFactoryMethodPdx)();
+typedef PdxSerializable *(*TypeFactoryMethodPdx)();
 /**
  * @class Serializable Serializable.hpp
  * This abstract base class is the superclass of all user objects
@@ -57,13 +57,12 @@ class CPPCACHE_EXPORT Serializable
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const = 0;
+  virtual void toData(DataOutput &output) const = 0;
 
   /**
-   *@brief deserialize this object, typical implementation should return
-   * the 'this' pointer.
+   *@brief deserialize this object.
    **/
-  virtual Serializable* fromData(DataInput& input) = 0;
+  virtual void fromData(DataInput &input) = 0;
 
   /**
    *@brief Return the classId of the instance being serialized.
@@ -135,9 +134,10 @@ class CPPCACHE_EXPORT Serializable
 
  private:
   // Never defined.
-  Serializable(const Serializable& other);
-  void operator=(const Serializable& other);
+  Serializable(const Serializable &other);
+  void operator=(const Serializable &other);
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CACHEABLEENUM_H_
-#define GEODE_CACHEABLEENUM_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CACHEABLEENUM_H_
+#define GEODE_CACHEABLEENUM_H_
+
 #include "CacheableKey.hpp"
 #include "CacheableString.hpp"
 
@@ -28,18 +28,18 @@ namespace geode {
 namespace client {
 
 /**
-* Since C++ enums cannot be directly passed as a parameter to PdxWriter's
-* writeObject and PdxReader's readObject api
-* wrap C++ enum in to a immutable wrapper CacheableEnum class type by specifying
-* enum class name, enum value name and its ordinal.
-* C++ enum allows explicit setting of ordinal number, but it is up to the user
-* to map java enumName with that of C++ enumName.
-* Currently this wrapper only works as part of PdxSerializable member object and
-* cannot be directly used in Region operations.
-*
-* @see PdxWriter#writeObject
-* @see PdxReader#readObject
-*/
+ * Since C++ enums cannot be directly passed as a parameter to PdxWriter's
+ * writeObject and PdxReader's readObject api
+ * wrap C++ enum in to a immutable wrapper CacheableEnum class type by
+ * specifying enum class name, enum value name and its ordinal. C++ enum allows
+ * explicit setting of ordinal number, but it is up to the user to map java
+ * enumName with that of C++ enumName. Currently this wrapper only works as part
+ * of PdxSerializable member object and cannot be directly used in Region
+ * operations.
+ *
+ * @see PdxWriter#writeObject
+ * @see PdxReader#readObject
+ */
 
 class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
  private:
@@ -53,18 +53,18 @@ class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
   ~CacheableEnum();
 
   /**
-  * @brief creation function for enum.
-  */
+   * @brief creation function for enum.
+   */
   static Serializable* createDeserializable() { return new CacheableEnum(); }
   /**
-  * @brief serialize this object
-  **/
+   * @brief serialize this object
+   **/
   virtual void toData(DataOutput& output) const;
 
   /**
-  * @brief deserialize this object
-  **/
-  virtual Serializable* fromData(DataInput& input);
+   * @brief deserialize this object
+   **/
+  virtual void fromData(DataInput& input);
 
   /** @return the size of the object in bytes */
   virtual uint32_t objectSize() const {
@@ -76,38 +76,39 @@ class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
   }
 
   /**
-  * @brief Return the classId of the instance being serialized.
-  * This is used by deserialization to determine what instance
-  * type to create and deserialize into.
-  */
+   * @brief Return the classId of the instance being serialized.
+   * This is used by deserialization to determine what instance
+   * type to create and deserialize into.
+   */
   virtual int32_t classId() const { return 0; }
 
   /**
-  * @brief return the typeId byte of the instance being serialized.
-  * This is used by deserialization to determine what instance
-  * type to create and deserialize into.
-  */
+   * @brief return the typeId byte of the instance being serialized.
+   * This is used by deserialization to determine what instance
+   * type to create and deserialize into.
+   */
   virtual int8_t typeId() const {
     // return 0;
     return static_cast<int8_t>(GeodeTypeIds::CacheableEnum);
   }
 
   /**
-  * Display this object as c string.
-  */
+   * Display this object as c string.
+   */
   virtual CacheableStringPtr toString() const {
     return CacheableString::create("CacheableEnum");
   }
 
   /**
-  * Factory method for creating an instance of CacheableEnum.
-  * @param className the name of the enum class that maps to the java enum type.
-  * @param enumName the name of the enum constant that maps to the java enum
-  * type.
-  * @param ordinal the ordinal value of the enum constant that maps to the java
-  * enum type.
-  * @return a {@link CacheableEnum} representing C++ enum.
-  */
+   * Factory method for creating an instance of CacheableEnum.
+   * @param className the name of the enum class that maps to the java enum
+   * type.
+   * @param enumName the name of the enum constant that maps to the java enum
+   * type.
+   * @param ordinal the ordinal value of the enum constant that maps to the java
+   * enum type.
+   * @return a {@link CacheableEnum} representing C++ enum.
+   */
   static CacheableEnumPtr create(const char* enumClassName,
                                  const char* enumName, int32_t ordinal) {
     return std::make_shared<CacheableEnum>(enumClassName, enumName, ordinal);
@@ -137,9 +138,10 @@ class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
   // never implemented.
   void operator=(const CacheableEnum& other);
   CacheableEnum(const CacheableEnum& other);
-  
+
   FRIEND_STD_SHARED_PTR(CacheableEnum)
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

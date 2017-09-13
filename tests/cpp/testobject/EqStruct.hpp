@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TESTOBJECT_EQSTRUCT_H_
-#define GEODE_TESTOBJECT_EQSTRUCT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_TESTOBJECT_EQSTRUCT_H_
+#define GEODE_TESTOBJECT_EQSTRUCT_H_
 
 /*
  * @brief User class for testing the put functionality for object.
@@ -108,8 +108,7 @@ class TESTOBJECT_EXPORT EqStruct : public TimestampedObject {
   EqStruct(int index);
   virtual ~EqStruct();
   virtual void toData(apache::geode::client::DataOutput& output) const;
-  virtual apache::geode::client::Serializable* fromData(
-      apache::geode::client::DataInput& input);
+  virtual void fromData(apache::geode::client::DataInput& input);
   virtual int32_t classId() const { return 101; }
   CacheableStringPtr toString() const;
 

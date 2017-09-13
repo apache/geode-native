@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "FastAsset.hpp"
 #include "fwklib/GsRandom.hpp"
 
@@ -31,9 +32,7 @@ void FastAsset::toData(apache::geode::client::DataOutput& output) const {
   output.writeDouble(value);
 }
 
-apache::geode::client::Serializable* FastAsset::fromData(
-    apache::geode::client::DataInput& input) {
+void FastAsset::fromData(apache::geode::client::DataInput& input) {
   input.readInt(&assetId);
   input.readDouble(&value);
-  return this;
 }

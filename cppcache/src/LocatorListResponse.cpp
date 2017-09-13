@@ -14,19 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "LocatorListResponse.hpp"
 #include <geode/DataInput.hpp>
 #include <vector>
+
 using namespace apache::geode::client;
-LocatorListResponse* LocatorListResponse::fromData(DataInput& input) {
+
+void LocatorListResponse::fromData(DataInput& input) {
   readList(input);
   input.readBoolean(&m_isBalanced);
-  return this;
 }
+
 int8_t LocatorListResponse::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::LocatorListResponse);
 }
+
 uint32_t LocatorListResponse::objectSize() const { return 0; }
+
 void LocatorListResponse::readList(DataInput& input) {
   uint32_t size = 0;
   input.readInt(&size);
@@ -36,9 +41,11 @@ void LocatorListResponse::readList(DataInput& input) {
     m_locators.push_back(temp);
   }
 }
+
 const std::vector<ServerLocation>& LocatorListResponse::getLocators() const {
   return m_locators;
 }
+
 bool LocatorListResponse::isBalanced() const { return m_isBalanced; }
 
 Serializable* LocatorListResponse::create() {

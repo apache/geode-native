@@ -64,7 +64,7 @@ int32_t Struct::length() const {
   return static_cast<int32_t>(m_fieldValues.size());
 }
 
-Serializable* Struct::fromData(DataInput& input) {
+void Struct::fromData(DataInput& input) {
   int8_t classType;
   input.read(&classType);
   input.read(&classType);
@@ -96,7 +96,6 @@ Serializable* Struct::fromData(DataInput& input) {
     input.readObject(val);  // need to look
     m_fieldValues.push_back(val);
   }
-  return this;
 }
 
 const std::string& Struct::getFieldName(const int32_t index) const {

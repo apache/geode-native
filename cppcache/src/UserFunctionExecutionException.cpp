@@ -25,10 +25,9 @@ void UserFunctionExecutionException::toData(DataOutput& output) const {
       "UserFunctionExecutionException::toData is not intended for use.");
 }
 
-Serializable* UserFunctionExecutionException::fromData(DataInput& input) {
+void UserFunctionExecutionException::fromData(DataInput& input) {
   throw IllegalStateException(
       "UserFunctionExecutionException::fromData is not intended for use.");
-  return nullptr;
 }
 
 int32_t UserFunctionExecutionException::classId() const {

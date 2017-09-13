@@ -917,7 +917,7 @@ void PdxInsideIGeodeSerializable::toData(DataOutput &output) const {
   output.writeInt(m_i4);
 }
 
-Serializable *PdxInsideIGeodeSerializable::fromData(DataInput &input) {
+void PdxInsideIGeodeSerializable::fromData(DataInput &input) {
   input.readInt(&m_i1);
   input.readObject(m_npdx);
   input.readInt(&m_i2);
@@ -926,7 +926,6 @@ Serializable *PdxInsideIGeodeSerializable::fromData(DataInput &input) {
   input.readObject(m_pdx3);
   input.readInt(&m_i3);
   input.readInt(&m_i4);
-
-  return this;
 }
+
 } /* namespace PdxTests */

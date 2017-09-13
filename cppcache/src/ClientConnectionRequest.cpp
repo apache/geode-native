@@ -14,27 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "ClientConnectionRequest.hpp"
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 #include "GeodeTypeIdsImpl.hpp"
+
 using namespace apache::geode::client;
+
 void ClientConnectionRequest::toData(DataOutput& output) const {
-  // output.writeASCII( m_servergroup.c_str() );
-  // writeSetOfServerLocation( output );
-  // CacheableStringPtr abe = CacheableString::create( m_servergroup.c_str());
-  // output.writeObject(abe);// Changed
   output.writeNativeString(m_servergroup.c_str());
   writeSetOfServerLocation(output);
 }
-Serializable* ClientConnectionRequest::fromData(DataInput& input) {
-  return nullptr;  // not needed as of now and my guess is  it will never be
-                   // needed.
-}
+
+void ClientConnectionRequest::fromData(DataInput& input) {}
+
 uint32_t ClientConnectionRequest::objectSize() const { return 0; }
+
 int8_t ClientConnectionRequest::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::ClientConnectionRequest);
 }
+
 void ClientConnectionRequest::writeSetOfServerLocation(
     DataOutput& output) const {
   output.writeInt(

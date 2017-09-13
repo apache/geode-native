@@ -19,15 +19,16 @@
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 #include "GeodeTypeIdsImpl.hpp"
+
 using namespace apache::geode::client;
+
 void ClientReplacementRequest::toData(DataOutput& output) const {
   ClientConnectionRequest::toData(output);
   this->m_serverLocation.toData(output);
 }
-Serializable* ClientReplacementRequest::fromData(DataInput& input) {
-  return nullptr;  // not needed as of now and my guess is  it will never be
-                   // needed.
-}
+
+void ClientReplacementRequest::fromData(DataInput& input) {}
+
 int8_t ClientReplacementRequest::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::ClientReplacementRequest);
 }

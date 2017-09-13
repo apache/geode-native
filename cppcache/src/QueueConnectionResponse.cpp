@@ -19,12 +19,14 @@
 #include "GeodeTypeIdsImpl.hpp"
 #include <geode/DataInput.hpp>
 #include "ServerLocation.hpp"
+
 using namespace apache::geode::client;
-QueueConnectionResponse* QueueConnectionResponse::fromData(DataInput& input) {
+
+void QueueConnectionResponse::fromData(DataInput& input) {
   input.readBoolean(&m_durableQueueFound);
   readList(input);
-  return this;
 }
+
 int8_t QueueConnectionResponse::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::QueueConnectionResponse);
 }

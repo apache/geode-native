@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CACHEABLEOBJECTARRAY_H_
-#define GEODE_CACHEABLEOBJECTARRAY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_CACHEABLEOBJECTARRAY_H_
+#define GEODE_CACHEABLEOBJECTARRAY_H_
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
@@ -38,7 +38,6 @@ namespace client {
 class CPPCACHE_EXPORT CacheableObjectArray : public Cacheable,
                                              public VectorOfCacheable {
  public:
-
   /**
    *@brief serialize this object
    **/
@@ -47,7 +46,7 @@ class CPPCACHE_EXPORT CacheableObjectArray : public Cacheable,
   /**
    *@brief deserialize this object
    **/
-  virtual Serializable* fromData(DataInput& input);
+  virtual void fromData(DataInput& input);
 
   /**
    * @brief creation function for java Object[]
@@ -100,6 +99,7 @@ class CPPCACHE_EXPORT CacheableObjectArray : public Cacheable,
 
   FRIEND_STD_SHARED_PTR(CacheableObjectArray)
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

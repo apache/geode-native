@@ -71,11 +71,7 @@ namespace Apache
         {
           try
           {
-            auto temp = static_cast<native::RegionAttributes*>(m_nativeptr->get()->fromData(*nativeInput));
-            if (temp != m_nativeptr->get())
-            {
-              m_nativeptr->get_shared_ptr().reset(temp);
-            }
+            m_nativeptr->get()->fromData(*nativeInput);
           }
           finally
           {
