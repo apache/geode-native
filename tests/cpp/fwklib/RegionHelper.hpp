@@ -146,59 +146,59 @@ class RegionHelper {
 
     return sString;
   }
-  void setRegionAttributes(RegionFactoryPtr& regionFac) {
+  void setRegionAttributes(RegionFactory& regionFac) {
     RegionAttributesPtr atts = m_region->getAttributesPtr();
-    regionFac->setCachingEnabled(atts->getCachingEnabled());
+    regionFac.setCachingEnabled(atts->getCachingEnabled());
     if (atts->getCacheListenerLibrary() != NULL &&
         atts->getCacheListenerFactory() != NULL) {
-      regionFac->setCacheListener(atts->getCacheListenerLibrary(),
-                                  atts->getCacheListenerFactory());
+      regionFac.setCacheListener(atts->getCacheListenerLibrary(),
+                                 atts->getCacheListenerFactory());
     }
     if (atts->getCacheLoaderLibrary() != NULL &&
         atts->getCacheLoaderFactory() != NULL) {
-      regionFac->setCacheLoader(atts->getCacheLoaderLibrary(),
-                                atts->getCacheLoaderFactory());
+      regionFac.setCacheLoader(atts->getCacheLoaderLibrary(),
+                               atts->getCacheLoaderFactory());
     }
     if (atts->getCacheWriterLibrary() != NULL &&
         atts->getCacheWriterFactory() != NULL) {
-      regionFac->setCacheWriter(atts->getCacheWriterLibrary(),
-                                atts->getCacheWriterFactory());
+      regionFac.setCacheWriter(atts->getCacheWriterLibrary(),
+                               atts->getCacheWriterFactory());
     }
     if (atts->getEntryIdleTimeout() != 0) {
-      regionFac->setEntryIdleTimeout(atts->getEntryIdleTimeoutAction(),
-                                     atts->getEntryIdleTimeout());
+      regionFac.setEntryIdleTimeout(atts->getEntryIdleTimeoutAction(),
+                                    atts->getEntryIdleTimeout());
     }
     if (atts->getEntryTimeToLive() != 0) {
-      regionFac->setEntryTimeToLive(atts->getEntryTimeToLiveAction(),
-                                    atts->getEntryTimeToLive());
+      regionFac.setEntryTimeToLive(atts->getEntryTimeToLiveAction(),
+                                   atts->getEntryTimeToLive());
     }
     if (atts->getRegionIdleTimeout() != 0) {
-      regionFac->setRegionIdleTimeout(atts->getRegionIdleTimeoutAction(),
-                                      atts->getRegionIdleTimeout());
+      regionFac.setRegionIdleTimeout(atts->getRegionIdleTimeoutAction(),
+                                     atts->getRegionIdleTimeout());
     }
     if (atts->getRegionTimeToLive() != 0) {
-      regionFac->setRegionTimeToLive(atts->getRegionTimeToLiveAction(),
-                                     atts->getRegionTimeToLive());
+      regionFac.setRegionTimeToLive(atts->getRegionTimeToLiveAction(),
+                                    atts->getRegionTimeToLive());
     }
     if (atts->getPartitionResolverLibrary() != NULL &&
         atts->getPartitionResolverFactory() != NULL) {
-      regionFac->setPartitionResolver(atts->getPartitionResolverLibrary(),
-                                      atts->getPartitionResolverFactory());
+      regionFac.setPartitionResolver(atts->getPartitionResolverLibrary(),
+                                     atts->getPartitionResolverFactory());
     }
     if (atts->getPersistenceLibrary() != NULL &&
         atts->getPersistenceFactory() != NULL) {
-      regionFac->setPersistenceManager(atts->getPersistenceLibrary(),
-                                       atts->getPersistenceFactory(),
-                                       atts->getPersistenceProperties());
+      regionFac.setPersistenceManager(atts->getPersistenceLibrary(),
+                                      atts->getPersistenceFactory(),
+                                      atts->getPersistenceProperties());
     }
-    regionFac->setInitialCapacity(atts->getInitialCapacity());
-    regionFac->setLoadFactor(atts->getLoadFactor());
-    regionFac->setConcurrencyLevel(atts->getConcurrencyLevel());
-    regionFac->setLruEntriesLimit(atts->getLruEntriesLimit());
-    regionFac->setDiskPolicy(atts->getDiskPolicy());
-    regionFac->setCloningEnabled(atts->getCloningEnabled());
-    regionFac->setPoolName(atts->getPoolName());
-    regionFac->setConcurrencyChecksEnabled(atts->getConcurrencyChecksEnabled());
+    regionFac.setInitialCapacity(atts->getInitialCapacity());
+    regionFac.setLoadFactor(atts->getLoadFactor());
+    regionFac.setConcurrencyLevel(atts->getConcurrencyLevel());
+    regionFac.setLruEntriesLimit(atts->getLruEntriesLimit());
+    regionFac.setDiskPolicy(atts->getDiskPolicy());
+    regionFac.setCloningEnabled(atts->getCloningEnabled());
+    regionFac.setPoolName(atts->getPoolName());
+    regionFac.setConcurrencyChecksEnabled(atts->getConcurrencyChecksEnabled());
   }
 
   RegionPtr createRootRegion(CachePtr& cachePtr) {
@@ -211,8 +211,6 @@ class RegionHelper {
   }
 
   RegionPtr createRootRegion(CachePtr& cachePtr, std::string regionName) {
-    RegionPtr region;
-    RegionFactoryPtr regionFac;
     if (regionName.empty()) {
       regionName = m_region->getName();
       FWKINFO("region name is " << regionName);
@@ -220,23 +218,9 @@ class RegionHelper {
         FWKEXCEPTION("Region name not specified.");
       }
     }
-    regionFac = cachePtr->createRegionFactory(CACHING_PROXY);
+    auto regionFac = cachePtr->createRegionFactory(CACHING_PROXY);
     setRegionAttributes(regionFac);
-    RegionAttributesPtr atts = m_region->getAttributesPtr();
-    /*   if(atts->getCachingEnabled())
-       {
-         regionFac=cachePtr->createRegionFactory(CACHING_PROXY);
-         regionFac->setCachingEnabled(true);
-         FWKINFO("Setting CachingEnabled=true");
-       }
-       else
-       {
-         regionFac=cachePtr->createRegionFactory(PROXY);
-         regionFac->setCachingEnabled(false);
-         FWKINFO("Setting CachingEnabled=false");
-       }*/
-    // UNUSED bool hasEndpoints = ( NULL != atts->getEndpoints() ) ? true :
-    // false;
+    auto atts = m_region->getAttributesPtr();
     bool withPool = (NULL != atts->getPoolName()) ? true : false;
     std::string poolName;
     if (withPool) {
@@ -244,7 +228,7 @@ class RegionHelper {
     } else {
       poolName = "";
     }
-    region = regionFac->create(regionName.c_str());
+    auto region = regionFac.create(regionName.c_str());
     FWKINFO("Region created with name = " << regionName + " and pool name= "
                                           << poolName);
     FWKINFO(" Region Created with following attributes :"

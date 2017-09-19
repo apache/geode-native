@@ -89,9 +89,8 @@ CacheHelper::CacheHelper(const char* member_id, const PropertiesPtr& configPtr,
   if (noRootRegion) return;
 
   try {
-    RegionFactoryPtr regionFactoryPtr =
-        cachePtr->createRegionFactory(CACHING_PROXY);
-    rootRegionPtr = regionFactoryPtr->create(ROOT_NAME);
+    auto regionFactory = cachePtr->createRegionFactory(CACHING_PROXY);
+    rootRegionPtr = regionFactory.create(ROOT_NAME);
   } catch (const RegionExistsException&) {
     rootRegionPtr = cachePtr->getRegion(ROOT_NAME);
   }
@@ -134,9 +133,8 @@ CacheHelper::CacheHelper(const PropertiesPtr& configPtr,
   if (noRootRegion) return;
 
   try {
-    RegionFactoryPtr regionFactoryPtr =
-        cachePtr->createRegionFactory(CACHING_PROXY);
-    rootRegionPtr = regionFactoryPtr->create(ROOT_NAME);
+    auto regionFactory = cachePtr->createRegionFactory(CACHING_PROXY);
+    rootRegionPtr = regionFactory.create(ROOT_NAME);
   } catch (const RegionExistsException&) {
     rootRegionPtr = cachePtr->getRegion(ROOT_NAME);
   }
@@ -526,16 +524,16 @@ RegionPtr CacheHelper::createRegionAndAttachPool(
   if (lel > 0) {
     preDefRA = CACHING_PROXY_ENTRY_LRU;
   }
-  RegionFactoryPtr regionFactoryPtr = cachePtr->createRegionFactory(preDefRA);
-  regionFactoryPtr->setLruEntriesLimit(lel);
-  regionFactoryPtr->setEntryIdleTimeout(action, eit);
-  regionFactoryPtr->setEntryTimeToLive(action, ettl);
-  regionFactoryPtr->setRegionIdleTimeout(action, rit);
-  regionFactoryPtr->setRegionTimeToLive(action, rttl);
+  auto regionFactory = cachePtr->createRegionFactory(preDefRA);
+  regionFactory.setLruEntriesLimit(lel);
+  regionFactory.setEntryIdleTimeout(action, eit);
+  regionFactory.setEntryTimeToLive(action, ettl);
+  regionFactory.setRegionIdleTimeout(action, rit);
+  regionFactory.setRegionTimeToLive(action, rttl);
   if (poolName != nullptr) {
-    regionFactoryPtr->setPoolName(poolName);
+    regionFactory.setPoolName(poolName);
   }
-  return regionFactoryPtr->create(name);
+  return regionFactory.create(name);
 }
 
 RegionPtr CacheHelper::createRegionAndAttachPool2(
@@ -549,15 +547,15 @@ RegionPtr CacheHelper::createRegionAndAttachPool2(
   if (lel > 0) {
     preDefRA = CACHING_PROXY_ENTRY_LRU;
   }
-  RegionFactoryPtr regionFactoryPtr = cachePtr->createRegionFactory(preDefRA);
-  regionFactoryPtr->setLruEntriesLimit(lel);
-  regionFactoryPtr->setEntryIdleTimeout(action, eit);
-  regionFactoryPtr->setEntryTimeToLive(action, ettl);
-  regionFactoryPtr->setRegionIdleTimeout(action, rit);
-  regionFactoryPtr->setRegionTimeToLive(action, rttl);
-  regionFactoryPtr->setPoolName(poolName);
-  regionFactoryPtr->setPartitionResolver(aResolver);
-  return regionFactoryPtr->create(name);
+  auto regionFactory = cachePtr->createRegionFactory(preDefRA);
+  regionFactory.setLruEntriesLimit(lel);
+  regionFactory.setEntryIdleTimeout(action, eit);
+  regionFactory.setEntryTimeToLive(action, ettl);
+  regionFactory.setRegionIdleTimeout(action, rit);
+  regionFactory.setRegionTimeToLive(action, rttl);
+  regionFactory.setPoolName(poolName);
+  regionFactory.setPartitionResolver(aResolver);
+  return regionFactory.create(name);
 }
 
 void CacheHelper::addServerLocatorEPs(const char* epList, PoolFactoryPtr pfPtr,
@@ -628,17 +626,17 @@ RegionPtr CacheHelper::createPooledRegion(
   if (lel > 0) {
     preDefRA = CACHING_PROXY_ENTRY_LRU;
   }
-  RegionFactoryPtr regionFactoryPtr = cachePtr->createRegionFactory(preDefRA);
-  regionFactoryPtr->setLruEntriesLimit(lel);
-  regionFactoryPtr->setEntryIdleTimeout(action, eit);
-  regionFactoryPtr->setEntryTimeToLive(action, ettl);
-  regionFactoryPtr->setRegionIdleTimeout(action, rit);
-  regionFactoryPtr->setRegionTimeToLive(action, rttl);
-  regionFactoryPtr->setPoolName(poolName);
+  auto regionFactory = cachePtr->createRegionFactory(preDefRA);
+  regionFactory.setLruEntriesLimit(lel);
+  regionFactory.setEntryIdleTimeout(action, eit);
+  regionFactory.setEntryTimeToLive(action, ettl);
+  regionFactory.setRegionIdleTimeout(action, rit);
+  regionFactory.setRegionTimeToLive(action, rttl);
+  regionFactory.setPoolName(poolName);
   if (cacheListener != nullptr) {
-    regionFactoryPtr->setCacheListener(cacheListener);
+    regionFactory.setCacheListener(cacheListener);
   }
-  return regionFactoryPtr->create(name);
+  return regionFactory.create(name);
 }
 
 RegionPtr CacheHelper::createPooledRegionConcurrencyCheckDisabled(
@@ -664,18 +662,18 @@ RegionPtr CacheHelper::createPooledRegionConcurrencyCheckDisabled(
   if (lel > 0) {
     preDefRA = CACHING_PROXY_ENTRY_LRU;
   }
-  RegionFactoryPtr regionFactoryPtr = cachePtr->createRegionFactory(preDefRA);
-  regionFactoryPtr->setLruEntriesLimit(lel);
-  regionFactoryPtr->setEntryIdleTimeout(action, eit);
-  regionFactoryPtr->setEntryTimeToLive(action, ettl);
-  regionFactoryPtr->setRegionIdleTimeout(action, rit);
-  regionFactoryPtr->setRegionTimeToLive(action, rttl);
-  regionFactoryPtr->setConcurrencyChecksEnabled(concurrencyCheckEnabled);
-  regionFactoryPtr->setPoolName(poolName);
+  auto regionFactory = cachePtr->createRegionFactory(preDefRA);
+  regionFactory.setLruEntriesLimit(lel);
+  regionFactory.setEntryIdleTimeout(action, eit);
+  regionFactory.setEntryTimeToLive(action, ettl);
+  regionFactory.setRegionIdleTimeout(action, rit);
+  regionFactory.setRegionTimeToLive(action, rttl);
+  regionFactory.setConcurrencyChecksEnabled(concurrencyCheckEnabled);
+  regionFactory.setPoolName(poolName);
   if (cacheListener != nullptr) {
-    regionFactoryPtr->setCacheListener(cacheListener);
+    regionFactory.setCacheListener(cacheListener);
   }
-  return regionFactoryPtr->create(name);
+  return regionFactory.create(name);
 }
 
 RegionPtr CacheHelper::createRegionDiscOverFlow(
@@ -737,30 +735,30 @@ RegionPtr CacheHelper::createPooledRegionDiscOverFlow(
   if (lel > 0) {
     preDefRA = CACHING_PROXY_ENTRY_LRU;
   }
-  RegionFactoryPtr regionFactoryPtr = cachePtr->createRegionFactory(preDefRA);
-  regionFactoryPtr->setLruEntriesLimit(lel);
-  regionFactoryPtr->setEntryIdleTimeout(action, eit);
-  regionFactoryPtr->setEntryTimeToLive(action, ettl);
-  regionFactoryPtr->setRegionIdleTimeout(action, rit);
-  regionFactoryPtr->setRegionTimeToLive(action, rttl);
-  regionFactoryPtr->setPoolName(poolName);
-  regionFactoryPtr->setCloningEnabled(true);
+  auto regionFactory = cachePtr->createRegionFactory(preDefRA);
+  regionFactory.setLruEntriesLimit(lel);
+  regionFactory.setEntryIdleTimeout(action, eit);
+  regionFactory.setEntryTimeToLive(action, ettl);
+  regionFactory.setRegionIdleTimeout(action, rit);
+  regionFactory.setRegionTimeToLive(action, rttl);
+  regionFactory.setPoolName(poolName);
+  regionFactory.setCloningEnabled(true);
   if (lel > 0) {
-    regionFactoryPtr->setDiskPolicy(DiskPolicyType::OVERFLOWS);
-    PropertiesPtr sqLiteProps = Properties::create();
+    regionFactory.setDiskPolicy(DiskPolicyType::OVERFLOWS);
+    auto sqLiteProps = Properties::create();
     sqLiteProps->insert("PageSize", "65536");
     sqLiteProps->insert("MaxPageCount", "1073741823");
     std::string sqlite_dir =
         "SqLiteRegionData" +
         std::to_string(static_cast<long long int>(ACE_OS::getpid()));
     sqLiteProps->insert("PersistenceDirectory", sqlite_dir.c_str());
-    regionFactoryPtr->setPersistenceManager(
-        "SqLiteImpl", "createSqLiteInstance", sqLiteProps);
+    regionFactory.setPersistenceManager("SqLiteImpl", "createSqLiteInstance",
+                                        sqLiteProps);
   }
   if (cacheListener != nullptr) {
-    regionFactoryPtr->setCacheListener(cacheListener);
+    regionFactory.setCacheListener(cacheListener);
   }
-  return regionFactoryPtr->create(name);
+  return regionFactory.create(name);
 }
 
 RegionPtr CacheHelper::createPooledRegionSticky(
@@ -790,17 +788,17 @@ RegionPtr CacheHelper::createPooledRegionSticky(
   if (lel > 0) {
     preDefRA = CACHING_PROXY_ENTRY_LRU;
   }
-  RegionFactoryPtr regionFactoryPtr = cachePtr->createRegionFactory(preDefRA);
-  regionFactoryPtr->setLruEntriesLimit(lel);
-  regionFactoryPtr->setEntryIdleTimeout(action, eit);
-  regionFactoryPtr->setEntryTimeToLive(action, ettl);
-  regionFactoryPtr->setRegionIdleTimeout(action, rit);
-  regionFactoryPtr->setRegionTimeToLive(action, rttl);
-  regionFactoryPtr->setPoolName(poolName);
+  auto regionFactory = cachePtr->createRegionFactory(preDefRA);
+  regionFactory.setLruEntriesLimit(lel);
+  regionFactory.setEntryIdleTimeout(action, eit);
+  regionFactory.setEntryTimeToLive(action, ettl);
+  regionFactory.setRegionIdleTimeout(action, rit);
+  regionFactory.setRegionTimeToLive(action, rttl);
+  regionFactory.setPoolName(poolName);
   if (cacheListener != nullptr) {
-    regionFactoryPtr->setCacheListener(cacheListener);
+    regionFactory.setCacheListener(cacheListener);
   }
-  return regionFactoryPtr->create(name);
+  return regionFactory.create(name);
 }
 
 RegionPtr CacheHelper::createPooledRegionStickySingleHop(
@@ -830,17 +828,17 @@ RegionPtr CacheHelper::createPooledRegionStickySingleHop(
   if (lel > 0) {
     preDefRA = CACHING_PROXY_ENTRY_LRU;
   }
-  RegionFactoryPtr regionFactoryPtr = cachePtr->createRegionFactory(preDefRA);
-  regionFactoryPtr->setLruEntriesLimit(lel);
-  regionFactoryPtr->setEntryIdleTimeout(action, eit);
-  regionFactoryPtr->setEntryTimeToLive(action, ettl);
-  regionFactoryPtr->setRegionIdleTimeout(action, rit);
-  regionFactoryPtr->setRegionTimeToLive(action, rttl);
-  regionFactoryPtr->setPoolName(poolName);
+  auto regionFactory = cachePtr->createRegionFactory(preDefRA);
+  regionFactory.setLruEntriesLimit(lel);
+  regionFactory.setEntryIdleTimeout(action, eit);
+  regionFactory.setEntryTimeToLive(action, ettl);
+  regionFactory.setRegionIdleTimeout(action, rit);
+  regionFactory.setRegionTimeToLive(action, rttl);
+  regionFactory.setPoolName(poolName);
   if (cacheListener != nullptr) {
-    regionFactoryPtr->setCacheListener(cacheListener);
+    regionFactory.setCacheListener(cacheListener);
   }
-  return regionFactoryPtr->create(name);
+  return regionFactory.create(name);
 }
 
 RegionPtr CacheHelper::createSubregion(RegionPtr& parent, const char* name,

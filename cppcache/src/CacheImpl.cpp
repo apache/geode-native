@@ -739,9 +739,8 @@ int CacheImpl::getPoolSize(const char* poolName) {
   return -1;
 }
 
-RegionFactoryPtr CacheImpl::createRegionFactory(
-    RegionShortcut preDefinedRegion) {
-  return std::make_shared<RegionFactory>(preDefinedRegion, this);
+RegionFactory CacheImpl::createRegionFactory(RegionShortcut preDefinedRegion) {
+  return RegionFactory(preDefinedRegion, this);
 }
 
 std::map<std::string, RegionAttributesPtr> CacheImpl::getRegionShortcut() {

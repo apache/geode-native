@@ -31,9 +31,13 @@ namespace apache {
 namespace geode {
 namespace client {
 class CacheImpl;
-class CPPCACHE_EXPORT RegionFactory
-    : public std::enable_shared_from_this<RegionFactory> {
+class CPPCACHE_EXPORT RegionFactory {
  public:
+  RegionFactory() = delete;
+  ~RegionFactory() = default;
+  RegionFactory(const RegionFactory& move) = delete;
+  RegionFactory(RegionFactory&& move) = default;
+
   /*
    * To create the (@link Region}.
    * @param name
@@ -48,58 +52,58 @@ class CPPCACHE_EXPORT RegionFactory
    * @param cacheLoader the cache loader or nullptr if no loader
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setCacheLoader(const CacheLoaderPtr& cacheLoader);
+  RegionFactory& setCacheLoader(const CacheLoaderPtr& cacheLoader);
 
   /** Sets the cache writer for the next <code>RegionAttributes</code> created.
    * @param cacheWriter the cache writer or nullptr if no cache writer
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setCacheWriter(const CacheWriterPtr& cacheWriter);
+  RegionFactory& setCacheWriter(const CacheWriterPtr& cacheWriter);
 
   /** Sets the CacheListener for the next <code>RegionAttributes</code> created.
    * @param aListener a user defined CacheListener, nullptr if no listener
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setCacheListener(const CacheListenerPtr& aListener);
+  RegionFactory& setCacheListener(const CacheListenerPtr& aListener);
 
   /** Sets the PartitionResolver for the next <code>RegionAttributes</code>
    * created.
    * @param aResolver a user defined PartitionResolver, nullptr if no resolver
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setPartitionResolver(const PartitionResolverPtr& aResolver);
+  RegionFactory& setPartitionResolver(const PartitionResolverPtr& aResolver);
 
   /**
    * Sets the library path for the library that will be invoked for the loader
    * of the region.
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setCacheLoader(const char* libpath,
-                                  const char* factoryFuncName);
+  RegionFactory& setCacheLoader(const char* libpath,
+                                const char* factoryFuncName);
 
   /**
    * Sets the library path for the library that will be invoked for the writer
    * of the region.
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setCacheWriter(const char* libpath,
-                                  const char* factoryFuncName);
+  RegionFactory& setCacheWriter(const char* libpath,
+                                const char* factoryFuncName);
 
   /**
    * Sets the library path for the library that will be invoked for the listener
    * of the region.
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setCacheListener(const char* libpath,
-                                    const char* factoryFuncName);
+  RegionFactory& setCacheListener(const char* libpath,
+                                  const char* factoryFuncName);
 
   /**
    * Sets the library path for the library that will be invoked for the
    * partition resolver of the region.
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setPartitionResolver(const char* libpath,
-                                        const char* factoryFuncName);
+  RegionFactory& setPartitionResolver(const char* libpath,
+                                      const char* factoryFuncName);
 
   // EXPIRATION ATTRIBUTES
 
@@ -109,8 +113,8 @@ class CPPCACHE_EXPORT RegionFactory
    * @param idleTimeout the idleTimeout in seconds for entries in this region.
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setEntryIdleTimeout(ExpirationAction::Action action,
-                                       int32_t idleTimeout);
+  RegionFactory& setEntryIdleTimeout(ExpirationAction::Action action,
+                                     int32_t idleTimeout);
 
   /** Sets the timeToLive expiration attributes for region entries for the next
    * <code>RegionAttributes</code> created.
@@ -118,8 +122,8 @@ class CPPCACHE_EXPORT RegionFactory
    * @param timeToLive the timeToLive in seconds for entries in this region.
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setEntryTimeToLive(ExpirationAction::Action action,
-                                      int32_t timeToLive);
+  RegionFactory& setEntryTimeToLive(ExpirationAction::Action action,
+                                    int32_t timeToLive);
 
   /** Sets the idleTimeout expiration attributes for the region itself for the
    * next <code>RegionAttributes</code> created.
@@ -127,8 +131,8 @@ class CPPCACHE_EXPORT RegionFactory
    * @param idleTimeout the idleTimeout in seconds for the region as a whole.
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setRegionIdleTimeout(ExpirationAction::Action action,
-                                        int32_t idleTimeout);
+  RegionFactory& setRegionIdleTimeout(ExpirationAction::Action action,
+                                      int32_t idleTimeout);
 
   /** Sets the timeToLive expiration attributes for the region itself for the
    * next <code>RegionAttributes</code> created.
@@ -136,8 +140,8 @@ class CPPCACHE_EXPORT RegionFactory
    * @param timeToLive the timeToLive in seconds for the region as a whole.
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setRegionTimeToLive(ExpirationAction::Action action,
-                                       int32_t timeToLive);
+  RegionFactory& setRegionTimeToLive(ExpirationAction::Action action,
+                                     int32_t timeToLive);
 
   // PERSISTENCE
   /**
@@ -148,9 +152,9 @@ class CPPCACHE_EXPORT RegionFactory
    * this must be used to set the PersistenceManager.
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setPersistenceManager(const char* libpath,
-                                         const char* factoryFuncName,
-                                         const PropertiesPtr& config = nullptr);
+  RegionFactory& setPersistenceManager(const char* libpath,
+                                       const char* factoryFuncName,
+                                       const PropertiesPtr& config = nullptr);
 
   /** Sets the PersistenceManager for the next <code>RegionAttributes</code>
    * created.
@@ -158,7 +162,7 @@ class CPPCACHE_EXPORT RegionFactory
    * persistenceManager
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setPersistenceManager(
+  RegionFactory& setPersistenceManager(
       const PersistenceManagerPtr& persistenceManager,
       const PropertiesPtr& config = nullptr);
 
@@ -170,7 +174,7 @@ class CPPCACHE_EXPORT RegionFactory
    * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if initialCapacity is negative.
    */
-  RegionFactoryPtr setInitialCapacity(int initialCapacity);
+  RegionFactory& setInitialCapacity(int initialCapacity);
 
   /** Sets the entry load factor for the next <code>RegionAttributes</code>
    * created. This value is
@@ -179,7 +183,7 @@ class CPPCACHE_EXPORT RegionFactory
    * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if loadFactor is nonpositive
    */
-  RegionFactoryPtr setLoadFactor(float loadFactor);
+  RegionFactory& setLoadFactor(float loadFactor);
 
   /** Sets the concurrency level tof the next <code>RegionAttributes</code>
    * created. This value is used in initializing the map that holds the entries.
@@ -187,7 +191,7 @@ class CPPCACHE_EXPORT RegionFactory
    * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if concurrencyLevel is nonpositive
    */
-  RegionFactoryPtr setConcurrencyLevel(uint8_t concurrencyLevel);
+  RegionFactory& setConcurrencyLevel(uint8_t concurrencyLevel);
 
   /**
    * Sets a limit on the number of entries that will be held in the cache.
@@ -197,7 +201,7 @@ class CPPCACHE_EXPORT RegionFactory
    * @param entriesLimit number of enteries to keep in region
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setLruEntriesLimit(const uint32_t entriesLimit);
+  RegionFactory& setLruEntriesLimit(const uint32_t entriesLimit);
 
   /** Sets the Disk policy type for the next <code>RegionAttributes</code>
    * created.
@@ -205,7 +209,7 @@ class CPPCACHE_EXPORT RegionFactory
    * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if diskPolicyType is Invalid
    */
-  RegionFactoryPtr setDiskPolicy(const DiskPolicyType::PolicyType diskPolicy);
+  RegionFactory& setDiskPolicy(const DiskPolicyType::PolicyType diskPolicy);
 
   /**
    * Set caching enabled flag for this region. If set to false, then no data is
@@ -218,7 +222,7 @@ class CPPCACHE_EXPORT RegionFactory
    * @param cachingEnabled if true, cache data for this region in this process.
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setCachingEnabled(bool cachingEnabled);
+  RegionFactory& setCachingEnabled(bool cachingEnabled);
 
   /*
    * Set the PoolName to attach the Region with that Pool.
@@ -227,14 +231,14 @@ class CPPCACHE_EXPORT RegionFactory
    *        the name of the Pool to which region will be attached.
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setPoolName(const char* name);
+  RegionFactory& setPoolName(const char* name);
 
   /*
    * Set boolean to enable/disable cloning while applying delta.
    * @param isClonable whether to enable cloning or not.
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setCloningEnabled(bool isClonable);
+  RegionFactory& setCloningEnabled(bool isClonable);
 
   /**
    * Enables or disables concurrent modification checks
@@ -243,7 +247,7 @@ class CPPCACHE_EXPORT RegionFactory
    * operations
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setConcurrencyChecksEnabled(bool enable);
+  RegionFactory& setConcurrencyChecksEnabled(bool enable);
 
   /**
    * Sets time out for tombstones
@@ -251,21 +255,21 @@ class CPPCACHE_EXPORT RegionFactory
    * @param tombstoneTimeoutInMSec tombstone timeout in milli second
    * @return a reference to <code>this</code>
    */
-  RegionFactoryPtr setTombstoneTimeout(uint32_t tombstoneTimeoutInMSec);
+  RegionFactory& setTombstoneTimeout(uint32_t tombstoneTimeoutInMSec);
 
  private:
   RegionFactory(apache::geode::client::RegionShortcut preDefinedRegion,
                 CacheImpl* cacheImpl);
 
+  void setRegionShortcut();
+
   RegionShortcut m_preDefinedRegion;
 
   AttributesFactoryPtr m_attributeFactory;
 
-  void setRegionShortcut();
   CacheImpl* m_cacheImpl;
-  ~RegionFactory();
+
   friend class CacheImpl;
-  FRIEND_STD_SHARED_PTR(RegionFactory)
 };
 }  // namespace client
 }  // namespace geode

@@ -255,7 +255,9 @@ namespace Apache
 
           try
           {
-            return RegionFactory::Create(m_nativeptr->get()->createRegionFactory(preDefineRegionAttr));
+            return RegionFactory::Create(std::unique_ptr<native::RegionFactory>(
+                new native::RegionFactory(
+                    m_nativeptr->get()->createRegionFactory(preDefineRegionAttr))));
           }
           finally
           {

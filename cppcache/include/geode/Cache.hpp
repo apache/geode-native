@@ -76,7 +76,7 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * @param regionShortcut
    *        To create the region specific type, @see RegionShortcut
    */
-  virtual RegionFactoryPtr createRegionFactory(RegionShortcut regionShortcut);
+  virtual RegionFactory createRegionFactory(RegionShortcut regionShortcut);
 
   /**
    * Initializes the cache from an xml file
