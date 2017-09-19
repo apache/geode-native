@@ -35,7 +35,7 @@ class CPPCACHE_EXPORT RegionFactory {
  public:
   RegionFactory() = delete;
   ~RegionFactory() = default;
-  RegionFactory(const RegionFactory& move) = delete;
+  RegionFactory(const RegionFactory& nocopy) = delete;
   RegionFactory(RegionFactory&& move) = default;
 
   /*
