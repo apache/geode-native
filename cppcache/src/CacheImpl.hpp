@@ -203,7 +203,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
    */
   inline void setSearchTimeout(int seconds = 0) {}
 
-  virtual RegionFactoryPtr createRegionFactory(RegionShortcut preDefinedRegion);
+  virtual RegionFactory createRegionFactory(RegionShortcut preDefinedRegion);
 
   CacheTransactionManagerPtr getCacheTransactionManager();
 

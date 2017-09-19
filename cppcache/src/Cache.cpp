@@ -132,7 +132,7 @@ void Cache::rootRegions(VectorOfRegion& regions) {
    }*/
 }
 
-RegionFactoryPtr Cache::createRegionFactory(RegionShortcut preDefinedRegion) {
+RegionFactory Cache::createRegionFactory(RegionShortcut preDefinedRegion) {
   return m_cacheImpl->createRegionFactory(preDefinedRegion);
 }
 

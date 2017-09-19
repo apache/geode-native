@@ -308,18 +308,17 @@ void verifyGetAll(RegionPtr region, int startIndex) {
 
 void createRegion(RegionPtr& regionPtr, const char* regionName,
                   PropertiesPtr& cacheProps, PropertiesPtr& sqLiteProps) {
-  CacheFactoryPtr cacheFactoryPtr =
-      CacheFactory::createCacheFactory(cacheProps);
-  CachePtr cachePtr = CacheFactory::createCacheFactory()->create();
+  auto cacheFactoryPtr = CacheFactory::createCacheFactory(cacheProps);
+  auto cachePtr = CacheFactory::createCacheFactory()->create();
   ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
-  RegionFactoryPtr regionFactoryPtr = cachePtr->createRegionFactory(LOCAL);
-  regionFactoryPtr->setCachingEnabled(true);
-  regionFactoryPtr->setLruEntriesLimit(10);
-  regionFactoryPtr->setInitialCapacity(1000);
-  regionFactoryPtr->setDiskPolicy(DiskPolicyType::OVERFLOWS);
-  regionFactoryPtr->setPersistenceManager("SqLiteImpl", "createSqLiteInstance",
-                                          sqLiteProps);
-  regionPtr = regionFactoryPtr->create(regionName);
+  auto regionFactory = cachePtr->createRegionFactory(LOCAL);
+  regionFactory.setCachingEnabled(true);
+  regionFactory.setLruEntriesLimit(10);
+  regionFactory.setInitialCapacity(1000);
+  regionFactory.setDiskPolicy(DiskPolicyType::OVERFLOWS);
+  regionFactory.setPersistenceManager("SqLiteImpl", "createSqLiteInstance",
+                                      sqLiteProps);
+  regionPtr = regionFactory.create(regionName);
   ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
 }
 
@@ -471,22 +470,22 @@ END_TEST(OverFlowTest_absPath)
 
 BEGIN_TEST(OverFlowTest_SqLiteFull)
   {
-    CacheFactoryPtr cacheFactoryPtr = CacheFactory::createCacheFactory();
-    CachePtr cachePtr = CacheFactory::createCacheFactory()->create();
+    auto cacheFactoryPtr = CacheFactory::createCacheFactory();
+    auto cachePtr = CacheFactory::createCacheFactory()->create();
     ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
-    RegionFactoryPtr regionFactoryPtr = cachePtr->createRegionFactory(LOCAL);
-    regionFactoryPtr->setCachingEnabled(true);
-    regionFactoryPtr->setLruEntriesLimit(1);
-    regionFactoryPtr->setInitialCapacity(1000);
-    regionFactoryPtr->setDiskPolicy(DiskPolicyType::OVERFLOWS);
-    PropertiesPtr sqliteProperties = Properties::create();
+    auto regionFactory = cachePtr->createRegionFactory(LOCAL);
+    regionFactory.setCachingEnabled(true);
+    regionFactory.setLruEntriesLimit(1);
+    regionFactory.setInitialCapacity(1000);
+    regionFactory.setDiskPolicy(DiskPolicyType::OVERFLOWS);
+    auto sqliteProperties = Properties::create();
     sqliteProperties->insert(
         "MaxPageCount", "10");  // 10 * 1024 is arround 10kB is the db file size
     sqliteProperties->insert("PageSize", "1024");
     sqliteProperties->insert("PersistenceDirectory", sqlite_dir.c_str());
-    regionFactoryPtr->setPersistenceManager(
-        "SqLiteImpl", "createSqLiteInstance", sqliteProperties);
-    RegionPtr regionPtr = regionFactoryPtr->create("OverFlowRegion");
+    regionFactory.setPersistenceManager("SqLiteImpl", "createSqLiteInstance",
+                                        sqliteProperties);
+    auto regionPtr = regionFactory.create("OverFlowRegion");
     ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
 
     try {
@@ -507,100 +506,30 @@ BEGIN_TEST(OverFlowTest_SqLiteFull)
   }
 END_TEST(OverFlowTest_SqLiteFull)
 
-//#if ( defined(_WIN64) || defined(__sparcv9) || defined(__x86_64__) ) // run
-// this test only for 64 bit mode
-// BEGIN_TEST(OverFlowTest_LargeData)
-//{
-//  /** Connecting to a distributed system. */
-//  DistributedSystem& dsysPtr;
-//
-//  /** Creating a cache to manage regions. */
-//  CachePtr cachePtr ;
-//  PropertiesPtr pp = Properties::create();
-//  startDSandCreateCache(dsysPtr, cachePtr, pp);
-//  ASSERT(dsysPtr != nullptr, "Expected dsys to be NON-nullptr");
-//  ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
-//
-//  RegionAttributesPtr attrsPtr;
-//  AttributesFactory attrsFact;
-//  attrsFact.setCachingEnabled(true);
-//  attrsFact.setLruEntriesLimit(1 );
-//  attrsFact.setInitialCapacity( 10000 );
-//  attrsFact.setDiskPolicy(DiskPolicyType::OVERFLOWS);
-//  PropertiesPtr sqliteProperties = Properties::create();
-//  sqliteProperties->insert("MaxPageCount","2147483646");  //maximum allowed
-//  for sqlite
-//  sqliteProperties->insert("PageSize","65536"); //maximum allowed for sqlite
-//  sqliteProperties->insert("PersistenceDirectory", sqlite_dir.c_str());
-//  attrsFact.setPersistenceManager("SqLiteImpl","createSqLiteInstance",sqliteProperties);
-//
-//  attrsPtr = attrsFact.createRegionAttributes( );
-//  ASSERT(attrsPtr != nullptr, "Expected region attributes to be NON-nullptr");
-//
-//  /** Create a region with caching and LRU. */
-//  RegionPtr regionPtr = cachePtr->createRegion( "OverFlowRegion", attrsPtr );
-//  ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
-//
-//  /** put one million values into the cache.  to test the large data values*/
-//  doNputLargeData(regionPtr, 1024 * 1); //arround 100 GB data
-//
-//  /** do some gets... printing what we find in the cache. */
-//  doNgetLargeData(regionPtr, 1024 * 1); //arround 100 GB data
-//  LOG("Completed doNget");
-//
-//
-//  /** test to verify same region repeatedly to ensure that the persistece
-//  files are created and destroyed correctly */
-//
-//  RegionPtr subRegion;
-//  for(int i = 0; i<10; i++)
-//  {
-//    createSubRegion(regionPtr,subRegion,attrsPtr,"SubRegion");
-//    ASSERT(subRegion != nullptr, "Expected region to be NON-nullptr");
-//    subRegion->destroyRegion();
-//    ASSERT(subRegion->isDestroyed(), "Expected region is not destroyed ");
-//    subRegion = nullptr;
-//    ACE_TCHAR hname[MAXHOSTNAMELEN];
-//    ACE_OS::hostname( hname, sizeof(hname)-1);
-//    char sqliteDirSubRgn[512];
-//    sprintf(sqliteDirSubRgn, "%s/%s_%u/_%s_SubRegion/file_0.db",
-//        sqlite_dir.c_str(), hname, ACE_OS::getpid(), regionPtr->getName());
-//
-//    ACE_stat fileStat;
-//    ASSERT(ACE_OS::stat(sqliteDirSubRgn, &fileStat) == -1, "persistence file
-//    still present");
-//  }
-//  // cache close
-//  cachePtr->close();
-//  // DS system close
-//  dsysPtr->disconnect();
-//}
-// END_TEST(OverFlowTest_LargeData)
-//#endif // 64-bit
 
 BEGIN_TEST(OverFlowTest_HeapLRU)
   {
     /** Creating a cache to manage regions. */
-    PropertiesPtr pp = Properties::create();
+    auto pp = Properties::create();
     pp->insert("heap-lru-limit", 1);
     pp->insert("heap-lru-delta", 10);
-    CacheFactoryPtr cacheFactoryPtr = CacheFactory::createCacheFactory(pp);
-    CachePtr cachePtr = CacheFactory::createCacheFactory()->create();
+    auto cacheFactoryPtr = CacheFactory::createCacheFactory(pp);
+    auto cachePtr = CacheFactory::createCacheFactory()->create();
     ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
-    RegionFactoryPtr regionFactoryPtr = cachePtr->createRegionFactory(LOCAL);
-    regionFactoryPtr->setCachingEnabled(true);
-    regionFactoryPtr->setLruEntriesLimit(1024 * 10);
-    regionFactoryPtr->setInitialCapacity(1000);
-    regionFactoryPtr->setDiskPolicy(DiskPolicyType::OVERFLOWS);
-    PropertiesPtr sqliteProperties = Properties::create();
+    auto regionFactory = cachePtr->createRegionFactory(LOCAL);
+    regionFactory.setCachingEnabled(true);
+    regionFactory.setLruEntriesLimit(1024 * 10);
+    regionFactory.setInitialCapacity(1000);
+    regionFactory.setDiskPolicy(DiskPolicyType::OVERFLOWS);
+    auto sqliteProperties = Properties::create();
     sqliteProperties->insert(
         "MaxPageCount",
         "2147483646");  // 10 * 1024 is arround 10kB is the db file size
     sqliteProperties->insert("PageSize", "65536");
     sqliteProperties->insert("PersistenceDirectory", sqlite_dir.c_str());
-    regionFactoryPtr->setPersistenceManager(
-        "SqLiteImpl", "createSqLiteInstance", sqliteProperties);
-    RegionPtr regionPtr = regionFactoryPtr->create("OverFlowRegion");
+    regionFactory.setPersistenceManager("SqLiteImpl", "createSqLiteInstance",
+                                        sqliteProperties);
+    auto regionPtr = regionFactory.create("OverFlowRegion");
     ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
 
     validateAttribute(regionPtr);

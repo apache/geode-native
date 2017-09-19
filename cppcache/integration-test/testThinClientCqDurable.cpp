@@ -186,13 +186,13 @@ void stepOne() {
 
 void RunDurableCqClient() {
   // Create durable client's properties using api.
-  PropertiesPtr pp = Properties::create();
+  auto pp = Properties::create();
   pp->insert("durable-client-id", "DurableClientId");
   pp->insert("durable-timeout", 3600);
 
   // Create a Geode Cache Programmatically.
-  CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory(pp);
-  CachePtr cachePtr = cacheFactory->create();
+  auto cacheFactory = CacheFactory::createCacheFactory(pp);
+  auto cachePtr = cacheFactory->create();
   auto poolFactory = cachePtr->getPoolManager().createFactory();
   poolFactory->setSubscriptionEnabled(true);
   poolFactory->setSubscriptionAckInterval(5000);
@@ -201,27 +201,27 @@ void RunDurableCqClient() {
 
   LOGINFO("Created the Geode Cache Programmatically");
 
-  RegionFactoryPtr regionFactory = cachePtr->createRegionFactory(CACHING_PROXY);
+  auto regionFactory = cachePtr->createRegionFactory(CACHING_PROXY);
 
   // Create the Region Programmatically.
-  RegionPtr regionPtr = regionFactory->create("DistRegionAck");
+  auto regionPtr = regionFactory.create("DistRegionAck");
 
   LOGINFO("Created the Region Programmatically");
 
   // Get the QueryService from the Cache.
-  QueryServicePtr qrySvcPtr = cachePtr->getQueryService();
+  auto qrySvcPtr = cachePtr->getQueryService();
 
   // Create CqAttributes and Install Listener
   CqAttributesFactory cqFac;
   auto cqLstner = std::make_shared<MyCqListener1>();
   cqFac.addCqListener(cqLstner);
-  CqAttributesPtr cqAttr = cqFac.create();
+  auto cqAttr = cqFac.create();
 
   LOGINFO("Attached CqListener");
 
   // create a new Cq Query
   const char* qryStr = "select * from /DistRegionAck ";
-  CqQueryPtr qry = qrySvcPtr->newCq((char*)"MyCq", qryStr, cqAttr, true);
+  auto qry = qrySvcPtr->newCq((char*)"MyCq", qryStr, cqAttr, true);
 
   LOGINFO("Created new CqQuery");
 
@@ -251,26 +251,25 @@ void RunDurableCqClient() {
 }
 
 void RunFeederClient() {
-  CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
+  auto cacheFactory = CacheFactory::createCacheFactory();
   LOGINFO("Feeder connected to the Geode Distributed System");
 
-  CachePtr cachePtr = cacheFactory->create();
+  auto cachePtr = cacheFactory->create();
 
   LOGINFO("Created the Geode Cache");
 
-  RegionFactoryPtr regionFactory = cachePtr->createRegionFactory(PROXY);
+  auto regionFactory = cachePtr->createRegionFactory(PROXY);
 
   LOGINFO("Created the RegionFactory");
 
   // Create the Region Programmatically.
-  RegionPtr regionPtr = regionFactory->create("DistRegionAck");
+  auto regionPtr = regionFactory.create("DistRegionAck");
 
   LOGINFO("Created the Region Programmatically.");
 
   for (int i = 0; i < 10; i++) {
-    auto keyPtr =
-        std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
-    CacheableInt32Ptr valPtr = CacheableInt32::create(i);
+    auto keyPtr = CacheableInt32::create(i);
+    auto valPtr = CacheableInt32::create(i);
 
     regionPtr->put(keyPtr, valPtr);
   }
@@ -284,26 +283,25 @@ void RunFeederClient() {
 }
 
 void RunFeederClient1() {
-  CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
+  auto cacheFactory = CacheFactory::createCacheFactory();
   LOGINFO("Feeder connected to the Geode Distributed System");
 
-  CachePtr cachePtr = cacheFactory->create();
+  auto cachePtr = cacheFactory->create();
 
   LOGINFO("Created the Geode Cache");
 
-  RegionFactoryPtr regionFactory = cachePtr->createRegionFactory(PROXY);
+  auto regionFactory = cachePtr->createRegionFactory(PROXY);
 
   LOGINFO("Created the RegionFactory");
 
   // Create the Region Programmatically.
-  RegionPtr regionPtr = regionFactory->create("DistRegionAck");
+  auto regionPtr = regionFactory.create("DistRegionAck");
 
   LOGINFO("Created the Region Programmatically.");
 
   for (int i = 10; i < 20; i++) {
-    auto keyPtr =
-        std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
-    CacheableInt32Ptr valPtr = CacheableInt32::create(i);
+    auto keyPtr = CacheableInt32::create(i);
+    auto valPtr = CacheableInt32::create(i);
 
     regionPtr->put(keyPtr, valPtr);
   }

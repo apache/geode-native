@@ -43,8 +43,6 @@ RegionFactory::RegionFactory(RegionShortcut preDefinedRegion,
   setRegionShortcut();
 }
 
-RegionFactory::~RegionFactory() {}
-
 RegionPtr RegionFactory::create(const char* name) {
   RegionPtr retRegionPtr = nullptr;
   RegionAttributesPtr regAttr = m_attributeFactory->createRegionAttributes();
@@ -82,136 +80,135 @@ void RegionFactory::setRegionShortcut() {
   }
 }
 
-RegionFactoryPtr RegionFactory::setCacheLoader(
+RegionFactory& RegionFactory::setCacheLoader(
     const CacheLoaderPtr& cacheLoader) {
   m_attributeFactory->setCacheLoader(cacheLoader);
-  return shared_from_this();
+  return *this;
 }
 
-RegionFactoryPtr RegionFactory::setCacheWriter(
+RegionFactory& RegionFactory::setCacheWriter(
     const CacheWriterPtr& cacheWriter) {
   m_attributeFactory->setCacheWriter(cacheWriter);
-  return shared_from_this();
+  return *this;
 }
-RegionFactoryPtr RegionFactory::setCacheListener(
+RegionFactory& RegionFactory::setCacheListener(
     const CacheListenerPtr& aListener) {
   m_attributeFactory->setCacheListener(aListener);
-  return shared_from_this();
+  return *this;
 }
-RegionFactoryPtr RegionFactory::setPartitionResolver(
+RegionFactory& RegionFactory::setPartitionResolver(
     const PartitionResolverPtr& aResolver) {
   m_attributeFactory->setPartitionResolver(aResolver);
-  return shared_from_this();
+  return *this;
 }
 
-RegionFactoryPtr RegionFactory::setCacheLoader(const char* lib,
-                                               const char* func) {
+RegionFactory& RegionFactory::setCacheLoader(const char* lib,
+                                             const char* func) {
   m_attributeFactory->setCacheLoader(lib, func);
-  return shared_from_this();
+  return *this;
 }
 
-RegionFactoryPtr RegionFactory::setCacheWriter(const char* lib,
-                                               const char* func) {
+RegionFactory& RegionFactory::setCacheWriter(const char* lib,
+                                             const char* func) {
   m_attributeFactory->setCacheWriter(lib, func);
-  return shared_from_this();
+  return *this;
 }
 
-RegionFactoryPtr RegionFactory::setCacheListener(const char* lib,
-                                                 const char* func) {
+RegionFactory& RegionFactory::setCacheListener(const char* lib,
+                                               const char* func) {
   m_attributeFactory->setCacheListener(lib, func);
-  return shared_from_this();
+  return *this;
 }
 
-RegionFactoryPtr RegionFactory::setPartitionResolver(const char* lib,
-                                                     const char* func) {
+RegionFactory& RegionFactory::setPartitionResolver(const char* lib,
+                                                   const char* func) {
   m_attributeFactory->setPartitionResolver(lib, func);
-  return shared_from_this();
+  return *this;
 }
 
-RegionFactoryPtr RegionFactory::setEntryIdleTimeout(
+RegionFactory& RegionFactory::setEntryIdleTimeout(
     ExpirationAction::Action action, int idleTimeout) {
   m_attributeFactory->setEntryIdleTimeout(action, idleTimeout);
-  return shared_from_this();
+  return *this;
 }
 
-RegionFactoryPtr RegionFactory::setEntryTimeToLive(
+RegionFactory& RegionFactory::setEntryTimeToLive(
     ExpirationAction::Action action, int timeToLive) {
   m_attributeFactory->setEntryTimeToLive(action, timeToLive);
-  return shared_from_this();
+  return *this;
 }
 
-RegionFactoryPtr RegionFactory::setRegionIdleTimeout(
+RegionFactory& RegionFactory::setRegionIdleTimeout(
     ExpirationAction::Action action, int idleTimeout) {
   m_attributeFactory->setRegionIdleTimeout(action, idleTimeout);
-  return shared_from_this();
+  return *this;
 }
-RegionFactoryPtr RegionFactory::setRegionTimeToLive(
+RegionFactory& RegionFactory::setRegionTimeToLive(
     ExpirationAction::Action action, int timeToLive) {
   m_attributeFactory->setRegionTimeToLive(action, timeToLive);
-  return shared_from_this();
+  return *this;
 }
 
-RegionFactoryPtr RegionFactory::setInitialCapacity(int initialCapacity) {
+RegionFactory& RegionFactory::setInitialCapacity(int initialCapacity) {
   char excpStr[256] = {0};
   if (initialCapacity < 0) {
     ACE_OS::snprintf(excpStr, 256, "initialCapacity must be >= 0 ");
     throw IllegalArgumentException(excpStr);
   }
   m_attributeFactory->setInitialCapacity(initialCapacity);
-  return shared_from_this();
+  return *this;
 }
 
-RegionFactoryPtr RegionFactory::setLoadFactor(float loadFactor) {
+RegionFactory& RegionFactory::setLoadFactor(float loadFactor) {
   m_attributeFactory->setLoadFactor(loadFactor);
-  return shared_from_this();
+  return *this;
 }
 
-RegionFactoryPtr RegionFactory::setConcurrencyLevel(uint8_t concurrencyLevel) {
+RegionFactory& RegionFactory::setConcurrencyLevel(uint8_t concurrencyLevel) {
   m_attributeFactory->setConcurrencyLevel(concurrencyLevel);
-  return shared_from_this();
+  return *this;
 }
-RegionFactoryPtr RegionFactory::setConcurrencyChecksEnabled(bool enable) {
+RegionFactory& RegionFactory::setConcurrencyChecksEnabled(bool enable) {
   m_attributeFactory->setConcurrencyChecksEnabled(enable);
-  return shared_from_this();
+  return *this;
 }
-RegionFactoryPtr RegionFactory::setLruEntriesLimit(
-    const uint32_t entriesLimit) {
+RegionFactory& RegionFactory::setLruEntriesLimit(const uint32_t entriesLimit) {
   m_attributeFactory->setLruEntriesLimit(entriesLimit);
-  return shared_from_this();
+  return *this;
 }
 
-RegionFactoryPtr RegionFactory::setDiskPolicy(
+RegionFactory& RegionFactory::setDiskPolicy(
     const DiskPolicyType::PolicyType diskPolicy) {
   m_attributeFactory->setDiskPolicy(diskPolicy);
-  return shared_from_this();
+  return *this;
 }
 
-RegionFactoryPtr RegionFactory::setCachingEnabled(bool cachingEnabled) {
+RegionFactory& RegionFactory::setCachingEnabled(bool cachingEnabled) {
   m_attributeFactory->setCachingEnabled(cachingEnabled);
-  return shared_from_this();
+  return *this;
 }
 
-RegionFactoryPtr RegionFactory::setPersistenceManager(
+RegionFactory& RegionFactory::setPersistenceManager(
     const PersistenceManagerPtr& persistenceManager,
     const PropertiesPtr& config) {
   m_attributeFactory->setPersistenceManager(persistenceManager, config);
-  return shared_from_this();
+  return *this;
 }
 
-RegionFactoryPtr RegionFactory::setPersistenceManager(
+RegionFactory& RegionFactory::setPersistenceManager(
     const char* lib, const char* func, const PropertiesPtr& config) {
   m_attributeFactory->setPersistenceManager(lib, func, config);
-  return shared_from_this();
+  return *this;
 }
 
-RegionFactoryPtr RegionFactory::setPoolName(const char* name) {
+RegionFactory& RegionFactory::setPoolName(const char* name) {
   m_attributeFactory->setPoolName(name);
-  return shared_from_this();
+  return *this;
 }
 
-RegionFactoryPtr RegionFactory::setCloningEnabled(bool isClonable) {
+RegionFactory& RegionFactory::setCloningEnabled(bool isClonable) {
   m_attributeFactory->setCloningEnabled(isClonable);
-  return shared_from_this();
+  return *this;
 }
 }  // namespace client
 }  // namespace geode
