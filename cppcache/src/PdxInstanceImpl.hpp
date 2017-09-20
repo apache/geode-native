@@ -1106,7 +1106,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
   bool hasDefaultBytes(PdxFieldTypePtr pField, DataInput& dataInput, int start,
                        int end) const;
 
-  bool compareDefaulBytes(DataInput& dataInput, int start, int end,
+  bool compareDefaultBytes(DataInput& dataInput, int start, int end,
                           int8_t* defaultBytes, int32_t length) const;
 
   void writeField(PdxWriterPtr writer, const char* fieldName, int typeId,
