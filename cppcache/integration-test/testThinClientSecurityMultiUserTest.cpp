@@ -359,8 +359,8 @@ DUNIT_TASK_DEFINITION(CLIENT_1, StepOne)
                               false, -1, true, 0);
       LOG("Region created successfully");
       PoolPtr pool = getPool(regionNamesAuth[0]);
-      int m_numberOfUsers = 10;
-      int m_numberOfOps = 100;
+      int m_numberOfUsers = 3;
+      int m_numberOfOps = 10;
       UserThread* uthreads = new UserThread[m_numberOfUsers];
 
       for (int i = 0; i < m_numberOfUsers; i++) {
