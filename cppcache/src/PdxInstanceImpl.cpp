@@ -1720,9 +1720,9 @@ int PdxInstanceImpl::getSerializedLength(DataInput& dataInput,
   return serializedLength;
 }
 
-bool PdxInstanceImpl::compareDefaulBytes(DataInput& dataInput, int start,
-                                         int end, int8_t* defaultBytes,
-                                         int32_t length) const {
+bool PdxInstanceImpl::compareDefaultBytes(DataInput& dataInput, int start,
+                                          int end, int8_t* defaultBytes,
+                                          int32_t length) const {
   if ((end - start) != length) return false;
 
   dataInput.reset();
@@ -1743,32 +1743,31 @@ bool PdxInstanceImpl::hasDefaultBytes(PdxFieldTypePtr pField,
                                       int end) const {
   switch (pField->getTypeId()) {
     case PdxFieldTypes::INT: {
-      return compareDefaulBytes(dataInput, start, end, m_IntDefaultBytes, 4);
+      return compareDefaultBytes(dataInput, start, end, m_IntDefaultBytes, 4);
     }
     case PdxFieldTypes::STRING: {
-      return compareDefaulBytes(dataInput, start, end, m_StringDefaultBytes, 1);
+      return compareDefaultBytes(dataInput, start, end, m_StringDefaultBytes, 1);
     }
     case PdxFieldTypes::BOOLEAN: {
-      return compareDefaulBytes(dataInput, start, end, m_BooleanDefaultBytes,
-                                1);
+      return compareDefaultBytes(dataInput, start, end, m_BooleanDefaultBytes, 1);
     }
     case PdxFieldTypes::FLOAT: {
-      return compareDefaulBytes(dataInput, start, end, m_FloatDefaultBytes, 4);
+      return compareDefaultBytes(dataInput, start, end, m_FloatDefaultBytes, 4);
     }
     case PdxFieldTypes::DOUBLE: {
-      return compareDefaulBytes(dataInput, start, end, m_DoubleDefaultBytes, 8);
+      return compareDefaultBytes(dataInput, start, end, m_DoubleDefaultBytes, 8);
     }
     case PdxFieldTypes::CHAR: {
-      return compareDefaulBytes(dataInput, start, end, m_CharDefaultBytes, 2);
+      return compareDefaultBytes(dataInput, start, end, m_CharDefaultBytes, 2);
     }
     case PdxFieldTypes::BYTE: {
-      return compareDefaulBytes(dataInput, start, end, m_ByteDefaultBytes, 1);
+      return compareDefaultBytes(dataInput, start, end, m_ByteDefaultBytes, 1);
     }
     case PdxFieldTypes::SHORT: {
-      return compareDefaulBytes(dataInput, start, end, m_ShortDefaultBytes, 2);
+      return compareDefaultBytes(dataInput, start, end, m_ShortDefaultBytes, 2);
     }
     case PdxFieldTypes::LONG: {
-      return compareDefaulBytes(dataInput, start, end, m_LongDefaultBytes, 8);
+      return compareDefaultBytes(dataInput, start, end, m_LongDefaultBytes, 8);
     }
     case PdxFieldTypes::BYTE_ARRAY:
     case PdxFieldTypes::DOUBLE_ARRAY:
@@ -1781,14 +1780,13 @@ bool PdxInstanceImpl::hasDefaultBytes(PdxFieldTypePtr pField,
     case PdxFieldTypes::STRING_ARRAY:
     case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS:
     case PdxFieldTypes::OBJECT_ARRAY: {
-      return compareDefaulBytes(dataInput, start, end, m_NULLARRAYDefaultBytes,
-                                1);
+      return compareDefaultBytes(dataInput, start, end, m_NULLARRAYDefaultBytes, 1);
     }
     case PdxFieldTypes::DATE: {
-      return compareDefaulBytes(dataInput, start, end, m_DateDefaultBytes, 8);
+      return compareDefaultBytes(dataInput, start, end, m_DateDefaultBytes, 8);
     }
     case PdxFieldTypes::OBJECT: {
-      return compareDefaulBytes(dataInput, start, end, m_ObjectDefaultBytes, 1);
+      return compareDefaultBytes(dataInput, start, end, m_ObjectDefaultBytes, 1);
     }
     default: {
       throw IllegalStateException("hasDefaultBytes unable to find typeID ");
