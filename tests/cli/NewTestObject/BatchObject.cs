@@ -75,7 +75,7 @@ namespace Apache.Geode.Client.Tests
       batch = anIndex/batchSize;
       byteArray = new byte[size];
     }
-    public override IGeodeSerializable FromData(DataInput input)
+    public override void FromData(DataInput input)
     {
       index = input.ReadInt32();
       timestamp = input.ReadInt64();

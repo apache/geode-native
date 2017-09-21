@@ -15,19 +15,13 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
-
 #include "ExceptionTypes.hpp"
-
 #include "CacheFactory.hpp"
 #include "Cache.hpp"
 #include "DistributedSystem.hpp"
 #include "SystemProperties.hpp"
 #include "impl/SafeConvert.hpp"
 #include "impl/PdxTypeRegistry.hpp"
-//#pragma warning(disable:4091)
-//#include <msclr/lock.h>
-//#pragma warning(disable:4091)
 #include "impl/AppDomainContext.hpp"
 
 using namespace System;
@@ -71,13 +65,12 @@ namespace Apache
     
           nativeCache = m_nativeptr->get()->create( );
 
-           auto cache = Cache::Create( nativeCache );
-          // TODO global create SerializerRegistry
+          auto cache = Cache::Create( nativeCache );
+
           if(!m_connected)
           {
             DistributedSystem::AppDomainInstanceInitialization(cache);                  
           }
-
 
 					pdxIgnoreUnreadFields = nativeCache->getPdxIgnoreUnreadFields();
           pdxReadSerialized = nativeCache->getPdxReadSerialized();
@@ -93,30 +86,28 @@ namespace Apache
             native::createAppDomainContext = &Apache::Geode::Client::createAppDomainContext;
           }
 
-            Serializable::RegisterTypeGeneric(
-              native::GeodeTypeIds::PdxType,
-              gcnew TypeFactoryMethodGeneric(Apache::Geode::Client::Internal::PdxType::CreateDeserializable),
-              nullptr, cache);
+          Serializable::RegisterTypeGeneric(
+            native::GeodeTypeIds::PdxType,
+            gcnew TypeFactoryMethodGeneric(Apache::Geode::Client::Internal::PdxType::CreateDeserializable),
+            nullptr, cache);
 
-           if(!m_connected)
-           {
-             //it registers types in unmanage layer, so should be once only 
-             DistributedSystem::ManagedPostConnect(cache);
-             DistributedSystem::AppDomainInstancePostInitialization();
-             DistributedSystem::connectInstance();
-           }
+          if(!m_connected)
+          {
+            //it registers types in unmanage layer, so should be once only 
+            DistributedSystem::ManagedPostConnect(cache);
+            DistributedSystem::AppDomainInstancePostInitialization();
+            DistributedSystem::connectInstance();
+          }
           
-           m_connected = true;
-           
-          
+          m_connected = true;
+ 
+          DistributedSystem::registerCliCallback();
+          Serializable::RegisterPDXManagedCacheableKey(cache);
 
-           DistributedSystem::registerCliCallback();
-           Serializable::RegisterPDXManagedCacheableKey(appDomainEnable, cache);
-
-           return cache;
+          return cache;
         _GF_MG_EXCEPTION_CATCH_ALL2
-          finally {
-            GC::KeepAlive(m_nativeptr);
+        finally {
+          GC::KeepAlive(m_nativeptr);
 					Apache::Geode::Client::Internal::PdxTypeRegistry::PdxIgnoreUnreadFields = pdxIgnoreUnreadFields; 
           Apache::Geode::Client::Internal::PdxTypeRegistry::PdxReadSerialized = pdxReadSerialized; 
           DistributedSystem::releaseDisconnectLock();

@@ -93,7 +93,7 @@ class User : IGeodeSerializable
       }
   }
   
-  public IGeodeSerializable FromData(DataInput input)
+  public void FromData(DataInput input)
   {
     m_name = input.ReadUTF();
     m_userId = input.ReadInt32();

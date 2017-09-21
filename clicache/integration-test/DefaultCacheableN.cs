@@ -162,7 +162,7 @@ namespace Apache.Geode.Client.UnitTests
       get { return 0x04; }
     }
 
-    public IGeodeSerializable FromData(DataInput input)
+    public void FromData(DataInput input)
     {
       if (!m_initialized)
       {
@@ -210,8 +210,6 @@ namespace Apache.Geode.Client.UnitTests
       {
         m_cacheableVector[item] = input.ReadObject();
       }
-      //m_cacheableObject = input.ReadObject();
-      return this;
     }
 
     public uint ObjectSize

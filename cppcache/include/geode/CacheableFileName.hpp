@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CACHEABLEFILENAME_H_
-#define GEODE_CACHEABLEFILENAME_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CACHEABLEFILENAME_H_
+#define GEODE_CACHEABLEFILENAME_H_
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 #include "CacheableKey.hpp"
@@ -31,6 +31,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 /**
  * Implement an immutable wrapper for filenames that can serve as a
  * distributable filename object for caching as both key and value.
@@ -47,7 +48,7 @@ class CPPCACHE_EXPORT CacheableFileName : public CacheableString {
    * Throw IllegalArgumentException if the packed CacheableString is not less
    * than 64K bytes.
    **/
-  virtual Serializable* fromData(DataInput& input);
+  virtual void fromData(DataInput& input);
 
   /**
    *@brief Return the classId of the instance being serialized.
@@ -116,6 +117,7 @@ class CPPCACHE_EXPORT CacheableFileName : public CacheableString {
  private:
   mutable int m_hashcode;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

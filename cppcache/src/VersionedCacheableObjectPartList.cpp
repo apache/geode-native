@@ -96,7 +96,7 @@ void VersionedCacheableObjectPartList::readObjectPart(int32_t index,
   }
 }
 
-Serializable* VersionedCacheableObjectPartList::fromData(DataInput& input) {
+void VersionedCacheableObjectPartList::fromData(DataInput& input) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_responseLock);
   LOGDEBUG("VersionedCacheableObjectPartList::fromData");
   uint8_t flags = 0;
@@ -123,7 +123,6 @@ Serializable* VersionedCacheableObjectPartList::fromData(DataInput& input) {
     LOGDEBUG(
         "VersionedCacheableObjectPartList::fromData: Looks like message has no "
         "data. Returning,");
-    return nullptr;
   }
 
   auto localKeys = std::make_shared<VectorOfCacheableKey>();
@@ -317,7 +316,6 @@ Serializable* VersionedCacheableObjectPartList::fromData(DataInput& input) {
   }
   if (m_keysOffset != nullptr) *m_keysOffset += len;
   if (valuesNULL) m_values = nullptr;
-  return this;
 }
 
 int32_t VersionedCacheableObjectPartList::classId() const { return 0; }

@@ -50,14 +50,13 @@ namespace Apache
           output->WriteByte(0xFF);
       }
 
-      IGeodeSerializable^ CacheableVector::FromData(DataInput^ input)
+     void CacheableVector::FromData(DataInput^ input)
       {
         int len = input->ReadArrayLen();
         for( int i = 0; i < len; i++)
         {
           m_arrayList->Add(input->ReadObject());
         }
-        return this;
       }
 
       System::UInt32 CacheableVector::ObjectSize::get()

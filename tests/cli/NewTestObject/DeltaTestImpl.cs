@@ -187,7 +187,7 @@ namespace Apache.Geode.Client.Tests
       return hasDelta;
     }
 
-    public IGeodeSerializable FromData(DataInput input)
+    public void FromData(DataInput input)
     {
       intVar = input.ReadInt32();
       str = (string)input.ReadObject();
@@ -198,7 +198,6 @@ namespace Apache.Geode.Client.Tests
       {
       fromDataCount++;
       }
-      return this;
     }
 
     public void ToData(DataOutput output)

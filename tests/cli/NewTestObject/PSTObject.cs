@@ -63,7 +63,7 @@ namespace Apache.Geode.Client.Tests
         return 4;
       }
     }
-    public override IGeodeSerializable FromData(DataInput input)
+    public override void FromData(DataInput input)
     {
       timestamp = input.ReadInt64();
       field1 = input.ReadInt32();

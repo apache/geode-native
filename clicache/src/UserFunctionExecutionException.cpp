@@ -35,10 +35,9 @@ namespace Apache
         throw gcnew IllegalStateException("UserFunctionExecutionException::ToData is not intended for use.");
       }
 
-      IGeodeSerializable^ UserFunctionExecutionException::FromData(DataInput^ input)
+      void UserFunctionExecutionException::FromData(DataInput^ input)
       {
         throw gcnew IllegalStateException("UserFunctionExecutionException::FromData is not intended for use.");
-        return this;
       }
 
       System::UInt32 UserFunctionExecutionException::ObjectSize::get()

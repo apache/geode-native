@@ -96,7 +96,7 @@ namespace Apache
         /// the DataInput stream to use for reading the object data
         /// </param>
         /// <returns>the deserialized object</returns>
-        virtual IGeodeSerializable^ FromData(DataInput^ input) override;
+        virtual void FromData(DataInput^ input) override;
 
         // <summary>
         /// Returns the classId of the instance being serialized.

@@ -38,7 +38,7 @@ namespace Apache.Geode.Client.Tests
         return 0;
       }
     }
-    public virtual IGeodeSerializable FromData(DataInput input)
+    public virtual void FromData(DataInput input)
     {
       return this;
     }

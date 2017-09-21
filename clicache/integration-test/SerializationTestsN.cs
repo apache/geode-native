@@ -440,7 +440,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #region IGeodeSerializable Members
 
-    public IGeodeSerializable FromData(DataInput input)
+    public void FromData(DataInput input)
     {
       m_struct.First = input.ReadInt32();
       m_struct.Second = input.ReadInt64();
@@ -465,7 +465,6 @@ namespace Apache.Geode.Client.UnitTests
           throw new ApplicationException("Throwing an exception with inner " +
             "exception", new IOException("This is an inner exception"));
       }
-      return this;
     }
 
     public void ToData(DataOutput output)
@@ -588,7 +587,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #region IGeodeSerializable Members
 
-    public IGeodeSerializable FromData(DataInput input)
+    public void FromData(DataInput input)
     {
       m_struct.First = input.ReadInt32();
       m_struct.Second = input.ReadInt64();
@@ -613,7 +612,6 @@ namespace Apache.Geode.Client.UnitTests
           throw new ApplicationException("Throwing an exception with inner " +
             "exception", new IOException("This is an inner exception"));
       }
-      return this;
     }
 
     public void ToData(DataOutput output)
@@ -737,7 +735,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #region IGeodeSerializable Members
 
-    public IGeodeSerializable FromData(DataInput input)
+    public void FromData(DataInput input)
     {
       m_struct.First = input.ReadInt32();
       m_struct.Second = input.ReadInt64();
@@ -762,7 +760,6 @@ namespace Apache.Geode.Client.UnitTests
           throw new ApplicationException("Throwing an exception with inner " +
             "exception", new IOException("This is an inner exception"));
       }
-      return this;
     }
 
     public void ToData(DataOutput output)
@@ -885,7 +882,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #region IGeodeSerializable Members
 
-    public IGeodeSerializable FromData(DataInput input)
+    public void FromData(DataInput input)
     {
       m_struct.First = input.ReadInt32();
       m_struct.Second = input.ReadInt64();
@@ -910,7 +907,6 @@ namespace Apache.Geode.Client.UnitTests
           throw new ApplicationException("Throwing an exception with inner " +
             "exception", new IOException("This is an inner exception"));
       }
-      return this;
     }
 
     public void ToData(DataOutput output)
@@ -1034,7 +1030,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #region IGeodeSerializable Members
 
-    public IGeodeSerializable FromData(DataInput input)
+    public void FromData(DataInput input)
     {
       m_struct.First = input.ReadInt32();
       m_struct.Second = input.ReadInt64();
@@ -1059,7 +1055,6 @@ namespace Apache.Geode.Client.UnitTests
           throw new ApplicationException("Throwing an exception with inner " +
             "exception", new IOException("This is an inner exception"));
       }
-      return this;
     }
 
     public void ToData(DataOutput output)
@@ -1183,7 +1178,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #region IGeodeSerializable Members
 
-    public IGeodeSerializable FromData(DataInput input)
+    public void FromData(DataInput input)
     {
       m_struct.First = input.ReadInt32();
       m_struct.Second = input.ReadInt64();
@@ -1208,7 +1203,6 @@ namespace Apache.Geode.Client.UnitTests
           throw new ApplicationException("Throwing an exception with inner " +
             "exception", new IOException("This is an inner exception"));
       }
-      return this;
     }
 
     public void ToData(DataOutput output)

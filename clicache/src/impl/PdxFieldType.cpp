@@ -139,7 +139,7 @@ namespace Apache
           output->WriteBoolean(m_isIdentityField);
         }
 
-        IGeodeSerializable^ PdxFieldType::FromData(DataInput^ input)
+        void PdxFieldType::FromData(DataInput^ input)
         {
           m_fieldName = input->ReadString();
           m_sequenceId = input->ReadInt32();
@@ -156,8 +156,6 @@ namespace Apache
             m_isVariableLengthType = false;
           else
             m_isVariableLengthType = true;
-
-          return this;
         }
 
         Int32 PdxFieldType::getFixedTypeSize()

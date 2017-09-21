@@ -53,7 +53,7 @@ namespace Apache
         //Log::Fine("CacheableDate::Todata time " + m_dateTime.Ticks);
       }
 
-      IGeodeSerializable^ CacheableDate::FromData(DataInput^ input)
+      void CacheableDate::FromData(DataInput^ input)
       {
         DateTime epochTime = EpochTime;
         System::Int64 millisSinceEpoch = input->ReadInt64();
@@ -61,7 +61,6 @@ namespace Apache
           millisSinceEpoch * TimeSpan::TicksPerMillisecond);
         m_dateTime = m_dateTime.ToLocalTime();
         //Log::Fine("CacheableDate::Fromadata time " + m_dateTime.Ticks);
-        return this;
       }
 
       System::UInt32 CacheableDate::ObjectSize::get()

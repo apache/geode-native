@@ -52,57 +52,26 @@ namespace Apache
         }
       }
 
-      IGeodeSerializable^ CacheableObjectArray::FromData(DataInput^ input)
+      void CacheableObjectArray::FromData(DataInput^ input)
       {
         int len = input->ReadArrayLen();
         if (len >= 0) {
-          //int8_t typeCode;
           input->ReadByte(); // ignore CLASS typeid
           input->ReadByte(); // ignore string typeid
           unsigned short classLen;
           classLen = input->ReadInt16();
           input->AdvanceCursor(classLen);
-          //nativeInput.readInt(&classLen);
-          //nativeInput.advanceCursor(classLen);
         }
         for (System::Int32 index = 0; index < len; ++index) {
           Add(input->ReadObject());
         }
-        return this;
-        /*_GF_MG_EXCEPTION_TRY
-
-          apache::geode::client::DataInput& nativeInput = *(input->_NativePtr);
-          System::Int32 len;
-          nativeInput.readArrayLen(&len);
-          if (len >= 0) {
-            int8_t typeCode;
-            nativeInput.read(&typeCode); // ignore CLASS typeid
-            nativeInput.read(&typeCode); // ignore string typeid
-            System::UInt16 classLen;
-            nativeInput.readInt(&classLen);
-            nativeInput.advanceCursor(classLen);
-          }
-          apache::geode::client::CacheablePtr value;
-          for (System::Int32 index = 0; index < len; ++index) {
-            nativeInput.readObject(value);
-            Add(SafeUMSerializableConvert(value.get()));
-          }
-
-        _GF_MG_EXCEPTION_CATCH_ALL
-        return this;*/
       }
 
       System::UInt32 CacheableObjectArray::ObjectSize::get()
       { 
-       /* System::UInt32 size = static_cast<System::UInt32> (sizeof(CacheableObjectArray^));
-        for each (IGeodeSerializable^ val in this) {
-          if (val != nullptr) {
-            size += val->ObjectSize;
-          }
-        }*/
         return Count;
+      }
+
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
- } //namespace 

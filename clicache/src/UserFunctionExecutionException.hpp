@@ -71,7 +71,7 @@ namespace Apache
         /// If this api is called from User code.
         /// </exception>
         /// <returns>the deserialized object</returns>
-        virtual IGeodeSerializable^ FromData(DataInput^ input);
+        virtual void FromData(DataInput^ input);
 
         /// <summary>
         /// Returns the classId of this class for serialization.

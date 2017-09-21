@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_SERIALIZATIONREGISTRY_H_
-#define GEODE_SERIALIZATIONREGISTRY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,22 +15,30 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#pragma once
 
-#include <geode/Serializable.hpp>
-#include <geode/PdxSerializer.hpp>
+#ifndef GEODE_SERIALIZATIONREGISTRY_H_
+#define GEODE_SERIALIZATIONREGISTRY_H_
+
+#include <string>
+#include <functional>
+
 #include <ace/Hash_Map_Manager.h>
 #include <ace/Thread_Mutex.h>
 #include <ace/Null_Mutex.h>
+
+#include <geode/geode_globals.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/PdxSerializer.hpp>
 #include <geode/GeodeTypeIds.hpp>
-#include "GeodeTypeIdsImpl.hpp"
 #include <geode/DataOutput.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/Delta.hpp>
-#include <string>
+#include <geode/PdxSerializable.hpp>
+
 #include "util/concurrent/spinlock_mutex.hpp"
 #include "NonCopyable.hpp"
-#include <geode/PdxSerializable.hpp>
+#include "GeodeTypeIdsImpl.hpp"
 #include "MemberListForVersionStamp.hpp"
 
 #if defined(_MACOSX)
@@ -211,12 +214,20 @@ class CPPCACHE_EXPORT SerializationRegistry {
 
   PdxSerializablePtr getPdxType(char* className);
 
+  typedef std::function<std::shared_ptr<Serializable>(DataInput&)>
+      PdxTypeHandler;
+  void setPdxTypeHandler(const PdxTypeHandler& pdxTypeHandler) {
+    this->pdxTypeHandler = pdxTypeHandler;
+  }
+
  private:
   PdxSerializerPtr m_pdxSerializer;
   TheTypeMap theTypeMap;
+  PdxTypeHandler pdxTypeHandler;
 };
 
 typedef std::shared_ptr<SerializationRegistry> SerializationRegistryPtr;
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

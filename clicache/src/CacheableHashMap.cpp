@@ -38,10 +38,9 @@ namespace Apache
         output->WriteDictionary((System::Collections::IDictionary^)m_dictionary);        
       }
 
-      IGeodeSerializable^ Client::CacheableHashMap::FromData(DataInput^ input)
+      void Client::CacheableHashMap::FromData(DataInput^ input)
       {
         m_dictionary = input->ReadDictionary();
-        return this;
       }
 
       System::UInt32 Client::CacheableHashMap::ObjectSize::get()

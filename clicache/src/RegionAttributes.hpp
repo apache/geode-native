@@ -443,7 +443,7 @@ namespace Apache
         /// </summary>
         /// <param name="input">the DataInput stream to use for reading data</param>
         /// <returns>the deserialized Properties object</returns>
-        virtual IGeodeSerializable^ FromData(DataInput^ input);
+        virtual void FromData(DataInput^ input);
 
         /// <summary>
         /// return the size of this object in bytes

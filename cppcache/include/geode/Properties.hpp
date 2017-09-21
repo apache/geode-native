@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_PROPERTIES_H_
-#define GEODE_PROPERTIES_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_PROPERTIES_H_
+#define GEODE_PROPERTIES_H_
 
 /**
  * @file
@@ -130,7 +130,7 @@ class CPPCACHE_EXPORT Properties : public Serializable {
   /**
    *@brief deserialize this object
    **/
-  virtual Serializable* fromData(DataInput& input);
+  virtual void fromData(DataInput& input);
 
   /** Return an empty instance for deserialization. */
   static Serializable* createDeserializable();
@@ -157,6 +157,7 @@ class CPPCACHE_EXPORT Properties : public Serializable {
   Properties(const Properties&);
   const Properties& operator=(const Properties&);
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

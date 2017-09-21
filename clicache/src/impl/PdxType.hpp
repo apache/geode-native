@@ -171,7 +171,7 @@ namespace Apache
             void set(bool val) { m_isLocal = val; }
           }
           virtual void ToData(DataOutput^ output);
-          virtual IGeodeSerializable^ FromData(DataInput^ input);
+          virtual void FromData(DataInput^ input);
           virtual property System::UInt32 ObjectSize
           {
             System::UInt32 get(){ return 0; }

@@ -857,7 +857,7 @@ namespace PdxTests
       get { return 5005; }
     }
 
-    public IGeodeSerializable FromData(DataInput input)
+    public void FromData(DataInput input)
     {
       m_i1 = input.ReadInt32();
       m_npdx = (NestedPdx)input.ReadObject();
@@ -867,7 +867,6 @@ namespace PdxTests
       m_pdx3 = (PdxTypes3)input.ReadObject();
       m_i3 = input.ReadInt32();
       m_i4 = input.ReadInt32();
-      return this;
     }
 
     public uint ObjectSize

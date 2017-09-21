@@ -63,7 +63,7 @@ namespace Apache
         }
       }
 
-      IGeodeSerializable^ CacheableObjectXml::FromData(DataInput^ input)
+      void CacheableObjectXml::FromData(DataInput^ input)
       {
         Byte isNull = input->ReadByte();
         if (isNull) {
@@ -87,7 +87,6 @@ namespace Apache
             m_objectSize = dis.BytesRead - checkpoint;
           }
         }
-        return this;
       }
 
       System::UInt32 CacheableObjectXml::ObjectSize::get()

@@ -67,11 +67,10 @@ namespace Apache.Geode.Client.Tests
             DataOut.WriteInt32( counter );
             ToDataCount++;
         }
-        public Apache.Geode.Client.IGeodeSerializable FromData(Apache.Geode.Client.DataInput DataIn)
+        public void FromData(Apache.Geode.Client.DataInput DataIn)
         {
             counter = DataIn.ReadInt32();
             FromDataCount++;
-            return this;
         }
 
         public UInt32 ClassId

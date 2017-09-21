@@ -73,7 +73,7 @@ namespace Apache.Geode.Client.Tests
         return 23;
       }
     }
-    public override IGeodeSerializable FromData(DataInput input)
+    public override void FromData(DataInput input)
     {
       acctId = input.ReadInt32();
       customerName = (string)input.ReadObject();

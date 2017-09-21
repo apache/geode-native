@@ -49,7 +49,7 @@ class AccountHistory : IGeodeSerializable
          return new AccountHistory();
       }
       #region IGeodeSerializable Members
-      public IGeodeSerializable FromData(DataInput input)
+      public void FromData(DataInput input)
       {
          int len = input.ReadInt32();
          m_history.Clear();

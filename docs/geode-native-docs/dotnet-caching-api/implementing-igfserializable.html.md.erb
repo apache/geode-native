@@ -113,7 +113,7 @@ public class BankAccount : IGeodeSerializable
       output.WriteInt32(m_customerId);
       output.WriteInt32(m_accountId);
    }
-   public IGeodeSerializable FromData(DataInput input)
+   public void FromData(DataInput input)
    {
       m_customerId = input.ReadInt32();
       m_accountId = input.ReadInt32();

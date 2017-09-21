@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "fwklib/GsRandom.hpp"
 #include "ArrayOfByte.hpp"
 #include "DeltaPSTObject.hpp"
@@ -38,14 +39,17 @@ DeltaPSTObject::DeltaPSTObject(int size, bool encodeKey, bool encodeTimestamp)
     valueData = ArrayOfByte::init(size, encodeKey, false);
   }
 }
+
 void DeltaPSTObject::fromDelta(DataInput& input) {
   input.readInt(&field1);
   input.readInt(reinterpret_cast<int64_t*>(&timestamp));
 }
+
 void DeltaPSTObject::toDelta(DataOutput& output) const {
   output.writeInt(static_cast<int32_t>(field1));
   output.writeInt(static_cast<int64_t>(timestamp));
 }
+
 void DeltaPSTObject::toData(apache::geode::client::DataOutput& output) const {
   output.writeInt(static_cast<int64_t>(timestamp));
   output.writeInt(static_cast<int32_t>(field1));
@@ -53,14 +57,13 @@ void DeltaPSTObject::toData(apache::geode::client::DataOutput& output) const {
   output.writeObject(valueData);
 }
 
-apache::geode::client::Serializable* DeltaPSTObject::fromData(
-    apache::geode::client::DataInput& input) {
+void DeltaPSTObject::fromData(apache::geode::client::DataInput& input) {
   input.readInt(reinterpret_cast<int64_t*>(&timestamp));
   input.readInt(&field1);
   input.read(&field2);
   input.readObject(valueData);
-  return this;
 }
+
 CacheableStringPtr DeltaPSTObject::toString() const {
   char buf[102500];
   sprintf(

@@ -959,9 +959,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @brief deserialize this object, typical implementation should return
    * the 'this' pointer. This is an internal method.
    */
-  virtual Serializable* fromData(DataInput& input) {
-    return PdxInstance::fromData(input);
-  }
+  virtual void fromData(DataInput& input) { PdxInstance::fromData(input); }
 
   /**
    * Returns true if the given CacheableKey derived object is equals to this
@@ -1107,7 +1105,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
                        int end) const;
 
   bool compareDefaultBytes(DataInput& dataInput, int start, int end,
-                          int8_t* defaultBytes, int32_t length) const;
+                           int8_t* defaultBytes, int32_t length) const;
 
   void writeField(PdxWriterPtr writer, const char* fieldName, int typeId,
                   CacheablePtr value);

@@ -129,7 +129,7 @@ namespace Apache
           virtual Int32 GetHashCode() override;
 
           virtual void ToData(DataOutput^ output);
-          virtual IGeodeSerializable^ FromData(DataInput^ input);
+          virtual void FromData(DataInput^ input);
           virtual property System::UInt32 ObjectSize
           {
             System::UInt32 get(){ return 0; }
@@ -143,8 +143,8 @@ namespace Apache
             return "PdxFieldName:" + m_fieldName + ", TypeId: " + m_typeId + ", VarLenFieldIdx:" + m_varLenFieldIdx + ", sequenceid:" + m_sequenceId;
           }
         };
-      }  // namespace Client
-    }  // namespace Geode
-  }  // namespace Apache
+      }
 
-}
+    }  // namespace Client
+  }  // namespace Geode
+}  // namespace Apache

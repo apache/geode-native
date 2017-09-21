@@ -53,7 +53,7 @@ namespace Apache
         }
       }
 
-      IGeodeSerializable^ CacheableObject::FromData(DataInput^ input)
+      void CacheableObject::FromData(DataInput^ input)
       {
         int maxSize = input->ReadInt32();
         GeodeDataInputStream dis(input, maxSize);
@@ -61,7 +61,6 @@ namespace Apache
         BinaryFormatter bf;
         m_obj = bf.Deserialize(%dis);
         m_objectSize = dis.BytesRead - checkpoint;
-        return this;
       }
 
       System::UInt32 CacheableObject::ObjectSize::get()

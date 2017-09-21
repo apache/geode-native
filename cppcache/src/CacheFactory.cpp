@@ -15,29 +15,33 @@
  * limitations under the License.
  */
 
-#include "config.h"
-#include <geode/CacheFactory.hpp>
-#include <CppCacheLibrary.hpp>
-#include <geode/Cache.hpp>
-#include <CacheImpl.hpp>
-#include <geode/SystemProperties.hpp>
-#include <geode/PoolManager.hpp>
-#include <PoolAttributes.hpp>
-#include <CacheConfig.hpp>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Guard_T.h>
+#include <functional>
 #include <map>
 #include <string>
-#include <DistributedSystemImpl.hpp>
-#include <SerializationRegistry.hpp>
-#include <PdxInstantiator.hpp>
-#include <PdxEnumInstantiator.hpp>
-#include <PdxType.hpp>
-#include <PdxTypeRegistry.hpp>
+
+#include <ace/Recursive_Thread_Mutex.h>
+#include <ace/Guard_T.h>
+
+#include <geode/CacheFactory.hpp>
+#include <geode/Cache.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/PoolManager.hpp>
+
+#include "config.h"
+#include "version.h"
+
+#include "CacheImpl.hpp"
+#include "CppCacheLibrary.hpp"
+#include "PoolAttributes.hpp"
+
+#include "CacheConfig.hpp"
+#include "DistributedSystemImpl.hpp"
+#include "SerializationRegistry.hpp"
+#include "PdxType.hpp"
+#include "PdxTypeRegistry.hpp"
 #include "DiskVersionTag.hpp"
 #include "TXCommitMessage.hpp"
-#include <functional>
-#include "version.h"
+#include "PdxHelper.hpp"
 
 #define DEFAULT_CACHE_NAME "default_GeodeCache"
 
@@ -52,9 +56,8 @@ CacheFactoryPtr CacheFactory::createCacheFactory(
   return std::make_shared<CacheFactory>(configPtr);
 }
 
-void CacheFactory::create_(const char* name,
-                           const char* id_data, CachePtr& cptr,
-                           bool readPdxSerialized) {
+void CacheFactory::create_(const char* name, const char* id_data,
+                           CachePtr& cptr, bool readPdxSerialized) {
   cptr = nullptr;
   if (name == nullptr) {
     throw IllegalArgumentException("CacheFactory::create: name is nullptr");
@@ -92,32 +95,33 @@ CachePtr CacheFactory::create() {
   LOGFINE("CacheFactory called DistributedSystem::connect");
   auto cache = create(DEFAULT_CACHE_NAME, nullptr);
 
-  cache->m_cacheImpl->getSerializationRegistry()->addType2(std::bind(
-      TXCommitMessage::create,
-      std::ref(*(cache->m_cacheImpl->getMemberListForVersionStamp()))));
+  auto& cacheImpl = cache->m_cacheImpl;
+  auto& serializationRegistry = cacheImpl->getSerializationRegistry();
+  auto& pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
+  auto& memberListForVersionStamp =
+      std::ref(*(cacheImpl->getMemberListForVersionStamp()));
 
-  cache->m_cacheImpl->getSerializationRegistry()->addType(
-      GeodeTypeIdsImpl::PDX, PdxInstantiator::createDeserializable);
-  cache->m_cacheImpl->getSerializationRegistry()->addType(
-      GeodeTypeIds::CacheableEnum, PdxEnumInstantiator::createDeserializable);
-  cache->m_cacheImpl->getSerializationRegistry()->addType(
+  serializationRegistry->addType2(
+      std::bind(TXCommitMessage::create, memberListForVersionStamp));
+
+  serializationRegistry->addType(
       GeodeTypeIds::PdxType,
-      std::bind(PdxType::CreateDeserializable,
-                cache->m_cacheImpl->getPdxTypeRegistry()));
+      std::bind(PdxType::CreateDeserializable, pdxTypeRegistry));
 
-  cache->m_cacheImpl->getSerializationRegistry()->addType(std::bind(
-      VersionTag::createDeserializable,
-      std::ref(*(cache->m_cacheImpl->getMemberListForVersionStamp()))));
-  cache->m_cacheImpl->getSerializationRegistry()->addType2(
+  serializationRegistry->addType(
+      std::bind(VersionTag::createDeserializable, memberListForVersionStamp));
+
+  serializationRegistry->addType2(
       GeodeTypeIdsImpl::DiskVersionTag,
-      std::bind(
-          DiskVersionTag::createDeserializable,
-          std::ref(*(cache->m_cacheImpl->getMemberListForVersionStamp()))));
+      std::bind(DiskVersionTag::createDeserializable,
+                memberListForVersionStamp));
 
-  cache->m_cacheImpl->getPdxTypeRegistry()->setPdxIgnoreUnreadFields(
-      cache->getPdxIgnoreUnreadFields());
-  cache->m_cacheImpl->getPdxTypeRegistry()->setPdxReadSerialized(
-      cache->getPdxReadSerialized());
+  serializationRegistry->setPdxTypeHandler([](DataInput& dataInput) {
+    return PdxHelper::deserializePdx(dataInput, false);
+  });
+
+  pdxTypeRegistry->setPdxIgnoreUnreadFields(cache->getPdxIgnoreUnreadFields());
+  pdxTypeRegistry->setPdxReadSerialized(cache->getPdxReadSerialized());
 
   return cache;
 }

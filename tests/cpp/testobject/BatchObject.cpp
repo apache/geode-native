@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "BatchObject.hpp"
 
 using namespace apache::geode::client;
@@ -39,14 +40,13 @@ void BatchObject::toData(apache::geode::client::DataOutput& output) const {
   output.writeObject(byteArray);
 }
 
-apache::geode::client::Serializable* BatchObject::fromData(
-    apache::geode::client::DataInput& input) {
+void BatchObject::fromData(apache::geode::client::DataInput& input) {
   input.readInt(&index);
   input.readInt(reinterpret_cast<int64_t*>(&timestamp));
   input.readInt(&batch);
   input.readObject(byteArray);
-  return this;
 }
+
 CacheableStringPtr BatchObject::toString() const {
   char buf[102500];
   sprintf(buf,

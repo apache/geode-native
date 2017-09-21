@@ -44,7 +44,7 @@ namespace Apache
         }
       }
 
-      IGeodeSerializable^ CacheableFileName::FromData(DataInput^ input)
+      void CacheableFileName::FromData(DataInput^ input)
       {
         unsigned char filetype = input->ReadByte();
         if (filetype == apache::geode::client::GeodeTypeIds::CacheableString) {
@@ -53,7 +53,6 @@ namespace Apache
         else {
           m_str = input->ReadUTFHuge();
         }
-        return this;
       }
 
       System::UInt32 CacheableFileName::ClassId::get()

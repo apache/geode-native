@@ -53,7 +53,7 @@ namespace Apache
         }
       }
 
-      IGeodeSerializable^ CacheableStack::FromData(DataInput^ input)
+      void CacheableStack::FromData(DataInput^ input)
       {
         int len = input->ReadArrayLen();
         if (len > 0)
@@ -62,10 +62,8 @@ namespace Apache
           for (int i = 0; i < len; i++)
           {
             (stack)->Push(input->ReadObject());
-            //            Push(input->ReadObject());
           }
         }
-        return this;
       }
 
       System::UInt32 CacheableStack::ClassId::get()

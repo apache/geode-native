@@ -66,7 +66,7 @@ namespace Apache
             GC::KeepAlive(this);
           }
 
-          virtual IGeodeSerializable^ FromData(DataInput^ input) override
+          virtual void FromData(DataInput^ input) override
           {
             int len = input->ReadArrayLen();
             if (len > 0)
@@ -77,7 +77,6 @@ namespace Apache
                 this->Add(key);
               }
             }
-            return this;
           }
 
           virtual property System::UInt32 ObjectSize

@@ -50,7 +50,7 @@ namespace Apache
         }
       }
 
-      IGeodeSerializable^ CacheableString::FromData(DataInput^ input)
+      void CacheableString::FromData(DataInput^ input)
       {
         if (m_type == GeodeClassIds::CacheableASCIIString ||
             m_type == GeodeClassIds::CacheableString)
@@ -65,8 +65,6 @@ namespace Apache
         {
           m_value = input->ReadUTFHuge();
         }
-
-        return this;
       }
 
 

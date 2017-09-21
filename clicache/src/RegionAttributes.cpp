@@ -63,7 +63,7 @@ namespace Apache
       }
 
       generic <class TKey, class TValue>
-      Apache::Geode::Client::IGeodeSerializable^ Client::RegionAttributes<TKey, TValue>::FromData(
+      void Client::RegionAttributes<TKey, TValue>::FromData(
         Apache::Geode::Client::DataInput^ input )
       {
         auto nativeInput = input->GetNative();
@@ -71,18 +71,13 @@ namespace Apache
         {
           try
           {
-            auto temp = static_cast<native::RegionAttributes*>(m_nativeptr->get()->fromData(*nativeInput));
-            if (temp != m_nativeptr->get())
-            {
-              m_nativeptr->get_shared_ptr().reset(temp);
-            }
+            m_nativeptr->get()->fromData(*nativeInput);
           }
           finally
           {
             GC::KeepAlive(m_nativeptr);
           }
         }
-        return this;
       }
 
       generic <class TKey, class TValue>

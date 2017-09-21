@@ -233,7 +233,7 @@ namespace Apache.Geode.Client.Tests
 
     #region IGeodeSerializable Members
 
-    public IGeodeSerializable FromData(DataInput input)
+    public void FromData(DataInput input)
     {
       m_id = input.ReadInt32();
       m_pkid = input.ReadUTF();

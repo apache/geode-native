@@ -96,10 +96,9 @@ namespace Apache
           return gcnew CacheableHashTable();
         }
 
-        virtual IGeodeSerializable^ FromData(DataInput^ input) override
+        virtual void FromData(DataInput^ input) override
         {
           m_dictionary = input->ReadHashtable();
-          return this;
         }
       internal:
 

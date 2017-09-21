@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "DeltaFastAssetAccount.hpp"
 
 using namespace apache::geode::client;
@@ -51,14 +52,12 @@ void DeltaFastAssetAccount::toData(
   output.writeInt(static_cast<int64_t>(timestamp));
 }
 
-apache::geode::client::Serializable* DeltaFastAssetAccount::fromData(
-    apache::geode::client::DataInput& input) {
+void DeltaFastAssetAccount::fromData(apache::geode::client::DataInput& input) {
   input.readInt(&acctId);
   input.readObject(customerName);
   input.readDouble(&netWorth);
   input.readObject(assets);
   input.readInt(reinterpret_cast<int64_t*>(&timestamp));
-  return this;
 }
 
 void DeltaFastAssetAccount::toDelta(
@@ -68,6 +67,7 @@ void DeltaFastAssetAccount::toDelta(
     output.writeInt(static_cast<int64_t>(timestamp));
   }
 }
+
 void DeltaFastAssetAccount::fromDelta(apache::geode::client::DataInput& input) {
   if (getBeforeUpdate) {
     input.readDouble(&netWorth);

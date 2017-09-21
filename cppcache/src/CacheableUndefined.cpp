@@ -26,7 +26,7 @@ namespace client {
 
 void CacheableUndefined::toData(DataOutput& output) const {}
 
-Serializable* CacheableUndefined::fromData(DataInput& input) { return this; }
+void CacheableUndefined::fromData(DataInput& input) {}
 
 int32_t CacheableUndefined::classId() const { return 0; }
 

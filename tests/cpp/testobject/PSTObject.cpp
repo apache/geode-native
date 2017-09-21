@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "PSTObject.hpp"
 #include "fwklib/GsRandom.hpp"
 #include "ArrayOfByte.hpp"
@@ -39,6 +40,7 @@ PSTObject::PSTObject(int size, bool encodeKey, bool encodeTimestamp) {
 }
 
 PSTObject::~PSTObject() {}
+
 void PSTObject::toData(apache::geode::client::DataOutput& output) const {
   output.writeInt(static_cast<int64_t>(timestamp));
   output.writeInt(static_cast<int32_t>(field1));
@@ -46,14 +48,13 @@ void PSTObject::toData(apache::geode::client::DataOutput& output) const {
   output.writeObject(valueData);
 }
 
-apache::geode::client::Serializable* PSTObject::fromData(
-    apache::geode::client::DataInput& input) {
+void PSTObject::fromData(apache::geode::client::DataInput& input) {
   input.readInt(reinterpret_cast<int64_t*>(&timestamp));
   input.readInt(&field1);
   input.read(&field2);
   input.readObject(valueData);
-  return this;
 }
+
 CacheableStringPtr PSTObject::toString() const {
   char buf[102500];
   sprintf(buf,

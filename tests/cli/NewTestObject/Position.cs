@@ -159,7 +159,7 @@ namespace Apache.Geode.Client.Tests
 
     #region IGeodeSerializable Members
 
-    public IGeodeSerializable FromData(DataInput input)
+    public void FromData(DataInput input)
     {
       m_avg20DaysVol = input.ReadInt64();
       m_bondRating = input.ReadUTF();
@@ -177,8 +177,6 @@ namespace Apache.Geode.Client.Tests
       m_underlyer = input.ReadUTF();
       m_volatility = input.ReadInt64();
       m_pid = input.ReadInt32();
-      
-      return this;
     }
 
     public void ToData(DataOutput output)

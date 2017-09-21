@@ -69,13 +69,12 @@ namespace Apache
       }
         
     
-      IGeodeSerializable^ CacheableStringArray::FromData(DataInput^ input)
+      void CacheableStringArray::FromData(DataInput^ input)
       {
         int len = input->ReadArrayLen();
         if ( len == -1)
         {
           m_value = nullptr;
-          return nullptr;
         }
         else 
         {
@@ -87,10 +86,9 @@ namespace Apache
               m_value[i] = dynamic_cast<String^>(input->ReadObject());
             }
           }
-          return this;
+        }
+      }
+
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
-}
- } //namespace 

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CACHEABLEUNDEFINED_H_
-#define GEODE_CACHEABLEUNDEFINED_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_CACHEABLEUNDEFINED_H_
+#define GEODE_CACHEABLEUNDEFINED_H_
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
@@ -44,7 +44,7 @@ class CPPCACHE_EXPORT CacheableUndefined : public Cacheable {
   /**
    *@brief deserialize this object
    **/
-  virtual Serializable* fromData(DataInput& input);
+  virtual void fromData(DataInput& input);
 
   /**
    * @brief creation function for undefined query result
@@ -93,6 +93,7 @@ class CPPCACHE_EXPORT CacheableUndefined : public Cacheable {
 
   FRIEND_STD_SHARED_PTR(CacheableUndefined)
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

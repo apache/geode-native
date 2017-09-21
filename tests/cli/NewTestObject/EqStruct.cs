@@ -170,7 +170,7 @@ namespace Apache.Geode.Client.Tests
             return portStr;
         }
 
-        public override IGeodeSerializable FromData(DataInput input)
+        public override void FromData(DataInput input)
         { //Strings
 	      state = input.ReadUTF();
 	      demandInd =input.ReadUTF();

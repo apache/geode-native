@@ -17,9 +17,8 @@
 
 #include "begin_native.hpp"
 #include <geode/Cache.hpp>
-#include <SerializationRegistry.hpp>
 #include <geode/PoolManager.hpp>
-#include <CacheImpl.hpp>
+#include "SerializationRegistry.hpp"
 #include "CacheRegionHelper.hpp"
 #include "end_native.hpp"
 
@@ -30,7 +29,6 @@
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
 #include "CacheableStringArray.hpp"
-
 #include "CacheableBuiltins.hpp"
 #include "impl/SafeConvert.hpp"
 #include "CacheableHashTable.hpp"
@@ -88,9 +86,7 @@ namespace Apache
         }
       }
 
-      Apache::Geode::Client::IGeodeSerializable^
-        Apache::Geode::Client::Serializable::FromData(
-        Apache::Geode::Client::DataInput^ input)
+      void Serializable::FromData(DataInput^ input)
       {
         if (input->IsManagedObject()) {
           input->AdvanceUMCursor();
@@ -99,16 +95,10 @@ namespace Apache
 
         try
         {
-          auto temp = m_nativeptr->get()->fromData(*nativeInput);
-          if (temp != m_nativeptr->get())
-          {
-            m_nativeptr->get_shared_ptr().reset(temp);
-          }
-
+          m_nativeptr->get()->fromData(*nativeInput);
           if (input->IsManagedObject()) {
             input->SetBuffer();
           }
-          return this;
         }
         finally
         {
@@ -518,19 +508,14 @@ namespace Apache
         return retVal();
       }
 
-      void Serializable::RegisterPDXManagedCacheableKey(bool appDomainEnable, Cache^ cache)
+      void Serializable::RegisterPDXManagedCacheableKey(Cache^ cache)
       {
-        CacheImpl *cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
-        if (!appDomainEnable)
-        {
-          cacheImpl->getSerializationRegistry()->addType(native::GeodeTypeIdsImpl::PDX,
-                                                                &native::PdxManagedCacheableKey::CreateDeserializable);
-        }
-        else
-        {
-          cacheImpl->getSerializationRegistry()->addType(native::GeodeTypeIdsImpl::PDX,
-                                                         std::bind(native::PdxManagedCacheableKeyBytes::CreateDeserializable, cache->GetNative().get()));
-        }
+        auto *cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
+        cacheImpl->getSerializationRegistry()->setPdxTypeHandler([](native::DataInput& dataInput){
+          auto obj = std::make_shared<native::PdxManagedCacheableKey>();
+          obj->fromData(dataInput);
+          return obj;
+        });
       }
 
       void Apache::Geode::Client::Serializable::RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod, Cache^ cache)

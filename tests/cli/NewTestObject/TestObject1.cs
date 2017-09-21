@@ -52,12 +52,11 @@ namespace Apache.Geode.Client.Tests
         return 0x1F;
       }
     }
-    public IGeodeSerializable FromData(DataInput input)
+    public void FromData(DataInput input)
     {
       arr = input.ReadBytes();
       name = (string)input.ReadObject();
       identifire = input.ReadInt32();
-      return this;
     }
     public void ToData(DataOutput output)
     {

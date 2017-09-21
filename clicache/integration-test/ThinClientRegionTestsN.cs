@@ -241,11 +241,10 @@ namespace Apache.Geode.Client.UnitTests
       m_accountid = accId;
     }
 
-    public IGeodeSerializable FromData(DataInput input)
+    public void FromData(DataInput input)
     {
       m_id = input.ReadInt32();
       m_accountid = input.ReadInt32();
-      return this;
     }
 
     public void ToData(DataOutput output)

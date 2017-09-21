@@ -73,7 +73,7 @@ namespace Apache.Geode.Client.Tests
         return 41;
       }
     }
-    public IGeodeSerializable FromData(DataInput input)
+    public void FromData(DataInput input)
     {
       acctId = input.ReadInt32();
       customerName = input.ReadUTF();

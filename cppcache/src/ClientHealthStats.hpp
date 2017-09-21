@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CLIENTHEALTHSTATS_H_
-#define GEODE_CLIENTHEALTHSTATS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_CLIENTHEALTHSTATS_H_
+#define GEODE_CLIENTHEALTHSTATS_H_
 
 #include <geode/geode_types.hpp>
 #include <geode/Serializable.hpp>
@@ -39,7 +39,7 @@ class ClientHealthStats : public Serializable {
   /**
    *@brief deserialize this object
    **/
-  virtual Serializable* fromData(DataInput& input);
+  virtual void fromData(DataInput& input);
 
   /**
    * @brief creation function for dates.
@@ -88,6 +88,7 @@ class ClientHealthStats : public Serializable {
   int m_cpus;
   CacheableDatePtr m_updateTime;  // Last updateTime
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

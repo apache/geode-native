@@ -99,14 +99,13 @@ namespace Apache
             output->WriteByte(0xFF);
         }
 
-        virtual IGeodeSerializable^ FromData(DataInput^ input)
+        virtual void FromData(DataInput^ input)
         {
           int len = input->ReadArrayLen();
           for (int i = 0; i < len; i++)
           {
             m_linkedList->AddLast(input->ReadObject());
           }
-          return this;
         }
 
         /*System::UInt32 ObjectSize::get()

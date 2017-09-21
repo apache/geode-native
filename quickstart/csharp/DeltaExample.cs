@@ -161,7 +161,7 @@ namespace Apache.Geode.Client.QuickStart
         DataOut.WriteInt32(m_field3);
       }
 
-      public IGeodeSerializable FromData(DataInput DataIn)
+      public void FromData(DataInput DataIn)
       {
         m_field1 = DataIn.ReadInt32();
         m_field2 = DataIn.ReadInt32();

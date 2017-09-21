@@ -212,10 +212,9 @@ namespace Apache
           output->WriteObject(m_value);
         }
 
-        virtual IGeodeSerializable^ FromData(DataInput^ input) override
+        virtual void FromData(DataInput^ input) override
         {
           input->ReadObject(m_value);
-          return this;
         }
 
         virtual property System::UInt32 ObjectSize

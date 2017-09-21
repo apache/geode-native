@@ -103,15 +103,12 @@ namespace Apache
         virtual void ToData(Apache::Geode::Client::DataOutput^ output);
 
         /// <summary>
-        /// Deserializes the native (C++) object -- returns an instance of the
-        /// <c>Serializable</c> class with the native object wrapped inside.
+        /// Deserializes the native (C++) object with the native object wrapped inside.
         /// </summary>
         /// <param name="input">
         /// the DataInput stream to use for reading the object data
         /// </param>
-        /// <returns>the deserialized object</returns>
-        virtual Apache::Geode::Client::IGeodeSerializable^
-          FromData(Apache::Geode::Client::DataInput^ input);
+        virtual void FromData(Apache::Geode::Client::DataInput^ input);
         
         /// <summary>
         /// return the size of this object in bytes
@@ -305,7 +302,7 @@ namespace Apache
 				static System::Int32 GetPDXIdForType(const char* poolName, IGeodeSerializable^ pdxType, const native::Cache* cache);
 				static IGeodeSerializable^ GetPDXTypeById(const char* poolName, System::Int32 typeId, const native::Cache* cache);
 				static IPdxSerializable^ Serializable::GetPdxType(String^ className);
-				static void RegisterPDXManagedCacheableKey(bool appDomainEnable, Cache^ cache);
+				static void RegisterPDXManagedCacheableKey(Cache^ cache);
         static bool IsObjectAndPdxSerializerRegistered(String^ className);
 
         static IPdxSerializer^ GetPdxSerializer();

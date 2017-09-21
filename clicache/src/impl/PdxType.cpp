@@ -85,7 +85,7 @@ namespace Apache
           }
         }
 
-        IGeodeSerializable^ PdxType::FromData(DataInput^ input)
+        void PdxType::FromData(DataInput^ input)
         {
           //defaulf java Dataserializable require this
           Byte val = input->ReadByte();//DS
@@ -127,8 +127,6 @@ namespace Apache
             m_numberOfVarLenFields = 1;
 
           InitializeType();
-
-          return this;
         }
 
         void PdxType::InitializeType()

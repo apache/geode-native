@@ -53,7 +53,7 @@ namespace apache
         }
       }
 
-      apache::geode::client::Serializable* ManagedCacheableKeyBytesGeneric::fromData(apache::geode::client::DataInput& input)
+      void ManagedCacheableKeyBytesGeneric::fromData(apache::geode::client::DataInput& input)
       {
         try {
 
@@ -82,7 +82,6 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return this;
       }
 
       System::UInt32 ManagedCacheableKeyBytesGeneric::objectSize() const
@@ -267,22 +266,17 @@ namespace apache
 
         Apache::Geode::Client::Log::Debug("ManagedCacheableKeyBytesGeneric::getManagedObject " + m_size);
 
-        //System::Text::StringBuilder^ sb = gcnew System::Text::StringBuilder(2000);
-        //for(System::UInt32 i = 0; i<m_size; i++)
-        //{
-        //	if(m_bytes[i] != 0)
-        //		sb->Append(System::Convert::ToChar( m_bytes[i]));
-        //	//sb->Append(' ');
-        //}
-
-        //  Apache::Geode::Client::Log::Debug("ManagedCacheableKeyBytesGeneric::getManagedObject " + sb);
         DataInputInternal dinp(m_bytes, m_size, nullptr);
         Apache::Geode::Client::DataInput mg_dinp(&dinp, true, nullptr);
         Apache::Geode::Client::TypeFactoryMethodGeneric^ creationMethod =
           Apache::Geode::Client::Serializable::GetTypeFactoryMethodGeneric(m_classId);
         Apache::Geode::Client::IGeodeSerializable^ newObj = creationMethod();
-        return newObj->FromData(%mg_dinp);
+
+        newObj->FromData(%mg_dinp);
+
+        return newObj;
       }
+
     }  // namespace client
   }  // namespace geode
 }  // namespace apache

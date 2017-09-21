@@ -38,16 +38,15 @@ namespace Apache
       {
       }
 
-      IGeodeSerializable^ CacheableUndefined::FromData(DataInput^ input)
+      void CacheableUndefined::FromData(DataInput^ input)
       {
-        return this;
       }
 
       System::UInt32 CacheableUndefined::ObjectSize::get()
       {
         return static_cast<System::UInt32> (sizeof(CacheableUndefined^));
+      }
+
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
- } //namespace 
