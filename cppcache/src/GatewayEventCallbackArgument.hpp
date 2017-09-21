@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef GEODE_GETALLSERVERSREQUEST_H_
-#define GEODE_GETALLSERVERSREQUEST_H_
+#ifndef GEODE_GATEWAYEVENTCALLBACKARGUMENT_H_
+#define GEODE_GATEWAYEVENTCALLBACKARGUMENT_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -21,36 +21,52 @@
  */
 
 #include <geode/Serializable.hpp>
-#include <geode/DataInput.hpp>
-#include <geode/DataOutput.hpp>
-#include <geode/CacheableString.hpp>
 #include "GeodeTypeIdsImpl.hpp"
-#include <string>
 
 namespace apache {
 namespace geode {
 namespace client {
-class GetAllServersRequest : public Serializable {
-  CacheableStringPtr m_serverGroup;
+class GatewayEventCallbackArgument : public Serializable {
+  SerializablePtr m_callback;
+
+  virtual int32_t classId() const { return 0; }
+
+  virtual int8_t typeId() const {
+    return static_cast<int8_t>(GeodeTypeIdsImpl::GatewayEventCallbackArgument);
+  }
+
+  virtual int8_t DSFID() const {
+    return static_cast<int32_t>(GeodeTypeIdsImpl::FixedIDByte);
+  }
+
+  virtual uint32_t objectSize() const { return 0; }
+
+  virtual void toData(DataOutput& output) const {
+    throw IllegalStateException(
+        "GatewayEventCallbackArgument::toData not implemented");
+  }
+
+  virtual Serializable* fromData(DataInput& input) {
+    input.readObject(m_callback);
+    CacheableStringPtr ignored;
+    // input.readObject(ignored);// Changed
+    input.readNativeString(ignored);
+    int32_t items;
+    input.readInt(&items);
+    for (int32_t item = 0; item < items; item++) {
+      // input.readObject(ignored);// Changed
+      input.readNativeString(ignored);
+    }
+    return m_callback.get();
+  }
 
  public:
-  GetAllServersRequest(const std::string& serverGroup) : Serializable() {
-    m_serverGroup = CacheableString::create(serverGroup.c_str());
+  inline static Serializable* createDeserializable() {
+    return new GatewayEventCallbackArgument();
   }
-  virtual void toData(DataOutput& output) const;
-  virtual Serializable* fromData(DataInput& input);
-  virtual int32_t classId() const { return 0; }
-  virtual int8_t typeId() const {
-    return GeodeTypeIdsImpl::GetAllServersRequest;
-  }
-  virtual int8_t DSFID() const {
-    return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);
-  }
-  virtual uint32_t objectSize() const { return m_serverGroup->length(); }
-  virtual ~GetAllServersRequest() {}
 };
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_GETALLSERVERSREQUEST_H_
+#endif  // GEODE_GATEWAYEVENTCALLBACKARGUMENT_H_

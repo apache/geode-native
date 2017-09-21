@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_DISKSTOREID_H_
+#define GEODE_DISKSTOREID_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,11 +20,6 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_DISKSTOREID_H_
-#define GEODE_DISKSTOREID_H_
-
 #include <geode/geode_globals.hpp>
 #include <geode/DataInput.hpp>
 #include "DSMemberForVersionStamp.hpp"
@@ -34,8 +34,8 @@ class DiskStoreId : public DSMemberForVersionStamp {
   DiskStoreId() : m_hashCode(""), m_mostSig(0), m_leastSig(0) {}
 
   /**
-   * for internal testing
-   */
+  * for internal testing
+  */
   DiskStoreId(int64_t mostSig, int64_t leastSig)
       : m_hashCode(""), m_mostSig(mostSig), m_leastSig(leastSig) {}
 
@@ -52,9 +52,10 @@ class DiskStoreId : public DSMemberForVersionStamp {
   virtual void toData(DataOutput& output) const {
     throw IllegalStateException("DiskStoreId::toData not implemented");
   }
-  virtual void fromData(DataInput& input) {
+  virtual Serializable* fromData(DataInput& input) {
     input.readInt(&m_mostSig);
     input.readInt(&m_leastSig);
+    return this;
   }
   virtual int32_t classId() const { return 0; }
 
@@ -100,7 +101,6 @@ class DiskStoreId : public DSMemberForVersionStamp {
   int64_t m_mostSig;
   int64_t m_leastSig;
 };
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

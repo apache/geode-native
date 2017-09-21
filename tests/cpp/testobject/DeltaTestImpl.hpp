@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_TESTOBJECT_DELTATESTIMPL_H_
+#define GEODE_TESTOBJECT_DELTATESTIMPL_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,11 +19,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#pragma once
-
-#ifndef GEODE_TESTOBJECT_DELTATESTIMPL_H_
-#define GEODE_TESTOBJECT_DELTATESTIMPL_H_
+/*
+ * DeltaTestImpl.hpp
+ *
+ *  Created on: Jul 14, 2009
+ *      Author: abhaware
+ */
 
 #include <ace/ACE.h>
 #include <ace/OS.h>
@@ -41,10 +47,8 @@
 using namespace apache::geode::client;
 
 namespace testobject {
-
 class DeltaTestImpl;
 typedef std::shared_ptr<DeltaTestImpl> DeltaTestImplPtr;
-
 class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
  private:
   static uint8_t INT_MASK;
@@ -70,7 +74,7 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
   DeltaTestImpl();
   DeltaTestImpl(int intValue, CacheableStringPtr strptr);
   DeltaTestImpl(DeltaTestImplPtr rhs);
-  void fromData(DataInput& input);
+  Serializable* fromData(DataInput& input);
   void toData(DataOutput& output) const;
 
   void fromDelta(DataInput& input);
@@ -116,7 +120,6 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
   void setTestObjFlag() { deltaBits = deltaBits | TEST_OBJ_MASK; }
   CacheableStringPtr toString() const;
 };
-
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_DELTATESTIMPL_H_

@@ -82,7 +82,7 @@ void Portfolio::toData(DataOutput& output) const {
   output.writeBytes(arrayZeroSize, 0);
 }
 
-void Portfolio::fromData(DataInput& input) {
+Serializable* Portfolio::fromData(DataInput& input) {
   input.readInt(&ID);
   input.readObject(pkid);
   input.readObject(position1);
@@ -96,6 +96,7 @@ void Portfolio::fromData(DataInput& input) {
   int tmp = 0;
   input.readBytes(&arrayNull, &tmp);
   input.readBytes(&arrayZeroSize, &tmp);
+  return this;
 }
 
 CacheableStringPtr Portfolio::toString() const {

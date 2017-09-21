@@ -17,24 +17,20 @@
 #include "ClientConnectionResponse.hpp"
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
-
 using namespace apache::geode::client;
-
-void ClientConnectionResponse::fromData(DataInput& input) {
+ClientConnectionResponse* ClientConnectionResponse::fromData(DataInput& input) {
   input.readBoolean(&m_serverFound);
   if (m_serverFound) {
     m_server.fromData(input);
   }
+  return this;
 }
-
 int8_t ClientConnectionResponse::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::ClientConnectionResponse);
 }
-
 uint32_t ClientConnectionResponse::objectSize() const {
   return (m_server.objectSize());
 }
-
 ServerLocation ClientConnectionResponse::getServerLocation() const {
   return m_server;
 }

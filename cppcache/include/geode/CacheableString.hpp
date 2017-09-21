@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_CACHEABLESTRING_H_
+#define GEODE_CACHEABLESTRING_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,11 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#pragma once
-
-#ifndef GEODE_CACHEABLESTRING_H_
-#define GEODE_CACHEABLESTRING_H_
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
@@ -62,7 +62,7 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
    * Throw IllegalArgumentException if the packed CacheableString is not less
    * than 64K bytes.
    **/
-  virtual void fromData(DataInput& input);
+  virtual Serializable* fromData(DataInput& input);
 
   /** creation function for strings */
   static Serializable* createDeserializable();
@@ -307,7 +307,6 @@ inline CacheablePtr createValueArr(const char* value) {
 inline CacheablePtr createValueArr(const wchar_t* value) {
   return CacheableString::create(value);
 }
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

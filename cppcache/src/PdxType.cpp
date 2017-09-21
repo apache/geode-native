@@ -43,10 +43,9 @@ PdxType::~PdxType() {
   GF_SAFE_DELETE_ARRAY(m_className);
 }
 
-// PdxType::PdxType() : PdxType(nullptr, false) {}
+//PdxType::PdxType() : PdxType(nullptr, false) {}
 
-PdxType::PdxType(PdxTypeRegistryPtr pdxTypeRegistryPtr,
-                 const char* pdxDomainClassName, bool isLocal)
+PdxType::PdxType(PdxTypeRegistryPtr pdxTypeRegistryPtr, const char* pdxDomainClassName, bool isLocal)
     : Serializable(),
       m_className(Utils::copyString(pdxDomainClassName)),
       m_isLocal(isLocal),
@@ -89,7 +88,7 @@ void PdxType::toData(DataOutput& output) const {
   }
 }
 
-void PdxType::fromData(DataInput& input) {
+Serializable* PdxType::fromData(DataInput& input) {
   int8_t dsByte;
   input.read(&dsByte);
 
@@ -132,6 +131,7 @@ void PdxType::fromData(DataInput& input) {
   }
 
   InitializeType();
+  return this;
 }
 
 void PdxType::addFixedLengthTypeField(const char* fieldName,
@@ -447,8 +447,7 @@ PdxTypePtr PdxType::isContains(PdxTypePtr first, PdxTypePtr second) {
 }
 
 PdxTypePtr PdxType::clone() {
-  auto clone =
-      std::make_shared<PdxType>(m_pdxTypeRegistryPtr, m_className, false);
+  auto clone = std::make_shared<PdxType>(m_pdxTypeRegistryPtr, m_className, false);
   clone->m_geodeTypeId = 0;
   clone->m_numberOfVarLenFields = m_numberOfVarLenFields;
 
@@ -598,6 +597,7 @@ bool PdxType::Equals(PdxTypePtr otherObj) {
 bool PdxType::operator<(const PdxType& other) const {
   return ACE_OS::strcmp(this->m_className, other.m_className) < 0;
 }
+
 
 }  // namespace client
 }  // namespace geode

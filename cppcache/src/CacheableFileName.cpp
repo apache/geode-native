@@ -31,9 +31,10 @@ void CacheableFileName::toData(DataOutput& output) const {
   CacheableString::toData(output);
 }
 
-void CacheableFileName::fromData(DataInput& input) {
+Serializable* CacheableFileName::fromData(DataInput& input) {
   input.read(&m_type);
-  CacheableString::fromData(input);
+  (void)CacheableString::fromData(input);
+  return this;
 }
 
 int32_t CacheableFileName::classId() const { return 0; }

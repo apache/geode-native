@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_PDXFIELDTYPE_H_
+#define GEODE_PDXFIELDTYPE_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,11 +20,6 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_PDXFIELDTYPE_H_
-#define GEODE_PDXFIELDTYPE_H_
-
 #include <geode/geode_globals.hpp>
 #include <geode/Serializable.hpp>
 #include <geode/CacheableString.hpp>
@@ -30,10 +30,8 @@
 namespace apache {
 namespace geode {
 namespace client {
-
 class PdxFieldType;
 typedef std::shared_ptr<PdxFieldType> PdxFieldTypePtr;
-
 class CPPCACHE_EXPORT PdxFieldType : public Serializable {
  private:
   std::string m_fieldName;
@@ -85,7 +83,7 @@ class CPPCACHE_EXPORT PdxFieldType : public Serializable {
 
   virtual void toData(DataOutput& output) const;
 
-  virtual void fromData(DataInput& input);
+  virtual Serializable* fromData(DataInput& input);
 
   virtual int32_t classId() const { return m_typeId; }
 
@@ -106,7 +104,6 @@ class CPPCACHE_EXPORT PdxFieldType : public Serializable {
 
   int32_t getRelativeOffset() const { return m_relativeOffset; }
 };
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

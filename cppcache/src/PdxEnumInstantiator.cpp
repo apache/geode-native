@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TXCOMMITMESSAGE_H_
-#define GEODE_TXCOMMITMESSAGE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,39 +14,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+* PdxEnumInstantiator.cpp
+*/
 
-#include <geode/geode_globals.hpp>
-#include <geode/geode_types.hpp>
+#include "PdxEnumInstantiator.hpp"
+#include "GeodeTypeIdsImpl.hpp"
+#include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
-#include "RegionCommit.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
-_GF_PTR_DEF_(TXCommitMessage, TXCommitMessagePtr);
 
-class TXCommitMessage : public apache::geode::client::Cacheable {
- public:
-  TXCommitMessage(MemberListForVersionStamp & memberListForVersionStamp);
-  virtual ~TXCommitMessage();
+PdxEnumInstantiator::PdxEnumInstantiator() {}
 
-  virtual Serializable* fromData(DataInput& input);
-  virtual void toData(DataOutput& output) const;
-  virtual int32_t classId() const;
-  int8_t typeId() const;
-  static Serializable* create(MemberListForVersionStamp & memberListForVersionStamp);
-  //	VectorOfEntryEvent getEvents(Cache* cache);
+PdxEnumInstantiator::~PdxEnumInstantiator() {}
 
-  void apply(Cache* cache);
+int8_t PdxEnumInstantiator::typeId() const {
+  return static_cast<int8_t>(GeodeTypeIds::CacheableEnum);
+}
 
- private:
-  // UNUSED int32_t m_processorId;
-  bool isAckRequired();
-  MemberListForVersionStamp & m_memberListForVersionStamp;
-  std::vector<RegionCommitPtr> m_regions;
-};
+void PdxEnumInstantiator::toData(DataOutput& output) const {
+  throw UnsupportedOperationException(
+      "operation PdxEnumInstantiator::toData() is not supported ");
+}
+
+Serializable* PdxEnumInstantiator::fromData(DataInput& input) {
+  m_enumObject = CacheableEnum::create(" ", " ", 0);
+  m_enumObject->fromData(input);
+  return m_enumObject.get();
+}
+
+CacheableStringPtr PdxEnumInstantiator::toString() const {
+  return CacheableString::create("PdxEnumInstantiator");
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
-
-#endif  // GEODE_TXCOMMITMESSAGE_H_

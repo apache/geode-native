@@ -71,7 +71,7 @@ void EventId::toData(DataOutput& output) const {
   output.write(m_breadcrumbCounter);
 }
 
-void EventId::fromData(DataInput& input) {
+Serializable* EventId::fromData(DataInput& input) {
   // TODO: statics being assigned; not thread-safe??
   input.readArrayLen(&m_eidMemLen);
   input.readBytesOnly(reinterpret_cast<int8_t*>(m_eidMem), m_eidMemLen);
@@ -84,6 +84,7 @@ void EventId::fromData(DataInput& input) {
   m_eidSeq = getEventIdData(input, numberCode);
   input.readInt(&m_bucketId);
   input.read(&m_breadcrumbCounter);
+  return this;
 }
 
 const char* EventId::getMemId() const { return m_eidMem; }

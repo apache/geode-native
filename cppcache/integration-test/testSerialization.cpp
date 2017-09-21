@@ -84,11 +84,12 @@ class OtherType : public Serializable {
 
   virtual uint32_t objectSize() const { return sizeof(CData); }
 
-  virtual void fromData(DataInput& input) {
+  virtual Serializable* fromData(DataInput& input) {
     int32_t size = 0;
     input.readArrayLen(&size);
     input.readBytesOnly(reinterpret_cast<uint8_t*>(&m_struct), size);
     input.readInt(&m_classIdToReturn);
+    return this;
   }
 
   static Serializable* createDeserializable() {

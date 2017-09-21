@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_PUTALLPARTIALRESULT_H_
+#define GEODE_PUTALLPARTIALRESULT_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,11 +20,6 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_PUTALLPARTIALRESULT_H_
-#define GEODE_PUTALLPARTIALRESULT_H_
-
 #include <geode/Serializable.hpp>
 #include <geode/CacheableString.hpp>
 #include "VersionedCacheableObjectPartList.hpp"
@@ -28,7 +28,6 @@
 namespace apache {
 namespace geode {
 namespace client {
-
 class PutAllPartialResult;
 typedef std::shared_ptr<PutAllPartialResult> PutAllPartialResultPtr;
 
@@ -114,9 +113,10 @@ class PutAllPartialResult : public Serializable {
         "PutAllPartialResult::toData is not intended for use.");
   }
 
-  void fromData(DataInput& input) {
+  Serializable* fromData(DataInput& input) {
     throw IllegalStateException(
         "PutAllPartialResult::fromData is not intended for use.");
+    return nullptr;
   }
 
   int32_t classId() const {
@@ -133,7 +133,6 @@ class PutAllPartialResult : public Serializable {
 
   int8_t typeId() const { return static_cast<int8_t>(0); }
 };
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

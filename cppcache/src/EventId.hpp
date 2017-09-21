@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_EVENTID_H_
+#define GEODE_EVENTID_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,11 +20,6 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_EVENTID_H_
-#define GEODE_EVENTID_H_
-
 #include <geode/geode_globals.hpp>
 #include <geode/geode_types.hpp>
 #include <geode/Cacheable.hpp>
@@ -29,7 +29,7 @@
 #include <string>
 
 /** @file
- */
+*/
 
 namespace apache {
 namespace geode {
@@ -65,7 +65,7 @@ class CPPCACHE_EXPORT EventId : public Cacheable {
   /**
    *@brief deserialize this object
    **/
-  virtual void fromData(DataInput& input);
+  virtual Serializable* fromData(DataInput& input);
 
   virtual uint32_t objectSize() const {
     uint32_t objectSize = 0;
@@ -149,7 +149,6 @@ class CPPCACHE_EXPORT EventId : public Cacheable {
   void operator=(const EventId& other);
   EventId(const EventId& other);
 };
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

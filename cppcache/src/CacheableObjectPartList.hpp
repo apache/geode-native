@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_CACHEABLEOBJECTPARTLIST_H_
+#define GEODE_CACHEABLEOBJECTPARTLIST_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,11 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#pragma once
-
-#ifndef GEODE_CACHEABLEOBJECTPARTLIST_H_
-#define GEODE_CACHEABLEOBJECTPARTLIST_H_
 
 #include <geode/geode_globals.hpp>
 #include <geode/geode_types.hpp>
@@ -37,7 +37,6 @@
 namespace apache {
 namespace geode {
 namespace client {
-
 class ThinClientRegion;
 
 /**
@@ -120,7 +119,7 @@ class CacheableObjectPartList : public Cacheable {
   /**
    *@brief deserialize this object
    **/
-  virtual void fromData(DataInput& input);
+  virtual Serializable* fromData(DataInput& input);
 
   /**
    * @brief creation function for java Object[]
@@ -154,7 +153,6 @@ class CacheableObjectPartList : public Cacheable {
 };
 
 typedef std::shared_ptr<CacheableObjectPartList> CacheableObjectPartListPtr;
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

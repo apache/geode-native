@@ -33,9 +33,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-TXCommitMessage::TXCommitMessage(
-    MemberListForVersionStamp& memberListForVersionStamp)
-    : m_memberListForVersionStamp(memberListForVersionStamp)
+TXCommitMessage::TXCommitMessage(MemberListForVersionStamp & memberListForVersionStamp) : m_memberListForVersionStamp(memberListForVersionStamp)
 // UNUSED : m_processorId(0)
 {}
 
@@ -43,7 +41,7 @@ TXCommitMessage::~TXCommitMessage() {}
 
 bool TXCommitMessage::isAckRequired() { return false; }
 
-void TXCommitMessage::fromData(DataInput& input) {
+Serializable* TXCommitMessage::fromData(DataInput& input) {
   int32_t pId;
   input.readInt(&pId);
   /*
@@ -147,6 +145,10 @@ m_processorId = -1;
     CacheablePtr tmp;
     input.readObject(tmp);
   }
+
+  // input.readObject(farSiders);
+
+  return this;
 }
 
 void TXCommitMessage::toData(DataOutput& output) const {}
@@ -157,16 +159,12 @@ int8_t TXCommitMessage::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::TXCommitMessage);
 }
 
-Serializable* TXCommitMessage::create(
-    MemberListForVersionStamp& memberListForVersionStamp) {
-  return new TXCommitMessage(memberListForVersionStamp);
-}
+Serializable* TXCommitMessage::create(MemberListForVersionStamp & memberListForVersionStamp) { return new TXCommitMessage(memberListForVersionStamp); }
 
 void TXCommitMessage::apply(Cache* cache) {
   for (std::vector<RegionCommitPtr>::iterator iter = m_regions.begin();
        m_regions.end() != iter; iter++) {
-    RegionCommitPtr regionCommit =
-        std::static_pointer_cast<RegionCommit>(*iter);
+    RegionCommitPtr regionCommit = std::static_pointer_cast<RegionCommit>(*iter);
     regionCommit->apply(cache);
   }
 }

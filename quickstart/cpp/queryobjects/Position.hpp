@@ -19,8 +19,6 @@
  * @brief User class for testing the put functionality for object.
  */
 
-#pragma once
-
 #ifndef __POSITION_HPP__
 #define __POSITION_HPP__
 
@@ -68,7 +66,8 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
   Position(const char* id, int32_t out);
   virtual ~Position();
   virtual void toData(apache::geode::client::DataOutput& output) const;
-  virtual void fromData(apache::geode::client::DataInput& input);
+  virtual apache::geode::client::Serializable* fromData(
+      apache::geode::client::DataInput& input);
   virtual int32_t classId() const { return 0x02; }
   CacheableStringPtr toString() const;
 

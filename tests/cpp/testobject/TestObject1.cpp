@@ -53,7 +53,7 @@ void TestObject1::toData(DataOutput& output) const {
   output.writeInt(identifier);
 }
 
-void TestObject1::fromData(DataInput& input) {
+Serializable* TestObject1::fromData(DataInput& input) {
   uint8_t* bytes;
   int32_t len;
   input.readBytes(&bytes, &len);
@@ -61,6 +61,7 @@ void TestObject1::fromData(DataInput& input) {
   delete bytes;
   input.readObject(name);
   input.readInt(&identifier);
+  return this;
 }
 
 Serializable* TestObject1::create() { return new TestObject1(); }

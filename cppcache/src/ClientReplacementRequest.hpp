@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_CLIENTREPLACEMENTREQUEST_H_
+#define GEODE_CLIENTREPLACEMENTREQUEST_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,12 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#pragma once
-
-#ifndef GEODE_CLIENTREPLACEMENTREQUEST_H_
-#define GEODE_CLIENTREPLACEMENTREQUEST_H_
-
 #include "ServerLocationRequest.hpp"
 #include "ClientConnectionRequest.hpp"
 #include "TcrEndpoint.hpp"
@@ -30,7 +29,6 @@
 namespace apache {
 namespace geode {
 namespace client {
-
 class ClientReplacementRequest : public ClientConnectionRequest {
  public:
   ClientReplacementRequest(const std::string& serverName,
@@ -39,13 +37,12 @@ class ClientReplacementRequest : public ClientConnectionRequest {
       : ClientConnectionRequest(excludeServergroup, servergroup),
         m_serverLocation(ServerLocation(serverName)) {}
   virtual void toData(DataOutput& output) const;
-  virtual void fromData(DataInput& input);
+  virtual Serializable* fromData(DataInput& input);
   virtual int8_t typeId() const;
   virtual ~ClientReplacementRequest() {}  // Virtual destructor
  private:
   const ServerLocation m_serverLocation;
 };
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

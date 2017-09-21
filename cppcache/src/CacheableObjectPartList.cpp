@@ -31,7 +31,7 @@ void CacheableObjectPartList::toData(DataOutput& output) const {
       "CacheableObjectPartList::toData not implemented");
 }
 
-void CacheableObjectPartList::fromData(DataInput& input) {
+Serializable* CacheableObjectPartList::fromData(DataInput& input) {
   bool hasKeys;
   input.readBoolean(&hasKeys);
   int32_t len;
@@ -121,6 +121,7 @@ void CacheableObjectPartList::fromData(DataInput& input) {
       *m_keysOffset += len;
     }
   }
+  return this;
 }
 
 int32_t CacheableObjectPartList::classId() const { return 0; }

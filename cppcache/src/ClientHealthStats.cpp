@@ -32,7 +32,7 @@ void ClientHealthStats::toData(DataOutput& output) const {
   m_updateTime->toData(output);
 }
 
-void ClientHealthStats::fromData(DataInput& input) {
+Serializable* ClientHealthStats::fromData(DataInput& input) {
   input.readInt(&m_numGets);
   input.readInt(&m_numPuts);
   input.readInt(&m_numMisses);
@@ -41,6 +41,7 @@ void ClientHealthStats::fromData(DataInput& input) {
   input.readInt(&m_processCpuTime);
   input.readInt(&m_cpus);
   m_updateTime->fromData(input);
+  return this;
 }
 
 Serializable* ClientHealthStats::createDeserializable() {

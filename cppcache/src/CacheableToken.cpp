@@ -46,8 +46,9 @@ void CacheableToken::toData(DataOutput& output) const {
   output.writeInt(static_cast<int32_t>(m_value));
 }
 
-void CacheableToken::fromData(DataInput& input) {
+Serializable* CacheableToken::fromData(DataInput& input) {
   input.readInt(reinterpret_cast<int32_t*>(&m_value));
+  return this;
 }
 
 int32_t CacheableToken::classId() const { return 0; }

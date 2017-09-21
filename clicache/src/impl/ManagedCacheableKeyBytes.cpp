@@ -53,7 +53,7 @@ namespace apache
         }
       }
 
-      void ManagedCacheableKeyBytesGeneric::fromData(apache::geode::client::DataInput& input)
+      apache::geode::client::Serializable* ManagedCacheableKeyBytesGeneric::fromData(apache::geode::client::DataInput& input)
       {
         try {
 
@@ -82,6 +82,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
+        return this;
       }
 
       System::UInt32 ManagedCacheableKeyBytesGeneric::objectSize() const

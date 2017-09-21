@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_CLIENTPROXYMEMBERSHIPID_H_
+#define GEODE_CLIENTPROXYMEMBERSHIPID_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,11 +20,6 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_CLIENTPROXYMEMBERSHIPID_H_
-#define GEODE_CLIENTPROXYMEMBERSHIPID_H_
-
 #include <geode/geode_globals.hpp>
 #include <geode/DataOutput.hpp>
 #include "GeodeTypeIdsImpl.hpp"
@@ -30,7 +30,6 @@
 namespace apache {
 namespace geode {
 namespace client {
-
 class ClientProxyMembershipID;
 typedef std::shared_ptr<ClientProxyMembershipID> ClientProxyMembershipIDPtr;
 
@@ -63,7 +62,7 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
 
   // Serializable interface:
   void toData(DataOutput& output) const;
-  void fromData(DataInput& input);
+  Serializable* fromData(DataInput& input);
   int32_t classId() const { return 0; }
   int8_t typeId() const { return GeodeTypeIdsImpl::InternalDistributedMember; }
   uint32_t objectSize() const { return 0; }
@@ -129,7 +128,6 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
 
   void readAdditionalData(DataInput& input);
 };
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

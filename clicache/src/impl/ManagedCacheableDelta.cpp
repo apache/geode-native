@@ -55,7 +55,7 @@ namespace apache
         }
       }
 
-     void ManagedCacheableDeltaGeneric::fromData(DataInput& input)
+      Serializable* ManagedCacheableDeltaGeneric::fromData(DataInput& input)
       {
         try {
           int pos = input.getBytesRead();
@@ -77,6 +77,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
+        return this;
       }
 
       System::UInt32 ManagedCacheableDeltaGeneric::objectSize() const

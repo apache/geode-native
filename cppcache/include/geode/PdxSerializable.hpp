@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_PDXSERIALIZABLE_H_
+#define GEODE_PDXSERIALIZABLE_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,11 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#pragma once
-
-#ifndef GEODE_PDXSERIALIZABLE_H_
-#define GEODE_PDXSERIALIZABLE_H_
 
 #include "CacheableKey.hpp"
 
@@ -80,7 +80,7 @@ class CPPCACHE_EXPORT PdxSerializable : public CacheableKey {
    *@brief deserialize this object, typical implementation should return
    * the 'this' pointer.
    **/
-  virtual void fromData(DataInput& input);
+  virtual Serializable* fromData(DataInput& input);
 
   /**
    *@brief return the classId of the instance being serialized.
@@ -101,7 +101,6 @@ class CPPCACHE_EXPORT PdxSerializable : public CacheableKey {
    */
   virtual const char* getClassName() const = 0;
 };
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

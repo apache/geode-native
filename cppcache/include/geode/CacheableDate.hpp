@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_CACHEABLEDATE_H_
+#define GEODE_CACHEABLEDATE_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,11 +20,6 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_CACHEABLEDATE_H_
-#define GEODE_CACHEABLEDATE_H_
-
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 #include "CacheableKey.hpp"
@@ -32,7 +32,7 @@
 #include <ctime>
 
 /** @file
- */
+*/
 namespace apache {
 namespace geode {
 namespace client {
@@ -63,7 +63,7 @@ class CPPCACHE_EXPORT CacheableDate : public CacheableKey {
   /**
    * @brief deserialize this object
    **/
-  virtual void fromData(DataInput& input);
+  virtual Serializable* fromData(DataInput& input);
 
   /**
    * @brief creation function for dates.

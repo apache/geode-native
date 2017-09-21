@@ -214,7 +214,7 @@ void ClientProxyMembershipID::toData(DataOutput& output) const {
   throw IllegalStateException("Member ID toData() not implemented.");
 }
 
-void ClientProxyMembershipID::fromData(DataInput& input) {
+Serializable* ClientProxyMembershipID::fromData(DataInput& input) {
   // deserialization for PR FX HA
   uint8_t* hostAddr;
   int32_t len, hostPort, dcport, vPID, durableClntTimeOut;
@@ -259,6 +259,8 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
   }
 
   readAdditionalData(input);
+
+  return this;
 }
 
 Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {

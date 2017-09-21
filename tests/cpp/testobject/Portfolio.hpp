@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_TESTOBJECT_PORTFOLIO_H_
+#define GEODE_TESTOBJECT_PORTFOLIO_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,11 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#pragma once
-
-#ifndef GEODE_TESTOBJECT_PORTFOLIO_H_
-#define GEODE_TESTOBJECT_PORTFOLIO_H_
 
 /*
  * @brief User class for testing the put functionality for object.
@@ -123,7 +123,7 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
   static Serializable* createDeserializable() { return new Portfolio(); }
 
   virtual void toData(DataOutput& output) const;
-  virtual void fromData(DataInput& input);
+  virtual Serializable* fromData(DataInput& input);
   virtual int32_t classId() const { return 0x03; }
   CacheableStringPtr toString() const;
 };

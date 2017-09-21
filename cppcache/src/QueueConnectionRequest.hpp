@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_QUEUECONNECTIONREQUEST_H_
+#define GEODE_QUEUECONNECTIONREQUEST_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,22 +19,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#pragma once
-
-#ifndef GEODE_QUEUECONNECTIONREQUEST_H_
-#define GEODE_QUEUECONNECTIONREQUEST_H_
-
 #include "ServerLocationRequest.hpp"
 #include "ServerLocation.hpp"
 #include "ClientProxyMembershipID.hpp"
 #include <set>
 #include <string>
-
 namespace apache {
 namespace geode {
 namespace client {
-
 class QueueConnectionRequest : public ServerLocationRequest {
  public:
   QueueConnectionRequest(const ClientProxyMembershipID& memId,
@@ -44,7 +41,7 @@ class QueueConnectionRequest : public ServerLocationRequest {
         m_serverGp(serverGp) {}  // No need for default constructor as creating
                                  // request with it does not make sense.
   virtual void toData(DataOutput& output) const;
-  virtual void fromData(DataInput& input);
+  virtual QueueConnectionRequest* fromData(DataInput& input);
   virtual int8_t typeId() const;
   virtual uint32_t objectSize() const;
   virtual std::set<ServerLocation> getExcludedServer() const;
@@ -63,7 +60,6 @@ class QueueConnectionRequest : public ServerLocationRequest {
   const bool m_findDurable;
   std::string m_serverGp;
 };
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

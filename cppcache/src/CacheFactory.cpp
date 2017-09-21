@@ -30,6 +30,8 @@
 #include <string>
 #include <DistributedSystemImpl.hpp>
 #include <SerializationRegistry.hpp>
+#include <PdxInstantiator.hpp>
+#include <PdxEnumInstantiator.hpp>
 #include <PdxType.hpp>
 #include <PdxTypeRegistry.hpp>
 #include "DiskVersionTag.hpp"
@@ -50,8 +52,9 @@ CacheFactoryPtr CacheFactory::createCacheFactory(
   return std::make_shared<CacheFactory>(configPtr);
 }
 
-void CacheFactory::create_(const char* name, const char* id_data,
-                           CachePtr& cptr, bool readPdxSerialized) {
+void CacheFactory::create_(const char* name,
+                           const char* id_data, CachePtr& cptr,
+                           bool readPdxSerialized) {
   cptr = nullptr;
   if (name == nullptr) {
     throw IllegalArgumentException("CacheFactory::create: name is nullptr");
@@ -93,11 +96,10 @@ CachePtr CacheFactory::create() {
       TXCommitMessage::create,
       std::ref(*(cache->m_cacheImpl->getMemberListForVersionStamp()))));
 
-  //  cache->m_cacheImpl->getSerializationRegistry()->addType(
-  //      GeodeTypeIdsImpl::PDX, PdxInstantiator::createDeserializable);
-  //  cache->m_cacheImpl->getSerializationRegistry()->addType(
-  //      GeodeTypeIds::CacheableEnum,
-  //      PdxEnumInstantiator::createDeserializable);
+  cache->m_cacheImpl->getSerializationRegistry()->addType(
+      GeodeTypeIdsImpl::PDX, PdxInstantiator::createDeserializable);
+  cache->m_cacheImpl->getSerializationRegistry()->addType(
+      GeodeTypeIds::CacheableEnum, PdxEnumInstantiator::createDeserializable);
   cache->m_cacheImpl->getSerializationRegistry()->addType(
       GeodeTypeIds::PdxType,
       std::bind(PdxType::CreateDeserializable,

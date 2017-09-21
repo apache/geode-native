@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_PDXINSTANTIATOR_H_
+#define GEODE_PDXINSTANTIATOR_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,19 +20,35 @@
  * limitations under the License.
  */
 
-#include "ClientReplacementRequest.hpp"
-#include <geode/DataOutput.hpp>
-#include <geode/DataInput.hpp>
-#include "GeodeTypeIdsImpl.hpp"
-using namespace apache::geode::client;
-void ClientReplacementRequest::toData(DataOutput& output) const {
-  ClientConnectionRequest::toData(output);
-  this->m_serverLocation.toData(output);
-}
-Serializable* ClientReplacementRequest::fromData(DataInput& input) {
-  return nullptr;  // not needed as of now and my guess is  it will never be
-                   // needed.
-}
-int8_t ClientReplacementRequest::typeId() const {
-  return static_cast<int8_t>(GeodeTypeIdsImpl::ClientReplacementRequest);
-}
+#include <geode/Serializable.hpp>
+
+namespace apache {
+namespace geode {
+namespace client {
+
+class PdxInstantiator : public Serializable {
+ private:
+  PdxSerializablePtr m_userObject;
+
+ public:
+  PdxInstantiator();
+
+  virtual ~PdxInstantiator();
+
+  static Serializable* createDeserializable() { return new PdxInstantiator(); }
+
+  virtual int8_t typeId() const;
+
+  virtual void toData(DataOutput& output) const;
+
+  virtual Serializable* fromData(DataInput& input);
+
+  virtual int32_t classId() const { return 0x10; }
+
+  CacheableStringPtr toString() const;
+};
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
+
+#endif  // GEODE_PDXINSTANTIATOR_H_

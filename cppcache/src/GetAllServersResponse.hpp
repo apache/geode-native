@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_GETALLSERVERSRESPONSE_H_
+#define GEODE_GETALLSERVERSRESPONSE_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,11 +20,6 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_GETALLSERVERSRESPONSE_H_
-#define GEODE_GETALLSERVERSRESPONSE_H_
-
 #include <geode/Serializable.hpp>
 #include "ServerLocation.hpp"
 #include <geode/DataInput.hpp>
@@ -29,7 +29,6 @@
 namespace apache {
 namespace geode {
 namespace client {
-
 class GetAllServersResponse : public Serializable {
   std::vector<ServerLocation> m_servers;
 
@@ -37,7 +36,7 @@ class GetAllServersResponse : public Serializable {
   static Serializable* create() { return new GetAllServersResponse(); }
   GetAllServersResponse() : Serializable() {}
   virtual void toData(DataOutput& output) const;
-  virtual void fromData(DataInput& input);
+  virtual Serializable* fromData(DataInput& input);
   virtual int32_t classId() const { return 0; }
   virtual int8_t typeId() const {
     return GeodeTypeIdsImpl::GetAllServersResponse;
@@ -52,7 +51,6 @@ class GetAllServersResponse : public Serializable {
   virtual ~GetAllServersResponse() {}
 };
 typedef std::shared_ptr<GetAllServersResponse> GetAllServersResponsePtr;
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

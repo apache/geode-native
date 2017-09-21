@@ -38,6 +38,8 @@
 #include "ClientConnectionResponse.hpp"
 #include "QueueConnectionResponse.hpp"
 #include "LocatorListResponse.hpp"
+#include "GatewayEventCallbackArgument.hpp"
+#include "GatewaySenderEventCallbackArgument.hpp"
 #include "ClientProxyMembershipID.hpp"
 #include <ace/Singleton.h>
 #include <ace/Thread_Mutex.h>
@@ -51,10 +53,9 @@
 #include "VersionTag.hpp"
 #include "DiskStoreId.hpp"
 #include "DiskVersionTag.hpp"
+#include "CachedDeserializableHelper.hpp"
 #include <mutex>
 #include <functional>
-#include "PdxHelper.hpp"
-#include <geode/CacheableEnum.hpp>
 
 namespace apache {
 namespace geode {
@@ -108,10 +109,15 @@ void TheTypeMap::setup() {
   bind2(QueueConnectionResponse::create);
   bind2(LocatorListResponse::create);
   bind2(ClientProxyMembershipID::createDeserializable);
+  bind2(GatewayEventCallbackArgument::createDeserializable);
+  bind2(GatewaySenderEventCallbackArgument::createDeserializable);
   bind2(GetAllServersResponse::create);
   bind2(EnumInfo::createDeserializable);
 
   rebind2(GeodeTypeIdsImpl::DiskStoreId, DiskStoreId::createDeserializable);
+
+  bind2(CachedDeserializableHelper::createForVmCachedDeserializable);
+  bind2(CachedDeserializableHelper::createForPreferBytesDeserializable);
 }
 
 /** This starts at reading the typeid.. assumes the length has been read. */
@@ -125,95 +131,73 @@ SerializablePtr SerializationRegistry::deserialize(DataInput& input,
 
   LOGDEBUG("SerializationRegistry::deserialize typeid = %d currentTypeId= %d ",
            typeId, currentTypeId);
-
-  switch (compId) {
-    case GeodeTypeIds::NullObj: {
-      return nullptr;
-      break;
-    }
-    case GeodeTypeIds::CacheableNullString: {
-      return SerializablePtr(CacheableString::createDeserializable());
-      break;
-    }
-    case GeodeTypeIdsImpl::PDX: {
-      return PdxHelper::deserializePdx(input, false);
-      break;
-    }
-    case GeodeTypeIds::CacheableEnum: {
-      auto enumObject = CacheableEnum::create(" ", " ", 0);
-      enumObject->fromData(input);
-      return enumObject;
-      break;
-    }
-    case GeodeTypeIdsImpl::CacheableUserData: {
-      int8_t classId = 0;
-      input.read(&classId);
-      compId |= ((static_cast<int64_t>(classId)) << 32);
-      break;
-    }
-    case GeodeTypeIdsImpl::CacheableUserData2: {
-      int16_t classId = 0;
-      input.readInt(&classId);
-      compId |= ((static_cast<int64_t>(classId)) << 32);
-      break;
-    }
-    case GeodeTypeIdsImpl::CacheableUserData4: {
-      int32_t classId = 0;
-      input.readInt(&classId);
-      compId |= ((static_cast<int64_t>(classId)) << 32);
-      break;
-    }
-    case GeodeTypeIdsImpl::FixedIDByte: {
-      int8_t fixedId;
-      input.read(&fixedId);
-      compId = fixedId;
-      findinternal = true;
-      break;
-    }
-    case GeodeTypeIdsImpl::FixedIDShort: {
-      int16_t fixedId;
-      input.readInt(&fixedId);
-      compId = fixedId;
-      findinternal = true;
-      break;
-    }
-    case GeodeTypeIdsImpl::FixedIDInt: {
-      int32_t fixedId;
-      input.readInt(&fixedId);
-      compId = fixedId;
-      findinternal = true;
-      break;
-    }
+  if (compId == GeodeTypeIds::NullObj) {
+    return nullptr;
+  } else if (compId == GeodeTypeIds::CacheableNullString) {
+    return SerializablePtr(CacheableString::createDeserializable());
+  } else if (compId == GeodeTypeIdsImpl::CacheableUserData) {
+    int8_t classId = 0;
+    input.read(&classId);
+    compId |= ((static_cast<int64_t>(classId)) << 32);
+  } else if (compId == GeodeTypeIdsImpl::CacheableUserData2) {
+    int16_t classId = 0;
+    input.readInt(&classId);
+    compId |= ((static_cast<int64_t>(classId)) << 32);
+  } else if (compId == GeodeTypeIdsImpl::CacheableUserData4) {
+    int32_t classId = 0;
+    input.readInt(&classId);
+    compId |= ((static_cast<int64_t>(classId)) << 32);
   }
 
   TypeFactoryMethod createType = nullptr;
+
+  if (compId == GeodeTypeIdsImpl::FixedIDByte) {
+    int8_t fixedId;
+    input.read(&fixedId);
+    compId = fixedId;
+    findinternal = true;
+  } else if (compId == GeodeTypeIdsImpl::FixedIDShort) {
+    int16_t fixedId;
+    input.readInt(&fixedId);
+    compId = fixedId;
+    findinternal = true;
+  } else if (compId == GeodeTypeIdsImpl::FixedIDInt) {
+    int32_t fixedId;
+    input.readInt(&fixedId);
+    compId = fixedId;
+    findinternal = true;
+  }
 
   if (findinternal) {
     theTypeMap.find2(compId, createType);
   } else {
     theTypeMap.find(compId, createType);
   }
-
   if (createType == nullptr) {
     if (findinternal) {
       LOGERROR(
           "Unregistered class ID %d during deserialization: Did the "
-          "application register serialization types?",
+          "application register "
+          "serialization types?",
           compId);
     } else {
       LOGERROR(
           "Unregistered class ID %d during deserialization: Did the "
-          "application register serialization types?",
+          "application register "
+          "serialization types?",
           (compId >> 32));
     }
 
     // instead of a null key or null value... an Exception should be thrown..
     throw IllegalStateException("Unregistered class ID in deserialization");
   }
-
   SerializablePtr obj(createType());
-  obj->fromData(input);
-  return obj;
+  // This assignment allows the fromData method to return a different object.
+  auto tmp = obj->fromData(input);
+  if (obj.get() == tmp) {
+    return obj;
+  }
+  return tmp->shared_from_this();
 }
 
 void SerializationRegistry::addType(TypeFactoryMethod func) {

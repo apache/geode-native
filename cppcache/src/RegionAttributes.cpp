@@ -513,7 +513,7 @@ void RegionAttributes::toData(DataOutput& out) const {
   apache::geode::client::impl::writeBool(out, m_isConcurrencyChecksEnabled);
 }
 
-void RegionAttributes::fromData(DataInput& in) {
+Serializable* RegionAttributes::fromData(DataInput& in) {
   in.readInt(reinterpret_cast<int32_t*>(&m_regionTimeToLive));
   in.readInt(reinterpret_cast<int32_t*>(&m_regionTimeToLiveExpirationAction));
   in.readInt(reinterpret_cast<int32_t*>(&m_regionIdleTimeout));
@@ -547,6 +547,8 @@ void RegionAttributes::fromData(DataInput& in) {
   in.readObject(m_persistenceProperties, true);
   apache::geode::client::impl::readCharStar(in, &m_poolName);
   apache::geode::client::impl::readBool(in, &m_isConcurrencyChecksEnabled);
+
+  return this;
 }
 
 /** Return true if all the attributes are equal to those of other. */

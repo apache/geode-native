@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "PutAllPartialResultServerException.hpp"
 
 namespace apache {
@@ -73,9 +72,10 @@ void PutAllPartialResultServerException::toData(DataOutput& output) const {
       "PutAllPartialResultServerException::toData is not intended for use.");
 }
 
-void PutAllPartialResultServerException::fromData(DataInput& input) {
+Serializable* PutAllPartialResultServerException::fromData(DataInput& input) {
   throw IllegalStateException(
       "PutAllPartialResultServerException::fromData is not intended for use.");
+  return nullptr;
 }
 
 int32_t PutAllPartialResultServerException::classId() const {
@@ -98,7 +98,6 @@ int8_t PutAllPartialResultServerException::typeId() const {
 PutAllPartialResultServerException::PutAllPartialResultServerException(
     CacheableStringPtr msg)
     : m_message(msg) {}
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

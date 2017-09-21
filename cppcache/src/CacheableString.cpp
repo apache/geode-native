@@ -42,7 +42,7 @@ void CacheableString::toData(DataOutput& output) const {
   }
 }
 
-void CacheableString::fromData(DataInput& input) {
+Serializable* CacheableString::fromData(DataInput& input) {
   uint16_t shortLen = 0;
   if (m_type == GF_STRING) {
     input.readASCII(reinterpret_cast<char**>(&m_str), &shortLen);
@@ -55,6 +55,7 @@ void CacheableString::fromData(DataInput& input) {
   } else if (m_type == GF_WIDESTRING_HUGE) {
     input.readUTFHuge(reinterpret_cast<wchar_t**>(&m_str), &m_len);
   }
+  return this;
 }
 
 Serializable* CacheableString::createDeserializable() {

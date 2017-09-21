@@ -57,16 +57,21 @@ namespace apache
         }
       }
 
-      void ManagedCacheableKeyGeneric::fromData(apache::geode::client::DataInput& input)
+      apache::geode::client::Serializable* ManagedCacheableKeyGeneric::fromData(apache::geode::client::DataInput& input)
       {
         try {
           int pos = input.getBytesRead();
+          //Apache::Geode::Client::Log::Debug("ManagedCacheableKeyGeneric::fromData");      
           Apache::Geode::Client::DataInput mg_input(&input, true, input.getCache());
           m_managedptr = m_managedptr->FromData(%mg_input);
 
           //this will move the cursor in c++ layer
           input.advanceCursor(mg_input.BytesReadInternally);
           m_objectSize = input.getBytesRead() - pos;
+          //if(m_hashcode == 0)
+          //m_hashcode = m_managedptr->GetHashCode();
+
+
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();
@@ -74,6 +79,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
+        return this;
       }
 
       System::UInt32 ManagedCacheableKeyGeneric::objectSize() const

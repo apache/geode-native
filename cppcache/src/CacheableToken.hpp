@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_CACHEABLETOKEN_H_
+#define GEODE_CACHEABLETOKEN_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,11 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#pragma once
-
-#ifndef GEODE_CACHEABLETOKEN_H_
-#define GEODE_CACHEABLETOKEN_H_
 
 #include <geode/geode_globals.hpp>
 #include <geode/Cacheable.hpp>
@@ -56,7 +56,7 @@ class CPPCACHE_EXPORT CacheableToken : public Cacheable {
   /**
    *@brief deserialize this object
    **/
-  virtual void fromData(DataInput& input);
+  virtual Serializable* fromData(DataInput& input);
 
   /**
    * @brief creation function for strings.
@@ -126,7 +126,6 @@ class CPPCACHE_EXPORT CacheableToken : public Cacheable {
   void operator=(const CacheableToken& other);
   CacheableToken(const CacheableToken& other);
 };
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

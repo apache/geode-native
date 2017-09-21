@@ -49,19 +49,20 @@ void CacheableEnum::toData(apache::geode::client::DataOutput& output) const {
   output.writeArrayLen(enumVal & 0xFFFFFF);
 }
 
-void CacheableEnum::fromData(apache::geode::client::DataInput& input) {
+Serializable* CacheableEnum::fromData(apache::geode::client::DataInput& input) {
   int8_t dsId;
   input.read(&dsId);
   int32_t arrLen;
   input.readArrayLen(&arrLen);
   int enumId = (dsId << 24) | (arrLen & 0xFFFFFF);
-  auto enumVal = PdxHelper::getEnum(
+  EnumInfoPtr enumVal = PdxHelper::getEnum(
       enumId,
       CacheRegionHelper::getCacheImpl(input.getCache())->getPdxTypeRegistry());
 
   m_enumClassName = enumVal->getEnumClassName();
   m_enumName = enumVal->getEnumName();
   m_ordinal = enumVal->getEnumOrdinal();
+  return enumVal.get();
 }
 
 int32_t CacheableEnum::hashcode() const {

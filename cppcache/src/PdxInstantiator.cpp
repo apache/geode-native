@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TXCOMMITMESSAGE_H_
-#define GEODE_TXCOMMITMESSAGE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,39 +14,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * PdxInstantiator.cpp
+ *
+ *  Created on: Dec 28, 2011
+ *      Author: npatel
+ */
 
-#include <geode/geode_globals.hpp>
-#include <geode/geode_types.hpp>
+#include "PdxInstantiator.hpp"
+#include "GeodeTypeIdsImpl.hpp"
+#include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
-#include "RegionCommit.hpp"
+#include "PdxHelper.hpp"
+#include <geode/PdxSerializable.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
-_GF_PTR_DEF_(TXCommitMessage, TXCommitMessagePtr);
 
-class TXCommitMessage : public apache::geode::client::Cacheable {
- public:
-  TXCommitMessage(MemberListForVersionStamp & memberListForVersionStamp);
-  virtual ~TXCommitMessage();
+PdxInstantiator::PdxInstantiator() {}
 
-  virtual Serializable* fromData(DataInput& input);
-  virtual void toData(DataOutput& output) const;
-  virtual int32_t classId() const;
-  int8_t typeId() const;
-  static Serializable* create(MemberListForVersionStamp & memberListForVersionStamp);
-  //	VectorOfEntryEvent getEvents(Cache* cache);
+PdxInstantiator::~PdxInstantiator() {}
 
-  void apply(Cache* cache);
+int8_t PdxInstantiator::typeId() const {
+  return static_cast<int8_t>(GeodeTypeIdsImpl::PDX);
+}
 
- private:
-  // UNUSED int32_t m_processorId;
-  bool isAckRequired();
-  MemberListForVersionStamp & m_memberListForVersionStamp;
-  std::vector<RegionCommitPtr> m_regions;
-};
+void PdxInstantiator::toData(DataOutput& output) const {
+  throw UnsupportedOperationException(
+      "operation PdxInstantiator::toData() is not supported ");
+}
+
+Serializable* PdxInstantiator::fromData(DataInput& input) {
+  m_userObject = PdxHelper::deserializePdx(input, false);
+  return m_userObject.get();
+}
+
+CacheableStringPtr PdxInstantiator::toString() const {
+  return CacheableString::create("PdxInstantiator");
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
-
-#endif  // GEODE_TXCOMMITMESSAGE_H_

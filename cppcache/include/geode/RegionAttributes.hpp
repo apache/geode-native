@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_REGIONATTRIBUTES_H_
+#define GEODE_REGIONATTRIBUTES_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,11 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#pragma once
-
-#ifndef GEODE_REGIONATTRIBUTES_H_
-#define GEODE_REGIONATTRIBUTES_H_
 
 /**
  * @file
@@ -39,7 +39,6 @@
 namespace apache {
 namespace geode {
 namespace client {
-
 class CacheImpl;
 
 /**
@@ -189,7 +188,7 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   virtual void toData(DataOutput& out) const;
 
   /** Initialize members from serialized data. */
-  virtual void fromData(DataInput& in);
+  virtual Serializable* fromData(DataInput& in);
 
   /** Return an empty instance for deserialization. */
   static Serializable* createDeserializable();
@@ -314,7 +313,6 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
    */
   bool getConcurrencyChecksEnabled() { return m_isConcurrencyChecksEnabled; }
   const RegionAttributes& operator=(const RegionAttributes&) = delete;
-
  private:
   // Helper function that safely compares two attribute string
   // taking into consideration the fact the one or the other
@@ -349,6 +347,7 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   // will be created by the factory
   RegionAttributes(const RegionAttributes& rhs);
   RegionAttributes();
+
 
   ExpirationAction::Action m_regionTimeToLiveExpirationAction;
   ExpirationAction::Action m_regionIdleTimeoutExpirationAction;
@@ -395,10 +394,11 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   friend class RegionInternal;
   friend class RegionXmlCreation;
 
+
  private:
+
   FRIEND_STD_SHARED_PTR(RegionAttributes)
 };
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

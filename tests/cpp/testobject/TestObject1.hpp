@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_TESTOBJECT_TESTOBJECT1_H_
+#define GEODE_TESTOBJECT_TESTOBJECT1_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,11 +19,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#pragma once
-
-#ifndef GEODE_TESTOBJECT_TESTOBJECT1_H_
-#define GEODE_TESTOBJECT_TESTOBJECT1_H_
+/*
+ * TestObject1.hpp
+ *
+ *  Created on: Jul 15, 2009
+ *      Author: abhaware
+ */
 
 #include <geode/GeodeCppCache.hpp>
 #include <string>
@@ -48,7 +54,7 @@ class TESTOBJECT_EXPORT TestObject1 : public Cacheable {
   TestObject1(std::string& str, int32_t id);
   TestObject1(TestObject1& rhs);
   void toData(DataOutput& output) const;
-  void fromData(DataInput& input);
+  Serializable* fromData(DataInput& input);
 
   int32_t getIdentifier() { return identifier; }
 

@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_DELTAEX_H_
+#define GEODE_INTEGRATION_TEST_DELTAEX_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,11 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_DELTAEX_H_
-#define GEODE_INTEGRATION_TEST_DELTAEX_H_
 
 #include "fw_dunit.hpp"
 #include <geode/GeodeCppCache.hpp>
@@ -64,9 +64,10 @@ class DeltaEx : public Cacheable, public Delta {
     output.writeInt(counter);
     toDataCount++;
   }
-  virtual void fromData(DataInput& input) {
+  virtual Serializable* fromData(DataInput& input) {
     input.readInt(&counter);
     fromDataCount++;
+    return this;
   }
   virtual int32_t classId() const { return 1; }
   virtual uint32_t objectSize() const { return 0; }

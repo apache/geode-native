@@ -25,7 +25,7 @@ void GetAllServersResponse::toData(DataOutput& output) const {
     output.writeObject(&m_servers.at(i));
   }
 }
-void GetAllServersResponse::fromData(DataInput& input) {
+Serializable* GetAllServersResponse::fromData(DataInput& input) {
   int length = 0;
 
   input.readInt(&length);
@@ -35,4 +35,5 @@ void GetAllServersResponse::fromData(DataInput& input) {
     sLoc.fromData(input);
     m_servers.push_back(sLoc);
   }
+  return this;
 }

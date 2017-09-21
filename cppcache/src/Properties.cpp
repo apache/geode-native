@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include <geode/Properties.hpp>
 #include <geode/GeodeTypeIds.hpp>
 
@@ -25,6 +24,8 @@
 #include "ace/config-lite.h"
 #include "ace/Versioned_Namespace.h"
 #include <ace/OS_NS_stdio.h>
+
+using namespace apache::geode::client;
 
 ACE_BEGIN_VERSIONED_NAMESPACE_DECL
 
@@ -307,7 +308,7 @@ void Properties::toData(DataOutput& output) const {
   }
 }
 
-void Properties::fromData(DataInput& input) {
+Serializable* Properties::fromData(DataInput& input) {
   int32_t mapSize = 0;
   input.readArrayLen(&mapSize);
   for (int i = 0; i < mapSize; i++) {
@@ -332,8 +333,8 @@ void Properties::fromData(DataInput& input) {
       }
     }
   }
+  return this;
 }
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

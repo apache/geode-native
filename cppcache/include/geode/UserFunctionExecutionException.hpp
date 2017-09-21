@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_USERFUNCTIONEXECUTIONEXCEPTION_H_
+#define GEODE_USERFUNCTIONEXECUTIONEXCEPTION_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,18 +20,12 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_USERFUNCTIONEXECUTIONEXCEPTION_H_
-#define GEODE_USERFUNCTIONEXECUTIONEXCEPTION_H_
-
 #include "Serializable.hpp"
 #include "CacheableString.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
-
 class UserFunctionExecutionException;
 typedef std::shared_ptr<UserFunctionExecutionException>
     UserFunctionExecutionExceptionPtr;
@@ -62,7 +61,7 @@ class UserFunctionExecutionException : public Serializable {
    * the 'this' pointer.
    * @throws IllegalStateException If this api is called from User code.
    **/
-  virtual void fromData(DataInput& input);
+  virtual Serializable* fromData(DataInput& input);
 
   /**
    *@brief Return the classId of the instance being serialized.
@@ -119,7 +118,6 @@ class UserFunctionExecutionException : public Serializable {
 
   CacheableStringPtr m_message;  // error message
 };
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

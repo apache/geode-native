@@ -65,12 +65,13 @@ DeltaTestImpl::DeltaTestImpl(DeltaTestImplPtr rhs) : Delta(nullptr) {
   fromDeltaCounter = rhs->getFromDeltaCounter();
 }
 
-void DeltaTestImpl::fromData(DataInput& input) {
+Serializable* DeltaTestImpl::fromData(DataInput& input) {
   input.readInt(&intVar);
   input.readObject(str);
   input.readDouble(&doubleVar);
   input.readObject(byteArr);
   input.readObject(testObj);
+  return this;
 }
 
 void DeltaTestImpl::toData(DataOutput& output) const {

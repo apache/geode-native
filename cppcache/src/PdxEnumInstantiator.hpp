@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef GEODE_TXCOMMITMESSAGE_H_
-#define GEODE_TXCOMMITMESSAGE_H_
+#ifndef GEODE_PDXENUMINSTANTIATOR_H_
+#define GEODE_PDXENUMINSTANTIATOR_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,38 +20,38 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
-#include <geode/geode_types.hpp>
-#include <geode/DataInput.hpp>
-#include "RegionCommit.hpp"
+#include <geode/Serializable.hpp>
+#include <geode/CacheableEnum.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
-_GF_PTR_DEF_(TXCommitMessage, TXCommitMessagePtr);
 
-class TXCommitMessage : public apache::geode::client::Cacheable {
+class PdxEnumInstantiator : public Serializable {
+ private:
+  CacheableEnumPtr m_enumObject;
+
  public:
-  TXCommitMessage(MemberListForVersionStamp & memberListForVersionStamp);
-  virtual ~TXCommitMessage();
+  PdxEnumInstantiator();
+
+  virtual ~PdxEnumInstantiator();
+
+  static Serializable* createDeserializable() {
+    return new PdxEnumInstantiator();
+  }
+
+  virtual int8_t typeId() const;
+
+  virtual void toData(DataOutput& output) const;
 
   virtual Serializable* fromData(DataInput& input);
-  virtual void toData(DataOutput& output) const;
-  virtual int32_t classId() const;
-  int8_t typeId() const;
-  static Serializable* create(MemberListForVersionStamp & memberListForVersionStamp);
-  //	VectorOfEntryEvent getEvents(Cache* cache);
 
-  void apply(Cache* cache);
+  virtual int32_t classId() const { return 0; }
 
- private:
-  // UNUSED int32_t m_processorId;
-  bool isAckRequired();
-  MemberListForVersionStamp & m_memberListForVersionStamp;
-  std::vector<RegionCommitPtr> m_regions;
+  CacheableStringPtr toString() const;
 };
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_TXCOMMITMESSAGE_H_
+#endif  // GEODE_PDXENUMINSTANTIATOR_H_

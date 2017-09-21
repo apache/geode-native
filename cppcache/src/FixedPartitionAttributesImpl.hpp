@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_FIXEDPARTITIONATTRIBUTESIMPL_H_
+#define GEODE_FIXEDPARTITIONATTRIBUTESIMPL_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,11 +20,6 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_FIXEDPARTITIONATTRIBUTESIMPL_H_
-#define GEODE_FIXEDPARTITIONATTRIBUTESIMPL_H_
-
 #include <geode/Serializable.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
@@ -29,7 +29,6 @@
 namespace apache {
 namespace geode {
 namespace client {
-
 _GF_PTR_DEF_(FixedPartitionAttributesImpl, FixedPartitionAttributesImplPtr)
 
 class FixedPartitionAttributesImpl : public Serializable {
@@ -67,11 +66,12 @@ class FixedPartitionAttributesImpl : public Serializable {
     output.writeInt(m_startingBucketId);
   }
 
-  void fromData(DataInput& input) {
+  FixedPartitionAttributesImpl* fromData(DataInput& input) {
     input.readNativeString(m_partitionName);
     input.readBoolean(&m_isPrimary);
     input.readInt((int32_t*)&m_numBuckets);
     input.readInt((int32_t*)&m_startingBucketId);
+    return this;
   }
 
   uint32_t objectSize() const {
@@ -121,7 +121,6 @@ class FixedPartitionAttributesImpl : public Serializable {
     return getStartingBucketID() <= bucketId && bucketId <= getLastBucketID();
   }
 };
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -99,7 +99,8 @@ void Position::toData(apache::geode::client::DataOutput& output) const {
   output.writeInt(pid);
 }
 
-void Position::fromData(apache::geode::client::DataInput& input) {
+apache::geode::client::Serializable* Position::fromData(
+    apache::geode::client::DataInput& input) {
   input.readInt(&avg20DaysVol);
   input.readObject(bondRating);
   input.readDouble(&convRatio);
@@ -116,6 +117,7 @@ void Position::fromData(apache::geode::client::DataInput& input) {
   input.readObject(underlyer);
   input.readInt(&volatility);
   input.readInt(&pid);
+  return this;
 }
 
 CacheableStringPtr Position::toString() const {

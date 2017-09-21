@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_QUEUECONNECTIONRESPONSE_H_
+#define GEODE_QUEUECONNECTIONRESPONSE_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,12 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#pragma once
-
-#ifndef GEODE_QUEUECONNECTIONRESPONSE_H_
-#define GEODE_QUEUECONNECTIONRESPONSE_H_
-
 #include <list>
 #include "ServerLocationResponse.hpp"
 #include <geode/DataInput.hpp>
@@ -27,12 +26,15 @@
 namespace apache {
 namespace geode {
 namespace client {
-
 class QueueConnectionResponse : public ServerLocationResponse {
  public:
   QueueConnectionResponse()
-      : ServerLocationResponse(), m_durableQueueFound(false) {}
-  virtual void fromData(DataInput& input);
+      : ServerLocationResponse(),
+        /* adongre
+         * CID 28940: Uninitialized scalar field (UNINIT_CTOR) *
+         */
+        m_durableQueueFound(false) {}
+  virtual QueueConnectionResponse* fromData(DataInput& input);
   virtual int8_t typeId() const;
   virtual uint32_t objectSize() const;
   virtual std::list<ServerLocation> getServers() { return m_list; }
@@ -47,7 +49,6 @@ class QueueConnectionResponse : public ServerLocationResponse {
   bool m_durableQueueFound;
 };
 typedef std::shared_ptr<QueueConnectionResponse> QueueConnectionResponsePtr;
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

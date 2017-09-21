@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_TESTOBJECT_TIMESTAMPEDOBJECT_H_
+#define GEODE_TESTOBJECT_TIMESTAMPEDOBJECT_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,11 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#pragma once
-
-#ifndef GEODE_TESTOBJECT_TIMESTAMPEDOBJECT_H_
-#define GEODE_TESTOBJECT_TIMESTAMPEDOBJECT_H_
 
 #include <geode/GeodeCppCache.hpp>
 
@@ -42,7 +42,9 @@ class TESTOBJECT_EXPORT TimestampedObject
  public:
   virtual uint64_t getTimestamp() { return 0; }
   virtual void resetTimestamp() {}
-  virtual void fromData(apache::geode::client::DataInput& input) {}
+  virtual Serializable* fromData(apache::geode::client::DataInput& input) {
+    return this;
+  }
   virtual void toData(apache::geode::client::DataOutput& output) const {}
   virtual int32_t classId() const { return 0; }
   virtual uint32_t objectSize() const { return 0; }

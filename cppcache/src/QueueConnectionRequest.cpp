@@ -14,12 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "QueueConnectionRequest.hpp"
 #include "GeodeTypeIdsImpl.hpp"
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-
 using namespace apache::geode::client;
 
 void QueueConnectionRequest::toData(DataOutput& output) const {
@@ -36,21 +34,20 @@ void QueueConnectionRequest::toData(DataOutput& output) const {
   writeSetOfServerLocation(output);
   output.writeBoolean(m_findDurable);
 }
-
-void QueueConnectionRequest::fromData(DataInput& input) {}
-
+QueueConnectionRequest* QueueConnectionRequest::fromData(
+    DataInput& input)  // NOt needed as of now.
+{
+  return nullptr;
+}
 int8_t QueueConnectionRequest::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::QueueConnectionRequest);
 }
-
 uint32_t QueueConnectionRequest::objectSize() const {
   return 0;  // will implement later.
 }
-
 std::set<ServerLocation> QueueConnectionRequest::getExcludedServer() const {
   return m_excludedServers;
 }
-
 const ClientProxyMembershipID& QueueConnectionRequest::getProxyMemberShipId()
     const {
   return m_membershipID;
@@ -59,9 +56,7 @@ const ClientProxyMembershipID& QueueConnectionRequest::getProxyMemberShipId()
 int QueueConnectionRequest::getRedundentCopies() const {
   return m_redundantCopies;
 }
-
 bool QueueConnectionRequest::isFindDurable() const { return m_findDurable; }
-
 void QueueConnectionRequest::writeSetOfServerLocation(
     DataOutput& output) const {
   output.writeInt(static_cast<int32_t>(m_excludedServers.size()));

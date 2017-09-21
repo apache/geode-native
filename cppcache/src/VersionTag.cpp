@@ -50,7 +50,7 @@ void VersionTag::toData(DataOutput& output) const {
   throw IllegalStateException("VersionTag::toData not implemented");
 }
 
-void VersionTag::fromData(DataInput& input) {
+Serializable* VersionTag::fromData(DataInput& input) {
   uint16_t flags;
   input.readInt(&flags);
   input.readInt(&m_bits);
@@ -71,6 +71,7 @@ void VersionTag::fromData(DataInput& input) {
   input.readInt(&m_regionVersionLowBytes);
   input.readUnsignedVL(&m_timeStamp);
   readMembers(flags, input);
+  return this;
 }
 
 Serializable* VersionTag::createDeserializable(

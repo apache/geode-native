@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_TESTOBJECT_VARIOUSPDXTYPES_H_
+#define GEODE_TESTOBJECT_VARIOUSPDXTYPES_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,11 +19,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
- #pragma once
-
-#ifndef GEODE_TESTOBJECT_VARIOUSPDXTYPES_H_
-#define GEODE_TESTOBJECT_VARIOUSPDXTYPES_H_
+/*
+ * VariousPdxTypes.hpp
+ *
+ *  Created on: Feb 10, 2012
+ *      Author: npatel
+ */
 
 #include <geode/PdxSerializable.hpp>
 #include <geode/GeodeCppCache.hpp>
@@ -514,7 +520,7 @@ class TESTOBJECT_EXPORT PdxInsideIGeodeSerializable : public Serializable {
 
   CacheableStringPtr toString() const;
 
-  virtual void fromData(DataInput& input);
+  virtual Serializable* fromData(DataInput& input);
 
   virtual void toData(DataOutput& output) const;
 

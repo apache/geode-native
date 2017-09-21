@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_TESTOBJECT_BATCHOBJECT_H_
+#define GEODE_TESTOBJECT_BATCHOBJECT_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,11 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
- #pragma once
-
- #ifndef GEODE_TESTOBJECT_BATCHOBJECT_H_
- #define GEODE_TESTOBJECT_BATCHOBJECT_H_
 
 /*
  * @brief User class for testing the cq functionality.
@@ -62,7 +62,8 @@ class TESTOBJECT_EXPORT BatchObject : public TimestampedObject {
   BatchObject(int32_t anIndex, int32_t batchSize, int32_t size);
   virtual ~BatchObject();
   virtual void toData(apache::geode::client::DataOutput& output) const;
-  virtual void fromData(apache::geode::client::DataInput& input);
+  virtual apache::geode::client::Serializable* fromData(
+      apache::geode::client::DataInput& input);
   virtual int32_t classId() const { return 25; }
   CacheableStringPtr toString() const;
 

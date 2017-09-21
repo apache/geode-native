@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_TESTOBJECT_POSITION_H_
+#define GEODE_TESTOBJECT_POSITION_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,11 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#pragma once
-
-#ifndef GEODE_TESTOBJECT_POSITION_H_
-#define GEODE_TESTOBJECT_POSITION_H_
 
 /*
  * @brief User class for testing the put functionality for object.
@@ -74,7 +74,8 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
   Position(int32_t iForExactVal);
   virtual ~Position();
   virtual void toData(apache::geode::client::DataOutput& output) const;
-  virtual void fromData(apache::geode::client::DataInput& input);
+  virtual apache::geode::client::Serializable* fromData(
+      apache::geode::client::DataInput& input);
   virtual int32_t classId() const { return 0x02; }
   CacheableStringPtr toString() const;
 
