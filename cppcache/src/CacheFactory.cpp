@@ -96,9 +96,9 @@ CachePtr CacheFactory::create() {
   auto cache = create(DEFAULT_CACHE_NAME, nullptr);
 
   auto& cacheImpl = cache->m_cacheImpl;
-  auto& serializationRegistry = cacheImpl->getSerializationRegistry();
-  auto& pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
-  auto& memberListForVersionStamp =
+  const auto& serializationRegistry = cacheImpl->getSerializationRegistry();
+  const auto& pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
+  const auto& memberListForVersionStamp =
       std::ref(*(cacheImpl->getMemberListForVersionStamp()));
 
   serializationRegistry->addType2(
