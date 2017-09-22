@@ -254,7 +254,7 @@ PdxSerializablePtr SerializationRegistry::getPdxType(char* className) {
   if (nullptr == objectType) {
     try {
       pdxObj =
-          std::make_shared<PdxWrapper>((const char*)className, m_pdxSerializer);
+          std::make_shared<PdxWrapper>((const char*)className, pdxSerializer);
     } catch (const Exception&) {
       LOGERROR(
           "Unregistered class %s during PDX deserialization: Did the "
@@ -270,11 +270,11 @@ PdxSerializablePtr SerializationRegistry::getPdxType(char* className) {
 }
 
 void SerializationRegistry::setPdxSerializer(PdxSerializerPtr pdxSerializer) {
-  m_pdxSerializer = pdxSerializer;
+  pdxSerializer = pdxSerializer;
 }
 
 PdxSerializerPtr SerializationRegistry::getPdxSerializer() {
-  return m_pdxSerializer;
+  return pdxSerializer;
 }
 
 int32_t SerializationRegistry::GetPDXIdForType(PoolPtr pool,

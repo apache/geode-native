@@ -221,7 +221,7 @@ class CPPCACHE_EXPORT SerializationRegistry {
   }
 
  private:
-  PdxSerializerPtr m_pdxSerializer;
+  PdxSerializerPtr pdxSerializer;
   TheTypeMap theTypeMap;
   PdxTypeHandler pdxTypeHandler;
 };
