@@ -170,11 +170,6 @@ namespace Apache
       }
 
 
-      bool SystemProperties::IsSecurityOn::get( )
-      {
-        return m_nativeptr->isSecurityOn( );
-      }
-
       Properties<String^, String^>^ SystemProperties::GetSecurityProperties::get( )
       {
         return Properties<String^, String^>::Create(m_nativeptr->getSecurityProperties());

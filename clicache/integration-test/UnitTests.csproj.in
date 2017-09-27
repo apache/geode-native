@@ -160,6 +160,7 @@
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientPdxTests.cs">
       <Link>ThinClientPdxTests.cs</Link>
     </Compile>
+    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientSecurityAuthSetAuthInitializeTests.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\AttributesFactoryTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\AttributesMutatorTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\CacheHelperN.cs" />

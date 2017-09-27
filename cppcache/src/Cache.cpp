@@ -116,20 +116,6 @@ RegionPtr Cache::getRegion(const char* path) {
 
 void Cache::rootRegions(VectorOfRegion& regions) {
   m_cacheImpl->rootRegions(regions);
-  /*VectorOfRegion tmp;
-   //this can cause issue when pool attached with region in multiuserSecure mode
-   m_cacheImpl->rootRegions(tmp);
-
-   if (tmp.size() > 0)
-   {
-     for(size_t i = 0; i< tmp.size(); i++)
-     {
-       if (!isPoolInMultiuserMode(tmp.at(i)))
-       {
-         regions.push_back(tmp.at(i));
-       }
-     }
-   }*/
 }
 
 RegionFactory Cache::createRegionFactory(RegionShortcut preDefinedRegion) {
@@ -151,11 +137,13 @@ CacheTransactionManagerPtr Cache::getCacheTransactionManager() {
 TypeRegistry& Cache::getTypeRegistry() { return *(m_typeRegistry.get()); }
 
 Cache::Cache(const std::string& name, PropertiesPtr dsProp,
-             bool ignorePdxUnreadFields, bool readPdxSerialized) {
+             bool ignorePdxUnreadFields, bool readPdxSerialized,
+             const AuthInitializePtr& authInitialize) {
   auto dsPtr = DistributedSystem::create(DEFAULT_DS_NAME, this, dsProp);
   dsPtr->connect();
-  m_cacheImpl = std::unique_ptr<CacheImpl>(new CacheImpl(
-      this, name, std::move(dsPtr), ignorePdxUnreadFields, readPdxSerialized));
+  m_cacheImpl = std::unique_ptr<CacheImpl>(
+      new CacheImpl(this, name, std::move(dsPtr), ignorePdxUnreadFields,
+                    readPdxSerialized, authInitialize));
   m_typeRegistry = std::unique_ptr<TypeRegistry>(new TypeRegistry(*this));
 }
 

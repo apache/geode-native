@@ -216,7 +216,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
    */
   CacheImpl(Cache* c, const std::string& name,
             std::unique_ptr<DistributedSystem> sys, bool ignorePdxUnreadFields,
-            bool readPdxSerialized);
+            bool readPdxSerialized, const AuthInitializePtr& authInitialize);
 
   void initServices();
   EvictionController* getEvictionController();
@@ -276,11 +276,15 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   PdxTypeRegistryPtr getPdxTypeRegistry() const;
 
   SerializationRegistryPtr getSerializationRegistry() const;
-  inline CachePerfStats& getCachePerfStats() { return *m_cacheStats; };
+  inline CachePerfStats& getCachePerfStats() { return *m_cacheStats; }
 
   PoolManager& getPoolManager() { return *m_poolManager; }
 
   ThreadPool* getThreadPool();
+
+  inline const AuthInitializePtr& getAuthInitialize() {
+    return m_authInitialize;
+  }
 
  private:
   std::atomic<bool> m_networkhop;
@@ -343,6 +347,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   SerializationRegistryPtr m_serializationRegistry;
   PdxTypeRegistryPtr m_pdxTypeRegistry;
   ThreadPool* m_threadPool;
+  const AuthInitializePtr m_authInitialize;
 
   friend class CacheFactory;
   friend class Cache;

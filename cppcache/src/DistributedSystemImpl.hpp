@@ -82,10 +82,6 @@ class CPPCACHE_EXPORT DistributedSystemImpl {
    */
   virtual ~DistributedSystemImpl();
 
-  /**
-   */
-  virtual AuthInitializePtr getAuthLoader();
-
   /** Retrieve the MemberId used to create this Cache. */
   virtual void disconnect();
   virtual void connect();
@@ -129,10 +125,6 @@ class CPPCACHE_EXPORT DistributedSystemImpl {
   static void CallCliCallBack(Cache& cache);
 
  private:
-  /**
-   * Guard for getAuthLoader()
-   */
-  ACE_Recursive_Thread_Mutex m_authLock;
   static ACE_Recursive_Thread_Mutex m_cliCallbackLock;
   static volatile bool m_isCliCallbackSet;
   static std::map<int, CliCallbackMethod> m_cliCallbackMap;

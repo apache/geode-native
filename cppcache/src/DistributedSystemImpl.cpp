@@ -46,11 +46,6 @@ DistributedSystemImpl::~DistributedSystemImpl() {
   LOGFINE("Destroyed DistributedSystemImpl");
 }
 
-AuthInitializePtr DistributedSystemImpl::getAuthLoader() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> authGuard(m_authLock);
-  return m_implementee->getSystemProperties().getAuthLoader();
-}
-
 void DistributedSystemImpl::connect() {}
 
 void DistributedSystemImpl::disconnect() {

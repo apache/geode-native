@@ -485,7 +485,12 @@ namespace Apache.Geode.Client.UnitTests
       InitConfig(null, null);
     }
 
-    public static void InitConfig(Properties<string, string> config)
+		public static void InitConfig(Properties<string, string> config, IAuthInitialize authInitialize)
+		{
+			InitConfig(config, null, authInitialize);
+		}
+
+		public static void InitConfig(Properties<string, string> config)
     {
       InitConfig(config, null);
     }
@@ -562,10 +567,10 @@ namespace Apache.Geode.Client.UnitTests
 
     public static void InitConfig(string cacheXml)
     {
-      InitConfig(null, cacheXml);
+      InitConfig(null, cacheXml, null);
     }
 
-    public static void InitConfig(Properties<string, string> config, string cacheXml)
+    public static void InitConfig(Properties<string, string> config, string cacheXml, IAuthInitialize authIntialize)
     {
       //Console.WriteLine(" in InitConfig1 " + System.AppDomain.CurrentDomain.Id);
       if (cacheXml != null)
@@ -608,6 +613,7 @@ namespace Apache.Geode.Client.UnitTests
           m_cache = cf
               .SetPdxIgnoreUnreadFields(PdxIgnoreUnreadFields)
               .SetPdxReadSerialized(PdxReadSerialized)
+							.SetAuthInitialize(authIntialize)
               .Create();
 
           PdxIgnoreUnreadFields = false; //reset so next test will have default value

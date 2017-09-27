@@ -22,7 +22,6 @@
 
 #include "Properties.hpp"
 #include "Log.hpp"
-#include "AuthInitialize.hpp"
 
 /** @file
  */
@@ -36,10 +35,6 @@ namespace client {
  *
  *
  */
-
-// Factory function typedefs to register the managed authInitialize
-typedef AuthInitialize* (*LibraryAuthInitializeFn)(const char* assemblyPath,
-                                                   const char* factFuncName);
 
 /**
  * A class for internal use, that encapsulates the properties that can be
@@ -297,20 +292,6 @@ class CPPCACHE_EXPORT SystemProperties {
     m_onClientDisconnectClearPdxTypeIds = set;
   }
 
-  /** Return the security auth library */
-  inline const char* authInitLibrary() const {
-    return (m_AuthIniLoaderLibrary == nullptr
-                ? ""
-                : m_AuthIniLoaderLibrary->asChar());
-  }
-
-  /** Return the security auth factory */
-  inline const char* authInitFactory() const {
-    return (m_AuthIniLoaderFactory == nullptr
-                ? ""
-                : m_AuthIniLoaderFactory->asChar());
-  }
-
   /** Return the security diffie hellman secret key algo */
   const char* securityClientDhAlgo() const {
     return (m_securityClientDhAlgo == nullptr
@@ -332,14 +313,6 @@ class CPPCACHE_EXPORT SystemProperties {
     return m_securityPropertiesPtr;
   }
 
-  /** Checks whether Security is on or off.
-   * @return  bool value.
-   */
-  inline bool isSecurityOn() const {
-    return (m_AuthIniLoaderFactory != nullptr &&
-            m_AuthIniLoaderLibrary != nullptr);
-  }
-
   /** Checks whether list of endpoint is shuffeled or not.
    * @return  bool value.
    */
@@ -352,7 +325,7 @@ class CPPCACHE_EXPORT SystemProperties {
    * @return bool flag to indicate whether DH for credentials is on.
    */
   bool isDhOn() const {
-    return isSecurityOn() && m_securityClientDhAlgo != nullptr &&
+    return m_securityClientDhAlgo != nullptr &&
            m_securityClientDhAlgo->length() > 0;
   }
 
@@ -447,11 +420,9 @@ class CPPCACHE_EXPORT SystemProperties {
   int32_t m_notifyDupCheckLife;
 
   PropertiesPtr m_securityPropertiesPtr;
-  CacheableStringPtr m_AuthIniLoaderLibrary;
-  CacheableStringPtr m_AuthIniLoaderFactory;
+
   CacheableStringPtr m_securityClientDhAlgo;
   CacheableStringPtr m_securityClientKsPath;
-  AuthInitializePtr m_authInitializer;
 
   char* m_durableClientId;
   uint32_t m_durableTimeout;
@@ -487,13 +458,6 @@ class CPPCACHE_EXPORT SystemProperties {
    */
   void processProperty(const char* property, const char* value);
 
-  /** Gets the authInitialize loader for the system.
-   * @return  a pointer that points to the system's ,
-   * <code>AuthLoader</code> , nullptr if there is no AuthLoader for this
-   * system.
-   */
-  AuthInitializePtr getAuthLoader();
-
  private:
   SystemProperties(const SystemProperties& rhs);  // never defined
   void operator=(const SystemProperties& rhs);    // never defined
@@ -501,8 +465,6 @@ class CPPCACHE_EXPORT SystemProperties {
   void throwError(const char* msg);
 
  public:
-  static LibraryAuthInitializeFn managedAuthInitializeFn;
-
   friend class DistributedSystemImpl;
 };
 }  // namespace client

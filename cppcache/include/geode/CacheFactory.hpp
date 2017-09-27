@@ -92,6 +92,14 @@ class CPPCACHE_EXPORT CacheFactory
    */
   CacheFactoryPtr setPdxIgnoreUnreadFields(bool ignore);
 
+  /**
+   * Sets the AuthInitializer defined by the user.
+   * The AuthInitializer will be used to obtain credentials for a client.
+   * @param authInitialize
+   * @return this ClientCacheFactory
+   */
+  CacheFactoryPtr setAuthInitialize(const AuthInitializePtr& authInitialize);
+
   /** Sets the object preference to PdxInstance type.
    * When a cached object that was serialized as a PDX is read
    * from the cache a {@link PdxInstance} will be returned instead of the actual
@@ -125,6 +133,7 @@ class CPPCACHE_EXPORT CacheFactory
   PropertiesPtr dsProp;
   bool ignorePdxUnreadFields;
   bool pdxReadSerialized;
+  AuthInitializePtr authInitialize;
 
   CachePtr create(const char* name,
                   const CacheAttributesPtr& attrs = nullptr);

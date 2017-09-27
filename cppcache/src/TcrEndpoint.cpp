@@ -14,18 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <thread>
+#include <chrono>
 #include <ace/OS.h>
+
+#include <geode/SystemProperties.hpp>
+#include <geode/AuthInitialize.hpp>
+
 #include "TcrEndpoint.hpp"
 #include "ThinClientRegion.hpp"
 #include "ThinClientPoolHADM.hpp"
 #include "StackTrace.hpp"
-#include <geode/SystemProperties.hpp>
 #include "CacheImpl.hpp"
 #include "Utils.hpp"
 #include "DistributedSystemImpl.hpp"
 
-#include <thread>
-#include <chrono>
 
 namespace apache {
 namespace geode {
@@ -354,7 +358,7 @@ PropertiesPtr TcrEndpoint::getCredentials() {
   const auto& tmpSecurityProperties =
       distributedSystem.getSystemProperties().getSecurityProperties();
 
-  if (const auto& authInitialize = distributedSystem.m_impl->getAuthLoader()) {
+  if (const auto& authInitialize = m_cacheImpl->getAuthInitialize()) {
     LOGFINER(
         "Acquired handle to AuthInitialize plugin, "
         "getting credentials for %s",
