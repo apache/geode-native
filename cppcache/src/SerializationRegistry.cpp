@@ -270,7 +270,7 @@ PdxSerializablePtr SerializationRegistry::getPdxType(char* className) {
 }
 
 void SerializationRegistry::setPdxSerializer(PdxSerializerPtr pdxSerializer) {
-  pdxSerializer = pdxSerializer;
+  this->pdxSerializer = pdxSerializer;
 }
 
 PdxSerializerPtr SerializationRegistry::getPdxSerializer() {
