@@ -24,6 +24,7 @@
 
 #include "native_shared_ptr.hpp"
 #include "Properties.hpp"
+#include "IAuthInitialize.hpp"
 
 using namespace System::Collections::Generic;
 
@@ -149,6 +150,18 @@ namespace Apache
         /// a instance of <c>CacheFactory</c> 
         /// </returns>
         CacheFactory^ Set(String^ name, String^ value);
+
+        /// <summary>
+        /// Sets the AuthInitializer defined by the user.
+        /// The AuthInitializer will be used to obtain credentials for a client.
+        /// </summary>
+        /// <param>
+        /// authInitialize
+        /// </param>
+        /// <returns>
+        /// a instance of <c>CacheFactory</c> 
+        /// </returns>
+        CacheFactory^ SetAuthInitialize(IAuthInitialize^ authInitialize);
 
       private:
 

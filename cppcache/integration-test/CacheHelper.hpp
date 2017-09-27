@@ -71,6 +71,9 @@ class CacheHelper {
   CacheHelper(const bool isThinclient, const PropertiesPtr& configPtr = nullptr,
               const bool noRootRegion = false);
 
+  CacheHelper(const bool isThinclient, const AuthInitializePtr& authInitialize,
+              const PropertiesPtr& configPtr = nullptr);
+
   CacheHelper(const bool isThinclient, bool pdxIgnoreUnreadFields,
               bool pdxReadSerialized, const PropertiesPtr& configPtr = nullptr,
               const bool noRootRegion = false);

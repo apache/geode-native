@@ -246,7 +246,8 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * @brief constructors
    */
   Cache(const std::string& name, PropertiesPtr dsProp,
-        bool ignorePdxUnreadFields, bool readPdxSerialized);
+        bool ignorePdxUnreadFields, bool readPdxSerialized,
+        const AuthInitializePtr& authInitialize);
 
   std::unique_ptr<CacheImpl> m_cacheImpl;
   std::unique_ptr<TypeRegistry> m_typeRegistry;

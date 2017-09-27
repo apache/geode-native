@@ -14,21 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <algorithm>
+#include <ace/INET_Addr.h>
+
+#include <geode/ResultCollector.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/PoolManager.hpp>
+#include <geode/AuthInitialize.hpp>
+
+#include "statistics/PoolStatsSampler.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "TcrEndpoint.hpp"
 #include "ThinClientRegion.hpp"
-#include <geode/ResultCollector.hpp>
 #include "ExecutionImpl.hpp"
 #include "ExpiryHandler_T.hpp"
-#include <ace/INET_Addr.h>
 #include "ExpiryTaskManager.hpp"
-#include <geode/SystemProperties.hpp>
-#include <statistics/PoolStatsSampler.hpp>
 #include "DistributedSystemImpl.hpp"
 #include "UserAttributes.hpp"
-#include <algorithm>
 #include "ThinClientStickyManager.hpp"
-#include <geode/PoolManager.hpp>
 
 #include "NonCopyable.hpp"
 
@@ -157,12 +161,12 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
   if (firstGurd) ClientProxyMembershipID::increaseSynchCounter();
   firstGurd = true;
 
-  auto& distributedSystem =
-      m_connManager.getCacheImpl()->getDistributedSystem();
+  auto cacheImpl = m_connManager.getCacheImpl();
+  auto& distributedSystem = cacheImpl->getDistributedSystem();
 
   auto& sysProp = distributedSystem.getSystemProperties();
   // to set security flag at pool level
-  this->m_isSecurityOn = sysProp.isSecurityOn();
+  this->m_isSecurityOn = cacheImpl->getAuthInitialize() != nullptr;
 
   ACE_TCHAR hostName[256];
   ACE_OS::hostname(hostName, sizeof(hostName) - 1);
@@ -180,10 +184,8 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
                              : "");
 
   const uint32_t durableTimeOut = sysProp.durableTimeout();
-  m_memId =
-      m_connManager.getCacheImpl()->getClientProxyMembershipIDFactory().create(
-          hostName, hostAddr, hostPort, clientDurableId.c_str(),
-          durableTimeOut);
+  m_memId = cacheImpl->getClientProxyMembershipIDFactory().create(
+      hostName, hostAddr, hostPort, clientDurableId.c_str(), durableTimeOut);
 
   if (m_attrs->m_initLocList.size() == 0 &&
       m_attrs->m_initServList.size() == 0) {
@@ -213,17 +215,16 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
 
 void ThinClientPoolDM::init() {
   LOGDEBUG("ThinClientPoolDM::init: Starting pool initialization");
-
-  auto& sysProp = m_connManager.getCacheImpl()
-                      ->getDistributedSystem()
-                      .getSystemProperties();
+  auto cacheImpl = m_connManager.getCacheImpl();
+  auto& sysProp = cacheImpl->getDistributedSystem().getSystemProperties();
   m_isMultiUserMode = this->getMultiuserAuthentication();
+
   if (m_isMultiUserMode) {
     LOGINFO("Multiuser authentication is enabled for pool %s",
             m_poolName.c_str());
   }
   // to set security flag at pool level
-  this->m_isSecurityOn = sysProp.isSecurityOn();
+  this->m_isSecurityOn = cacheImpl->getAuthInitialize() != nullptr;
 
   LOGDEBUG("ThinClientPoolDM::init: security in on/off = %d ",
            this->m_isSecurityOn);
@@ -241,12 +242,12 @@ void ThinClientPoolDM::init() {
 }
 
 PropertiesPtr ThinClientPoolDM::getCredentials(TcrEndpoint* ep) {
-  const auto& distributedSystem =
-      m_connManager.getCacheImpl()->getDistributedSystem();
+  auto cacheImpl = m_connManager.getCacheImpl();
+  const auto& distributedSystem = cacheImpl->getDistributedSystem();
   const auto& tmpSecurityProperties =
       distributedSystem.getSystemProperties().getSecurityProperties();
 
-  if (const auto& authInitialize = distributedSystem.m_impl->getAuthLoader()) {
+  if (const auto& authInitialize = cacheImpl->getAuthInitialize()) {
     LOGFINER(
         "ThinClientPoolDM::getCredentials: acquired handle to authLoader, "
         "invoking getCredentials %s",

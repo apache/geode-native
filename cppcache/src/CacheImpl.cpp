@@ -48,7 +48,8 @@ using namespace apache::geode::client;
 
 CacheImpl::CacheImpl(Cache* c, const std::string& name,
                      std::unique_ptr<DistributedSystem> sys, bool iPUF,
-                     bool readPdxSerialized)
+                     bool readPdxSerialized,
+                     const AuthInitializePtr& authInitialize)
     : m_name(name),
       m_defaultPool(nullptr),
       m_ignorePdxUnreadFields(iPUF),
@@ -73,7 +74,8 @@ CacheImpl::CacheImpl(Cache* c, const std::string& name,
           std::unique_ptr<ExpiryTaskManager>(new ExpiryTaskManager())),
       m_clientProxyMembershipIDFactory(m_distributedSystem->getName()),
       m_threadPool(new ThreadPool(
-          m_distributedSystem->getSystemProperties().threadPoolSize())) {
+          m_distributedSystem->getSystemProperties().threadPoolSize())),
+      m_authInitialize(authInitialize) {
   m_cacheTXManager = InternalCacheTransactionManager2PCPtr(
       new InternalCacheTransactionManager2PCImpl(c));
 

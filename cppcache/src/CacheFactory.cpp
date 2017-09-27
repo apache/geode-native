@@ -67,7 +67,7 @@ void CacheFactory::create_(const char* name, const char* id_data,
   }
 
   cptr = std::make_shared<Cache>(name, dsProp, ignorePdxUnreadFields,
-                                 readPdxSerialized);
+                                 readPdxSerialized, authInitialize);
 }  // namespace client
 
 const char* CacheFactory::getVersion() { return PRODUCT_VERSION; }
@@ -168,6 +168,12 @@ CacheFactoryPtr CacheFactory::set(const char* name, const char* value) {
     this->dsProp = Properties::create();
   }
   this->dsProp->insert(name, value);
+  return shared_from_this();
+}
+
+CacheFactoryPtr CacheFactory::setAuthInitialize(
+    const AuthInitializePtr& authInitialize) {
+  this->authInitialize = authInitialize;
   return shared_from_this();
 }
 

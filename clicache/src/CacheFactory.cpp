@@ -24,6 +24,7 @@
 #include "impl/PdxTypeRegistry.hpp"
 #include "impl/AppDomainContext.hpp"
 #include "impl/CacheResolver.hpp"
+#include "impl/ManagedAuthInitialize.hpp"
 
 using namespace System;
 
@@ -177,8 +178,31 @@ namespace Apache
           return this;
 
 			  _GF_MG_EXCEPTION_CATCH_ALL2
+      }
+
+      CacheFactory^ CacheFactory::SetAuthInitialize(IAuthInitialize^ authInitialize)
+      {
+        	_GF_MG_EXCEPTION_TRY2
+
+          try
+          {
+            std::shared_ptr<ManagedAuthInitializeGeneric> nativeAuthInitialize;
+            if (authInitialize != nullptr)
+            {
+              nativeAuthInitialize.reset(new ManagedAuthInitializeGeneric(authInitialize));
+            }
+            m_nativeptr->get()->setAuthInitialize( nativeAuthInitialize);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+          return this;
+
+			  _GF_MG_EXCEPTION_CATCH_ALL2
+      }
+
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
 
-}

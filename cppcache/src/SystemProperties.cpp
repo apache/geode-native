@@ -160,8 +160,6 @@ const int32_t DefaultRedundancyMonitorInterval = 10;
 const int32_t DefaultNotifyAckInterval = 1;
 const int32_t DefaultNotifyDupCheckLife = 300;
 const char DefaultSecurityPrefix[] = "security-";
-const char DefaultAuthIniLoaderFactory[] = "security-client-auth-factory";
-const char DefaultAuthIniLoaderLibrary[] = "security-client-auth-library";
 const char DefaultSecurityClientDhAlgo[] ATTR_UNUSED = "";
 const char DefaultSecurityClientKsPath[] ATTR_UNUSED = "";
 const uint32_t DefaultThreadPoolSize = ACE_OS::num_processors() * 2;
@@ -173,7 +171,6 @@ const bool DefaultReadTimeoutUnitInMillis = false;
 const bool DefaultOnClientDisconnectClearPdxTypeIds = false;
 }  // namespace
 
-LibraryAuthInitializeFn SystemProperties::managedAuthInitializeFn = nullptr;
 
 SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
                                    const char* configFile)
@@ -202,11 +199,8 @@ SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
       m_redundancyMonitorInterval(DefaultRedundancyMonitorInterval),
       m_notifyAckInterval(DefaultNotifyAckInterval),
       m_notifyDupCheckLife(DefaultNotifyDupCheckLife),
-      m_AuthIniLoaderLibrary(nullptr),
-      m_AuthIniLoaderFactory(nullptr),
       m_securityClientDhAlgo(nullptr),
       m_securityClientKsPath(nullptr),
-      m_authInitializer(nullptr),
       m_durableClientId(nullptr),
       m_durableTimeout(DefaultDurableTimeout),
       m_connectTimeout(DefaultConnectTimeout),
@@ -287,16 +281,9 @@ SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
     propertiesPtr->foreach (processPropsVisitor);
   }
 
-  m_AuthIniLoaderLibrary =
-      m_securityPropertiesPtr->find(DefaultAuthIniLoaderLibrary);
-  m_AuthIniLoaderFactory =
-      m_securityPropertiesPtr->find(DefaultAuthIniLoaderFactory);
   m_securityClientDhAlgo = m_securityPropertiesPtr->find(SecurityClientDhAlgo);
   m_securityClientKsPath = m_securityPropertiesPtr->find(SecurityClientKsPath);
 
-  // Deleting inorder to prevent it from sending to Server.
-  m_securityPropertiesPtr->remove(DefaultAuthIniLoaderLibrary);
-  m_securityPropertiesPtr->remove(DefaultAuthIniLoaderFactory);
 }
 
 SystemProperties::~SystemProperties() {
@@ -873,12 +860,6 @@ void SystemProperties::logSettings() {
   settings += "\n  redundancy-monitor-interval = ";
   settings += buf;
 
-  settings += "\n  security-client-auth-factory = ";
-  settings += authInitFactory();
-
-  settings += "\n  security-client-auth-library = ";
-  settings += authInitLibrary();
-
   settings += "\n  security-client-dhalgo = ";
   settings += securityClientDhAlgo();
 
@@ -924,27 +905,3 @@ void SystemProperties::logSettings() {
   LOGCONFIG(settings.c_str());
 }
 
-AuthInitializePtr SystemProperties::getAuthLoader() {
-  if ((m_authInitializer == nullptr) && (m_AuthIniLoaderLibrary != nullptr &&
-                                         m_AuthIniLoaderFactory != nullptr)) {
-    if (managedAuthInitializeFn != nullptr &&
-        strchr(m_AuthIniLoaderFactory->asChar(), '.') != nullptr) {
-      // this is a managed library
-      m_authInitializer.reset((*managedAuthInitializeFn)(
-          m_AuthIniLoaderLibrary->asChar(), m_AuthIniLoaderFactory->asChar()));
-    } else {
-      AuthInitialize* (*funcptr)();
-      funcptr = reinterpret_cast<AuthInitialize* (*)()>(getFactoryFunc(
-          m_AuthIniLoaderLibrary->asChar(), m_AuthIniLoaderFactory->asChar()));
-      if (funcptr == nullptr) {
-        LOGERROR("Failed to acquire handle to AuthInitialize library");
-        return nullptr;
-      }
-      AuthInitialize* p = funcptr();
-      m_authInitializer.reset(p);
-    }
-  } else if (m_authInitializer == nullptr) {
-    LOGFINE("No AuthInitialize library or factory configured");
-  }
-  return m_authInitializer;
-}

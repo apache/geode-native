@@ -14,10 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "ThinClientDistributionManager.hpp"
+
 #include <algorithm>
-#include "ThinClientRegion.hpp"
+
 #include <geode/SystemProperties.hpp>
+#include <geode/AuthInitialize.hpp>
+
+#include "ThinClientDistributionManager.hpp"
+#include "ThinClientRegion.hpp"
 #include "DistributedSystemImpl.hpp"
 
 using namespace apache::geode::client;
@@ -306,12 +310,12 @@ bool ThinClientDistributionManager::postFailoverAction(TcrEndpoint* endpoint) {
 }
 
 PropertiesPtr ThinClientDistributionManager::getCredentials(TcrEndpoint* ep) {
-  const auto& distributedSystem =
-      m_connManager.getCacheImpl()->getDistributedSystem();
+  auto cacheImpl = m_connManager.getCacheImpl();
+  const auto& distributedSystem = cacheImpl->getDistributedSystem();
   const auto& tmpSecurityProperties =
       distributedSystem.getSystemProperties().getSecurityProperties();
 
-  if (const auto& authInitialize = distributedSystem.m_impl->getAuthLoader()) {
+  if (const auto& authInitialize = cacheImpl->getAuthInitialize()) {
     LOGFINER(
         "ThinClientDistributionManager::getCredentials: acquired handle to "
         "authLoader, "

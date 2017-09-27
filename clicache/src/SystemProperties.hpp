@@ -312,15 +312,6 @@ namespace Apache
         }
 
         /// <summary>
-        /// True if client needs to be authenticated
-        /// </summary>
-        /// <returns>true if enabled</returns>
-        property bool IsSecurityOn
-        {
-          bool get();
-        }
-
-        /// <summary>
         /// Returns all the security properties
         /// </summary>
         /// <returns>the security properties</returns>

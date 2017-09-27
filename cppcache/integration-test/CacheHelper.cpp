@@ -144,6 +144,27 @@ CacheHelper::CacheHelper(const PropertiesPtr& configPtr,
 }
 
 CacheHelper::CacheHelper(const bool isThinclient,
+                         const AuthInitializePtr& authInitialize,
+                         const PropertiesPtr& configPtr) {
+  PropertiesPtr pp = configPtr;
+  if (pp == nullptr) {
+    pp = Properties::create();
+  }
+  try {
+    LOG(" in cachehelper before createCacheFactory");
+    cachePtr = CacheFactory::createCacheFactory(pp)
+                   ->setAuthInitialize(authInitialize)
+                   ->create();
+    m_doDisconnect = false;
+  } catch (const Exception& excp) {
+    LOG("Geode exception while creating cache, logged in following line");
+    LOG(excp.getMessage());
+  } catch (...) {
+    LOG("Throwing exception while creating cache....");
+  }
+}
+
+CacheHelper::CacheHelper(const bool isThinclient,
                          const PropertiesPtr& configPtr,
                          const bool noRootRegion) {
   PropertiesPtr pp = configPtr;
@@ -1268,29 +1289,17 @@ void CacheHelper::initServer(int instance, const char* xml,
   currDir += sname;
 
   if (xml != nullptr) {
-    /*
-    xmlFile = path;
-    xmlFile += PATH_SEP;
-    xmlFile += xml;
-    */
     xmlFile = xml;
   }
 
   std::string xmlFile_new;
   printf(" xml file name = %s \n", xmlFile.c_str());
   CacheHelper::createDuplicateXMLFile(xmlFile_new, xmlFile);
-  // sprintf( tmp, "%d.xml", portNum );
-  // xmlFile += tmp;
+
   xmlFile = xmlFile_new;
 
   printf("  creating dir = %s \n", sname.c_str());
   ACE_OS::mkdir(sname.c_str());
-
-  //    sprintf( cmd, "/bin/cp %s/../test.geode.properties
-  //    %s/",currDir.c_str(),
-  // currDir.c_str()  );
-  // LOG( cmd );
-  // ACE_OS::system( cmd );
 
   sprintf(cmd, "%s/bin/%s stop server --dir=%s 2>&1", gfjavaenv, GFSH,
           currDir.c_str());

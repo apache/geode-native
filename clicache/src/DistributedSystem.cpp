@@ -110,14 +110,6 @@ namespace apache
                                    const char* factoryFunctionName);
       };
 
-      class ManagedAuthInitializeGeneric
-        : public AuthInitialize
-      {
-      public:
-
-        static AuthInitialize* create(const char* assemblyPath,
-                                      const char* factoryFunctionName);
-      };
     }  // namespace client
   }  // namespace geode
 }  // namespace apache
@@ -303,9 +295,6 @@ namespace Apache
 
         //if (!native::DistributedSystem::isConnected())
         //{
-          // Set the Generic ManagedAuthInitialize factory function
-          native::SystemProperties::managedAuthInitializeFn =
-            native::ManagedAuthInitializeGeneric::create;
 
           // Set the Generic ManagedCacheLoader/Listener/Writer factory functions.
           native::CacheXmlParser::managedCacheLoaderFn =
