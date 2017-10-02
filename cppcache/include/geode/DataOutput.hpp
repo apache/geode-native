@@ -336,11 +336,8 @@ class CPPCACHE_EXPORT DataOutput {
   }
 
   /**
-   * Writes the given given string using java modified UTF-8 encoding
-   * supporting maximum encoded length of 64K (i.e. unsigned 16-bit integer).
-   * @remarks The string will be truncated if greater than the maximum
-   *   permissible length of 64K. Use <code>writeUTFHuge</code> to write
-   *   strings of length larger than this.
+   * Writes the given string using java modified UTF-8 encoding
+   * supporting maximum 32-bit unsigned integer.
    *
    * @param value the C string to be written
    *
