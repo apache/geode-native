@@ -3269,8 +3269,13 @@ bool ThinClientRegion::executeFunctionSH(
     threadPool->perform(worker);
     feWorkers.push_back(worker);
   }
+  LOGERROR("ThinClientRegion::executeFunctionSH worker count = %d", feWorkers.size());
 
-  for (const auto& worker : feWorkers) {
+  GfErrType abortError = GF_NOERR;
+
+  while ( !feWorkers.empty()) {
+    std::vector<OnRegionFunctionExecution*>::iterator iter = feWorkers.begin();
+    OnRegionFunctionExecution* worker = *iter;
     auto err = worker->getResult();
     auto currentReply = worker->getReply();
 
@@ -3328,19 +3333,22 @@ bool ThinClientRegion::executeFunctionSH(
           LOGWARN("ThinClientRegion::executeFunctionSH: Unexpected Exception");
         }
 
-        for (std::vector<OnRegionFunctionExecution*>::iterator iter2 =
-                 feWorkers.begin();
-             iter2 != feWorkers.end(); ++iter2) {
-          OnRegionFunctionExecution* worker = *iter2;
-          delete worker;
+        if(abortError == GF_NOERR) {
+          abortError = err;
         }
-        LOGDEBUG(
-            "ThinClientRegion::executeFunctionSH: Cleaned out the workers ");
-
-        GfErrTypeToException("ExecuteOnRegion:", err);
       }
     }
+    LOGERROR("ThinClientRegion::executeFunctionSH worker count = %d", feWorkers.size());
+
     delete worker;
+    feWorkers.erase(iter);
+    LOGERROR("ThinClientRegion::executeFunctionSH worker count = %d", feWorkers.size());
+
+  }
+  LOGERROR("ThinClientRegion::executeFunctionSH exited loop");
+
+  if (abortError != GF_NOERR) {
+    GfErrTypeToException("ExecuteOnRegion:", abortError);
   }
   return reExecute;
 }
