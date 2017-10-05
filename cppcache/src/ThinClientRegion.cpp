@@ -3198,7 +3198,7 @@ bool ThinClientRegion::executeFunctionSH(
 
   GfErrType abortError = GF_NOERR;
 
-  for ( auto iter = std::begin(feWorkers); iter != std::end(feWorkers);) {
+  for (auto iter = std::begin(feWorkers); iter != std::end(feWorkers);) {
     auto worker = *iter;
     auto err = worker->getResult();
     auto currentReply = worker->getReply();
@@ -3257,7 +3257,7 @@ bool ThinClientRegion::executeFunctionSH(
           LOGWARN("ThinClientRegion::executeFunctionSH: Unexpected Exception");
         }
 
-        if(abortError == GF_NOERR) {
+        if (abortError == GF_NOERR) {
           abortError = err;
         }
       }
