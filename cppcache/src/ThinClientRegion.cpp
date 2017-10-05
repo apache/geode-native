@@ -2774,8 +2774,7 @@ GfErrType ThinClientRegion::clientNotificationHandler(TcrMessage& msg) {
 
 GfErrType ThinClientRegion::handleServerException(const char* func,
                                                   const char* exceptionMsg) {
-  // LOGERROR("%s: An exception (%s) happened at remote server.", func,
-  //			exceptionMsg);
+
   GfErrType error = GF_NOERR;
   setTSSExceptionMessage(exceptionMsg);
   if (strstr(exceptionMsg,
@@ -2992,79 +2991,6 @@ void ThinClientRegion::releaseGlobals(bool isFailover) {
   }
 }
 
-// CacheableVectorPtr ThinClientRegion::executeFunction(const char* func,
-//		const CacheablePtr& args, CacheableVectorPtr routingObj,
-//		uint8_t getResult, ResultCollectorPtr rc, int32_t retryAttempts,
-//		uint32_t timeout) {
-//	int32_t attempt = 0;
-//	CacheableHashSetPtr failedNodes = nullptr;
-//
-//	//CacheableStringArrayPtr csArray = poolDM->getServers();
-//
-//	//if (csArray != nullptr && csArray->length() != 0) {
-//	//	for (int i = 0; i < csArray->length(); i++) {
-//	//		CacheableStringPtr cs = csArray[i];
-//	//		TcrEndpoint *ep = nullptr;
-// //     /*
-//	//		std::string endpointStr =
-// Utils::convertHostToCanonicalForm(
-//	//				cs->asChar());
-// //         */
-//	//		ep = poolDM->addEP(cs->asChar());
-//	//	}
-//	//}
-//
-//	//if pools retry attempts are not set then retry once on all available
-// endpoints
-//	if (retryAttempts == -1) {
-//		retryAttempts = (int32_t) m_tcrdm->getNumberOfEndPoints();
-//	}
-//
-//	while (attempt <= retryAttempts) {
-//		std::string funcName(func);
-//		TcrMessage msg(TcrMessage::EXECUTE_REGION_FUNCTION, funcName,
-//				m_fullPath, args, routingObj, getResult,
-// failedNodes,
-// m_tcrdm);
-//		TcrMessage reply(true, m_tcrdm);
-//		ChunkedFunctionExecutionResponsePtr
-//				resultCollector(new
-// ChunkedFunctionExecutionResponse(reply,
-//						(getResult & 2), rc));
-//		reply.setChunkedResultHandler(resultCollector);
-//		reply.setTimeout(timeout);
-//
-//		GfErrType err = GF_NOERR;
-//		err = m_tcrdm->sendSyncRequest(msg, reply, !(getResult & 1));
-//		if (err == GF_NOERR && (reply.getMessageType() ==
-// TcrMessage::EXCEPTION
-//				|| reply.getMessageType()
-//						==
-// TcrMessage::EXECUTE_REGION_FUNCTION_ERROR)) {
-//			err = ThinClientRegion::handleServerException("Execute",
-//					reply.getException());
-//		}
-//
-//		if (ThinClientBaseDM::isFatalClientError(err)) {
-//			GfErrTypeToException("ExecuteOnRegion:", err);
-//		} else if (err != GF_NOERR) {
-//			if (getResult & 1) {
-//				resultCollector->reset();
-//				rc->clearResults();
-//				failedNodes = reply.getFailedNode();
-//				attempt++;
-//				continue;
-//			} else {
-//				GfErrTypeToException("ExecuteOnRegion:", err);
-//			}
-//		}
-//		CacheableVectorPtr values =
-//				resultCollector->getFunctionExecutionResults();
-//		return values;
-//	}
-//	return nullptr;
-//}
-
 void ThinClientRegion::executeFunction(const char* func,
                                        const CacheablePtr& args,
                                        CacheableVectorPtr routingObj,
@@ -3255,27 +3181,25 @@ bool ThinClientRegion::executeFunctionSH(
   auto resultCollectorLock = std::make_shared<ACE_Recursive_Thread_Mutex>();
   const auto& userAttr =
       TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
-  std::vector<OnRegionFunctionExecution*> feWorkers;
+  std::vector<std::shared_ptr<OnRegionFunctionExecution>> feWorkers;
   auto* threadPool =
       CacheRegionHelper::getCacheImpl(getCache().get())->getThreadPool();
 
   for (const auto& locationIter : *locationMap) {
     const auto& serverLocation = locationIter.first;
     const auto& routingObj = locationIter.second;
-    auto worker = new OnRegionFunctionExecution(
+    auto worker = std::make_shared<OnRegionFunctionExecution>(
         func, this, args, routingObj, getResult, timeout,
         dynamic_cast<ThinClientPoolDM*>(m_tcrdm), resultCollectorLock, rc,
         userAttr, false, serverLocation, allBuckets);
-    threadPool->perform(worker);
+    threadPool->perform(worker.get());
     feWorkers.push_back(worker);
   }
-  LOGERROR("ThinClientRegion::executeFunctionSH worker count = %d", feWorkers.size());
 
   GfErrType abortError = GF_NOERR;
 
-  while ( !feWorkers.empty()) {
-    std::vector<OnRegionFunctionExecution*>::iterator iter = feWorkers.begin();
-    OnRegionFunctionExecution* worker = *iter;
+  for (auto iter = std::begin(feWorkers); iter != std::end(feWorkers);) {
+    auto worker = *iter;
     auto err = worker->getResult();
     auto currentReply = worker->getReply();
 
@@ -3333,19 +3257,14 @@ bool ThinClientRegion::executeFunctionSH(
           LOGWARN("ThinClientRegion::executeFunctionSH: Unexpected Exception");
         }
 
-        if(abortError == GF_NOERR) {
+        if (abortError == GF_NOERR) {
           abortError = err;
         }
       }
     }
-    LOGERROR("ThinClientRegion::executeFunctionSH worker count = %d", feWorkers.size());
 
-    delete worker;
-    feWorkers.erase(iter);
-    LOGERROR("ThinClientRegion::executeFunctionSH worker count = %d", feWorkers.size());
-
+    iter = feWorkers.erase(iter);
   }
-  LOGERROR("ThinClientRegion::executeFunctionSH exited loop");
 
   if (abortError != GF_NOERR) {
     GfErrTypeToException("ExecuteOnRegion:", abortError);
@@ -3820,12 +3739,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
              partLen, objectlen, memberIdLen);
     LOGDEBUG("function input->getBytesRemaining() = %d ",
              input->getBytesRemaining());
-    // is there any way to assert it, as after that we need to read security
-    // header
-    /*if(input->getBytesRemaining() !=  0) {
-      LOGERROR("Function response not read all bytes");
-      throw IllegalStateException("Function Execution didn't read all bytes");
-    }*/
+
   } else {
     value = CacheableString::create("Function exception result.");
   }
