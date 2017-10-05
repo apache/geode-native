@@ -151,6 +151,7 @@ namespace Apache.Geode.Client.FwkClient
           catch (TargetInvocationException tie)
           {
             Util.Log(Util.LogLevel.Error, tie.InnerException.StackTrace.ToString());
+            throw tie;
           }
         }
         else {
