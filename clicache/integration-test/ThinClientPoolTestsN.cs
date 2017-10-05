@@ -263,9 +263,9 @@ namespace Apache.Geode.Client.UnitTests
       Assert.AreEqual("test_pool_2", poolNameRegion2);
       Assert.AreEqual("test_pool_2", poolNameSubRegion);
 
-      Pool poolOfRegion1 = CacheHelper.DCache.GetPoolManager().Find(poolNameRegion1);
-      Pool poolOfRegion2 = CacheHelper.DCache.GetPoolManager().Find(poolNameRegion2);
-      Pool poolOfSubRegion = CacheHelper.DCache.GetPoolManager().Find(poolNameSubRegion);
+      Pool poolOfRegion1 = cache.GetPoolManager().Find(poolNameRegion1);
+      Pool poolOfRegion2 = cache.GetPoolManager().Find(poolNameRegion2);
+      Pool poolOfSubRegion = cache.GetPoolManager().Find(poolNameSubRegion);
 
       string[] locators = new string[1] { "localhost:" + CacheHelper.LOCATOR_PORT_1 };
       string[] servers = new string[2] { "localhost:" + CacheHelper.HOST_PORT_1, "localhost:" + CacheHelper.HOST_PORT_2 };
