@@ -252,27 +252,27 @@ namespace Apache
         return (Apache::Geode::Client::Serializable^)CacheableStringArray::Create(value);
       }
 
-      System::Int32 Serializable::GetPDXIdForType(const char* poolName, IGeodeSerializable^ pdxType, const native::Cache* cache)
+      System::Int32 Serializable::GetPDXIdForType(const char* poolName, IGeodeSerializable^ pdxType, Cache^ cache)
       {
-        native::CacheablePtr kPtr(SafeMSerializableConvertGeneric(pdxType));
-        return CacheRegionHelper::getCacheImpl(cache)->getSerializationRegistry()->GetPDXIdForType(cache->getPoolManager().find(poolName), kPtr);
+        native::CacheablePtr kPtr(SafeMSerializableConvertGeneric(pdxType, cache));
+        return CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetPDXIdForType(cache->GetNative()->getPoolManager().find(poolName), kPtr);
       }
 
-      IGeodeSerializable^ Serializable::GetPDXTypeById(const char* poolName, System::Int32 typeId, const native::Cache* cache)
+      IGeodeSerializable^ Serializable::GetPDXTypeById(const char* poolName, System::Int32 typeId, Cache^ cache)
       {        
-        SerializablePtr sPtr = CacheRegionHelper::getCacheImpl(cache)->getSerializationRegistry()->GetPDXTypeById(cache->getPoolManager().find(poolName), typeId);
+        SerializablePtr sPtr = CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetPDXTypeById(cache->GetNative()->getPoolManager().find(poolName), typeId);
         return SafeUMSerializableConvertGeneric(sPtr);
       }
 
-      int Serializable::GetEnumValue(Internal::EnumInfo^ ei, const native::Cache* cache)
+      int Serializable::GetEnumValue(Internal::EnumInfo^ ei, Cache^ cache)
       {
-        native::CacheablePtr kPtr(SafeMSerializableConvertGeneric(ei));
-        return  CacheRegionHelper::getCacheImpl(cache)->getSerializationRegistry()->GetEnumValue(cache->getPoolManager().getAll().begin()->second, kPtr);
+        native::CacheablePtr kPtr(SafeMSerializableConvertGeneric(ei, cache));
+        return  CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetEnumValue(cache->GetNative()->getPoolManager().getAll().begin()->second, kPtr);
       }
 
-      Internal::EnumInfo^ Serializable::GetEnum(int val, const native::Cache* cache)
+      Internal::EnumInfo^ Serializable::GetEnum(int val, Cache^ cache)
       {
-        SerializablePtr sPtr = CacheRegionHelper::getCacheImpl(cache)->getSerializationRegistry()->GetEnum(cache->getPoolManager().getAll().begin()->second, val);
+        SerializablePtr sPtr = CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetEnum(cache->GetNative()->getPoolManager().getAll().begin()->second, val);
         return (Internal::EnumInfo^)SafeUMSerializableConvertGeneric(sPtr);
       }
 
@@ -508,14 +508,38 @@ namespace Apache
         return retVal();
       }
 
+      //class Wrap
+      //{
+      //public:
+      //  Wrap(Cache^ cache) : m_cache(cache){}
+
+      //  std::shared_ptr<native::PdxManagedCacheableKey> operator()(native::DataInput& dataInput)
+      //  {
+      //    auto obj = std::make_shared<native::PdxManagedCacheableKey>(m_cache);
+      //    obj->fromData(dataInput);
+      //    return obj;
+      //  }
+
+      //private:
+      //  gcroot<Cache^> m_cache;
+      //};
+
       void Serializable::RegisterPDXManagedCacheableKey(Cache^ cache)
       {
-        auto *cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
-        cacheImpl->getSerializationRegistry()->setPdxTypeHandler([](native::DataInput& dataInput){
-          auto obj = std::make_shared<native::PdxManagedCacheableKey>();
-          obj->fromData(dataInput);
-          return obj;
-        });
+        // TODO: globals ******************************** FIXME
+
+        //auto f = [](native::DataInput& dataInput, Cache^ cache){
+        //  auto obj = std::make_shared<native::PdxManagedCacheableKey>(cache);
+        //  obj->fromData(dataInput);
+        //  return obj;
+        //};
+
+        //auto cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
+        //cacheImpl->getSerializationRegistry()->setPdxTypeHandler([&cache](native::DataInput& dataInput){
+        //  auto obj = std::make_shared<native::PdxManagedCacheableKey>(cache);
+        //  obj->fromData(dataInput);
+        //  return obj;
+        //});
       }
 
       void Apache::Geode::Client::Serializable::RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod, Cache^ cache)
@@ -927,7 +951,7 @@ namespace Apache
       }
 
       generic<class TKey>
-      native::CacheableKeyPtr Serializable::GetUnmanagedValueGeneric(TKey key, native::Cache* cache)
+      native::CacheableKeyPtr Serializable::GetUnmanagedValueGeneric(TKey key, Cache^ cache)
       {
         //System::Type^ managedType = TKey::typeid;  
         if (key != nullptr) {
@@ -938,7 +962,7 @@ namespace Apache
       }
 
       generic<class TKey>
-      native::CacheableKeyPtr Serializable::GetUnmanagedValueGeneric(TKey key, bool isAciiChar, native::Cache* cache)
+      native::CacheableKeyPtr Serializable::GetUnmanagedValueGeneric(TKey key, bool isAciiChar, Cache^ cache)
       {
         //System::Type^ managedType = TKey::typeid;  
         if (key != nullptr) {
@@ -1058,14 +1082,14 @@ namespace Apache
 
       generic<class TKey>
       native::CacheableKeyPtr Serializable::GetUnmanagedValueGeneric(
-        Type^ managedType, TKey key, native::Cache* cache)
+        Type^ managedType, TKey key, Cache^ cache)
       {
         return GetUnmanagedValueGeneric(managedType, key, false, cache);
       }
 
       generic<class TKey>
       native::CacheableKeyPtr Serializable::GetUnmanagedValueGeneric(
-        Type^ managedType, TKey key, bool isAsciiChar, native::Cache* cache)
+        Type^ managedType, TKey key, bool isAsciiChar, Cache^ cache)
       {
         Byte typeId = Apache::Geode::Client::Serializable::GetManagedTypeMappingGeneric(managedType);
 

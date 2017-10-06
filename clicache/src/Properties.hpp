@@ -268,9 +268,9 @@ namespace Apache
           Apache::Geode::Client::IGeodeSerializable^ value)
         {
           TPropKey tpkey = Apache::Geode::Client::Serializable::
-            GetManagedValueGeneric<TPropKey>(SerializablePtr(SafeMSerializableConvertGeneric(key)));
+            GetManagedValueGeneric<TPropKey>(SerializablePtr(SafeMSerializableConvertGeneric(key, m_cache)));
           TPropValue tpvalue = Apache::Geode::Client::Serializable::
-            GetManagedValueGeneric<TPropValue>(SerializablePtr(SafeMSerializableConvertGeneric(value)));
+            GetManagedValueGeneric<TPropValue>(SerializablePtr(SafeMSerializableConvertGeneric(value, m_cache)));
           m_visitor->Invoke(tpkey, tpvalue);
         }
 
@@ -283,7 +283,8 @@ namespace Apache
       private:
 
         Apache::Geode::Client::PropertyVisitorGeneric<TPropKey, TPropValue>^ m_visitor;
-
+        // TODO globals ******************** how should m_cache get populated??
+        Apache::Geode::Client::Cache^ m_cache;
       };
 
   /*    ref class PropertiesFactory {

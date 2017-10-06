@@ -44,7 +44,8 @@ namespace Apache
           
           auto nativeRegion = ((Region<TKey, TValue>^)rg)->GetNative();
           auto execution = native::FunctionService::onRegion(nativeRegion);
-          return Execution<TResult>::Create( execution, nullptr );
+          auto cache = dynamic_cast<Cache^>(rg->RegionService);
+          return Execution<TResult>::Create( execution, nullptr, cache );
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -55,7 +56,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
           auto nativeptr = native::FunctionService::onServer(pl->GetNative());
-          return Execution<TResult>::Create( nativeptr , nullptr);
+          return Execution<TResult>::Create( nativeptr , nullptr, pl->Cache);
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -66,7 +67,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
           auto nativeptr = native::FunctionService::onServers(pl->GetNative());
-          return Execution<TResult>::Create( nativeptr , nullptr);
+          return Execution<TResult>::Create( nativeptr , nullptr, pl->Cache);
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -79,13 +80,14 @@ namespace Apache
           if(auto realCache = dynamic_cast<Cache^>(cache))
           {
             auto nativeptr = native::FunctionService::onServer(realCache->GetNative());
-            return Execution<TResult>::Create( nativeptr, nullptr );
+            return Execution<TResult>::Create( nativeptr, nullptr, realCache );
           }
           else
           {
             auto authCache = dynamic_cast<AuthenticatedCache^>(cache);
             auto nativeptr = native::FunctionService::onServer(authCache->GetNative());
-            return Execution<TResult>::Create( nativeptr, nullptr );
+            // TODO globals *****************
+            return Execution<TResult>::Create( nativeptr, nullptr, nullptr );
           }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
@@ -99,13 +101,14 @@ namespace Apache
           if(auto realCache = dynamic_cast<Cache^>(cache))
           {
             auto nativeptr = native::FunctionService::onServers(realCache->GetNative());
-            return Execution<TResult>::Create( nativeptr, nullptr );
+            return Execution<TResult>::Create( nativeptr, nullptr, realCache );
           }
           else
           {
             auto authCache = dynamic_cast<AuthenticatedCache^>(cache);
             auto nativeptr = native::FunctionService::onServers(authCache->GetNative());
-            return Execution<TResult>::Create( nativeptr, nullptr );
+            // TODO globals *****************
+            return Execution<TResult>::Create( nativeptr, nullptr, nullptr );
           }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */

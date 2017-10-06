@@ -16,13 +16,11 @@
  */
 
 #pragma once
-#include "begin_native.hpp"
-#include "CacheRegionHelper.hpp"
-#include "CacheImpl.hpp"
-#include "end_native.hpp"
+
 #include "PdxInstanceFactoryImpl.hpp"
 #include "PdxInstanceImpl.hpp"
 #include "DotNetTypes.hpp"
+
 using namespace System::Text;
 
 namespace Apache
@@ -34,7 +32,7 @@ namespace Apache
 
       namespace Internal
       {
-        PdxInstanceFactoryImpl::PdxInstanceFactoryImpl(String^ className, native::Cache* cache)
+        PdxInstanceFactoryImpl::PdxInstanceFactoryImpl(String^ className, Cache^ cache)
         {
           if (className == nullptr)
             throw gcnew IllegalStateException(
@@ -53,7 +51,7 @@ namespace Apache
               "The IPdxInstanceFactory.Create() method can only be called once.");
           }
           //need to get typeid;
-          IPdxInstance^ pi = gcnew PdxInstanceImpl(m_FieldVsValues, m_pdxType, &CacheRegionHelper::getCacheImpl(m_cache)->getCachePerfStats(), m_cache);
+          IPdxInstance^ pi = gcnew PdxInstanceImpl(m_FieldVsValues, m_pdxType, m_cache);
           m_created = true;
           return pi;
         }

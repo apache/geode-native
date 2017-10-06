@@ -69,6 +69,7 @@ namespace Apache
       {
         try
         {
+          // TODO globals *******************
           native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key, nullptr);
           auto nativeptr = m_nativeptr->get()->find(keyptr);
           return Serializable::GetManagedValueGeneric<TPropValue>(nativeptr);
@@ -82,6 +83,7 @@ namespace Apache
       generic<class TPropKey, class TPropValue>
       void Properties<TPropKey, TPropValue>::Insert( TPropKey key, TPropValue value )
       {
+        // TODO globals *******************
         native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key, true, nullptr);
         native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TPropValue>(value, true, nullptr);
 

@@ -41,7 +41,7 @@ namespace apache
         try {
           System::UInt32 pos = (int)output.getBufferLength();
           //Apache::Geode::Client::Log::Debug("ManagedCacheableKeyGeneric::toData");      
-          Apache::Geode::Client::DataOutput mg_output(&output, true);
+          Apache::Geode::Client::DataOutput mg_output(&output, true, m_cache);
           m_managedptr->ToData(%mg_output);
           //this will move the cursor in c++ layer
           mg_output.WriteBytesToUMDataOutput();
@@ -61,7 +61,7 @@ namespace apache
       {
         try {
           int pos = input.getBytesRead();
-          Apache::Geode::Client::DataInput mg_input(&input, true, input.getCache());
+          Apache::Geode::Client::DataInput mg_input(&input, true, m_cache);
           m_managedptr->FromData(%mg_input);
 
           //this will move the cursor in c++ layer

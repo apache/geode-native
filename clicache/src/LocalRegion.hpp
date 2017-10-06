@@ -231,10 +231,10 @@ namespace Apache
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
         //generic<class TKey, class TValue>
-        inline static IRegion<TKey, TValue>^ Create( native::RegionPtr nativeptr )
+        inline static IRegion<TKey, TValue>^ Create( native::RegionPtr nativeptr, Cache^ cache )
         {
           return __nullptr == nativeptr ? nullptr :
-            gcnew LocalRegion<TKey, TValue>( nativeptr );
+            gcnew LocalRegion<TKey, TValue>( nativeptr, cache );
         }
 
         std::shared_ptr<native::Region> GetNative()
@@ -246,16 +246,20 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline LocalRegion( native::RegionPtr nativeptr )
+        inline LocalRegion( native::RegionPtr nativeptr, Cache^ cache )
 				{
           m_nativeptr = gcnew native_shared_ptr<native::Region>(nativeptr);
+          m_cache = cache;
         }
 
         private:        
         inline apache::geode::client::SerializablePtr getRegionEntryValue(apache::geode::client::CacheableKeyPtr& key);
         bool AreValuesEqual(apache::geode::client::CacheablePtr& val1, apache::geode::client::CacheablePtr& val2);
 
-        native_shared_ptr<native::Region>^ m_nativeptr;   
+        native_shared_ptr<native::Region>^ m_nativeptr;
+
+        Cache^ m_cache;
+
       };
     }  // namespace Client
   }  // namespace Geode

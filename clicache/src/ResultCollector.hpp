@@ -38,6 +38,8 @@ namespace Apache
     {
      namespace native = apache::geode::client;
 
+     ref class Cache;
+
      generic<class TResult>
 	   interface class IResultCollector;
 
@@ -81,12 +83,14 @@ namespace Apache
         /// Internal constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline ResultCollector( native::ResultCollectorPtr nativeptr )
+        inline ResultCollector( native::ResultCollectorPtr nativeptr, Cache^ cache )
         {
            m_nativeptr = gcnew native_shared_ptr<native::ResultCollector>(nativeptr);
+           m_cache = cache;
         }
 
         native_shared_ptr<native::ResultCollector>^ m_nativeptr;
+        Cache^ m_cache;
       };
     }  // namespace Client
   }  // namespace Geode

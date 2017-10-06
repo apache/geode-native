@@ -64,7 +64,8 @@ namespace Apache
 
             virtual void init(const RegionPtr& region, PropertiesPtr& diskProperties)
             {
-              auto gRegion = Region<TKey, TValue>::Create(region);
+              // TODO globals ***************
+              auto gRegion = Region<TKey, TValue>::Create(region, nullptr);
               auto gProps = Properties<String^, String^>::Create(diskProperties);
               m_persistenceManager->Init(gRegion, gProps);
             }
@@ -72,6 +73,7 @@ namespace Apache
             virtual CacheablePtr read(const CacheableKeyPtr& key/*, void *& PersistenceInfo*/)
             {
               TKey gKey = Serializable::GetManagedValueGeneric<TKey>(key);
+              // TODO globals ***************
               return Serializable::GetUnmanagedValueGeneric<TValue>(m_persistenceManager->Read(gKey), nullptr);
             }
             

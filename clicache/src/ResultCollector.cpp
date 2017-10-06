@@ -40,7 +40,7 @@ namespace Apache
 
           try
           {
-            auto result = std::shared_ptr<native::Cacheable>(SafeGenericMSerializableConvert((IGeodeSerializable^)rs, nullptr));
+            auto result = std::shared_ptr<native::Cacheable>(SafeGenericMSerializableConvert((IGeodeSerializable^)rs, m_cache));
             m_nativeptr->get()->addResult(result);
           }
           finally

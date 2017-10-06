@@ -62,8 +62,8 @@ namespace Apache
           bool                   m_isVarLenFieldAdded;
           bool									 m_noJavaClass;
 
-          void initRemoteToLocal();
-          void initLocalToRemote();
+          void initRemoteToLocal(Cache^ cache);
+          void initLocalToRemote(Cache^ cache);
           //first has more fields than second
           PdxType^ isContains(PdxType^ first, PdxType^ second);
           PdxType^ clone();
@@ -159,8 +159,8 @@ namespace Apache
             m_otherVersions->Add(otherVersion);
           }
 
-          array<int>^ GetLocalToRemoteMap();
-          array<int>^ GetRemoteToLocalMap();
+          array<int>^ GetLocalToRemoteMap(Cache^ cache);
+          array<int>^ GetRemoteToLocalMap(Cache^ cache);
           property Int32 NumberOfVarLenFields
           {
             Int32 get(){ return m_numberOfVarLenFields; }
@@ -186,7 +186,7 @@ namespace Apache
           }
           void AddFixedLengthTypeField(String^ fieldName, String^ className, Byte typeId, Int32 size);
           void AddVariableLengthTypeField(String^ fieldName, String^ className, Byte typeId);
-          void InitializeType();
+          void InitializeType(Cache^ cache);
           PdxType^ MergeVersion(PdxType^ otherVersion);
           Int32 GetFieldPosition(String^ fieldName, System::Byte* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen);
           Int32 GetFieldPosition(Int32 fieldIdx, System::Byte* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen);

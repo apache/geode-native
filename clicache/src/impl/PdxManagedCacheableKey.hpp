@@ -60,17 +60,19 @@ namespace apache
       private:
         int m_hashcode;
         int m_objectSize;
+        gcroot<Apache::Geode::Client::Cache^> m_cache;
+
       public:
 
-        inline PdxManagedCacheableKey()
-          : Delta(nullptr), m_managedptr(nullptr), m_hashcode(0), m_objectSize(0), m_managedDeltaptr(nullptr)
+        inline PdxManagedCacheableKey(Apache::Geode::Client::Cache^ cache)
+          : Delta(nullptr), m_managedptr(nullptr), m_cache(cache), m_hashcode(0), m_objectSize(0), m_managedDeltaptr(nullptr)
         {
 
         }
 
         inline PdxManagedCacheableKey(
-          Apache::Geode::Client::IPdxSerializable^ managedptr, int hashcode)
-          :Delta(nullptr), m_managedptr(managedptr), m_objectSize(0) {
+          Apache::Geode::Client::IPdxSerializable^ managedptr, int hashcode, Apache::Geode::Client::Cache^ cache)
+          :Delta(nullptr), m_managedptr(managedptr), m_cache(cache), m_objectSize(0) {
           m_hashcode = hashcode;
           m_managedDeltaptr = dynamic_cast<Apache::Geode::Client::IGeodeDelta^>(managedptr);
         }
@@ -81,8 +83,8 @@ namespace apache
         /// The managed object.
         /// </param>
         inline PdxManagedCacheableKey(
-          Apache::Geode::Client::IPdxSerializable^ managedptr)
-          : Delta(nullptr), m_managedptr(managedptr), m_objectSize(0) {
+          Apache::Geode::Client::IPdxSerializable^ managedptr, Apache::Geode::Client::Cache^ cache)
+          : Delta(nullptr), m_managedptr(managedptr), m_cache(cache), m_objectSize(0) {
           m_hashcode = 0;//it can be zero while initializing the object
           m_managedDeltaptr = dynamic_cast<Apache::Geode::Client::IGeodeDelta^>(managedptr);
         }
@@ -175,7 +177,8 @@ namespace apache
 
         static Serializable* CreateDeserializable()
         {
-          return new PdxManagedCacheableKey();
+          throw "Not implemented";
+          //return new PdxManagedCacheableKey();
         }
       private:
 

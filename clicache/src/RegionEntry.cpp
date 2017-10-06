@@ -61,7 +61,8 @@ namespace Apache
       {
         try
         {
-          return Apache::Geode::Client::Region<TKey, TValue>::Create(m_nativeptr->get()->getRegion());
+          // TODO globals *****************
+          return Apache::Geode::Client::Region<TKey, TValue>::Create(m_nativeptr->get()->getRegion(), nullptr);
         }
         finally
         {

@@ -108,9 +108,7 @@ namespace Apache
         _GF_MG_EXCEPTION_CATCH_ALL2
         finally {
           GC::KeepAlive(m_nativeptr);
-					Apache::Geode::Client::Internal::PdxTypeRegistry::PdxIgnoreUnreadFields = pdxIgnoreUnreadFields; 
-          Apache::Geode::Client::Internal::PdxTypeRegistry::PdxReadSerialized = pdxReadSerialized; 
-          DistributedSystem::releaseDisconnectLock();
+           DistributedSystem::releaseDisconnectLock();
         }
       }
    

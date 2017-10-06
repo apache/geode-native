@@ -427,10 +427,10 @@ namespace Apache
       /// <returns>
       /// The managed wrapper object; null if the native pointer is null.
       /// </returns>
-      inline static RegionFactory^ Create(std::unique_ptr<native::RegionFactory>& nativeptr)
+      inline static RegionFactory^ Create(std::unique_ptr<native::RegionFactory>& nativeptr, Cache^ cache)
       {
           return __nullptr == nativeptr ? nullptr :
-            gcnew RegionFactory( nativeptr );
+            gcnew RegionFactory( nativeptr, cache );
       }
 
       native::RegionFactory& GetNative()
@@ -444,12 +444,14 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-      inline RegionFactory(std::unique_ptr<native::RegionFactory>& nativeptr)
+      inline RegionFactory(std::unique_ptr<native::RegionFactory>& nativeptr, Cache^ cache)
       {
         m_nativeptr = gcnew native_conditional_unique_ptr<native::RegionFactory>(std::move(nativeptr));
+        m_cache = cache;
       }
 
       native_conditional_unique_ptr<native::RegionFactory>^ m_nativeptr; 
+      Cache^ m_cache;
       };
     }  // namespace Client
   }  // namespace Geode

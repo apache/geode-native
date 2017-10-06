@@ -25,6 +25,7 @@
 
 #include "../IGeodeDelta.hpp"
 #include "../IGeodeSerializable.hpp"
+#include "Cache.hpp"
 
 
 using namespace System;
@@ -71,8 +72,8 @@ namespace apache
         /// The managed object.
         /// </param>
         inline ManagedCacheableDeltaGeneric(
-          Apache::Geode::Client::IGeodeDelta^ managedptr)
-          : Delta(nullptr), m_managedptr(managedptr)
+          Apache::Geode::Client::IGeodeDelta^ managedptr, Apache::Geode::Client::Cache^ cache)
+          : Delta(nullptr), m_managedptr(managedptr), m_cache(cache)
         {
           m_managedSerializableptr = dynamic_cast <Apache::Geode::Client::IGeodeSerializable^> (managedptr);
           m_classId = m_managedSerializableptr->ClassId;
@@ -179,6 +180,7 @@ namespace apache
         /// </summary>
         gcroot<Apache::Geode::Client::IGeodeDelta^> m_managedptr;
         gcroot<Apache::Geode::Client::IGeodeSerializable^> m_managedSerializableptr;
+        gcroot<Apache::Geode::Client::Cache^> m_cache;
         // Disable the copy and assignment constructors
         ManagedCacheableDeltaGeneric(const ManagedCacheableDeltaGeneric&);
         ManagedCacheableDeltaGeneric& operator = (const ManagedCacheableDeltaGeneric&);

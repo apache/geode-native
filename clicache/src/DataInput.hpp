@@ -40,6 +40,8 @@ namespace Apache
 
       interface class IGeodeSerializable;
 
+      ref class Cache;
+
       /// <summary>
       /// Provides operations for reading primitive data values, byte arrays,
       /// strings, <c>IGeodeSerializable</c> objects from a byte stream.
@@ -57,7 +59,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if the buffer is null
         /// </exception>
-        DataInput( array<Byte>^ buffer, const native::Cache* cache );
+        DataInput( array<Byte>^ buffer, Cache^ cache );
 
         /// <summary>
         /// Construct <c>DataInput</c> using a given length of an array of
@@ -72,7 +74,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if the buffer is null
         /// </exception>
-        DataInput( array<Byte>^ buffer, System::Int32 len, const native::Cache* cache );
+        DataInput( array<Byte>^ buffer, System::Int32 len, Cache^ cache );
 
         /// <summary>
         /// Dispose: frees the internal buffer.
@@ -191,6 +193,11 @@ namespace Apache
         property System::UInt32 BytesRemaining
         {
           System::UInt32 get();
+        }
+
+        property Apache::Geode::Client::Cache^ Cache
+        {
+          Apache::Geode::Client::Cache^ get() { return m_cache; }
         }
 
         /// <summary>
@@ -656,7 +663,7 @@ namespace Apache
         /// Internal constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline DataInput( apache::geode::client::DataInput* nativeptr, bool managedObject, const native::Cache* cache )
+        inline DataInput( apache::geode::client::DataInput* nativeptr, bool managedObject, Apache::Geode::Client::Cache^ cache )
         { 
           m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(nativeptr);
           m_ispdxDesrialization = false;
@@ -674,7 +681,7 @@ namespace Apache
           }
         }
 
-        DataInput( System::Byte* buffer, int size, const native::Cache* cache );
+        DataInput( System::Byte* buffer, int size, Apache::Geode::Client::Cache^ cache );
 
         bool IsManagedObject()
         {
@@ -694,7 +701,7 @@ namespace Apache
         /// </summary>
         bool m_ispdxDesrialization;
         bool m_isRootObjectPdx;
-        const native::Cache* m_cache;
+        Apache::Geode::Client::Cache^ m_cache;
         System::Byte* m_buffer;
         unsigned int m_bufferLength;
         int m_cursor;

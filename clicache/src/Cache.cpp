@@ -33,6 +33,8 @@
 #include "impl/SafeConvert.hpp"
 #include "impl/PdxTypeRegistry.hpp"
 #include "impl/PdxInstanceFactoryImpl.hpp"
+#include "CacheTransactionManager.hpp"
+#include "PoolManager.hpp"
 
 #pragma warning(disable:4091)
 
@@ -45,6 +47,12 @@ namespace Apache
     namespace Client
     {
       namespace native = apache::geode::client;
+
+      Cache::Cache(native::CachePtr nativeptr)
+      {
+        m_nativeptr = gcnew native_shared_ptr<native::Cache>(nativeptr);
+        m_pdxTypeRegistry = gcnew Apache::Geode::Client::Internal::PdxTypeRegistry(this);
+      }
 
       String^ Cache::Name::get( )
       {
@@ -160,7 +168,7 @@ namespace Apache
           ManagedString mg_path( path );
           try
           {
-            return Client::Region<TKey, TValue>::Create(m_nativeptr->get()->getRegion(mg_path.CharPtr));
+            return Client::Region<TKey, TValue>::Create(m_nativeptr->get()->getRegion(mg_path.CharPtr), this);
           }
           finally
           {
@@ -188,7 +196,7 @@ namespace Apache
         for( System::Int32 index = 0; index < vrr.size( ); index++ )
         {
           apache::geode::client::RegionPtr& nativeptr( vrr[ index ] );
-          rootRegions[ index ] = Client::Region<TKey, TValue>::Create( nativeptr );
+          rootRegions[ index ] = Client::Region<TKey, TValue>::Create( nativeptr, this );
         }
         return rootRegions;
       }
@@ -257,7 +265,7 @@ namespace Apache
           {
             return RegionFactory::Create(std::unique_ptr<native::RegionFactory>(
                 new native::RegionFactory(
-                    m_nativeptr->get()->createRegionFactory(preDefineRegionAttr))));
+                    m_nativeptr->get()->createRegionFactory(preDefineRegionAttr))), this);
           }
           finally
           {
@@ -349,24 +357,24 @@ namespace Apache
        IPdxInstanceFactory^ Cache::CreatePdxInstanceFactory(String^ className)
        {
     
-         return gcnew Internal::PdxInstanceFactoryImpl(className, (m_nativeptr->get()));
+         return gcnew Internal::PdxInstanceFactoryImpl(className, this);
 
        }
 
        DataInput^ Cache::CreateDataInput(array<Byte>^ buffer, System::Int32 len)
        {
-         return gcnew DataInput(buffer, len,  m_nativeptr->get());
+         return gcnew DataInput(buffer, len,  this);
        }
 
        
        DataInput^ Cache::CreateDataInput(array<Byte>^ buffer)
        {
-         return gcnew DataInput(buffer, m_nativeptr->get());
+         return gcnew DataInput(buffer, this);
        }
 
         DataOutput^ Cache::CreateDataOutput()
        {
-         return gcnew DataOutput( m_nativeptr->get());
+         return gcnew DataOutput(this);
        }
 
         PoolFactory^ Cache::GetPoolFactory()
@@ -376,7 +384,7 @@ namespace Apache
 
         PoolManager^ Cache::GetPoolManager()
         {
-          return gcnew PoolManager(m_nativeptr->get_shared_ptr()->getPoolManager());
+          return gcnew PoolManager(m_nativeptr->get_shared_ptr()->getPoolManager(), this);
         }
     }  // namespace Client
   }  // namespace Geode

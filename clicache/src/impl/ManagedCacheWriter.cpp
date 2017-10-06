@@ -297,8 +297,9 @@ namespace apache
       void ManagedCacheWriterGeneric::close(const RegionPtr& rp)
       {
         try {
+          // TODO globals **********************************
           Apache::Geode::Client::IRegion<Object^, Object^>^ mregion =
-            Apache::Geode::Client::Region<Object^, Object^>::Create(rp);
+            Apache::Geode::Client::Region<Object^, Object^>::Create(rp, nullptr);
 
           m_managedptr->Close(reinterpret_cast<Apache::Geode::Client::Region<Object^, Object^>^>(mregion));
         }

@@ -49,7 +49,7 @@ namespace Apache
             m_pdxType = pdxType;
             m_preserveData = preservedData;
             m_preserveDataIdx = 0;
-            m_remoteTolocalMap = m_pdxType->GetRemoteToLocalMap();
+            m_remoteTolocalMap = m_pdxType->GetRemoteToLocalMap(dataOutput->Cache);
             m_currentDataIdx = -1;
             m_pdxClassName = pdxType->PdxClassName;
             initialize();

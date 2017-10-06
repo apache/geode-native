@@ -38,6 +38,8 @@ namespace Apache
 
       namespace native = apache::geode::client;
 
+      ref class Cache;
+
       generic<class TKey, class TValue>
 			public ref class Region :
         public IRegion<TKey, TValue>,
@@ -258,7 +260,6 @@ namespace Apache
 
           virtual Object^ SelectValue( String^ predicate, System::UInt32 timeout );
 
-
       internal:
         /// <summary>
         /// Internal factory function to wrap a native object pointer inside
@@ -270,10 +271,10 @@ namespace Apache
         /// </returns>
         //generic<class TKey, class TValue>
         inline static IRegion<TKey, TValue>^
-        Create( native::RegionPtr nativeptr )
+        Create( native::RegionPtr nativeptr, Client::Cache^ cache )
         {
           return __nullptr == nativeptr ? nullptr :
-            gcnew Region<TKey, TValue>( nativeptr );
+            gcnew Region<TKey, TValue>( nativeptr, cache );
         }
 
         std::shared_ptr<native::Region> GetNative()
@@ -287,9 +288,10 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline Region( native::RegionPtr nativeptr )
+        inline Region( native::RegionPtr nativeptr, Client::Cache^ cache )
 				{
           m_nativeptr = gcnew native_shared_ptr<native::Region>(nativeptr);
+          m_cache = cache;
         }
 
         inline apache::geode::client::SerializablePtr get(apache::geode::client::CacheableKeyPtr& key, apache::geode::client::SerializablePtr& callbackArg);
@@ -298,10 +300,10 @@ namespace Apache
         bool isPoolInMultiuserMode();
         
         native_shared_ptr<native::Region>^ m_nativeptr;
+        Client::Cache^ m_cache;
 
       };
 
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
- //namespace 

@@ -49,12 +49,12 @@ namespace Apache
         
           for each(TFilter item in routingObj)
           {
-            rsptr->push_back(Serializable::GetUnmanagedValueGeneric<TFilter>( item, nullptr ));
+            rsptr->push_back(Serializable::GetUnmanagedValueGeneric<TFilter>( item, this->m_cache ));
           }
           
           try
           {
-            return Execution<TResult>::Create(m_nativeptr->get()->withFilter(rsptr), this->m_rc);
+            return Execution<TResult>::Create(m_nativeptr->get()->withFilter(rsptr), this->m_rc, this->m_cache);
           }
           finally
           {
@@ -74,8 +74,8 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
           try
           {
-            auto argsptr = Serializable::GetUnmanagedValueGeneric<TArgs>( args, nullptr );
-            return Execution<TResult>::Create(m_nativeptr->get()->withArgs(argsptr), this->m_rc);
+            auto argsptr = Serializable::GetUnmanagedValueGeneric<TArgs>( args, this->m_cache );
+            return Execution<TResult>::Create(m_nativeptr->get()->withArgs(argsptr), this->m_rc, this->m_cache);
           }
           finally
           {
@@ -96,7 +96,7 @@ namespace Apache
         }
         try
         {
-          return Execution<TResult>::Create( m_nativeptr->get()->withCollector(rcptr), rc);
+          return Execution<TResult>::Create( m_nativeptr->get()->withCollector(rcptr), rc, this->m_cache);
         }
         finally
         {
@@ -114,7 +114,7 @@ namespace Apache
           ManagedString mg_function(func);
           auto rc = m_nativeptr->get()->execute(mg_function.CharPtr, timeout);
           if (m_rc == nullptr)
-            return gcnew ResultCollector<TResult>(rc);
+            return gcnew ResultCollector<TResult>(rc, m_cache);
           else
             return m_rc;
         }

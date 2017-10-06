@@ -63,19 +63,21 @@ namespace Apache
           virtual apache::geode::client::CacheablePtr load( const apache::geode::client::RegionPtr& region,
             const apache::geode::client::CacheableKeyPtr& key, const apache::geode::client::SerializablePtr& helper )
           {
-            IRegion<TKey, TValue>^ gregion = Region<TKey, TValue>::Create(region);
+            // TODO globals ************************
+            IRegion<TKey, TValue>^ gregion = Region<TKey, TValue>::Create(region, nullptr);
 
             TKey gkey = Serializable::GetManagedValueGeneric<TKey>(key);
 
             Object^ ghelper = Serializable::GetManagedValueGeneric<Object^>(helper);
 
-            //return SafeMSerializableConvertGeneric(m_loader->Load(gregion, gkey, ghelper));
+            // TODO globals ************************
             return Serializable::GetUnmanagedValueGeneric<TValue>(m_loader->Load(gregion, gkey, ghelper), nullptr);
           }
 
           virtual void close( const apache::geode::client::RegionPtr& region )
           {
-            IRegion<TKey, TValue>^ gregion = Region<TKey, TValue>::Create(region);
+            // TODO globals ************************
+            IRegion<TKey, TValue>^ gregion = Region<TKey, TValue>::Create(region, nullptr);
             m_loader->Close(gregion);
           }
       };

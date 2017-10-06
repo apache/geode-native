@@ -18,14 +18,6 @@
 #pragma once
 
 #include "geode_defs.hpp"
-//#include "geode_includes.hpp"
-#include "QueryService.hpp"
-#include "Region.hpp"
-
-using namespace System;
-using namespace System::Collections::Generic;
-
-
 
 namespace Apache
 {
@@ -34,7 +26,17 @@ namespace Apache
     namespace Client
     {
 
+      using namespace System;
+      using namespace System::Collections::Generic;
+
+      generic<class TKey, class TValue>
+			interface class IRegion;
+
+      generic<class TKey, class TResult>
+      ref class QueryService;
+
       interface class IPdxInstanceFactory;
+
       /// <summary>
       /// A RegionService provides access to existing regions that exist
       /// in a <see cref="Cache" />.

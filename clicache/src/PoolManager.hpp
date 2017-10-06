@@ -32,6 +32,8 @@ namespace Apache
     namespace Client
     {
 
+      ref class Cache;
+
       //generic<class TKey, class TValue>
       ref class Pool;
      // generic<class TKey, class TValue>
@@ -89,12 +91,14 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline PoolManager(native::PoolManager& nativeref)
-          : m_nativeref(nativeref)
+        inline PoolManager(native::PoolManager& nativeref, Cache^ cache)
+          : m_nativeref(nativeref), m_cache(cache)
         {
         }
 
         native::PoolManager& m_nativeref;
+        
+        Cache^ m_cache;
       };
     }  // namespace Client
   }  // namespace Geode

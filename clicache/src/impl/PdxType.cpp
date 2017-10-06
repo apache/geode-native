@@ -23,6 +23,7 @@
 #include "../Log.hpp"
 #include <msclr/lock.h>
 #include "PdxWrapper.hpp"
+#include "Cache.hpp"
 using namespace System;
 
 namespace Apache
@@ -126,13 +127,13 @@ namespace Apache
           else if (foundVarLenType)
             m_numberOfVarLenFields = 1;
 
-          InitializeType();
+          InitializeType(input->Cache);
         }
 
-        void PdxType::InitializeType()
+        void PdxType::InitializeType(Cache^ cache)
         {
-          initRemoteToLocal();//for writing
-          initLocalToRemote();//for reading
+          initRemoteToLocal(cache);//for writing
+          initLocalToRemote(cache);//for reading
 
           generatePositionMap();
 
@@ -314,7 +315,7 @@ namespace Apache
           return newone;
         }
 
-        array<int>^ PdxType::GetLocalToRemoteMap()
+        array<int>^ PdxType::GetLocalToRemoteMap(Cache^ cache)
         {
           if (m_localToRemoteFieldMap != nullptr)
             return m_localToRemoteFieldMap;
@@ -322,12 +323,12 @@ namespace Apache
           msclr::lock lockInstance(m_lockObj);
           if (m_localToRemoteFieldMap != nullptr)
             return m_localToRemoteFieldMap;
-          initLocalToRemote();
+          initLocalToRemote(cache);
 
           return m_localToRemoteFieldMap;
 
         }
-        array<int>^ PdxType::GetRemoteToLocalMap()
+        array<int>^ PdxType::GetRemoteToLocalMap(Cache^ cache)
         {
           //return m_remoteToLocalFieldMap;
 
@@ -337,7 +338,7 @@ namespace Apache
           msclr::lock lockInstance(m_lockObj);
           if (m_remoteToLocalFieldMap != nullptr)
             return m_remoteToLocalFieldMap;
-          initRemoteToLocal();
+          initRemoteToLocal(cache);
 
           return m_remoteToLocalFieldMap;
         }
@@ -345,11 +346,11 @@ namespace Apache
         /*
          * this is write data on remote type(this will always have all fields)
          */
-        void PdxType::initRemoteToLocal()
+        void PdxType::initRemoteToLocal(Cache^ cache)
         {
           //get local type from type Registry and then map local fields.
           //need to generate static map
-          PdxType^ localPdxType = PdxTypeRegistry::GetLocalPdxType(m_className);
+          PdxType^ localPdxType = cache->GetPdxTypeRegistry()->GetLocalPdxType(m_className);
           m_numberOfFieldsExtra = 0;
 
           if (localPdxType != nullptr)
@@ -386,9 +387,9 @@ namespace Apache
             }
           }
         }
-        void PdxType::initLocalToRemote()
+        void PdxType::initLocalToRemote(Cache^ cache)
         {
-          PdxType^ localPdxType = PdxTypeRegistry::GetLocalPdxType(m_className);
+          PdxType^ localPdxType = cache->GetPdxTypeRegistry()->GetLocalPdxType(m_className);
 
           if (localPdxType != nullptr)
           {

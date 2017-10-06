@@ -1296,11 +1296,11 @@ namespace Apache.Geode.Client.UnitTests
          region0[1] = pRet;
          if (m_useWeakHashMap == false)
          {
-           Assert.AreEqual(Client.Internal.PdxTypeRegistry.testNumberOfPreservedData(), 0);
+           Assert.AreEqual(CacheHelper.DCache.GetPdxTypeRegistry().testNumberOfPreservedData(), 0);
          }
          else
          {
-           Assert.IsTrue(Client.Internal.PdxTypeRegistry.testNumberOfPreservedData() > 0); 
+           Assert.IsTrue(CacheHelper.DCache.GetPdxTypeRegistry().testNumberOfPreservedData() > 0); 
          }
        }
 
@@ -1323,12 +1323,12 @@ namespace Apache.Geode.Client.UnitTests
 
        if (m_useWeakHashMap == false)
        {
-         Assert.AreEqual(Client.Internal.PdxTypeRegistry.testNumberOfPreservedData(), 0);
+         Assert.AreEqual(CacheHelper.DCache.GetPdxTypeRegistry().testNumberOfPreservedData(), 0);
        }
        else
        {
          //it has extra fields, so no need to preserve data
-         Assert.IsTrue(Client.Internal.PdxTypeRegistry.testNumberOfPreservedData() == 0); 
+         Assert.IsTrue(CacheHelper.DCache.GetPdxTypeRegistry().testNumberOfPreservedData() == 0); 
        }
      }
 
@@ -2516,7 +2516,7 @@ namespace Apache.Geode.Client.UnitTests
        ret = region0[2];
        Util.Log("Put from pool-2 completed");
 
-       int pdxIds = Apache.Geode.Client.Internal.PdxTypeRegistry.testGetNumberOfPdxIds();
+       int pdxIds = CacheHelper.DCache.GetPdxTypeRegistry().testGetNumberOfPdxIds();
 
        Assert.AreEqual(3, pdxIds);
      }

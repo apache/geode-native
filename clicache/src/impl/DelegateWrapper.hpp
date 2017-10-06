@@ -87,15 +87,12 @@ namespace Apache
             dynamic_cast<IGeodeDelta^>(tempObj);
           if( tempDelta != nullptr )
           {
-            if(!SafeConvertClassGeneric::isAppDomainEnabled)
-              return new apache::geode::client::ManagedCacheableDeltaGeneric( tempDelta );
-            else
-              return new apache::geode::client::ManagedCacheableDeltaBytesGeneric( tempDelta, false );
+            return new apache::geode::client::ManagedCacheableDeltaGeneric( tempDelta, m_cache);
           }
-          else if(!SafeConvertClassGeneric::isAppDomainEnabled)
-            return new apache::geode::client::ManagedCacheableKeyGeneric( tempObj, CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry().get());
           else
-            return new apache::geode::client::ManagedCacheableKeyBytesGeneric( tempObj, false);
+          {
+            return new apache::geode::client::ManagedCacheableKeyGeneric( tempObj, m_cache);
+          }
         }
 
 

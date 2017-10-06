@@ -368,7 +368,7 @@ namespace Apache
           {
             ManagedString mg_name( regionName );
             auto nativeptr = m_nativeptr->get()->create( mg_name.CharPtr );
-            return Client::Region<TKey,TValue>::Create( nativeptr );
+            return Client::Region<TKey,TValue>::Create( nativeptr, m_cache );
           }
           finally
           {

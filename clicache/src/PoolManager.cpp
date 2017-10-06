@@ -45,7 +45,7 @@ namespace Apache
         for (const auto& iter : pools)
         {
           auto key = gcnew String(iter.first.c_str());
-          auto val = Pool::Create(iter.second);
+          auto val = Pool::Create(iter.second, m_cache);
           result->Add(key, val);
         }
         return result;
@@ -55,12 +55,12 @@ namespace Apache
       {
         ManagedString mg_name( name );
         auto pool = m_nativeref.find(mg_name.CharPtr);
-        return Pool::Create(pool);
+        return Pool::Create(pool, m_cache);
       }
 
       Pool^ PoolManager::Find(Client::Region<Object^, Object^>^ region)
       {
-        return Pool::Create(m_nativeref.find(region->GetNative()));
+        return Pool::Create(m_nativeref.find(region->GetNative()), m_cache);
       }
 
       void PoolManager::Close(Boolean KeepAlive)

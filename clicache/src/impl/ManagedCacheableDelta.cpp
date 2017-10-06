@@ -40,7 +40,7 @@ namespace apache
       {
         try {
           System::UInt32 pos = (int)output.getBufferLength();
-          Apache::Geode::Client::DataOutput mg_output(&output, true);
+          Apache::Geode::Client::DataOutput mg_output(&output, true, m_cache);
           m_managedSerializableptr->ToData(%mg_output);
           //this will move the cursor in c++ layer
           mg_output.WriteBytesToUMDataOutput();
@@ -59,7 +59,7 @@ namespace apache
       {
         try {
           int pos = input.getBytesRead();
-          Apache::Geode::Client::DataInput mg_input(&input, true, input.getCache());
+          Apache::Geode::Client::DataInput mg_input(&input, true, m_cache);
           m_managedSerializableptr->FromData(%mg_input);
 
           //this will move the cursor in c++ layer
@@ -161,7 +161,7 @@ namespace apache
       void ManagedCacheableDeltaGeneric::toDelta(DataOutput& output) const
       {
         try {
-          Apache::Geode::Client::DataOutput mg_output(&output, true);
+          Apache::Geode::Client::DataOutput mg_output(&output, true, m_cache);
           m_managedptr->ToDelta(%mg_output);
           //this will move the cursor in c++ layer
           mg_output.WriteBytesToUMDataOutput();
@@ -177,7 +177,7 @@ namespace apache
       void ManagedCacheableDeltaGeneric::fromDelta(DataInput& input)
       {
         try {
-          Apache::Geode::Client::DataInput mg_input(&input, true, input.getCache());
+          Apache::Geode::Client::DataInput mg_input(&input, true, m_cache);
           m_managedptr->FromDelta(%mg_input);
 
           //this will move the cursor in c++ layer
@@ -202,7 +202,7 @@ namespace apache
             Apache::Geode::Client::IGeodeSerializable^ Mclone =
               dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(cloneable->Clone());
             return DeltaPtr(static_cast<ManagedCacheableDeltaGeneric*>(
-              SafeMSerializableConvertGeneric(Mclone)));
+              SafeMSerializableConvertGeneric(Mclone, m_cache)));
           }
           else {
             return Delta::clone();
