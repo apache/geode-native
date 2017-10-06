@@ -973,7 +973,7 @@ namespace Apache.Geode.Client.UnitTests
         Util.Log("filter count= {0}.", filter.Length);
 
         Execution<object> exc = Client.FunctionService<object>.OnRegion<object, object>(region);
-        IResultCollector<object> rc = exc.WithArgs<Object>(args).WithFilter<object>(filter).Execute(FuncTimeOutName, 5000);
+        IResultCollector<object> rc = exc.WithArgs<Object>(args).WithFilter<object>(filter).Execute(FuncTimeOutName, 5000 * 1000);
         ICollection<object> FunctionResult = rc.GetResult();
         Util.Log("ExecuteFETimeOut onRegion FunctionResult.Count = {0} ", FunctionResult.Count);        
         foreach (Boolean item in FunctionResult)
@@ -987,7 +987,7 @@ namespace Apache.Geode.Client.UnitTests
 
       Pool pool = CacheHelper.DCache.GetPoolManager().Find(poolName);
       Execution<object> excs = Client.FunctionService<object>.OnServer(pool);
-      IResultCollector<object> rcs = excs.WithArgs<Object>(args).Execute(FuncTimeOutName, 5000);
+      IResultCollector<object> rcs = excs.WithArgs<Object>(args).Execute(FuncTimeOutName, 5000 * 1000);
       ICollection<object> ServerFunctionResult = rcs.GetResult();
       Util.Log("ExecuteFETimeOut onServer FunctionResult.Count = {0} ", ServerFunctionResult.Count);
       foreach (Boolean item in ServerFunctionResult)
@@ -999,7 +999,7 @@ namespace Apache.Geode.Client.UnitTests
 
 
       Execution<object> excss = Client.FunctionService<object>.OnServers(pool);
-      IResultCollector<object> rcss = excss.WithArgs<Object>(args).Execute(FuncTimeOutName, 5000);
+      IResultCollector<object> rcss = excss.WithArgs<Object>(args).Execute(FuncTimeOutName, 5000 * 1000);
       ICollection<object> ServerFunctionResults = rcss.GetResult();
       Util.Log("ExecuteFETimeOut onServer FunctionResult.Count = {0} ", ServerFunctionResults.Count);
       foreach (Boolean item in ServerFunctionResults)
