@@ -44,12 +44,12 @@ namespace apache
       ref class CacheResolver
       {
       public:
-        static Apache::Geode::Client::Cache^ Lookup(const Cache* cache);
+        static Apache::Geode::Client::Cache^ Lookup(const Cache* nativeCache);
 
         static void Add(const Cache* nativeCache, Apache::Geode::Client::Cache^ managedCache);
 
       private:
-        static ConcurrentDictionary<IntPtr, Apache::Geode::Client::Cache^>^ nativeToManagedCacheMap;
+        static ConcurrentDictionary<IntPtr, Apache::Geode::Client::Cache^> nativeToManagedCacheMap;
       };
 
     }  // namespace client

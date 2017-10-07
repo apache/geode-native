@@ -30,14 +30,14 @@ namespace apache
     namespace client
     {
 
-      Apache::Geode::Client::Cache^ CacheResolver::Lookup(const Cache* cache)
+      Apache::Geode::Client::Cache^ CacheResolver::Lookup(const Cache* nativeCache)
       {
-        return nativeToManagedCacheMap[IntPtr((void*)cache)];
+        return nativeToManagedCacheMap[IntPtr((void*)nativeCache)];
       }
 
       void CacheResolver::Add(const Cache* nativeCache, Apache::Geode::Client::Cache^ managedCache)
       {
-        nativeToManagedCacheMap->TryAdd(IntPtr((void*)nativeCache), managedCache);
+        nativeToManagedCacheMap[IntPtr((void*)nativeCache)] = managedCache;
       }
 
     }  // namespace client

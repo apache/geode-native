@@ -23,7 +23,7 @@
 #include "Cache.hpp"
 #include "EntryEvent.hpp"
 #include "Cache.hpp"
-
+#include "impl/CacheResolver.hpp"
 
 using namespace System;
 using namespace Apache::Geode::Client;
@@ -39,11 +39,8 @@ namespace Apache
       generic<class TKey, class TValue>
       Cache^ TransactionEvent<TKey, TValue>::Cache::get( )
       {
-        apache::geode::client::CachePtr & nativeptr(
-          NativePtr->getCache( ) );
-
-				return Apache::Geode::Client::Cache::Create(
-          nativeptr.get() );
+        auto cache = NativePtr->getCache();
+				return CacheResolver::Lookup(cache);
       }
       
       generic<class TKey, class TValue>
