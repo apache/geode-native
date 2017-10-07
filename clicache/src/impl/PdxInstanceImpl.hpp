@@ -17,6 +17,10 @@
 
 #pragma once
 
+#include "begin_native.hpp"
+#include <CachePerfStats.hpp>
+#include "end_native.hpp"
+
 #include "../IPdxInstance.hpp"
 #include "../IPdxSerializable.hpp"
 #include "../DataInput.hpp"
@@ -64,8 +68,7 @@ namespace Apache
           void cleanup();
 
 
-          //DataInput^ m_dataInput;
-          //CachePerfStats* m_cachePerfStats;
+          CachePerfStats* m_cachePerfStats;
           System::Byte* m_buffer;
           int m_bufferLength;
           int m_typeId;
@@ -124,7 +127,6 @@ namespace Apache
         public:
           PdxInstanceImpl(System::Byte* buffer, int length, int typeId, bool own, Apache::Geode::Client::Cache^ cache)
           {
-            //m_dataInput = dataInput;
             m_buffer = buffer;
             m_bufferLength = length;
             m_typeId = typeId;

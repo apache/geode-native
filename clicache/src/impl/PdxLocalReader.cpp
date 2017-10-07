@@ -64,7 +64,7 @@ namespace Apache
         PdxRemotePreservedData^ PdxLocalReader::GetPreservedData(PdxType^ mergedVersion, IPdxSerializable^ pdxObject)
         {
           int nFieldExtra = m_pdxType->NumberOfFieldsExtra;
-          if(nFieldExtra > 0 && m_dataInput->Cache->GetPdxTypeRegistry()->PdxIgnoreUnreadFields == false)
+          if(nFieldExtra > 0 && m_dataInput->Cache->GetPdxIgnoreUnreadFields() == false)
           {
             //m_pdxRemotePreserveData = gcnew PdxRemotePreservedData(m_pdxType!=nullptr? m_pdxType->TypeId : 0, mergedVersion->TypeId,nFieldExtra);
 						m_pdxRemotePreserveData->Initialize(m_pdxType!=nullptr? m_pdxType->TypeId : 0, mergedVersion->TypeId,nFieldExtra,pdxObject);
@@ -108,7 +108,7 @@ namespace Apache
 				IPdxUnreadFields^ PdxLocalReader::ReadUnreadFields()
         {
 					//Log::Debug("PdxLocalReader::ReadUnreadFields:: " + m_isDataNeedToPreserve + " ignore property " + PdxTypeRegistry::PdxIgnoreUnreadFields);
-					if(m_dataInput->Cache->GetPdxTypeRegistry()->PdxIgnoreUnreadFields == true)
+					if(m_dataInput->Cache->GetPdxIgnoreUnreadFields() == true)
 						return nullptr;
           m_isDataNeedToPreserve = false;
           return m_pdxRemotePreserveData;

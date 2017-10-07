@@ -262,26 +262,6 @@ namespace Apache
           return nullptr;
         }
 
-        bool PdxTypeRegistry::PdxIgnoreUnreadFields::get()
-        {
-          return m_cache->GetNative()->getPdxIgnoreUnreadFields();
-        }
-
-				void PdxTypeRegistry::PdxIgnoreUnreadFields::set(bool value)
-        {
-          // TODO globals m_cache->GetNative()->setPdxIgnoreUnreadFields(value);
-        }
-
-        bool PdxTypeRegistry::PdxReadSerialized::get()
-        {
-          return m_cache->GetNative()->getPdxReadSerialized();
-        }
-
-				void PdxTypeRegistry::PdxReadSerialized::set(bool value)
-        {
-          // TODO globals m_cache->GetNative()->setPdxReadSerialized(value);
-        }
-
         Int32 PdxTypeRegistry::GetEnumValue(EnumInfo^ ei)
         {
           IDictionary<EnumInfo^, Int32>^ tmp = enumToInt;

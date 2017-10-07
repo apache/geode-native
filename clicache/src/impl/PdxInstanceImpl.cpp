@@ -55,8 +55,7 @@ namespace Apache
           m_bufferLength = 0;
           m_pdxType = pdxType;
           m_cache = cache;
-          // TODO globals ***********************
-          //m_cachePerfStats = cachePerfStats;
+          m_cachePerfStats = &CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getCachePerfStats();
           m_pdxType->InitializeType(cache);//to generate static position map
 
           //need to initiailize stream. this will call todata and in toData we will have stream
@@ -86,14 +85,13 @@ namespace Apache
           Object^ ret = Internal::PdxHelper::DeserializePdx(dataInput, true, m_typeId, m_bufferLength, CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry().get());
           //dataInput->ResetPdx(0);
 
-          // TODO globals ************************
-          //if(m_cachePerfStats)
-          //{
-          //  Utils::updateStatOpTime(m_cachePerfStats->getStat(),
-          //                          m_cachePerfStats->getPdxInstanceDeserializationTimeId(),
-          //                          sampleStartNanos);
-          //  m_cachePerfStats->incPdxInstanceDeserializations();
-          //}
+          if(m_cachePerfStats)
+          {
+            Utils::updateStatOpTime(m_cachePerfStats->getStat(),
+                                    m_cachePerfStats->getPdxInstanceDeserializationTimeId(),
+                                    sampleStartNanos);
+            m_cachePerfStats->incPdxInstanceDeserializations();
+          }
           return ret;
         }
 

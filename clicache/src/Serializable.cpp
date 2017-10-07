@@ -508,38 +508,14 @@ namespace Apache
         return retVal();
       }
 
-      //class Wrap
-      //{
-      //public:
-      //  Wrap(Cache^ cache) : m_cache(cache){}
-
-      //  std::shared_ptr<native::PdxManagedCacheableKey> operator()(native::DataInput& dataInput)
-      //  {
-      //    auto obj = std::make_shared<native::PdxManagedCacheableKey>(m_cache);
-      //    obj->fromData(dataInput);
-      //    return obj;
-      //  }
-
-      //private:
-      //  gcroot<Cache^> m_cache;
-      //};
-
       void Serializable::RegisterPDXManagedCacheableKey(Cache^ cache)
       {
-        // TODO: globals ******************************** FIXME
-
-        //auto f = [](native::DataInput& dataInput, Cache^ cache){
-        //  auto obj = std::make_shared<native::PdxManagedCacheableKey>(cache);
-        //  obj->fromData(dataInput);
-        //  return obj;
-        //};
-
-        //auto cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
-        //cacheImpl->getSerializationRegistry()->setPdxTypeHandler([&cache](native::DataInput& dataInput){
-        //  auto obj = std::make_shared<native::PdxManagedCacheableKey>(cache);
-        //  obj->fromData(dataInput);
-        //  return obj;
-        //});
+        auto cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
+        cacheImpl->getSerializationRegistry()->setPdxTypeHandler([](native::DataInput& dataInput){
+          auto obj = std::make_shared<native::PdxManagedCacheableKey>();
+          obj->fromData(dataInput);
+          return obj;
+        });
       }
 
       void Apache::Geode::Client::Serializable::RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod, Cache^ cache)

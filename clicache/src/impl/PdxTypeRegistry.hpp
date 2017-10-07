@@ -71,18 +71,6 @@ namespace Apache
 
             Int32 GetPDXIdForType(PdxType^ type, const char* poolname);
 
-					 property bool PdxIgnoreUnreadFields
-					{
-						bool get();
-						void set(bool value);
-					}
-
-            property bool PdxReadSerialized
-					{
-						bool get();
-						void set(bool value);
-					}
-
             Int32 GetEnumValue(EnumInfo^ ei);
 
             EnumInfo^ GetEnum(Int32 enumVal);
