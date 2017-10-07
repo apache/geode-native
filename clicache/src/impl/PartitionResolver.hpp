@@ -59,8 +59,7 @@ namespace Apache
           {
             EntryEvent<TKey, TValue> gevent(&ev);
 						Object^ groutingobject = m_resolver->GetRoutingObject(%gevent);
-            // TODO globals ******************
-            return Serializable::GetUnmanagedValueGeneric<Object^>(groutingobject, nullptr);
+            return Serializable::GetUnmanagedValueGeneric<Object^>(groutingobject);
           }
 
           virtual const char * getName()

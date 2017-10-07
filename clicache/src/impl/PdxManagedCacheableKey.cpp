@@ -31,6 +31,8 @@
 #include "ManagedString.hpp"
 #include "PdxHelper.hpp"
 #include "SafeConvert.hpp"
+#include "CacheResolver.hpp"
+
 using namespace System;
 
 namespace apache
@@ -43,7 +45,8 @@ namespace apache
       {
         try {
           System::UInt32 pos = (int)output.getBufferLength();
-          Apache::Geode::Client::DataOutput mg_output(&output, true, m_cache);
+          auto cache = CacheResolver::Lookup(output.getCache());
+          Apache::Geode::Client::DataOutput mg_output(&output, true, cache);
           Apache::Geode::Client::Internal::PdxHelper::SerializePdx(%mg_output, m_managedptr);
           //m_managedptr->ToData( %mg_output );
           //this will move the cursor in c++ layer
@@ -63,7 +66,8 @@ namespace apache
       {
         try {
           int pos = input.getBytesRead();
-          Apache::Geode::Client::DataInput mg_input(&input, true, m_cache);
+          auto cache = CacheResolver::Lookup(input.getCache());
+          Apache::Geode::Client::DataInput mg_input(&input, true, cache);
           //m_managedptr = m_managedptr->FromData( %mg_input );
           Apache::Geode::Client::IPdxSerializable^ tmp = Apache::Geode::Client::Internal::PdxHelper::DeserializePdx(%mg_input, false,  CacheRegionHelper::getCacheImpl(input.getCache())->getSerializationRegistry().get());
           m_managedptr = tmp;
@@ -246,7 +250,8 @@ namespace apache
       void PdxManagedCacheableKey::toDelta(DataOutput& output) const
       {
         try {
-          Apache::Geode::Client::DataOutput mg_output(&output, true, m_cache);
+          auto cache = CacheResolver::Lookup(output.getCache());
+          Apache::Geode::Client::DataOutput mg_output(&output, true, cache);
           m_managedDeltaptr->ToDelta(%mg_output);
           //this will move the cursor in c++ layer
           mg_output.WriteBytesToUMDataOutput();
@@ -262,7 +267,8 @@ namespace apache
       void PdxManagedCacheableKey::fromDelta(native::DataInput& input)
       {
         try {
-          Apache::Geode::Client::DataInput mg_input(&input, true, m_cache);
+          auto cache = CacheResolver::Lookup(input.getCache());
+          Apache::Geode::Client::DataInput mg_input(&input, true, cache);
           m_managedDeltaptr->FromDelta(%mg_input);
 
           //this will move the cursor in c++ layer
@@ -281,15 +287,10 @@ namespace apache
       DeltaPtr PdxManagedCacheableKey::clone()
       {
         try {
-          ICloneable^ cloneable = dynamic_cast<ICloneable^>((
-            Apache::Geode::Client::IGeodeDelta^) m_managedDeltaptr);
-          if (cloneable) {
-            Apache::Geode::Client::IPdxSerializable^ Mclone =
-              dynamic_cast<Apache::Geode::Client::IPdxSerializable^>(cloneable->Clone());
-            return DeltaPtr(static_cast<PdxManagedCacheableKey*>(
-              SafeGenericM2UMConvert(Mclone, m_cache)));
-          }
-          else {
+          if (auto cloneable = dynamic_cast<ICloneable^>((Apache::Geode::Client::IGeodeDelta^) m_managedDeltaptr)) {
+            auto Mclone = dynamic_cast<Apache::Geode::Client::IPdxSerializable^>(cloneable->Clone());
+            return DeltaPtr(static_cast<PdxManagedCacheableKey*>(SafeGenericM2UMConvert(Mclone)));
+          } else {
             return Delta::clone();
           }
         }

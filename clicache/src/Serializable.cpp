@@ -254,7 +254,7 @@ namespace Apache
 
       System::Int32 Serializable::GetPDXIdForType(const char* poolName, IGeodeSerializable^ pdxType, Cache^ cache)
       {
-        native::CacheablePtr kPtr(SafeMSerializableConvertGeneric(pdxType, cache));
+        native::CacheablePtr kPtr(SafeMSerializableConvertGeneric(pdxType));
         return CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetPDXIdForType(cache->GetNative()->getPoolManager().find(poolName), kPtr);
       }
 
@@ -266,7 +266,7 @@ namespace Apache
 
       int Serializable::GetEnumValue(Internal::EnumInfo^ ei, Cache^ cache)
       {
-        native::CacheablePtr kPtr(SafeMSerializableConvertGeneric(ei, cache));
+        native::CacheablePtr kPtr(SafeMSerializableConvertGeneric(ei));
         return  CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetEnumValue(cache->GetNative()->getPoolManager().getAll().begin()->second, kPtr);
       }
 
@@ -556,7 +556,7 @@ namespace Apache
         if (!ManagedDelegatesGeneric->ContainsKey(classId))
           ManagedDelegatesGeneric->Add(classId, creationMethod);
 
-        DelegateWrapperGeneric^ delegateObj = gcnew DelegateWrapperGeneric(creationMethod, cache);
+        DelegateWrapperGeneric^ delegateObj = gcnew DelegateWrapperGeneric(creationMethod);
         TypeFactoryNativeMethodGeneric^ nativeDelegate =
           gcnew TypeFactoryNativeMethodGeneric(delegateObj,
           &DelegateWrapperGeneric::NativeDelegateGeneric);
@@ -584,7 +584,7 @@ namespace Apache
           throw gcnew IllegalArgumentException("Serializable.RegisterType(): "
                                                "null TypeFactoryMethod delegate passed");
         }
-        DelegateWrapperGeneric^ delegateObj = gcnew DelegateWrapperGeneric(creationMethod, cache);
+        DelegateWrapperGeneric^ delegateObj = gcnew DelegateWrapperGeneric(creationMethod);
         TypeFactoryNativeMethodGeneric^ nativeDelegate =
           gcnew TypeFactoryNativeMethodGeneric(delegateObj,
           &DelegateWrapperGeneric::NativeDelegateGeneric);
@@ -951,23 +951,19 @@ namespace Apache
       }
 
       generic<class TKey>
-      native::CacheableKeyPtr Serializable::GetUnmanagedValueGeneric(TKey key, Cache^ cache)
+      native::CacheableKeyPtr Serializable::GetUnmanagedValueGeneric(TKey key)
       {
-        //System::Type^ managedType = TKey::typeid;  
         if (key != nullptr) {
-          //System::Type^ managedType = key->GetType();
-          return GetUnmanagedValueGeneric(key->GetType(), key, cache);
+          return GetUnmanagedValueGeneric(key->GetType(), key);
         }
         return nullptr;
       }
 
       generic<class TKey>
-      native::CacheableKeyPtr Serializable::GetUnmanagedValueGeneric(TKey key, bool isAciiChar, Cache^ cache)
+      native::CacheableKeyPtr Serializable::GetUnmanagedValueGeneric(TKey key, bool isAciiChar)
       {
-        //System::Type^ managedType = TKey::typeid;  
         if (key != nullptr) {
-          //System::Type^ managedType = key->GetType();
-          return GetUnmanagedValueGeneric(key->GetType(), key, isAciiChar, cache);
+          return GetUnmanagedValueGeneric(key->GetType(), key, isAciiChar);
         }
         return nullptr;
       }
@@ -1082,14 +1078,14 @@ namespace Apache
 
       generic<class TKey>
       native::CacheableKeyPtr Serializable::GetUnmanagedValueGeneric(
-        Type^ managedType, TKey key, Cache^ cache)
+        Type^ managedType, TKey key)
       {
-        return GetUnmanagedValueGeneric(managedType, key, false, cache);
+        return GetUnmanagedValueGeneric(managedType, key, false);
       }
 
       generic<class TKey>
       native::CacheableKeyPtr Serializable::GetUnmanagedValueGeneric(
-        Type^ managedType, TKey key, bool isAsciiChar, Cache^ cache)
+        Type^ managedType, TKey key, bool isAsciiChar)
       {
         Byte typeId = Apache::Geode::Client::Serializable::GetManagedTypeMappingGeneric(managedType);
 
@@ -1123,122 +1119,122 @@ namespace Apache
         }
         case native::GeodeTypeIds::CacheableBytes:
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableBytes::Create((array<Byte>^)key), cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableBytes::Create((array<Byte>^)key)));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableDoubleArray:
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableDoubleArray::Create((array<Double>^)key), cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableDoubleArray::Create((array<Double>^)key)));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableFloatArray:
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableFloatArray::Create((array<float>^)key), cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableFloatArray::Create((array<float>^)key)));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableInt16Array:
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableInt16Array::Create((array<Int16>^)key), cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableInt16Array::Create((array<Int16>^)key)));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableInt32Array:
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableInt32Array::Create((array<Int32>^)key), cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableInt32Array::Create((array<Int32>^)key)));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableInt64Array:
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableInt64Array::Create((array<Int64>^)key), cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableInt64Array::Create((array<Int64>^)key)));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableStringArray:
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableStringArray::Create((array<String^>^)key), cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableStringArray::Create((array<String^>^)key)));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableFileName:
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)(Apache::Geode::Client::CacheableFileName^)key, cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)(Apache::Geode::Client::CacheableFileName^)key));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableHashTable://collection::hashtable
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableHashTable::Create((System::Collections::Hashtable^)key), cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableHashTable::Create((System::Collections::Hashtable^)key)));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableHashMap://generic dictionary
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableHashMap::Create((System::Collections::IDictionary^)key), cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableHashMap::Create((System::Collections::IDictionary^)key)));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableVector://collection::arraylist
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)CacheableVector::Create((System::Collections::IList^)key), cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)CacheableVector::Create((System::Collections::IList^)key)));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableArrayList://generic ilist
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableArrayList::Create((System::Collections::IList^)key), cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableArrayList::Create((System::Collections::IList^)key)));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableLinkedList://generic linked list
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableLinkedList::Create((System::Collections::Generic::LinkedList<Object^>^)key), cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableLinkedList::Create((System::Collections::Generic::LinkedList<Object^>^)key)));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableStack:
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert(Apache::Geode::Client::CacheableStack::Create((System::Collections::ICollection^)key), cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert(Apache::Geode::Client::CacheableStack::Create((System::Collections::ICollection^)key)));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case 7: //GeodeClassIds::CacheableManagedObject
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((Apache::Geode::Client::CacheableObject^)key, cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((Apache::Geode::Client::CacheableObject^)key));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case 8://GeodeClassIds::CacheableManagedObjectXml
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((Apache::Geode::Client::CacheableObjectXml^)key, cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((Apache::Geode::Client::CacheableObjectXml^)key));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableObjectArray:
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((Apache::Geode::Client::CacheableObjectArray^)key, cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((Apache::Geode::Client::CacheableObjectArray^)key));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableIdentityHashMap:
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert(Apache::Geode::Client::CacheableIdentityHashMap::Create((System::Collections::IDictionary^)key), cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert(Apache::Geode::Client::CacheableIdentityHashMap::Create((System::Collections::IDictionary^)key)));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableHashSet://no need of it, default case should work
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((Apache::Geode::Client::CacheableHashSet^)key, cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((Apache::Geode::Client::CacheableHashSet^)key));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableLinkedHashSet://no need of it, default case should work
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((Apache::Geode::Client::CacheableLinkedHashSet^)key, cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((Apache::Geode::Client::CacheableLinkedHashSet^)key));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CacheableDate:
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableDate::Create((System::DateTime)key), cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CacheableDate::Create((System::DateTime)key)));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::BooleanArray:
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::BooleanArray::Create((array<bool>^)key), cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::BooleanArray::Create((array<bool>^)key)));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         case native::GeodeTypeIds::CharArray:
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CharArray::Create((array<Char>^)key), cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert((IGeodeSerializable^)Apache::Geode::Client::CharArray::Create((array<Char>^)key)));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         default:
         {
-          native::CacheablePtr kPtr(SafeGenericMSerializableConvert(key, cache));
+          native::CacheablePtr kPtr(SafeGenericMSerializableConvert(key));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         }

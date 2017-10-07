@@ -32,8 +32,7 @@ namespace Apache
       IRegion<TKey, TValue>^ EntryEvent<TKey, TValue>::Region::get( )
       {
         apache::geode::client::RegionPtr regionptr = m_nativeptr->getRegion();
-        // TODO globals ************************
-        return Client::Region<TKey, TValue>::Create( regionptr, nullptr );
+        return Client::Region<TKey, TValue>::Create( regionptr );
       }
 
       generic<class TKey, class TValue>

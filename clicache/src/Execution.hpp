@@ -34,8 +34,6 @@ namespace Apache
     {
       namespace native = apache::geode::client;
 
-      ref class Cache;
-
       generic<class TResult>
       interface class IResultCollector;
 
@@ -92,28 +90,25 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static Execution<TResult>^ Create( native::ExecutionPtr nativeptr, IResultCollector<TResult>^ rc, Cache^ cache )
+        inline static Execution<TResult>^ Create( native::ExecutionPtr nativeptr, IResultCollector<TResult>^ rc )
         {
           return __nullptr == nativeptr ? nullptr :
-            gcnew Execution<TResult>( nativeptr, rc, cache );
+            gcnew Execution<TResult>( nativeptr, rc );
 	      }
 
         /// <summary>
         /// Private constructor to wrap a native object pointer.
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline Execution( native::ExecutionPtr nativeptr, IResultCollector<TResult>^ rc , Cache^ cache)
+        inline Execution( native::ExecutionPtr nativeptr, IResultCollector<TResult>^ rc )
         {
           m_rc = rc;
           m_nativeptr = gcnew native_shared_ptr<native::Execution>(nativeptr);
-          m_cache = cache;
         }
       private:
         IResultCollector<TResult>^ m_rc;
 
         native_shared_ptr<native::Execution>^ m_nativeptr;
-
-        Cache^ m_cache;
       };
     }  // namespace Client
   }  // namespace Geode

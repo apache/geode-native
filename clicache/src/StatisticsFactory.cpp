@@ -36,17 +36,6 @@ namespace Apache
     namespace Client
     {
 
-      // TODO globals - pass in distributed system
-      //StatisticsFactory^ StatisticsFactory::GetExistingInstance(DistributedSystem^ distributedSystem)
-      //{
-      //  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-
-
-      //    return StatisticsFactory::Create(distributedSystem->getStatisticsManager()->getStatisticsFactory());
-
-      //  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
-      //}
-
       StatisticDescriptor^ StatisticsFactory::CreateIntCounter( String^ name, String^ description,String^ units )
       {
         return CreateIntCounter(name,description,units,true);

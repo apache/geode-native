@@ -78,7 +78,7 @@ namespace Apache
           {
             ManagedString mg_path( path );
             auto nativeptr = m_nativeptr->get()->getRegion( mg_path.CharPtr );
-            return Client::Region<TKey, TValue>::Create( nativeptr, dynamic_cast<Cache^>(this) );
+            return Client::Region<TKey, TValue>::Create( nativeptr );
           }
           finally
           {
@@ -122,7 +122,7 @@ namespace Apache
         for( System::Int32 index = 0; index < vrr.size( ); index++ )
         {
           auto& nativeptr( vrr[ index ] );
-          rootRegions[ index ] = Client::Region<TKey, TValue>::Create( nativeptr, dynamic_cast<Cache^>(this) );
+          rootRegions[ index ] = Client::Region<TKey, TValue>::Create( nativeptr );
         }
         return rootRegions;
       }

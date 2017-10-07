@@ -15,11 +15,7 @@
  * limitations under the License.
  */
 
-#include "RegionEvent.hpp"
-#include "Region.hpp"
-#include "IGeodeSerializable.hpp"
-#include "impl/SafeConvert.hpp"
-using namespace System;
+#pragma once
 
 namespace Apache
 {
@@ -28,26 +24,35 @@ namespace Apache
     namespace Client
     {
 
-      generic<class TKey, class TValue>
-      IRegion<TKey, TValue>^ RegionEvent<TKey, TValue>::Region::get( )
-      {
-        auto regionptr = m_nativeptr->getRegion( );
-        return Client::Region<TKey, TValue>::Create( regionptr );
-      }
+      ref class Cache;
 
-      generic<class TKey, class TValue>
-      Object^ RegionEvent<TKey, TValue>::CallbackArgument::get()
-      {
-        apache::geode::client::SerializablePtr& valptr(m_nativeptr->getCallbackArgument());
-        return Serializable::GetManagedValueGeneric<Object^>( valptr );
-      }
-
-      generic<class TKey, class TValue>
-      bool RegionEvent<TKey, TValue>::RemoteOrigin::get( )
-      {
-        return m_nativeptr->remoteOrigin( );
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
 
- } //namespace 
+namespace apache
+{
+  namespace geode
+  {
+    namespace client
+    {
+      class Cache;
+
+      using namespace System;
+      using namespace System::Collections::Concurrent;
+
+      ref class CacheResolver
+      {
+      public:
+        static Apache::Geode::Client::Cache^ Lookup(const Cache* cache);
+
+        static void Add(const Cache* nativeCache, Apache::Geode::Client::Cache^ managedCache);
+
+      private:
+        static ConcurrentDictionary<IntPtr, Apache::Geode::Client::Cache^>^ nativeToManagedCacheMap;
+      };
+
+    }  // namespace client
+  }  // namespace geode
+}  // namespace apache
+

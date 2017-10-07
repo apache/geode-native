@@ -268,9 +268,9 @@ namespace Apache
           Apache::Geode::Client::IGeodeSerializable^ value)
         {
           TPropKey tpkey = Apache::Geode::Client::Serializable::
-            GetManagedValueGeneric<TPropKey>(SerializablePtr(SafeMSerializableConvertGeneric(key, m_cache)));
+            GetManagedValueGeneric<TPropKey>(SerializablePtr(SafeMSerializableConvertGeneric(key)));
           TPropValue tpvalue = Apache::Geode::Client::Serializable::
-            GetManagedValueGeneric<TPropValue>(SerializablePtr(SafeMSerializableConvertGeneric(value, m_cache)));
+            GetManagedValueGeneric<TPropValue>(SerializablePtr(SafeMSerializableConvertGeneric(value)));
           m_visitor->Invoke(tpkey, tpvalue);
         }
 
@@ -283,22 +283,8 @@ namespace Apache
       private:
 
         Apache::Geode::Client::PropertyVisitorGeneric<TPropKey, TPropValue>^ m_visitor;
-        // TODO globals ******************** how should m_cache get populated??
-        Apache::Geode::Client::Cache^ m_cache;
       };
 
-  /*    ref class PropertiesFactory {
-      public:
-          PropertiesFactory(native::SerializationRegistryPtr serializationRegistry)
-          {
-             m_serializationRegistry = gcnew native_shared_ptr<native::SerializationRegistry>(serializationRegistry);
-          }
-          IGeodeSerializable^ CreateDeserializable() {
-            return Properties<String^, String^>::CreateDeserializable(m_serializationRegistry->get_shared_ptr());
-          }
-      private:
-        native_shared_ptr<native::SerializationRegistry>^  m_serializationRegistry;
-        };*/
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

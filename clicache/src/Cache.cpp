@@ -168,7 +168,7 @@ namespace Apache
           ManagedString mg_path( path );
           try
           {
-            return Client::Region<TKey, TValue>::Create(m_nativeptr->get()->getRegion(mg_path.CharPtr), this);
+            return Client::Region<TKey, TValue>::Create(m_nativeptr->get()->getRegion(mg_path.CharPtr));
           }
           finally
           {
@@ -196,7 +196,7 @@ namespace Apache
         for( System::Int32 index = 0; index < vrr.size( ); index++ )
         {
           apache::geode::client::RegionPtr& nativeptr( vrr[ index ] );
-          rootRegions[ index ] = Client::Region<TKey, TValue>::Create( nativeptr, this );
+          rootRegions[ index ] = Client::Region<TKey, TValue>::Create( nativeptr );
         }
         return rootRegions;
       }
@@ -265,7 +265,7 @@ namespace Apache
           {
             return RegionFactory::Create(std::unique_ptr<native::RegionFactory>(
                 new native::RegionFactory(
-                    m_nativeptr->get()->createRegionFactory(preDefineRegionAttr))), this);
+                    m_nativeptr->get()->createRegionFactory(preDefineRegionAttr))));
           }
           finally
           {
@@ -384,7 +384,7 @@ namespace Apache
 
         PoolManager^ Cache::GetPoolManager()
         {
-          return gcnew PoolManager(m_nativeptr->get_shared_ptr()->getPoolManager(), this);
+          return gcnew PoolManager(m_nativeptr->get_shared_ptr()->getPoolManager());
         }
     }  // namespace Client
   }  // namespace Geode

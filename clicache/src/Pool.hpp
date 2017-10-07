@@ -323,19 +323,15 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static Pool^ Create(native::PoolPtr nativeptr, Client::Cache^ cache)
+        inline static Pool^ Create(native::PoolPtr nativeptr)
         {
           return __nullptr == nativeptr ? nullptr :
-            gcnew Pool( nativeptr, cache );
+            gcnew Pool( nativeptr );
         }
 
         std::shared_ptr<native::Pool> GetNative()
         {
           return m_nativeptr->get_shared_ptr();
-        }
-
-        property Client::Cache^ Cache {
-          Client::Cache^ get() { return m_cache; }
         }
 
       private:
@@ -344,16 +340,12 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline Pool(native::PoolPtr nativeptr, Client::Cache^ cache)
+        inline Pool(native::PoolPtr nativeptr)
         {
           m_nativeptr = gcnew native_shared_ptr<native::Pool>(nativeptr);
-          m_cache = cache;
         }
 
         native_shared_ptr<native::Pool>^ m_nativeptr;
-        
-        Client::Cache^ m_cache;
-
       };
     }  // namespace Client
   }  // namespace Geode

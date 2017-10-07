@@ -438,7 +438,7 @@ namespace Apache
           ManagedString mg_name(name);
           try
           {
-            return Pool::Create(m_nativeptr->get()->create(mg_name.CharPtr), cache);
+            return Pool::Create(m_nativeptr->get()->create(mg_name.CharPtr));
           }
           finally
           {

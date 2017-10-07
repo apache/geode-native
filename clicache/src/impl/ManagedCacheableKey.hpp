@@ -25,7 +25,6 @@
 #include "end_native.hpp"
 
 #include "../IGeodeSerializable.hpp"
-#include "../Cache.hpp"
 
 using namespace System;
 
@@ -58,13 +57,12 @@ namespace apache
       private:
         int m_hashcode;
         int m_classId;
-        gcroot<Apache::Geode::Client::Cache^> m_cache;
         int m_objectSize;
       public:
 
         inline ManagedCacheableKeyGeneric(
-          Apache::Geode::Client::IGeodeSerializable^ managedptr, int hashcode, int classId, Apache::Geode::Client::Cache^ cache)
-          : m_cache(cache), m_managedptr(managedptr) {
+          Apache::Geode::Client::IGeodeSerializable^ managedptr, int hashcode, int classId)
+          : m_managedptr(managedptr) {
           m_hashcode = hashcode;
           m_classId = classId;
           m_objectSize = 0;
@@ -75,8 +73,8 @@ namespace apache
         /// <param name="managedptr">
         /// The managed object.
         /// </param>
-        inline ManagedCacheableKeyGeneric(Apache::Geode::Client::IGeodeSerializable^ managedptr, Apache::Geode::Client::Cache^ cache)
-          : m_cache(cache), m_managedptr(managedptr) {
+        inline ManagedCacheableKeyGeneric(Apache::Geode::Client::IGeodeSerializable^ managedptr)
+          : m_managedptr(managedptr) {
           m_hashcode = 0;
           m_classId = managedptr->ClassId;
           m_objectSize = 0;

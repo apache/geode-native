@@ -455,18 +455,16 @@ namespace Apache
         static TValue GetManagedValueGeneric(native::SerializablePtr val);
 
         generic<class TKey>
-        static native::CacheableKeyPtr GetUnmanagedValueGeneric(TKey key, Cache^ cache);
+        static native::CacheableKeyPtr GetUnmanagedValueGeneric(TKey key);
 
         generic<class TKey>
-        static native::CacheableKeyPtr GetUnmanagedValueGeneric(TKey key, bool isAciiChar, Cache^ cache);
+        static native::CacheableKeyPtr GetUnmanagedValueGeneric(TKey key, bool isAciiChar);
 
         generic<class TKey>
-        static native::CacheableKeyPtr GetUnmanagedValueGeneric(
-          Type^ managedType, TKey key, Cache^ cache);
+        static native::CacheableKeyPtr GetUnmanagedValueGeneric(Type^ managedType, TKey key);
 
         generic<class TKey>
-        static native::CacheableKeyPtr GetUnmanagedValueGeneric(
-          Type^ managedType, TKey key, bool isAsciiChar, Cache^ cache);
+        static native::CacheableKeyPtr GetUnmanagedValueGeneric(Type^ managedType, TKey key, bool isAsciiChar);
 
         /// <summary>
         /// Static map of <c>TypeFactoryMethod</c> delegates created

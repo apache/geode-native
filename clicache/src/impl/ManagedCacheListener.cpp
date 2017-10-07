@@ -330,9 +330,7 @@ namespace apache
       void ManagedCacheListenerGeneric::close(const apache::geode::client::RegionPtr& region)
       {
         try {
-          // TODO globals **********************************
-          Apache::Geode::Client::IRegion<Object^, Object^>^ mregion =
-            Apache::Geode::Client::Region<Object^, Object^>::Create(region, nullptr);
+          auto mregion = Apache::Geode::Client::Region<Object^, Object^>::Create(region);
 
           m_managedptr->Close(mregion);
         }
@@ -346,9 +344,7 @@ namespace apache
       void ManagedCacheListenerGeneric::afterRegionDisconnected(const apache::geode::client::RegionPtr& region)
       {
         try {
-          // TODO globals **********************************
-          Apache::Geode::Client::IRegion<Object^, Object^>^ mregion =
-            Apache::Geode::Client::Region<Object^, Object^>::Create(region, nullptr);
+          auto mregion = Apache::Geode::Client::Region<Object^, Object^>::Create(region);
           m_managedptr->AfterRegionDisconnected(mregion);
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {

@@ -69,8 +69,7 @@ namespace Apache
       {
         try
         {
-          // TODO globals *******************
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key, nullptr);
+          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key);
           auto nativeptr = m_nativeptr->get()->find(keyptr);
           return Serializable::GetManagedValueGeneric<TPropValue>(nativeptr);
         }
@@ -83,9 +82,8 @@ namespace Apache
       generic<class TPropKey, class TPropValue>
       void Properties<TPropKey, TPropValue>::Insert( TPropKey key, TPropValue value )
       {
-        // TODO globals *******************
-        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key, true, nullptr);
-        native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TPropValue>(value, true, nullptr);
+        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key, true);
+        native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TPropValue>(value, true);
 
         _GF_MG_EXCEPTION_TRY2
 
@@ -104,7 +102,7 @@ namespace Apache
       generic<class TPropKey, class TPropValue>
       void Properties<TPropKey, TPropValue>::Remove( TPropKey key)
       {
-        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key, nullptr);
+        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key);
 
         _GF_MG_EXCEPTION_TRY2
 

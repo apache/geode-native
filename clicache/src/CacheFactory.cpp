@@ -23,6 +23,7 @@
 #include "impl/SafeConvert.hpp"
 #include "impl/PdxTypeRegistry.hpp"
 #include "impl/AppDomainContext.hpp"
+#include "impl/CacheResolver.hpp"
 
 using namespace System;
 
@@ -66,6 +67,7 @@ namespace Apache
           nativeCache = m_nativeptr->get()->create( );
 
           auto cache = Cache::Create( nativeCache );
+          CacheResolver::Add(nativeCache.get(), cache);
 
           if(!m_connected)
           {

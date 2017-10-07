@@ -115,37 +115,20 @@ namespace Apache
       /// </remarks>
       template<typename ManagedType, typename ManagedWrapper,
         typename NativeType, typename NativeWrapper>
-      inline static NativeType* SafeM2UMConvertGeneric( ManagedType^ mg_obj, Cache^ cache )
+      inline static NativeType* SafeM2UMConvertGeneric( ManagedType^ mg_obj )
       {
-        /*
-        *return SafeM2UMConvertGeneric<IGeodeSerializable, native::ManagedCacheableKey,
-          native::Serializable, Serializable>( mg_obj );
-        */
-        //TODO: need to look this further for all types
-        if (mg_obj == nullptr) return NULL;
+        if (mg_obj == nullptr) return __nullptr;
         
         NativeWrapper^ obj = dynamic_cast<NativeWrapper^>( mg_obj );
         
-        //if (obj != nullptr) {
-        //  // this should not be 
-        //  throw gcnew Exception("Something is worng");
-        //  return obj->_NativePtr;
-        //}
-        //else 
+        if(auto sDelta = dynamic_cast<Apache::Geode::Client::IGeodeDelta^> (mg_obj))
         {
-          Apache::Geode::Client::IGeodeDelta^ sDelta =
-            dynamic_cast<Apache::Geode::Client::IGeodeDelta^> (mg_obj);
-          if(sDelta != nullptr)
-          {
-            return new native::ManagedCacheableDeltaGeneric( sDelta, cache);
-          }
-          else
-          {
-            return new ManagedWrapper(mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId, nullptr);
-          }
+          return new native::ManagedCacheableDeltaGeneric(sDelta);
         }
-         //if (mg_obj == nullptr) return NULL;
-         //return new ManagedWrapperGeneric(mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId);
+        else
+        {
+          return new ManagedWrapper(mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId);
+        }
       }
 
       template<typename NativeType, typename ManagedType>
@@ -193,65 +176,48 @@ namespace Apache
       /// <c>SafeM2UMConvert</c>.
       /// </summary>
       inline static native::Serializable* SafeMSerializableConvertGeneric(
-        Apache::Geode::Client::IGeodeSerializable^ mg_obj, Cache^ cache )
+        Apache::Geode::Client::IGeodeSerializable^ mg_obj )
       {
         //it is called for cacheables types  only
         return SafeM2UMConvertGeneric<Apache::Geode::Client::IGeodeSerializable,
           native::ManagedCacheableKeyGeneric, native::Serializable,
-          Apache::Geode::Client::Serializable>( mg_obj, cache );
+          Apache::Geode::Client::Serializable>(mg_obj);
       }
 
       generic<class TValue>
-      inline static native::Cacheable* SafeGenericM2UMConvert( TValue mg_val, Cache^ cache)
+      inline static native::Cacheable* SafeGenericM2UMConvert( TValue mg_val)
       {
         if (mg_val == nullptr) return NULL;
 
 				Object^ mg_obj = (Object^)mg_val;
 
-				/*ICacheableKey^ iKey = dynamic_cast<ICacheableKey^>(obj);
-
-        if(iKey != nullptr)
+        if(auto pdxType = dynamic_cast<IPdxSerializable^>(mg_obj))
         {
-          if(!SafeConvertClass::isAppDomainEnabled)
-          return new vmware::ManagedCacheableKey(iKey);
-        else
-          return new vmware::ManagedCacheableKeyBytes( iKey, true);
-        }*/
-
-        IPdxSerializable^ pdxType = dynamic_cast<IPdxSerializable^>(mg_obj);
-
-        if(pdxType != nullptr)
-        {
-					return new native::PdxManagedCacheableKey(pdxType, cache);
+					return new native::PdxManagedCacheableKey(pdxType);
         }
       
-				Apache::Geode::Client::IGeodeDelta^ sDelta =
-            dynamic_cast<Apache::Geode::Client::IGeodeDelta^> (mg_obj);
-          if(sDelta != nullptr)
-					{
-            return new native::ManagedCacheableDeltaGeneric( sDelta, cache);
-          }
-          else
-					{
-						Apache::Geode::Client::IGeodeSerializable^ tmpIGFS = 
-							dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(mg_obj);
-						if(tmpIGFS != nullptr)
-						{
-							return new native::ManagedCacheableKeyGeneric( tmpIGFS, nullptr);
-						}
+        if(auto sDelta = dynamic_cast<IGeodeDelta^> (mg_obj))
+				{
+          return new native::ManagedCacheableDeltaGeneric(sDelta);
+        }
+
+        if(auto tmpIGFS = dynamic_cast<IGeodeSerializable^>(mg_obj))
+				{
+					return new native::ManagedCacheableKeyGeneric(tmpIGFS);
+				}
             
-            if(Serializable::IsObjectAndPdxSerializerRegistered(mg_obj->GetType()->FullName))
-            {
-				    	return new native::PdxManagedCacheableKey(gcnew PdxWrapper(mg_obj), cache);
-            }
-            throw gcnew Apache::Geode::Client::IllegalStateException(String::Format("Unable to map object type {0}. Possible Object type may not be registered or PdxSerializer is not registered. ", mg_obj->GetType()));
-          }	
+        if(Serializable::IsObjectAndPdxSerializerRegistered(mg_obj->GetType()->FullName))
+        {
+				  return new native::PdxManagedCacheableKey(gcnew PdxWrapper(mg_obj));
+        }
+
+        throw gcnew Apache::Geode::Client::IllegalStateException(String::Format("Unable to map object type {0}. Possible Object type may not be registered or PdxSerializer is not registered. ", mg_obj->GetType()));
       }
 
       generic<class TValue>
-      inline static native::Cacheable* SafeGenericMSerializableConvert( TValue mg_obj, Cache^ cache )
+      inline static native::Cacheable* SafeGenericMSerializableConvert( TValue mg_obj )
       {
-        return SafeGenericM2UMConvert<TValue>( mg_obj, cache );
+        return SafeGenericM2UMConvert<TValue>( mg_obj );
       }
 
 			inline static IPdxSerializable^ SafeUMSerializablePDXConvert( native::SerializablePtr obj )
@@ -285,20 +251,20 @@ namespace Apache
         return gcnew Client::CacheableKey( obj );
       }
 
-      generic <class TKey>
-      inline static native::CacheableKey* SafeGenericMKeyConvert( TKey mg_obj, Cache^ cache )
-      {
-        if (mg_obj == nullptr) return NULL;
-        auto obj = Apache::Geode::Client::Serializable::GetUnmanagedValueGeneric<TKey>( mg_obj, cache );
-        if (obj.get() != nullptr)
-        {
-          return obj.get();
-        }
-        else
-        {
-          return new native::ManagedCacheableKeyGeneric(SafeUMSerializableConvertGeneric(obj), nullptr);
-        }
-      }
+      //generic <class TKey>
+      //inline static native::CacheableKey* SafeGenericMKeyConvert( TKey mg_obj, Cache^ cache )
+      //{
+      //  if (mg_obj == nullptr) return NULL;
+      //  auto obj = Apache::Geode::Client::Serializable::GetUnmanagedValueGeneric<TKey>( mg_obj, cache );
+      //  if (obj.get() != nullptr)
+      //  {
+      //    return obj.get();
+      //  }
+      //  else
+      //  {
+      //    return new native::ManagedCacheableKeyGeneric(SafeUMSerializableConvertGeneric(obj));
+      //  }
+      //}
 
       template<typename NativeType, typename ManagedType>
       inline static NativeType* GetNativePtr2( ManagedType^ mg_obj )
