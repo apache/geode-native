@@ -52,7 +52,7 @@ namespace apache
         /// Invokes the managed <c>PropertyVisitor</c> delegate for the given
         /// <c>Property</c> key and value.
         /// </summary>
-        virtual void visit(CacheableKeyPtr& key, CacheablePtr& value);
+        virtual void visit(const CacheableKeyPtr& key, const CacheablePtr& value);
 
         /// <summary>
         /// Destructor -- does nothing.

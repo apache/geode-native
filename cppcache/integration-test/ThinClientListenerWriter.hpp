@@ -248,14 +248,14 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, Register2WithFalse)
   {
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    regPtr0->registerAllKeys(false, nullptr, false, false);
+    regPtr0->registerAllKeys(false, false, false);
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT3, Register3WithFalse)
   {
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    regPtr0->registerAllKeys(false, nullptr, false, false);
+    regPtr0->registerAllKeys(false, false, false);
   }
 END_TASK_DEFINITION
 

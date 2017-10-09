@@ -70,10 +70,8 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     regPtr0->registerKeys(keys2, false, true);
     regPtr0->registerRegex(testregex[2], true);
 
-    VectorOfCacheableKey vkey;
-    VectorOfCacheableString vreg;
-    regPtr0->getInterestList(vkey);
-    regPtr0->getInterestListRegex(vreg);
+    auto vkey = regPtr0->getInterestList();
+    auto vreg = regPtr0->getInterestListRegex();
     for (int32_t i = 0; i < vkey.size(); i++) {
       char buf[1024];
       const char* key =
@@ -107,8 +105,7 @@ DUNIT_TASK(CLIENT1, SetupClient1)
       ASSERT(found, buf);
     }
     regPtr0->registerAllKeys(true);
-    VectorOfCacheableString vreg1;
-    regPtr0->getInterestListRegex(vreg1);
+    auto vreg1 = regPtr0->getInterestListRegex();
     for (int32_t i = 0; i < vreg1.size(); i++) {
       char buf[1024];
       CacheableStringPtr ptr = vreg1[i];

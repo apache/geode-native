@@ -48,7 +48,7 @@ namespace PdxTests {
 
 class TESTOBJECT_EXPORT PdxVersioned2 : public PdxSerializable {
  private:
-  wchar_t m_char;
+  char16_t m_char;
   bool m_bool;
   int8_t m_byte;
   int8_t m_sbyte;  //

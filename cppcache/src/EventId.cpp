@@ -73,17 +73,13 @@ void EventId::toData(DataOutput& output) const {
 
 void EventId::fromData(DataInput& input) {
   // TODO: statics being assigned; not thread-safe??
-  input.readArrayLen(&m_eidMemLen);
+  m_eidMemLen = input.readArrayLen();
   input.readBytesOnly(reinterpret_cast<int8_t*>(m_eidMem), m_eidMemLen);
-  int32_t arrayLen;
-  input.readArrayLen(&arrayLen);
-  char numberCode = 0;
-  input.read(reinterpret_cast<uint8_t*>(&numberCode));
-  m_eidThr = getEventIdData(input, numberCode);
-  input.read(reinterpret_cast<uint8_t*>(&numberCode));
-  m_eidSeq = getEventIdData(input, numberCode);
-  input.readInt(&m_bucketId);
-  input.read(&m_breadcrumbCounter);
+  input.readArrayLen(); // ignore arrayLen
+  m_eidThr = getEventIdData(input, input.read());
+  m_eidSeq = getEventIdData(input, input.read());
+  m_bucketId = input.readInt32();
+  m_breadcrumbCounter = input.read();
 }
 
 const char* EventId::getMemId() const { return m_eidMem; }
@@ -99,20 +95,16 @@ int64_t EventId::getEventIdData(DataInput& input, char numberCode) {
 
   //  Read number based on numeric code written by java server.
   if (numberCode == 0) {
-    int8_t byteVal;
-    input.read(&byteVal);
-    retVal = byteVal;
+    return input.read();
   } else if (numberCode == 1) {
-    int16_t shortVal;
-    input.readInt(&shortVal);
-    retVal = shortVal;
+    retVal = input.readInt16();
   } else if (numberCode == 2) {
     int32_t intVal;
-    input.readInt(&intVal);
+    intVal = input.readInt32();
     retVal = intVal;
   } else if (numberCode == 3) {
     int64_t longVal;
-    input.readInt(&longVal);
+    longVal = input.readInt64();
     retVal = longVal;
   }
 

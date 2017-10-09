@@ -97,7 +97,7 @@ DUNIT_TASK(CLIENT2, setupClient2)
     mylistner = std::make_shared<MyListener>();
     setCacheListener(regionNames[0], mylistner);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    regPtr->registerAllKeys(false, nullptr, true);
+    regPtr->registerAllKeys(false, true);
   }
 END_TASK(setupClient2)
 

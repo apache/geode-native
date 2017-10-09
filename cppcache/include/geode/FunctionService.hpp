@@ -57,7 +57,7 @@ class CPPCACHE_EXPORT FunctionService {
    * @throws NullPointerException
    *                 if the region passed in is nullptr
    */
-  static ExecutionPtr onRegion(RegionPtr region);
+  static ExecutionPtr onRegion(const RegionPtr& region);
 
   /**
    * Returns a {@link Execution} object that can be used to execute a data

@@ -36,7 +36,7 @@ CacheableVectorPtr ResultCollector::getResult(uint32_t timeout) {
         "getResult() method");
   }
 }
-void ResultCollector::addResult(CacheablePtr& result) {
+void ResultCollector::addResult(const CacheablePtr& result) {
   m_resultList->push_back(result);
 }
 void ResultCollector::endResults() { m_isResultReady = true; }

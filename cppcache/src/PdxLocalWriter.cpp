@@ -164,9 +164,9 @@ PdxWriterPtr PdxLocalWriter::writeChar(const char* fieldName, char value) {
   return shared_from_this();
 }
 
-PdxWriterPtr PdxLocalWriter::writeWideChar(const char* fieldName,
-                                           wchar_t value) {
-  m_dataOutput->writeChar(static_cast<uint16_t>(value));
+PdxWriterPtr PdxLocalWriter::writeChar(const char* fieldName,
+                                           char16_t value) {
+  m_dataOutput->writeChar(value);
   return shared_from_this();
 }
 

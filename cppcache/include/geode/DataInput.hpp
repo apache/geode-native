@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_DATAINPUT_H_
-#define GEODE_DATAINPUT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#pragma once
+
+#ifndef GEODE_DATAINPUT_H_
+#define GEODE_DATAINPUT_H_
 
 #include "geode_globals.hpp"
 #include "ExceptionTypes.hpp"
@@ -58,24 +57,15 @@ class DataInputInternal;
  */
 class CPPCACHE_EXPORT DataInput {
  public:
-  /**
-   * Read an unsigned byte from the <code>DataInput</code>.
-   *
-   * @param value output parameter to hold the unsigned byte read from stream
-   */
-  inline void read(uint8_t* value) {
-    checkBufferSize(1);
-    *value = *(m_buf++);
-  }
 
   /**
    * Read a signed byte from the <code>DataInput</code>.
    *
-   * @param value output parameter to hold the signed byte read from stream
+   * @@return signed byte read from stream
    */
-  inline void read(int8_t* value) {
+  inline int8_t read() {
     checkBufferSize(1);
-    *value = *(m_buf++);
+    return *(m_buf++);
   }
 
   /**
@@ -83,10 +73,9 @@ class CPPCACHE_EXPORT DataInput {
    *
    * @param value output parameter to hold the boolean read from stream
    */
-  inline void readBoolean(bool* value) {
+  inline bool readBoolean() {
     checkBufferSize(1);
-    *value = (*m_buf == 1 ? true : false);
-    m_buf++;
+    return *(m_buf++) == 1 ? true : false;
   }
 
   /**
@@ -136,8 +125,7 @@ class CPPCACHE_EXPORT DataInput {
    * @param len output parameter to hold the length of array read from stream
    */
   inline void readBytes(uint8_t** bytes, int32_t* len) {
-    int32_t length;
-    readArrayLen(&length);
+    int32_t length = readArrayLen();
     *len = length;
     uint8_t* buffer = nullptr;
     if (length > 0) {
@@ -160,8 +148,7 @@ class CPPCACHE_EXPORT DataInput {
    * @param len output parameter to hold the length of array read from stream
    */
   inline void readBytes(int8_t** bytes, int32_t* len) {
-    int32_t length;
-    readArrayLen(&length);
+    int32_t length = readArrayLen();
     *len = length;
     int8_t* buffer = nullptr;
     if (length > 0) {
@@ -174,42 +161,41 @@ class CPPCACHE_EXPORT DataInput {
   }
 
   /**
-   * Read a 16-bit unsigned integer from the <code>DataInput</code>.
+   * Read a 16-bit signed integer from the <code>DataInput</code>.
    *
-   * @param value output parameter to hold the 16-bit unsigned integer
-   *   read from stream
+   * @return 16-bit signed integer read from stream
    */
-  inline void readInt(uint16_t* value) {
+  inline int16_t  readInt16() {
     checkBufferSize(2);
-    uint16_t tmp = *(m_buf++);
-    tmp = static_cast<uint16_t>((tmp << 8) | *(m_buf++));
-    *value = tmp;
+    int16_t tmp = *(m_buf++);
+    tmp = static_cast<int16_t>((tmp << 8) | *(m_buf++));
+    return tmp;
   }
 
   /**
-   * Read a 32-bit unsigned integer from the <code>DataInput</code>.
+   * Read a 32-bit signed integer from the <code>DataInput</code>.g
    *
-   * @param value output parameter to hold the 32-bit unsigned integer
+   * @param value output parameter to hold the 32-bit signed integer
    *   read from stream
    */
-  inline void readInt(uint32_t* value) {
+  inline int32_t readInt32() {
     checkBufferSize(4);
-    uint32_t tmp = *(m_buf++);
+    int32_t tmp = *(m_buf++);
     tmp = (tmp << 8) | *(m_buf++);
     tmp = (tmp << 8) | *(m_buf++);
     tmp = (tmp << 8) | *(m_buf++);
-    *value = tmp;
+    return tmp;
   }
 
   /**
-   * Read a 64-bit unsigned integer from the <code>DataInput</code>.
+   * Read a 64-bit signed integer from the <code>DataInput</code>.
    *
-   * @param value output parameter to hold the 64-bit unsigned integer
+   * @param value output parameter to hold the 64-bit signed integer
    *   read from stream
    */
-  inline void readInt(uint64_t* value) {
+  inline int64_t readInt64() {
     checkBufferSize(8);
-    uint64_t tmp;
+    int64_t tmp;
     if (sizeof(long) == 8) {
       tmp = *(m_buf++);
       tmp = (tmp << 8) | *(m_buf++);
@@ -232,40 +218,7 @@ class CPPCACHE_EXPORT DataInput {
       hword = (hword << 8) | *(m_buf++);
       tmp = (tmp << 32) | hword;
     }
-    *value = tmp;
-  }
-
-  /**
-   * Read a 16-bit signed integer from the <code>DataInput</code>.
-   *
-   * @param value output parameter to hold the 16-bit signed integer
-   *   read from stream
-   */
-  inline void readInt(int16_t* value) {
-    checkBufferSize(2);
-    readInt(reinterpret_cast<uint16_t*>(value));
-  }
-
-  /**
-   * Read a 32-bit signed integer from the <code>DataInput</code>.
-   *
-   * @param value output parameter to hold the 32-bit signed integer
-   *   read from stream
-   */
-  inline void readInt(int32_t* value) {
-    checkBufferSize(4);
-    readInt(reinterpret_cast<uint32_t*>(value));
-  }
-
-  /**
-   * Read a 64-bit signed integer from the <code>DataInput</code>.
-   *
-   * @param value output parameter to hold the 64-bit signed integer
-   *   read from stream
-   */
-  inline void readInt(int64_t* value) {
-    checkBufferSize(8);
-    readInt(reinterpret_cast<uint64_t*>(value));
+    return tmp;
   }
 
   /**
@@ -276,27 +229,24 @@ class CPPCACHE_EXPORT DataInput {
    * @param len output parameter to hold the 32-bit signed length
    *   read from stream
    */
-  inline void readArrayLen(int32_t* len) {
-    uint8_t code;
-    read(&code);
+  inline int32_t readArrayLen() {
+    const uint8_t code = read();
     if (code == 0xFF) {
-      *len = -1;
+      return -1;
     } else {
       int32_t result = code;
       if (result > 252) {  // 252 is java's ((byte)-4 && 0xFF)
         if (code == 0xFE) {
-          uint16_t val;
-          readInt(&val);
+          uint16_t val =  readInt16();
           result = val;
         } else if (code == 0xFD) {
-          uint32_t val;
-          readInt(&val);
+          uint32_t val = readInt32();
           result = val;
         } else {
           throw IllegalStateException("unexpected array length code");
         }
       }
-      *len = result;
+      return result;
     }
   }
 
@@ -306,16 +256,14 @@ class CPPCACHE_EXPORT DataInput {
    * This is taken from the varint encoding in protobufs (BSD licensed).
    * See https://developers.google.com/protocol-buffers/docs/encoding
    */
-  inline void readUnsignedVL(int64_t* value) {
+  inline int64_t readUnsignedVL() {
     int32_t shift = 0;
     int64_t result = 0;
     while (shift < 64) {
-      int8_t b;
-      read(&b);
+      const auto b = read();
       result |= static_cast<int64_t>(b & 0x7F) << shift;
       if ((b & 0x80) == 0) {
-        *value = result;
-        return;
+        return result;
       }
       shift += 7;
     }
@@ -327,14 +275,14 @@ class CPPCACHE_EXPORT DataInput {
    *
    * @param value output parameter to hold the float read from stream
    */
-  inline void readFloat(float* value) {
+  inline float readFloat() {
     checkBufferSize(4);
     union float_uint32_t {
       float f;
       uint32_t u;
     } v;
-    readInt(&v.u);
-    *value = v.f;
+    v.u = readInt32();
+    return v.f;
   }
 
   /**
@@ -343,14 +291,14 @@ class CPPCACHE_EXPORT DataInput {
    * @param value output parameter to hold the double precision number
    *   read from stream
    */
-  inline void readDouble(double* value) {
+  inline double readDouble() {
     checkBufferSize(8);
     union double_uint64_t {
       double d;
       uint64_t ll;
     } v;
-    readInt(&v.ll);
-    *value = v.d;
+    v.ll = readInt64();
+     return v.d;
   }
 
   /**
@@ -383,8 +331,7 @@ class CPPCACHE_EXPORT DataInput {
    *   stream; not set if nullptr
    */
   inline void readASCII(char** value, uint16_t* len = nullptr) {
-    uint16_t length;
-    readInt(&length);
+    uint16_t length = readInt16();
     checkBufferSize(length);
     if (len != nullptr) {
       *len = length;
@@ -411,8 +358,7 @@ class CPPCACHE_EXPORT DataInput {
    *   stream; not set if nullptr
    */
   inline void readASCIIHuge(char** value, uint32_t* len = nullptr) {
-    uint32_t length;
-    readInt(&length);
+    uint32_t length = readInt32();
     if (len != nullptr) {
       *len = length;
     }
@@ -440,8 +386,7 @@ class CPPCACHE_EXPORT DataInput {
    *   stream; not set if nullptr
    */
   inline void readUTF(char** value, uint16_t* len = nullptr) {
-    uint16_t length;
-    readInt(&length);
+    uint16_t length = readInt16();
     checkBufferSize(length);
     uint16_t decodedLen =
         static_cast<uint16_t>(getDecodedLength(m_buf, length));
@@ -491,8 +436,7 @@ class CPPCACHE_EXPORT DataInput {
    *   stream; not set if nullptr
    */
   inline void readUTFHuge(char** value, uint32_t* len = nullptr) {
-    uint32_t length;
-    readInt(&length);
+    uint32_t length = readInt32();
     if (len != nullptr) {
       *len = length;
     }
@@ -500,10 +444,8 @@ class CPPCACHE_EXPORT DataInput {
     GF_NEW(str, char[length + 1]);
     *value = str;
     for (uint32_t i = 0; i < length; i++) {
-      int8_t item;
-      read(&item);  // ignore this - should be higher order zero byte
-      read(&item);
-      *str = item;
+      read();  // ignore this - should be higher order zero byte
+      *str = read();
       str++;
     }
     *str = '\0';  // null terminate for c-string.
@@ -526,8 +468,7 @@ class CPPCACHE_EXPORT DataInput {
    *   stream; not set if nullptr
    */
   inline void readUTF(wchar_t** value, uint16_t* len = nullptr) {
-    uint16_t length;
-    readInt(&length);
+    uint16_t length = readInt16();
     checkBufferSize(length);
     uint16_t decodedLen =
         static_cast<uint16_t>(getDecodedLength(m_buf, length));
@@ -558,8 +499,7 @@ class CPPCACHE_EXPORT DataInput {
    *   stream; not set if nullptr
    */
   inline void readUTFHuge(wchar_t** value, uint32_t* len = nullptr) {
-    uint32_t length;
-    readInt(&length);
+    uint32_t length = readInt32();
     if (len != nullptr) {
       *len = length;
     }
@@ -567,10 +507,8 @@ class CPPCACHE_EXPORT DataInput {
     GF_NEW(str, wchar_t[length + 1]);
     *value = str;
     for (uint32_t i = 0; i < length; i++) {
-      uint8_t hibyte;
-      read(&hibyte);
-      uint8_t lobyte;
-      read(&lobyte);
+      const auto hibyte = read();
+      const auto lobyte = read();
       *str = ((static_cast<uint16_t>(hibyte)) << 8) |
              static_cast<uint16_t>(lobyte);
       str++;
@@ -598,39 +536,30 @@ class CPPCACHE_EXPORT DataInput {
    * @see staticCast
    */
   template <class PTR>
-  inline void readObject(std::shared_ptr<PTR>& ptr,
+  inline std::shared_ptr<PTR> readObject(
                          bool throwOnError = DINP_THROWONERROR_DEFAULT) {
-    SerializablePtr sPtr;
-    readObjectInternal(sPtr);
+    SerializablePtr sPtr = readObjectInternal();
     if (throwOnError) {
-      ptr = std::dynamic_pointer_cast<PTR>(sPtr);
+      return std::dynamic_pointer_cast<PTR>(sPtr);
     } else {
-      ptr = std::static_pointer_cast<PTR>(sPtr);
+      return std::static_pointer_cast<PTR>(sPtr);
     }
   }
 
   inline bool readNativeBool() {
-    int8_t typeId = 0;
-    read(&typeId);
+    read(); // ignore type id
 
-    bool val;
-    readBoolean(&val);
-    return val;
+    return readBoolean();
   }
 
   inline int32_t readNativeInt32() {
-    int8_t typeId = 0;
-    read(&typeId);
-
-    int32_t val;
-    readInt(&val);
-    return val;
+    read(); // ignore type id
+    return readInt32();
   }
 
-  inline bool readNativeString(CacheableStringPtr& csPtr) {
-    int8_t typeId = 0;
-    read(&typeId);
-    int64_t compId = typeId;
+  inline CacheableStringPtr readNativeString() {
+    CacheableStringPtr csPtr;
+    const int64_t compId = read();
     if (compId == GeodeTypeIds::NullObj) {
       csPtr = nullptr;
     } else if (compId == GeodeTypeIds::CacheableNullString) {
@@ -659,52 +588,48 @@ class CPPCACHE_EXPORT DataInput {
       LOGDEBUG("In readNativeString something is wrong while expecting string");
       rewindCursor(1);
       csPtr = nullptr;
-      return false;
     }
-    return true;
+    return csPtr;
   }
 
-  inline void readDirectObject(SerializablePtr& ptr, int8_t typeId = -1) {
-    readObjectInternal(ptr, typeId);
+  inline SerializablePtr readDirectObject(int8_t typeId = -1) {
+    return readObjectInternal(typeId);
   }
 
   /**
    * Read a <code>Serializable</code> object from the <code>DataInput</code>.
    * Null objects are handled.
    */
-  inline void readObject(SerializablePtr& ptr) { readObjectInternal(ptr); }
+  inline void readObject(SerializablePtr& ptr) { ptr = readObjectInternal(); }
 
   inline void readObject(wchar_t* value) {
-    uint16_t temp = 0;
-    readInt(&temp);
+    uint16_t temp = readInt16();
     *value = static_cast<wchar_t>(temp);
   }
 
-  inline void readObject(bool* value) { readBoolean(value); }
+  inline void readObject(bool* value) { *value = readBoolean(); }
 
-  inline void readObject(int8_t* value) { read(value); }
+  inline void readObject(int8_t* value) { *value = read(); }
 
-  inline void readObject(int16_t* value) { readInt(value); }
+  inline void readObject(int16_t* value) { *value = readInt16(); }
 
-  inline void readObject(int32_t* value) { readInt(value); }
+  inline void readObject(int32_t* value) { *value = readInt32(); }
 
-  inline void readObject(int64_t* value) { readInt(value); }
+  inline void readObject(int64_t* value) { *value = readInt64(); }
 
-  inline void readObject(float* value) { readFloat(value); }
+  inline void readObject(float* value) { *value = readFloat(); }
 
-  inline void readObject(double* value) { readDouble(value); }
+  inline void readObject(double* value) { *value = readDouble(); }
 
   inline void readCharArray(char** value, int32_t& length) {
-    int arrayLen = 0;
-    readArrayLen(&arrayLen);
+    int arrayLen = readArrayLen();
     length = arrayLen;
     char* objArray = nullptr;
     if (arrayLen > 0) {
       objArray = new char[arrayLen];
       int i = 0;
       for (i = 0; i < arrayLen; i++) {
-        char tmp = 0;
-        readPdxChar(&tmp);
+        char tmp = readPdxChar();
         objArray[i] = tmp;
       }
       *value = objArray;
@@ -744,8 +669,7 @@ class CPPCACHE_EXPORT DataInput {
   }
 
   inline void readString(char** value) {
-    int8_t typeId;
-    read(&typeId);
+    const auto typeId = read();
 
     // Check for nullptr String
     if (typeId == GeodeTypeIds::CacheableNullString) {
@@ -777,8 +701,7 @@ class CPPCACHE_EXPORT DataInput {
   }
 
   inline void readWideString(wchar_t** value) {
-    int8_t typeId;
-    read(&typeId);
+    const auto typeId = read();
 
     // Check for nullptr String
     if (typeId == GeodeTypeIds::CacheableNullString) {
@@ -802,8 +725,7 @@ class CPPCACHE_EXPORT DataInput {
   }
 
   inline void readStringArray(char*** strArray, int32_t& length) {
-    int32_t arrLen;
-    readArrayLen(&arrLen);
+    int32_t arrLen = readArrayLen();
     length = arrLen;
     if (arrLen == -1) {
       *strArray = nullptr;
@@ -819,8 +741,7 @@ class CPPCACHE_EXPORT DataInput {
   }
 
   inline void readWideStringArray(wchar_t*** strArray, int32_t& length) {
-    int32_t arrLen;
-    readArrayLen(&arrLen);
+    int32_t arrLen = readArrayLen();
     length = arrLen;
     if (arrLen == -1) {
       *strArray = nullptr;
@@ -838,8 +759,7 @@ class CPPCACHE_EXPORT DataInput {
   inline void readArrayOfByteArrays(int8_t*** arrayofBytearr,
                                     int32_t& arrayLength,
                                     int32_t** elementLength) {
-    int32_t arrLen;
-    readArrayLen(&arrLen);
+    int32_t arrLen = readArrayLen();
     arrayLength = arrLen;
 
     if (arrLen == -1) {
@@ -980,12 +900,11 @@ class CPPCACHE_EXPORT DataInput {
   const char* m_poolName;
   const Cache* m_cache;
 
-  void readObjectInternal(SerializablePtr& ptr, int8_t typeId = -1);
+  SerializablePtr readObjectInternal(int8_t typeId = -1);
 
   template <typename mType>
   void readObject(mType** value, int32_t& length) {
-    int arrayLen;
-    readArrayLen(&arrayLen);
+    int arrayLen = readArrayLen();
     length = arrayLen;
     mType* objArray;
     if (arrayLen > 0) {
@@ -1000,10 +919,8 @@ class CPPCACHE_EXPORT DataInput {
     }
   }
 
-  inline void readPdxChar(char* value) {
-    int16_t val = 0;
-    readInt(&val);
-    *value = static_cast<char>(val);
+  inline char readPdxChar() {
+    return static_cast<char>(readInt16());
   }
 
   inline void _checkBufferSize(int32_t size, int32_t line) {

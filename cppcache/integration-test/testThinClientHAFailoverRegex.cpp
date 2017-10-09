@@ -421,11 +421,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
   {
-    VectorOfCacheableKey vec0, vec1;
     RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
     RegionPtr reg1 = getHelper()->getRegion(regionNames[1]);
-    reg0->serverKeys(vec0);
-    reg1->serverKeys(vec1);
+    auto vec0 = reg0->serverKeys();
+    auto vec1 = reg1->serverKeys();
     ASSERT(vec0.size() == 2, "Should have 2 keys in first region.");
     ASSERT(vec1.size() == 2, "Should have 2 keys in second region.");
     std::string key0, key1;

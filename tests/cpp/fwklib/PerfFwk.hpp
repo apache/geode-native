@@ -202,8 +202,8 @@ class Record {
 
   inline void read(apache::geode::client::DataInput& input) {
     input.readASCII(&m_testName);
-    input.readInt(reinterpret_cast<int32_t*>(&m_operations));
-    input.readInt(reinterpret_cast<int32_t*>(&m_micros));
+    m_operations = input.readInt32();
+    m_micros = input.readInt32();
   }
 
   inline std::string perSec() {

@@ -663,7 +663,7 @@ namespace Apache
           {
             ManagedTypeMappingGeneric[SByte::typeid] = native::GeodeTypeIds::CacheableByte;
             ManagedTypeMappingGeneric[Boolean::typeid] = native::GeodeTypeIds::CacheableBoolean;
-            ManagedTypeMappingGeneric[Char::typeid] = native::GeodeTypeIds::CacheableWideChar;
+            ManagedTypeMappingGeneric[Char::typeid] = native::GeodeTypeIds::CacheableCharacter;
             ManagedTypeMappingGeneric[Double::typeid] = native::GeodeTypeIds::CacheableDouble;
             ManagedTypeMappingGeneric[String::typeid] = native::GeodeTypeIds::CacheableASCIIString;
             ManagedTypeMappingGeneric[float::typeid] = native::GeodeTypeIds::CacheableFloat;

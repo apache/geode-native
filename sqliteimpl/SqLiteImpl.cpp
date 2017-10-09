@@ -28,7 +28,8 @@ std::string g_default_persistence_directory = "GeodeRegionData";
 
 using namespace apache::geode::client;
 
-void SqLiteImpl::init(const RegionPtr& region, PropertiesPtr& diskProperties) {
+void SqLiteImpl::init(const RegionPtr& region,
+                      const PropertiesPtr& diskProperties) {
   // Set the default values
 
   int maxPageCount = 0;

@@ -49,7 +49,7 @@ namespace client {
  */
 class CPPCACHE_EXPORT CqAttributesImpl : public CqAttributes {
  public:
-  void getCqListeners(listener_container_type& vl);
+  listener_container_type getCqListeners() override;
 
   /**
    * Get the CqListener set with the CQ.

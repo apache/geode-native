@@ -182,7 +182,7 @@ void Properties::addAll(const PropertiesPtr& other) {
 
    public:
     explicit Copier(Properties& lhs) : m_lhs(lhs) {}
-    void visit(CacheableKeyPtr& key, CacheablePtr& value) {
+    void visit(const CacheableKeyPtr& key, const CacheablePtr& value) {
       m_lhs.insert(key, value);
     }
   } aCopier(*this);
@@ -308,22 +308,21 @@ void Properties::toData(DataOutput& output) const {
 }
 
 void Properties::fromData(DataInput& input) {
-  int32_t mapSize = 0;
-  input.readArrayLen(&mapSize);
+  int32_t mapSize = input.readArrayLen();
   for (int i = 0; i < mapSize; i++) {
     CacheableStringPtr key;
     CacheableStringPtr val;
     // TODO: need to look just look typeid if string then convert otherwise
     // continue with readobject
 
-    if (!input.readNativeString(key)) {
+    if (!(key = input.readNativeString())) {
       CacheableKeyPtr keyPtr;
       CacheablePtr valPtr;
-      input.readObject(keyPtr, true);
+      keyPtr = input.readObject<CacheableKey>(true);
       input.readObject(valPtr);
       MAP->rebind(keyPtr, valPtr);
     } else {
-      if (!input.readNativeString(val)) {
+      if (!(val = input.readNativeString())) {
         CacheablePtr valPtr;
         input.readObject(valPtr);
         MAP->rebind(key, valPtr);

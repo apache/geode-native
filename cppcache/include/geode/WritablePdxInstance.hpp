@@ -194,21 +194,6 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * The setField method has copy-on-write semantics.
    * So for the modifications to be stored in the cache the WritablePdxInstance
    * must be put into a region after setField has been called one or more times.
-   * wchar_t type is corresponding to java char type.
-   * @param fieldName
-   *          name of the field whose value will be set
-   * @param value
-   *          value that will be set to the field of type wchar_t
-   * @throws IllegalStateException if the named field does not exist
-   * or if the type of the value is not compatible with the field.
-   */
-  virtual void setField(const char* fieldName, wchar_t value) = 0;
-
-  /**
-   * Set the existing named field to the given value.
-   * The setField method has copy-on-write semantics.
-   * So for the modifications to be stored in the cache the WritablePdxInstance
-   * must be put into a region after setField has been called one or more times.
    * char type is corresponding to java char type.
    * @param fieldName
    *          name of the field whose value will be set
@@ -217,7 +202,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, char value) = 0;
+  virtual void setField(const char* fieldName, char16_t value) = 0;
 
   /**
    * Set the existing named field to the given value.

@@ -358,9 +358,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_Locator)
     createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TEST_POOL1__",
                        true);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    regPtr->registerAllKeys(false, nullptr, false, false);
+    regPtr->registerAllKeys(false, false, false);
     regPtr = getHelper()->getRegion(regionNames[1]);
-    regPtr->registerAllKeys(false, nullptr, false, false);
+    regPtr->registerAllKeys(false, false, false);
     LOG("StepOne complete.");
   }
 END_TASK_DEFINITION
@@ -376,9 +376,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_Locator)
     createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TEST_POOL1__",
                        true);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    regPtr->registerAllKeys(false, nullptr, false, false);
+    regPtr->registerAllKeys(false, false, false);
     regPtr = getHelper()->getRegion(regionNames[1]);
-    regPtr->registerAllKeys(false, nullptr, false, false);
+    regPtr->registerAllKeys(false, false, false);
     LOG("StepTwo complete.");
   }
 END_TASK_DEFINITION
@@ -420,11 +420,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
-    VectorOfCacheableKey vec0, vec1;
     RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
     RegionPtr reg1 = getHelper()->getRegion(regionNames[1]);
-    reg0->serverKeys(vec0);
-    reg1->serverKeys(vec1);
+    auto vec0 = reg0->serverKeys();
+    auto vec1 = reg1->serverKeys();
     ASSERT(vec0.size() == 3, "Should have 3 keys in first region.");
     ASSERT(vec1.size() == 2, "Should have 2 keys in second region.");
 

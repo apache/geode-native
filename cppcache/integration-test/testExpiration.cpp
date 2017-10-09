@@ -29,8 +29,7 @@ ExpirationAction::Action action = ExpirationAction::DESTROY;
 // This test is for serially running the tests.
 
 size_t getNumOfEntries(RegionPtr& R1) {
-  VectorOfCacheableKey v;
-  R1->keys(v);
+  VectorOfCacheableKey v = R1->keys();
   LOGFINE("Number of keys in region %s is %d", R1->getFullPath(), v.size());
   return v.size();
 }

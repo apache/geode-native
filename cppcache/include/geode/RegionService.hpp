@@ -105,7 +105,7 @@ class CPPCACHE_EXPORT RegionService {
    * @param regions the returned set of
    * regions
    */
-  virtual void rootRegions(VectorOfRegion& regions) = 0;
+  virtual VectorOfRegion rootRegions() = 0;
 
   /**
   * Returns a factory that can create a {@link PdxInstance}.

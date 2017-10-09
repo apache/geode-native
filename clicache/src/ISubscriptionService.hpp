@@ -254,9 +254,6 @@ namespace Apache
         /// Should only be called for durable clients and with cache server version 5.5 onwards.
         /// </summary>
         /// <param name="isDurable">whether the registration should be durable</param>
-        /// <param name="resultKeys">
-        /// if non-null then all keys on the server are returned
-        /// </param>
         /// <param name="getInitialValues">
         /// true to populate the cache with values of all the keys
         /// from the server
@@ -282,7 +279,6 @@ namespace Apache
         /// </exception>
         /// <exception cref="UnknownException">For other exceptions.</exception>
         void RegisterAllKeys(bool isDurable,
-                             System::Collections::Generic::ICollection<TKey>^ resultKeys,
                              bool getInitialValues);
 
         /// <summary>
@@ -293,9 +289,6 @@ namespace Apache
         /// Should only be called for durable clients and with cache server version 5.5 onwards.
         /// </summary>
         /// <param name="isDurable">whether the registration should be durable</param>
-        /// <param name="resultKeys">
-        /// if non-null then all keys on the server are returned
-        /// </param>
         /// <param name="getInitialValues">
         /// true to populate the cache with values of all the keys
         /// from the server
@@ -322,7 +315,6 @@ namespace Apache
         /// </exception>
         /// <exception cref="UnknownException">For other exceptions.</exception>
         void RegisterAllKeys(bool isDurable,
-                             System::Collections::Generic::ICollection<TKey>^ resultKeys,
                              bool getInitialValues,
                              bool receiveValues);
 
@@ -451,54 +443,6 @@ namespace Apache
         /// </summary>
         /// <param name="regex">the regular expression to register</param>
         /// <param name="isDurable">whether the registration should be durable</param>
-        /// <param name="resultKeys">
-        /// if non-null then the keys that match the regular expression
-        /// on the server are returned
-        ///</param>
-        /// <exception cref="IllegalArgumentException">
-        /// If the regular expression string is empty.
-        /// </exception>
-        /// <exception cref="CacheServerException">
-        /// If an exception is received from the Java cache server.
-        /// </exception>
-        /// <exception cref="NotConnectedException">
-        /// if not connected to the Geode system because the client cannot
-        /// establish usable connections to any of the servers given to it.
-        /// For pools configured with locators, if no locators are available, innerException
-        /// of NotConnectedException is set to NoAvailableLocatorsException.
-        /// </exception>
-        /// <exception cref="MessageException">
-        /// If the message received from server could not be handled. This will
-        /// be the case when an unregistered typeId is received in the reply or
-        /// reply is not well formed. More information can be found in the log.
-        /// </exception>
-        /// <exception cref="RegionDestroyedException">
-        /// If region destroy is pending.
-        /// </exception>
-        /// <exception cref="UnsupportedOperationException">
-        /// If the region is not a Native Client region or
-        /// <see cref="AttributesFactory.SetClientNotificationEnabled" /> is false.
-        /// </exception>
-        /// <exception cref="TimeoutException">
-        /// if the operation timed out
-        /// </exception>
-        /// <exception cref="UnknownException">For other exceptions.</exception>
-        void RegisterRegex(String^ regex, bool isDurable,
-                           System::Collections::Generic::ICollection<TKey>^ resultKeys);
-
-        /// <summary>
-        /// Register interest for the keys of the region that match the
-        /// given regular expression to get updates from the server.
-        /// Valid only for a Native Client region when client notification
-        /// ( <see cref="AttributesFactory.SetClientNotificationEnabled" /> ) is true.
-        /// Should only be called for durable clients and with cache server version 5.5 onwards.
-        /// </summary>
-        /// <param name="regex">the regular expression to register</param>
-        /// <param name="isDurable">whether the registration should be durable</param>
-        /// <param name="resultKeys">
-        /// if non-null then the keys that match the regular expression
-        /// on the server are returned
-        ///</param>
         /// <param name="getInitialValues">
         /// true to populate the cache with values of the keys
         /// that were registered on the server
@@ -531,8 +475,7 @@ namespace Apache
         /// if the operation timed out
         /// </exception>
         /// <exception cref="UnknownException">For other exceptions.</exception>
-        void RegisterRegex(String^ regex, bool isDurable,
-                           System::Collections::Generic::ICollection<TKey>^ resultKeys, bool getInitialValues);
+        void RegisterRegex(String^ regex, bool isDurable, bool getInitialValues);
 
         /// <summary>
         /// Register interest for the keys of the region that match the
@@ -543,10 +486,6 @@ namespace Apache
         /// </summary>
         /// <param name="regex">the regular expression to register</param>
         /// <param name="isDurable">whether the registration should be durable</param>
-        /// <param name="resultKeys">
-        /// if non-null then the keys that match the regular expression
-        /// on the server are returned
-        ///</param>
         /// <param name="getInitialValues">
         /// true to populate the cache with values of the keys
         /// that were registered on the server
@@ -581,7 +520,7 @@ namespace Apache
         /// </exception>
         /// <exception cref="UnknownException">For other exceptions.</exception>
         void RegisterRegex(String^ regex, bool isDurable,
-                           System::Collections::Generic::ICollection<TKey>^ resultKeys, bool getInitialValues, bool receiveValues);
+                           bool getInitialValues, bool receiveValues);
 
         /// <summary>
         /// Unregister interest for the keys of the region that match the

@@ -16,6 +16,7 @@
  */
 
 #include "begin_native.hpp"
+#include <tuple>
 #include "geode/Region.hpp"
 #include "geode/Cache.hpp"
 #include "end_native.hpp"
@@ -173,7 +174,7 @@ namespace Apache
 
           try
           {
-            m_nativeptr->get()->entries(vc, false);
+            vc = m_nativeptr->get()->entries(false);
           }
           finally
           {
@@ -204,7 +205,7 @@ namespace Apache
 
           try
           {
-            m_nativeptr->get()->entries(vc, false);
+            vc = m_nativeptr->get()->entries(false);
           }
           finally
           {
@@ -320,7 +321,7 @@ namespace Apache
           native::VectorOfCacheableKey vc;
         try
         {
-          m_nativeptr->get()->serverKeys(vc);
+          vc = m_nativeptr->get()->serverKeys();
         }
         finally
         {
@@ -346,7 +347,7 @@ namespace Apache
           native::VectorOfCacheable vc;
         try
         {
-          m_nativeptr->get()->values(vc);
+          vc = m_nativeptr->get()->values();
         }
         finally
         {
@@ -678,34 +679,21 @@ namespace Apache
               Serializable::GetUnmanagedValueGeneric<TKey>(item));
           }
 
-          native::HashMapOfCacheablePtr valuesPtr;
-          if (values != nullptr) {
-            valuesPtr = std::make_shared<native::HashMapOfCacheable>();
-          }
-          native::HashMapOfExceptionPtr exceptionsPtr;
-          if (exceptions != nullptr) {
-            exceptionsPtr = std::make_shared<native::HashMapOfException>();
-          }
+          native::HashMapOfCacheable native_value;
+        
           try
           {
-            m_nativeptr->get()->getAll(vecKeys, valuesPtr, exceptionsPtr, addToLocalCache);
+            native_value = m_nativeptr->get()->getAll(vecKeys);
           }
           finally
           {
             GC::KeepAlive(m_nativeptr);
           }
           if (values != nullptr) {
-            for (const auto& iter : *valuesPtr) {
+            for (const auto& iter : native_value) {
               TKey key = Serializable::GetManagedValueGeneric<TKey>(iter.first);
               TValue val = Serializable::GetManagedValueGeneric<TValue>(iter.second);
               values->Add(key, val);
-            }
-          }
-          if (exceptions != nullptr) {
-            for (const auto& iter : *exceptionsPtr) {
-              TKey key = Serializable::GetManagedValueGeneric<TKey>(iter.first);
-              System::Exception^ ex = GeodeException::Get(*(iter.second));
-              exceptions->Add(key, ex);
             }
           }
 
@@ -737,36 +725,24 @@ namespace Apache
           if (values != nullptr) {
             valuesPtr = std::make_shared<native::HashMapOfCacheable>();
           }
-          native::HashMapOfExceptionPtr exceptionsPtr;
-          if (exceptions != nullptr) {
-            exceptionsPtr = std::make_shared<native::HashMapOfException>();
-          }
-
-         native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
-
+         native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg, m_nativeptr->get()->getCache().get());
+         native::HashMapOfCacheable native_value;
           try
           {
-            m_nativeptr->get()->getAll(vecKeys, valuesPtr, exceptionsPtr, addToLocalCache, callbackptr);
+            native_value = m_nativeptr->get()->getAll(vecKeys, callbackptr);
           }
           finally
           {
             GC::KeepAlive(m_nativeptr);
           }
           if (values != nullptr) {
-            for (const auto& iter : *valuesPtr) {
+            for (const auto& iter : native_value) {
               TKey key = Serializable::GetManagedValueGeneric<TKey>(iter.first);
               TValue val = Serializable::GetManagedValueGeneric<TValue>(iter.second);
               values->Add(key, val);
             }
           }
-          if (exceptions != nullptr) {
-            for (const auto& iter : *exceptionsPtr) {
-              TKey key = Serializable::GetManagedValueGeneric<TKey>(iter.first);
-              System::Exception^ ex = GeodeException::Get(*(iter.second));
-              exceptions->Add(key, ex);
-            }
-          }
-
+ 
           _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
         }
         else {
@@ -955,7 +931,7 @@ namespace Apache
           native::VectorOfRegion vsr;
         try
         {
-          m_nativeptr->get()->subregions(recursive, vsr);
+          vsr = m_nativeptr->get()->subregions(recursive);
         }
         finally
         {
@@ -1002,7 +978,7 @@ namespace Apache
         native::VectorOfRegionEntry vc;
         try
         {
-          m_nativeptr->get()->entries(vc, recursive);
+          vc = m_nativeptr->get()->entries(recursive);
         }
         finally
         {
@@ -1102,7 +1078,7 @@ namespace Apache
           native::VectorOfRegionEntry vc;
         try
         {
-          m_nativeptr->get()->entries(vc, false);
+          vc = m_nativeptr->get()->entries(false);
         }
         finally
         {
@@ -1211,60 +1187,39 @@ namespace Apache
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::RegisterAllKeys()
       {
-        RegisterAllKeys(false, nullptr, false);
+        RegisterAllKeys(false, false);
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::RegisterAllKeys(bool isDurable)
       {
-        RegisterAllKeys(isDurable, nullptr, false);
+        RegisterAllKeys(isDurable, false);
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::RegisterAllKeys(bool isDurable,
-                                                  System::Collections::Generic::ICollection<TKey>^ resultKeys,
                                                   bool getInitialValues)
       {
-        RegisterAllKeys(isDurable, resultKeys, getInitialValues, true);
+        RegisterAllKeys(isDurable, getInitialValues, true);
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::RegisterAllKeys(bool isDurable,
-                                                  System::Collections::Generic::ICollection<TKey>^ resultKeys,
                                                   bool getInitialValues,
                                                   bool receiveValues)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+          
+        try
+        {
+            m_nativeptr->get()->registerAllKeys(isDurable, getInitialValues, receiveValues);
+        }
+        finally
+        {
+            GC::KeepAlive(m_nativeptr);
+        }
 
-          if (resultKeys != nullptr) {
-            auto mg_keys = std::make_shared<native::VectorOfCacheableKey>();
-
-            try
-            {
-              m_nativeptr->get()->registerAllKeys(isDurable, mg_keys, getInitialValues, receiveValues);
-            }
-            finally
-            {
-              GC::KeepAlive(m_nativeptr);
-            }
-
-            for (System::Int32 index = 0; index < mg_keys->size(); ++index) {
-              resultKeys->Add(Serializable::GetManagedValueGeneric<TKey>(
-                mg_keys->operator[](index)));
-            }
-          }
-          else {
-            try
-            {
-              m_nativeptr->get()->registerAllKeys(isDurable, nullptr, getInitialValues, receiveValues);
-            }
-            finally
-            {
-              GC::KeepAlive(m_nativeptr);
-            }
-          }
-
-          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
@@ -1275,7 +1230,7 @@ namespace Apache
           native::VectorOfCacheableKey vc;
         try
         {
-          m_nativeptr->get()->getInterestList(vc);
+          vc = m_nativeptr->get()->getInterestList();
         }
         finally
         {
@@ -1302,7 +1257,7 @@ namespace Apache
           native::VectorOfCacheableString vc;
         try
         {
-          m_nativeptr->get()->getInterestListRegex(vc);
+          vc = m_nativeptr->get()->getInterestListRegex();
         }
         finally
         {
@@ -1341,52 +1296,32 @@ namespace Apache
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::RegisterRegex(String^ regex)
       {
-        RegisterRegex(regex, false, nullptr, false);
+        RegisterRegex(regex, false, false);
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::RegisterRegex(String^ regex, bool isDurable)
       {
-        RegisterRegex(regex, isDurable, nullptr, false);
+        RegisterRegex(regex, isDurable, false);
       }
 
       generic<class TKey, class TValue>
-      void Region<TKey, TValue>::RegisterRegex(String^ regex, bool isDurable,
-                                                System::Collections::Generic::ICollection<TKey>^ resultKeys)
+      void Region<TKey, TValue>::RegisterRegex(String^ regex, bool isDurable, bool getInitialValues)
       {
-        RegisterRegex(regex, isDurable, resultKeys, false);
+        RegisterRegex(regex, isDurable, getInitialValues, true);
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::RegisterRegex(String^ regex, bool isDurable,
-                                                System::Collections::Generic::ICollection<TKey>^ resultKeys, bool getInitialValues)
-      {
-        RegisterRegex(regex, isDurable, resultKeys, getInitialValues, true);
-      }
-
-      generic<class TKey, class TValue>
-      void Region<TKey, TValue>::RegisterRegex(String^ regex, bool isDurable,
-                                                System::Collections::Generic::ICollection<TKey>^ resultKeys, bool getInitialValues, bool receiveValues)
+          bool getInitialValues, bool receiveValues)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          try
+        try
         {
           ManagedString mg_regex(regex);
-          if (resultKeys != nullptr) {
-            auto mg_keys = std::make_shared<native::VectorOfCacheableKey>();
-            m_nativeptr->get()->registerRegex(mg_regex.CharPtr, isDurable,
-              mg_keys, getInitialValues, receiveValues);
-
-            for (System::Int32 index = 0; index < mg_keys->size(); ++index) {
-              resultKeys->Add(Serializable::GetManagedValueGeneric<TKey>(
-                mg_keys->operator[](index)));
-            }
-          }
-          else {
-            m_nativeptr->get()->registerRegex(mg_regex.CharPtr, isDurable,
-              nullptr, getInitialValues, receiveValues);
-          }
+          m_nativeptr->get()->registerRegex(mg_regex.CharPtr, isDurable,
+            getInitialValues, receiveValues);
         }
         finally
         {

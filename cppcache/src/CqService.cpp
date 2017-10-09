@@ -193,14 +193,15 @@ void CqService::clearCqQueryMap() {
 /**
  * Retrieve  all registered CQs
  */
-void CqService::getAllCqs(query_container_type& cqVec) {
-  cqVec.clear();
+CqService::query_container_type CqService::getAllCqs() {
+  CqService::query_container_type cqVec;
   MapOfRegionGuard guard(m_cqQueryMap->mutex());
-  if (m_cqQueryMap->current_size() == 0) return;
+  if (m_cqQueryMap->current_size() == 0) return cqVec;
   cqVec.reserve(static_cast<int32_t>(m_cqQueryMap->current_size()));
   for (auto& q : *m_cqQueryMap) {
     cqVec.push_back(q.int_id_);
   }
+  return cqVec;
 }
 
 /**
@@ -208,8 +209,7 @@ void CqService::getAllCqs(query_container_type& cqVec) {
  */
 void CqService::executeAllClientCqs(bool afterFailover) {
   // ACE_Guard< ACE_Recursive_Thread_Mutex > _guard( m_mutex );
-  query_container_type cqVec;
-  getAllCqs(cqVec);
+  query_container_type cqVec = getAllCqs();
   // MapOfRegionGuard guard( m_cqQueryMap->mutex() );
   executeCqs(cqVec, afterFailover);
 }
@@ -218,8 +218,7 @@ void CqService::executeAllClientCqs(bool afterFailover) {
  * Executes all CQs on the specified endpoint after failover.
  */
 GfErrType CqService::executeAllClientCqs(TcrEndpoint* endpoint) {
-  query_container_type cqVec;
-  getAllCqs(cqVec);
+  query_container_type cqVec = getAllCqs();
   return executeCqs(cqVec, endpoint);
 }
 
@@ -281,8 +280,7 @@ void CqService::executeCqs(query_container_type& cqs, bool afterFailover) {
  * Stops all the cqs
  */
 void CqService::stopAllClientCqs() {
-  query_container_type cqVec;
-  getAllCqs(cqVec);
+  query_container_type cqVec = getAllCqs();
   // MapOfRegionGuard guard( m_cqQueryMap->mutex() );
   stopCqs(cqVec);
 }
@@ -363,8 +361,7 @@ void CqService::closeCqService() {
 }
 void CqService::closeAllCqs() {
   Log::fine("closeAllCqs()");
-  query_container_type cqVec;
-  getAllCqs(cqVec);
+  query_container_type cqVec = getAllCqs();
   Log::fine("closeAllCqs() 1");
   MapOfRegionGuard guard(m_cqQueryMap->mutex());
   Log::fine("closeAllCqs() 2");
@@ -456,15 +453,7 @@ void CqService::invokeCqListeners(const std::map<std::string, int>* cqs,
     cQueryImpl->updateStats(*cqEvent);
 
     // invoke CQ Listeners.
-    CqAttributes::listener_container_type cqListeners;
-    cQueryImpl->getCqAttributes()->getCqListeners(cqListeners);
-    /*
-    Log::fine(("Invoking CqListeners for the CQ, CqName : " + cqName +
-        " , Number of Listeners : " + cqListeners.length() + " cqEvent : " +
-    cqEvent);
-        */
-
-    for (auto l : cqListeners) {
+    for (auto l : cQueryImpl->getCqAttributes()->getCqListeners()) {
       try {
         // Check if the listener is not null, it could have been changed/reset
         // by the CqAttributeMutator.
@@ -488,8 +477,7 @@ void CqService::invokeCqListeners(const std::map<std::string, int>* cqs,
 
 void CqService::invokeCqConnectedListeners(const std::string& poolName,
                                            bool connected) {
-  query_container_type vec;
-  getAllCqs(vec);
+  query_container_type vec = getAllCqs();
   for (int32_t i = 0; i < vec.size(); i++) {
     std::string cqName = vec.at(i)->getName();
     auto cQuery = getCq(cqName);
@@ -511,9 +499,7 @@ void CqService::invokeCqConnectedListeners(const std::string& poolName,
     }
 
     // invoke CQ Listeners.
-    std::vector<CqListenerPtr> cqListeners;
-    cQueryImpl->getCqAttributes()->getCqListeners(cqListeners);
-    for (auto l : cqListeners) {
+    for (auto l : cQueryImpl->getCqAttributes()->getCqListeners()) {
       try {
         // Check if the listener is not null, it could have been changed/reset
         // by the CqAttributeMutator.

@@ -717,11 +717,11 @@ namespace Apache.Geode.Client.UnitTests
     public void registerAllKeys()
     {
       Region region1 = CacheHelper.GetVerifyRegion<object, object>("PoolRegion1");
-      region1.GetSubscriptionService().RegisterAllKeys(false, null, true);
+      region1.GetSubscriptionService().RegisterAllKeys(false, true);
       Region region2 = CacheHelper.GetVerifyRegion<object, object>("PoolRegion2");
-      region2.GetSubscriptionService().RegisterAllKeys(false, null, true);
+      region2.GetSubscriptionService().RegisterAllKeys(false, true);
       Region region3 = CacheHelper.GetVerifyRegion<object, object>("PoolRegion3");
-      region3.GetSubscriptionService().RegisterAllKeys(false, null, true);
+      region3.GetSubscriptionService().RegisterAllKeys(false, true);
     }
 
     void runPoolRedundancy()

@@ -14,12 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "CqAttributesImpl.hpp"
 #include <geode/ExceptionTypes.hpp>
-using namespace apache::geode::client;
-void CqAttributesImpl::getCqListeners(listener_container_type& vl) {
+
+namespace apache {
+namespace geode {
+namespace client {
+
+CqAttributes::listener_container_type CqAttributesImpl::getCqListeners() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
-  vl = m_cqListeners;
+  return m_cqListeners;
 }
 
 void CqAttributesImpl::addCqListener(const CqListenerPtr& cql) {
@@ -80,3 +85,7 @@ void CqAttributesImpl::removeCqListener(const CqListenerPtr& cql) {
     }
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

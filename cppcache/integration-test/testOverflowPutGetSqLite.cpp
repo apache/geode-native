@@ -36,10 +36,8 @@ std::string sqlite_dir = "SqLiteRegionData";
 
 // Return the number of keys and values in entries map.
 void getNumOfEntries(RegionPtr& regionPtr, uint32_t num) {
-  VectorOfCacheableKey v;
-  regionPtr->keys(v);
-  VectorOfCacheable vecValues;
-  regionPtr->values(vecValues);
+  auto v = regionPtr->keys();
+  auto vecValues = regionPtr->values();
   printf("Values vector size is %zd\n", vecValues.size());
   printf("Num is %d\n", num);
   ASSERT(vecValues.size() == num, (char*)"size of value vec and num not equal");
@@ -87,8 +85,7 @@ void validateAttribute(RegionPtr& regionPtr) {
 }
 
 void checkOverflowTokenValues(RegionPtr& regionPtr, uint32_t num) {
-  VectorOfCacheableKey v;
-  regionPtr->keys(v);
+  VectorOfCacheableKey v = regionPtr->keys();
   CacheableKeyPtr keyPtr;
   CacheablePtr valuePtr;
   int count = 0;
@@ -111,8 +108,7 @@ void checkOverflowTokenValues(RegionPtr& regionPtr, uint32_t num) {
 }
 
 void checkOverflowToken(RegionPtr& regionPtr, uint32_t lruLimit) {
-  VectorOfCacheableKey v;
-  regionPtr->keys(v);
+  VectorOfCacheableKey v = regionPtr->keys();
   CacheableKeyPtr keyPtr;
   CacheablePtr valuePtr;
   int normalCount = 0;
@@ -226,8 +222,7 @@ uint32_t doNget(RegionPtr& regionPtr, uint32_t num, uint32_t start = 0) {
  *  Test the entry operation ( local invalidate, localDestroy ).
  */
 void testEntryDestroy(RegionPtr& regionPtr, uint32_t num) {
-  VectorOfCacheableKey v;
-  regionPtr->keys(v);
+  VectorOfCacheableKey v = regionPtr->keys();
   VectorOfCacheable vecValues;
   CacheablePtr valuePtr;
   for (uint32_t i = 45; i < 50; i++) {
@@ -239,13 +234,12 @@ void testEntryDestroy(RegionPtr& regionPtr, uint32_t num) {
       ASSERT(false, (char*)"entry missing");
     }
   }
-  regionPtr->keys(v);
+  v = regionPtr->keys();
   ASSERT(v.size() == num - 5, (char*)"size of key vec not equal");
 }
 
 void testEntryInvalidate(RegionPtr& regionPtr, uint32_t num) {
-  VectorOfCacheableKey v;
-  regionPtr->keys(v);
+  VectorOfCacheableKey v = regionPtr->keys();
   VectorOfCacheable vecValues;
   CacheablePtr valuePtr;
   for (uint32_t i = 40; i < 45; i++) {
@@ -257,7 +251,7 @@ void testEntryInvalidate(RegionPtr& regionPtr, uint32_t num) {
       ASSERT(false, (char*)"entry missing");
     }
   }
-  regionPtr->keys(v);
+  v = regionPtr->keys();
   ASSERT(v.size() == num, (char*)"size of key vec not equal");
 }
 
@@ -290,12 +284,10 @@ void verifyGetAll(RegionPtr region, int startIndex) {
   for (int i = 0; i <= 100; i++) keysVector.push_back(CacheableKey::create(i));
 
   // keysVector.push_back(CacheableKey::create(101)); //key not there
-  auto valuesMap = std::make_shared<HashMapOfCacheable>();
-  valuesMap->clear();
-  region->getAll(keysVector, valuesMap, nullptr, false);
-  if (valuesMap->size() == keysVector.size()) {
+  const auto valuesMap = region->getAll(keysVector);
+  if (valuesMap.size() == keysVector.size()) {
     int i = startIndex;
-    for (const auto& iter : *valuesMap) {
+    for (const auto& iter : valuesMap) {
       auto key = std::dynamic_pointer_cast<CacheableKey>(iter.first);
       CacheablePtr mVal = iter.second;
       if (mVal != nullptr) {

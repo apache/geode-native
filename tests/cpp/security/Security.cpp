@@ -703,10 +703,9 @@ int32_t Security::checkValues() {
   int32_t result = FWK_SEVERE;
   FWKINFO("In Security::checkValues()");
   try {
-    RegionPtr region = getRegionPtr();
+    auto region = getRegionPtr();
 
-    VectorOfCacheable vals;
-    region->values(vals);
+    auto vals = region->values();
     int32_t creates = 0;
     int32_t updates = 0;
     int32_t unknowns = 0;
@@ -761,8 +760,7 @@ RegionPtr Security::getRegionPtr(const char *reg) {
   }
   try {
     if (name.empty()) {  // just get a random root region
-      VectorOfRegion rootRegionVector;
-      m_cache->rootRegions(rootRegionVector);
+      auto rootRegionVector = m_cache->rootRegions();
       int32_t size = rootRegionVector.size();
 
       if (size == 0) {

@@ -88,7 +88,7 @@ class CPPCACHE_EXPORT PersistenceManager {
    * @throws InitfailedException if the persistence manager cannot be
    * initialized.
    */
-  virtual void init(const RegionPtr& region, PropertiesPtr& diskProperties) = 0;
+  virtual void init(const RegionPtr& region, const PropertiesPtr& diskProperties) = 0;
 
   /**
   * Reads the value for the key from the disk.
@@ -113,7 +113,8 @@ class CPPCACHE_EXPORT PersistenceManager {
   * @throws RegionDestroyedException is the region is already destroyed.
   * @throws EntryNotFoundException if the entry is not found on the disk.
   */
-  virtual void destroy(const CacheableKeyPtr& key, void*& PersistenceInfo) = 0;
+  virtual void destroy(const CacheableKeyPtr& key,
+                       void*& PersistenceInfo) = 0;
 
   /**
    * Closes the persistence manager instance.

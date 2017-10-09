@@ -75,7 +75,7 @@ class CPPCACHE_EXPORT RegionEntry {
    * @throws StatisticsDisabledException if statistics have been disabled for
    * this region
    */
-  void getStatistics(CacheStatisticsPtr& csptr);
+  CacheStatisticsPtr getStatistics();
 
   /**
    * Returns whether this entry has been destroyed.

@@ -100,22 +100,22 @@ void Position::toData(apache::geode::client::DataOutput& output) const {
 }
 
 void Position::fromData(apache::geode::client::DataInput& input) {
-  input.readInt(&avg20DaysVol);
-  input.readObject(bondRating);
-  input.readDouble(&convRatio);
-  input.readObject(country);
-  input.readDouble(&delta);
-  input.readInt(&industry);
-  input.readInt(&issuer);
-  input.readDouble(&mktValue);
-  input.readDouble(&qty);
-  input.readObject(secId);
-  input.readObject(secLinks);
+  avg20DaysVol = input.readInt64();
+  bondRating = input.readObject<CacheableString>();
+  convRatio = input.readDouble();
+  country = input.readObject<CacheableString>();
+  delta = input.readDouble();
+  industry = input.readInt64();
+  issuer = input.readInt64();
+  mktValue = input.readDouble();
+  qty = input.readDouble();
+  secId = input.readObject<CacheableString>();
+  secLinks = input.readObject<CacheableString>();
   input.readUTF(&secType);
-  input.readInt(&sharesOutstanding);
-  input.readObject(underlyer);
-  input.readInt(&volatility);
-  input.readInt(&pid);
+  sharesOutstanding = input.readInt32();
+  underlyer = input.readObject<CacheableString>();
+  volatility = input.readInt64();
+  pid = input.readInt32();
 }
 
 CacheableStringPtr Position::toString() const {

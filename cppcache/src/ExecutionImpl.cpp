@@ -69,9 +69,9 @@ std::vector<int8_t>* ExecutionImpl::getFunctionAttributes(const char* func) {
   return nullptr;
 }
 
-ResultCollectorPtr ExecutionImpl::execute(CacheableVectorPtr& routingObj,
-                                          CacheablePtr& args,
-                                          ResultCollectorPtr& rs,
+ResultCollectorPtr ExecutionImpl::execute(const CacheableVectorPtr& routingObj,
+                                          const CacheablePtr& args,
+                                          const ResultCollectorPtr& rs,
                                           const char* func, uint32_t timeout) {
   m_routingObj = routingObj;
   m_args = args;
@@ -158,18 +158,6 @@ ResultCollectorPtr ExecutionImpl::execute(const char* fn, uint32_t timeout) {
       retryAttempts = m_pool->getRetryAttempts();
     }
 
-    //    if(txState != nullptr && !txState->isReplay())
-    //    {
-    //		auto args = std::make_shared<VectorOfCacheable>();
-    //		args->push_back(m_args);
-    //		args->push_back(m_routingObj);
-    //		args->push_back(m_rc);
-    //		args->push_back(CacheableString::create(func));
-    //		args->push_back(CacheableInt32::create(timeout));
-    //		txState->recordTXOperation(GF_EXECUTE_FUNCTION,
-    // m_region==nullptr?nullptr:m_region->getFullPath(), nullptr, args);
-    //    }
-    //    try{
     if (m_pool != nullptr && m_pool->getPRSingleHopEnabled()) {
       auto tcrdm = std::dynamic_pointer_cast<ThinClientPoolDM>(m_pool);
       if (!tcrdm) {

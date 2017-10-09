@@ -49,7 +49,7 @@ class SqLiteImpl : public PersistenceManager {
    * @throws InitfailedException if persistence directory/environment directory
    * initialization fails.
    */
-  void init(const RegionPtr& regionptr, PropertiesPtr& diskProperties);
+  void init(const RegionPtr& regionptr, const PropertiesPtr& diskProperties);
 
   /**
    * Stores a key-value pair in the SqLite implementation.

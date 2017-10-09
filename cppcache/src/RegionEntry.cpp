@@ -37,8 +37,8 @@ CacheablePtr RegionEntry::getValue() {
 
 RegionPtr RegionEntry::getRegion() { return m_region; }
 
-void RegionEntry::getStatistics(CacheStatisticsPtr& csptr) {
-  csptr = m_statistics;
+CacheStatisticsPtr RegionEntry::getStatistics() {
+  return m_statistics;
 }
 
 bool RegionEntry::isDestroyed() const { return m_destroyed; }

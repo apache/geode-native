@@ -69,7 +69,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, setupClient2_Pool_Locator)
     createPooledRegion(regionNames[0], false /*ack mode*/, locatorsG,
                        "__TEST_POOL1__", true /*client notification*/);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    regPtr->registerAllKeys(false, nullptr, true);
+    regPtr->registerAllKeys(false, true);
     SLEEP(200);
   }
 END_TASK_DEFINITION

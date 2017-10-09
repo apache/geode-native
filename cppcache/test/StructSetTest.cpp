@@ -30,18 +30,19 @@ TEST(StructSetTest, Basic) {
   
   for (size_t i = 0; i < numOfFields; i++) {
     std::string value = "value";
-    value += i;
+    value += std::to_string(i);
     std::string field = "field";
-    field += i;
+    field += std::to_string(i);
     values->push_back(CacheableString::create(value.c_str()));
     fieldNames.push_back(CacheableString::create(field.c_str()));
   }
   
-  StructSet* ss = new StructSetImpl(values, fieldNames);
+  auto ss = StructSetImpl(values, fieldNames);
   
-  ss->size();
+  ASSERT_EQ(1, ss.size());
 
 }
+
 TEST(StructSetTest, MissingFieldIndex) {
   CacheableVectorPtr values = CacheableVector::create();
   std::vector<CacheableStringPtr> fieldNames;
@@ -50,22 +51,18 @@ TEST(StructSetTest, MissingFieldIndex) {
   
   for (size_t i = 0; i < numOfFields; i++) {
     std::string value = "value";
-    value += i;
+    value += std::to_string(i);
     std::string field = "field";
-    field += i;
+    field += std::to_string(i);
     values->push_back(CacheableString::create(value.c_str()));
     fieldNames.push_back(CacheableString::create(field.c_str()));
   }
   
-  StructSet* ss = new StructSetImpl(values, fieldNames);
+  auto ss = StructSetImpl(values, fieldNames);
   
-  try {
-    ss->getFieldIndex("test");
-  } catch (const std::invalid_argument& e) {
-    printf("Caught expected exception: %s", e.what());
-  }
-
+  ASSERT_THROW(ss.getFieldIndex("test"), std::invalid_argument);
 }
+
 TEST(StructSetTest, MissingFieldName) {
   CacheableVectorPtr values = CacheableVector::create();
   std::vector<CacheableStringPtr> fieldNames;
@@ -74,18 +71,14 @@ TEST(StructSetTest, MissingFieldName) {
   
   for (size_t i = 0; i < numOfFields; i++) {
     std::string value = "value";
-    value += i;
+    value += std::to_string(i);
     std::string field = "field";
-    field += i;
+    field += std::to_string(i);
     values->push_back(CacheableString::create(value.c_str()));
     fieldNames.push_back(CacheableString::create(field.c_str()));
   }
   
-  StructSet* ss = new StructSetImpl(values, fieldNames);
+  auto ss = StructSetImpl(values, fieldNames);
   
-  try {
-    ss->getFieldName(100);
-  } catch (const std::out_of_range& e) {
-    printf("Caught expected exception: %s", e.what());
-  }
+  ASSERT_THROW(ss.getFieldName(100), std::out_of_range);
 }

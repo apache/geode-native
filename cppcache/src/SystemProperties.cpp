@@ -243,7 +243,7 @@ SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
    public:
     explicit ProcessPropsVisitor(SystemProperties* sysProps)
         : m_sysProps(sysProps) {}
-    void visit(CacheableKeyPtr& key, CacheablePtr& value) {
+    void visit(const CacheableKeyPtr& key, const CacheablePtr& value) {
       CacheableStringPtr prop = key->toString();
       CacheableStringPtr val;
       if (value != nullptr) {

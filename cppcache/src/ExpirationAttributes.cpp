@@ -29,6 +29,6 @@ void ExpirationAttributes::setTimeout(int timeout) { m_timeout = timeout; }
 ExpirationAction::Action ExpirationAttributes::getAction() const {
   return m_action;
 }
-void ExpirationAttributes::setAction(ExpirationAction::Action& action) {
+void ExpirationAttributes::setAction(const ExpirationAction::Action& action) {
   m_action = action;
 }

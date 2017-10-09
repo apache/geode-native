@@ -150,7 +150,7 @@ class TESTOBJECT_EXPORT Child : public Parent, public PdxSerializable {
 class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
  private:
   char m_ch;
-  wchar_t m_widechar;
+  char16_t m_widechar;
   char* m_chArray;
   wchar_t* m_widecharArray;
 
@@ -228,7 +228,7 @@ class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
 
   void toData(PdxWriterPtr pw) {
     pw->writeChar("m_ch", m_ch);
-    pw->writeWideChar("m_widechar", m_widechar);
+    pw->writeChar("m_widechar", m_widechar);
     pw->writeCharArray("m_chArray", m_chArray, 2);
     pw->writeWideCharArray("m_widecharArray", m_widecharArray, 2);
   }
@@ -326,7 +326,7 @@ typedef std::shared_ptr<Address> AddressPtr;
 enum pdxEnumTest { pdx1, pdx2, pdx3 };
 class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
  private:
-  wchar_t m_char;
+  char16_t m_char;
   bool m_bool;
   int8_t m_byte;
   int8_t m_sbyte;  //
@@ -664,7 +664,7 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
     return objectSize;
   }
 
-  wchar_t getChar() { return m_char; }
+  char16_t getChar() { return m_char; }
 
   wchar_t* getCharArray() { return m_charArray; }
 

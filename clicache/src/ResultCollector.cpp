@@ -34,7 +34,7 @@ namespace Apache
       namespace native = apache::geode::client;
 
       generic<class TResult>
-      void ResultCollector<TResult>::AddResult( TResult rs )
+      void ResultCollector<TResult>::AddResult( const TResult rs )
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 

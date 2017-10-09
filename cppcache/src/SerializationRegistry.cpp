@@ -98,7 +98,7 @@ void TheTypeMap::setup() {
   bind(CacheableArrayList::createDeserializable);
   bind(CacheableLinkedList::createDeserializable);
   bind(CacheableStack::createDeserializable);
-  bind(CacheableWideChar::createDeserializable);
+  bind(CacheableCharacter::createDeserializable);
   bind(CharArray::createDeserializable);
   bind(CacheableToken::createDeserializable);
   bind(RegionAttributes::createDeserializable);
@@ -121,9 +121,9 @@ void TheTypeMap::setup() {
 SerializablePtr SerializationRegistry::deserialize(DataInput& input,
                                                    int8_t typeId) const {
   bool findinternal = false;
-  int8_t currentTypeId = typeId;
+  auto currentTypeId = typeId;
 
-  if (typeId == -1) input.read(&currentTypeId);
+  if (typeId == -1) currentTypeId = input.read();
   int64_t compId = currentTypeId;
 
   LOGDEBUG("SerializationRegistry::deserialize typeid = %d currentTypeId= %d ",
@@ -149,40 +149,30 @@ SerializablePtr SerializationRegistry::deserialize(DataInput& input,
       break;
     }
     case GeodeTypeIdsImpl::CacheableUserData: {
-      int8_t classId = 0;
-      input.read(&classId);
-      compId |= ((static_cast<int64_t>(classId)) << 32);
+      compId |= ((static_cast<int64_t>(input.read())) << 32);
       break;
     }
     case GeodeTypeIdsImpl::CacheableUserData2: {
-      int16_t classId = 0;
-      input.readInt(&classId);
-      compId |= ((static_cast<int64_t>(classId)) << 32);
+      compId |= ((static_cast<int64_t>(input.readInt16())) << 32);
       break;
     }
     case GeodeTypeIdsImpl::CacheableUserData4: {
-      int32_t classId = 0;
-      input.readInt(&classId);
+      int32_t classId = input.readInt32();
       compId |= ((static_cast<int64_t>(classId)) << 32);
       break;
     }
     case GeodeTypeIdsImpl::FixedIDByte: {
-      int8_t fixedId;
-      input.read(&fixedId);
-      compId = fixedId;
+      compId = input.read();
       findinternal = true;
       break;
     }
     case GeodeTypeIdsImpl::FixedIDShort: {
-      int16_t fixedId;
-      input.readInt(&fixedId);
-      compId = fixedId;
+      compId = input.readInt16();
       findinternal = true;
       break;
     }
     case GeodeTypeIdsImpl::FixedIDInt: {
-      int32_t fixedId;
-      input.readInt(&fixedId);
+      int32_t fixedId = input.readInt32();
       compId = fixedId;
       findinternal = true;
       break;

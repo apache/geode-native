@@ -192,7 +192,7 @@ namespace Apache
         //wide char
         Serializable::RegisterWrapperGeneric(
           gcnew WrapperDelegateGeneric(CacheableCharacter::Create),
-          native::GeodeTypeIds::CacheableWideChar, Char::typeid);
+          native::GeodeTypeIds::CacheableCharacter, Char::typeid);
         //double
         Serializable::RegisterWrapperGeneric(
           gcnew WrapperDelegateGeneric(CacheableDouble::Create),

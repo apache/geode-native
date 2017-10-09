@@ -58,18 +58,15 @@ bool FarSideEntryOp::isInvalidate(int8_t op) {
 
 void FarSideEntryOp::fromData(DataInput& input, bool largeModCount,
                               uint16_t memId) {
-  input.readObject(m_key);
-  input.read(&m_op);
+  m_key = input.readObject<CacheableKey>();
+  m_op = input.read();
   if (largeModCount) {
-    input.readInt(&m_modSerialNum);
+    m_modSerialNum = input.readInt32();
   } else {
-    int8_t modSerialNum;
-    input.read(&modSerialNum);
-    m_modSerialNum = modSerialNum;
+    m_modSerialNum = input.read();
   }
-  uint8_t firstByte;
-  input.read(&firstByte);
-  if (firstByte != GeodeTypeIds::NullObj) {
+
+  if (input.read() != GeodeTypeIds::NullObj) {
     input.rewindCursor(1);
     input.readObject(m_callbackArg);
   }
@@ -79,31 +76,23 @@ void FarSideEntryOp::fromData(DataInput& input, bool largeModCount,
       TcrMessage::readVersionTagPart(input, memId, m_memberListForVersionStamp);
   // SerializablePtr sPtr;
   // input.readObject(sPtr);
-  input.readInt(&m_eventOffset);
+  m_eventOffset = input.readInt32();
   if (!isDestroy(m_op)) {
-    input.readBoolean(&m_didDestroy);
+    m_didDestroy = input.readBoolean();
     if (!isInvalidate(m_op)) {
-      bool isToken;
-      input.readBoolean(&isToken);
-      if (isToken) {
-        int8_t objType;
+      if (input.readBoolean()) {
         int32_t rewind = 1;
         int16_t fixedId = 0;
-        input.read(&objType);
-        if (objType == GeodeTypeIdsImpl::FixedIDShort) {
-          input.readInt(&fixedId);
+        if (input.read() == GeodeTypeIdsImpl::FixedIDShort) {
+          fixedId = input.readInt16();
           rewind += 2;
         }
 
-        //			  public static final short TOKEN_INVALID = 141;
-        //			  public static final short TOKEN_LOCAL_INVALID
-        //=
-        // 142;
-        //			  public static final short TOKEN_DESTROYED =
-        // 143;
-        //			  public static final short TOKEN_REMOVED = 144;
-        //			  public static final short TOKEN_REMOVED2 =
-        // 145;
+        // TOKEN_INVALID = 141;
+        // TOKEN_LOCAL_INVALID = 142;
+        // TOKEN_DESTROYED = 43;
+        // TOKEN_REMOVED = 144;
+        // TOKEN_REMOVED2 = 145;
         if (fixedId >= 141 && fixedId < 146) {
           m_value = nullptr;
         } else {
@@ -112,8 +101,7 @@ void FarSideEntryOp::fromData(DataInput& input, bool largeModCount,
         }
       } else {
         // uint8_t* buf = nullptr;
-        int32_t len;
-        input.readArrayLen(&len);
+        input.readArrayLen(); // ignore len
         input.readObject(m_value);
 
         // input.readBytes(&buf, &len);
@@ -138,74 +126,52 @@ void FarSideEntryOp::apply(RegionPtr& region) {
 }
 
 void FarSideEntryOp::skipFilterRoutingInfo(DataInput& input) {
-  int8_t structType;
-  uint8_t classByte;
   CacheablePtr tmp;
-  input.read(&structType);  // this is DataSerializable (45)
+  auto structType = input.read();  // this is DataSerializable (45)
 
   if (structType == GeodeTypeIds::NullObj) {
     return;
   } else if (structType == GeodeTypeIdsImpl::DataSerializable) {
-    input.read(&classByte);
+    input.read(); // ignore classbyte
     input.readObject(tmp);
-    int32_t size;
-    input.readInt(&size);
+    int32_t size = input.readInt32();
     for (int i = 0; i < size; i++) {
       ClientProxyMembershipID memId;
       // memId.fromData(input);
       memId.readEssentialData(input);
 
-      int32_t len;
-      input.readArrayLen(&len);
+      int32_t len = input.readArrayLen();
 
-      /*
-                        for(int j = 0; j < len; j++)
-                        {
-                                input.readObject(tmp);
-                                input.readObject(tmp);
-                        }
-      */
-
-      bool hasCQs;
-      input.readBoolean(&hasCQs);
-
-      if (hasCQs) {
-        input.readArrayLen(&len);
+      if (input.readBoolean()) {
+        len = input.readArrayLen();
         for (int j = 0; j < len; j++) {
-          int64_t ignore;
-          input.readUnsignedVL(&ignore);
-          input.readUnsignedVL(&ignore);
+          input.readUnsignedVL();
+          input.readUnsignedVL();
         }
       }
 
-      input.readInt(&len);
+      len = input.readInt32();
       if (len != -1) {
-        bool isLong;
-        input.readBoolean(&isLong);
+        const auto isLong = input.readBoolean();
 
         for (int j = 0; j < len; j++) {
           if (isLong) {
-            int64_t val;
-            input.readInt(&val);
+            input.readInt64();
           } else {
-            int32_t val;
-            input.readInt(&val);
+            input.readInt32();
           }
         }
       }
 
-      input.readInt(&len);
+      len = input.readInt32();
       if (len != -1) {
-        bool isLong;
-        input.readBoolean(&isLong);
+        const auto isLong = input.readBoolean();
 
         for (int j = 0; j < len; j++) {
           if (isLong) {
-            int64_t val;
-            input.readInt(&val);
+            input.readInt64();
           } else {
-            int32_t val;
-            input.readInt(&val);
+            input.readInt32();
           }
         }
       }

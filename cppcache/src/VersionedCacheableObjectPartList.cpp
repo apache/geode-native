@@ -40,21 +40,18 @@ void VersionedCacheableObjectPartList::toData(DataOutput& output) const {
 void VersionedCacheableObjectPartList::readObjectPart(int32_t index,
                                                       DataInput& input,
                                                       CacheableKeyPtr keyPtr) {
-  uint8_t objType = 0;
   CacheableStringPtr exMsgPtr;
   ExceptionPtr ex;
-  input.read(&objType);
+  auto objType = input.read();
   CacheablePtr value;
   m_byteArray[index] = objType;
   bool isException = (objType == 2 ? 1 : 0);
 
   if (isException) {  // Exception case
     // Skip the exception that is in java serialized format, we cant read it.
-    int32_t skipLen;
-    input.readArrayLen(&skipLen);
-    input.advanceCursor(skipLen);
+    input.advanceCursor(input.readArrayLen());
 
-    input.readNativeString(exMsgPtr);  ////4.1
+    exMsgPtr = input.readNativeString();  ////4.1
     if (m_exceptions != nullptr) {
       const char* exMsg = exMsgPtr->asChar();
       if (strstr(exMsg,
@@ -70,8 +67,7 @@ void VersionedCacheableObjectPartList::readObjectPart(int32_t index,
     }
   } else if (m_serializeValues) {
     // read length
-    int32_t skipLen;
-    input.readArrayLen(&skipLen);
+    int32_t skipLen = input.readArrayLen();
     uint8_t* bytes = nullptr;
     if (skipLen > 0) {
       // readObject
@@ -99,15 +95,13 @@ void VersionedCacheableObjectPartList::readObjectPart(int32_t index,
 void VersionedCacheableObjectPartList::fromData(DataInput& input) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_responseLock);
   LOGDEBUG("VersionedCacheableObjectPartList::fromData");
-  uint8_t flags = 0;
-  input.read(&flags);
+  uint8_t flags = input.read();
   m_hasKeys = (flags & 0x01) == 0x01;
   bool hasObjects = (flags & 0x02) == 0x02;
   m_hasTags = (flags & 0x04) == 0x04;
   m_regionIsVersioned = (flags & 0x08) == 0x08;
   m_serializeValues = (flags & 0x10) == 0x10;
   bool persistent = (flags & 0x20) == 0x20;
-  CacheableKeyPtr key;
   CacheableStringPtr exMsgPtr;
   int32_t len = 0;
   bool valuesNULL = false;
@@ -127,12 +121,10 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
 
   auto localKeys = std::make_shared<VectorOfCacheableKey>();
   if (m_hasKeys) {
-    int64_t tempLen;
-    input.readUnsignedVL(&tempLen);
-    len = static_cast<int32_t>(tempLen);
+    len = static_cast<int32_t>(input.readUnsignedVL());
 
     for (int32_t index = 0; index < len; ++index) {
-      input.readObject(key, true);
+      CacheableKeyPtr key = input.readObject<CacheableKey>(true);
       if (m_resultKeys != nullptr) {
         m_resultKeys->push_back(key);
       }
@@ -177,9 +169,7 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
   }  // m_hasKeys else ends here
 
   if (hasObjects) {
-    int64_t tempLen;
-    input.readUnsignedVL(&tempLen);
-    len = static_cast<int32_t>(tempLen);
+    len = static_cast<int32_t>(input.readUnsignedVL());
     m_byteArray.resize(len);
     for (int32_t index = 0; index < len; ++index) {
       if (m_keys != nullptr && !m_hasKeys) {
@@ -195,18 +185,13 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
   }  // hasObjects ends here
 
   if (m_hasTags) {
-    int32_t versionTaglen;
-    int64_t tempLen;
-    input.readUnsignedVL(&tempLen);
-    versionTaglen = static_cast<int32_t>(tempLen);
-    len = versionTaglen;
-    m_versionTags.resize(versionTaglen);
+    len = static_cast<int32_t>(input.readUnsignedVL());;
+    m_versionTags.resize(len);
     std::vector<uint16_t> ids;
     MemberListForVersionStamp& memberListForVersionStamp =
         *(m_region->getCacheImpl()->getMemberListForVersionStamp());
-    for (int32_t index = 0; index < versionTaglen; index++) {
-      uint8_t entryType = 0;
-      input.read(&entryType);
+    for (int32_t index = 0; index < len; index++) {
+      uint8_t entryType = input.read();
       VersionTagPtr versionTag;
       switch (entryType) {
         case FLAG_NULL_TAG: {
@@ -247,10 +232,7 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
                 VersionTagPtr(new VersionTag(memberListForVersionStamp));
           }
           versionTag->fromData(input);
-          int32_t idNumber;
-          int64_t tempLen;
-          input.readUnsignedVL(&tempLen);
-          idNumber = static_cast<int32_t>(tempLen);
+          int32_t idNumber = input.readUnsignedVL();
           versionTag->setInternalMemID(ids.at(idNumber));
           break;
         }

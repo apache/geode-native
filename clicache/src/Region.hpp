@@ -215,11 +215,9 @@ namespace Apache
           virtual void RegisterAllKeys( bool isDurable );
 
           virtual void RegisterAllKeys(bool isDurable,
-            System::Collections::Generic::ICollection<TKey>^ resultKeys,
             bool getInitialValues);
 
           virtual void RegisterAllKeys(bool isDurable,
-            System::Collections::Generic::ICollection<TKey>^ resultKeys,
             bool getInitialValues,
             bool receiveValues);
 
@@ -231,16 +229,13 @@ namespace Apache
 
           virtual void RegisterRegex(String^ regex );
 
-          virtual void RegisterRegex( String^ regex, bool isDurable );
+          virtual void RegisterRegex(String^ regex, bool isDurable);
 
           virtual void RegisterRegex(String^ regex, bool isDurable,
-            System::Collections::Generic::ICollection<TKey>^ resultKeys);
+            bool getInitialValues);
 
           virtual void RegisterRegex(String^ regex, bool isDurable,
-            System::Collections::Generic::ICollection<TKey>^ resultKeys, bool getInitialValues);
-
-          virtual void RegisterRegex(String^ regex, bool isDurable,
-            System::Collections::Generic::ICollection<TKey>^ resultKeys, bool getInitialValues, bool receiveValues);
+            bool getInitialValues, bool receiveValues);
 
           virtual void UnregisterRegex( String^ regex );
 

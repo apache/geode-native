@@ -278,9 +278,8 @@ int testXmlCacheCreationWithPools() {
     return -1;
   }
 
-  VectorOfRegion vrp;
   std::cout << "Test if number of root regions are correct" << std::endl;
-  cptr->rootRegions(vrp);
+  auto vrp = cptr->rootRegions();
   std::cout << "  vrp.size=" << vrp.size() << std::endl;
 
   if (vrp.size() != 2) {
@@ -295,11 +294,11 @@ int testXmlCacheCreationWithPools() {
   }
   RegionPtr regPtr1 = vrp.at(0);
 
-  VectorOfRegion vr;
+  VectorOfRegion vr = regPtr1->subregions(true);
   std::cout << "Test if the number of sub regions with the root region Root1 "
                "are correct"
             << std::endl;
-  regPtr1->subregions(true, vr);
+
   std::cout << "  vr.size=" << vr.size() << std::endl;
   if (vr.size() != 1) {
     std::cout << "Number of Subregions does not match" << std::endl;
@@ -316,14 +315,13 @@ int testXmlCacheCreationWithPools() {
   // TODO - global Issue is that we cannot have config with server and locator
   // pools. Check if this assumption is valid and if so then break up this test.
   RegionPtr subRegPtr = vr.at(0);
-  vr.clear();
 
   RegionPtr regPtr2 = vrp.at(1);
 
   std::cout << "Test if the number of sub regions with the root region Root2 "
                "are correct"
             << std::endl;
-  regPtr2->subregions(true, vr);
+  vr = regPtr2->subregions(true);
   std::cout << "  vr.size=" << vr.size() << std::endl;
   if (vr.size() != 0) {
     std::cout << "Number of Subregions does not match" << std::endl;
@@ -494,9 +492,8 @@ int testXmlDeclarativeCacheCreation() {
     return -1;
   }
 
-  VectorOfRegion vrp;
   std::cout << "Test if number of root regions are correct" << std::endl;
-  cptr->rootRegions(vrp);
+  auto vrp = cptr->rootRegions();
   std::cout << "  vrp.size=" << vrp.size() << std::endl;
 
   if (vrp.size() != 1) {

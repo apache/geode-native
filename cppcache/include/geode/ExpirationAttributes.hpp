@@ -86,7 +86,7 @@ class CPPCACHE_EXPORT ExpirationAttributes {
    * @return the action to take when expiring
    */
   ExpirationAction::Action getAction() const;
-  void setAction(ExpirationAction::Action& action);
+  void setAction(const ExpirationAction::Action& action);
 
  private:
   /** The action that should take place when this object or region expires.

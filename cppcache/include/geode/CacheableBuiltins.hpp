@@ -504,12 +504,12 @@ _GF_CACHEABLE_KEY_TYPE_DEF_(int64_t, CacheableInt64, 31);
  */
 _GF_CACHEABLE_KEY_TYPE_(int64_t, CacheableInt64, 31);
 
-_GF_CACHEABLE_KEY_TYPE_DEF_(wchar_t, CacheableWideChar, 3);
+_GF_CACHEABLE_KEY_TYPE_DEF_(char16_t, CacheableCharacter, 3);
 /**
- * An immutable wrapper for wide-characters that can serve as
+ * An immutable wrapper for characters that can serve as
  * a distributable key object for caching.
  */
-_GF_CACHEABLE_KEY_TYPE_(wchar_t, CacheableWideChar, 3);
+_GF_CACHEABLE_KEY_TYPE_(char16_t, CacheableCharacter, 3);
 
 _GF_CACHEABLE_ARRAY_TYPE_DEF_(wchar_t, CharArray);
 /**

@@ -100,17 +100,17 @@ class CPPCACHE_EXPORT EntriesMap {
   /**
    * @brief return the all the keys in a vector.
    */
-  virtual void keys(VectorOfCacheableKey& result) const = 0;
+  virtual void getKeys(VectorOfCacheableKey& result) const = 0;
 
   /**
    * @brief return all the entries in a vector.
    */
-  virtual void entries(VectorOfRegionEntry& result) const = 0;
+  virtual void getEntries(VectorOfRegionEntry& result) const = 0;
 
   /**
    * @brief return all values in a vector.
    */
-  virtual void values(VectorOfCacheable& result) const = 0;
+  virtual void getValues(VectorOfCacheable& result) const = 0;
 
   /** @brief return the number of entries in the map. */
   virtual uint32_t size() const = 0;

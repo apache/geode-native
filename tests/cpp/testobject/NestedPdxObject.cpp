@@ -96,7 +96,7 @@ void ParentPdx::toData(PdxWriterPtr pw) {
   pw->markIdentityField("m_childPdx");
 
   pw->writeChar("m_char", m_char);
-  pw->writeWideChar("m_wideChar", m_wideChar);
+  pw->writeChar("m_wideChar", m_wideChar);
   pw->writeCharArray("m_charArray", m_charArray, 2);
   pw->writeWideCharArray("m_wideCharArray", m_wideCharArray, 2);
 

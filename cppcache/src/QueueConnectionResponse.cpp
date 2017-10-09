@@ -23,7 +23,7 @@
 using namespace apache::geode::client;
 
 void QueueConnectionResponse::fromData(DataInput& input) {
-  input.readBoolean(&m_durableQueueFound);
+  m_durableQueueFound = input.readBoolean();
   readList(input);
 }
 
@@ -36,8 +36,7 @@ uint32_t QueueConnectionResponse::objectSize() const {
 }
 
 void QueueConnectionResponse::readList(DataInput& input) {
-  uint32_t size = 0;
-  input.readInt(&size);
+  uint32_t size = input.readInt32();
   for (uint32_t i = 0; i < size; i++) {
     ServerLocation temp;
     temp.fromData(input);

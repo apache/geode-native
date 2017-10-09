@@ -41,8 +41,8 @@ DeltaPSTObject::DeltaPSTObject(int size, bool encodeKey, bool encodeTimestamp)
 }
 
 void DeltaPSTObject::fromDelta(DataInput& input) {
-  input.readInt(&field1);
-  input.readInt(reinterpret_cast<int64_t*>(&timestamp));
+  field1 = input.readInt32();
+  timestamp = input.readInt64();
 }
 
 void DeltaPSTObject::toDelta(DataOutput& output) const {
@@ -58,10 +58,10 @@ void DeltaPSTObject::toData(apache::geode::client::DataOutput& output) const {
 }
 
 void DeltaPSTObject::fromData(apache::geode::client::DataInput& input) {
-  input.readInt(reinterpret_cast<int64_t*>(&timestamp));
-  input.readInt(&field1);
-  input.read(&field2);
-  input.readObject(valueData);
+  timestamp = input.readInt64();
+  field1 = input.readInt32();
+  field2 = input.read();
+  valueData = input.readObject<CacheableBytes>();
 }
 
 CacheableStringPtr DeltaPSTObject::toString() const {

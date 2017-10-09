@@ -117,9 +117,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1_1)
     RegionPtr regPtr1 = getHelper()->getRegion(poolRegNames[1]);
     RegionPtr regPtr2 = getHelper()->getRegion(poolRegNames[2]);
 
-    regPtr0->registerAllKeys(false, nullptr, true);
-    regPtr1->registerAllKeys(false, nullptr, true);
-    regPtr2->registerAllKeys(false, nullptr, true);
+    regPtr0->registerAllKeys(false, true);
+    regPtr1->registerAllKeys(false, true);
+    regPtr2->registerAllKeys(false, true);
 
     LOG("CreateClient1 complete.");
   }
@@ -145,9 +145,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_1)
     RegionPtr regPtr1 = getHelper()->getRegion(poolRegNames[1]);
     RegionPtr regPtr2 = getHelper()->getRegion(poolRegNames[2]);
 
-    regPtr0->registerAllKeys(false, nullptr, true);
-    regPtr1->registerAllKeys(false, nullptr, true);
-    regPtr2->registerAllKeys(false, nullptr, true);
+    regPtr0->registerAllKeys(false, true);
+    regPtr1->registerAllKeys(false, true);
+    regPtr2->registerAllKeys(false, true);
 
     LOG("CreateClient2 verify starts.");
     verifyEntries(0);
@@ -176,9 +176,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1_2)
     RegionPtr regPtr1 = getHelper()->getRegion(poolRegNames[1]);
     RegionPtr regPtr2 = getHelper()->getRegion(poolRegNames[2]);
 
-    regPtr0->registerAllKeys(false, nullptr, true);
-    regPtr1->registerAllKeys(false, nullptr, true);
-    regPtr2->registerAllKeys(false, nullptr, true);
+    regPtr0->registerAllKeys(false, true);
+    regPtr1->registerAllKeys(false, true);
+    regPtr2->registerAllKeys(false, true);
 
     LOG("CreateClient1 complete.");
   }
@@ -204,9 +204,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_2)
     RegionPtr regPtr1 = getHelper()->getRegion(poolRegNames[1]);
     RegionPtr regPtr2 = getHelper()->getRegion(poolRegNames[2]);
 
-    regPtr0->registerAllKeys(false, nullptr, true);
-    regPtr1->registerAllKeys(false, nullptr, true);
-    regPtr2->registerAllKeys(false, nullptr, true);
+    regPtr0->registerAllKeys(false, true);
+    regPtr1->registerAllKeys(false, true);
+    regPtr2->registerAllKeys(false, true);
 
     verifyEntries(0);
 

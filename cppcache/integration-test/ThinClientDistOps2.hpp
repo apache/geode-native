@@ -158,20 +158,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll)
     CacheableKeyPtr key0 = CacheableString::create(_keys[0]);
     CacheableKeyPtr key1 = CacheableString::create(_keys[1]);
 
-    // test invalid combination with caching disabled for getAll
-    reg0->localDestroyRegion();
-    reg0 = nullptr;
-    getHelper()->createPooledRegion(regionNames[0], USE_ACK, 0,
-                                    "__TEST_POOL1__", false, false);
-    reg0 = getHelper()->getRegion(_regionNames[0]);
-    keys0.push_back(key0);
-    keys0.push_back(key1);
-    try {
-      reg0->getAll(keys0, nullptr, nullptr, true);
-      FAIL("Expected IllegalArgumentException");
-    } catch (const IllegalArgumentException&) {
-      LOG("Got expected IllegalArgumentException");
-    }
     // re-create region with caching enabled
     reg0->localDestroyRegion();
     reg0 = nullptr;
@@ -179,33 +165,24 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll)
                                     "__TEST_POOL1__", true, true);
     reg0 = getHelper()->getRegion(_regionNames[0]);
     // check for IllegalArgumentException for empty key list
-    auto values = std::make_shared<HashMapOfCacheable>();
-    auto exceptions = std::make_shared<HashMapOfException>();
     keys0.clear();
     try {
-      reg0->getAll(keys0, values, exceptions);
-      FAIL("Expected IllegalArgumentException");
-    } catch (const IllegalArgumentException&) {
-      LOG("Got expected IllegalArgumentException");
-    }
-    keys0.push_back(key0);
-    keys0.push_back(key1);
-    try {
-      reg0->getAll(keys0, nullptr, nullptr, false);
+      reg0->getAll(keys0);
       FAIL("Expected IllegalArgumentException");
     } catch (const IllegalArgumentException&) {
       LOG("Got expected IllegalArgumentException");
     }
 
-    reg0->getAll(keys0, values, exceptions);
-    ASSERT(values->size() == 2, "Expected 2 values");
-    ASSERT(exceptions->size() == 0, "Expected no exceptions");
-    auto val0 =
-        std::dynamic_pointer_cast<CacheableString>(values->operator[](key0));
-    auto val1 =
-        std::dynamic_pointer_cast<CacheableString>(values->operator[](key1));
-    ASSERT(strcmp(_nvals[0], val0->asChar()) == 0, "Got unexpected value");
-    ASSERT(strcmp(_nvals[1], val1->asChar()) == 0, "Got unexpected value");
+    keys0.push_back(key0);
+    keys0.push_back(key1);
+    {
+      auto values = reg0->getAll(keys0);
+      ASSERT(values.size() == 2, "Expected 2 values");
+      auto val0 = std::dynamic_pointer_cast<CacheableString>(values[key0]);
+      auto val1 = std::dynamic_pointer_cast<CacheableString>(values[key1]);
+      ASSERT(strcmp(_nvals[0], val0->asChar()) == 0, "Got unexpected value");
+      ASSERT(strcmp(_nvals[1], val1->asChar()) == 0, "Got unexpected value");
+    }
 
     // for second region invalidate only one key to have a partial get
     // from java server
@@ -217,139 +194,108 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll)
     keys1.push_back(key2);
     keys1.push_back(key3);
 
-    values->clear();
-    exceptions->clear();
-    reg1->getAll(keys1, values, exceptions, true);
-    ASSERT(values->size() == 2, "Expected 2 values");
-    ASSERT(exceptions->size() == 0, "Expected no exceptions");
-    auto val2 =
-        std::dynamic_pointer_cast<CacheableString>(values->operator[](key2));
-    auto val3 =
-        std::dynamic_pointer_cast<CacheableString>(values->operator[](key3));
-    ASSERT(strcmp(_nvals[2], val2->asChar()) == 0, "Got unexpected value");
-    ASSERT(strcmp(_vals[3], val3->asChar()) == 0, "Got unexpected value");
+    {
+      auto values = reg1->getAll(keys1);
+      ASSERT(values.size() == 2, "Expected 2 values");
+      auto val2 = std::dynamic_pointer_cast<CacheableString>(values[key2]);
+      auto val3 = std::dynamic_pointer_cast<CacheableString>(values[key3]);
+      ASSERT(strcmp(_nvals[2], val2->asChar()) == 0, "Got unexpected value");
+      ASSERT(strcmp(_vals[3], val3->asChar()) == 0, "Got unexpected value");
+    }
 
     // also check that the region is properly populated
     ASSERT(reg1->size() == 2, "Expected 2 entries in the region");
-    VectorOfRegionEntry regEntries;
-    reg1->entries(regEntries, false);
+    auto regEntries = reg1->entries(false);
     ASSERT(regEntries.size() == 2, "Expected 2 entries in the region.entries");
     verifyEntry(_regionNames[1], _keys[2], _nvals[2], true);
     verifyEntry(_regionNames[1], _keys[3], _vals[3], true);
 
     // also check with nullptr values that region is properly populated
-    reg1->localInvalidate(key3);
-    values = nullptr;
-    exceptions->clear();
-    reg1->getAll(keys1, values, exceptions, true);
-    // now check that the region is properly populated
-    ASSERT(reg1->size() == 2, "Expected 2 entries in the region");
-    regEntries.clear();
-    reg1->entries(regEntries, false);
-    ASSERT(regEntries.size() == 2, "Expected 2 entries in the region.entries");
-    verifyEntry(_regionNames[1], _keys[2], _nvals[2], true);
-    verifyEntry(_regionNames[1], _keys[3], _nvals[3], true);
+    {
+      reg1->localInvalidate(key3);
+      auto values = reg1->getAll(keys1);
+      // now check that the region is properly populated
+      ASSERT(reg1->size() == 2, "Expected 2 entries in the region");
+      regEntries = reg1->entries(false);
+      ASSERT(regEntries.size() == 2,
+             "Expected 2 entries in the region.entries");
+      verifyEntry(_regionNames[1], _keys[2], _nvals[2], true);
+      verifyEntry(_regionNames[1], _keys[3], _nvals[3], true);
+    }
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll_Pool)
   {
-    RegionPtr reg0 = getHelper()->getRegion(_regionNames[0]);
+    {
+      RegionPtr reg0 = getHelper()->getRegion(_regionNames[0]);
 
-    VectorOfCacheableKey keys0;
-    CacheableKeyPtr key0 = CacheableString::create(_keys[0]);
-    CacheableKeyPtr key1 = CacheableString::create(_keys[1]);
+      VectorOfCacheableKey keys0;
+      CacheableKeyPtr key0 = CacheableString::create(_keys[0]);
+      CacheableKeyPtr key1 = CacheableString::create(_keys[1]);
 
-    // test invalid combination with caching disabled for getAll
-    reg0->localDestroyRegion();
-    reg0 = nullptr;
-    getHelper()->createRegionAndAttachPool(_regionNames[0], USE_ACK, poolName,
-                                           false);
-    reg0 = getHelper()->getRegion(_regionNames[0]);
-    keys0.push_back(key0);
-    keys0.push_back(key1);
-    try {
-      reg0->getAll(keys0, nullptr, nullptr, true);
-      FAIL("Expected IllegalArgumentException");
-    } catch (const IllegalArgumentException&) {
-      LOG("Got expected IllegalArgumentException");
-    }
-    // re-create region with caching enabled
-    reg0->localDestroyRegion();
-    reg0 = nullptr;
-    getHelper()->createRegionAndAttachPool(_regionNames[0], USE_ACK, poolName);
-    reg0 = getHelper()->getRegion(_regionNames[0]);
-    // check for IllegalArgumentException for empty key list
-    auto values = std::make_shared<HashMapOfCacheable>();
-    auto exceptions = std::make_shared<HashMapOfException>();
-    keys0.clear();
-    try {
-      reg0->getAll(keys0, values, exceptions);
-      FAIL("Expected IllegalArgumentException");
-    } catch (const IllegalArgumentException&) {
-      LOG("Got expected IllegalArgumentException");
-    }
-    keys0.push_back(key0);
-    keys0.push_back(key1);
-    try {
-      reg0->getAll(keys0, nullptr, nullptr, false);
-      FAIL("Expected IllegalArgumentException");
-    } catch (const IllegalArgumentException&) {
-      LOG("Got expected IllegalArgumentException");
+      getHelper()->createRegionAndAttachPool(_regionNames[0], USE_ACK, poolName);
+      reg0 = getHelper()->getRegion(_regionNames[0]);
+      // check for IllegalArgumentException for empty key list
+      keys0.clear();
+      try {
+        reg0->getAll(keys0);
+        FAIL("Expected IllegalArgumentException");
+      } catch (const IllegalArgumentException&) {
+        LOG("Got expected IllegalArgumentException");
+      }
+
+      keys0.push_back(key0);
+      keys0.push_back(key1);
+
+      auto values = reg0->getAll(keys0);
+
+      ASSERT(values.size() == 2, "Expected 2 values");
+      auto val0 = std::dynamic_pointer_cast<CacheableString>(values[key0]);
+      auto val1 = std::dynamic_pointer_cast<CacheableString>(values[key1]);
+      ASSERT(strcmp(_nvals[0], val0->asChar()) == 0, "Got unexpected value");
+      ASSERT(strcmp(_nvals[1], val1->asChar()) == 0, "Got unexpected value");
     }
 
-    reg0->getAll(keys0, values, exceptions);
-    ASSERT(values->size() == 2, "Expected 2 values");
-    ASSERT(exceptions->size() == 0, "Expected no exceptions");
-    auto val0 =
-        std::dynamic_pointer_cast<CacheableString>(values->operator[](key0));
-    auto val1 =
-        std::dynamic_pointer_cast<CacheableString>(values->operator[](key1));
-    ASSERT(strcmp(_nvals[0], val0->asChar()) == 0, "Got unexpected value");
-    ASSERT(strcmp(_nvals[1], val1->asChar()) == 0, "Got unexpected value");
+    {
+      // for second region invalidate only one key to have a partial get
+      // from java server
+      RegionPtr reg1 = getHelper()->getRegion(_regionNames[1]);
+      CacheableKeyPtr key2 = CacheableString::create(_keys[2]);
+      CacheableKeyPtr key3 = CacheableString::create(_keys[3]);
+      reg1->localInvalidate(key2);
+      VectorOfCacheableKey keys1;
+      keys1.push_back(key2);
+      keys1.push_back(key3);
 
-    // for second region invalidate only one key to have a partial get
-    // from java server
-    RegionPtr reg1 = getHelper()->getRegion(_regionNames[1]);
-    CacheableKeyPtr key2 = CacheableString::create(_keys[2]);
-    CacheableKeyPtr key3 = CacheableString::create(_keys[3]);
-    reg1->localInvalidate(key2);
-    VectorOfCacheableKey keys1;
-    keys1.push_back(key2);
-    keys1.push_back(key3);
+      auto values = reg1->getAll(keys1);
 
-    values->clear();
-    exceptions->clear();
-    reg1->getAll(keys1, values, exceptions, true);
-    ASSERT(values->size() == 2, "Expected 2 values");
-    ASSERT(exceptions->size() == 0, "Expected no exceptions");
-    auto val2 =
-        std::dynamic_pointer_cast<CacheableString>(values->operator[](key2));
-    auto val3 =
-        std::dynamic_pointer_cast<CacheableString>(values->operator[](key3));
-    ASSERT(strcmp(_nvals[2], val2->asChar()) == 0, "Got unexpected value");
-    ASSERT(strcmp(_vals[3], val3->asChar()) == 0, "Got unexpected value");
+      ASSERT(values.size() == 2, "Expected 2 values");
+      auto val2 = std::dynamic_pointer_cast<CacheableString>(values[key2]);
+      auto val3 = std::dynamic_pointer_cast<CacheableString>(values[key3]);
+      ASSERT(strcmp(_nvals[2], val2->asChar()) == 0, "Got unexpected value");
+      ASSERT(strcmp(_vals[3], val3->asChar()) == 0, "Got unexpected value");
 
-    // also check that the region is properly populated
-    ASSERT(reg1->size() == 2, "Expected 2 entries in the region");
-    VectorOfRegionEntry regEntries;
-    reg1->entries(regEntries, false);
-    ASSERT(regEntries.size() == 2, "Expected 2 entries in the region.entries");
-    verifyEntry(_regionNames[1], _keys[2], _nvals[2], true);
-    verifyEntry(_regionNames[1], _keys[3], _vals[3], true);
+      // also check that the region is properly populated
+      ASSERT(reg1->size() == 2, "Expected 2 entries in the region");
+      auto regEntries = reg1->entries(false);
+      ASSERT(regEntries.size() == 2,
+             "Expected 2 entries in the region.entries");
+      verifyEntry(_regionNames[1], _keys[2], _nvals[2], true);
+      verifyEntry(_regionNames[1], _keys[3], _vals[3], true);
 
-    // also check with nullptr values that region is properly populated
-    reg1->localInvalidate(key3);
-    values = nullptr;
-    exceptions->clear();
-    reg1->getAll(keys1, values, exceptions, true);
-    // now check that the region is properly populated
-    ASSERT(reg1->size() == 2, "Expected 2 entries in the region");
-    regEntries.clear();
-    reg1->entries(regEntries, false);
-    ASSERT(regEntries.size() == 2, "Expected 2 entries in the region.entries");
-    verifyEntry(_regionNames[1], _keys[2], _nvals[2], true);
-    verifyEntry(_regionNames[1], _keys[3], _nvals[3], true);
+      // also check with nullptr values that region is properly populated
+      reg1->localInvalidate(key3);
+
+      reg1->getAll(keys1);
+      // now check that the region is properly populated
+      ASSERT(reg1->size() == 2, "Expected 2 entries in the region");
+      regEntries = reg1->entries(false);
+      ASSERT(regEntries.size() == 2,
+             "Expected 2 entries in the region.entries");
+      verifyEntry(_regionNames[1], _keys[2], _nvals[2], true);
+      verifyEntry(_regionNames[1], _keys[3], _nvals[3], true);
+    }
   }
 END_TASK_DEFINITION
 

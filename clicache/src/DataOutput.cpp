@@ -500,7 +500,7 @@ namespace Apache
           WriteBoolean((bool)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableWideChar:
+        case apache::geode::client::GeodeTypeIds::CacheableCharacter:
         {
           WriteByte(typeId);
           WriteObject((Char)obj);

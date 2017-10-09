@@ -33,6 +33,6 @@ void FastAsset::toData(apache::geode::client::DataOutput& output) const {
 }
 
 void FastAsset::fromData(apache::geode::client::DataInput& input) {
-  input.readInt(&assetId);
-  input.readDouble(&value);
+  assetId = input.readInt32();
+  value = input.readDouble();
 }

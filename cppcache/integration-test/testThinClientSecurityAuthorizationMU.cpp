@@ -266,18 +266,16 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       }*/
 
       LOG("GetServerKeys check started for ADMIN");
-      VectorOfCacheableKey keysvec;
-      regionPtr->serverKeys(keysvec);
+      auto keysvec = regionPtr->serverKeys();
       LOG("GetServerKeys check passed for ADMIN");
 
       VectorOfCacheableKey entrykeys;
       for (int i = 0; i < 5; i++) {
         entrykeys.push_back(CacheableKey::create(i));
       }
-      auto valuesMap = std::make_shared<HashMapOfCacheable>();
-      valuesMap->clear();
-      regionPtr->getAll(entrykeys, valuesMap, nullptr, false);
-      if (valuesMap->size() > 0) {
+
+      const auto valuesMap = regionPtr->getAll(entrykeys);
+      if (valuesMap.size() > 0) {
         LOG("GetAll completed successfully");
       } else {
         FAIL("GetAll did not complete successfully");
@@ -585,8 +583,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
         LOG("Pool is nullptr");
       }
       LOG("GetServerKeys check started for WRITER");
-      VectorOfCacheableKey keysvec;
-      regionPtr->serverKeys(keysvec);
+      auto keysvec = regionPtr->serverKeys();
       LOG("GetServerKeys check passed for WRITER");
       FAIL("GetServerKeys should not have completed successfully for WRITER");
     }
@@ -652,10 +649,9 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       for (int i = 0; i < 5; i++) {
         entrykeys.push_back(CacheableKey::create(i));
       }
-      auto valuesMap = std::make_shared<HashMapOfCacheable>();
-      valuesMap->clear();
-      regionPtr->getAll(entrykeys, valuesMap, nullptr, false);
-      if (valuesMap->size() > 0) {
+
+      const auto valuesMap = regionPtr->getAll(entrykeys);
+      if (valuesMap.size() > 0) {
         FAIL("GetAll should not have completed successfully");
       }
     }
@@ -979,8 +975,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
 
     try {
       LOG("GetServerKeys check started for READER");
-      VectorOfCacheableKey keysvec;
-      rptr->serverKeys(keysvec);
+      auto keysvec = rptr->serverKeys();
       LOG("GetServerKeys check passed for READER");
     }
     HANDLE_NO_NOT_AUTHORIZED_EXCEPTION
@@ -990,10 +985,8 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
       for (int i = 0; i < 5; i++) {
         entrykeys.push_back(CacheableKey::create(i));
       }
-      auto valuesMap = std::make_shared<HashMapOfCacheable>();
-      valuesMap->clear();
-      rptr->getAll(entrykeys, valuesMap, nullptr, false);
-      if (valuesMap->size() > 0) {
+      const auto valuesMap = rptr->getAll(entrykeys);
+      if (valuesMap.size() > 0) {
         LOG("GetAll completed successfully");
       } else {
         FAIL("GetAll did not complete successfully");

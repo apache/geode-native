@@ -140,7 +140,7 @@ void createRegion(const char* name, bool ackMode, int ettl, int eit, int rttl,
       getHelper()->createRegionAndAttachPool(name, ackMode, "LRUPool", true,
                                              ettl, eit, rttl, rit, lel, action);
   ASSERT(regPtr != nullptr, "Failed to create region.");
-  if (registerKey) regPtr->registerAllKeys(false, nullptr, false, false);
+  if (registerKey) regPtr->registerAllKeys(false, false, false);
   LOG("Region created.");
 }
 
@@ -199,13 +199,11 @@ size_t getNumOfEntries(const char* regName, bool isValue = false) {
   dumpCounters(regName);
   RegionPtr rptr = getHelper()->getRegion(regName);
   if (isValue) {
-    VectorOfCacheable v;
-    rptr->values(v);
+    auto v = rptr->values();
     printf("Region value size: %zd\n", v.size());
     return v.size();
   } else if (!useRegionSize) {
-    VectorOfCacheableKey v;
-    rptr->keys(v);
+    auto v = rptr->keys();
     printf("Region key size: %zd\n", v.size());
     return v.size();
   } else {

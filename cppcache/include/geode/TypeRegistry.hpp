@@ -30,7 +30,7 @@ namespace client {
 
 class TypeRegistry {
  public:
-  TypeRegistry(Cache& cache);
+  TypeRegistry(const Cache& cache);
 
   /**
    * @brief register an instance factory method for a given type.
@@ -59,7 +59,7 @@ class TypeRegistry {
 
  protected:
  private:
-  Cache& m_cache;
+  const Cache& m_cache;
 };
 }  // namespace client
 }  // namespace geode

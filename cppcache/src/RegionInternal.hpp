@@ -149,13 +149,11 @@ class RegionInternal : public Region {
                             bool receiveValues = true);
   virtual void unregisterKeys(const VectorOfCacheableKey& keys);
   virtual void registerAllKeys(bool isDurable = false,
-                               VectorOfCacheableKeyPtr resultKeys = nullptr,
                                bool getInitialValues = false,
                                bool receiveValues = true);
   virtual void unregisterAllKeys();
 
   virtual void registerRegex(const char* regex, bool isDurable = false,
-                             VectorOfCacheableKeyPtr resultKeys = nullptr,
                              bool getInitialValues = false,
                              bool receiveValues = true);
   virtual void unregisterRegex(const char* regex);
@@ -174,10 +172,15 @@ class RegionInternal : public Region {
 
   virtual GfErrType getNoThrow(const CacheableKeyPtr& key, CacheablePtr& value,
                                const SerializablePtr& aCallbackArgument) = 0;
+
+  virtual HashMapOfCacheable getAll_internal(
+      const VectorOfCacheableKey& keys,
+      const SerializablePtr& aCallbackArgument, bool addToLocalCache) = 0;
+
   virtual GfErrType getAllNoThrow(const VectorOfCacheableKey& keys,
                                   const HashMapOfCacheablePtr& values,
                                   const HashMapOfExceptionPtr& exceptions,
-                                  bool addToLocalCache,
+                                  const bool addToLocalCache,
                                   const SerializablePtr& aCallbackArgument) = 0;
   virtual GfErrType putNoThrow(const CacheableKeyPtr& key,
                                const CacheablePtr& value,

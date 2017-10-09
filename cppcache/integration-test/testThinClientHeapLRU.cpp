@@ -60,8 +60,7 @@ void createOnekEntries() {
     //  delete tmpval;
   }
   dunit::sleep(10000);
-  VectorOfRegionEntry me;
-  dataReg->entries(me, false);
+  auto me = dataReg->entries(false);
   LOG("Verifying size outside loop");
   char buf[1024];
   sprintf(buf, "region size is %zd", me.size());

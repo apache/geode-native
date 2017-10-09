@@ -47,7 +47,7 @@ void CacheableToken::toData(DataOutput& output) const {
 }
 
 void CacheableToken::fromData(DataInput& input) {
-  input.readInt(reinterpret_cast<int32_t*>(&m_value));
+  m_value = static_cast<TokenType>(input.readInt32());
 }
 
 int32_t CacheableToken::classId() const { return 0; }

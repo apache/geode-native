@@ -89,7 +89,7 @@ class MyResultCollector : public ResultCollector {
     }
   }
 
-  void addResult(CacheablePtr& resultItem) {
+  void addResult(const CacheablePtr& resultItem) {
     m_addResultCount++;
     if (resultItem == nullptr) return;
     auto result = std::dynamic_pointer_cast<CacheableArrayList>(resultItem);

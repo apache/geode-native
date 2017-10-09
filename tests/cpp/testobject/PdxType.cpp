@@ -79,7 +79,7 @@ void PdxTests::PdxType::toData(PdxWriterPtr pw) /*const*/ {
   lengthArr[0] = 1;
   lengthArr[1] = 2;
   pw->writeArrayOfByteArrays("m_byteByteArray", m_byteByteArray, 2, lengthArr);
-  pw->writeWideChar("m_char", m_char);
+  pw->writeChar("m_char", m_char);
   pw->markIdentityField("m_char");
   pw->writeBoolean("m_bool", m_bool);  // 1
   pw->markIdentityField("m_bool");

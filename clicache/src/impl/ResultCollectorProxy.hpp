@@ -33,7 +33,7 @@ namespace Apache
       public interface class ResultCollectorG
       {
       public:
-        void AddResult(Object^ result);
+        void AddResult(const Object^ result);
         void EndResults();
         void ClearResults();
       };
@@ -52,11 +52,11 @@ namespace Apache
             m_rscoll = rscoll;
           }
 
-          virtual void AddResult( Object^ rs ) 
+          virtual void AddResult( const Object^ rs ) 
           {
             //apache::geode::client::CacheablePtr nativeptr(rs);
             //TResult grs =  Serializable::GetManagedValueGeneric<TResult>( nativeptr);
-            m_rscoll->AddResult(safe_cast<TResult>(rs));
+            m_rscoll->AddResult(safe_cast<const TResult>(rs));
           }
 
           virtual void EndResults() 

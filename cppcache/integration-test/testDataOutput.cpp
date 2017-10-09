@@ -59,10 +59,8 @@ BEGIN_TEST(Byte)
 
     ASSERT(buffer[0] == (uint8_t)0x11, "expected 0x11.");
 
-    int8_t result;
-
     DataInputInternal dataInput(buffer, dataOutput.getBufferLength(), nullptr);
-    dataInput.read(&result);
+    const  auto result = dataInput.read();
     ASSERT(result == (uint8_t)0x11, "expected 0x11");
   }
 END_TEST(Byte)
@@ -78,12 +76,10 @@ BEGIN_TEST(Boolean)
     ASSERT(buffer[0] == (uint8_t)0x1, "expected 0x1.");
     ASSERT(buffer[1] == (uint8_t)0x0, "expected 0x0.");
 
-    bool result;
-
     DataInputInternal dataInput(buffer, dataOutput.getBufferLength(), nullptr);
-    dataInput.readBoolean(&result);
+    auto result = dataInput.readBoolean();
     ASSERT(result, "expected true");
-    dataInput.readBoolean(&result);
+    result = dataInput.readBoolean();
     ASSERT(result == false, "expected false");
   }
 END_TEST(Boolean)
@@ -97,10 +93,8 @@ BEGIN_TEST(Short)
     ASSERT(buffer[0] == (uint8_t)0x11, "expected 0x11.");
     ASSERT(buffer[1] == (uint8_t)0x22, "expected 0x11.");
 
-    int16_t result;
-
     DataInputInternal dataInput(buffer, dataOutput.getBufferLength(), nullptr);
-    dataInput.readInt(&result);
+    int16_t result = dataInput.readInt16();
     ASSERT(result == 0x1122, "expected 0x1122");
   }
 END_TEST(Short)
@@ -118,8 +112,7 @@ BEGIN_TEST(int_t)
     ASSERT(buffer[3] == (uint8_t)0x44, "expected 0x44.");
 
     DataInputInternal dataInput(buffer, dataOutput.getBufferLength(), nullptr);
-    int32_t result;
-    dataInput.readInt(&result);
+    int32_t result = dataInput.readInt32();
     ASSERT(result == 0x11223344, "expected 0x11223344");
   }
 END_TEST(int_t)
@@ -141,8 +134,7 @@ BEGIN_TEST(Long)
     ASSERT(buffer[7] == (uint8_t)0x88, "expected 0x88.");
 
     DataInputInternal dataInput(buffer, dataOutput.getBufferLength(), nullptr);
-    int64_t result;
-    dataInput.readInt(&result);
+    int64_t result = dataInput.readInt64();
     ASSERT(result == value, "expected 0x1122334455667788");
   }
 END_TEST(Long)
@@ -159,8 +151,7 @@ BEGIN_TEST(Float)
     ASSERT(buffer[3] == (uint8_t)0x9a, "expected 0x9a.");
 
     DataInputInternal dataInput(buffer, dataOutput.getBufferLength(), nullptr);
-    float result;
-    dataInput.readFloat(&result);
+    float result = dataInput.readFloat();
     ASSERT(result == 1.2f, "expected 1.2f");
   }
 END_TEST(Float)
@@ -181,8 +172,7 @@ BEGIN_TEST(Double)
     ASSERT(buffer[7] == (uint8_t)0x33, "expected 0x33.");
 
     DataInputInternal dataInput(buffer, dataOutput.getBufferLength(), nullptr);
-    double result;
-    dataInput.readDouble(&result);
+    double result = dataInput.readDouble();
     ASSERT(result == 1.2, "expected 1.2");
   }
 END_TEST(Double)

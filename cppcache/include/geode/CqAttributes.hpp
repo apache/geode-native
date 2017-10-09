@@ -57,7 +57,7 @@ class CPPCACHE_EXPORT CqAttributes {
    * @see CqListener
    * @param[out] std::vector<CqListenerPtr> of CqListnerPtr
    */
-  virtual void getCqListeners(listener_container_type& vl) = 0;
+  virtual listener_container_type getCqListeners() = 0;
 };
 }  // namespace client
 }  // namespace geode

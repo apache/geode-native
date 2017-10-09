@@ -72,8 +72,8 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeWideChar(const char* fieldName,
-                                              wchar_t value);
+  virtual PdxInstanceFactoryPtr writeChar(const char* fieldName,
+                                              char16_t value);
 
   /**
    * Writes the named field with the given value to the serialized form.

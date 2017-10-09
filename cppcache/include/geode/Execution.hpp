@@ -105,8 +105,9 @@ class CPPCACHE_EXPORT Execution {
    * @return either a default result collector or one specified by {@link
    * #withCollector(ResultCollector)}
    */
-  virtual ResultCollectorPtr execute(CacheableVectorPtr& routingObj,
-                                     CacheablePtr& args, ResultCollectorPtr& rs,
+  virtual ResultCollectorPtr execute(const CacheableVectorPtr& routingObj,
+                                     const CacheablePtr& args,
+                                     const ResultCollectorPtr& rs,
                                      const char* func, uint32_t timeout) = 0;
 };
 }  // namespace client

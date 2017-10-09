@@ -507,7 +507,7 @@ namespace Apache
       /// An immutable wrapper for 16-bit characters that can serve
       /// as a distributable key object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableWideChar,
+      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableCharacter,
                                    CacheableCharacter, Char);
 
       /// <summary>

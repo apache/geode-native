@@ -94,7 +94,7 @@ void InvalidPdxUsage::toData(PdxWriterPtr pw) /*const*/ {
   }
 
   try {
-    pw->writeWideChar("", m_char);
+    pw->writeChar("", m_char);
     pw->markIdentityField("m_char");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;

@@ -75,7 +75,7 @@ namespace Apache
         apache::geode::client::CacheStatisticsPtr nativeptr;
         try
         {
-          m_nativeptr->get()->getStatistics( nativeptr );
+          nativeptr = m_nativeptr->get()->getStatistics();
         }
         finally
         {

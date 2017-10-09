@@ -562,7 +562,7 @@ namespace Apache.Geode.Client.FwkLib
         bool isDurable = GetBoolValue("isDurableReg");
         ResetKey("getInitialValues");
         bool isGetInitialValues = GetBoolValue("getInitialValues");
-        region.GetSubscriptionService().RegisterAllKeys(isDurable, null, isGetInitialValues);
+        region.GetSubscriptionService().RegisterAllKeys(isDurable, isGetInitialValues);
       }
       catch (Exception ex)
       {

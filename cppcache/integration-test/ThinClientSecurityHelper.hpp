@@ -202,7 +202,7 @@ class putThread : public ACE_Task_Base {
     char buf[20];
     char valbuf[20];
     if (m_regInt) {
-      m_reg->registerAllKeys(false, nullptr, true);
+      m_reg->registerAllKeys(false, true);
     }
     if (m_waitTime != 0) {
       ACE_OS::sleep(m_waitTime);
@@ -233,7 +233,7 @@ class putThread : public ACE_Task_Base {
           m_reg->registerKeys(keys0, false, true);
         }
       } else if (m_opcode == 6) {
-        m_reg->registerRegex("key-[1-3]", false, nullptr, true);
+        m_reg->registerRegex("key-[1-3]", false, true);
       } else {
         try {
           if (m_isCallBack) {

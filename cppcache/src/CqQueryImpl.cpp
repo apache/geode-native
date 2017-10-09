@@ -141,8 +141,7 @@ void CqQueryImpl::close(bool sendRequestToServer) {
 
   // Invoke close on Listeners if any.
   if (m_cqAttributes) {
-    CqAttributes::listener_container_type cqListeners;
-    m_cqAttributes->getCqListeners(cqListeners);
+    auto cqListeners = m_cqAttributes->getCqListeners();
 
     if (!cqListeners.empty()) {
       LOGFINE(
@@ -240,7 +239,7 @@ void CqQueryImpl::cleanup() { removeFromCqMap(); }
  */
 void CqQueryImpl::getCqListeners(
     CqAttributes::listener_container_type& cqListener) {
-  m_cqAttributes->getCqListeners(cqListener);
+  cqListener = m_cqAttributes->getCqListeners();
 }
 
 GfErrType CqQueryImpl::execute(TcrEndpoint* endpoint) {

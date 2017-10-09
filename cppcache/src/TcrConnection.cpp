@@ -404,7 +404,7 @@ bool TcrConnection::InitTcrConnection(
     auto dI = cacheImpl->getCache()->createDataInput(queueSizeMsg->value(),
                                                      queueSizeMsg->length());
     int32_t queueSize = 0;
-    dI->readInt(&queueSize);
+    queueSize = dI->readInt32();
     m_queueSize = queueSize > 0 ? queueSize : 0;
 
     m_endpointObj->setServerQueueStatus(m_hasServerQueue, m_queueSize);
@@ -433,17 +433,15 @@ bool TcrConnection::InitTcrConnection(
       if (static_cast<int8_t>((*arrayLenHeader)[0]) == -2) {
         CacheableBytesPtr recvMsgLenBytes =
             readHandshakeData(2, connectTimeout);
-        auto dI2 = cacheImpl->getCache()->createDataInput(
-            recvMsgLenBytes->value(), recvMsgLenBytes->length());
-        int16_t recvMsgLenShort = 0;
-        dI2->readInt(&recvMsgLenShort);
-        recvMsgLen = recvMsgLenShort;
+        auto dI2 = m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+                      recvMsgLenBytes->value(), recvMsgLenBytes->length());
+        recvMsgLen = dI2->readInt16();
       } else if (static_cast<int8_t>((*arrayLenHeader)[0]) == -3) {
         CacheableBytesPtr recvMsgLenBytes =
             readHandshakeData(4, connectTimeout);
-        auto dI2 = cacheImpl->getCache()->createDataInput(
-            recvMsgLenBytes->value(), recvMsgLenBytes->length());
-        dI2->readInt(&recvMsgLen);
+        auto dI2 = m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+                      recvMsgLenBytes->value(), recvMsgLenBytes->length());
+        recvMsgLen = dI2->readInt32();
       }
       auto recvMessage = readHandshakeData(recvMsgLen, connectTimeout);
       // If the distributed member has not been set yet, set it.
@@ -452,7 +450,7 @@ bool TcrConnection::InitTcrConnection(
         auto diForClient = cacheImpl->getCache()->createDataInput(
             recvMessage->value(), recvMessage->length());
         ClientProxyMembershipIDPtr member;
-        diForClient->readObject(member);
+        member = diForClient->readObject<ClientProxyMembershipID>();
         auto memId = cacheImpl->getMemberListForVersionStamp()->add(member);
         getEndpointObject()->setDistributedMemberID(memId);
         LOGDEBUG("Deserialized distributed member Id %d", memId);
@@ -460,20 +458,17 @@ bool TcrConnection::InitTcrConnection(
     }
 
     CacheableBytesPtr recvMsgLenBytes = readHandshakeData(2, connectTimeout);
-    auto dI3 = cacheImpl->getCache()->createDataInput(
-        recvMsgLenBytes->value(), recvMsgLenBytes->length());
-    uint16_t recvMsgLen2 = 0;
-    dI3->readInt(&recvMsgLen2);
+    auto dI3 = m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+                  recvMsgLenBytes->value(), recvMsgLenBytes->length());
+    uint16_t recvMsgLen2 = dI3->readInt16();
     CacheableBytesPtr recvMessage =
         readHandshakeData(recvMsgLen2, connectTimeout);
 
     if (!isClientNotification) {
       CacheableBytesPtr deltaEnabledMsg = readHandshakeData(1, connectTimeout);
-      auto di =
-          cacheImpl->getCache()->createDataInput(deltaEnabledMsg->value(), 1);
-      bool isDeltaEnabledOnServer;
-      di->readBoolean(&isDeltaEnabledOnServer);
-      ThinClientBaseDM::setDeltaEnabledOnServer(isDeltaEnabledOnServer);
+      auto di = m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+                   deltaEnabledMsg->value(), 1);
+      ThinClientBaseDM::setDeltaEnabledOnServer(di->readBoolean());
     }
 
     switch ((*acceptanceCode)[0]) {
@@ -953,8 +948,8 @@ char* TcrConnection::readMessage(size_t* recvLen, uint32_t receiveTimeoutSec,
 
   auto input = m_connectionManager->getCacheImpl()->getCache()->createDataInput(
       reinterpret_cast<uint8_t*>(msg_header), HEADER_LENGTH);
-  input->readInt(&msgType);
-  input->readInt(&msgLen);
+  msgType = input->readInt32();
+  msgLen = input->readInt32();
   //  check that message length is valid.
   if (!(msgLen > 0) && request == TcrMessage::GET_CLIENT_PR_METADATA) {
     char* fullMessage;
@@ -1063,16 +1058,14 @@ void TcrConnection::readMessageChunked(TcrMessageReply& reply,
 
   auto input = m_connectionManager->getCacheImpl()->getCache()->createDataInput(
       msg_header, HDR_LEN_12);
-  int32_t msgType;
-  input->readInt(&msgType);
+  int32_t msgType = input->readInt32();
   reply.setMessageType(msgType);
   int32_t txId;
-  int32_t numOfParts;
-  input->readInt(&numOfParts);
+  int32_t numOfParts = input->readInt32();
   LOGDEBUG("TcrConnection::readMessageChunked numberof parts = %d ",
            numOfParts);
   // input->advanceCursor(4);
-  input->readInt(&txId);
+  txId = input->readInt32();
   reply.setTransId(txId);
 
   // bool isLastChunk = false;
@@ -1132,11 +1125,10 @@ void TcrConnection::readMessageChunked(TcrMessageReply& reply,
         m_connectionManager->getCacheImpl()->getCache()->createDataInput(
             msg_header + HDR_LEN_12, HDR_LEN);
     int32_t chunkLen;
-    input->readInt(&chunkLen);
+    chunkLen = input->readInt32();
     //  check that chunk length is valid.
     GF_DEV_ASSERT(chunkLen > 0);
-    // input->readBoolean(&isLastChunk);
-    input->read(&isLastChunk);
+    isLastChunk = input->read();
 
     uint8_t* chunk_body;
     GF_NEW(chunk_body, uint8_t[chunkLen]);
@@ -1292,11 +1284,9 @@ CacheableBytesPtr TcrConnection::readHandshakeByteArray(
 // read a byte array
 uint32_t TcrConnection::readHandshakeArraySize(uint32_t connectTimeout) {
   CacheableBytesPtr codeBytes = readHandshakeData(1, connectTimeout);
-  auto codeDI =
-      m_connectionManager->getCacheImpl()->getCache()->createDataInput(
-          codeBytes->value(), codeBytes->length());
-  uint8_t code = 0;
-  codeDI->read(&code);
+  auto codeDI = m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+                   codeBytes->value(), codeBytes->length());
+  uint8_t code = codeDI->read();
   uint32_t arraySize = 0;
   if (code == 0xFF) {
     return 0;
@@ -1305,19 +1295,13 @@ uint32_t TcrConnection::readHandshakeArraySize(uint32_t connectTimeout) {
     if (tempLen > 252) {  // 252 is java's ((byte)-4 && 0xFF)
       if (code == 0xFE) {
         CacheableBytesPtr lenBytes = readHandshakeData(2, connectTimeout);
-        auto lenDI =
-            m_connectionManager->getCacheImpl()->getCache()->createDataInput(
-                lenBytes->value(), lenBytes->length());
-        uint16_t val;
-        lenDI->readInt(&val);
+        auto lenDI = m_connectionManager->getCacheImpl()->getCache()->createDataInput(lenBytes->value(), lenBytes->length());
+        uint16_t val = lenDI->readInt16();
         tempLen = val;
       } else if (code == 0xFD) {
         CacheableBytesPtr lenBytes = readHandshakeData(4, connectTimeout);
-        auto lenDI =
-            m_connectionManager->getCacheImpl()->getCache()->createDataInput(
-                lenBytes->value(), lenBytes->length());
-        uint32_t val;
-        lenDI->readInt(&val);
+        auto lenDI = m_connectionManager->getCacheImpl()->getCache()->createDataInput(lenBytes->value(), lenBytes->length());
+        uint32_t val = lenDI->readInt32();
         tempLen = val;
       } else {
         GF_SAFE_DELETE_CON(m_conn);
@@ -1406,10 +1390,8 @@ int32_t TcrConnection::readHandShakeInt(uint32_t connectTimeout) {
     }
   }
 
-  auto di = m_connectionManager->getCacheImpl()->getCache()->createDataInput(
-      recvMessage, 4);
-  int32_t val;
-  di->readInt(&val);
+  auto di = m_connectionManager->getCacheImpl()->getCache()->createDataInput(recvMessage, 4);
+  int32_t val = di->readInt32();
 
   GF_SAFE_DELETE_ARRAY(recvMessage);
 
@@ -1443,13 +1425,10 @@ CacheableStringPtr TcrConnection::readHandshakeString(uint32_t connectTimeout) {
       break;
     }
     case GF_STRING: {
-      uint16_t shortLen = 0;
       CacheableBytesPtr lenBytes = readHandshakeData(2, connectTimeout);
-      auto lenDI =
-          m_connectionManager->getCacheImpl()->getCache()->createDataInput(
-              lenBytes->value(), lenBytes->length());
-      lenDI->readInt(&shortLen);
-      length = shortLen;
+      auto lenDI = m_connectionManager->getCacheImpl()->getCache()->createDataInput(lenBytes->value(), lenBytes->length());
+      length = lenDI->readInt16();
+
       break;
     }
     default: {

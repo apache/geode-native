@@ -314,9 +314,7 @@ void FrameworkTest::incClientCount() {
 
 void FrameworkTest::destroyAllRegions() {
   // destroy all root regions
-  VectorOfRegion vec;
-  m_cache->rootRegions(vec);
-  for (auto& region : vec) {
+  for (auto& region : m_cache->rootRegions()) {
     localDestroyRegion(region);
   }
 }

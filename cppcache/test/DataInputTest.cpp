@@ -66,11 +66,11 @@ class TestDataInput {
 
   operator DataInput &() { return m_dataInput; }
 
-  void read(uint8_t *value) { m_dataInput.read(value); }
+  void read(uint8_t *value) { *value = m_dataInput.read(); }
 
-  void read(int8_t *value) { m_dataInput.read(value); }
+  void read(int8_t *value) { *value = m_dataInput.read(); }
 
-  void readBoolean(bool *value) { m_dataInput.readBoolean(value); }
+  void readBoolean(bool *value) { *value = m_dataInput.readBoolean(); }
 
   void readBytesOnly(uint8_t *buffer, uint32_t len) {
     m_dataInput.readBytesOnly(buffer, len);
@@ -88,25 +88,21 @@ class TestDataInput {
     m_dataInput.readBytes(buffer, len);
   }
 
-  void readInt(uint16_t *value) { m_dataInput.readInt(value); }
+  int16_t readInt16() { return m_dataInput.readInt16(); }
 
-  void readInt(int16_t *value) { m_dataInput.readInt(value); }
+  int32_t readInt32() { return m_dataInput.readInt32(); }
 
-  void readInt(uint32_t *value) { m_dataInput.readInt(value); }
+  void readInt(uint64_t *value) { *value = m_dataInput.readInt64(); }
 
-  void readInt(int32_t *value) { m_dataInput.readInt(value); }
+  int64_t readInt64() { return m_dataInput.readInt64(); }
 
-  void readInt(uint64_t *value) { m_dataInput.readInt(value); }
+  int32_t readArrayLen() { return m_dataInput.readArrayLen(); }
 
-  void readInt(int64_t *value) { m_dataInput.readInt(value); }
+  int64_t readUnsignedVL() { return m_dataInput.readUnsignedVL(); }
 
-  void readArrayLen(int32_t *len) { m_dataInput.readArrayLen(len); }
+  float readFloat() { return m_dataInput.readFloat(); }
 
-  void readUnsignedVL(int64_t *value) { m_dataInput.readUnsignedVL(value); }
-
-  void readFloat(float *value) { m_dataInput.readFloat(value); }
-
-  void readDouble(double *value) { m_dataInput.readDouble(value); }
+  double readDouble() { return m_dataInput.readDouble(); }
 
   void readASCII(char **value, uint16_t *len = nullptr) {
     m_dataInput.readASCII(value, len);
@@ -139,7 +135,7 @@ class TestDataInput {
   template <class PTR>
   void readObject(std::shared_ptr<PTR> &ptr,
                   bool throwOnError = DINP_THROWONERROR_DEFAULT) {
-    m_dataInput.readObject(ptr, throwOnError);
+    ptr = m_dataInput.readObject<PTR>(throwOnError);
   }
 
   bool readNativeBool() { return m_dataInput.readNativeBool(); }
@@ -147,11 +143,12 @@ class TestDataInput {
   int32_t readNativeInt32() { return m_dataInput.readNativeInt32(); }
 
   bool readNativeString(CacheableStringPtr &csPtr) {
-    return m_dataInput.readNativeString(csPtr);
+    csPtr =  m_dataInput.readNativeString();
+    return csPtr != nullptr;
   }
 
-  void readDirectObject(SerializablePtr &ptr, int8_t typeId = -1) {
-    m_dataInput.readDirectObject(ptr, typeId);
+  SerializablePtr readDirectObject(int8_t typeId = -1) {
+    return m_dataInput.readDirectObject(typeId);
   }
 
   void readObject(SerializablePtr &ptr) { m_dataInput.readObject(ptr); }
@@ -259,12 +256,10 @@ TEST_F(DataInputTest, CanReadABooleanFromInput) {
   bool boolArray[2] = {true, false};
   DataInputUnderTest dataInput(reinterpret_cast<uint8_t *>(boolArray), 2, nullptr);
 
-  bool aBool = false;
-  dataInput.readBoolean(&aBool);
+  auto aBool = dataInput.readBoolean();
   EXPECT_EQ(aBool, true);
 
-  aBool = true;
-  dataInput.readBoolean(&aBool);
+  aBool = dataInput.readBoolean();
   EXPECT_EQ(aBool, false);
 }
 
@@ -293,8 +288,7 @@ TEST_F(DataInputTest, CanReadIntWithAMaxSizeUnsigned64BitIntInput) {
   DataInputUnderTest dataInput(reinterpret_cast<uint8_t *>(intArray), sizeof(intArray),
                       nullptr);
 
-  uint64_t aInt = 0UL;
-  dataInput.readInt(&aInt);
+  uint64_t aInt = dataInput.readInt64();
   EXPECT_EQ(aInt, std::numeric_limits<uint64_t>::max());
 }
 
@@ -481,29 +475,25 @@ TEST_F(DataInputTest, TestReadInt8_tBytes) {
 
 TEST_F(DataInputTest, TestReadIntUint16) {
   TestDataInput dataInput("123456789ABCDEF0", nullptr);
-  uint16_t value = 0U;
-  dataInput.readInt(&value);
+  uint16_t value = dataInput.readInt16();
   EXPECT_EQ((uint16_t)4660U, value) << "Correct uint16_t";
 }
 
 TEST_F(DataInputTest, TestReadIntInt16) {
   TestDataInput dataInput("123456789ABCDEF0", nullptr);
-  int16_t value = 0;
-  dataInput.readInt(&value);
+  int16_t value = dataInput.readInt16();
   EXPECT_EQ((int16_t)4660, value) << "Correct int16_t";
 }
 
 TEST_F(DataInputTest, TestReadIntUint32) {
   TestDataInput dataInput("123456789ABCDEF0", nullptr);
-  uint32_t value = 0U;
-  dataInput.readInt(&value);
+  uint32_t value = dataInput.readInt32();
   EXPECT_EQ((uint32_t)305419896U, value) << "Correct uint32_t";
 }
 
 TEST_F(DataInputTest, TestReadIntInt32) {
   TestDataInput dataInput("123456789ABCDEF0", nullptr);
-  int32_t value = 0;
-  dataInput.readInt(&value);
+  int32_t value = dataInput.readInt32();
   EXPECT_EQ((int32_t)305419896, value) << "Correct int32_t";
 }
 
@@ -516,8 +506,7 @@ TEST_F(DataInputTest, TestReadIntUint64) {
 
 TEST_F(DataInputTest, TestReadIntInt64) {
   TestDataInput dataInput("123456789ABCDEF0", nullptr);
-  int64_t value = 0;
-  dataInput.readInt(&value);
+  int64_t value = dataInput.readInt64();
   EXPECT_EQ((int64_t)1311768467463790320, value) << "Correct int64_t";
 }
 
@@ -525,19 +514,19 @@ TEST_F(DataInputTest, TestReadArrayLen) {
   int32_t len = 0;
 
   TestDataInput dataInput0("FF12345678", nullptr);
-  dataInput0.readArrayLen(&len);
+  len = dataInput0.readArrayLen();
   EXPECT_EQ(-1, len) << "Correct length for 0xFF";
 
   TestDataInput dataInput1("FE12345678", nullptr);
-  dataInput1.readArrayLen(&len);
+  len = dataInput1.readArrayLen();
   EXPECT_EQ(4660, len) << "Correct length for 0xFE";
 
   TestDataInput dataInput2("FD12345678", nullptr);
-  dataInput2.readArrayLen(&len);
+  len = dataInput2.readArrayLen();
   EXPECT_EQ(305419896, len) << "Correct length for 0xFD";
 
   TestDataInput dataInput3("FC12345678", nullptr);
-  dataInput3.readArrayLen(&len);
+  len = dataInput3.readArrayLen();
   EXPECT_EQ(252, len) << "Correct length for 0xFC";
 }
 
@@ -556,22 +545,20 @@ TEST_F(DataInputTest, TestReadUnsignedVL) {
   // 00    92       9A       95       CF       89       D5       F3       BD F0
 
   TestDataInput dataInput("F0BDF3D589CF959A9200", nullptr);
-  int64_t value = 0;
-  dataInput.readUnsignedVL(&value);
+  int64_t value = dataInput.readUnsignedVL();
   EXPECT_EQ((int64_t)1311768467463790320, value) << "Correct int64_t";
 }
 
 TEST_F(DataInputTest, TestReadFloat) {
   TestDataInput dataInput("123456789ABCDEF0", nullptr);
-  float value = 0.F;
-  dataInput.readFloat(&value);
+  float value = dataInput.readFloat();
   EXPECT_FLOAT_EQ(5.6904566e-28F, value) << "Correct float";
 }
 
 TEST_F(DataInputTest, TestReadDouble) {
   TestDataInput dataInput("123456789ABCDEF0", nullptr);
   double value = 0.;
-  dataInput.readDouble(&value);
+  value = dataInput.readDouble();
   EXPECT_DOUBLE_EQ(5.626349274901198e-221, value) << "Correct double";
 }
 
@@ -690,8 +677,7 @@ TEST_F(DataInputTest, TestReadNativeString) {
 TEST_F(DataInputTest, TestReadDirectObject) {
   TestDataInput dataInput(
       "57001B596F7520686164206D65206174206D65617420746F726E61646F2E", nullptr);
-  SerializablePtr objptr;
-  dataInput.readDirectObject(objptr);
+  SerializablePtr objptr = dataInput.readDirectObject();
   EXPECT_STREQ(
       (const char *)"You had me at meat tornado.",
       (const char *)(std::dynamic_pointer_cast<CacheableString>(objptr))

@@ -413,8 +413,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     // if key port1-4 then only query 3 and 4 will satisfied
     auto cqy = qs->getCq(cqNames[3]);
     auto cqAttr = cqy->getCqAttributes();
-    std::vector<CqListenerPtr> vl;
-    cqAttr->getCqListeners(vl);
+    auto vl = cqAttr->getCqListeners();
 
     auto cqListener_3 = static_cast<MyCqListener*>(vl[0].get());
     printf(" cqListener_3 should have one create event = %d \n",
@@ -422,11 +421,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     ASSERT(cqListener_3->getNumInserts() == 1,
            "incorrect number of events got listener 3");
 
-    vl.clear();
-
     cqy = qs->getCq(cqNames[4]);
     cqAttr = cqy->getCqAttributes();
-    cqAttr->getCqListeners(vl);
+    vl = cqAttr->getCqListeners();
 
     auto cqListener_4 = static_cast<MyCqListener*>(vl[0].get());
     printf(" cqListener_4 should have one create event = %d \n",
@@ -473,8 +470,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour2)
       // if key port1-4 then only query 3 and 4 will satisfied
       auto cqy = qs->getCq(cqNames[3]);
       auto cqAttr = cqy->getCqAttributes();
-      std::vector<CqListenerPtr> vl;
-      cqAttr->getCqListeners(vl);
+      auto vl = cqAttr->getCqListeners();
 
       auto cqListener_3 = static_cast<MyCqListener*>(vl[0].get());
       printf(" cqListener_3 should have one update event = %d \n",
@@ -482,11 +478,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour2)
       ASSERT(cqListener_3->getNumUpdates() == 1,
              "incorrect number of events got listener 3");
 
-      vl.clear();
-
       cqy = qs->getCq(cqNames[4]);
       cqAttr = cqy->getCqAttributes();
-      cqAttr->getCqListeners(vl);
+      vl = cqAttr->getCqListeners();
 
       MyCqListener* cqListener_4 = static_cast<MyCqListener*>(vl[0].get());
       printf(" cqListener_4 should have one update event = %d \n",
@@ -500,8 +494,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour2)
       // if key port1-4 then only query 3 and 4 will satisfied
       auto cqy = qs->getCq(cqNames[3]);
       auto cqAttr = cqy->getCqAttributes();
-      std::vector<CqListenerPtr> vl;
-      cqAttr->getCqListeners(vl);
+      auto vl = cqAttr->getCqListeners();
 
       auto cqListener_3 = static_cast<MyCqListener*>(vl[0].get());
       printf(" cqListener_3 should have zero update event = %d \n",
@@ -509,11 +502,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour2)
       ASSERT(cqListener_3->getNumUpdates() == 0,
              "incorrect number of events got listener 3");
 
-      vl.clear();
-
       cqy = qs->getCq(cqNames[4]);
       cqAttr = cqy->getCqAttributes();
-      cqAttr->getCqListeners(vl);
+      vl = cqAttr->getCqListeners();
 
       auto cqListener_4 = static_cast<MyCqListener*>(vl[0].get());
       printf(" cqListener_4 should have zero update event = %d \n",

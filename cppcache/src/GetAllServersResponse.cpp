@@ -26,9 +26,7 @@ void GetAllServersResponse::toData(DataOutput& output) const {
   }
 }
 void GetAllServersResponse::fromData(DataInput& input) {
-  int length = 0;
-
-  input.readInt(&length);
+  int length = input.readInt32();
   LOGFINER("GetAllServersResponse::fromData length = %d ", length);
   for (int i = 0; i < length; i++) {
     ServerLocation sLoc;

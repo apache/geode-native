@@ -35,14 +35,10 @@ Struct::Struct(StructSet* ssPtr, std::vector<SerializablePtr>& fieldValues) {
 }
 
 void Struct::skipClassName(DataInput& input) {
-  uint8_t classByte;
-  input.read(&classByte);
-  if (classByte == GeodeTypeIdsImpl::Class) {
-    uint8_t stringType;
-    input.read(&stringType);  // ignore string type id - assuming its a normal
+  if (input.read() == GeodeTypeIdsImpl::Class) {
+    input.read();  // ignore string type id - assuming its a normal
                               // (under 64k) string.
-    uint16_t len;
-    input.readInt(&len);
+    uint16_t len = input.readInt16();
     input.advanceCursor(len);
   } else {
     throw IllegalStateException(
@@ -65,31 +61,23 @@ int32_t Struct::length() const {
 }
 
 void Struct::fromData(DataInput& input) {
-  int8_t classType;
-  input.read(&classType);
-  input.read(&classType);
+  input.advanceCursor(2); // ignore classType
   skipClassName(input);
 
-  int32_t numOfFields;
-  input.readArrayLen(&numOfFields);
+  int32_t numOfFields = input.readArrayLen();
 
   m_parent = nullptr;
   for (int32_t i = 0; i < numOfFields; i++) {
-    CacheableStringPtr fieldName;
-    // input.readObject(fieldName);
-    input.readNativeString(fieldName);
+    CacheableStringPtr fieldName = input.readNativeString();
     m_fieldNames.emplace(fieldName->asChar(), i);
   }
-  int32_t lengthForTypes;
-  input.readArrayLen(&lengthForTypes);
+  int32_t lengthForTypes = input.readArrayLen();
   skipClassName(input);
   for (int i = 0; i < lengthForTypes; i++) {
-    input.read(&classType);
-    input.read(&classType);
+    input.advanceCursor(2); // ignore classType
     skipClassName(input);
   }
-  int32_t numOfSerializedValues;
-  input.readArrayLen(&numOfSerializedValues);
+  int32_t numOfSerializedValues = input.readArrayLen();
   skipClassName(input);
   for (int i = 0; i < numOfSerializedValues; i++) {
     SerializablePtr val;

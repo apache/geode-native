@@ -88,7 +88,7 @@ class CPPCACHE_EXPORT ResultCollector {
    * @param resultOfSingleExecution
    * @since 5.8LA
    */
-  virtual void addResult(CacheablePtr& resultOfSingleExecution);
+  virtual void addResult(const CacheablePtr& resultOfSingleExecution);
   /**
    * Geode will invoke this method when function execution has completed
    * and all results for the execution have been obtained and  added to the

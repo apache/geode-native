@@ -60,8 +60,9 @@ class ExecutionImpl : public Execution {
   virtual ExecutionPtr withCollector(ResultCollectorPtr rs);
   // java function has hasResult property. we put the hasResult argument
   // here as a kluge.
-  virtual ResultCollectorPtr execute(CacheableVectorPtr& routingObj,
-                                     CacheablePtr& args, ResultCollectorPtr& rs,
+  virtual ResultCollectorPtr execute(const CacheableVectorPtr& routingObj,
+                                     const CacheablePtr& args,
+                                     const ResultCollectorPtr& rs,
                                      const char* func, uint32_t timeout);
   virtual ResultCollectorPtr execute(
       const char* func, uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);

@@ -137,10 +137,9 @@ PdxWriterPtr PdxRemoteWriter::writeChar(const char* fieldName, char value) {
   return shared_from_this();
 }
 
-PdxWriterPtr PdxRemoteWriter::writeWideChar(const char* fieldName,
-                                            wchar_t value) {
+PdxWriterPtr PdxRemoteWriter::writeChar(const char* fieldName, char16_t value) {
   writePreserveData();
-  PdxLocalWriter::writeWideChar(fieldName, value);
+  PdxLocalWriter::writeChar(fieldName, value);
   return shared_from_this();
 }
 

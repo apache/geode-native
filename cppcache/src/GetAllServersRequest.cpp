@@ -24,5 +24,5 @@ void GetAllServersRequest::toData(DataOutput& output) const {
 }
 
 void GetAllServersRequest::fromData(DataInput& input) {
-  input.readObject(m_serverGroup);
+  m_serverGroup = input.readObject<CacheableString>();
 }

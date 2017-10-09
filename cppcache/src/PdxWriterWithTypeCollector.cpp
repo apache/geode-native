@@ -109,11 +109,11 @@ PdxWriterPtr PdxWriterWithTypeCollector::writeChar(const char* fieldName,
   return shared_from_this();
 }
 
-PdxWriterPtr PdxWriterWithTypeCollector::writeWideChar(const char* fieldName,
-                                                       wchar_t value) {
+PdxWriterPtr PdxWriterWithTypeCollector::writeChar(const char* fieldName,
+                                                   char16_t value) {
   m_pdxType->addFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR,
                                      PdxTypes::CHAR_SIZE);
-  PdxLocalWriter::writeWideChar(fieldName, value);
+  PdxLocalWriter::writeChar(fieldName, value);
   return shared_from_this();
 }
 

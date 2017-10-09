@@ -45,8 +45,7 @@ BEGIN_TEST(TestRegionLRULastTen)
     sprintf(buf, "value of %d", i);
     CacheableStringPtr valuePtr = cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
-    VectorOfCacheableKey vecKeys;
-    regionPtr->keys(vecKeys);
+    VectorOfCacheableKey vecKeys = regionPtr->keys();
     ASSERT(vecKeys.size() == (i + 1), "expected more entries");
   }
   for (i = 10; i < 20; i++) {
@@ -56,13 +55,11 @@ BEGIN_TEST(TestRegionLRULastTen)
     sprintf(buf, "value of %d", i);
     CacheableStringPtr valuePtr = cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
-    VectorOfCacheableKey vecKeys;
-    regionPtr->keys(vecKeys);
+    VectorOfCacheableKey vecKeys = regionPtr->keys();
     cacheHelper.showKeys(vecKeys);
     ASSERT(vecKeys.size() == (10), "expected 10 entries");
   }
-  VectorOfCacheableKey vecKeys;
-  regionPtr->keys(vecKeys);
+  VectorOfCacheableKey vecKeys = regionPtr->keys();
   ASSERT(vecKeys.size() == 10, "expected 10 entries");
   // verify it is the last 10 keys..
   int expected = 0;
@@ -92,8 +89,7 @@ BEGIN_TEST(TestRegionNoLRU)
     sprintf(buf, "value of %d", i);
     CacheableStringPtr valuePtr = cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
-    VectorOfCacheableKey vecKeys;
-    regionPtr->keys(vecKeys);
+    VectorOfCacheableKey vecKeys = regionPtr->keys();
     cacheHelper.showKeys(vecKeys);
     ASSERT(vecKeys.size() == (i + 1), "unexpected entries count");
   }
@@ -119,8 +115,7 @@ BEGIN_TEST(TestRegionLRULocal)
     sprintf(buf, "value of %d", i);
     CacheableStringPtr valuePtr = cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
-    VectorOfCacheableKey vecKeys;
-    regionPtr->keys(vecKeys);
+    VectorOfCacheableKey vecKeys = regionPtr->keys();
     ASSERT(vecKeys.size() == (i < 10 ? i + 1 : 10), "expected more entries");
   }
 
@@ -157,8 +152,7 @@ BEGIN_TEST(TestRecentlyUsedBit)
     CacheableKeyPtr key = CacheableKey::create(buf);
     CacheableStringPtr valuePtr = cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
-    VectorOfCacheableKey vecKeys;
-    regionPtr->keys(vecKeys);
+    VectorOfCacheableKey vecKeys = regionPtr->keys();
     cacheHelper.showKeys(vecKeys);
     ASSERT(vecKeys.size() == 10, "expected more entries");
   }
@@ -168,8 +162,7 @@ BEGIN_TEST(TestRecentlyUsedBit)
     CacheableKeyPtr key = CacheableKey::create(buf);
     CacheableStringPtr valuePtr = cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
-    VectorOfCacheableKey vecKeys;
-    regionPtr->keys(vecKeys);
+    VectorOfCacheableKey vecKeys = regionPtr->keys();
     cacheHelper.showKeys(vecKeys);
     ASSERT(vecKeys.size() == 10, "expected more entries");
   }
@@ -191,8 +184,7 @@ BEGIN_TEST(TestEmptiedMap)
     sprintf(buf, "value of %d", i);
     CacheableStringPtr valuePtr = cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
-    VectorOfCacheableKey vecKeys;
-    regionPtr->keys(vecKeys);
+    VectorOfCacheableKey vecKeys = regionPtr->keys();
     ASSERT(vecKeys.size() == (i + 1), "expected more entries");
   }
   for (i = 0; i < 10; i++) {
@@ -204,8 +196,7 @@ BEGIN_TEST(TestEmptiedMap)
               << std::dynamic_pointer_cast<CacheableString>(key)->asChar()
               << std::endl;
   }
-  VectorOfCacheableKey vecKeys;
-  regionPtr->keys(vecKeys);
+  VectorOfCacheableKey vecKeys = regionPtr->keys();
   ASSERT(vecKeys.size() == 0, "expected more entries");
   for (i = 20; i < 40; i++) {
     char buf[100];
@@ -215,8 +206,7 @@ BEGIN_TEST(TestEmptiedMap)
     CacheableStringPtr valuePtr = cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
   }
-  vecKeys.clear();
-  regionPtr->keys(vecKeys);
+  vecKeys = regionPtr->keys();
   ASSERT(vecKeys.size() == 10, "expected more entries");
 
 END_TEST(TestEmptiedMap)

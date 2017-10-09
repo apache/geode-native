@@ -32,7 +32,7 @@ void CacheableFileName::toData(DataOutput& output) const {
 }
 
 void CacheableFileName::fromData(DataInput& input) {
-  input.read(&m_type);
+  m_type = input.read();
   CacheableString::fromData(input);
 }
 

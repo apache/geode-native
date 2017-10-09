@@ -55,7 +55,7 @@ class GeodeTypeIds {
     CacheableDoubleArray = 51,
     CacheableObjectArray = 52,
     CacheableBoolean = 53,
-    CacheableWideChar = 54,
+    CacheableCharacter = 54,
     CacheableByte = 55,
     CacheableInt16 = 56,
     CacheableInt32 = 57,

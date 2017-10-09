@@ -23,7 +23,7 @@
   TypeRegistry is the public facing wrapper for the serialization registry.
 **/
 
-TypeRegistry::TypeRegistry(Cache &cache) : m_cache(cache) {}
+TypeRegistry::TypeRegistry(const Cache &cache) : m_cache(cache) {}
 
 void TypeRegistry::registerType(TypeFactoryMethod creationFunction) {
   CacheRegionHelper::getCacheImpl(&m_cache)

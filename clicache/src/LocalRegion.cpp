@@ -133,7 +133,7 @@ namespace Apache
 
           try
           {
-            m_nativeptr->get()->entries( vc, false );
+            vc = m_nativeptr->get()->entries( false );
           }
           finally
           {
@@ -163,7 +163,7 @@ namespace Apache
 
           try
           {
-            m_nativeptr->get()->entries( vc, false );
+            vc = m_nativeptr->get()->entries( false );
           }
           finally
           {
@@ -272,7 +272,7 @@ namespace Apache
         apache::geode::client::VectorOfCacheableKey vc;
         try
         {
-          m_nativeptr->get()->keys(vc);
+          vc = m_nativeptr->get()->keys();
         }
         finally
         {
@@ -299,7 +299,7 @@ namespace Apache
           apache::geode::client::VectorOfCacheable vc;
           try
           {
-            m_nativeptr->get()->values( vc );
+            vc = m_nativeptr->get()->values(  );
           }
           finally
           {
@@ -685,7 +685,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-			Apache::Geode::Client::CacheStatistics^ LocalRegion<TKey, TValue>::Statistics::get()
+      Apache::Geode::Client::CacheStatistics^ LocalRegion<TKey, TValue>::Statistics::get()
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
@@ -753,7 +753,7 @@ namespace Apache
           apache::geode::client::VectorOfRegion vsr;
           try
           {
-            m_nativeptr->get()->subregions( recursive, vsr );
+            vsr = m_nativeptr->get()->subregions( recursive );
           }
           finally
           {
@@ -800,7 +800,7 @@ namespace Apache
           apache::geode::client::VectorOfRegionEntry vc;
           try
           {
-            m_nativeptr->get()->entries( vc, recursive );
+            vc = m_nativeptr->get()->entries( recursive );
           }
           finally
           {
@@ -896,7 +896,7 @@ namespace Apache
         apache::geode::client::VectorOfRegionEntry vc;
         try
         {
-          m_nativeptr->get()->entries( vc, false );
+          vc = m_nativeptr->get()->entries( false );
         }
         finally
         {

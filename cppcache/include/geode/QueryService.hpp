@@ -89,7 +89,8 @@ class CPPCACHE_EXPORT QueryService {
    * @endnativeclient
    */
   virtual CqQueryPtr newCq(const char* name, const char* querystr,
-                           CqAttributesPtr& cqAttr, bool isDurable = false) = 0;
+                           const CqAttributesPtr& cqAttr,
+                           bool isDurable = false) = 0;
   /**
    * @nativeclient
    * Constructs a new named continuous query, represented by an instance of
@@ -122,7 +123,7 @@ class CPPCACHE_EXPORT QueryService {
    *
    * @endnativeclient
    */
-  virtual CqQueryPtr newCq(const char* querystr, CqAttributesPtr& cqAttr,
+  virtual CqQueryPtr newCq(const char* querystr, const CqAttributesPtr& cqAttr,
                            bool isDurable = false) = 0;
   /**
    * @nativeclient
@@ -136,7 +137,7 @@ class CPPCACHE_EXPORT QueryService {
    * Retrieve  all registered CQs
    * @endnativeclient
    */
-  virtual void getCqs(query_container_type& vec) = 0;
+  virtual query_container_type getCqs() = 0;
   /**
    * @nativeclient
    * Retrieve a CqQuery by name.

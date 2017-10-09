@@ -918,14 +918,14 @@ void PdxInsideIGeodeSerializable::toData(DataOutput &output) const {
 }
 
 void PdxInsideIGeodeSerializable::fromData(DataInput &input) {
-  input.readInt(&m_i1);
-  input.readObject(m_npdx);
-  input.readInt(&m_i2);
+  m_i1 = input.readInt32();
+  m_npdx = input.readObject<NestedPdx>();
+  m_i2 = input.readInt32();
   input.readUTF(&m_s1);
   input.readUTF(&m_s2);
-  input.readObject(m_pdx3);
-  input.readInt(&m_i3);
-  input.readInt(&m_i4);
+  m_pdx3 = input.readObject<PdxTypes3>();
+  m_i3 = input.readInt32();
+  m_i4 = input.readInt32();
 }
 
 } /* namespace PdxTests */

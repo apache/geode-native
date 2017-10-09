@@ -159,7 +159,7 @@ class CPPCACHE_EXPORT CqService
   /**
    * Retrieve  all registered CQs
    */
-  void getAllCqs(query_container_type& vec);
+  query_container_type getAllCqs();
   /**
    * Executes all the cqs on this client.
    */

@@ -54,26 +54,23 @@ std::unique_ptr<PdxInstance> PdxInstanceFactoryImpl::create() {
   return pi;
 }
 
-PdxInstanceFactoryPtr PdxInstanceFactoryImpl::writeWideChar(
-    const char* fieldName, wchar_t value) {
+PdxInstanceFactoryPtr PdxInstanceFactoryImpl::writeChar(
+    const char* fieldName, char16_t value) {
   isFieldAdded(fieldName);
   m_pdxType->addFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR,
                                      PdxTypes::CHAR_SIZE);
-  CacheablePtr cacheableObject = CacheableWideChar::create(value);
-  m_FieldVsValues.insert(
-      std::pair<const char*, CacheablePtr>(fieldName, cacheableObject));
+  CacheablePtr cacheableObject = CacheableCharacter::create(value);
+  m_FieldVsValues.emplace(fieldName, cacheableObject);
   return shared_from_this();
 }
 
 PdxInstanceFactoryPtr PdxInstanceFactoryImpl::writeChar(const char* fieldName,
                                                         char value) {
   isFieldAdded(fieldName);
-  wchar_t tempWideChar = static_cast<wchar_t>(value);
   m_pdxType->addFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR,
                                      PdxTypes::CHAR_SIZE);
-  CacheablePtr cacheableObject = CacheableWideChar::create(tempWideChar);
-  m_FieldVsValues.insert(
-      std::pair<const char*, CacheablePtr>(fieldName, cacheableObject));
+  CacheablePtr cacheableObject = CacheableCharacter::create(value);
+  m_FieldVsValues.emplace(fieldName, cacheableObject);
   return shared_from_this();
 }
 

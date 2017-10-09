@@ -1331,13 +1331,12 @@ namespace Apache.Geode.Client.FwkLib
               ResetKey("receiveValue");
               isReceiveValues = GetBoolValue("receiveValue");
           }
-          ICollection<TKey> keys = new List<TKey>();
           ResetKey("sleepBeforeRegisterInterest");
           int sleepTime = GetUIntValue("sleepBeforeRegisterInterest");
           sleepTime = sleepTime > 0 ? sleepTime : 0;
           FwkInfo("Sleeping for " + sleepTime + " millis");
           Thread.Sleep(sleepTime);
-          region.GetSubscriptionService().RegisterAllKeys(isDurable, keys, isGetInitialValues, isReceiveValues);
+          region.GetSubscriptionService().RegisterAllKeys(isDurable, isGetInitialValues, isReceiveValues);
           String durableClientId = CacheHelper<TKey, TVal>.DCache.DistributedSystem.SystemProperties.DurableClientId;
           if (durableClientId.Length > 0)
           {

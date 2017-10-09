@@ -715,9 +715,7 @@ void CacheImpl::processMarker() {
         auto regionMsg = new TcrMessageClientMarker(
             this->getCache()->createDataOutput(), true);
         tcrHARegion->receiveNotification(regionMsg);
-        VectorOfRegion subregions;
-        tcrHARegion->subregions(true, subregions);
-        for (const auto& iter : subregions) {
+        for (const auto& iter : tcrHARegion->subregions(true)) {
           if (!iter->isDestroyed()) {
             if (const auto subregion =
                     std::dynamic_pointer_cast<ThinClientHARegion>(iter)) {

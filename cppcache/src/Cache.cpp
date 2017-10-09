@@ -114,8 +114,10 @@ RegionPtr Cache::getRegion(const char* path) {
  * regions when the function returns
  */
 
-void Cache::rootRegions(VectorOfRegion& regions) {
+VectorOfRegion Cache::rootRegions() {
+  VectorOfRegion regions;
   m_cacheImpl->rootRegions(regions);
+  return regions;
 }
 
 RegionFactory Cache::createRegionFactory(RegionShortcut preDefinedRegion) {
