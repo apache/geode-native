@@ -64,7 +64,9 @@ namespace Apache.Geode.Client.UnitTests
     [TearDown]
     public override void EndTest()
     {
-      CacheHelper.StopJavaServers();
+			m_client1.Call(Close);
+			m_client2.Call(Close);
+			CacheHelper.StopJavaServers();
       base.EndTest();
     }
 
@@ -91,16 +93,20 @@ namespace Apache.Geode.Client.UnitTests
       m_isPdx = isPdx;
       try
       {
-        QueryService<object, object> qsFail = null;
-        qsFail = CacheHelper.DCache.GetPoolManager().CreateFactory().Create("_TESTFAILPOOL_", CacheHelper.DCache).GetQueryService<object, object>();
-        Query<object> qryFail = qsFail.NewQuery("select distinct * from /" + QERegionName);
-        ISelectResults<object> resultsFail = qryFail.Execute();
+				var poolFail = CacheHelper.DCache.GetPoolManager().CreateFactory().Create("_TESTFAILPOOL_", CacheHelper.DCache);
+				var qsFail = poolFail.GetQueryService<object, object>();
+        var qryFail = qsFail.NewQuery("select distinct * from /" + QERegionName);
+        var resultsFail = qryFail.Execute();
         Assert.Fail("Since no endpoints defined, so exception expected");
       }
       catch (IllegalStateException ex)
       {
         Util.Log("Got expected exception: {0}", ex);
       }
+			catch (Exception e) {
+				Util.Log("Caught unexpected exception: {0}", e);
+				throw e;
+			}
 
       CacheHelper.CreateTCRegion_Pool<object, object>(QERegionName, true, true,
         null, locators, "__TESTPOOL1_", true);
@@ -1863,62 +1869,85 @@ namespace Apache.Geode.Client.UnitTests
     static bool m_isPdx = false;
 
     [Test]
-    public void RemoteQueryRS()
+    public void RemoteQueryRSWithPdx()
     {
-      for (int i = 0; i < 2; i++)
-      {
-        runRemoteQueryRS();
-        m_isPdx = true;
-      }
-      m_isPdx = false;
+      m_isPdx = true;
+      runRemoteQueryRS();
     }
 
-    [Test]
-    public void RemoteParamQueryRS()
+
+		[Test]
+		public void RemoteQueryRSWithoutPdx()
+		{
+			m_isPdx = false;
+			runRemoteQueryRS();
+		}
+
+		[Test]
+		public void RemoteParamQueryRSWithPdx()
     {
-      for (int i = 0; i < 2; i++)
-      {
-        runRemoteParamQueryRS();
-        m_isPdx = true;
-      }
-      m_isPdx = false;
+			m_isPdx = true;
+			runRemoteParamQueryRS();
+
     }
 
-    [Test]
-    public void RemoteQuerySS()
+		[Test]
+		public void RemoteParamQueryRSWithoutPdx()
+		{
+			m_isPdx = false;
+			runRemoteParamQueryRS();
+
+		}
+
+		[Test]
+		public void RemoteQuerySSWithPdx()
     {
-      for (int i = 0; i < 2; i++)
-      {
-        runRemoteQuerySS();
-        m_isPdx = true;
-      }
-      m_isPdx = false;
+				m_isPdx = true;
+				runRemoteQuerySS();
+
     }
 
-    [Test]
-    public void RemoteParamQuerySS()
+		[Test]
+		public void RemoteQuerySSWithoutPdx()
+		{
+			m_isPdx = false;
+			runRemoteQuerySS();
+
+		}
+
+		[Test]
+		public void RemoteParamQuerySSWithoutPdx()
     {
-      for (int i = 0; i < 2; i++)
-      {
-        runRemoteParamQuerySS();
-        m_isPdx = true;
-      }
+
       m_isPdx = false;
+      runRemoteParamQuerySS();
+
     }
 
-    [Test]
-    [Ignore]
-    public void RemoteQueryFailover()
+		[Test]
+		public void RemoteParamQuerySSWithPdx()
+		{
+
+			m_isPdx = true;
+			runRemoteParamQuerySS();
+
+		}
+
+		[Test]
+    public void RemoteQueryFailoverWithPdx()
     {
-      for (int i = 0; i < 2; i++)
-      {
-        runRemoteQueryFailover();
-        m_isPdx = true;
-      }
-      m_isPdx = false;
+      m_isPdx = true;
+      runRemoteQueryFailover();
     }
 
-    [Test]
+		[Test]
+		public void RemoteQueryFailoverWithoutPdx()
+		{
+			m_isPdx = false;
+			runRemoteQueryFailover();
+		}
+
+		[Test]
     [Ignore]
     public void RemoteParamQueryFailover()
     {
@@ -1931,18 +1960,23 @@ namespace Apache.Geode.Client.UnitTests
     }
 
     [Test]
-    public void QueryExclusiveness()
+    public void QueryExclusivenessWithoutPdx()
     {
-      for (int i = 0; i < 2; i++)
-      {
-        runQueryExclusiveness();
-        m_isPdx = true;
-      }
-      m_isPdx = false;
+			m_isPdx = false;
+      runQueryExclusiveness();
+
     }
 
-    [Test]
-    [Ignore]
+
+		[Test]
+		public void QueryExclusivenessWithPdx()
+		{
+			m_isPdx = true;
+			runQueryExclusiveness();
+		}
+
+		[Test]
+		[Ignore]
     public void QueryTimeout()
     {
       for (int i = 0; i < 2; i++)
@@ -1965,16 +1999,18 @@ namespace Apache.Geode.Client.UnitTests
       m_isPdx = false;
     }
 
-    //Successful@8th_march
-    [Test]
-    public void RegionQuery()
+		[Test]
+		public void RegionQueryWithPdx()
+		{
+			m_isPdx = true;
+			runRegionQuery();
+		}
+
+		[Test]
+    public void RegionQueryWithoutPdx()
     {
-      for (int i = 0; i < 2; i++)
-      {
-        runRegionQuery();
-        m_isPdx = true;
-      }
-      m_isPdx = false;
+			m_isPdx = false;
+      runRegionQuery();
     }
 
   }
