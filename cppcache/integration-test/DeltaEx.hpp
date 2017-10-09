@@ -50,8 +50,7 @@ class DeltaEx : public Cacheable, public Delta {
 
   virtual void fromDelta(DataInput& in) {
     LOG("From delta gets called");
-    int32_t val;
-    in.readInt(&val);
+    int32_t val = in.readInt32();
     if (fromDeltaCount == 1) {
       fromDeltaCount++;
       LOG("Invalid Delta expetion thrown");
@@ -65,7 +64,7 @@ class DeltaEx : public Cacheable, public Delta {
     toDataCount++;
   }
   virtual void fromData(DataInput& input) {
-    input.readInt(&counter);
+    counter = input.readInt32();
     fromDataCount++;
   }
   virtual int32_t classId() const { return 1; }
@@ -106,8 +105,7 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
 
   virtual void fromDelta(DataInput& in) {
     LOG("From delta gets called");
-    int32_t val;
-    in.readInt(&val);
+    int32_t val = in.readInt32();
     if (m_fromDeltaCount == 1) {
       m_fromDeltaCount++;
       LOG("Invalid Delta expetion thrown");

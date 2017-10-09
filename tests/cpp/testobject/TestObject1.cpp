@@ -59,8 +59,8 @@ void TestObject1::fromData(DataInput& input) {
   input.readBytes(&bytes, &len);
   arr = CacheableBytes::create(bytes, len);
   delete bytes;
-  input.readObject(name);
-  input.readInt(&identifier);
+  name = input.readObject<CacheableString>();
+  identifier = input.readInt32();
 }
 
 Serializable* TestObject1::create() { return new TestObject1(); }

@@ -66,11 +66,11 @@ DeltaTestImpl::DeltaTestImpl(DeltaTestImplPtr rhs) : Delta(nullptr) {
 }
 
 void DeltaTestImpl::fromData(DataInput& input) {
-  input.readInt(&intVar);
-  input.readObject(str);
-  input.readDouble(&doubleVar);
-  input.readObject(byteArr);
-  input.readObject(testObj);
+  intVar = input.readInt32();
+  str = input.readObject<CacheableString>();
+  doubleVar = input.readDouble();
+  byteArr = input.readObject<CacheableBytes>();
+  testObj = input.readObject<TestObject1>();
 }
 
 void DeltaTestImpl::toData(DataOutput& output) const {
@@ -111,18 +111,18 @@ void DeltaTestImpl::fromDelta(DataInput& input) {
     ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
     fromDeltaCounter++;
   }
-  input.read(&deltaBits);
+  deltaBits = input.read();
   if ((deltaBits & INT_MASK) == INT_MASK) {
-    input.readInt(&intVar);
+    intVar = input.readInt32();
   }
   if ((deltaBits & STR_MASK) == STR_MASK) {
-    input.readObject(str);
+    str = input.readObject<CacheableString>();
   }
   if ((deltaBits & DOUBLE_MASK) == DOUBLE_MASK) {
-    input.readDouble(&doubleVar);
+    doubleVar = input.readDouble();
   }
   if ((deltaBits & BYTE_ARR_MASK) == BYTE_ARR_MASK) {
-    input.readObject(byteArr);
+    byteArr = input.readObject<CacheableBytes>();
     /*
         uint8_t* bytes;
         int32_t len;
@@ -132,7 +132,7 @@ void DeltaTestImpl::fromDelta(DataInput& input) {
     */
   }
   if ((deltaBits & TEST_OBJ_MASK) == TEST_OBJ_MASK) {
-    input.readObject(testObj);
+    testObj = input.readObject<TestObject1>();
   }
 }
 CacheableStringPtr DeltaTestImpl::toString() const {

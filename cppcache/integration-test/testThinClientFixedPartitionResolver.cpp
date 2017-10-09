@@ -326,14 +326,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
         keys.push_back(CacheableInt32::create(j));
       }
 
-      auto values = std::make_shared<HashMapOfCacheable>();
-      auto exceptions = std::make_shared<HashMapOfException>();
-
       try {
-        dataReg->getAll(keys, values, exceptions, false);
+        const auto values = dataReg->getAll(keys);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
-        ASSERT(values->size() == 5, "number of value size should be 5");
+        ASSERT(values.size() == 5, "number of value size should be 5");
         LOGDEBUG("CheckPrSingleHopForIntKeysTask_REGION: networkhop %d ",
                  networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
@@ -366,11 +363,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
       }
 
       try {
-        dataReg->getAll(keys, values, exceptions, false,
-                        CacheableInt32::create(1000));
+        const auto values =
+            dataReg->getAll(keys, CacheableInt32::create(1000));
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
-        ASSERT(values->size() == 5, "number of value size should be 5");
+        ASSERT(values.size() == 5, "number of value size should be 5");
         LOGDEBUG("CheckPrSingleHopForIntKeysTask_REGION: networkhop %d ",
                  networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");

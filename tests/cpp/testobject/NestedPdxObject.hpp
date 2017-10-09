@@ -102,7 +102,7 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
   CacheableEnumPtr m_enum;
   int m_arrLength;
   char m_char;
-  wchar_t m_wideChar;
+  char16_t m_wideChar;
   char* m_charArray;
   wchar_t* m_wideCharArray;
 

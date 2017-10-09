@@ -146,7 +146,7 @@ namespace apache
         return NULL;
       }
 
-      void ManagedResultCollectorGeneric::addResult(CacheablePtr& result)
+      void ManagedResultCollectorGeneric::addResult(const CacheablePtr& result)
       {
         try {
           Object^ rs = Apache::Geode::Client::Serializable::GetManagedValueGeneric<Object^>(result);

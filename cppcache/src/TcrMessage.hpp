@@ -1249,9 +1249,8 @@ class TcrMessageHelper {
       TcrMessage& msg, DataInput& input, uint8_t expectedFirstType,
       int32_t expectedPartType, const char* methodName, uint32_t& partLen,
       uint8_t isLastChunk) {
-    input.readInt(&partLen);
-    bool isObj;
-    input.readBoolean(&isObj);
+    partLen = input.readInt32();
+    const auto isObj = input.readBoolean();
 
     if (partLen == 0) {
       // special null object is case for scalar query result
@@ -1268,8 +1267,7 @@ class TcrMessageHelper {
       return EXCEPTION;
     }
 
-    uint8_t partType;
-    input.read(&partType);
+    uint8_t partType = input.read();
     int32_t compId = partType;
 
     //  ugly hack to check for exception chunk
@@ -1303,13 +1301,11 @@ class TcrMessageHelper {
       }
       // This is for GETALL
       if (expectedFirstType == GeodeTypeIdsImpl::FixedIDShort) {
-        int16_t shortId;
-        input.readInt(&shortId);
-        compId = shortId;
+        compId = input.readInt16();;
       }  // This is for QUERY or REGISTER INTEREST.
       else if (expectedFirstType == GeodeTypeIdsImpl::FixedIDByte ||
                expectedFirstType == 0) {
-        input.read(&partType);
+        partType = input.read();
         compId = partType;
       }
     }
@@ -1327,9 +1323,8 @@ class TcrMessageHelper {
                                            const char* methodName,
                                            uint32_t& partLen,
                                            uint8_t isLastChunk) {
-    input.readInt(&partLen);
-    bool isObj;
-    input.readBoolean(&isObj);
+    partLen = input.readInt32();
+    const auto isObj = input.readBoolean();
 
     if (partLen == 0) {
       // special null object is case for scalar query result
@@ -1344,8 +1339,7 @@ class TcrMessageHelper {
       throw MessageException(exMsg);
     }
 
-    int8_t partType;
-    input.read(&partType);
+    const auto partType = input.read();
     //  ugly hack to check for exception chunk
     if (partType == GeodeTypeIdsImpl::JavaSerializable) {
       input.reset();

@@ -47,7 +47,8 @@ class CPPCACHE_EXPORT Properties : public Serializable {
  public:
   class Visitor {
    public:
-    virtual void visit(CacheableKeyPtr& key, CacheablePtr& value) = 0;
+    virtual void visit(const CacheableKeyPtr& key,
+                       const CacheablePtr& value) = 0;
     virtual ~Visitor() {}
   };
 

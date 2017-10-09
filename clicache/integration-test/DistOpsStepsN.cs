@@ -682,13 +682,13 @@ namespace Apache.Geode.Client.UnitTests
     public virtual void RegisterAllKeysR0WithoutValues()
     {
       IRegion<object, object> region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
-      region0.GetSubscriptionService().RegisterAllKeys(false, null, false, false);
+      region0.GetSubscriptionService().RegisterAllKeys(false, false, false);
     }
 
     public virtual void RegisterAllKeysR1WithoutValues()
     {
       IRegion<object, object> region1 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[1]);
-      region1.GetSubscriptionService().RegisterAllKeys(false, null, false, false);
+      region1.GetSubscriptionService().RegisterAllKeys(false, false, false);
     }
 
     public virtual void StepThree()

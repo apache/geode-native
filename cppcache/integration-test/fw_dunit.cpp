@@ -996,12 +996,9 @@ void Record::read(apache::geode::client::DataInput& input) {
   input.readASCII(&buf);
   m_testName = buf;
   delete[] buf;
-  input.readInt(&m_operations);
-  int64_t timetmp;
-  input.readInt(&timetmp);
-  m_startTime.msec(timetmp);
-  input.readInt(&timetmp);
-  m_stopTime.msec(timetmp);
+  m_operations = input.readInt64();
+  m_startTime.msec(input.readInt64());
+  m_stopTime.msec(input.readInt64());
 }
 
 Record::~Record() {}

@@ -221,7 +221,7 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
   CacheableStringPtr hostname, dsName, uniqueTag, durableClientId;
   int8_t splitbrain, vmKind;
 
-  input.readArrayLen(&len);  // inetaddress len
+  len = input.readArrayLen();  // inetaddress len
   m_hostAddrLocalMem = true;
   /* adongre  - Coverity II
    * CID 29184: Out-of-bounds access (OVERRUN_DYNAMIC)
@@ -230,18 +230,18 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
   hostAddr = new uint8_t[len];
 
   input.readBytesOnly(hostAddr, len);  // inetaddress
-  input.readInt(&hostPort);            // port
-  input.readObject(hostname);          // hostname
-  input.read(&splitbrain);             // splitbrain
-  input.readInt(&dcport);              // port
-  input.readInt(&vPID);                // pid
-  input.read(&vmKind);                 // vmkind
+  hostPort = input.readInt32();            // port
+  hostname = input.readObject<CacheableString>();          // hostname
+  splitbrain = input.read();             // splitbrain
+  dcport = input.readInt32();              // port
+  vPID = input.readInt32();                // pid
+  vmKind = input.read();                 // vmkind
   auto aStringArray = CacheableStringArray::create();
   aStringArray->fromData(input);
-  input.readObject(dsName);            // name
-  input.readObject(uniqueTag);         // unique tag
-  input.readObject(durableClientId);   // durable client id
-  input.readInt(&durableClntTimeOut);  // durable client timeout
+  dsName = input.readObject<CacheableString>();            // name
+  uniqueTag = input.readObject<CacheableString>();         // unique tag
+  durableClientId = input.readObject<CacheableString>();   // durable client id
+  durableClntTimeOut = input.readInt32();  // durable client timeout
   int32_t vmViewId = 0;
   readVersion(splitbrain, input);
 
@@ -265,10 +265,8 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
   uint8_t* hostAddr;
   int32_t len, hostPort, vmViewId = 0;
   CacheableStringPtr hostname, dsName, uniqueTag, vmViewIdstr;
-  int8_t vmKind;
-  uint8_t flag;
 
-  input.readArrayLen(&len);  // inetaddress len
+  len = input.readArrayLen();  // inetaddress len
   m_hostAddrLocalMem = true;
   /* adongre - Coverity II
    * CID 29183: Out-of-bounds access (OVERRUN_DYNAMIC)
@@ -278,21 +276,21 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
 
   input.readBytesOnly(hostAddr, len);  // inetaddress
 
-  input.readInt(&hostPort);  // port
+  hostPort = input.readInt32();  // port
   // TODO: RVV get the host name from
 
-  input.read(&flag);
+  const uint8_t flag = input.read();
 
-  input.read(&vmKind);  // vmkind
+  const auto vmKind = input.read();  // vmkind
 
   if (vmKind == ClientProxyMembershipID::LONER_DM_TYPE) {
-    input.readObject(uniqueTag);  // unique tag
+    uniqueTag = input.readObject<CacheableString>();  // unique tag
   } else {
-    input.readObject(vmViewIdstr);
+    vmViewIdstr = input.readObject<CacheableString>();
     vmViewId = atoi(vmViewIdstr.get()->asChar());
   }
 
-  input.readObject(dsName);  // name
+  dsName = input.readObject<CacheableString>();  // name
 
   if (vmKind != ClientProxyMembershipID::LONER_DM_TYPE) {
     // initialize the object with the values read and some dummy values
@@ -377,14 +375,11 @@ int16_t ClientProxyMembershipID::compareTo(
 
 void ClientProxyMembershipID::readVersion(int flags, DataInput& input) {
   if ((flags & ClientProxyMembershipID::VERSION_MASK) != 0) {
-    int8_t ordinal;
-    input.read(&ordinal);
+    int8_t ordinal = input.read();
     LOGDEBUG("ClientProxyMembershipID::readVersion ordinal = %d ", ordinal);
     if (ordinal != ClientProxyMembershipID::TOKEN_ORDINAL) {
     } else {
-      int16_t ordinal;
-      input.readInt(&ordinal);
-      LOGDEBUG("ClientProxyMembershipID::readVersion ordinal = %d ", ordinal);
+      LOGDEBUG("ClientProxyMembershipID::readVersion ordinal = %d ", input.readInt16());
     }
   }
 }

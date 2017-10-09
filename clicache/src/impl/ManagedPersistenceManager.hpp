@@ -47,7 +47,7 @@ namespace apache {
 
         virtual void write(const CacheableKeyPtr&  key, const CacheablePtr&  value, void *& PersistenceInfo);
         virtual bool writeAll();
-        virtual void init(const RegionPtr& region, PropertiesPtr& diskProperties);
+        virtual void init(const RegionPtr& region, const PropertiesPtr& diskProperties);
         virtual CacheablePtr read(const CacheableKeyPtr& key, void *& PersistenceInfo);
         virtual bool readAll();
         virtual void destroy(const CacheableKeyPtr& key, void *& PersistenceInfo);

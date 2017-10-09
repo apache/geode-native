@@ -67,7 +67,7 @@ class CPPCACHE_EXPORT ProxyCache
    *
    * @return true, if this cache is closed; false, otherwise
    */
-  virtual bool isClosed() const;
+  virtual bool isClosed() const override;
 
   /**
    * Terminates this object cache and releases all the local resources.
@@ -77,20 +77,20 @@ class CPPCACHE_EXPORT ProxyCache
    * @param keepalive whether to keep a durable client's queue alive
    * @throws CacheClosedException,  if the cache is already closed.
    */
-  virtual void close();
+  virtual void close() override;
 
   /** Look up a region with the full path from root.
    * @param path the region's path, such as <code>RootA/Sub1/Sub1A</code>.
    * @returns region, or nullptr if no such region exists.
    */
-  virtual RegionPtr getRegion(const char* path);
+  virtual RegionPtr getRegion(const char* path) override;
 
   /**
    * Gets the QueryService from which a new Query can be obtained.
    *
    * @returns A smart pointer to the QueryService.
    */
-  virtual QueryServicePtr getQueryService();
+  virtual QueryServicePtr getQueryService() override;
 
   /**
    * Returns a set of root regions in the cache. This set is a snapshot and
@@ -100,7 +100,7 @@ class CPPCACHE_EXPORT ProxyCache
    * @param regions the returned set of
    * regions
    */
-  virtual void rootRegions(VectorOfRegion& regions);
+  virtual VectorOfRegion rootRegions() override;
 
   /**
    * @brief destructor
@@ -116,7 +116,8 @@ class CPPCACHE_EXPORT ProxyCache
    * when it is fully deserialized.
    * @return the factory
    */
-  virtual PdxInstanceFactoryPtr createPdxInstanceFactory(const char* className);
+  virtual PdxInstanceFactoryPtr createPdxInstanceFactory(
+      const char* className) override;
 
  private:
   /**

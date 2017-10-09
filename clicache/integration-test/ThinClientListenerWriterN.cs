@@ -105,7 +105,7 @@ namespace Apache.Geode.Client.UnitTests
     public void RegisterAllKeysRN()
     {
       Region region = CacheHelper.GetVerifyRegion<object, object>(RegionName);
-      region.GetSubscriptionService().RegisterAllKeys(false, null, false, false);
+      region.GetSubscriptionService().RegisterAllKeys(false, false, false);
     }
 
     public void CallOp()

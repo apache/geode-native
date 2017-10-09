@@ -174,7 +174,7 @@ namespace Apache
         /// ClassId of <c>CacheableInt16</c> class for wide-characters
         /// </summary>
         literal System::UInt32 CacheableCharacter =
-          apache::geode::client::GeodeTypeIds::CacheableWideChar + 0x80000000;
+          apache::geode::client::GeodeTypeIds::CacheableCharacter + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableByte</c> class

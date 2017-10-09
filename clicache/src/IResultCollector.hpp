@@ -45,7 +45,7 @@ namespace Apache
         /// <summary>
         /// add result from a single function execution
         /// </summary>
-        void AddResult(TResult rs);
+        void AddResult(const TResult rs);
 
         /// <summary>
         /// get result 

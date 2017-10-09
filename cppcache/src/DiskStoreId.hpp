@@ -53,8 +53,8 @@ class DiskStoreId : public DSMemberForVersionStamp {
     throw IllegalStateException("DiskStoreId::toData not implemented");
   }
   virtual void fromData(DataInput& input) {
-    input.readInt(&m_mostSig);
-    input.readInt(&m_leastSig);
+    m_mostSig = input.readInt64();
+    m_leastSig = input.readInt64();
   }
   virtual int32_t classId() const { return 0; }
 

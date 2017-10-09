@@ -79,19 +79,18 @@ void PdxFieldType::toData(DataOutput& output) const {
 }
 
 void PdxFieldType::fromData(DataInput& input) {
-  int8_t typeId;
-  input.read(&typeId);
+  input.read(); // ignore typeid
   char* fname = nullptr;
   input.readUTF(&fname);
   m_fieldName = fname;
   input.freeUTFMemory(fname);  // freeing fname
 
-  input.readInt(&m_sequenceId);
-  input.readInt(&m_varLenFieldIdx);
-  input.read(&m_typeId);
-  input.readInt(&m_relativeOffset);
-  input.readInt(&m_vlOffsetIndex);
-  input.readBoolean(&m_isIdentityField);
+  m_sequenceId = input.readInt32();
+  m_varLenFieldIdx = input.readInt32();
+  m_typeId = input.read();
+  m_relativeOffset = input.readInt32();
+  m_vlOffsetIndex = input.readInt32();
+  m_isIdentityField = input.readBoolean();
   m_fixedSize = getFixedTypeSize();
   if (m_fixedSize != -1) {
     m_isVariableLengthType = false;

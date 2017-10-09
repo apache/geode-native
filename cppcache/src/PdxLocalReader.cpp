@@ -100,65 +100,49 @@ void PdxLocalReader::checkEmptyFieldName(const char* fieldName) {
 
 char PdxLocalReader::readChar(const char* fieldName) {
   checkEmptyFieldName(fieldName);
-  uint16_t value = 0;
-  m_dataInput->readInt(&value);
+  uint16_t value = m_dataInput->readInt16();
   return (static_cast<char>(value));
 }
 
 wchar_t PdxLocalReader::readWideChar(const char* fieldName) {
   checkEmptyFieldName(fieldName);
-  uint16_t value = 0;
-  m_dataInput->readInt(&value);
+  uint16_t value = m_dataInput->readInt16();
   return static_cast<wchar_t>(value);
 }
 
 bool PdxLocalReader::readBoolean(const char* fieldName) {
   checkEmptyFieldName(fieldName);
-  bool value;
-  m_dataInput->readBoolean(&value);
-  return value;
+  return m_dataInput->readBoolean();
 }
 
 int8_t PdxLocalReader::readByte(const char* fieldName) {
   checkEmptyFieldName(fieldName);
-  int8_t value;
-  m_dataInput->read(&value);
-  return value;
+  return m_dataInput->read();
 }
 
 int16_t PdxLocalReader::readShort(const char* fieldName) {
   checkEmptyFieldName(fieldName);
-  int16_t value;
-  m_dataInput->readInt(&value);
-  return value;
+  return m_dataInput->readInt16();
 }
 
 int32_t PdxLocalReader::readInt(const char* fieldName) {
   checkEmptyFieldName(fieldName);
-  int32_t value;
-  m_dataInput->readInt(&value);
-  return value;
+  return m_dataInput->readInt32();
 }
 
 int64_t PdxLocalReader::readLong(const char* fieldName) {
   checkEmptyFieldName(fieldName);
-  int64_t value;
-  m_dataInput->readInt(&value);
-  return value;
+  return m_dataInput->readInt64();
 }
 
 float PdxLocalReader::readFloat(const char* fieldName) {
   checkEmptyFieldName(fieldName);
-  float value;
-  m_dataInput->readFloat(&value);
-  return value;
+  return m_dataInput->readFloat();
 }
 
 double PdxLocalReader::readDouble(const char* fieldName) {
   checkEmptyFieldName(fieldName);
-  double value;
-  m_dataInput->readDouble(&value);
-  return value;
+  return m_dataInput->readDouble();
 }
 
 char* PdxLocalReader::readString(const char* fieldName) {
@@ -334,11 +318,9 @@ PdxRemotePreservedDataPtr PdxLocalReader::getPreservedData(
 
         resettoPdxHead();
         m_dataInput->advanceCursor(pos);
-        uint8_t dataByte = 0;
 
         for (int i = 0; i < (nFieldPos - pos); i++) {
-          m_dataInput->read(&dataByte);
-          pdVector.push_back(dataByte);
+          pdVector.push_back(m_dataInput->read());
         }
         resettoPdxHead();
 
@@ -371,7 +353,7 @@ bool PdxLocalReader::isIdentityField(const char* fieldName) {
 
 void PdxLocalReader::readCollection(const char* fieldName,
                                     CacheableArrayListPtr& collection) {
-  m_dataInput->readObject(collection);
+  collection = m_dataInput->readObject<CacheableArrayList>();
 }
 
 PdxUnreadFieldsPtr PdxLocalReader::readUnreadFields() {

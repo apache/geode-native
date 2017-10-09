@@ -112,15 +112,15 @@ class BucketServerLocation : public ServerLocation {
 
   void fromData(apache::geode::client::DataInput& input) {
     ServerLocation::fromData(input);
-    input.readInt(&m_bucketId);
-    input.readBoolean(&m_isPrimary);
-    input.read(&m_version);
-    input.read((&m_numServerGroups));
+    m_bucketId = input.readInt32();
+    m_isPrimary = input.readBoolean();
+    m_version = input.read();
+    m_numServerGroups = input.read();
     CacheableStringPtr* serverGroups = nullptr;
     if (m_numServerGroups > 0) {
       serverGroups = new CacheableStringPtr[m_numServerGroups];
       for (int i = 0; i < m_numServerGroups; i++) {
-        input.readNativeString(serverGroups[i]);
+        serverGroups[i] = input.readNativeString();
       }
     }
     if (m_numServerGroups > 0) {

@@ -73,7 +73,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, setupClient2)
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    regPtr->registerAllKeys(false, nullptr, true);
+    regPtr->registerAllKeys(false, true);
   }
 END_TASK_DEFINITION
 

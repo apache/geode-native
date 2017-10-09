@@ -37,14 +37,11 @@ void CacheableObjectArray::toData(DataOutput& output) const {
 }
 
 void CacheableObjectArray::fromData(DataInput& input) {
-  int32_t len;
-  input.readArrayLen(&len);
+  int32_t len = input.readArrayLen();
   if (len >= 0) {
-    int8_t header;
-    input.read(&header);  // ignore CLASS typeid
-    input.read(&header);  // ignore string typeid
-    uint16_t classLen;
-    input.readInt(&classLen);
+    input.read();  // ignore CLASS typeid
+    input.read();  // ignore string typeid
+    uint16_t classLen = input.readInt16();
     input.advanceCursor(classLen);
     CacheablePtr obj;
     for (int32_t index = 0; index < len; index++) {

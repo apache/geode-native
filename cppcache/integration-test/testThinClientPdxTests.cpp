@@ -582,8 +582,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet1)
     jsonDoc->getField("lastName", &stringVal1);
     */
 
-    CacheablePtr object2 = nullptr;
-    jsonDoc->getField("kids", object2);
+    CacheablePtr object2 = jsonDoc->getCacheableField("kids");
     auto listPtr = std::dynamic_pointer_cast<CacheableLinkedList>(object2);
     LOGINFO("Task:JavaPutGet: list size = %d", listPtr->size());
 

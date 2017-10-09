@@ -41,10 +41,10 @@ void BatchObject::toData(apache::geode::client::DataOutput& output) const {
 }
 
 void BatchObject::fromData(apache::geode::client::DataInput& input) {
-  input.readInt(&index);
-  input.readInt(reinterpret_cast<int64_t*>(&timestamp));
-  input.readInt(&batch);
-  input.readObject(byteArray);
+  index = input.readInt32();
+  timestamp = input.readInt64();
+  batch = input.readInt32();
+  byteArray = input.readObject<CacheableBytes>();
 }
 
 CacheableStringPtr BatchObject::toString() const {

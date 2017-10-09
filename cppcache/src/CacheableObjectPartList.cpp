@@ -32,10 +32,8 @@ void CacheableObjectPartList::toData(DataOutput& output) const {
 }
 
 void CacheableObjectPartList::fromData(DataInput& input) {
-  bool hasKeys;
-  input.readBoolean(&hasKeys);
-  int32_t len;
-  input.readInt(&len);
+  const auto hasKeys = input.readBoolean();
+  int32_t len = input.readInt32();
   if (len > 0) {
     CacheableKeyPtr key;
     CacheablePtr value;
@@ -45,7 +43,7 @@ void CacheableObjectPartList::fromData(DataInput& input) {
     int32_t keysOffset = (m_keysOffset != nullptr ? *m_keysOffset : 0);
     for (int32_t index = keysOffset; index < keysOffset + len; ++index) {
       if (hasKeys) {
-        input.readObject(key, true);
+        key = input.readObject<CacheableKey>(true);
       } else if (m_keys != nullptr) {
         key = m_keys->operator[](index);
       } else {
@@ -57,15 +55,12 @@ void CacheableObjectPartList::fromData(DataInput& input) {
         m_resultKeys->push_back(key);
       }
       // input.readBoolean(&isException);
-      uint8_t byte = 0;
-      input.read(&byte);
+      uint8_t byte = input.read();
 
       if (byte == 2 /* for exception*/) {
-        int32_t skipLen;
-        input.readArrayLen(&skipLen);
-        input.advanceCursor(skipLen);
+        input.advanceCursor(input.readArrayLen());
         // input.readObject(exMsgPtr, true);// Changed
-        input.readNativeString(exMsgPtr);
+        exMsgPtr = input.readNativeString();
         if (m_exceptions != nullptr) {
           const char* exMsg = exMsgPtr->asChar();
           if (strstr(exMsg,

@@ -24,9 +24,8 @@ CqAttributesFactory::CqAttributesFactory() {
   m_cqAttributes = std::make_shared<CqAttributesImpl>();
 }
 CqAttributesFactory::CqAttributesFactory(const CqAttributesPtr &cqAttributes) {
+  auto vl = cqAttributes->getCqListeners();
   m_cqAttributes = std::make_shared<CqAttributesImpl>();
-  CqAttributesImpl::listener_container_type vl;
-  std::static_pointer_cast<CqAttributesImpl>(cqAttributes)->getCqListeners(vl);
   std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)
       ->setCqListeners(vl);
 }

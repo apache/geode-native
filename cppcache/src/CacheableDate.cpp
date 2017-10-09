@@ -40,7 +40,7 @@ void CacheableDate::toData(DataOutput& output) const {
   output.writeInt(m_timevalue);
 }
 
-void CacheableDate::fromData(DataInput& input) { input.readInt(&m_timevalue); }
+void CacheableDate::fromData(DataInput& input) { m_timevalue = input.readInt64(); }
 
 Serializable* CacheableDate::createDeserializable() {
   return new CacheableDate();

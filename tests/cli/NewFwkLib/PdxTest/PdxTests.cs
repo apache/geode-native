@@ -1420,7 +1420,7 @@ namespace Apache.Geode.Client.FwkLib
                     ResetKey("receiveValue");
                     isReceiveValues = GetBoolValue("receiveValue");
                 }
-                region.GetSubscriptionService().RegisterAllKeys(isDurable, null, isGetInitialValues, isReceiveValues);
+                region.GetSubscriptionService().RegisterAllKeys(isDurable, isGetInitialValues, isReceiveValues);
             }
             catch (Exception ex)
             {

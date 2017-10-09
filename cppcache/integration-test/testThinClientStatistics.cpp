@@ -188,7 +188,7 @@ void DoRegionOpsAndVerify() {
     bool flag =
         cache->getDistributedSystem().getSystemProperties().statisticsEnabled();
     LOGINFO("statisticsEnabled = %d ", flag);
-    regEntry->getStatistics(cacheStatptr);
+    cacheStatptr = regEntry->getStatistics();
   } catch (StatisticsDisabledException& ex) {
     LOGINFO("Exception Caught:: StatisticsDisabledException");
   } catch (GeodeConfigException& e) {

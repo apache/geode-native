@@ -129,8 +129,7 @@ void getKeysVector(VectorOfCacheableKey& keysVec, int numKeys) {
   }
 }
 
-void checkValuesMap(const HashMapOfCacheablePtr& values, int clientNum,
-                    int numKeys) {
+void checkValuesMap(HashMapOfCacheable& values, int clientNum, int numKeys) {
   int expectedNum = 0;
   CacheableKeyPtr key;
   CacheableStringPtr val;
@@ -138,18 +137,18 @@ void checkValuesMap(const HashMapOfCacheablePtr& values, int clientNum,
   for (int index = clientNum - 1; index < numKeys; index += clientNum) {
     ++expectedNum;
     key = CacheableString::create(keys[index]);
-    const auto& iter = values->find(key);
-    ASSERT(iter != values->end(), "key not found in values map");
+    const auto& iter = values.find(key);
+    ASSERT(iter != values.end(), "key not found in values map");
     val = std::dynamic_pointer_cast<CacheableString>(iter->second);
     expectedVal = CacheableString::create(nvals[index]);
     ASSERT(*val == *expectedVal, "unexpected value in values map");
   }
   printf("Expected number of values: %d; got values: %zd", expectedNum,
-         values->size());
-  ASSERT(values->size() == expectedNum, "unexpected number of values");
+         values.size());
+  ASSERT(values.size() == expectedNum, "unexpected number of values");
 }
 
-void checkExceptionsMap(const HashMapOfExceptionPtr& exceptions, int clientNum,
+void checkExceptionsMap(HashMapOfException& exceptions, int clientNum,
                         int numKeys) {
   int expectedNum = 0;
   CacheableKeyPtr key;
@@ -157,8 +156,8 @@ void checkExceptionsMap(const HashMapOfExceptionPtr& exceptions, int clientNum,
     if ((index + 1) % clientNum != 0) {
       ++expectedNum;
       key = CacheableString::create(keys[index]);
-      const auto& iter = exceptions->find(key);
-      ASSERT(iter != exceptions->end(), "key not found in exceptions map");
+      const auto& iter = exceptions.find(key);
+      ASSERT(iter != exceptions.end(), "key not found in exceptions map");
       ASSERT(std::dynamic_pointer_cast<NotAuthorizedExceptionPtr>(iter->second),
              "unexpected exception type in exception map");
       printf("Got expected NotAuthorizedException: %s",
@@ -166,8 +165,8 @@ void checkExceptionsMap(const HashMapOfExceptionPtr& exceptions, int clientNum,
     }
   }
   printf("Expected number of exceptions: %d; got exceptions: %zd", expectedNum,
-         exceptions->size());
-  ASSERT(exceptions->size() == expectedNum, "unexpected number of exceptions");
+         exceptions.size());
+  ASSERT(exceptions.size() == expectedNum, "unexpected number of exceptions");
 }
 
 DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StartLocator)
@@ -227,13 +226,10 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       VectorOfCacheableKey keysVec;
       keysVec.push_back(key0);
       keysVec.push_back(key2);
-      auto values = std::make_shared<HashMapOfCacheable>();
-      auto exceptions = std::make_shared<HashMapOfException>();
-      regPtr0->getAll(keysVec, values, exceptions);
-      ASSERT(values->size() == 2, "Expected 2 entries");
-      ASSERT(exceptions->size() == (size_t)0, "Expected no exceptions");
-      auto res0 = std::dynamic_pointer_cast<CacheableString>((*values)[key0]);
-      auto res2 = std::dynamic_pointer_cast<CacheableString>((*values)[key2]);
+      auto values = regPtr0->getAll(keysVec);
+      ASSERT(values.size() == 2, "Expected 2 entries");
+      auto res0 = std::dynamic_pointer_cast<CacheableString>(values[key0]);
+      auto res2 = std::dynamic_pointer_cast<CacheableString>(values[key2]);
       ASSERT(*res0 == *val0, "Unexpected value for key");
       ASSERT(*res2 == *val2, "Unexpected value for key");
     }
@@ -290,14 +286,11 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
     createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
 
     VectorOfCacheableKey keys;
-    auto values = std::make_shared<HashMapOfCacheable>();
-    auto exceptions = std::make_shared<HashMapOfException>();
     getKeysVector(keys, 6);
     RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
-    rptr->getAll(keys, values, exceptions);
+    auto values = rptr->getAll(keys);
 
     checkValuesMap(values, 2, 6);
-    checkExceptionsMap(exceptions, 2, 6);
 
     LOG("StepThree complete.");
   }
@@ -309,14 +302,11 @@ DUNIT_TASK_DEFINITION(READER2_CLIENT, StepFour)
     createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
 
     VectorOfCacheableKey keys;
-    auto values = std::make_shared<HashMapOfCacheable>();
-    auto exceptions = std::make_shared<HashMapOfException>();
     getKeysVector(keys, 6);
     RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
-    rptr->getAll(keys, values, exceptions);
+    auto values = rptr->getAll(keys);
 
     checkValuesMap(values, 3, 6);
-    checkExceptionsMap(exceptions, 3, 6);
 
     LOG("StepFour complete.");
   }

@@ -356,14 +356,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     createEntry(regionNames[0], keys[0], vals[0]);
     createEntry(regionNames[1], keys[2], vals[2]);
 
-    auto vec = std::make_shared<VectorOfCacheableKey>();
     RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
-    regPtr1->registerRegex(regkeys[1], false, vec);
-
-    ASSERT(vec->size() == 1, "Expected one key after registerRegex");
-    auto key1 = std::dynamic_pointer_cast<CacheableString>(vec->operator[](0));
-    ASSERT(strcmp(keys[1], key1->asChar()) == 0,
-           "Expected key to match in registerRegex");
+    regPtr1->registerRegex(regkeys[1], false);
 
     doNetsearch(
         regionNames[1], keys[1],

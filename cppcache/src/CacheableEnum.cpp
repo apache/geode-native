@@ -50,10 +50,8 @@ void CacheableEnum::toData(apache::geode::client::DataOutput& output) const {
 }
 
 void CacheableEnum::fromData(apache::geode::client::DataInput& input) {
-  int8_t dsId;
-  input.read(&dsId);
-  int32_t arrLen;
-  input.readArrayLen(&arrLen);
+  auto dsId = input.read();
+  int32_t arrLen = input.readArrayLen();
   int enumId = (dsId << 24) | (arrLen & 0xFFFFFF);
   auto enumVal = PdxHelper::getEnum(
       enumId,

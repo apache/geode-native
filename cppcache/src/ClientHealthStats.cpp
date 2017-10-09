@@ -33,13 +33,13 @@ void ClientHealthStats::toData(DataOutput& output) const {
 }
 
 void ClientHealthStats::fromData(DataInput& input) {
-  input.readInt(&m_numGets);
-  input.readInt(&m_numPuts);
-  input.readInt(&m_numMisses);
-  input.readInt(&m_numCacheListenerCalls);
-  input.readInt(&m_numThread);
-  input.readInt(&m_processCpuTime);
-  input.readInt(&m_cpus);
+  m_numGets = input.readInt32();
+  m_numPuts = input.readInt32();
+  m_numMisses = input.readInt32();
+  m_numCacheListenerCalls = input.readInt32();
+  m_numThread = input.readInt32();
+  m_processCpuTime = input.readInt64();
+  m_cpus = input.readInt32();
   m_updateTime->fromData(input);
 }
 

@@ -447,9 +447,7 @@ void writeBool(DataOutput& out, bool field) {
 }
 
 void readBool(DataInput& in, bool* field) {
-  int8_t v = 0;
-  in.read(&v);
-  *field = v ? true : false;
+  *field = in.read() ? true : false;
 }
 
 void writeCharStar(DataOutput& out, const char* field) {
@@ -464,8 +462,7 @@ void writeCharStar(DataOutput& out, const char* field) {
 /** this one allocates the memory and modifies field to point to it. */
 void readCharStar(DataInput& in, char** field) {
   GF_D_ASSERT(*field == nullptr);
-  int32_t memlen = 0;
-  in.readArrayLen(&memlen);
+  int32_t memlen = in.readArrayLen();
   if (memlen != 0) {
     *field = new char[memlen];
     in.readBytesOnly(reinterpret_cast<int8_t*>(*field), memlen);
@@ -514,20 +511,20 @@ void RegionAttributes::toData(DataOutput& out) const {
 }
 
 void RegionAttributes::fromData(DataInput& in) {
-  in.readInt(reinterpret_cast<int32_t*>(&m_regionTimeToLive));
-  in.readInt(reinterpret_cast<int32_t*>(&m_regionTimeToLiveExpirationAction));
-  in.readInt(reinterpret_cast<int32_t*>(&m_regionIdleTimeout));
-  in.readInt(reinterpret_cast<int32_t*>(&m_regionIdleTimeoutExpirationAction));
-  in.readInt(reinterpret_cast<int32_t*>(&m_entryTimeToLive));
-  in.readInt(reinterpret_cast<int32_t*>(&m_entryTimeToLiveExpirationAction));
-  in.readInt(reinterpret_cast<int32_t*>(&m_entryIdleTimeout));
-  in.readInt(reinterpret_cast<int32_t*>(&m_entryIdleTimeoutExpirationAction));
-  in.readInt(reinterpret_cast<int32_t*>(&m_initialCapacity));
-  in.readFloat(&m_loadFactor);
-  in.readInt(reinterpret_cast<int32_t*>(&m_maxValueDistLimit));
-  in.readInt(reinterpret_cast<int32_t*>(&m_concurrencyLevel));
-  in.readInt(reinterpret_cast<int32_t*>(&m_lruEntriesLimit));
-  in.readInt(reinterpret_cast<int32_t*>(&m_lruEvictionAction));
+  m_regionTimeToLive = in.readInt32();
+  m_regionTimeToLiveExpirationAction = static_cast<ExpirationAction::Action>(in.readInt32());
+  m_regionIdleTimeout = in.readInt32();
+  m_regionIdleTimeoutExpirationAction = static_cast<ExpirationAction::Action>(in.readInt32());
+  m_entryTimeToLive = in.readInt32();
+  m_entryTimeToLiveExpirationAction = static_cast<ExpirationAction::Action>(in.readInt32());
+  m_entryIdleTimeout = in.readInt32();
+  m_entryIdleTimeoutExpirationAction = static_cast<ExpirationAction::Action>(in.readInt32());
+  m_initialCapacity = in.readInt32();
+  m_loadFactor = in.readFloat();
+  m_maxValueDistLimit = in.readInt32();
+  m_concurrencyLevel = in.readInt32();
+  m_lruEntriesLimit = in.readInt32();
+  m_lruEvictionAction = static_cast<ExpirationAction::Action>(in.readInt32());
 
   apache::geode::client::impl::readBool(in, &m_caching);
   apache::geode::client::impl::readBool(in, &m_clientNotificationEnabled);
@@ -540,11 +537,11 @@ void RegionAttributes::fromData(DataInput& in) {
   apache::geode::client::impl::readCharStar(in, &m_cacheListenerFactory);
   apache::geode::client::impl::readCharStar(in, &m_partitionResolverLibrary);
   apache::geode::client::impl::readCharStar(in, &m_partitionResolverFactory);
-  in.readInt(reinterpret_cast<int32_t*>(&m_diskPolicy));
+  m_diskPolicy = static_cast<DiskPolicyType::PolicyType>(in.readInt32());
   apache::geode::client::impl::readCharStar(in, &m_endpoints);
   apache::geode::client::impl::readCharStar(in, &m_persistenceLibrary);
   apache::geode::client::impl::readCharStar(in, &m_persistenceFactory);
-  in.readObject(m_persistenceProperties, true);
+  m_persistenceProperties = in.readObject<Properties>(true);
   apache::geode::client::impl::readCharStar(in, &m_poolName);
   apache::geode::client::impl::readBool(in, &m_isConcurrencyChecksEnabled);
 }

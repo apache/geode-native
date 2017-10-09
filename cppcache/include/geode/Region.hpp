@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_REGION_H_
-#define GEODE_REGION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_REGION_H_
+#define GEODE_REGION_H_
 
 //#### Warning: DO NOT directly include Region.hpp, include Cache.hpp instead.
 
@@ -249,7 +249,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @param[out] sr subregions
    * @throws RegionDestroyedException
    */
-  virtual void subregions(const bool recursive, VectorOfRegion& sr) = 0;
+  virtual VectorOfRegion subregions(const bool recursive) = 0;
 
   /** Return the meta-object RegionEntry for key.
    * @throws IllegalArgumentException, RegionDestroyedException.
@@ -952,7 +952,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * Return all the keys in the local process for this region. This includes
    * keys for which the entry is invalid.
    */
-  virtual void keys(VectorOfCacheableKey& v) = 0;
+  virtual VectorOfCacheableKey keys() = 0;
 
   /**
    * Return the set of keys defined in the server process associated to this
@@ -979,15 +979,15 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws UnsupportedOperationException if the member type is not CLIENT
    *                                       or region is not a native client one.
    */
-  virtual void serverKeys(VectorOfCacheableKey& v) = 0;
+  virtual VectorOfCacheableKey serverKeys() = 0;
 
   /**
    * Return all values in the local process for this region. No value is
    * included for entries that are invalidated.
    */
-  virtual void values(VectorOfCacheable& vc) = 0;
+  virtual VectorOfCacheable values() = 0;
 
-  virtual void entries(VectorOfRegionEntry& me, bool recursive) = 0;
+  virtual VectorOfRegionEntry entries(bool recursive) = 0;
 
   /**
    * Returns the <code>cache</code> associated with this region.
@@ -1034,14 +1034,14 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws UnsupportedOperationException if the region's scope is
    * ScopeType::LOCAL.
    */
-  virtual void getInterestList(VectorOfCacheableKey& vlist) const = 0;
+  virtual VectorOfCacheableKey getInterestList() const = 0;
   /**
    * Returns the list of regular expresssions on which this client is
    * interested and will be notified of changes.
    * @throws UnsupportedOperationException if the region's scope is
    * ScopeType::LOCAL.
    */
-  virtual void getInterestListRegex(VectorOfCacheableString& vregex) const = 0;
+  virtual VectorOfCacheableString getInterestListRegex() const = 0;
   /**
    * Convenience method allowing key to be a const char*
    * This operations checks for the key in the local cache .
@@ -1126,9 +1126,6 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * ( {@link AttributesFactory::setClientNotification} ) is true.
    *
    * @param isDurable flag to indicate whether this is a durable registration
-   * @param resultKeys If non-nullptr then all the keys on the server that got
-   *   registered are returned. The vector is cleared at the start to discard
-   *   any existing keys in the vector.
    * @param getInitialValues true to populate the cache with values of all keys
    *   from the server
    * @param receiveValues whether to act like notify-by-subscription is set
@@ -1156,7 +1153,6 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws TimeoutException if operation timed out
    */
   virtual void registerAllKeys(bool isDurable = false,
-                               VectorOfCacheableKeyPtr resultKeys = nullptr,
                                bool getInitialValues = false,
                                bool receiveValues = true) = 0;
 
@@ -1228,7 +1224,6 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws TimeoutException if operation timed out
    */
   virtual void registerRegex(const char* regex, bool isDurable = false,
-                             VectorOfCacheableKeyPtr resultKeys = nullptr,
                              bool getInitialValues = false,
                              bool receiveValues = true) = 0;
 
@@ -1282,8 +1277,6 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    *   otherwise an <code>IllegalArgumentException</code> is thrown.
    * @param exceptions Output parameter that provides the map of keys
    *   to any exceptions while obtaining the key. It is ignored if nullptr.
-   * @param addToLocalCache true if the obtained values have also to be added
-   *   to the local cache
    * @since 8.1
    * @param aCallbackArgument an argument that is passed to the callback
    *functions.
@@ -1305,11 +1298,9 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    *
    * @see get
    */
-  virtual void getAll(const VectorOfCacheableKey& keys,
-                      HashMapOfCacheablePtr values,
-                      HashMapOfExceptionPtr exceptions,
-                      bool addToLocalCache = false,
-                      const SerializablePtr& aCallbackArgument = nullptr) = 0;
+  virtual HashMapOfCacheable getAll(
+      const VectorOfCacheableKey& keys,
+      const SerializablePtr& aCallbackArgument = nullptr) = 0;
 
   /**
    * Executes the query on the server based on the predicate.

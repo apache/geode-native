@@ -314,8 +314,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree3)
     ASSERT(cqAttr != nullptr, "failed to get CqAttributes");
     CqListenerPtr cqLstner = nullptr;
     try {
-      std::vector<CqListenerPtr> vl;
-      cqAttr->getCqListeners(vl);
+      auto vl = cqAttr->getCqListeners();
       cqLstner = vl[0];
     } catch (Exception& excp) {
       char excpmsg[500] = {0};
@@ -402,8 +401,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
     ASSERT(cqAttr != nullptr, "failed to get CqAttributes");
     CqListenerPtr cqLstner = nullptr;
     try {
-      std::vector<CqListenerPtr> vl;
-      cqAttr->getCqListeners(vl);
+      auto vl = cqAttr->getCqListeners();
       cqLstner = vl[0];
     } catch (Exception& excp) {
       char excpmsg[500] = {0};

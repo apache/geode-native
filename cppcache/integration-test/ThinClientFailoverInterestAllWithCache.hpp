@@ -317,21 +317,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, InitializeClient2)
 
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
     RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
-    auto resultKeys = std::make_shared<VectorOfCacheableKey>();
     // create a local entry to check for no change after register interest
     createEntry(regionNames[0], keys[1], nvals[1]);
-    regPtr0->registerAllKeys(false, resultKeys, true);
-    regPtr1->registerAllKeys(false, nullptr, true);
+    regPtr0->registerAllKeys(false, true);
+    regPtr1->registerAllKeys(false, true);
 
     // check that initial entries are created properly
     ASSERT(regPtr0->size() == 1, "Expected one entry in region");
     ASSERT(regPtr1->size() == 1, "Expected one entry in region");
-    ASSERT(resultKeys->size() == 1, "Expected one key from registerAllKeys");
-    ASSERT(strcmp(std::dynamic_pointer_cast<CacheableString>(
-                      resultKeys->operator[](0))
-                      ->asChar(),
-                  keys[1]) == 0,
-           "Unexpected key from registerAllKeys");
 
     LOG("InitializeClient2 complete.");
   }
@@ -346,21 +339,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, InitializeClient2Regex)
 
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
     RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
-    auto resultKeys = std::make_shared<VectorOfCacheableKey>();
     // create a local entry to check for no change after register interest
     createEntry(regionNames[0], keys[1], nvals[1]);
-    regPtr0->registerRegex(".*", false, resultKeys, true);
-    regPtr1->registerRegex(".*", false, nullptr, true);
+    regPtr0->registerRegex(".*", false, true);
+    regPtr1->registerRegex(".*", false, true);
 
     // check that initial entries are created properly
     ASSERT(regPtr0->size() == 1, "Expected one entry in region");
     ASSERT(regPtr1->size() == 1, "Expected one entry in region");
-    ASSERT(resultKeys->size() == 1, "Expected one key from registerAllKeys");
-    ASSERT(strcmp(std::dynamic_pointer_cast<CacheableString>(
-                      resultKeys->operator[](0))
-                      ->asChar(),
-                  keys[1]) == 0,
-           "Unexpected key from registerAllKeys");
 
     verifyCreated(regionNames[0], keys[1]);
     verifyCreated(regionNames[1], keys[3]);
@@ -373,38 +359,22 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, VerifyClient1)
   {
-    // check the combination of (resultKeys != nullptr) and
-    // (getValues == false) in registerAllKeys
-    auto resultKeys = std::make_shared<VectorOfCacheableKey>();
     RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    regPtr0->registerAllKeys(false, resultKeys, false);
+    regPtr0->registerAllKeys(false, false);
 
     ASSERT(regPtr0->size() == 1, "Expected one entry in region");
     ASSERT(regPtr0->containsKey(keys[1]), "Expected region to contain the key");
     ASSERT(!regPtr0->containsValueForKey(keys[1]),
            "Expected region to not contain the value");
-    ASSERT(resultKeys->size() == 1, "Expected one key from registerAllKeys");
-    ASSERT(strcmp(std::dynamic_pointer_cast<CacheableString>(
-                      resultKeys->operator[](0))
-                      ->asChar(),
-                  keys[1]) == 0,
-           "Unexpected key from registerAllKeys");
 
     // check the same for registerRegex(".*")
     RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
-    resultKeys->clear();
-    regPtr1->registerRegex(".*", false, resultKeys, false);
+    regPtr1->registerRegex(".*", false, false);
 
     ASSERT(regPtr1->size() == 1, "Expected one entry in region");
     ASSERT(regPtr1->containsKey(keys[3]), "Expected region to contain the key");
     ASSERT(!regPtr1->containsValueForKey(keys[3]),
            "Expected region to not contain the value");
-    ASSERT(resultKeys->size() == 1, "Expected one key from registerRegex");
-    ASSERT(strcmp(std::dynamic_pointer_cast<CacheableString>(
-                      resultKeys->operator[](0))
-                      ->asChar(),
-                  keys[3]) == 0,
-           "Unexpected key from registerRegex");
 
     createEntry(regionNames[0], keys[0], vals[0]);
     updateEntry(regionNames[0], keys[1], vals[1]);

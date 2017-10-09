@@ -68,10 +68,10 @@ class FixedPartitionAttributesImpl : public Serializable {
   }
 
   void fromData(DataInput& input) {
-    input.readNativeString(m_partitionName);
-    input.readBoolean(&m_isPrimary);
-    input.readInt((int32_t*)&m_numBuckets);
-    input.readInt((int32_t*)&m_startingBucketId);
+    m_partitionName = input.readNativeString();
+    m_isPrimary = input.readBoolean();
+    m_numBuckets = input.readInt32();
+    m_startingBucketId = input.readInt32();
   }
 
   uint32_t objectSize() const {

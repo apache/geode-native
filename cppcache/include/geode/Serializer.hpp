@@ -48,7 +48,7 @@ inline void writeObject(apache::geode::client::DataOutput& output,
 
 inline void readObject(apache::geode::client::DataInput& input,
                        uint8_t& value) {
-  input.read(&value);
+  value = input.read();
 }
 
 inline void writeObject(apache::geode::client::DataOutput& output,
@@ -57,7 +57,7 @@ inline void writeObject(apache::geode::client::DataOutput& output,
 }
 
 inline void readObject(apache::geode::client::DataInput& input, int8_t& value) {
-  input.read(&value);
+  value = input.read();
 }
 
 inline void writeObject(apache::geode::client::DataOutput& output,
@@ -87,7 +87,7 @@ inline void writeObject(apache::geode::client::DataOutput& output,
 
 inline void readObject(apache::geode::client::DataInput& input,
                        int16_t& value) {
-  input.readInt(&value);
+  value = input.readInt16();
 }
 
 inline void writeObject(apache::geode::client::DataOutput& output,
@@ -97,7 +97,7 @@ inline void writeObject(apache::geode::client::DataOutput& output,
 
 inline void readObject(apache::geode::client::DataInput& input,
                        int32_t& value) {
-  input.readInt(&value);
+  value = input.readInt32();
 }
 
 inline void writeObject(apache::geode::client::DataOutput& output,
@@ -107,7 +107,7 @@ inline void writeObject(apache::geode::client::DataOutput& output,
 
 inline void readObject(apache::geode::client::DataInput& input,
                        int64_t& value) {
-  input.readInt(&value);
+  value = input.readInt64();
 }
 
 inline void writeObject(apache::geode::client::DataOutput& output,
@@ -117,7 +117,7 @@ inline void writeObject(apache::geode::client::DataOutput& output,
 
 inline void readObject(apache::geode::client::DataInput& input,
                        uint16_t& value) {
-  input.readInt(&value);
+  value = input.readInt16();
 }
 
 inline void writeObject(apache::geode::client::DataOutput& output,
@@ -127,7 +127,7 @@ inline void writeObject(apache::geode::client::DataOutput& output,
 
 inline void readObject(apache::geode::client::DataInput& input,
                        uint32_t& value) {
-  input.readInt(&value);
+  value = input.readInt32();
 }
 
 inline void writeObject(apache::geode::client::DataOutput& output,
@@ -137,7 +137,7 @@ inline void writeObject(apache::geode::client::DataOutput& output,
 
 inline void readObject(apache::geode::client::DataInput& input,
                        uint64_t& value) {
-  input.readInt(&value);
+  value = input.readInt64();
 }
 
 inline void writeObject(apache::geode::client::DataOutput& output, bool value) {
@@ -145,7 +145,7 @@ inline void writeObject(apache::geode::client::DataOutput& output, bool value) {
 }
 
 inline void readObject(apache::geode::client::DataInput& input, bool& value) {
-  input.readBoolean(&value);
+  value = input.readBoolean();
 }
 
 inline void writeObject(apache::geode::client::DataOutput& output,
@@ -154,7 +154,7 @@ inline void writeObject(apache::geode::client::DataOutput& output,
 }
 
 inline void readObject(apache::geode::client::DataInput& input, double& value) {
-  input.readDouble(&value);
+  value = input.readDouble();
 }
 
 inline void writeObject(apache::geode::client::DataOutput& output,
@@ -163,7 +163,7 @@ inline void writeObject(apache::geode::client::DataOutput& output,
 }
 
 inline void readObject(apache::geode::client::DataInput& input, float& value) {
-  input.readFloat(&value);
+  value = input.readFloat();
 }
 
 inline void writeObject(apache::geode::client::DataOutput& output,
@@ -172,10 +172,8 @@ inline void writeObject(apache::geode::client::DataOutput& output,
 }
 
 inline void readObject(apache::geode::client::DataInput& input,
-                       wchar_t& value) {
-  int16_t val;
-  input.readInt(&val);
-  value = val;
+                       char16_t& value) {
+  value = input.readInt16();
 }
 
 inline void writeObject(apache::geode::client::DataOutput& output,
@@ -236,7 +234,7 @@ template <typename TObj,
                                   Serializable>::type* = nullptr>
 inline void readObject(apache::geode::client::DataInput& input,
                        std::shared_ptr<TObj>& value) {
-  input.readObject(value, true);
+  value = input.readObject<TObj>(true);
 }
 
 // For arrays
@@ -258,7 +256,7 @@ inline void writeObject(apache::geode::client::DataOutput& output,
 template <typename TObj, typename TLen>
 inline void readObject(apache::geode::client::DataInput& input, TObj*& array,
                        TLen& len) {
-  input.readArrayLen(&len);
+  len = input.readArrayLen();
   if (len > 0) {
     GF_NEW(array, TObj[len]);
     TObj* startArray = array;
@@ -319,8 +317,7 @@ inline uint32_t objectSize(const VectorOfCacheable& value) {
 template <typename TObj, typename _tail>
 inline void readObject(apache::geode::client::DataInput& input,
                        std::vector<TObj, _tail>& value) {
-  int32_t len;
-  input.readArrayLen(&len);
+  int32_t len = input.readArrayLen();
   if (len >= 0) {
     TObj obj;
     for (int32_t index = 0; index < len; index++) {
@@ -357,8 +354,7 @@ inline uint32_t objectSize(const HashMapOfCacheable& value) {
 template <typename TKey, typename TValue, typename Hash, typename KeyEqual, typename Allocator>
 inline void readObject(apache::geode::client::DataInput& input,
                        std::unordered_map<TKey, TValue, Hash, KeyEqual, Allocator>& value) {
-  int32_t len;
-  input.readArrayLen(&len);
+  int32_t len = input.readArrayLen();
   value.reserve(len);
   TKey key;
   TValue val;
@@ -392,8 +388,7 @@ inline uint32_t objectSize(const HashSetOfCacheableKey& value) {
 template <typename TKey, typename Hash, typename KeyEqual, typename Allocator>
 inline void readObject(apache::geode::client::DataInput& input,
                        std::unordered_set<TKey, Hash, KeyEqual, Allocator>& value) {
-  int32_t len;
-  input.readArrayLen(&len);
+  int32_t len = input.readArrayLen();
   if (len > 0) {
     TKey key;
     for (int32_t index = 0; index < len; index++) {

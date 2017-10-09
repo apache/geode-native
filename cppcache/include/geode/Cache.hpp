@@ -84,12 +84,12 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * @param cacheXml
    *        Valid cache.xml file
    */
-  virtual void initializeDeclarativeCache(const char* cacheXml);
+  virtual void initializeDeclarativeCache(const char* cacheXml) override;
 
   /** Returns the name of this cache.
    * @return the string name of this cache
    */
-  virtual const std::string& getName() const;
+  virtual const std::string& getName() const override;
 
   /**
    * Indicates if this cache has been closed.
@@ -99,13 +99,13 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    *
    * @return true, if this cache is closed; false, otherwise
    */
-  virtual bool isClosed() const;
+  virtual bool isClosed() const override;
 
   /**
    * Returns the distributed system that this cache was
    * {@link CacheFactory::createCacheFactory created} with.
    */
-  virtual DistributedSystem& getDistributedSystem() const;
+  virtual DistributedSystem& getDistributedSystem() const override;
 
   /**
    * Terminates this object cache and releases all the local resources.
@@ -116,7 +116,7 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * reset user related security data.
    * @throws CacheClosedException,  if the cache is already closed.
    */
-  virtual void close();
+  virtual void close() override;
 
   /**
    * Terminates this object cache and releases all the local resources.
@@ -140,7 +140,7 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * @param path the region's name, such as <code>AuthRegion</code>.
    * @returns region, or nullptr if no such region exists.
    */
-  virtual RegionPtr getRegion(const char* path);
+  virtual RegionPtr getRegion(const char* path) override;
 
   /**
    * Returns a set of root regions in the cache. This set is a snapshot and
@@ -150,13 +150,13 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * @param regions the returned set of
    * regions
    */
-  virtual void rootRegions(VectorOfRegion& regions);
+  virtual VectorOfRegion rootRegions() override;
 
   /**
    * Gets the QueryService from which a new Query can be obtained.
    * @returns A smart pointer to the QueryService.
    */
-  virtual QueryServicePtr getQueryService();
+  virtual QueryServicePtr getQueryService() override;
 
   /**
    * Gets the QueryService from which a new Query can be obtained.
@@ -196,7 +196,8 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    */
 
   virtual RegionServicePtr createAuthenticatedView(
-      PropertiesPtr userSecurityProperties, const char* poolName = nullptr);
+      PropertiesPtr userSecurityProperties,
+      const char* poolName = nullptr);
 
   /**
    * Get the CacheTransactionManager instance for this Cache.
@@ -208,13 +209,13 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
   /**
    * Returns whether Cache saves unread fields for Pdx types.
    */
-  virtual bool getPdxIgnoreUnreadFields();
+  virtual bool getPdxIgnoreUnreadFields() override;
 
   /**
    * Returns whether { @link PdxInstance} is preferred for PDX types instead of
    * C++ object.
    */
-  virtual bool getPdxReadSerialized();
+  virtual bool getPdxReadSerialized() override;
 
   virtual TypeRegistry& getTypeRegistry();
 
@@ -226,7 +227,8 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * @throws IllegalStateException if the className is nullptr or invalid.
    * @return the factory
    */
-  virtual PdxInstanceFactoryPtr createPdxInstanceFactory(const char* className);
+  virtual PdxInstanceFactoryPtr createPdxInstanceFactory(
+      const char* className) override;
 
   virtual statistics::StatisticsFactory* getStatisticsFactory() const;
 

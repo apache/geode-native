@@ -295,12 +295,9 @@ PdxSerializablePtr PdxHelper::deserializePdx(DataInput& dataInput,
   auto& cachePerfStats = cacheImpl->getCachePerfStats();
   if (pdxTypeRegistry->getPdxReadSerialized() == false || forceDeserialize) {
     // Read Length
-    int32_t len;
-    dataInput.readInt(&len);
+    int32_t len = dataInput.readInt32();
 
-    int32_t typeId;
-    // read typeId
-    dataInput.readInt(&typeId);
+    int32_t typeId = dataInput.readInt32();
 
     cachePerfStats.incPdxDeSerialization(len + 9);  // pdxLen + 1 + 2*4
 
@@ -309,12 +306,9 @@ PdxSerializablePtr PdxHelper::deserializePdx(DataInput& dataInput,
 
   } else {
     // Read Length
-    int32_t len;
-    dataInput.readInt(&len);
+    int32_t len = dataInput.readInt32();
 
-    int typeId;
-    // read typeId
-    dataInput.readInt(&typeId);
+    int typeId = dataInput.readInt32();
 
     auto pType = pdxTypeRegistry->getPdxType(typeId);
 

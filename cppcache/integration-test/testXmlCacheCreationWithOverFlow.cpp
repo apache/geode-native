@@ -83,9 +83,8 @@ int testXmlCacheCreationWithOverflow() {
     return -1;
   }
 
-  VectorOfRegion vrp;
   std::cout << "Test if number of root regions are correct" << std::endl;
-  cptr->rootRegions(vrp);
+  auto vrp = cptr->rootRegions();
   std::cout << "  vrp.size=" << vrp.size() << std::endl;
 
   if (vrp.size() != totalRootRegions) {
@@ -101,11 +100,10 @@ int testXmlCacheCreationWithOverflow() {
   RegionPtr regPtr1 = vrp.at(0);
 
   uint32_t i ATTR_UNUSED = 0;
-  VectorOfRegion vr;
   std::cout << "Test if the number of sub regions with the root region Root1 are "
           "correct"
        << std::endl;
-  regPtr1->subregions(true, vr);
+  VectorOfRegion vr = regPtr1->subregions(true);
   std::cout << "  vr.size=" << vr.size() << std::endl;
   if (vr.size() != totalSubRegionsRoot1) {
     std::cout << "Number of Subregions does not match" << std::endl;
@@ -123,8 +121,7 @@ int testXmlCacheCreationWithOverflow() {
   const char* parentName;
   const char* childName;
   RegionPtr regPtr2 = vrp.at(1);
-  VectorOfRegion vsr;
-  regPtr2->subregions(true, vsr);
+  VectorOfRegion vsr = regPtr2->subregions(true);
   for (uint32_t i = 0; i < static_cast<uint32_t>(vsr.size()); i++) {
     Region* regPtr = vsr.at(i).get();
     childName = regPtr->getName();

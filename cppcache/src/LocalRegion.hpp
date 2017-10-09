@@ -157,7 +157,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   RegionPtr getSubregion(const char* path);
   RegionPtr createSubregion(const char* subregionName,
                             const RegionAttributesPtr& aRegionAttributes);
-  void subregions(const bool recursive, VectorOfRegion& sr);
+  VectorOfRegion subregions(const bool recursive);
   RegionEntryPtr getEntry(const CacheableKeyPtr& key);
   void getEntry(const CacheableKeyPtr& key, CacheablePtr& valuePtr);
   CacheablePtr get(const CacheableKeyPtr& key,
@@ -186,13 +186,19 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                    const SerializablePtr& aCallbackArgument = nullptr);
   bool localRemoveEx(const CacheableKeyPtr& key,
                      const SerializablePtr& aCallbackArgument = nullptr);
-  void keys(VectorOfCacheableKey& v);
-  void serverKeys(VectorOfCacheableKey& v);
-  void values(VectorOfCacheable& vc);
-  void entries(VectorOfRegionEntry& me, bool recursive);
-  void getAll(const VectorOfCacheableKey& keys, HashMapOfCacheablePtr values,
-              HashMapOfExceptionPtr exceptions, bool addToLocalCache,
-              const SerializablePtr& aCallbackArgument = nullptr);
+  VectorOfCacheableKey keys();
+  VectorOfCacheableKey serverKeys();
+  VectorOfCacheable values();
+  VectorOfRegionEntry entries(bool recursive);
+
+  HashMapOfCacheable getAll(
+      const VectorOfCacheableKey& keys,
+      const SerializablePtr& aCallbackArgument = nullptr);
+
+  HashMapOfCacheable getAll_internal(
+      const VectorOfCacheableKey& keys,
+      const SerializablePtr& aCallbackArgument, bool addToLocalCache);
+
   void putAll(const HashMapOfCacheable& map,
               uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
               const SerializablePtr& aCallbackArgument = nullptr);
@@ -205,8 +211,8 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   bool containsValueForKey(const CacheableKeyPtr& keyPtr) const;
   bool containsKey(const CacheableKeyPtr& keyPtr) const;
   virtual bool containsKeyOnServer(const CacheableKeyPtr& keyPtr) const;
-  virtual void getInterestList(VectorOfCacheableKey& vlist) const;
-  virtual void getInterestListRegex(VectorOfCacheableString& vregex) const;
+  virtual VectorOfCacheableKey getInterestList() const;
+  virtual VectorOfCacheableString getInterestListRegex() const;
 
   /** @brief Public Methods from RegionInternal
    *  There are all virtual methods
@@ -218,7 +224,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                                const SerializablePtr& aCallbackArgument);
   virtual GfErrType getAllNoThrow(
       const VectorOfCacheableKey& keys, const HashMapOfCacheablePtr& values,
-      const HashMapOfExceptionPtr& exceptions, bool addToLocalCache,
+      const HashMapOfExceptionPtr& exceptions, const bool addToLocalCache,
       const SerializablePtr& aCallbackArgument = nullptr);
   virtual GfErrType putNoThrow(const CacheableKeyPtr& key,
                                const CacheablePtr& value,
@@ -449,7 +455,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   bool m_enableTimeStatistics;
 
   mutable ACE_RW_Thread_Mutex m_rwLock;
-  void keys_internal(VectorOfCacheableKey& v);
+  VectorOfCacheableKey keys_internal();
   bool containsKey_internal(const CacheableKeyPtr& keyPtr) const;
   int removeRegion(const std::string& name);
 
@@ -472,7 +478,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   // functions related to expirations.
   void updateAccessAndModifiedTimeForEntry(MapEntryImplPtr& ptr, bool modified);
   void registerEntryExpiryTask(MapEntryImplPtr& entry);
-  void subregions_internal(const bool recursive, VectorOfRegion& sr);
+  VectorOfRegion subregions_internal(const bool recursive);
   void entries_internal(VectorOfRegionEntry& me, const bool recursive);
 
   PersistenceManagerPtr m_persistenceManager;

@@ -64,7 +64,7 @@ class PdxRemoteWriter : public PdxLocalWriter {
    */
   virtual PdxWriterPtr writeChar(const char* fieldName, char value);
 
-  virtual PdxWriterPtr writeWideChar(const char* fieldName, wchar_t value);
+  virtual PdxWriterPtr writeChar(const char* fieldName, char16_t value);
 
   /**
    *Write a boolean value to the PdxWriter.

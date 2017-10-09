@@ -53,7 +53,7 @@ namespace Apache
         /// <summary>
         /// add result from a single function execution
         /// </summary>
-        virtual void AddResult( TResult rs );
+        virtual void AddResult( const TResult rs );
 
         /// <summary>
         /// get result 

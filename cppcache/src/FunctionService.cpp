@@ -27,13 +27,14 @@
 
 using namespace apache::geode::client;
 
-ExecutionPtr FunctionService::onRegion(RegionPtr region) {
+ExecutionPtr FunctionService::onRegion(const RegionPtr& region) {
   LOGDEBUG("FunctionService::onRegion(RegionPtr region)");
   if (region == nullptr) {
     throw NullPointerException("FunctionService::onRegion: region is null");
   }
 
-  const PoolPtr& pool = region->getPool();
+  auto realRegion = region;
+  const auto& pool = realRegion->getPool();
 
   if (pool == nullptr) {
     throw IllegalArgumentException("Pool attached with region is closed.");
@@ -41,40 +42,36 @@ ExecutionPtr FunctionService::onRegion(RegionPtr region) {
   ProxyCachePtr proxyCache = nullptr;
 
   if (pool->getMultiuserAuthentication()) {
-    ProxyRegion* pr = dynamic_cast<ProxyRegion*>(region.get());
-    if (pr != nullptr) {
+    if (auto pr = std::dynamic_pointer_cast<ProxyRegion>(realRegion)) {
       LOGDEBUG("FunctionService::onRegion(RegionPtr region) proxy cache");
       // it is in multiuser mode
       proxyCache = pr->m_proxyCache;
-      PoolPtr userAttachedPool = proxyCache->m_userAttributes->getPool();
-      PoolPtr pool = region->getCache()->getPoolManager().find(
+      auto userAttachedPool = proxyCache->m_userAttributes->getPool();
+      auto pool = realRegion->getCache()->getPoolManager().find(
           userAttachedPool->getName());
       if (!(pool != nullptr && pool.get() == userAttachedPool.get() &&
             !pool->isDestroyed())) {
         throw IllegalStateException(
             "Pool has been closed with attached Logical Cache.");
       }
-      RegionPtr tmpRegion;
-      tmpRegion = nullptr;
       // getting real region to execute function on region
-      if (!region->getCache()->isClosed()) {
-        region->getCache()->m_cacheImpl->getRegion(region->getName(),
-                                                   tmpRegion);
+      if (!realRegion->getCache()->isClosed()) {
+        realRegion->getCache()->m_cacheImpl->getRegion(realRegion->getName(),
+                                                      realRegion);
       } else {
         throw IllegalStateException("Cache has been closed");
       }
 
-      if (tmpRegion == nullptr) {
+      if (realRegion == nullptr) {
         throw IllegalStateException("Real region has been closed.");
       }
-      region = tmpRegion;
     } else {
       throw IllegalArgumentException(
           "onRegion() argument region should have get from RegionService.");
     }
   }
 
-  return std::make_shared<ExecutionImpl>(region, proxyCache, pool);
+  return std::make_shared<ExecutionImpl>(realRegion, proxyCache, pool);
 }
 
 ExecutionPtr FunctionService::onServerWithPool(const PoolPtr& pool) {

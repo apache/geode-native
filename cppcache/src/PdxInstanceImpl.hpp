@@ -74,7 +74,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, bool& value) const;
+  virtual bool getBooleanField(const char *fieldname) const;
 
   /**
    * Reads the named field and set its value in signed char type out param.
@@ -89,22 +89,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, signed char& value) const;
-
-  /**
-   * Reads the named field and set its value in unsigned char type out param.
-   * unsigned char type is corresponding to java byte type.
-   * For C++ on Windows and Linux, unsigned char type is corresponding to int8_t
-   * type.
-   * However C++ users on Solaris should always use this api after casting
-   * int8_t to unsigned char.
-   * @param fieldname name of the field to read
-   * @param value value of the field to be set with unsigned char type.
-   * @throws IllegalStateException if PdxInstance doesn't has the named field.
-   *
-   * @see PdxInstance#hasField
-   */
-  virtual void getField(const char* fieldname, unsigned char& value) const;
+  virtual int8_t getByteField(const char* fieldname) const;
 
   /**
    * Reads the named field and set its value in int16_t type out param.
@@ -115,7 +100,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, int16_t& value) const;
+  virtual int16_t getShortField(const char *fieldname) const;
 
   /**
    * Reads the named field and set its value in int32_t type out param.
@@ -124,7 +109,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @param value value of the field to be set with int32_t type.
    * @throws IllegalStateException if PdxInstance doesn't has the named field.
    */
-  virtual void getField(const char* fieldname, int32_t& value) const;
+  virtual int32_t getIntField(const char* fieldname) const;
 
   /**
    * Reads the named field and set its value in int64_t type out param.
@@ -135,7 +120,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, int64_t& value) const;
+  virtual int64_t getLongField(const char* fieldname) const;
 
   /**
    * Reads the named field and set its value in float type out param.
@@ -146,7 +131,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, float& value) const;
+  virtual float getFloatField(const char* fieldname) const;
 
   /**
    * Reads the named field and set its value in double type out param.
@@ -157,18 +142,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, double& value) const;
-
-  /**
-   * Reads the named field and set its value in wchar_t type out param.
-   * wchar_t type is corresponding to java char type.
-   * @param fieldname name of the field to read
-   * @param value value of the field to be set with wchar_t type.
-   * @throws IllegalStateException if PdxInstance doesn't has the named field.
-   *
-   * @see PdxInstance#hasField
-   */
-  virtual void getField(const char* fieldName, wchar_t& value) const;
+  virtual double getDoubleField(const char* fieldname) const;
 
   /**
    * Reads the named field and set its value in char type out param.
@@ -179,7 +153,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldName, char& value) const;
+  virtual char16_t getCharField(const char* fieldName) const;
 
   /**
    * Reads the named field and set its value in bool array type out param.
@@ -379,7 +353,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, CacheableDatePtr& value) const;
+  virtual CacheableDatePtr getCacheableDateField(const char* fieldname) const;
 
   /**
    * Reads the named field and set its value in array of byte arrays type out
@@ -408,7 +382,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @see serializationRegistry->addPdxType
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, CacheablePtr& value) const;
+  virtual CacheablePtr getCacheableField(const char *fieldname) const;
 
   /**
    * Reads the named field and set its value in CacheableObjectArrayPtr type out
@@ -424,8 +398,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @see serializationRegistry->addPdxType
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname,
-                        CacheableObjectArrayPtr& value) const;
+  virtual CacheableObjectArrayPtr getCacheableObjectArrayField(
+                                                const char* fieldname) const;
 
   /**
    * Set the existing named field to the given value.
@@ -560,21 +534,6 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * The setField method has copy-on-write semantics.
    * So for the modifications to be stored in the cache the WritablePdxInstance
    * must be put into a region after setField has been called one or more times.
-   * wchar_t type is corresponding to java char type.
-   * @param fieldName
-   *          name of the field whose value will be set
-   * @param value
-   *          value that will be set to the field of type wchar_t
-   * @throws IllegalStateException if the named field does not exist
-   * or if the type of the value is not compatible with the field.
-   */
-  virtual void setField(const char* fieldName, wchar_t value);
-
-  /**
-   * Set the existing named field to the given value.
-   * The setField method has copy-on-write semantics.
-   * So for the modifications to be stored in the cache the WritablePdxInstance
-   * must be put into a region after setField has been called one or more times.
    * char type is corresponding to java char type.
    * @param fieldName
    *          name of the field whose value will be set
@@ -583,7 +542,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, char value);
+  virtual void setField(const char* fieldName, char16_t value);
 
   /**
    * Set the existing named field to the given value.

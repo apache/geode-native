@@ -53,11 +53,11 @@ void DeltaFastAssetAccount::toData(
 }
 
 void DeltaFastAssetAccount::fromData(apache::geode::client::DataInput& input) {
-  input.readInt(&acctId);
-  input.readObject(customerName);
-  input.readDouble(&netWorth);
-  input.readObject(assets);
-  input.readInt(reinterpret_cast<int64_t*>(&timestamp));
+  acctId = input.readInt32();
+  customerName = input.readObject<CacheableString>();
+  netWorth = input.readDouble();
+  assets = input.readObject<CacheableHashMap>();
+  timestamp = input.readInt64();
 }
 
 void DeltaFastAssetAccount::toDelta(
@@ -70,13 +70,13 @@ void DeltaFastAssetAccount::toDelta(
 
 void DeltaFastAssetAccount::fromDelta(apache::geode::client::DataInput& input) {
   if (getBeforeUpdate) {
-    input.readDouble(&netWorth);
+    netWorth = input.readDouble();
   } else {
     double netWorthTemp;
-    input.readDouble(&netWorthTemp);
+    netWorthTemp = input.readDouble();
     netWorth += netWorthTemp;
   }
   if (encodeTimestamp) {
-    input.readInt(reinterpret_cast<int64_t*>(&timestamp));
+    timestamp = input.readInt64();
   }
 }

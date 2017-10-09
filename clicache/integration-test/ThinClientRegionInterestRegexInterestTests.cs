@@ -489,7 +489,7 @@ namespace Apache.Geode.Client.UnitTests
         keys.Add(key);
       }
       region.GetSubscriptionService().RegisterKeys(keys.ToArray(), false, false, receiveValues);
-      region.GetSubscriptionService().RegisterRegex("key-regex.*", false, null, false, receiveValues);
+      region.GetSubscriptionService().RegisterRegex("key-regex.*", false, false, receiveValues);
     }
 
     public void DoUnregister()

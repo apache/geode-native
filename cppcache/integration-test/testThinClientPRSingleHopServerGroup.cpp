@@ -191,11 +191,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
         keys.push_back(CacheableInt32::create(j));
       }
 
-      auto values = std::make_shared<HashMapOfCacheable>();
       auto exceptions = std::make_shared<HashMapOfException>();
 
       try {
-        dataReg->getAll(keys, values, exceptions, false);
+        auto values = dataReg->getAll(keys);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         ASSERT(!networkhop, "It is networkhop operation.");
@@ -362,14 +361,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
         keys.push_back(CacheableInt32::create(j));
       }
 
-      auto values = std::make_shared<HashMapOfCacheable>();
-      auto exceptions = std::make_shared<HashMapOfException>();
-
       try {
-        dataReg->getAll(keys, values, exceptions, false);
+        const auto values = dataReg->getAll(keys);
         int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                      ->getAndResetServerGroupFlag();
-        ASSERT(values->size() == 5, "getall size should be 5 ");
+        ASSERT(values.size() == 5, "getall size should be 5 ");
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
       } catch (CacheServerException&) {
@@ -528,11 +524,8 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
         keys.push_back(CacheableInt32::create(j));
       }
 
-      auto values = std::make_shared<HashMapOfCacheable>();
-      auto exceptions = std::make_shared<HashMapOfException>();
-
       try {
-        dataReg->getAll(keys, values, exceptions, false);
+        dataReg->getAll(keys);
         int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                      ->getAndResetServerGroupFlag();
         ASSERT(serverGroupFlag != 2,

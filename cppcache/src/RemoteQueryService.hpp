@@ -52,12 +52,13 @@ class CPPCACHE_EXPORT RemoteQueryService
   void close();
 
   ~RemoteQueryService() {}
-  virtual CqQueryPtr newCq(const char* querystr, CqAttributesPtr& cqAttr,
+  virtual CqQueryPtr newCq(const char* querystr, const CqAttributesPtr& cqAttr,
                            bool isDurable = false);
   virtual CqQueryPtr newCq(const char* name, const char* querystr,
-                           CqAttributesPtr& cqAttr, bool isDurable = false);
+                           const CqAttributesPtr& cqAttr,
+                           bool isDurable = false);
   virtual void closeCqs();
-  virtual void getCqs(QueryService::query_container_type& vec);
+  virtual QueryService::query_container_type getCqs();
   virtual CqQueryPtr getCq(const char* name);
   virtual void executeCqs();
   virtual void stopCqs();

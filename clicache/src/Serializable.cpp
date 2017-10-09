@@ -664,7 +664,7 @@ namespace Apache
         {
           return safe_cast<TValue>(Serializable::getBoolean(val));
         }
-        case native::GeodeTypeIds::CacheableWideChar:
+        case native::GeodeTypeIds::CacheableCharacter:
         {
           return safe_cast<TValue>(Serializable::getChar(val));
         }
@@ -1072,7 +1072,7 @@ namespace Apache
         }
         case native::GeodeTypeIds::CacheableBoolean:
           return Serializable::getCacheableBoolean((bool)key);
-        case native::GeodeTypeIds::CacheableWideChar:
+        case native::GeodeTypeIds::CacheableCharacter:
           return Serializable::getCacheableWideChar((Char)key);
         case native::GeodeTypeIds::CacheableDouble:
           return Serializable::getCacheableDouble((double)key);
@@ -1258,13 +1258,13 @@ namespace Apache
       //widechar
       Char Serializable::getChar(native::SerializablePtr nativeptr)
       {
-        native::CacheableWideChar* ci = static_cast<native::CacheableWideChar*>(nativeptr.get());
+        native::CacheableCharacter* ci = static_cast<native::CacheableCharacter*>(nativeptr.get());
         return ci->value();
       }
 
       native::CacheableKeyPtr Serializable::getCacheableWideChar(Char val)
       {
-        return native::CacheableWideChar::create(val);
+        return native::CacheableCharacter::create(val);
       }
 
       //double

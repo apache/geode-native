@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 #include <vector>
+#include <tuple>
 
 #include "LocalRegion.hpp"
 #include <geode/Log.hpp>
@@ -274,12 +275,11 @@ RegionPtr LocalRegion::createSubregion(
   return region_ptr;
 }
 
-void LocalRegion::subregions(const bool recursive, VectorOfRegion& sr) {
+VectorOfRegion LocalRegion::subregions(const bool recursive) {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::subregions);
-  sr.clear();
-  if (m_subRegions.current_size() == 0) return;
+  if (m_subRegions.current_size() == 0) return VectorOfRegion();
 
-  subregions_internal(recursive, sr);
+  return subregions_internal(recursive);
 }
 
 RegionEntryPtr LocalRegion::getEntry(const CacheableKeyPtr& key) {
@@ -494,63 +494,70 @@ bool LocalRegion::localRemoveEx(const CacheableKeyPtr& key,
   return result;
 }
 
-void LocalRegion::keys(VectorOfCacheableKey& v) {
+VectorOfCacheableKey LocalRegion::keys() {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::keys);
-  keys_internal(v);
+  return keys_internal();
 }
 
-void LocalRegion::serverKeys(VectorOfCacheableKey& v) {
+VectorOfCacheableKey LocalRegion::serverKeys() {
   throw UnsupportedOperationException(
       "serverKeys is not supported for local regions.");
 }
 
-void LocalRegion::values(VectorOfCacheable& vc) {
+VectorOfCacheable LocalRegion::values() {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::values);
-  if (!m_regionAttributes->getCachingEnabled()) {
-    return;
+
+  VectorOfCacheable values;
+
+  if (m_regionAttributes->getCachingEnabled()) {
+    // invalidToken should not be added by the MapSegments.
+    m_entries->getValues(values);
   }
-  uint32_t size = m_entries->size();
-  vc.clear();
-  if (size == 0) return;
-  m_entries->values(vc);
-  // invalidToken should not be added by the MapSegments.
+
+  return values;
 }
 
-void LocalRegion::entries(VectorOfRegionEntry& me, bool recursive) {
+VectorOfRegionEntry LocalRegion::entries(bool recursive) {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::entries);
-  me.clear();
-  if (!m_regionAttributes->getCachingEnabled()) {
-    return;
+
+  VectorOfRegionEntry entries;
+
+  if (m_regionAttributes->getCachingEnabled()) {
+    entries_internal(entries, recursive);
   }
-  entries_internal(me, recursive);
+
+  return entries;
 }
 
-void LocalRegion::getAll(const VectorOfCacheableKey& keys,
-                         HashMapOfCacheablePtr values,
-                         HashMapOfExceptionPtr exceptions, bool addToLocalCache,
-                         const SerializablePtr& aCallbackArgument) {
-  if (keys.size() == 0) {
+HashMapOfCacheable LocalRegion::getAll(
+    const VectorOfCacheableKey& keys,
+    const SerializablePtr& aCallbackArgument) {
+  return getAll_internal(keys, aCallbackArgument, true);
+}
+
+HashMapOfCacheable LocalRegion::getAll_internal(
+    const VectorOfCacheableKey& keys, const SerializablePtr& aCallbackArgument,
+    bool addToLocalCache) {
+
+  if (keys.empty()) {
     throw IllegalArgumentException("Region::getAll: zero keys provided");
-  }
-  // check for the combination which will result in no action
-  if (values == nullptr &&
-      !(addToLocalCache && m_regionAttributes->getCachingEnabled())) {
-    throw IllegalArgumentException(
-        "Region::getAll: either output \"values\""
-        " parameter should be non-null, or \"addToLocalCache\" should be "
-        "true "
-        "and caching should be enabled for the region [%s]",
-        getFullPath());
   }
 
   int64_t sampleStartNanos = startStatOpTime();
+
+  auto values = std::make_shared<HashMapOfCacheable>();
+  auto exceptions = std::make_shared<HashMapOfException>();
   GfErrType err = getAllNoThrow(keys, values, exceptions, addToLocalCache,
                                 aCallbackArgument);
+
   updateStatOpTime(m_regionStats->getStat(), m_regionStats->getGetAllTimeId(),
                    sampleStartNanos);
-  // handleReplay(err, nullptr);
+
   GfErrTypeToException("Region::getAll", err);
+
+  return *values;
 }
+
 uint32_t LocalRegion::size_remote() {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::size);
   if (m_regionAttributes->getCachingEnabled()) {
@@ -615,11 +622,11 @@ bool LocalRegion::containsKeyOnServer(const CacheableKeyPtr& keyPtr) const {
   throw UnsupportedOperationException(
       "LocalRegion::containsKeyOnServer: is not supported.");
 }
-void LocalRegion::getInterestList(VectorOfCacheableKey& vlist) const {
+VectorOfCacheableKey LocalRegion::getInterestList() const {
   throw UnsupportedOperationException(
       "LocalRegion::getInterestList: is not supported.");
 }
-void LocalRegion::getInterestListRegex(VectorOfCacheableString& vregex) const {
+VectorOfCacheableString LocalRegion::getInterestListRegex() const {
   throw UnsupportedOperationException(
       "LocalRegion::getInterestListRegex: is not supported.");
 }
@@ -759,17 +766,17 @@ bool LocalRegion::containsKey_internal(const CacheableKeyPtr& keyPtr) const {
   return m_entries->containsKey(keyPtr);
 }
 
-void LocalRegion::subregions_internal(const bool recursive,
-                                      VectorOfRegion& sr) {
+VectorOfRegion LocalRegion::subregions_internal(const bool recursive) {
   MapOfRegionGuard guard(m_subRegions.mutex());
 
-  if (m_subRegions.current_size() == 0) return;
+  if (m_subRegions.current_size() == 0) return VectorOfRegion();
 
+  VectorOfRegion regions;
   VectorOfRegion subRegions;
 
   for (MapOfRegionWithLock::iterator p = m_subRegions.begin();
        p != m_subRegions.end(); ++p) {
-    sr.push_back((*p).int_id_);
+    regions.push_back((*p).int_id_);
     // seperate list so children can be descended.
     if (recursive) {
       subRegions.push_back((*p).int_id_);
@@ -779,10 +786,12 @@ void LocalRegion::subregions_internal(const bool recursive,
   if (recursive == true) {
     // decend...
     for (int32_t i = 0; i < subRegions.size(); i++) {
-      dynamic_cast<LocalRegion*>(subRegions.at(i).get())
-          ->subregions_internal(true, sr);
+      auto temp = dynamic_cast<LocalRegion*>(subRegions.at(i).get())
+          ->subregions_internal(true);
+      regions.insert(regions.end(), temp.begin(), temp.end());
     }
   }
+  return regions;
 }
 
 GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
@@ -966,7 +975,7 @@ GfErrType LocalRegion::getNoThrow(const CacheableKeyPtr& keyPtr,
 GfErrType LocalRegion::getAllNoThrow(const VectorOfCacheableKey& keys,
                                      const HashMapOfCacheablePtr& values,
                                      const HashMapOfExceptionPtr& exceptions,
-                                     bool addToLocalCache,
+                                     const bool addToLocalCache,
                                      const SerializablePtr& aCallbackArgument) {
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
   GfErrType err = GF_NOERR;
@@ -977,20 +986,6 @@ GfErrType LocalRegion::getAllNoThrow(const VectorOfCacheableKey& keys,
     if (isLocalOp()) {
       return GF_NOTSUP;
     }
-    //		if(!txState->isReplay())
-    //		{
-    //			auto args =
-    // std::make_shared<VectorOfCacheable>();
-    //			args->push_back(VectorOfCacheableKeyPtr(new
-    // VectorOfCacheableKey(keys)));
-    //			args->push_back(values);
-    //			args->push_back(exceptions);
-    //			args->push_back(CacheableBoolean::create(addToLocalCache));
-    //			txState->recordTXOperation(GF_GET_ALL,
-    // getFullPath(),
-    // nullptr,
-    // args);
-    //		}
     err = getAllNoThrow_remote(&keys, values, exceptions, nullptr, false,
                                aCallbackArgument);
     if (err == GF_NOERR) {
@@ -1089,14 +1084,6 @@ class PutActions {
                                 const CacheablePtr& value,
                                 const SerializablePtr& aCallbackArgument,
                                 VersionTagPtr& versionTag) {
-    //    	if(m_txState != nullptr && !m_txState->isReplay())
-    //    	{
-    //    		auto args = std::make_shared<VectorOfCacheable>();
-    //    		args->push_back(value);
-    //    		args->push_back(aCallbackArgument);
-    //    		m_txState->recordTXOperation(GF_PUT,
-    //    m_region.getFullPath(), key, args);
-    //    	}
     // propagate the put to remote server, if any
     return m_region.putNoThrow_remote(key, value, aCallbackArgument,
                                       versionTag);
@@ -1174,16 +1161,7 @@ class CreateActions {
                                 const CacheablePtr& value,
                                 const SerializablePtr& aCallbackArgument,
                                 VersionTagPtr& versionTag) {
-    // propagate the create to remote server, if any
-    //  	  if(m_txState != nullptr && !m_txState->isReplay())
-    //  	  {
-    //  		  auto args = std::make_shared<VectorOfCacheable>();
-    //  		  args->push_back(value);
-    //  		  args->push_back(aCallbackArgument);
-    //  		  m_txState->recordTXOperation(GF_CREATE,
-    //  m_region.getFullPath(), key, args);
-    //  	  }
-    return m_region.createNoThrow_remote(key, value, aCallbackArgument,
+     return m_region.createNoThrow_remote(key, value, aCallbackArgument,
                                          versionTag);
   }
 
@@ -1246,15 +1224,6 @@ class DestroyActions {
                                 const CacheablePtr& value,
                                 const SerializablePtr& aCallbackArgument,
                                 VersionTagPtr& versionTag) {
-    // propagate the destroy to remote server, if any
-    //    	if(m_txState != nullptr && !m_txState->isReplay())
-    //    	{
-    //    		auto args = std::make_shared<VectorOfCacheable>();
-    //    		args->push_back(aCallbackArgument);
-    //    		m_txState->recordTXOperation(GF_DESTROY,
-    //    m_region.getFullPath(), key, args);
-    //    	}
-
     return m_region.destroyNoThrow_remote(key, aCallbackArgument, versionTag);
   }
 
@@ -1394,16 +1363,6 @@ class RemoveActions {
           return err;
         }
       } else if ((valuePtr == nullptr || CacheableToken::isInvalid(valuePtr))) {
-        //        	if(m_txState != nullptr && !m_txState->isReplay())
-        //        	{
-        //        		VectorOfCacheablePtr args(new
-        //        VectorOfCacheable());
-        //        		args->push_back(value);
-        //        		args->push_back(aCallbackArgument);
-        //        		m_txState->recordTXOperation(GF_REMOVE,
-        //        m_region.getFullPath(), key, args);
-        //        	}
-
         m_ServerResponse = m_region.removeNoThrow_remote(
             key, value, aCallbackArgument, versionTag);
 
@@ -1413,14 +1372,6 @@ class RemoveActions {
         return err;
       }
     }
-    //  	if(m_txState != nullptr && !m_txState->isReplay())
-    //  	{
-    //  		auto args = std::make_shared<VectorOfCacheable>();
-    //  		args->push_back(value);
-    //  		args->push_back(aCallbackArgument);
-    //  		m_txState->recordTXOperation(GF_REMOVE,
-    //  m_region.getFullPath(), key, args);
-    //  	}
     if (allowNULLValue) {
       m_ServerResponse =
           m_region.removeNoThrowEX_remote(key, aCallbackArgument, versionTag);
@@ -1592,13 +1543,6 @@ class InvalidateActions {
                                 const CacheablePtr& value,
                                 const SerializablePtr& aCallbackArgument,
                                 VersionTagPtr& versionTag) {
-    //    	if(m_txState != nullptr && !m_txState->isReplay())
-    //    	{
-    //    		auto args = std::make_shared<VectorOfCacheable>();
-    //    		args->push_back(aCallbackArgument);
-    //    		m_txState->recordTXOperation(GF_INVALIDATE,
-    //    m_region.getFullPath(), key, args);
-    //    	}
     // propagate the invalidate to remote server, if any
     return m_region.invalidateNoThrow_remote(key, aCallbackArgument,
                                              versionTag);
@@ -2283,8 +2227,7 @@ GfErrType LocalRegion::invalidateRegionNoThrow(
   GfErrType err = GF_NOERR;
 
   if (m_regionAttributes->getCachingEnabled()) {
-    VectorOfCacheableKey v;
-    keys_internal(v);
+    VectorOfCacheableKey v = keys_internal();
     const auto size = v.size();
     MapEntryImplPtr me;
     for (size_t i = 0; i < size; i++) {
@@ -2518,21 +2461,19 @@ GfErrType LocalRegion::putLocal(const char* name, bool isCreate,
   return err;
 }
 
-void LocalRegion::keys_internal(VectorOfCacheableKey& v) {
-  if (!m_regionAttributes->getCachingEnabled()) {
-    return;
+VectorOfCacheableKey LocalRegion::keys_internal() {
+  VectorOfCacheableKey keys;
+
+  if (m_regionAttributes->getCachingEnabled()) {
+    m_entries->getKeys(keys);
   }
-  uint32_t size = m_entries->size();
-  v.clear();
-  if (size == 0) {
-    return;
-  }
-  m_entries->keys(v);
+
+  return keys;
 }
 
 void LocalRegion::entries_internal(VectorOfRegionEntry& me,
                                    const bool recursive) {
-  m_entries->entries(me);
+  m_entries->getEntries(me);
 
   if (recursive == true) {
     MapOfRegionGuard guard(m_subRegions.mutex());

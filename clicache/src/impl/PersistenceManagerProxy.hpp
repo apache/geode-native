@@ -33,7 +33,7 @@ namespace Apache
           public:
             void write(const CacheableKeyPtr&  key, const CacheablePtr&  value/*, void *& PersistenceInfo*/);
             bool writeAll();
-            void init(const RegionPtr& region, PropertiesPtr& diskProperties);
+            void init(const RegionPtr& region, const PropertiesPtr& diskProperties);
             CacheablePtr read(const CacheableKeyPtr& key/*, void *& PersistenceInfo*/);
             bool readAll();
             void destroy(const CacheableKeyPtr& key/*, void *& PersistenceInfo*/);
@@ -62,7 +62,7 @@ namespace Apache
               throw gcnew System::NotSupportedException;
             }
 
-            virtual void init(const RegionPtr& region, PropertiesPtr& diskProperties)
+            virtual void init(const RegionPtr& region, const PropertiesPtr& diskProperties)
             {
               auto gRegion = Region<TKey, TValue>::Create(region);
               auto gProps = Properties<String^, String^>::Create(diskProperties);

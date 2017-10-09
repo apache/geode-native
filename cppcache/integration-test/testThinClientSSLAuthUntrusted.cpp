@@ -142,7 +142,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateRegions1_PoolLocators)
     createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TESTPOOL1_", true);
     RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
     try {
-      regPtr->registerAllKeys(false, nullptr, false, false);
+      regPtr->registerAllKeys(false, false, false);
       FAIL("Should have got NotConnectedException during registerAllKeys");
     } catch (NotConnectedException exp) {
       LOG("Connection Failed as expected via NotConnectedException");

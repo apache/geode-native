@@ -111,7 +111,7 @@ namespace Apache
         apache::geode::client::VectorOfRegion vrr;
         try
         {
-          m_nativeptr->get()->rootRegions( vrr );
+          vrr = m_nativeptr->get()->rootRegions( );
         }
         finally
         {

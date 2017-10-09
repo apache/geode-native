@@ -85,7 +85,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * @see serializationRegistry->addPdxType
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, CacheablePtr& value) const = 0;
+  virtual CacheablePtr getCacheableField(const char *fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in bool type out param.
@@ -96,37 +96,18 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, bool& value) const = 0;
+  virtual bool getBooleanField(const char *fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in signed char type out param.
    * signed char type is corresponding to java byte type.
-   * For C++ on Windows and Linux, signed char type is corresponding to int8_t
-   * type.
-   * However C++ users on Solaris should always use this api after casting
-   * int8_t to signed char.
    * @param fieldname name of the field to read
    * @param value value of the field to be set with signed char type.
    * @throws IllegalStateException if PdxInstance doesn't has the named field.
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, signed char& value) const = 0;
-
-  /**
-   * Reads the named field and set its value in unsigned char type out param.
-   * unsigned char type is corresponding to java byte type.
-   * For C++ on Windows and Linux, unsigned char type is corresponding to int8_t
-   * type.
-   * However C++ users on Solaris should always use this api after casting
-   * int8_t to unsigned char.
-   * @param fieldname name of the field to read
-   * @param value value of the field to be set with unsigned char type.
-   * @throws IllegalStateException if PdxInstance doesn't has the named field.
-   *
-   * @see PdxInstance#hasField
-   */
-  virtual void getField(const char* fieldname, unsigned char& value) const = 0;
+  virtual int8_t getByteField(const char* fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in int16_t type out param.
@@ -137,7 +118,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, int16_t& value) const = 0;
+  virtual int16_t getShortField(const char *fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in int32_t type out param.
@@ -146,7 +127,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * @param value value of the field to be set with int32_t type.
    * @throws IllegalStateException if PdxInstance doesn't has the named field.
    */
-  virtual void getField(const char* fieldname, int32_t& value) const = 0;
+  virtual int32_t getIntField(const char* fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in int64_t type out param.
@@ -157,7 +138,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, int64_t& value) const = 0;
+  virtual int64_t getLongField(const char* fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in float type out param.
@@ -168,7 +149,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, float& value) const = 0;
+  virtual float getFloatField(const char* fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in double type out param.
@@ -179,18 +160,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, double& value) const = 0;
-
-  /**
-   * Reads the named field and set its value in wchar_t type out param.
-   * wchar_t type is corresponding to java char type.
-   * @param fieldname name of the field to read
-   * @param value value of the field to be set with wchar_t type.
-   * @throws IllegalStateException if PdxInstance doesn't has the named field.
-   *
-   * @see PdxInstance#hasField
-   */
-  virtual void getField(const char* fieldName, wchar_t& value) const = 0;
+  virtual double getDoubleField(const char* fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in char type out param.
@@ -201,7 +171,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldName, char& value) const = 0;
+  virtual char16_t getCharField(const char* fieldName) const = 0;
 
   /**
    * Reads the named field and set its value in bool array type out param.
@@ -218,10 +188,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
 
   /**
    * Reads the named field and set its value in signed char array type out
-   * param. signed char* type is corresponding to java byte[] type. For C++ on
-   * Windows and Linux, signed char* type is corresponding to int8_t* type.
-   * However C++ users on Solaris should always use this api after casting
-   * int8_t* to signed char*.
+   * param. signed char* type is corresponding to java byte[] type.
    * @param fieldname name of the field to read
    * @param value value of the field to be set with signed char array type.
    * @param length length is set with number of signed char elements.
@@ -401,8 +368,8 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname,
-                        CacheableDatePtr& value) const = 0;
+  virtual CacheableDatePtr getCacheableDateField(
+                                              const char* fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in array of byte arrays type out
@@ -434,8 +401,8 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * @see serializationRegistry->addPdxType
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname,
-                        CacheableObjectArrayPtr& value) const = 0;
+  virtual CacheableObjectArrayPtr getCacheableObjectArrayField(
+                                            const char* fieldname) const = 0;
 
   /**
    * Checks if the named field was {@link PdxWriter#markIdentityField}marked as

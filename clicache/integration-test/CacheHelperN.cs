@@ -613,7 +613,7 @@ namespace Apache.Geode.Client.UnitTests
           m_cache = cf
               .SetPdxIgnoreUnreadFields(PdxIgnoreUnreadFields)
               .SetPdxReadSerialized(PdxReadSerialized)
-							.SetAuthInitialize(authIntialize)
+              .SetAuthInitialize(authIntialize)
               .Create();
 
           PdxIgnoreUnreadFields = false; //reset so next test will have default value

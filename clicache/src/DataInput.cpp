@@ -456,7 +456,7 @@ namespace Apache
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableWideChar:
+        case apache::geode::client::GeodeTypeIds::CacheableCharacter:
         {
           Char obj;
           ReadObject(obj);

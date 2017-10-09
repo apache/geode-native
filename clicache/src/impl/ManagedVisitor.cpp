@@ -30,7 +30,7 @@ namespace apache
     namespace client
     {
 
-      void ManagedVisitorGeneric::visit(CacheableKeyPtr& key, CacheablePtr& value)
+      void ManagedVisitorGeneric::visit(const CacheableKeyPtr& key, const CacheablePtr& value)
       {
         using namespace Apache::Geode::Client;
         try {

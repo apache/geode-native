@@ -663,20 +663,18 @@ class CacheableWideCharWrapper : public CacheableWrapper {
   virtual int32_t maxKeys() const { return SHRT_MAX; }
 
   virtual void initKey(int32_t keyIndex, int32_t maxSize) {
-    m_cacheableObject =
-        CacheableWideChar::create(static_cast<wchar_t>(keyIndex));
+    m_cacheableObject = CacheableCharacter::create(keyIndex);
   }
 
   virtual void initRandomValue(int32_t maxSize) {
     m_cacheableObject =
-        CacheableWideChar::create(CacheableHelper::random<wchar_t>(SHRT_MAX));
+      CacheableCharacter::create(CacheableHelper::random<char16_t>(SHRT_MAX));
   }
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {
-    const CacheableWideChar* obj =
-        dynamic_cast<const CacheableWideChar*>(object.get());
+    auto obj = std::dynamic_pointer_cast<const CacheableCharacter>(object);
     ASSERT(obj != nullptr, "getCheckSum: null object.");
-    return CacheableHelper::crc32<wchar_t>(obj->value());
+    return CacheableHelper::crc32<char16_t>(obj->value());
   }
 };
 
@@ -1245,8 +1243,8 @@ void registerBuiltins(bool isRegisterFileName = false) {
   CacheableWrapperFactory::registerType(
       GeodeTypeIds::CacheableStringHuge, "CacheableHugeUnicodeString",
       CacheableHugeUnicodeStringWrapper::create, true);
-  CacheableWrapperFactory::registerType(GeodeTypeIds::CacheableWideChar,
-                                        "CacheableWideChar",
+  CacheableWrapperFactory::registerType(GeodeTypeIds::CacheableCharacter,
+                                        "CacheableCharacter",
                                         CacheableWideCharWrapper::create, true);
 
   // Register other builtin cacheables

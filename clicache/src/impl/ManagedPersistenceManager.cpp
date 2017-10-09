@@ -219,7 +219,7 @@ namespace apache
         throw gcnew System::NotSupportedException;
       }
 
-      void ManagedPersistenceManagerGeneric::init(const RegionPtr& region, PropertiesPtr& diskProperties)
+      void ManagedPersistenceManagerGeneric::init(const RegionPtr& region, const PropertiesPtr& diskProperties)
       {
         m_managedptr->init(region, diskProperties);
       }

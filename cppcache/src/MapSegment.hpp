@@ -267,17 +267,17 @@ class CPPCACHE_EXPORT MapSegment {
   /**
    * @brief return the all the keys in the provided list.
    */
-  void keys(VectorOfCacheableKey& result);
+  void getKeys(VectorOfCacheableKey& result);
 
   /**
    * @brief return all the entries in the provided list.
    */
-  void entries(VectorOfRegionEntry& result);
+  void getEntries(VectorOfRegionEntry& result);
 
   /**
    * @brief return all values in the provided list.
    */
-  void values(VectorOfCacheable& result);
+  void getValues(VectorOfCacheable& result);
 
   inline uint32_t rehashCount() { return m_rehashCount; }
 

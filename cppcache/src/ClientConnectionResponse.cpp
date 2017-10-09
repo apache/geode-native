@@ -21,7 +21,7 @@
 using namespace apache::geode::client;
 
 void ClientConnectionResponse::fromData(DataInput& input) {
-  input.readBoolean(&m_serverFound);
+  m_serverFound = input.readBoolean();
   if (m_serverFound) {
     m_server.fromData(input);
   }

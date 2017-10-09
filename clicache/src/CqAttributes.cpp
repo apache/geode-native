@@ -43,7 +43,7 @@ namespace Apache
         native::CqAttributes::listener_container_type vrr;
         try
         {
-          m_nativeptr->get()->getCqListeners(vrr);
+          vrr = m_nativeptr->get()->getCqListeners();
         }
         finally
         {
