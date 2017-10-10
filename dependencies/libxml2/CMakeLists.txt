@@ -12,11 +12,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required( VERSION 3.3 )
+
 project( libxml2 )
 
-set( ${PROJECT_NAME}_VERSION 2.9.4 )
-set( ${PROJECT_NAME}_SHA265 ffb911191e509b966deb55de705387f14156e1a56b21824357cdf0053233633c )
+set( ${PROJECT_NAME}_VERSION 2.9.6 )
+set( ${PROJECT_NAME}_SHA265 8b9038cca7240e881d462ea391882092dfdc6d4f483f72683e817be08df5ebbc )
 set( ${PROJECT_NAME}_URL "http://xmlsoft.org/sources/libxml2-${${PROJECT_NAME}_VERSION}.tar.gz" )
 set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
 
