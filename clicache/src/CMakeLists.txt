@@ -48,7 +48,7 @@ target_link_libraries(Apache.Geode
 
 string(REPLACE "/EHsc" "/EHa" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /clr /wd4947 /doc")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /clr /wd4947 /wd4251 /doc")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SHARED_LINKER_FLAGS_STRONG_KEY}")
 
 include_directories(${CMAKE_SOURCE_DIR}/clicache/include)

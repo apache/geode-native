@@ -29,9 +29,6 @@
 #include "CacheRegionHelper.hpp"
 using namespace apache::geode::client;
 
-#define DEFAULT_SERVER_PORT 40404
-#define DEFAULT_SERVER_HOST "localhost"
-
 constexpr const char* PoolFactory::DEFAULT_SERVER_GROUP;
 
 PoolFactory::PoolFactory(const Cache& cache)
@@ -120,9 +117,6 @@ PoolPtr PoolFactory::create(const char* name) {
   {
     if (m_cache.getPoolManager().find(name) != nullptr) {
       throw IllegalStateException("Pool with the same name already exists");
-    }
-    if (!m_addedServerOrLocator) {
-      addServer(DEFAULT_SERVER_HOST, DEFAULT_SERVER_PORT);
     }
     // Create a clone of Attr;
     PoolAttributesPtr copyAttrs = m_attrs->clone();

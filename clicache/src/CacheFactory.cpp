@@ -23,6 +23,7 @@
 #include "impl/SafeConvert.hpp"
 #include "impl/PdxTypeRegistry.hpp"
 #include "impl/AppDomainContext.hpp"
+#include "impl/CacheResolver.hpp"
 
 using namespace System;
 
@@ -66,6 +67,7 @@ namespace Apache
           nativeCache = m_nativeptr->get()->create( );
 
           auto cache = Cache::Create( nativeCache );
+          CacheResolver::Add(nativeCache.get(), cache);
 
           if(!m_connected)
           {
@@ -108,9 +110,7 @@ namespace Apache
         _GF_MG_EXCEPTION_CATCH_ALL2
         finally {
           GC::KeepAlive(m_nativeptr);
-					Apache::Geode::Client::Internal::PdxTypeRegistry::PdxIgnoreUnreadFields = pdxIgnoreUnreadFields; 
-          Apache::Geode::Client::Internal::PdxTypeRegistry::PdxReadSerialized = pdxReadSerialized; 
-          DistributedSystem::releaseDisconnectLock();
+           DistributedSystem::releaseDisconnectLock();
         }
       }
    

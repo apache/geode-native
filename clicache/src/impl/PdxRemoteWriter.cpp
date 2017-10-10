@@ -67,7 +67,7 @@ namespace Apache
           if (m_preserveData == nullptr)
           {
             //this needs to fix for IPdxTypeMapper
-            m_pdxType = PdxTypeRegistry::GetLocalPdxType(m_pdxClassName);
+            m_pdxType = GetLocalPdxType(m_pdxClassName);
             m_offsets = gcnew array<int>(m_pdxType->NumberOfVarLenFields);
           }
         }
@@ -80,7 +80,7 @@ namespace Apache
         IPdxWriter^ PdxRemoteWriter::WriteUnreadFields(IPdxUnreadFields^ unread)
         {
           PdxLocalWriter::WriteUnreadFields(unread);
-          m_remoteTolocalMap = m_pdxType->GetRemoteToLocalMap();
+          m_remoteTolocalMap = m_pdxType->GetRemoteToLocalMap(m_dataOutput->Cache);
           return this;
         }
 

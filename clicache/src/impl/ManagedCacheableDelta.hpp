@@ -179,6 +179,7 @@ namespace apache
         /// </summary>
         gcroot<Apache::Geode::Client::IGeodeDelta^> m_managedptr;
         gcroot<Apache::Geode::Client::IGeodeSerializable^> m_managedSerializableptr;
+
         // Disable the copy and assignment constructors
         ManagedCacheableDeltaGeneric(const ManagedCacheableDeltaGeneric&);
         ManagedCacheableDeltaGeneric& operator = (const ManagedCacheableDeltaGeneric&);

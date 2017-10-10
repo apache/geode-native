@@ -32,6 +32,7 @@
 #include "../DataInput.hpp"
 #include "DotNetTypes.hpp"
 #include "PdxType.hpp"
+#include "Cache.hpp"
 
 using namespace System::Text;
 
@@ -45,7 +46,7 @@ namespace Apache
       namespace Internal
       {
         //this is for PdxInstanceFactory
-        PdxInstanceImpl::PdxInstanceImpl(Dictionary<String^, Object^>^ fieldVsValue, PdxType^ pdxType, CachePerfStats* cachePerfStats, const native::Cache* cache)
+        PdxInstanceImpl::PdxInstanceImpl(Dictionary<String^, Object^>^ fieldVsValue, PdxType^ pdxType, Apache::Geode::Client::Cache^ cache)
         {
           m_updatedFields = fieldVsValue;
           m_typeId = 0;
@@ -54,13 +55,13 @@ namespace Apache
           m_bufferLength = 0;
           m_pdxType = pdxType;
           m_cache = cache;
-          m_cachePerfStats = cachePerfStats;
-          m_pdxType->InitializeType();//to generate static position map
+          m_cachePerfStats = &CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getCachePerfStats();
+          m_pdxType->InitializeType(cache);//to generate static position map
 
           //need to initiailize stream. this will call todata and in toData we will have stream
-          auto output = m_cache->createDataOutput();
+          auto output = m_cache->GetNative()->createDataOutput();
 
-          Apache::Geode::Client::DataOutput mg_output(output.get(), true);
+          Apache::Geode::Client::DataOutput mg_output(output.get(), true, cache);
           Apache::Geode::Client::Internal::PdxHelper::SerializePdx(%mg_output, this);
         }
 
@@ -68,7 +69,7 @@ namespace Apache
         {
           if (m_typeId != 0)
           {
-            PdxType^ pdxtype = Internal::PdxTypeRegistry::GetPdxType(m_typeId);
+            PdxType^ pdxtype = m_cache->GetPdxTypeRegistry()->GetPdxType(m_typeId);
             if (pdxtype == nullptr)//will it ever happen
               throw gcnew IllegalStateException("PdxType is not defined for PdxInstance: " + m_typeId);
             return pdxtype->PdxClassName;
@@ -81,7 +82,7 @@ namespace Apache
           DataInput^ dataInput = gcnew DataInput(m_buffer, m_bufferLength, m_cache);
           dataInput->setRootObjectPdx(true);
           System::Int64 sampleStartNanos = Utils::startStatOpTime();
-          Object^ ret = Internal::PdxHelper::DeserializePdx(dataInput, true, m_typeId, m_bufferLength, CacheRegionHelper::getCacheImpl(m_cache)->getSerializationRegistry().get());
+          Object^ ret = Internal::PdxHelper::DeserializePdx(dataInput, true, m_typeId, m_bufferLength, CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry().get());
           //dataInput->ResetPdx(0);
 
           if(m_cachePerfStats)
@@ -1090,11 +1091,8 @@ namespace Apache
               }
               return m_pdxType;
             }
-            /*m_dataInput->ResetAndAdvanceCursorPdx(0);
-            int typeId= Internal::PdxHelper::ReadInt32(m_dataInput->GetCursor() + 4);
 
-            PdxType^ pType = Internal::PdxTypeRegistry::GetPdxType(typeId);*/
-            PdxType^ pType = Internal::PdxTypeRegistry::GetPdxType(m_typeId);
+            PdxType^ pType = m_cache->GetPdxTypeRegistry()->GetPdxType(m_typeId);
 
             return pType;
           }

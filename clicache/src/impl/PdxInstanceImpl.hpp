@@ -16,9 +16,9 @@
  */
 
 #pragma once
+
 #include "begin_native.hpp"
-#include "CachePerfStats.hpp"
-#include "SerializationRegistry.hpp"
+#include <CachePerfStats.hpp>
 #include "end_native.hpp"
 
 #include "../IPdxInstance.hpp"
@@ -32,6 +32,7 @@ namespace Apache
   {
     namespace Client
     {
+      ref class Cache;
 
       namespace Internal
       {
@@ -67,14 +68,13 @@ namespace Apache
           void cleanup();
 
 
-          //DataInput^ m_dataInput;
           CachePerfStats* m_cachePerfStats;
           System::Byte* m_buffer;
           int m_bufferLength;
           int m_typeId;
           bool m_own;
           PdxType^ m_pdxType;
-          const native::Cache* m_cache;
+          Apache::Geode::Client::Cache^ m_cache;
         internal:
           Dictionary<String^, Object^>^ m_updatedFields;
 
@@ -125,9 +125,8 @@ namespace Apache
           void updatePdxStream(System::Byte* newPdxStream, int len);
 
         public:
-          PdxInstanceImpl(System::Byte* buffer, int length, int typeId, bool own, const native::Cache* cache)
+          PdxInstanceImpl(System::Byte* buffer, int length, int typeId, bool own, Apache::Geode::Client::Cache^ cache)
           {
-            //m_dataInput = dataInput;
             m_buffer = buffer;
             m_bufferLength = length;
             m_typeId = typeId;
@@ -138,7 +137,7 @@ namespace Apache
           }
 
           //for pdxInstance factory
-          PdxInstanceImpl(Dictionary<String^, Object^>^ fieldVsValue, PdxType^ pdxType, CachePerfStats* cachePerfStats, const native::Cache* cache);
+          PdxInstanceImpl(Dictionary<String^, Object^>^ fieldVsValue, PdxType^ pdxType, Cache^ cache);
 
           ~PdxInstanceImpl()
           {
@@ -291,8 +290,7 @@ namespace Apache
           virtual void FromData(IPdxReader^ reader);
 
         };
-      }  // namespace Client
-    }  // namespace Geode
-  }  // namespace Apache
-
-}
+      }
+    }  // namespace Client
+  }  // namespace Geode
+}  // namespace Apache

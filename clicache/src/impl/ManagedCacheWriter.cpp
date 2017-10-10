@@ -297,10 +297,8 @@ namespace apache
       void ManagedCacheWriterGeneric::close(const RegionPtr& rp)
       {
         try {
-          Apache::Geode::Client::IRegion<Object^, Object^>^ mregion =
-            Apache::Geode::Client::Region<Object^, Object^>::Create(rp);
-
-          m_managedptr->Close(reinterpret_cast<Apache::Geode::Client::Region<Object^, Object^>^>(mregion));
+          auto mregion = Apache::Geode::Client::Region<Object^, Object^>::Create(rp);
+          m_managedptr->Close(mregion);
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();

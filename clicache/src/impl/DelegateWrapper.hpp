@@ -22,7 +22,6 @@
 #include "CacheRegionHelper.hpp"
 #include "end_native.hpp"
 
-#include "Cache.hpp"
 #include "../geode_defs.hpp"
 #include "../Serializable.hpp"
 #include "ManagedCacheableKey.hpp"
@@ -69,8 +68,8 @@ namespace Apache
         /// <summary>
         /// Constructor to wrap the given managed delegate.
         /// </summary>
-        inline DelegateWrapperGeneric( TypeFactoryMethodGeneric^ typeDelegate, Cache^ cache )
-          : m_delegate( typeDelegate ), m_cache(cache) { }
+        inline DelegateWrapperGeneric( TypeFactoryMethodGeneric^ typeDelegate )
+          : m_delegate( typeDelegate ) { }
 
         /// <summary>
         /// Returns the native <c>apache::geode::client::Serializable</c> object by invoking the
@@ -82,20 +81,15 @@ namespace Apache
         /// </returns>
         apache::geode::client::Serializable* NativeDelegateGeneric( )
         {
-          IGeodeSerializable^ tempObj = m_delegate( );
-          IGeodeDelta^ tempDelta =
-            dynamic_cast<IGeodeDelta^>(tempObj);
-          if( tempDelta != nullptr )
+          auto tempObj = m_delegate( );
+          if(auto tempDelta = dynamic_cast<IGeodeDelta^>(tempObj))
           {
-            if(!SafeConvertClassGeneric::isAppDomainEnabled)
-              return new apache::geode::client::ManagedCacheableDeltaGeneric( tempDelta );
-            else
-              return new apache::geode::client::ManagedCacheableDeltaBytesGeneric( tempDelta, false );
+            return new apache::geode::client::ManagedCacheableDeltaGeneric(tempDelta);
           }
-          else if(!SafeConvertClassGeneric::isAppDomainEnabled)
-            return new apache::geode::client::ManagedCacheableKeyGeneric( tempObj, CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry().get());
           else
-            return new apache::geode::client::ManagedCacheableKeyBytesGeneric( tempObj, false);
+          {
+            return new apache::geode::client::ManagedCacheableKeyGeneric(tempObj);
+          }
         }
 
 
@@ -103,7 +97,6 @@ namespace Apache
 
         TypeFactoryMethodGeneric^ m_delegate;
 
-        Cache^ m_cache;
       };
     }  // namespace Client
   }  // namespace Geode

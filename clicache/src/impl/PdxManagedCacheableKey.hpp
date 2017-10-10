@@ -60,6 +60,7 @@ namespace apache
       private:
         int m_hashcode;
         int m_objectSize;
+
       public:
 
         inline PdxManagedCacheableKey()
@@ -175,7 +176,8 @@ namespace apache
 
         static Serializable* CreateDeserializable()
         {
-          return new PdxManagedCacheableKey();
+          throw "Not implemented";
+          //return new PdxManagedCacheableKey();
         }
       private:
 

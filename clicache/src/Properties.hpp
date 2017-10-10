@@ -283,21 +283,8 @@ namespace Apache
       private:
 
         Apache::Geode::Client::PropertyVisitorGeneric<TPropKey, TPropValue>^ m_visitor;
-
       };
 
-  /*    ref class PropertiesFactory {
-      public:
-          PropertiesFactory(native::SerializationRegistryPtr serializationRegistry)
-          {
-             m_serializationRegistry = gcnew native_shared_ptr<native::SerializationRegistry>(serializationRegistry);
-          }
-          IGeodeSerializable^ CreateDeserializable() {
-            return Properties<String^, String^>::CreateDeserializable(m_serializationRegistry->get_shared_ptr());
-          }
-      private:
-        native_shared_ptr<native::SerializationRegistry>^  m_serializationRegistry;
-        };*/
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

@@ -20,6 +20,7 @@
 #include <GeodeTypeIdsImpl.hpp>
 #include "SerializationRegistry.hpp"
 #include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
 #include "end_native.hpp"
 
 #include <vcclr.h>
@@ -36,6 +37,7 @@
 #include "CacheableObjectArray.hpp"
 #include "Serializable.hpp"
 #include "impl/PdxHelper.hpp"
+#include "impl/PdxWrapper.hpp"
 
 using namespace System;
 using namespace System::IO;
@@ -49,7 +51,7 @@ namespace Apache
     {
       namespace native = apache::geode::client;
 
-      DataInput::DataInput(System::Byte* buffer, int size, const native::Cache* cache)
+      DataInput::DataInput(System::Byte* buffer, int size, Apache::Geode::Client::Cache^ cache)
       {
         m_ispdxDesrialization = false;
         m_isRootObjectPdx = false;
@@ -57,7 +59,7 @@ namespace Apache
         if (buffer != nullptr && size > 0) {
           _GF_MG_EXCEPTION_TRY2
 
-          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(cache->createDataInput(buffer, size));
+          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(cache->GetNative()->createDataInput(buffer, size));
           m_cursor = 0;
           m_isManagedObject = false;
           m_forStringDecode = gcnew array<Char>(100);
@@ -80,7 +82,7 @@ namespace Apache
         }
       }
 
-      DataInput::DataInput(array<Byte>^ buffer, const native::Cache * cache)
+      DataInput::DataInput(array<Byte>^ buffer, Apache::Geode::Client::Cache^ cache)
       {
         m_ispdxDesrialization = false;
         m_isRootObjectPdx = false;
@@ -92,7 +94,7 @@ namespace Apache
           GF_NEW(m_buffer, System::Byte[len]);
           pin_ptr<const Byte> pin_buffer = &buffer[0];
           memcpy(m_buffer, (void*)pin_buffer, len);
-          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(m_cache->createDataInput(m_buffer, len));
+          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(m_cache->GetNative()->createDataInput(m_buffer, len));
 
           m_cursor = 0;
           m_isManagedObject = false;
@@ -116,7 +118,7 @@ namespace Apache
         }
       }
 
-      DataInput::DataInput(array<Byte>^ buffer, System::Int32 len, const native::Cache* cache)
+      DataInput::DataInput(array<Byte>^ buffer, System::Int32 len, Apache::Geode::Client::Cache^ cache)
       {
         m_ispdxDesrialization = false;
         m_isRootObjectPdx = false;
@@ -134,7 +136,7 @@ namespace Apache
             GF_NEW(m_buffer, System::Byte[len]);
           pin_ptr<const Byte> pin_buffer = &buffer[0];
           memcpy(m_buffer, (void*)pin_buffer, len);
-          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(m_cache->createDataInput(m_buffer, len));
+          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(m_cache->GetNative()->createDataInput(m_buffer, len));
 
           try
           {
@@ -663,7 +665,7 @@ namespace Apache
           int cacheCursor = m_cursor;
           System::Byte* cacheBuffer = m_buffer;
           unsigned int cacheBufferLength = m_bufferLength;
-          Object^ ret = Internal::PdxHelper::DeserializePdx(this, false, CacheRegionHelper::getCacheImpl(m_cache)->getSerializationRegistry().get());
+          Object^ ret = Internal::PdxHelper::DeserializePdx(this, false, CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry().get());
           int tmp = m_nativeptr->get()->getBytesRemaining();
           m_cursor = cacheBufferLength - tmp;
           m_buffer = cacheBuffer;
@@ -672,7 +674,7 @@ namespace Apache
 
           if (ret != nullptr)
           {
-            PdxWrapper^ pdxWrapper = dynamic_cast<PdxWrapper^>(ret);
+            Apache::Geode::Client::PdxWrapper^ pdxWrapper = dynamic_cast<Apache::Geode::Client::PdxWrapper^>(ret);
 
             if (pdxWrapper != nullptr)
             {
@@ -814,7 +816,7 @@ namespace Apache
         }
         else if (compId == GeodeClassIds::PDX)
         {
-          return Internal::PdxHelper::DeserializePdx(this, false, CacheRegionHelper::getCacheImpl(m_cache)->getSerializationRegistry().get());
+          return Internal::PdxHelper::DeserializePdx(this, false, CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry().get());
         }
         else if (compId == GeodeTypeIds::CacheableNullString) {
           //return SerializablePtr(CacheableString::createDeserializable());

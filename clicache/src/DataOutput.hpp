@@ -20,7 +20,6 @@
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
 #include <geode/DataOutput.hpp>
-#include <geode/Cache.hpp>
 #include "end_native.hpp"
 
 #include "native_conditional_unique_ptr.hpp"
@@ -45,6 +44,7 @@ namespace Apache
     {
       namespace native = apache::geode::client;
 
+      ref class Cache;
       interface class IGeodeSerializable;
 
       /// <summary>
@@ -61,28 +61,14 @@ namespace Apache
         System::Int32 m_remainingBufferLength;
         bool m_ispdxSerialization;
         native_conditional_unique_ptr<native::DataOutput>^ m_nativeptr;
+        Apache::Geode::Client::Cache^ m_cache;
 
       public:
 
         /// <summary>
         /// Default constructor.
         /// </summary>
-        inline DataOutput(native::Cache* cache)
-        { 
-          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataOutput>(cache->createDataOutput());
-          m_isManagedObject = true;
-          m_cursor = 0;
-          try
-          {
-            m_bytes = const_cast<System::Byte *>(m_nativeptr->get()->getCursor());
-            m_remainingBufferLength = (System::Int32)m_nativeptr->get()->getRemainingBufferLength();
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
-          m_ispdxSerialization = false;
-        }
+        DataOutput(Apache::Geode::Client::Cache^ cache);
 
         /// <summary>
         /// Write length of the array to the <c>DataOutput</c>.
@@ -285,6 +271,11 @@ namespace Apache
         property System::UInt32 BufferLength
         {
           System::UInt32 get( );
+        }
+        
+        property Apache::Geode::Client::Cache^ Cache
+        {
+          Apache::Geode::Client::Cache^ get() { return m_cache; }
         }
 
         /// <summary>
@@ -640,8 +631,9 @@ namespace Apache
         /// Internal constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline DataOutput( apache::geode::client::DataOutput* nativeptr, bool managedObject )
+        inline DataOutput(apache::geode::client::DataOutput* nativeptr, bool managedObject, Apache::Geode::Client::Cache^ cache)
         {
+          m_cache = cache;
           m_nativeptr = gcnew native_conditional_unique_ptr<native::DataOutput>(nativeptr);
           m_isManagedObject = managedObject;
           m_cursor = 0;

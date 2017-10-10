@@ -16,9 +16,16 @@
  */
 
 #pragma once
+
+#include "begin_native.hpp"
+#include <geode/Cache.hpp>
+#include "end_native.hpp"
+
 #include "PdxTypeRegistry.hpp"
 #include "../Serializable.hpp"
 #include "PdxWrapper.hpp"
+#include "Cache.hpp"
+
 using namespace System;
 
 namespace Apache
@@ -40,7 +47,7 @@ namespace Apache
 					return preserveData->Count;
 				}
 
-        Int32 PdxTypeRegistry::GetPDXIdForType(Type^ pdxType, const char* poolname, PdxType^ nType, bool checkIfThere, const native::Cache* cache)
+        Int32 PdxTypeRegistry::GetPDXIdForType(Type^ pdxType, const char* poolname, PdxType^ nType, bool checkIfThere)
         {
           if(checkIfThere)
           {
@@ -62,7 +69,7 @@ namespace Apache
                   return lpdx->TypeId;
               } 
             }
-            return Serializable::GetPDXIdForType(poolname, nType, cache);            
+            return Serializable::GetPDXIdForType(poolname, nType, m_cache);            
           }
           finally
           {
@@ -71,7 +78,7 @@ namespace Apache
             
         }
 
-        Int32 PdxTypeRegistry::GetPDXIdForType(PdxType^ pType, const char* poolname, const native::Cache* cache)
+        Int32 PdxTypeRegistry::GetPDXIdForType(PdxType^ pType, const char* poolname)
         {
           IDictionary<PdxType^, Int32>^ tmp = pdxTypeToTypeId;
           Int32 typeId = 0;
@@ -92,7 +99,7 @@ namespace Apache
                 return typeId;
 
             }
-            typeId = Serializable::GetPDXIdForType(poolname, pType, cache);            
+            typeId = Serializable::GetPDXIdForType(poolname, pType, m_cache);            
             pType->TypeId = typeId;
 
             IDictionary<PdxType^, Int32>^ newDict = gcnew Dictionary<PdxType^, Int32>(pdxTypeToTypeId);
@@ -255,7 +262,7 @@ namespace Apache
           return nullptr;
         }
 
-        Int32 PdxTypeRegistry::GetEnumValue(EnumInfo^ ei, const native::Cache* cache)
+        Int32 PdxTypeRegistry::GetEnumValue(EnumInfo^ ei)
         {
           IDictionary<EnumInfo^, Int32>^ tmp = enumToInt;
           if(tmp->ContainsKey(ei))
@@ -267,7 +274,7 @@ namespace Apache
              if(tmp->ContainsKey(ei))
               return tmp[ei];
 
-             int val = Serializable::GetEnumValue(ei, cache);
+             int val = Serializable::GetEnumValue(ei, m_cache);
              tmp = gcnew Dictionary<EnumInfo^, Int32>(enumToInt);
              tmp[ei] = val;
              enumToInt = tmp;
@@ -280,7 +287,7 @@ namespace Apache
           return 0;
         }
 
-        EnumInfo^ PdxTypeRegistry::GetEnum(Int32 enumVal, const native::Cache* cache)
+        EnumInfo^ PdxTypeRegistry::GetEnum(Int32 enumVal)
         {
           IDictionary<Int32, EnumInfo^>^ tmp = intToEnum;
           EnumInfo^ ret = nullptr;
@@ -298,7 +305,7 @@ namespace Apache
             if(ret != nullptr)
               return ret;
 
-             ret = Serializable::GetEnum(enumVal, cache);
+             ret = Serializable::GetEnum(enumVal, m_cache);
              tmp = gcnew Dictionary<Int32, EnumInfo^>(intToEnum);
              tmp[enumVal] = ret;
              intToEnum = tmp;

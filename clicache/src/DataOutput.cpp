@@ -28,6 +28,7 @@
 #include "CacheableObjectArray.hpp"
 #include "impl/PdxHelper.hpp"
 #include "impl/PdxWrapper.hpp"
+#include "Cache.hpp"
 
 using namespace System;
 using namespace System::Runtime::InteropServices;
@@ -39,6 +40,24 @@ namespace Apache
   {
     namespace Client
     {
+
+      DataOutput::DataOutput(Apache::Geode::Client::Cache^ cache)
+      { 
+        m_cache = cache;
+        m_nativeptr = gcnew native_conditional_unique_ptr<native::DataOutput>(cache->GetNative()->createDataOutput());
+        m_isManagedObject = true;
+        m_cursor = 0;
+        try
+        {
+          m_bytes = const_cast<System::Byte *>(m_nativeptr->get()->getCursor());
+          m_remainingBufferLength = (System::Int32)m_nativeptr->get()->getRemainingBufferLength();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+        m_ispdxSerialization = false;
+      }
 
       void DataOutput::WriteByte(Byte value)
       {
@@ -456,7 +475,7 @@ namespace Apache
         if (m_ispdxSerialization && obj->GetType()->IsEnum)
         {
           //need to set             
-          int enumVal = Internal::PdxHelper::GetEnumValue(obj->GetType()->FullName, Enum::GetName(obj->GetType(), obj), obj->GetHashCode(), m_nativeptr->get()->getCache());
+          int enumVal = Internal::PdxHelper::GetEnumValue(obj->GetType()->FullName, Enum::GetName(obj->GetType(), obj), obj->GetHashCode(), m_cache);
           WriteByte(GeodeClassIds::PDX_ENUM);
           WriteByte(enumVal >> 24);
           WriteArrayLen(enumVal & 0xFFFFFF);

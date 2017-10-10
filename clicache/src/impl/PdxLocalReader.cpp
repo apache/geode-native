@@ -19,6 +19,7 @@
 #include "PdxTypeRegistry.hpp"
 #include "../DataInput.hpp"
 #include "DotNetTypes.hpp"
+#include "Cache.hpp"
 
 using namespace System;
 
@@ -63,13 +64,13 @@ namespace Apache
         PdxRemotePreservedData^ PdxLocalReader::GetPreservedData(PdxType^ mergedVersion, IPdxSerializable^ pdxObject)
         {
           int nFieldExtra = m_pdxType->NumberOfFieldsExtra;
-          if(nFieldExtra > 0 && PdxTypeRegistry::PdxIgnoreUnreadFields == false)
+          if(nFieldExtra > 0 && m_dataInput->Cache->GetPdxIgnoreUnreadFields() == false)
           {
             //m_pdxRemotePreserveData = gcnew PdxRemotePreservedData(m_pdxType!=nullptr? m_pdxType->TypeId : 0, mergedVersion->TypeId,nFieldExtra);
 						m_pdxRemotePreserveData->Initialize(m_pdxType!=nullptr? m_pdxType->TypeId : 0, mergedVersion->TypeId,nFieldExtra,pdxObject);
 
-            m_localToRemoteMap = m_pdxType->GetLocalToRemoteMap();
-            m_remoteToLocalMap = m_pdxType->GetRemoteToLocalMap();
+            m_localToRemoteMap = m_pdxType->GetLocalToRemoteMap(m_dataInput->Cache);
+            m_remoteToLocalMap = m_pdxType->GetRemoteToLocalMap(m_dataInput->Cache);
 
             int currentIdx = 0; 
             for(int i = 0; i < m_remoteToLocalMap->Length; i++)
@@ -107,7 +108,7 @@ namespace Apache
 				IPdxUnreadFields^ PdxLocalReader::ReadUnreadFields()
         {
 					//Log::Debug("PdxLocalReader::ReadUnreadFields:: " + m_isDataNeedToPreserve + " ignore property " + PdxTypeRegistry::PdxIgnoreUnreadFields);
-					if(PdxTypeRegistry::PdxIgnoreUnreadFields == true)
+					if(m_dataInput->Cache->GetPdxIgnoreUnreadFields() == true)
 						return nullptr;
           m_isDataNeedToPreserve = false;
           return m_pdxRemotePreserveData;

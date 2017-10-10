@@ -107,23 +107,22 @@ namespace Apache
         /// It invokes the '==' operator of the underlying
         /// native object.
         /// </summary>
-        virtual bool Equals(CacheableBuiltinKey^ other) override
+        virtual bool Equals(ICacheableKey^ other) override
         {
-          if (other == nullptr)
-          {
-            return false;
+          if (auto o = dynamic_cast<CacheableBuiltinKey^>(other)) {
+            try
+            {
+              return static_cast<TNative*>(m_nativeptr->get())->operator==(
+                *static_cast<TNative*>(o->m_nativeptr->get()));
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+              GC::KeepAlive(o->m_nativeptr);
+            }
           }
 
-          try
-          {
-            return static_cast<TNative*>(m_nativeptr->get())->operator==(
-              *static_cast<TNative*>(other->m_nativeptr->get()));
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-            GC::KeepAlive(other->m_nativeptr);
-          }
+          return false;
         }
 
         /// <summary>

@@ -22,6 +22,7 @@
 #include "PdxType.hpp"
 #include "../GeodeClassIds.hpp"
 #include "PdxRemotePreservedData.hpp"
+
 using namespace System;
 
 namespace Apache
@@ -31,7 +32,9 @@ namespace Apache
     namespace Client
     {
 
+      ref class Cache;
       ref class DataOutput;
+
       namespace Internal
       {
         ref class PdxLocalWriter : public IPdxWriter
@@ -48,30 +51,13 @@ namespace Apache
           //Type^       m_pdxDomainType;
           String^       m_pdxClassName;
 
+          PdxType^ GetLocalPdxType(String^ pdxClassName);
+
         public:
 
-          PdxLocalWriter(DataOutput^ dataOutput, PdxType^ pdxType)
-          {
-            m_dataOutput = dataOutput;
-            m_pdxType = pdxType;
-            m_currentOffsetIndex = 0;
-            m_preserveData = nullptr;
-            if (pdxType != nullptr)
-              m_pdxClassName = pdxType->PdxClassName;
-            //m_pdxDomainType = nullptr;
-            initialize();
-          }
+          PdxLocalWriter(DataOutput^ dataOutput, PdxType^ pdxType);
 
-          PdxLocalWriter(DataOutput^ dataOutput, PdxType^ pdxType, String^ pdxClassName)
-          {
-            m_dataOutput = dataOutput;
-            m_pdxType = pdxType;
-            m_currentOffsetIndex = 0;
-            m_preserveData = nullptr;
-            // m_pdxDomainType = pdxDomainType;
-            m_pdxClassName = pdxClassName;
-            initialize();
-          }
+          PdxLocalWriter(DataOutput^ dataOutput, PdxType^ pdxType, String^ pdxClassName);
 
           void initialize();
 
@@ -362,8 +348,7 @@ namespace Apache
 
           virtual void WriteByte(Byte byte);//for internal purpose
         };
-      }  // namespace Client
-    }  // namespace Geode
-  }  // namespace Apache
-
-}
+      }
+    }  // namespace Client
+  }  // namespace Geode
+}  // namespace Apache

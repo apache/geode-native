@@ -19,8 +19,7 @@
 
 #include "geode_defs.hpp"
 #include "IRegionService.hpp"
-#include "DistributedSystem.hpp"
-#include "CacheTransactionManager.hpp"
+
 using namespace System;
 using namespace System::Collections::Generic;
 
@@ -30,6 +29,10 @@ namespace Apache
   {
     namespace Client
     {
+
+      ref class DistributedSystem;
+
+      ref class CacheTransactionManager;
 
       /// <summary>
       /// GeodeCache represents the singleton cache that must be created

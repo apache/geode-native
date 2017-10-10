@@ -26,6 +26,7 @@
 #include "../CacheableString.hpp"
 #include "../ExceptionTypes.hpp"
 #include "../Log.hpp"
+#include "CacheResolver.hpp"
 
 using namespace System;
 
@@ -40,8 +41,9 @@ namespace apache
       {
         try {
           System::UInt32 pos = (int)output.getBufferLength();
-          //Apache::Geode::Client::Log::Debug("ManagedCacheableKeyGeneric::toData");      
-          Apache::Geode::Client::DataOutput mg_output(&output, true);
+          //Apache::Geode::Client::Log::Debug("ManagedCacheableKeyGeneric::toData");
+          auto cache = CacheResolver::Lookup(output.getCache());
+          Apache::Geode::Client::DataOutput mg_output(&output, true, cache);
           m_managedptr->ToData(%mg_output);
           //this will move the cursor in c++ layer
           mg_output.WriteBytesToUMDataOutput();
@@ -61,7 +63,8 @@ namespace apache
       {
         try {
           int pos = input.getBytesRead();
-          Apache::Geode::Client::DataInput mg_input(&input, true, input.getCache());
+          auto cache = CacheResolver::Lookup(input.getCache());
+          Apache::Geode::Client::DataInput mg_input(&input, true, cache);
           m_managedptr->FromData(%mg_input);
 
           //this will move the cursor in c++ layer

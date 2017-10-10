@@ -20,6 +20,8 @@
 #include "PdxTypeRegistry.hpp"
 #include "../DataOutput.hpp"
 #include "DotNetTypes.hpp"
+#include "Cache.hpp"
+
 using namespace System;
 
 namespace Apache
@@ -32,6 +34,28 @@ namespace Apache
       namespace Internal
       {
         
+          PdxLocalWriter::PdxLocalWriter(DataOutput^ dataOutput, PdxType^ pdxType)
+          {
+            m_dataOutput = dataOutput;
+            m_pdxType = pdxType;
+            m_currentOffsetIndex = 0;
+            m_preserveData = nullptr;
+            if (pdxType != nullptr)
+              m_pdxClassName = pdxType->PdxClassName;
+            //m_pdxDomainType = nullptr;
+            initialize();
+          }
+
+          PdxLocalWriter::PdxLocalWriter(DataOutput^ dataOutput, PdxType^ pdxType, String^ pdxClassName)
+          {
+            m_dataOutput = dataOutput;
+            m_pdxType = pdxType;
+            m_currentOffsetIndex = 0;
+            m_preserveData = nullptr;
+            // m_pdxDomainType = pdxDomainType;
+            m_pdxClassName = pdxClassName;
+            initialize();
+          }
           
           void PdxLocalWriter::initialize()
           {
@@ -143,11 +167,11 @@ namespace Apache
             {
               m_preserveData = (PdxRemotePreservedData^)unread;
 
-              m_pdxType = PdxTypeRegistry::GetPdxType(m_preserveData->MergedTypeId);
+              m_pdxType = m_dataOutput->Cache->GetPdxTypeRegistry()->GetPdxType(m_preserveData->MergedTypeId);
               if(m_pdxType == nullptr)
               {//its local type
                 //this needs to fix for IPdxTypemapper
-                m_pdxType = PdxTypeRegistry::GetLocalPdxType(m_pdxClassName);
+                m_pdxType = GetLocalPdxType(m_pdxClassName);
               }
               m_offsets = gcnew array<int>(m_pdxType->NumberOfVarLenFields);
             }
@@ -479,12 +503,15 @@ namespace Apache
             else
             {
               return this->WriteObject(fieldName, fieldValue);
-              //throw gcnew IllegalStateException("WriteField unable to serialize  " 
-								//																	+ fieldName + " of " + type); 
+            }
+          }
+          
+          PdxType^ PdxLocalWriter::GetLocalPdxType(String^ pdxClassName)
+          {
+            return m_dataOutput->Cache->GetPdxTypeRegistry()->GetLocalPdxType(pdxClassName);
+          }
+
+      }  // namespace Internal
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
-    }
-  }
-}

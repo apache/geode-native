@@ -126,6 +126,7 @@ CacheHelper::CacheHelper(const PropertiesPtr& configPtr,
   cachePtr = CacheFactory::createCacheFactory(pp)->create();
 
   auto poolFactory = cachePtr->getPoolManager().createFactory();
+  addServerLocatorEPs("localhost:40404", poolFactory);
   poolFactory->create("__CACHE_HELPER_POOL__");
 
   m_doDisconnect = false;

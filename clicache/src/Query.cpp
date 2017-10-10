@@ -70,7 +70,7 @@ namespace Apache
           auto rsptr = apache::geode::client::CacheableVector::create();
           for( int index = 0; index < paramList->Length; index++ )
           {
-            auto valueptr = Serializable::GetUnmanagedValueGeneric<Object^>(paramList[index]->GetType(), (Object^)paramList[index], nullptr);
+            auto valueptr = Serializable::GetUnmanagedValueGeneric<Object^>(paramList[index]->GetType(), (Object^)paramList[index]);
             rsptr->push_back(valueptr);
 		      }
 

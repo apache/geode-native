@@ -27,6 +27,7 @@
 #include "RegionEntry.hpp"
 #include "impl/AuthenticatedCache.hpp"
 #include "impl/SafeConvert.hpp"
+#include "impl/CacheResolver.hpp"
 
 using namespace System;
 
@@ -40,7 +41,7 @@ namespace Apache
       generic<class TKey, class TValue>
       TValue LocalRegion<TKey, TValue>::Get(TKey key, Object^ callbackArg)
       {
-        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key, m_nativeptr->get()->getCache().get() );
+        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );
         auto nativeptr= this->getRegionEntryValue(keyptr);
         if (nativeptr == nullptr)
         {
@@ -77,9 +78,9 @@ namespace Apache
 
         try
         {
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key, m_nativeptr->get()->getCache().get() );
-          native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( value, m_nativeptr->get()->getCache().get() );        
-          native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg, m_nativeptr->get()->getCache().get() );
+          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );
+          native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( value );        
+          native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg );
           m_nativeptr->get()->localPut( keyptr, valueptr, callbackptr );
         }
         finally
@@ -93,7 +94,7 @@ namespace Apache
       generic<class TKey, class TValue>
       TValue LocalRegion<TKey, TValue>::default::get(TKey key)
       { 
-        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key, m_nativeptr->get()->getCache().get() );
+        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );
         auto nativeptr = this->getRegionEntryValue(keyptr);
         if (nativeptr == nullptr)
         {
@@ -110,8 +111,8 @@ namespace Apache
 
         try
         {
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key, m_nativeptr->get()->getCache().get() );
-          native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( value, m_nativeptr->get()->getCache().get() );
+          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );
+          native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( value );
           m_nativeptr->get()->localPut( keyptr, valueptr );
         }
         finally
@@ -220,7 +221,7 @@ namespace Apache
       generic<class TKey, class TValue> 
       bool LocalRegion<TKey, TValue>::Contains(KeyValuePair<TKey,TValue> keyValuePair) 
       { 
-        auto keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( keyValuePair.Key, m_nativeptr->get()->getCache().get() ); 
+        auto keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( keyValuePair.Key ); 
         auto nativeptr = this->getRegionEntryValue(keyptr);
         //This means that key is not present.
         if (nativeptr == nullptr) {
@@ -237,7 +238,7 @@ namespace Apache
 
         try
         {
-          auto keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key, m_nativeptr->get()->getCache().get() );          
+          auto keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );          
           return m_nativeptr->get()->containsKey(keyptr);
         }
         finally
@@ -251,7 +252,7 @@ namespace Apache
       generic<class TKey, class TValue>
       bool LocalRegion<TKey, TValue>::TryGetValue(TKey key, TValue %val)
       {        
-        auto keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key, m_nativeptr->get()->getCache().get() );
+        auto keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );
         auto nativeptr = this->getRegionEntryValue(keyptr);
         if (nativeptr == nullptr) {            
           val = TValue();
@@ -325,8 +326,8 @@ namespace Apache
 
           try
           {
-            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key, m_nativeptr->get()->getCache().get() );
-            native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( value, m_nativeptr->get()->getCache().get() );
+            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );
+            native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( value );
             m_nativeptr->get()->localCreate( keyptr, valueptr );
           }
           finally
@@ -344,8 +345,8 @@ namespace Apache
 
           try
           {
-            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( keyValuePair.Key, m_nativeptr->get()->getCache().get() );
-            native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( keyValuePair.Value, m_nativeptr->get()->getCache().get() );
+            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( keyValuePair.Key );
+            native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( keyValuePair.Value );
             m_nativeptr->get()->localCreate( keyptr, valueptr );
           }
           finally
@@ -363,9 +364,9 @@ namespace Apache
 
           try
           {
-            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key, m_nativeptr->get()->getCache().get() );
-            native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( value, m_nativeptr->get()->getCache().get() );          
-            native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg, m_nativeptr->get()->getCache().get() );
+            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );
+            native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( value );          
+            native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg );
             m_nativeptr->get()->localCreate( keyptr, valueptr, callbackptr );
           }
           finally
@@ -383,7 +384,7 @@ namespace Apache
     
           try
           {
-            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key, m_nativeptr->get()->getCache().get());
+            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
             m_nativeptr->get()->localDestroy(keyptr);
             return true;
           }
@@ -406,8 +407,8 @@ namespace Apache
          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
            try
            {
-             native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key, m_nativeptr->get()->getCache().get());
-             native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg, m_nativeptr->get()->getCache().get());
+             native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+             native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
              m_nativeptr->get()->localDestroy(keyptr, callbackptr);
              return true;
            }
@@ -429,8 +430,8 @@ namespace Apache
 
           try
           {
-            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( keyValuePair.Key, m_nativeptr->get()->getCache().get() );
-            native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( keyValuePair.Value, m_nativeptr->get()->getCache().get() );
+            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( keyValuePair.Key );
+            native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>( keyValuePair.Value );
             return m_nativeptr->get()->localRemove(keyptr, valueptr);
           }
           finally
@@ -448,9 +449,9 @@ namespace Apache
 
           try
           {
-            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key, m_nativeptr->get()->getCache().get());
-            native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value, m_nativeptr->get()->getCache().get());
-            native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg, m_nativeptr->get()->getCache().get());
+            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+            native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
+            native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
             return m_nativeptr->get()->localRemove(keyptr, valueptr, callbackptr);
           }
           finally
@@ -478,7 +479,7 @@ namespace Apache
                     
           try
           {
-            native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg, m_nativeptr->get()->getCache().get() );
+            native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg );
             m_nativeptr->get()->localInvalidateRegion( callbackptr );
           }
           finally
@@ -505,7 +506,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */          
           try
           {
-            native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg, m_nativeptr->get()->getCache().get() );
+            native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg );
             m_nativeptr->get()->localDestroyRegion( callbackptr );
           }
           finally
@@ -533,8 +534,8 @@ namespace Apache
 
           try
           {
-            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key, m_nativeptr->get()->getCache().get() );          
-            native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg, m_nativeptr->get()->getCache().get() );
+            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );          
+            native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg );
             m_nativeptr->get()->localInvalidate( keyptr, callbackptr );
           }
           finally
@@ -779,7 +780,7 @@ namespace Apache
 
           try
           {
-            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key, m_nativeptr->get()->getCache().get());
+            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
             auto nativeptr = m_nativeptr->get()->getEntry(keyptr);
             return RegionEntry<TKey, TValue>::Create(nativeptr);
           }
@@ -822,26 +823,7 @@ namespace Apache
       generic<class TKey, class TValue>
       IRegionService^ LocalRegion<TKey, TValue>::RegionService::get()
       {        
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-
-          try
-          {
-            auto regionService = m_nativeptr->get()->getRegionService();
-            if (auto realCache = std::dynamic_pointer_cast<apache::geode::client::Cache>(regionService))
-            {
-              return Apache::Geode::Client::Cache::Create(realCache);
-            }
-            else
-            {
-              return Apache::Geode::Client::AuthenticatedCache::Create(regionService);
-            }
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
-          
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        return CacheResolver::Lookup(m_nativeptr->get()->getCache().get());
       }
 
       generic<class TKey, class TValue>
@@ -851,7 +833,7 @@ namespace Apache
 
            try
            {
-             return m_nativeptr->get()->containsValueForKey(Serializable::GetUnmanagedValueGeneric<TKey>(key, m_nativeptr->get()->getCache().get()));
+             return m_nativeptr->get()->containsValueForKey(Serializable::GetUnmanagedValueGeneric<TKey>(key));
            }
            finally
            {
@@ -886,7 +868,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */        
           try
           {
-            m_nativeptr->get()->localClear(Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg, m_nativeptr->get()->getCache().get() ) );
+            m_nativeptr->get()->localClear(Serializable::GetUnmanagedValueGeneric<Object^>( callbackArg ) );
           }
           finally
           {

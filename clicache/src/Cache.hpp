@@ -18,11 +18,8 @@
 #pragma once
 
 #include "geode_defs.hpp"
-#include "RegionShortcut.hpp"
 #include "IGeodeCache.hpp"
-#include "IRegion.hpp"
-#include "RegionAttributes.hpp"
-#include "PoolManager.hpp"
+#include "native_shared_ptr.hpp"
 
 using namespace System;
 
@@ -32,16 +29,35 @@ namespace Apache
   {
     namespace Client
     {
+      namespace Internal {
+        ref class PdxTypeRegistry;
+      } // namespace Internal
+
       namespace native = apache::geode::client;
 
       generic<class TKey, class TResult>
       ref class QueryService;
 
       ref class RegionFactory;
+      
       enum class ExpirationAction;
+
+      enum class RegionShortcut;
+      
       ref class DistributedSystem;
+      
       ref class CacheTransactionManager2PC;
-      //ref class FunctionService;
+      
+      generic<class TPropKey, class TPropValue>
+      ref class Properties;
+
+      ref class PoolFactory;
+
+      ref class PoolManager;
+
+      ref class DataInput;
+
+      ref class DataOutput;
 
       /// <summary>
       /// Provides a distributed cache.
@@ -283,18 +299,22 @@ namespace Apache
           return m_nativeptr->get_shared_ptr();
         }
 
+        Apache::Geode::Client::Internal::PdxTypeRegistry^ GetPdxTypeRegistry()
+        {
+          return m_pdxTypeRegistry;
+        }
+
       private:
 
         /// <summary>
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline Cache(native::CachePtr nativeptr)
-        {
-          m_nativeptr = gcnew native_shared_ptr<native::Cache>(nativeptr);
-        }
+        Cache(native::CachePtr nativeptr);
 
         native_shared_ptr<native::Cache>^ m_nativeptr;
+
+        Apache::Geode::Client::Internal::PdxTypeRegistry^ m_pdxTypeRegistry;
       };
     }  // namespace Client
   }  // namespace Geode

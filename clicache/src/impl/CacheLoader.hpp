@@ -69,8 +69,7 @@ namespace Apache
 
             Object^ ghelper = Serializable::GetManagedValueGeneric<Object^>(helper);
 
-            //return SafeMSerializableConvertGeneric(m_loader->Load(gregion, gkey, ghelper));
-            return Serializable::GetUnmanagedValueGeneric<TValue>(m_loader->Load(gregion, gkey, ghelper), nullptr);
+            return Serializable::GetUnmanagedValueGeneric<TValue>(m_loader->Load(gregion, gkey, ghelper));
           }
 
           virtual void close( const apache::geode::client::RegionPtr& region )

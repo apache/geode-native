@@ -379,7 +379,7 @@ namespace Apache
 
             try
             {
-              static_cast<HSTYPE*>(m_nativeptr->get())->insert(Serializable::GetUnmanagedValueGeneric(item, nullptr));
+              static_cast<HSTYPE*>(m_nativeptr->get())->insert(Serializable::GetUnmanagedValueGeneric(item));
             }
             finally
             {
@@ -419,7 +419,7 @@ namespace Apache
           {
             try
             {
-              return static_cast<HSTYPE*>(m_nativeptr->get())->find(Serializable::GetUnmanagedValueGeneric(item, nullptr)) != static_cast<HSTYPE*>(m_nativeptr->get())->end();
+              return static_cast<HSTYPE*>(m_nativeptr->get())->find(Serializable::GetUnmanagedValueGeneric(item)) != static_cast<HSTYPE*>(m_nativeptr->get())->end();
             }
             finally
             {
@@ -509,7 +509,7 @@ namespace Apache
           {
             try
             {
-              return (static_cast<HSTYPE*>(m_nativeptr->get())->erase(Serializable::GetUnmanagedValueGeneric(item, nullptr)) > 0);
+              return (static_cast<HSTYPE*>(m_nativeptr->get())->erase(Serializable::GetUnmanagedValueGeneric(item)) > 0);
             }
             finally
             {

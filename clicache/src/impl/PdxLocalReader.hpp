@@ -65,8 +65,8 @@ namespace Apache
             m_pdxType = pdxType;
             m_serializedLengthWithOffsets = pdxLen;
 
-            m_localToRemoteMap = pdxType->GetLocalToRemoteMap();
-            m_remoteToLocalMap = pdxType->GetRemoteToLocalMap();
+            m_localToRemoteMap = pdxType->GetLocalToRemoteMap(dataInput->Cache);
+            m_remoteToLocalMap = pdxType->GetRemoteToLocalMap(dataInput->Cache);
             m_pdxRemotePreserveData = gcnew PdxRemotePreservedData();
             m_isDataNeedToPreserve = true;
             initialize();
