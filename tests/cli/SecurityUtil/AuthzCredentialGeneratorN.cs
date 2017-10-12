@@ -399,22 +399,22 @@ namespace Apache.Geode.Client.Tests
       string args = string.Empty;
       if (authenticator != null && authenticator.Length > 0)
       {
-        args += (" security-client-authenticator=" + authenticator);
+        args += (" --J=-Dgemfire.security-client-authenticator=" + authenticator);
       }
       if (accessor != null && accessor.Length > 0)
       {
-        args += (" security-client-accessor=" + accessor);
+        args += (" --J=-Dgemfire.security-client-accessor=" + accessor);
       }
       if (accessorPP != null && accessorPP.Length > 0)
       {
-        args += (" security-client-accessor-pp=" + accessorPP);
+        args += (" --J=-Dgemfire.security-client-accessor-pp=" + accessorPP);
       }
       if (extraProps != null)
       {
         PropertyVisitorGeneric<string, string> visitor =
           delegate(string key, string value)
           {
-            args += (' ' + key.ToString() + '=' + value);
+            args += (" --J=-D" + key.ToString() + '=' + value);
           };
         extraProps.ForEach(visitor);
       }
@@ -423,7 +423,7 @@ namespace Apache.Geode.Client.Tests
         PropertyVisitorGeneric<string, string> visitor =
           delegate(string key, string value)
           {
-            args += (" -J-D" + key.ToString() + '=' + value);
+            args += (" --J=-D" + key.ToString() + '=' + value);
           };
         javaProps.ForEach(visitor);
       }

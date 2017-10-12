@@ -100,10 +100,10 @@ namespace Apache.Geode.Client.UnitTests
 			Util.Log("Cacheserver 1 started.");
 
 
-			m_client1.Call(CreateClient, RegionName, CacheHelper.Locators);
+      m_client1.Call(AssertAuthInitializeCalled, false);
+      m_client1.Call(CreateClient, RegionName, CacheHelper.Locators);
 
 			// Perform some put operations from client1
-			//m_client1.Call(AssertAuthInitializeCalled, false);
 			m_client1.Call(DoPuts, 4);
 			m_client1.Call(AssertAuthInitializeCalled, true);
 
