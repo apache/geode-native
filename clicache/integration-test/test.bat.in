@@ -58,6 +58,11 @@ rem exit code. As a workaround we write exit codes to files.
 
 (${NUNIT_CONSOLE} /run:${NAMESPACE}.${TESTCLASS} ..\..\$<CONFIG>\UnitTests.dll 2>&1 && echo 0 >${TEST}.errorlevel || echo 1 >${TEST}.errorlevel) | tee %LOG%
 
+rem Our testing framework sometimes leaves lingering server/locator processes.
+rem Let's clean up after ourselves so that we do not affect subsequent runs.
+rem Unfortunately this also means that our tests can only run serially.
+taskkill.exe /F /IM java.exe
+
 set /p errorlevel= <${TEST}.errorlevel
 if %errorlevel% neq 0 exit /b %errorlevel%
 
