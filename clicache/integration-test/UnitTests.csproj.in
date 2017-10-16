@@ -199,6 +199,7 @@
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientRemoteParamQueryStructSetTests.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientRemoteQueryFailoverTests.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientRemoteQueryExclusivenessTests.cs" />
+    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientRegionQueryTests.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientAppDomainQueryTests.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientAppDomainFunctionExecutionTests.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\BuiltinCacheableWrappersN.cs" />
