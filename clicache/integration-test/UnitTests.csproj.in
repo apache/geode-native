@@ -194,6 +194,7 @@
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientSecurityAuthzTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientQueryTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientRemoteQueryResultSetTests.cs" />
+    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientRemoteParamQueryResultSetTests.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientAppDomainQueryTests.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientAppDomainFunctionExecutionTests.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\BuiltinCacheableWrappersN.cs" />
