@@ -96,6 +96,7 @@ endforeach()
 
 # Label any flaky tests here
 set_property(TEST ThinClientCqTestsN PROPERTY LABELS FLAKY)
+set_property(TEST ThinClientRemoteQueryTestsN PROPERTY LABELS FLAKY)
 
 # Label any tests that always fail here
 set_property(TEST OverflowTestsN PROPERTY LABELS OMITTED)
