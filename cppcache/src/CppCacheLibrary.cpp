@@ -83,7 +83,6 @@ std::string CppCacheLibrary::getProductLibDir() {
   DllMainGetPath(buffer, PATH_MAX);
 
   std::string path(buffer);
-  fprintf(stderr, "MOOF: %s\n", path.c_str());
   std::string::size_type pos = std::string::npos;
 #ifdef WIN32
   std::string cppName = PRODUCT_LIB_NAME;
