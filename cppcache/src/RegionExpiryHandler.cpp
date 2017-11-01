@@ -30,7 +30,7 @@
 
 using namespace apache::geode::client;
 
-RegionExpiryHandler::RegionExpiryHandler(RegionInternalPtr& rptr,
+RegionExpiryHandler::RegionExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
                                          ExpirationAction::Action action,
                                          uint32_t duration)
     : m_regionPtr(rptr),
@@ -45,7 +45,7 @@ int RegionExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
                                         const void* arg) {
   time_t curr_time = current_time.sec();
   try {
-    CacheStatisticsPtr ptr = m_regionPtr->getStatistics();
+    std::shared_ptr<CacheStatistics> ptr = m_regionPtr->getStatistics();
     uint32_t lastTimeForExp = ptr->getLastAccessedTime();
     if (m_regionPtr->getAttributes()->getRegionTimeToLive() > 0) {
       lastTimeForExp = ptr->getLastModifiedTime();

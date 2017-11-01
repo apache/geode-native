@@ -32,9 +32,9 @@ class TcrPoolEndPoint : public TcrEndpoint {
                   ACE_Semaphore& redundancySema, ThinClientPoolDM* dm);
   virtual ThinClientPoolDM* getPoolHADM();
 
-  virtual bool checkDupAndAdd(EventIdPtr eventid);
+  virtual bool checkDupAndAdd(std::shared_ptr<EventId> eventid);
   virtual void processMarker();
-  virtual QueryServicePtr getQueryService();
+  virtual std::shared_ptr<QueryService> getQueryService();
   virtual void sendRequestForChunkedResponse(const TcrMessage& request,
                                              TcrMessageReply& reply,
                                              TcrConnection* conn);

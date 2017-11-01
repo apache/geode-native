@@ -142,7 +142,7 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static StructSet<TResult>^ Create(native::StructSetPtr nativeptr)
+        inline static StructSet<TResult>^ Create(std::shared_ptr<native::StructSet> nativeptr)
         {
           return __nullptr == nativeptr ? nullptr :
             gcnew StructSet<TResult>( nativeptr );
@@ -158,7 +158,7 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline StructSet(native::StructSetPtr nativeptr)
+        inline StructSet(std::shared_ptr<native::StructSet> nativeptr)
         {
           m_nativeptr = gcnew native_shared_ptr<native::StructSet>(nativeptr);
         }

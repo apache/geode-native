@@ -169,7 +169,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * @param regionAttributes the <code>RegionAttributes</code> used to
    * initialize this AttributesFactory
    */
-  AttributesFactory(const RegionAttributesPtr& regionAttributes);
+  AttributesFactory(const std::shared_ptr<RegionAttributes>& regionAttributes);
 
   /**
    *@brief destructor
@@ -181,23 +181,23 @@ class CPPCACHE_EXPORT AttributesFactory {
   /** Sets the cache loader for the next <code>RegionAttributes</code> created.
    * @param cacheLoader the cache loader or nullptr if no loader
    */
-  void setCacheLoader(const CacheLoaderPtr& cacheLoader);
+  void setCacheLoader(const std::shared_ptr<CacheLoader>& cacheLoader);
 
   /** Sets the cache writer for the next <code>RegionAttributes</code> created.
    * @param cacheWriter the cache writer or nullptr if no cache writer
    */
-  void setCacheWriter(const CacheWriterPtr& cacheWriter);
+  void setCacheWriter(const std::shared_ptr<CacheWriter>& cacheWriter);
 
   /** Sets the CacheListener for the next <code>RegionAttributes</code> created.
    * @param aListener a user defined CacheListener, nullptr if no listener
    */
-  void setCacheListener(const CacheListenerPtr& aListener);
+  void setCacheListener(const std::shared_ptr<CacheListener>& aListener);
 
   /** Sets the PartitionResolver for the next <code>RegionAttributes</code>
    * created.
    * @param aResolver a user defined PartitionResolver, nullptr if no resolver
    */
-  void setPartitionResolver(const PartitionResolverPtr& aResolver);
+  void setPartitionResolver(const std::shared_ptr<PartitionResolver>& aResolver);
 
   /**
    * Sets the library path for the library that will be invoked for the loader
@@ -265,15 +265,15 @@ class CPPCACHE_EXPORT AttributesFactory {
    * this must be used to set the PersistenceManager.
    */
   void setPersistenceManager(const char* libpath, const char* factoryFuncName,
-                             const PropertiesPtr& config = nullptr);
+                             const std::shared_ptr<Properties>& config = nullptr);
 
   /** Sets the PersistenceManager for the next <code>RegionAttributes</code>
   * created.
   * @param persistenceManager a user defined PersistenceManager, nullptr if no
   * resolver
   */
-  void setPersistenceManager(const PersistenceManagerPtr& persistenceManager,
-                             const PropertiesPtr& config = nullptr);
+  void setPersistenceManager(const std::shared_ptr<PersistenceManager>& persistenceManager,
+                             const std::shared_ptr<Properties>& config = nullptr);
 
  public:
   // DISTRIBUTION ATTRIBUTES

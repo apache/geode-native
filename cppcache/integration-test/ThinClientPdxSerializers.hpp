@@ -63,7 +63,7 @@ class TestPdxSerializer : public PdxSerializer {
     return objectSize;
   }
 
-  void *fromDataForAddress(PdxReaderPtr pr) {
+  void *fromDataForAddress(std::shared_ptr<PdxReader> pr) {
     try {
       PdxTests::NonPdxAddress *npa = new PdxTests::NonPdxAddress;
       npa->_aptNumber = pr->readInt("_aptNumber");
@@ -75,7 +75,7 @@ class TestPdxSerializer : public PdxSerializer {
     }
   }
 
-  void *fromData(const char *className, PdxReaderPtr pr) {
+  void *fromData(const char *className, std::shared_ptr<PdxReader> pr) {
     ASSERT(strcmp(className, CLASSNAME1) == 0 ||
                strcmp(className, CLASSNAME2) == 0,
            "Unexpected classname in fromData");
@@ -180,7 +180,7 @@ class TestPdxSerializer : public PdxSerializer {
     return (void *)npt;
   }
 
-  bool toDataForAddress(void *testObject, PdxWriterPtr pw) {
+  bool toDataForAddress(void *testObject, std::shared_ptr<PdxWriter> pw) {
     try {
       PdxTests::NonPdxAddress *npa =
           reinterpret_cast<PdxTests::NonPdxAddress *>(testObject);
@@ -193,7 +193,7 @@ class TestPdxSerializer : public PdxSerializer {
     }
   }
 
-  bool toData(void *testObject, const char *className, PdxWriterPtr pw) {
+  bool toData(void *testObject, const char *className, std::shared_ptr<PdxWriter> pw) {
     ASSERT(strcmp(className, CLASSNAME1) == 0 ||
                strcmp(className, CLASSNAME2) == 0,
            "Unexpected classname in toData");

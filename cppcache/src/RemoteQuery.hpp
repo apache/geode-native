@@ -45,33 +45,33 @@ namespace client {
 class CPPCACHE_EXPORT RemoteQuery : public Query {
   std::string m_queryString;
 
-  RemoteQueryServicePtr m_queryService;
+  std::shared_ptr<RemoteQueryService> m_queryService;
   ThinClientBaseDM* m_tccdm;
-  ProxyCachePtr m_proxyCache;
+  std::shared_ptr<ProxyCache> m_proxyCache;
 
  public:
-  RemoteQuery(const char* querystr, const RemoteQueryServicePtr& queryService,
-              ThinClientBaseDM* tccdmptr, ProxyCachePtr proxyCache = nullptr);
+  RemoteQuery(const char* querystr, const std::shared_ptr<RemoteQueryService>& queryService,
+              ThinClientBaseDM* tccdmptr, std::shared_ptr<ProxyCache> proxyCache = nullptr);
 
   //@TODO check the return type, is it ok. second option could be to pass
   // SelectResults by reference as a parameter.
-  SelectResultsPtr execute(uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+  std::shared_ptr<SelectResults> execute(uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   //@TODO check the return type, is it ok. second option could be to pass
   // SelectResults by reference as a parameter.
-  SelectResultsPtr execute(CacheableVectorPtr paramList = nullptr,
+  std::shared_ptr<SelectResults> execute(std::shared_ptr<CacheableVector> paramList = nullptr,
                            uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   // executes a query using a given distribution manager
   // used by Region.query() and Region.getAll()
-  SelectResultsPtr execute(uint32_t timeout, const char* func,
+  std::shared_ptr<SelectResults> execute(uint32_t timeout, const char* func,
                            ThinClientBaseDM* tcdm,
-                           CacheableVectorPtr paramList);
+                           std::shared_ptr<CacheableVector> paramList);
 
   // nothrow version of execute()
   GfErrType executeNoThrow(uint32_t timeout, TcrMessageReply& reply,
                            const char* func, ThinClientBaseDM* tcdm,
-                           CacheableVectorPtr paramList);
+                           std::shared_ptr<CacheableVector> paramList);
 
   const char* getQueryString() const;
 
@@ -80,7 +80,6 @@ class CPPCACHE_EXPORT RemoteQuery : public Query {
   bool isCompiled();
 };
 
-typedef std::shared_ptr<RemoteQuery> RemoteQueryPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -83,7 +83,7 @@ void initClientCq(const bool isthinClient) {
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 
   try {
-    SerializationRegistryPtr serializationRegistry =
+    auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     serializationRegistry->addType(Position::createDeserializable);
@@ -231,7 +231,6 @@ class MyCqStatusListener : public CqStatusListener {
     m_cqsConnectedCount = 0;
   }
 };
-typedef std::shared_ptr<MyCqStatusListener> MyCqStatusListenerPtr;
 
 DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateLocator)
   {
@@ -301,9 +300,9 @@ END_TASK_DEFINITION
 void stepOne() {
   initClientCq(true);
   createRegionForCQ(regionNamesCq[0], USE_ACK, true);
-  RegionPtr regptr = getHelper()->getRegion(regionNamesCq[0]);
-  RegionAttributesPtr lattribPtr = regptr->getAttributes();
-  RegionPtr subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
+  auto regptr = getHelper()->getRegion(regionNamesCq[0]);
+  auto lattribPtr = regptr->getAttributes();
+  auto subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
 
   LOG("StepOne complete.");
 }
@@ -348,9 +347,9 @@ END_TASK_DEFINITION
 void stepOne2() {
   initClientCq(true);
   createRegionForCQ(regionNamesCq[0], USE_ACK, true);
-  RegionPtr regptr = getHelper()->getRegion(regionNamesCq[0]);
-  RegionAttributesPtr lattribPtr = regptr->getAttributes();
-  RegionPtr subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
+  auto regptr = getHelper()->getRegion(regionNamesCq[0]);
+  auto lattribPtr = regptr->getAttributes();
+  auto subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
 
   LOG("StepOne2 complete.");
 }
@@ -361,8 +360,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
-    RegionPtr subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
+    auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
+    auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
     QueryHelper* qh = &QueryHelper::getHelper();
 
@@ -383,9 +382,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     uint8_t i = 0;
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    PoolPtr pool =
+    auto pool =
         getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
-    QueryServicePtr qs;
+    std::shared_ptr<QueryService> qs;
     if (pool != nullptr) {
       // Using region name as pool name as in ThinClientCq.hpp
       qs = pool->getQueryService();
@@ -396,8 +395,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     for (i = 0; i < MAX_LISTNER; i++) {
       auto cqLstner = std::make_shared<MyCqListener>(i);
       cqFac.addCqListener(cqLstner);
-      CqAttributesPtr cqAttr = cqFac.create();
-      CqQueryPtr qry = qs->newCq(cqNames[i], queryStrings[i], cqAttr);
+      auto cqAttr = cqFac.create();
+      auto qry = qs->newCq(cqNames[i], queryStrings[i], cqAttr);
     }
 
     try {
@@ -418,7 +417,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     {
       try {
         LOG("Testing bug #1026");
-        RegionPtr regionPtr = getHelper()->getRegion(regionNamesCq[0]);
+        auto regionPtr = getHelper()->getRegion(regionNamesCq[0]);
         regionPtr->put("1026_Key1", "asdas");
         regionPtr->put("1026_Key2",
                        "Schüler");  // string with extended charater set
@@ -429,13 +428,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
 
         const char* qryStr = "select * from /Portfolios p where p='Schüler'";
 
-        CqListenerPtr cqLstner(new MyCqListener1026);
+        std::shared_ptr<CqListener> cqLstner(new MyCqListener1026);
         cqFac.addCqListener(cqLstner);
-        CqAttributesPtr cqAttr = cqFac.create();
-        CqQueryPtr qry = qs->newCq((char*)"1026_MyCq", qryStr, cqAttr);
+        auto cqAttr = cqFac.create();
+        auto qry = qs->newCq((char*)"1026_MyCq", qryStr, cqAttr);
 
         // execute Cq Query with initial Results
-        CqResultsPtr resultsPtr = qry->executeWithInitialResults();
+        auto resultsPtr = qry->executeWithInitialResults();
 
         LOGINFO("ResultSet Query returned %d rows", resultsPtr->size());
         LOG("Testing bug #1026 Complete");
@@ -451,8 +450,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwo2)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
-    RegionPtr subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
+    auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
+    auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
     QueryHelper* qh = &QueryHelper::getHelper();
 
@@ -464,15 +463,15 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo2)
       qh->populatePositionPdxData(subregPtr0, 3, 2);
     }
 
-    CacheablePtr port = nullptr;
+    std::shared_ptr<Cacheable> port = nullptr;
     for (int i = 1; i < 3; i++) {
       if (!m_isPdx) {
-        port = CacheablePtr(new Portfolio(i, 2));
+        port = std::shared_ptr<Cacheable>(new Portfolio(i, 2));
       } else {
-        port = CacheablePtr(new PortfolioPdx(i, 2));
+        port = std::shared_ptr<Cacheable>(new PortfolioPdx(i, 2));
       }
 
-      CacheableKeyPtr keyport = CacheableKey::create("port1-1");
+      std::shared_ptr<CacheableKey> keyport = CacheableKey::create("port1-1");
       regPtr0->put(keyport, port);
       SLEEP(10);  // sleep a while to allow server query to complete
     }
@@ -486,9 +485,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    PoolPtr pool =
+    auto pool =
         getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
-    QueryServicePtr qs;
+    std::shared_ptr<QueryService> qs;
     if (pool != nullptr) {
       // Using region name as pool name as in ThinClientCq.hpp
       qs = pool->getQueryService();
@@ -515,8 +514,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     for (i = 0; i < MAX_LISTNER; i++) {
       sprintf(buf, "get info for cq[%s]:", cqNames[i]);
       LOG(buf);
-      CqQueryPtr cqy = qs->getCq(cqNames[i]);
-      CqStatisticsPtr cqStats = cqy->getStatistics();
+      auto cqy = qs->getCq(cqNames[i]);
+      auto cqStats = cqy->getStatistics();
       sprintf(buf,
               "Cq[%s]From CqStatistics: numInserts[%d], numDeletes[%d], "
               "numUpdates[%d], numEvents[%d]",
@@ -529,7 +528,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
         deletes[j] += cqStats->numDeletes();
         events[j] += cqStats->numEvents();
       }
-      CqAttributesPtr cqAttr = cqy->getCqAttributes();
+      auto cqAttr = cqy->getCqAttributes();
       auto vl = cqAttr->getCqListeners();
       sprintf(buf, "number of listeners for cq[%s] is %zd", cqNames[i],
               vl.size());
@@ -564,8 +563,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
                  "accumulative events count incorrect");
         }
         LOG("removing listener");
-        CqAttributesMutatorPtr cqAttrMtor = cqy->getCqAttributesMutator();
-        CqListenerPtr ptr = vl[0];
+        auto cqAttrMtor = cqy->getCqAttributesMutator();
+        auto ptr = vl[0];
         cqAttrMtor->removeCqListener(ptr);
         vl = cqAttr->getCqListeners();
         sprintf(buf, "number of listeners for cq[%s] is %zd", cqNames[i],
@@ -575,7 +574,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       }
     }
     try {
-      CqQueryPtr cqy = qs->getCq(cqNames[1]);
+      auto cqy = qs->getCq(cqNames[1]);
       cqy->stop();
 
       cqy = qs->getCq(cqNames[6]);
@@ -619,7 +618,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       FAIL(failmsg.c_str());
       excp.printStackTrace();
     }
-    CqServiceStatisticsPtr serviceStats = qs->getCqServiceStatistics();
+    auto serviceStats = qs->getCqServiceStatistics();
     ASSERT(serviceStats != nullptr, "serviceStats is nullptr");
     sprintf(buf,
             "numCqsActive=%d, numCqsCreated=%d, "
@@ -631,7 +630,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     /*
     for(i=0; i < MAX_LISTNER; i++)
     {
-     CqQueryPtr cqy = qs->getCq(cqNames[i]);
+     auto cqy = qs->getCq(cqNames[i]);
      CqState::StateType state = cqy->getState();
      CqState cqState;
      cqState.setState(state);
@@ -696,9 +695,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     i = 0;
     auto cqLstner = std::make_shared<MyCqListener>(i);
     cqFac.addCqListener(cqLstner);
-    CqAttributesPtr cqAttr = cqFac.create();
+    auto cqAttr = cqFac.create();
     try {
-      CqQueryPtr qry = qs->newCq(cqNames[i], queryStrings[i], cqAttr);
+      auto qry = qs->newCq(cqNames[i], queryStrings[i], cqAttr);
       qry->execute();
       qry->stop();
       qry->close();
@@ -796,13 +795,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ)
   {
     SLEEP(10000);
     // Create CqAttributes and Install Listener
-    PoolPtr pool = getHelper()->getCache()->getPoolManager().find(regionName);
-    QueryServicePtr qs = pool->getQueryService();
+    auto pool = getHelper()->getCache()->getPoolManager().find(regionName);
+    auto qs = pool->getQueryService();
     CqAttributesFactory cqFac;
     auto cqLstner = std::make_shared<MyCqStatusListener>(100);
     cqFac.addCqListener(cqLstner);
-    CqAttributesPtr cqAttr = cqFac.create();
-    CqQueryPtr cq =
+    auto cqAttr = cqFac.create();
+    auto cq =
         qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
 
     cq->execute();
@@ -821,15 +820,15 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
   {
-    PoolPtr pool =
+    auto pool =
         getHelper()->getCache()->getPoolManager().find("__TEST_POOL1__");
-    QueryServicePtr qs = pool->getQueryService();
+    auto qs = pool->getQueryService();
     CqAttributesFactory cqFac;
     auto cqLstner = std::make_shared<MyCqStatusListener>(100);
     cqFac.addCqListener(cqLstner);
-    CqAttributesPtr cqAttr = cqFac.create();
+    auto cqAttr = cqFac.create();
 
-    CqQueryPtr cq =
+    auto cq =
         qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
     cq->execute();
     SLEEP(20000);
@@ -842,14 +841,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
     ASSERT(myStatusCq->getCqsConnectedCount() == 1,
            "incorrect number of CqStatus Connected count.");
 
-    PoolPtr pool2 =
+    auto pool2 =
         getHelper()->getCache()->getPoolManager().find("__TEST_POOL2__");
-    QueryServicePtr qs2 = pool2->getQueryService();
+    auto qs2 = pool2->getQueryService();
     CqAttributesFactory cqFac1;
     auto cqLstner1 = std::make_shared<MyCqStatusListener>(101);
     cqFac1.addCqListener(cqLstner1);
-    CqAttributesPtr cqAttr1 = cqFac1.create();
-    CqQueryPtr cq2 =
+    auto cqAttr1 = cqFac1.create();
+    auto cq2 =
         qs2->newCq(const_cast<char*>(cqName1), cqQueryStatusString1, cqAttr1);
     cq2->execute();
     SLEEP(20000);
@@ -863,16 +862,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
     ASSERT(myStatusCq2->getCqsConnectedCount() == 1,
            "incorrect number of CqStatus Connected count.");
 
-    RegionPtr regPtr0 = getHelper()->getRegion(regionName);
-    RegionPtr regPtr1 = getHelper()->getRegion(regionName1);
-    CacheablePtr val = nullptr;
+    auto regPtr0 = getHelper()->getRegion(regionName);
+    auto regPtr1 = getHelper()->getRegion(regionName1);
+    std::shared_ptr<Cacheable> val = nullptr;
     char KeyStr[256] = {0};
     char valStr[256] = {0};
     for (int i = 1; i <= 5; i++) {
       ACE_OS::snprintf(KeyStr, 256, "Key-%d ", i);
       ACE_OS::snprintf(valStr, 256, "val-%d ", i);
-      CacheableKeyPtr keyport = CacheableKey::create(KeyStr);
-      CacheablePtr valport = CacheableString::create(valStr);
+      std::shared_ptr<CacheableKey> keyport = CacheableKey::create(KeyStr);
+      std::shared_ptr<Cacheable> valport = CacheableString::create(valStr);
       regPtr0->put(keyport, valport);
       regPtr1->put(keyport, valport);
       SLEEP(10 * 1000);  // sleep a while to allow server query to complete
@@ -892,12 +891,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
 END_TASK_DEFINITION
 
 void executeCq(const char* poolName, const char* name) {
-  PoolPtr pool = getHelper()->getCache()->getPoolManager().find(poolName);
-  QueryServicePtr qs;
+  auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
+  std::shared_ptr<QueryService> qs;
   if (pool != nullptr) {
     qs = pool->getQueryService();
   }
-  CqQueryPtr cq = qs->getCq(const_cast<char*>(name));
+  auto cq = qs->getCq(const_cast<char*>(name));
   cq->execute();
   SLEEP(20000);
   LOG("executeCq complete");
@@ -912,13 +911,13 @@ END_TASK_DEFINITION
 
 void checkCQStatusOnConnect(const char* poolName, const char* name,
                             int connect) {
-  PoolPtr pool = getHelper()->getCache()->getPoolManager().find(poolName);
-  QueryServicePtr qs;
+  auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
+  std::shared_ptr<QueryService> qs;
   if (pool != nullptr) {
     qs = pool->getQueryService();
   }
-  CqQueryPtr cq = qs->getCq(const_cast<char*>(name));
-  CqAttributesPtr cqAttr = cq->getCqAttributes();
+  auto cq = qs->getCq(const_cast<char*>(name));
+  auto cqAttr = cq->getCqAttributes();
   auto vl = cqAttr->getCqListeners();
   MyCqStatusListener* myStatusCq =
       dynamic_cast<MyCqStatusListener*>(vl[0].get());
@@ -955,13 +954,13 @@ END_TASK_DEFINITION
 
 void checkCQStatusOnDisConnect(const char* poolName, const char* cqName,
                                int disconnect) {
-  PoolPtr pool = getHelper()->getCache()->getPoolManager().find(poolName);
-  QueryServicePtr qs;
+  auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
+  std::shared_ptr<QueryService> qs;
   if (pool != nullptr) {
     qs = pool->getQueryService();
   }
-  CqQueryPtr cq = qs->getCq(const_cast<char*>(cqName));
-  CqAttributesPtr cqAttr = cq->getCqAttributes();
+  auto cq = qs->getCq(const_cast<char*>(cqName));
+  auto cqAttr = cq->getCqAttributes();
   auto vl = cqAttr->getCqListeners();
   auto myStatusCq = std::dynamic_pointer_cast<MyCqStatusListener>(vl[0]);
   LOGINFO("checkCQStatusOnDisConnect = %d ",
@@ -1005,16 +1004,16 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, putEntries)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionName);
-    RegionPtr regPtr1 = getHelper()->getRegion(regionName1);
-    CacheablePtr val = nullptr;
+    auto regPtr0 = getHelper()->getRegion(regionName);
+    auto regPtr1 = getHelper()->getRegion(regionName1);
+    std::shared_ptr<Cacheable> val = nullptr;
     char KeyStr[256] = {0};
     char valStr[256] = {0};
     for (int i = 1; i <= 5; i++) {
       ACE_OS::snprintf(KeyStr, 256, "Key-%d ", i);
       ACE_OS::snprintf(valStr, 256, "val-%d ", i);
-      CacheableKeyPtr keyport = CacheableKey::create(KeyStr);
-      CacheablePtr valport = CacheableString::create(valStr);
+      std::shared_ptr<CacheableKey> keyport = CacheableKey::create(KeyStr);
+      std::shared_ptr<Cacheable> valport = CacheableString::create(valStr);
       regPtr0->put(keyport, valport);
       regPtr1->put(keyport, valport);
       SLEEP(10 * 1000);  // sleep a while to allow server query to complete
@@ -1025,13 +1024,13 @@ END_TASK_DEFINITION
 
 void checkCQStatusOnPutEvent(const char* poolName, const char* cqName,
                              int count) {
-  PoolPtr pool = getHelper()->getCache()->getPoolManager().find(poolName);
-  QueryServicePtr qs;
+  auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
+  std::shared_ptr<QueryService> qs;
   if (pool != nullptr) {
     qs = pool->getQueryService();
   }
-  CqQueryPtr cq = qs->getCq(const_cast<char*>(cqName));
-  CqAttributesPtr cqAttr = cq->getCqAttributes();
+  auto cq = qs->getCq(const_cast<char*>(cqName));
+  auto cqAttr = cq->getCqAttributes();
   auto vl = cqAttr->getCqListeners();
   MyCqStatusListener* myStatusCq =
       dynamic_cast<MyCqStatusListener*>(vl[0].get());
@@ -1059,30 +1058,30 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
   {
     SLEEP(10000);
     // Create CqAttributes and Install Listener
-    PoolPtr pool = getHelper()->getCache()->getPoolManager().find(regionName);
-    QueryServicePtr qs = pool->getQueryService();
+    auto pool = getHelper()->getCache()->getPoolManager().find(regionName);
+    auto qs = pool->getQueryService();
     CqAttributesFactory cqFac;
     auto cqLstner = std::make_shared<MyCqListener>(1);
     auto cqStatusLstner = std::make_shared<MyCqStatusListener>(100);
     cqFac.addCqListener(cqLstner);
     cqFac.addCqListener(cqStatusLstner);
-    CqAttributesPtr cqAttr = cqFac.create();
+    auto cqAttr = cqFac.create();
 
-    CqQueryPtr cq =
+    auto cq =
         qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
     cq->execute();
     SLEEP(20000);
     LOG("ProcessCQ Query executed.");
 
-    RegionPtr regPtr0 = getHelper()->getRegion(regionName);
-    CacheablePtr val = nullptr;
+    auto regPtr0 = getHelper()->getRegion(regionName);
+    std::shared_ptr<Cacheable> val = nullptr;
     char KeyStr[256] = {0};
     char valStr[256] = {0};
     for (int i = 1; i <= 5; i++) {
       ACE_OS::snprintf(KeyStr, 256, "Key-%d ", i);
       ACE_OS::snprintf(valStr, 256, "val-%d ", i);
-      CacheableKeyPtr keyport = CacheableKey::create(KeyStr);
-      CacheablePtr valport = CacheableString::create(valStr);
+      std::shared_ptr<CacheableKey> keyport = CacheableKey::create(KeyStr);
+      std::shared_ptr<Cacheable> valport = CacheableString::create(valStr);
       regPtr0->put(keyport, valport);
       SLEEP(10 * 1000);  // sleep a while to allow server query to complete
     }
@@ -1106,8 +1105,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
     ASSERT(myCq->getNumInserts() == 5,
            "incorrect number of CqStatus Updates count.");
 
-    CqAttributesMutatorPtr cqAttrMtor = cq->getCqAttributesMutator();
-    CqListenerPtr ptr = vl[0];
+    auto cqAttrMtor = cq->getCqAttributesMutator();
+    auto ptr = vl[0];
     cqAttrMtor->removeCqListener(ptr);
     vl = cqAttr->getCqListeners();
     LOGINFO("number of listeners = %d", vl.size());
@@ -1121,7 +1120,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
 
     ASSERT(vl.size() == 0, "incorrect number of listeners");
 
-    std::vector<CqListenerPtr> v2;
+    std::vector<std::shared_ptr<CqListener>> v2;
     v2.push_back(cqStatusLstner);
     v2.push_back(cqLstner);
     cqAttrMtor->setCqListeners(v2);
@@ -1137,14 +1136,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
     for (int i = 1; i <= 5; i++) {
       ACE_OS::snprintf(KeyStr, 256, "Key-%d ", i);
       ACE_OS::snprintf(valStr, 256, "val-%d ", i);
-      CacheableKeyPtr keyport = CacheableKey::create(KeyStr);
-      CacheablePtr valport = CacheableString::create(valStr);
+      std::shared_ptr<CacheableKey> keyport = CacheableKey::create(KeyStr);
+      std::shared_ptr<Cacheable> valport = CacheableString::create(valStr);
       regPtr0->put(keyport, valport);
       SLEEP(10 * 1000);  // sleep a while to allow server query to complete
     }
     LOGINFO("putEntries complete again");
 
-    std::vector<CqListenerPtr> vl21;
+    std::vector<std::shared_ptr<CqListener>> vl21;
     vl21.push_back(cqStatusLstner);
     vl21.push_back(cqLstner);
     cqFac.initCqListeners(vl21);

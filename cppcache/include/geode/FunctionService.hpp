@@ -31,7 +31,9 @@
 namespace apache {
 namespace geode {
 namespace client {
-
+class RegionService;
+class Region;
+class Pool;
 /**
  * @class FunctionService FunctionService.hpp
  * entry point for function execution
@@ -57,7 +59,7 @@ class CPPCACHE_EXPORT FunctionService {
    * @throws NullPointerException
    *                 if the region passed in is nullptr
    */
-  static ExecutionPtr onRegion(const RegionPtr& region);
+  static std::shared_ptr<Execution> onRegion(const std::shared_ptr<Region>& region);
 
   /**
    * Returns a {@link Execution} object that can be used to execute a data
@@ -72,7 +74,7 @@ class CPPCACHE_EXPORT FunctionService {
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
-  inline static ExecutionPtr onServer(const PoolPtr& pool) {
+  inline static std::shared_ptr<Execution> onServer(const std::shared_ptr<Pool>& pool) {
     return onServerWithPool(pool);
   }
 
@@ -90,7 +92,7 @@ class CPPCACHE_EXPORT FunctionService {
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
-  inline static ExecutionPtr onServer(const RegionServicePtr& cache) {
+  inline static std::shared_ptr<Execution> onServer(const std::shared_ptr<RegionService>& cache) {
     return onServerWithCache(cache);
   }
 
@@ -107,7 +109,7 @@ class CPPCACHE_EXPORT FunctionService {
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
-  inline static ExecutionPtr onServers(const PoolPtr& pool) {
+  inline static std::shared_ptr<Execution> onServers(const std::shared_ptr<Pool>& pool) {
     return onServersWithPool(pool);
   }
 
@@ -125,20 +127,20 @@ class CPPCACHE_EXPORT FunctionService {
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
-  inline static ExecutionPtr onServers(const RegionServicePtr& cache) {
+  inline static std::shared_ptr<Execution> onServers(const std::shared_ptr<RegionService>& cache) {
     return onServersWithCache(cache);
   }
 
   virtual ~FunctionService() {}
 
  private:
-  static ExecutionPtr onServerWithPool(const PoolPtr& pool);
+  static std::shared_ptr<Execution> onServerWithPool(const std::shared_ptr<Pool>& pool);
 
-  static ExecutionPtr onServerWithCache(const RegionServicePtr& cache);
+  static std::shared_ptr<Execution> onServerWithCache(const std::shared_ptr<RegionService>& cache);
 
-  static ExecutionPtr onServersWithPool(const PoolPtr& pool);
+  static std::shared_ptr<Execution> onServersWithPool(const std::shared_ptr<Pool>& pool);
 
-  static ExecutionPtr onServersWithCache(const RegionServicePtr& cache);
+  static std::shared_ptr<Execution> onServersWithCache(const std::shared_ptr<RegionService>& cache);
 };
 }  // namespace client
 }  // namespace geode

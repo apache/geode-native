@@ -39,7 +39,7 @@ class CPPCACHE_EXPORT TcrHADistributionManager
  public:
   TcrHADistributionManager(ThinClientRegion* theRegion,
                            TcrConnectionManager& connManager,
-                           CacheAttributesPtr cacheAttributes);
+                           std::shared_ptr<CacheAttributes> cacheAttributes);
 
   void init();
 
@@ -83,7 +83,7 @@ class CPPCACHE_EXPORT TcrHADistributionManager
   // Disallow copy constructor and assignment operator.
   TcrHADistributionManager(const TcrHADistributionManager&);
   TcrHADistributionManager& operator=(const TcrHADistributionManager&);
-  CacheAttributesPtr m_cacheAttributes;
+  std::shared_ptr<CacheAttributes> m_cacheAttributes;
   TcrConnectionManager& m_theTcrConnManager;
 
   GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply) {

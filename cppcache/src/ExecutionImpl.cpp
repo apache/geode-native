@@ -26,7 +26,7 @@
 
 FunctionToFunctionAttributes ExecutionImpl::m_func_attrs;
 ACE_Recursive_Thread_Mutex ExecutionImpl::m_func_attrs_lock;
-ExecutionPtr ExecutionImpl::withFilter(CacheableVectorPtr routingObj) {
+std::shared_ptr<Execution> ExecutionImpl::withFilter(std::shared_ptr<CacheableVector> routingObj) {
   // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (routingObj == nullptr) {
     throw IllegalArgumentException("Execution::withFilter: filter is null");
@@ -40,7 +40,7 @@ ExecutionPtr ExecutionImpl::withFilter(CacheableVectorPtr routingObj) {
   return std::make_shared<ExecutionImpl>(routingObj, m_args, m_rc, m_region,
                                          m_allServer, m_pool, m_proxyCache);
 }
-ExecutionPtr ExecutionImpl::withArgs(CacheablePtr args) {
+std::shared_ptr<Execution> ExecutionImpl::withArgs(std::shared_ptr<Cacheable> args) {
   // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (args == nullptr) {
     throw IllegalArgumentException("Execution::withArgs: args is null");
@@ -49,7 +49,7 @@ ExecutionPtr ExecutionImpl::withArgs(CacheablePtr args) {
   return std::make_shared<ExecutionImpl>(m_routingObj, args, m_rc, m_region,
                                          m_allServer, m_pool, m_proxyCache);
 }
-ExecutionPtr ExecutionImpl::withCollector(ResultCollectorPtr rs) {
+std::shared_ptr<Execution> ExecutionImpl::withCollector(std::shared_ptr<ResultCollector> rs) {
   // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (rs == nullptr) {
     throw IllegalArgumentException(
@@ -69,9 +69,9 @@ std::vector<int8_t>* ExecutionImpl::getFunctionAttributes(const char* func) {
   return nullptr;
 }
 
-ResultCollectorPtr ExecutionImpl::execute(const CacheableVectorPtr& routingObj,
-                                          const CacheablePtr& args,
-                                          const ResultCollectorPtr& rs,
+ std::shared_ptr<ResultCollector> ExecutionImpl::execute(const std::shared_ptr<CacheableVector>& routingObj,
+                                          const std::shared_ptr<Cacheable>& args,
+                                          const std::shared_ptr<ResultCollector>& rs,
                                           const char* func, uint32_t timeout) {
   m_routingObj = routingObj;
   m_args = args;
@@ -79,7 +79,7 @@ ResultCollectorPtr ExecutionImpl::execute(const CacheableVectorPtr& routingObj,
   return execute(func, timeout);
 }
 
-ResultCollectorPtr ExecutionImpl::execute(const char* fn, uint32_t timeout) {
+std::shared_ptr<ResultCollector> ExecutionImpl::execute(const char* fn, uint32_t timeout) {
   std::string func = fn;
   LOGDEBUG("ExecutionImpl::execute: ");
   GuardUserAttribures gua;
@@ -208,7 +208,7 @@ ResultCollectorPtr ExecutionImpl::execute(const char* fn, uint32_t timeout) {
           if (reExecute) {  // Fallback to old FE onREgion
             if (isHAHasResultOptimizeForWrite & 1) {  // isHA = true
               m_rc->clearResults();
-              CacheableVectorPtr rs =
+              std::shared_ptr<CacheableVector> rs =
                   std::dynamic_pointer_cast<ThinClientRegion>(m_region)
                       ->reExecuteFunction(fn, m_args, m_routingObj,
                                           isHAHasResultOptimizeForWrite, m_rc,
@@ -263,7 +263,7 @@ ResultCollectorPtr ExecutionImpl::execute(const char* fn, uint32_t timeout) {
             if (reExecute) {  // Fallback to old FE onREgion
               if (isHAHasResultOptimizeForWrite & 1) {  // isHA = true
                 m_rc->clearResults();
-                CacheableVectorPtr rs =
+                std::shared_ptr<CacheableVector> rs =
                     dynamic_cast<ThinClientRegion*>(m_region.get())
                         ->reExecuteFunction(fn, m_args, m_routingObj,
                                             isHAHasResultOptimizeForWrite, m_rc,
@@ -389,14 +389,14 @@ GfErrType ExecutionImpl::getFuncAttributes(const char* func,
   return err;
 }
 
-void ExecutionImpl::addResults(ResultCollectorPtr& collector,
-                               const CacheableVectorPtr& results) {
+void ExecutionImpl::addResults(std::shared_ptr<ResultCollector>& collector,
+                               const std::shared_ptr<CacheableVector>& results) {
   if (results == nullptr || collector == nullptr) {
     return;
   }
 
   for (int32_t resultItem = 0; resultItem < results->size(); resultItem++) {
-    CacheablePtr result(results->operator[](resultItem));
+    std::shared_ptr<Cacheable> result(results->operator[](resultItem));
     collector->addResult(result);
   }
 }
@@ -407,7 +407,7 @@ void ExecutionImpl::executeOnAllServers(std::string& func, uint8_t getResult,
     throw IllegalArgumentException(
         "Execute: pool cast to ThinClientPoolDM failed");
   }
-  CacheableStringPtr exceptionPtr = nullptr;
+  std::shared_ptr<CacheableString> exceptionPtr = nullptr;
   GfErrType err = tcrdm->sendRequestToAllServers(
       func.c_str(), getResult, timeout, m_args, m_rc, exceptionPtr);
   if (exceptionPtr != nullptr && err != GF_NOERR) {
@@ -441,7 +441,7 @@ void ExecutionImpl::executeOnAllServers(std::string& func, uint8_t getResult,
     }
   }
 }
-CacheableVectorPtr ExecutionImpl::executeOnPool(std::string& func,
+std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(std::string& func,
                                                 uint8_t getResult,
                                                 int32_t retryAttempts,
                                                 uint32_t timeout) {
@@ -452,12 +452,12 @@ CacheableVectorPtr ExecutionImpl::executeOnPool(std::string& func,
   }
   int32_t attempt = 0;
 
-  // CacheableStringArrayPtr csArray = tcrdm->getServers();
+  // std::shared_ptr<CacheableStringArray> csArray = tcrdm->getServers();
 
   // if (csArray != nullptr && csArray->length() != 0) {
   //  for (int i = 0; i < csArray->length(); i++)
   //  {
-  //    CacheableStringPtr cs = csArray[i];
+  //    std::shared_ptr<CacheableString> cs = csArray[i];
   //    TcrEndpoint *ep = nullptr;
   //    /*
   //    std::string endpointStr = Utils::convertHostToCanonicalForm(cs->asChar()
@@ -512,7 +512,7 @@ CacheableVectorPtr ExecutionImpl::executeOnPool(std::string& func,
         GfErrTypeToException("ExecuteOnPool:", err);
       }
     }
-    // CacheableVectorPtr values =
+    // std::shared_ptr<CacheableVector> values =
     // resultCollector->getFunctionExecutionResults();
     /*
     ==25848== 1,610 (72 direct, 1,538 indirect) bytes in 2 blocks are definitely

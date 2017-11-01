@@ -84,10 +84,10 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   }
   free(buf);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
-  CacheableKeyPtr keyPtr = createKey(key);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
 
   // if the region is no ack, then we may need to wait...
   if (!isCreated) {
@@ -182,7 +182,7 @@ void createRegion(const char* name, bool ackMode,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   // ack, caching
-  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
+  auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
                                                clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
@@ -194,10 +194,10 @@ void createEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Create entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
+  std::shared_ptr<CacheableString> valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
@@ -219,10 +219,10 @@ void updateEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Update entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
+  std::shared_ptr<CacheableString> valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
@@ -244,9 +244,9 @@ void doNetsearch(const char* name, const char* key, const char* value) {
       key, value, name);
   fflush(stdout);
   // Get entry created in Process A, verify entry is correct
-  CacheableKeyPtr keyPtr = CacheableKey::create(key);
+  std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(key);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
@@ -283,7 +283,7 @@ const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 const bool USE_ACK = true;
 void initClientAndRegion(int redundancy) {
   g_redundancyLevel = redundancy;
-  PropertiesPtr pp = Properties::create();
+  auto pp = Properties::create();
   getHelper()->createPoolWithLocators("__TESTPOOL1_", locatorsG, true,
                                       redundancy);
   getHelper()->createRegionAndAttachPool(regionNames[0], USE_ACK,
@@ -363,8 +363,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, RegisterRegexes)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
 
     if (g_redundancyLevel > 1) {
       regPtr0->registerRegex(testregex[0]);
@@ -421,8 +421,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
   {
-    RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
-    RegionPtr reg1 = getHelper()->getRegion(regionNames[1]);
+    auto reg0 = getHelper()->getRegion(regionNames[0]);
+    auto reg1 = getHelper()->getRegion(regionNames[1]);
     auto vec0 = reg0->serverKeys();
     auto vec1 = reg1->serverKeys();
     ASSERT(vec0.size() == 2, "Should have 2 keys in first region.");
@@ -502,7 +502,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepEight)
     verifyEntry(regionNames[1], keys[2], vals[2]);
     verifyEntry(regionNames[1], keys[3], vals[3]);
 
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
     regPtr1->unregisterRegex(testregex[2]);
 
     LOG("StepEight complete.");

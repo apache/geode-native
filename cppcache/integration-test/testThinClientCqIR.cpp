@@ -55,7 +55,7 @@ void initClientCq(const bool isthinClient) {
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 
   try {
-    SerializationRegistryPtr serializationRegistry =
+    auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     serializationRegistry->addType(Position::createDeserializable);
@@ -97,9 +97,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1Regions)
     initClientCq(true);
     createRegionForCQ(regionNamesCq[0], USE_ACK, true);
     createRegionForCQ(regionNamesCq[2], USE_ACK, true);
-    RegionPtr regptr = getHelper()->getRegion(regionNamesCq[0]);
-    RegionAttributesPtr lattribPtr = regptr->getAttributes();
-    RegionPtr subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
+    auto regptr = getHelper()->getRegion(regionNamesCq[0]);
+    auto lattribPtr = regptr->getAttributes();
+    auto subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
 
     LOG("CreateClient1Regions complete.");
   }
@@ -109,9 +109,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2Regions)
   {
     initClientCq(true);
     createRegionForCQ(regionNamesCq[0], USE_ACK, true);
-    RegionPtr regptr = getHelper()->getRegion(regionNamesCq[0]);
-    RegionAttributesPtr lattribPtr = regptr->getAttributes();
-    RegionPtr subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
+    auto regptr = getHelper()->getRegion(regionNamesCq[0]);
+    auto lattribPtr = regptr->getAttributes();
+    auto subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
 
     LOG("CreateClient2Regions complete.");
   }
@@ -119,9 +119,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, PopulateData)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
-    RegionPtr subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNamesCq[2]);
+    auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
+    auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
+    auto regPtr1 = getHelper()->getRegion(regionNamesCq[2]);
 
     QueryHelper* qh = &QueryHelper::getHelper();
 
@@ -134,18 +134,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, PopulateData)
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, PutData)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
-    RegionPtr subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
+    auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
+    auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
     QueryHelper* qh = &QueryHelper::getHelper();
     qh->populatePortfolioPdxData(regPtr0, 150, 40, 150);
     qh->populatePositionPdxData(subregPtr0, 150, 40);
 
-    CacheablePtr port = nullptr;
+    std::shared_ptr<Cacheable> port = nullptr;
     for (int i = 1; i < 150; i++) {
-      port = CacheablePtr(new PortfolioPdx(i, 150));
+      port = std::shared_ptr<Cacheable>(new PortfolioPdx(i, 150));
 
-      CacheableKeyPtr keyport = CacheableKey::create((char*)"port1-1");
+      std::shared_ptr<CacheableKey> keyport = CacheableKey::create((char*)"port1-1");
       regPtr0->put(keyport, port);
       SLEEP(100);  // sleep a while to allow server query to complete
     }
@@ -162,7 +162,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
     // using region name as pool name
     auto pool =
         getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
-    QueryServicePtr qs;
+    std::shared_ptr<QueryService> qs;
     if (pool != nullptr) {
       qs = pool->getQueryService();
     } else {
@@ -294,7 +294,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckRegionDestroy)
   {
     LOG("check region destory");
     try {
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
+      auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
       if (regPtr0 == nullptr) {
         LOG("regPtr0==nullptr");
       } else {

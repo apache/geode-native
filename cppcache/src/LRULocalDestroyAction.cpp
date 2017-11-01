@@ -21,10 +21,10 @@
 
 using namespace apache::geode::client;
 
-bool LRULocalDestroyAction::evict(const MapEntryImplPtr& mePtr) {
-  CacheableKeyPtr keyPtr;
+bool LRULocalDestroyAction::evict(const std::shared_ptr<MapEntryImpl>& mePtr) {
+  std::shared_ptr<CacheableKey> keyPtr;
   mePtr->getKeyI(keyPtr);
-  VersionTagPtr versionTag;
+  std::shared_ptr<VersionTag> versionTag;
   //  we should invoke the destroyNoThrow with appropriate
   // flags to correctly invoke listeners
   LOGDEBUG("LRULocalDestroy: evicting entry with key [%s]",

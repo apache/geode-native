@@ -45,23 +45,23 @@ using namespace apache::geode::client;
 int main(int argc, char** argv) {
   try {
     // Create a Geode Cache.
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
+    std::shared_ptr<CacheFactory> cacheFactory = CacheFactory::createCacheFactory();
 
-    CachePtr cachePtr = cacheFactory->create();
+    auto cachePtr = cacheFactory->create();
 
     LOGINFO("Created the Geode Cache");
 
-    RegionFactoryPtr regionFactory =
+    auto regionFactory =
         cachePtr->createRegionFactory(CACHING_PROXY);
 
     LOGINFO("Created the RegionFactory");
 
     // Create the example Region Programmatically.
-    RegionPtr regionPtr = regionFactory->create("exampleRegion");
+    auto regionPtr = regionFactory->create("exampleRegion");
 
-    CacheableKeyPtr keyPtr = CacheableInt32::create(123);
+    std::shared_ptr<CacheableKey> keyPtr = CacheableInt32::create(123);
     LOGINFO("Created the Region Programmatically.");
-    CacheTransactionManagerPtr txManager =
+    std::shared_ptr<CacheTransactionManager> txManager =
         cachePtr->getCacheTransactionManager();
     // start a transaction
     txManager->begin();

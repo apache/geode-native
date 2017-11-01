@@ -47,11 +47,11 @@ namespace unitTests {
 
 class TestUtils {
  public:
-  static RegionInternal* getRegionInternal(RegionPtr& rptr) {
+  static RegionInternal* getRegionInternal(std::shared_ptr<Region>& rptr) {
     return dynamic_cast<RegionInternal*>(rptr.get());
   }
 
-  static CacheImpl* getCacheImpl(const CachePtr& cptr) {
+  static CacheImpl* getCacheImpl(const std::shared_ptr<Cache>& cptr) {
     return CacheRegionHelper::getCacheImpl(cptr.get());
   }
 
@@ -59,7 +59,7 @@ class TestUtils {
     return cacheImpl.getPdxTypeRegistry()->testNumberOfPreservedData();
   }
 
-  static bool waitForKey(CacheableKeyPtr& keyPtr, RegionPtr& rptr, int maxTry,
+  static bool waitForKey(std::shared_ptr<CacheableKey>& keyPtr, std::shared_ptr<Region>& rptr, int maxTry,
                          uint32_t msleepTime) {
     int tries = 0;
     bool found = false;
@@ -69,7 +69,7 @@ class TestUtils {
     }
     return found;
   }
-  static bool waitForValueForKey(CacheableKeyPtr& keyPtr, RegionPtr& rptr,
+  static bool waitForValueForKey(std::shared_ptr<CacheableKey>& keyPtr, std::shared_ptr<Region>& rptr,
                                  int maxTry, uint32_t msleepTime) {
     int tries = 0;
     bool found = false;
@@ -79,7 +79,7 @@ class TestUtils {
     }
     return found;
   }
-  static bool waitForValueForKeyGoAway(CacheableKeyPtr& keyPtr, RegionPtr& rptr,
+  static bool waitForValueForKeyGoAway(std::shared_ptr<CacheableKey>& keyPtr, std::shared_ptr<Region>& rptr,
                                        int maxTry, uint32_t msleepTime) {
     int tries = 0;
     bool found = true;
@@ -89,7 +89,7 @@ class TestUtils {
     }
     return found;
   }
-  static bool waitForValueNotNULL(CacheableStringPtr& valPtr, int maxTry,
+  static bool waitForValueNotNULL(std::shared_ptr<CacheableString>& valPtr, int maxTry,
                                   uint32_t msleepTime) {
     int tries = 0;
     bool found = false;
@@ -101,8 +101,8 @@ class TestUtils {
     return !found;
   }
 
-  static int waitForValue(CacheableKeyPtr& keyPtr, int expected,
-                          CacheableStringPtr& valPtr, RegionPtr& rptr,
+  static int waitForValue(std::shared_ptr<CacheableKey>& keyPtr, int expected,
+                          std::shared_ptr<CacheableString>& valPtr, std::shared_ptr<Region>& rptr,
                           int maxTry, uint32_t msleepTime) {
     int tries = 0;
     int val = 0;
@@ -115,14 +115,14 @@ class TestUtils {
     } while ((val != expected) && (tries < maxTry));
     return val;
   }
-  static void showKeys(RegionPtr& rptr) {
+  static void showKeys(std::shared_ptr<Region>& rptr) {
     char buf[2048];
     if (rptr == nullptr) {
       sprintf(buf, "this region does not exist!\n");
       LOG(buf);
       return;
     }
-    VectorOfCacheableKey v = rptr->keys();
+    auto v = rptr->keys();
     auto len = v.size();
     sprintf(buf, "Total keys in region %s : %zu\n", rptr->getName(), len);
     LOG(buf);
@@ -134,19 +134,19 @@ class TestUtils {
       LOG(buf);
     }
   }
-  static void showKeyValues(RegionPtr& rptr) {
+  static void showKeyValues(std::shared_ptr<Region>& rptr) {
     char buf[2048];
     if (rptr == nullptr) {
       sprintf(buf, "this region does not exist!\n");
       LOG(buf);
       return;
     }
-    VectorOfCacheableKey v = rptr->keys();
+    auto v = rptr->keys();
     auto len = v.size();
     sprintf(buf, "Total keys in region %s : %zu\n", rptr->getName(), len);
     LOG(buf);
     for (uint32_t i = 0; i < len; i++) {
-      CacheableKeyPtr keyPtr = v[i];
+      std::shared_ptr<CacheableKey> keyPtr = v[i];
       char keyText[100];
       keyPtr->logString(keyText, 100);
       auto valPtr =
@@ -157,7 +157,7 @@ class TestUtils {
       LOG(buf);
     }
   }
-  static void showValues(RegionPtr& rptr) {
+  static void showValues(std::shared_ptr<Region>& rptr) {
     char buf[2048];
     if (rptr == nullptr) {
       sprintf(buf, "this region does not exist!\n");

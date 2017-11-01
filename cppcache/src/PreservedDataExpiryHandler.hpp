@@ -54,7 +54,7 @@ class CPPCACHE_EXPORT PreservedDataExpiryHandler : public ACE_Event_Handler {
    * Constructor
    */
   PreservedDataExpiryHandler(const std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
-                             const PdxSerializablePtr& pdxObjectPtr,
+                             const std::shared_ptr<PdxSerializable>& pdxObjectPtr,
                              uint32_t duration);
 
   /** This task object will be registered with the Timer Queue.
@@ -71,7 +71,7 @@ class CPPCACHE_EXPORT PreservedDataExpiryHandler : public ACE_Event_Handler {
   // modification.
   // UNUSED uint32_t m_duration;
   std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
-  PdxSerializablePtr m_pdxObjectPtr;
+  std::shared_ptr<PdxSerializable> m_pdxObjectPtr;
 };
 }  // namespace client
 }  // namespace geode

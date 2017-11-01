@@ -98,7 +98,7 @@ PortfolioPdxAuto::~PortfolioPdxAuto() {
   }
 }
 
-CacheableStringPtr PortfolioPdxAuto::toString() const {
+std::shared_ptr<CacheableString> PortfolioPdxAuto::toString() const {
   LOGINFO("PortfolioPdxAuto::toString() Start");
   char idbuf[1024];
   sprintf(idbuf, "PortfolioPdxObject: [ id=%d ]", id);

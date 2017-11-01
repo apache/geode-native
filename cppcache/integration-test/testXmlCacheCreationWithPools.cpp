@@ -45,7 +45,7 @@ using namespace std;
 
 #define SLIST vector<string>
 
-bool findString(string& item, CacheableStringArrayPtr array) {
+bool findString(string& item, std::shared_ptr<CacheableStringArray> array) {
   for (int size = 0; size < array->length(); size++) {
     if (strcmp(item.c_str(), array->operator[](size)->asChar()) == 0) {
       return true;
@@ -55,7 +55,7 @@ bool findString(string& item, CacheableStringArrayPtr array) {
   return false;
 }
 
-bool checkStringArray(SLIST& first, CacheableStringArrayPtr second) {
+bool checkStringArray(SLIST& first, std::shared_ptr<CacheableStringArray> second) {
   if (second == nullptr && first.size() > 0) return false;
 
   if (second == nullptr && first.size() == 0) return true;
@@ -71,7 +71,7 @@ bool checkStringArray(SLIST& first, CacheableStringArrayPtr second) {
   return true;
 }
 
-bool checkPoolAttribs(PoolPtr pool, SLIST& locators, SLIST& servers,
+bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators, SLIST& servers,
                       int freeConnectionTimeout, int loadConditioningInterval,
                       int minConnections, int maxConnections, int retryAttempts,
                       int idleTimeout, int pingInterval, const char* name,
@@ -84,7 +84,7 @@ bool checkPoolAttribs(PoolPtr pool, SLIST& locators, SLIST& servers,
   char logmsg[500] = {0};
 
   if (pool == nullptr) {
-    LOG("checkPoolAttribs: PoolPtr is nullptr");
+    LOG("checkPoolAttribs: std::shared_ptr<Pool> is nullptr");
     return false;
   }
 
@@ -242,8 +242,8 @@ bool checkPoolAttribs(PoolPtr pool, SLIST& locators, SLIST& servers,
 
 int testXmlCacheCreationWithPools() {
   char* host_name = (char*)"XML_CACHE_CREATION_TEST";
-  CacheFactoryPtr cacheFactory;
-  CachePtr cptr;
+  std::shared_ptr<CacheFactory> cacheFactory;
+  std::shared_ptr<Cache> cptr;
 
   std::cout << "create DistributedSytem with name=" << host_name << std::endl;
   try {
@@ -292,9 +292,9 @@ int testXmlCacheCreationWithPools() {
     std::cout << "vc[" << i << "].m_regionPtr=" << vrp.at(i).get() << std::endl;
     std::cout << "vc[" << i << "]=" << vrp.at(i)->getName() << std::endl;
   }
-  RegionPtr regPtr1 = vrp.at(0);
+  auto regPtr1 = vrp.at(0);
 
-  VectorOfRegion vr = regPtr1->subregions(true);
+  auto vr = regPtr1->subregions(true);
   std::cout << "Test if the number of sub regions with the root region Root1 "
                "are correct"
             << std::endl;
@@ -314,9 +314,9 @@ int testXmlCacheCreationWithPools() {
 
   // TODO - global Issue is that we cannot have config with server and locator
   // pools. Check if this assumption is valid and if so then break up this test.
-  RegionPtr subRegPtr = vr.at(0);
+  auto subRegPtr = vr.at(0);
 
-  RegionPtr regPtr2 = vrp.at(1);
+  auto regPtr2 = vrp.at(1);
 
   std::cout << "Test if the number of sub regions with the root region Root2 "
                "are correct"
@@ -350,9 +350,9 @@ int testXmlCacheCreationWithPools() {
     return -1;
   }
 
-  PoolPtr poolOfReg1 = cptr->getPoolManager().find(poolNameReg1);
-  PoolPtr poolOfSubReg = cptr->getPoolManager().find(poolNameSubReg);
-  PoolPtr poolOfReg2 = cptr->getPoolManager().find(poolNameReg2);
+  auto poolOfReg1 = cptr->getPoolManager().find(poolNameReg1);
+  auto poolOfSubReg = cptr->getPoolManager().find(poolNameSubReg);
+  auto poolOfReg2 = cptr->getPoolManager().find(poolNameReg2);
   SLIST locators;
   SLIST servers;
   SLIST emptylist;
@@ -464,8 +464,8 @@ int testXmlCacheCreationWithPools() {
 
 int testXmlDeclarativeCacheCreation() {
   char* host_name = (char*)"XML_DECLARATIVE_CACHE_CREATION_TEST";
-  CacheFactoryPtr cacheFactory;
-  CachePtr cptr;
+  std::shared_ptr<CacheFactory> cacheFactory;
+  std::shared_ptr<Cache> cptr;
 
   char* path = ACE_OS::getenv("TESTSRC");
   std::string directory(path);
@@ -506,9 +506,9 @@ int testXmlDeclarativeCacheCreation() {
     std::cout << "vc[" << i << "].m_reaPtr=" << vrp.at(i).get() << std::endl;
     std::cout << "vc[" << i << "]=" << vrp.at(i)->getName() << std::endl;
   }
-  RegionPtr regPtr1 = vrp.at(0);
+  auto regPtr1 = vrp.at(0);
 
-  RegionAttributesPtr raPtr = regPtr1->getAttributes();
+  auto raPtr = regPtr1->getAttributes();
   RegionAttributes* regAttr = raPtr.get();
   std::cout << "Test Attributes of root region Root1 " << std::endl;
   std::cout << "Region name " << regPtr1->getName() << std::endl;

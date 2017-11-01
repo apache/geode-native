@@ -37,12 +37,9 @@ namespace apache {
 namespace geode {
 namespace client {
 
-typedef std::map<std::string, PdxFieldTypePtr> NameVsPdxType;
-class PdxType;
-typedef std::shared_ptr<PdxType> PdxTypePtr;
-class PdxTypeRegistry;
-typedef std::shared_ptr<PdxTypeRegistry> PdxTypeRegistryPtr;
+typedef std::map<std::string, std::shared_ptr<PdxFieldType>> NameVsPdxType;
 
+class PdxTypeRegistry;
 class PdxType : public Serializable,
                 private NonCopyable,
                 private NonAssignable {
@@ -51,9 +48,9 @@ class PdxType : public Serializable,
 
   static const char* m_javaPdxClass;
 
-  std::vector<PdxFieldTypePtr>* m_pdxFieldTypes;
+  std::vector<std::shared_ptr<PdxFieldType>>* m_pdxFieldTypes;
 
-  std::list<PdxTypePtr> m_otherVersions;
+  std::list<std::shared_ptr<PdxType>> m_otherVersions;
 
   char* m_className;
 
@@ -77,30 +74,30 @@ class PdxType : public Serializable,
 
   bool m_noJavaClass;
 
-  PdxTypeRegistryPtr m_pdxTypeRegistryPtr;
+  std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistryPtr;
 
   void initRemoteToLocal();
   void initLocalToRemote();
-  int32_t fixedLengthFieldPosition(PdxFieldTypePtr fixLenField,
+  int32_t fixedLengthFieldPosition(std::shared_ptr<PdxFieldType> fixLenField,
                                    uint8_t* offsetPosition, int32_t offsetSize,
                                    int32_t pdxStreamlen);
-  int32_t variableLengthFieldPosition(PdxFieldTypePtr varLenField,
+  int32_t variableLengthFieldPosition(std::shared_ptr<PdxFieldType> varLenField,
                                       uint8_t* offsetPosition,
                                       int32_t offsetSize, int32_t pdxStreamlen);
 
-  PdxTypePtr isContains(PdxTypePtr first, PdxTypePtr second);
-  PdxTypePtr clone();
+  std::shared_ptr<PdxType> isContains(std::shared_ptr<PdxType> first, std::shared_ptr<PdxType> second);
+  std::shared_ptr<PdxType> clone();
   void generatePositionMap();
 
-  PdxTypePtr isLocalTypeContains(PdxTypePtr otherType);
-  PdxTypePtr isRemoteTypeContains(PdxTypePtr localType);
+  std::shared_ptr<PdxType> isLocalTypeContains(std::shared_ptr<PdxType> otherType);
+  std::shared_ptr<PdxType> isRemoteTypeContains(std::shared_ptr<PdxType> localType);
 
-  PdxTypePtr shared_from_this() {
+  std::shared_ptr<PdxType> shared_from_this() {
     return std::static_pointer_cast<PdxType>(Serializable::shared_from_this());
   }
 
  public:
-  PdxType(PdxTypeRegistryPtr pdxTypeRegistryPtr, const char* pdxDomainClassName,
+  PdxType(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr, const char* pdxDomainClassName,
           bool isLocal);
 
   virtual ~PdxType();
@@ -112,7 +109,7 @@ class PdxType : public Serializable,
   virtual int32_t classId() const { return GeodeTypeIds::PdxType; }
 
   static Serializable* CreateDeserializable(
-      PdxTypeRegistryPtr pdxTypeRegistryPtr) {
+      std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr) {
     return new PdxType(pdxTypeRegistryPtr, nullptr, false);
   }
 
@@ -168,7 +165,7 @@ class PdxType : public Serializable,
 
   int32_t getVarLenFieldIdx() const { return m_varLenFieldIdx; }
 
-  PdxFieldTypePtr getPdxField(const char* fieldName) {
+  std::shared_ptr<PdxFieldType> getPdxField(const char* fieldName) {
     NameVsPdxType::iterator iter = m_fieldNameVsPdxType.find(fieldName);
     if (iter != m_fieldNameVsPdxType.end()) {
       return (*iter).second;
@@ -180,7 +177,7 @@ class PdxType : public Serializable,
 
   void setLocal(bool local) { m_isLocal = local; }
 
-  std::vector<PdxFieldTypePtr>* getPdxFieldTypes() const {
+  std::vector<std::shared_ptr<PdxFieldType>>* getPdxFieldTypes() const {
     return m_pdxFieldTypes;
   }
 
@@ -189,14 +186,14 @@ class PdxType : public Serializable,
   void addVariableLengthTypeField(const char* fieldName, const char* className,
                                   int8_t typeId);
   void InitializeType();
-  PdxTypePtr mergeVersion(PdxTypePtr otherVersion);
+  std::shared_ptr<PdxType> mergeVersion(std::shared_ptr<PdxType> otherVersion);
   int32_t getFieldPosition(const char* fieldName, uint8_t* offsetPosition,
                            int32_t offsetSize, int32_t pdxStreamlen);
   int32_t getFieldPosition(int32_t fieldIdx, uint8_t* offsetPosition,
                            int32_t offsetSize, int32_t pdxStreamlen);
   int32_t* getLocalToRemoteMap();
   int32_t* getRemoteToLocalMap();
-  bool Equals(PdxTypePtr otherObj);
+  bool Equals(std::shared_ptr<PdxType> otherObj);
   // This is for PdxType as key in std map.
   bool operator<(const PdxType& other) const;
 };

@@ -74,10 +74,10 @@ class PositionPdxAuto : public apache::geode::client::PdxSerializable {
   // This constructor is just for some internal data validation test
   PositionPdxAuto(int32_t iForExactVal);
   virtual ~PositionPdxAuto();
-  virtual void toData(PdxWriterPtr pw);
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void toData(std::shared_ptr<PdxWriter> pw);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   virtual uint32_t objectSize() const {
     uint32_t objectSize = sizeof(PositionPdxAuto);
@@ -100,6 +100,6 @@ class PositionPdxAuto : public apache::geode::client::PdxSerializable {
   void init();
 };
 
-typedef std::shared_ptr<PositionPdxAuto> PositionPdxPtr;
+typedef std::shared_ptr<PositionPdxAuto> std::shared_ptr<PositionPdx>;
 }
 #endif

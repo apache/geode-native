@@ -130,7 +130,7 @@ GfErrType ThinClientLocatorHelper::getAllServers(
 
       auto di = m_poolDM->getConnectionManager().getCacheImpl()->getCache()->createDataInput(
                    reinterpret_cast<uint8_t*>(buff), receivedLength);
-      GetAllServersResponsePtr response(nullptr);
+      std::shared_ptr<GetAllServersResponse> response(nullptr);
 
       /* adongre
        * SSL Enabled on Location and not in the client
@@ -225,7 +225,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
       }
       auto di = m_poolDM->getConnectionManager().getCacheImpl()->getCache()->createDataInput(
                    reinterpret_cast<uint8_t*>(buff), receivedLength);
-      QueueConnectionResponsePtr response(nullptr);
+      std::shared_ptr<QueueConnectionResponse> response(nullptr);
 
       /* adongre
        * ssl defect
@@ -328,7 +328,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
       }
       auto di = m_poolDM->getConnectionManager().getCacheImpl()->getCache()->createDataInput(
                    reinterpret_cast<uint8_t*>(buff), receivedLength);
-      ClientConnectionResponsePtr response;
+      std::shared_ptr<ClientConnectionResponse> response;
 
       /* adongre
        * SSL is enabled on locator and not in the client

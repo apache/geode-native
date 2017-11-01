@@ -200,7 +200,7 @@ void EqStruct::fromData(apache::geode::client::DataInput &in) {
   discretionOffset = in.readDouble();
 }
 
-CacheableStringPtr EqStruct::toString() const {
+std::shared_ptr<CacheableString> EqStruct::toString() const {
   char buf[102500];
   sprintf(buf, "EqStruct:[timestamp = %lld myIndex = %d cxlQty = %d ]",
           timestamp, myIndex, cxlQty);

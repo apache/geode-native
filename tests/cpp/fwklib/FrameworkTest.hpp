@@ -47,9 +47,9 @@ class FrameworkTest  // Base class all test classes written for xml testing
   FwkTask* m_task;
 
  protected:
-  CachePtr m_cache;
+  std::shared_ptr<Cache> m_cache;
   // bool m_istransaction;
-  CacheTransactionManagerPtr txManager;
+  std::shared_ptr<CacheTransactionManager> txManager;
   static spinlock_mutex m_lck;
 
  public:
@@ -59,14 +59,14 @@ class FrameworkTest  // Base class all test classes written for xml testing
   int32_t initialize(const char* initArgs) { return FWK_SUCCESS; }
   int32_t finalize() { return FWK_SUCCESS; }
 
-  void cacheInitialize(PropertiesPtr& props,
-                       const CacheAttributesPtr& cAttrs = nullptr);
+  void cacheInitialize(std::shared_ptr<Properties>& props,
+                       const std::shared_ptr<CacheAttributes>& cAttrs = nullptr);
 
   void cacheFinalize();
 
   void destroyAllRegions();
 
-  void localDestroyRegion(RegionPtr& region);
+  void localDestroyRegion(std::shared_ptr<Region>& region);
 
   void incClientCount();
 
@@ -74,11 +74,11 @@ class FrameworkTest  // Base class all test classes written for xml testing
 
   void createPool();
 
-  std::string poolAttributesToString(PoolPtr& pool);
+  std::string poolAttributesToString(std::shared_ptr<Pool>& pool);
 
   void setTestScheme();
 
-  QueryServicePtr checkQueryService();
+  std::shared_ptr<QueryService> checkQueryService();
 
   void setTask(const char* taskId) {
     m_task = const_cast<FwkTask*>(m_coll->getTaskById(taskId));
@@ -98,7 +98,7 @@ class FrameworkTest  // Base class all test classes written for xml testing
     }
     return 0;
   }
-  CacheTransactionManagerPtr gettxManager() { return txManager; }
+  std::shared_ptr<CacheTransactionManager> gettxManager() { return txManager; }
   inline int32_t getClientId() { return m_id; }
 
   inline int32_t getDeltaMicros() { return m_deltaMicros; }

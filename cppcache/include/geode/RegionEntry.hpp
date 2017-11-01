@@ -34,6 +34,7 @@ namespace geode {
 namespace client {
 
 class RegionInternal;
+class Region;
 
 /**
  * @class RegionEntry RegionEntry.hpp
@@ -54,20 +55,20 @@ class CPPCACHE_EXPORT RegionEntry {
    *
    * @return the key for this entry
    */
-  CacheableKeyPtr getKey();
+  std::shared_ptr<CacheableKey> getKey();
 
   /** Returns the value of this entry in the local cache. Does not invoke
    * a <code>CacheLoader</code>,
    *
    * @return the value or <code>nullptr</code> if this entry is invalid
    */
-  CacheablePtr getValue();
+  std::shared_ptr<Cacheable> getValue();
 
   /** Returns the region that contains this entry.
    *
    * @return the Region that contains this entry
    */
-  RegionPtr getRegion();
+  std::shared_ptr<Region> getRegion();
 
   /** Returns the statistics for this entry.
    *
@@ -75,7 +76,7 @@ class CPPCACHE_EXPORT RegionEntry {
    * @throws StatisticsDisabledException if statistics have been disabled for
    * this region
    */
-  CacheStatisticsPtr getStatistics();
+  std::shared_ptr<CacheStatistics> getStatistics();
 
   /**
    * Returns whether this entry has been destroyed.
@@ -95,12 +96,12 @@ class CPPCACHE_EXPORT RegionEntry {
     * @brief constructors
     * created by region
     */
-  RegionEntry(const RegionPtr& region, const CacheableKeyPtr& key,
-              const CacheablePtr& value);
-  RegionPtr m_region;
-  CacheableKeyPtr m_key;
-  CacheablePtr m_value;
-  CacheStatisticsPtr m_statistics;
+  RegionEntry(const std::shared_ptr<Region>& region, const std::shared_ptr<CacheableKey>& key,
+              const std::shared_ptr<Cacheable>& value);
+  std::shared_ptr<Region> m_region;
+  std::shared_ptr<CacheableKey> m_key;
+  std::shared_ptr<Cacheable> m_value;
+  std::shared_ptr<CacheStatistics> m_statistics;
   bool m_destroyed;
   friend class RegionInternal;
 

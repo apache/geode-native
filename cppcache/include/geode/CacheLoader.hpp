@@ -33,6 +33,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
+class Region;
 /**
  * @class CacheLoader CacheLoader.hpp
  * An application plug-in that can be installed on a region. Loaders
@@ -67,8 +68,8 @@ class CPPCACHE_EXPORT CacheLoader  {
    *
    *@see Region::get .
    */
-  virtual CacheablePtr load(const RegionPtr& rp, const CacheableKeyPtr& key,
-                            const SerializablePtr& aCallbackArgument) = 0;
+  virtual std::shared_ptr<Cacheable> load(const std::shared_ptr<Region>& rp, const std::shared_ptr<CacheableKey>& key,
+                            const std::shared_ptr<Serializable>& aCallbackArgument) = 0;
 
   /** Called when the region containing this callback is destroyed, when
    * the cache is closed.
@@ -85,7 +86,7 @@ class CPPCACHE_EXPORT CacheLoader  {
    * @see Cache::close
    * @see Region::destroyRegion
    */
-  virtual void close(const RegionPtr& rp);
+  virtual void close(const std::shared_ptr<Region>& rp);
 
   virtual ~CacheLoader();
 

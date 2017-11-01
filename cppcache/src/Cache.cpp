@@ -86,10 +86,9 @@ void Cache::close(bool keepalive) {
   } catch (...) {
   }
 }
-
-RegionPtr Cache::getRegion(const char* path) {
+ std::shared_ptr<Region> Cache::getRegion(const char* path) {
   LOGDEBUG("Cache::getRegion");
-  RegionPtr result;
+  std::shared_ptr<Region> result;
   m_cacheImpl->getRegion(path, result);
 
   if (result != nullptr) {
@@ -114,8 +113,8 @@ RegionPtr Cache::getRegion(const char* path) {
  * regions when the function returns
  */
 
-VectorOfRegion Cache::rootRegions() {
-  VectorOfRegion regions;
+std::vector<std::shared_ptr<Region>> Cache::rootRegions() {
+  std::vector<std::shared_ptr<Region>> regions;
   m_cacheImpl->rootRegions(regions);
   return regions;
 }
@@ -124,23 +123,23 @@ RegionFactory Cache::createRegionFactory(RegionShortcut preDefinedRegion) {
   return m_cacheImpl->createRegionFactory(preDefinedRegion);
 }
 
-QueryServicePtr Cache::getQueryService() {
+std::shared_ptr<QueryService> Cache::getQueryService() {
   return m_cacheImpl->getQueryService();
 }
 
-QueryServicePtr Cache::getQueryService(const char* poolName) {
+std::shared_ptr<QueryService> Cache::getQueryService(const char* poolName) {
   return m_cacheImpl->getQueryService(poolName);
 }
 
-CacheTransactionManagerPtr Cache::getCacheTransactionManager() {
+std::shared_ptr<CacheTransactionManager> Cache::getCacheTransactionManager() {
   return m_cacheImpl->getCacheTransactionManager();
 }
 
 TypeRegistry& Cache::getTypeRegistry() { return *(m_typeRegistry.get()); }
 
-Cache::Cache(const std::string& name, PropertiesPtr dsProp,
+Cache::Cache(const std::string& name, std::shared_ptr<Properties> dsProp,
              bool ignorePdxUnreadFields, bool readPdxSerialized,
-             const AuthInitializePtr& authInitialize) {
+             const std::shared_ptr<AuthInitialize>& authInitialize) {
   auto dsPtr = DistributedSystem::create(DEFAULT_DS_NAME, this, dsProp);
   dsPtr->connect();
   m_cacheImpl = std::unique_ptr<CacheImpl>(
@@ -176,11 +175,11 @@ void Cache::initializeDeclarativeCache(const char* cacheXml) {
 
 void Cache::readyForEvents() { m_cacheImpl->readyForEvents(); }
 
-bool Cache::isPoolInMultiuserMode(RegionPtr regionPtr) {
+bool Cache::isPoolInMultiuserMode(std::shared_ptr<Region> regionPtr) {
   const char* poolName = regionPtr->getAttributes()->getPoolName();
 
   if (poolName != nullptr) {
-    PoolPtr poolPtr = regionPtr->getCache()->getPoolManager().find(poolName);
+    auto poolPtr = regionPtr->getCache()->getPoolManager().find(poolName);
     if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
       return poolPtr->getMultiuserAuthentication();
     }
@@ -196,7 +195,7 @@ bool Cache::getPdxReadSerialized() {
   return m_cacheImpl->getPdxReadSerialized();
 }
 
-PdxInstanceFactoryPtr Cache::createPdxInstanceFactory(const char* className) {
+std::shared_ptr<PdxInstanceFactory> Cache::createPdxInstanceFactory(const char* className) {
   return std::make_shared<PdxInstanceFactoryImpl>(
       className, m_cacheImpl->m_cacheStats, m_cacheImpl->getPdxTypeRegistry(),
       this,
@@ -205,8 +204,8 @@ PdxInstanceFactoryPtr Cache::createPdxInstanceFactory(const char* className) {
           .getEnableTimeStatistics());
 }
 
-RegionServicePtr Cache::createAuthenticatedView(
-    PropertiesPtr userSecurityProperties, const char* poolName) {
+std::shared_ptr<RegionService> Cache::createAuthenticatedView(
+    std::shared_ptr<Properties> userSecurityProperties, const char* poolName) {
   if (poolName == nullptr) {
     auto pool = m_cacheImpl->getPoolManager().getDefaultPool();
     if (!this->isClosed() && pool != nullptr) {
@@ -220,7 +219,7 @@ RegionServicePtr Cache::createAuthenticatedView(
   } else {
     if (!this->isClosed()) {
       if (poolName != nullptr) {
-        PoolPtr poolPtr = m_cacheImpl->getPoolManager().find(poolName);
+        auto poolPtr = m_cacheImpl->getPoolManager().find(poolName);
         if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
           return poolPtr->createSecureUserCache(userSecurityProperties,
                                                 m_cacheImpl.get());

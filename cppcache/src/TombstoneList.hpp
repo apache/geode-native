@@ -39,7 +39,7 @@ class MapSegment;
 class TombstoneExpiryHandler;
 class TombstoneEntry {
  public:
-  TombstoneEntry(const MapEntryImplPtr& entry, int64_t tombstoneCreationTime)
+  TombstoneEntry(const std::shared_ptr<MapEntryImpl>& entry, int64_t tombstoneCreationTime)
       : m_entry(entry),
         m_tombstoneCreationTime(tombstoneCreationTime),
         /* adongre
@@ -53,7 +53,7 @@ class TombstoneEntry {
         m_expiryTaskId(0),
         m_handler(nullptr) {}
   virtual ~TombstoneEntry() {}
-  MapEntryImplPtr getEntry() { return m_entry; }
+  std::shared_ptr<MapEntryImpl> getEntry() { return m_entry; }
   int64_t getTombstoneCreationTime() { return m_tombstoneCreationTime; }
   ExpiryTaskManager::id_type getExpiryTaskId() { return m_expiryTaskId; }
   void setExpiryTaskId(ExpiryTaskManager::id_type expiryTaskId) {
@@ -63,19 +63,18 @@ class TombstoneEntry {
   void setHandler(TombstoneExpiryHandler* handler) { m_handler = handler; };
 
  private:
-  MapEntryImplPtr m_entry;
+  std::shared_ptr<MapEntryImpl> m_entry;
   int64_t m_tombstoneCreationTime;
   ExpiryTaskManager::id_type m_expiryTaskId;
   TombstoneExpiryHandler* m_handler;
 };
-typedef std::shared_ptr<TombstoneEntry> TombstoneEntryPtr;
 
 class TombstoneList {
  public:
   TombstoneList(MapSegment* mapSegment, CacheImpl* cacheImpl)
       : m_mapSegment(mapSegment), m_cacheImpl(cacheImpl) {}
   virtual ~TombstoneList() { cleanUp(); }
-  void add(const MapEntryImplPtr& entry, TombstoneExpiryHandler* handler,
+  void add(const std::shared_ptr<MapEntryImpl>& entry, TombstoneExpiryHandler* handler,
            long taskID);
 
   // Reaps the tombstones which have been gc'ed on server.
@@ -83,21 +82,21 @@ class TombstoneList {
   // and server version of the tombstone with highest version as the
   // value is passed as paramter
   void reapTombstones(std::map<uint16_t, int64_t>& gcVersions);
-  void reapTombstones(CacheableHashSetPtr removedKeys);
-  void eraseEntryFromTombstoneList(const CacheableKeyPtr& key,
+  void reapTombstones(std::shared_ptr<CacheableHashSet> removedKeys);
+  void eraseEntryFromTombstoneList(const std::shared_ptr<CacheableKey>& key,
                                    bool cancelTask = true);
   long eraseEntryFromTombstoneListWithoutCancelTask(
-      const CacheableKeyPtr& key, TombstoneExpiryHandler*& handler);
+      const std::shared_ptr<CacheableKey>& key, TombstoneExpiryHandler*& handler);
   void cleanUp();
   long getExpiryTask(TombstoneExpiryHandler** handler);
-  bool exists(const CacheableKeyPtr& key) const;
+  bool exists(const std::shared_ptr<CacheableKey>& key) const;
 
  private:
-  void removeEntryFromMapSegment(CacheableKeyPtr key);
-  void unguardedRemoveEntryFromMapSegment(CacheableKeyPtr key);
-  typedef std::unordered_map<CacheableKeyPtr, TombstoneEntryPtr,
-                             dereference_hash<CacheableKeyPtr>,
-                             dereference_equal_to<CacheableKeyPtr>>
+  void removeEntryFromMapSegment(std::shared_ptr<CacheableKey> key);
+  void unguardedRemoveEntryFromMapSegment(std::shared_ptr<CacheableKey> key);
+  typedef std::unordered_map<std::shared_ptr<CacheableKey>, std::shared_ptr<TombstoneEntry>,
+                             dereference_hash<std::shared_ptr<CacheableKey>>,
+                             dereference_equal_to<std::shared_ptr<CacheableKey>>>
       TombstoneMap;
   TombstoneMap m_tombstoneMap;
   ACE_Recursive_Thread_Mutex m_queueLock;
@@ -105,7 +104,7 @@ class TombstoneList {
   CacheImpl* m_cacheImpl;
   friend class TombstoneExpiryHandler;
 };
-typedef std::shared_ptr<TombstoneList> TombstoneListPtr;
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

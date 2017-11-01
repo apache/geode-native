@@ -50,7 +50,7 @@ class CPPCACHE_EXPORT ExpMapEntry : public MapEntryImpl,
       : MapEntryImpl(true), ExpEntryProperties(true) {}
 
   inline ExpMapEntry(ExpiryTaskManager* expiryTaskManager,
-                     const CacheableKeyPtr& key)
+                     const std::shared_ptr<CacheableKey>& key)
       : MapEntryImpl(key), ExpEntryProperties(expiryTaskManager) {}
 
  private:
@@ -58,8 +58,6 @@ class CPPCACHE_EXPORT ExpMapEntry : public MapEntryImpl,
   ExpMapEntry(const ExpMapEntry&);
   ExpMapEntry& operator=(const ExpMapEntry&);
 };
-
-typedef std::shared_ptr<ExpMapEntry> ExpMapEntryPtr;
 
 class CPPCACHE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
                                              public VersionStamp {
@@ -72,7 +70,7 @@ class CPPCACHE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
   inline explicit VersionedExpMapEntry(bool noInit) : ExpMapEntry(true) {}
 
   inline VersionedExpMapEntry(ExpiryTaskManager* expiryTaskManager,
-                              const CacheableKeyPtr& key)
+                              const std::shared_ptr<CacheableKey>& key)
       : ExpMapEntry(expiryTaskManager, key) {}
 
  private:
@@ -81,8 +79,6 @@ class CPPCACHE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
   VersionedExpMapEntry& operator=(const VersionedExpMapEntry&);
 };
 
-typedef std::shared_ptr<VersionedExpMapEntry> VersionedExpMapEntryPtr;
-
 class CPPCACHE_EXPORT ExpEntryFactory : public EntryFactory {
  public:
   using EntryFactory::EntryFactory;
@@ -90,8 +86,8 @@ class CPPCACHE_EXPORT ExpEntryFactory : public EntryFactory {
   virtual ~ExpEntryFactory() {}
 
   virtual void newMapEntry(ExpiryTaskManager* expiryTaskManager,
-                           const CacheableKeyPtr& key,
-                           MapEntryImplPtr& result) const;
+                           const std::shared_ptr<CacheableKey>& key,
+                           std::shared_ptr<MapEntryImpl>& result) const;
 };
 }  // namespace client
 }  // namespace geode

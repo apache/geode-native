@@ -62,7 +62,7 @@ using namespace test;
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 const char* regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
-CredentialGeneratorPtr credentialGeneratorHandler;
+std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
@@ -104,13 +104,13 @@ void initCredentialGenerator() {
   if (loopNum > 2) loopNum = 1;
 }
 
-static PropertiesPtr userCreds;
+static std::shared_ptr<Properties> userCreds;
 
 void initClientAuth(char credentialsType, const char* dhAlgo) {
   printf("Initializing Client with %s credential and %s DH Algo\n",
          credentialsType == CORRECT_CREDENTIALS ? "Valid" : "Invalid", dhAlgo);
 
-  PropertiesPtr config = Properties::create();
+  auto config = Properties::create();
   userCreds = Properties::create();
 
   config->insert("security-client-dhalgo", dhAlgo);
@@ -165,11 +165,11 @@ void InitIncorrectClients(const char* dhAlgo) {
   try {
     createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, nullptr, false,
                             -1, true, 0);
-    PoolPtr pool = getPool(regionNamesAuth[0]);
+    auto pool = getPool(regionNamesAuth[0]);
     LOG(" 6");
     if (pool != nullptr) {
       LOG(" 7");
-      RegionServicePtr virtualCache = getVirtualCache(userCreds, pool);
+      auto virtualCache = getVirtualCache(userCreds, pool);
       LOG(" 8");
       virtualCache->getRegion(regionNamesAuth[0])->put(keys[0], vals[0]);
       LOG("Operation allowed, something is wrong.");
@@ -196,13 +196,13 @@ void InitCorrectClients(const char* dhAlgo) {
   try {
     createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, nullptr, false,
                             -1, true, 0);
-    PoolPtr pool = getPool(regionNamesAuth[0]);
+    auto pool = getPool(regionNamesAuth[0]);
     LOG(" 6");
 
     LOG(" 7");
-    RegionServicePtr virtualCache = getVirtualCache(userCreds, pool);
+    auto virtualCache = getVirtualCache(userCreds, pool);
     LOG(" 8");
-    RegionPtr regionPtr = virtualCache->getRegion(regionNamesAuth[0]);
+    auto regionPtr = virtualCache->getRegion(regionNamesAuth[0]);
 
     for (int i = 0; i < 100; i++) regionPtr->put(keys[0], vals[0]);
   } catch (const apache::geode::client::Exception& other) {
@@ -216,15 +216,15 @@ void DoNetSearch() {
   try {
     createRegionForSecurity(regionNamesAuth[1], USE_ACK, false, nullptr, false,
                             -1, true, 0);
-    PoolPtr pool = getPool(regionNamesAuth[1]);
+    auto pool = getPool(regionNamesAuth[1]);
     LOG(" 6");
 
     LOG(" 7");
-    RegionServicePtr virtualCache = getVirtualCache(userCreds, pool);
+    auto virtualCache = getVirtualCache(userCreds, pool);
     LOG(" 8");
-    RegionPtr regionPtr = virtualCache->getRegion(regionNamesAuth[1]);
+    auto regionPtr = virtualCache->getRegion(regionNamesAuth[1]);
 
-    CacheableKeyPtr keyPtr = CacheableKey::create(keys[0]);
+    std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(keys[0]);
     auto checkPtr =
         std::dynamic_pointer_cast<CacheableString>(regionPtr->get(keyPtr));
     if (checkPtr != nullptr && !strcmp(vals[0], checkPtr->asChar())) {

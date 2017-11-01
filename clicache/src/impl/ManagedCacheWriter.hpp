@@ -33,7 +33,7 @@ namespace apache
   {
     namespace client
     {
-
+		namespace native = apache::geode::client;
       /// <summary>
       /// Wraps the managed <see cref="Apache.Geode.Client.ICacheWriter" />
       /// object and implements the native <c>apache::geode::client::CacheWriter</c> interface.
@@ -152,7 +152,7 @@ namespace apache
         /// </remarks>
         /// <seealso cref="Apache.Geode.Client.Cache.Close" />
         /// <seealso cref="Apache.Geode.Client.Region.DestroyRegion" />
-        void close(const RegionPtr& rp);
+        void close(const std::shared_ptr<native::Region>& rp);
 
         /// <summary>
         /// Returns the wrapped managed object reference.

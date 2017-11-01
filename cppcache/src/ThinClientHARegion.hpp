@@ -47,9 +47,9 @@ class CPPCACHE_EXPORT ThinClientHARegion : public ThinClientRegion {
    * @brief constructor/destructor
    */
   ThinClientHARegion(const std::string& name, CacheImpl* cache,
-                     const RegionInternalPtr& rPtr,
-                     const RegionAttributesPtr& attributes,
-                     const CacheStatisticsPtr& stats, bool shared = false,
+                     const std::shared_ptr<RegionInternal>& rPtr,
+                     const std::shared_ptr<RegionAttributes>& attributes,
+                     const std::shared_ptr<CacheStatistics>& stats, bool shared = false,
                      bool enableNotification = true);
 
   virtual ~ThinClientHARegion() {
@@ -64,12 +64,12 @@ class CPPCACHE_EXPORT ThinClientHARegion : public ThinClientRegion {
   void addDisMessToQueue();
 
  protected:
-  virtual GfErrType getNoThrow_FullObject(EventIdPtr eventId,
-                                          CacheablePtr& fullObject,
-                                          VersionTagPtr& versionTag);
+  virtual GfErrType getNoThrow_FullObject(std::shared_ptr<EventId> eventId,
+                                          std::shared_ptr<Cacheable>& fullObject,
+                                          std::shared_ptr<VersionTag>& versionTag);
 
  private:
-  RegionAttributesPtr m_attribute;
+  std::shared_ptr<RegionAttributes> m_attribute;
   volatile bool m_processedMarker;
   void handleMarker();
 

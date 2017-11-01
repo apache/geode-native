@@ -21,15 +21,16 @@
  */
 
 #include <atomic>
-
-#include <geode/geode_globals.hpp>
 #include <memory>
 
+
+#include <geode/geode_globals.hpp>
 #include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+class LRUListEntry;
 
 // Bit mask for recently used
 #define RECENTLY_USED_BITS 1u
@@ -85,7 +86,6 @@ using util::concurrent::spinlock_mutex;
 template <typename TEntry, typename TCreateEntry>
 class LRUList {
  protected:
-  typedef std::shared_ptr<TEntry> LRUListEntryPtr;
 
   /**
    * @brief The entries in the LRU List are instances of LRUListNode.
@@ -93,12 +93,12 @@ class LRUList {
    */
   class LRUListNode {
    public:
-    inline LRUListNode(const LRUListEntryPtr& entry)
+    inline LRUListNode(const std::shared_ptr<TEntry>& entry)
         : m_entry(entry), m_nextLRUListNode(nullptr) {}
 
     inline ~LRUListNode() {}
 
-    inline void getEntry(LRUListEntryPtr& result) const { result = m_entry; }
+    inline void getEntry(std::shared_ptr<TEntry>& result) const { result = m_entry; }
 
     inline LRUListNode* getNextLRUListNode() const { return m_nextLRUListNode; }
 
@@ -109,7 +109,7 @@ class LRUList {
     inline void clearNextLRUListNode() { m_nextLRUListNode = nullptr; }
 
    private:
-    LRUListEntryPtr m_entry;
+    std::shared_ptr<TEntry> m_entry;
     LRUListNode* m_nextLRUListNode;
 
     // disabled
@@ -124,13 +124,13 @@ class LRUList {
   /**
    * @brief add an entry to the tail of the list.
    */
-  void appendEntry(const LRUListEntryPtr& entry);
+  void appendEntry(const std::shared_ptr<TEntry>& entry);
 
   /**
    * @brief return the least recently used node from the list,
    * and removing it from the list.
    */
-  void getLRUEntry(LRUListEntryPtr& result);
+  void getLRUEntry(std::shared_ptr<TEntry>& result);
 
  private:
   /**

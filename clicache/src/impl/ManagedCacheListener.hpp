@@ -181,7 +181,7 @@ namespace apache {
         /// </remarks>
         /// <seealso cref="Apache.Geode.Client.Cache.Close" />
         /// <seealso cref="Apache.Geode.Client.Region.DestroyRegion" />
-        virtual void close(const apache::geode::client::RegionPtr& region);
+        virtual void close(const std::shared_ptr<apache::geode::client::Region>& region);
 
         ///<summary>
         ///Called when all the endpoints associated with region are down.
@@ -194,7 +194,7 @@ namespace apache {
         ///<param>
         ///region Region^ denotes the assosiated region.
         ///</param>
-        virtual void afterRegionDisconnected(const apache::geode::client::RegionPtr& region);
+        virtual void afterRegionDisconnected(const std::shared_ptr<apache::geode::client::Region>& region);
 
         /// <summary>
         /// Returns the wrapped managed object reference.

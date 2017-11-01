@@ -294,7 +294,7 @@ namespace apache
         return false;
       }
 
-      void ManagedCacheWriterGeneric::close(const RegionPtr& rp)
+      void ManagedCacheWriterGeneric::close(const std::shared_ptr<native::Region>& rp)
       {
         try {
           auto mregion = Apache::Geode::Client::Region<Object^, Object^>::Create(rp);

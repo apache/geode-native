@@ -35,19 +35,19 @@ namespace client {
  * the circumstances of the event. */
 class CPPCACHE_EXPORT EntryEvent {
  protected:
-  RegionPtr m_region;      /**< Region */
-  CacheableKeyPtr m_key;   /**< Cacheable key */
-  CacheablePtr m_oldValue; /**< Old value */
-  CacheablePtr m_newValue; /**< New value */
-  SerializablePtr
+  std::shared_ptr<Region> m_region;      /**< Region */
+  std::shared_ptr<CacheableKey> m_key;   /**< Cacheable key */
+  std::shared_ptr<Cacheable> m_oldValue; /**< Old value */
+  std::shared_ptr<Cacheable> m_newValue; /**< New value */
+  std::shared_ptr<Serializable>
       m_callbackArgument; /**< Callback argument for this event, if any. */
   bool m_remoteOrigin;    /**< True if from a remote (non-local) process */
 
  public:
   /** Constructor, given all values. */
-  EntryEvent(const RegionPtr& region, const CacheableKeyPtr& key,
-             const CacheablePtr& oldValue, const CacheablePtr& newValue,
-             const SerializablePtr& aCallbackArgument, const bool remoteOrigin);
+  EntryEvent(const std::shared_ptr<Region>& region, const std::shared_ptr<CacheableKey>& key,
+             const std::shared_ptr<Cacheable>& oldValue, const std::shared_ptr<Cacheable>& newValue,
+             const std::shared_ptr<Serializable>& aCallbackArgument, const bool remoteOrigin);
 
   /** Destructor. */
   virtual ~EntryEvent();
@@ -56,29 +56,29 @@ class CPPCACHE_EXPORT EntryEvent {
   EntryEvent();
 
   /** @return the region this event occurred in. */
-  inline RegionPtr getRegion() const { return m_region; }
+  inline std::shared_ptr<Region> getRegion() const { return m_region; }
 
   /** @return the key this event describes. */
-  inline CacheableKeyPtr getKey() const { return m_key; }
+  inline std::shared_ptr<CacheableKey> getKey() const { return m_key; }
 
   /** If the prior state of the entry was invalid, or non-existent/destroyed,
    * then the old value will be nullptr.
    * @return the old value in the cache.
    */
-  inline CacheablePtr getOldValue() const { return m_oldValue; }
+  inline std::shared_ptr<Cacheable> getOldValue() const { return m_oldValue; }
 
   /** If the event is a destroy or invalidate operation, then the new value
    * will be nullptr.
    * @return the updated value from this event
    */
-  inline CacheablePtr getNewValue() const { return m_newValue; }
+  inline std::shared_ptr<Cacheable> getNewValue() const { return m_newValue; }
 
   /**
    * Returns the callbackArgument passed to the method that generated
    * this event. See the {@link Region} interface methods that take
    * a callbackArgument parameter.
    */
-  inline SerializablePtr getCallbackArgument() const { return m_callbackArgument; }
+  inline std::shared_ptr<Serializable> getCallbackArgument() const { return m_callbackArgument; }
 
   /** If the event originated in a remote process, returns true. */
   inline bool remoteOrigin() const { return m_remoteOrigin; }

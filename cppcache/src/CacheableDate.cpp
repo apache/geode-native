@@ -86,7 +86,7 @@ CacheableDate::CacheableDate(const CacheableDate::duration& value) {
 
 CacheableDate::~CacheableDate() {}
 
-CacheableStringPtr CacheableDate::toString() const {
+std::shared_ptr<CacheableString> CacheableDate::toString() const {
   char buffer[25];
   struct tm date = {0};
   time_t sec = m_timevalue / 1000;

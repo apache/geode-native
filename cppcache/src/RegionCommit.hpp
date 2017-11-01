@@ -25,20 +25,18 @@
  *  Created on: 23-Feb-2011
  *      Author: ankurs
  */
+#include <vector>
+#include <memory>
 
 #include <geode/geode_types.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/Cache.hpp>
-#include <vector>
 #include "FarSideEntryOp.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
-
-_GF_PTR_DEF_(RegionCommit, RegionCommitPtr);
-_GF_PTR_DEF_(FarSideEntryOp, FarSideEntryOpPtr);
 
 class RegionCommit {
  public:
@@ -48,14 +46,14 @@ class RegionCommit {
 
   void fromData(DataInput& input);
   void apply(Cache* cache);
-  void fillEvents(Cache* cache, std::vector<FarSideEntryOpPtr>& ops);
-  RegionPtr getRegion(Cache* cache) {
+  void fillEvents(Cache* cache, std::vector<std::shared_ptr<FarSideEntryOp>>& ops);
+  std::shared_ptr<Region> getRegion(Cache* cache) {
     return cache->getRegion(m_regionPath->asChar());
   }
 
  private:
-  CacheableStringPtr m_regionPath;
-  CacheableStringPtr m_parentRegionPath;
+  std::shared_ptr<CacheableString> m_regionPath;
+  std::shared_ptr<CacheableString> m_parentRegionPath;
   std::vector< std::shared_ptr<FarSideEntryOp> > m_farSideEntryOps;
   MemberListForVersionStamp& m_memberListForVersionStamp;
 };

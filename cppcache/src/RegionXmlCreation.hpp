@@ -54,7 +54,7 @@ class CPPCACHE_EXPORT RegionXmlCreation {
   bool isRoot;
 
   /** The attributes of this region */
-  RegionAttributesPtr regAttrs;
+  std::shared_ptr<RegionAttributes> regAttrs;
 
   /** This region's subregions */
   std::vector<std::shared_ptr<RegionXmlCreation>> subRegions;
@@ -66,7 +66,7 @@ class CPPCACHE_EXPORT RegionXmlCreation {
    * by this <code>RegionXmlCreation</code>.
    *
    */
-  void fillIn(RegionPtr region);
+  void fillIn(std::shared_ptr<Region> region);
 
  public:
   ~RegionXmlCreation() = default;
@@ -83,12 +83,12 @@ class CPPCACHE_EXPORT RegionXmlCreation {
   /**
    * Sets the attributes of this region
    */
-  void setAttributes(RegionAttributesPtr attrsPtr);
+  void setAttributes(std::shared_ptr<RegionAttributes> attrsPtr);
 
   /**
    * Gets the attributes of this region
    */
-  RegionAttributesPtr getAttributes();
+  std::shared_ptr<RegionAttributes> getAttributes();
 
   /**
    * Creates a root {@link Region} in a given <code>Cache</code>
@@ -122,7 +122,7 @@ class CPPCACHE_EXPORT RegionXmlCreation {
    * @throws UnknownException otherwise
    *
    */
-  void create(RegionPtr parent);
+  void create(std::shared_ptr<Region> parent);
 
   std::string getAttrId() const;
   void setAttrId(const std::string& attrId);

@@ -27,7 +27,7 @@ CqAttributes::listener_container_type CqAttributesImpl::getCqListeners() {
   return m_cqListeners;
 }
 
-void CqAttributesImpl::addCqListener(const CqListenerPtr& cql) {
+void CqAttributesImpl::addCqListener(const std::shared_ptr<CqListener>& cql) {
   if (cql == nullptr) {
     throw IllegalArgumentException("addCqListener parameter was null");
   }
@@ -67,7 +67,7 @@ void CqAttributesImpl::setCqListeners(
   }
 }
 
-void CqAttributesImpl::removeCqListener(const CqListenerPtr& cql) {
+void CqAttributesImpl::removeCqListener(const std::shared_ptr<CqListener>& cql) {
   if (cql == nullptr) {
     throw IllegalArgumentException("removeCqListener parameter was null");
   }
@@ -75,7 +75,7 @@ void CqAttributesImpl::removeCqListener(const CqListenerPtr& cql) {
   if (!m_cqListeners.empty()) {
     m_cqListeners.erase(
         std::remove_if(m_cqListeners.begin(), m_cqListeners.end(),
-                       [cql](CqListenerPtr l) -> bool { return cql == l; }),
+                       [cql](std::shared_ptr<CqListener> l) -> bool { return cql == l; }),
         m_cqListeners.end());
     try {
       cql->close();

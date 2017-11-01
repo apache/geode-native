@@ -28,12 +28,12 @@ using namespace apache::geode::client;
 
 Delta::Delta(Cache* cache) : m_cache(cache) {}
 
-DeltaPtr Delta::clone() {
+std::shared_ptr<Delta> Delta::clone() {
   auto out = m_cache->createDataOutput();
   auto ptr = dynamic_cast<Cacheable*>(this);
   out->writeObject(ptr);
   auto in = m_cache->createDataInput(out->getBuffer(), out->getBufferLength());
-  CacheablePtr theClonePtr;
+  std::shared_ptr<Cacheable> theClonePtr;
   in->readObject(theClonePtr);
   return std::dynamic_pointer_cast<Delta>(theClonePtr);
 }

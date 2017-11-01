@@ -34,7 +34,7 @@ using namespace apache::geode::client;
 
 PreservedDataExpiryHandler::PreservedDataExpiryHandler(
 	const std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
-    const PdxSerializablePtr& pdxObjectPtr, uint32_t duration)
+    const std::shared_ptr<PdxSerializable>& pdxObjectPtr, uint32_t duration)
     :  // UNUSED m_duration(duration),
       m_pdxObjectPtr(pdxObjectPtr),
 	  m_pdxTypeRegistry(pdxTypeRegistry) {}

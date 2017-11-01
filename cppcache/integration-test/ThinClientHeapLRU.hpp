@@ -62,7 +62,7 @@ const bool NO_ACK = false;
 
 void initThinClientWithClientTypeAsCLIENT(const bool isthinClient) {
   if (cacheHelper == nullptr) {
-    PropertiesPtr pp = Properties::create();
+    auto pp = Properties::create();
     pp->insert("heap-lru-limit", 1);
     pp->insert("heap-lru-delta", 10);
 
@@ -95,7 +95,7 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr = getHelper()->createRegion(
+  auto regPtr = getHelper()->createRegion(
       name, ackMode, true, nullptr, endpoints, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
@@ -108,7 +108,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("createRegion_Pool() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr =
+  auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -117,7 +117,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
 
 void createOnekEntries() {
   CacheableHelper::registerBuiltins();
-  RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+  auto dataReg = getHelper()->getRegion(regionNames[0]);
   for (int i = 0; i < 2048; i++) {
     CacheableWrapper* tmpkey =
         CacheableWrapperFactory::createInstance(GeodeTypeIds::CacheableInt32);
@@ -136,7 +136,7 @@ void createOnekEntries() {
     //  delete tmpval;
   }
   dunit::sleep(10000);
-  VectorOfRegionEntry me;
+  std::vector<std::shared_ptr<RegionEntry>> me;
   dataReg->entries(me, false);
   LOG("Verifying size outside loop");
   char buf[1024];

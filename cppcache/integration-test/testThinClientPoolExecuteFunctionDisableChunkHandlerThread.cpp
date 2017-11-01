@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
+#include <geode/FunctionService.hpp>
 #include "ThinClientHelper.hpp"
 #include "testobject/VariousPdxTypes.hpp"
 #include <ace/OS.h>
@@ -85,7 +86,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
     // createPool(poolName, locHostPort,serverGroup, nullptr, 0, true );
     // createRegionAndAttachPool(poolRegNames[0],USE_ACK, poolName);
 
-    RegionPtr regPtr0 =
+    auto regPtr0 =
         createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
     ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
     regPtr0->registerAllKeys();
@@ -133,7 +134,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StartTestClient)
   {
     LOG("in before starting StartTestClient");
-    PropertiesPtr config = Properties::create();
+    auto config = Properties::create();
     config->insert("disable-chunk-handler-thread", "true");
     config->insert("read-timeout-unit-in-millis", "true");
     config->insert("ping-interval", "-1");
@@ -144,7 +145,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartTestClient)
                        -1, -1, -1, true, false);
     // createPool(poolName, locHostPort,serverGroup, nullptr, 0, true );
 
-    RegionPtr regPtr0 =
+    auto regPtr0 =
         createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
     ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
 
@@ -155,7 +156,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StartTestClient2)
   {
     LOG("in before starting StartTestClient");
-    PropertiesPtr config = Properties::create();
+    auto config = Properties::create();
     config->insert("disable-chunk-handler-thread", "true");
     config->insert("read-timeout-unit-in-millis", "true");
     config->insert("ping-interval", "-1");
@@ -166,7 +167,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StartTestClient2)
                        -1, -1, -1, true, false);
     // createPool(poolName, locHostPort,serverGroup, nullptr, 0, true );
 
-    RegionPtr regPtr0 =
+    auto regPtr0 =
         createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
     ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
 
@@ -176,13 +177,13 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, clientPuts)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+    auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     char buf[128];
     for (int i = 1; i <= 500; i++) {
-      CacheablePtr value(CacheableInt32::create(i));
+      std::shared_ptr<Cacheable> value(CacheableInt32::create(i));
 
       sprintf(buf, "am-%d", i);
-      CacheableKeyPtr key = CacheableKey::create(buf);
+      std::shared_ptr<CacheableKey> key = CacheableKey::create(buf);
       regPtr0->put(key, value);
     }
     LOG("clientPuts complete.");
@@ -191,7 +192,7 @@ END_TASK_DEFINITION
 
 class putThread : public ACE_Task_Base {
  private:
-  RegionPtr regPtr;
+  std::shared_ptr<Region> regPtr;
   int m_min;
   int m_max;
   int m_failureCount;
@@ -199,7 +200,7 @@ class putThread : public ACE_Task_Base {
   volatile bool m_stop;
 
  public:
-  putThread(RegionPtr rp, int min, int max, bool isWarmUpTask)
+  putThread(std::shared_ptr<Region> rp, int min, int max, bool isWarmUpTask)
       : regPtr(rp),
         m_min(min),
         m_max(max),
@@ -213,19 +214,19 @@ class putThread : public ACE_Task_Base {
 
   int svc(void) {
     bool networkhop ATTR_UNUSED = false;
-    CacheableKeyPtr keyPtr;
-    CacheablePtr args = nullptr;
-    ResultCollectorPtr rPtr = nullptr;
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+    std::shared_ptr<CacheableKey> keyPtr;
+    std::shared_ptr<Cacheable> args = nullptr;
+    auto rPtr = nullptr;
+    auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     while (!m_stop) {
       for (int i = m_min; i < m_max; i++) {
         try {
           char buf[128];
           sprintf(buf, "am-%d", i);
-          CacheableKeyPtr key = CacheableKey::create(buf);
-          CacheableVectorPtr routingObj = CacheableVector::create();
+          std::shared_ptr<CacheableKey> key = CacheableKey::create(buf);
+          std::shared_ptr<CacheableVector> routingObj = CacheableVector::create();
           routingObj->push_back(key);
-          ExecutionPtr exc = FunctionService::onRegion(regPtr0);
+          auto exc = FunctionService::onRegion(regPtr0);
           exc->execute(routingObj, args, rPtr, getFuncName2, 300 /*in millis*/)
               ->getResult();
         } catch (const TimeoutException& te) {
@@ -249,10 +250,10 @@ class putThread : public ACE_Task_Base {
 };
 
 void executeFunction() {
-  RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+  auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
   TestUtils::getCacheImpl(getHelper()->cachePtr)->getAndResetNetworkHopFlag();
-  CacheablePtr args = nullptr;
-  ResultCollectorPtr rPtr = nullptr;
+  std::shared_ptr<Cacheable> args = nullptr;
+  auto rPtr = nullptr;
   int failureCount = 0;
   LOGINFO("executeFunction started");
   for (int i = 0; i < 300; i++) {
@@ -264,10 +265,10 @@ void executeFunction() {
     }
     char buf[128];
     sprintf(buf, "am-%d", i);
-    CacheableKeyPtr key = CacheableKey::create(buf);
-    CacheableVectorPtr routingObj = CacheableVector::create();
+    std::shared_ptr<CacheableKey> key = CacheableKey::create(buf);
+    std::shared_ptr<CacheableVector> routingObj = CacheableVector::create();
     routingObj->push_back(key);
-    ExecutionPtr exc = FunctionService::onRegion(regPtr0);
+    auto exc = FunctionService::onRegion(regPtr0);
     exc->execute(routingObj, args, rPtr, getFuncName2, 300 /*in millis*/)
         ->getResult();
   }
@@ -280,7 +281,7 @@ putThread* threads[nThreads];
 
 DUNIT_TASK_DEFINITION(CLIENT1, dofuncOps)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+    auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     // check nextwork hop for single key
     executeFunction();
 

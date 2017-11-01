@@ -288,7 +288,7 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static Cache^ Create(native::CachePtr nativeptr)
+        inline static Cache^ Create(std::shared_ptr<native::Cache> nativeptr)
         {
           return __nullptr == nativeptr ? nullptr :
             gcnew Cache( nativeptr );
@@ -310,7 +310,7 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        Cache(native::CachePtr nativeptr);
+        Cache(std::shared_ptr<native::Cache> nativeptr);
 
         native_shared_ptr<native::Cache>^ m_nativeptr;
 

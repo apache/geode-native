@@ -70,7 +70,7 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
     }
     return "";
   }
-  void setServername(CacheableStringPtr sn) { m_serverName = sn; }
+  void setServername(std::shared_ptr<CacheableString> sn) { m_serverName = sn; }
   int getPort() const { return m_port; }
   void toData(DataOutput& output) const {
     if (m_serverName != nullptr) {
@@ -156,7 +156,7 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
   void makeEpString();
 
  protected:
-  CacheableStringPtr m_serverName;
+  std::shared_ptr<CacheableString> m_serverName;
   int m_port;
   std::string m_epString;
 };

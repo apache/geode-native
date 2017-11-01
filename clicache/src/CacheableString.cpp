@@ -69,7 +69,7 @@ namespace Apache
 
 
       inline void CacheableString::GetCacheableString(String^ value,
-                                                      apache::geode::client::CacheableStringPtr& cStr)
+                                                      std::shared_ptr<apache::geode::client::CacheableString>& cStr)
       {
         size_t len;
         if (value != nullptr && (len = value->Length) > 0) {
@@ -83,7 +83,7 @@ namespace Apache
       }
 
       inline void CacheableString::GetCacheableString(array<Char>^ value,
-                                                      apache::geode::client::CacheableStringPtr& cStr)
+                                                      std::shared_ptr<apache::geode::client::CacheableString>& cStr)
       {
         size_t len;
         if (value != nullptr && (len = value->Length) > 0) {

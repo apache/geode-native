@@ -33,7 +33,7 @@ using namespace apache::geode::client;
  * support shared regions directly.
  */
 EntriesMap* EntriesMapFactory::createMap(RegionInternal* region,
-                                         const RegionAttributesPtr& attrs) {
+                                         const std::shared_ptr<RegionAttributes>& attrs) {
   EntriesMap* result = nullptr;
   uint32_t initialCapacity = attrs->getInitialCapacity();
   uint8_t concurrency = attrs->getConcurrencyLevel();

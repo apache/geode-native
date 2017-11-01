@@ -59,7 +59,7 @@ using namespace test;
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 const char* regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
-CredentialGeneratorPtr credentialGeneratorHandler;
+std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
@@ -105,7 +105,7 @@ void initClientAuth(char credentialsType, const char* dhAlgo) {
   printf("Initializing Client with %s credential and %s DH Algo\n",
          credentialsType == CORRECT_CREDENTIALS ? "Valid" : "Invalid", dhAlgo);
 
-  PropertiesPtr config = Properties::create();
+  auto config = Properties::create();
 
   config->insert("security-client-dhalgo", dhAlgo);
   std::string testsrc = ACE_OS::getenv("TESTSRC");
@@ -191,8 +191,8 @@ void InitCorrectClients(const char* dhAlgo) {
 void DoNetSearch() {
   try {
     createRegionForSecurity(regionNamesAuth[1], USE_ACK, true);
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
-    CacheableKeyPtr keyPtr = CacheableKey::create(keys[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
+    std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(keys[0]);
     auto checkPtr =
         std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
     if (checkPtr != nullptr && !strcmp(nvals[0], checkPtr->asChar())) {

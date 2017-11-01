@@ -245,7 +245,7 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static AttributesMutator<TKey, TValue>^ Create( native::AttributesMutatorPtr nativeptr )
+        inline static AttributesMutator<TKey, TValue>^ Create( std::shared_ptr<native::AttributesMutator> nativeptr )
         {
           return __nullptr == nativeptr ? nullptr :
             gcnew AttributesMutator<TKey, TValue>( nativeptr );
@@ -258,7 +258,7 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline AttributesMutator<TKey, TValue>( native::AttributesMutatorPtr nativeptr )
+        inline AttributesMutator<TKey, TValue>( std::shared_ptr<native::AttributesMutator> nativeptr )
         {
           m_nativeptr = gcnew native_shared_ptr<native::AttributesMutator>(nativeptr);
         }

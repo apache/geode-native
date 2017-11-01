@@ -43,8 +43,8 @@ namespace client {
 
 class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
  private:
-  CacheableStringPtr m_enumClassName;
-  CacheableStringPtr m_enumName;
+  std::shared_ptr<CacheableString> m_enumClassName;
+  std::shared_ptr<CacheableString> m_enumName;
   int32_t m_ordinal;
   mutable int32_t m_hashcode;
 
@@ -95,7 +95,7 @@ class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
   /**
    * Display this object as c string.
    */
-  virtual CacheableStringPtr toString() const {
+  virtual std::shared_ptr<CacheableString> toString() const {
     return CacheableString::create("CacheableEnum");
   }
 
@@ -109,7 +109,7 @@ class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
    * enum type.
    * @return a {@link CacheableEnum} representing C++ enum.
    */
-  static CacheableEnumPtr create(const char* enumClassName,
+  static std::shared_ptr<CacheableEnum> create(const char* enumClassName,
                                  const char* enumName, int32_t ordinal) {
     return std::make_shared<CacheableEnum>(enumClassName, enumName, ordinal);
   }

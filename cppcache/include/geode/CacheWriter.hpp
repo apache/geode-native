@@ -34,6 +34,7 @@ namespace client {
 
 class EntryEvent;
 class RegionEvent;
+class Region;
 /**
  * @class CacheWriter CacheWriter.hpp
  * An application plug-in that can be installed on the region.
@@ -169,7 +170,7 @@ class CPPCACHE_EXPORT CacheWriter  {
      * @see Cache::close
      * @see Region::destroyRegion
    */
-  virtual void close(const RegionPtr& rp);
+  virtual void close(const std::shared_ptr<Region>& rp);
 
   virtual ~CacheWriter();
 

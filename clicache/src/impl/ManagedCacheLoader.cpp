@@ -214,8 +214,8 @@ namespace apache
         return NULL;
       }
 
-      CacheablePtr ManagedCacheLoaderGeneric::load(const RegionPtr& region,
-                                                   const CacheableKeyPtr& key, const SerializablePtr& aCallbackArgument)
+     std::shared_ptr<native::Cacheable> ManagedCacheLoaderGeneric::load(const std::shared_ptr<native::Region>& region,
+                                                   const std::shared_ptr<native::CacheableKey>& key, const std::shared_ptr<native::Serializable>& aCallbackArgument)
       {
         try {
           return m_managedptr->load(region, key, aCallbackArgument);
@@ -229,7 +229,7 @@ namespace apache
         return nullptr;
       }
 
-      void ManagedCacheLoaderGeneric::close(const RegionPtr& region)
+      void ManagedCacheLoaderGeneric::close(const std::shared_ptr<native::Region>& region)
       {
         try {
           /*

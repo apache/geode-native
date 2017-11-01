@@ -35,7 +35,7 @@ class EntryEvent;
  * <p>
  * Geode uses the partition name returned by
  * {@link FixedPartitionResolver#getPartitionName(EntryEvent,
- * CacheableHashSetPtr)}
+ * std::shared_ptr<CacheableHashSet>)}
  * to determine on which member the data is being managed. Say, for example, you
  * want to
  * partition all Trades according to quarters. You can implement
@@ -45,7 +45,7 @@ class EntryEvent;
  *
  * public class QuarterPartitionResolver implements FixedPartitionResolver{<br>
  * &nbsp &nbsp public const char* getPartitionName(EntryEvent event,
- * CacheableHashSetPtr
+ * std::shared_ptr<CacheableHashSet>
  * allAvailablePartitions) {<br>
  * &nbsp &nbsp Date date = sdf.parse((String)opDetails.getKey());<br>
  * &nbsp &nbsp Calendar cal = Calendar.getInstance();<br>

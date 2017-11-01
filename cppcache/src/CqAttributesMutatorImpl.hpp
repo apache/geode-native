@@ -20,9 +20,11 @@
  * limitations under the License.
  */
 
+#include <vector>
+#include <memory>
+
 #include <geode/geode_globals.hpp>
 #include <geode/geode_types.hpp>
-#include <geode/VectorT.hpp>
 #include <geode/CqAttributesMutator.hpp>
 #include <geode/CqAttributes.hpp>
 
@@ -45,14 +47,14 @@ namespace client {
  */
 class CPPCACHE_EXPORT CqAttributesMutatorImpl : public CqAttributesMutator {
  public:
-  CqAttributesMutatorImpl(const CqAttributesPtr& impl);
+  CqAttributesMutatorImpl(const std::shared_ptr<CqAttributes>& impl);
 
   /**
    * Adds a CQ listener to the end of the list of CQ listeners on this CqQuery.
    * @param aListener the user defined CQ listener to add to the CqQuery.
    * @throws IllegalArgumentException if <code>aListener</code> is null
    */
-  void addCqListener(const CqListenerPtr& aListener);
+  void addCqListener(const std::shared_ptr<CqListener>& aListener);
 
   /**
    * Removes given CQ listener from the list of CQ listeners on this CqQuery.
@@ -62,7 +64,7 @@ class CPPCACHE_EXPORT CqAttributesMutatorImpl : public CqAttributesMutator {
    * @param aListener the CQ listener to remove from the CqQuery.
    * @throws IllegalArgumentException if <code>aListener</code> is null
    */
-  void removeCqListener(const CqListenerPtr& aListener);
+  void removeCqListener(const std::shared_ptr<CqListener>& aListener);
 
   /**
    * Adds the given set CqListner on this CQ. If the CQ already has CqListeners,
@@ -73,10 +75,10 @@ class CPPCACHE_EXPORT CqAttributesMutatorImpl : public CqAttributesMutator {
    * @throws IllegalArgumentException if the <code>newListeners</code> array
    * has a null element
    */
-  void setCqListeners(const std::vector<CqListenerPtr>& newListeners);
+  void setCqListeners(const std::vector<std::shared_ptr<CqListener>>& newListeners);
 
  private:
-  CqAttributesPtr m_cqAttributes;
+  std::shared_ptr<CqAttributes> m_cqAttributes;
 };
 }  // namespace client
 }  // namespace geode

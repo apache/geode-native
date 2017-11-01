@@ -40,5 +40,5 @@ class SimpleCacheListener : public CacheListener {
   virtual void afterDestroy(const EntryEvent& event);
   virtual void afterRegionInvalidate(const RegionEvent& event);
   virtual void afterRegionDestroy(const RegionEvent& event);
-  virtual void close(const RegionPtr& region);
+  virtual void close(const std::shared_ptr<Region>& region);
 };

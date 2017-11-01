@@ -40,7 +40,7 @@ class DisconnectCacheListioner : public CacheListener {
  public:
   explicit DisconnectCacheListioner(int index) { m_index = index; };
 
-  void afterRegionDisconnected(const RegionPtr& region) {
+  void afterRegionDisconnected(const std::shared_ptr<Region>& region) {
     isRegionDead[m_index] = true;
     LOG("After Region Disconnected event received");
   }
@@ -59,12 +59,12 @@ auto cptr4 = std::make_shared<DisconnectCacheListioner>(3);
 
 void createPooledRegionMine(bool callReadyForEventsAPI = false) {
   auto& poolManager = getHelper()->getCache()->getPoolManager();
-  PoolFactoryPtr poolFacPtr = poolManager.createFactory();
+  auto poolFacPtr = poolManager.createFactory();
   poolFacPtr->setSubscriptionEnabled(true);
   getHelper()->addServerLocatorEPs(locatorsG, poolFacPtr);
   if ((poolManager.find("__TEST_POOL1__")) ==
       nullptr) {  // Pool does not exist with the same name.
-    PoolPtr pptr = poolFacPtr->create("__TEST_POOL1__");
+    auto pptr = poolFacPtr->create("__TEST_POOL1__");
   }
   SLEEP(10000);
   AttributesFactory af;
@@ -78,21 +78,21 @@ void createPooledRegionMine(bool callReadyForEventsAPI = false) {
   LOG("poolName = ");
   LOG("__TEST_POOL1__");
   af.setCacheListener(cptr1);
-  RegionAttributesPtr rattrsPtr1 = af.createRegionAttributes();
+  std::shared_ptr<RegionAttributes> rattrsPtr1 = af.createRegionAttributes();
   af.setCacheListener(cptr2);
-  RegionAttributesPtr rattrsPtr2 = af.createRegionAttributes();
+  std::shared_ptr<RegionAttributes> rattrsPtr2 = af.createRegionAttributes();
   af.setCacheListener(cptr3);
-  RegionAttributesPtr rattrsPtr3 = af.createRegionAttributes();
+  std::shared_ptr<RegionAttributes> rattrsPtr3 = af.createRegionAttributes();
   af.setCacheListener(cptr4);
-  RegionAttributesPtr rattrsPtr4 = af.createRegionAttributes();
+  std::shared_ptr<RegionAttributes> rattrsPtr4 = af.createRegionAttributes();
   CacheImpl* cacheImpl =
       CacheRegionHelper::getCacheImpl(getHelper()->cachePtr.get());
-  RegionPtr region1;
+  std::shared_ptr<Region> region1;
   cacheImpl->createRegion(regionNames[0], rattrsPtr1, region1);
-  RegionPtr region2;
+  std::shared_ptr<Region> region2;
   cacheImpl->createRegion(regionNames[1], rattrsPtr2, region2);
-  RegionPtr subregion1 = region1->createSubregion(regionNames[0], rattrsPtr3);
-  RegionPtr subregion2 = region2->createSubregion(regionNames[1], rattrsPtr4);
+  auto subregion1 = region1->createSubregion(regionNames[0], rattrsPtr3);
+  auto subregion2 = region2->createSubregion(regionNames[1], rattrsPtr4);
   if (callReadyForEventsAPI) {
     getHelper()->cachePtr->readyForEvents();
   }
@@ -106,7 +106,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, NotAutoReady_CallReadyForEvents)
   {
-    PropertiesPtr props(Properties::create());
+    std::shared_ptr<Properties> props(Properties::create());
     props->insert("auto-ready-for-events", "false");
     initClient(true, props);
     createPooledRegionMine(true);
@@ -115,7 +115,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, NotAutoReady_DontCallReadyForEvents)
   {
-    PropertiesPtr props(Properties::create());
+    std::shared_ptr<Properties> props(Properties::create());
     props->insert("auto-ready-for-events", "false");
     initClient(true, props);
     createPooledRegionMine(false);
@@ -185,9 +185,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, populateServer)
   {
     SLEEP(10000);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    CacheableKeyPtr keyPtr = createKey("PXR");
-    CacheableStringPtr valPtr = CacheableString::create("PXR1");
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
+    std::shared_ptr<CacheableKey> keyPtr = createKey("PXR");
+    std::shared_ptr<CacheableString> valPtr = CacheableString::create("PXR1");
     regPtr->create(keyPtr, valPtr);
   }
 END_TASK_DEFINITION

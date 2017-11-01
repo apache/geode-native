@@ -31,7 +31,6 @@ namespace apache {
 namespace geode {
 namespace client {
 class ProxyCache;
-typedef std::shared_ptr<ProxyCache> ProxyCachePtr;
 class ThinClientPoolDM;
 class UserConnectionAttributes {
  public:
@@ -74,14 +73,14 @@ class CPPCACHE_EXPORT UserAttributes {
   // servers
  public:
   ~UserAttributes();
-  UserAttributes(PropertiesPtr credentials, PoolPtr pool,
+  UserAttributes(std::shared_ptr<Properties> credentials, std::shared_ptr<Pool> pool,
                  ProxyCache* proxyCache);
 
   bool isCacheClosed();
 
-  ProxyCachePtr getProxyCache();
+  std::shared_ptr<ProxyCache> getProxyCache();
 
-  PoolPtr getPool();
+  std::shared_ptr<Pool> getPool();
 
   void setConnectionAttributes(TcrEndpoint* endpoint, uint64_t id) {
     m_isUserAuthenticated = true;
@@ -96,7 +95,7 @@ class CPPCACHE_EXPORT UserAttributes {
 
   UserConnectionAttributes* getConnectionAttribute();
   UserConnectionAttributes* getConnectionAttribute(TcrEndpoint* ep);
-  PropertiesPtr getCredentials();
+  std::shared_ptr<Properties> getCredentials();
 
   std::map<std::string, UserConnectionAttributes*>& getUserConnectionServers() {
     return m_connectionAttr;
@@ -108,30 +107,29 @@ class CPPCACHE_EXPORT UserAttributes {
 
  private:
   std::map<std::string, UserConnectionAttributes*> m_connectionAttr;
-  PropertiesPtr m_credentials;
+  std::shared_ptr<Properties> m_credentials;
   // ThinClientPoolDM m_pool;
   ACE_Recursive_Thread_Mutex m_listLock;
   bool m_isUserAuthenticated;
-  ProxyCachePtr m_proxyCache;
-  PoolPtr m_pool;
+  std::shared_ptr<ProxyCache> m_proxyCache;
+  std::shared_ptr<Pool> m_pool;
 
   // Disallow copy constructor and assignment operator.
   UserAttributes(const UserAttributes&);
   UserAttributes& operator=(const UserAttributes&);
 };
 
-typedef std::shared_ptr<UserAttributes> UserAttributesPtr;
 
 class TSSUserAttributesWrapper {
  private:
-  UserAttributesPtr m_userAttribute;
+  std::shared_ptr<UserAttributes> m_userAttribute;
   TSSUserAttributesWrapper& operator=(const TSSUserAttributesWrapper&);
   TSSUserAttributesWrapper(const TSSUserAttributesWrapper&);
 
  public:
   static ACE_TSS<TSSUserAttributesWrapper> s_geodeTSSUserAttributes;
-  UserAttributesPtr getUserAttributes() { return m_userAttribute; }
-  void setUserAttributes(UserAttributesPtr userAttr) {
+  std::shared_ptr<UserAttributes> getUserAttributes() { return m_userAttribute; }
+  void setUserAttributes(std::shared_ptr<UserAttributes> userAttr) {
     m_userAttribute = userAttr;
   }
   TSSUserAttributesWrapper() : m_userAttribute(nullptr) {}
@@ -142,14 +140,14 @@ class GuardUserAttribures {
  public:
   GuardUserAttribures();
 
-  GuardUserAttribures(ProxyCachePtr proxyCache);
+  GuardUserAttribures(std::shared_ptr<ProxyCache> proxyCache);
 
-  void setProxyCache(ProxyCachePtr proxyCache);
+  void setProxyCache(std::shared_ptr<ProxyCache> proxyCache);
 
   ~GuardUserAttribures();
 
  private:
-  ProxyCachePtr m_proxyCache;
+  std::shared_ptr<ProxyCache> m_proxyCache;
 };
 }  // namespace client
 }  // namespace geode

@@ -26,8 +26,10 @@
  *      Author: vrao
  */
 
-#include <geode/GeodeCppCache.hpp>
 #include "SerializationRegistry.hpp"
+#include <geode/CacheableEnum.hpp>
+#include <geode/CacheableObjectArray.hpp>
+#include <geode/PdxWrapper.hpp>
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
 #define TESTOBJECT_EXPORT LIBEXP
@@ -105,7 +107,7 @@ class TESTOBJECT_EXPORT NonPdxType {
 
   char* m_charArray;
 
-  CacheableDatePtr m_date;
+  std::shared_ptr<CacheableDate> m_date;
 
   int16_t* m_int16Array;
   int16_t* m_uint16Array;
@@ -123,25 +125,25 @@ class TESTOBJECT_EXPORT NonPdxType {
 
   char** m_stringArray;
 
-  SerializablePtr m_address;
+  std::shared_ptr<Serializable> m_address;
 
   NonPdxAddress* m_add[10];
 
-  CacheableArrayListPtr m_arraylist;
-  CacheableHashMapPtr m_map;
-  CacheableHashTablePtr m_hashtable;
-  CacheableVectorPtr m_vector;
+  std::shared_ptr<CacheableArrayList> m_arraylist;
+  std::shared_ptr<CacheableHashMap> m_map;
+  std::shared_ptr<CacheableHashTable> m_hashtable;
+  std::shared_ptr<CacheableVector> m_vector;
 
-  CacheableHashSetPtr m_chs;
-  CacheableLinkedHashSetPtr m_clhs;
+  std::shared_ptr<CacheableHashSet> m_chs;
+  std::shared_ptr<CacheableLinkedHashSet> m_clhs;
 
   int8_t* m_byte252;
   int8_t* m_byte253;
   int8_t* m_byte65535;
   int8_t* m_byte65536;
-  CacheablePtr m_pdxEnum;
+  std::shared_ptr<Cacheable> m_pdxEnum;
 
-  CacheableObjectArrayPtr m_objectArray;
+  std::shared_ptr<CacheableObjectArray> m_objectArray;
 
   int32_t boolArrayLen;
   int32_t charArrayLen;
@@ -163,7 +165,7 @@ class TESTOBJECT_EXPORT NonPdxType {
  public:
   bool selfCheck();
 
-  inline void init(PdxSerializerPtr pdxSerializer) {
+  inline void init(std::shared_ptr<PdxSerializer> pdxSerializer) {
     m_char = 'C';
     m_bool = true;
     m_byte = 0x74;
@@ -301,34 +303,34 @@ class TESTOBJECT_EXPORT NonPdxType {
 
     m_objectArray = CacheableObjectArray::create();
     m_objectArray->push_back(
-        PdxWrapperPtr(new PdxWrapper(new NonPdxAddress(1, "street0", "city0"),
+        std::shared_ptr<PdxWrapper>(new PdxWrapper(new NonPdxAddress(1, "street0", "city0"),
                                      "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(
-        PdxWrapperPtr(new PdxWrapper(new NonPdxAddress(2, "street1", "city1"),
+        std::shared_ptr<PdxWrapper>(new PdxWrapper(new NonPdxAddress(2, "street1", "city1"),
                                      "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(
-        PdxWrapperPtr(new PdxWrapper(new NonPdxAddress(3, "street2", "city2"),
+        std::shared_ptr<PdxWrapper>(new PdxWrapper(new NonPdxAddress(3, "street2", "city2"),
                                      "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(
-        PdxWrapperPtr(new PdxWrapper(new NonPdxAddress(4, "street3", "city3"),
+        std::shared_ptr<PdxWrapper>(new PdxWrapper(new NonPdxAddress(4, "street3", "city3"),
                                      "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(
-        PdxWrapperPtr(new PdxWrapper(new NonPdxAddress(5, "street4", "city4"),
+        std::shared_ptr<PdxWrapper>(new PdxWrapper(new NonPdxAddress(5, "street4", "city4"),
                                      "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(
-        PdxWrapperPtr(new PdxWrapper(new NonPdxAddress(6, "street5", "city5"),
+        std::shared_ptr<PdxWrapper>(new PdxWrapper(new NonPdxAddress(6, "street5", "city5"),
                                      "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(
-        PdxWrapperPtr(new PdxWrapper(new NonPdxAddress(7, "street6", "city6"),
+        std::shared_ptr<PdxWrapper>(new PdxWrapper(new NonPdxAddress(7, "street6", "city6"),
                                      "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(
-        PdxWrapperPtr(new PdxWrapper(new NonPdxAddress(8, "street7", "city7"),
+        std::shared_ptr<PdxWrapper>(new PdxWrapper(new NonPdxAddress(8, "street7", "city7"),
                                      "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(
-        PdxWrapperPtr(new PdxWrapper(new NonPdxAddress(9, "street8", "city8"),
+        std::shared_ptr<PdxWrapper>(new PdxWrapper(new NonPdxAddress(9, "street8", "city8"),
                                      "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(
-        PdxWrapperPtr(new PdxWrapper(new NonPdxAddress(10, "street9", "city9"),
+        std::shared_ptr<PdxWrapper>(new PdxWrapper(new NonPdxAddress(10, "street9", "city9"),
                                      "PdxTests.Address", pdxSerializer)));
 
     m_byte252 = new int8_t[252];
@@ -368,7 +370,7 @@ class TESTOBJECT_EXPORT NonPdxType {
     lengthArr[1] = 2;
   }
 
-  NonPdxType(PdxSerializerPtr pdxSerializer) { init(pdxSerializer); }
+  NonPdxType(std::shared_ptr<PdxSerializer> pdxSerializer) { init(pdxSerializer); }
 
   inline bool compareBool(bool b, bool b2) {
     if (b == b2) return b;
@@ -385,7 +387,7 @@ class TESTOBJECT_EXPORT NonPdxType {
 
   bool getBool() { return m_bool; }
 
-  CacheableHashMapPtr getHashMap() { return m_map; }
+  std::shared_ptr<CacheableHashMap> getHashMap() { return m_map; }
 
   int8_t getSByte() { return m_sbyte; }
 
@@ -411,15 +413,15 @@ class TESTOBJECT_EXPORT NonPdxType {
 
   int8_t* getSByteArray() { return m_sbyteArray; }
 
-  CacheableHashSetPtr getHashSet() { return m_chs; }
+  std::shared_ptr<CacheableHashSet> getHashSet() { return m_chs; }
 
-  CacheableLinkedHashSetPtr getLinkedHashSet() { return m_clhs; }
+  std::shared_ptr<CacheableLinkedHashSet> getLinkedHashSet() { return m_clhs; }
 
-  CacheableArrayListPtr getArrayList() { return m_arraylist; }
+  std::shared_ptr<CacheableArrayList> getArrayList() { return m_arraylist; }
 
-  CacheableHashTablePtr getHashTable() { return m_hashtable; }
+  std::shared_ptr<CacheableHashTable> getHashTable() { return m_hashtable; }
 
-  CacheableVectorPtr getVector() { return m_vector; }
+  std::shared_ptr<CacheableVector> getVector() { return m_vector; }
 
   int8_t getByte() { return m_byte; }
 
@@ -451,11 +453,11 @@ class TESTOBJECT_EXPORT NonPdxType {
 
   char** getStringArray() { return m_stringArray; }
 
-  CacheableDatePtr getDate() { return m_date; }
+  std::shared_ptr<CacheableDate> getDate() { return m_date; }
 
-  CacheableObjectArrayPtr getCacheableObjectArray() { return m_objectArray; }
+  std::shared_ptr<CacheableObjectArray> getCacheableObjectArray() { return m_objectArray; }
 
-  CacheableEnumPtr getEnum() {
+  std::shared_ptr<CacheableEnum> getEnum() {
     return std::static_pointer_cast<CacheableEnum>(m_pdxEnum);
   }
 

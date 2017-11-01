@@ -40,7 +40,7 @@ namespace Apache
     {
     private:
 
-      IntPtr m_str;
+     IntPtr m_str;
 
 
     public:
@@ -49,7 +49,7 @@ namespace Apache
 
       inline ManagedString( String^ str )
       {
-        m_str = (str == nullptr) ? IntPtr::Zero :
+        m_str = (str == nullptr) ?IntPtr::Zero :
           System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi( str );
       }
 
@@ -57,7 +57,7 @@ namespace Apache
 
       inline ~ManagedString( )
       {
-        if (m_str != IntPtr::Zero)
+        if (m_str !=IntPtr::Zero)
         {
           System::Runtime::InteropServices::Marshal::FreeHGlobal( m_str );
         }
@@ -67,7 +67,7 @@ namespace Apache
       // or call delete explicitly.
       !ManagedString( )
       {
-        if (m_str != IntPtr::Zero)
+        if (m_str !=IntPtr::Zero)
         {
           System::Runtime::InteropServices::Marshal::FreeHGlobal( m_str );
         }
@@ -89,11 +89,11 @@ namespace Apache
 
       // Properties
 
-      property const char* CharPtr
+      property const char*CharPtr
       {
         inline const char* get( )
         {
-          return ((m_str == IntPtr::Zero) ? nullptr :
+          return ((m_str ==IntPtr::Zero) ? nullptr :
             static_cast<const char*>( m_str.ToPointer( ) ));
         }
       }

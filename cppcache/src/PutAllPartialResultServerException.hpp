@@ -29,10 +29,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class PutAllPartialResultServerException;
-typedef std::shared_ptr<PutAllPartialResultServerException>
-    PutAllPartialResultServerExceptionPtr;
-
 /**
  * @brief PutAllPartialResultServerException class is used to encapsulate
  *geode PutAllPartialResultServerException in case of PutAll execution.
@@ -42,30 +38,30 @@ class CPPCACHE_EXPORT PutAllPartialResultServerException : public Serializable {
    * @brief public methods
    */
  public:
-  PutAllPartialResultServerException(PutAllPartialResultPtr result);
+  PutAllPartialResultServerException(std::shared_ptr<PutAllPartialResult> result);
 
   PutAllPartialResultServerException();
 
   // Consolidate exceptions
-  void consolidate(PutAllPartialResultServerExceptionPtr pre);
+  void consolidate(std::shared_ptr<PutAllPartialResultServerException> pre);
 
-  void consolidate(PutAllPartialResultPtr otherResult);
+  void consolidate(std::shared_ptr<PutAllPartialResult> otherResult);
 
-  PutAllPartialResultPtr getResult();
+  std::shared_ptr<PutAllPartialResult> getResult();
 
   /**
    * Returns the key set in exception
    */
-  VersionedCacheableObjectPartListPtr getSucceededKeysAndVersions();
+  std::shared_ptr<VersionedCacheableObjectPartList> getSucceededKeysAndVersions();
 
-  ExceptionPtr getFailure();
+  std::shared_ptr<Exception> getFailure();
 
   // Returns there's failedKeys
   bool hasFailure();
 
-  CacheableKeyPtr getFirstFailedKey();
+  std::shared_ptr<CacheableKey> getFirstFailedKey();
 
-  CacheableStringPtr getMessage();
+  std::shared_ptr<CacheableString> getMessage();
 
   /**
    * @brief destructor
@@ -75,7 +71,7 @@ class CPPCACHE_EXPORT PutAllPartialResultServerException : public Serializable {
   /**
    * @brief constructors
    */
-  PutAllPartialResultServerException(CacheableStringPtr msg);
+  PutAllPartialResultServerException(std::shared_ptr<CacheableString> msg);
 
   /**
    *@brief serialize this object
@@ -123,12 +119,12 @@ class CPPCACHE_EXPORT PutAllPartialResultServerException : public Serializable {
   virtual int8_t typeId() const;
 
   /**
-   *@brief return as CacheableStringPtr the Exception name returned from geode
+   *@brief return as std::shared_ptr<CacheableString> the Exception name returned from geode
    *sendException api.
    **/
-  CacheableStringPtr getName() {
+  std::shared_ptr<CacheableString> getName() {
     const char* msg = "PutAllPartialResultServerException";
-    CacheableStringPtr str = CacheableString::create(msg);
+    std::shared_ptr<CacheableString> str = CacheableString::create(msg);
     return str;
   }
 
@@ -138,8 +134,8 @@ class CPPCACHE_EXPORT PutAllPartialResultServerException : public Serializable {
       const PutAllPartialResultServerException& other);
   void operator=(const PutAllPartialResultServerException& other);
 
-  CacheableStringPtr m_message;  // error message
-  PutAllPartialResultPtr m_result;
+  std::shared_ptr<CacheableString> m_message;  // error message
+  std::shared_ptr<PutAllPartialResult> m_result;
 };
 
 }  // namespace client

@@ -41,7 +41,7 @@ const char* _regionNames[] = {"DistRegionAck"};
 
 void createOnekEntries() {
   CacheableHelper::registerBuiltins();
-  RegionPtr dataReg = getHelper()->getRegion(_regionNames[0]);
+  auto dataReg = getHelper()->getRegion(_regionNames[0]);
   for (int i = 0; i < 2048; i++) {
     CacheableWrapper* tmpkey =
         CacheableWrapperFactory::createInstance(GeodeTypeIds::CacheableInt32);
@@ -71,7 +71,7 @@ void createOnekEntries() {
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
   {
-    PropertiesPtr pp = Properties::create();
+    auto pp = Properties::create();
     pp->insert("heap-lru-limit", 1);
     pp->insert("heap-lru-delta", 10);
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, pp, 0, true);
@@ -83,7 +83,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwo)
   {
-    PropertiesPtr pp = Properties::create();
+    auto pp = Properties::create();
     pp->insert("heap-lru-limit", 1);
     pp->insert("heap-lru-delta", 10);
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, pp, 0, true);

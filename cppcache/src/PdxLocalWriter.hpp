@@ -38,27 +38,27 @@ class PdxLocalWriter : public PdxWriter,
                        public std::enable_shared_from_this<PdxLocalWriter> {
  protected:
   DataOutput* m_dataOutput;
-  PdxTypePtr m_pdxType;
+  std::shared_ptr<PdxType> m_pdxType;
   const uint8_t* m_startPosition;
   int32_t m_startPositionOffset;
   const char* m_domainClassName;
   std::vector<int32_t> m_offsets;
   int32_t m_currentOffsetIndex;
 
-  PdxRemotePreservedDataPtr m_preserveData;
-  PdxTypeRegistryPtr m_pdxTypeRegistry;
+  std::shared_ptr<PdxRemotePreservedData> m_preserveData;
+  std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
   const char* m_pdxClassName;
 
-  PdxWriterPtr writeStringwithoutOffset(const char* value);
+  std::shared_ptr<PdxWriter> writeStringwithoutOffset(const char* value);
 
-  PdxWriterPtr writeWideStringwithoutOffset(const wchar_t* value);
+  std::shared_ptr<PdxWriter> writeWideStringwithoutOffset(const wchar_t* value);
 
  public:
-  PdxLocalWriter(DataOutput& output, PdxTypePtr pdxType,
-                 PdxTypeRegistryPtr pdxTypeRegistry);
+  PdxLocalWriter(DataOutput& output, std::shared_ptr<PdxType> pdxType,
+                 std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
-  PdxLocalWriter(DataOutput& output, PdxTypePtr pdxType,
-                 const char* pdxDomainType, PdxTypeRegistryPtr pdxTypeRegistry);
+  PdxLocalWriter(DataOutput& output, std::shared_ptr<PdxType> pdxType,
+                 const char* pdxDomainType, std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
   virtual ~PdxLocalWriter();
 
@@ -134,89 +134,89 @@ class PdxLocalWriter : public PdxWriter,
    *@param fieldName The name of the field associated with the value.
    *@param value The wide char value to write
    */
-  virtual PdxWriterPtr writeChar(const char* fieldName, char value);
+  virtual std::shared_ptr<PdxWriter> writeChar(const char* fieldName, char value);
 
-  virtual PdxWriterPtr writeChar(const char* fieldName, char16_t value);
+  virtual std::shared_ptr<PdxWriter> writeChar(const char* fieldName, char16_t value);
 
   /**
    *Write a boolean value to the PdxWriter.
    *@param fieldName The name of the field associated with the value.
    *@param value The boolean value to write
    */
-  virtual PdxWriterPtr writeBoolean(const char* fieldName, bool value);
+  virtual std::shared_ptr<PdxWriter> writeBoolean(const char* fieldName, bool value);
 
   /**
    *Write a 8-bit integer or byte to the PdxWriter.
    *@param fieldName The name of the field associated with the value.
    *@param value The 8-bit integer or byte to write
    */
-  virtual PdxWriterPtr writeByte(const char* fieldName, int8_t value);
+  virtual std::shared_ptr<PdxWriter> writeByte(const char* fieldName, int8_t value);
 
   /**
    *Write a 16-bit integer to the PdxWriter.
    *@param fieldName The name of the field associated with the value.
    *@param value The 16-bit integer to write
    */
-  virtual PdxWriterPtr writeShort(const char* fieldName, int16_t value);
+  virtual std::shared_ptr<PdxWriter> writeShort(const char* fieldName, int16_t value);
 
   /**
    *Write a 32-bit integer to the PdxWriter.
    *@param fieldName The name of the field associated with the value.
    *@param value The 32-bit integer to write
    */
-  virtual PdxWriterPtr writeInt(const char* fieldName, int32_t value);
+  virtual std::shared_ptr<PdxWriter> writeInt(const char* fieldName, int32_t value);
 
   /**
    *Write a long integer to the PdxWriter.
    *@param fieldName The name of the field associated with the value.
    *@param value The long integer to write
    */
-  virtual PdxWriterPtr writeLong(const char* fieldName, int64_t value);
+  virtual std::shared_ptr<PdxWriter> writeLong(const char* fieldName, int64_t value);
 
   /**
    *Write a Float to the PdxWriter.
    *@param fieldName The name of the field associated with the value.
    *@param value The float value to write
    */
-  virtual PdxWriterPtr writeFloat(const char* fieldName, float value);
+  virtual std::shared_ptr<PdxWriter> writeFloat(const char* fieldName, float value);
 
   /**
    *Write a Double to the PdxWriter.
    *@param fieldName The name of the field associated with the value.
    *@param value The double value to write
    */
-  virtual PdxWriterPtr writeDouble(const char* fieldName, double value);
+  virtual std::shared_ptr<PdxWriter> writeDouble(const char* fieldName, double value);
 
   /**
    *Write a Date to the PdxWriter.
    *@param fieldName The name of the field associated with the value.
    *@param value The date value to write
    */
-  virtual PdxWriterPtr writeDate(const char* fieldName, CacheableDatePtr date);
+  virtual std::shared_ptr<PdxWriter> writeDate(const char* fieldName, std::shared_ptr<CacheableDate> date);
 
   /**
    *Write a string to the PdxWriter.
    *@param fieldName The name of the field associated with the value.
    *@param value The string to write
    */
-  virtual PdxWriterPtr writeString(const char* fieldName, const char* value);
+  virtual std::shared_ptr<PdxWriter> writeString(const char* fieldName, const char* value);
 
-  virtual PdxWriterPtr writeWideString(const char* fieldName,
+  virtual std::shared_ptr<PdxWriter> writeWideString(const char* fieldName,
                                        const wchar_t* value);
   /**
    *Write a object to the PdxWriter.
    *@param fieldName The name of the field associated with the value.
    *@param value The object to write
    */
-  virtual PdxWriterPtr writeObject(const char* fieldName,
-                                   SerializablePtr value);
+  virtual std::shared_ptr<PdxWriter> writeObject(const char* fieldName,
+                                   std::shared_ptr<Serializable> value);
 
   /**
    *Write a boolean array to the PdxWriter.
    *@param fieldName The name of the field associated with the value.
    *@param value The boolean array value to write
    */
-  virtual PdxWriterPtr writeBooleanArray(const char* fieldName, bool* array,
+  virtual std::shared_ptr<PdxWriter> writeBooleanArray(const char* fieldName, bool* array,
                                          int length);
 
   /**
@@ -224,17 +224,17 @@ class PdxLocalWriter : public PdxWriter,
    *@param fieldName The name of the field associated with the value.
    *@param value The char array value to write
    */
-  virtual PdxWriterPtr writeCharArray(const char* fieldName, char* array,
+  virtual std::shared_ptr<PdxWriter> writeCharArray(const char* fieldName, char* array,
                                       int length);
 
-  virtual PdxWriterPtr writeWideCharArray(const char* fieldName, wchar_t* array,
+  virtual std::shared_ptr<PdxWriter> writeWideCharArray(const char* fieldName, wchar_t* array,
                                           int length);
   /**
    *Write a Byte array to the PdxWriter.
    *@param fieldName The name of the field associated with the value.
    *@param value The byte array value to write
    */
-  virtual PdxWriterPtr writeByteArray(const char* fieldName, int8_t* array,
+  virtual std::shared_ptr<PdxWriter> writeByteArray(const char* fieldName, int8_t* array,
                                       int length);
 
   /**
@@ -242,7 +242,7 @@ class PdxLocalWriter : public PdxWriter,
    *@param fieldName The name of the field associated with the value.
    *@param value The array value to write
    */
-  virtual PdxWriterPtr writeShortArray(const char* fieldName, int16_t* array,
+  virtual std::shared_ptr<PdxWriter> writeShortArray(const char* fieldName, int16_t* array,
                                        int length);
 
   /**
@@ -250,7 +250,7 @@ class PdxLocalWriter : public PdxWriter,
    *@param fieldName The name of the field associated with the value.
    *@param value The integer array value to write
    */
-  virtual PdxWriterPtr writeIntArray(const char* fieldName, int32_t* array,
+  virtual std::shared_ptr<PdxWriter> writeIntArray(const char* fieldName, int32_t* array,
                                      int length);
 
   /**
@@ -258,7 +258,7 @@ class PdxLocalWriter : public PdxWriter,
    *@param fieldName The name of the field associated with the value.
    *@param value The long integer array value to write
    */
-  virtual PdxWriterPtr writeLongArray(const char* fieldName, int64_t* array,
+  virtual std::shared_ptr<PdxWriter> writeLongArray(const char* fieldName, int64_t* array,
                                       int length);
 
   /**
@@ -266,7 +266,7 @@ class PdxLocalWriter : public PdxWriter,
    *@param fieldName The name of the field associated with the value.
    *@param value The float array value to write
    */
-  virtual PdxWriterPtr writeFloatArray(const char* fieldName, float* array,
+  virtual std::shared_ptr<PdxWriter> writeFloatArray(const char* fieldName, float* array,
                                        int length);
 
   /**
@@ -274,7 +274,7 @@ class PdxLocalWriter : public PdxWriter,
    *@param fieldName The name of the field associated with the value.
    *@param value The double array value to write
    */
-  virtual PdxWriterPtr writeDoubleArray(const char* fieldName, double* array,
+  virtual std::shared_ptr<PdxWriter> writeDoubleArray(const char* fieldName, double* array,
                                         int length);
 
   /**
@@ -282,25 +282,25 @@ class PdxLocalWriter : public PdxWriter,
    *@param fieldName The name of the field associated with the value.
    *@param value The string array value to write
    */
-  virtual PdxWriterPtr writeStringArray(const char* fieldName, char** array,
+  virtual std::shared_ptr<PdxWriter> writeStringArray(const char* fieldName, char** array,
                                         int length);
 
-  virtual PdxWriterPtr writeWideStringArray(const char* fieldName,
+  virtual std::shared_ptr<PdxWriter> writeWideStringArray(const char* fieldName,
                                             wchar_t** array, int length);
   /**
    *Write a object array to the PdxWriter.
    *@param fieldName The name of the field associated with the value.
    *@param value The object array value to write
    */
-  virtual PdxWriterPtr writeObjectArray(const char* fieldName,
-                                        CacheableObjectArrayPtr array);
+  virtual std::shared_ptr<PdxWriter> writeObjectArray(const char* fieldName,
+                                        std::shared_ptr<CacheableObjectArray> array);
 
   /**
    *Write a array of byte arrays to the PdxWriter.
    *@param fieldName The name of the field associated with the value.
    *@param array The arrayOfbytearray value to write
    */
-  virtual PdxWriterPtr writeArrayOfByteArrays(const char* fieldName,
+  virtual std::shared_ptr<PdxWriter> writeArrayOfByteArrays(const char* fieldName,
                                               int8_t** array, int arrayLength,
                                               int* elementLength);
 
@@ -324,11 +324,11 @@ class PdxLocalWriter : public PdxWriter,
    *
    *@param fieldName The name of the field that should be used in the as part of
    *the identity.
-   *@eturns this PdxWriterPtr
+   *@eturns this std::shared_ptr<PdxWriter>
    */
-  virtual PdxWriterPtr markIdentityField(const char* fieldName);
+  virtual std::shared_ptr<PdxWriter> markIdentityField(const char* fieldName);
 
-  virtual PdxWriterPtr writeUnreadFields(PdxUnreadFieldsPtr unread);
+  virtual std::shared_ptr<PdxWriter> writeUnreadFields(std::shared_ptr<PdxUnreadFields> unread);
 
   // this is used to get pdx stream when WriteablePdxStream udpadates the field
   // It should be called after pdx stream has been written to output
@@ -339,9 +339,8 @@ class PdxLocalWriter : public PdxWriter,
   inline int32_t getStartPositionOffset() { return m_startPositionOffset; }
 
  private:
-  PdxTypeRegistryPtr getPdxTypeRegistry() const;
+  std::shared_ptr<PdxTypeRegistry> getPdxTypeRegistry() const;
 };
-typedef std::shared_ptr<PdxLocalWriter> PdxLocalWriterPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

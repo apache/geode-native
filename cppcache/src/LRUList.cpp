@@ -27,7 +27,7 @@ using util::concurrent::spinlock_mutex;
 
 template <typename TEntry, typename TCreateEntry>
 LRUList<TEntry, TCreateEntry>::LRUList() : m_headLock(), m_tailLock() {
-  LRUListEntryPtr headEntry(TCreateEntry::create(nullptr));
+  std::shared_ptr<TEntry> headEntry(TCreateEntry::create(nullptr));
   headEntry->getLRUProperties().setEvicted();  // create empty evicted entry.
   m_headNode = new LRUListNode(headEntry);
   m_tailNode = m_headNode;
@@ -45,7 +45,7 @@ LRUList<TEntry, TCreateEntry>::~LRUList() {
 }
 
 template <typename TEntry, typename TCreateEntry>
-void LRUList<TEntry, TCreateEntry>::appendEntry(const LRUListEntryPtr& entry) {
+void LRUList<TEntry, TCreateEntry>::appendEntry(const std::shared_ptr<TEntry>& entry) {
   std::lock_guard<spinlock_mutex> lk(m_tailLock);
 
   LRUListNode* aNode = new LRUListNode(entry);
@@ -65,7 +65,7 @@ void LRUList<TEntry, TCreateEntry>::appendNode(LRUListNode* aNode) {
 }
 
 template <typename TEntry, typename TCreateEntry>
-void LRUList<TEntry, TCreateEntry>::getLRUEntry(LRUListEntryPtr& result) {
+void LRUList<TEntry, TCreateEntry>::getLRUEntry(std::shared_ptr<TEntry>& result) {
   bool isLast = false;
   LRUListNode* aNode;
   while (true) {
@@ -112,7 +112,7 @@ LRUList<TEntry, TCreateEntry>::getHeadNode(bool& isLast) {
     if (nextNode == nullptr) {
       // last one in the list...
       isLast = true;
-      LRUListEntryPtr entry;
+      std::shared_ptr<TEntry> entry;
       result->getEntry(entry);
       if (entry->getLRUProperties().testEvicted()) {
         // list is empty.

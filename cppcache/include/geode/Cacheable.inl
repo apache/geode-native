@@ -25,25 +25,26 @@
  */
 
 #include "Cacheable.hpp"
-
+#include "CacheableDate.hpp"
+#include "CacheableBuiltins.hpp"
 namespace apache {
 namespace geode {
 namespace client {
 
 template< class PRIM >
-inline CacheablePtr Cacheable::create( const PRIM value )
+inline std::shared_ptr<Cacheable> Cacheable::create( const PRIM value )
 {
   return createValue( value );
 }
 
 template <typename TVALUE>
-inline CacheablePtr createValue( const std::shared_ptr< TVALUE >& value )
+inline std::shared_ptr<Cacheable> createValue( const std::shared_ptr< TVALUE >& value )
 {
   return std::dynamic_pointer_cast<Cacheable>(value);
 }
 
 template <typename TVALUE>
-inline CacheablePtr createValue( const TVALUE* value )
+inline std::shared_ptr<Cacheable> createValue( const TVALUE* value )
 {
   return createValueArr( value );
 }

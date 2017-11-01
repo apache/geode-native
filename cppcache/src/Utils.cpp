@@ -165,7 +165,7 @@ char* Utils::copyString(const char* str) {
   return resStr;
 }
 
-CacheableStringPtr Utils::convertBytesToString(const uint8_t* bytes,
+std::shared_ptr<CacheableString> Utils::convertBytesToString(const uint8_t* bytes,
                                                int32_t length,
                                                size_t maxLength) {
   if (bytes != nullptr) {

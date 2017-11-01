@@ -84,10 +84,10 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   }
   free(buf);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
-  CacheableKeyPtr keyPtr = createKey(key);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
 
   // if the region is no ack, then we may need to wait...
   if (!isCreated) {
@@ -202,7 +202,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("createRegion_Pool() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr =
+  auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locatorsG, poolname,
                                       cachingEnable, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -215,13 +215,13 @@ void createEntry(const char* name, const char* key,
           value, name);
   fflush(stdout);
   // Create entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
   if (value == nullptr) {
     value = "";
   }
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  std::shared_ptr<CacheableString> valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
@@ -243,10 +243,10 @@ void updateEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Update entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
+  std::shared_ptr<CacheableString> valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
@@ -268,9 +268,9 @@ void doNetsearch(const char* name, const char* key, const char* value) {
       key, value, name);
   fflush(stdout);
   // Get entry created in Process A, verify entry is correct
-  CacheableKeyPtr keyPtr = CacheableKey::create(key);
+  std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(key);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
@@ -332,8 +332,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1Entries)
     createEntry(regionNames[0], keys[0], vals[0]);
     createEntry(regionNames[1], keys[2], vals[2]);
 
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
 
     regPtr0->registerAllKeys();
     regPtr1->registerAllKeys();
@@ -348,7 +348,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2Entries)
     doNetsearch(regionNames[1], keys[2], vals[2]);
     createEntry(regionNames[0], keys[1], vals[1]);
     createEntry(regionNames[1], keys[3], vals[3]);
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     regPtr0->registerAllKeys();
     LOG("CreateClient2Entries complete.");
   }
@@ -363,7 +363,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, UpdateClient1Entries)
     updateEntry(regionNames[0], keys[0], nvals[0]);
     updateEntry(regionNames[1], keys[2], nvals[2]);
 
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
     regPtr1->unregisterAllKeys();
     LOG("UpdateClient1Entries complete.");
   }
@@ -373,10 +373,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyAndDestroyClient2Entries)
     // verifyCreated( regionNames[0], keys[0]);
     verifyEntry(regionNames[0], keys[0], nvals[0]);
     verifyEntry(regionNames[1], keys[2], vals[2]);
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
-    CacheableKeyPtr keyPtr1 = CacheableKey::create(keys[1]);
-    CacheableKeyPtr keyPtr3 = CacheableKey::create(keys[3]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
+    std::shared_ptr<CacheableKey> keyPtr1 = CacheableKey::create(keys[1]);
+    std::shared_ptr<CacheableKey> keyPtr3 = CacheableKey::create(keys[3]);
     regPtr0->destroy(keyPtr1);
     regPtr1->destroy(keyPtr3);
     LOG("VerifyAndDestroyClient2Entries complete.");

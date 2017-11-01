@@ -57,9 +57,6 @@ namespace client {
 namespace testframework {
 namespace security {
 
-class CredentialGenerator;
-typedef std::shared_ptr<CredentialGenerator> CredentialGeneratorPtr;
-
 /**
  * @class CredentialGenerator CredentialGenerator.hpp
  * Encapsulates valid or invalid credentials required for Client connection
@@ -69,7 +66,7 @@ typedef std::shared_ptr<CredentialGenerator> CredentialGeneratorPtr;
  * authorization schemes.
  * <p>
  * Usage:
- *    CredentialGeneratorPtr cg = CredentialGenerator::create( schemeStr );
+ *    std::shared_ptr<CredentialGenerator> cg = CredentialGenerator::create( schemeStr );
  *   @param schemeStr can be one of the following
  *    DUMMY - simple username/password authentication
  *    LDAP  - LDAP server based authentication.
@@ -86,7 +83,7 @@ typedef std::shared_ptr<CredentialGenerator> CredentialGeneratorPtr;
  */
 class CredentialGenerator {
  public:
-  typedef std::map<std::string, CredentialGeneratorPtr> registeredClassMap;
+  typedef std::map<std::string, std::shared_ptr<CredentialGenerator>> registeredClassMap;
 
  private:
   ID m_id;
@@ -116,8 +113,8 @@ class CredentialGenerator {
   };
 
  public:
-  static CredentialGeneratorPtr create(std::string scheme);
-  static bool registerScheme(CredentialGeneratorPtr scheme) {
+  static std::shared_ptr<CredentialGenerator> create(std::string scheme);
+  static bool registerScheme(std::shared_ptr<CredentialGenerator> scheme) {
     // if not already registered...
     if (generators().find(scheme->m_name) == generators().end()) {
       generators()[scheme->m_name] = scheme;
@@ -153,7 +150,7 @@ class CredentialGenerator {
 
   void hashCode(){};
 
-  void getAuthInit(PropertiesPtr& prop) {
+  void getAuthInit(std::shared_ptr<Properties>& prop) {
     std::string authinit = this->getClientAuthInitLoaderFactory();
     if (!authinit.empty()) {
       FWKINFO("Authentication initializer : "
@@ -226,23 +223,23 @@ class CredentialGenerator {
     return securityCmdStr;
   }
 
-  virtual void getValidCredentials(PropertiesPtr& p) {
+  virtual void getValidCredentials(std::shared_ptr<Properties>& p) {
     ;
     ;  // no credentials by default
   }
-  virtual void getInvalidCredentials(PropertiesPtr& p) {
+  virtual void getInvalidCredentials(std::shared_ptr<Properties>& p) {
     ;
     ;  // no credentials by default
   }
 
   virtual void getAllowedCredentialsForOps(opCodeList& opCodes,
-                                           PropertiesPtr& p,
+                                           std::shared_ptr<Properties>& p,
                                            stringList* regionNames = NULL) {
     ;
     ;  // no credentials by default
   }
   virtual void getDisallowedCredentialsForOps(opCodeList& opCodes,
-                                              PropertiesPtr& p,
+                                              std::shared_ptr<Properties>& p,
                                               stringList* regionNames = NULL) {
     ;
     ;  // no credentials by default

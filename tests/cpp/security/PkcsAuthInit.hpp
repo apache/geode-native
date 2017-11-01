@@ -26,18 +26,14 @@
 #include <openssl/pem.h>
 #include <openssl/err.h>
 #include <openssl/pkcs12.h>
-//#include <unistd.h>
-//#include <netinet/in.h>
-//#include <fcntl.h>
 #include <openssl/evp.h>
 #include <openssl/rsa.h>
-#include <openssl/evp.h>
 #include <openssl/objects.h>
 #include <openssl/x509.h>
-#include <openssl/pem.h>
+
 #define KSSL_H 1
 //#define OPENSSL_NO_KRB5 1
-#include <openssl/ssl.h>
+//#include <openssl/ssl.h>
 
 /**
  * @file
@@ -88,7 +84,7 @@ class PKCSAuthInitInternal : public AuthInitialize {
    * The format expected is "host:port".
    * @returns the credentials to be used for the given <code>server</code>
    */
-  PropertiesPtr getCredentials(const PropertiesPtr& securityprops,
+  std::shared_ptr<Properties> getCredentials(const std::shared_ptr<Properties>& securityprops,
                                const char* server);
 
   /**

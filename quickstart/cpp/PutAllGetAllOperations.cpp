@@ -40,16 +40,16 @@ int main(int argc, char** argv) {
   try {
     // Create a Geode Cache using CacheFactory. By default it will connect to
     // "localhost" at port 40404".
-    CachePtr cachePtr = CacheFactory::createCacheFactory()->create();
+    auto cachePtr = CacheFactory::createCacheFactory()->create();
 
     LOGINFO("Created the Geode Cache");
 
     // Set Attributes for the region.
-    RegionFactoryPtr regionFactory =
+    auto regionFactory =
         cachePtr->createRegionFactory(CACHING_PROXY);
 
     // Create exampleRegion.
-    RegionPtr regionPtr = regionFactory->create("exampleRegion");
+    auto regionPtr = regionFactory->create("exampleRegion");
 
     LOGINFO("Created the Region");
 
@@ -67,13 +67,13 @@ int main(int argc, char** argv) {
     LOGINFO("PutAll 100 entries into the Region");
 
     // GetAll Entries back out of the Region
-    VectorOfCacheableKey keys;
+    std::vector<std::shared_ptr<CacheableKey>> keys;
     for (int32_t item = 0; item < 100; item++) {
       sprintf(key, "key-%d", item);
       keys.push_back(CacheableKey::create(key));
     }
 
-    HashMapOfCacheablePtr values(new HashMapOfCacheable());
+    std::shared_ptr<HashMapOfCacheable> values(new HashMapOfCacheable());
     regionPtr->getAll(keys, values, nullptr, true);
 
     LOGINFO("Obtained 100 entries from the Region");

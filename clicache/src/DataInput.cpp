@@ -693,7 +693,7 @@ namespace Apache
           return enumVal;
         }
         else if (compId == GeodeTypeIds::CacheableNullString) {
-          //return SerializablePtr(CacheableString::createDeserializable());
+          //return std::shared_ptr<native::Serializable>(CacheableString::createDeserializable());
           //TODO::
           return nullptr;
         }
@@ -819,7 +819,7 @@ namespace Apache
           return Internal::PdxHelper::DeserializePdx(this, false, CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry().get());
         }
         else if (compId == GeodeTypeIds::CacheableNullString) {
-          //return SerializablePtr(CacheableString::createDeserializable());
+          //return std::shared_ptr<native::Serializable>(CacheableString::createDeserializable());
           //TODO::
           return nullptr;
         }

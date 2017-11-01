@@ -152,11 +152,11 @@ END_TASK_DEFINITION
 // Test for getAll
 DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll)
   {
-    RegionPtr reg0 = getHelper()->getRegion(_regionNames[0]);
+    auto reg0 = getHelper()->getRegion(_regionNames[0]);
 
-    VectorOfCacheableKey keys0;
-    CacheableKeyPtr key0 = CacheableString::create(_keys[0]);
-    CacheableKeyPtr key1 = CacheableString::create(_keys[1]);
+    std::vector<std::shared_ptr<CacheableKey>> keys0;
+    std::shared_ptr<CacheableKey> key0 = CacheableString::create(_keys[0]);
+    std::shared_ptr<CacheableKey> key1 = CacheableString::create(_keys[1]);
 
     // re-create region with caching enabled
     reg0->localDestroyRegion();
@@ -186,11 +186,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll)
 
     // for second region invalidate only one key to have a partial get
     // from java server
-    RegionPtr reg1 = getHelper()->getRegion(_regionNames[1]);
-    CacheableKeyPtr key2 = CacheableString::create(_keys[2]);
-    CacheableKeyPtr key3 = CacheableString::create(_keys[3]);
+    auto reg1 = getHelper()->getRegion(_regionNames[1]);
+    std::shared_ptr<CacheableKey> key2 = CacheableString::create(_keys[2]);
+    std::shared_ptr<CacheableKey> key3 = CacheableString::create(_keys[3]);
     reg1->localInvalidate(key2);
-    VectorOfCacheableKey keys1;
+    std::vector<std::shared_ptr<CacheableKey>> keys1;
     keys1.push_back(key2);
     keys1.push_back(key3);
 
@@ -228,11 +228,11 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll_Pool)
   {
     {
-      RegionPtr reg0 = getHelper()->getRegion(_regionNames[0]);
+      auto reg0 = getHelper()->getRegion(_regionNames[0]);
 
-      VectorOfCacheableKey keys0;
-      CacheableKeyPtr key0 = CacheableString::create(_keys[0]);
-      CacheableKeyPtr key1 = CacheableString::create(_keys[1]);
+      std::vector<std::shared_ptr<CacheableKey>> keys0;
+      std::shared_ptr<CacheableKey> key0 = CacheableString::create(_keys[0]);
+      std::shared_ptr<CacheableKey> key1 = CacheableString::create(_keys[1]);
 
       getHelper()->createRegionAndAttachPool(_regionNames[0], USE_ACK,
                                              poolName);
@@ -261,11 +261,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll_Pool)
     {
       // for second region invalidate only one key to have a partial get
       // from java server
-      RegionPtr reg1 = getHelper()->getRegion(_regionNames[1]);
-      CacheableKeyPtr key2 = CacheableString::create(_keys[2]);
-      CacheableKeyPtr key3 = CacheableString::create(_keys[3]);
+      auto reg1 = getHelper()->getRegion(_regionNames[1]);
+      std::shared_ptr<CacheableKey> key2 = CacheableString::create(_keys[2]);
+      std::shared_ptr<CacheableKey> key3 = CacheableString::create(_keys[3]);
       reg1->localInvalidate(key2);
-      VectorOfCacheableKey keys1;
+      std::vector<std::shared_ptr<CacheableKey>> keys1;
       keys1.push_back(key2);
       keys1.push_back(key3);
 

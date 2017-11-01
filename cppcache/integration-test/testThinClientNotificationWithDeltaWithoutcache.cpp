@@ -78,7 +78,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("createRegion_Pool() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr =
+  auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -91,7 +91,7 @@ void createRegionCachingDisabled(const char* name, bool ackMode,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   // ack, caching
-  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, false, nullptr,
+  auto regPtr = getHelper()->createRegion(name, ackMode, false, nullptr,
                                                clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
@@ -110,7 +110,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1)
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TESTPOOL1_", true,
                        false);  // without LRU
     try {
-      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
       serializationRegistry->addType(DeltaEx::create);
     } catch (IllegalStateException&) {
       //  ignore exception caused by type reregistration.
@@ -123,7 +123,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1_NoPools)
     initClientNoPools();
     createRegionCachingDisabled(regionNames[0], USE_ACK, true);  // without LRU
     try {
-      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
       serializationRegistry->addType(DeltaEx::create);
     } catch (IllegalStateException&) {
       //  ignore exception caused by type reregistration.
@@ -137,7 +137,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2)
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TESTPOOL1_", true,
                        false);
     try {
-      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
       serializationRegistry->addType(DeltaEx::create);
     } catch (IllegalStateException&) {
       //  ignore exception caused by type reregistration.
@@ -152,7 +152,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_NoPools)
     initClientNoPools();
     createRegionCachingDisabled(regionNames[0], USE_ACK, true);  // without LRU
     try {
-      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
       serializationRegistry->addType(DeltaEx::create);
     } catch (IllegalStateException&) {
       //  ignore exception caused by type reregistration.
@@ -164,10 +164,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, Client2_RegisterInterest)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    VectorOfCacheableKey vec;
-    CacheableKeyPtr keyPtr = createKey(keys[0]);
-    // CacheableKeyPtr keyPtr1 = createKey( keys[1] );
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
+    std::vector<std::shared_ptr<CacheableKey>> vec;
+    std::shared_ptr<CacheableKey> keyPtr = createKey(keys[0]);
+    // std::shared_ptr<CacheableKey> keyPtr1 = createKey( keys[1] );
     vec.push_back(keyPtr);
     // vec.push_back( keyPt1 );
     regPtr->registerKeys(vec);
@@ -177,11 +177,11 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, Client1_Put)
   {
-    CacheableKeyPtr keyPtr = createKey(keys[0]);
+    std::shared_ptr<CacheableKey> keyPtr = createKey(keys[0]);
     DeltaEx* ptr = new DeltaEx();
-    CacheablePtr valPtr(ptr);
+    std::shared_ptr<Cacheable> valPtr(ptr);
 
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->put(keyPtr, valPtr);
     ptr->setDelta(true);
     regPtr->put(keyPtr, valPtr);

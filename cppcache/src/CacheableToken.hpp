@@ -27,8 +27,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class CPPCACHE_EXPORT CacheableToken;
-typedef std::shared_ptr<CacheableToken> CacheableTokenPtr;
 
 /** Implement a non-mutable int64_t wrapper that can serve as a distributable
  * key object for cacheing as well as being a 64 bit value. */
@@ -38,16 +36,16 @@ class CPPCACHE_EXPORT CacheableToken : public Cacheable {
 
   TokenType m_value;
 
-  static CacheableTokenPtr invalidToken;
-  static CacheableTokenPtr destroyedToken;
-  static CacheableTokenPtr overflowedToken;
-  static CacheableTokenPtr tombstoneToken;
+  static std::shared_ptr<CacheableToken> invalidToken;
+  static std::shared_ptr<CacheableToken> destroyedToken;
+  static std::shared_ptr<CacheableToken> overflowedToken;
+  static std::shared_ptr<CacheableToken> tombstoneToken;
 
  public:
-  inline static CacheableTokenPtr& invalid() { return invalidToken; }
-  inline static CacheableTokenPtr& destroyed() { return destroyedToken; }
-  inline static CacheableTokenPtr& overflowed() { return overflowedToken; }
-  inline static CacheableTokenPtr& tombstone() { return tombstoneToken; }
+  inline static std::shared_ptr<CacheableToken>& invalid() { return invalidToken; }
+  inline static std::shared_ptr<CacheableToken>& destroyed() { return destroyedToken; }
+  inline static std::shared_ptr<CacheableToken>& overflowed() { return overflowedToken; }
+  inline static std::shared_ptr<CacheableToken>& tombstone() { return tombstoneToken; }
   /**
    *@brief serialize this object
    **/
@@ -89,22 +87,22 @@ class CPPCACHE_EXPORT CacheableToken : public Cacheable {
 
   inline bool isTombstone() { return m_value == TOMBSTONE; }
 
-  static bool isToken(const CacheablePtr& ptr) {
+  static bool isToken(const std::shared_ptr<Cacheable>& ptr) {
     return (invalidToken == ptr) || (destroyedToken == ptr) ||
            (overflowedToken == ptr) || (tombstoneToken == ptr);
   }
 
-  static bool isInvalid(const CacheablePtr& ptr) { return invalidToken == ptr; }
+  static bool isInvalid(const std::shared_ptr<Cacheable>& ptr) { return invalidToken == ptr; }
 
-  static bool isDestroyed(const CacheablePtr& ptr) {
+  static bool isDestroyed(const std::shared_ptr<Cacheable>& ptr) {
     return destroyedToken == ptr;
   }
 
-  static bool isOverflowed(const CacheablePtr& ptr) {
+  static bool isOverflowed(const std::shared_ptr<Cacheable>& ptr) {
     return overflowedToken == ptr;
   }
 
-  static bool isTombstone(const CacheablePtr& ptr) {
+  static bool isTombstone(const std::shared_ptr<Cacheable>& ptr) {
     return tombstoneToken == ptr;
   }
 
@@ -113,7 +111,7 @@ class CPPCACHE_EXPORT CacheableToken : public Cacheable {
    * the subclasses. The default implementation renders the classname.
    * This returns constant strings of the form "CacheableToken::INVALID".
    */
-  virtual CacheableStringPtr toString() const;
+  virtual std::shared_ptr<CacheableString> toString() const;
 
   virtual uint32_t objectSize() const;
 

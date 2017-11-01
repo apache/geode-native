@@ -94,7 +94,7 @@ class MapEntryT : public TBase {
 
   virtual ~MapEntryT() {}
 
-  virtual int addTracker(MapEntryPtr& newEntry) {
+  virtual int addTracker(std::shared_ptr<MapEntry>& newEntry) {
     return MapEntryST<TBase, NUM_TRACKERS, UPDATE_COUNT>::addTracker(this);
   }
 
@@ -104,7 +104,7 @@ class MapEntryT : public TBase {
         MapEntryST<TBase, NUM_TRACKERS, UPDATE_COUNT>::removeTracker(this));
   }
 
-  virtual int incrementUpdateCount(MapEntryPtr& newEntry) {
+  virtual int incrementUpdateCount(std::shared_ptr<MapEntry>& newEntry) {
     return MapEntryST<TBase, NUM_TRACKERS, UPDATE_COUNT>::incUpdateCount(this);
   }
 
@@ -112,19 +112,19 @@ class MapEntryT : public TBase {
 
   virtual int getUpdateCount() const { return UPDATE_COUNT; }
 
-  inline static std::shared_ptr<MapEntryT> create(const CacheableKeyPtr& key) {
+  inline static std::shared_ptr<MapEntryT> create(const std::shared_ptr<CacheableKey>& key) {
     return std::make_shared<MapEntryT>(key);
   }
 
   inline static std::shared_ptr<MapEntryT> create(
-      ExpiryTaskManager* expiryTaskManager, const CacheableKeyPtr& key) {
+      ExpiryTaskManager* expiryTaskManager, const std::shared_ptr<CacheableKey>& key) {
     return std::make_shared<MapEntryT>(expiryTaskManager, key);
   }
 
  protected:
-  inline MapEntryT(const CacheableKeyPtr& key) : TBase(key) {}
+  inline MapEntryT(const std::shared_ptr<CacheableKey>& key) : TBase(key) {}
   inline MapEntryT(ExpiryTaskManager* expiryTaskManager,
-                   const CacheableKeyPtr& key)
+                   const std::shared_ptr<CacheableKey>& key)
       : TBase(expiryTaskManager, key) {}
 
  private:
@@ -144,7 +144,7 @@ class MapEntryT<TBase, NUM_TRACKERS, GF_UPDATE_MAX> : public TBase {
 
   virtual ~MapEntryT() {}
 
-  virtual int addTracker(MapEntryPtr& newEntry) {
+  virtual int addTracker(std::shared_ptr<MapEntry>& newEntry) {
     return MapEntryST<TBase, NUM_TRACKERS, GF_UPDATE_MAX>::addTracker(this);
   }
 
@@ -154,7 +154,7 @@ class MapEntryT<TBase, NUM_TRACKERS, GF_UPDATE_MAX> : public TBase {
         MapEntryST<TBase, NUM_TRACKERS, GF_UPDATE_MAX>::removeTracker(this));
   }
 
-  virtual int incrementUpdateCount(MapEntryPtr& newEntry) {
+  virtual int incrementUpdateCount(std::shared_ptr<MapEntry>& newEntry) {
     // fallback to TrackedMapEntry
     newEntry = std::make_shared<TrackedMapEntry>(
         this->shared_from_this(), NUM_TRACKERS, GF_UPDATE_MAX + 1);
@@ -180,7 +180,7 @@ class MapEntryT<TBase, GF_TRACK_MAX, UPDATE_COUNT> : public TBase {
 
   virtual ~MapEntryT() {}
 
-  virtual int addTracker(MapEntryPtr& newEntry) {
+  virtual int addTracker(std::shared_ptr<MapEntry>& newEntry) {
     // fallback to TrackedMapEntry
     newEntry = std::make_shared<TrackedMapEntry>(
         this->shared_from_this(), GF_TRACK_MAX + 1, UPDATE_COUNT);
@@ -193,7 +193,7 @@ class MapEntryT<TBase, GF_TRACK_MAX, UPDATE_COUNT> : public TBase {
         MapEntryST<TBase, GF_TRACK_MAX, UPDATE_COUNT>::removeTracker(this));
   }
 
-  virtual int incrementUpdateCount(MapEntryPtr& newEntry) {
+  virtual int incrementUpdateCount(std::shared_ptr<MapEntry>& newEntry) {
     return MapEntryST<TBase, GF_TRACK_MAX, UPDATE_COUNT>::incUpdateCount(this);
   }
 
@@ -216,7 +216,7 @@ class MapEntryT<TBase, GF_TRACK_MAX, GF_UPDATE_MAX> : public TBase {
 
   virtual ~MapEntryT() {}
 
-  virtual int addTracker(MapEntryPtr& newEntry) {
+  virtual int addTracker(std::shared_ptr<MapEntry>& newEntry) {
     // fallback to TrackedMapEntry
     newEntry = std::make_shared<TrackedMapEntry>(
         this->shared_from_this(), GF_TRACK_MAX + 1, GF_UPDATE_MAX);
@@ -229,7 +229,7 @@ class MapEntryT<TBase, GF_TRACK_MAX, GF_UPDATE_MAX> : public TBase {
         MapEntryST<TBase, GF_TRACK_MAX, GF_UPDATE_MAX>::removeTracker(this));
   }
 
-  virtual int incrementUpdateCount(MapEntryPtr& newEntry) {
+  virtual int incrementUpdateCount(std::shared_ptr<MapEntry>& newEntry) {
     // fallback to TrackedMapEntry
     newEntry = std::make_shared<TrackedMapEntry>(
         this->shared_from_this(), GF_TRACK_MAX, GF_UPDATE_MAX + 1);

@@ -56,22 +56,21 @@ class TESTOBJECT_EXPORT PdxTypes1 : public PdxSerializable {
 
   int32_t getHashCode();
 
-  bool equals(PdxSerializablePtr obj);
+  bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  virtual void toData(PdxWriterPtr pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw);
 
   const char* getClassName() const { return "PdxTests.PdxTypes1"; }
   int32_t getm_i1() { return m_i1; }
   static PdxSerializable* createDeserializable() { return new PdxTypes1(); }
 };
-typedef std::shared_ptr<PdxTypes1> PdxTypes1Ptr;
 
 /************************************************************
  *  PdxTypes2
@@ -92,22 +91,21 @@ class TESTOBJECT_EXPORT PdxTypes2 : public PdxSerializable {
 
   int32_t getHashCode();
 
-  bool equals(PdxSerializablePtr obj);
+  bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  virtual void toData(PdxWriterPtr pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw);
 
   const char* getClassName() const { return "PdxTests.PdxTypes2"; }
 
   static PdxSerializable* createDeserializable() { return new PdxTypes2(); }
 };
-typedef std::shared_ptr<PdxTypes2> PdxTypes2Ptr;
 
 /************************************************************
  *  PdxTypes3
@@ -128,22 +126,21 @@ class TESTOBJECT_EXPORT PdxTypes3 : public PdxSerializable {
 
   int32_t getHashCode();
 
-  bool equals(PdxSerializablePtr obj);
+  bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  virtual void toData(PdxWriterPtr pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw);
 
   const char* getClassName() const { return "PdxTests.PdxTypes3"; }
 
   static PdxSerializable* createDeserializable() { return new PdxTypes3(); }
 };
-typedef std::shared_ptr<PdxTypes3> PdxTypes3Ptr;
 
 /************************************************************
  *  PdxTypes4
@@ -163,22 +160,21 @@ class TESTOBJECT_EXPORT PdxTypes4 : public PdxSerializable {
 
   int32_t getHashCode();
 
-  bool equals(PdxSerializablePtr obj);
+  bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  virtual void toData(PdxWriterPtr pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw);
 
   const char* getClassName() const { return "PdxTests.PdxTypes4"; }
 
   static PdxSerializable* createDeserializable() { return new PdxTypes4(); }
 };
-typedef std::shared_ptr<PdxTypes4> PdxTypes4Ptr;
 
 /************************************************************
  *  PdxTypes5
@@ -199,22 +195,21 @@ class TESTOBJECT_EXPORT PdxTypes5 : public PdxSerializable {
 
   int32_t getHashCode();
 
-  bool equals(PdxSerializablePtr obj);
+  bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  virtual void toData(PdxWriterPtr pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw);
 
   const char* getClassName() const { return "PdxTests.PdxTypes5"; }
 
   static PdxSerializable* createDeserializable() { return new PdxTypes5(); }
 };
-typedef std::shared_ptr<PdxTypes5> PdxTypes5Ptr;
 
 /************************************************************
  *  PdxTypes6
@@ -236,22 +231,21 @@ class TESTOBJECT_EXPORT PdxTypes6 : public PdxSerializable {
 
   int32_t getHashCode();
 
-  bool equals(PdxSerializablePtr obj);
+  bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  virtual void toData(PdxWriterPtr pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw);
 
   const char* getClassName() const { return "PdxTests.PdxTypes6"; }
 
   static PdxSerializable* createDeserializable() { return new PdxTypes6(); }
 };
-typedef std::shared_ptr<PdxTypes6> PdxTypes6Ptr;
 
 /************************************************************
  *  PdxTypes7
@@ -273,22 +267,21 @@ class TESTOBJECT_EXPORT PdxTypes7 : public PdxSerializable {
 
   int32_t getHashCode();
 
-  bool equals(PdxSerializablePtr obj);
+  bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  virtual void toData(PdxWriterPtr pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw);
 
   const char* getClassName() const { return "PdxTests.PdxTypes7"; }
 
   static PdxSerializable* createDeserializable() { return new PdxTypes7(); }
 };
-typedef std::shared_ptr<PdxTypes7> PdxTypes7Ptr;
 
 /************************************************************
  *  PdxTypes8
@@ -300,7 +293,7 @@ class TESTOBJECT_EXPORT PdxTypes8 : public PdxSerializable {
   char* m_s2;
   int32_t m_i1;
   int8_t* bytes300;
-  CacheablePtr _enum;
+  std::shared_ptr<Cacheable> _enum;
   int32_t m_i2;
   int32_t m_i3;
   int32_t m_i4;
@@ -312,22 +305,21 @@ class TESTOBJECT_EXPORT PdxTypes8 : public PdxSerializable {
 
   int32_t getHashCode();
 
-  bool equals(PdxSerializablePtr obj);
+  bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  virtual void toData(PdxWriterPtr pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw);
 
   const char* getClassName() const { return "PdxTests.PdxTypes8"; }
 
   static PdxSerializable* createDeserializable() { return new PdxTypes8(); }
 };
-typedef std::shared_ptr<PdxTypes8> PdxTypes8Ptr;
 
 /************************************************************
  *  PdxTypes9
@@ -348,22 +340,21 @@ class TESTOBJECT_EXPORT PdxTypes9 : public PdxSerializable {
 
   int32_t getHashCode();
 
-  bool equals(PdxSerializablePtr obj);
+  bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  virtual void toData(PdxWriterPtr pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw);
 
   const char* getClassName() const { return "PdxTests.PdxTypes9"; }
 
   static PdxSerializable* createDeserializable() { return new PdxTypes9(); }
 };
-typedef std::shared_ptr<PdxTypes9> PdxTypes9Ptr;
 
 /************************************************************
  *  PdxTypes10
@@ -385,22 +376,21 @@ class TESTOBJECT_EXPORT PdxTypes10 : public PdxSerializable {
 
   int32_t getHashCode();
 
-  bool equals(PdxSerializablePtr obj);
+  bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  virtual void toData(PdxWriterPtr pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw);
 
   const char* getClassName() const { return "PdxTests.PdxTypes10"; }
 
   static PdxSerializable* createDeserializable() { return new PdxTypes10(); }
 };
-typedef std::shared_ptr<PdxTypes10> PdxTypes10Ptr;
 
 /************************************************************
  *  NestedPdx
@@ -408,8 +398,8 @@ typedef std::shared_ptr<PdxTypes10> PdxTypes10Ptr;
 
 class TESTOBJECT_EXPORT NestedPdx : public PdxSerializable {
  private:
-  PdxTypes1Ptr m_pd1;
-  PdxTypes2Ptr m_pd2;
+  std::shared_ptr<PdxTypes1> m_pd1;
+  std::shared_ptr<PdxTypes2> m_pd2;
   char* m_s1;  //"one"
   char* m_s2;
   int32_t m_i1;
@@ -425,23 +415,22 @@ class TESTOBJECT_EXPORT NestedPdx : public PdxSerializable {
 
   int32_t getHashCode();
 
-  bool equals(PdxSerializablePtr obj);
+  bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  virtual void toData(PdxWriterPtr pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw);
 
   const char* getClassName() const { return "PdxTests::NestedPdx"; }
   const char* getString() { return m_s1; }
 
   static PdxSerializable* createDeserializable() { return new NestedPdx(); }
 };
-typedef std::shared_ptr<NestedPdx> NestedPdxPtr;
 
 /************************************************************
  *  Mixed Version NestedPdx
@@ -449,8 +438,8 @@ typedef std::shared_ptr<NestedPdx> NestedPdxPtr;
 
 class TESTOBJECT_EXPORT MixedVersionNestedPdx : public PdxSerializable {
  private:
-  PdxTypes1Ptr m_pd1;
-  PdxTypes2Ptr m_pd2;
+  std::shared_ptr<PdxTypes1> m_pd1;
+  std::shared_ptr<PdxTypes2> m_pd2;
   char* m_s1;  //"one"
   char* m_s2;
   char* m_s3;
@@ -467,16 +456,16 @@ class TESTOBJECT_EXPORT MixedVersionNestedPdx : public PdxSerializable {
 
   int32_t getHashCode();
 
-  bool equals(PdxSerializablePtr obj);
+  bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  virtual void toData(PdxWriterPtr pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw);
 
   const char* getClassName() const { return "PdxTests::MixedVersionNestedPdx"; }
   const char* getString() { return m_s1; }
@@ -485,7 +474,6 @@ class TESTOBJECT_EXPORT MixedVersionNestedPdx : public PdxSerializable {
     return new MixedVersionNestedPdx();
   }
 };
-typedef std::shared_ptr<MixedVersionNestedPdx> MixedVersionNestedPdxPtr;
 
 /************************************************************
  *  PdxInsideIGeodeSerializable
@@ -493,8 +481,8 @@ typedef std::shared_ptr<MixedVersionNestedPdx> MixedVersionNestedPdxPtr;
 
 class TESTOBJECT_EXPORT PdxInsideIGeodeSerializable : public Serializable {
  private:
-  NestedPdxPtr m_npdx;
-  PdxTypes3Ptr m_pdx3;
+  std::shared_ptr<NestedPdx> m_npdx;
+  std::shared_ptr<PdxTypes3> m_pdx3;
 
   char* m_s1;  //"one"
   char* m_s2;
@@ -510,9 +498,9 @@ class TESTOBJECT_EXPORT PdxInsideIGeodeSerializable : public Serializable {
 
   int32_t getHashCode();
 
-  bool equals(SerializablePtr obj);
+  bool equals(std::shared_ptr<Serializable> obj);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   virtual void fromData(DataInput& input);
 
@@ -528,8 +516,6 @@ class TESTOBJECT_EXPORT PdxInsideIGeodeSerializable : public Serializable {
     return new PdxInsideIGeodeSerializable();
   }
 };
-typedef std::shared_ptr<PdxInsideIGeodeSerializable>
-    PdxInsideIGeodeSerializablePtr;
 
 } /* namespace PdxTests */
 

@@ -22,25 +22,12 @@
 
 using namespace apache::geode::client;
 
-/*
-void PoolXmlCreation::addLocator(const char * host, const char * port)
-{
-  locatorhosts.push_back(host);
-  locatorports.push_back(port);
-}
 
-void PoolXmlCreation::addServer(const char * host, const char * port)
-{
-  serverhosts.push_back(host);
-  serverports.push_back(port);
-}
-*/
-
-PoolPtr PoolXmlCreation::create(Cache& cache) {
+std::shared_ptr<Pool> PoolXmlCreation::create(Cache& cache) {
   return poolFactory->create(poolName.c_str());
 }
 
-PoolXmlCreation::PoolXmlCreation(const char* name, PoolFactoryPtr factory) {
+PoolXmlCreation::PoolXmlCreation(const char* name, std::shared_ptr<PoolFactory> factory) {
   poolName = name;
   poolFactory = factory;
 }

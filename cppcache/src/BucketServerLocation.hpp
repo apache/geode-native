@@ -26,15 +26,14 @@
 namespace apache {
 namespace geode {
 namespace client {
-
-_GF_PTR_DEF_(BucketServerLocation, BucketServerLocationPtr)
+class CacheableStringArray;
 
 class BucketServerLocation : public ServerLocation {
  private:
   int m_bucketId;
   bool m_isPrimary;
   int8_t m_version;
-  CacheableStringArrayPtr m_serverGroups;
+  std::shared_ptr<CacheableStringArray> m_serverGroups;
   int8_t m_numServerGroups;
 
  public:
@@ -70,9 +69,9 @@ class BucketServerLocation : public ServerLocation {
         m_isPrimary(isPrimary),
         m_version(version) {
     int32_t size = static_cast<int32_t>(serverGroups.size());
-    CacheableStringPtr* ptrArr = nullptr;
+    std::shared_ptr<CacheableString>* ptrArr = nullptr;
     if (size > 0) {
-      ptrArr = new CacheableStringPtr[size];
+      ptrArr = new std::shared_ptr<CacheableString>[size];
       for (int i = 0; i < size; i++) {
         ptrArr[i] = CacheableString::create(
             serverGroups[i].c_str(),
@@ -116,9 +115,9 @@ class BucketServerLocation : public ServerLocation {
     m_isPrimary = input.readBoolean();
     m_version = input.read();
     m_numServerGroups = input.read();
-    CacheableStringPtr* serverGroups = nullptr;
+    std::shared_ptr<CacheableString>* serverGroups = nullptr;
     if (m_numServerGroups > 0) {
-      serverGroups = new CacheableStringPtr[m_numServerGroups];
+      serverGroups = new std::shared_ptr<CacheableString>[m_numServerGroups];
       for (int i = 0; i < m_numServerGroups; i++) {
         serverGroups[i] = input.readNativeString();
       }
@@ -171,7 +170,7 @@ class BucketServerLocation : public ServerLocation {
     this->m_serverGroups = rhs.m_serverGroups;
   }
 
-  inline CacheableStringArrayPtr getServerGroups() { return m_serverGroups; }
+  inline std::shared_ptr<CacheableStringArray> getServerGroups() { return m_serverGroups; }
 };
 
 }  // namespace client

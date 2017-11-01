@@ -49,29 +49,29 @@ static bool isLocator1 = false;
 const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator1, isLocalServer1, 1);
 
-CacheableStringPtr c1v11;
-CacheableStringPtr c1v12;
-CacheableStringPtr c1v13;
-CacheableStringPtr c1v14;
-CacheableStringPtr c1v15;
+std::shared_ptr<CacheableString> c1v11;
+std::shared_ptr<CacheableString> c1v12;
+std::shared_ptr<CacheableString> c1v13;
+std::shared_ptr<CacheableString> c1v14;
+std::shared_ptr<CacheableString> c1v15;
 
-CacheableStringPtr s1v11;
-CacheableStringPtr s1v12;
-CacheableStringPtr s1v13;
-CacheableStringPtr s1v14;
-CacheableStringPtr s1v15;
+std::shared_ptr<CacheableString> s1v11;
+std::shared_ptr<CacheableString> s1v12;
+std::shared_ptr<CacheableString> s1v13;
+std::shared_ptr<CacheableString> s1v14;
+std::shared_ptr<CacheableString> s1v15;
 
-CacheableStringPtr c2v11;
-CacheableStringPtr c2v12;
-CacheableStringPtr c2v13;
-CacheableStringPtr c2v14;
-CacheableStringPtr c2v15;
+std::shared_ptr<CacheableString> c2v11;
+std::shared_ptr<CacheableString> c2v12;
+std::shared_ptr<CacheableString> c2v13;
+std::shared_ptr<CacheableString> c2v14;
+std::shared_ptr<CacheableString> c2v15;
 
-CacheableStringPtr s2v11;
-CacheableStringPtr s2v12;
-CacheableStringPtr s2v13;
-CacheableStringPtr s2v14;
-CacheableStringPtr s2v15;
+std::shared_ptr<CacheableString> s2v11;
+std::shared_ptr<CacheableString> s2v12;
+std::shared_ptr<CacheableString> s2v13;
+std::shared_ptr<CacheableString> s2v14;
+std::shared_ptr<CacheableString> s2v15;
 
 void verifyAllValues() {
   LOGINFO("verifyAllValues TEST-1");
@@ -138,13 +138,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartClient1)
     // 0/*redundancy*/, true/*clientNotification*/,
     // -1/*subscriptionAckInterval*/,
     // 5/*connections*/, 60000/*loadConditioningInterval*/);
-    // RegionPtr regPtr0 = createRegionAndAttachPool(regNames[0],USE_ACK,
+    // auto regPtr0 = createRegionAndAttachPool(regNames[0],USE_ACK,
     // nullptr);
 
     initClient(true);
     getHelper()->createPoolWithLocators("__TEST_POOL1__", locatorsG, true, -1,
                                         -1, -1, false, group1);
-    RegionPtr regPtr0 = getHelper()->createRegionAndAttachPool(
+    auto regPtr0 = getHelper()->createRegionAndAttachPool(
         regNames[0], USE_ACK, "__TEST_POOL1__", true);
     LOG("StepOne_Pooled_Locator1 complete.");
 
@@ -170,14 +170,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, StartClient2)
     gfendpoints2.c_str(), nullptr, 0, true, -1, 5, 60000); LOG( "Client-2 Init
     -5" );
 
-    RegionPtr regPtr0 = createRegionAndAttachPool(regNames[0],USE_ACK, nullptr);
+    auto regPtr0 = createRegionAndAttachPool(regNames[0],USE_ACK, nullptr);
     LOG( "Client-2 Init -6" );
 
     */
     initClient(true);
     getHelper()->createPoolWithLocators("__TEST_POOL1__", locatorsG, true, -1,
                                         -1, -1, false, group2);
-    RegionPtr regPtr0 = getHelper()->createRegionAndAttachPool(
+    auto regPtr0 = getHelper()->createRegionAndAttachPool(
         regNames[0], USE_ACK, "__TEST_POOL1__", true);
     LOG("StepOne_Pooled_Locator1 complete.");
 
@@ -189,7 +189,7 @@ END_TASK_DEFINITION
 // threadPutonClient1
 DUNIT_TASK_DEFINITION(CLIENT1, threadPutonClient1)
   {
-    RegionPtr rptr = getHelper()->getRegion(regNames[0]);
+    auto rptr = getHelper()->getRegion(regNames[0]);
     thread4 = new putThread(rptr, false);
     thread4->setParams(0, 10, 1, true, false, 0);
     thread4->start();
@@ -199,20 +199,20 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, transactionPutOnClient2)
   {
-    RegionPtr rptr = getHelper()->getRegion(regNames[0]);
-    CacheTransactionManagerPtr txManager =
+    auto rptr = getHelper()->getRegion(regNames[0]);
+    std::shared_ptr<CacheTransactionManager> txManager =
         getHelper()->getCache()->getCacheTransactionManager();
 
     txManager->begin();
-    CacheableKeyPtr keyPtr1 = CacheableKey::create("key-1");
-    CacheableStringPtr valPtr = CacheableString::create("client2-value1");
+    std::shared_ptr<CacheableKey> keyPtr1 = CacheableKey::create("key-1");
+    std::shared_ptr<CacheableString> valPtr = CacheableString::create("client2-value1");
     rptr->put(keyPtr1, valPtr);
 
-    CacheableKeyPtr keyPtr2 = CacheableKey::create("key-2");
+    std::shared_ptr<CacheableKey> keyPtr2 = CacheableKey::create("key-2");
     valPtr = CacheableString::create("client2-value2");
     rptr->put(keyPtr2, valPtr);
 
-    CacheableKeyPtr keyPtr3 = CacheableKey::create("key-3");
+    std::shared_ptr<CacheableKey> keyPtr3 = CacheableKey::create("key-3");
     valPtr = CacheableString::create("client2-value3");
     rptr->put(keyPtr3, valPtr);
     txManager->commit();
@@ -268,11 +268,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyGetonClient1)
     thread4->stop();
     delete thread4;
 
-    RegionPtr rptr = getHelper()->getRegion(regNames[0]);
+    auto rptr = getHelper()->getRegion(regNames[0]);
 
-    CacheableKeyPtr keyPtr1 = CacheableKey::create("key-1");
-    CacheableKeyPtr keyPtr2 = CacheableKey::create("key-2");
-    CacheableKeyPtr keyPtr3 = CacheableKey::create("key-3");
+    std::shared_ptr<CacheableKey> keyPtr1 = CacheableKey::create("key-1");
+    std::shared_ptr<CacheableKey> keyPtr2 = CacheableKey::create("key-2");
+    std::shared_ptr<CacheableKey> keyPtr3 = CacheableKey::create("key-3");
 
     // localGet
     c1v11 = std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr1));
@@ -317,7 +317,7 @@ END_TASK_DEFINITION
 //
 DUNIT_TASK_DEFINITION(CLIENT1, PutOnClient1)
   {
-    RegionPtr rptr = getHelper()->getRegion(regNames[0]);
+    auto rptr = getHelper()->getRegion(regNames[0]);
     thread1 = new putThread(rptr, false);
     thread1->setParams(0, 5, 1, true, false, 1);
     thread1->start();
@@ -327,7 +327,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, PutOnClient2)
   {
-    RegionPtr rptr = getHelper()->getRegion(regNames[0]);
+    auto rptr = getHelper()->getRegion(regNames[0]);
     thread2 = new putThread(rptr, false);
     thread2->setParams(0, 5, 1, false, false, 0);  // 0, 5, 1, false, false, 0
     thread2->start();
@@ -337,7 +337,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, testServerGC)
   {
-    RegionPtr rptr = getHelper()->getRegion(regNames[0]);
+    auto rptr = getHelper()->getRegion(regNames[0]);
     thread3 = new putThread(rptr, false);
     thread3->setParams(0, 5000, 1, true, false, 0);  // 0, 5, 1, false, false, 0
     thread3->start();
@@ -361,13 +361,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetOnClient1)
     thread1->stop();
     delete thread1;
     dunit::sleep(3000);
-    RegionPtr regPtr = getHelper()->getRegion(regNames[0]);
+    auto regPtr = getHelper()->getRegion(regNames[0]);
     // localGet
-    CacheableKeyPtr keyPtr1 = CacheableKey::create("key-1");
-    CacheableKeyPtr keyPtr2 = CacheableKey::create("key-2");
-    CacheableKeyPtr keyPtr3 = CacheableKey::create("key-3");
-    CacheableKeyPtr keyPtr4 = CacheableKey::create("key-4");
-    CacheableKeyPtr keyPtr5 = CacheableKey::create("key-5");
+    std::shared_ptr<CacheableKey> keyPtr1 = CacheableKey::create("key-1");
+    std::shared_ptr<CacheableKey> keyPtr2 = CacheableKey::create("key-2");
+    std::shared_ptr<CacheableKey> keyPtr3 = CacheableKey::create("key-3");
+    std::shared_ptr<CacheableKey> keyPtr4 = CacheableKey::create("key-4");
+    std::shared_ptr<CacheableKey> keyPtr5 = CacheableKey::create("key-5");
 
     c1v11 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr1));
     c1v12 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr2));
@@ -422,17 +422,17 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, GetOnClient2)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regNames[0]);
+    auto regPtr = getHelper()->getRegion(regNames[0]);
     thread2->stop();
     delete thread2;
 
     dunit::sleep(3000);
     // localGet
-    CacheableKeyPtr keyPtr1 = CacheableKey::create("key-1");
-    CacheableKeyPtr keyPtr2 = CacheableKey::create("key-2");
-    CacheableKeyPtr keyPtr3 = CacheableKey::create("key-3");
-    CacheableKeyPtr keyPtr4 = CacheableKey::create("key-4");
-    CacheableKeyPtr keyPtr5 = CacheableKey::create("key-5");
+    std::shared_ptr<CacheableKey> keyPtr1 = CacheableKey::create("key-1");
+    std::shared_ptr<CacheableKey> keyPtr2 = CacheableKey::create("key-2");
+    std::shared_ptr<CacheableKey> keyPtr3 = CacheableKey::create("key-3");
+    std::shared_ptr<CacheableKey> keyPtr4 = CacheableKey::create("key-4");
+    std::shared_ptr<CacheableKey> keyPtr5 = CacheableKey::create("key-5");
 
     c2v11 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr1));
     c2v12 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr2));

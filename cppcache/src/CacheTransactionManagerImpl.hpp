@@ -49,16 +49,16 @@ class CacheTransactionManagerImpl
   virtual void commit();
   virtual void rollback();
   virtual bool exists();
-  virtual TransactionIdPtr suspend();
-  virtual void resume(TransactionIdPtr transactionId);
-  virtual bool isSuspended(TransactionIdPtr transactionId);
-  virtual bool tryResume(TransactionIdPtr transactionId);
-  bool tryResume(TransactionIdPtr transactionId, bool cancelExpiryTask);
-  virtual bool tryResume(TransactionIdPtr transactionId,
+  virtual std::shared_ptr<TransactionId> suspend();
+  virtual void resume(std::shared_ptr<TransactionId> transactionId);
+  virtual bool isSuspended(std::shared_ptr<TransactionId> transactionId);
+  virtual bool tryResume(std::shared_ptr<TransactionId> transactionId);
+  bool tryResume(std::shared_ptr<TransactionId> transactionId, bool cancelExpiryTask);
+  virtual bool tryResume(std::shared_ptr<TransactionId> transactionId,
                          int32_t waitTimeInMillisec);
-  virtual bool exists(TransactionIdPtr transactionId);
+  virtual bool exists(std::shared_ptr<TransactionId> transactionId);
 
-  virtual TransactionIdPtr getTransactionId();
+  virtual std::shared_ptr<TransactionId> getTransactionId();
 
   TXState* getSuspendedTx(int32_t txId);
 

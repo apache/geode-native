@@ -145,7 +145,7 @@ void EvictionController::evict(int32_t percentage) {
   // On the flip side, this requires a copy of the registered region list
   // every time eviction is ordered and that might not be cheap
   //@TODO: Discuss with team
-  VectorOfString regionTmpVector;
+  std::vector<std::string> regionTmpVector;
   {
     ReadGuard guard(m_regionLock);
     for (size_t i = 0; i < m_regions.size(); i++) {
@@ -155,7 +155,7 @@ void EvictionController::evict(int32_t percentage) {
 
   for (size_t i = 0; i < regionTmpVector.size(); i++) {
     std::string str = regionTmpVector.at(i);
-    RegionPtr rptr;
+    std::shared_ptr<Region> rptr;
     m_cacheImpl->getRegion(str.c_str(), rptr);
     if (rptr != nullptr) {
       RegionInternal* rimpl = dynamic_cast<RegionInternal*>(rptr.get());

@@ -45,7 +45,7 @@ class CPPCACHE_EXPORT TombstoneExpiryHandler : public ACE_Event_Handler {
   /**
    * Constructor
    */
-  TombstoneExpiryHandler(TombstoneEntryPtr entryPtr,
+  TombstoneExpiryHandler(std::shared_ptr<TombstoneEntry> entryPtr,
                          TombstoneList* tombstoneList, uint32_t duration,
                          CacheImpl* cacheImpl);
 
@@ -58,17 +58,17 @@ class CPPCACHE_EXPORT TombstoneExpiryHandler : public ACE_Event_Handler {
    */
   int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask);
 
-  void setTombstoneEntry(TombstoneEntryPtr entryPtr) { m_entryPtr = entryPtr; }
+  void setTombstoneEntry(std::shared_ptr<TombstoneEntry> entryPtr) { m_entryPtr = entryPtr; }
 
  private:
   // The entry contained in the tombstone list
-  TombstoneEntryPtr m_entryPtr;
+  std::shared_ptr<TombstoneEntry> m_entryPtr;
   // Duration after which the task should be reset in case of
   // modification.
   uint32_t m_duration;
   CacheImpl* m_cacheImpl;
   // perform the actual expiration action
-  void DoTheExpirationAction(const CacheableKeyPtr& key);
+  void DoTheExpirationAction(const std::shared_ptr<CacheableKey>& key);
 
   TombstoneList* m_tombstoneList;
 };

@@ -50,9 +50,6 @@ class SystemProperties;
  * The connection will be through a (host, port) pair.
  */
 
-class DistributedSystemImpl;
-typedef std::shared_ptr<DistributedSystemImpl> DistributedSystemImplPtr;
-
 class CPPCACHE_EXPORT DistributedSystemImpl {
   /**
    * @brief public methods

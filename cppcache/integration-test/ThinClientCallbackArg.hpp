@@ -43,26 +43,26 @@ static int numberOfLocators = 0;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 const char* poolName = "__TESTPOOL1_";
-TallyListenerPtr regListener;
-TallyWriterPtr regWriter;
+std::shared_ptr<TallyListener> regListener;
+std::shared_ptr<TallyWriter> regWriter;
 
 #include "LocatorHelper.hpp"
 
-void setCacheListener(const char* regName, TallyListenerPtr regListener) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheListener(const char* regName, std::shared_ptr<TallyListener> regListener) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(regListener);
 }
 
-void setCacheWriter(const char* regName, TallyWriterPtr regWriter) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheWriter(const char* regName, std::shared_ptr<TallyWriter> regWriter) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheWriter(regWriter);
 }
 
 void createClientPooledLocatorRegion() {
   initClient(true);
-  CacheableKeyPtr key0 = CacheableKey::create(keys[0]);
+  std::shared_ptr<CacheableKey> key0 = CacheableKey::create(keys[0]);
   LOG("Creating region in CLIENT , no-ack, cacheing enable, with-listener and "
       "writer");
   createPooledRegion(regionNames[0], false, locatorsG, poolName, true,
@@ -73,7 +73,7 @@ void createClientPooledLocatorRegion() {
   setCacheListener(regionNames[0], regListener);
   regWriter->setCallBackArg(key0);
   regListener->setCallBackArg(key0);
-  RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+  auto regPtr0 = getHelper()->getRegion(regionNames[0]);
   regPtr0->registerAllKeys();
 }
 void validateLocalListenerWriterData() {
@@ -111,7 +111,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, doOperations)
   {
-    CacheableKeyPtr key0 = CacheableKey::create(keys[0]);
+    std::shared_ptr<CacheableKey> key0 = CacheableKey::create(keys[0]);
     LOG("do entry operation from client 1");
     RegionOperations region(regionNames[0]);
     region.putOp(5, key0);

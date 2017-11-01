@@ -46,8 +46,8 @@ class MyCqListener : public CqListener {
  public:
   void onEvent(const CqEvent& cqe) {
     char* opStr = (char*)"Default";
-    PortfolioPtr portfolio(dynamic_cast<Portfolio*>(cqe.getNewValue().get()));
-    CacheableStringPtr key(dynamic_cast<CacheableString*>(cqe.getKey().get()));
+    std::shared_ptr<Portfolio> portfolio(dynamic_cast<Portfolio*>(cqe.getNewValue().get()));
+    std::shared_ptr<CacheableString> key(dynamic_cast<CacheableString*>(cqe.getKey().get()));
     switch (cqe.getQueryOperation()) {
       case CqOperation::OP_TYPE_CREATE: {
         opStr = (char*)"CREATE";
@@ -78,20 +78,20 @@ class MyCqListener : public CqListener {
 int main(int argc, char** argv) {
   try {
     // Create a Geode Cache Programmatically.
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
+    auto cacheFactory = CacheFactory::createCacheFactory();
 
-    CachePtr cachePtr = cacheFactory->addServer("localhost", 50505)
+    auto cachePtr = cacheFactory->addServer("localhost", 50505)
                             ->setSubscriptionEnabled(true)
                             ->create();
 
     LOGINFO("Created the Geode Cache");
 
-    RegionFactoryPtr regionFactory = cachePtr->createRegionFactory(PROXY);
+    auto regionFactory = cachePtr->createRegionFactory(PROXY);
 
     LOGINFO("Created the RegionFactory");
 
     // Create the example Region programmatically.
-    RegionPtr regionPtr = regionFactory->create("Portfolios");
+    auto regionPtr = regionFactory->create("Portfolios");
 
     // Register our Serializable/Cacheable Query objects, viz. Portfolio and
     // Position.
@@ -101,9 +101,9 @@ int main(int argc, char** argv) {
     LOGINFO("Registered Serializable Query Objects");
 
     // Populate the Region with some Portfolio objects.
-    PortfolioPtr port1Ptr(new Portfolio(1 /*ID*/, 10 /*size*/));
-    PortfolioPtr port2Ptr(new Portfolio(2 /*ID*/, 20 /*size*/));
-    PortfolioPtr port3Ptr(new Portfolio(3 /*ID*/, 30 /*size*/));
+    std::shared_ptr<Portfolio> port1Ptr(new Portfolio(1 /*ID*/, 10 /*size*/));
+    std::shared_ptr<Portfolio> port2Ptr(new Portfolio(2 /*ID*/, 20 /*size*/));
+    std::shared_ptr<Portfolio> port3Ptr(new Portfolio(3 /*ID*/, 30 /*size*/));
     regionPtr->put("Key1", port1Ptr);
     regionPtr->put("Key2", port2Ptr);
     regionPtr->put("Key3", port3Ptr);
@@ -111,20 +111,20 @@ int main(int argc, char** argv) {
     LOGINFO("Populated some Portfolio Objects");
 
     // Get the QueryService from the Cache.
-    QueryServicePtr qrySvcPtr = cachePtr->getQueryService();
+    auto qrySvcPtr = cachePtr->getQueryService();
 
     // Create CqAttributes and Install Listener
     CqAttributesFactory cqFac;
-    CqListenerPtr cqLstner(new MyCqListener());
+    std::shared_ptr<CqListener> cqLstner(new MyCqListener());
     cqFac.addCqListener(cqLstner);
-    CqAttributesPtr cqAttr = cqFac.create();
+    auto cqAttr = cqFac.create();
 
     // create a new Cq Query
     const char* qryStr = "select * from /Portfolios p where p.ID < 5";
-    CqQueryPtr qry = qrySvcPtr->newCq((char*)"MyCq", qryStr, cqAttr);
+    auto qry = qrySvcPtr->newCq((char*)"MyCq", qryStr, cqAttr);
 
     // execute Cq Query with initial Results
-    CqResultsPtr resultsPtr = qry->executeWithInitialResults();
+    auto resultsPtr = qry->executeWithInitialResults();
 
     // make change to generate cq events
     regionPtr->put("Key3", port1Ptr);
@@ -136,19 +136,19 @@ int main(int argc, char** argv) {
     // Iterate through the rows of the query result.
     SelectResultsIterator iter = resultsPtr->getIterator();
     while (iter.hasNext()) {
-      SerializablePtr ser = iter.next();
+      std::shared_ptr<Serializable> ser = iter.next();
       if (ser != nullptr) {
         LOGINFO(" query pulled object %s\n", ser->toString()->asChar());
 
-        StructPtr stPtr(dynamic_cast<Struct*>(ser.get()));
+        std::shared_ptr<Struct> stPtr(dynamic_cast<Struct*>(ser.get()));
         if (stPtr != nullptr) {
           LOGINFO(" got struct ptr ");
-          SerializablePtr serKey = (*(stPtr.get()))["key"];
+          std::shared_ptr<Serializable> serKey = (*(stPtr.get()))["key"];
           if (serKey != nullptr) {
             LOGINFO("got struct key %s\n", serKey->toString()->asChar());
           }
 
-          SerializablePtr serVal = (*(stPtr.get()))["value"];
+          std::shared_ptr<Serializable> serVal = (*(stPtr.get()))["value"];
 
           if (serVal != nullptr) {
             LOGINFO("  got struct value %s\n", serVal->toString()->asChar());

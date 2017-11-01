@@ -28,9 +28,9 @@ namespace client {
 
 ThinClientHARegion::ThinClientHARegion(const std::string& name,
                                        CacheImpl* cache,
-                                       const RegionInternalPtr& rPtr,
-                                       const RegionAttributesPtr& attributes,
-                                       const CacheStatisticsPtr& stats,
+                                       const std::shared_ptr<RegionInternal>& rPtr,
+                                       const std::shared_ptr<RegionAttributes>& attributes,
+                                       const std::shared_ptr<CacheStatistics>& stats,
                                        bool shared, bool enableNotification)
     : ThinClientRegion(name, cache, rPtr, attributes, stats, shared),
       m_attribute(attributes),
@@ -165,9 +165,9 @@ void ThinClientHARegion::addDisMessToQueue() {
   }
 }
 
-GfErrType ThinClientHARegion::getNoThrow_FullObject(EventIdPtr eventId,
-                                                    CacheablePtr& fullObject,
-                                                    VersionTagPtr& versionTag) {
+GfErrType ThinClientHARegion::getNoThrow_FullObject(std::shared_ptr<EventId> eventId,
+                                                    std::shared_ptr<Cacheable>& fullObject,
+                                                    std::shared_ptr<VersionTag>& versionTag) {
   TcrMessageRequestEventValue fullObjectMsg(m_cache->createDataOutput(),
                                             eventId);
   TcrMessageReply reply(true, nullptr);

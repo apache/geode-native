@@ -68,7 +68,7 @@ class NoopAuthInit : public AuthInitialize {
    * @remarks This method can modify the given set of properties. For
    * example it may invoke external agents or even interact with the user.
    */
-  PropertiesPtr getCredentials(const PropertiesPtr& securityprops,
+  std::shared_ptr<Properties> getCredentials(const std::shared_ptr<Properties>& securityprops,
                                const char* server);
 
   /**

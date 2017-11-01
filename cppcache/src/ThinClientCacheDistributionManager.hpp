@@ -59,8 +59,6 @@ class CPPCACHE_EXPORT ThinClientCacheDistributionManager
       const ThinClientCacheDistributionManager&);
 };
 
-typedef std::shared_ptr<ThinClientCacheDistributionManager>
-    ThinClientCacheDistributionManagerPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

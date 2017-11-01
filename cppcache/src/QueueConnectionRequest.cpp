@@ -23,7 +23,7 @@
 using namespace apache::geode::client;
 
 void QueueConnectionRequest::toData(DataOutput& output) const {
-  // CacheableStringPtr abe = CacheableString::create(m_serverGp.c_str());
+  // std::shared_ptr<CacheableString> abe = CacheableString::create(m_serverGp.c_str());
   // output.writeObject(abe);// changed
   output.writeNativeString(m_serverGp.c_str());
   output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte));

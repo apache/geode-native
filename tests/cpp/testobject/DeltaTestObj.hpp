@@ -43,7 +43,7 @@ class TESTOBJECT_EXPORT DeltaTestObj : public DeltaTestImpl {
   bool enableFailure;
 
  public:
-  DeltaTestObj(int intVal, CacheableStringPtr str, bool enableFail = false)
+  DeltaTestObj(int intVal, std::shared_ptr<CacheableString> str, bool enableFail = false)
       : DeltaTestImpl(intVal, str), enableFailure(enableFail) {
     // DeltaTestImpl::DeltaTestImpl(intVal, str);
   }
@@ -73,7 +73,7 @@ class TESTOBJECT_EXPORT DeltaTestObj : public DeltaTestImpl {
   }
   void setFromDeltaCounter(int counter) { fromDeltaCounter = counter; }
   void setToDeltaCounter(int counter) { toDeltaCounter = counter; }
-  CacheableStringPtr toString() const {
+  std::shared_ptr<CacheableString> toString() const {
     char buf[102500];
     sprintf(buf,
             "DeltaTestObj: toDeltaCounter = %lld fromDeltaCounter = %lld\n",
@@ -95,7 +95,7 @@ class TESTOBJECT_EXPORT DeltaTestObj : public DeltaTestImpl {
   }
 };
 
-typedef std::shared_ptr<DeltaTestObj> DeltaTestObjPtr;
+typedef std::shared_ptr<DeltaTestObj> std::shared_ptr<DeltaTestObj>;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_DELTATESTOBJ_H_

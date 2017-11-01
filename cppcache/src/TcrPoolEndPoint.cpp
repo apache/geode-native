@@ -26,12 +26,12 @@ TcrPoolEndPoint::TcrPoolEndPoint(const std::string& name, CacheImpl* cache,
                                  ThinClientPoolDM* dm)
     : TcrEndpoint(name, cache, failoverSema, cleanupSema, redundancySema, dm),
       m_dm(dm) {}
-bool TcrPoolEndPoint::checkDupAndAdd(EventIdPtr eventid) {
+bool TcrPoolEndPoint::checkDupAndAdd(std::shared_ptr<EventId> eventid) {
   return m_dm->checkDupAndAdd(eventid);
 }
 
 void TcrPoolEndPoint::processMarker() { m_dm->processMarker(); }
-QueryServicePtr TcrPoolEndPoint::getQueryService() {
+std::shared_ptr<QueryService> TcrPoolEndPoint::getQueryService() {
   return m_dm->getQueryServiceWithoutCheck();
 }
 void TcrPoolEndPoint::sendRequestForChunkedResponse(const TcrMessage& request,

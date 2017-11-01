@@ -49,28 +49,28 @@ using namespace apache::geode::client;
 int main(int argc, char** argv) {
   try {
     // Create a Geode Cache Programmatically.
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
+    auto cacheFactory = CacheFactory::createCacheFactory();
 
-    CachePtr cachePtr = cacheFactory->setSubscriptionEnabled(true)->create();
+    auto cachePtr = cacheFactory->setSubscriptionEnabled(true)->create();
 
     LOGINFO("Created the Geode Cache");
 
-    RegionFactoryPtr regionFactory =
+    auto regionFactory =
         cachePtr->createRegionFactory(CACHING_PROXY);
 
     LOGINFO("Created the RegionFactory");
 
     // Create the example Region programmatically.
-    RegionPtr regionPtr =
+    auto regionPtr =
         regionFactory->setEntryIdleTimeout(ExpirationAction::DESTROY, 10)
             ->create("exampleRegion");
 
     LOGINFO("Created the Region from the Cache");
 
     // Plugin the SimpleCacheListener to the Region.
-    AttributesMutatorPtr attrMutatorPtr = regionPtr->getAttributesMutator();
+    auto attrMutatorPtr = regionPtr->getAttributesMutator();
     attrMutatorPtr->setCacheListener(
-        CacheListenerPtr(new SimpleCacheListener()));
+        std::shared_ptr<CacheListener>(new SimpleCacheListener()));
 
     LOGINFO("Set the SimpleCacheListener on the Region");
 
@@ -90,15 +90,15 @@ int main(int argc, char** argv) {
     std::this_thread::sleep_for(std::chrono::milliseconds(entryIdleTimeout * 1000 / 2));
 
     // Get the number of Keys remaining in the Region, should be all 3.
-    VectorOfCacheableKey keys;
+    std::vector<std::shared_ptr<CacheableKey>> keys;
     regionPtr->keys(keys);
 
     LOGINFO("Got %d keys before the Entry Idle Timeout duration elapsed",
             keys.size());
 
     // Get 2 of the 3 Entries from the Region to "reset" their Idle Timeouts.
-    CacheablePtr value1Ptr = regionPtr->get("Key1");
-    CacheablePtr value2Ptr = regionPtr->get("Key2");
+    std::shared_ptr<Cacheable> value1Ptr = regionPtr->get("Key1");
+    std::shared_ptr<Cacheable> value2Ptr = regionPtr->get("Key2");
 
     LOGINFO("The SimpleCacheListener should next report the expiration action");
 

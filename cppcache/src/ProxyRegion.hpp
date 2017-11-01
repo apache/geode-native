@@ -71,13 +71,13 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Returns the parent region, or nullptr if a root region.
    * @throws RegionDestroyedException
    */
-  virtual RegionPtr getParentRegion() const {
+  virtual std::shared_ptr<Region> getParentRegion() const {
     return m_realRegion->getParentRegion();
   }
 
   /** Return the RegionAttributes for this region.
    */
-  virtual RegionAttributesPtr getAttributes() const {
+  virtual std::shared_ptr<RegionAttributes> getAttributes() const {
     return m_realRegion->getAttributes();
   }
 
@@ -85,13 +85,13 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * attributes.
    * @throws RegionDestroyedException.
    */
-  virtual AttributesMutatorPtr getAttributesMutator() const {
+  virtual std::shared_ptr<AttributesMutator> getAttributesMutator() const {
     throw UnsupportedOperationException("Region.getAttributesMutator()");
   }
 
   // virtual void updateAccessOrModifiedTime() = 0;
 
-  virtual CacheStatisticsPtr getStatistics() const {
+  virtual std::shared_ptr<CacheStatistics> getStatistics() const {
     return m_realRegion->getStatistics();
   }
 
@@ -112,7 +112,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * This operation is not distributed.
    */
   virtual void invalidateRegion(
-      const SerializablePtr& aCallbackArgument = nullptr) {
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     throw UnsupportedOperationException("Region.invalidateRegion()");
   }
 
@@ -136,7 +136,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
 
   */
   virtual void localInvalidateRegion(
-      const SerializablePtr& aCallbackArgument = nullptr) {
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     throw UnsupportedOperationException("Region.localInvalidateRegion()");
   }
 
@@ -173,7 +173,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws TimeoutException if operation timed out
    * @see  invalidateRegion
    */
-  virtual void destroyRegion(const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void destroyRegion(const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->destroyRegion(aCallbackArgument);
   }
@@ -186,7 +186,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheListener#afterRegionClear
    * @see CacheWriter#beforeRegionClear
    */
-  virtual void clear(const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void clear(const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->clear(aCallbackArgument);
   }
@@ -198,7 +198,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheListener#afterRegionClear
    * @see CacheWriter#beforeRegionClear
    */
-  virtual void localClear(const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void localClear(const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     throw UnsupportedOperationException("localClear()");
   }
 
@@ -222,13 +222,13 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see  localInvalidateRegion
    */
   virtual void localDestroyRegion(
-      const SerializablePtr& aCallbackArgument = nullptr) {
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     throw UnsupportedOperationException("Region.localDestroyRegion()");
   }
 
   /** Returns the subregion identified by the path, nullptr if no such subregion
    */
-  virtual RegionPtr getSubregion(const char* path) {
+  virtual std::shared_ptr<Region> getSubregion(const char* path) {
     LOGDEBUG("ProxyRegion getSubregion");
     auto rPtr = std::static_pointer_cast<RegionInternal>(
         m_realRegion->getSubregion(path));
@@ -239,12 +239,12 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   }
 
   /** Creates a subregion with the specified attributes */
-  virtual RegionPtr createSubregion(
-      const char* subregionName, const RegionAttributesPtr& aRegionAttributes) {
+  virtual std::shared_ptr<Region> createSubregion(
+      const char* subregionName, const std::shared_ptr<RegionAttributes>& aRegionAttributes) {
     throw UnsupportedOperationException("createSubregion()");
     return nullptr;
     /*LOGDEBUG("ProxyRegion getSubregion");
-    RegionPtr rPtr = m_realRegion->createSubregion(subregionName,
+    auto rPtr = m_realRegion->createSubregion(subregionName,
     aRegionAttributes);
 
     if(rPtr == nullptr)
@@ -254,21 +254,21 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
     return prPtr;*/
   }
 
-  /** Populates the passed in VectorOfRegion with subregions of the current
+  /** Populates the passed in std::vector<std::shared_ptr<Region>>  with subregions of the current
    * region
    * @param recursive determines whether the method recursively fills in
    * subregions
    * @param[out] sr subregions
    * @throws RegionDestroyedException
    */
-  VectorOfRegion subregions(const bool recursive) {
-    VectorOfRegion realVectorRegion = m_realRegion->subregions(recursive);
-    VectorOfRegion proxyRegions(realVectorRegion.size());
+  std::vector<std::shared_ptr<Region>> subregions(const bool recursive) {
+    auto realVectorRegion = m_realRegion->subregions(recursive);
+    std::vector<std::shared_ptr<Region>> proxyRegions(realVectorRegion.size());
 
     std::transform(
         realVectorRegion.begin(), realVectorRegion.end(),
         std::back_inserter(proxyRegions),
-        [this](const RegionPtr& realRegion) -> std::shared_ptr<ProxyRegion> {
+        [this](const std::shared_ptr<Region>& realRegion) -> std::shared_ptr<ProxyRegion> {
           return std::make_shared<ProxyRegion>(
               m_proxyCache,
               std::static_pointer_cast<RegionInternal>(realRegion));
@@ -280,13 +280,13 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Return the meta-object RegionEntry for key.
    * @throws IllegalArgumentException, RegionDestroyedException.
    */
-  virtual RegionEntryPtr getEntry(const CacheableKeyPtr& key) {
+  virtual std::shared_ptr<RegionEntry> getEntry(const std::shared_ptr<CacheableKey>& key) {
     return m_realRegion->getEntry(key);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline RegionEntryPtr getEntry(const KEYTYPE& key) {
+  inline std::shared_ptr<RegionEntry> getEntry(const KEYTYPE& key) {
     return getEntry(createKey(key));
   }
 
@@ -328,16 +328,16 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws RegionDestroyedException if the method is called on a destroyed
    *region
    **/
-  virtual CacheablePtr get(const CacheableKeyPtr& key,
-                           const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual std::shared_ptr<Cacheable> get(const std::shared_ptr<CacheableKey>& key,
+                           const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->get(key, aCallbackArgument);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline CacheablePtr get(const KEYTYPE& key,
-                          const SerializablePtr& callbackArg = nullptr) {
+  inline std::shared_ptr<Cacheable> get(const KEYTYPE& key,
+                          const std::shared_ptr<Serializable>& callbackArg = nullptr) {
     return get(createKey(key), callbackArg);
   }
 
@@ -383,8 +383,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws TimeoutException if operation timed out
    * @throws OutOfMemoryException if  not enoough memory for the value
    */
-  virtual void put(const CacheableKeyPtr& key, const CacheablePtr& value,
-                   const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void put(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value,
+                   const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->put(key, value, aCallbackArgument);
   }
@@ -392,21 +392,21 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void put(const KEYTYPE& key, const VALUETYPE& value,
-                  const SerializablePtr& arg = nullptr) {
+                  const std::shared_ptr<Serializable>& arg = nullptr) {
     put(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline void put(const KEYTYPE& key, const CacheablePtr& value,
-                  const SerializablePtr& arg = nullptr) {
+  inline void put(const KEYTYPE& key, const std::shared_ptr<Cacheable>& value,
+                  const std::shared_ptr<Serializable>& arg = nullptr) {
     put(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
-  inline void put(const CacheableKeyPtr& key, const VALUETYPE& value,
-                  const SerializablePtr& arg = nullptr) {
+  inline void put(const std::shared_ptr<CacheableKey>& key, const VALUETYPE& value,
+                  const std::shared_ptr<Serializable>& arg = nullptr) {
     put(key, createValue(value), arg);
   }
 
@@ -433,7 +433,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    */
   virtual void putAll(const HashMapOfCacheable& map,
                       uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-                      const SerializablePtr& aCallbackArgument = nullptr) {
+                      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->putAll(map, timeout, aCallbackArgument);
   }
@@ -462,29 +462,29 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws RegionDestroyedException if region no longer valid
    * @throws OutOfMemoryException if not enoough memory for the value
    */
-  virtual void localPut(const CacheableKeyPtr& key, const CacheablePtr& value,
-                        const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void localPut(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value,
+                        const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     throw UnsupportedOperationException("Region.localPut()");
   }
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void localPut(const KEYTYPE& key, const VALUETYPE& value,
-                       const SerializablePtr& arg = nullptr) {
+                       const std::shared_ptr<Serializable>& arg = nullptr) {
     localPut(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline void localPut(const KEYTYPE& key, const CacheablePtr& value,
-                       const SerializablePtr& arg = nullptr) {
+  inline void localPut(const KEYTYPE& key, const std::shared_ptr<Cacheable>& value,
+                       const std::shared_ptr<Serializable>& arg = nullptr) {
     localPut(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
-  inline void localPut(const CacheableKeyPtr& key, const VALUETYPE& value,
-                       const SerializablePtr& arg = nullptr) {
+  inline void localPut(const std::shared_ptr<CacheableKey>& key, const VALUETYPE& value,
+                       const std::shared_ptr<Serializable>& arg = nullptr) {
     localPut(key, createValue(value), arg);
   }
 
@@ -531,8 +531,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws OutOfMemoryException if no memory for new entry
    * @throws EntryExistsException if an entry with this key already exists
    */
-  virtual void create(const CacheableKeyPtr& key, const CacheablePtr& value,
-                      const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void create(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value,
+                      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->create(key, value, aCallbackArgument);
   }
@@ -540,21 +540,21 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void create(const KEYTYPE& key, const VALUETYPE& value,
-                     const SerializablePtr& arg = nullptr) {
+                     const std::shared_ptr<Serializable>& arg = nullptr) {
     create(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline void create(const KEYTYPE& key, const CacheablePtr& value,
-                     const SerializablePtr& arg = nullptr) {
+  inline void create(const KEYTYPE& key, const std::shared_ptr<Cacheable>& value,
+                     const std::shared_ptr<Serializable>& arg = nullptr) {
     create(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
-  inline void create(const CacheableKeyPtr& key, const VALUETYPE& value,
-                     const SerializablePtr& arg = nullptr) {
+  inline void create(const std::shared_ptr<CacheableKey>& key, const VALUETYPE& value,
+                     const std::shared_ptr<Serializable>& arg = nullptr) {
     create(key, createValue(value), arg);
   }
 
@@ -583,30 +583,30 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws OutOfMemoryException if no memory for new entry
    * @throws EntryExistsException if an entry with this key already exists
    */
-  virtual void localCreate(const CacheableKeyPtr& key,
-                           const CacheablePtr& value,
-                           const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void localCreate(const std::shared_ptr<CacheableKey>& key,
+                           const std::shared_ptr<Cacheable>& value,
+                           const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     throw UnsupportedOperationException("Region.localCreate()");
   }
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline void localCreate(const KEYTYPE& key, const VALUETYPE& value,
-                          const SerializablePtr& arg = nullptr) {
+                          const std::shared_ptr<Serializable>& arg = nullptr) {
     localCreate(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline void localCreate(const KEYTYPE& key, const CacheablePtr& value,
-                          const SerializablePtr& arg = nullptr) {
+  inline void localCreate(const KEYTYPE& key, const std::shared_ptr<Cacheable>& value,
+                          const std::shared_ptr<Serializable>& arg = nullptr) {
     localCreate(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
-  inline void localCreate(const CacheableKeyPtr& key, const VALUETYPE& value,
-                          const SerializablePtr& arg = nullptr) {
+  inline void localCreate(const std::shared_ptr<CacheableKey>& key, const VALUETYPE& value,
+                          const std::shared_ptr<Serializable>& arg = nullptr) {
     localCreate(key, createValue(value), arg);
   }
 
@@ -632,15 +632,15 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see destroy
    * @see CacheListener::afterInvalidate
    */
-  virtual void invalidate(const CacheableKeyPtr& key,
-                          const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void invalidate(const std::shared_ptr<CacheableKey>& key,
+                          const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->invalidate(key, aCallbackArgument);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline void invalidate(const KEYTYPE& key, const SerializablePtr& arg = nullptr) {
+  inline void invalidate(const KEYTYPE& key, const std::shared_ptr<Serializable>& arg = nullptr) {
     invalidate(createKey(key), arg);
   }
 
@@ -664,15 +664,15 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see destroy
    * @see CacheListener::afterInvalidate
    */
-  virtual void localInvalidate(const CacheableKeyPtr& key,
-                               const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void localInvalidate(const std::shared_ptr<CacheableKey>& key,
+                               const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     throw UnsupportedOperationException("Region.localInvalidate()");
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localInvalidate(const KEYTYPE& key,
-                              const SerializablePtr& arg = nullptr) {
+                              const std::shared_ptr<Serializable>& arg = nullptr) {
     localInvalidate(createKey(key), arg);
   }
 
@@ -718,15 +718,15 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheListener::afterDestroy
    * @see CacheWriter::beforeDestroy
    */
-  virtual void destroy(const CacheableKeyPtr& key,
-                       const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void destroy(const std::shared_ptr<CacheableKey>& key,
+                       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->destroy(key, aCallbackArgument);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline void destroy(const KEYTYPE& key, const SerializablePtr& arg = nullptr) {
+  inline void destroy(const KEYTYPE& key, const std::shared_ptr<Serializable>& arg = nullptr) {
     destroy(createKey(key), arg);
   }
 
@@ -754,15 +754,15 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheListener::afterDestroy
    * @see CacheWriter::beforeDestroy
    */
-  virtual void localDestroy(const CacheableKeyPtr& key,
-                            const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void localDestroy(const std::shared_ptr<CacheableKey>& key,
+                            const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     throw UnsupportedOperationException("Region.localDestroy()");
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localDestroy(const KEYTYPE& key,
-                           const SerializablePtr& arg = nullptr) {
+                           const std::shared_ptr<Serializable>& arg = nullptr) {
     localDestroy(createKey(key), arg);
   }
 
@@ -814,8 +814,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheListener::afterDestroy
    * @see CacheWriter::beforeDestroy
    */
-  virtual bool remove(const CacheableKeyPtr& key, const CacheablePtr& value,
-                      const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual bool remove(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value,
+                      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->remove(key, value, aCallbackArgument);
   }
@@ -823,21 +823,21 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline bool remove(const KEYTYPE& key, const VALUETYPE& value,
-                     const SerializablePtr& arg = nullptr) {
+                     const std::shared_ptr<Serializable>& arg = nullptr) {
     return remove(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline bool remove(const KEYTYPE& key, const CacheablePtr& value,
-                     const SerializablePtr& arg = nullptr) {
+  inline bool remove(const KEYTYPE& key, const std::shared_ptr<Cacheable>& value,
+                     const std::shared_ptr<Serializable>& arg = nullptr) {
     return remove(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
-  inline bool remove(const CacheableKeyPtr& key, const VALUETYPE& value,
-                     const SerializablePtr& arg = nullptr) {
+  inline bool remove(const std::shared_ptr<CacheableKey>& key, const VALUETYPE& value,
+                     const std::shared_ptr<Serializable>& arg = nullptr) {
     return remove(key, createValue(value), arg);
   }
 
@@ -888,15 +888,15 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheWriter::beforeDestroy
    */
 
-  virtual bool removeEx(const CacheableKeyPtr& key,
-                        const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual bool removeEx(const std::shared_ptr<CacheableKey>& key,
+                        const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->removeEx(key, aCallbackArgument);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline bool removeEx(const KEYTYPE& key, const SerializablePtr& arg = nullptr) {
+  inline bool removeEx(const KEYTYPE& key, const std::shared_ptr<Serializable>& arg = nullptr) {
     return removeEx(createKey(key), arg);
   }
 
@@ -927,9 +927,9 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheListener::afterDestroy
    * @see CacheWriter::beforeDestroy
    */
-  virtual bool localRemove(const CacheableKeyPtr& key,
-                           const CacheablePtr& value,
-                           const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual bool localRemove(const std::shared_ptr<CacheableKey>& key,
+                           const std::shared_ptr<Cacheable>& value,
+                           const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     throw UnsupportedOperationException("Region.localRemove()");
     return false;
   }
@@ -937,21 +937,21 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
   inline bool localRemove(const KEYTYPE& key, const VALUETYPE& value,
-                          const SerializablePtr& arg = nullptr) {
+                          const std::shared_ptr<Serializable>& arg = nullptr) {
     return localRemove(createKey(key), createValue(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline bool localRemove(const KEYTYPE& key, const CacheablePtr& value,
-                          const SerializablePtr& arg = nullptr) {
+  inline bool localRemove(const KEYTYPE& key, const std::shared_ptr<Cacheable>& value,
+                          const std::shared_ptr<Serializable>& arg = nullptr) {
     return localRemove(createKey(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
   template <class VALUETYPE>
-  inline bool localRemove(const CacheableKeyPtr& key, const VALUETYPE& value,
-                          const SerializablePtr& arg = nullptr) {
+  inline bool localRemove(const std::shared_ptr<CacheableKey>& key, const VALUETYPE& value,
+                          const std::shared_ptr<Serializable>& arg = nullptr) {
     return localRemove(key, createValue(value), arg);
   }
 
@@ -980,8 +980,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see CacheListener::afterDestroy
    * @see CacheWriter::beforeDestroy
    */
-  virtual bool localRemoveEx(const CacheableKeyPtr& key,
-                             const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual bool localRemoveEx(const std::shared_ptr<CacheableKey>& key,
+                             const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     throw UnsupportedOperationException("Region.localRemoveEx()");
     return false;
   }
@@ -989,7 +989,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline bool localRemoveEx(const KEYTYPE& key,
-                            const SerializablePtr& arg = nullptr) {
+                            const std::shared_ptr<Serializable>& arg = nullptr) {
     return localRemoveEx(createKey(key), arg);
   }
 
@@ -997,9 +997,9 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * Return all the keys in the local process for this region. This includes
    * keys for which the entry is invalid.
    */
-  virtual VectorOfCacheableKey keys() {
+  virtual std::vector<std::shared_ptr<CacheableKey>> keys() {
     throw UnsupportedOperationException("Region.keys()");
-    return VectorOfCacheableKey();
+    return std::vector<std::shared_ptr<CacheableKey>>();
   }
 
   /**
@@ -1024,7 +1024,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws UnsupportedOperationException if the member type is not CLIENT
    *                                       or region is not a native client one.
    */
-  virtual VectorOfCacheableKey serverKeys() {
+  virtual std::vector<std::shared_ptr<CacheableKey>> serverKeys() {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->serverKeys();
   }
@@ -1033,16 +1033,16 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * Return all values in the local process for this region. No value is
    * included for entries that are invalidated.
    */
-  virtual VectorOfCacheable values() {
+  virtual std::vector<std::shared_ptr<Cacheable>> values() {
     throw UnsupportedOperationException("Region.values()");
   }
 
-  virtual VectorOfRegionEntry entries(bool recursive) {
+  virtual std::vector<std::shared_ptr<RegionEntry>> entries(bool recursive) {
     throw UnsupportedOperationException("Region.entries()");
   }
 
-  virtual RegionServicePtr getRegionService() const {
-    return RegionServicePtr(m_proxyCache);
+  virtual std::shared_ptr<RegionService> getRegionService() const {
+    return std::shared_ptr<RegionService>(m_proxyCache);
   }
 
   virtual bool isDestroyed() const { return m_realRegion->isDestroyed(); }
@@ -1052,8 +1052,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * It is not propagated to the Geode cache server
    * to which it is connected.
    */
-  virtual bool containsValueForKey(const CacheableKeyPtr& keyPtr) const {
-    throw UnsupportedOperationException("Region.containsValueForKey()");
+  virtual bool containsValueForKey(const std::shared_ptr<CacheableKey>& keyPtr) const {
+    UnsupportedOperationException("Region.containsValueForKey()");
     return false;
   }
 
@@ -1073,8 +1073,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * server
    * to which it is connected with.
    */
-  virtual bool containsKey(const CacheableKeyPtr& keyPtr) const {
-    throw UnsupportedOperationException("Region.containsKey()");
+  virtual bool containsKey(const std::shared_ptr<CacheableKey>& keyPtr) const {
+    UnsupportedOperationException("Region.containsKey()");
     return false;
   }
 
@@ -1084,7 +1084,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws UnsupportedOperationException if the region's scope is
    * ScopeType::LOCAL.
    */
-  virtual bool containsKeyOnServer(const CacheableKeyPtr& keyPtr) const {
+  virtual bool containsKeyOnServer(const std::shared_ptr<CacheableKey>& keyPtr) const {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->containsKeyOnServer(keyPtr);
   }
@@ -1094,7 +1094,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws UnsupportedOperationException if the region's scope is
    * ScopeType::LOCAL.
    */
-  virtual VectorOfCacheableKey getInterestList() const {
+  virtual std::vector<std::shared_ptr<CacheableKey>> getInterestList() const {
     throw UnsupportedOperationException("Region.getInterestList()");
   }
   /**
@@ -1103,7 +1103,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws UnsupportedOperationException if the region's scope is
    * ScopeType::LOCAL.
    */
-  virtual VectorOfCacheableString getInterestListRegex() const {
+  virtual std::vector<std::shared_ptr<CacheableString>> getInterestListRegex() const {
     throw UnsupportedOperationException("Region.getInterestListRegex()");
   }
 
@@ -1150,7 +1150,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws UnknownException For other exceptions.
    * @throws TimeoutException if operation timed out
    */
-  virtual void registerKeys(const VectorOfCacheableKey& keys,
+  virtual void registerKeys(const std::vector<std::shared_ptr<CacheableKey>>& keys,
                             bool isDurable = false,
                             bool getInitialValues = false,
                             bool receiveValues = true) {
@@ -1179,8 +1179,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws UnknownException For other exceptions.
    * @throws TimeoutException if operation timed out
    */
-  virtual void unregisterKeys(const VectorOfCacheableKey& keys) {
-    throw UnsupportedOperationException("Region.unregisterKeys()");
+  virtual void unregisterKeys(const std::vector<std::shared_ptr<CacheableKey>>& keys) {
+    UnsupportedOperationException("Region.unregisterKeys()");
   }
 
   /**
@@ -1361,8 +1361,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @see get
    */
   virtual HashMapOfCacheable getAll(
-      const VectorOfCacheableKey& keys,
-      const SerializablePtr& aCallbackArgument = nullptr) {
+      const std::vector<std::shared_ptr<CacheableKey>>& keys,
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->getAll_internal(keys, aCallbackArgument, false);
   }
@@ -1393,7 +1393,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @returns A smart pointer to the SelectResults which can either be a
    * ResultSet or a StructSet.
    */
-  virtual SelectResultsPtr query(
+  virtual std::shared_ptr<SelectResults> query(
       const char* predicate,
       uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) {
     GuardUserAttribures gua(m_proxyCache);
@@ -1446,7 +1446,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @returns A smart pointer to the single ResultSet or StructSet item, or
    * nullptr of no results are available.
    */
-  virtual SerializablePtr selectValue(
+  virtual std::shared_ptr<Serializable> selectValue(
       const char* predicate,
       uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) {
     GuardUserAttribures gua(m_proxyCache);
@@ -1480,8 +1480,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    * @throws UnknownException For other exceptions.
    * @see destroy
    */
-  virtual void removeAll(const VectorOfCacheableKey& keys,
-                         const SerializablePtr& aCallbackArgument = nullptr) {
+  virtual void removeAll(const std::vector<std::shared_ptr<CacheableKey>>& keys,
+                         const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     GuardUserAttribures gua(m_proxyCache);
     m_realRegion->removeAll(keys, aCallbackArgument);
   }
@@ -1492,10 +1492,9 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
    */
   virtual uint32_t size() { return m_realRegion->size(); }
 
-  virtual const PoolPtr& getPool() { return m_realRegion->getPool(); }
+  virtual const std::shared_ptr<Pool>& getPool() { return m_realRegion->getPool(); }
 
-  ProxyRegion(const ProxyCachePtr& proxyCache,
-              const std::shared_ptr<RegionInternal>& realRegion)
+  ProxyRegion(const std::shared_ptr<ProxyCache>& proxyCache, const std::shared_ptr<RegionInternal>& realRegion)
       : Region(realRegion->getCache()) {
     m_proxyCache = proxyCache;
     m_realRegion = realRegion;
@@ -1508,14 +1507,13 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
 
  private:
 
-  ProxyCachePtr m_proxyCache;
+  std::shared_ptr<ProxyCache> m_proxyCache;
   std::shared_ptr<RegionInternal> m_realRegion;
   friend class FunctionService;
 
   FRIEND_STD_SHARED_PTR(ProxyRegion)
 };
 
-typedef std::shared_ptr<ProxyRegion> ProxyRegionPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

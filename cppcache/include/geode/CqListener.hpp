@@ -31,7 +31,7 @@
 namespace apache {
 namespace geode {
 namespace client {
-
+class CacheListener;
 /**
  * @cacheserver
  * Querying is only supported for native clients.

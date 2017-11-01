@@ -45,10 +45,7 @@ const char* locatorsG =
 #include "LocatorHelper.hpp"
 
 //---------------------------------------------------------------------------------
-using namespace apache::geode::client;
-class CallbackListener;
 
-typedef std::shared_ptr<CallbackListener> CallbackListenerPtr;
 
 class CallbackListener : public CacheListener {
  private:
@@ -59,8 +56,8 @@ class CallbackListener : public CacheListener {
   int m_regionInvalidate;
   int m_regionDestroy;
   int m_regionClear;
-  // CacheableStringPtr m_callbackArg;
-  CacheablePtr m_callbackArg;
+  // std::shared_ptr<CacheableString> m_callbackArg;
+  std::shared_ptr<Cacheable> m_callbackArg;
 
  public:
   CallbackListener()
@@ -86,19 +83,19 @@ class CallbackListener : public CacheListener {
   int getRegionInvalidates() { return m_regionInvalidate; }
   int getRegionDestroys() { return m_regionDestroy; }
   int getRegionClear() { return m_regionClear; }
-  void setCallBackArg(const CacheablePtr& callbackArg) {
+  void setCallBackArg(const std::shared_ptr<Cacheable>& callbackArg) {
     m_callbackArg = callbackArg;
   }
 
-  void check(CacheablePtr eventCallback, int& updateEvent) {
+  void check(std::shared_ptr<Cacheable> eventCallback, int& updateEvent) {
     if (m_callbackArg != nullptr) {
       try {
         auto mCallbkArg = std::dynamic_pointer_cast<Portfolio>(m_callbackArg);
 
         auto callbkArg = std::dynamic_pointer_cast<Portfolio>(eventCallback);
 
-        CacheableStringPtr fromCallback = callbkArg->getPkid();
-        CacheableStringPtr mCallback = mCallbkArg->getPkid();
+        std::shared_ptr<CacheableString> fromCallback = callbkArg->getPkid();
+        std::shared_ptr<CacheableString> mCallback = mCallbkArg->getPkid();
 
         LOGFINE(" values are %s === %s ", fromCallback->asChar(),
                 mCallback->asChar());
@@ -168,16 +165,15 @@ class CallbackListener : public CacheListener {
     checkcallbackArg(event, m_regionClear);
   }
 };
+
 //---------------------------------------------------------------------------------
+ std::shared_ptr<CallbackListener> reg1Listener1 = nullptr;
+ std::shared_ptr<CacheableString> callBackStrPtr;
+ std::shared_ptr<Cacheable> callBackPortFolioPtr;
 
-CallbackListenerPtr reg1Listener1 = nullptr;
-CacheableStringPtr callBackStrPtr;
-
-CacheablePtr callBackPortFolioPtr;
-
-void setCacheListener(const char* regName, CallbackListenerPtr regListener) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheListener(const char* regName, std::shared_ptr<CallbackListener> regListener) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(regListener);
 }
 
@@ -225,7 +221,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1_Pool_Locator)
 
     createPooledRegion(regionNames[0], false /*ack mode*/, locatorsG,
                        "__TEST_POOL1__", true /*client notification*/);
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
     serializationRegistry->addType(Portfolio::createDeserializable);
     serializationRegistry->addType(Position::createDeserializable);
     reg1Listener1 = std::make_shared<CallbackListener>();
@@ -233,7 +229,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1_Pool_Locator)
 
     reg1Listener1->setCallBackArg(callBackPortFolioPtr);
     setCacheListener(regionNames[0], reg1Listener1);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->registerAllKeys();
   }
 END_TASK_DEFINITION
@@ -251,7 +247,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, testCreatesAndUpdates)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
 
     callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
     regPtr->create("aaa", "bbb", callBackPortFolioPtr);
@@ -262,7 +258,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, testInvalidates)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
 
     callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
     regPtr->localCreate(1234, 1234, callBackPortFolioPtr);
@@ -283,7 +279,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, testDestroy)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
 
     callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
     regPtr->destroy(keys[1], callBackPortFolioPtr);
@@ -294,14 +290,14 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, testRemove)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->remove(keys[1], nvals[1], callBackPortFolioPtr);
     regPtr->destroyRegion(callBackPortFolioPtr);
   }
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, testlocalClear)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->localClear(callBackPortFolioPtr);
   }
 END_TASK_DEFINITION

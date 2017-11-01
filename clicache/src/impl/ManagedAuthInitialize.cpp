@@ -34,7 +34,7 @@ namespace apache
     namespace client
     {
 
-      PropertiesPtr ManagedAuthInitializeGeneric::getCredentials(const PropertiesPtr&
+     std::shared_ptr<native::Properties> ManagedAuthInitializeGeneric::getCredentials(const std::shared_ptr<native::Properties>&
                                                                  securityprops, const char* server)
       {
         try {

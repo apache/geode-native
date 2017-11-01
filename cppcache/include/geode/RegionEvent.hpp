@@ -36,8 +36,8 @@ namespace client {
 
 class CPPCACHE_EXPORT RegionEvent {
  protected:
-  const RegionPtr m_region; /**< Region for this event. */
-  const SerializablePtr
+  const std::shared_ptr<Region> m_region; /**< Region for this event. */
+  const std::shared_ptr<Serializable>
       m_callbackArgument;    /**< Callback argument for this event, if any. */
   const bool m_remoteOrigin; /**< True if from a remote process. */
 
@@ -45,21 +45,21 @@ class CPPCACHE_EXPORT RegionEvent {
   /** Constructor. */
   RegionEvent();
   /** Constructor, given the values. */
-  RegionEvent(const RegionPtr& region, const SerializablePtr& aCallbackArgument,
+  RegionEvent(const std::shared_ptr<Region>& region, const std::shared_ptr<Serializable>& aCallbackArgument,
               const bool remoteOrigin);
 
   /** Destructor. */
   ~RegionEvent();
 
   /** Return the region this event occurred in. */
-  inline RegionPtr getRegion() const { return m_region; }
+  inline std::shared_ptr<Region> getRegion() const { return m_region; }
 
   /**
    * Returns the callbackArgument passed to the method that generated
    * this event. See the {@link Region} interface methods that take
    * a callbackArgument parameter.
    */
-  inline SerializablePtr getCallbackArgument() const { return m_callbackArgument; }
+  inline std::shared_ptr<Serializable> getCallbackArgument() const { return m_callbackArgument; }
 
   /** If the event originated in a remote process, returns true. */
   inline bool remoteOrigin() const { return m_remoteOrigin; }

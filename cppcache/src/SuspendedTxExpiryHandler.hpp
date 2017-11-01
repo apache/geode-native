@@ -45,7 +45,7 @@ class CPPCACHE_EXPORT SuspendedTxExpiryHandler : public ACE_Event_Handler {
    * Constructor
    */
   SuspendedTxExpiryHandler(CacheTransactionManagerImpl* cacheTxMgr,
-                           TransactionIdPtr txid, uint32_t duration);
+                           std::shared_ptr<TransactionId> txid, uint32_t duration);
 
   /** This task object will be registered with the Timer Queue.
    *  When the timer expires the handle_timeout is invoked.
@@ -61,7 +61,7 @@ class CPPCACHE_EXPORT SuspendedTxExpiryHandler : public ACE_Event_Handler {
   // modification.
   // UNUSED uint32_t m_duration;
   CacheTransactionManagerImpl* m_cacheTxMgr;
-  TransactionIdPtr m_txid;
+  std::shared_ptr<TransactionId> m_txid;
 };
 }  // namespace client
 }  // namespace geode

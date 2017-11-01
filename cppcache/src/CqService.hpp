@@ -73,7 +73,7 @@ class CPPCACHE_EXPORT CqService
   bool m_running;
   MapOfCqQueryWithLock* m_cqQueryMap;
 
-  CqServiceStatisticsPtr m_stats;
+  std::shared_ptr<CqServiceStatistics> m_stats;
 
   inline bool noCq() const {
     MapOfRegionGuard guard(m_cqQueryMap->mutex());
@@ -81,7 +81,7 @@ class CPPCACHE_EXPORT CqService
   }
 
  public:
-  typedef std::vector<CqQueryPtr> query_container_type;
+  typedef std::vector<std::shared_ptr<CqQuery>> query_container_type;
 
   /**
    * Constructor.
@@ -133,14 +133,14 @@ class CPPCACHE_EXPORT CqService
    * release.
    *
    */
-  CqQueryPtr newCq(const std::string& cqName, const std::string& queryString,
-                   const CqAttributesPtr& cqAttributes,
+  std::shared_ptr<CqQuery> newCq(const std::string& cqName, const std::string& queryString,
+                   const std::shared_ptr<CqAttributes>& cqAttributes,
                    const bool isDurable = false);
 
   /**
    * Adds the given CQ and cqQuery object into the CQ map.
    */
-  void addCq(const std::string& cqName, CqQueryPtr& cq);
+  void addCq(const std::string& cqName, std::shared_ptr<CqQuery>& cq);
 
   /**
    * Removes given CQ from the cqMap..
@@ -150,7 +150,7 @@ class CPPCACHE_EXPORT CqService
    * Retrieve a CqQuery by name.
    * @return the CqQuery or null if not found
    */
-  CqQueryPtr getCq(const std::string& cqName);
+  std::shared_ptr<CqQuery> getCq(const std::string& cqName);
 
   /**
    * Clears the CQ Query Map.
@@ -201,7 +201,7 @@ class CPPCACHE_EXPORT CqService
    * Get statistics information for all CQs
    * @return the CqServiceStatistics
    */
-  CqServiceStatisticsPtr getCqServiceStatistics();
+  std::shared_ptr<CqServiceStatistics> getCqServiceStatistics();
 
   /**
    * Close the CQ Service after cleanup if any.
@@ -228,9 +228,9 @@ class CPPCACHE_EXPORT CqService
    * @param value
    */
   void invokeCqListeners(const std::map<std::string, int>* cqs,
-                         uint32_t messageType, CacheableKeyPtr key,
-                         CacheablePtr value, CacheableBytesPtr deltaValue,
-                         EventIdPtr eventId);
+                         uint32_t messageType, std::shared_ptr<CacheableKey> key,
+                         std::shared_ptr<Cacheable> value, std::shared_ptr<CacheableBytes> deltaValue,
+                         std::shared_ptr<EventId> eventId);
   /**
    * Returns the Operation for the given EnumListenerEvent type.
    * @param eventType
@@ -246,13 +246,12 @@ class CPPCACHE_EXPORT CqService
    * @return List of names of registered durable CQs, empty list if no durable
    * cqs.
    */
-  CacheableArrayListPtr getAllDurableCqsFromServer();
+  std::shared_ptr<CacheableArrayList> getAllDurableCqsFromServer();
 
   void invokeCqConnectedListeners(const std::string& poolName,
                                   const bool connected);
 };
 
-typedef std::shared_ptr<CqService> CqServicePtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

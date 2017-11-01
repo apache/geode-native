@@ -155,7 +155,7 @@ namespace Apache
         /// <summary>
         /// Factory function to register wrapper
         /// </summary>
-        static IGeodeSerializable^ Create(apache::geode::client::SerializablePtr obj)
+        static IGeodeSerializable^ Create(std::shared_ptr<apache::geode::client::Serializable> obj)
         {
           return (obj != nullptr ?
                   gcnew CacheableStringArray(obj) : nullptr);
@@ -183,7 +183,7 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CacheableStringArray(apache::geode::client::SerializablePtr nativeptr)
+        inline CacheableStringArray(std::shared_ptr<apache::geode::client::Serializable> nativeptr)
           : Serializable(nativeptr) { }
       };
     }  // namespace Client

@@ -77,10 +77,10 @@ void _verifyEntry(const char *name, const char *key, const char *val,
   }
   free(buf);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
-  CacheableKeyPtr keyPtr = createKey(key);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
 
   // if the region is no ack, then we may need to wait...
   if (!isCreated) {
@@ -193,7 +193,7 @@ void createRegion(const char *name, bool ackMode, const char *endpoints,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr = getHelper()->createRegion(
+  auto regPtr = getHelper()->createRegion(
       name, ackMode, true, nullptr, endpoints, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
@@ -205,13 +205,13 @@ void createEntry(const char *name, const char *key,
           value, name);
   fflush(stdout);
   // Create entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
   if (value == nullptr) {
     value = "";
   }
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  std::shared_ptr<CacheableString> valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
@@ -233,10 +233,10 @@ void updateEntry(const char *name, const char *key, const char *value) {
           value, name);
   fflush(stdout);
   // Update entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
+  std::shared_ptr<CacheableString> valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
@@ -258,9 +258,9 @@ void doNetsearch(const char *name, const char *key, const char *value) {
       key, value, name);
   fflush(stdout);
   // Get entry created in Process A, verify entry is correct
-  CacheableKeyPtr keyPtr = CacheableKey::create(key);
+  std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(key);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
@@ -361,7 +361,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepSeven)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     regPtr0->registerRegex(regex23);
 
     verifyInvalid(regionNames[0], keys[1]);
@@ -376,7 +376,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepEight)
   {
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
     // regPtr1->registerRegex(regexWildcard);
     regPtr1->registerAllKeys();
 
@@ -396,13 +396,13 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepNine)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     regPtr0->unregisterRegex(regex23);
 
-    CacheableKeyPtr keyptr0 = CacheableKey::create(keys[0]);
-    CacheableKeyPtr keyptr1 = CacheableKey::create(keys[1]);
-    CacheableKeyPtr keyptr2 = CacheableKey::create(keys[2]);
-    VectorOfCacheableKey keylist;
+    std::shared_ptr<CacheableKey> keyptr0 = CacheableKey::create(keys[0]);
+    std::shared_ptr<CacheableKey> keyptr1 = CacheableKey::create(keys[1]);
+    std::shared_ptr<CacheableKey> keyptr2 = CacheableKey::create(keys[2]);
+    std::vector<std::shared_ptr<CacheableKey>> keylist;
     keylist.push_back(keyptr0);
     keylist.push_back(keyptr1);
     keylist.push_back(keyptr2);

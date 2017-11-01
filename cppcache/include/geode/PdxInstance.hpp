@@ -27,7 +27,9 @@
 namespace apache {
 namespace geode {
 namespace client {
-
+class CacheableDate;
+class WritablePdxInstance;
+class CacheableObjectArray;
 /**
  * PdxInstance provides run time access to the fields of a PDX without
  * deserializing the PDX. Preventing deserialization saves time
@@ -61,7 +63,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see serializationRegistry->addPdxType
    */
-  virtual PdxSerializablePtr getObject() = 0;
+  virtual std::shared_ptr<PdxSerializable> getObject() = 0;
 
   /**
    * Checks if the named field exists and returns the result.
@@ -74,10 +76,10 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
   virtual bool hasField(const char* fieldname) = 0;
 
   /**
-   * Reads the named field and set its value in CacheablePtr type out param.
-   * CacheablePtr type is corresponding to java object type.
+   * Reads the named field and set its value in std::shared_ptr<Cacheable> type out param.
+   * std::shared_ptr<Cacheable> type is corresponding to java object type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with CacheablePtr type.
+   * @param value value of the field to be set with std::shared_ptr<Cacheable> type.
    * @throws IllegalStateException if PdxInstance doesn't has the named field.
    * For deserialization C++ Native Client requires the domain class to be
    * registered.
@@ -85,7 +87,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * @see serializationRegistry->addPdxType
    * @see PdxInstance#hasField
    */
-  virtual CacheablePtr getCacheableField(const char* fieldname) const = 0;
+  virtual std::shared_ptr<Cacheable> getCacheableField(const char* fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in bool type out param.
@@ -360,15 +362,15 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
                         int32_t& length) const = 0;
 
   /**
-   * Reads the named field and set its value in CacheableDatePtr type out param.
-   * CacheableDatePtr type is corresponding to java Java.util.date type.
+   * Reads the named field and set its value in std::shared_ptr<CacheableDate> type out param.
+   * std::shared_ptr<CacheableDate> type is corresponding to java Java.util.date type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with CacheableDatePtr type.
+   * @param value value of the field to be set with std::shared_ptr<CacheableDate> type.
    * @throws IllegalStateException if PdxInstance doesn't has the named field.
    *
    * @see PdxInstance#hasField
    */
-  virtual CacheableDatePtr getCacheableDateField(
+  virtual std::shared_ptr<CacheableDate> getCacheableDateField(
       const char* fieldname) const = 0;
 
   /**
@@ -388,20 +390,20 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
                         int32_t*& elementLength) const = 0;
 
   /**
-   * Reads the named field and set its value in CacheableObjectArrayPtr type out
+   * Reads the named field and set its value in std::shared_ptr<CacheableObjectArray> type out
    * param.
    * For deserialization C++ Native Client requires the domain class to be
    * registered.
-   * CacheableObjectArrayPtr type is corresponding to java Object[] type.
+   * std::shared_ptr<CacheableObjectArray> type is corresponding to java Object[] type.
    * @param fieldname name of the field to read.
-   * @param value value of the field to be set with CacheableObjectArrayPtr
+   * @param value value of the field to be set with std::shared_ptr<CacheableObjectArray>
    * type.
    * @throws IllegalStateException if PdxInstance doesn't has the named field.
    *
    * @see serializationRegistry->addPdxType
    * @see PdxInstance#hasField
    */
-  virtual CacheableObjectArrayPtr getCacheableObjectArrayField(
+  virtual std::shared_ptr<CacheableObjectArray> getCacheableObjectArrayField(
       const char* fieldname) const = 0;
 
   /**
@@ -424,7 +426,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * made to the returned value will not modify this PdxInstance.
    * @return a {@link WritablePdxInstance}
    */
-  virtual WritablePdxInstancePtr createWriter() = 0;
+  virtual std::shared_ptr<WritablePdxInstance> createWriter() = 0;
 
   /**
    * Generates a hashcode based on the identity fields of
@@ -457,7 +459,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see serializationRegistry->addPdxType
    */
-  virtual CacheableStringPtr toString() const = 0;
+  virtual std::shared_ptr<CacheableString> toString() const = 0;
 
   /**
    * @brief serialize this object. This is an internal method.
@@ -528,7 +530,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * Return an unmodifiable list of the field names on this PdxInstance.
    * @return an unmodifiable list of the field names on this PdxInstance
    */
-  virtual CacheableStringArrayPtr getFieldNames() = 0;
+  virtual std::shared_ptr<CacheableStringArray> getFieldNames() = 0;
 
   // From PdxSerializable
   /**
@@ -536,13 +538,13 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * method.
    * @param PdxWriter to serialize the PDX object
    */
-  virtual void toData(PdxWriterPtr output) = 0;
+  virtual void toData(std::shared_ptr<PdxWriter> output) = 0;
 
   /**
    * @brief Deserialize this object. This is an internal method.
    * @param PdxReader to Deserialize the PDX object
    */
-  virtual void fromData(PdxReaderPtr input) = 0;
+  virtual void fromData(std::shared_ptr<PdxReader> input) = 0;
 
   /**
    * Return the full name of the class that this pdx instance represents.

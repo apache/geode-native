@@ -72,7 +72,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("createRegion_Pool() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr =
+  auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -85,7 +85,7 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   // ack, caching
-  RegionPtr regPtr = getHelper()->createRegion(
+  auto regPtr = getHelper()->createRegion(
       name, ackMode, true, nullptr, endpoints, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
@@ -111,7 +111,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
   {
     LOG("Step one entered");
     try {
-      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
       serializationRegistry->addType(DeltaEx::create);
     } catch (IllegalStateException&) {
       //  ignore exception caused by type reregistration.
@@ -119,9 +119,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
     DeltaEx::toDeltaCount = 0;
     DeltaEx::toDataCount = 0;
 
-    CacheableKeyPtr keyPtr = createKey(keys[0]);
+    std::shared_ptr<CacheableKey> keyPtr = createKey(keys[0]);
     auto valPtr = std::make_shared<DeltaEx>();
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->put(keyPtr, valPtr);
     valPtr->setDelta(true);
     regPtr->put(keyPtr, valPtr);
@@ -147,7 +147,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_DisableDelta)
     DeltaEx::toDeltaCount = 0;
     DeltaEx::toDataCount = 0;
     try {
-      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
 
       serializationRegistry->addType(DeltaEx::create);
     } catch (IllegalStateException&) {

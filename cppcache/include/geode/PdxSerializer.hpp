@@ -60,7 +60,7 @@ class CPPCACHE_EXPORT PdxSerializer  {
    * @param className the class name whose object need to de-serialize
    * @param pr the PdxReader stream to use for reading the object data
    */
-  virtual void* fromData(const char* className, PdxReaderPtr pr) = 0;
+  virtual void* fromData(const char* className, std::shared_ptr<PdxReader> pr) = 0;
 
   /**
    * Serializes this object in geode PDX format.
@@ -68,7 +68,7 @@ class CPPCACHE_EXPORT PdxSerializer  {
    * @param pw the PdxWriter object to use for serializing the object
    */
   virtual bool toData(void* userObject, const char* className,
-                      PdxWriterPtr pw) = 0;
+                      std::shared_ptr<PdxWriter> pw) = 0;
 
   /**
    * Get the function pointer to the user deallocator

@@ -64,7 +64,7 @@ void DeltaPSTObject::fromData(apache::geode::client::DataInput& input) {
   valueData = input.readObject<CacheableBytes>();
 }
 
-CacheableStringPtr DeltaPSTObject::toString() const {
+std::shared_ptr<CacheableString> DeltaPSTObject::toString() const {
   char buf[102500];
   sprintf(
       buf,

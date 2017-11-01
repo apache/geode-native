@@ -35,7 +35,7 @@ using namespace apache::geode::client;
 
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-CredentialGeneratorPtr credentialGeneratorHandler;
+std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
@@ -102,10 +102,10 @@ void initCredentialGenerator() {
 
 const char* regionNamesAuth[] = {"DistRegionAck"};
 
-PropertiesPtr userCreds;
+std::shared_ptr<Properties> userCreds;
 void initClientAuth() {
   userCreds = Properties::create();
-  PropertiesPtr config = Properties::create();
+  auto config = Properties::create();
   credentialGeneratorHandler->getAuthInit(config);
 
   credentialGeneratorHandler->getValidCredentials(userCreds);
@@ -122,8 +122,8 @@ typedef enum { OP_GET = 0, OP_PUT = 1 } UserOpCode;
 class UserThread : public ACE_Task_Base {
   int m_numberOfOps;
   int m_numberOfUsers;
-  RegionServicePtr m_userCache;
-  RegionPtr m_userRegion;
+  std::shared_ptr<RegionService> m_userCache;
+  std::shared_ptr<Region> m_userRegion;
   int m_userId;
   bool m_failed;
   bool getValidOps;
@@ -239,13 +239,13 @@ class UserThread : public ACE_Task_Base {
     getValidOps = true;
     m_totalOpsPassed = 0;
   }
-  void setParameters(int numberOfOps, int userId, PoolPtr pool,
+  void setParameters(int numberOfOps, int userId, std::shared_ptr<Pool> pool,
                      int numberOfUsers) {
     printf("userthread constructor nOo = %d, userid = %d, numberOfUsers = %d\n",
            numberOfOps, userId, numberOfUsers);
     m_userId = userId;
     m_failed = false;
-    PropertiesPtr creds = Properties::create();
+    auto creds = Properties::create();
     char tmp[25] = {'\0'};
     sprintf(tmp, "user%d", userId);
 
@@ -358,7 +358,7 @@ DUNIT_TASK_DEFINITION(CLIENT_1, StepOne)
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, nullptr,
                               false, -1, true, 0);
       LOG("Region created successfully");
-      PoolPtr pool = getPool(regionNamesAuth[0]);
+      auto pool = getPool(regionNamesAuth[0]);
       int m_numberOfUsers = 3;
       int m_numberOfOps = 10;
       UserThread* uthreads = new UserThread[m_numberOfUsers];

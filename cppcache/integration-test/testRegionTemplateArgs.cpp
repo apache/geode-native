@@ -24,7 +24,7 @@
 
 using namespace apache::geode::client;
 
-bool CheckBytesEqual(CacheableBytesPtr result, CacheablePtr expected) {
+bool CheckBytesEqual(std::shared_ptr<CacheableBytes> result, std::shared_ptr<Cacheable> expected) {
   auto expectedPtr = std::dynamic_pointer_cast<CacheableBytes>(expected);
   // Assume that the bytes are really a char*
   return (strcmp((char*)result->value(), (char*)expectedPtr->value()) == 0);
@@ -35,11 +35,11 @@ bool CheckBytesEqual(CacheableBytesPtr result, CacheablePtr expected) {
 
 BEGIN_TEST(CheckTemplates)
   {
-    CacheFactoryPtr cacheFactoryPtr = CacheFactory::createCacheFactory();
-    CachePtr cache = cacheFactoryPtr->create();
+    std::shared_ptr<CacheFactory> cacheFactoryPtr = CacheFactory::createCacheFactory();
+    auto cache = cacheFactoryPtr->create();
     AttributesFactory afact;
-    RegionAttributesPtr attrs = afact.createRegionAttributes();
-    RegionPtr regPtr;
+    std::shared_ptr<RegionAttributes> attrs = afact.createRegionAttributes();
+    std::shared_ptr<Region> regPtr;
     CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
     cacheImpl->createRegion("TestRegion", attrs, regPtr);
 
@@ -52,18 +52,18 @@ BEGIN_TEST(CheckTemplates)
     const char baseKey[] = "test base key";
     const char baseVal[] = "test base value";
     int int32Key = 100;
-    CacheableStringPtr stringPtr = CacheableString::create(stringKey);
-    CacheableInt32Ptr int32Ptr = CacheableInt32::create(int32Key);
-    CacheableBytesPtr bytesPtr = CacheableBytes::create(
+    std::shared_ptr<CacheableString> stringPtr = CacheableString::create(stringKey);
+    std::shared_ptr<CacheableInt32> int32Ptr = CacheableInt32::create(int32Key);
+    std::shared_ptr<CacheableBytes> bytesPtr = CacheableBytes::create(
         reinterpret_cast<const uint8_t*>(stringVal), sizeof(stringVal));
-    CacheableKeyPtr keyPtr = CacheableString::create(baseKey);
-    CacheablePtr valPtr = CacheableBytes::create(
+    std::shared_ptr<CacheableKey> keyPtr = CacheableString::create(baseKey);
+    std::shared_ptr<Cacheable> valPtr = CacheableBytes::create(
         reinterpret_cast<const uint8_t*>(baseVal), sizeof(baseVal));
 
-    CacheableBytesPtr resValPtr;
-    CacheableStringPtr resStringPtr;
-    CacheableInt32Ptr resInt32Ptr;
-    RegionEntryPtr resEntryPtr;
+    std::shared_ptr<CacheableBytes> resValPtr;
+    std::shared_ptr<CacheableString> resStringPtr;
+    std::shared_ptr<CacheableInt32> resInt32Ptr;
+    std::shared_ptr<RegionEntry> resEntryPtr;
 
     /* ------ Test puts/gets of various shapes and sizes --------- */
 

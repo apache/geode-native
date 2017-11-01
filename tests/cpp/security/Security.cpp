@@ -96,7 +96,7 @@ TESTTASK doCloseCache() {
   return result;
 }
 
-void Security::getClientSecurityParams(PropertiesPtr prop,
+void Security::getClientSecurityParams(std::shared_ptr<Properties> prop,
                                        std::string credentials) {
   std::string securityParams = getStringValue("securityParams");
 
@@ -121,7 +121,7 @@ void Security::getClientSecurityParams(PropertiesPtr prop,
 
   if (prop == nullptr) prop = Properties::create();
 
-  CredentialGeneratorPtr cg = CredentialGenerator::create(sc);
+  std::shared_ptr<CredentialGenerator> cg = CredentialGenerator::create(sc);
   cg->getAuthInit(prop);
 
   if (securityParams == "valid" || securityParams == "VALID") {
@@ -161,7 +161,7 @@ void Security::checkTest(const char *taskId) {
   std::lock_guard<spinlock_mutex> guard(m_lck);
   setTask(taskId);
   if (m_cache == nullptr || m_cache->isClosed()) {
-    PropertiesPtr pp = Properties::create();
+    auto pp = Properties::create();
 
     getClientSecurityParams(pp, getStringValue("credentials"));
 
@@ -327,13 +327,13 @@ int32_t Security::doServerKeys()
 
   int32_t expected = getIntValue( "expectedCount" );
 
-  RegionPtr regionPtr = getRegionPtr();
+  auto regionPtr = getRegionPtr();
   if ( regionPtr == NULL ) {
     FWKEXCEPTION( "Security::doServerKeys(): No region to perform operations
 on." );
   }
 
-  VectorOfCacheableKey keysVec;
+  std::vector<std::shared_ptr<CacheableKey>> keysVec;
   try {
     regionPtr->serverKeys( keysVec );
   } catch( Exception & e ) {
@@ -403,7 +403,7 @@ int32_t Security::initKeys(bool useDefault) {
 
 void Security::initStrKeys(int32_t low, int32_t high,
                            const std::string &keyBase) {
-  m_KeysA = new CacheableStringPtr[m_MaxKeys];
+  m_KeysA = new std::shared_ptr<CacheableString>[m_MaxKeys];
   const char *const base = keyBase.c_str();
 
   char buf[128];
@@ -440,7 +440,7 @@ int32_t Security::initValues(int32_t numKeys, int32_t siz, bool useDefault) {
 
   m_MaxValues = numKeys;
 
-  m_CValue = new CacheableBytesPtr[m_MaxValues];
+  m_CValue = new std::shared_ptr<CacheableBytes>[m_MaxValues];
 
   char *buf = new char[siz];
   memset(buf, 'V', siz);
@@ -462,7 +462,7 @@ int32_t Security::createRegion() {
   try {
     createPool();
     RegionHelper help(g_test);
-    RegionPtr region = help.createRootRegion(m_cache);
+    auto region = help.createRootRegion(m_cache);
 
     std::string key(region->getName());
     bbIncrement(REGIONSBB, key);
@@ -492,14 +492,14 @@ int32_t Security::verifyInterestList()
 
   try {
     int32_t countUpdate = 0;
-    RegionPtr region = getRegionPtr();
+    auto region = getRegionPtr();
     int32_t numOfRegisterKeys = getIntValue( "registerKeys");
     int32_t payload = getIntValue( "valueSizes");
 
-    VectorOfCacheableKey keys;
+    std::vector<std::shared_ptr<CacheableKey>> keys;
     region->keys(keys);
-    CacheableBytesPtr valuePtr;
-    CacheableKeyPtr keyPtr;
+    std::shared_ptr<CacheableBytes> valuePtr;
+    std::shared_ptr<CacheableKey> keyPtr;
     uint32_t valueSize;
     for(int32_t i = 0; i < (int32_t) keys.size(); i++)
     {
@@ -545,7 +545,7 @@ int32_t Security::populateRegion()
   FWKINFO( "In Security::populateRegion()" );
 
   try {
-    RegionPtr region = getRegionPtr();
+    auto region = getRegionPtr();
     TestClient * clnt = TestClient::getTestClient();
     resetValue( "distinctKeys" );
     initValues( initKeys());
@@ -579,7 +579,7 @@ int32_t Security::registerInterestList() {
   FWKINFO("In Security::registerInterestList()");
 
   try {
-    RegionPtr region = getRegionPtr();
+    auto region = getRegionPtr();
     int32_t numKeys = getIntValue("distinctKeys");  // check distince keys first
     if (numKeys <= 0) {
       // FWKSEVERE( "Failed to initialize keys with numKeys :" <<  numKeys);
@@ -593,7 +593,7 @@ int32_t Security::registerInterestList() {
     clearKeys();
     m_MaxKeys = numOfRegisterKeys;
     m_KeyIndexBegin = low;
-    VectorOfCacheableKey registerKeyList;
+    std::vector<std::shared_ptr<CacheableKey>> registerKeyList;
     int32_t keySize = getIntValue("keySize");
     keySize = (keySize > 0) ? keySize : 10;
     std::string keyBase(keySize, 'A');
@@ -629,7 +629,7 @@ int32_t Security::registerRegexList() {
   int32_t result = FWK_SEVERE;
   FWKINFO("In Security::registerRegexList()");
   try {
-    RegionPtr region = getRegionPtr();
+    auto region = getRegionPtr();
     std::string registerRegex = getStringValue("registerRegex");
     FWKINFO("Security::registerRegexList region name is "
             << region->getName() << "regex is: " << registerRegex.c_str());
@@ -654,7 +654,7 @@ int32_t Security::unregisterRegexList() {
   int32_t result = FWK_SEVERE;
   FWKINFO("In Security::unregisterRegexList()");
   try {
-    RegionPtr region = getRegionPtr();
+    auto region = getRegionPtr();
     std::string unregisterRegex = getStringValue("unregisterRegex");
     FWKINFO("Security::unregisterRegexList region name is "
             << region->getName() << "regex is: " << unregisterRegex.c_str());
@@ -680,7 +680,7 @@ int32_t Security::registerAllKeys() {
   FWKINFO("In Security::registerAllKeys()");
 
   try {
-    RegionPtr region = getRegionPtr();
+    auto region = getRegionPtr();
     FWKINFO("Security::registerAllKeys region name is " << region->getName());
     region->registerAllKeys();
     result = FWK_SUCCESS;
@@ -740,9 +740,8 @@ int32_t Security::checkValues() {
 }
 
 // ----------------------------------------------------------------------------
-
-RegionPtr Security::getRegionPtr(const char *reg) {
-  RegionPtr region;
+ std::shared_ptr<Region> Security::getRegionPtr(const char *reg) {
+  std::shared_ptr<Region> region;
   std::string name;
 
   if (reg == NULL) {
@@ -815,8 +814,8 @@ bool Security::checkReady(int32_t numClients) {
   return false;
 }
 //----------------------------------------------------------------------------
-CacheablePtr Security::getUserObject(const std::string &objType) {
-  CacheablePtr usrObj = nullptr;
+std::shared_ptr<Cacheable> Security::getUserObject(const std::string &objType) {
+  std::shared_ptr<Cacheable> usrObj = nullptr;
   resetValue("entryCount");
   int numOfKeys =
       getIntValue("entryCount");  // number of key should be multiple of 20
@@ -839,8 +838,8 @@ CacheablePtr Security::getUserObject(const std::string &objType) {
   return usrObj;
 }
 // ----------------------------------------------------------------------------
-CacheableStringPtr Security::getKey(int32_t max) {
-  CacheableStringPtr keyPtr;
+std::shared_ptr<CacheableString> Security::getKey(int32_t max) {
+  std::shared_ptr<CacheableString> keyPtr;
   char buf[32];
   resetValue("objectType");
   const std::string objectType = getStringValue("objectType");
@@ -894,9 +893,9 @@ void Security::runQuery(int32_t &queryCnt) {
                                  static_cast<uint32_t>(QueryStrings::RSsize()));
 
     ACE_Time_Value startTime, endTime;
-    QueryServicePtr qs = m_cache->getQueryService();
-    QueryPtr qry;
-    SelectResultsPtr results;
+    auto qs = m_cache->getQueryService();
+    std::shared_ptr<Query> qry;
+    std::shared_ptr<SelectResults> results;
     resetValue("largeSetQuery");
     resetValue("unsupportedPRQuery");
     bool islargeSetQuery = g_test->getBoolValue("largeSetQuery");
@@ -962,9 +961,9 @@ int32_t Security::doEntryOperations() {
   ACE_Time_Value end = ACE_OS::gettimeofday() + ACE_Time_Value(secondsToRun);
   ACE_Time_Value now;
 
-  CacheableStringPtr keyPtr;
-  CacheablePtr valuePtr;
-  CacheablePtr tmpValue;
+  std::shared_ptr<CacheableString> keyPtr;
+  std::shared_ptr<Cacheable> valuePtr;
+  std::shared_ptr<Cacheable> tmpValue;
   char *valBuf = new char[valSize + 1];
   memset(valBuf, 'A', valSize);
   valBuf[valSize] = 0;
@@ -973,7 +972,7 @@ int32_t Security::doEntryOperations() {
   std::string objectType;
 
   int32_t creates = 0, puts = 0, gets = 0, dests = 0, invals = 0, query = 0;
-  RegionPtr regionPtr = getRegionPtr();
+  auto regionPtr = getRegionPtr();
   if (regionPtr == nullptr) {
     fwkResult = FWK_SEVERE;
     FWKSEVERE(

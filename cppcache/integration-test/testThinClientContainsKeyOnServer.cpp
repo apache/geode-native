@@ -44,8 +44,8 @@ DUNIT_TASK(CLIENT1, SetupClient1)
                        true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    CacheableKeyPtr key = CacheableKey::create((const char*)"key01");
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
+    std::shared_ptr<CacheableKey> key = CacheableKey::create((const char*)"key01");
     ASSERT(!regPtr->containsKeyOnServer(key), "key should not be there");
   }
 END_TASK(SetupClient1)
@@ -56,17 +56,17 @@ DUNIT_TASK(CLIENT2, SetupClient2)
                        true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    CacheableKeyPtr key = CacheableKey::create((const char*)"key01");
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
+    std::shared_ptr<CacheableKey> key = CacheableKey::create((const char*)"key01");
     ASSERT(!regPtr->containsKeyOnServer(key), "key should not be there");
   }
 END_TASK(SetupClient2)
 
 DUNIT_TASK(CLIENT1, puts)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    CacheableKeyPtr keyPtr = CacheableKey::create((const char*)"key01");
-    CacheableBytesPtr valPtr =
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
+    std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create((const char*)"key01");
+    std::shared_ptr<CacheableBytes> valPtr =
         CacheableBytes::create(reinterpret_cast<const uint8_t*>("value01"), 7);
     regPtr->put(keyPtr, valPtr);
     ASSERT(regPtr->containsKeyOnServer(keyPtr), "key should be there");
@@ -75,8 +75,8 @@ END_TASK(puts)
 
 DUNIT_TASK(CLIENT2, VerifyPuts)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    CacheableKeyPtr keyPtr = CacheableKey::create((const char*)"key01");
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
+    std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create((const char*)"key01");
     ASSERT(regPtr->containsKeyOnServer(keyPtr), "key should be there");
   }
 END_TASK(VerifyPuts)

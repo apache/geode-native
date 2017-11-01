@@ -83,14 +83,14 @@ class CPPCACHE_EXPORT ProxyCache
    * @param path the region's path, such as <code>RootA/Sub1/Sub1A</code>.
    * @returns region, or nullptr if no such region exists.
    */
-  virtual RegionPtr getRegion(const char* path) override;
+  virtual std::shared_ptr<Region> getRegion(const char* path) override;
 
   /**
    * Gets the QueryService from which a new Query can be obtained.
    *
    * @returns A smart pointer to the QueryService.
    */
-  virtual QueryServicePtr getQueryService() override;
+  virtual std::shared_ptr<QueryService> getQueryService() override;
 
   /**
    * Returns a set of root regions in the cache. This set is a snapshot and
@@ -100,14 +100,14 @@ class CPPCACHE_EXPORT ProxyCache
    * @param regions the returned set of
    * regions
    */
-  virtual VectorOfRegion rootRegions() override;
+  virtual std::vector<std::shared_ptr<Region>> rootRegions() override;
 
   /**
    * @brief destructor
    */
   virtual ~ProxyCache();
 
-  ProxyCache(PropertiesPtr credentials, PoolPtr pool, CacheImpl* cacheImpl);
+  ProxyCache(std::shared_ptr<Properties> credentials, std::shared_ptr<Pool> pool, CacheImpl* cacheImpl);
 
   /**
    * Returns a factory that can create a {@link PdxInstance}.
@@ -116,7 +116,7 @@ class CPPCACHE_EXPORT ProxyCache
    * when it is fully deserialized.
    * @return the factory
    */
-  virtual PdxInstanceFactoryPtr createPdxInstanceFactory(
+  virtual std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
       const char* className) override;
 
  private:
@@ -124,9 +124,9 @@ class CPPCACHE_EXPORT ProxyCache
    * @brief constructors
    */
 
-  UserAttributesPtr m_userAttributes;
+  std::shared_ptr<UserAttributes> m_userAttributes;
   bool m_isProxyCacheClosed;
-  QueryServicePtr m_remoteQueryService;
+  std::shared_ptr<QueryService> m_remoteQueryService;
   CacheImpl* m_cacheImpl;
   friend class Pool;
   friend class ProxyRegion;

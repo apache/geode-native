@@ -27,10 +27,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class UserFunctionExecutionException;
-typedef std::shared_ptr<UserFunctionExecutionException>
-    UserFunctionExecutionExceptionPtr;
-
 /**
  * @brief UserFunctionExecutionException class is used to encapsulate geode
  *sendException in case of Function execution.
@@ -49,7 +45,7 @@ class UserFunctionExecutionException : public Serializable {
   /**
    * @brief constructors
    */
-  UserFunctionExecutionException(CacheableStringPtr msg);
+  UserFunctionExecutionException(std::shared_ptr<CacheableString> msg);
 
   /**
    *@brief serialize this object
@@ -97,18 +93,18 @@ class UserFunctionExecutionException : public Serializable {
   virtual int8_t typeId() const;
 
   /**
-   *@brief return as CacheableStringPtr the Exception message returned from
+   *@brief return as std::shared_ptr<CacheableString> the Exception message returned from
    *geode sendException api.
    **/
-  CacheableStringPtr getMessage() { return m_message; }
+  std::shared_ptr<CacheableString> getMessage() { return m_message; }
 
   /**
-   *@brief return as CacheableStringPtr the Exception name returned from geode
+   *@brief return as std::shared_ptr<CacheableString> the Exception name returned from geode
    *sendException api.
    **/
-  CacheableStringPtr getName() {
+  std::shared_ptr<CacheableString> getName() {
     const char* msg = "UserFunctionExecutionException";
-    CacheableStringPtr str = CacheableString::create(msg);
+    std::shared_ptr<CacheableString> str = CacheableString::create(msg);
     return str;
   }
 
@@ -117,7 +113,7 @@ class UserFunctionExecutionException : public Serializable {
   UserFunctionExecutionException(const UserFunctionExecutionException& other);
   void operator=(const UserFunctionExecutionException& other);
 
-  CacheableStringPtr m_message;  // error message
+  std::shared_ptr<CacheableString> m_message;  // error message
 };
 
 }  // namespace client

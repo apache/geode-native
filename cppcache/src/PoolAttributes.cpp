@@ -43,7 +43,7 @@ PoolAttributes::PoolAttributes()
       m_isPRSingleHopEnabled(PoolFactory::DEFAULT_PR_SINGLE_HOP_ENABLED),
       m_serverGrp(PoolFactory::DEFAULT_SERVER_GROUP) {}
 
-PoolAttributesPtr PoolAttributes::clone() {
+std::shared_ptr<PoolAttributes> PoolAttributes::clone() {
   return std::make_shared<PoolAttributes>(*this);
 }
 

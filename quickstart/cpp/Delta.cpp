@@ -42,21 +42,21 @@
 using namespace apache::geode::client;
 
 // The Delta QuickStart example.
-typedef std::shared_ptr<DeltaExample> DeltaExamplePtr;
+typedef std::shared_ptr<DeltaExample> std::shared_ptr<DeltaExample>;
 int main(int argc, char** argv) {
   try {
     // Create a Geode Cache.
-    PropertiesPtr prptr = Properties::create();
+    auto prptr = Properties::create();
     prptr->insert("cache-xml-file", "XMLs/clientDelta.xml");
 
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory(prptr);
+    auto cacheFactory = CacheFactory::createCacheFactory(prptr);
 
-    CachePtr cachePtr = cacheFactory->create();
+    auto cachePtr = cacheFactory->create();
 
     LOGINFO("Created the Geode Cache");
 
     // get the example Region.
-    RegionPtr regPtr = cachePtr->getRegion("exampleRegion");
+    auto regPtr = cachePtr->getRegion("exampleRegion");
 
     LOGINFO("Obtained the Region from the Cache");
 
@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
 
     // Creating Delta Object.
     DeltaExample* ptr = new DeltaExample(10, 15, 20);
-    CacheablePtr valPtr(ptr);
+    std::shared_ptr<Cacheable> valPtr(ptr);
     // Put the delta object. This will send the complete object to the server.
     regPtr->put("Key1", valPtr);
     LOGINFO("Completed put for a delta object");

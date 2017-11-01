@@ -80,7 +80,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeChar(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeChar(const char* fieldName,
                                           char16_t value) = 0;
 
   /**
@@ -93,7 +93,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeChar(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeChar(const char* fieldName,
                                           char value) = 0;
 
   /**
@@ -106,7 +106,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeBoolean(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeBoolean(const char* fieldName,
                                              bool value) = 0;
 
   /**
@@ -119,7 +119,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeByte(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeByte(const char* fieldName,
                                           int8_t value) = 0;
 
   /**
@@ -132,7 +132,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeShort(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeShort(const char* fieldName,
                                            int16_t value) = 0;
 
   /**
@@ -145,7 +145,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeInt(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeInt(const char* fieldName,
                                          int32_t value) = 0;
 
   /**
@@ -158,7 +158,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeLong(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeLong(const char* fieldName,
                                           int64_t value) = 0;
 
   /**
@@ -171,7 +171,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeFloat(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeFloat(const char* fieldName,
                                            float value) = 0;
 
   /**
@@ -184,21 +184,21 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeDouble(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeDouble(const char* fieldName,
                                             double value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
    * The fields type is <code>CacheableDatePtr</code>.
-   * <p>Java Date is mapped to C++ CacheableDatePtr.</p>
+   * <p>Java Date is mapped to C++ std::shared_ptr<CacheableDate>.</p>
    * @param fieldName the name of the field to write
    * @param value the value of the field to write
    * @return this PdxInstanceFactory
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeDate(const char* fieldName,
-                                          CacheableDatePtr value) = 0;
+  virtual std::shared_ptr<PdxInstanceFactory> writeDate(const char* fieldName,
+                                          std::shared_ptr<CacheableDate> value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -210,7 +210,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeWideString(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeWideString(const char* fieldName,
                                                 const wchar_t* value) = 0;
 
   /**
@@ -223,13 +223,13 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeString(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeString(const char* fieldName,
                                             const char* value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
    * The fields type is <code>CacheablePtr</code>.
-   * <p>Java object is mapped to C++ CacheablePtr.</p>
+   * <p>Java object is mapped to C++ std::shared_ptr<Cacheable>.</p>
    * It is best to use one of the other writeXXX methods if your field type
    * will always be XXX. This method allows the field value to be anything
    * that is an instance of Object. This gives you more flexibility but more
@@ -243,8 +243,8 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeObject(const char* fieldName,
-                                            CacheablePtr value) = 0;
+  virtual std::shared_ptr<PdxInstanceFactory> writeObject(const char* fieldName,
+                                            std::shared_ptr<Cacheable> value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -257,7 +257,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeBooleanArray(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeBooleanArray(const char* fieldName,
                                                   bool* value,
                                                   int32_t length) = 0;
 
@@ -272,7 +272,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeWideCharArray(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeWideCharArray(const char* fieldName,
                                                    wchar_t* value,
                                                    int32_t length) = 0;
 
@@ -287,7 +287,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeCharArray(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeCharArray(const char* fieldName,
                                                char* value, int32_t length) = 0;
 
   /**
@@ -301,7 +301,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeByteArray(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeByteArray(const char* fieldName,
                                                int8_t* value,
                                                int32_t length) = 0;
 
@@ -316,7 +316,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeShortArray(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeShortArray(const char* fieldName,
                                                 int16_t* value,
                                                 int32_t length) = 0;
 
@@ -331,7 +331,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeIntArray(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeIntArray(const char* fieldName,
                                               int32_t* value,
                                               int32_t length) = 0;
 
@@ -346,7 +346,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeLongArray(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeLongArray(const char* fieldName,
                                                int64_t* value,
                                                int32_t length) = 0;
 
@@ -361,7 +361,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeFloatArray(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeFloatArray(const char* fieldName,
                                                 float* value,
                                                 int32_t length) = 0;
 
@@ -376,7 +376,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeDoubleArray(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeDoubleArray(const char* fieldName,
                                                  double* value,
                                                  int32_t length) = 0;
 
@@ -391,7 +391,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeStringArray(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeStringArray(const char* fieldName,
                                                  char** value,
                                                  int32_t length) = 0;
 
@@ -406,14 +406,14 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeWideStringArray(const char* fieldName,
+  virtual std::shared_ptr<PdxInstanceFactory> writeWideStringArray(const char* fieldName,
                                                      wchar_t** value,
                                                      int32_t length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
    * The fields type is <code>CacheableObjectArrayPtr</code>.
-   * Java Object[] is mapped to C++ CacheableObjectArrayPtr.
+   * Java Object[] is mapped to C++ std::shared_ptr<CacheableObjectArray>.
    * For how each element of the array is a mapped to C++ see {@link
    * #writeObject}.
    * Note that this call may serialize elements that are not compatible with
@@ -424,8 +424,8 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeObjectArray(
-      const char* fieldName, CacheableObjectArrayPtr value) = 0;
+  virtual std::shared_ptr<PdxInstanceFactory> writeObjectArray(
+      const char* fieldName, std::shared_ptr<CacheableObjectArray> value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -440,7 +440,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxInstanceFactoryPtr writeArrayOfByteArrays(
+  virtual std::shared_ptr<PdxInstanceFactory> writeArrayOfByteArrays(
       const char* fieldName, int8_t** value, int32_t arrayLength,
       int32_t* elementLength) = 0;
 
@@ -467,7 +467,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @return this PdxInstanceFactory
    * @throws IllegalStateException if the named field does not exist.
    */
-  virtual PdxInstanceFactoryPtr markIdentityField(const char* fieldName) = 0;
+  virtual std::shared_ptr<PdxInstanceFactory> markIdentityField(const char* fieldName) = 0;
 };
 }  // namespace client
 }  // namespace geode

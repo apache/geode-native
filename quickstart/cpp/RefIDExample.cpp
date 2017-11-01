@@ -44,27 +44,27 @@ using namespace apache::geode::client;
 int main(int argc, char** argv) {
   try {
     // Create a Geode Cache using XMLs/clientRefIDExample.xml.
-    PropertiesPtr prptr = Properties::create();
+    auto prptr = Properties::create();
     prptr->insert("cache-xml-file", "XMLs/clientRefIDExample.xml");
 
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory(prptr);
+    std::shared_ptr<CacheFactory> cacheFactory = CacheFactory::createCacheFactory(prptr);
 
-    CachePtr cachePtr = cacheFactory->create();
+    auto cachePtr = cacheFactory->create();
 
     LOGINFO("Created the Geode Cache");
 
     // get the root1 Region.
-    RegionPtr regionPtr1 = cachePtr->getRegion("root1");
+    auto regionPtr1 = cachePtr->getRegion("root1");
 
     LOGINFO("Obtained the root1 Region from the Cache");
 
     // get the root2 Region.
-    RegionPtr regionPtr2 = cachePtr->getRegion("root2");
+    auto regionPtr2 = cachePtr->getRegion("root2");
 
     LOGINFO("Obtained the root2 Region from the Cache");
 
-    RegionAttributesPtr rAttPtr1 = regionPtr1->getAttributes();
-    RegionAttributesPtr rAttPtr2 = regionPtr2->getAttributes();
+    auto rAttPtr1 = regionPtr1->getAttributes();
+    auto rAttPtr2 = regionPtr2->getAttributes();
 
     bool isCacheEnabled1 = rAttPtr1->getCachingEnabled();
     LOGINFO("For region root1 cachingEnabled is %s ",
@@ -82,16 +82,16 @@ int main(int argc, char** argv) {
     LOGINFO("Put the first Entries into both the Regions");
 
     // Put an Entry into the Region by manually creating a Key and a Value pair.
-    CacheableKeyPtr keyPtr = CacheableInt32::create(123);
-    CacheablePtr valuePtr = CacheableString::create("123");
+    std::shared_ptr<CacheableKey> keyPtr = CacheableInt32::create(123);
+    std::shared_ptr<Cacheable> valuePtr = CacheableString::create("123");
     regionPtr1->put(keyPtr, valuePtr);
     regionPtr2->put(keyPtr, valuePtr);
 
     LOGINFO("Put the second Entries into both the Regions.");
 
     // Get Entries back out of the Region.
-    CacheablePtr resultPtr1 = regionPtr1->get("Key1");
-    CacheablePtr resultPtr2 = regionPtr2->get("Key1");
+    std::shared_ptr<Cacheable> resultPtr1 = regionPtr1->get("Key1");
+    std::shared_ptr<Cacheable> resultPtr2 = regionPtr2->get("Key1");
     LOGINFO("Obtained the first Entry from both the Regions");
 
     resultPtr1 = regionPtr1->get(keyPtr);

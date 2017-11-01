@@ -26,7 +26,7 @@
 
 using namespace apache::geode::client;
 
-TEST(CacheableStringEqualityTest, StdHashSpecializationViaStdSharedPtr) {
+TEST(CacheableStringEqualityTest, StdHashSpecializationViaStdSharedPtr ) {
   auto s = CacheableString::create("test");
   typedef decltype(s) key_type;
   EXPECT_EQ(s->hashcode(), dereference_hash<key_type>{}(s));

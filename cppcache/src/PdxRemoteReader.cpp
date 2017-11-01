@@ -330,7 +330,7 @@ wchar_t* PdxRemoteReader::readWideString(const char* fieldName) {
   }
 }
 
-SerializablePtr PdxRemoteReader::readObject(const char* fieldName) {
+std::shared_ptr<Serializable> PdxRemoteReader::readObject(const char* fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -345,7 +345,7 @@ SerializablePtr PdxRemoteReader::readObject(const char* fieldName) {
       int position = m_pdxType->getFieldPosition(
           choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
       if (position != -1) {
-        SerializablePtr ptr;
+        std::shared_ptr<Serializable> ptr;
         PdxLocalReader::resettoPdxHead();
         m_dataInput->advanceCursor(position);
         ptr = PdxLocalReader::readObject(fieldName);
@@ -664,7 +664,7 @@ wchar_t** PdxRemoteReader::readWideStringArray(const char* fieldName,
   }
 }
 
-CacheableObjectArrayPtr PdxRemoteReader::readObjectArray(
+std::shared_ptr<CacheableObjectArray> PdxRemoteReader::readObjectArray(
     const char* fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
@@ -680,7 +680,7 @@ CacheableObjectArrayPtr PdxRemoteReader::readObjectArray(
           choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
       PdxLocalReader::resettoPdxHead();
       m_dataInput->advanceCursor(position);
-      CacheableObjectArrayPtr retVal =
+      std::shared_ptr<CacheableObjectArray> retVal =
           PdxLocalReader::readObjectArray(fieldName);
       PdxLocalReader::resettoPdxHead();
       return retVal;
@@ -713,7 +713,7 @@ int8_t** PdxRemoteReader::readArrayOfByteArrays(const char* fieldName,
   }
 }
 
-CacheableDatePtr PdxRemoteReader::readDate(const char* fieldName) {
+std::shared_ptr<CacheableDate> PdxRemoteReader::readDate(const char* fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -727,7 +727,7 @@ CacheableDatePtr PdxRemoteReader::readDate(const char* fieldName) {
           choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
       PdxLocalReader::resettoPdxHead();
       m_dataInput->advanceCursor(position);
-      CacheableDatePtr retVal = PdxLocalReader::readDate(fieldName);
+      std::shared_ptr<CacheableDate> retVal = PdxLocalReader::readDate(fieldName);
       PdxLocalReader::resettoPdxHead();
       return retVal;
     }
@@ -735,7 +735,7 @@ CacheableDatePtr PdxRemoteReader::readDate(const char* fieldName) {
 }
 
 void PdxRemoteReader::readCollection(const char* fieldName,
-                                     CacheableArrayListPtr& collection) {
+                                     std::shared_ptr<CacheableArrayList>& collection) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {

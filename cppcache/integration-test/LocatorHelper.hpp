@@ -22,6 +22,8 @@
 #ifndef SERVER2
 #define SERVER2 s2p2
 #endif
+
+
 DUNIT_TASK_DEFINITION(SERVER1, CreateLocator1)
   {
     // starting locator

@@ -47,18 +47,18 @@ using namespace testobject;
 int main(int argc, char** argv) {
   try {
     // Create a Geode Cache Programmatically.
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
-    CachePtr cachePtr = cacheFactory->setSubscriptionEnabled(true)->create();
+    auto cacheFactory = CacheFactory::createCacheFactory();
+    auto cachePtr = cacheFactory->setSubscriptionEnabled(true)->create();
 
     LOGINFO("Created the Geode Cache");
 
-    RegionFactoryPtr regionFactory =
+    auto regionFactory =
         cachePtr->createRegionFactory(CACHING_PROXY);
 
     LOGINFO("Created the RegionFactory");
 
     // Create the example Region programmatically.
-    RegionPtr regionPtr = regionFactory->create("Portfolios");
+    auto regionPtr = regionFactory->create("Portfolios");
 
     LOGINFO("Created the Region.");
 
@@ -70,9 +70,9 @@ int main(int argc, char** argv) {
     LOGINFO("Registered Serializable Query Objects");
 
     // Populate the Region with some Portfolio objects.
-    PortfolioPtr port1Ptr(new Portfolio(1 /*ID*/, 10 /*size*/));
-    PortfolioPtr port2Ptr(new Portfolio(2 /*ID*/, 20 /*size*/));
-    PortfolioPtr port3Ptr(new Portfolio(3 /*ID*/, 30 /*size*/));
+    std::shared_ptr<Portfolio> port1Ptr(new Portfolio(1 /*ID*/, 10 /*size*/));
+    std::shared_ptr<Portfolio> port2Ptr(new Portfolio(2 /*ID*/, 20 /*size*/));
+    std::shared_ptr<Portfolio> port3Ptr(new Portfolio(3 /*ID*/, 30 /*size*/));
     regionPtr->put("Key1", port1Ptr);
     regionPtr->put("Key2", port2Ptr);
     regionPtr->put("Key3", port3Ptr);
@@ -80,13 +80,13 @@ int main(int argc, char** argv) {
     LOGINFO("Populated some Portfolio Objects");
 
     // Get the QueryService from the Cache.
-    QueryServicePtr qrySvcPtr = cachePtr->getQueryService();
+    auto qrySvcPtr = cachePtr->getQueryService();
 
     LOGINFO("Got the QueryService from the Cache");
 
     // Execute a Query which returns a ResultSet.
-    QueryPtr qryPtr = qrySvcPtr->newQuery("SELECT DISTINCT * FROM /Portfolios");
-    SelectResultsPtr resultsPtr = qryPtr->execute();
+    auto qryPtr = qrySvcPtr->newQuery("SELECT DISTINCT * FROM /Portfolios");
+    std::shared_ptr<SelectResults> resultsPtr = qryPtr->execute();
 
     LOGINFO("ResultSet Query returned %d rows", resultsPtr->size());
 
@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
     LOGINFO("Region Query returned %d rows", resultsPtr->size());
 
     // Execute the Region selectValue() API.
-    SerializablePtr resultPtr = regionPtr->selectValue("ID = 3");
+    std::shared_ptr<Serializable> resultPtr = regionPtr->selectValue("ID = 3");
     auto portPtr = std::dynamic_pointer_cast<Portfolio>(resultPtr);
 
     LOGINFO("Region selectValue() returned an item:\n %s",
@@ -128,15 +128,15 @@ int main(int argc, char** argv) {
 
     // Execute the parameterized query
     // Populate the parameter list (paramList) for the query.
-    QueryPtr pqryPtr = qrySvcPtr->newQuery(
+    auto pqryPtr = qrySvcPtr->newQuery(
         "SELECT DISTINCT ID, status FROM /Portfolios WHERE ID > $1 and "
         "status=$2");
 
-    CacheableVectorPtr paramList = CacheableVector::create();
+    std::shared_ptr<CacheableVector> paramList = CacheableVector::create();
     paramList->push_back(Cacheable::create(1));         // Param-1
     paramList->push_back(Cacheable::create("active"));  // Param-2
 
-    SelectResultsPtr pqresultsPtr = pqryPtr->execute(paramList);
+    std::shared_ptr<SelectResults> pqresultsPtr = pqryPtr->execute(paramList);
 
     LOGINFO("StructSet Query returned %d rows", pqresultsPtr->size());
 

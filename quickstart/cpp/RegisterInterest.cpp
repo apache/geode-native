@@ -42,22 +42,22 @@ int main(int argc, char** argv) {
   try {
     // Create CacheFactory using the user specified properties or from the
     // geode.properties file by default.
-    PropertiesPtr prp = Properties::create();
+    auto prp = Properties::create();
     prp->insert("cache-xml-file", "XMLs/clientRegisterInterest.xml");
 
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory(prp);
+    std::shared_ptr<CacheFactory> cacheFactory = CacheFactory::createCacheFactory(prp);
 
     LOGINFO("Created CacheFactory");
 
     // Create a Geode Cache with the "clientRegisterInterest.xml" Cache XML
     // file.
-    CachePtr cachePtr = cacheFactory->create();
+    auto cachePtr = cacheFactory->create();
 
     LOGINFO("Created the Geode Cache");
 
     // Get the example Region from the Cache which is declared in the Cache XML
     // file.
-    RegionPtr regionPtr = cachePtr->getRegion("exampleRegion");
+    auto regionPtr = cachePtr->getRegion("exampleRegion");
 
     LOGINFO("Obtained the Region from the Cache");
 
@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
     LOGINFO("Called registerAllKeys() and unregisterAllKeys()");
 
     // Register and Unregister Interest on Region for Some Keys.
-    VectorOfCacheableKey keys;
+    std::vector<std::shared_ptr<CacheableKey>> keys;
     keys.push_back(CacheableInt32::create(123));
     keys.push_back(CacheableString::create("Key-123"));
     regionPtr->registerKeys(keys);

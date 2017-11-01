@@ -78,15 +78,13 @@ class CPPCACHE_EXPORT LRUMapEntry : public MapEntryImpl,
   inline explicit LRUMapEntry(bool noInit)
       : MapEntryImpl(true), LRUEntryProperties(true) {}
 
-  inline LRUMapEntry(const CacheableKeyPtr& key) : MapEntryImpl(key) {}
+  inline LRUMapEntry(const std::shared_ptr<CacheableKey>& key) : MapEntryImpl(key) {}
 
  private:
   // disabled
   LRUMapEntry(const LRUMapEntry&);
   LRUMapEntry& operator=(const LRUMapEntry&);
 };
-
-typedef std::shared_ptr<LRUMapEntry> LRUMapEntryPtr;
 
 class CPPCACHE_EXPORT VersionedLRUMapEntry : public LRUMapEntry,
                                              public VersionStamp {
@@ -98,15 +96,13 @@ class CPPCACHE_EXPORT VersionedLRUMapEntry : public LRUMapEntry,
  protected:
   inline explicit VersionedLRUMapEntry(bool noInit) : LRUMapEntry(true) {}
 
-  inline VersionedLRUMapEntry(const CacheableKeyPtr& key) : LRUMapEntry(key) {}
+  inline VersionedLRUMapEntry(const std::shared_ptr<CacheableKey>& key) : LRUMapEntry(key) {}
 
  private:
   // disabled
   VersionedLRUMapEntry(const VersionedLRUMapEntry&);
   VersionedLRUMapEntry& operator=(const VersionedLRUMapEntry&);
 };
-
-typedef std::shared_ptr<VersionedLRUMapEntry> VersionedLRUMapEntryPtr;
 
 class CPPCACHE_EXPORT LRUEntryFactory : public EntryFactory {
  public:
@@ -115,8 +111,8 @@ class CPPCACHE_EXPORT LRUEntryFactory : public EntryFactory {
   virtual ~LRUEntryFactory() {}
 
   virtual void newMapEntry(ExpiryTaskManager* expiryTaskManager,
-                           const CacheableKeyPtr& key,
-                           MapEntryImplPtr& result) const;
+                           const std::shared_ptr<CacheableKey>& key,
+                           std::shared_ptr<MapEntryImpl>& result) const;
 };
 }  // namespace client
 }  // namespace geode

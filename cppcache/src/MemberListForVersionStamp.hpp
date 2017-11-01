@@ -33,11 +33,11 @@ namespace client {
 struct DistributedMemberWithIntIdentifier {
  public:
   DistributedMemberWithIntIdentifier(
-      DSMemberForVersionStampPtr dsmember = nullptr, uint16_t id = 0) {
+      std::shared_ptr<DSMemberForVersionStamp> dsmember = nullptr, uint16_t id = 0) {
     this->m_member = dsmember;
     this->m_identifier = id;
   }
-  DSMemberForVersionStampPtr m_member;
+  std::shared_ptr<DSMemberForVersionStamp> m_member;
   uint16_t m_identifier;
 };
 
@@ -45,11 +45,11 @@ class MemberListForVersionStamp {
  public:
   MemberListForVersionStamp();
   virtual ~MemberListForVersionStamp();
-  uint16_t add(DSMemberForVersionStampPtr member);
-  DSMemberForVersionStampPtr getDSMember(uint16_t memberId);
+  uint16_t add(std::shared_ptr<DSMemberForVersionStamp> member);
+  std::shared_ptr<DSMemberForVersionStamp> getDSMember(uint16_t memberId);
 
  private:
-  std::unordered_map<uint32_t, DSMemberForVersionStampPtr> m_members1;
+  std::unordered_map<uint32_t, std::shared_ptr<DSMemberForVersionStamp>> m_members1;
   std::unordered_map<std::string, DistributedMemberWithIntIdentifier>
       m_members2;
 
@@ -57,7 +57,6 @@ class MemberListForVersionStamp {
   uint32_t m_memberCounter;
 };
 
-typedef std::shared_ptr<MemberListForVersionStamp> MemberListForVersionStampPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

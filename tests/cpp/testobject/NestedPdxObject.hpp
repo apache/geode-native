@@ -25,7 +25,7 @@
  */
 
 #include <geode/PdxSerializable.hpp>
-#include <geode/GeodeCppCache.hpp>
+#include <geode/CacheableEnum.hpp>
 #include <geode/PdxWriter.hpp>
 #include <geode/PdxReader.hpp>
 
@@ -47,7 +47,7 @@ class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
  private:
   int m_childId;
   char* m_childName;
-  CacheableEnumPtr m_enum;
+  std::shared_ptr<CacheableEnum> m_enum;
 
  public:
   ChildPdx() {}
@@ -78,11 +78,11 @@ class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void toData(PdxWriterPtr pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw);
 
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   const char* getClassName() const { return "testobject::ChildPdx"; }
 
@@ -90,7 +90,6 @@ class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
 
   bool equals(ChildPdx& other) const;
 };
-typedef std::shared_ptr<ChildPdx> ChildPdxPtr;
 
 class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
  private:
@@ -98,8 +97,8 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
   char* m_parentName;
   const wchar_t* m_wideparentName;
   wchar_t** m_wideparentArrayName;
-  CacheablePtr m_childPdx;
-  CacheableEnumPtr m_enum;
+  std::shared_ptr<Cacheable> m_childPdx;
+  std::shared_ptr<CacheableEnum> m_enum;
   int m_arrLength;
   char m_char;
   char16_t m_wideChar;
@@ -168,11 +167,11 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
 
   wchar_t** getWideParentArrayName() { return m_wideparentArrayName; }
 
-  ChildPdxPtr getChildPdx() {
+  std::shared_ptr<ChildPdx> getChildPdx() {
     return std::static_pointer_cast<ChildPdx>(m_childPdx);
   }
 
-  CacheableEnumPtr getEnum() { return m_enum; }
+  std::shared_ptr<CacheableEnum> getEnum() { return m_enum; }
 
   char getChar() { return m_char; }
 
@@ -189,11 +188,11 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void toData(PdxWriterPtr pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw);
 
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   const char* getClassName() const { return "testobject::ParentPdx"; }
 
@@ -201,19 +200,18 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
 
   bool equals(ParentPdx& other, bool isPdxReadSerialized) const;
 };
-typedef std::shared_ptr<ParentPdx> ParentPdxPtr;
 
 enum enumQuerytest { id1, id2, id3 };
 
 class TESTOBJECT_EXPORT PdxEnumTestClass : public PdxSerializable {
  private:
   int m_id;
-  CacheableEnumPtr m_enumid;
+  std::shared_ptr<CacheableEnum> m_enumid;
 
  public:
   int getID() { return m_id; }
 
-  CacheableEnumPtr getEnumID() { return m_enumid; }
+  std::shared_ptr<CacheableEnum> getEnumID() { return m_enumid; }
 
   PdxEnumTestClass(int id) {
     m_id = id;
@@ -246,18 +244,18 @@ class TESTOBJECT_EXPORT PdxEnumTestClass : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(PdxWriterPtr pw) {
+  void toData(std::shared_ptr<PdxWriter> pw) {
     pw->writeInt("m_id", m_id);
     pw->writeObject("m_enumid", m_enumid);
   }
 
-  void fromData(PdxReaderPtr pr) {
+  void fromData(std::shared_ptr<PdxReader> pr) {
     m_id = pr->readInt("m_id");
     m_enumid =
         std::static_pointer_cast<CacheableEnum>(pr->readObject("m_enumid"));
   }
 
-  CacheableStringPtr toString() const {
+  std::shared_ptr<CacheableString> toString() const {
     return CacheableString::create("PdxEnumTestClass");
   }
 
@@ -267,7 +265,6 @@ class TESTOBJECT_EXPORT PdxEnumTestClass : public PdxSerializable {
     return new PdxEnumTestClass();
   }
 };
-typedef std::shared_ptr<PdxEnumTestClass> PdxEnumTestClassPtr;
 
 class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
  private:
@@ -300,7 +297,7 @@ class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(PdxWriterPtr pw) {
+  void toData(std::shared_ptr<PdxWriter> pw) {
     pw->writeInt("i1", i1);
     pw->markIdentityField("i1");
     pw->writeInt("i2", i2);
@@ -309,14 +306,14 @@ class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
     pw->writeString("s2", s2);
   }
 
-  void fromData(PdxReaderPtr pr) {
+  void fromData(std::shared_ptr<PdxReader> pr) {
     i1 = pr->readInt("i1");
     i2 = pr->readInt("i2");
     s1 = pr->readString("s1");
     s2 = pr->readString("s2");
   }
 
-  CacheableStringPtr toString() const {
+  std::shared_ptr<CacheableString> toString() const {
     return CacheableString::create("SerializePdx");
   }
 
@@ -338,7 +335,6 @@ class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
     return true;
   }
 };
-typedef std::shared_ptr<SerializePdx> SerializePdxPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_NESTEDPDXOBJECT_H_

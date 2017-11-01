@@ -59,7 +59,7 @@ class CPPCACHE_EXPORT SelectResultsIterator {
    * @returns a smart pointer to the next item from the iterator or nullptr if
    * no further items are available.
    */
-  const SerializablePtr next();
+  const std::shared_ptr<Serializable> next();
 
   /**
    * Move the iterator to point to the next item to get.
@@ -74,7 +74,7 @@ class CPPCACHE_EXPORT SelectResultsIterator {
    * @returns A smart pointer to the current item pointed to by the
    * SelectResultsIterator.
    */
-  const SerializablePtr current() const;
+  const std::shared_ptr<Serializable> current() const;
 
   /**
    * Reset the SelectResultsIterator to point to the start of the items.
@@ -85,14 +85,14 @@ class CPPCACHE_EXPORT SelectResultsIterator {
   /**
    * Constructor - meant only for internal use.
    */
-  SelectResultsIterator(const CacheableVectorPtr& vectorSR,
-                        SelectResultsPtr srp);
+  SelectResultsIterator(const std::shared_ptr<CacheableVector>& vectorSR,
+                        std::shared_ptr<SelectResults> srp);
 
-  CacheableVectorPtr m_vectorSR;
+  std::shared_ptr<CacheableVector> m_vectorSR;
   int32_t m_nextIndex;
   // this is to ensure that a reference of SelectResults is kept alive
   // if an iterator object is present
-  SelectResultsPtr m_srp;
+  std::shared_ptr<SelectResults> m_srp;
 
   friend class ResultSetImpl;
   friend class StructSetImpl;

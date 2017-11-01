@@ -71,7 +71,7 @@ bool PdxTests::PdxType::generic2DCompare(T1** value1, T2** value2, int length,
 // PdxType::~PdxObject() {
 //}
 
-void PdxTests::PdxType::toData(PdxWriterPtr pw) /*const*/ {
+void PdxTests::PdxType::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   // TODO:delete it later
 
   int* lengthArr = new int[2];
@@ -174,7 +174,7 @@ void PdxTests::PdxType::toData(PdxWriterPtr pw) /*const*/ {
   // TODO:delete it later
 }
 
-void PdxTests::PdxType::fromData(PdxReaderPtr pr) {
+void PdxTests::PdxType::fromData(std::shared_ptr<PdxReader> pr) {
   // TODO:temp added, delete later
 
   int32_t* Lengtharr;
@@ -264,7 +264,7 @@ void PdxTests::PdxType::fromData(PdxReaderPtr pr) {
   LOGINFO("PdxObject::readObject() for enum Done...");
 }
 
-CacheableStringPtr PdxTests::PdxType::toString() const {
+std::shared_ptr<CacheableString> PdxTests::PdxType::toString() const {
   char idbuf[1024];
   // sprintf(idbuf,"PdxObject: [ m_bool=%d ] [m_byte=%d] [m_int16=%d]
   // [m_int32=%d] [m_float=%f] [m_double=%lf] [ m_string=%s ]",m_bool, m_byte,

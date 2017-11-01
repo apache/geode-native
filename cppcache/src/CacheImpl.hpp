@@ -65,7 +65,6 @@ class CacheFactory;
 class ExpiryTaskManager;
 class PdxTypeRegistry;
 class SerializationRegistry;
-typedef std::shared_ptr<SerializationRegistry> SerializationRegistryPtr;
 
 /**
  * @class Cache Cache.hpp
@@ -114,7 +113,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
     m_serverGroupFlag = serverGroupFlag;
   }
 
-  MemberListForVersionStampPtr getMemberListForVersionStamp();
+  std::shared_ptr<MemberListForVersionStamp> getMemberListForVersionStamp();
 
   /** Returns the name of this cache.
    * @return the string name of this cache
@@ -132,10 +131,10 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   bool isClosed() const;
 
   /** Get the <code>CacheAttributes</code> for this cache. */
-  inline CacheAttributesPtr getAttributes() const { return m_attributes; }
+  inline std::shared_ptr<CacheAttributes> getAttributes() const { return m_attributes; }
 
   /** Set the <code>CacheAttributes</code> for this cache. */
-  void setAttributes(const CacheAttributesPtr& attrs);
+  void setAttributes(const std::shared_ptr<CacheAttributes>& attrs);
 
   /**
    * Returns the distributed system that this cache was
@@ -171,10 +170,10 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
    * @throws UnknownException otherwise
    */
   void createRegion(const char* name,
-                    const RegionAttributesPtr& aRegionAttributes,
-                    RegionPtr& regionPtr);
+                    const std::shared_ptr<RegionAttributes>& aRegionAttributes,
+                    std::shared_ptr<Region>& regionPtr);
 
-  void getRegion(const char* path, RegionPtr& rptr);
+  void getRegion(const char* path, std::shared_ptr<Region>& rptr);
 
   /**
    * Returns a set of root regions in the cache. Does not cause any
@@ -185,7 +184,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
    * regions when the function returns
    */
 
-  void rootRegions(VectorOfRegion& regions);
+  void rootRegions(std::vector<std::shared_ptr<Region>> & regions);
 
   /**
    * FUTURE: not used currently. Gets the number of seconds a cache
@@ -205,7 +204,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
 
   virtual RegionFactory createRegionFactory(RegionShortcut preDefinedRegion);
 
-  CacheTransactionManagerPtr getCacheTransactionManager();
+  std::shared_ptr<CacheTransactionManager> getCacheTransactionManager();
 
   /**
    * @brief destructor
@@ -216,7 +215,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
    */
   CacheImpl(Cache* c, const std::string& name,
             std::unique_ptr<DistributedSystem> sys, bool ignorePdxUnreadFields,
-            bool readPdxSerialized, const AuthInitializePtr& authInitialize);
+            bool readPdxSerialized, const std::shared_ptr<AuthInitialize>& authInitialize);
 
   void initServices();
   EvictionController* getEvictionController();
@@ -234,14 +233,14 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
 
   int removeRegion(const char* name);
 
-  QueryServicePtr getQueryService(bool noInit = false);
+  std::shared_ptr<QueryService> getQueryService(bool noInit = false);
 
-  QueryServicePtr getQueryService(const char* poolName);
+  std::shared_ptr<QueryService> getQueryService(const char* poolName);
 
   std::shared_ptr<RegionInternal> createRegion_internal(
       const std::string& name,
       const std::shared_ptr<RegionInternal>& rootRegion,
-      const RegionAttributesPtr& attrs, const CacheStatisticsPtr& csptr,
+      const std::shared_ptr<RegionAttributes>& attrs, const std::shared_ptr<CacheStatistics>& csptr,
       bool shared);
 
   /**
@@ -271,18 +270,18 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   bool getPdxReadSerialized() { return m_readPdxSerialized; }
   bool isCacheDestroyPending() const;
 
-  static std::map<std::string, RegionAttributesPtr> getRegionShortcut();
+  static std::map<std::string, std::shared_ptr<RegionAttributes>> getRegionShortcut();
 
-  PdxTypeRegistryPtr getPdxTypeRegistry() const;
+  std::shared_ptr<PdxTypeRegistry> getPdxTypeRegistry() const;
 
-  SerializationRegistryPtr getSerializationRegistry() const;
+  std::shared_ptr<SerializationRegistry> getSerializationRegistry() const;
   inline CachePerfStats& getCachePerfStats() { return *m_cacheStats; }
 
   PoolManager& getPoolManager() { return *m_poolManager; }
 
   ThreadPool* getThreadPool();
 
-  inline const AuthInitializePtr& getAuthInitialize() {
+  inline const std::shared_ptr<AuthInitialize>& getAuthInitialize() {
     return m_authInitialize;
   }
 
@@ -290,7 +289,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   std::atomic<bool> m_networkhop;
   std::atomic<int> m_blacklistBucketTimeout;
   std::atomic<int8_t> m_serverGroupFlag;
-  PoolPtr m_defaultPool;
+  std::shared_ptr<Pool> m_defaultPool;
   bool m_ignorePdxUnreadFields;
   bool m_readPdxSerialized;
   std::unique_ptr<ExpiryTaskManager> m_expiryTaskManager;
@@ -307,12 +306,12 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
     THINCLIENT_POOL_REGION
   };
 
-  RegionKind getRegionKind(const RegionAttributesPtr& rattrs) const;
+  RegionKind getRegionKind(const std::shared_ptr<RegionAttributes>& rattrs) const;
 
   void sendNotificationCloseMsgs();
 
   void validateRegionAttributes(const char* name,
-                                const RegionAttributesPtr& attrs) const;
+                                const std::shared_ptr<RegionAttributes>& attrs) const;
 
   inline void getSubRegions(MapOfRegionWithLock& srm) {
     MapOfRegionGuard guard(m_regions->mutex());
@@ -332,22 +331,22 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   Cache* m_implementee;
   ACE_Recursive_Thread_Mutex m_mutex;
   Condition m_cond;
-  CacheAttributesPtr m_attributes;
+  std::shared_ptr<CacheAttributes> m_attributes;
   EvictionController* m_evictionControllerPtr;
   TcrConnectionManager* m_tcrConnectionManager;
-  RemoteQueryServicePtr m_remoteQueryServicePtr;
+  std::shared_ptr<RemoteQueryService> m_remoteQueryServicePtr;
   ACE_RW_Thread_Mutex m_destroyCacheMutex;
   volatile bool m_destroyPending;
   volatile bool m_initDone;
   ACE_Thread_Mutex m_initDoneLock;
-  AdminRegionPtr m_adminRegion;
-  CacheTransactionManagerPtr m_cacheTXManager;
+  std::shared_ptr<AdminRegion> m_adminRegion;
+  std::shared_ptr<CacheTransactionManager> m_cacheTXManager;
 
   MemberListForVersionStamp& m_memberListForVersionStamp;
-  SerializationRegistryPtr m_serializationRegistry;
-  PdxTypeRegistryPtr m_pdxTypeRegistry;
+  std::shared_ptr<SerializationRegistry> m_serializationRegistry;
+  std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
   ThreadPool* m_threadPool;
-  const AuthInitializePtr m_authInitialize;
+  const std::shared_ptr<AuthInitialize> m_authInitialize;
 
   friend class CacheFactory;
   friend class Cache;

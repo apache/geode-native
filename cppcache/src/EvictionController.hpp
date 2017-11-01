@@ -63,12 +63,9 @@ namespace geode {
 namespace client {
 
 typedef IntQueue<int64_t> HeapSizeInfoQueue;
-typedef std::vector<std::string> VectorOfString;
 
-class EvictionController;
 class EvictionThread;
 class CacheImpl;
-typedef std::shared_ptr<EvictionController> EvictionControllerPtr;
 
 class CPPCACHE_EXPORT EvictionController : public ACE_Task_Base {
  public:
@@ -112,7 +109,7 @@ class CPPCACHE_EXPORT EvictionController : public ACE_Task_Base {
   CacheImpl* m_cacheImpl;
   int64_t m_currentHeapSize;
   HeapSizeInfoQueue m_queue;
-  VectorOfString m_regions;
+  std::vector<std::string> m_regions;
   mutable ACE_RW_Thread_Mutex m_regionLock;
   EvictionThread* evictionThreadPtr;
   static const char* NC_EC_Thread;

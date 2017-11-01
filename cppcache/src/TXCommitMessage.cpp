@@ -115,7 +115,7 @@ m_processorId = -1;
 
   int32_t len = input.readArrayLen();
   for (int j = 0; j < len; j++) {
-    CacheablePtr tmp;
+    std::shared_ptr<Cacheable> tmp;
     input.readObject(tmp);
   }
 }
@@ -134,9 +134,9 @@ Serializable* TXCommitMessage::create(
 }
 
 void TXCommitMessage::apply(Cache* cache) {
-  for (std::vector<RegionCommitPtr>::iterator iter = m_regions.begin();
+  for (std::vector<std::shared_ptr<RegionCommit>>::iterator iter = m_regions.begin();
        m_regions.end() != iter; iter++) {
-    RegionCommitPtr regionCommit =
+    auto regionCommit =
         std::static_pointer_cast<RegionCommit>(*iter);
     regionCommit->apply(cache);
   }

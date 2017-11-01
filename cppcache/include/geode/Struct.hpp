@@ -53,7 +53,7 @@ class CPPCACHE_EXPORT Struct : public Serializable {
   /**
    * Constructor - meant only for internal use.
    */
-  Struct(StructSet* ssPtr, std::vector<SerializablePtr>& fieldValues);
+  Struct(StructSet* ssPtr, std::vector<std::shared_ptr<Serializable>>& fieldValues);
 
   /**
    * Factory function for registration of <code>Struct</code>.
@@ -67,7 +67,7 @@ class CPPCACHE_EXPORT Struct : public Serializable {
    * @returns A smart pointer to the field value or nullptr if index out of
    * bounds.
    */
-  const SerializablePtr operator[](int32_t index) const;
+  const std::shared_ptr<Serializable> operator[](int32_t index) const;
 
   /**
    * Get the field value for the given field name.
@@ -76,14 +76,14 @@ class CPPCACHE_EXPORT Struct : public Serializable {
    * @returns A smart pointer to the field value.
    * @throws IllegalArgumentException if the field name is not found.
    */
-  const SerializablePtr operator[](const std::string& fieldName) const;
+  const std::shared_ptr<Serializable> operator[](const std::string& fieldName) const;
 
   /**
    * Get the parent StructSet of this Struct.
    *
    * @returns A smart pointer to the parent StructSet of this Struct.
    */
-  const StructSetPtr getStructSet() const;
+  const std::shared_ptr<StructSet> getStructSet() const;
 
   /**
    * Check whether another field value is available to iterate over in this
@@ -106,7 +106,7 @@ class CPPCACHE_EXPORT Struct : public Serializable {
    * @returns A smart pointer to the next item in the Struct or nullptr if no
    * more available.
    */
-  const SerializablePtr next();
+  const std::shared_ptr<Serializable> next();
 
   /**
    * Deserializes the Struct object from the DataInput. @TODO KN: better comment
@@ -155,7 +155,7 @@ class CPPCACHE_EXPORT Struct : public Serializable {
 
   typedef std::unordered_map<std::string, int32_t> FieldNames;
   FieldNames m_fieldNames;
-  std::vector<SerializablePtr> m_fieldValues;
+  std::vector<std::shared_ptr<Serializable>> m_fieldValues;
 
   StructSet* m_parent;
 

@@ -20,10 +20,11 @@
  * limitations under the License.
  */
 
+#include <vector>
+#include <memory>
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
-#include <memory>
-#include "VectorT.hpp"
 #include "CacheableBuiltins.hpp"
 
 /**
@@ -47,14 +48,14 @@ namespace client {
  *  Example:
  *  <br>
  *  <pre>
- *  ResultCollectorPtr rc = FunctionService::onRegion(region)
+ *  std::shared_ptr<ResultCollector> rc = FunctionService::onRegion(region)
  *                                      ->withArgs(args)
  *                                      ->withFilter(keySet)
  *                                      ->withCollector(new
  * MyCustomResultCollector())
  *                                      .execute(Function);
  *  //Application can do something else here before retrieving the result
- *  CacheableVectorPtr functionResult = rc.getResult();
+ *  std::shared_ptr<CacheableVector> functionResult = rc.getResult();
  * </pre>
  *
  * @see FunctionService
@@ -80,7 +81,7 @@ class CPPCACHE_EXPORT ResultCollector {
    * @throws FunctionException if result retrieval fails
    * @see UserFunctionExecutionException
    */
-  virtual CacheableVectorPtr getResult(
+  virtual std::shared_ptr<CacheableVector> getResult(
       uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
   /**
    * Adds a single function execution result to the ResultCollector
@@ -88,7 +89,7 @@ class CPPCACHE_EXPORT ResultCollector {
    * @param resultOfSingleExecution
    * @since 5.8LA
    */
-  virtual void addResult(const CacheablePtr& resultOfSingleExecution);
+  virtual void addResult(const std::shared_ptr<Cacheable>& resultOfSingleExecution);
   /**
    * Geode will invoke this method when function execution has completed
    * and all results for the execution have been obtained and  added to the
@@ -104,7 +105,7 @@ class CPPCACHE_EXPORT ResultCollector {
   virtual void clearResults();
 
  private:
-  CacheableVectorPtr m_resultList;
+  std::shared_ptr<CacheableVector> m_resultList;
   volatile bool m_isResultReady;
 };
 }  // namespace client

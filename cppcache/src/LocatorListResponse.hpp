@@ -50,7 +50,6 @@ class LocatorListResponse : public ServerLocationResponse {
   virtual ~LocatorListResponse() {}  // Virtual destructor
   static Serializable* create();
 };
-typedef std::shared_ptr<LocatorListResponse> LocatorListResponsePtr;
 
 }  // namespace client
 }  // namespace geode

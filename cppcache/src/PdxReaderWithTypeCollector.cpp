@@ -32,8 +32,8 @@ namespace geode {
 namespace client {
 
 PdxReaderWithTypeCollector::PdxReaderWithTypeCollector(
-    DataInput& dataInput, PdxTypePtr pdxType, int32_t pdxlen,
-    PdxTypeRegistryPtr pdxTypeRegistry)
+    DataInput& dataInput, std::shared_ptr<PdxType> pdxType, int32_t pdxlen,
+    std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry)
     : PdxLocalReader(dataInput, pdxType, pdxlen, pdxTypeRegistry) {
   m_newPdxType = std::make_shared<PdxType>(m_pdxTypeRegistry ,pdxType->getPdxClassName(), true);
 }
@@ -47,7 +47,7 @@ void PdxReaderWithTypeCollector::checkType(const char* fieldName, int8_t typeId,
     throw IllegalStateException("Field name is null");
   }
 
-  PdxFieldTypePtr pft = m_pdxType->getPdxField(fieldName);
+  auto pft = m_pdxType->getPdxField(fieldName);
   if (pft != nullptr) {
     if (typeId != pft->getTypeId()) {
       char excpStr[128] = {0};
@@ -268,14 +268,14 @@ wchar_t* PdxReaderWithTypeCollector::readWideString(const char* fieldName) {
   }
 }
 
-SerializablePtr PdxReaderWithTypeCollector::readObject(const char* fieldName) {
+std::shared_ptr<Serializable> PdxReaderWithTypeCollector::readObject(const char* fieldName) {
   // field is collected after reading
   checkType(fieldName, PdxFieldTypes::OBJECT, "Serializable");
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
   LOGDEBUG("PdxReaderWithTypeCollector::readObject():position = %d", position);
   if (position != -1) {
-    SerializablePtr ptr;
+    std::shared_ptr<Serializable> ptr;
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
     ptr = PdxLocalReader::readObject(fieldName);
@@ -554,7 +554,7 @@ wchar_t** PdxReaderWithTypeCollector::readWideStringArray(const char* fieldName,
   }
 }
 
-CacheableObjectArrayPtr PdxReaderWithTypeCollector::readObjectArray(
+std::shared_ptr<CacheableObjectArray> PdxReaderWithTypeCollector::readObjectArray(
     const char* fieldName) {
   checkType(fieldName, PdxFieldTypes::OBJECT_ARRAY, "Object[]");
   m_newPdxType->addVariableLengthTypeField(fieldName, "Object[]",
@@ -566,7 +566,7 @@ CacheableObjectArrayPtr PdxReaderWithTypeCollector::readObjectArray(
   if (position != -1) {
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
-    CacheableObjectArrayPtr retVal = PdxLocalReader::readObjectArray(fieldName);
+    std::shared_ptr<CacheableObjectArray> retVal = PdxLocalReader::readObjectArray(fieldName);
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
@@ -601,7 +601,7 @@ int8_t** PdxReaderWithTypeCollector::readArrayOfByteArrays(
   }
 }
 
-CacheableDatePtr PdxReaderWithTypeCollector::readDate(const char* fieldName) {
+std::shared_ptr<CacheableDate> PdxReaderWithTypeCollector::readDate(const char* fieldName) {
   checkType(fieldName, PdxFieldTypes::DATE, "Date");
   m_newPdxType->addFixedLengthTypeField(fieldName, "Date", PdxFieldTypes::DATE,
                                         PdxTypes::DATE_SIZE);
@@ -610,7 +610,7 @@ CacheableDatePtr PdxReaderWithTypeCollector::readDate(const char* fieldName) {
   LOGDEBUG("PdxReaderWithTypeCollector::readDate() position = %d", position);
   if (position != -1) {
     m_dataInput->advanceCursor(position);
-    CacheableDatePtr retVal = PdxLocalReader::readDate(fieldName);
+    std::shared_ptr<CacheableDate> retVal = PdxLocalReader::readDate(fieldName);
     m_dataInput->rewindCursor(position + PdxTypes::DATE_SIZE);
     return retVal;
   } else {
@@ -619,7 +619,7 @@ CacheableDatePtr PdxReaderWithTypeCollector::readDate(const char* fieldName) {
 }
 
 void PdxReaderWithTypeCollector::readCollection(
-    const char* fieldName, CacheableArrayListPtr& collection) {
+    const char* fieldName, std::shared_ptr<CacheableArrayList>& collection) {
   checkType(fieldName, apache::geode::client::GeodeTypeIds::CacheableArrayList,
             "Collection");
   m_newPdxType->addVariableLengthTypeField(

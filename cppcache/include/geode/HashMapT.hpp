@@ -34,17 +34,15 @@ namespace apache {
 namespace geode {
 namespace client {
 
-typedef std::unordered_map<CacheableKeyPtr, CacheablePtr,
-                           dereference_hash<CacheableKeyPtr>,
-                           dereference_equal_to<CacheableKeyPtr>>
+typedef std::unordered_map<std::shared_ptr<CacheableKey>, std::shared_ptr<Cacheable>,
+                           dereference_hash<std::shared_ptr<CacheableKey>>,
+                           dereference_equal_to<std::shared_ptr<CacheableKey>>>
     HashMapOfCacheable;
-typedef std::shared_ptr<HashMapOfCacheable> HashMapOfCacheablePtr;
 
-typedef std::unordered_map<CacheableKeyPtr, ExceptionPtr,
-                           dereference_hash<CacheableKeyPtr>,
-                           dereference_equal_to<CacheableKeyPtr>>
+typedef std::unordered_map<std::shared_ptr<CacheableKey>, std::shared_ptr<Exception>,
+                           dereference_hash<std::shared_ptr<CacheableKey>>,
+                           dereference_equal_to<std::shared_ptr<CacheableKey>>>
     HashMapOfException;
-typedef std::shared_ptr<HashMapOfException> HashMapOfExceptionPtr;
 
 }  // namespace client
 }  // namespace geode

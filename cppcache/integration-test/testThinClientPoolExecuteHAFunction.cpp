@@ -74,7 +74,7 @@ class MyResultCollector : public ResultCollector {
         m_addResultCount(0),
         m_getResultCount(0) {}
   ~MyResultCollector() {}
-  CacheableVectorPtr getResult(uint32_t timeout) {
+  std::shared_ptr<CacheableVector> getResult(uint32_t timeout) {
     m_getResultCount++;
     if (m_isResultReady == true) {
       return m_resultList;
@@ -89,7 +89,7 @@ class MyResultCollector : public ResultCollector {
     }
   }
 
-  void addResult(const CacheablePtr& resultItem) {
+  void addResult(const std::shared_ptr<Cacheable>& resultItem) {
     m_addResultCount++;
     if (resultItem == nullptr) return;
     auto result = std::dynamic_pointer_cast<CacheableArrayList>(resultItem);
@@ -106,7 +106,7 @@ class MyResultCollector : public ResultCollector {
   uint32_t getGetResultCount() { return m_getResultCount; }
 
  private:
-  CacheableVectorPtr m_resultList;
+  std::shared_ptr<CacheableVector> m_resultList;
   volatile bool m_isResultReady;
   uint32_t m_endResultCount;
   uint32_t m_addResultCount;
@@ -158,7 +158,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
     // createPool(poolName, locHostPort,serverGroup, nullptr, 0, true );
     // createRegionAndAttachPool(poolRegNames[0],USE_ACK, poolName);
 
-    RegionPtr regPtr0 =
+    auto regPtr0 =
         createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
     ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
     regPtr0->registerAllKeys();
@@ -173,7 +173,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartC11)
     createPool(poolName, locHostPort, serverGroup, 0, true);
     createRegionAndAttachPool(poolRegNames[0], USE_ACK, poolName);
 
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+    auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     regPtr0->registerAllKeys();
 
     LOG("Clnt1Init complete.");
@@ -199,7 +199,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       for (int i = 0; i < 34; i++) {
         if (i % 2 == 0) continue;
         sprintf(buf, "KEY--%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+        std::shared_ptr<CacheableKey> key = CacheableKey::create(buf);
         routingObj->push_back(key);
       }
       // UNUSED bool getResult = true;

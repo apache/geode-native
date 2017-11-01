@@ -66,10 +66,10 @@ class ClientHealthStats : public Serializable {
   /**
    * Factory method for creating an instance of ClientHealthStats
    */
-  static ClientHealthStatsPtr create(int gets, int puts, int misses,
+  static std::shared_ptr<ClientHealthStats> create(int gets, int puts, int misses,
                                      int listCalls, int numThreads,
                                      int64_t cpuTime = 0, int cpus = 0) {
-    return ClientHealthStatsPtr(new ClientHealthStats(
+    return std::shared_ptr<ClientHealthStats>(new ClientHealthStats(
         gets, puts, misses, listCalls, numThreads, cpuTime, cpus));
   }
   ~ClientHealthStats();
@@ -86,7 +86,7 @@ class ClientHealthStats : public Serializable {
   int m_numThread;              // ProcessStats.threads;
   int64_t m_processCpuTime;     //
   int m_cpus;
-  CacheableDatePtr m_updateTime;  // Last updateTime
+  std::shared_ptr<CacheableDate> m_updateTime;  // Last updateTime
 };
 
 }  // namespace client

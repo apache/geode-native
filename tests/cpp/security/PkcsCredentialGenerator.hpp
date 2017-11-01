@@ -79,7 +79,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
     return "javaobject.DummyAuthorization.create";
   }
 
-  void insertKeyStorePath(PropertiesPtr& p, const char* username) {
+  void insertKeyStorePath(std::shared_ptr<Properties>& p, const char* username) {
     char keystoreFilePath[1024];
     char* tempPath = NULL;
     tempPath = ACE_OS::getenv("TESTSRC");
@@ -96,7 +96,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
     p->insert(KEYSTORE_FILE_PATH, keystoreFilePath);
   }
 
-  void setPKCSProperties(PropertiesPtr& p, char* username) {
+  void setPKCSProperties(std::shared_ptr<Properties>& p, char* username) {
     char keyStorePassWord[1024];
 
     sprintf(keyStorePassWord, "%s", "geode");
@@ -106,7 +106,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
     insertKeyStorePath(p, username);
   }
 
-  void getValidCredentials(PropertiesPtr& p) {
+  void getValidCredentials(std::shared_ptr<Properties>& p) {
     char username[20] = {'\0'};
     sprintf(username, "geode%d", (rand() % 10) + 1);
     setPKCSProperties(p, username);
@@ -114,7 +114,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
             << p->find("security-username")->asChar());
   }
 
-  void getInvalidCredentials(PropertiesPtr& p) {
+  void getInvalidCredentials(std::shared_ptr<Properties>& p) {
     char username[20] = {'\0'};
     sprintf(username, "%dgeode", (rand() % 11) + 1);
     setPKCSProperties(p, username);
@@ -122,7 +122,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
             << p->find("security-username")->asChar());
   }
 
-  void getAllowedCredentialsForOps(opCodeList& opCodes, PropertiesPtr& p,
+  void getAllowedCredentialsForOps(opCodeList& opCodes, std::shared_ptr<Properties>& p,
                                    stringList* regionNames = NULL) {
     XmlAuthzCredentialGenerator authz(id());
     authz.getAllowedCredentials(opCodes, p, regionNames);
@@ -130,7 +130,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
     insertKeyStorePath(p, username);
   }
 
-  void getDisallowedCredentialsForOps(opCodeList& opCodes, PropertiesPtr& p,
+  void getDisallowedCredentialsForOps(opCodeList& opCodes, std::shared_ptr<Properties>& p,
                                       stringList* regionNames = NULL) {
     XmlAuthzCredentialGenerator authz(id());
     authz.getDisallowedCredentials(opCodes, p, regionNames);

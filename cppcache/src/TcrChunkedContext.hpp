@@ -44,7 +44,7 @@ namespace client {
 class TcrChunkedResult {
  private:
   ACE_Semaphore* m_finalizeSema;
-  ExceptionPtr m_ex;
+  std::shared_ptr<Exception> m_ex;
   bool m_inSameThread;
   std::unique_ptr<AppDomainContext> appDomainContext;
 
@@ -123,10 +123,9 @@ class TcrChunkedResult {
 
   inline void setException(Exception& ex) { m_ex.reset(ex.clone()); }
 
-  inline ExceptionPtr& getException() { return m_ex; }
+  inline std::shared_ptr<Exception>& getException() { return m_ex; }
 };
 
-typedef std::shared_ptr<TcrChunkedResult> TcrChunkedResultPtr;
 
 /**
  * Holds the context for a chunk including the chunk bytes, length and the

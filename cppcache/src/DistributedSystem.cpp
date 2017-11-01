@@ -150,7 +150,7 @@ void DistributedSystem::logSystemInformation() {
 }
 
 std::unique_ptr<DistributedSystem> DistributedSystem::create(
-    const std::string& _name, Cache* cache, const PropertiesPtr& configPtr) {
+    const std::string& _name, Cache* cache, const std::shared_ptr<Properties>& configPtr) {
   // TODO global - Refactory out the static initialization
   // Trigger other library initialization.
   CppCacheLibrary::initLib();

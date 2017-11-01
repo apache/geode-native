@@ -25,15 +25,15 @@ namespace apache {
 namespace geode {
 namespace client {
 
-SelectResultsIterator::SelectResultsIterator(const CacheableVectorPtr& vectorSR,
-                                             SelectResultsPtr srp)
+SelectResultsIterator::SelectResultsIterator(const std::shared_ptr<CacheableVector>& vectorSR,
+                                             std::shared_ptr<SelectResults> srp)
     : m_vectorSR(vectorSR), m_nextIndex(0), m_srp(srp) {}
 
 bool SelectResultsIterator::hasNext() const {
   return m_nextIndex < m_vectorSR->size();
 }
 
-const SerializablePtr SelectResultsIterator::next() {
+const std::shared_ptr<Serializable> SelectResultsIterator::next() {
   if (!hasNext()) return nullptr;
 
   return m_vectorSR->operator[](m_nextIndex++);
@@ -48,7 +48,7 @@ bool SelectResultsIterator::moveNext() {
   }
 }
 
-const SerializablePtr SelectResultsIterator::current() const {
+const std::shared_ptr<Serializable> SelectResultsIterator::current() const {
   if (m_nextIndex == 0 || m_nextIndex > m_vectorSR->size()) return nullptr;
 
   return m_vectorSR->operator[](m_nextIndex - 1);

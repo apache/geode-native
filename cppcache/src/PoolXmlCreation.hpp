@@ -42,7 +42,7 @@ class CPPCACHE_EXPORT PoolXmlCreation {
  private:
   /** An <code>AttributesFactory</code> for creating default
    * <code>PoolAttribute</code>s */
-  PoolFactoryPtr poolFactory;
+  std::shared_ptr<PoolFactory> poolFactory;
 
   /** The name of this pool */
   std::string poolName;
@@ -59,7 +59,7 @@ class CPPCACHE_EXPORT PoolXmlCreation {
   /**
    * Creates a new <code>PoolXmlCreation</code> with the given pool name.
    */
-  PoolXmlCreation(const char* name, PoolFactoryPtr factory);
+  PoolXmlCreation(const char* name, std::shared_ptr<PoolFactory> factory);
 
   /** Add a locator */
   // void addLocator(const char * host, const char * port);
@@ -82,7 +82,7 @@ class CPPCACHE_EXPORT PoolXmlCreation {
    * @throws UnknownException otherwise
    *
    */
-  PoolPtr create(Cache &cache);
+  std::shared_ptr<Pool> create(Cache &cache);
 };
 }  // namespace client
 }  // namespace geode

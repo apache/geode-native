@@ -15,13 +15,16 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
-#include <ace/High_Res_Timer.h>
 
-#include <ace/OS.h>
 #include <string>
 #include <thread>
 #include <chrono>
+
+#include <ace/High_Res_Timer.h>
+#include <ace/OS.h>
+
+#include <geode/EntryEvent.hpp>
+
 
 #define ROOT_NAME "testThinClientHAPeriodicAck"
 #define ROOT_SCOPE DISTRIBUTED_ACK
@@ -38,7 +41,7 @@ class DupChecker : public CacheListener {
   void check(const EntryEvent& event) {
     m_ops++;
 
-    CacheableKeyPtr key = event.getKey();
+    std::shared_ptr<CacheableKey> key = event.getKey();
     auto value = std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
 
     const auto& item = m_map.find(key);
@@ -76,7 +79,6 @@ class DupChecker : public CacheListener {
   virtual void afterRegionDestroy(const RegionEvent& event){};
 };
 
-typedef std::shared_ptr<DupChecker> DupCheckerPtr;
 
 ///////////////////////////////////////////////////////
 
@@ -96,7 +98,7 @@ bool g_poolConfig = false;
 bool g_poolLocators = false;
 
 void initClient(int redundancyLevel) {
-  PropertiesPtr props = Properties::create();
+  auto props = Properties::create();
   props->insert("notify-ack-interval", 1);
   props->insert("notify-dupcheck-life", 30);
 
@@ -108,7 +110,7 @@ void initClient(int redundancyLevel) {
 }
 
 void initClient() {
-  PropertiesPtr props = Properties::create();
+  auto props = Properties::create();
   props->insert("notify-ack-interval", 1);
   props->insert("notify-dupcheck-life", 30);
 
@@ -151,10 +153,10 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   }
   free(buf);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
-  CacheableKeyPtr keyPtr = createKey(key);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
 
   // if the region is no ack, then we may need to wait...
   if (!isCreated) {
@@ -242,10 +244,10 @@ void _verifyIntEntry(const char* name, const char* key, const int val,
   }
   free(buf);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
-  CacheableKeyPtr keyPtr = createKey(key);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
 
   // if the region is no ack, then we may need to wait...
   if (!isCreated) {
@@ -353,7 +355,7 @@ void createRegion(const char* name, bool ackMode,
   fflush(stdout);
   char* endpoints = nullptr;
   // ack, caching
-  RegionPtr regPtr = getHelper()->createRegion(
+  auto regPtr = getHelper()->createRegion(
       name, ackMode, true, nullptr, endpoints, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
@@ -365,10 +367,10 @@ void createEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Create entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
+  std::shared_ptr<CacheableString> valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
@@ -390,10 +392,10 @@ void createIntEntry(const char* name, const char* key, const int value) {
           value, name);
   fflush(stdout);
   // Create entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableInt32Ptr valPtr = CacheableInt32::create(value);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
+  std::shared_ptr<CacheableInt32> valPtr = CacheableInt32::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   // ASSERT( !regPtr->containsKey( keyPtr ), "Key should not have been found in
@@ -409,9 +411,9 @@ void createIntEntry(const char* name, const char* key, const int value) {
   LOG("Entry created.");
 }
 
-void setCacheListener(const char* regName, DupCheckerPtr checker) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheListener(const char* regName, std::shared_ptr<DupChecker> checker) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(checker);
 }
 
@@ -425,11 +427,11 @@ const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 const bool USE_ACK = true;
 const bool NO_ACK = false;
 
-DupCheckerPtr checker1;
-DupCheckerPtr checker2;
+std::shared_ptr<DupChecker> checker1;
+std::shared_ptr<DupChecker> checker2;
 
 void initClientAndRegion(int redundancy) {
-  PropertiesPtr pp = Properties::create();
+  auto pp = Properties::create();
   getHelper()->createPoolWithLocators("__TESTPOOL1_", locatorsG, true,
                                       redundancy);
   getHelper()->createRegionAndAttachPool(regionNames[0], USE_ACK,

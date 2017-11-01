@@ -21,7 +21,9 @@
  */
 
 #include "CacheableKey.hpp"
-
+#include "CacheableString.hpp"
+#include "Cacheable.hpp"
+#include "CacheableBuiltins.hpp"
 /**
  * @file
  */
@@ -30,20 +32,20 @@ namespace apache {
 namespace geode {
 namespace client {
 
+template <class TKEY>
+inline std::shared_ptr<CacheableKey> createKey( const std::shared_ptr< TKEY >& value )
+{
+  return std::shared_ptr<CacheableKey>( value );
+}
+
 template< class PRIM >
-inline CacheableKeyPtr CacheableKey::create( const PRIM value )
+inline std::shared_ptr<CacheableKey> CacheableKey::create( const PRIM value )
 {
   return createKey( value );
 }
 
-template <class TKEY>
-inline CacheableKeyPtr createKey( const std::shared_ptr< TKEY >& value )
-{
-  return CacheableKeyPtr( value );
-}
-
 template <typename TKEY>
-inline CacheableKeyPtr createKey( const TKEY* value )
+inline std::shared_ptr<CacheableKey> createKey( const TKEY* value )
 {
   return createKeyArr( value );
 }

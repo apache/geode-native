@@ -14,7 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/VectorT.hpp>
+#include <vector>
+#include <memory>
+
 #include "CqQueryImpl.hpp"
 #include <geode/CqAttributesFactory.hpp>
 #include "CqAttributesMutatorImpl.hpp"
@@ -27,12 +29,12 @@
 #include "ThinClientRegion.hpp"
 using namespace apache::geode::client;
 
-CqQueryImpl::CqQueryImpl(const CqServicePtr& cqService,
+CqQueryImpl::CqQueryImpl(const std::shared_ptr<CqService>& cqService,
                          const std::string& cqName,
                          const std::string& queryString,
-                         const CqAttributesPtr& cqAttributes,
+                         const std::shared_ptr<CqAttributes>& cqAttributes,
                          StatisticsFactory* factory, const bool isDurable,
-                         const UserAttributesPtr& userAttributesPtr)
+                         const std::shared_ptr<UserAttributes>& userAttributesPtr)
     : m_cqName(cqName),
       m_queryString(queryString),
       m_cqService(cqService),
@@ -177,7 +179,7 @@ void CqQueryImpl::addToCqMap() {
   try {
     LOGFINE("Adding to CQ Repository. CqName : %s Server CqName : %s",
             m_cqName.c_str(), m_serverCqName.c_str());
-    CqQueryPtr cq = shared_from_this();
+    std::shared_ptr<CqQuery> cq = shared_from_this();
     m_cqService->addCq(m_cqName, cq);
   } catch (Exception& ex) {
     std::string errMsg =
@@ -217,14 +219,14 @@ const char* CqQueryImpl::getQueryString() const {
  * Return the query
  * @return the Query for the query string
  */
-QueryPtr CqQueryImpl::getQuery() const { return m_query; }
+std::shared_ptr<Query> CqQueryImpl::getQuery() const { return m_query; }
 
 /**
  * @see org.apache.geode.cache.query.CqQuery#getStatistics()
  */
-const CqStatisticsPtr CqQueryImpl::getStatistics() const { return m_stats; }
+const std::shared_ptr<CqStatistics> CqQueryImpl::getStatistics() const { return m_stats; }
 
-const CqAttributesPtr CqQueryImpl::getCqAttributes() const {
+const std::shared_ptr<CqAttributes> CqQueryImpl::getCqAttributes() const {
   return m_cqAttributes;
 }
 
@@ -359,7 +361,7 @@ bool CqQueryImpl::executeCq(TcrMessage::MsgType requestType) {
 }
 
 // for EXECUTE_INITIAL_RESULTS_REQUEST :
-CqResultsPtr CqQueryImpl::executeWithInitialResults(uint32_t timeout) {
+std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(uint32_t timeout) {
   GuardUserAttribures gua;
   if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);
@@ -409,9 +411,9 @@ CqResultsPtr CqQueryImpl::executeWithInitialResults(uint32_t timeout) {
   }
   m_cqState = CqState::RUNNING;
   updateStats();
-  CqResultsPtr sr;
+  std::shared_ptr<CqResults> sr;
   auto values = resultCollector->getQueryResults();
-  const std::vector<CacheableStringPtr>& fieldNameVec =
+  const std::vector<std::shared_ptr<CacheableString>>& fieldNameVec =
       resultCollector->getStructFieldNames();
   int32_t sizeOfFieldNamesVec = static_cast<int32_t>(fieldNameVec.size());
   if (sizeOfFieldNamesVec == 0) {
@@ -522,7 +524,7 @@ void CqQueryImpl::setCqState(CqState::StateType state) {
   m_cqState = state;
 }
 
-const CqAttributesMutatorPtr CqQueryImpl::getCqAttributesMutator() const {
+const std::shared_ptr<CqAttributesMutator> CqQueryImpl::getCqAttributesMutator() const {
   return m_cqAttributesMutator;
 }
 /**

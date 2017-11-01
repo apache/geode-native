@@ -27,14 +27,14 @@ void EventIdMap::clear() {
   m_map.clear();
 }
 
-EventIdMapEntry EventIdMap::make(EventIdPtr eventid) {
+EventIdMapEntry EventIdMap::make(std::shared_ptr<EventId> eventid) {
   auto sid = std::make_shared<EventSource>(
       eventid->getMemId(), eventid->getMemIdLen(), eventid->getThrId());
   auto seq = std::make_shared<EventSequence>(eventid->getSeqNum());
   return std::make_pair(sid, seq);
 }
 
-bool EventIdMap::isDuplicate(EventSourcePtr key, EventSequencePtr value) {
+bool EventIdMap::isDuplicate(std::shared_ptr<EventSource> key, std::shared_ptr<EventSequence> value) {
   GUARD_MAP;
   const auto& entry = m_map.find(key);
 
@@ -44,7 +44,7 @@ bool EventIdMap::isDuplicate(EventSourcePtr key, EventSequencePtr value) {
   return false;
 }
 
-bool EventIdMap::put(EventSourcePtr key, EventSequencePtr value, bool onlynew) {
+bool EventIdMap::put(std::shared_ptr<EventSource> key, std::shared_ptr<EventSequence> value, bool onlynew) {
   GUARD_MAP;
 
   value->touch(m_expiry);
@@ -64,7 +64,7 @@ bool EventIdMap::put(EventSourcePtr key, EventSequencePtr value, bool onlynew) {
   }
 }
 
-bool EventIdMap::touch(EventSourcePtr key) {
+bool EventIdMap::touch(std::shared_ptr<EventSource> key) {
   GUARD_MAP;
 
   const auto& entry = m_map.find(key);
@@ -77,7 +77,7 @@ bool EventIdMap::touch(EventSourcePtr key) {
   }
 }
 
-bool EventIdMap::remove(EventSourcePtr key) {
+bool EventIdMap::remove(std::shared_ptr<EventSource> key) {
   GUARD_MAP;
 
   const auto& entry = m_map.find(key);

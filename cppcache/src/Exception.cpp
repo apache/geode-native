@@ -37,7 +37,7 @@ void Exception::setStackTraces(bool stackTraceEnabled) {
 }
 
 Exception::Exception(const char* msg1, const char* msg2, bool forceTrace,
-                     const ExceptionPtr& cause)
+                     const std::shared_ptr<Exception>& cause)
     : m_stack(), m_cause(cause) {
   size_t len1 = 0;
   if (msg1) {
@@ -116,8 +116,8 @@ Exception::Exception(const Exception& other)
       m_stack(other.m_stack),
       m_cause(other.m_cause) {}
 
-Exception::Exception(const CacheableStringPtr& message,
-                     const StackTracePtr& stack, const ExceptionPtr& cause)
+Exception::Exception(const std::shared_ptr<CacheableString>& message,
+                     const std::shared_ptr<StackTrace>& stack, const std::shared_ptr<Exception>& cause)
     : m_message(message), m_stack(stack), m_cause(cause) {}
 
 Exception* Exception::clone() const {

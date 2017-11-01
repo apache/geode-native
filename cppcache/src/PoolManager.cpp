@@ -25,24 +25,24 @@ class PoolManager::Impl {
   Impl(const Cache& cache) : m_cache(cache) {}
   void removePool(const char* name);
 
-  PoolFactoryPtr createFactory();
+  std::shared_ptr<PoolFactory> createFactory();
 
   void close(bool keepAlive);
 
-  PoolPtr find(const char* name);
+  std::shared_ptr<Pool> find(const char* name);
 
-  PoolPtr find(RegionPtr region);
+  std::shared_ptr<Pool> find(std::shared_ptr<Region> region);
 
   const HashMapOfPools& getAll();
 
-  void addPool(const char* name, const PoolPtr& pool);
+  void addPool(const char* name, const std::shared_ptr<Pool>& pool);
 
-  PoolPtr getDefaultPool();
+  std::shared_ptr<Pool> getDefaultPool();
 
  private:
   HashMapOfPools m_connectionPools;
   std::recursive_mutex m_connectionPoolsLock;
-  PoolPtr m_defaultPool;
+  std::shared_ptr<Pool> m_defaultPool;
   const Cache& m_cache;
 };
 
@@ -51,14 +51,14 @@ void PoolManager::Impl::removePool(const char* name) {
   m_connectionPools.erase(name);
 }
 
-PoolFactoryPtr PoolManager::Impl::createFactory() {
+std::shared_ptr<PoolFactory> PoolManager::Impl::createFactory() {
   return std::shared_ptr<PoolFactory>(new PoolFactory(m_cache));
 }
 
 void PoolManager::Impl::close(bool keepAlive) {
   std::lock_guard<std::recursive_mutex> guard(m_connectionPoolsLock);
 
-  std::vector<PoolPtr> poolsList;
+  std::vector<std::shared_ptr<Pool>> poolsList;
 
   for (const auto& c : m_connectionPools) {
     poolsList.push_back(c.second);
@@ -69,13 +69,13 @@ void PoolManager::Impl::close(bool keepAlive) {
   }
 }
 
-PoolPtr PoolManager::Impl::find(const char* name) {
+std::shared_ptr<Pool> PoolManager::Impl::find(const char* name) {
   std::lock_guard<std::recursive_mutex> guard(m_connectionPoolsLock);
 
   if (name) {
     const auto& iter = m_connectionPools.find(name);
 
-    PoolPtr poolPtr = nullptr;
+    std::shared_ptr<Pool> poolPtr = nullptr;
 
     if (iter != m_connectionPools.end()) {
       poolPtr = iter->second;
@@ -89,13 +89,13 @@ PoolPtr PoolManager::Impl::find(const char* name) {
   }
 }
 
-PoolPtr PoolManager::Impl::find(RegionPtr region) {
+std::shared_ptr<Pool> PoolManager::Impl::find(std::shared_ptr<Region> region) {
   return find(region->getAttributes()->getPoolName());
 }
 
 const HashMapOfPools& PoolManager::Impl::getAll() { return m_connectionPools; }
 
-void PoolManager::Impl::addPool(const char* name, const PoolPtr& pool) {
+void PoolManager::Impl::addPool(const char* name, const std::shared_ptr<Pool>& pool) {
   std::lock_guard<std::recursive_mutex> guard(m_connectionPoolsLock);
 
   if (!m_defaultPool) {
@@ -104,26 +104,22 @@ void PoolManager::Impl::addPool(const char* name, const PoolPtr& pool) {
 
   m_connectionPools.emplace(name, pool);
 }
-
-PoolPtr PoolManager::Impl::getDefaultPool() { return m_defaultPool; }
+ std::shared_ptr<Pool> PoolManager::Impl::getDefaultPool() { return m_defaultPool; }
 
 PoolManager::PoolManager(const Cache& cache)
     : m_pimpl(new Impl(cache), [](Impl* impl) { delete impl; }) {}
 
 void PoolManager::removePool(const char* name) { m_pimpl->removePool(name); }
-
-PoolFactoryPtr PoolManager::createFactory() { return m_pimpl->createFactory(); }
+ std::shared_ptr<PoolFactory> PoolManager::createFactory() { return m_pimpl->createFactory(); }
 
 void PoolManager::close(bool keepAlive) { m_pimpl->close(keepAlive); }
-
-PoolPtr PoolManager::find(const char* name) { return m_pimpl->find(name); }
-
-PoolPtr PoolManager::find(RegionPtr region) { return m_pimpl->find(region); }
+ std::shared_ptr<Pool> PoolManager::find(const char* name) { return m_pimpl->find(name); }
+ std::shared_ptr<Pool> PoolManager::find(std::shared_ptr<Region> region) { return m_pimpl->find(region); }
 
 const HashMapOfPools& PoolManager::getAll() { return m_pimpl->getAll(); }
 
-void PoolManager::addPool(const char* name, const PoolPtr& pool) {
+void PoolManager::addPool(const char* name, const std::shared_ptr<Pool>& pool) {
   m_pimpl->addPool(name, pool);
 }
 
-PoolPtr PoolManager::getDefaultPool() { return m_pimpl->getDefaultPool(); }
+std::shared_ptr<Pool> PoolManager::getDefaultPool() { return m_pimpl->getDefaultPool(); }

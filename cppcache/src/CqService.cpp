@@ -82,9 +82,9 @@ bool CqService::checkAndAcquireLock() {
   }
 }
 
-CqQueryPtr CqService::newCq(const std::string& cqName,
+std::shared_ptr<CqQuery> CqService::newCq(const std::string& cqName,
                             const std::string& queryString,
-                            const CqAttributesPtr& cqAttributes,
+                            const std::shared_ptr<CqAttributes>& cqAttributes,
                             bool isDurable) {
   if (queryString.empty()) {
     throw IllegalArgumentException("Null queryString is passed. ");
@@ -121,7 +121,7 @@ CqQueryPtr CqService::newCq(const std::string& cqName,
         ("CQ with the given name already exists. CqName : " + cqName).c_str());
   }
 
-  UserAttributesPtr ua = nullptr;
+  std::shared_ptr<UserAttributes> ua = nullptr;
   if (m_tccdm != nullptr && m_tccdm->isMultiUserMode()) {
     ua =
         TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
@@ -137,10 +137,10 @@ CqQueryPtr CqService::newCq(const std::string& cqName,
 /**
  * Adds the given CQ and cqQuery object into the CQ map.
  */
-void CqService::addCq(const std::string& cqName, CqQueryPtr& cq) {
+void CqService::addCq(const std::string& cqName, std::shared_ptr<CqQuery>& cq) {
   try {
     MapOfRegionGuard guard(m_cqQueryMap->mutex());
-    CqQueryPtr tmp;
+    std::shared_ptr<CqQuery> tmp;
     if (0 == m_cqQueryMap->find(cqName, tmp)) {
       throw CqExistsException("CQ with given name already exists. ");
     }
@@ -166,9 +166,9 @@ void CqService::removeCq(const std::string& cqName) {
  * Retrieve a CqQuery by name.
  * @return the CqQuery or null if not found
  */
-CqQueryPtr CqService::getCq(const std::string& cqName) {
+std::shared_ptr<CqQuery> CqService::getCq(const std::string& cqName) {
   MapOfRegionGuard guard(m_cqQueryMap->mutex());
-  CqQueryPtr tmp;
+  std::shared_ptr<CqQuery> tmp;
   if (0 != m_cqQueryMap->find(cqName, tmp)) {
     LOGWARN("Failed to get the specified CQ: %s", cqName.c_str());
   } else {
@@ -345,7 +345,7 @@ void CqService::closeCqs(query_container_type& cqs) {
  * Get statistics information for all CQs
  * @return the CqServiceStatistics
  */
-CqServiceStatisticsPtr CqService::getCqServiceStatistics() { return m_stats; }
+std::shared_ptr<CqServiceStatistics> CqService::getCqServiceStatistics() { return m_stats; }
 
 /**
  * Close the CQ Service after cleanup if any.
@@ -391,7 +391,7 @@ bool CqService::isCqExists(const std::string& cqName) {
   bool status = false;
   try {
     MapOfRegionGuard guard(m_cqQueryMap->mutex());
-    CqQueryPtr tmp;
+    std::shared_ptr<CqQuery> tmp;
     status = (0 == m_cqQueryMap->find(cqName, tmp));
   } catch (Exception& ex) {
     LOGFINE("Exception (%s) in isCQExists, ignored ",
@@ -414,10 +414,10 @@ void CqService::receiveNotification(TcrMessage* msg) {
  * @param value
  */
 void CqService::invokeCqListeners(const std::map<std::string, int>* cqs,
-                                  uint32_t messageType, CacheableKeyPtr key,
-                                  CacheablePtr value,
-                                  CacheableBytesPtr deltaValue,
-                                  EventIdPtr eventId) {
+                                  uint32_t messageType, std::shared_ptr<CacheableKey> key,
+                                  std::shared_ptr<Cacheable> value,
+                                  std::shared_ptr<CacheableBytes> deltaValue,
+                                  std::shared_ptr<EventId> eventId) {
   LOGDEBUG("CqService::invokeCqListeners");
   for (const auto& kv : *cqs) {
     const auto cqName = kv.first;
@@ -561,7 +561,7 @@ CqOperation::CqOperationType CqService::getOperation(int eventType) {
  * @return List of names of registered durable CQs, empty list if no durable
  * cqs.
  */
-CacheableArrayListPtr CqService::getAllDurableCqsFromServer() {
+std::shared_ptr<CacheableArrayList> CqService::getAllDurableCqsFromServer() {
   TcrMessageGetDurableCqs msg(m_tccdm->getConnectionManager()
                                   .getCacheImpl()
                                   ->getCache()
@@ -596,7 +596,7 @@ CacheableArrayListPtr CqService::getAllDurableCqsFromServer() {
     }
   }
 
-  CacheableArrayListPtr tmpRes = resultCollector->getResults();
+  std::shared_ptr<CacheableArrayList> tmpRes = resultCollector->getResults();
   delete resultCollector;
   return tmpRes;
 }

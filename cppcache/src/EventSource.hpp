@@ -95,7 +95,6 @@ class CPPCACHE_EXPORT EventSource {
   };
 };
 
-typedef std::shared_ptr<EventSource> EventSourcePtr;
 
 }  // namespace client
 }  // namespace geode

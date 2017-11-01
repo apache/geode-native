@@ -47,7 +47,7 @@ int8_t UserFunctionExecutionException::typeId() const {
 }
 
 UserFunctionExecutionException::UserFunctionExecutionException(
-    CacheableStringPtr msg)
+    std::shared_ptr<CacheableString> msg)
     : m_message(msg) {}
 }  // namespace client
 }  // namespace geode

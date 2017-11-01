@@ -31,10 +31,10 @@ LIBEXP AuthInitialize* createNoopAuthInitInstance() {
 }
 }
 
-PropertiesPtr NoopAuthInit::getCredentials(const PropertiesPtr& securityprops,
+std::shared_ptr<Properties> NoopAuthInit::getCredentials(const std::shared_ptr<Properties>& securityprops,
                                            const char* server) {
   LOGINFO("rjk: calling NoopAuthInit::getCredentials");
-  PropertiesPtr credentials = Properties::create();
+  auto credentials = Properties::create();
   return credentials;
 }
 }  // namespace client

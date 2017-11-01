@@ -76,7 +76,7 @@ END_TASK_DEFINITION
 // check that tracking works correctly with put.
 DUNIT_TASK_DEFINITION(CLIENT1, PutOnClient1)
   {
-    RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
+    auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
     rptr->put("key-1", "client1-value1");
     rptr->put("key-2", "client1-value2");
     rptr->put("key-3", "client1-value3");
@@ -85,7 +85,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutOnClient1)
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, RegisterInterestAllOnClient2)
   {
-    RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
+    auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
     thread1 = new putThread(rptr, true);
     thread1->start();
     LOG("RegisterInterest started on client 2");
@@ -93,7 +93,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, RegisterInterestAllOnClient2)
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, DestroyEntryOnClient1)
   {
-    RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
+    auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
     rptr->destroy("key-3");
     LOG("DestroyEntryOnClient1 completed");
   }
@@ -114,14 +114,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyOnClient2)
     verifyEntry(regionNamesAuth[0], "key-1", "client1-value1");
     verifyEntry(regionNamesAuth[0], "key-2", "client1-value2");
     verifyDestroyed(regionNamesAuth[0], "key-3");
-    RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
+    auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
     rptr->localDestroyRegion();
     LOG("VerifyOnClient2 completed");
   }
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, RegisterInterestKeysOnClient2)
   {
-    RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
+    auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
     thread1 = new putThread(rptr);
     thread1->setParams(5, 3, 1);
     thread1->start();
@@ -130,7 +130,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, RegisterInterestKeysOnClient2)
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, RegisterRegexClient2)
   {
-    RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
+    auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
     thread1 = new putThread(rptr);
     thread1->setParams(6, 3, 1);
     thread1->start();
@@ -140,7 +140,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CreateRegionOnClient1)
   ;
   {
-    RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
+    auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
     rptr->localDestroyRegion();
     SLEEP(10000);
     createRegion(regionNamesAuth[0], false, true);

@@ -64,7 +64,7 @@ void createRegion(const char* name, bool ackMode,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, false, nullptr,
+  auto regPtr = getHelper()->createRegion(name, ackMode, false, nullptr,
                                                clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
@@ -105,15 +105,15 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
   {
     int sizeArray = sizeof(keyArr) / sizeof(int);
-    RegionPtr verifyReg = getHelper()->getRegion(_regionNames[1]);
+    auto verifyReg = getHelper()->getRegion(_regionNames[1]);
     for (int count = 0; count < sizeArray; count++) {
       uint8_t* ptr = createRandByteArray(keyArr[count]);
       char* ptrChar = createRandCharArray(keyArr[count]);
 
-      CacheableBytesPtr emptyBytesArr = CacheableBytes::create();
-      CacheableBytesPtr bytePtrSent =
+      std::shared_ptr<CacheableBytes> emptyBytesArr = CacheableBytes::create();
+      std::shared_ptr<CacheableBytes> bytePtrSent =
           CacheableBytes::createNoCopy(ptr, keyArr[count]);
-      CacheableStringPtr stringPtrSent =
+      std::shared_ptr<CacheableString> stringPtrSent =
           CacheableString::createNoCopy(ptrChar, keyArr[count]);
 
       verifyReg->put(KEY_BYTE, bytePtrSent);

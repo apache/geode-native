@@ -54,7 +54,7 @@ void initClient() {
   initClient(true);
   ASSERT(getHelper() != nullptr, "null CacheHelper");
   try {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
     serializationRegistry->addType(Position::createDeserializable);
     serializationRegistry->addType(Portfolio::createDeserializable);
   }
@@ -89,12 +89,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClientCreateRegionAndRunQueries)
   {
     LOG("Starting Step One with Pool + Locator lists");
     initClient();
-    PoolPtr pool1 = nullptr;
+    std::shared_ptr<Pool> pool1 = nullptr;
     pool1 = createPool(poolNames[0], locHostPort, sGNames[0], 0, true);
     createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
 
     // populate the region
-    RegionPtr reg = getHelper()->getRegion(qRegionNames[0]);
+    auto reg = getHelper()->getRegion(qRegionNames[0]);
     QueryHelper& qh = QueryHelper::getHelper();
     qh.populatePortfolioData(reg, qh.getPortfolioSetSize(),
                              qh.getPortfolioNumSets());
@@ -102,11 +102,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClientCreateRegionAndRunQueries)
     std::string qry1Str = (std::string) "select * from /" + qRegionNames[0];
     std::string qry2Str = (std::string) "select * from /" + qRegionNames[1];
 
-    QueryServicePtr qs = nullptr;
+    std::shared_ptr<QueryService> qs = nullptr;
     qs = pool1->getQueryService();
 
-    SelectResultsPtr results;
-    QueryPtr qry = qs->newQuery(qry1Str.c_str());
+    std::shared_ptr<SelectResults> results;
+    auto qry = qs->newQuery(qry1Str.c_str());
     results = qry->execute();
     ASSERT(
         results->size() == qh.getPortfolioSetSize() * qh.getPortfolioNumSets(),
@@ -150,13 +150,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateRegionAndRunQueries)
   {
     LOG("Starting Step Two with Pool + Locator list");
     // Create pool2
-    PoolPtr pool2 = nullptr;
+    std::shared_ptr<Pool> pool2 = nullptr;
 
     pool2 = createPool(poolNames[1], locHostPort, sGNames[1], 0, true);
     createRegionAndAttachPool(qRegionNames[1], USE_ACK, poolNames[1]);
 
     // populate the region
-    RegionPtr reg = getHelper()->getRegion(qRegionNames[1]);
+    auto reg = getHelper()->getRegion(qRegionNames[1]);
     QueryHelper& qh = QueryHelper::getHelper();
     qh.populatePositionData(reg, qh.getPositionSetSize(),
                             qh.getPositionNumSets());
@@ -164,10 +164,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateRegionAndRunQueries)
     std::string qry1Str = (std::string) "select * from /" + qRegionNames[0];
     std::string qry2Str = (std::string) "select * from /" + qRegionNames[1];
 
-    QueryServicePtr qs = nullptr;
+    std::shared_ptr<QueryService> qs = nullptr;
     qs = pool2->getQueryService();
-    SelectResultsPtr results;
-    QueryPtr qry;
+    std::shared_ptr<SelectResults> results;
+    std::shared_ptr<Query> qry;
 
     // now region queries
     try {

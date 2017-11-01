@@ -25,6 +25,7 @@
  */
 
 #include <geode/GeodeCppCache.hpp>
+#include <geode/Delta.hpp>
 #include <string>
 #include "fwklib/Timer.hpp"
 #include "fwklib/FrameworkTest.hpp"
@@ -52,21 +53,21 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
   uint64_t timestamp;
   int32_t field1;
   int8_t field2;
-  CacheableBytesPtr valueData;
+  std::shared_ptr<CacheableBytes> valueData;
   std::shared_ptr<DeltaPSTObject> shared_from_this() {
     return std::static_pointer_cast<DeltaPSTObject>(
         Serializable::shared_from_this());
   }
 
  public:
-  DeltaPSTObject() : Delta(nullptr), timestamp(0), valueData(nullptr) {}
+  DeltaPSTObject() : apache::geode::client::Delta(nullptr), timestamp(0), valueData(nullptr) {}
   DeltaPSTObject(int size, bool encodeKey, bool encodeTimestamp);
   virtual ~DeltaPSTObject() {}
   void toData(apache::geode::client::DataOutput& output) const;
   void fromData(apache::geode::client::DataInput& input);
   void fromDelta(DataInput& input);
   void toDelta(DataOutput& output) const;
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
   bool hasDelta() { return true; }
   int32_t classId() const { return 42; }
 
@@ -88,14 +89,13 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
     startTime.to_usec(tusec);
     timestamp = tusec * 1000;
   }
-  DeltaPtr clone() {
+  std::shared_ptr<apache::geode::client::Delta> clone() {
     // TODO shared_ptr - this isn't actually cloning.
     return shared_from_this();
   }
 
   static Serializable* createDeserializable() { return new DeltaPSTObject(); }
 };
-typedef std::shared_ptr<DeltaPSTObject> DeltaPSTObjectPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_DELTAPSTOBJECT_H_

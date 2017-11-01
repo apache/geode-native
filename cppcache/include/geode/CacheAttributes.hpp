@@ -51,8 +51,6 @@ namespace client {
  */
 class CacheAttributesFactory;
 
-_GF_PTR_DEF_(CacheAttributes, CacheAttributesPtr);
-
 class CPPCACHE_EXPORT CacheAttributes  {
   /**
    * @brief public static methods

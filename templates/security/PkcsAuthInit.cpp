@@ -91,7 +91,7 @@ static bool s_initDone = openSSLInit();
 }
 // end of extern "C"
 
-PropertiesPtr PKCSAuthInit::getCredentials(const PropertiesPtr& securityprops,
+std::shared_ptr<Properties> PKCSAuthInit::getCredentials(const std::shared_ptr<Properties>& securityprops,
                                            const char* server) {
   if (!s_initDone) {
     throw AuthenticationFailedException(
@@ -104,7 +104,7 @@ PropertiesPtr PKCSAuthInit::getCredentials(const PropertiesPtr& securityprops,
         "No security-* properties are set.");
   }
 
-  CacheableStringPtr keyStoreptr = securityprops->find(KEYSTORE_FILE_PATH);
+  std::shared_ptr<CacheableString> keyStoreptr = securityprops->find(KEYSTORE_FILE_PATH);
 
   const char* keyStorePath = keyStoreptr->asChar();
 
@@ -114,7 +114,7 @@ PropertiesPtr PKCSAuthInit::getCredentials(const PropertiesPtr& securityprops,
         "key-store file path property KEYSTORE_FILE_PATH not set.");
   }
 
-  CacheableStringPtr aliasptr = securityprops->find(KEYSTORE_ALIAS);
+  std::shared_ptr<CacheableString> aliasptr = securityprops->find(KEYSTORE_ALIAS);
 
   const char* alias = aliasptr->asChar();
 
@@ -124,7 +124,7 @@ PropertiesPtr PKCSAuthInit::getCredentials(const PropertiesPtr& securityprops,
         "key-store alias property KEYSTORE_ALIAS not set.");
   }
 
-  CacheableStringPtr keyStorePassptr = securityprops->find(KEYSTORE_PASSWORD);
+  std::shared_ptr<CacheableString> keyStorePassptr = securityprops->find(KEYSTORE_PASSWORD);
 
   const char* keyStorePass = keyStorePassptr->asChar();
 
@@ -170,10 +170,10 @@ PropertiesPtr PKCSAuthInit::getCredentials(const PropertiesPtr& securityprops,
         "PKCSAuthInit::getCredentials: "
         "Unable to create signature");
   }
-  CacheablePtr signatureValPtr =
+  std::shared_ptr<Cacheable> signatureValPtr =
       CacheableBytes::createNoCopy(signatureData, lengthEncryptedData);
 
-  PropertiesPtr credentials = Properties::create();
+  auto credentials = Properties::create();
   credentials->insert(KEYSTORE_ALIAS, alias);
   credentials->insert(CacheableString::create(SIGNATURE_DATA), signatureValPtr);
   return credentials;

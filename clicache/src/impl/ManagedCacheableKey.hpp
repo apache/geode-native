@@ -125,7 +125,7 @@ namespace apache
         /// Display this object as 'string', which depends on the implementation in
         /// the managed class
         /// </summary>
-        virtual apache::geode::client::CacheableStringPtr toString() const;
+        virtual std::shared_ptr<apache::geode::client::CacheableString> toString() const;
 
         /// <summary>
         /// return true if this key matches other CacheableKey

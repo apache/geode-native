@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
   try {
     // Create client's Authentication Intializer and Credentials using api (
     // Same can be set to geode.properties & comment following code ).
-    PropertiesPtr properties = Properties::create();
+    auto properties = Properties::create();
     properties->insert("security-client-auth-factory",
                        "createPKCSAuthInitInstance");
     properties->insert("security-client-auth-library", "securityImpl");
@@ -48,18 +48,18 @@ int main(int argc, char** argv) {
     properties->insert("cache-xml-file", "XMLs/clientSecurity.xml");
 
     // overriding secProp properties.
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory(properties);
+    std::shared_ptr<CacheFactory> cacheFactory = CacheFactory::createCacheFactory(properties);
 
     LOGINFO("Connected to the Geode Distributed System");
 
     // Create a Geode Cache with the "clientSecurity.xml" Cache XML file.
-    CachePtr cachePtr = cacheFactory->create();
+    auto cachePtr = cacheFactory->create();
 
     LOGINFO("Created the Geode Cache");
 
     // Get the example Region from the Cache which is declared in the Cache XML
     // file.
-    RegionPtr regionPtr = cachePtr->getRegion("exampleRegion");
+    auto regionPtr = cachePtr->getRegion("exampleRegion");
 
     LOGINFO("Obtained the Region from the Cache");
 
@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
 
     try {
       // Get Entries back out of the Region.
-      CacheablePtr result1Ptr = regionPtr->get("Key1");
+      std::shared_ptr<Cacheable> result1Ptr = regionPtr->get("Key1");
 
       // collect NotAuthorized exception
     } catch (const apache::geode::client::NotAuthorizedException& expected) {

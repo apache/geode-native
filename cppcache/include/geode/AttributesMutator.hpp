@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#include <memory>
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 #include "ExpirationAction.hpp"
@@ -34,7 +34,7 @@ namespace client {
 class CacheListener;
 class CacheLoader;
 class CacheWriter;
-
+class Region;
 /**
  * @class AttributesMutator AttributesMutator.hpp
  *
@@ -54,12 +54,12 @@ class CacheWriter;
  */
 class CPPCACHE_EXPORT AttributesMutator {
  private:
-  RegionPtr m_region;
+  std::shared_ptr<Region> m_region;
 
  public:
   /** Internal constructor. Use Region::getAttributesMutator() to acquire the
    * mutator for a region. */
-  AttributesMutator(const RegionPtr& region);
+  AttributesMutator(const std::shared_ptr<Region>& region);
 
   virtual ~AttributesMutator();
 
@@ -142,7 +142,7 @@ class CPPCACHE_EXPORT AttributesMutator {
    * <code>aListener</code>.
    * @param aListener cache listener
    */
-  void setCacheListener(const CacheListenerPtr& aListener);
+  void setCacheListener(const std::shared_ptr<CacheListener>& aListener);
 
   /** Sets cache listener for region. The previous cache listener will be
    * replaced with
@@ -159,7 +159,7 @@ class CPPCACHE_EXPORT AttributesMutator {
    * <code>aLoader</code>.
    * @param aLoader cache loader
    */
-  void setCacheLoader(const CacheLoaderPtr& aLoader);
+  void setCacheLoader(const std::shared_ptr<CacheLoader>& aLoader);
 
   /** Sets cache loader for region. The previous cache loader will be replaced
    * with
@@ -175,7 +175,7 @@ class CPPCACHE_EXPORT AttributesMutator {
    * <code>aWriter</code>.
    * @param aWriter cache writer
    */
-  void setCacheWriter(const CacheWriterPtr& aWriter);
+  void setCacheWriter(const std::shared_ptr<CacheWriter>& aWriter);
 
   /** Sets cache writer for region. The previous cache writer will be replaced
    * with

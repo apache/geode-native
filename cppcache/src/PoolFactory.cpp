@@ -106,20 +106,20 @@ void PoolFactory::setMultiuserAuthentication(bool multiuserAuthentication) {
   m_attrs->setMultiuserSecureModeEnabled(multiuserAuthentication);
 }
 
-void PoolFactory::reset() { m_attrs = PoolAttributesPtr(new PoolAttributes); }
+void PoolFactory::reset() { m_attrs = std::shared_ptr<PoolAttributes>(new PoolAttributes); }
 
 void PoolFactory::setPRSingleHopEnabled(bool enabled) {
   m_attrs->setPRSingleHopEnabled(enabled);
 }
 
-PoolPtr PoolFactory::create(const char* name) {
-  ThinClientPoolDMPtr poolDM;
+std::shared_ptr<Pool> PoolFactory::create(const char* name) {
+  std::shared_ptr<ThinClientPoolDM> poolDM;
   {
     if (m_cache.getPoolManager().find(name) != nullptr) {
       throw IllegalStateException("Pool with the same name already exists");
     }
     // Create a clone of Attr;
-    PoolAttributesPtr copyAttrs = m_attrs->clone();
+    auto copyAttrs = m_attrs->clone();
 
     CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(&m_cache);
 

@@ -37,10 +37,8 @@
 namespace apache {
 namespace geode {
 namespace client {
-class CPPCACHE_EXPORT MapEntry;
-typedef std::shared_ptr<MapEntry> MapEntryPtr;
-class CPPCACHE_EXPORT MapEntryImpl;
-typedef std::shared_ptr<MapEntryImpl> MapEntryImplPtr;
+
+
 
 class CPPCACHE_EXPORT LRUEntryProperties;
 class CacheImpl;
@@ -85,7 +83,7 @@ class CPPCACHE_EXPORT ExpEntryProperties {
 
   inline long getExpiryTaskId() const { return m_expiryTaskId; }
 
-  inline void cancelExpiryTaskId(const CacheableKeyPtr& key) const {
+  inline void cancelExpiryTaskId(const std::shared_ptr<CacheableKey>& key) const {
     LOGDEBUG("Cancelling expiration task for key [%s] with id [%d]",
              Utils::getCacheableKeyString(key)->asChar(), m_expiryTaskId);
     m_expiryTaskManager->cancelTask(m_expiryTaskId);
@@ -110,14 +108,14 @@ class CPPCACHE_EXPORT ExpEntryProperties {
  */
 class CPPCACHE_EXPORT MapEntry {
  public:
-  static MapEntryPtr MapEntry_NullPointer;
+  static std::shared_ptr<MapEntry> MapEntry_NullPointer;
 
   virtual ~MapEntry() {}
 
-  virtual void getKey(CacheableKeyPtr& result) const = 0;
-  virtual void getValue(CacheablePtr& result) const = 0;
-  virtual void setValue(const CacheablePtr& value) = 0;
-  virtual MapEntryImplPtr getImplPtr() = 0;
+  virtual void getKey(std::shared_ptr<CacheableKey>& result) const = 0;
+  virtual void getValue(std::shared_ptr<Cacheable>& result) const = 0;
+  virtual void setValue(const std::shared_ptr<Cacheable>& value) = 0;
+  virtual std::shared_ptr<MapEntryImpl> getImplPtr() = 0;
 
   virtual LRUEntryProperties& getLRUProperties() = 0;
   virtual ExpEntryProperties& getExpProperties() = 0;
@@ -142,7 +140,7 @@ class CPPCACHE_EXPORT MapEntry {
    * tracking an entry goes down to zero, then the update sequence number
    * is also reset to zero.
    */
-  virtual int addTracker(MapEntryPtr& newEntry) = 0;
+  virtual int addTracker(std::shared_ptr<MapEntry>& newEntry) = 0;
 
   /**
    * Removes a tracker for this MapEntry and returns a pair:
@@ -161,7 +159,7 @@ class CPPCACHE_EXPORT MapEntry {
    * Note that the contract says that the return value should not be
    * touched if this MapEntry is to be continued with.
    */
-  virtual int incrementUpdateCount(MapEntryPtr& newEntry) = 0;
+  virtual int incrementUpdateCount(std::shared_ptr<MapEntry>& newEntry) = 0;
 
   /**
    * Get the current tracking number of this entry. A return value of zero
@@ -195,9 +193,9 @@ class MapEntryImpl : public MapEntry,
  public:
   virtual ~MapEntryImpl() {}
 
-  inline void getKeyI(CacheableKeyPtr& result) const { result = m_key; }
+  inline void getKeyI(std::shared_ptr<CacheableKey>& result) const { result = m_key; }
 
-  inline void getValueI(CacheablePtr& result) const {
+  inline void getValueI(std::shared_ptr<Cacheable>& result) const {
     // If value is destroyed, then this returns nullptr
     if (CacheableToken::isDestroyed(m_value)) {
       result = nullptr;
@@ -206,15 +204,15 @@ class MapEntryImpl : public MapEntry,
     }
   }
 
-  inline void setValueI(const CacheablePtr& value) { m_value = value; }
+  inline void setValueI(const std::shared_ptr<Cacheable>& value) { m_value = value; }
 
-  virtual void getKey(CacheableKeyPtr& result) const { getKeyI(result); }
+  virtual void getKey(std::shared_ptr<CacheableKey>& result) const { getKeyI(result); }
 
-  virtual void getValue(CacheablePtr& result) const { getValueI(result); }
+  virtual void getValue(std::shared_ptr<Cacheable>& result) const { getValueI(result); }
 
-  virtual void setValue(const CacheablePtr& value) { setValueI(value); }
+  virtual void setValue(const std::shared_ptr<Cacheable>& value) { setValueI(value); }
 
-  virtual MapEntryImplPtr getImplPtr() { return shared_from_this(); }
+  virtual std::shared_ptr<MapEntryImpl> getImplPtr() { return shared_from_this(); }
 
   virtual LRUEntryProperties& getLRUProperties() {
     throw FatalInternalException(
@@ -239,10 +237,10 @@ class MapEntryImpl : public MapEntry,
   inline explicit MapEntryImpl(bool noInit)
       : MapEntry(true), m_value(nullptr), m_key(nullptr) {}
 
-  inline MapEntryImpl(const CacheableKeyPtr& key) : MapEntry(), m_key(key) {}
+  inline MapEntryImpl(const std::shared_ptr<CacheableKey>& key) : MapEntry(), m_key(key) {}
 
-  CacheablePtr m_value;
-  CacheableKeyPtr m_key;
+  std::shared_ptr<Cacheable> m_value;
+  std::shared_ptr<CacheableKey> m_key;
 
  private:
   // disabled
@@ -260,7 +258,7 @@ class CPPCACHE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
  protected:
   inline explicit VersionedMapEntryImpl(bool noInit) : MapEntryImpl(true) {}
 
-  inline VersionedMapEntryImpl(const CacheableKeyPtr& key)
+  inline VersionedMapEntryImpl(const std::shared_ptr<CacheableKey>& key)
       : MapEntryImpl(key) {}
 
  private:
@@ -268,8 +266,6 @@ class CPPCACHE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
   VersionedMapEntryImpl(const VersionedMapEntryImpl&);
   VersionedMapEntryImpl& operator=(const VersionedMapEntryImpl&);
 };
-
-typedef std::shared_ptr<VersionedMapEntryImpl> VersionedMapEntryImplPtr;
 
 class CPPCACHE_EXPORT EntryFactory {
  public:
@@ -279,8 +275,8 @@ class CPPCACHE_EXPORT EntryFactory {
   virtual ~EntryFactory() {}
 
   virtual void newMapEntry(ExpiryTaskManager* expiryTaskManager,
-                           const CacheableKeyPtr& key,
-                           MapEntryImplPtr& result) const;
+                           const std::shared_ptr<CacheableKey>& key,
+                           std::shared_ptr<MapEntryImpl>& result) const;
 
  protected:
   bool m_concurrencyChecksEnabled;

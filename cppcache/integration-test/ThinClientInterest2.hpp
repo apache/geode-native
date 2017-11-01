@@ -49,15 +49,15 @@ DUNIT_TASK_DEFINITION(CLIENT2, setupClient2_Pool_Locator)
     initClient(true);
     createPooledRegion(regionNames[0], false /*ack mode*/, locatorsG,
                        "__TEST_POOL1__", true /*client notification*/);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, populateServer)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     for (int i = 0; i < 5; i++) {
-      CacheableKeyPtr keyPtr = CacheableKey::create(keys[i]);
+      std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(keys[i]);
       regPtr->create(keyPtr, vals[i]);
     }
   }
@@ -65,13 +65,13 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, verify)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     for (int i = 0; i < 5; i++) {
-      CacheableKeyPtr keyPtr1 = CacheableKey::create(keys[i]);
+      std::shared_ptr<CacheableKey> keyPtr1 = CacheableKey::create(keys[i]);
       char buf[1024];
       sprintf(buf, "key[%s] should not have been found", keys[i]);
       ASSERT(!regPtr->containsKey(keyPtr1), buf);
-      CacheablePtr checkPtr = regPtr->get(keyPtr1);
+      std::shared_ptr<Cacheable> checkPtr = regPtr->get(keyPtr1);
       verifyEntry(regionNames[0], keys[i], vals[i]);
     }
   }

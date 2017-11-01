@@ -25,10 +25,11 @@
  * file.
  */
 
+#include <vector>
+#include <memory>
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
-#include "VectorT.hpp"
-#include <memory>
 #include "CacheableBuiltins.hpp"
 #include "ResultCollector.hpp"
 
@@ -61,7 +62,7 @@ class CPPCACHE_EXPORT Execution {
    * @throws UnsupportedOperationException if not called after
    *    FunctionService::onRegion(Region).
    */
-  virtual ExecutionPtr withFilter(CacheableVectorPtr routingObj) = 0;
+  virtual std::shared_ptr<Execution> withFilter(std::shared_ptr<CacheableVector> routingObj) = 0;
   /**
    * Specifies the user data passed to the function when it is executed.
    * @param args user data passed to the function execution
@@ -69,7 +70,7 @@ class CPPCACHE_EXPORT Execution {
    * @throws IllegalArgumentException if the input parameter is nullptr
    *
    */
-  virtual ExecutionPtr withArgs(CacheablePtr args) = 0;
+  virtual std::shared_ptr<Execution> withArgs(std::shared_ptr<Cacheable> args) = 0;
   /**
    * Specifies the {@link ResultCollector} that will receive the results after
    * the function has been executed.
@@ -77,7 +78,7 @@ class CPPCACHE_EXPORT Execution {
    * @throws IllegalArgumentException if {@link ResultCollector} is nullptr
    * @see ResultCollector
    */
-  virtual ExecutionPtr withCollector(ResultCollectorPtr rs) = 0;
+  virtual std::shared_ptr<Execution> withCollector(std::shared_ptr<ResultCollector> rs) = 0;
   /**
    * Executes the function using its name
    * <p>
@@ -87,7 +88,7 @@ class CPPCACHE_EXPORT Execution {
    * @return either a default result collector or one specified by {@link
    * #withCollector(ResultCollector)}
    */
-  virtual ResultCollectorPtr execute(
+  virtual std::shared_ptr<ResultCollector> execute(
       const char* func, uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
 
   /**
@@ -105,9 +106,9 @@ class CPPCACHE_EXPORT Execution {
    * @return either a default result collector or one specified by {@link
    * #withCollector(ResultCollector)}
    */
-  virtual ResultCollectorPtr execute(const CacheableVectorPtr& routingObj,
-                                     const CacheablePtr& args,
-                                     const ResultCollectorPtr& rs,
+  virtual std::shared_ptr<ResultCollector> execute(const std::shared_ptr<CacheableVector>& routingObj,
+                                     const std::shared_ptr<Cacheable>& args,
+                                     const std::shared_ptr<ResultCollector>& rs,
                                      const char* func, uint32_t timeout) = 0;
 };
 }  // namespace client

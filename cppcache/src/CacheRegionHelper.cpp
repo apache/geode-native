@@ -15,9 +15,12 @@
  * limitations under the License.
  */
 
+#include <geode/RegionService.hpp>
+
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 #include "ProxyCache.hpp"
+
 
 namespace apache {
 namespace geode {

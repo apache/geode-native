@@ -218,7 +218,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2
 
           // Conver the unmanaged object to  managed generic object 
-          apache::geode::client::TransactionWriterPtr& writerPtr( m_nativeptr->getGCKeepAlive()->getWriter( ) );
+          std::shared_ptr<apache::geode::client::TransactionWriter>& writerPtr( m_nativeptr->getGCKeepAlive()->getWriter( ) );
           apache::geode::client::ManagedTransactionWriterGeneric* twg =
           dynamic_cast<apache::geode::client::ManagedTransactionWriterGeneric*>( writerPtr.get() );
 
@@ -238,7 +238,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2
           // Create a unmanaged object using the ManagedTransactionWriterGeneric.
           // Set the generic object inside the TransactionWriterGeneric that is a non generic object
-          apache::geode::client::TransactionWriterPtr writerPtr;
+          std::shared_ptr<apache::geode::client::TransactionWriter> writerPtr;
           if ( transactionWriter != nullptr ) 
           {
             TransactionWriterGeneric<TKey, TValue>^ twg = gcnew TransactionWriterGeneric<TKey, TValue> ();
@@ -257,7 +257,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2
           // Create a unmanaged object using the ManagedTransactionListenerGeneric.
           // Set the generic object inside the TransactionListenerGeneric that is a non generic object
-          apache::geode::client::TransactionListenerPtr listenerPtr;
+          std::shared_ptr<apache::geode::client::TransactionListener> listenerPtr;
           if ( transactionListener != nullptr ) 
           {
             TransactionListenerGeneric<TKey, TValue>^ twg = gcnew TransactionListenerGeneric<TKey, TValue> ();
@@ -276,7 +276,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2
           // Create an unmanaged non generic object using the managed generic object
           // use this to call the remove listener
-          apache::geode::client::TransactionListenerPtr listenerPtr;
+          std::shared_ptr<apache::geode::client::TransactionListener> listenerPtr;
           if ( transactionListener != nullptr ) 
           {
             TransactionListenerGeneric<TKey, TValue>^ twg = gcnew TransactionListenerGeneric<TKey, TValue> ();

@@ -48,7 +48,7 @@ class CacheFactory;
 class CacheRegionHelper;
 class Pool;
 class CacheImpl;
-
+class AuthInitialize;
 /**
  * @class Cache Cache.hpp
  *
@@ -135,12 +135,12 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * If Pool attached with Region is in multiusersecure mode then don't use
    * return instance of region as no credential are attached with this instance.
    * Get region from RegionService instance of Cache.@see
-   * Cache#createAuthenticatedView(PropertiesPtr).
+   * Cache#createAuthenticatedView(std::shared_ptr<Properties>).
    *
    * @param path the region's name, such as <code>AuthRegion</code>.
    * @returns region, or nullptr if no such region exists.
    */
-  virtual RegionPtr getRegion(const char* path) override;
+  virtual std::shared_ptr<Region> getRegion(const char* path) override;
 
   /**
    * Returns a set of root regions in the cache. This set is a snapshot and
@@ -150,13 +150,13 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * @param regions the returned set of
    * regions
    */
-  virtual VectorOfRegion rootRegions() override;
+  virtual std::vector<std::shared_ptr<Region>> rootRegions() override;
 
   /**
    * Gets the QueryService from which a new Query can be obtained.
    * @returns A smart pointer to the QueryService.
    */
-  virtual QueryServicePtr getQueryService() override;
+  virtual std::shared_ptr<QueryService> getQueryService() override;
 
   /**
    * Gets the QueryService from which a new Query can be obtained.
@@ -165,7 +165,7 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * PoolManager}
    * @returns A smart pointer to the QueryService.
    */
-  virtual QueryServicePtr getQueryService(const char* poolName);
+  virtual std::shared_ptr<QueryService> getQueryService(const char* poolName);
 
   /**
    * Send the "client ready" message to the server from a durable client.
@@ -195,15 +195,15 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * there are more than one Pool in Cache.
    */
 
-  virtual RegionServicePtr createAuthenticatedView(
-      PropertiesPtr userSecurityProperties, const char* poolName = nullptr);
+  virtual std::shared_ptr<RegionService> createAuthenticatedView(
+      std::shared_ptr<Properties> userSecurityProperties, const char* poolName = nullptr);
 
   /**
    * Get the CacheTransactionManager instance for this Cache.
    * @return The CacheTransactionManager instance.
    * @throws CacheClosedException if the cache is closed.
    */
-  virtual CacheTransactionManagerPtr getCacheTransactionManager();
+  virtual std::shared_ptr<CacheTransactionManager> getCacheTransactionManager();
 
   /**
    * Returns whether Cache saves unread fields for Pdx types.
@@ -226,7 +226,7 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * @throws IllegalStateException if the className is nullptr or invalid.
    * @return the factory
    */
-  virtual PdxInstanceFactoryPtr createPdxInstanceFactory(
+  virtual std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
       const char* className) override;
 
   virtual statistics::StatisticsFactory* getStatisticsFactory() const;
@@ -246,9 +246,9 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
   /**
    * @brief constructors
    */
-  Cache(const std::string& name, PropertiesPtr dsProp,
+  Cache(const std::string& name, std::shared_ptr<Properties> dsProp,
         bool ignorePdxUnreadFields, bool readPdxSerialized,
-        const AuthInitializePtr& authInitialize);
+        const std::shared_ptr<AuthInitialize>& authInitialize);
 
   std::unique_ptr<CacheImpl> m_cacheImpl;
   std::unique_ptr<TypeRegistry> m_typeRegistry;
@@ -256,7 +256,7 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
  protected:
   Cache() = delete;
 
-  static bool isPoolInMultiuserMode(RegionPtr regionPtr);
+  static bool isPoolInMultiuserMode(std::shared_ptr<Region> regionPtr);
 
   friend class CacheFactory;
   friend class CacheRegionHelper;

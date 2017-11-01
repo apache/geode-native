@@ -39,15 +39,15 @@ class TXState {
   TXState(Cache* cache);
   virtual ~TXState();
 
-  TXIdPtr getTransactionId();
+  std::shared_ptr<TXId> getTransactionId();
   bool isDirty() { return m_dirty; }
   void setDirty() { m_dirty = true; }
   bool isReplay() { return m_replay; }
   bool isPrepared() { return m_prepared; }
   void setPrepared() { m_prepared = true; }
   void recordTXOperation(ServerRegionOperation op, const char* regionName,
-                         CacheableKeyPtr key, VectorOfCacheablePtr arguments);
-  CacheablePtr replay(bool isRollback);
+                         std::shared_ptr<CacheableKey> key, std::shared_ptr<std::vector<std::shared_ptr<Cacheable>>> arguments);
+  std::shared_ptr<Cacheable> replay(bool isRollback);
   void releaseStickyConnection();
 
   // This variable is used only when the transaction is suspended and resumed.
@@ -67,7 +67,7 @@ class TXState {
   void endReplay() { m_replay = false; };
 
  private:
-  TXIdPtr m_txId;
+  std::shared_ptr<TXId> m_txId;
   /**
    * Used to hand out modification serial numbers used to preserve
    * the order of operation done by this transaction.
@@ -82,7 +82,7 @@ class TXState {
   std::string epNameStr;
   int32_t nextModSerialNum();
   bool m_replay;
-  std::vector<TransactionalOperationPtr> m_operations;
+  std::vector<std::shared_ptr<TransactionalOperation>> m_operations;
   Cache* m_cache;
   ThinClientPoolDM* m_pooldm;
   long m_suspendedExpiryTaskId;

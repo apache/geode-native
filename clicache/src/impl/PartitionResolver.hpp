@@ -37,7 +37,7 @@ namespace Apache
       public interface class IPartitionResolverProxy
       {
       public:
-        apache::geode::client::CacheableKeyPtr getRoutingObject(const apache::geode::client::EntryEvent& ev);
+        std::shared_ptr<apache::geode::client::CacheableKey> getRoutingObject(const apache::geode::client::EntryEvent& ev);
         const char * getName();
       };
 
@@ -55,7 +55,7 @@ namespace Apache
             m_resolver = resolver;
           }
 
-          virtual apache::geode::client::CacheableKeyPtr getRoutingObject(const apache::geode::client::EntryEvent& ev)
+          virtual std::shared_ptr<apache::geode::client::CacheableKey> getRoutingObject(const apache::geode::client::EntryEvent& ev)
           {
             EntryEvent<TKey, TValue> gevent(&ev);
 						Object^ groutingobject = m_resolver->GetRoutingObject(%gevent);

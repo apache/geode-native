@@ -51,9 +51,9 @@ class TESTOBJECT_EXPORT BatchObject : public TimestampedObject {
   int32_t index;
   uint64_t timestamp;
   int32_t batch;
-  CacheableBytesPtr byteArray;
+  std::shared_ptr<CacheableBytes> byteArray;
 
-  inline uint32_t getObjectSize(const SerializablePtr& obj) const {
+  inline uint32_t getObjectSize(const std::shared_ptr<Serializable>& obj) const {
     return (obj == nullptr ? 0 : obj->objectSize());
   }
 
@@ -64,7 +64,7 @@ class TESTOBJECT_EXPORT BatchObject : public TimestampedObject {
   virtual void toData(apache::geode::client::DataOutput& output) const;
   virtual void fromData(apache::geode::client::DataInput& input);
   virtual int32_t classId() const { return 25; }
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   virtual uint32_t objectSize() const {
     uint32_t objectSize = sizeof(BatchObject);
@@ -87,7 +87,6 @@ class TESTOBJECT_EXPORT BatchObject : public TimestampedObject {
   }
 };
 
-typedef std::shared_ptr<BatchObject> BatchObjectPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_BATCHOBJECT_H_

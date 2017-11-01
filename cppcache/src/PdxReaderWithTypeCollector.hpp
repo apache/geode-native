@@ -29,17 +29,17 @@ namespace client {
 
 class PdxReaderWithTypeCollector : public PdxLocalReader {
  private:
-  PdxTypePtr m_newPdxType;
+  std::shared_ptr<PdxType> m_newPdxType;
 
   void checkType(const char* fieldName, int8_t typeId, const char* fieldType);
 
  public:
-  PdxReaderWithTypeCollector(DataInput& dataInput, PdxTypePtr pdxType,
-                             int pdxlen, PdxTypeRegistryPtr pdxTypeRegistry);
+  PdxReaderWithTypeCollector(DataInput& dataInput, std::shared_ptr<PdxType> pdxType,
+                             int pdxlen, std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
   virtual ~PdxReaderWithTypeCollector();
 
-  PdxTypePtr getLocalType() const { return m_newPdxType; }
+  std::shared_ptr<PdxType> getLocalType() const { return m_newPdxType; }
 
   virtual char readChar(const char* fieldName);
 
@@ -103,7 +103,7 @@ class PdxReaderWithTypeCollector : public PdxLocalReader {
    * @param fieldName name of the field which needs to serialize
    * Returns String value
    */
-  virtual SerializablePtr readObject(const char* fieldName);
+  virtual std::shared_ptr<Serializable> readObject(const char* fieldName);
 
   virtual char* readCharArray(const char* fieldName, int32_t& length);
 
@@ -162,19 +162,18 @@ class PdxReaderWithTypeCollector : public PdxLocalReader {
 
   virtual wchar_t** readWideStringArray(const char* fieldName, int32_t& length);
 
-  virtual CacheableObjectArrayPtr readObjectArray(const char* fieldName);
+  virtual std::shared_ptr<CacheableObjectArray> readObjectArray(const char* fieldName);
 
   virtual int8_t** readArrayOfByteArrays(const char* fieldName,
                                          int32_t& arrayLength,
                                          int32_t** elementLength);
 
-  virtual CacheableDatePtr readDate(const char* fieldName);
+  virtual std::shared_ptr<CacheableDate> readDate(const char* fieldName);
 
   virtual void readCollection(const char* fieldName,
-                              CacheableArrayListPtr& collection);
+                              std::shared_ptr<CacheableArrayList>& collection);
 };
-typedef std::shared_ptr<PdxReaderWithTypeCollector>
-    PdxReaderWithTypeCollectorPtr;
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

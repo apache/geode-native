@@ -71,7 +71,7 @@ class ThinClientRedundancyManager {
                               ThinClientBaseDM* theHADM);
   void readyForEvents();
   void startPeriodicAck();
-  bool checkDupAndAdd(EventIdPtr eventid);
+  bool checkDupAndAdd(std::shared_ptr<EventId> eventid);
   void netDown();
   void acquireRedundancyLock() { m_redundantEndpointsLock.acquire_read(); }
   void releaseRedundancyLock() { m_redundantEndpointsLock.release(); }
@@ -97,8 +97,8 @@ class ThinClientRedundancyManager {
   std::vector<TcrEndpoint*> m_nonredundantEndpoints;
   ACE_Recursive_Thread_Mutex m_redundantEndpointsLock;
   TcrConnectionManager* m_theTcrConnManager;
-  CacheableStringArrayPtr m_locators;
-  CacheableStringArrayPtr m_servers;
+  std::shared_ptr<CacheableStringArray> m_locators;
+  std::shared_ptr<CacheableStringArray> m_servers;
 
   void removeEndpointsInOrder(std::vector<TcrEndpoint*>& destVector,
                               const std::vector<TcrEndpoint*>& srcVector);

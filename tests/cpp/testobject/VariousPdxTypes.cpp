@@ -22,7 +22,7 @@
  */
 
 #include "VariousPdxTypes.hpp"
-
+#include <geode/CacheableEnum.hpp>
 namespace PdxTests {
 
 /************************************************************
@@ -42,7 +42,7 @@ PdxTypes1::~PdxTypes1() {
 
 int32_t PdxTypes1::getHashCode() { return 1; }
 
-bool PdxTypes1::equals(PdxSerializablePtr obj) {
+bool PdxTypes1::equals(std::shared_ptr<PdxSerializable> obj) {
   // LOGDEBUG("NIL:PdxTypes1::==::33");
   if (obj == nullptr) {
     // LOGDEBUG("NIL:PdxTypes1::==::35");
@@ -68,21 +68,21 @@ bool PdxTypes1::equals(PdxSerializablePtr obj) {
   return false;
 }
 
-CacheableStringPtr PdxTypes1::toString() const {
+std::shared_ptr<CacheableString> PdxTypes1::toString() const {
   char idbuf[4096];
   sprintf(idbuf, "PdxTypes1:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d]", m_i1,
           m_i2, m_i3, m_i4);
   return CacheableString::create(idbuf);
 }
 
-void PdxTypes1::toData(PdxWriterPtr pw) {
+void PdxTypes1::toData(std::shared_ptr<PdxWriter> pw) {
   pw->writeInt("i1", m_i1);
   pw->writeInt("i2", m_i2);
   pw->writeInt("i3", m_i3);
   pw->writeInt("i4", m_i4);
 }
 
-void PdxTypes1::fromData(PdxReaderPtr pr) {
+void PdxTypes1::fromData(std::shared_ptr<PdxReader> pr) {
   m_i1 = pr->readInt("i1");
   m_i2 = pr->readInt("i2");
   m_i3 = pr->readInt("i3");
@@ -106,7 +106,7 @@ PdxTypes2::~PdxTypes2() {
 
 int32_t PdxTypes2::getHashCode() { return 1; }
 
-bool PdxTypes2::equals(PdxSerializablePtr obj) {
+bool PdxTypes2::equals(std::shared_ptr<PdxSerializable> obj) {
   // LOGDEBUG("NIL:96:this::PdxType2 = %s", this->toString());
 
   if (obj == nullptr) return false;
@@ -126,14 +126,14 @@ bool PdxTypes2::equals(PdxSerializablePtr obj) {
   return false;
 }
 
-CacheableStringPtr PdxTypes2::toString() const {
+std::shared_ptr<CacheableString> PdxTypes2::toString() const {
   char idbuf[4096];
   sprintf(idbuf, "PdxTypes2:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s]",
           m_i1, m_i2, m_i3, m_i4, m_s1);
   return CacheableString::create(idbuf);
 }
 
-void PdxTypes2::toData(PdxWriterPtr pw) {
+void PdxTypes2::toData(std::shared_ptr<PdxWriter> pw) {
   pw->writeString("s1", m_s1);
   pw->writeInt("i1", m_i1);
   pw->writeInt("i2", m_i2);
@@ -141,7 +141,7 @@ void PdxTypes2::toData(PdxWriterPtr pw) {
   pw->writeInt("i4", m_i4);
 }
 
-void PdxTypes2::fromData(PdxReaderPtr pr) {
+void PdxTypes2::fromData(std::shared_ptr<PdxReader> pr) {
   m_s1 = pr->readString("s1");
   m_i1 = pr->readInt("i1");
   m_i2 = pr->readInt("i2");
@@ -166,7 +166,7 @@ PdxTypes3::~PdxTypes3() {
 
 int32_t PdxTypes3::getHashCode() { return 1; }
 
-bool PdxTypes3::equals(PdxSerializablePtr obj) {
+bool PdxTypes3::equals(std::shared_ptr<PdxSerializable> obj) {
   if (obj == nullptr) return false;
 
   auto pap = std::dynamic_pointer_cast<PdxTypes3>(obj);
@@ -183,14 +183,14 @@ bool PdxTypes3::equals(PdxSerializablePtr obj) {
   return false;
 }
 
-CacheableStringPtr PdxTypes3::toString() const {
+std::shared_ptr<CacheableString> PdxTypes3::toString() const {
   char idbuf[4096];
   sprintf(idbuf, "PdxTypes3:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s]",
           m_i1, m_i2, m_i3, m_i4, m_s1);
   return CacheableString::create(idbuf);
 }
 
-void PdxTypes3::toData(PdxWriterPtr pw) {
+void PdxTypes3::toData(std::shared_ptr<PdxWriter> pw) {
   pw->writeInt("i1", m_i1);
   pw->writeInt("i2", m_i2);
   pw->writeInt("i3", m_i3);
@@ -198,7 +198,7 @@ void PdxTypes3::toData(PdxWriterPtr pw) {
   pw->writeString("s1", m_s1);
 }
 
-void PdxTypes3::fromData(PdxReaderPtr pr) {
+void PdxTypes3::fromData(std::shared_ptr<PdxReader> pr) {
   m_i1 = pr->readInt("i1");
   m_i2 = pr->readInt("i2");
   m_i3 = pr->readInt("i3");
@@ -223,7 +223,7 @@ PdxTypes4::~PdxTypes4() {
 
 int32_t PdxTypes4::getHashCode() { return 1; }
 
-bool PdxTypes4::equals(PdxSerializablePtr obj) {
+bool PdxTypes4::equals(std::shared_ptr<PdxSerializable> obj) {
   if (obj == nullptr) return false;
 
   auto pap = std::dynamic_pointer_cast<PdxTypes4>(obj);
@@ -240,14 +240,14 @@ bool PdxTypes4::equals(PdxSerializablePtr obj) {
   return false;
 }
 
-CacheableStringPtr PdxTypes4::toString() const {
+std::shared_ptr<CacheableString> PdxTypes4::toString() const {
   char idbuf[4096];
   sprintf(idbuf, "PdxTypes4:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s]",
           m_i1, m_i2, m_i3, m_i4, m_s1);
   return CacheableString::create(idbuf);
 }
 
-void PdxTypes4::toData(PdxWriterPtr pw) {
+void PdxTypes4::toData(std::shared_ptr<PdxWriter> pw) {
   pw->writeInt("i1", m_i1);
   pw->writeInt("i2", m_i2);
   pw->writeString("s1", m_s1);
@@ -255,7 +255,7 @@ void PdxTypes4::toData(PdxWriterPtr pw) {
   pw->writeInt("i4", m_i4);
 }
 
-void PdxTypes4::fromData(PdxReaderPtr pr) {
+void PdxTypes4::fromData(std::shared_ptr<PdxReader> pr) {
   m_i1 = pr->readInt("i1");
   m_i2 = pr->readInt("i2");
   m_s1 = pr->readString("s1");
@@ -281,7 +281,7 @@ PdxTypes5::~PdxTypes5() {
 
 int32_t PdxTypes5::getHashCode() { return 1; }
 
-bool PdxTypes5::equals(PdxSerializablePtr obj) {
+bool PdxTypes5::equals(std::shared_ptr<PdxSerializable> obj) {
   if (obj == nullptr) return false;
 
   auto pap = std::dynamic_pointer_cast<PdxTypes5>(obj);
@@ -299,7 +299,7 @@ bool PdxTypes5::equals(PdxSerializablePtr obj) {
   return false;
 }
 
-CacheableStringPtr PdxTypes5::toString() const {
+std::shared_ptr<CacheableString> PdxTypes5::toString() const {
   char idbuf[4096];
   sprintf(
       idbuf,
@@ -308,7 +308,7 @@ CacheableStringPtr PdxTypes5::toString() const {
   return CacheableString::create(idbuf);
 }
 
-void PdxTypes5::toData(PdxWriterPtr pw) {
+void PdxTypes5::toData(std::shared_ptr<PdxWriter> pw) {
   pw->writeString("s1", m_s1);
   pw->writeString("s2", m_s2);
   pw->writeInt("i1", m_i1);
@@ -317,7 +317,7 @@ void PdxTypes5::toData(PdxWriterPtr pw) {
   pw->writeInt("i4", m_i4);
 }
 
-void PdxTypes5::fromData(PdxReaderPtr pr) {
+void PdxTypes5::fromData(std::shared_ptr<PdxReader> pr) {
   m_s1 = pr->readString("s1");
   m_s2 = pr->readString("s2");
   m_i1 = pr->readInt("i1");
@@ -348,7 +348,7 @@ PdxTypes6::~PdxTypes6() {
 
 int32_t PdxTypes6::getHashCode() { return 1; }
 
-bool PdxTypes6::equals(PdxSerializablePtr obj) {
+bool PdxTypes6::equals(std::shared_ptr<PdxSerializable> obj) {
   LOGDEBUG("PdxTypes6::equals -1");
   if (obj == nullptr) return false;
 
@@ -383,7 +383,7 @@ bool PdxTypes6::equals(PdxSerializablePtr obj) {
   return false;
 }
 
-CacheableStringPtr PdxTypes6::toString() const {
+std::shared_ptr<CacheableString> PdxTypes6::toString() const {
   char idbuf[4096];
   sprintf(
       idbuf,
@@ -392,7 +392,7 @@ CacheableStringPtr PdxTypes6::toString() const {
   return CacheableString::create(idbuf);
 }
 
-void PdxTypes6::toData(PdxWriterPtr pw) {
+void PdxTypes6::toData(std::shared_ptr<PdxWriter> pw) {
   pw->writeString("s1", m_s1);
   pw->writeInt("i1", m_i1);
   pw->writeByteArray("bytes128", bytes128, 2);
@@ -402,7 +402,7 @@ void PdxTypes6::toData(PdxWriterPtr pw) {
   pw->writeString("s2", m_s2);
 }
 
-void PdxTypes6::fromData(PdxReaderPtr pr) {
+void PdxTypes6::fromData(std::shared_ptr<PdxReader> pr) {
   m_s1 = pr->readString("s1");
   // LOGDEBUG("PdxTypes6::fromData m_s1 = %s", m_s1);
 
@@ -442,7 +442,7 @@ PdxTypes7::~PdxTypes7() {
 
 int32_t PdxTypes7::getHashCode() { return 1; }
 
-bool PdxTypes7::equals(PdxSerializablePtr obj) {
+bool PdxTypes7::equals(std::shared_ptr<PdxSerializable> obj) {
   if (obj == nullptr) return false;
 
   auto pap = std::dynamic_pointer_cast<PdxTypes7>(obj);
@@ -462,7 +462,7 @@ bool PdxTypes7::equals(PdxSerializablePtr obj) {
   return false;
 }
 
-CacheableStringPtr PdxTypes7::toString() const {
+std::shared_ptr<CacheableString> PdxTypes7::toString() const {
   char idbuf[4096];
   sprintf(
       idbuf,
@@ -471,7 +471,7 @@ CacheableStringPtr PdxTypes7::toString() const {
   return CacheableString::create(idbuf);
 }
 
-void PdxTypes7::toData(PdxWriterPtr pw) {
+void PdxTypes7::toData(std::shared_ptr<PdxWriter> pw) {
   pw->writeInt("i1", m_i1);
   pw->writeInt("i2", m_i2);
   pw->writeString("s1", m_s1);
@@ -481,7 +481,7 @@ void PdxTypes7::toData(PdxWriterPtr pw) {
   pw->writeString("s2", m_s2);
 }
 
-void PdxTypes7::fromData(PdxReaderPtr pr) {
+void PdxTypes7::fromData(std::shared_ptr<PdxReader> pr) {
   m_i1 = pr->readInt("i1");
   m_i2 = pr->readInt("i2");
   m_s1 = pr->readString("s1");
@@ -511,7 +511,7 @@ PdxTypes8::~PdxTypes8() { delete[] bytes300; }
 
 int32_t PdxTypes8::getHashCode() { return 1; }
 
-bool PdxTypes8::equals(PdxSerializablePtr obj) {
+bool PdxTypes8::equals(std::shared_ptr<PdxSerializable> obj) {
   if (obj == nullptr) return false;
 
   auto pap = std::dynamic_pointer_cast<PdxTypes8>(obj);
@@ -531,7 +531,7 @@ bool PdxTypes8::equals(PdxSerializablePtr obj) {
   return false;
 }
 
-CacheableStringPtr PdxTypes8::toString() const {
+std::shared_ptr<CacheableString> PdxTypes8::toString() const {
   char idbuf[4096];
   sprintf(
       idbuf,
@@ -540,7 +540,7 @@ CacheableStringPtr PdxTypes8::toString() const {
   return CacheableString::create(idbuf);
 }
 
-void PdxTypes8::toData(PdxWriterPtr pw) {
+void PdxTypes8::toData(std::shared_ptr<PdxWriter> pw) {
   pw->writeInt("i1", m_i1);
   pw->writeInt("i2", m_i2);
   pw->writeString("s1", m_s1);
@@ -551,7 +551,7 @@ void PdxTypes8::toData(PdxWriterPtr pw) {
   pw->writeInt("i4", m_i4);
 }
 
-void PdxTypes8::fromData(PdxReaderPtr pr) {
+void PdxTypes8::fromData(std::shared_ptr<PdxReader> pr) {
   m_i1 = pr->readInt("i1");
   m_i2 = pr->readInt("i2");
   m_s1 = pr->readString("s1");
@@ -579,7 +579,7 @@ PdxTypes9::~PdxTypes9() { delete[] m_bytes66000; }
 
 int32_t PdxTypes9::getHashCode() { return 1; }
 
-bool PdxTypes9::equals(PdxSerializablePtr obj) {
+bool PdxTypes9::equals(std::shared_ptr<PdxSerializable> obj) {
   if (obj == nullptr) return false;
 
   auto pap = std::dynamic_pointer_cast<PdxTypes9>(obj);
@@ -599,14 +599,14 @@ bool PdxTypes9::equals(PdxSerializablePtr obj) {
   return false;
 }
 
-CacheableStringPtr PdxTypes9::toString() const {
+std::shared_ptr<CacheableString> PdxTypes9::toString() const {
   char idbuf[4096];
   sprintf(idbuf, "PdxTypes9:[m_s1=%s] [m_s2=%s] [m_s3=%s] [m_s4=%s] [m_s5=%s] ",
           m_s1, m_s2, m_s3, m_s4, m_s5);
   return CacheableString::create(idbuf);
 }
 
-void PdxTypes9::toData(PdxWriterPtr pw) {
+void PdxTypes9::toData(std::shared_ptr<PdxWriter> pw) {
   pw->writeString("s1", m_s1);
   pw->writeString("s2", m_s2);
   pw->writeByteArray("bytes66000", m_bytes66000, 2);
@@ -615,7 +615,7 @@ void PdxTypes9::toData(PdxWriterPtr pw) {
   pw->writeString("s5", m_s5);
 }
 
-void PdxTypes9::fromData(PdxReaderPtr pr) {
+void PdxTypes9::fromData(std::shared_ptr<PdxReader> pr) {
   m_s1 = pr->readString("s1");
   m_s2 = pr->readString("s2");
   int32_t byteArrLen = 0;
@@ -641,7 +641,7 @@ PdxTypes10::~PdxTypes10() { delete[] m_bytes66000; }
 
 int32_t PdxTypes10::getHashCode() { return 1; }
 
-bool PdxTypes10::equals(PdxSerializablePtr obj) {
+bool PdxTypes10::equals(std::shared_ptr<PdxSerializable> obj) {
   if (obj == nullptr) return false;
 
   auto pap = std::dynamic_pointer_cast<PdxTypes10>(obj);
@@ -661,14 +661,14 @@ bool PdxTypes10::equals(PdxSerializablePtr obj) {
   return false;
 }
 
-CacheableStringPtr PdxTypes10::toString() const {
+std::shared_ptr<CacheableString> PdxTypes10::toString() const {
   char idbuf[4096];
   sprintf(idbuf, "PdxTypes9:[m_s1=%s] [m_s2=%s] [m_s3=%s] [m_s4=%s] [m_s5=%s] ",
           m_s1, m_s2, m_s3, m_s4, m_s5);
   return CacheableString::create(idbuf);
 }
 
-void PdxTypes10::toData(PdxWriterPtr pw) {
+void PdxTypes10::toData(std::shared_ptr<PdxWriter> pw) {
   pw->writeString("s1", m_s1);
   pw->writeString("s2", m_s2);
   pw->writeByteArray("bytes66000", m_bytes66000, 2);
@@ -677,7 +677,7 @@ void PdxTypes10::toData(PdxWriterPtr pw) {
   pw->writeString("s5", m_s5);
 }
 
-void PdxTypes10::fromData(PdxReaderPtr pr) {
+void PdxTypes10::fromData(std::shared_ptr<PdxReader> pr) {
   m_s1 = pr->readString("s1");
   m_s2 = pr->readString("s2");
   int32_t byteArrLen = 0;
@@ -721,7 +721,7 @@ NestedPdx::~NestedPdx() {
 
 int32_t NestedPdx::getHashCode() { return 1; }
 
-bool NestedPdx::equals(PdxSerializablePtr obj) {
+bool NestedPdx::equals(std::shared_ptr<PdxSerializable> obj) {
   if (obj == nullptr) return false;
 
   auto pap = std::dynamic_pointer_cast<NestedPdx>(obj);
@@ -740,7 +740,7 @@ bool NestedPdx::equals(PdxSerializablePtr obj) {
   return false;
 }
 
-CacheableStringPtr NestedPdx::toString() const {
+std::shared_ptr<CacheableString> NestedPdx::toString() const {
   char idbuf[4096];
   sprintf(
       idbuf,
@@ -749,7 +749,7 @@ CacheableStringPtr NestedPdx::toString() const {
   return CacheableString::create(idbuf);
 }
 
-void NestedPdx::toData(PdxWriterPtr pw) {
+void NestedPdx::toData(std::shared_ptr<PdxWriter> pw) {
   pw->writeInt("i1", m_i1);
   pw->writeObject("pd1", m_pd1);
   pw->writeInt("i2", m_i2);
@@ -760,7 +760,7 @@ void NestedPdx::toData(PdxWriterPtr pw) {
   pw->writeInt("i4", m_i4);
 }
 
-void NestedPdx::fromData(PdxReaderPtr pr) {
+void NestedPdx::fromData(std::shared_ptr<PdxReader> pr) {
   m_i1 = pr->readInt("i1");
   m_pd1 = std::static_pointer_cast<PdxTypes1>(pr->readObject("pd1"));
   m_i2 = pr->readInt("i2");
@@ -807,7 +807,7 @@ MixedVersionNestedPdx::~MixedVersionNestedPdx() {
 
 int32_t MixedVersionNestedPdx::getHashCode() { return 1; }
 
-bool MixedVersionNestedPdx::equals(PdxSerializablePtr obj) {
+bool MixedVersionNestedPdx::equals(std::shared_ptr<PdxSerializable> obj) {
   if (obj == nullptr) return false;
 
   auto pap = std::dynamic_pointer_cast<MixedVersionNestedPdx>(obj);
@@ -826,7 +826,7 @@ bool MixedVersionNestedPdx::equals(PdxSerializablePtr obj) {
   return false;
 }
 
-CacheableStringPtr MixedVersionNestedPdx::toString() const {
+std::shared_ptr<CacheableString> MixedVersionNestedPdx::toString() const {
   char idbuf[4096];
   sprintf(idbuf,
           "MixedVersionNestedPdx:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] "
@@ -835,7 +835,7 @@ CacheableStringPtr MixedVersionNestedPdx::toString() const {
   return CacheableString::create(idbuf);
 }
 
-void MixedVersionNestedPdx::toData(PdxWriterPtr pw) {
+void MixedVersionNestedPdx::toData(std::shared_ptr<PdxWriter> pw) {
   pw->writeInt("i1", m_i1);
   pw->writeObject("pd1", m_pd1);
   pw->writeInt("i2", m_i2);
@@ -847,7 +847,7 @@ void MixedVersionNestedPdx::toData(PdxWriterPtr pw) {
   pw->writeInt("i4", m_i4);
 }
 
-void MixedVersionNestedPdx::fromData(PdxReaderPtr pr) {
+void MixedVersionNestedPdx::fromData(std::shared_ptr<PdxReader> pr) {
   m_i1 = pr->readInt("i1");
   m_pd1 = std::static_pointer_cast<PdxTypes1>(pr->readObject("pd1"));
   m_i2 = pr->readInt("i2");
@@ -879,7 +879,7 @@ PdxInsideIGeodeSerializable::~PdxInsideIGeodeSerializable() {
 
 int32_t PdxInsideIGeodeSerializable::getHashCode() { return 1; }
 
-bool PdxInsideIGeodeSerializable::equals(SerializablePtr obj) {
+bool PdxInsideIGeodeSerializable::equals(std::shared_ptr<Serializable> obj) {
   if (obj == nullptr) return false;
 
   auto pap = std::dynamic_pointer_cast<PdxInsideIGeodeSerializable>(obj);
@@ -897,7 +897,7 @@ bool PdxInsideIGeodeSerializable::equals(SerializablePtr obj) {
   return false;
 }
 
-CacheableStringPtr PdxInsideIGeodeSerializable::toString() const {
+std::shared_ptr<CacheableString> PdxInsideIGeodeSerializable::toString() const {
   char idbuf[4096];
   sprintf(idbuf,
           "PdxInsideIGeodeSerializable:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] "

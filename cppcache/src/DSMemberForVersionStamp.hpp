@@ -28,7 +28,6 @@ namespace apache {
 namespace geode {
 namespace client {
 class DSMemberForVersionStamp;
-typedef std::shared_ptr<DSMemberForVersionStamp> DSMemberForVersionStampPtr;
 
 class DSMemberForVersionStamp : public CacheableKey {
  public:

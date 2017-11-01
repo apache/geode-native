@@ -88,7 +88,7 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr = getHelper()->createRegion(
+  auto regPtr = getHelper()->createRegion(
       name, ackMode, isCacheEnabled, nullptr, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
@@ -100,7 +100,7 @@ void createRegionLocal(const char* name, bool ackMode, const char* endpoints,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr = getHelper()->createRegion(
+  auto regPtr = getHelper()->createRegion(
       name, ackMode, isCacheEnabled, nullptr, clientNotificationEnabled, true);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
@@ -113,7 +113,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("createRegion_Pool() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr =
+  auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -127,7 +127,7 @@ void createPooledRegionConcurrencyCheckDisabled(
   LOG("createRegion_Pool() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr = getHelper()->createPooledRegionConcurrencyCheckDisabled(
+  auto regPtr = getHelper()->createPooledRegionConcurrencyCheckDisabled(
       name, ackMode, locators, poolname, cachingEnable,
       clientNotificationEnabled, concurrencyCheckEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -192,8 +192,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, removeAllValidation)
   {
     char key[2048];
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    VectorOfCacheableKey removeallkeys;
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    std::vector<std::shared_ptr<CacheableKey>> removeallkeys;
     try {
       regPtr0->removeAll(removeallkeys);
       FAIL("Did not get expected IllegalArgumentException exception");
@@ -244,8 +244,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, removeAllValidationLocal)
   {
     char key[2048];
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    VectorOfCacheableKey removeallkeys;
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    std::vector<std::shared_ptr<CacheableKey>> removeallkeys;
     try {
       regPtr0->removeAll(removeallkeys);
       FAIL("Did not get expected IllegalArgumentException exception");
@@ -307,11 +307,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, removeAllOps)
                        CacheableString::create(value));
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     regPtr0->putAll(entryMap);
     LOG("putAll1 complete");
 
-    VectorOfCacheableKey removeallkeys;
+    std::vector<std::shared_ptr<CacheableKey>> removeallkeys;
     for (int32_t item = 0; item < 1; item++) {
       sprintf(key, "key-%d", item);
       removeallkeys.push_back(CacheableKey::create(key));
@@ -336,11 +336,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, removeAllSequence)
     entryMap.emplace(CacheableKey::create(3), CacheableInt32::create(3));
     entryMap.emplace(CacheableKey::create(4), CacheableInt32::create(4));
 
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     regPtr0->putAll(entryMap);
     LOG("putAll1 complete");
 
-    VectorOfCacheableKey removeallkeys;
+    std::vector<std::shared_ptr<CacheableKey>> removeallkeys;
     removeallkeys.push_back(CacheableKey::create(1));
     removeallkeys.push_back(CacheableKey::create(2));
     removeallkeys.push_back(CacheableKey::create(3));
@@ -381,11 +381,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, removeAllOpsLocal)
                        CacheableString::create(value));
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     regPtr0->putAll(entryMap);
     LOG("putAll1 complete");
 
-    VectorOfCacheableKey removeallkeys;
+    std::vector<std::shared_ptr<CacheableKey>> removeallkeys;
     for (int32_t item = 0; item < 1; item++) {
       sprintf(key, "key-%d", item);
       removeallkeys.push_back(CacheableKey::create(key));

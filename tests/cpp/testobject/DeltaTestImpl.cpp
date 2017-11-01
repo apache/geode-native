@@ -23,7 +23,7 @@
 #include "DeltaTestImpl.hpp"
 #include <ace/Guard_T.h>
 using namespace testobject;
-
+using namespace apache::geode::client;
 uint8_t DeltaTestImpl::INT_MASK = 0x1;
 uint8_t DeltaTestImpl::STR_MASK = 0x2;
 uint8_t DeltaTestImpl::DOUBLE_MASK = 0x4;
@@ -31,7 +31,7 @@ uint8_t DeltaTestImpl::BYTE_ARR_MASK = 0x8;
 uint8_t DeltaTestImpl::TEST_OBJ_MASK = 0x10;
 uint8_t DeltaTestImpl::COMPLETE_MASK = 0x1F;
 
-DeltaTestImpl::DeltaTestImpl() : Delta(nullptr) {
+DeltaTestImpl::DeltaTestImpl() : apache::geode::client::Delta(nullptr) {
   intVar = 1;
   str = CacheableString::create("test");
   doubleVar = 1.1;
@@ -43,14 +43,14 @@ DeltaTestImpl::DeltaTestImpl() : Delta(nullptr) {
   toDeltaCounter = 0;
   fromDeltaCounter = 0;
 }
-DeltaTestImpl::DeltaTestImpl(int intValue, CacheableStringPtr strptr)
-    : Delta(nullptr),
+DeltaTestImpl::DeltaTestImpl(int intValue, std::shared_ptr<CacheableString> strptr)
+    : apache::geode::client::Delta(nullptr),
       intVar(intValue),
       str(strptr),
       doubleVar(0),
       toDeltaCounter(0),
       fromDeltaCounter(0) {}
-DeltaTestImpl::DeltaTestImpl(DeltaTestImplPtr rhs) : Delta(nullptr) {
+DeltaTestImpl::DeltaTestImpl(std::shared_ptr<DeltaTestImpl> rhs) : apache::geode::client::Delta(nullptr) {
   intVar = rhs->intVar;
   str = CacheableString::create(rhs->str->asChar());
   doubleVar = rhs->doubleVar;
@@ -60,7 +60,7 @@ DeltaTestImpl::DeltaTestImpl(DeltaTestImplPtr rhs) : Delta(nullptr) {
                                           rhs->byteArr->length()));
   testObj = (rhs->testObj == nullptr
                  ? nullptr
-                 : TestObject1Ptr(new TestObject1(*(rhs->testObj.get()))));
+                 : std::shared_ptr<TestObject1>(new TestObject1(*(rhs->testObj.get()))));
   toDeltaCounter = rhs->getToDeltaCounter();
   fromDeltaCounter = rhs->getFromDeltaCounter();
 }
@@ -135,7 +135,7 @@ void DeltaTestImpl::fromDelta(DataInput& input) {
     testObj = input.readObject<TestObject1>();
   }
 }
-CacheableStringPtr DeltaTestImpl::toString() const {
+std::shared_ptr<CacheableString> DeltaTestImpl::toString() const {
   char buf[102500];
   sprintf(buf, "DeltaTestImpl[hasDelta=%d int=%d double=%f str=%s \n",
           m_hasDelta, intVar, doubleVar, str->toString());
