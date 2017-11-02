@@ -239,14 +239,6 @@ TEST_F(DataOutputTest, TestWriteASCIIHuge) {
       dataOutput.getByteArray());
 }
 
-TEST_F(DataOutputTest, TestWriteFullUTF) {
-  TestDataOutput dataOutput(nullptr);
-  dataOutput.writeFullUTF("You had me at meat tornado.");
-  EXPECT_BYTEARRAY_EQ(
-      "0000001B00596F7520686164206D65206174206D65617420746F726E61646F2E",
-      dataOutput.getByteArray());
-}
-
 TEST_F(DataOutputTest, TestWriteUTF) {
   TestDataOutput dataOutput(nullptr);
   dataOutput.writeUTF("You had me at meat tornado.");
