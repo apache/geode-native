@@ -85,7 +85,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * @see serializationRegistry->addPdxType
    * @see PdxInstance#hasField
    */
-  virtual CacheablePtr getCacheableField(const char *fieldname) const = 0;
+  virtual CacheablePtr getCacheableField(const char* fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in bool type out param.
@@ -96,7 +96,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual bool getBooleanField(const char *fieldname) const = 0;
+  virtual bool getBooleanField(const char* fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in signed char type out param.
@@ -118,7 +118,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual int16_t getShortField(const char *fieldname) const = 0;
+  virtual int16_t getShortField(const char* fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in int32_t type out param.
@@ -369,7 +369,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * @see PdxInstance#hasField
    */
   virtual CacheableDatePtr getCacheableDateField(
-                                              const char* fieldname) const = 0;
+      const char* fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in array of byte arrays type out
@@ -402,7 +402,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * @see PdxInstance#hasField
    */
   virtual CacheableObjectArrayPtr getCacheableObjectArrayField(
-                                            const char* fieldname) const = 0;
+      const char* fieldname) const = 0;
 
   /**
    * Checks if the named field was {@link PdxWriter#markIdentityField}marked as

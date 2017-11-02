@@ -1301,7 +1301,8 @@ class TcrMessageHelper {
       }
       // This is for GETALL
       if (expectedFirstType == GeodeTypeIdsImpl::FixedIDShort) {
-        compId = input.readInt16();;
+        compId = input.readInt16();
+        ;
       }  // This is for QUERY or REGISTER INTEREST.
       else if (expectedFirstType == GeodeTypeIdsImpl::FixedIDByte ||
                expectedFirstType == 0) {

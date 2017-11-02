@@ -549,7 +549,8 @@ void ThinClientRegion::registerRegex(const char* regex, bool isDurable,
   LOGDEBUG("ThinClientRegion::registerRegex : interestpolicy is %d",
            interestPolicy.ordinal);
 
-  VectorOfCacheableKeyPtr resultKeys2 = std::make_shared<VectorOfCacheableKey>();
+  VectorOfCacheableKeyPtr resultKeys2 =
+      std::make_shared<VectorOfCacheableKey>();
 
   //  if we need to fetch initial data for "allKeys" case, then we
   // get the keys in that call itself using the special GET_ALL message and
@@ -2481,7 +2482,6 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
 
     reply = &replyLocal;
     if (interestPolicy.ordinal == InterestResultPolicy::KEYS_VALUES.ordinal) {
-
       MapOfUpdateCounters trackers;
       int32_t destroyTracker = 1;
       if (resultKeys == nullptr) {
@@ -2502,7 +2502,7 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
     }
     err = m_tcrdm->sendSyncRequestRegisterInterest(
         request, replyLocal, attemptFailover, this, endpoint);
-  } else{
+  } else {
     err = m_tcrdm->sendSyncRequestRegisterInterest(
         request, *reply, attemptFailover, this, endpoint);
   }
@@ -2622,7 +2622,7 @@ void ThinClientRegion::addKeys(const VectorOfCacheableKey& keys, bool isDurable,
   }
 }
 
-void ThinClientRegion:: addRegex(const std::string& regex, bool isDurable,
+void ThinClientRegion::addRegex(const std::string& regex, bool isDurable,
                                 bool receiveValues,
                                 InterestResultPolicy interestpolicy) {
   std::unordered_map<CacheableKeyPtr, InterestResultPolicy>& interestList =
@@ -3417,7 +3417,6 @@ void ChunkedQueryResponse::reset() {
 
 void ChunkedQueryResponse::readObjectPartList(DataInput& input,
                                               bool isResultSet) {
-
   if (input.readBoolean()) {
     LOGERROR("Query response has keys which is unexpected.");
     throw IllegalStateException("Query response has keys which is unexpected.");
@@ -3426,9 +3425,8 @@ void ChunkedQueryResponse::readObjectPartList(DataInput& input,
   int32_t len = input.readInt32();
 
   for (int32_t index = 0; index < len; ++index) {
-
     if (input.read() == 2 /* for exception*/) {
-      input.advanceCursor(input.readArrayLen()); // skipLen
+      input.advanceCursor(input.readArrayLen());  // skipLen
       CacheableStringPtr exMsgPtr = input.readNativeString();
       throw IllegalStateException(exMsgPtr->asChar());
     } else {
@@ -3494,7 +3492,6 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
     return;
   }
 
-
   char* isStructTypeImpl = nullptr;
   uint16_t stiLen = 0;
   // soubhik: ignoring parent classes for now
@@ -3512,7 +3509,8 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
   input->read();  // this is Fixed ID byte (1)
   input->read();  // this is DataSerializable (45)
   uint8_t classByte = input->read();
-  uint8_t stringType = input->read();  // ignore string header - assume 64k string
+  uint8_t stringType =
+      input->read();  // ignore string header - assume 64k string
   input->readUTF(&isStructTypeImpl, &stiLen);
 
   DeleteArray<char> delSTI(isStructTypeImpl);
@@ -3680,7 +3678,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
       partLen = input->readInt32();
 
       // then isObject byte
-      input->read(); // ignore iSobject
+      input->read();  // ignore iSobject
 
       startLen = input->getBytesRead();  // reset from here need to look value
                                         // part + memberid AND -1 for array type
@@ -3944,8 +3942,9 @@ void ChunkedDurableCQListResponse::handleChunk(const uint8_t* chunk,
 
   input->advanceCursor(1);  // skip the CacheableArrayList type ID byte
 
-  const auto stringParts = input->read();  // read the number of strings in the message this
-                             // is one byte
+  const auto stringParts =
+      input->read();  // read the number of strings in the message this
+                      // is one byte
 
   for (int i = 0; i < stringParts; i++) {
     m_resultList->push_back(input->readObject<CacheableString>());

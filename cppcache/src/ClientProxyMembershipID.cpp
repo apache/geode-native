@@ -230,17 +230,17 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
   hostAddr = new uint8_t[len];
 
   input.readBytesOnly(hostAddr, len);  // inetaddress
-  hostPort = input.readInt32();            // port
-  hostname = input.readObject<CacheableString>();          // hostname
-  splitbrain = input.read();             // splitbrain
-  dcport = input.readInt32();              // port
-  vPID = input.readInt32();                // pid
-  vmKind = input.read();                 // vmkind
+  hostPort = input.readInt32();        // port
+  hostname = input.readObject<CacheableString>();  // hostname
+  splitbrain = input.read();                       // splitbrain
+  dcport = input.readInt32();                      // port
+  vPID = input.readInt32();                        // pid
+  vmKind = input.read();                           // vmkind
   auto aStringArray = CacheableStringArray::create();
   aStringArray->fromData(input);
-  dsName = input.readObject<CacheableString>();            // name
-  uniqueTag = input.readObject<CacheableString>();         // unique tag
-  durableClientId = input.readObject<CacheableString>();   // durable client id
+  dsName = input.readObject<CacheableString>();           // name
+  uniqueTag = input.readObject<CacheableString>();        // unique tag
+  durableClientId = input.readObject<CacheableString>();  // durable client id
   durableClntTimeOut = input.readInt32();  // durable client timeout
   int32_t vmViewId = 0;
   readVersion(splitbrain, input);
@@ -379,7 +379,8 @@ void ClientProxyMembershipID::readVersion(int flags, DataInput& input) {
     LOGDEBUG("ClientProxyMembershipID::readVersion ordinal = %d ", ordinal);
     if (ordinal != ClientProxyMembershipID::TOKEN_ORDINAL) {
     } else {
-      LOGDEBUG("ClientProxyMembershipID::readVersion ordinal = %d ", input.readInt16());
+      LOGDEBUG("ClientProxyMembershipID::readVersion ordinal = %d ",
+               input.readInt16());
     }
   }
 }

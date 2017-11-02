@@ -1494,7 +1494,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
 
   virtual const PoolPtr& getPool() { return m_realRegion->getPool(); }
 
-  ProxyRegion(const ProxyCachePtr& proxyCache, const std::shared_ptr<RegionInternal>& realRegion)
+  ProxyRegion(const ProxyCachePtr& proxyCache,
+              const std::shared_ptr<RegionInternal>& realRegion)
       : Region(realRegion->getCache()) {
     m_proxyCache = proxyCache;
     m_realRegion = realRegion;

@@ -37,7 +37,7 @@ Struct::Struct(StructSet* ssPtr, std::vector<SerializablePtr>& fieldValues) {
 void Struct::skipClassName(DataInput& input) {
   if (input.read() == GeodeTypeIdsImpl::Class) {
     input.read();  // ignore string type id - assuming its a normal
-                              // (under 64k) string.
+                   // (under 64k) string.
     uint16_t len = input.readInt16();
     input.advanceCursor(len);
   } else {
@@ -61,7 +61,7 @@ int32_t Struct::length() const {
 }
 
 void Struct::fromData(DataInput& input) {
-  input.advanceCursor(2); // ignore classType
+  input.advanceCursor(2);  // ignore classType
   skipClassName(input);
 
   int32_t numOfFields = input.readArrayLen();
@@ -74,7 +74,7 @@ void Struct::fromData(DataInput& input) {
   int32_t lengthForTypes = input.readArrayLen();
   skipClassName(input);
   for (int i = 0; i < lengthForTypes; i++) {
-    input.advanceCursor(2); // ignore classType
+    input.advanceCursor(2);  // ignore classType
     skipClassName(input);
   }
   int32_t numOfSerializedValues = input.readArrayLen();

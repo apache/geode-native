@@ -283,8 +283,7 @@ void PdxInstanceImpl::writeField(PdxWriterPtr writer, const char* fieldName,
       break;
     }
     case PdxFieldTypes::OBJECT_ARRAY: {
-      auto objArray =
-          std::dynamic_pointer_cast<CacheableObjectArray>(value);
+      auto objArray = std::dynamic_pointer_cast<CacheableObjectArray>(value);
       if (objArray != nullptr) {
         writer->writeObjectArray(fieldName, objArray);
       }
@@ -801,7 +800,7 @@ bool PdxInstanceImpl::hasField(const char* fieldname) {
   return (pft != nullptr);
 }
 
-bool PdxInstanceImpl::getBooleanField(const char *fieldname) const {
+bool PdxInstanceImpl::getBooleanField(const char* fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   return dataInput->readBoolean();
 }
@@ -811,7 +810,7 @@ int8_t PdxInstanceImpl::getByteField(const char* fieldname) const {
   return dataInput->read();
 }
 
-int16_t PdxInstanceImpl::getShortField(const char *fieldname) const {
+int16_t PdxInstanceImpl::getShortField(const char* fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   return dataInput->readInt16();
 }
@@ -932,14 +931,14 @@ void PdxInstanceImpl::getField(const char* fieldname, char*** value,
 }
 
 CacheableDatePtr PdxInstanceImpl::getCacheableDateField(
-                                                const char* fieldname) const {
+    const char* fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   auto value = CacheableDate::create();
   value->fromData(*dataInput);
   return value;
 }
 
-CacheablePtr PdxInstanceImpl::getCacheableField(const char *fieldname) const {
+CacheablePtr PdxInstanceImpl::getCacheableField(const char* fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   CacheablePtr value;
   dataInput->readObject(value);
@@ -947,7 +946,7 @@ CacheablePtr PdxInstanceImpl::getCacheableField(const char *fieldname) const {
 }
 
 CacheableObjectArrayPtr PdxInstanceImpl::getCacheableObjectArrayField(
-                                                const char* fieldname) const {
+    const char* fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   auto value = CacheableObjectArray::create();
   value->fromData(*dataInput);
@@ -1030,7 +1029,7 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         break;
       }
       case PdxFieldTypes::DOUBLE: {
-        double value =  getDoubleField(identityFields.at(i)->getFieldName());
+        double value = getDoubleField(identityFields.at(i)->getFieldName());
         ACE_OS::snprintf(buf, 2048, "%f", value);
         toString += buf;
         break;
@@ -1150,8 +1149,8 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         break;
       }
       case PdxFieldTypes::DATE: {
-        CacheableDatePtr value = getCacheableDateField(
-                                        identityFields.at(i)->getFieldName());
+        CacheableDatePtr value =
+            getCacheableDateField(identityFields.at(i)->getFieldName());
         if (value != nullptr) {
           ACE_OS::snprintf(buf, 2048, "%s", value->toString()->asChar());
           toString += buf;
@@ -1188,8 +1187,8 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         break;
       }
       case PdxFieldTypes::OBJECT_ARRAY: {
-        CacheableObjectArrayPtr value = getCacheableObjectArrayField(
-                                        identityFields.at(i)->getFieldName());
+        CacheableObjectArrayPtr value =
+            getCacheableObjectArrayField(identityFields.at(i)->getFieldName());
         if (value != nullptr) {
           ACE_OS::snprintf(buf, 2048, "%s\t", value->toString()->asChar());
           toString += buf;
@@ -1197,7 +1196,8 @@ CacheableStringPtr PdxInstanceImpl::toString() const {
         break;
       }
       default: {
-        CacheablePtr value = getCacheableField(identityFields.at(i)->getFieldName());
+        CacheablePtr value =
+            getCacheableField(identityFields.at(i)->getFieldName());
         if (value != nullptr) {
           ACE_OS::snprintf(buf, 2048, "%s\t", value->toString()->asChar());
           toString += buf;

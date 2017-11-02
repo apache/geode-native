@@ -362,14 +362,14 @@ DUNIT_TASK(CLIENT2, VerifyUpdatedManyPutsInt64GetAll)
       auto entry = regPtr->getEntry(key);
       ASSERT(entry != nullptr, "expected non-null entry");
       auto valPtr = entry->getValue();
-          //std::dynamic_pointer_cast<CacheableString>(entry->getValue());
+      // std::dynamic_pointer_cast<CacheableString>(entry->getValue());
       ASSERT(valPtr != nullptr, "expected non-null value");
-      //ASSERT(valPtr->length() == 207, "unexpected size of value in verify");
+      // ASSERT(valPtr->length() == 207, "unexpected size of value in verify");
       const auto& iter = valuesMap.find(key);
       ASSERT(iter != valuesMap.end(), "expected to find key in map");
       valPtr = std::dynamic_pointer_cast<CacheableString>(iter->second);
       ASSERT(valPtr != nullptr, "expected non-null value");
-      //ASSERT(valPtr->length() == 207, "unexpected size of value in verify");
+      // ASSERT(valPtr->length() == 207, "unexpected size of value in verify");
     }
     LOG("On client Found all int64 entries with "
         "correct size via getAll.");

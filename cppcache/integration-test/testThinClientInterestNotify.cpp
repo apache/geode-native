@@ -234,8 +234,7 @@ void registerInterests(const char* region, bool durable, bool receiveValues) {
 
   regionPtr->registerKeys(keysVector, durable, true, receiveValues);
 
-  regionPtr->registerRegex("key-regex.*", durable, true,
-                           receiveValues);
+  regionPtr->registerRegex("key-regex.*", durable, true, receiveValues);
 }
 
 void unregisterInterests(const char* region) {

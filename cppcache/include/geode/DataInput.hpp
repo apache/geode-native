@@ -57,7 +57,6 @@ class DataInputInternal;
  */
 class CPPCACHE_EXPORT DataInput {
  public:
-
   /**
    * Read a signed byte from the <code>DataInput</code>.
    *
@@ -165,7 +164,7 @@ class CPPCACHE_EXPORT DataInput {
    *
    * @return 16-bit signed integer read from stream
    */
-  inline int16_t  readInt16() {
+  inline int16_t readInt16() {
     checkBufferSize(2);
     int16_t tmp = *(m_buf++);
     tmp = static_cast<int16_t>((tmp << 8) | *(m_buf++));
@@ -237,7 +236,7 @@ class CPPCACHE_EXPORT DataInput {
       int32_t result = code;
       if (result > 252) {  // 252 is java's ((byte)-4 && 0xFF)
         if (code == 0xFE) {
-          uint16_t val =  readInt16();
+          uint16_t val = readInt16();
           result = val;
         } else if (code == 0xFD) {
           uint32_t val = readInt32();
@@ -298,7 +297,7 @@ class CPPCACHE_EXPORT DataInput {
       uint64_t ll;
     } v;
     v.ll = readInt64();
-     return v.d;
+    return v.d;
   }
 
   /**
@@ -537,7 +536,7 @@ class CPPCACHE_EXPORT DataInput {
    */
   template <class PTR>
   inline std::shared_ptr<PTR> readObject(
-                         bool throwOnError = DINP_THROWONERROR_DEFAULT) {
+      bool throwOnError = DINP_THROWONERROR_DEFAULT) {
     SerializablePtr sPtr = readObjectInternal();
     if (throwOnError) {
       return std::dynamic_pointer_cast<PTR>(sPtr);
@@ -547,13 +546,13 @@ class CPPCACHE_EXPORT DataInput {
   }
 
   inline bool readNativeBool() {
-    read(); // ignore type id
+    read();  // ignore type id
 
     return readBoolean();
   }
 
   inline int32_t readNativeInt32() {
-    read(); // ignore type id
+    read();  // ignore type id
     return readInt32();
   }
 
@@ -919,9 +918,7 @@ class CPPCACHE_EXPORT DataInput {
     }
   }
 
-  inline char readPdxChar() {
-    return static_cast<char>(readInt16());
-  }
+  inline char readPdxChar() { return static_cast<char>(readInt16()); }
 
   inline void _checkBufferSize(int32_t size, int32_t line) {
     if ((m_bufLength - (m_buf - m_bufHead)) < size) {

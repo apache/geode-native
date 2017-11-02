@@ -446,9 +446,7 @@ void writeBool(DataOutput& out, bool field) {
   out.write(static_cast<int8_t>(field ? 1 : 0));
 }
 
-void readBool(DataInput& in, bool* field) {
-  *field = in.read() ? true : false;
-}
+void readBool(DataInput& in, bool* field) { *field = in.read() ? true : false; }
 
 void writeCharStar(DataOutput& out, const char* field) {
   if (field == nullptr) {
@@ -512,13 +510,17 @@ void RegionAttributes::toData(DataOutput& out) const {
 
 void RegionAttributes::fromData(DataInput& in) {
   m_regionTimeToLive = in.readInt32();
-  m_regionTimeToLiveExpirationAction = static_cast<ExpirationAction::Action>(in.readInt32());
+  m_regionTimeToLiveExpirationAction =
+      static_cast<ExpirationAction::Action>(in.readInt32());
   m_regionIdleTimeout = in.readInt32();
-  m_regionIdleTimeoutExpirationAction = static_cast<ExpirationAction::Action>(in.readInt32());
+  m_regionIdleTimeoutExpirationAction =
+      static_cast<ExpirationAction::Action>(in.readInt32());
   m_entryTimeToLive = in.readInt32();
-  m_entryTimeToLiveExpirationAction = static_cast<ExpirationAction::Action>(in.readInt32());
+  m_entryTimeToLiveExpirationAction =
+      static_cast<ExpirationAction::Action>(in.readInt32());
   m_entryIdleTimeout = in.readInt32();
-  m_entryIdleTimeoutExpirationAction = static_cast<ExpirationAction::Action>(in.readInt32());
+  m_entryIdleTimeoutExpirationAction =
+      static_cast<ExpirationAction::Action>(in.readInt32());
   m_initialCapacity = in.readInt32();
   m_loadFactor = in.readFloat();
   m_maxValueDistLimit = in.readInt32();

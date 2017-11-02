@@ -110,15 +110,15 @@ void TcrMessage::readBooleanPartAsObject(DataInput& input, bool* boolVal) {
 
 void TcrMessage::readOldValue(DataInput& input) {
   int32_t lenObj = input.readInt32();
-  input.read(); //ignore isObj
+  input.read();  // ignore isObj
   CacheablePtr value;
   input.readObject(value);  // we are not using this value currently
 }
 
 void TcrMessage::readPrMetaData(DataInput& input) {
   int32_t lenObj = input.readInt32();
-  input.read(); // ignore
-  m_metaDataVersion = input.read();// read refresh meta data byte
+  input.read();                      // ignore
+  m_metaDataVersion = input.read();  // read refresh meta data byte
   if (lenObj == 2) {
     m_serverGroupVersion = input.read();
     LOGDEBUG("Single-hop m_serverGroupVersion in message reply is %d",
@@ -129,7 +129,7 @@ void TcrMessage::readPrMetaData(DataInput& input) {
 VersionTagPtr TcrMessage::readVersionTagPart(
     DataInput& input, uint16_t endpointMemId,
     MemberListForVersionStamp& memberListForVersionStamp) {
-  auto isObj= input.read();
+  auto isObj = input.read();
   VersionTagPtr versionTag;
 
   if (isObj == GeodeTypeIds::NullObj) return versionTag;
@@ -156,7 +156,7 @@ void TcrMessage::readVersionTag(
     DataInput& input, uint16_t endpointMemId,
     MemberListForVersionStamp& memberListForVersionStamp) {
   int32_t lenObj = input.readInt32();
-  input.read(); // ignore byte
+  input.read();  // ignore byte
 
   if (lenObj == 0) return;
   auto versionTag = TcrMessage::readVersionTagPart(input, endpointMemId,
@@ -347,7 +347,7 @@ inline void TcrMessage::readFailedNodePart(DataInput& input,
   int32_t lenObj = input.readInt32();
   const auto isObj = input.readBoolean();
   m_failedNode = CacheableHashSet::create();
-  input.read(); // ignore typeId
+  input.read();  // ignore typeId
   // input.readDirectObject(m_failedNode, typeId);
   m_failedNode->fromData(input);
   LOGDEBUG("readFailedNodePart m_failedNode size = %d ", m_failedNode->size());
@@ -389,32 +389,28 @@ SerializablePtr TcrMessage::readCacheableString(DataInput& input, int lenObj) {
       input.rewindCursor(2);
       writeInt(const_cast<uint8_t*>(input.currentBufferPosition()),
                static_cast<uint16_t>(lenObj));
-      sPtr = input.readDirectObject(
-          static_cast<int8_t>(
-                    apache::geode::client::GeodeTypeIds::CacheableASCIIString));
+      sPtr = input.readDirectObject(static_cast<int8_t>(
+          apache::geode::client::GeodeTypeIds::CacheableASCIIString));
     } else {
       input.rewindCursor(4);
       writeInt(const_cast<uint8_t*>(input.currentBufferPosition()),
                static_cast<uint32_t>(lenObj));
-      sPtr = input.readDirectObject(
-          static_cast<int8_t>(
-              apache::geode::client::GeodeTypeIds::CacheableASCIIStringHuge));
+      sPtr = input.readDirectObject(static_cast<int8_t>(
+          apache::geode::client::GeodeTypeIds::CacheableASCIIStringHuge));
     }
   } else {
     if (decodedLen <= 0xffff) {
       input.rewindCursor(2);
       writeInt(const_cast<uint8_t*>(input.currentBufferPosition()),
                static_cast<uint16_t>(lenObj));
-      sPtr = input.readDirectObject(
-          static_cast<int8_t>(
-                    apache::geode::client::GeodeTypeIds::CacheableString));
+      sPtr = input.readDirectObject(static_cast<int8_t>(
+          apache::geode::client::GeodeTypeIds::CacheableString));
     } else {
       input.rewindCursor(4);
       writeInt(const_cast<uint8_t*>(input.currentBufferPosition()),
                static_cast<uint32_t>(lenObj));
-      sPtr = input.readDirectObject(
-          static_cast<int8_t>(
-                    apache::geode::client::GeodeTypeIds::CacheableStringHuge));
+      sPtr = input.readDirectObject(static_cast<int8_t>(
+          apache::geode::client::GeodeTypeIds::CacheableStringHuge));
     }
   }
 
@@ -978,7 +974,7 @@ void TcrMessage::handleByteArrayResponse(
         m_value = serializationRegistry.deserialize(*input);
       } else if (m_msgTypeRequest == TcrMessage::GET_FUNCTION_ATTRIBUTES) {
         int32_t lenObj = input->readInt32();
-        input->advanceCursor(1); // ignore byte
+        input->advanceCursor(1);  // ignore byte
 
         m_functionAttributes = new std::vector<int8_t>();
         m_functionAttributes->push_back(input->read());
@@ -1130,7 +1126,7 @@ void TcrMessage::handleByteArrayResponse(
     case TcrMessage::LOCAL_INVALIDATE:
     case TcrMessage::LOCAL_DESTROY: {
       int32_t regionLen = input->readInt32();
-      input->advanceCursor(1); // ignore byte
+      input->advanceCursor(1);  // ignore byte
       char* regname = nullptr;
       regname = new char[regionLen + 1];
       DeleteArray<char> delRegName(regname);
@@ -1165,7 +1161,7 @@ void TcrMessage::handleByteArrayResponse(
     case TcrMessage::LOCAL_CREATE:
     case TcrMessage::LOCAL_UPDATE: {
       int32_t regionLen = input->readInt32();
-      input->advanceCursor(1); // ignore byte
+      input->advanceCursor(1);  // ignore byte
       char* regname = nullptr;
       regname = new char[regionLen + 1];
       DeleteArray<char> delRegName(regname);
@@ -1180,7 +1176,7 @@ void TcrMessage::handleByteArrayResponse(
       if (isDelta) {
         m_deltaBytesLen = input->readInt32();
 
-        input->advanceCursor(1); // ignore byte
+        input->advanceCursor(1);  // ignore byte
         m_deltaBytes = new uint8_t[m_deltaBytesLen];
         input->readBytesOnly(m_deltaBytes, m_deltaBytesLen);
         m_delta = m_tcdm->getConnectionManager().getCacheImpl()->getCache()->createDataInput(
@@ -1217,7 +1213,7 @@ void TcrMessage::handleByteArrayResponse(
     case TcrMessage::LOCAL_DESTROY_REGION:
     case TcrMessage::CLEAR_REGION: {
       int32_t regionLen = input->readInt32();
-      input->advanceCursor(1); // ignore byte
+      input->advanceCursor(1);  // ignore byte
       char* regname = nullptr;
       regname = new char[regionLen + 1];
       DeleteArray<char> delRegName(regname);
@@ -1245,8 +1241,8 @@ void TcrMessage::handleByteArrayResponse(
       m_metadata = new std::vector<std::vector<BucketServerLocationPtr> >();
       for (int32_t i = 0; i < numparts; i++) {
         int32_t bits32 = input->readInt32();  // partlen;
-        input->read();  // isObj;
-        auto bits8 = input->read();  // cacheable vector typeid
+        input->read();                        // isObj;
+        auto bits8 = input->read();           // cacheable vector typeid
         LOGDEBUG("Expected typeID %d, got %d", GeodeTypeIds::CacheableArrayList,
                  bits8);
 
@@ -1281,32 +1277,34 @@ void TcrMessage::handleByteArrayResponse(
 
     case TcrMessage::RESPONSE_CLIENT_PARTITION_ATTRIBUTES: {
       int32_t bits32 = input->readInt32();  // partlen;
-      input->read();  //ignore isObj;
+      input->read();                        // ignore isObj;
 
       m_bucketCount = input->readNativeInt32();  // PART1 = bucketCount
 
       bits32 = input->readInt32();  // partlen;
-      input->read();      //ignore isObj;
+      input->read();                // ignore isObj;
       if (bits32 > 0) {
         m_colocatedWith = input->readNativeString();  // PART2 = colocatedwith
       }
 
       if (numparts == 4) {
         bits32 = input->readInt32();  // partlen;
-        input->read();      //ignore isObj;
+        input->read();                // ignore isObj;
         if (bits32 > 0) {
-          m_partitionResolverName = input->readNativeString();  // PART3 = partitionresolvername
+          m_partitionResolverName =
+              input->readNativeString();  // PART3 = partitionresolvername
         }
 
         bits32 = input->readInt32();  // partlen;
-        input->read();      // ignore isObj;
-        input->read();      // ignore cacheable CacheableHashSet typeid
+        input->read();                // ignore isObj;
+        input->read();  // ignore cacheable CacheableHashSet typeid
 
         bits32 = input->readArrayLen();  // array length
         if (bits32 > 0) {
           m_fpaSet = new std::vector<FixedPartitionAttributesImplPtr>();
           for (int32_t index = 0; index < bits32; index++) {
-            input->advanceCursor(3);  // ignore DS typeid, CLASS typeid, string typeid
+            input->advanceCursor(
+                3);  // ignore DS typeid, CLASS typeid, string typeid
             uint16_t classLen = input->readInt16();  // Read classLen
             input->advanceCursor(classLen);
             auto fpa = std::make_shared<FixedPartitionAttributesImpl>();

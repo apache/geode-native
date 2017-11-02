@@ -54,8 +54,8 @@ std::unique_ptr<PdxInstance> PdxInstanceFactoryImpl::create() {
   return pi;
 }
 
-PdxInstanceFactoryPtr PdxInstanceFactoryImpl::writeChar(
-    const char* fieldName, char16_t value) {
+PdxInstanceFactoryPtr PdxInstanceFactoryImpl::writeChar(const char* fieldName,
+                                                        char16_t value) {
   isFieldAdded(fieldName);
   m_pdxType->addFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR,
                                      PdxTypes::CHAR_SIZE);

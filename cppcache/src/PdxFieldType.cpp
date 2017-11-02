@@ -79,7 +79,7 @@ void PdxFieldType::toData(DataOutput& output) const {
 }
 
 void PdxFieldType::fromData(DataInput& input) {
-  input.read(); // ignore typeid
+  input.read();  // ignore typeid
   char* fname = nullptr;
   input.readUTF(&fname);
   m_fieldName = fname;

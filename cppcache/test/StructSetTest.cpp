@@ -36,11 +36,10 @@ TEST(StructSetTest, Basic) {
     values->push_back(CacheableString::create(value.c_str()));
     fieldNames.push_back(CacheableString::create(field.c_str()));
   }
-  
-  auto ss = StructSetImpl(values, fieldNames);
-  
-  ASSERT_EQ(1, ss.size());
 
+  auto ss = StructSetImpl(values, fieldNames);
+
+  ASSERT_EQ(1, ss.size());
 }
 
 TEST(StructSetTest, MissingFieldIndex) {
@@ -57,9 +56,9 @@ TEST(StructSetTest, MissingFieldIndex) {
     values->push_back(CacheableString::create(value.c_str()));
     fieldNames.push_back(CacheableString::create(field.c_str()));
   }
-  
+
   auto ss = StructSetImpl(values, fieldNames);
-  
+
   ASSERT_THROW(ss.getFieldIndex("test"), std::invalid_argument);
 }
 
@@ -77,8 +76,8 @@ TEST(StructSetTest, MissingFieldName) {
     values->push_back(CacheableString::create(value.c_str()));
     fieldNames.push_back(CacheableString::create(field.c_str()));
   }
-  
+
   auto ss = StructSetImpl(values, fieldNames);
-  
+
   ASSERT_THROW(ss.getFieldName(100), std::out_of_range);
 }

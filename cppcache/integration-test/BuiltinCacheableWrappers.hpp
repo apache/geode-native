@@ -668,7 +668,7 @@ class CacheableWideCharWrapper : public CacheableWrapper {
 
   virtual void initRandomValue(int32_t maxSize) {
     m_cacheableObject =
-      CacheableCharacter::create(CacheableHelper::random<char16_t>(SHRT_MAX));
+        CacheableCharacter::create(CacheableHelper::random<char16_t>(SHRT_MAX));
   }
 
   virtual uint32_t getCheckSum(const CacheablePtr object) const {

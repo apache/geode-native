@@ -73,7 +73,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual PdxInstanceFactoryPtr writeChar(const char* fieldName,
-                                              char16_t value);
+                                          char16_t value);
 
   /**
    * Writes the named field with the given value to the serialized form.

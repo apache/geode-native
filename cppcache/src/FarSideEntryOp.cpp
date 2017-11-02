@@ -101,7 +101,7 @@ void FarSideEntryOp::fromData(DataInput& input, bool largeModCount,
         }
       } else {
         // uint8_t* buf = nullptr;
-        input.readArrayLen(); // ignore len
+        input.readArrayLen();  // ignore len
         input.readObject(m_value);
 
         // input.readBytes(&buf, &len);
@@ -132,7 +132,7 @@ void FarSideEntryOp::skipFilterRoutingInfo(DataInput& input) {
   if (structType == GeodeTypeIds::NullObj) {
     return;
   } else if (structType == GeodeTypeIdsImpl::DataSerializable) {
-    input.read(); // ignore classbyte
+    input.read();  // ignore classbyte
     input.readObject(tmp);
     int32_t size = input.readInt32();
     for (int i = 0; i < size; i++) {
