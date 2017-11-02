@@ -185,7 +185,8 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
   }  // hasObjects ends here
 
   if (m_hasTags) {
-    len = static_cast<int32_t>(input.readUnsignedVL());;
+    len = static_cast<int32_t>(input.readUnsignedVL());
+    ;
     m_versionTags.resize(len);
     std::vector<uint16_t> ids;
     MemberListForVersionStamp& memberListForVersionStamp =

@@ -234,7 +234,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll_Pool)
       CacheableKeyPtr key0 = CacheableString::create(_keys[0]);
       CacheableKeyPtr key1 = CacheableString::create(_keys[1]);
 
-      getHelper()->createRegionAndAttachPool(_regionNames[0], USE_ACK, poolName);
+      getHelper()->createRegionAndAttachPool(_regionNames[0], USE_ACK,
+                                             poolName);
       reg0 = getHelper()->getRegion(_regionNames[0]);
       // check for IllegalArgumentException for empty key list
       keys0.clear();

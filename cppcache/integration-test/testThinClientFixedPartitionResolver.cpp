@@ -363,8 +363,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
       }
 
       try {
-        const auto values =
-            dataReg->getAll(keys, CacheableInt32::create(1000));
+        const auto values = dataReg->getAll(keys, CacheableInt32::create(1000));
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         ASSERT(values.size() == 5, "number of value size should be 5");

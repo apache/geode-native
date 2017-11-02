@@ -74,7 +74,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual bool getBooleanField(const char *fieldname) const;
+  virtual bool getBooleanField(const char* fieldname) const;
 
   /**
    * Reads the named field and set its value in signed char type out param.
@@ -100,7 +100,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual int16_t getShortField(const char *fieldname) const;
+  virtual int16_t getShortField(const char* fieldname) const;
 
   /**
    * Reads the named field and set its value in int32_t type out param.
@@ -382,7 +382,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @see serializationRegistry->addPdxType
    * @see PdxInstance#hasField
    */
-  virtual CacheablePtr getCacheableField(const char *fieldname) const;
+  virtual CacheablePtr getCacheableField(const char* fieldname) const;
 
   /**
    * Reads the named field and set its value in CacheableObjectArrayPtr type out
@@ -399,7 +399,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @see PdxInstance#hasField
    */
   virtual CacheableObjectArrayPtr getCacheableObjectArrayField(
-                                                const char* fieldname) const;
+      const char* fieldname) const;
 
   /**
    * Set the existing named field to the given value.

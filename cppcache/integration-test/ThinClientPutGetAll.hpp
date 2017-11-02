@@ -338,8 +338,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putallAndGetallPdxWithCallBackArg)
     keys1.push_back(CacheableInt32::create(28));
     keys1.push_back(CacheableInt32::create(29));
     keys1.push_back(CacheableInt32::create(30));
-    auto valuesMap =
-        regPtr0->getAll(keys1, CacheableInt32::create(1000));
+    auto valuesMap = regPtr0->getAll(keys1, CacheableInt32::create(1000));
     LOG("GetallPdxWithCallBackArg on Pdx objects completed.");
 
     ASSERT(valuesMap.size() == keys1.size(), "getAll size did not match");

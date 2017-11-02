@@ -190,7 +190,7 @@ void RemoteQueryService::closeCqs() {
 CqService::query_container_type RemoteQueryService::getCqs() {
   TryReadGuard guard(m_rwLock, m_invalid);
 
-  CqService::query_container_type  vec;
+  CqService::query_container_type vec;
   if (m_invalid) {
     throw CacheClosedException("QueryService::getCqs: Cache has been closed.");
   }

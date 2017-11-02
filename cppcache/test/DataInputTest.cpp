@@ -143,7 +143,7 @@ class TestDataInput {
   int32_t readNativeInt32() { return m_dataInput.readNativeInt32(); }
 
   bool readNativeString(CacheableStringPtr &csPtr) {
-    csPtr =  m_dataInput.readNativeString();
+    csPtr = m_dataInput.readNativeString();
     return csPtr != nullptr;
   }
 

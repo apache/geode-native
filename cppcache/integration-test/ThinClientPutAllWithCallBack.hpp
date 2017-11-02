@@ -492,7 +492,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllOps)
       getAllkeys.push_back(CacheableKey::create(key));
     }
 
-
     const auto values = regPtr0->getAll(getAllkeys);
     ASSERT(values.size() == 500, "GetAll should return 500 entries.");
 

@@ -196,8 +196,7 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    */
 
   virtual RegionServicePtr createAuthenticatedView(
-      PropertiesPtr userSecurityProperties,
-      const char* poolName = nullptr);
+      PropertiesPtr userSecurityProperties, const char* poolName = nullptr);
 
   /**
    * Get the CacheTransactionManager instance for this Cache.

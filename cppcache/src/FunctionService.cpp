@@ -57,7 +57,7 @@ ExecutionPtr FunctionService::onRegion(const RegionPtr& region) {
       // getting real region to execute function on region
       if (!realRegion->getCache()->isClosed()) {
         realRegion->getCache()->m_cacheImpl->getRegion(realRegion->getName(),
-                                                      realRegion);
+                                                       realRegion);
       } else {
         throw IllegalStateException("Cache has been closed");
       }

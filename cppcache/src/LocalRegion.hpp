@@ -191,13 +191,12 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   VectorOfCacheable values();
   VectorOfRegionEntry entries(bool recursive);
 
-  HashMapOfCacheable getAll(
-      const VectorOfCacheableKey& keys,
-      const SerializablePtr& aCallbackArgument = nullptr);
+  HashMapOfCacheable getAll(const VectorOfCacheableKey& keys,
+                            const SerializablePtr& aCallbackArgument = nullptr);
 
-  HashMapOfCacheable getAll_internal(
-      const VectorOfCacheableKey& keys,
-      const SerializablePtr& aCallbackArgument, bool addToLocalCache);
+  HashMapOfCacheable getAll_internal(const VectorOfCacheableKey& keys,
+                                     const SerializablePtr& aCallbackArgument,
+                                     bool addToLocalCache);
 
   void putAll(const HashMapOfCacheable& map,
               uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,

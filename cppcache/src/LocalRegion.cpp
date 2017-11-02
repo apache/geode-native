@@ -538,7 +538,6 @@ HashMapOfCacheable LocalRegion::getAll(
 HashMapOfCacheable LocalRegion::getAll_internal(
     const VectorOfCacheableKey& keys, const SerializablePtr& aCallbackArgument,
     bool addToLocalCache) {
-
   if (keys.empty()) {
     throw IllegalArgumentException("Region::getAll: zero keys provided");
   }
@@ -787,7 +786,7 @@ VectorOfRegion LocalRegion::subregions_internal(const bool recursive) {
     // decend...
     for (int32_t i = 0; i < subRegions.size(); i++) {
       auto temp = dynamic_cast<LocalRegion*>(subRegions.at(i).get())
-          ->subregions_internal(true);
+                      ->subregions_internal(true);
       regions.insert(regions.end(), temp.begin(), temp.end());
     }
   }
@@ -1161,7 +1160,7 @@ class CreateActions {
                                 const CacheablePtr& value,
                                 const SerializablePtr& aCallbackArgument,
                                 VersionTagPtr& versionTag) {
-     return m_region.createNoThrow_remote(key, value, aCallbackArgument,
+    return m_region.createNoThrow_remote(key, value, aCallbackArgument,
                                          versionTag);
   }
 

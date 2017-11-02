@@ -53,7 +53,7 @@ void VersionTag::toData(DataOutput& output) const {
 void VersionTag::fromData(DataInput& input) {
   uint16_t flags = input.readInt16();
   m_bits = input.readInt16();
-  input.read(); //skip distributedSystemId
+  input.read();  // skip distributedSystemId
   if ((flags & VERSION_TWO_BYTES) != 0) {
     m_entryVersion = input.readInt16();
     m_entryVersion &= 0xffff;

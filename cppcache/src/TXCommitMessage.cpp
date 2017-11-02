@@ -73,10 +73,10 @@ m_processorId = -1;
     m_farsideBaseMembershipId = nullptr;
   }
 
-  input.readInt64(); // ignore tid
-  input.readInt64(); // ignore seqId
+  input.readInt64();  // ignore tid
+  input.readInt64();  // ignore seqId
 
-  input.readBoolean(); // ignore needsLargeModCount
+  input.readBoolean();  // ignore needsLargeModCount
 
   int32_t regionSize = input.readInt32();
   for (int32_t i = 0; i < regionSize; i++) {
