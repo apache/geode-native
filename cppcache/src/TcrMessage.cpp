@@ -656,7 +656,33 @@ void TcrMessage::writeRegionPart(const std::string& regionName) {
 }
 
 void TcrMessage::writeStringPart(const std::string& str) {
-  m_request->writeFullUTF(str.c_str());
+  const char* value = str.c_str();
+  uint32_t length = 0;
+  if (value != nullptr) {
+    int32_t encodedLen = m_request->getEncodedLength(value, length);
+    m_request->writeInt(encodedLen);
+    m_request->ensureCapacity(encodedLen);
+    m_request->write(static_cast<int8_t>(0));  // isObject = 0 BYTE_CODE
+    const uint8_t* end = m_request->getCursor() + encodedLen;
+
+    while (m_request->getCursor() < end) {
+      uint8_t tmp = static_cast<uint8_t>(*value++);
+      if ((tmp == 0) || (tmp & 0x80)) {
+        // two byte.
+        m_request->write(static_cast<uint8_t>(0xc0 | ((tmp & 0xc0) >> 6)));
+        m_request->write(static_cast<uint8_t>(0x80 | (tmp & 0x3f)));
+      } else {
+        // one byte.
+        m_request->write(tmp);
+      }
+    }
+    if (m_request->getCursor() > end) {
+      uint32_t offset = m_request->getCursor() - end;
+      m_request->rewindCursor(offset);
+    }
+  } else {
+    m_request->writeInt(static_cast<uint16_t>(0));
+  }
 }
 
 void TcrMessage::writeEventIdPart(int reserveSize,

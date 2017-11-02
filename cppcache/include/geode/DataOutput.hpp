@@ -336,29 +336,6 @@ class CPPCACHE_EXPORT DataOutput {
   }
 
   /**
-   * Writes the given string using java modified UTF-8 encoding
-   * supporting maximum 32-bit unsigned integer.
-   *
-   * @param value the C string to be written
-   *
-   */
-  inline void writeFullUTF(const char* value, uint32_t length = 0) {
-    if (value != nullptr) {
-      int32_t encodedLen = getEncodedLength(value, length);
-      writeInt(encodedLen);
-      ensureCapacity(encodedLen);
-      write(static_cast<int8_t>(0));  // isObject = 0 BYTE_CODE
-      uint8_t* end = m_buf + encodedLen;
-      while (m_buf < end) {
-        encodeChar(*value++);
-      }
-      if (m_buf > end) m_buf = end;
-    } else {
-      writeInt(static_cast<uint16_t>(0));
-    }
-  }
-
-  /**
    * Writes the given given string using java modified UTF-8 encoding
    * supporting maximum encoded length of 64K (i.e. unsigned 16-bit integer).
    * @remarks The string will be truncated if greater than the maximum
