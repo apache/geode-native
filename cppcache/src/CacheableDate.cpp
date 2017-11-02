@@ -60,27 +60,6 @@ bool CacheableDate::operator==(const CacheableKey& other) const {
   return m_timevalue == otherDt.m_timevalue;
 }
 
-int CacheableDate::day() const {
-  struct tm date = {0};
-  time_t sec = m_timevalue / 1000;
-  ACE_OS::localtime_r(&sec, &date);
-  return date.tm_mday;
-}
-
-int CacheableDate::month() const {
-  struct tm date = {0};
-  time_t sec = m_timevalue / 1000;
-  ACE_OS::localtime_r(&sec, &date);
-  return date.tm_mon + 1;
-}
-
-int CacheableDate::year() const {
-  struct tm date = {0};
-  time_t sec = m_timevalue / 1000;
-  ACE_OS::localtime_r(&sec, &date);
-  return date.tm_year + 1900;
-}
-
 int64_t CacheableDate::milliseconds() const { return m_timevalue; }
 
 int32_t CacheableDate::hashcode() const {
