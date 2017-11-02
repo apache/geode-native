@@ -90,27 +90,6 @@ class CPPCACHE_EXPORT CacheableDate : public CacheableKey {
   /** @return true if this key matches other. */
   virtual bool operator==(const CacheableKey& other) const;
 
-  /**
-   * @return day of the month.
-   * @deprecated Use localtime or similar for calendar conversions.
-   */
-  __DEPRECATED__("Use localtime or similar for calendar conversions.")
-  virtual int day() const;
-
-  /**
-   * @return month 1(Jan) - 12(Dec) .
-   * @deprecated Use localtime or similar for calendar conversions.
-   */
-  __DEPRECATED__("Use localtime or similar for calendar conversions.")
-  virtual int month() const;
-
-  /**
-   * @return year, example 1999.
-   * @deprecated Use localtime or similar for calendar conversions.
-   */
-  __DEPRECATED__("Use localtime or similar for calendar conversions.")
-  virtual int year() const;
-
   /** @return milliseconds elapsed since January 1, 1970, 00:00:00 GMT. */
   virtual int64_t milliseconds() const;
 
