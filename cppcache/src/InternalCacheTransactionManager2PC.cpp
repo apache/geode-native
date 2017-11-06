@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <geode/InternalCacheTransactionManager2PC.hpp>
+#include "InternalCacheTransactionManager2PC.hpp"
 
 namespace apache {
 namespace geode {
