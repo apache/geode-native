@@ -419,9 +419,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
           // LOGINFO("NIL::260: queryparamSet[%d][%d] = %s", i, j,
           // queryparamSet[i][j]);
           if (atoi(queryparamSet[i][j]) != 0) {
-            paramList->push_back(Cacheable::create(atoi(queryparamSet[i][j])));
+            paramList->push_back(CacheableInt32::create(atoi(queryparamSet[i][j])));
           } else {
-            paramList->push_back(Cacheable::create(queryparamSet[i][j]));
+            paramList->push_back(CacheableString::create(queryparamSet[i][j]));
           }
         }
 

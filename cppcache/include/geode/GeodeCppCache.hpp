@@ -81,6 +81,4 @@
 #include "CqStatusListener.hpp"
 #include "PdxFieldTypes.hpp"
 
-#include "GeodeCppCache.inl"
-
 #endif  // GEODE_GEODECPPCACHE_H_

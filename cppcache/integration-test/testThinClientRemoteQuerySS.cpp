@@ -444,9 +444,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
           // queryparamSetSS[i][j]);
           if (atoi(queryparamSetSS[i][j]) != 0) {
             paramList->push_back(
-                Cacheable::create(atoi(queryparamSetSS[i][j])));
+                CacheableInt32::create(atoi(queryparamSetSS[i][j])));
           } else {
-            paramList->push_back(Cacheable::create(queryparamSetSS[i][j]));
+            paramList->push_back(CacheableString::create(queryparamSetSS[i][j]));
           }
         }
 

@@ -111,11 +111,6 @@ class CPPCACHE_EXPORT CacheableKey : public Cacheable {
   void operator=(const CacheableKey& other);
 };
 
-template <class TKEY>
-inline CacheableKeyPtr createKey(const std::shared_ptr<TKEY>& value);
-
-template <typename TKEY>
-inline CacheableKeyPtr createKey(const TKEY* value);
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

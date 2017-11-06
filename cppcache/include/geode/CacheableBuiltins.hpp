@@ -642,6 +642,12 @@ _GF_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey,
  */
 _GF_CACHEABLE_CONTAINER_TYPE_(HashSetOfCacheableKey, CacheableLinkedHashSet);
 
+template<>
+inline CacheableKeyPtr CacheableKey::create(int value )
+{
+  return CacheableInt32::create(value);
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

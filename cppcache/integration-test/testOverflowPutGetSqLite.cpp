@@ -626,7 +626,7 @@ BEGIN_TEST(OverFlowTest_PutGetAll)
     HashMapOfCacheable map0;
     map0.clear();
     for (int i = 1; i <= 50; i++) {
-      map0.emplace(CacheableKey::create(i), Cacheable::create(i));
+      map0.emplace(CacheableKey::create(i), CacheableInt32::create(i));
     }
     regionPtr->putAll(map0);
     checkOverflowToken(regionPtr, 10);

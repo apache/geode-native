@@ -121,7 +121,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutUnicodeStrings)
     RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
     for (int index = 0; index < 5; ++index) {
       CacheableStringPtr key = getUString(index);
-      CacheablePtr val = Cacheable::create(index + 100);
+      CacheablePtr val = CacheableInt32::create(index + 100);
       reg0->put(key, val);
     }
     LOG("PutUnicodeStrings complete.");
