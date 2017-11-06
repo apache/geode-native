@@ -327,9 +327,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSeven)
 
       for (int j = 0; j < numSSQueryParam[5]; j++) {
         if (atoi(queryparamSetSS[5][j]) != 0) {
-          paramList->push_back(CacheableInt32::create(atoi(queryparamSetSS[5][j])));
+          paramList->push_back(Cacheable::create(atoi(queryparamSetSS[5][j])));
         } else {
-          paramList->push_back(CacheableString::create(queryparamSetSS[5][j]));
+          paramList->push_back(Cacheable::create(queryparamSetSS[5][j]));
         }
       }
       results = qry->execute(paramList, 1);
@@ -380,9 +380,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
 
       for (int j = 0; j < numSSQueryParam[5]; j++) {
         if (atoi(queryparamSetSS[5][j]) != 0) {
-          paramList->push_back(CacheableInt32::create(atoi(queryparamSetSS[5][j])));
+          paramList->push_back(Cacheable::create(atoi(queryparamSetSS[5][j])));
         } else {
-          paramList->push_back(CacheableString::create(queryparamSetSS[5][j]));
+          paramList->push_back(Cacheable::create(queryparamSetSS[5][j]));
         }
       }
 

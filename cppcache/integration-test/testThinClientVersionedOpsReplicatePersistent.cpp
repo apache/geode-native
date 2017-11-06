@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#include <geode/CacheableString.hpp>
-
 #include "ThinClientVersionedOps.hpp"
 
 DUNIT_MAIN

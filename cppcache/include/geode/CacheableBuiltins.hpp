@@ -642,9 +642,13 @@ _GF_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey,
  */
 _GF_CACHEABLE_CONTAINER_TYPE_(HashSetOfCacheableKey, CacheableLinkedHashSet);
 
-template<>
-inline CacheableKeyPtr CacheableKey::create(int value )
-{
+template <>
+inline CacheableKeyPtr CacheableKey::create(int32_t value) {
+  return CacheableInt32::create(value);
+}
+
+template <>
+inline SerializablePtr Serializable::create(int32_t value) {
   return CacheableInt32::create(value);
 }
 
