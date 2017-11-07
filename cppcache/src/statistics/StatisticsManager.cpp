@@ -24,7 +24,7 @@
 #include <ace/Guard_T.h>
 #include <geode/Exception.hpp>
 #include "StatisticsManager.hpp"
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 #include "GeodeStatisticsFactory.hpp"
 #include <string>
 #include "AtomicStatisticsImpl.hpp"

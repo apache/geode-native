@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 #include <geode/DataOutput.hpp>
 #include <geode/SystemProperties.hpp>
 #include <SerializationRegistry.hpp>

@@ -88,7 +88,7 @@ BEGIN_TEST.
 
 #include <CppCacheLibrary.hpp>
 #include <geode/Exception.hpp>
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 
 #include <list>
 #include <string>

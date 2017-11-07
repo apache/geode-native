@@ -26,7 +26,7 @@
 #include <ace/Thread_Mutex.h>
 #include <ace/Task.h>
 #include <geode/DataOutput.hpp>
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 #include <memory>
 #include "IntQueue.hpp"
 #include "EvictionThread.hpp"

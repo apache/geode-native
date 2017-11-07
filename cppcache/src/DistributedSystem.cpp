@@ -23,7 +23,7 @@
 
 #include <CppCacheLibrary.hpp>
 #include <Utils.hpp>
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 #include <geode/CacheFactory.hpp>
 #include <ace/OS.h>
 

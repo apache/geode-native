@@ -122,7 +122,7 @@
 
 #include <cstdint>
 
-#include "Log.hpp"
+#include "util/Log.hpp"
 #include "Assert.hpp"
 
 #endif  // GEODE_GFCPP_GLOBALS_H_

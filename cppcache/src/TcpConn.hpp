@@ -21,7 +21,7 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 #include "Connector.hpp"
 
 #include <ace/SOCK_Stream.h>

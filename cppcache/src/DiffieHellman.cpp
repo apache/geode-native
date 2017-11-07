@@ -16,7 +16,7 @@
  */
 
 #include "DiffieHellman.hpp"
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 #include <geode/ExceptionTypes.hpp>
 #include <geode/SystemProperties.hpp>
 #include <ace/Guard_T.h>

@@ -26,7 +26,7 @@
  *
  */
 
-#include "geode_globals.hpp"
+#include <geode/geode_globals.hpp>
 #include <cstdio>
 #include <cstdarg>
 

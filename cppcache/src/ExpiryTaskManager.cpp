@@ -16,7 +16,7 @@
  */
 #include "config.h"
 #include "ExpiryTaskManager.hpp"
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 #include <geode/Assert.hpp>
 #include <geode/DistributedSystem.hpp>
 #include "DistributedSystemImpl.hpp"

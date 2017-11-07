@@ -21,7 +21,7 @@
  */
 
 #include "Properties.hpp"
-#include "Log.hpp"
+#include "util/Log.hpp"
 
 /** @file
  */

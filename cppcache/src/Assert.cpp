@@ -16,7 +16,7 @@
  */
 #include <geode/Assert.hpp>
 #include <geode/ExceptionTypes.hpp>
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {

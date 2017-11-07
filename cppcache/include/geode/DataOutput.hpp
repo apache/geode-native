@@ -22,7 +22,7 @@
 
 #include "geode_globals.hpp"
 #include "ExceptionTypes.hpp"
-#include "Log.hpp"
+#include "util/Log.hpp"
 #include "Serializable.hpp"
 #include "CacheableString.hpp"
 

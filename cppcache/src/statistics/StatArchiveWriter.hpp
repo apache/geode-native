@@ -31,7 +31,7 @@
 #include "StatisticDescriptorImpl.hpp"
 #include <geode/statistics/StatisticsType.hpp>
 #include "HostStatSampler.hpp"
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 #include <geode/DataOutput.hpp>
 #include <NonCopyable.hpp>
 #include <chrono>
