@@ -23,8 +23,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <geode/utils.hpp>
-
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 #include "CacheableBuiltins.hpp"

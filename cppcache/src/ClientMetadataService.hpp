@@ -26,7 +26,6 @@
 
 #include <ace/Task.h>
 
-#include <geode/utils.hpp>
 #include <memory>
 #include <geode/CacheableKey.hpp>
 #include <geode/Cacheable.hpp>
@@ -38,6 +37,7 @@
 #include "Queue.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "NonCopyable.hpp"
+#include "util/functional.hpp"
 
 namespace apache {
 namespace geode {

@@ -31,11 +31,9 @@
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Guard_T.h>
 
-#include <geode/utils.hpp>
-#include <memory>
-
 #include "EventId.hpp"
 #include "EventSource.hpp"
+#include "util/functional.hpp"
 
 namespace apache {
 namespace geode {

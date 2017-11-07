@@ -26,7 +26,6 @@
 #include <ace/ACE.h>
 #include <ace/Recursive_Thread_Mutex.h>
 
-#include <geode/utils.hpp>
 #include <geode/PdxSerializable.hpp>
 #include <geode/Cache.hpp>
 
@@ -36,6 +35,7 @@
 #include "EnumInfo.hpp"
 #include "PreservedDataExpiryHandler.hpp"
 #include "ExpiryTaskManager.hpp"
+#include "util/functional.hpp"
 
 namespace apache {
 namespace geode {

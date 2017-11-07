@@ -23,10 +23,9 @@
 #include <unordered_set>
 #include <memory>
 
-#include <geode/utils.hpp>
-
 #include "geode_globals.hpp"
 #include "CacheableKey.hpp"
+#include "util/functional.hpp"
 
 namespace apache {
 namespace geode {

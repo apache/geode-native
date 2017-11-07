@@ -28,9 +28,9 @@
 
 #include <memory>
 #include <geode/CacheableBuiltins.hpp>
-#include <geode/utils.hpp>
 
 #include "MapEntry.hpp"
+#include "util/functional.hpp"
 
 namespace apache {
 namespace geode {
