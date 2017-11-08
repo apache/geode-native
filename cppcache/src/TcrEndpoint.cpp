@@ -122,7 +122,7 @@ inline bool TcrEndpoint::needtoTakeConnectLock() {
 #ifdef __linux
   if (m_cacheImpl->getDistributedSystem()
           .getSystemProperties()
-          .connectWaitTimeout() > 0) {
+          .connectWaitTimeout() > std::chrono::seconds::zero()) {
     return m_needToConnectInLock;  // once pipe or other socket error will take
                                    // lock to connect.
   }

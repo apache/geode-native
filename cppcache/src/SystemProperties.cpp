@@ -656,18 +656,14 @@ void SystemProperties::logSettings() {
 
   std::string settings = "Geode Native Client System Properties:";
 
-  char buf[2048];
-
   settings += "\n  appdomain-enabled = ";
   settings += isAppDomainEnabled() ? "true" : "false";
 
-  ACE_OS::snprintf(buf, 2048, "%" PRIu32, statsDiskSpaceLimit());
   settings += "\n  archive-disk-space-limit = ";
-  settings += buf;
+  settings += std::to_string(statsDiskSpaceLimit());
 
-  ACE_OS::snprintf(buf, 2048, "%" PRIu32, statsFileSizeLimit());
   settings += "\n  archive-file-size-limit = ";
-  settings += buf;
+  settings += std::to_string(statsFileSizeLimit());
 
   settings += "\n  auto-ready-for-events = ";
   settings += autoReadyForEvents() ? "true" : "false";
@@ -684,9 +680,8 @@ void SystemProperties::logSettings() {
   settings += "\n  connect-timeout = ";
   settings += util::chrono::duration::to_string(connectTimeout());
 
-  ACE_OS::snprintf(buf, 2048, "%" PRIu32, javaConnectionPoolSize());
   settings += "\n  connection-pool-size = ";
-  settings += buf;
+  settings += std::to_string(javaConnectionPoolSize());
 
   settings += "\n  connect-wait-timeout = ";
   settings += util::chrono::duration::to_string(connectWaitTimeout());
@@ -714,15 +709,13 @@ void SystemProperties::logSettings() {
   settings += "\n  grid-client = ";
   settings += isGridClient() ? "true" : "false";
 
-  ACE_OS::snprintf(buf, 2048, "%" PRIu32, heapLRUDelta());
   settings += "\n  heap-lru-delta = ";
-  settings += buf;
+  settings += std::to_string(heapLRUDelta());
   /* adongre  - Coverity II
    * CID 29195: Printf arg type mismatch (PW.PRINTF_ARG_MISMATCH)
    */
-  ACE_OS::snprintf(buf, 2048, "%" PRIu32, static_cast<int>(heapLRULimit()));
   settings += "\n  heap-lru-limit = ";
-  settings += buf;
+  settings += std::to_string(heapLRULimit());
 
   // settings += "\n  license-file = ";
   // settings += licenseFilename();
@@ -730,27 +723,23 @@ void SystemProperties::logSettings() {
   // settings += "\n  license-type = ";
   // settings += licenseType();
 
-  ACE_OS::snprintf(buf, 2048, "%" PRIu32, logDiskSpaceLimit());
   settings += "\n  log-disk-space-limit = ";
-  settings += buf;
+  settings += std::to_string(logDiskSpaceLimit());
 
   settings += "\n  log-file = ";
   settings += logFilename();
 
-  ACE_OS::snprintf(buf, 2048, "%" PRIu32, logFileSizeLimit());
   settings += "\n  log-file-size-limit = ";
-  settings += buf;
+  settings += std::to_string(logFileSizeLimit());
 
   settings += "\n  log-level = ";
   settings += Log::levelToChars(logLevel());
 
-  ACE_OS::snprintf(buf, 2048, "%" PRIu32, threadPoolSize());
   settings += "\n  max-fe-threads = ";
-  settings += buf;
+  settings += std::to_string(threadPoolSize());
 
-  ACE_OS::snprintf(buf, 2048, "%" PRIu32, maxSocketBufferSize());
   settings += "\n  max-socket-buffer-size = ";
-  settings += buf;
+  settings += std::to_string(maxSocketBufferSize());
 
   settings += "\n  notify-ack-interval = ";
   settings += util::chrono::duration::to_string(notifyAckInterval());
