@@ -17,15 +17,21 @@
 
 #pragma once
 
-//#include "begin_native.hpp"
-//#include <CachePerfStats.hpp>
-//#include "end_native.hpp"
-
 #include "../IPdxInstance.hpp"
 #include "../IPdxSerializable.hpp"
 #include "../DataInput.hpp"
 #include "PdxLocalWriter.hpp"
 #include "IWritablePdxInstance.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
+
+  class CachePerfStats;
+
+}  // namespace client
+}  // nanespace geode
+}  // namespace apache
 
 namespace Apache
 {
@@ -38,6 +44,8 @@ namespace Apache
       namespace Internal
       {
         using namespace System;
+
+        namespace native = apache::geode::client;
 
         ref class PdxType;
 
@@ -72,7 +80,7 @@ namespace Apache
           void cleanup();
 
 
-          //CachePerfStats* m_cachePerfStats;
+          native::CachePerfStats* m_cachePerfStats;
           System::Byte* m_buffer;
           int m_bufferLength;
           int m_typeId;

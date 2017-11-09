@@ -18,9 +18,10 @@
 #pragma once
 
 #include "begin_native.hpp"
-#include <CacheRegionHelper.hpp>
 #include <geode/Cache.hpp>
+#include <CacheRegionHelper.hpp>
 #include <CacheImpl.hpp>
+#include <CachePerfStats.hpp>
 #include "end_native.hpp"
 
 #include "PdxInstanceImpl.hpp"
@@ -55,7 +56,7 @@ namespace Apache
           m_bufferLength = 0;
           m_pdxType = pdxType;
           m_cache = cache;
-          //m_cachePerfStats = &CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getCachePerfStats();
+          m_cachePerfStats = &CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getCachePerfStats();
           m_pdxType->InitializeType(cache);//to generate static position map
 
           //need to initiailize stream. this will call todata and in toData we will have stream
@@ -86,13 +87,13 @@ namespace Apache
           Object^ ret = Internal::PdxHelper::DeserializePdx(dataInput, true, m_typeId, m_bufferLength, CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry().get());
           //dataInput->ResetPdx(0);
 
-          //if(m_cachePerfStats)
-          //{
-          //  Utils::updateStatOpTime(m_cachePerfStats->getStat(),
-          //                          m_cachePerfStats->getPdxInstanceDeserializationTimeId(),
-          //                          sampleStartNanos);
-          //  m_cachePerfStats->incPdxInstanceDeserializations();
-          //}
+          if(m_cachePerfStats)
+          {
+            Utils::updateStatOpTime(m_cachePerfStats->getStat(),
+                                    m_cachePerfStats->getPdxInstanceDeserializationTimeId(),
+                                    sampleStartNanos);
+            m_cachePerfStats->incPdxInstanceDeserializations();
+          }
           return ret;
         }
 
