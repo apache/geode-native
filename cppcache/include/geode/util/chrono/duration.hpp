@@ -79,7 +79,7 @@ struct _is_duration<const volatile std::chrono::duration<Rep, Period>>
     : std::true_type {};
 
 /**
- * Converts std::chrono:duration from givene unit to other where other duration
+ * Converts std::chrono:duration from given unit to other where other duration
  * is no less than the given duration.
  *
  * For internal use only.
@@ -140,6 +140,14 @@ inline
   throw std::invalid_argument("Not a valid duration parsing '" + string + "'.");
 }
 
+/**
+ * Converts std::chrono::duration to std::string.
+ *
+ * @tparam Rep
+ * @tparam Period
+ * @param duration to convert to std::string
+ * @return std::string representing the givrn duration.
+ */
 template <class Rep, class Period>
 inline std::string to_string(
     const std::chrono::duration<Rep, Period>& duration) {
