@@ -39,6 +39,8 @@ TEST(util_chrono_durationTest, to_string) {
   EXPECT_EQ("42ms", to_string(std::chrono::milliseconds(42)));
   EXPECT_EQ("42us", to_string(std::chrono::microseconds(42)));
   EXPECT_EQ("42ns", to_string(std::chrono::nanoseconds(42)));
+  EXPECT_EQ("0ns", to_string(std::chrono::nanoseconds(0)));
+  EXPECT_EQ("-42ns", to_string(std::chrono::nanoseconds(-42)));
 }
 
 TEST(util_chrono_durationTest, from_string) {
@@ -48,6 +50,8 @@ TEST(util_chrono_durationTest, from_string) {
   EXPECT_EQ(std::chrono::milliseconds(42), from_string("42ms"));
   EXPECT_EQ(std::chrono::microseconds(42), from_string("42us"));
   EXPECT_EQ(std::chrono::nanoseconds(42), from_string("42ns"));
+  EXPECT_EQ(std::chrono::nanoseconds(0), from_string("0ns"));
+  EXPECT_EQ(std::chrono::nanoseconds(-42), from_string("-42ns"));
 }
 
 TEST(util_chrono_durationTest, from_stringWithCeil) {
