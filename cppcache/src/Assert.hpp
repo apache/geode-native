@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_ASSERT_H_
-#define GEODE_ASSERT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,7 +15,12 @@
  * limitations under the License.
  */
 
-#include "geode_globals.hpp"
+#pragma once
+
+#ifndef GEODE_ASSERT_H_
+#define GEODE_ASSERT_H_
+
+#include <geode/geode_globals.hpp>
 
 /**
  * @file

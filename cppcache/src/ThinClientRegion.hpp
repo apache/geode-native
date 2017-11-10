@@ -24,7 +24,6 @@
 
 #include <ace/Task.h>
 
-#include <geode/utils.hpp>
 #include <geode/ResultCollector.hpp>
 
 #include "LocalRegion.hpp"
@@ -35,7 +34,7 @@
 #include "TcrChunkedContext.hpp"
 #include "CacheableObjectPartList.hpp"
 #include "ClientMetadataService.hpp"
-
+#include "util/functional.hpp"
 /**
  * @file
  */

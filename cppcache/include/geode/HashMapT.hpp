@@ -23,12 +23,11 @@
 #include <unordered_map>
 #include <memory>
 
-#include <geode/utils.hpp>
-
 #include "geode_globals.hpp"
 #include "Cacheable.hpp"
 #include "CacheableKey.hpp"
 #include "Exception.hpp"
+#include "util/functional.hpp"
 
 namespace apache {
 namespace geode {

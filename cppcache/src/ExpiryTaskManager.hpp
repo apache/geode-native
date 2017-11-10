@@ -25,7 +25,7 @@
 #include "ReadWriteLock.hpp"
 
 #include <geode/geode_globals.hpp>
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 
 /**
  * @file ExpiryTaskManager.hpp

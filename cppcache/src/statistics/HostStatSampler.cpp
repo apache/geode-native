@@ -35,7 +35,7 @@
 #include "StatArchiveWriter.hpp"
 #include <geode/DistributedSystem.hpp>
 #include <geode/SystemProperties.hpp>
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 #include "GeodeStatisticsFactory.hpp"
 #include <ClientHealthStats.hpp>
 #include <ClientProxyMembershipID.hpp>

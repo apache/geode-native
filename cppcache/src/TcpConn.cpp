@@ -18,7 +18,7 @@
 #include "TcpConn.hpp"
 #include <geode/DistributedSystem.hpp>
 #include <geode/SystemProperties.hpp>
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 
 #include <memory.h>
 

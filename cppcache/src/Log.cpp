@@ -36,7 +36,7 @@
 #include <ace/Dirent_Selector.h>
 #include <ace/OS_NS_sys_stat.h>
 
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 #include <geode/ExceptionTypes.hpp>
 #include <geodeBanner.hpp>
 

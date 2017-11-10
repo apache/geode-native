@@ -19,7 +19,7 @@
 
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 #include "end_native.hpp"
 
 

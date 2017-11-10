@@ -18,7 +18,7 @@
 #include "CqQueryImpl.hpp"
 #include <geode/CqAttributesFactory.hpp>
 #include "CqAttributesMutatorImpl.hpp"
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 #include "ResultSetImpl.hpp"
 #include "StructSetImpl.hpp"
 #include <geode/ExceptionTypes.hpp>

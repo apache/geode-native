@@ -18,7 +18,7 @@
 #include <tuple>
 
 #include "LocalRegion.hpp"
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 #include <geode/SystemProperties.hpp>
 #include <geode/PoolManager.hpp>
 

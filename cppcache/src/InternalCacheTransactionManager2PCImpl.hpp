@@ -26,7 +26,7 @@
  *      Author: sshcherbakov
  */
 
-#include <geode/InternalCacheTransactionManager2PC.hpp>
+#include "InternalCacheTransactionManager2PC.hpp"
 #include "CacheTransactionManagerImpl.hpp"
 
 namespace apache {

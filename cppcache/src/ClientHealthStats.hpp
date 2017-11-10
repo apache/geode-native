@@ -22,7 +22,7 @@
 
 #include <geode/geode_types.hpp>
 #include <geode/Serializable.hpp>
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 #include <geode/CacheableDate.hpp>
 
 namespace apache {

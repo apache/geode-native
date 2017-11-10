@@ -21,8 +21,9 @@
 #include <unordered_set>
 #include <unordered_map>
 
-#include <geode/utils.hpp>
 #include <geode/CacheableString.hpp>
+
+#include "util/functional.hpp"
 
 using namespace apache::geode::client;
 

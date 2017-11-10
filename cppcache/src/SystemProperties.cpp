@@ -23,7 +23,7 @@
 
 #include <geode/SystemProperties.hpp>
 #include <CppCacheLibrary.hpp>
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 #include <geode/ExceptionTypes.hpp>
 #include <ace/OS.h>
 #include <ace/DLL.h>

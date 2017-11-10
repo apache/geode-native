@@ -29,7 +29,7 @@
 #include <geode/CacheTransactionManager.hpp>
 
 #include "TXCommitMessage.hpp"
-#include <geode/Log.hpp>
+#include "util/Log.hpp"
 #include "SuspendedTxExpiryHandler.hpp"
 
 namespace apache {

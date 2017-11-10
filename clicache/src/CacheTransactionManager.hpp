@@ -20,7 +20,7 @@
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
 #include <geode/CacheTransactionManager.hpp>
-#include <geode/InternalCacheTransactionManager2PC.hpp>
+#include "InternalCacheTransactionManager2PC.hpp"
 #include "end_native.hpp"
 #include "native_shared_ptr.hpp"
 #include "TransactionId.hpp"
