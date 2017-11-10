@@ -14,16 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <geode/GeodeTypeIds.hpp>
+
 #include "RemoteQuery.hpp"
 #include "TcrMessage.hpp"
 #include "ResultSetImpl.hpp"
 #include "StructSetImpl.hpp"
-#include <geode/GeodeTypeIds.hpp>
 #include "ReadWriteLock.hpp"
 #include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
 #include "EventId.hpp"
 #include "ThinClientPoolDM.hpp"
+#include "util/bounds.hpp"
 
 using namespace apache::geode::client;
 
@@ -38,6 +41,7 @@ RemoteQuery::RemoteQuery(const char* querystr,
 }
 
 SelectResultsPtr RemoteQuery::execute(std::chrono::milliseconds timeout) {
+  util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
   GuardUserAttribures gua;
   if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);
@@ -47,6 +51,7 @@ SelectResultsPtr RemoteQuery::execute(std::chrono::milliseconds timeout) {
 
 SelectResultsPtr RemoteQuery::execute(CacheableVectorPtr paramList,
                                       std::chrono::milliseconds timeout) {
+  util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
   GuardUserAttribures gua;
   if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);

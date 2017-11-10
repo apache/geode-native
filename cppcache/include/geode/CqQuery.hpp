@@ -96,6 +96,7 @@ class CPPCACHE_EXPORT CqQuery  {
    *
    * @param timeout The time to wait for query response, optional.
    *
+   * @throws IllegalArgumentException If timeout exceeds 2147483647ms.
    * @throws CqClosedException if this CqQuery is closed.
    * @throws RegionNotFoundException if the specified region in the
    *         query string is not found.

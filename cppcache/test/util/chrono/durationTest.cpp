@@ -16,10 +16,13 @@
  */
 
 #include <chrono>
+#include <algorithm>
 
 #include <gtest/gtest.h>
 
 #include <geode/util/chrono/duration.hpp>
+
+#include "util/chrono/duration_bounds.hpp"
 
 using namespace apache::geode::util::chrono::duration;
 
@@ -69,4 +72,24 @@ TEST(util_chrono_durationTest, from_stringWithCeil) {
 
 TEST(util_chrono_durationTest, from_stringException) {
   ASSERT_THROW(from_string("42"), std::invalid_argument);
+}
+
+TEST(util_chrono_durationTest, assert_bounds) {
+  auto protocolTimeoutLimit = assert_bounds<int32_t, std::milli, 0>{};
+
+  ASSERT_NO_THROW(protocolTimeoutLimit(std::chrono::milliseconds(2147483647)));
+
+  ASSERT_THROW(protocolTimeoutLimit(std::chrono::milliseconds(2147483648)),
+               std::invalid_argument);
+
+  ASSERT_THROW(protocolTimeoutLimit(std::chrono::hours(2400)),
+               std::invalid_argument);
+
+  ASSERT_NO_THROW(protocolTimeoutLimit(std::chrono::milliseconds(0)));
+
+  ASSERT_THROW(protocolTimeoutLimit(std::chrono::milliseconds(-2)),
+               std::invalid_argument);
+
+  ASSERT_THROW(protocolTimeoutLimit(std::chrono::hours(-2400)),
+               std::invalid_argument);
 }

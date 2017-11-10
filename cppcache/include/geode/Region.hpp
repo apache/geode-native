@@ -400,8 +400,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * functions.
    * It is ignored if nullptr. It must be serializable if this operation is
    * distributed.
-   * @throws IllegalArgumentException If timeout
-   *         parameter is greater than 2^31/1000, ie 2147483.
+   * @throws IllegalArgumentException If timeout exceeds 2147483647ms.
    * @since 8.1
    */
   virtual void putAll(
@@ -1310,12 +1309,9 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    *
    * @param predicate The query predicate (just the WHERE clause) or the entire
    * query to execute.
-   * @param timeout The time (in seconds) to wait for the query response,
-   * optional.
-   *        This should be less than or equal to 2^31/1000 i.e. 2147483.
+   * @param timeout The time to wait for the query response, optional.
    *
-   * @throws IllegalArgumentException If predicate is empty or timeout
-   *         parameter is greater than 2^31/1000.
+   * @throws IllegalArgumentException If timeout exceeds 2147483647ms.
    * @throws QueryException if some query error occurred at the server.
    * @throws CacheServerException If an exception is received from the Java
    * cache server.
@@ -1343,15 +1339,13 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * Valid only for a Native Client region.
    * @param predicate The query predicate (just the WHERE clause) or the entire
    * query to execute.
-   * @param timeout The time (in seconds) to wait for the response, optional.
-   *        This should be less than or equal to 2^31/1000 i.e. 2147483.
-   * @throws IllegalArgumentException If predicate is empty or timeout
-   *         parameter is greater than 2^31/1000.
+   * @param timeout The time to wait for the response, optional.
+   * @throws IllegalArgumentException If timeout exceeds 2147483647ms.
    * @throws QueryException if some query error occurred at the server.
    * @throws NotConnectedException if a server connection error occurs.
    *         For pools configured with locators, if no locators are available,
-   * the cause
-   *         of NotConnectedException is set to NoAvailableLocatorsException.
+   *         the cause of NotConnectedException is set to
+   *         NoAvailableLocatorsException.
    * @throws MessageExcepton If the message received from server could not be
    *         handled. This will be the case when the reply is not well formed.
    *         More information can be found in the log.
@@ -1368,10 +1362,8 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * single result value. Valid only for a Native Client region.
    * @param predicate The query predicate (just the WHERE clause) or the entire
    * query to execute.
-   * @param timeout The time (in seconds) to wait for the response, optional.
-   *        This should be less than or equal to 2^31/1000 i.e. 2147483.
-   * @throws IllegalArgumentException If predicate is empty or timeout
-   *         parameter is greater than 2^31/1000.
+   * @param timeout The time to wait for the response, optional.
+   * @throws IllegalArgumentException If timeout exceeds 2147483647ms.
    * @throws QueryException if some query error occurred at the server, or more
    * than one result items are available.
    * @throws NotConnectedException if a server connection error occurs.

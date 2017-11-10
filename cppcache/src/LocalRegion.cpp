@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <vector>
 
 #include <geode/SystemProperties.hpp>
@@ -31,6 +32,7 @@
 #include "RegionGlobalLocks.hpp"
 #include "TXState.hpp"
 #include "VersionTag.hpp"
+#include "util/bounds.hpp"
 #include "util/Log.hpp"
 
 namespace apache {
@@ -348,11 +350,8 @@ void LocalRegion::localPut(const CacheableKeyPtr& key,
 void LocalRegion::putAll(const HashMapOfCacheable& map,
                          std::chrono::milliseconds timeout,
                          const SerializablePtr& aCallbackArgument) {
-  //  if ((timeout * 1000) >= 0x7fffffff) {
-  //    throw IllegalArgumentException(
-  //        "Region::putAll: timeout parameter "
-  //        "greater than maximum allowed (2^31/1000 i.e 2147483).");
-  //  }
+  util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
+
   auto sampleStartNanos = startStatOpTime();
   auto err = putAllNoThrow(map, timeout, aCallbackArgument);
   updateStatOpTime(m_regionStats->getStat(), m_regionStats->getPutAllTimeId(),

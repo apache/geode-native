@@ -122,12 +122,12 @@ std::unique_ptr<RegionAttributes> AttributesFactory::createRegionAttributes() {
 
 void AttributesFactory::validateAttributes(RegionAttributes& attrs) {
   if (!attrs.m_caching) {
-    if (attrs.m_entryTimeToLive.count() != 0) {
+    if (attrs.m_entryTimeToLive != std::chrono::seconds::zero()) {
       throw IllegalStateException(
           "Entry TimeToLive use is incompatible with disabled caching");
     }
 
-    if (attrs.m_entryIdleTimeout.count() != 0) {
+    if (attrs.m_entryIdleTimeout != std::chrono::seconds::zero()) {
       throw IllegalStateException(
           "Entry IdleTimeout use is incompatible with disabled caching");
     }

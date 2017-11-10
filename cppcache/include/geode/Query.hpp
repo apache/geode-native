@@ -52,11 +52,9 @@ class CPPCACHE_EXPORT Query {
   /**
    * Executes the OQL Query on the cache server and returns the results.
    *
-   * @param timeout The time (in seconds) to wait for query response, optional.
-   *        This should be less than or equal to 2^31/1000 i.e. 2147483.
+   * @param timeout The time to wait for query response, optional.
    *
-   * @throws IllegalArgumentException if timeout parameter is greater than
-   * 2^31/1000.
+   * @throws IllegalArgumentException If timeout exceeds 2147483647ms.
    * @throws QueryException if some query error occurred at the server.
    * @throws IllegalStateException if some error occurred.
    * @throws NotConnectedException if no java cache server is available.  For
@@ -75,11 +73,9 @@ class CPPCACHE_EXPORT Query {
    * results.
    *
    * @param paramList The query parameters list
-   * @param timeout The time (in seconds) to wait for query response, optional.
-   *       This should be less than or equal to 2^31/1000 i.e. 2147483.
+   * @param timeout The time to wait for query response, optional.
    *
-   * @throws IllegalArgumentException if timeout parameter is greater than
-   * 2^31/1000.
+   * @throws IllegalArgumentException If timeout exceeds 2147483647ms.
    * @throws QueryException if some query error occurred at the server.
    * @throws IllegalStateException if some error occurred.
    * @throws NotConnectedException if no java cache server is available.  For

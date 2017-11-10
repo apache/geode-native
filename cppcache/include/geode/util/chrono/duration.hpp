@@ -31,32 +31,32 @@ namespace util {
 namespace chrono {
 namespace duration {
 
-template <class Duration>
+template <class Period>
 struct _suffix {
   static constexpr char const* value = nullptr;
 };
 template <>
-struct _suffix<std::chrono::hours> {
+struct _suffix<std::ratio<3600>> {
   static constexpr char const* value = "h";
 };
 template <>
-struct _suffix<std::chrono::minutes> {
+struct _suffix<std::ratio<60>> {
   static constexpr char const* value = "min";
 };
 template <>
-struct _suffix<std::chrono::seconds> {
+struct _suffix<std::ratio<1>> {
   static constexpr char const* value = "s";
 };
 template <>
-struct _suffix<std::chrono::milliseconds> {
+struct _suffix<std::milli> {
   static constexpr char const* value = "ms";
 };
 template <>
-struct _suffix<std::chrono::microseconds> {
+struct _suffix<std::micro> {
   static constexpr char const* value = "us";
 };
 template <>
-struct _suffix<std::chrono::nanoseconds> {
+struct _suffix<std::nano> {
   static constexpr char const* value = "ns";
 };
 
@@ -146,13 +146,12 @@ inline
  * @tparam Rep
  * @tparam Period
  * @param duration to convert to std::string
- * @return std::string representing the givrn duration.
+ * @return std::string representing the given duration.
  */
 template <class Rep, class Period>
 inline std::string to_string(
     const std::chrono::duration<Rep, Period>& duration) {
-  return std::to_string(duration.count()) +
-         _suffix<std::chrono::duration<Rep, Period>>::value;
+  return std::to_string(duration.count()) + _suffix<Period>::value;
 }
 
 }  // namespace duration

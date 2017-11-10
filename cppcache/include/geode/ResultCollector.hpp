@@ -78,7 +78,7 @@ class CPPCACHE_EXPORT ResultCollector {
    * will not
    * throw exception but will have exception {@link
    * UserFunctionExecutionException} as a part of results received.
-   * @param timeout in seconds, if result is not ready within this time,
+   * @param timeout if result is not ready within this time,
    * exception will be thrown
    * @return the result
    * @throws FunctionException if result retrieval fails

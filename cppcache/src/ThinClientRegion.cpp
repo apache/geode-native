@@ -22,6 +22,7 @@
 #include <geode/SystemProperties.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/UserFunctionExecutionException.hpp>
+#include <geode/Struct.hpp>
 
 #include "Utils.hpp"
 #include "CacheRegionHelper.hpp"
@@ -34,12 +35,12 @@
 #include "RegionGlobalLocks.hpp"
 #include "ReadWriteLock.hpp"
 #include "RemoteQuery.hpp"
-#include <geode/Struct.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 #include "AutoDelete.hpp"
 #include "UserAttributes.hpp"
 #include "PutAllPartialResultServerException.hpp"
 #include "VersionedCacheableObjectPartList.hpp"
+#include "util/bounds.hpp"
 
 namespace apache {
 namespace geode {
@@ -609,14 +610,9 @@ void ThinClientRegion::unregisterAllKeys() {
 
 SelectResultsPtr ThinClientRegion::query(const char* predicate,
                                          std::chrono::milliseconds timeout) {
-  CHECK_DESTROY_PENDING(TryReadGuard, Region::query);
+  util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
 
-  if (timeout < std::chrono::milliseconds::zero()) {
-    throw IllegalArgumentException("Timeout must be positive.");
-  } else if (timeout >
-             std::chrono::milliseconds(std::numeric_limits<int32_t>::max())) {
-    throw IllegalArgumentException("Timeout too long.");
-  }
+  CHECK_DESTROY_PENDING(TryReadGuard, Region::query);
 
   if (predicate == nullptr || predicate[0] == '\0') {
     LOGERROR("Region query predicate string is empty");
@@ -681,6 +677,8 @@ SelectResultsPtr ThinClientRegion::query(const char* predicate,
 
 bool ThinClientRegion::existsValue(const char* predicate,
                                    std::chrono::milliseconds timeout) {
+  util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
+
   SelectResultsPtr results = query(predicate, timeout);
 
   if (results == nullptr) {

@@ -17,22 +17,20 @@
 
 #pragma once
 
-#ifndef GEODE_UTIL_CHRONO_LIMITS_H_
-#define GEODE_UTIL_CHRONO_LIMITS_H_
+#ifndef GEODE_UTIL_BOUNDS_H_
+#define GEODE_UTIL_BOUNDS_H_
 
-#include <chrono>
+#include "chrono/duration_bounds.hpp"
 
 namespace apache {
 namespace geode {
 namespace util {
-namespace chrono {
 
-constexpr auto MAX_DURATION_32 =
-    std::chrono::milliseconds(std::numeric_limits<int32_t>::max();
+constexpr auto PROTOCOL_OPERATION_TIMEOUT_BOUNDS =
+    chrono::duration::assert_bounds<int32_t, std::milli, 0>{};
 
-}  // namespace chrono
 }  // namespace util
 }  // namespace geode
 }  // namespace apache
 
-#endif
+#endif  // GEODE_UTIL_BOUNDS_H_

@@ -268,7 +268,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * resolution.
    *
    * @param action the expiration action for entries in this region.
-   * @param timeToLive the timeToLive in seconds for the region as a whole.
+   * @param timeToLive the timeToLive for the region as a whole.
    */
   void setRegionTimeToLive(ExpirationAction::Action action,
                            std::chrono::seconds timeToLive);

@@ -215,7 +215,7 @@ class CPPCACHE_EXPORT PoolFactory {
    * server to improve the load balance.
    * <p>A value of <code>-1</code> disables load conditioning
    *
-   * @param loadConditioningInterval is the connection lifetime in milliseconds
+   * @param loadConditioningInterval is the connection lifetime
    *
    * @throws std::invalid_argument if <code>connectionLifetime</code>
    * is less than <code>-1</code>.
@@ -257,8 +257,8 @@ class CPPCACHE_EXPORT PoolFactory {
   void setThreadLocalConnections(bool threadLocalConnections);
 
   /**
-   * Sets the number of milliseconds to wait for a response from a server before
-   * timing out the operation and trying another server (if any are available).
+   * Sets the duration to wait for a response from a server before timing out
+   * the operation and trying another server (if any are available).
    *
    * @param timeout duration to wait for a response from a
    * server

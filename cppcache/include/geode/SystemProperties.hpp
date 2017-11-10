@@ -67,7 +67,7 @@ class CPPCACHE_EXPORT SystemProperties {
 
   /**
    * Returns the sampling interval of the sampling thread.
-   * This would be how often the statistics thread writes to disk in seconds.
+   * This would be how often the statistics thread writes to disk.
    */
   const std::chrono::milliseconds statisticsSampleInterval() const {
     return m_statisticsSampleInterval;

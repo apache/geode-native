@@ -23,16 +23,15 @@ namespace util {
 namespace chrono {
 namespace duration {
 
-constexpr char const* _suffix<std::chrono::hours>::value;
-constexpr char const* _suffix<std::chrono::minutes>::value;
-constexpr char const* _suffix<std::chrono::seconds>::value;
-constexpr char const* _suffix<std::chrono::milliseconds>::value;
-constexpr char const* _suffix<std::chrono::microseconds>::value;
-constexpr char const* _suffix<std::chrono::nanoseconds>::value;
+constexpr char const* _suffix<std::ratio<3600>>::value;
+constexpr char const* _suffix<std::ratio<60>>::value;
+constexpr char const* _suffix<std::ratio<1>>::value;
+constexpr char const* _suffix<std::milli>::value;
+constexpr char const* _suffix<std::micro>::value;
+constexpr char const* _suffix<std::nano>::value;
 
 }  // namespace duration
 }  // namespace chrono
 }  // namespace util
 }  // namespace geode
 }  // namespace apache
-

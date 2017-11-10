@@ -14,17 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <geode/VectorT.hpp>
-#include "CqQueryImpl.hpp"
 #include <geode/CqAttributesFactory.hpp>
+#include <geode/ExceptionTypes.hpp>
+
+#include "CqQueryImpl.hpp"
 #include "CqAttributesMutatorImpl.hpp"
-#include "util/Log.hpp"
 #include "ResultSetImpl.hpp"
 #include "StructSetImpl.hpp"
-#include <geode/ExceptionTypes.hpp>
 #include "ThinClientRegion.hpp"
 #include "ReadWriteLock.hpp"
 #include "ThinClientRegion.hpp"
+#include "util/bounds.hpp"
+#include "util/Log.hpp"
+
 using namespace apache::geode::client;
 
 CqQueryImpl::CqQueryImpl(const CqServicePtr& cqService,
@@ -361,6 +365,8 @@ bool CqQueryImpl::executeCq(TcrMessage::MsgType requestType) {
 // for EXECUTE_INITIAL_RESULTS_REQUEST :
 CqResultsPtr CqQueryImpl::executeWithInitialResults(
     std::chrono::milliseconds timeout) {
+  util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
+
   GuardUserAttribures gua;
   if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);

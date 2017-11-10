@@ -65,8 +65,7 @@ class CPPCACHE_EXPORT ExpirationAttributes {
   /** Constructs an <code>ExpirationAttributes</code> with the specified
    * expiration time and
    * expiration action.
-   * @param expirationTime The number of seconds for a value to live before it
-   * expires
+   * @param expirationTime Duration live before it expires
    * @param expirationAction the action to take when the value expires
    * @throws IllegalArgumentException if expirationTime is nonpositive
    */
@@ -74,10 +73,10 @@ class CPPCACHE_EXPORT ExpirationAttributes {
                        const ExpirationAction::Action expirationAction =
                            ExpirationAction::INVALIDATE);
 
-  /** Returns the number of seconds before a region or value expires.
+  /** Returns the duration before a region or value expires.
    *
-   * @return the relative number of seconds before a region or value expires
-   * or zero if it will never expire
+   * @return the duration before a region or value expires or zero if it will
+   * never expire
    */
   const std::chrono::seconds& getTimeout() const;
   void setTimeout(const std::chrono::seconds& timeout);
@@ -91,11 +90,7 @@ class CPPCACHE_EXPORT ExpirationAttributes {
   void setAction(const ExpirationAction::Action& action);
 
  private:
-  /** The action that should take place when this object or region expires.
-   */
   ExpirationAction::Action m_action;
-  /** The number of seconds since this value or region was created before it
-   * expires. */
   std::chrono::seconds m_timeout;
 };
 
