@@ -132,7 +132,7 @@ namespace Apache
       }
 
       template<typename NativeType, typename ManagedType>
-      inline static NativeType*std::GetNativePtr( ManagedType^ mg_obj )
+      inline static NativeType* GetNativePtr( ManagedType^ mg_obj )
       {
         return (mg_obj != nullptr ? mg_obj->_NativePtr : NULL);
       }

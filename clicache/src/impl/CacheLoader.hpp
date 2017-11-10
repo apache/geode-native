@@ -16,19 +16,13 @@
  */
 #pragma once
 
-//#include "../geode_includes.hpp"
-//#include "../../../ICacheLoader.hpp"
 #include "../ICacheLoader.hpp"
-//#include "../Serializable.hpp"
 #include "../Region.hpp"
 #include "SafeConvert.hpp"
-//#include "../legacy/impl/SafeConvert.hpp"
-//#include "../../../Region.hpp"
-//#include "../../../Cache.hpp"
+
 
 using namespace System;
 
-//using namespace Apache::Geode::Client;
 
 namespace Apache
 {
@@ -41,13 +35,14 @@ namespace Apache
       {
       public:
         std::shared_ptr<apache::geode::client::Cacheable> load( const std::shared_ptr<apache::geode::client::Region>& region,
-          const std::shared_ptr<apache::geode::client::CacheableKey>& key, const std::shared_ptr<apache::geode::client::Serializable>& helper );
+                                                                const std::shared_ptr<apache::geode::client::CacheableKey>& key,
+                                                                const std::shared_ptr<apache::geode::client::Serializable>& helper );
 
         void close( const std::shared_ptr<apache::geode::client::Region>& region );
       };
 
       generic<class TKey, class TValue>
-      public ref class CacheLoaderGeneric : ICacheLoaderProxy // : Apache::Geode::Client::ICacheLoader /*<Object^, Object^>*/
+      public ref class CacheLoaderGeneric : ICacheLoaderProxy
       {
         private:
 
@@ -61,7 +56,8 @@ namespace Apache
           }
 
           virtual std::shared_ptr<apache::geode::client::Cacheable> load( const std::shared_ptr<apache::geode::client::Region>& region,
-            const std::shared_ptr<apache::geode::client::CacheableKey>& key, const std::shared_ptr<apache::geode::client::Serializable>& helper )
+                                                                          const std::shared_ptr<apache::geode::client::CacheableKey>& key,
+                                                                          const std::shared_ptr<apache::geode::client::Serializable>& helper )
           {
             IRegion<TKey, TValue>^ gregion = Region<TKey, TValue>::Create(region);
 

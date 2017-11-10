@@ -215,7 +215,8 @@ namespace apache
       }
 
      std::shared_ptr<native::Cacheable> ManagedCacheLoaderGeneric::load(const std::shared_ptr<native::Region>& region,
-                                                   const std::shared_ptr<native::CacheableKey>& key, const std::shared_ptr<native::Serializable>& aCallbackArgument)
+                                                   const std::shared_ptr<native::CacheableKey>& key,
+                                                   const std::shared_ptr<native::Serializable>& aCallbackArgument)
       {
         try {
           return m_managedptr->load(region, key, aCallbackArgument);

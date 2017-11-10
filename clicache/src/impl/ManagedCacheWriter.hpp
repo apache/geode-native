@@ -33,7 +33,7 @@ namespace apache
   {
     namespace client
     {
-		namespace native = apache::geode::client;
+		  namespace native = apache::geode::client;
       /// <summary>
       /// Wraps the managed <see cref="Apache.Geode.Client.ICacheWriter" />
       /// object and implements the native <c>apache::geode::client::CacheWriter</c> interface.

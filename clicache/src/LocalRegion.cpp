@@ -893,7 +893,7 @@ namespace Apache
 
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			std::vector<std::shared_ptr<apache::geode::client::RegionEntry>> vc;
+			  std::vector<std::shared_ptr<apache::geode::client::RegionEntry>> vc;
         try
         {
           vc = m_nativeptr->get()->entries( false );

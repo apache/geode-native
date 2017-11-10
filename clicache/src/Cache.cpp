@@ -181,7 +181,7 @@ namespace Apache
       generic<class TKey, class TValue>
       array<Client::IRegion<TKey, TValue>^>^ Cache::RootRegions( )
       {
-        std::vector<std::shared_ptr<apache::geode::client::Region>> vrr;
+        std::vector<std::shared_ptr<native::Region>> vrr;
         try
         {
 			vrr = m_nativeptr->get()->rootRegions( );
