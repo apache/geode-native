@@ -98,18 +98,6 @@ else()
   set( CMAKE_LINK_LIBRARY_SUFFIX ${CMAKE_SHARED_LIBRARY_SUFFIX})
 endif()
 
-if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
-ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} patches
-    BYPRODUCTS ${${PROJECT_NAME}_SOURCE_DIR}/Configure
-    ALWAYS 0
-    DEPENDEES download
-    DEPENDERS patch
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/patches
-    WORKING_DIRECTORY ${${PROJECT_NAME}_SOURCE_DIR}
-    COMMAND ${PATCH} -u -N -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/patches
-)
-endif()
-
 add_library(ssl INTERFACE)
 target_include_directories(ssl INTERFACE
   $<BUILD_INTERFACE:${${PROJECT_NAME}_INSTALL_DIR}/include>
