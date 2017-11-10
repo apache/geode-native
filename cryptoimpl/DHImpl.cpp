@@ -99,16 +99,16 @@ ASN1_SEQUENCE(
 
   dhimpl->m_dh = DH_new();
 
-  LOGDH(" DHInit: P ptr is %p", dhimpl->m_dh->p);
-  LOGDH(" DHInit: G ptr is %p", dhimpl->m_dh->g);
-  LOGDH(" DHInit: length is %d", dhimpl->m_dh->length);
-
   int ret = -1;
 
   const BIGNUM* pbn,* gbn;
   DH_get0_pqg(dhimpl->m_dh, &pbn, NULL, &gbn);
   ret = BN_dec2bn((BIGNUM**)&pbn, dhP);
   LOGDH(" DHInit: BN_dec2bn dhP ret %d", ret);
+
+  LOGDH(" DHInit: P ptr is %p", pbn);
+  LOGDH(" DHInit: G ptr is %p", gbn);
+  LOGDH(" DHInit: length is %d", DH_get_length(dhimpl->m_dh));
 
   ret = BN_dec2bn((BIGNUM**)&gbn, dhG);
   LOGDH(" DHInit: BN_dec2bn dhG ret %d", ret);
@@ -534,19 +534,13 @@ bool gf_verifyDH(void *dhCtx, const char *subject,
 
   RSA* dh = EVP_PKEY_get1_RSA(evpkey);
 
-  LOGDH("Challenge response length is %d, rsalen is %d\n", responseLen, rsalen);
-
   const ASN1_OBJECT *macobj;
   const X509_ALGOR *algorithm;
   X509_ALGOR_get0(&macobj, NULL, NULL, algorithm);
-  if (algorithm != NULL) {
-    LOGDH("algo %s -- %s \n", cert->sig_alg->algorithm->sn,
-          cert->sig_alg->algorithm->ln);
-  } else {
+  if (algorithm == NULL) {
     LOGDH("algo is null \n");
   }
 
-  LOGDH("after algo name in DHimp = %s\n", cert->name);
   const EVP_MD *signatureDigest = EVP_get_digestbyobj(macobj);
   LOGDH("after EVP_get_digestbyobj  :  err(%d): %s", ERR_get_error(),
         ERR_error_string(ERR_get_error(), NULL));
@@ -592,7 +586,7 @@ int DH_PUBKEY_set(DH_PUBKEY **x, EVP_PKEY *pkey) {
   if ((pk = DH_PUBKEY_new()) == NULL) goto err;
   a = pk->algor;
 
-  LOGDH(" key type for OBJ NID is %d", pkey->type);
+  LOGDH(" key type for OBJ NID is %d", EVP_PKEY_base_id(pkey));
 
   /* set the algorithm id */
   if ((o = OBJ_nid2obj(EVP_PKEY_base_id(pkey))) == NULL) goto err;
@@ -710,7 +704,7 @@ EVP_PKEY *DH_PUBKEY_get(DH_PUBKEY *key) {
     return (NULL);
   }
 
-  LOGDH(" DHPUBKEY evppkey type is %d", ret->type);
+  LOGDH(" DHPUBKEY evppkey type is %d", EVP_PKEY_base_id(ret));
 
   /* the parameters must be extracted before the public key */
 
