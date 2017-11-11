@@ -24,8 +24,10 @@
  * @file
  */
 
+#include <memory>
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
+#include "StackTrace.hpp"
 
 namespace apache {
 namespace geode {
@@ -34,10 +36,8 @@ namespace client {
 #define GF_EX_MSG_LIMIT 2048
 
 class Exception;
-typedef std::shared_ptr<Exception> ExceptionPtr;
-
 class DistributedSystem;
-
+class CacheableString;
 /**
  * @class Exception Exception.hpp
  * A description of an exception that occurred during a cache operation.
@@ -56,7 +56,8 @@ class CPPCACHE_EXPORT Exception {
    *               retrieved using <code>getCause</code>
    **/
   Exception(const char* msg1, const char* msg2 = nullptr,
-            bool forceTrace = false, const ExceptionPtr& cause = nullptr);
+            bool forceTrace = false,
+            const std::shared_ptr<Exception>& cause = nullptr);
 
   /** Creates an exception as a copy of the given other exception.
    * @param  other the original exception.
@@ -103,18 +104,19 @@ class CPPCACHE_EXPORT Exception {
    */
   virtual void raise() { throw * this; }
 
-  inline ExceptionPtr getCause() const { return m_cause; }
+  inline std::shared_ptr<Exception> getCause() const { return m_cause; }
 
  protected:
   /** internal constructor used to clone this exception */
-  Exception(const CacheableStringPtr& message, const StackTracePtr& stack,
-            const ExceptionPtr& cause);
+  Exception(const std::shared_ptr<CacheableString>& message,
+            const std::shared_ptr<StackTrace>& stack,
+            const std::shared_ptr<Exception>& cause);
 
   static bool s_exceptionStackTraceEnabled;
 
-  CacheableStringPtr m_message;  // error message
-  StackTracePtr m_stack;
-  ExceptionPtr m_cause;
+  std::shared_ptr<CacheableString> m_message;  // error message
+  std::shared_ptr<StackTrace> m_stack;
+  std::shared_ptr<Exception> m_cause;
 
  private:
   static void setStackTraces(bool stackTraceEnabled);

@@ -99,7 +99,8 @@ class TESTOBJECT_EXPORT EqStruct : public TimestampedObject {
   char* var8;
   char* var9;
 
-  inline uint32_t getObjectSize(const SerializablePtr& obj) const {
+  inline uint32_t getObjectSize(
+      const std::shared_ptr<Serializable>& obj) const {
     return (obj == nullptr ? 0 : obj->objectSize());
   }
 
@@ -110,7 +111,7 @@ class TESTOBJECT_EXPORT EqStruct : public TimestampedObject {
   virtual void toData(apache::geode::client::DataOutput& output) const;
   virtual void fromData(apache::geode::client::DataInput& input);
   virtual int32_t classId() const { return 101; }
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   virtual uint32_t objectSize() const {
     uint32_t objectSize = sizeof(EqStruct);
@@ -148,7 +149,6 @@ class TESTOBJECT_EXPORT EqStruct : public TimestampedObject {
   }
 };
 
-typedef std::shared_ptr<EqStruct> EqStructPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_EQSTRUCT_H_

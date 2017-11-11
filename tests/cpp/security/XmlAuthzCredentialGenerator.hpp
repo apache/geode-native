@@ -48,16 +48,12 @@ const stringList::value_type QRArr[] = {"Portfolios", "Positions"};
 
 const char* PRiUsnm = "%s%d";
 
-class XmlAuthzCredentialGenerator;
-typedef std::shared_ptr<XmlAuthzCredentialGenerator>
-    XmlAuthzCredentialGeneratorPtr;
-
 class XmlAuthzCredentialGenerator {
  private:
   ID m_id;
   opCodeList* m_opCode;
   stringList* m_regionNames;
-  PropertiesPtr* m_prop;
+  std::shared_ptr<Properties>* m_prop;
 
   opCodeList Readers;
   opCodeList Writers;
@@ -79,7 +75,7 @@ class XmlAuthzCredentialGenerator {
   }
   virtual ~XmlAuthzCredentialGenerator() { ; }
 
-  virtual void getAllowedCredentials(opCodeList& opCode, PropertiesPtr& prop,
+  virtual void getAllowedCredentials(opCodeList& opCode, std::shared_ptr<Properties>& prop,
                                      stringList* regionNames) {
     try {
       m_opCode = &opCode;
@@ -113,7 +109,7 @@ class XmlAuthzCredentialGenerator {
     m_prop = NULL;
   }
 
-  virtual void getDisallowedCredentials(opCodeList& opCode, PropertiesPtr& prop,
+  virtual void getDisallowedCredentials(opCodeList& opCode, std::shared_ptr<Properties>& prop,
                                         stringList* regionNames) {
     try {
       m_opCode = &opCode;

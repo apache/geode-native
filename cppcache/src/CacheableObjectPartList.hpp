@@ -20,12 +20,14 @@
 #ifndef GEODE_CACHEABLEOBJECTPARTLIST_H_
 #define GEODE_CACHEABLEOBJECTPARTLIST_H_
 
+#include <vector>
+#include <memory>
+
 #include <geode/geode_globals.hpp>
 #include <geode/geode_types.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/Cacheable.hpp>
-#include <geode/VectorT.hpp>
 #include <geode/HashMapT.hpp>
 #include "MapWithLock.hpp"
 
@@ -52,11 +54,11 @@ class ThinClientRegion;
  */
 class CacheableObjectPartList : public Cacheable {
  protected:
-  const VectorOfCacheableKey* m_keys;
+  const std::vector<std::shared_ptr<CacheableKey>>* m_keys;
   uint32_t* m_keysOffset;
-  HashMapOfCacheablePtr m_values;
-  HashMapOfExceptionPtr m_exceptions;
-  VectorOfCacheableKeyPtr m_resultKeys;
+  std::shared_ptr<HashMapOfCacheable> m_values;
+  std::shared_ptr<HashMapOfException> m_exceptions;
+  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> m_resultKeys;
   ThinClientRegion* m_region;
   MapOfUpdateCounters* m_updateCountMap;
   int32_t m_destroyTracker;
@@ -94,14 +96,14 @@ class CacheableObjectPartList : public Cacheable {
    *        map of exceptions and region to populate with the values
    *        obtained in fromData
    */
-  CacheableObjectPartList(const VectorOfCacheableKey* keys,
-                          uint32_t* keysOffset,
-                          const HashMapOfCacheablePtr& values,
-                          const HashMapOfExceptionPtr& exceptions,
-                          const VectorOfCacheableKeyPtr& resultKeys,
-                          ThinClientRegion* region,
-                          MapOfUpdateCounters* trackerMap,
-                          int32_t destroyTracker, bool addToLocalCache)
+  CacheableObjectPartList(
+      const std::vector<std::shared_ptr<CacheableKey>>* keys,
+      uint32_t* keysOffset, const std::shared_ptr<HashMapOfCacheable>& values,
+      const std::shared_ptr<HashMapOfException>& exceptions,
+      const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>&
+          resultKeys,
+      ThinClientRegion* region, MapOfUpdateCounters* trackerMap,
+      int32_t destroyTracker, bool addToLocalCache)
       : m_keys(keys),
         m_keysOffset(keysOffset),
         m_values(values),
@@ -152,8 +154,6 @@ class CacheableObjectPartList : public Cacheable {
 
   virtual uint32_t objectSize() const;
 };
-
-typedef std::shared_ptr<CacheableObjectPartList> CacheableObjectPartListPtr;
 
 }  // namespace client
 }  // namespace geode

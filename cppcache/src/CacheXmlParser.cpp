@@ -595,7 +595,7 @@ void CacheXmlParser::startPool(const xmlChar** atts) {
         "A pool cannot be created without a name";
     throw CacheXmlException(s.c_str());
   }
-  PoolFactoryPtr factory = m_cache->getPoolManager().createFactory();
+  auto factory = m_cache->getPoolManager().createFactory();
 
   const char* poolName = nullptr;
 
@@ -1010,7 +1010,7 @@ void CacheXmlParser::endRegionAttributes() {
         "CacheXmlParser::endRegion:AttributesFactory is null");
   }
 
-  RegionAttributesPtr regionAttributesPtr =
+  std::shared_ptr<RegionAttributes> regionAttributesPtr =
       attrsFactory->createRegionAttributes();
 
   auto regionPtr = std::static_pointer_cast<RegionXmlCreation>(_stack.top());

@@ -58,7 +58,7 @@ const char* qRegionNames[] = {"Portfolios", "Positions"};
 void clientOperations() {
   initClient(true);
   try {
-    SerializationRegistryPtr serializationRegistry =
+    auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
 
@@ -68,11 +68,11 @@ void clientOperations() {
     // ignore exception
   }
 
-  PoolPtr pool1 = nullptr;
+  std::shared_ptr<Pool> pool1 = nullptr;
   pool1 = createPool(poolNames[0], locHostPort, nullptr, 0, true);
   createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
 
-  RegionPtr rptr = getHelper()->cachePtr->getRegion(qRegionNames[0]);
+  auto rptr = getHelper()->cachePtr->getRegion(qRegionNames[0]);
   auto p1 = std::make_shared<Portfolio>(1, 100);
   auto p2 = std::make_shared<Portfolio>(2, 100);
   auto p3 = std::make_shared<Portfolio>(3, 100);
@@ -83,11 +83,11 @@ void clientOperations() {
   rptr->put("3", p3);
   rptr->put("4", p4);
 
-  QueryServicePtr qs = nullptr;
+  std::shared_ptr<QueryService> qs = nullptr;
   qs = pool1->getQueryService();
 
-  QueryPtr qry1 = qs->newQuery("select distinct * from /Portfolios");
-  SelectResultsPtr results1 = qry1->execute();
+  auto qry1 = qs->newQuery("select distinct * from /Portfolios");
+  std::shared_ptr<SelectResults> results1 = qry1->execute();
   ASSERT(results1->size() == 4,
          "Expected 4 as number of portfolio objects put were 4");
 
@@ -97,8 +97,8 @@ void clientOperations() {
 
   try {
     LOG("Going to execute the query");
-    QueryPtr qry2 = qs->newQuery("select distinct * from /Portfolios");
-    SelectResultsPtr results2 = qry2->execute();
+    auto qry2 = qs->newQuery("select distinct * from /Portfolios");
+    std::shared_ptr<SelectResults> results2 = qry2->execute();
     ASSERT(results2->size() == 4, "Failed verification");
   } catch (...) {
     FAIL("Got an exception!");

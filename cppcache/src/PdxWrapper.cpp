@@ -31,7 +31,7 @@ namespace geode {
 namespace client {
 
 PdxWrapper::PdxWrapper(void *userObject, const char *className,
-                       PdxSerializerPtr pdxSerializerPtr)
+                       std::shared_ptr<PdxSerializer> pdxSerializerPtr)
     : m_userObject(userObject), m_serializer(pdxSerializerPtr) {
   if (className != nullptr) {
     m_className = Utils::copyString(className);
@@ -62,7 +62,8 @@ PdxWrapper::PdxWrapper(void *userObject, const char *className,
   m_sizer = m_serializer->getObjectSizer(className);
 }
 
-PdxWrapper::PdxWrapper(const char *className, PdxSerializerPtr pdxSerializerPtr)
+PdxWrapper::PdxWrapper(const char *className,
+                       std::shared_ptr<PdxSerializer> pdxSerializerPtr)
     : m_serializer(pdxSerializerPtr) {
   if (className != nullptr) {
     m_className = Utils::copyString(className);
@@ -126,7 +127,7 @@ int32_t PdxWrapper::hashcode() const {
   return apache::geode::client::serializer::hashcode(hash);
 }
 
-void PdxWrapper::toData(PdxWriterPtr output) {
+void PdxWrapper::toData(std::shared_ptr<PdxWriter> output) {
   if (m_userObject != nullptr) {
     m_serializer->toData(m_userObject, (const char *)m_className, output);
   } else {
@@ -136,7 +137,7 @@ void PdxWrapper::toData(PdxWriterPtr output) {
   }
 }
 
-void PdxWrapper::fromData(PdxReaderPtr input) {
+void PdxWrapper::fromData(std::shared_ptr<PdxReader> input) {
   m_userObject = m_serializer->fromData((const char *)m_className, input);
 }
 
@@ -158,7 +159,7 @@ uint32_t PdxWrapper::objectSize() const {
   }
 }
 
-CacheableStringPtr PdxWrapper::toString() const {
+std::shared_ptr<CacheableString> PdxWrapper::toString() const {
   std::string message = "PdxWrapper for ";
   message += m_className;
   return CacheableString::create(message.c_str());

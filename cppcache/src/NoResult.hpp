@@ -45,7 +45,8 @@ class CPPCACHE_EXPORT NoResult : public ResultCollector {
  public:
   NoResult() {}
   ~NoResult() {}
-  inline void addResult(const CacheablePtr& resultOfSingleExecution) {
+  inline void addResult(
+      const std::shared_ptr<Cacheable>& resultOfSingleExecution) {
     throw UnsupportedOperationException("can not add to NoResult");
   }
 
@@ -53,7 +54,7 @@ class CPPCACHE_EXPORT NoResult : public ResultCollector {
     throw UnsupportedOperationException("can not close on NoResult");
   }
 
-  inline CacheableVectorPtr getResult(
+  inline std::shared_ptr<CacheableVector> getResult(
       uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) {
     throw FunctionExecutionException(
         "Cannot return any result, as Function.hasResult() is false");

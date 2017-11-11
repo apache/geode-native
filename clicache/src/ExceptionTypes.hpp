@@ -152,7 +152,7 @@ namespace Apache
         /// contained in the message. Note that in this process the
         /// original stacktrace is appended to the message of the exception.
         /// </remarks>
-        inline static apache::geode::client::ExceptionPtr GetNative(Exception^ ex)
+        inline static std::shared_ptr<apache::geode::client::Exception> GetNative(Exception^ ex)
         {
           if (ex != nullptr) {
             GeodeException^ gfEx = dynamic_cast<GeodeException^>(ex);
@@ -160,7 +160,7 @@ namespace Apache
               return gfEx->GetNative();
             }
             else {
-              apache::geode::client::ExceptionPtr cause;
+              std::shared_ptr<apache::geode::client::Exception> cause;
               if (ex->InnerException != nullptr) {
                 cause = GeodeException::GetNative(ex->InnerException);
               }
@@ -176,11 +176,11 @@ namespace Apache
         /// Gets the C++ native exception object for this managed
         /// <c>GeodeException</c>.
         /// </summary>
-        virtual apache::geode::client::ExceptionPtr GetNative()
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
         {
           String^ msg = this->Message + ": " + this->StackTrace;
           ManagedString mg_msg(msg);
-          apache::geode::client::ExceptionPtr cause;
+          std::shared_ptr<apache::geode::client::Exception> cause;
           if (this->InnerException != nullptr) {
             cause = GeodeException::GetNative(this->InnerException);
           }
@@ -205,7 +205,7 @@ namespace Apache
         inline static void ThrowNative(Exception^ ex)
         {
           if (ex != nullptr) {
-            apache::geode::client::ExceptionPtr cause;
+            std::shared_ptr<apache::geode::client::Exception> cause;
             if (ex->InnerException != nullptr) {
               cause = GeodeException::GetNative(ex->InnerException);
             }
@@ -350,11 +350,11 @@ namespace Apache
           } \
           return nullptr; \
         } \
-        virtual apache::geode::client::ExceptionPtr GetNative() override \
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative() override \
         { \
           String^ msg = this->Message + ": " + this->StackTrace; \
           ManagedString mg_msg(msg); \
-          apache::geode::client::ExceptionPtr cause; \
+          std::shared_ptr<apache::geode::client::Exception> cause; \
           if (this->InnerException != nullptr) { \
             cause = GeodeException::GetNative(this->InnerException); \
           } \

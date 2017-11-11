@@ -28,10 +28,6 @@
 using namespace apache::geode::client;
 using namespace test;
 
-class MyListener;
-
-typedef std::shared_ptr<MyListener> MyListenerPtr;
-
 class MyListener : public CacheListener {
   uint8_t m_gotit[5];
 
@@ -60,11 +56,11 @@ class MyListener : public CacheListener {
   }
 };
 
-MyListenerPtr mylistner = nullptr;
+std::shared_ptr<MyListener> mylistner = nullptr;
 
-void setCacheListener(const char* regName, MyListenerPtr regListener) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheListener(const char* regName, std::shared_ptr<MyListener> regListener) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(regListener);
 }
 
@@ -96,16 +92,16 @@ DUNIT_TASK(CLIENT2, setupClient2)
                                     "__TEST_POOL1__", true, true);
     mylistner = std::make_shared<MyListener>();
     setCacheListener(regionNames[0], mylistner);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->registerAllKeys(false, true);
   }
 END_TASK(setupClient2)
 
 DUNIT_TASK(CLIENT1, populateServer)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     for (int i = 0; i < 5; i++) {
-      CacheableKeyPtr keyPtr = CacheableKey::create(keys[i]);
+      std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(keys[i]);
       regPtr->create(keyPtr, vals[i]);
     }
     SLEEP(1000);

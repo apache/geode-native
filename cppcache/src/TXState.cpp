@@ -32,7 +32,7 @@ namespace geode {
 namespace client {
 
 TXState::TXState(Cache* cache) {
-  m_txId = TXIdPtr(new TXId());
+  m_txId = std::shared_ptr<TXId>(new TXId());
   m_closed = false;
   m_modSerialNum = 0;
   m_dirty = false;
@@ -49,18 +49,18 @@ TXState::TXState(Cache* cache) {
 
 TXState::~TXState() {}
 
-TXIdPtr TXState::getTransactionId() { return m_txId; }
+std::shared_ptr<TXId> TXState::getTransactionId() { return m_txId; }
 
 int32_t TXState::nextModSerialNum() {
   m_modSerialNum += 1;
   return m_modSerialNum;
 }
 
-CacheablePtr TXState::replay(bool isRollback) {
+std::shared_ptr<Cacheable> TXState::replay(bool isRollback) {
   GfErrTypeThrowException("Replay is unsupported", GF_NOTSUP);
   int retryAttempts = 3;
 
-  CacheablePtr result = nullptr;
+  std::shared_ptr<Cacheable> result = nullptr;
 
   ReplayControl replayControl(this);
   m_dirty = false;
@@ -77,7 +77,7 @@ CacheablePtr TXState::replay(bool isRollback) {
             ex.getMessage());
       }
     }
-    m_txId = TXIdPtr(new TXId());
+    m_txId = std::shared_ptr<TXId>(new TXId());
     // LOGFINE("retrying transaction after loss of state in server.  Attempt #"
     // + (i+1));
     try {
@@ -129,10 +129,11 @@ void TXState::releaseStickyConnection() {
   // manager.releaseThreadLocalConnection();
 }
 
-void TXState::recordTXOperation(ServerRegionOperation op,
-                                const char* regionName, CacheableKeyPtr key,
-                                VectorOfCacheablePtr arguments) {
-  m_operations.push_back(TransactionalOperationPtr(
+void TXState::recordTXOperation(
+    ServerRegionOperation op, const char* regionName,
+    std::shared_ptr<CacheableKey> key,
+    std::shared_ptr<std::vector<std::shared_ptr<Cacheable>>> arguments) {
+  m_operations.push_back(std::shared_ptr<TransactionalOperation>(
       new TransactionalOperation(op, regionName, key, arguments)));
 }
 }  // namespace client

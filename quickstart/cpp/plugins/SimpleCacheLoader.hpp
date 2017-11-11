@@ -33,8 +33,10 @@ using namespace apache::geode::client;
 // The SimpleCacheLoader class.
 class SimpleCacheLoader : public CacheLoader {
  public:
-  virtual CacheablePtr load(const RegionPtr& region, const CacheableKeyPtr& key,
-                            const SerializablePtr& aCallbackArgument);
+  virtual std::shared_ptr<Cacheable> load(
+      const std::shared_ptr<Region>& region,
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Serializable>& aCallbackArgument);
 
-  virtual void close(const RegionPtr& region);
+  virtual void close(const std::shared_ptr<Region>& region);
 };

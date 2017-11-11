@@ -22,7 +22,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-AttributesMutator::AttributesMutator(const RegionPtr& region)
+AttributesMutator::AttributesMutator(const std::shared_ptr<Region>& region)
     : m_region(region) {}
 
 AttributesMutator::~AttributesMutator() { m_region = nullptr; }
@@ -128,7 +128,8 @@ uint32_t AttributesMutator::setLruEntriesLimit(uint32_t entriesLimit) {
   return rImpl->adjustLruEntriesLimit(entriesLimit);
 }
 
-void AttributesMutator::setCacheListener(const CacheListenerPtr& aListener) {
+void AttributesMutator::setCacheListener(
+    const std::shared_ptr<CacheListener>& aListener) {
   RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   rImpl->adjustCacheListener(aListener);
 }
@@ -139,7 +140,8 @@ void AttributesMutator::setCacheListener(const char* libpath,
   rImpl->adjustCacheListener(libpath, factoryFuncName);
 }
 
-void AttributesMutator::setCacheLoader(const CacheLoaderPtr& aLoader) {
+void AttributesMutator::setCacheLoader(
+    const std::shared_ptr<CacheLoader>& aLoader) {
   RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   rImpl->adjustCacheLoader(aLoader);
 }
@@ -150,7 +152,8 @@ void AttributesMutator::setCacheLoader(const char* libpath,
   rImpl->adjustCacheLoader(libpath, factoryFuncName);
 }
 
-void AttributesMutator::setCacheWriter(const CacheWriterPtr& aWriter) {
+void AttributesMutator::setCacheWriter(
+    const std::shared_ptr<CacheWriter>& aWriter) {
   RegionInternal* rImpl = dynamic_cast<RegionInternal*>(m_region.get());
   rImpl->adjustCacheWriter(aWriter);
 }

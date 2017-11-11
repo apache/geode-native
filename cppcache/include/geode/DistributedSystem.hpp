@@ -24,12 +24,12 @@
  * @file
  */
 #include <memory>
+#include <vector>
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 #include "ExceptionTypes.hpp"
 #include "Properties.hpp"
-#include "VectorT.hpp"
 
 namespace apache {
 namespace geode {
@@ -67,7 +67,7 @@ class CPPCACHE_EXPORT DistributedSystem {
    **/
   static std::unique_ptr<DistributedSystem> create(
       const std::string& name, Cache* cache,
-      const PropertiesPtr& configPtr = nullptr);
+      const std::shared_ptr<Properties>& configPtr = nullptr);
 
   /**
    * @brief connects from the distributed system

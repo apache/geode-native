@@ -71,7 +71,7 @@ bool InvalidPdxUsage::generic2DCompare(T1** value1, T2** value2, int length,
 // InvalidPdxUsage::~PdxObject() {
 //}
 
-void InvalidPdxUsage::toData(PdxWriterPtr pw) /*const*/ {
+void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   // TODO:delete it later
   LOGINFO(" NILKANTH InvalidPdxUsage::toData() Start exceptionCounter = %d ",
           toDataexceptionCounter);
@@ -456,7 +456,7 @@ void InvalidPdxUsage::toData(PdxWriterPtr pw) /*const*/ {
   LOGDEBUG("PdxObject::toData() Done......");
 }
 
-void InvalidPdxUsage::fromData(PdxReaderPtr pr) {
+void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   // TODO:temp added, delete later
   LOGINFO(
       " NILKANTH InvalidPdxUsage::fromData() Start fromDataexceptionCounter = "
@@ -793,7 +793,7 @@ void InvalidPdxUsage::fromData(PdxReaderPtr pr) {
       fromDataexceptionCounter, exceptionCounter);
 }
 
-CacheableStringPtr InvalidPdxUsage::toString() const {
+std::shared_ptr<CacheableString> InvalidPdxUsage::toString() const {
   char idbuf[1024];
   // sprintf(idbuf,"PdxObject: [ m_bool=%d ] [m_byte=%d] [m_int16=%d]
   // [m_int32=%d] [m_float=%f] [m_double=%lf] [ m_string=%s ]",m_bool, m_byte,

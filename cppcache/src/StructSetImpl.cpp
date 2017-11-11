@@ -23,8 +23,8 @@
 using namespace apache::geode::client;
 
 StructSetImpl::StructSetImpl(
-    const CacheableVectorPtr& response,
-    const std::vector<CacheableStringPtr>& fieldNames) {
+    const std::shared_ptr<CacheableVector>& response,
+    const std::vector<std::shared_ptr<CacheableString>>& fieldNames) {
   m_nextIndex = 0;
 
   size_t numOfFields = fieldNames.size();
@@ -41,7 +41,7 @@ StructSetImpl::StructSetImpl(
 
   m_structVector = CacheableVector::create();
   while (valStoredCnt < numOfValues) {
-    std::vector<SerializablePtr> tmpVec;
+    std::vector<std::shared_ptr<Serializable>> tmpVec;
     for (size_t i = 0; i < numOfFields; i++) {
       tmpVec.push_back(response->operator[](valStoredCnt++));
     }
@@ -54,7 +54,8 @@ bool StructSetImpl::isModifiable() const { return false; }
 
 int32_t StructSetImpl::size() const { return m_structVector->size(); }
 
-const SerializablePtr StructSetImpl::operator[](int32_t index) const {
+const std::shared_ptr<Serializable> StructSetImpl::operator[](
+    int32_t index) const {
   if (index >= m_structVector->size()) {
     throw IllegalArgumentException("Index out of bounds");
   }

@@ -47,8 +47,8 @@ class CPPCACHE_EXPORT Properties : public Serializable {
  public:
   class Visitor {
    public:
-    virtual void visit(const CacheableKeyPtr& key,
-                       const CacheablePtr& value) = 0;
+    virtual void visit(const std::shared_ptr<CacheableKey>& key,
+                       const std::shared_ptr<Cacheable>& value) = 0;
     virtual ~Visitor() {}
   };
 
@@ -57,14 +57,14 @@ class CPPCACHE_EXPORT Properties : public Serializable {
    *
    * @throws NullPointerException if the key is null
    */
-  CacheableStringPtr find(const char* key);
+  std::shared_ptr<CacheableString> find(const char* key);
   /**
    * Return the value for the given <code>CacheableKey</code>,
    * or nullptr if not found.
    *
    * @throws NullPointerException if the key is nullptr
    */
-  CacheablePtr find(const CacheableKeyPtr& key);
+  std::shared_ptr<Cacheable> find(const std::shared_ptr<CacheableKey>& key);
 
   /**
    * Add or update the string value for key.
@@ -85,7 +85,8 @@ class CPPCACHE_EXPORT Properties : public Serializable {
    *
    * @throws NullPointerException if the key is nullptr
    */
-  void insert(const CacheableKeyPtr& key, const CacheablePtr& value);
+  void insert(const std::shared_ptr<CacheableKey>& key,
+              const std::shared_ptr<Cacheable>& value);
 
   /**
    * Remove the key from the collection.
@@ -99,7 +100,7 @@ class CPPCACHE_EXPORT Properties : public Serializable {
    *
    * @throws NullPointerException if the key is nullptr
    */
-  void remove(const CacheableKeyPtr& key);
+  void remove(const std::shared_ptr<CacheableKey>& key);
 
   /** Execute the Visitor's <code>visit( const char* key, const char* value
    * )</code>
@@ -113,10 +114,10 @@ class CPPCACHE_EXPORT Properties : public Serializable {
   /** Add the contents of other to this instance, replacing any existing
    * values with those from other.
    */
-  void addAll(const PropertiesPtr& other);
+  void addAll(const std::shared_ptr<Properties>& other);
 
   /** Factory method, returns an empty collection. */
-  static PropertiesPtr create();
+  static std::shared_ptr<Properties> create();
 
   /** Read property values from a file, overriding what is currently
    * in the properties object.

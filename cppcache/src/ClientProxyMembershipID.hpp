@@ -31,9 +31,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class ClientProxyMembershipID;
-typedef std::shared_ptr<ClientProxyMembershipID> ClientProxyMembershipIDPtr;
-
 class ClientProxyMembershipID : public DSMemberForVersionStamp {
  public:
   const char* getDSMemberId(uint32_t& mesgLength) const;
@@ -93,7 +90,7 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
       offset += ACE_OS::snprintf(hostInfo + offset, 255 - offset, ":%x",
                                  m_hostAddr[i]);
     }
-    CacheableStringPtr tempHashCode = CacheableString::create(hostInfo, offset);
+    std::shared_ptr<CacheableString> tempHashCode = CacheableString::create(hostInfo, offset);
     result = result + tempHashCode->hashcode();
     result = result + m_hostPort;
     return result;

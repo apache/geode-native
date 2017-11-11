@@ -265,7 +265,7 @@ namespace Apache
         /// </returns>
         //generic<class TKey, class TValue>
         inline static IRegion<TKey, TValue>^
-        Create( native::RegionPtr nativeptr )
+        Create( std::shared_ptr<native::Region> nativeptr )
         {
           return __nullptr == nativeptr ? nullptr :
             gcnew Region<TKey, TValue>( nativeptr );
@@ -282,14 +282,14 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline Region( native::RegionPtr nativeptr )
+        inline Region( std::shared_ptr<native::Region> nativeptr )
 				{
           m_nativeptr = gcnew native_shared_ptr<native::Region>(nativeptr);
         }
 
-        inline apache::geode::client::SerializablePtr get(apache::geode::client::CacheableKeyPtr& key, apache::geode::client::SerializablePtr& callbackArg);
-        inline apache::geode::client::SerializablePtr get(apache::geode::client::CacheableKeyPtr& key);
-        bool AreValuesEqual(apache::geode::client::CacheablePtr& val1, apache::geode::client::CacheablePtr& val2);
+        inline std::shared_ptr<apache::geode::client::Serializable> get(std::shared_ptr<apache::geode::client::CacheableKey>& key, std::shared_ptr<apache::geode::client::Serializable>& callbackArg);
+        inline std::shared_ptr<apache::geode::client::Serializable> get(std::shared_ptr<apache::geode::client::CacheableKey>& key);
+        bool AreValuesEqual(std::shared_ptr<apache::geode::client::Cacheable>& val1, std::shared_ptr<apache::geode::client::Cacheable>& val2);
         bool isPoolInMultiuserMode();
         
         native_shared_ptr<native::Region>^ m_nativeptr;

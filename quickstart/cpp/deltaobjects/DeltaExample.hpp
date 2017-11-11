@@ -147,7 +147,9 @@ class DeltaExample : public Cacheable, public Delta {
 
   virtual uint32_t objectSize() const { return 0; }
 
-  DeltaPtr clone() { return DeltaPtr(new DeltaExample(this)); }
+  std::shared_ptr<Delta> clone() {
+    return std::shared_ptr<Delta>(new DeltaExample(this));
+  }
 
   virtual ~DeltaExample() {}
 

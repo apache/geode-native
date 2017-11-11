@@ -73,8 +73,8 @@ namespace apache {
         /// </summary>
         virtual ~ManagedResultCollectorGeneric() { }
 
-        CacheableVectorPtr getResult(System::UInt32 timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
-        void addResult(const CacheablePtr& result);
+       std::shared_ptr<native::CacheableVector> getResult(System::UInt32 timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+        void addResult(const std::shared_ptr<native::Cacheable>& result);
         void endResults();
         void clearResults();
         /// <summary>

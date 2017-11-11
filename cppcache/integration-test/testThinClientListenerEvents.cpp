@@ -21,19 +21,11 @@
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 
-using namespace apache::geode::client;
-using namespace test;
-
 #include "locator_globals.hpp"
 #include "LocatorHelper.hpp"
 
 using namespace apache::geode::client;
-class SimpleCacheListener;
-
-typedef std::shared_ptr<SimpleCacheListener> SimpleCacheListenerPtr;
-
-// Use the "geode" namespace.
-using namespace apache::geode::client;
+using namespace test;
 
 // The SimpleCacheListener class.
 class SimpleCacheListener : public CacheListener {
@@ -59,7 +51,7 @@ class SimpleCacheListener : public CacheListener {
   virtual void afterRegionDestroy(const RegionEvent& event) {
     LOGINFO("SimpleCacheListener: Got an afterRegionDestroy event.");
   }
-  virtual void close(const RegionPtr& region) {
+  virtual void close(const std::shared_ptr<Region>& region) {
     LOGINFO("SimpleCacheListener: Got an close event.");
   }
 
@@ -88,9 +80,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, doRemoteGet)
   {
-    RegionPtr regionPtr = getHelper()->getRegion(regionNames[0]);
+    auto regionPtr = getHelper()->getRegion(regionNames[0]);
 
-    AttributesMutatorPtr attrMutatorPtr = regionPtr->getAttributesMutator();
+    auto attrMutatorPtr = regionPtr->getAttributesMutator();
     auto regListener1 = std::make_shared<SimpleCacheListener>();
     attrMutatorPtr->setCacheListener(regListener1);
 

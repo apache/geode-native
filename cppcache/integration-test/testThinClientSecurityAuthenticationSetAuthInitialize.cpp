@@ -31,7 +31,7 @@ using namespace test;
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 const char* regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
-CredentialGeneratorPtr credentialGeneratorHandler;
+std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
@@ -51,10 +51,10 @@ class UserPasswordAuthInit : public AuthInitialize {
 
   ~UserPasswordAuthInit() {}
 
-  PropertiesPtr getCredentials(const PropertiesPtr& securityprops,
-                               const char* server) {
+  std::shared_ptr<Properties> getCredentials(
+      const std::shared_ptr<Properties>& securityprops, const char* server) {
     // LOGDEBUG("UserPasswordAuthInit: inside userPassword::getCredentials");
-    CacheablePtr userName;
+    std::shared_ptr<Cacheable> userName;
     if (securityprops == nullptr ||
         (userName = securityprops->find(SECURITY_USERNAME)) == nullptr) {
       throw AuthenticationFailedException(
@@ -64,7 +64,8 @@ class UserPasswordAuthInit : public AuthInitialize {
 
     auto credentials = Properties::create();
     credentials->insert(SECURITY_USERNAME, userName->toString()->asChar());
-    CacheableStringPtr passwd = securityprops->find(SECURITY_PASSWORD);
+    std::shared_ptr<CacheableString> passwd =
+        securityprops->find(SECURITY_PASSWORD);
     // If password is not provided then use empty string as the password.
     if (passwd == nullptr) {
       passwd = CacheableString::create("");
@@ -135,7 +136,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, TestAuthentication)
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
       createEntry(regionNamesAuth[0], keys[0], vals[0]);
       updateEntry(regionNamesAuth[0], keys[0], nvals[0]);
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
+      auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
       regPtr0->containsKeyOnServer(
           apache::geode::client::CacheableKey::create(keys[0]));
     } catch (const apache::geode::client::Exception& other) {

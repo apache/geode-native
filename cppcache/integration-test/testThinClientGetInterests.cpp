@@ -42,7 +42,7 @@ END_TASK(StartServer)
 
 DUNIT_TASK(CLIENT1, SetupClient1)
   {
-    PropertiesPtr pp = Properties::create();
+    auto pp = Properties::create();
     pp->insert("durable-client-id", durableIds[0]);
     pp->insert("durable-timeout", 300);
     pp->insert("notify-ack-interval", 1);
@@ -50,19 +50,19 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, pp, 0, true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
-    CacheableKeyPtr keyPtr0 = CacheableString::create(keys[0]);
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    VectorOfCacheableKey keys0;
+    std::shared_ptr<CacheableKey> keyPtr0 = CacheableString::create(keys[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    std::vector<std::shared_ptr<CacheableKey>> keys0;
     keys0.push_back(keyPtr0);
     regPtr0->registerKeys(keys0);
-    CacheableKeyPtr keyPtr1 = CacheableString::create(keys[1]);
-    VectorOfCacheableKey keys1;
+    std::shared_ptr<CacheableKey> keyPtr1 = CacheableString::create(keys[1]);
+    std::vector<std::shared_ptr<CacheableKey>> keys1;
     keys1.push_back(keyPtr1);
     regPtr0->registerKeys(keys1);
     regPtr0->registerRegex(testregex[0]);
     regPtr0->registerRegex(testregex[1]);
-    CacheableKeyPtr keyPtr2 = CacheableString::create(keys[2]);
-    VectorOfCacheableKey keys2;
+    std::shared_ptr<CacheableKey> keyPtr2 = CacheableString::create(keys[2]);
+    std::vector<std::shared_ptr<CacheableKey>> keys2;
     keys2.push_back(keyPtr2);
     keyPtr2 = CacheableString::create(keys[3]);
     keys2.push_back(keyPtr2);
@@ -90,7 +90,7 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     }
     for (int32_t i = 0; i < vreg.size(); i++) {
       char buf[1024];
-      CacheableStringPtr ptr = vreg[i];
+      std::shared_ptr<CacheableString> ptr = vreg[i];
       const char* reg = ptr->asChar();
       sprintf(buf, "regex[%d]=%s", i, reg);
       LOG(buf);
@@ -108,7 +108,7 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     auto vreg1 = regPtr0->getInterestListRegex();
     for (int32_t i = 0; i < vreg1.size(); i++) {
       char buf[1024];
-      CacheableStringPtr ptr = vreg1[i];
+      std::shared_ptr<CacheableString> ptr = vreg1[i];
       sprintf(buf, "regex[%d]=%s", i, ptr->asChar());
       LOG(buf);
     }

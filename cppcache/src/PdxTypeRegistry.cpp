@@ -41,10 +41,11 @@ size_t PdxTypeRegistry::testNumberOfPreservedData() const {
 }
 
 int32_t PdxTypeRegistry::getPDXIdForType(const char* type, const char* poolname,
-                                         PdxTypePtr nType, bool checkIfThere) {
+                                         std::shared_ptr<PdxType> nType,
+                                         bool checkIfThere) {
   // WriteGuard guard(g_readerWriterLock);
   if (checkIfThere) {
-    PdxTypePtr lpdx = getLocalPdxType(type);
+    auto lpdx = getLocalPdxType(type);
     if (lpdx != nullptr) {
       int id = lpdx->getTypeId();
       if (id != 0) {
@@ -63,7 +64,7 @@ int32_t PdxTypeRegistry::getPDXIdForType(const char* type, const char* poolname,
   return typeId;
 }
 
-int32_t PdxTypeRegistry::getPDXIdForType(PdxTypePtr nType,
+int32_t PdxTypeRegistry::getPDXIdForType(std::shared_ptr<PdxType> nType,
                                          const char* poolname) {
   int32_t typeId = 0;
   {
@@ -117,15 +118,16 @@ void PdxTypeRegistry::clear() {
   }
 }
 
-void PdxTypeRegistry::addPdxType(int32_t typeId, PdxTypePtr pdxType) {
+void PdxTypeRegistry::addPdxType(int32_t typeId,
+                                 std::shared_ptr<PdxType> pdxType) {
   WriteGuard guard(g_readerWriterLock);
-  std::pair<int32_t, PdxTypePtr> pc(typeId, pdxType);
+  std::pair<int32_t, std::shared_ptr<PdxType>> pc(typeId, pdxType);
   typeIdToPdxType.insert(pc);
 }
 
-PdxTypePtr PdxTypeRegistry::getPdxType(int32_t typeId) {
+std::shared_ptr<PdxType> PdxTypeRegistry::getPdxType(int32_t typeId) {
   ReadGuard guard(g_readerWriterLock);
-  PdxTypePtr retValue = nullptr;
+  std::shared_ptr<PdxType> retValue = nullptr;
   TypeIdVsPdxType::iterator iter;
   iter = typeIdToPdxType.find(typeId);
   if (iter != typeIdToPdxType.end()) {
@@ -136,15 +138,16 @@ PdxTypePtr PdxTypeRegistry::getPdxType(int32_t typeId) {
 }
 
 void PdxTypeRegistry::addLocalPdxType(const char* localType,
-                                      PdxTypePtr pdxType) {
+                                      std::shared_ptr<PdxType> pdxType) {
   WriteGuard guard(g_readerWriterLock);
   localTypeToPdxType.insert(
-      std::pair<std::string, PdxTypePtr>(localType, pdxType));
+      std::pair<std::string, std::shared_ptr<PdxType>>(localType, pdxType));
 }
 
-PdxTypePtr PdxTypeRegistry::getLocalPdxType(const char* localType) {
+std::shared_ptr<PdxType> PdxTypeRegistry::getLocalPdxType(
+    const char* localType) {
   ReadGuard guard(g_readerWriterLock);
-  PdxTypePtr localTypePtr = nullptr;
+  std::shared_ptr<PdxType> localTypePtr = nullptr;
   TypeNameVsPdxType::iterator it;
   it = localTypeToPdxType.find(localType);
   if (it != localTypeToPdxType.end()) {
@@ -155,14 +158,15 @@ PdxTypePtr PdxTypeRegistry::getLocalPdxType(const char* localType) {
 }
 
 void PdxTypeRegistry::setMergedType(int32_t remoteTypeId,
-                                    PdxTypePtr mergedType) {
+                                    std::shared_ptr<PdxType> mergedType) {
   WriteGuard guard(g_readerWriterLock);
-  std::pair<int32_t, PdxTypePtr> mergedTypePair(remoteTypeId, mergedType);
+  std::pair<int32_t, std::shared_ptr<PdxType>> mergedTypePair(remoteTypeId,
+                                                              mergedType);
   remoteTypeIdToMergedPdxType.insert(mergedTypePair);
 }
 
-PdxTypePtr PdxTypeRegistry::getMergedType(int32_t remoteTypeId) {
-  PdxTypePtr retVal = nullptr;
+std::shared_ptr<PdxType> PdxTypeRegistry::getMergedType(int32_t remoteTypeId) {
+  std::shared_ptr<PdxType> retVal = nullptr;
   TypeIdVsPdxType::iterator it;
   it = remoteTypeIdToMergedPdxType.find(remoteTypeId);
   if (it != remoteTypeIdToMergedPdxType.end()) {
@@ -172,9 +176,10 @@ PdxTypePtr PdxTypeRegistry::getMergedType(int32_t remoteTypeId) {
   return retVal;
 }
 
-void PdxTypeRegistry::setPreserveData(PdxSerializablePtr obj,
-                                      PdxRemotePreservedDataPtr pData,
-                                      ExpiryTaskManager& expiryTaskManager) {
+void PdxTypeRegistry::setPreserveData(
+    std::shared_ptr<PdxSerializable> obj,
+    std::shared_ptr<PdxRemotePreservedData> pData,
+    ExpiryTaskManager& expiryTaskManager) {
   WriteGuard guard(getPreservedDataLock());
   pData->setOwner(obj);
   if (preserveData.find(obj) != preserveData.end()) {
@@ -201,8 +206,8 @@ void PdxTypeRegistry::setPreserveData(PdxSerializablePtr obj,
       "preservedData");
 }
 
-PdxRemotePreservedDataPtr PdxTypeRegistry::getPreserveData(
-    PdxSerializablePtr pdxobj) {
+std::shared_ptr<PdxRemotePreservedData> PdxTypeRegistry::getPreserveData(
+    std::shared_ptr<PdxSerializable> pdxobj) {
   ReadGuard guard(getPreservedDataLock());
   const auto& iter = preserveData.find((pdxobj));
   if (iter != preserveData.end()) {
@@ -211,9 +216,9 @@ PdxRemotePreservedDataPtr PdxTypeRegistry::getPreserveData(
   return nullptr;
 }
 
-int32_t PdxTypeRegistry::getEnumValue(EnumInfoPtr ei) {
+int32_t PdxTypeRegistry::getEnumValue(std::shared_ptr<EnumInfo> ei) {
   // TODO locking - naive concurrent optimization?
-  CacheableHashMapPtr tmp;
+  std::shared_ptr<CacheableHashMap> tmp;
   tmp = enumToInt;
   const auto& entry = tmp->find(ei);
   if (entry != tmp->end()) {
@@ -239,10 +244,10 @@ int32_t PdxTypeRegistry::getEnumValue(EnumInfoPtr ei) {
   return val;
 }
 
-EnumInfoPtr PdxTypeRegistry::getEnum(int32_t enumVal) {
+std::shared_ptr<EnumInfo> PdxTypeRegistry::getEnum(int32_t enumVal) {
   // TODO locking - naive concurrent optimization?
-  EnumInfoPtr ret;
-  CacheableHashMapPtr tmp;
+  std::shared_ptr<EnumInfo> ret;
+  std::shared_ptr<CacheableHashMap> tmp;
   auto enumValPtr = CacheableInt32::create(enumVal);
 
   tmp = intToEnum;

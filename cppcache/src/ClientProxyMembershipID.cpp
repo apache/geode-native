@@ -141,7 +141,8 @@ void ClientProxyMembershipID::initObjectVars(
   if (durableClientId != nullptr && durableClntTimeOut != 0) {
     m_memID.write(static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
     m_memID.writeASCII(durableClientId);
-    CacheableInt32Ptr int32ptr = CacheableInt32::create(durableClntTimeOut);
+    std::shared_ptr<CacheableInt32> int32ptr =
+        CacheableInt32::create(durableClntTimeOut);
     int32ptr->toData(m_memID);
   }
   writeVersion(Version::getOrdinal(), m_memID);
@@ -218,7 +219,7 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
   // deserialization for PR FX HA
   uint8_t* hostAddr;
   int32_t len, hostPort, dcport, vPID, durableClntTimeOut;
-  CacheableStringPtr hostname, dsName, uniqueTag, durableClientId;
+  std::shared_ptr<CacheableString> hostname, dsName, uniqueTag, durableClientId;
   int8_t splitbrain, vmKind;
 
   len = input.readArrayLen();  // inetaddress len
@@ -264,7 +265,7 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
 Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
   uint8_t* hostAddr;
   int32_t len, hostPort, vmViewId = 0;
-  CacheableStringPtr hostname, dsName, uniqueTag, vmViewIdstr;
+  std::shared_ptr<CacheableString> hostname, dsName, uniqueTag, vmViewIdstr;
 
   len = input.readArrayLen();  // inetaddress len
   m_hostAddrLocalMem = true;

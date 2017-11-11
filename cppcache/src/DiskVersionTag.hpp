@@ -30,7 +30,6 @@ namespace client {
 
 class RegionInternal;
 class CacheImpl;
-_GF_PTR_DEF_(VersionTag, VersionTagPtr);
 
 class DiskVersionTag : public VersionTag {
  protected:

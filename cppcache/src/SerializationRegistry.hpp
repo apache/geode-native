@@ -59,6 +59,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
+class Pool;
+
 typedef ACE_Hash_Map_Manager<int64_t, TypeFactoryMethod, ACE_Null_Mutex>
     IdToFactoryMap;
 
@@ -174,7 +176,7 @@ class CPPCACHE_EXPORT SerializationRegistry {
     }
   }
 
-  inline void serialize(const SerializablePtr& obj, DataOutput& output) const {
+  inline void serialize(const std::shared_ptr<Serializable>& obj, DataOutput& output) const {
     serialize(obj.get(), output);
   }
 
@@ -182,7 +184,7 @@ class CPPCACHE_EXPORT SerializationRegistry {
    * Read the length, typeid, and run the objs fromData. Returns the New
    * object.
    */
-  SerializablePtr deserialize(DataInput& input, int8_t typeId = -1) const;
+  std::shared_ptr<Serializable> deserialize(DataInput& input, int8_t typeId = -1) const;
 
   void addType(TypeFactoryMethod func);
 
@@ -190,9 +192,9 @@ class CPPCACHE_EXPORT SerializationRegistry {
 
   void addPdxType(TypeFactoryMethodPdx func);
 
-  void setPdxSerializer(PdxSerializerPtr pdxSerializer);
+  void setPdxSerializer(std::shared_ptr<PdxSerializer> pdxSerializer);
 
-  PdxSerializerPtr getPdxSerializer();
+  std::shared_ptr<PdxSerializer> getPdxSerializer();
 
   void removeType(int64_t compId);
 
@@ -205,14 +207,17 @@ class CPPCACHE_EXPORT SerializationRegistry {
 
   void removeType2(int64_t compId);
 
-  int32_t GetPDXIdForType(PoolPtr pool, SerializablePtr pdxType) const;
+  int32_t GetPDXIdForType(std::shared_ptr<Pool> pool,
+                          std::shared_ptr<Serializable> pdxType) const;
 
-  SerializablePtr GetPDXTypeById(PoolPtr pool, int32_t typeId) const;
+  std::shared_ptr<Serializable> GetPDXTypeById(std::shared_ptr<Pool> pool,
+                                               int32_t typeId) const;
 
-  int32_t GetEnumValue(PoolPtr pool, SerializablePtr enumInfo) const;
-  SerializablePtr GetEnum(PoolPtr pool, int32_t val) const;
+  int32_t GetEnumValue(std::shared_ptr<Pool> pool, std::shared_ptr<Serializable> enumInfo) const;
+  std::shared_ptr<Serializable> GetEnum(std::shared_ptr<Pool> pool,
+                                        int32_t val) const;
 
-  PdxSerializablePtr getPdxType(char* className);
+  std::shared_ptr<PdxSerializable> getPdxType(char* className);
 
   typedef std::function<std::shared_ptr<Serializable>(DataInput&)>
       PdxTypeHandler;
@@ -221,12 +226,10 @@ class CPPCACHE_EXPORT SerializationRegistry {
   }
 
  private:
-  PdxSerializerPtr pdxSerializer;
+  std::shared_ptr<PdxSerializer> pdxSerializer;
   TheTypeMap theTypeMap;
   PdxTypeHandler pdxTypeHandler;
 };
-
-typedef std::shared_ptr<SerializationRegistry> SerializationRegistryPtr;
 
 }  // namespace client
 }  // namespace geode

@@ -32,7 +32,7 @@ using namespace test;
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 const char* regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
-CredentialGeneratorPtr credentialGeneratorHandler;
+std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
@@ -72,7 +72,7 @@ void initCredentialGenerator() {
 }
 
 void initClientAuth(char credentialsType) {
-  PropertiesPtr config = Properties::create();
+  auto config = Properties::create();
   if (credentialGeneratorHandler == nullptr) {
     FAIL("credentialGeneratorHandler is nullptr");
   }
@@ -196,7 +196,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
       createEntry(regionNamesAuth[0], keys[0], vals[0]);
       updateEntry(regionNamesAuth[0], keys[0], nvals[0]);
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
+      auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
       regPtr0->containsKeyOnServer(
           apache::geode::client::CacheableKey::create(keys[0]));
     } catch (const apache::geode::client::Exception& other) {
@@ -255,8 +255,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFive)
     SLEEP(80);
     try {
       createRegionForSecurity(regionNamesAuth[1], USE_ACK, true);
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
-      CacheableKeyPtr keyPtr = CacheableKey::create(keys[0]);
+      auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
+      std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(keys[0]);
       auto checkPtr =
           std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
       if (checkPtr != nullptr && !strcmp(nvals[0], checkPtr->asChar())) {
@@ -328,10 +328,10 @@ void createEntryTx(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Create entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
+  std::shared_ptr<CacheableString> valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   // ASSERT( !regPtr->containsKey( keyPtr ), "Key should not have been found in
@@ -353,10 +353,10 @@ void updateEntryTx(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Update entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
+  std::shared_ptr<CacheableString> valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
@@ -375,8 +375,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
     initClientAuth(CORRECT_CREDENTIALS);
     try {
       createRegionForSecurity(regionNamesAuth[1], USE_ACK, true);
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[1]);
-      CacheTransactionManagerPtr txManager =
+      auto regPtr0 = getHelper()->getRegion(regionNamesAuth[1]);
+      std::shared_ptr<CacheTransactionManager> txManager =
           getHelper()->getCache()->getCacheTransactionManager();
       LOG("txManager got");
       txManager->begin();
@@ -386,7 +386,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       txManager->commit();
       LOG("txManager commit done");
 
-      CacheableKeyPtr keyPtr = CacheableKey::create("TxKey");
+      std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create("TxKey");
       auto checkPtr =
           std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
       ASSERT(checkPtr != nullptr, "Value not found.");

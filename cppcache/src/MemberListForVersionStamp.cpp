@@ -28,7 +28,8 @@ MemberListForVersionStamp::~MemberListForVersionStamp() {}
 // Add function searches whether the member is already added to the hash maps.
 // If yes, return the integer counter. If not, add it to both the hash maps.
 // This function is protected  using readers/writer lock
-uint16_t MemberListForVersionStamp::add(DSMemberForVersionStampPtr member) {
+uint16_t MemberListForVersionStamp::add(
+    std::shared_ptr<DSMemberForVersionStamp> member) {
   WriteGuard guard(m_mapLock);
   std::unordered_map<std::string, DistributedMemberWithIntIdentifier>::iterator
       it = m_members2.find(member->getHashKey());
@@ -44,10 +45,11 @@ uint16_t MemberListForVersionStamp::add(DSMemberForVersionStampPtr member) {
 }
 
 // This function is protected  using readers/writer lock
-DSMemberForVersionStampPtr MemberListForVersionStamp::getDSMember(
+std::shared_ptr<DSMemberForVersionStamp> MemberListForVersionStamp::getDSMember(
     uint16_t memberId) {
   ReadGuard guard(m_mapLock);
-  std::unordered_map<uint32_t, DSMemberForVersionStampPtr>::iterator it =
+  std::unordered_map<uint32_t,
+                     std::shared_ptr<DSMemberForVersionStamp>>::iterator it =
       m_members1.find(memberId);
   if (it != m_members1.end()) return (*it).second;
   return nullptr;

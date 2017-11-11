@@ -112,7 +112,7 @@ namespace Apache
       System::Exception^ GeodeException::Get(const apache::geode::client::Exception& nativeEx)
       {
         Exception^ innerException = nullptr;
-        const apache::geode::client::ExceptionPtr& cause = nativeEx.getCause();
+        const std::shared_ptr<apache::geode::client::Exception>& cause = nativeEx.getCause();
         if (cause != nullptr) {
           innerException = GeodeException::Get(*cause);
         }

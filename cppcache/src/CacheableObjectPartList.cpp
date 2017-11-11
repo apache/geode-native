@@ -35,10 +35,10 @@ void CacheableObjectPartList::fromData(DataInput& input) {
   const auto hasKeys = input.readBoolean();
   int32_t len = input.readInt32();
   if (len > 0) {
-    CacheableKeyPtr key;
-    CacheablePtr value;
-    CacheableStringPtr exMsgPtr;
-    ExceptionPtr ex;
+    std::shared_ptr<CacheableKey> key;
+    std::shared_ptr<Cacheable> value;
+    std::shared_ptr<CacheableString> exMsgPtr;
+    std::shared_ptr<Exception> ex;
     // bool isException;
     int32_t keysOffset = (m_keysOffset != nullptr ? *m_keysOffset : 0);
     for (int32_t index = keysOffset; index < keysOffset + len; ++index) {
@@ -76,7 +76,7 @@ void CacheableObjectPartList::fromData(DataInput& input) {
         }
       } else {
         input.readObject(value);
-        CacheablePtr oldValue;
+        std::shared_ptr<Cacheable> oldValue;
         if (m_addToLocalCache) {
           // for both  register interest  and getAll it is desired
           // to overwrite an invalidated entry
@@ -89,7 +89,7 @@ void CacheableObjectPartList::fromData(DataInput& input) {
             updateCount = pos->second;
             m_updateCountMap->erase(pos);
           }
-          VersionTagPtr versionTag;
+          std::shared_ptr<VersionTag> versionTag;
           GfErrType err =
               m_region->putLocal("getAll", false, key, value, oldValue, true,
                                  updateCount, m_destroyTracker, versionTag);

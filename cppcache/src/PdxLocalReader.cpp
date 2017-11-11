@@ -27,7 +27,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-PdxLocalReader::PdxLocalReader(PdxTypeRegistryPtr pdxTypeRegistry)
+PdxLocalReader::PdxLocalReader(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry)
     : m_dataInput(nullptr),
       m_startBuffer(nullptr),
       m_startPosition(0),
@@ -41,9 +41,10 @@ PdxLocalReader::PdxLocalReader(PdxTypeRegistryPtr pdxTypeRegistry)
       m_remoteToLocalMapSize(0),
       m_pdxTypeRegistry(pdxTypeRegistry) {}
 
-PdxLocalReader::PdxLocalReader(DataInput& input, PdxTypePtr remoteType,
+PdxLocalReader::PdxLocalReader(DataInput& input,
+                               std::shared_ptr<PdxType> remoteType,
                                int32_t pdxLen,
-                               PdxTypeRegistryPtr pdxTypeRegistry)
+                               std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry)
     : m_dataInput(&input),
       m_pdxType(remoteType),
       m_serializedLengthWithOffsets(pdxLen),
@@ -159,9 +160,10 @@ wchar_t* PdxLocalReader::readWideString(const char* fieldName) {
   return str;
 }
 
-SerializablePtr PdxLocalReader::readObject(const char* fieldName) {
+std::shared_ptr<Serializable> PdxLocalReader::readObject(
+    const char* fieldName) {
   checkEmptyFieldName(fieldName);
-  SerializablePtr ptr;
+  std::shared_ptr<Serializable> ptr;
   m_dataInput->readObject(ptr);
   if (ptr != nullptr) {
     return ptr;
@@ -255,9 +257,10 @@ wchar_t** PdxLocalReader::readWideStringArray(const char* fieldName,
   return stringArray;
 }
 
-CacheableObjectArrayPtr PdxLocalReader::readObjectArray(const char* fieldName) {
+std::shared_ptr<CacheableObjectArray> PdxLocalReader::readObjectArray(
+    const char* fieldName) {
   checkEmptyFieldName(fieldName);
-  CacheableObjectArrayPtr coa = CacheableObjectArray::create();
+  std::shared_ptr<CacheableObjectArray> coa = CacheableObjectArray::create();
   coa->fromData(*m_dataInput);
   LOGDEBUG("PdxLocalReader::readObjectArray coa->size() = %d", coa->size());
   if (coa->size() <= 0) {
@@ -275,15 +278,16 @@ int8_t** PdxLocalReader::readArrayOfByteArrays(const char* fieldName,
   return arrofBytearr;
 }
 
-CacheableDatePtr PdxLocalReader::readDate(const char* fieldName) {
+std::shared_ptr<CacheableDate> PdxLocalReader::readDate(const char* fieldName) {
   checkEmptyFieldName(fieldName);
-  CacheableDatePtr cd = CacheableDate::create();
+  std::shared_ptr<CacheableDate> cd = CacheableDate::create();
   cd->fromData(*m_dataInput);
   return cd;
 }
 
-PdxRemotePreservedDataPtr PdxLocalReader::getPreservedData(
-    PdxTypePtr mergedVersion, PdxSerializablePtr pdxObject) {
+std::shared_ptr<PdxRemotePreservedData> PdxLocalReader::getPreservedData(
+    std::shared_ptr<PdxType> mergedVersion,
+    std::shared_ptr<PdxSerializable> pdxObject) {
   int nFieldExtra = m_pdxType->getNumberOfExtraFields();
   LOGDEBUG(
       "PdxLocalReader::getPreservedData::nFieldExtra = %d AND "
@@ -347,16 +351,16 @@ bool PdxLocalReader::hasField(const char* fieldName) {
 }
 
 bool PdxLocalReader::isIdentityField(const char* fieldName) {
-  PdxFieldTypePtr pft = m_pdxType->getPdxField(fieldName);
+  auto pft = m_pdxType->getPdxField(fieldName);
   return (pft != nullptr) && (pft->getIdentityField());
 }
 
-void PdxLocalReader::readCollection(const char* fieldName,
-                                    CacheableArrayListPtr& collection) {
+void PdxLocalReader::readCollection(
+    const char* fieldName, std::shared_ptr<CacheableArrayList>& collection) {
   collection = m_dataInput->readObject<CacheableArrayList>();
 }
 
-PdxUnreadFieldsPtr PdxLocalReader::readUnreadFields() {
+std::shared_ptr<PdxUnreadFields> PdxLocalReader::readUnreadFields() {
   LOGDEBUG("readUnreadFields:: %d ignore property %d", m_isDataNeedToPreserve,
            m_pdxTypeRegistry->getPdxIgnoreUnreadFields());
   if (m_pdxTypeRegistry->getPdxIgnoreUnreadFields() == true) return nullptr;

@@ -71,14 +71,15 @@ void createRegion(const char* name, bool ackMode,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
-                                               clientNotificationEnabled);
+  auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
+                                          clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 
 void checkGets(int maxKeys, int8_t keyTypeId, int8_t valTypeId,
-               const RegionPtr& dataReg, const RegionPtr& verifyReg) {
+               const std::shared_ptr<Region>& dataReg,
+               const std::shared_ptr<Region>& verifyReg) {
   for (int i = 0; i < maxKeys; i++) {
     CacheableWrapper* tmpkey =
         CacheableWrapperFactory::createInstance(keyTypeId);
@@ -88,11 +89,11 @@ void checkGets(int maxKeys, int8_t keyTypeId, int8_t valTypeId,
     ASSERT(tmpval != nullptr, "tmpval is nullptr");
     tmpkey->initKey(i, KEYSIZE);
     auto key = std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable());
-    CacheablePtr val = dataReg->get(key);
+    std::shared_ptr<Cacheable> val = dataReg->get(key);
     // also check that value is in local cache
-    RegionEntryPtr entry = dataReg->getEntry(key);
+    auto entry = dataReg->getEntry(key);
     ASSERT(entry != nullptr, "entry is nullptr");
-    CacheablePtr localVal = entry->getValue();
+    std::shared_ptr<Cacheable> localVal = entry->getValue();
     uint32_t keychksum = tmpkey->getCheckSum();
     auto int32val = std::dynamic_pointer_cast<CacheableInt32>(
         verifyReg->get(static_cast<int32_t>(keychksum)));
@@ -170,8 +171,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
         (key->maxKeys() < DEFAULTNUMKEYS ? key->maxKeys() : DEFAULTNUMKEYS);
     delete key;
 
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
-    RegionPtr verifyReg = getHelper()->getRegion(regionNames[1]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
+    auto verifyReg = getHelper()->getRegion(regionNames[1]);
     for (int i = 0; i < maxKeys; i++) {
       CacheableWrapper* tmpkey =
           CacheableWrapperFactory::createInstance(keyTypeId);
@@ -202,9 +203,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
       verifyReg->put(static_cast<int32_t>(keychksum),
                      static_cast<int32_t>(valchksum));
       // also check that value is in local cache
-      RegionEntryPtr entry = dataReg->getEntry(
+      auto entry = dataReg->getEntry(
           std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable()));
-      CacheablePtr localVal;
+      std::shared_ptr<Cacheable> localVal;
       if (entry != nullptr) {
         localVal = entry->getValue();
       }
@@ -245,8 +246,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetsTask)
         (key->maxKeys() < DEFAULTNUMKEYS ? key->maxKeys() : DEFAULTNUMKEYS);
     delete key;
 
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
-    RegionPtr verifyReg = getHelper()->getRegion(regionNames[1]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
+    auto verifyReg = getHelper()->getRegion(regionNames[1]);
     dataReg->localInvalidateRegion();
     verifyReg->localInvalidateRegion();
     checkGets(maxKeys, keyTypeId, valTypeId, dataReg, verifyReg);

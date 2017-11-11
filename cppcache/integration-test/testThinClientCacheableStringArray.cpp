@@ -69,25 +69,30 @@ DUNIT_TASK(CLIENT1, StepOne)
   {
     initClientWithPool(true, "__TEST_POOL1__", locHostPort, nullptr, nullptr, 0,
                        true);
-    SerializationRegistryPtr serializationRegistry =
+    auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
 
     serializationRegistry->addType(Position::createDeserializable);
     serializationRegistry->addType(Portfolio::createDeserializable);
 
-    RegionPtr regptr = getHelper()->createPooledRegion(
+    auto regptr = getHelper()->createPooledRegion(
         _regionNames[0], USE_ACK, locHostPort, "__TEST_POOL1__", true, true);
-    RegionAttributesPtr lattribPtr = regptr->getAttributes();
-    RegionPtr subregPtr = regptr->createSubregion(_regionNames[1], lattribPtr);
+    auto lattribPtr = regptr->getAttributes();
+    auto subregPtr = regptr->createSubregion(_regionNames[1], lattribPtr);
 
     QueryHelper* qh = &QueryHelper::getHelper();
-    CacheableStringPtr cstr[4] = {
-        CacheableStringPtr(CacheableString::create((const char*)"Taaa", 4)),
-        CacheableStringPtr(CacheableString::create((const char*)"Tbbb", 4)),
-        CacheableStringPtr(CacheableString::create((const char*)"Tccc", 4)),
-        CacheableStringPtr(CacheableString::create((const char*)"Tddd", 4))};
-    CacheableStringArrayPtr nm = CacheableStringArray::create(cstr, 4);
+    std::shared_ptr<CacheableString> cstr[4] = {
+        std::shared_ptr<CacheableString>(
+            CacheableString::create((const char*)"Taaa", 4)),
+        std::shared_ptr<CacheableString>(
+            CacheableString::create((const char*)"Tbbb", 4)),
+        std::shared_ptr<CacheableString>(
+            CacheableString::create((const char*)"Tccc", 4)),
+        std::shared_ptr<CacheableString>(
+            CacheableString::create((const char*)"Tddd", 4))};
+    std::shared_ptr<CacheableStringArray> nm =
+        CacheableStringArray::create(cstr, 4);
     qh->populatePortfolioData(regptr, 4, 3, 2, nm);
     qh->populatePositionData(subregPtr, 4, 3);
 
@@ -98,12 +103,11 @@ END_TASK(StepOne)
 DUNIT_TASK(CLIENT1, StepThree)
   {
     try {
-      QueryServicePtr qs =
-          getHelper()->cachePtr->getQueryService("__TEST_POOL1__");
+      auto qs = getHelper()->cachePtr->getQueryService("__TEST_POOL1__");
 
       char* qryStr = (char*)"select * from /Portfolios p where p.ID < 3";
-      QueryPtr qry = qs->newQuery(qryStr);
-      SelectResultsPtr results;
+      auto qry = qs->newQuery(qryStr);
+      std::shared_ptr<SelectResults> results;
       results = qry->execute();
 
       SelectResultsIterator iter = results->getIterator();
@@ -113,9 +117,9 @@ DUNIT_TASK(CLIENT1, StepThree)
       LOG(buf);
       while (iter.hasNext()) {
         count--;
-        SerializablePtr ser = iter.next();
-        PortfolioPtr portfolio = std::dynamic_pointer_cast<Portfolio>(ser);
-        PositionPtr position = std::dynamic_pointer_cast<Position>(ser);
+        std::shared_ptr<Serializable> ser = iter.next();
+        auto portfolio = std::dynamic_pointer_cast<Portfolio>(ser);
+        auto position = std::dynamic_pointer_cast<Position>(ser);
 
         if (portfolio != nullptr) {
           printf("   query pulled portfolio object ID %d, pkid %s\n",

@@ -38,7 +38,7 @@ namespace Apache
       generic<class TKey, class TValue>
       Object^ RegionEvent<TKey, TValue>::CallbackArgument::get()
       {
-        apache::geode::client::SerializablePtr& valptr(m_nativeptr->getCallbackArgument());
+        std::shared_ptr<apache::geode::client::Serializable>& valptr(m_nativeptr->getCallbackArgument());
         return Serializable::GetManagedValueGeneric<Object^>( valptr );
       }
 

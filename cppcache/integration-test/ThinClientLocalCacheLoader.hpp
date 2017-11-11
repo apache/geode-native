@@ -31,10 +31,10 @@
 using namespace apache::geode::client;
 using namespace test;
 
-TallyLoaderPtr reg1Loader1;
+std::shared_ptr<TallyLoader> reg1Loader1;
 int numLoads = 0;
-CachePtr cachePtr;
-RegionPtr regionPtr;
+std::shared_ptr<Cache> cachePtr;
+std::shared_ptr<Region> regionPtr;
 
 class ThinClientTallyLoader : public TallyLoader {
  public:
@@ -42,14 +42,17 @@ class ThinClientTallyLoader : public TallyLoader {
 
   virtual ~ThinClientTallyLoader() {}
 
-  CacheablePtr load(const RegionPtr& rp, const CacheableKeyPtr& key,
-                    const SerializablePtr& aCallbackArgument) {
+  std::shared_ptr<Cacheable> load(
+      const std::shared_ptr<Region>& rp,
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Serializable>& aCallbackArgument) {
     int32_t loadValue = std::dynamic_pointer_cast<CacheableInt32>(
                             TallyLoader::load(rp, key, aCallbackArgument))
                             ->value();
     char lstrvalue[32];
     sprintf(lstrvalue, "%i", loadValue);
-    CacheableStringPtr lreturnValue = CacheableString::create(lstrvalue);
+    std::shared_ptr<CacheableString> lreturnValue =
+        CacheableString::create(lstrvalue);
     if (key != nullptr && (nullptr != rp->getAttributes()->getEndpoints() ||
                            rp->getAttributes()->getPoolName() != nullptr)) {
       LOGDEBUG("Putting the value (%s) for local region clients only ",
@@ -59,7 +62,7 @@ class ThinClientTallyLoader : public TallyLoader {
     return lreturnValue;
   }
 
-  void close(const RegionPtr& region) {
+  void close(const std::shared_ptr<Region>& region) {
     LOG(" ThinClientTallyLoader::close() called");
     if (region != nullptr) {
       LOGINFO(" Region %s is Destroyed = %d ", region->getName(),
@@ -101,8 +104,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient)
     std::string clientXml = path;
     clientXml += "/";
     clientXml += clientXmlFile;
-    CacheFactoryPtr cacheFactoryPtr = CacheFactory::createCacheFactory()->set(
-        "cache-xml-file", clientXml.c_str());
+    std::shared_ptr<CacheFactory> cacheFactoryPtr =
+        CacheFactory::createCacheFactory()->set("cache-xml-file",
+                                                clientXml.c_str());
     cachePtr = cacheFactoryPtr->create();
     LOGINFO("Created the Geode Cache");
 
@@ -112,7 +116,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient)
     LOGINFO("Obtained the Region from the Cache");
 
     // Plugin the ThinClientTallyLoader to the Region.
-    AttributesMutatorPtr attrMutatorPtr = regionPtr->getAttributesMutator();
+    auto attrMutatorPtr = regionPtr->getAttributesMutator();
     reg1Loader1 = std::make_shared<ThinClientTallyLoader>();
     attrMutatorPtr->setCacheLoader(reg1Loader1);
   }
@@ -128,15 +132,15 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, testLoader)
   {
-    CacheableKeyPtr keyPtr = CacheableKey::create("Key0");
+    std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create("Key0");
 
     ASSERT(!regionPtr->containsKey(keyPtr),
            "Key should not have been found in region.");
     // now having the Callbacks set, lets call the loader
     ASSERT(regionPtr->get(keyPtr) != nullptr, "Expected non null value");
 
-    RegionEntryPtr regEntryPtr = regionPtr->getEntry(keyPtr);
-    CacheablePtr valuePtr = regEntryPtr->getValue();
+    auto regEntryPtr = regionPtr->getEntry(keyPtr);
+    std::shared_ptr<Cacheable> valuePtr = regEntryPtr->getValue();
     int val = atoi(valuePtr->toString()->asChar());
     LOGFINE("val for keyPtr is %d", val);
     numLoads++;
@@ -146,12 +150,12 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, testDestroy)
   {
-    CacheableKeyPtr keyPtr2 = CacheableKey::create("Key1");
+    std::shared_ptr<CacheableKey> keyPtr2 = CacheableKey::create("Key1");
     regionPtr->destroy(keyPtr2);
     // Verify the sequence destroy()->get() :- CacheLoader to be invoked.
     regionPtr->get(keyPtr2);
-    RegionEntryPtr regEntryPtr2 = regionPtr->getEntry(keyPtr2);
-    CacheablePtr valuePtr2 = regEntryPtr2->getValue();
+    auto regEntryPtr2 = regionPtr->getEntry(keyPtr2);
+    std::shared_ptr<Cacheable> valuePtr2 = regEntryPtr2->getValue();
     int val2 = atoi(valuePtr2->toString()->asChar());
     LOGFINE("val2 for keyPtr2 is %d", val2);
     numLoads++;
@@ -161,13 +165,13 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateKey)
   {
-    CacheableKeyPtr keyPtr2 = CacheableKey::create("Key2");
+    std::shared_ptr<CacheableKey> keyPtr2 = CacheableKey::create("Key2");
     regionPtr->put(keyPtr2, "Value2");
     regionPtr->invalidate(keyPtr2);
     // Verify the sequence invalidate()->get() :- CacheLoader to be invoked.
     regionPtr->get(keyPtr2);
-    RegionEntryPtr regEntryPtr = regionPtr->getEntry(keyPtr2);
-    CacheablePtr valuePtr = regEntryPtr->getValue();
+    auto regEntryPtr = regionPtr->getEntry(keyPtr2);
+    std::shared_ptr<Cacheable> valuePtr = regEntryPtr->getValue();
     int val = atoi(valuePtr->toString()->asChar());
     LOGFINE("val for keyPtr1 is %d", val);
     numLoads++;
@@ -176,12 +180,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateKey)
     // Verify the sequence put()->invalidate()->get()->invalidate()->get() :-
     // CacheLoader to be invoked twice
     // once after each get.
-    CacheableKeyPtr keyPtr4 = CacheableKey::create("Key4");
+    std::shared_ptr<CacheableKey> keyPtr4 = CacheableKey::create("Key4");
     regionPtr->put(keyPtr4, "Value4");
     regionPtr->invalidate(keyPtr4);
     regionPtr->get(keyPtr4);
-    RegionEntryPtr regEntryPtr1 = regionPtr->getEntry(keyPtr4);
-    CacheablePtr valuePtr1 = regEntryPtr1->getValue();
+    auto regEntryPtr1 = regionPtr->getEntry(keyPtr4);
+    std::shared_ptr<Cacheable> valuePtr1 = regEntryPtr1->getValue();
     int val1 = atoi(valuePtr1->toString()->asChar());
     LOGFINE("val1 for keyPtr4 is %d", val1);
     numLoads++;
@@ -189,8 +193,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateKey)
 
     regionPtr->invalidate(keyPtr4);
     regionPtr->get(keyPtr4);
-    RegionEntryPtr regEntryPtr2 = regionPtr->getEntry(keyPtr4);
-    CacheablePtr valuePtr2 = regEntryPtr2->getValue();
+    auto regEntryPtr2 = regionPtr->getEntry(keyPtr4);
+    std::shared_ptr<Cacheable> valuePtr2 = regEntryPtr2->getValue();
     int val2 = atoi(valuePtr2->toString()->asChar());
     LOGFINE("val2 for keyPtr4 is %d", val2);
     numLoads++;
@@ -200,14 +204,14 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateRegion)
   {
-    CacheableKeyPtr keyPtr3 = CacheableKey::create("Key3");
+    std::shared_ptr<CacheableKey> keyPtr3 = CacheableKey::create("Key3");
     regionPtr->put(keyPtr3, "Value3");
     // Verify the sequence invalidateRegion()->get() :- CacheLoader to be
     // invoked.
     regionPtr->invalidateRegion();
     regionPtr->get(keyPtr3);
-    RegionEntryPtr regEntryPtr = regionPtr->getEntry(keyPtr3);
-    CacheablePtr valuePtr = regEntryPtr->getValue();
+    auto regEntryPtr = regionPtr->getEntry(keyPtr3);
+    std::shared_ptr<Cacheable> valuePtr = regEntryPtr->getValue();
     int val = atoi(valuePtr->toString()->asChar());
     LOGFINE("val for keyPtr3 is %d", val);
     numLoads++;
@@ -218,12 +222,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateRegion)
     // CacheLoader
     // to be invoked twice.
     // once after each get.
-    CacheableKeyPtr keyPtr4 = CacheableKey::create("Key4");
+    std::shared_ptr<CacheableKey> keyPtr4 = CacheableKey::create("Key4");
     regionPtr->put(keyPtr4, "Value4");
     regionPtr->invalidateRegion();
     regionPtr->get(keyPtr4);
-    RegionEntryPtr regEntryPtr1 = regionPtr->getEntry(keyPtr4);
-    CacheablePtr valuePtr1 = regEntryPtr1->getValue();
+    auto regEntryPtr1 = regionPtr->getEntry(keyPtr4);
+    std::shared_ptr<Cacheable> valuePtr1 = regEntryPtr1->getValue();
     int val1 = atoi(valuePtr1->toString()->asChar());
     LOGFINE("val1 for keyPtr4 is %d", val1);
     numLoads++;
@@ -231,8 +235,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateRegion)
 
     regionPtr->invalidateRegion();
     regionPtr->get(keyPtr4);
-    RegionEntryPtr regEntryPtr2 = regionPtr->getEntry(keyPtr4);
-    CacheablePtr valuePtr2 = regEntryPtr2->getValue();
+    auto regEntryPtr2 = regionPtr->getEntry(keyPtr4);
+    std::shared_ptr<Cacheable> valuePtr2 = regEntryPtr2->getValue();
     int val2 = atoi(valuePtr2->toString()->asChar());
     LOGFINE("val2 for keyPtr4 is %d", val2);
     numLoads++;

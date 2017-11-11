@@ -32,8 +32,8 @@ class MyPdxClass : public PdxSerializable {
  public:
   MyPdxClass();
   ~MyPdxClass();
-  virtual void toData(PdxWriterPtr output);
-  virtual void fromData(PdxReaderPtr input);
+  virtual void toData(std::shared_ptr<PdxWriter> output);
+  virtual void fromData(std::shared_ptr<PdxReader> input);
   virtual void setAString(std::string a_string);
   virtual std::string getAString();
   virtual const char *getClassName() const;
@@ -52,11 +52,11 @@ std::string MyPdxClass::getAString() { return _a_string; }
 
 MyPdxClass::~MyPdxClass() {}
 
-void MyPdxClass::toData(PdxWriterPtr output) {
+void MyPdxClass::toData(std::shared_ptr<PdxWriter> output) {
   output->writeString("name", _a_string.c_str());
 }
 
-void MyPdxClass::fromData(PdxReaderPtr input) {
+void MyPdxClass::fromData(std::shared_ptr<PdxReader> input) {
   _a_string = input->readString("name");
 }
 const char *MyPdxClass::getClassName() const { return "MyPdxClass"; }
@@ -71,7 +71,7 @@ class DISABLED_PdxLocalReaderTest : public ::testing::Test {
   }
 
  protected:
-  CachePtr cache;
+  std::shared_ptr<Cache> cache;
 };
 
 TEST_F(DISABLED_PdxLocalReaderTest, testSerializationOfPdxType) {

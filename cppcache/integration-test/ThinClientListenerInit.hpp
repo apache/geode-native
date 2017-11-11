@@ -39,9 +39,9 @@ static int numberOfLocators = 1;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 const char* poolName = "__TESTPOOL1_";
-TallyListenerPtr reg1Listener1, reg1Listener2;
-TallyWriterPtr reg1Writer1, reg1Writer2;
-TallyLoaderPtr reg1Loader1, reg1Loader2;
+std::shared_ptr<TallyListener> reg1Listener1, reg1Listener2;
+std::shared_ptr<TallyWriter> reg1Writer1, reg1Writer2;
+std::shared_ptr<TallyLoader> reg1Loader1, reg1Loader2;
 int numCreates = 0;
 int numUpdates = 0;
 int numLoads = 0;
@@ -54,14 +54,17 @@ class ThinClientTallyLoader : public TallyLoader {
 
   virtual ~ThinClientTallyLoader() {}
 
-  CacheablePtr load(const RegionPtr& rp, const CacheableKeyPtr& key,
-                    const SerializablePtr& aCallbackArgument) {
+  std::shared_ptr<Cacheable> load(
+      const std::shared_ptr<Region>& rp,
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Serializable>& aCallbackArgument) {
     int32_t loadValue = std::dynamic_pointer_cast<CacheableInt32>(
                             TallyLoader::load(rp, key, aCallbackArgument))
                             ->value();
     char lstrvalue[32];
     sprintf(lstrvalue, "%i", loadValue);
-    CacheableStringPtr lreturnValue = CacheableString::create(lstrvalue);
+    std::shared_ptr<CacheableString> lreturnValue =
+        CacheableString::create(lstrvalue);
     if (key != nullptr && (nullptr != rp->getAttributes()->getEndpoints() ||
                            rp->getAttributes()->getPoolName() != nullptr)) {
       LOGDEBUG("Putting the value (%s) for local region clients only ",
@@ -72,21 +75,24 @@ class ThinClientTallyLoader : public TallyLoader {
   }
 };
 
-void setCacheListener(const char* regName, TallyListenerPtr regListener) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheListener(const char* regName,
+                      std::shared_ptr<TallyListener> regListener) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(regListener);
 }
 
-void setCacheLoader(const char* regName, TallyLoaderPtr regLoader) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheLoader(const char* regName,
+                    std::shared_ptr<TallyLoader> regLoader) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheLoader(regLoader);
 }
 
-void setCacheWriter(const char* regName, TallyWriterPtr regWriter) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheWriter(const char* regName,
+                    std::shared_ptr<TallyWriter> regWriter) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheWriter(regWriter);
 }
 
@@ -134,9 +140,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, testLoaderAndWriter)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    CacheableKeyPtr keyPtr = CacheableKey::create(keys[0]);
-    VectorOfCacheableKey keys;
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
+    std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(keys[0]);
+    std::vector<std::shared_ptr<CacheableKey>> keys;
     keys.push_back(keyPtr);
     regPtr->registerKeys(keys);
 
@@ -148,8 +154,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, testLoaderAndWriter)
     // now having all the Callbacks set, lets call the loader and writer
     ASSERT(regPtr->get(keyPtr) != nullptr, "Expected non null value");
 
-    RegionEntryPtr regEntryPtr = regPtr->getEntry(keyPtr);
-    CacheablePtr valuePtr = regEntryPtr->getValue();
+    auto regEntryPtr = regPtr->getEntry(keyPtr);
+    std::shared_ptr<Cacheable> valuePtr = regEntryPtr->getValue();
     int val = atoi(valuePtr->toString()->asChar());
     LOGFINE("val for keyPtr is %d", val);
     ASSERT(val == 0, "Expected value CacheLoad value should be 0");
@@ -162,10 +168,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, testCreatesAndUpdates)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    CacheableKeyPtr keyPtr1 = CacheableKey::create(keys[1]);
-    CacheableKeyPtr keyPtr2 = CacheableKey::create(keys[2]);
-    VectorOfCacheableKey keys;
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
+    auto keyPtr1 = CacheableKey::create(keys[1]);
+    auto keyPtr2 = CacheableKey::create(keys[2]);
+    std::vector<std::shared_ptr<CacheableKey>> keys;
     keys.push_back(keyPtr1);
     keys.push_back(keyPtr2);
     regPtr->registerKeys(keys);
@@ -212,17 +218,17 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, testDestroy)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    CacheableKeyPtr keyPtr1 = CacheableKey::create(keys[1]);
-    CacheableKeyPtr keyPtr2 = CacheableKey::create(keys[2]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
+    std::shared_ptr<CacheableKey> keyPtr1 = CacheableKey::create(keys[1]);
+    std::shared_ptr<CacheableKey> keyPtr2 = CacheableKey::create(keys[2]);
     regPtr->localInvalidate(keyPtr1);
     // Verify no listener activity after the invalidate
     validateEventCount(__LINE__);
 
     // Verify after update listener activity after a get on an invalidated value
     regPtr->get(keyPtr1);
-    RegionEntryPtr regEntryPtr = regPtr->getEntry(keyPtr1);
-    CacheablePtr valuePtr = regEntryPtr->getValue();
+    auto regEntryPtr = regPtr->getEntry(keyPtr1);
+    std::shared_ptr<Cacheable> valuePtr = regEntryPtr->getValue();
     int val = atoi(valuePtr->toString()->asChar());
     LOGFINE("val for keyPtr1 is %d", val);
     ASSERT(val == 0, "Expected value CacheLoad value should be 0");
@@ -231,8 +237,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, testDestroy)
 
     regPtr->destroy(keyPtr2);
     regPtr->get(keyPtr2);
-    RegionEntryPtr regEntryPtr1 = regPtr->getEntry(keyPtr2);
-    CacheablePtr valuePtr1 = regEntryPtr1->getValue();
+    auto regEntryPtr1 = regPtr->getEntry(keyPtr2);
+    std::shared_ptr<Cacheable> valuePtr1 = regEntryPtr1->getValue();
     int val1 = atoi(valuePtr1->toString()->asChar());
     LOGFINE("val1 for keyPtr2 is %d", val1);
     ASSERT(val1 == 1, "Expected value CacheLoad value should be 1");

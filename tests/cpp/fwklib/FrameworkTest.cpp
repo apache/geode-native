@@ -228,9 +228,10 @@ const FwkPool* FrameworkTest::getPoolSnippet(const std::string& name) const {
 }
 // ----------------------------------------------------------------------------
 
-void FrameworkTest::cacheInitialize(PropertiesPtr& props,
-                                    const CacheAttributesPtr& cAttrs) {
-  CacheFactoryPtr cacheFactory;
+void FrameworkTest::cacheInitialize(
+    std::shared_ptr<Properties>& props,
+    const std::shared_ptr<CacheAttributes>& cAttrs) {
+  std::shared_ptr<CacheFactory> cacheFactory;
   try {
     std::string name = getStringValue("systemName");
     bool isPdxSerialized = getBoolValue("PdxReadSerialized");
@@ -321,7 +322,7 @@ void FrameworkTest::destroyAllRegions() {
 
 // ----------------------------------------------------------------------------
 
-void FrameworkTest::localDestroyRegion(RegionPtr& region) {
+void FrameworkTest::localDestroyRegion(std::shared_ptr<Region>& region) {
   try {
     region->localDestroyRegion();
   } catch (RegionDestroyedException& ignore) {
@@ -336,7 +337,7 @@ void FrameworkTest::localDestroyRegion(RegionPtr& region) {
 void FrameworkTest::parseEndPoints(int32_t ep, std::string label,
                                    bool isServer) {
   std::string poolName = "_Test_Pool";
-  PoolFactoryPtr pfPtr = m_cache->getPoolManager().createFactory();
+  auto pfPtr = m_cache->getPoolManager().createFactory();
   std::string tag = getStringValue("TAG");
   std::string bb("GFE_BB");
 
@@ -396,7 +397,7 @@ void FrameworkTest::parseEndPoints(int32_t ep, std::string label,
   int32_t redundancyLevel = getIntValue("redundancyLevel");
   if (redundancyLevel > 0) pfPtr->setSubscriptionRedundancy(redundancyLevel);
   // create tag specific pools
-  PoolPtr pptr = nullptr;
+  std::shared_ptr<Pool> pptr = nullptr;
   if (!tag.empty()) {
     poolName.append(tag);
     // check if pool already exists
@@ -441,13 +442,13 @@ void FrameworkTest::createPool() {
   }
 }
 
-QueryServicePtr FrameworkTest::checkQueryService() {
-  PoolFactoryPtr pfPtr = m_cache->getPoolManager().createFactory();
+std::shared_ptr<QueryService> FrameworkTest::checkQueryService() {
+  auto pfPtr = m_cache->getPoolManager().createFactory();
   std::string bb("GFE_BB");
   std::string keys("testScheme");
   std::string mode = bbGetString(bb, keys);
   if (mode == "poolwithendpoints" || mode == "poolwithlocator") {
-    PoolPtr pool = m_cache->getPoolManager().find("_Test_Pool");
+    auto pool = m_cache->getPoolManager().find("_Test_Pool");
     return pool->getQueryService();
   } else {
     return m_cache->getQueryService();
@@ -477,7 +478,7 @@ void FrameworkTest::setTestScheme() {
   }
 }
 
-std::string FrameworkTest::poolAttributesToString(PoolPtr& pool) {
+std::string FrameworkTest::poolAttributesToString(std::shared_ptr<Pool>& pool) {
   std::string sString;
   sString += "\npoolName: ";
   sString += FwkStrCvt(pool->getName()).toString();

@@ -59,27 +59,25 @@ class OperMonitor : public CacheListener {
       LOG("Duplicate Recieved");
     }
   }
-  virtual void close(const RegionPtr& region) {
+  virtual void close(const std::shared_ptr<Region>& region) {
     m_close = true;
     LOG("Listener Close Called");
   }
 };
-typedef std::shared_ptr<OperMonitor> OperMonitorPtr;
 
-void setCacheListener(const char* regName, OperMonitorPtr monitor) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheListener(const char* regName, std::shared_ptr<OperMonitor> monitor) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(monitor);
 }
+ std::shared_ptr<OperMonitor> mon1 = nullptr;
 
-OperMonitorPtr mon1 = nullptr;
-
-const char* mixKeys[] = {"D-Key-1"};
+ const char* mixKeys[] = {"D-Key-1"};
 
 #include "ThinClientDurableInit.hpp"
 #include "ThinClientTasks_C2S2.hpp"
 
-void initClientCache(int redundancy, OperMonitorPtr& mon) {
+void initClientCache(int redundancy, std::shared_ptr<OperMonitor>& mon) {
   initClientAndRegion(redundancy, 0, 60000, 1, 300);
 
   if (mon == nullptr) {
@@ -89,7 +87,7 @@ void initClientCache(int redundancy, OperMonitorPtr& mon) {
   setCacheListener(regionNames[0], mon);
 
   getHelper()->cachePtr->readyForEvents();
-  RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+  auto regPtr0 = getHelper()->getRegion(regionNames[0]);
   regPtr0->registerAllKeys(true);
 }
 

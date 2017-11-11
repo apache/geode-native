@@ -51,13 +51,14 @@ namespace apache {
 namespace geode {
 namespace client {
 
-CacheFactoryPtr CacheFactory::createCacheFactory(
-    const PropertiesPtr& configPtr) {
+std::shared_ptr<CacheFactory> CacheFactory::createCacheFactory(
+    const std::shared_ptr<Properties>& configPtr) {
   return std::make_shared<CacheFactory>(configPtr);
 }
 
 void CacheFactory::create_(const char* name, const char* id_data,
-                           CachePtr& cptr, bool readPdxSerialized) {
+                           std::shared_ptr<Cache>& cptr,
+                           bool readPdxSerialized) {
   cptr = nullptr;
   if (name == nullptr) {
     throw IllegalArgumentException("CacheFactory::create: name is nullptr");
@@ -83,13 +84,13 @@ CacheFactory::CacheFactory() {
   dsProp = nullptr;
 }
 
-CacheFactory::CacheFactory(const PropertiesPtr dsProps) {
+CacheFactory::CacheFactory(const std::shared_ptr<Properties> dsProps) {
   ignorePdxUnreadFields = false;
   pdxReadSerialized = false;
   this->dsProp = dsProps;
 }
 
-CachePtr CacheFactory::create() {
+std::shared_ptr<Cache> CacheFactory::create() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
 
   LOGFINE("CacheFactory called DistributedSystem::connect");
@@ -126,11 +127,12 @@ CachePtr CacheFactory::create() {
   return cache;
 }
 
-CachePtr CacheFactory::create(const char* name,
-                              const CacheAttributesPtr& attrs /*= nullptr*/) {
+std::shared_ptr<Cache> CacheFactory::create(
+    const char* name,
+    const std::shared_ptr<CacheAttributes>& attrs /*= nullptr*/) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
 
-  CachePtr cptr;
+  std::shared_ptr<Cache> cptr;
   create_(name, "", cptr, pdxReadSerialized);
   cptr->m_cacheImpl->setAttributes(attrs);
   try {
@@ -163,7 +165,8 @@ CachePtr CacheFactory::create(const char* name,
 
 CacheFactory::~CacheFactory() {}
 
-CacheFactoryPtr CacheFactory::set(const char* name, const char* value) {
+std::shared_ptr<CacheFactory> CacheFactory::set(const char* name,
+                                                const char* value) {
   if (this->dsProp == nullptr) {
     this->dsProp = Properties::create();
   }
@@ -171,18 +174,19 @@ CacheFactoryPtr CacheFactory::set(const char* name, const char* value) {
   return shared_from_this();
 }
 
-CacheFactoryPtr CacheFactory::setAuthInitialize(
-    const AuthInitializePtr& authInitialize) {
+std::shared_ptr<CacheFactory> CacheFactory::setAuthInitialize(
+    const std::shared_ptr<AuthInitialize>& authInitialize) {
   this->authInitialize = authInitialize;
   return shared_from_this();
 }
 
-CacheFactoryPtr CacheFactory::setPdxIgnoreUnreadFields(bool ignore) {
+std::shared_ptr<CacheFactory> CacheFactory::setPdxIgnoreUnreadFields(
+    bool ignore) {
   ignorePdxUnreadFields = ignore;
   return shared_from_this();
 }
 
-CacheFactoryPtr CacheFactory::setPdxReadSerialized(bool prs) {
+std::shared_ptr<CacheFactory> CacheFactory::setPdxReadSerialized(bool prs) {
   pdxReadSerialized = prs;
   return shared_from_this();
 }

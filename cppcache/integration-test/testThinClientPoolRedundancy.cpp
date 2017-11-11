@@ -113,9 +113,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1_1)
 
     feedEntries(0);
 
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
-    RegionPtr regPtr1 = getHelper()->getRegion(poolRegNames[1]);
-    RegionPtr regPtr2 = getHelper()->getRegion(poolRegNames[2]);
+    auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+    auto regPtr1 = getHelper()->getRegion(poolRegNames[1]);
+    auto regPtr2 = getHelper()->getRegion(poolRegNames[2]);
 
     regPtr0->registerAllKeys(false, true);
     regPtr1->registerAllKeys(false, true);
@@ -141,9 +141,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_1)
 
     feedEntries(1);
 
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
-    RegionPtr regPtr1 = getHelper()->getRegion(poolRegNames[1]);
-    RegionPtr regPtr2 = getHelper()->getRegion(poolRegNames[2]);
+    auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+    auto regPtr1 = getHelper()->getRegion(poolRegNames[1]);
+    auto regPtr2 = getHelper()->getRegion(poolRegNames[2]);
 
     regPtr0->registerAllKeys(false, true);
     regPtr1->registerAllKeys(false, true);
@@ -172,9 +172,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1_2)
 
     feedEntries(0);
 
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
-    RegionPtr regPtr1 = getHelper()->getRegion(poolRegNames[1]);
-    RegionPtr regPtr2 = getHelper()->getRegion(poolRegNames[2]);
+    auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+    auto regPtr1 = getHelper()->getRegion(poolRegNames[1]);
+    auto regPtr2 = getHelper()->getRegion(poolRegNames[2]);
 
     regPtr0->registerAllKeys(false, true);
     regPtr1->registerAllKeys(false, true);
@@ -200,9 +200,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_2)
 
     feedEntries(1);
 
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
-    RegionPtr regPtr1 = getHelper()->getRegion(poolRegNames[1]);
-    RegionPtr regPtr2 = getHelper()->getRegion(poolRegNames[2]);
+    auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+    auto regPtr1 = getHelper()->getRegion(poolRegNames[1]);
+    auto regPtr2 = getHelper()->getRegion(poolRegNames[2]);
 
     regPtr0->registerAllKeys(false, true);
     regPtr1->registerAllKeys(false, true);
@@ -268,9 +268,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, VerifyK1C1New2)
   {
-    RegionPtr regPtr = getHelper()->getRegion(poolRegNames[2]);
+    auto regPtr = getHelper()->getRegion(poolRegNames[2]);
 
-    CacheableKeyPtr keyPtr = createKey(keys[1]);
+    std::shared_ptr<CacheableKey> keyPtr = createKey(keys[1]);
 
     auto checkPtr =
         std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));

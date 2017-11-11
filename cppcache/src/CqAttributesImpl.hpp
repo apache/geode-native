@@ -58,10 +58,10 @@ class CPPCACHE_EXPORT CqAttributesImpl : public CqAttributes {
    * @see CqListener
    * @return CqListener Object, returns null if there is no CqListener.
    */
-  CqListenerPtr getCqListener();
-  void addCqListener(const CqListenerPtr& cql);
+  std::shared_ptr<CqListener> getCqListener();
+  void addCqListener(const std::shared_ptr<CqListener>& cql);
   void setCqListeners(const listener_container_type& addedListeners);
-  void removeCqListener(const CqListenerPtr& cql);
+  void removeCqListener(const std::shared_ptr<CqListener>& cql);
   CqAttributesImpl* clone();
 
  private:

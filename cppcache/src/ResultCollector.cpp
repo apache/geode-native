@@ -22,7 +22,7 @@ using namespace apache::geode::client;
 ResultCollector::ResultCollector()
     : m_resultList(CacheableVector::create()), m_isResultReady(false) {}
 ResultCollector::~ResultCollector() {}
-CacheableVectorPtr ResultCollector::getResult(uint32_t timeout) {
+std::shared_ptr<CacheableVector> ResultCollector::getResult(uint32_t timeout) {
   if (m_isResultReady == true) {
     return m_resultList;
   } else {
@@ -36,7 +36,7 @@ CacheableVectorPtr ResultCollector::getResult(uint32_t timeout) {
         "getResult() method");
   }
 }
-void ResultCollector::addResult(const CacheablePtr& result) {
+void ResultCollector::addResult(const std::shared_ptr<Cacheable>& result) {
   m_resultList->push_back(result);
 }
 void ResultCollector::endResults() { m_isResultReady = true; }

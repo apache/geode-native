@@ -22,7 +22,7 @@
 */
 
 #include "NonPdxType.hpp"
-
+#include <geode/PdxWrapper.hpp>
 using namespace apache::geode::client;
 using namespace PdxTests;
 

@@ -26,30 +26,30 @@ void RegionXmlCreation::addSubregion(
   subRegions.push_back(regionPtr);
 }
 
-void RegionXmlCreation::setAttributes(RegionAttributesPtr attrsPtr) {
+void RegionXmlCreation::setAttributes(
+    std::shared_ptr<RegionAttributes> attrsPtr) {
   regAttrs = attrsPtr;
 }
+ std::shared_ptr<RegionAttributes> RegionXmlCreation::getAttributes() { return regAttrs; }
 
-RegionAttributesPtr RegionXmlCreation::getAttributes() { return regAttrs; }
-
-void RegionXmlCreation::fillIn(RegionPtr regionPtr) {
-  for (const auto& regXmlCreation : subRegions) {
-    regXmlCreation->create(regionPtr);
-  }
+ void RegionXmlCreation::fillIn(std::shared_ptr<Region> regionPtr) {
+   for (const auto& regXmlCreation : subRegions) {
+     regXmlCreation->create(regionPtr);
+   }
 }
 
 void RegionXmlCreation::createRoot(Cache* cache) {
   GF_D_ASSERT(this->isRoot);
-  RegionPtr rootRegPtr = nullptr;
+  std::shared_ptr<Region> rootRegPtr = nullptr;
 
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache);
   cacheImpl->createRegion(regionName.c_str(), regAttrs, rootRegPtr);
   fillIn(rootRegPtr);
 }
 
-void RegionXmlCreation::create(RegionPtr parent) {
+void RegionXmlCreation::create(std::shared_ptr<Region> parent) {
   GF_D_ASSERT(!(this->isRoot));
-  RegionPtr subRegPtr = nullptr;
+  std::shared_ptr<Region> subRegPtr = nullptr;
 
   subRegPtr = parent->createSubregion(regionName.c_str(), regAttrs);
   fillIn(subRegPtr);

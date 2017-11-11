@@ -54,7 +54,7 @@ namespace Apache
 
           virtual void AddResult( const Object^ rs ) 
           {
-            //apache::geode::client::CacheablePtr nativeptr(rs);
+            //std::shared_ptr<apache::geode::client::Cacheable> nativeptr(rs);
             //TResult grs =  Serializable::GetManagedValueGeneric<TResult>( nativeptr);
             m_rscoll->AddResult(safe_cast<const TResult>(rs));
           }

@@ -41,7 +41,7 @@ namespace Apache
         {
         internal:
 
-          inline static TransactionId^ Create(native::TransactionIdPtr nativeptr )
+          inline static TransactionId^ Create(std::shared_ptr<native::TransactionId> nativeptr )
           {
           return __nullptr == nativeptr ? nullptr :
             gcnew TransactionId( nativeptr );
@@ -58,7 +58,7 @@ namespace Apache
           /// Private constructor to wrap a native object pointer
           /// </summary>
           /// <param name="nativeptr">The native object pointer</param>
-          inline TransactionId( native::TransactionIdPtr nativeptr )
+          inline TransactionId( std::shared_ptr<native::TransactionId> nativeptr )
           {
             m_nativeptr = gcnew native_shared_ptr<native::TransactionId>(nativeptr);
           }

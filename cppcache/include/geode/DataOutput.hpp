@@ -307,7 +307,7 @@ class CPPCACHE_EXPORT DataOutput {
     // create cacheable string
     // write typeid id.
     // call todata
-    CacheableStringPtr csPtr = CacheableString::create(value);
+    std::shared_ptr<CacheableString> csPtr = CacheableString::create(value);
     write(csPtr->typeId());
     csPtr->toData(*this);
   }

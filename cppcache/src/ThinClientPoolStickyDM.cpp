@@ -21,7 +21,7 @@ using namespace apache::geode::client;
 TcrConnection* ThinClientPoolStickyDM::getConnectionFromQueueW(
     GfErrType* error, std::set<ServerLocation>& excludeServers, bool isBGThread,
     TcrMessage& request, int8_t& version, bool& match, bool& connFound,
-    const BucketServerLocationPtr& serverLocation) {
+    const std::shared_ptr<BucketServerLocation>& serverLocation) {
   TcrConnection* conn = nullptr;
   TcrEndpoint* ep = nullptr;
   bool maxConnLimit = false;
@@ -32,7 +32,7 @@ TcrConnection* ThinClientPoolStickyDM::getConnectionFromQueueW(
         serverLocation);
     return conn;
   }
-  BucketServerLocationPtr slTmp = nullptr;
+  std::shared_ptr<BucketServerLocation> slTmp = nullptr;
   if (m_attrs->getPRSingleHopEnabled() && !request.forTransaction()) {
     if (serverLocation != nullptr) {
       ep = getEndPoint(serverLocation, version, excludeServers);

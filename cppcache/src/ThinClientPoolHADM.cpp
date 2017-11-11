@@ -21,7 +21,7 @@
 using namespace apache::geode::client;
 const char* ThinClientPoolHADM::NC_Redundancy = "NC Redundancy";
 ThinClientPoolHADM::ThinClientPoolHADM(const char* name,
-                                       PoolAttributesPtr poolAttr,
+                                       std::shared_ptr<PoolAttributes> poolAttr,
                                        TcrConnectionManager& connManager)
     : ThinClientPoolDM(name, poolAttr, connManager),
       m_theTcrConnManager(connManager),

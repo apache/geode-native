@@ -25,8 +25,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-AdminRegionPtr AdminRegion::create(CacheImpl* cache,
-                                   ThinClientBaseDM* distMan) {
+std::shared_ptr<AdminRegion> AdminRegion::create(CacheImpl* cache,
+                                                 ThinClientBaseDM* distMan) {
   auto adminRegion = std::make_shared<AdminRegion>();
 
   auto& props = cache->getDistributedSystem().getSystemProperties();
@@ -66,14 +66,14 @@ TcrConnectionManager* AdminRegion::getConnectionManager() {
   return m_connectionMgr;
 }
 
-void AdminRegion::put(const CacheableKeyPtr& keyPtr,
-                      const CacheablePtr& valuePtr) {
+void AdminRegion::put(const std::shared_ptr<CacheableKey>& keyPtr,
+                      const std::shared_ptr<Cacheable>& valuePtr) {
   GfErrType err = putNoThrow(keyPtr, valuePtr);
   GfErrTypeToException("AdminRegion::put", err);
 }
 
-GfErrType AdminRegion::putNoThrow(const CacheableKeyPtr& keyPtr,
-                                  const CacheablePtr& valuePtr) {
+GfErrType AdminRegion::putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,
+                                  const std::shared_ptr<Cacheable>& valuePtr) {
   // put obj to region
   GfErrType err = GF_NOERR;
 

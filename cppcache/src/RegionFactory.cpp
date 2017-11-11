@@ -43,9 +43,10 @@ RegionFactory::RegionFactory(RegionShortcut preDefinedRegion,
   setRegionShortcut();
 }
 
-RegionPtr RegionFactory::create(const char* name) {
-  RegionPtr retRegionPtr = nullptr;
-  RegionAttributesPtr regAttr = m_attributeFactory->createRegionAttributes();
+std::shared_ptr<Region> RegionFactory::create(const char* name) {
+  std::shared_ptr<Region> retRegionPtr = nullptr;
+  std::shared_ptr<RegionAttributes> regAttr =
+      m_attributeFactory->createRegionAttributes();
   if (m_preDefinedRegion != LOCAL && (regAttr->getPoolName() == nullptr ||
                                       strlen(regAttr->getPoolName()) == 0)) {
     auto pool = m_cacheImpl->getPoolManager().getDefaultPool();
@@ -81,23 +82,23 @@ void RegionFactory::setRegionShortcut() {
 }
 
 RegionFactory& RegionFactory::setCacheLoader(
-    const CacheLoaderPtr& cacheLoader) {
+    const std::shared_ptr<CacheLoader>& cacheLoader) {
   m_attributeFactory->setCacheLoader(cacheLoader);
   return *this;
 }
 
 RegionFactory& RegionFactory::setCacheWriter(
-    const CacheWriterPtr& cacheWriter) {
+    const std::shared_ptr<CacheWriter>& cacheWriter) {
   m_attributeFactory->setCacheWriter(cacheWriter);
   return *this;
 }
 RegionFactory& RegionFactory::setCacheListener(
-    const CacheListenerPtr& aListener) {
+    const std::shared_ptr<CacheListener>& aListener) {
   m_attributeFactory->setCacheListener(aListener);
   return *this;
 }
 RegionFactory& RegionFactory::setPartitionResolver(
-    const PartitionResolverPtr& aResolver) {
+    const std::shared_ptr<PartitionResolver>& aResolver) {
   m_attributeFactory->setPartitionResolver(aResolver);
   return *this;
 }
@@ -189,14 +190,15 @@ RegionFactory& RegionFactory::setCachingEnabled(bool cachingEnabled) {
 }
 
 RegionFactory& RegionFactory::setPersistenceManager(
-    const PersistenceManagerPtr& persistenceManager,
-    const PropertiesPtr& config) {
+    const std::shared_ptr<PersistenceManager>& persistenceManager,
+    const std::shared_ptr<Properties>& config) {
   m_attributeFactory->setPersistenceManager(persistenceManager, config);
   return *this;
 }
 
 RegionFactory& RegionFactory::setPersistenceManager(
-    const char* lib, const char* func, const PropertiesPtr& config) {
+    const char* lib, const char* func,
+    const std::shared_ptr<Properties>& config) {
   m_attributeFactory->setPersistenceManager(lib, func, config);
   return *this;
 }

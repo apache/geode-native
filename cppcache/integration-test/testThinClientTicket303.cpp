@@ -27,7 +27,7 @@
 void createAuthzRegion() {
   initCredentialGenerator();
   initClientAuth('A');
-  RegionPtr regPtr = createOverflowRegion(regionNamesAuth[0], false, 1);
+  auto regPtr = createOverflowRegion(regionNamesAuth[0], false, 1);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
@@ -66,7 +66,7 @@ END_TASK_DEFINITION
 // check that tracking work correctly with put.
 DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerification)
   {
-    RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
+    auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
     rptr->put("key-1", "client1-value1");
     rptr->put("key-2", "client1-value2");
     rptr->put("key-3", "client1-value3");

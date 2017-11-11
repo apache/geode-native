@@ -176,7 +176,7 @@ namespace Apache
         /// Protected constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CacheableBuiltinKey(native::SerializablePtr nativeptr)
+        inline CacheableBuiltinKey(std::shared_ptr<native::Serializable> nativeptr)
           : CacheableKey(nativeptr) { }
       };
 
@@ -279,7 +279,7 @@ namespace Apache
         /// Protected constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CacheableBuiltinArray(native::SerializablePtr nptr)
+        inline CacheableBuiltinArray(std::shared_ptr<native::Serializable> nptr)
           : Serializable(nptr)
         {
           auto nativeptr = std::static_pointer_cast<TNative>(nptr);
@@ -386,20 +386,20 @@ namespace Apache
            }                                                                     \
            \
            internal:                                                               \
-           static IGeodeSerializable^ Create(native::SerializablePtr obj)            \
+           static IGeodeSerializable^ Create(std::shared_ptr<native::Serializable> obj)            \
            {                                                                     \
            return (obj != nullptr ? gcnew m(obj) : nullptr);                   \
            }                                                                     \
            \
            private:                                                                \
-             inline m(native::SerializablePtr nativeptr)                            \
+             inline m(std::shared_ptr<native::Serializable> nativeptr)                            \
               : CacheableBuiltinKey(nativeptr) { }                                \
       };
 
 
 #define _GFCLI_CACHEABLE_ARRAY_DEF_NEW(m, mt)                                    \
       ref class m : public CacheableBuiltinArray<            \
-        native::m, native::m##Ptr, mt, GeodeClassIds::m>                  \
+        native::m, native::m, mt, GeodeClassIds::m>                  \
             {                                                                       \
       public:                                                                 \
         /** <summary>
@@ -449,7 +449,7 @@ namespace Apache
       }                                                                     \
       \
             internal:                                                               \
-              static IGeodeSerializable^ Create(native::SerializablePtr obj)            \
+              static IGeodeSerializable^ Create(std::shared_ptr<native::Serializable> obj)            \
       {                                                                     \
       return (obj != nullptr ? gcnew m(obj) : nullptr);                   \
       }                                                                     \
@@ -482,7 +482,7 @@ namespace Apache
                */                                                                   \
                inline m(array<mt>^ value, System::Int32 length)                              \
                : CacheableBuiltinArray(value, length) { }                          \
-               inline m(native::SerializablePtr nativeptr)                            \
+               inline m(std::shared_ptr<native::Serializable> nativeptr)                            \
                : CacheableBuiltinArray(nativeptr) { }                              \
       };
 

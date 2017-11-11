@@ -41,12 +41,13 @@ using namespace apache::geode::client;
 // The HA QuickStart example.
 int main(int argc, char** argv) {
   try {
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
+    std::shared_ptr<CacheFactory> cacheFactory =
+        CacheFactory::createCacheFactory();
 
     LOGINFO("Connected to the Geode Distributed System");
 
     // Create a Geode Cache with the "clientHACache.xml" Cache XML file.
-    CachePtr cachePtr =
+    auto cachePtr =
         cacheFactory->set("cache-xml-file", "XMLs/clientHACache.xml")
             ->addServer("localhost", 40404)
             ->addServer("localhost", 40405)
@@ -58,14 +59,18 @@ int main(int argc, char** argv) {
 
     // Get the example Region from the Cache which is declared in the Cache XML
     // file.
-    RegionPtr regionPtr = cachePtr->getRegion("exampleRegion");
+    auto regionPtr = cachePtr->getRegion("exampleRegion");
 
     LOGINFO("Obtained the Region from the Cache");
 
     // Register and Unregister Interest on Region for Some Keys.
-    VectorOfCacheableKey keys;
-    CacheableKeyPtr key1 = CacheableInt32::create(123);
-    CacheableKeyPtr key2 = CacheableString::create("Key-123");
+<<<<<<< HEAD
+    std::vector<std::shared_ptr<CacheableKey>> keys;
+=======
+    std::vector<std::shared_ptr<CacheableKey>> keys;
+>>>>>>> Removing macros out of geode_types.h
+    std::shared_ptr<CacheableKey> key1 = CacheableInt32::create(123);
+    std::shared_ptr<CacheableKey> key2 = CacheableString::create("Key-123");
     keys.push_back(key1);
     keys.push_back(key2);
     regionPtr->registerKeys(keys);

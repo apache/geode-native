@@ -43,16 +43,16 @@ namespace client {
  * of the class.
  */
 
-class Delta {
+class CPPCACHE_EXPORT Delta {
  public:
   /**
    * <code>hasDelta( )</code> is invoked by Geode during <code>Region::put(
-   * CacheableKeyPtr, CacheablePtr )</code> to determine if the object contains
-   * a delta.
-   * If <code>hasDelta( )</code> returns true, the delta in the object is
-   * serialized by invoking <code>Delta::toDelta( DataOutput& )</code>.
-   * If <code>hasDelta( )</code> returns false, the object is serialized by
-   * invoking <code>Cacheable::toData( DataOutput& )</code>.
+   * std::shared_ptr<CacheableKey>, std::shared_ptr<Cacheable> )</code> to
+   * determine if the object contains a delta. If <code>hasDelta( )</code>
+   * returns true, the delta in the object is serialized by invoking
+   * <code>Delta::toDelta( DataOutput& )</code>. If <code>hasDelta( )</code>
+   * returns false, the object is serialized by invoking
+   * <code>Cacheable::toData( DataOutput& )</code>.
    */
   virtual bool hasDelta() = 0;
 
@@ -88,7 +88,7 @@ class Delta {
    * a buffer, then deserializing from the buffer thus creating a clone of the
    * original.
    */
-  virtual DeltaPtr clone();
+  virtual std::shared_ptr<Delta> clone();
 
   virtual ~Delta() {}
 

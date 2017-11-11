@@ -55,30 +55,31 @@ class PutAllWork : public PooledWork<GfErrType>,
                    private NonCopyable,
                    private NonAssignable {
   ThinClientPoolDM* m_poolDM;
-  BucketServerLocationPtr m_serverLocation;
+  std::shared_ptr<BucketServerLocation> m_serverLocation;
   TcrMessage* m_request;
   TcrMessageReply* m_reply;
   MapOfUpdateCounters m_mapOfUpdateCounters;
   bool m_attemptFailover;
   bool m_isBGThread;
-  UserAttributesPtr m_userAttribute;
-  const RegionPtr m_region;
-  VectorOfCacheableKeyPtr m_keys;
-  HashMapOfCacheablePtr m_map;
-  VersionedCacheableObjectPartListPtr m_verObjPartListPtr;
+  std::shared_ptr<UserAttributes> m_userAttribute;
+  const std::shared_ptr<Region> m_region;
+  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> m_keys;
+  std::shared_ptr<HashMapOfCacheable> m_map;
+  std::shared_ptr<VersionedCacheableObjectPartList> m_verObjPartListPtr;
   uint32_t m_timeout;
-  PutAllPartialResultServerExceptionPtr m_papException;
+  std::shared_ptr<PutAllPartialResultServerException> m_papException;
   bool m_isPapeReceived;
   ChunkedPutAllResponse* m_resultCollector;
-  // UNUSED const SerializablePtr& m_aCallbackArgument;
+  // UNUSED const std::shared_ptr<Serializable>& m_aCallbackArgument;
 
  public:
-  PutAllWork(ThinClientPoolDM* poolDM,
-             const BucketServerLocationPtr& serverLocation,
-             const RegionPtr& region, bool attemptFailover, bool isBGThread,
-             const HashMapOfCacheablePtr map,
-             const VectorOfCacheableKeyPtr keys, uint32_t timeout,
-             const SerializablePtr& aCallbackArgument)
+  PutAllWork(
+      ThinClientPoolDM* poolDM,
+      const std::shared_ptr<BucketServerLocation>& serverLocation,
+      const std::shared_ptr<Region>& region, bool attemptFailover,
+      bool isBGThread, const std::shared_ptr<HashMapOfCacheable> map,
+      const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> keys,
+      uint32_t timeout, const std::shared_ptr<Serializable>& aCallbackArgument)
       : m_poolDM(poolDM),
         m_serverLocation(serverLocation),
         m_attemptFailover(attemptFailover),
@@ -122,17 +123,19 @@ class PutAllWork : public PooledWork<GfErrType>,
 
   TcrMessage* getReply() { return m_reply; }
 
-  HashMapOfCacheablePtr getPutAllMap() { return m_map; }
+  std::shared_ptr<HashMapOfCacheable> getPutAllMap() { return m_map; }
 
-  VersionedCacheableObjectPartListPtr getVerObjPartList() {
+  std::shared_ptr<VersionedCacheableObjectPartList> getVerObjPartList() {
     return m_verObjPartListPtr;
   }
 
   ChunkedPutAllResponse* getResultCollector() { return m_resultCollector; }
 
-  BucketServerLocationPtr getServerLocation() { return m_serverLocation; }
+  std::shared_ptr<BucketServerLocation> getServerLocation() {
+    return m_serverLocation;
+  }
 
-  PutAllPartialResultServerExceptionPtr getPaPResultException() {
+  std::shared_ptr<PutAllPartialResultServerException> getPaPResultException() {
     return m_papException;
   }
 
@@ -201,27 +204,29 @@ class RemoveAllWork : public PooledWork<GfErrType>,
                       private NonCopyable,
                       private NonAssignable {
   ThinClientPoolDM* m_poolDM;
-  BucketServerLocationPtr m_serverLocation;
+  std::shared_ptr<BucketServerLocation> m_serverLocation;
   TcrMessage* m_request;
   TcrMessageReply* m_reply;
   MapOfUpdateCounters m_mapOfUpdateCounters;
   bool m_attemptFailover;
   bool m_isBGThread;
-  UserAttributesPtr m_userAttribute;
-  const RegionPtr m_region;
-  const SerializablePtr& m_aCallbackArgument;
-  VectorOfCacheableKeyPtr m_keys;
-  VersionedCacheableObjectPartListPtr m_verObjPartListPtr;
-  PutAllPartialResultServerExceptionPtr m_papException;
+  std::shared_ptr<UserAttributes> m_userAttribute;
+  const std::shared_ptr<Region> m_region;
+  const std::shared_ptr<Serializable>& m_aCallbackArgument;
+  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> m_keys;
+  std::shared_ptr<VersionedCacheableObjectPartList> m_verObjPartListPtr;
+  std::shared_ptr<PutAllPartialResultServerException> m_papException;
   bool m_isPapeReceived;
   ChunkedRemoveAllResponse* m_resultCollector;
 
  public:
-  RemoveAllWork(ThinClientPoolDM* poolDM,
-                const BucketServerLocationPtr& serverLocation,
-                const RegionPtr& region, bool attemptFailover, bool isBGThread,
-                const VectorOfCacheableKeyPtr keys,
-                const SerializablePtr& aCallbackArgument)
+  RemoveAllWork(
+      ThinClientPoolDM* poolDM,
+      const std::shared_ptr<BucketServerLocation>& serverLocation,
+      const std::shared_ptr<Region>& region, bool attemptFailover,
+      bool isBGThread,
+      const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> keys,
+      const std::shared_ptr<Serializable>& aCallbackArgument)
       : m_poolDM(poolDM),
         m_serverLocation(serverLocation),
         m_attemptFailover(attemptFailover),
@@ -259,15 +264,17 @@ class RemoveAllWork : public PooledWork<GfErrType>,
 
   TcrMessage* getReply() { return m_reply; }
 
-  VersionedCacheableObjectPartListPtr getVerObjPartList() {
+  std::shared_ptr<VersionedCacheableObjectPartList> getVerObjPartList() {
     return m_verObjPartListPtr;
   }
 
   ChunkedRemoveAllResponse* getResultCollector() { return m_resultCollector; }
 
-  BucketServerLocationPtr getServerLocation() { return m_serverLocation; }
+  std::shared_ptr<BucketServerLocation> getServerLocation() {
+    return m_serverLocation;
+  }
 
-  PutAllPartialResultServerExceptionPtr getPaPResultException() {
+  std::shared_ptr<PutAllPartialResultServerException> getPaPResultException() {
     return m_papException;
   }
 
@@ -332,11 +339,11 @@ class RemoveAllWork : public PooledWork<GfErrType>,
   }
 };
 
-ThinClientRegion::ThinClientRegion(const std::string& name,
-                                   CacheImpl* cacheImpl,
-                                   const RegionInternalPtr& rPtr,
-                                   const RegionAttributesPtr& attributes,
-                                   const CacheStatisticsPtr& stats, bool shared)
+ThinClientRegion::ThinClientRegion(
+    const std::string& name, CacheImpl* cacheImpl,
+    const std::shared_ptr<RegionInternal>& rPtr,
+    const std::shared_ptr<RegionAttributes>& attributes,
+    const std::shared_ptr<CacheStatistics>& stats, bool shared)
     : LocalRegion(name, cacheImpl, rPtr, attributes, stats, shared),
       m_tcrdm((ThinClientBaseDM*)0),
       m_notifyRelease(false),
@@ -350,7 +357,7 @@ ThinClientRegion::ThinClientRegion(const std::string& name,
 
 void ThinClientRegion::initTCR() {
   bool subscription = false;
-  PoolPtr pool = m_cacheImpl->getCache()->getPoolManager().find(
+  auto pool = m_cacheImpl->getCache()->getPoolManager().find(
       getAttributes()->getPoolName());
   if (pool != nullptr) {
     subscription = pool->getSubscriptionEnabled();
@@ -381,10 +388,10 @@ void ThinClientRegion::initTCR() {
   }
 }
 
-void ThinClientRegion::registerKeys(const VectorOfCacheableKey& keys,
-                                    bool isDurable, bool getInitialValues,
-                                    bool receiveValues) {
-  PoolPtr pool = m_cacheImpl->getCache()->getPoolManager().find(
+void ThinClientRegion::registerKeys(
+    const std::vector<std::shared_ptr<CacheableKey>>& keys, bool isDurable,
+    bool getInitialValues, bool receiveValues) {
+  auto pool = m_cacheImpl->getCache()->getPoolManager().find(
       getAttributes()->getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
@@ -427,8 +434,9 @@ void ThinClientRegion::registerKeys(const VectorOfCacheableKey& keys,
   GfErrTypeToException("Region::registerKeys", err);
 }
 
-void ThinClientRegion::unregisterKeys(const VectorOfCacheableKey& keys) {
-  PoolPtr pool = m_cacheImpl->getCache()->getPoolManager().find(
+void ThinClientRegion::unregisterKeys(
+    const std::vector<std::shared_ptr<CacheableKey>>& keys) {
+  auto pool = m_cacheImpl->getCache()->getPoolManager().find(
       getAttributes()->getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
@@ -463,7 +471,7 @@ void ThinClientRegion::unregisterKeys(const VectorOfCacheableKey& keys) {
 void ThinClientRegion::registerAllKeys(bool isDurable,
                                        bool getInitialValues,
                                        bool receiveValues) {
-  PoolPtr pool = m_cacheImpl->getCache()->getPoolManager().find(
+  auto pool = m_cacheImpl->getCache()->getPoolManager().find(
       getAttributes()->getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
@@ -494,7 +502,7 @@ void ThinClientRegion::registerAllKeys(bool isDurable,
   LOGDEBUG("ThinClientRegion::registerAllKeys : interestpolicy is %d",
            interestPolicy.ordinal);
 
-  VectorOfCacheableKeyPtr resultKeys;
+  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> resultKeys;
   //  if we need to fetch initial data, then we get the keys in
   // that call itself using the special GET_ALL message and do not need
   // to get the keys in the initial  register interest  call
@@ -513,7 +521,7 @@ void ThinClientRegion::registerAllKeys(bool isDurable,
 void ThinClientRegion::registerRegex(const char* regex, bool isDurable,
                                      bool getInitialValues,
                                      bool receiveValues) {
-  PoolPtr pool = m_cacheImpl->getCache()->getPoolManager().find(
+  auto pool = m_cacheImpl->getCache()->getPoolManager().find(
       getAttributes()->getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
@@ -549,8 +557,8 @@ void ThinClientRegion::registerRegex(const char* regex, bool isDurable,
   LOGDEBUG("ThinClientRegion::registerRegex : interestpolicy is %d",
            interestPolicy.ordinal);
 
-  VectorOfCacheableKeyPtr resultKeys2 =
-      std::make_shared<VectorOfCacheableKey>();
+  auto resultKeys2 =
+      std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>();
 
   //  if we need to fetch initial data for "allKeys" case, then we
   // get the keys in that call itself using the special GET_ALL message and
@@ -567,7 +575,7 @@ void ThinClientRegion::registerRegex(const char* regex, bool isDurable,
 }
 
 void ThinClientRegion::unregisterRegex(const char* regex) {
-  PoolPtr pool = m_cacheImpl->getCache()->getPoolManager().find(
+  auto pool = m_cacheImpl->getCache()->getPoolManager().find(
       getAttributes()->getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
@@ -593,7 +601,7 @@ void ThinClientRegion::unregisterRegex(const char* regex) {
 }
 
 void ThinClientRegion::unregisterAllKeys() {
-  PoolPtr pool = m_cacheImpl->getCache()->getPoolManager().find(
+  auto pool = m_cacheImpl->getCache()->getPoolManager().find(
       getAttributes()->getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
@@ -610,8 +618,8 @@ void ThinClientRegion::unregisterAllKeys() {
   GfErrTypeToException("Region::unregisterAllKeys", err);
 }
 
-SelectResultsPtr ThinClientRegion::query(const char* predicate,
-                                         uint32_t timeout) {
+std::shared_ptr<SelectResults> ThinClientRegion::query(const char* predicate,
+                                                       uint32_t timeout) {
   CHECK_DESTROY_PENDING(TryReadGuard, Region::query);
 
   if (predicate == nullptr || predicate[0] == '\0') {
@@ -659,7 +667,7 @@ SelectResultsPtr ThinClientRegion::query(const char* predicate,
     squery += predicate;
   }
 
-  RemoteQueryPtr queryPtr;
+  std::shared_ptr<RemoteQuery> queryPtr;
 
   // TODO:
   ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
@@ -676,7 +684,7 @@ SelectResultsPtr ThinClientRegion::query(const char* predicate,
 }
 
 bool ThinClientRegion::existsValue(const char* predicate, uint32_t timeout) {
-  SelectResultsPtr results = query(predicate, timeout);
+  std::shared_ptr<SelectResults> results = query(predicate, timeout);
 
   if (results == nullptr) {
     return false;
@@ -686,7 +694,7 @@ bool ThinClientRegion::existsValue(const char* predicate, uint32_t timeout) {
 }
 
 GfErrType ThinClientRegion::unregisterKeysBeforeDestroyRegion() {
-  PoolPtr pool = m_cacheImpl->getCache()->getPoolManager().find(
+  auto pool = m_cacheImpl->getCache()->getPoolManager().find(
       getAttributes()->getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
@@ -710,24 +718,25 @@ GfErrType ThinClientRegion::unregisterKeysBeforeDestroyRegion() {
       m_durableInterestListRegexForUpdatesAsInvalidates);
   err = opErr != GF_NOERR ? opErr : err;
 
-  VectorOfCacheableKey keysVec;
+  std::vector<std::shared_ptr<CacheableKey>> keysVec;
   copyInterestList(keysVec, m_interestList);
   opErr = unregisterKeysNoThrowLocalDestroy(keysVec, false);
   err = opErr != GF_NOERR ? opErr : err;
 
-  VectorOfCacheableKey keysVecDurable;
+  std::vector<std::shared_ptr<CacheableKey>> keysVecDurable;
   copyInterestList(keysVecDurable, m_durableInterestList);
   opErr = unregisterKeysNoThrowLocalDestroy(keysVecDurable, false);
   err = opErr != GF_NOERR ? opErr : err;
 
-  VectorOfCacheableKey keysVecForUpdatesAsInvalidates;
+  std::vector<std::shared_ptr<CacheableKey>> keysVecForUpdatesAsInvalidates;
   copyInterestList(keysVecForUpdatesAsInvalidates,
                    m_interestListForUpdatesAsInvalidates);
   opErr =
       unregisterKeysNoThrowLocalDestroy(keysVecForUpdatesAsInvalidates, false);
   err = opErr != GF_NOERR ? opErr : err;
 
-  VectorOfCacheableKey keysVecDurableForUpdatesAsInvalidates;
+  std::vector<std::shared_ptr<CacheableKey>>
+      keysVecDurableForUpdatesAsInvalidates;
   copyInterestList(keysVecDurableForUpdatesAsInvalidates,
                    m_durableInterestListForUpdatesAsInvalidates);
   opErr = unregisterKeysNoThrowLocalDestroy(
@@ -736,9 +745,9 @@ GfErrType ThinClientRegion::unregisterKeysBeforeDestroyRegion() {
   return err;
 }
 
-SerializablePtr ThinClientRegion::selectValue(const char* predicate,
-                                              uint32_t timeout) {
-  SelectResultsPtr results = query(predicate, timeout);
+std::shared_ptr<Serializable> ThinClientRegion::selectValue(
+    const char* predicate, uint32_t timeout) {
+  std::shared_ptr<SelectResults> results = query(predicate, timeout);
 
   if (results == nullptr || results->size() == 0) {
     return nullptr;
@@ -751,14 +760,14 @@ SerializablePtr ThinClientRegion::selectValue(const char* predicate,
   return results->operator[](0);
 }
 
-VectorOfCacheableKey ThinClientRegion::serverKeys() {
+std::vector<std::shared_ptr<CacheableKey>> ThinClientRegion::serverKeys() {
   CHECK_DESTROY_PENDING(TryReadGuard, Region::serverKeys);
 
   TcrMessageReply reply(true, m_tcrdm);
   TcrMessageKeySet request(m_cacheImpl->getCache()->createDataOutput(),
                            m_fullPath, m_tcrdm);
   reply.setMessageTypeRequest(TcrMessage::KEY_SET);
-  VectorOfCacheableKey serverKeys;
+  std::vector<std::shared_ptr<CacheableKey>> serverKeys;
   ChunkedKeySetResponse resultCollector(request, serverKeys, reply);
   reply.setChunkedResultHandler(&resultCollector);
 
@@ -795,14 +804,15 @@ VectorOfCacheableKey ThinClientRegion::serverKeys() {
 }
 
 bool ThinClientRegion::containsKeyOnServer(
-    const CacheableKeyPtr& keyPtr) const {
+    const std::shared_ptr<CacheableKey>& keyPtr) const {
   GfErrType err = GF_NOERR;
   bool ret = false;
   TXState* txState = getTXState();
 
   if (txState != nullptr) {
     //		if (!txState->isReplay()) {
-    //			auto args = std::make_shared<VectorOfCacheable>();
+    //			auto args =
+    //std::make_shared<std::vector<std::shared_ptr<Cacheable>>>();
     //			txState->recordTXOperation(GF_CONTAINS_KEY,
     // getFullPath(),
     // keyPtr,
@@ -812,9 +822,9 @@ bool ThinClientRegion::containsKeyOnServer(
 
   /** @brief Create message and send to bridge server */
 
-  TcrMessageContainsKey request(m_cache->createDataOutput(), this, keyPtr,
-                                static_cast<SerializablePtr>(nullptr), true,
-                                m_tcrdm);
+  TcrMessageContainsKey request(
+      m_cache->createDataOutput(), this, keyPtr,
+      static_cast<std::shared_ptr<Serializable>>(nullptr), true, m_tcrdm);
   TcrMessageReply reply(true, m_tcrdm);
   reply.setMessageTypeRequest(TcrMessage::CONTAINS_KEY);
   err = m_tcrdm->sendSyncRequest(request, reply);
@@ -844,7 +854,7 @@ bool ThinClientRegion::containsKeyOnServer(
       break;
   }
 
-  CacheableBooleanPtr rptr = CacheableBoolean::create(ret);
+  std::shared_ptr<CacheableBoolean> rptr = CacheableBoolean::create(ret);
 
   rptr = std::static_pointer_cast<CacheableBoolean>(handleReplay(err, rptr));
   GfErrTypeToException("Region::containsKeyOnServer ", err);
@@ -852,14 +862,15 @@ bool ThinClientRegion::containsKeyOnServer(
 }
 
 bool ThinClientRegion::containsValueForKey_remote(
-    const CacheableKeyPtr& keyPtr) const {
+    const std::shared_ptr<CacheableKey>& keyPtr) const {
   GfErrType err = GF_NOERR;
   bool ret = false;
   TXState* txState = getTXState();
 
   if (txState != nullptr) {
     //		if (!txState->isReplay()) {
-    //			auto args = std::make_shared<VectorOfCacheable>();
+    //			auto args =
+    //std::make_shared<std::vector<std::shared_ptr<Cacheable>>>();
     //			txState->recordTXOperation(GF_CONTAINS_VALUE_FOR_KEY,
     //					getFullPath(), keyPtr, args);
     //		}
@@ -867,9 +878,9 @@ bool ThinClientRegion::containsValueForKey_remote(
 
   /** @brief Create message and send to bridge server */
 
-  TcrMessageContainsKey request(m_cache->createDataOutput(), this, keyPtr,
-                                static_cast<SerializablePtr>(nullptr), false,
-                                m_tcrdm);
+  TcrMessageContainsKey request(
+      m_cache->createDataOutput(), this, keyPtr,
+      static_cast<std::shared_ptr<Serializable>>(nullptr), false, m_tcrdm);
   TcrMessageReply reply(true, m_tcrdm);
   reply.setMessageTypeRequest(TcrMessage::CONTAINS_KEY);
   err = m_tcrdm->sendSyncRequest(request, reply);
@@ -899,7 +910,7 @@ bool ThinClientRegion::containsValueForKey_remote(
       break;
   }
 
-  CacheableBooleanPtr rptr = CacheableBoolean::create(ret);
+  std::shared_ptr<CacheableBoolean> rptr = CacheableBoolean::create(ret);
 
   rptr = std::static_pointer_cast<CacheableBoolean>(handleReplay(err, rptr));
 
@@ -907,7 +918,8 @@ bool ThinClientRegion::containsValueForKey_remote(
   return rptr->value();
 }
 
-void ThinClientRegion::clear(const SerializablePtr& aCallbackArgument) {
+void ThinClientRegion::clear(
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   GfErrType err = GF_NOERR;
   err = localClearNoThrow(aCallbackArgument, CacheEventFlags::NORMAL);
   if (err != GF_NOERR) GfErrTypeToException("Region::clear", err);
@@ -949,8 +961,10 @@ void ThinClientRegion::clear(const SerializablePtr& aCallbackArgument) {
 }
 
 GfErrType ThinClientRegion::getNoThrow_remote(
-    const CacheableKeyPtr& keyPtr, CacheablePtr& valPtr,
-    const SerializablePtr& aCallbackArgument, VersionTagPtr& versionTag) {
+    const std::shared_ptr<CacheableKey>& keyPtr,
+    std::shared_ptr<Cacheable>& valPtr,
+    const std::shared_ptr<Serializable>& aCallbackArgument,
+    std::shared_ptr<VersionTag>& versionTag) {
   GfErrType err = GF_NOERR;
 
   /** @brief Create message and send to bridge server */
@@ -989,8 +1003,9 @@ GfErrType ThinClientRegion::getNoThrow_remote(
 }
 
 GfErrType ThinClientRegion::invalidateNoThrow_remote(
-    const CacheableKeyPtr& keyPtr, const SerializablePtr& aCallbackArgument,
-    VersionTagPtr& versionTag) {
+    const std::shared_ptr<CacheableKey>& keyPtr,
+    const std::shared_ptr<Serializable>& aCallbackArgument,
+    std::shared_ptr<VersionTag>& versionTag) {
   GfErrType err = GF_NOERR;
 
   /** @brief Create message and send to bridge server */
@@ -1028,9 +1043,10 @@ GfErrType ThinClientRegion::invalidateNoThrow_remote(
 }
 
 GfErrType ThinClientRegion::putNoThrow_remote(
-    const CacheableKeyPtr& keyPtr, const CacheablePtr& valuePtr,
-    const SerializablePtr& aCallbackArgument, VersionTagPtr& versionTag,
-    bool checkDelta) {
+    const std::shared_ptr<CacheableKey>& keyPtr,
+    const std::shared_ptr<Cacheable>& valuePtr,
+    const std::shared_ptr<Serializable>& aCallbackArgument,
+    std::shared_ptr<VersionTag>& versionTag, bool checkDelta) {
   GfErrType err = GF_NOERR;
   // do TCR put
   // bool delta = valuePtr->hasDelta();
@@ -1091,15 +1107,18 @@ GfErrType ThinClientRegion::putNoThrow_remote(
 }
 
 GfErrType ThinClientRegion::createNoThrow_remote(
-    const CacheableKeyPtr& keyPtr, const CacheablePtr& valuePtr,
-    const SerializablePtr& aCallbackArgument, VersionTagPtr& versionTag) {
+    const std::shared_ptr<CacheableKey>& keyPtr,
+    const std::shared_ptr<Cacheable>& valuePtr,
+    const std::shared_ptr<Serializable>& aCallbackArgument,
+    std::shared_ptr<VersionTag>& versionTag) {
   return putNoThrow_remote(keyPtr, valuePtr, aCallbackArgument, versionTag,
                            false);
 }
 
 GfErrType ThinClientRegion::destroyNoThrow_remote(
-    const CacheableKeyPtr& keyPtr, const SerializablePtr& aCallbackArgument,
-    VersionTagPtr& versionTag) {
+    const std::shared_ptr<CacheableKey>& keyPtr,
+    const std::shared_ptr<Serializable>& aCallbackArgument,
+    std::shared_ptr<VersionTag>& versionTag) {
   GfErrType err = GF_NOERR;
 
   // do TCR destroy
@@ -1140,8 +1159,10 @@ GfErrType ThinClientRegion::destroyNoThrow_remote(
 }  // destroyNoThrow_remote()
 
 GfErrType ThinClientRegion::removeNoThrow_remote(
-    const CacheableKeyPtr& keyPtr, const CacheablePtr& cvalue,
-    const SerializablePtr& aCallbackArgument, VersionTagPtr& versionTag) {
+    const std::shared_ptr<CacheableKey>& keyPtr,
+    const std::shared_ptr<Cacheable>& cvalue,
+    const std::shared_ptr<Serializable>& aCallbackArgument,
+    std::shared_ptr<VersionTag>& versionTag) {
   GfErrType err = GF_NOERR;
 
   // do TCR remove
@@ -1182,8 +1203,9 @@ GfErrType ThinClientRegion::removeNoThrow_remote(
 }
 
 GfErrType ThinClientRegion::removeNoThrowEX_remote(
-    const CacheableKeyPtr& keyPtr, const SerializablePtr& aCallbackArgument,
-    VersionTagPtr& versionTag) {
+    const std::shared_ptr<CacheableKey>& keyPtr,
+    const std::shared_ptr<Serializable>& aCallbackArgument,
+    std::shared_ptr<VersionTag>& versionTag) {
   GfErrType err = GF_NOERR;
 
   // do TCR remove
@@ -1224,10 +1246,13 @@ GfErrType ThinClientRegion::removeNoThrowEX_remote(
 }
 
 GfErrType ThinClientRegion::getAllNoThrow_remote(
-    const VectorOfCacheableKey* keys, const HashMapOfCacheablePtr& values,
-    const HashMapOfExceptionPtr& exceptions,
-    const VectorOfCacheableKeyPtr& resultKeys, bool addToLocalCache,
-    const SerializablePtr& aCallbackArgument) {
+    const std::vector<std::shared_ptr<CacheableKey>>* keys,
+    const std::shared_ptr<HashMapOfCacheable>& values,
+    const std::shared_ptr<HashMapOfException>& exceptions,
+    const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>&
+        resultKeys,
+    bool addToLocalCache,
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   GfErrType err = GF_NOERR;
   MapOfUpdateCounters updateCountMap;
   int32_t destroyTracker = 0;
@@ -1239,8 +1264,8 @@ GfErrType ThinClientRegion::getAllNoThrow_remote(
       destroyTracker = m_entries->addTrackerForAllEntries(updateCountMap, true);
     } else {
       for (int32_t index = 0; index < keys->size(); ++index) {
-        CacheablePtr oldValue;
-        const CacheableKeyPtr& key = keys->operator[](index);
+        std::shared_ptr<Cacheable> oldValue;
+        const std::shared_ptr<CacheableKey>& key = keys->operator[](index);
         int updateCount =
             m_entries->addTrackerForEntry(key, oldValue, true, false, false);
         updateCountMap.insert(std::make_pair(key, updateCount));
@@ -1309,11 +1334,11 @@ GfErrType ThinClientRegion::getAllNoThrow_remote(
 
 GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
     ThinClientPoolDM* tcrdm, const HashMapOfCacheable& map,
-    VersionedCacheableObjectPartListPtr& versionedObjPartList, uint32_t timeout,
-    const SerializablePtr& aCallbackArgument) {
+    std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
+    uint32_t timeout, const std::shared_ptr<Serializable>& aCallbackArgument) {
   LOGDEBUG(" ThinClientRegion::singleHopPutAllNoThrow_remote map size = %d",
            map.size());
-  RegionPtr region = shared_from_this();
+  auto region = shared_from_this();
 
   GfErrType error = GF_NOERR;
   /*Step-1::
@@ -1322,7 +1347,8 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
    * If locationMap is nullptr try the old, existing putAll impl that may take
    * multiple n/w hops
    */
-  VectorOfCacheableKey userKeys = VectorOfCacheableKey();
+  std::vector<std::shared_ptr<CacheableKey>> userKeys =
+      std::vector<std::shared_ptr<CacheableKey>>();
   for (const auto& iter : map) {
     userKeys.push_back(iter.first);
   }
@@ -1347,8 +1373,9 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
 
   /*Step-2
    *  a. create vector of PutAllWork
-   *  b. locationMap<BucketServerLocationPtr, VectorOfCacheableKeyPtr>.
-   *     Create server specific filteredMap/subMap by populating all keys
+   *  b. locationMap<std::shared_ptr<BucketServerLocation>,
+   * std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>>. Create server
+   * specific filteredMap/subMap by populating all keys
    * (locationIter.second()) and its corr. values from the user Map.
    *  c. create new instance of PutAllWork, i.e worker with required params.
    *     //TODO:: Add details of each parameter later
@@ -1407,12 +1434,13 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
    * Step::3
    * a. Iterate over all vector of putAllWorkers and populate worker specific
    * information into the HashMap
-   *    resultMap<BucketServerLocationPtr, SerializablePtr>, 2nd part, Value can
-   * be a VersionedCacheableObjectPartListPtr or
-   * PutAllPartialResultServerExceptionPtr.
-   *    failedServers<BucketServerLocationPtr, CacheableInt32Ptr>, 2nd part,
-   * Value is a ErrorCode.
-   * b. delete the worker
+   *    resultMap<std::shared_ptr<BucketServerLocation>,
+   * std::shared_ptr<Serializable>>, 2nd part, Value can be a
+   * std::shared_ptr<VersionedCacheableObjectPartList> or
+   * std::shared_ptr<PutAllPartialResultServerException>.
+   *    failedServers<std::shared_ptr<BucketServerLocation>,
+   * std::shared_ptr<CacheableInt32>>, 2nd part, Value is a ErrorCode. b. delete
+   * the worker
    */
   auto resultMap = ResultMap();
   auto failedServers = FailedServersMap();
@@ -1461,10 +1489,10 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
   }
   /**
    * Step:4
-   * a. create instance of PutAllPartialResultPtr with total size= map.size()
-   * b. Iterate over the resultMap and value for the particular serverlocation
-   * is of type VersionedCacheableObjectPartList add keys and versions.
-   * C. ToDO:: what if the value in the resultMap is of type
+   * a. create instance of std::shared_ptr<PutAllPartialResult> with total size=
+   * map.size() b. Iterate over the resultMap and value for the particular
+   * serverlocation is of type VersionedCacheableObjectPartList add keys and
+   * versions. C. ToDO:: what if the value in the resultMap is of type
    * PutAllPartialResultServerException
    */
   ACE_Recursive_Thread_Mutex responseLock;
@@ -1514,8 +1542,8 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
   /**
    * a. if PutAllPartialResult result does not contains any entry,  Iterate over
    * locationMap.
-   * b. Create VectorOfCacheableKey succeedKeySet, and keep adding set of keys
-   * (locationIter.second()) in locationMap for which
+   * b. Create std::vector<std::shared_ptr<CacheableKey>> succeedKeySet, and
+   * keep adding set of keys (locationIter.second()) in locationMap for which
    * failedServers->contains(locationIter.first()is false.
    */
 
@@ -1527,7 +1555,8 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
   // then we need to gather up the keys that we know have succeeded so far and
   // add them to the partial result set (See bug Id #955)
   if (!failedServers.empty()) {
-    auto succeedKeySet = std::make_shared<VectorOfCacheableKey>();
+    auto succeedKeySet =
+        std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>();
     if (result->getSucceededKeysAndVersions()->size() == 0) {
       for (const auto& locationIter : *locationMap) {
         if (failedServers.find(locationIter.first) != failedServers.end()) {
@@ -1560,7 +1589,8 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
       continue;
     }
 
-    VectorOfCacheableKeyPtr failedKeys = nullptr;
+    std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> failedKeys =
+        nullptr;
     const auto& failedSerInLocMapIter =
         locationMap->find(failedServerIter.first);
     if (failedSerInLocMapIter != locationMap->end()) {
@@ -1587,7 +1617,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
       }
     }
 
-    VersionedCacheableObjectPartListPtr vcopListPtr;
+    std::shared_ptr<VersionedCacheableObjectPartList> vcopListPtr;
     GfErrType errCode = multiHopPutAllNoThrow_remote(
         *newSubMap.get(), vcopListPtr, timeout, aCallbackArgument);
     if (errCode == GF_NOERR) {
@@ -1601,7 +1631,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
     } else /*if(errCode != GF_NOERR)*/ {
       oneSubMapRetryFailed = true;
       const auto& firstKey = newSubMap->begin()->first;
-      ExceptionPtr excptPtr = nullptr;
+      std::shared_ptr<Exception> excptPtr = nullptr;
       // TODO:: formulat excptPtr from the errCode
       result->saveFailedKey(firstKey, excptPtr);
       error = errCode;
@@ -1620,8 +1650,8 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
 
 GfErrType ThinClientRegion::multiHopPutAllNoThrow_remote(
     const HashMapOfCacheable& map,
-    VersionedCacheableObjectPartListPtr& versionedObjPartList, uint32_t timeout,
-    const SerializablePtr& aCallbackArgument) {
+    std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
+    uint32_t timeout, const std::shared_ptr<Serializable>& aCallbackArgument) {
   // Multiple hop implementation
   LOGDEBUG("ThinClientRegion::multiHopPutAllNoThrow_remote ");
   GfErrType err = GF_NOERR;
@@ -1685,8 +1715,8 @@ GfErrType ThinClientRegion::multiHopPutAllNoThrow_remote(
 
 GfErrType ThinClientRegion::putAllNoThrow_remote(
     const HashMapOfCacheable& map,
-    VersionedCacheableObjectPartListPtr& versionedObjPartList, uint32_t timeout,
-    const SerializablePtr& aCallbackArgument) {
+    std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
+    uint32_t timeout, const std::shared_ptr<Serializable>& aCallbackArgument) {
   LOGDEBUG("ThinClientRegion::putAllNoThrow_remote");
 
   ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
@@ -1709,12 +1739,13 @@ GfErrType ThinClientRegion::putAllNoThrow_remote(
 }
 
 GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
-    ThinClientPoolDM* tcrdm, const VectorOfCacheableKey& keys,
-    VersionedCacheableObjectPartListPtr& versionedObjPartList,
-    const SerializablePtr& aCallbackArgument) {
+    ThinClientPoolDM* tcrdm,
+    const std::vector<std::shared_ptr<CacheableKey>>& keys,
+    std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   LOGDEBUG(" ThinClientRegion::singleHopRemoveAllNoThrow_remote keys size = %d",
            keys.size());
-  RegionPtr region = shared_from_this();
+  auto region = shared_from_this();
   GfErrType error = GF_NOERR;
 
   auto locationMap = tcrdm->getClientMetaDataService()->getServerToFilterMap(
@@ -1733,8 +1764,9 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
 
   /*Step-2
    *  a. create vector of RemoveAllWork
-   *  b. locationMap<BucketServerLocationPtr, VectorOfCacheableKeyPtr>.
-   *     Create server specific filteredMap/subMap by populating all keys
+   *  b. locationMap<std::shared_ptr<BucketServerLocation>,
+   * std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>>. Create server
+   * specific filteredMap/subMap by populating all keys
    * (locationIter.second()) and its corr. values from the user Map.
    *  c. create new instance of RemoveAllWork, i.e worker with required params.
    *     //TODO:: Add details of each parameter later
@@ -1768,12 +1800,13 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
    * Step::3
    * a. Iterate over all vector of putAllWorkers and populate worker specific
    * information into the HashMap
-   *    resultMap<BucketServerLocationPtr, SerializablePtr>, 2nd part, Value can
-   * be a VersionedCacheableObjectPartListPtr or
-   * PutAllPartialResultServerExceptionPtr.
-   *    failedServers<BucketServerLocationPtr, CacheableInt32Ptr>, 2nd part,
-   * Value is a ErrorCode.
-   * b. delete the worker
+   *    resultMap<std::shared_ptr<BucketServerLocation>,
+   * std::shared_ptr<Serializable>>, 2nd part, Value can be a
+   * std::shared_ptr<VersionedCacheableObjectPartList> or
+   * std::shared_ptr<PutAllPartialResultServerException>.
+   *    failedServers<std::shared_ptr<BucketServerLocation>,
+   * std::shared_ptr<CacheableInt32>>, 2nd part, Value is a ErrorCode. b. delete
+   * the worker
    */
   auto resultMap = ResultMap();
   auto failedServers = FailedServersMap();
@@ -1810,10 +1843,10 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
   }
   /**
    * Step:4
-   * a. create instance of PutAllPartialResultPtr with total size= map.size()
-   * b. Iterate over the resultMap and value for the particular serverlocation
-   * is of type VersionedCacheableObjectPartList add keys and versions.
-   * C. ToDO:: what if the value in the resultMap is of type
+   * a. create instance of std::shared_ptr<PutAllPartialResult> with total size=
+   * map.size() b. Iterate over the resultMap and value for the particular
+   * serverlocation is of type VersionedCacheableObjectPartList add keys and
+   * versions. C. ToDO:: what if the value in the resultMap is of type
    * PutAllPartialResultServerException
    */
   ACE_Recursive_Thread_Mutex responseLock;
@@ -1829,7 +1862,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
   for (const auto& resultMapIter : resultMap) {
     const auto& value = resultMapIter.second;
     PutAllPartialResultServerException* papException = nullptr;
-    VersionedCacheableObjectPartListPtr list = nullptr;
+    std::shared_ptr<VersionedCacheableObjectPartList> list = nullptr;
 
     if (const auto papException =
             std::dynamic_pointer_cast<PutAllPartialResultServerException>(
@@ -1865,8 +1898,8 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
   /**
    * a. if PutAllPartialResult result does not contains any entry,  Iterate over
    * locationMap.
-   * b. Create VectorOfCacheableKey succeedKeySet, and keep adding set of keys
-   * (locationIter.second()) in locationMap for which
+   * b. Create std::vector<std::shared_ptr<CacheableKey>> succeedKeySet, and
+   * keep adding set of keys (locationIter.second()) in locationMap for which
    * failedServers->contains(locationIter.first()is false.
    */
 
@@ -1878,7 +1911,8 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
   // then we need to gather up the keys that we know have succeeded so far and
   // add them to the partial result set (See bug Id #955)
   if (!failedServers.empty()) {
-    auto succeedKeySet = std::make_shared<VectorOfCacheableKey>();
+    auto succeedKeySet =
+        std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>();
     if (result->getSucceededKeysAndVersions()->size() == 0) {
       for (const auto& locationIter : *locationMap) {
         if (failedServers.find(locationIter.first) != failedServers.end()) {
@@ -1911,7 +1945,8 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
       continue;
     }
 
-    VectorOfCacheableKeyPtr failedKeys = nullptr;
+    std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> failedKeys =
+        nullptr;
     const auto& failedSerInLocMapIter =
         locationMap->find(failedServerIter.first);
     if (failedSerInLocMapIter != locationMap->end()) {
@@ -1925,8 +1960,8 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
           "that is not valid");
     }
 
-    VersionedCacheableObjectPartListPtr vcopListPtr;
-    PutAllPartialResultServerExceptionPtr papResultServerExc = nullptr;
+    std::shared_ptr<VersionedCacheableObjectPartList> vcopListPtr;
+    auto papResultServerExc = nullptr;
     GfErrType errCode = multiHopRemoveAllNoThrow_remote(
         *failedKeys, vcopListPtr, aCallbackArgument);
     if (errCode == GF_NOERR) {
@@ -1936,7 +1971,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
       error = errCode;
     } else /*if(errCode != GF_NOERR)*/ {
       oneSubMapRetryFailed = true;
-      ExceptionPtr excptPtr = nullptr;
+      std::shared_ptr<Exception> excptPtr = nullptr;
       result->saveFailedKey(failedKeys->at(0), excptPtr);
       error = errCode;
     }
@@ -1952,9 +1987,9 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
 }
 
 GfErrType ThinClientRegion::multiHopRemoveAllNoThrow_remote(
-    const VectorOfCacheableKey& keys,
-    VersionedCacheableObjectPartListPtr& versionedObjPartList,
-    const SerializablePtr& aCallbackArgument) {
+    const std::vector<std::shared_ptr<CacheableKey>>& keys,
+    std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   // Multiple hop implementation
   LOGDEBUG("ThinClientRegion::multiHopRemoveAllNoThrow_remote ");
   GfErrType err = GF_NOERR;
@@ -2007,9 +2042,9 @@ GfErrType ThinClientRegion::multiHopRemoveAllNoThrow_remote(
 }
 
 GfErrType ThinClientRegion::removeAllNoThrow_remote(
-    const VectorOfCacheableKey& keys,
-    VersionedCacheableObjectPartListPtr& versionedObjPartList,
-    const SerializablePtr& aCallbackArgument) {
+    const std::vector<std::shared_ptr<CacheableKey>>& keys,
+    std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   LOGDEBUG("ThinClientRegion::removeAllNoThrow_remote");
 
   ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
@@ -2047,7 +2082,7 @@ uint32_t ThinClientRegion::size_remote() {
 
   switch (reply.getMessageType()) {
     case TcrMessage::RESPONSE: {
-      CacheableInt32Ptr size =
+      std::shared_ptr<CacheableInt32> size =
           std::static_pointer_cast<CacheableInt32>(reply.getValue());
       return size->value();
       // LOGINFO("Map is written into remote server at region %s",
@@ -2110,26 +2145,27 @@ GfErrType ThinClientRegion::registerKeys(TcrEndpoint* endpoint,
       endpoint, m_durableInterestListRegexForUpdatesAsInvalidates, true, false);
   err = opErr != GF_NOERR ? opErr : err;
 
-  VectorOfCacheableKey keysVec;
+  std::vector<std::shared_ptr<CacheableKey>> keysVec;
   InterestResultPolicy interestPolicy =
       copyInterestList(keysVec, m_interestList);
   opErr = registerKeysNoThrow(keysVec, false, endpoint, false, interestPolicy);
   err = opErr != GF_NOERR ? opErr : err;
 
-  VectorOfCacheableKey keysVecForUpdatesAsInvalidates;
+  std::vector<std::shared_ptr<CacheableKey>> keysVecForUpdatesAsInvalidates;
   interestPolicy = copyInterestList(keysVecForUpdatesAsInvalidates,
                                     m_interestListForUpdatesAsInvalidates);
   opErr = registerKeysNoThrow(keysVecForUpdatesAsInvalidates, false, endpoint,
                               false, interestPolicy, false);
   err = opErr != GF_NOERR ? opErr : err;
 
-  VectorOfCacheableKey keysVecDurable;
+  std::vector<std::shared_ptr<CacheableKey>> keysVecDurable;
   interestPolicy = copyInterestList(keysVecDurable, m_durableInterestList);
   opErr = registerKeysNoThrow(keysVecDurable, false, endpoint, true,
                               interestPolicy);
   err = opErr != GF_NOERR ? opErr : err;
 
-  VectorOfCacheableKey keysVecDurableForUpdatesAsInvalidates;
+  std::vector<std::shared_ptr<CacheableKey>>
+      keysVecDurableForUpdatesAsInvalidates;
   interestPolicy =
       copyInterestList(keysVecDurableForUpdatesAsInvalidates,
                        m_durableInterestListForUpdatesAsInvalidates);
@@ -2140,7 +2176,8 @@ GfErrType ThinClientRegion::registerKeys(TcrEndpoint* endpoint,
   if (request != nullptr && request->getRegionName() == m_fullPath &&
       (request->getMessageType() == TcrMessage::REGISTER_INTEREST ||
        request->getMessageType() == TcrMessage::REGISTER_INTEREST_LIST)) {
-    const VectorOfCacheableKey* newKeysVec = request->getKeys();
+    const std::vector<std::shared_ptr<CacheableKey>>* newKeysVec =
+        request->getKeys();
     bool isDurable = request->isDurable();
     bool receiveValues = request->receiveValues();
     if (newKeysVec == nullptr || newKeysVec->empty()) {
@@ -2212,23 +2249,24 @@ GfErrType ThinClientRegion::unregisterKeys() {
       unregisterStoredRegex(m_durableInterestListRegexForUpdatesAsInvalidates);
   err = opErr != GF_NOERR ? opErr : err;
 
-  VectorOfCacheableKey keysVec;
+  std::vector<std::shared_ptr<CacheableKey>> keysVec;
   copyInterestList(keysVec, m_interestList);
   opErr = unregisterKeysNoThrow(keysVec, false);
   err = opErr != GF_NOERR ? opErr : err;
 
-  VectorOfCacheableKey keysVecDurable;
+  std::vector<std::shared_ptr<CacheableKey>> keysVecDurable;
   copyInterestList(keysVecDurable, m_durableInterestList);
   opErr = unregisterKeysNoThrow(keysVecDurable, false);
   err = opErr != GF_NOERR ? opErr : err;
 
-  VectorOfCacheableKey keysVecForUpdatesAsInvalidates;
+  std::vector<std::shared_ptr<CacheableKey>> keysVecForUpdatesAsInvalidates;
   copyInterestList(keysVecForUpdatesAsInvalidates,
                    m_interestListForUpdatesAsInvalidates);
   opErr = unregisterKeysNoThrow(keysVecForUpdatesAsInvalidates, false);
   err = opErr != GF_NOERR ? opErr : err;
 
-  VectorOfCacheableKey keysVecDurableForUpdatesAsInvalidates;
+  std::vector<std::shared_ptr<CacheableKey>>
+      keysVecDurableForUpdatesAsInvalidates;
   copyInterestList(keysVecDurableForUpdatesAsInvalidates,
                    m_durableInterestListForUpdatesAsInvalidates);
   opErr = unregisterKeysNoThrow(keysVecDurableForUpdatesAsInvalidates, false);
@@ -2238,7 +2276,7 @@ GfErrType ThinClientRegion::unregisterKeys() {
 }
 
 GfErrType ThinClientRegion::destroyRegionNoThrow_remote(
-    const SerializablePtr& aCallbackArgument) {
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   GfErrType err = GF_NOERR;
 
   // do TCR destroyRegion
@@ -2273,9 +2311,10 @@ GfErrType ThinClientRegion::destroyRegionNoThrow_remote(
 }
 
 GfErrType ThinClientRegion::registerKeysNoThrow(
-    const VectorOfCacheableKey& keys, bool attemptFailover,
-    TcrEndpoint* endpoint, bool isDurable, InterestResultPolicy interestPolicy,
-    bool receiveValues, TcrMessageReply* reply) {
+    const std::vector<std::shared_ptr<CacheableKey>>& keys,
+    bool attemptFailover, TcrEndpoint* endpoint, bool isDurable,
+    InterestResultPolicy interestPolicy, bool receiveValues,
+    TcrMessageReply* reply) {
   RegionGlobalLocks acquireLocksRedundancy(this, false);
   RegionGlobalLocks acquireLocksFailover(this);
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
@@ -2345,7 +2384,8 @@ GfErrType ThinClientRegion::registerKeysNoThrow(
 }
 
 GfErrType ThinClientRegion::unregisterKeysNoThrow(
-    const VectorOfCacheableKey& keys, bool attemptFailover) {
+    const std::vector<std::shared_ptr<CacheableKey>>& keys,
+    bool attemptFailover) {
   RegionGlobalLocks acquireLocksRedundancy(this, false);
   RegionGlobalLocks acquireLocksFailover(this);
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
@@ -2381,7 +2421,8 @@ GfErrType ThinClientRegion::unregisterKeysNoThrow(
 }
 
 GfErrType ThinClientRegion::unregisterKeysNoThrowLocalDestroy(
-    const VectorOfCacheableKey& keys, bool attemptFailover) {
+    const std::vector<std::shared_ptr<CacheableKey>>& keys,
+    bool attemptFailover) {
   RegionGlobalLocks acquireLocksRedundancy(this, false);
   RegionGlobalLocks acquireLocksFailover(this);
   GfErrType err = GF_NOERR;
@@ -2427,7 +2468,8 @@ bool ThinClientRegion::isRegexRegistered(
 
 GfErrType ThinClientRegion::registerRegexNoThrow(
     const std::string& regex, bool attemptFailover, TcrEndpoint* endpoint,
-    bool isDurable, VectorOfCacheableKeyPtr resultKeys,
+    bool isDurable,
+    std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> resultKeys,
     InterestResultPolicy interestPolicy, bool receiveValues,
     TcrMessageReply* reply) {
   RegionGlobalLocks acquireLocksRedundancy(this, false);
@@ -2485,7 +2527,9 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
       MapOfUpdateCounters trackers;
       int32_t destroyTracker = 1;
       if (resultKeys == nullptr) {
-        resultKeys = VectorOfCacheableKeyPtr(new VectorOfCacheableKey());
+        resultKeys =
+            std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>(
+                new std::vector<std::shared_ptr<CacheableKey>>());
       }
       // need to check
       getAllResultCollector = (new ChunkedGetAllResponse(
@@ -2518,10 +2562,10 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
         if (allKeys) {
           localInvalidateRegion_internal();
         } else {
-          const VectorOfCacheableKeyPtr& keys =
-              resultCollector != nullptr
-                  ? resultCollector->getResultKeys()
-                  : getAllResultCollector->getResultKeys();
+          const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>&
+              keys = resultCollector != nullptr
+                         ? resultCollector->getResultKeys()
+                         : getAllResultCollector->getResultKeys();
           if (keys != nullptr) {
             localInvalidateForRegisterInterest(*keys);
           }
@@ -2607,29 +2651,34 @@ GfErrType ThinClientRegion::unregisterRegexNoThrowLocalDestroy(
   return err;
 }
 
-void ThinClientRegion::addKeys(const VectorOfCacheableKey& keys, bool isDurable,
-                               bool receiveValues,
-                               InterestResultPolicy interestpolicy) {
-  std::unordered_map<CacheableKeyPtr, InterestResultPolicy>& interestList =
-      isDurable ? (receiveValues ? m_durableInterestList
-                                 : m_durableInterestListForUpdatesAsInvalidates)
-                : (receiveValues ? m_interestList
-                                 : m_interestListForUpdatesAsInvalidates);
+void ThinClientRegion::addKeys(
+    const std::vector<std::shared_ptr<CacheableKey>>& keys, bool isDurable,
+    bool receiveValues, InterestResultPolicy interestpolicy) {
+  std::unordered_map<std::shared_ptr<CacheableKey>, InterestResultPolicy>&
+      interestList =
+          isDurable
+              ? (receiveValues ? m_durableInterestList
+                               : m_durableInterestListForUpdatesAsInvalidates)
+              : (receiveValues ? m_interestList
+                               : m_interestListForUpdatesAsInvalidates);
 
   for (const auto& key : keys) {
     interestList.insert(
-        std::pair<CacheableKeyPtr, InterestResultPolicy>(key, interestpolicy));
+        std::pair<std::shared_ptr<CacheableKey>, InterestResultPolicy>(
+            key, interestpolicy));
   }
 }
 
 void ThinClientRegion::addRegex(const std::string& regex, bool isDurable,
                                 bool receiveValues,
                                 InterestResultPolicy interestpolicy) {
-  std::unordered_map<CacheableKeyPtr, InterestResultPolicy>& interestList =
-      isDurable ? (receiveValues ? m_durableInterestList
-                                 : m_durableInterestListForUpdatesAsInvalidates)
-                : (receiveValues ? m_interestList
-                                 : m_interestListForUpdatesAsInvalidates);
+  std::unordered_map<std::shared_ptr<CacheableKey>, InterestResultPolicy>&
+      interestList =
+          isDurable
+              ? (receiveValues ? m_durableInterestList
+                               : m_durableInterestListForUpdatesAsInvalidates)
+              : (receiveValues ? m_interestList
+                               : m_interestListForUpdatesAsInvalidates);
 
   std::unordered_map<std::string, InterestResultPolicy>& interestListRegex =
       isDurable
@@ -2647,14 +2696,15 @@ void ThinClientRegion::addRegex(const std::string& regex, bool isDurable,
       std::pair<std::string, InterestResultPolicy>(regex, interestpolicy));
 }
 
-VectorOfCacheableKey ThinClientRegion::getInterestList() const {
+std::vector<std::shared_ptr<CacheableKey>> ThinClientRegion::getInterestList()
+    const {
   ThinClientRegion* nthis = const_cast<ThinClientRegion*>(this);
   RegionGlobalLocks acquireLocksRedundancy(nthis, false);
   RegionGlobalLocks acquireLocksFailover(nthis);
   CHECK_DESTROY_PENDING(TryReadGuard, getInterestList);
   ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(nthis->m_keysLock);
 
-  VectorOfCacheableKey vlist;
+  std::vector<std::shared_ptr<CacheableKey>> vlist;
 
   std::transform(std::begin(m_durableInterestList),
                  std::end(m_durableInterestList), std::back_inserter(vlist),
@@ -2669,14 +2719,15 @@ VectorOfCacheableKey ThinClientRegion::getInterestList() const {
 
   return vlist;
 }
-VectorOfCacheableString ThinClientRegion::getInterestListRegex() const {
+std::vector<std::shared_ptr<CacheableString>>
+ThinClientRegion::getInterestListRegex() const {
   ThinClientRegion* nthis = const_cast<ThinClientRegion*>(this);
   RegionGlobalLocks acquireLocksRedundancy(nthis, false);
   RegionGlobalLocks acquireLocksFailover(nthis);
   CHECK_DESTROY_PENDING(TryReadGuard, getInterestListRegex);
   ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(nthis->m_keysLock);
 
-  VectorOfCacheableString vlist;
+  std::vector<std::shared_ptr<CacheableString>> vlist;
 
   std::transform(std::begin(m_durableInterestListRegex),
                  std::end(m_durableInterestListRegex),
@@ -2696,7 +2747,7 @@ VectorOfCacheableString ThinClientRegion::getInterestListRegex() const {
 
 GfErrType ThinClientRegion::clientNotificationHandler(TcrMessage& msg) {
   GfErrType err = GF_NOERR;
-  CacheablePtr oldValue;
+  std::shared_ptr<Cacheable> oldValue;
   switch (msg.getMessageType()) {
     case TcrMessage::LOCAL_INVALIDATE: {
       LocalRegion::invalidateNoThrow(
@@ -2846,26 +2897,27 @@ void ThinClientRegion::receiveNotification(TcrMessage* msg) {
 }
 
 void ThinClientRegion::localInvalidateRegion_internal() {
-  MapEntryImplPtr me;
-  CacheablePtr oldValue;
+  std::shared_ptr<MapEntryImpl> me;
+  std::shared_ptr<Cacheable> oldValue;
 
-  VectorOfCacheableKey keysVec = keys_internal();
+  auto keysVec = keys_internal();
   for (const auto& key : keysVec) {
-    VersionTagPtr versionTag;
+    std::shared_ptr<VersionTag> versionTag;
     m_entries->invalidate(key, me, oldValue, versionTag);
   }
 }
 
 void ThinClientRegion::invalidateInterestList(
-    std::unordered_map<CacheableKeyPtr, InterestResultPolicy>& interestList) {
-  MapEntryImplPtr me;
-  CacheablePtr oldValue;
+    std::unordered_map<std::shared_ptr<CacheableKey>, InterestResultPolicy>&
+        interestList) {
+  std::shared_ptr<MapEntryImpl> me;
+  std::shared_ptr<Cacheable> oldValue;
 
   if (!m_regionAttributes->getCachingEnabled()) {
     return;
   }
   for (const auto& iter : interestList) {
-    VersionTagPtr versionTag;
+    std::shared_ptr<VersionTag> versionTag;
     m_entries->invalidate(iter.first, me, oldValue, versionTag);
   }
 }
@@ -2884,7 +2936,7 @@ void ThinClientRegion::localInvalidateFailover() {
 }
 
 void ThinClientRegion::localInvalidateForRegisterInterest(
-    const VectorOfCacheableKey& keys) {
+    const std::vector<std::shared_ptr<CacheableKey>>& keys) {
   CHECK_DESTROY_PENDING(TryReadGuard,
                         ThinClientRegion::localInvalidateForRegisterInterest);
 
@@ -2892,23 +2944,24 @@ void ThinClientRegion::localInvalidateForRegisterInterest(
     return;
   }
 
-  CacheablePtr oldValue;
-  MapEntryImplPtr me;
+  std::shared_ptr<Cacheable> oldValue;
+  std::shared_ptr<MapEntryImpl> me;
 
   for (const auto& key : keys) {
-    VersionTagPtr versionTag;
+    std::shared_ptr<VersionTag> versionTag;
     m_entries->invalidate(key, me, oldValue, versionTag);
     updateAccessAndModifiedTimeForEntry(me, true);
   }
 }
 
 InterestResultPolicy ThinClientRegion::copyInterestList(
-    VectorOfCacheableKey& keysVector,
-    std::unordered_map<CacheableKeyPtr, InterestResultPolicy>& interestList)
-    const {
+    std::vector<std::shared_ptr<CacheableKey>>& keysVector,
+    std::unordered_map<std::shared_ptr<CacheableKey>, InterestResultPolicy>&
+        interestList) const {
   InterestResultPolicy interestPolicy = InterestResultPolicy::NONE;
-  for (std::unordered_map<CacheableKeyPtr, InterestResultPolicy>::const_iterator
-           iter = interestList.begin();
+  for (std::unordered_map<std::shared_ptr<CacheableKey>,
+                          InterestResultPolicy>::const_iterator iter =
+           interestList.begin();
        iter != interestList.end(); ++iter) {
     keysVector.push_back(iter->first);
     interestPolicy = iter->second;
@@ -2917,8 +2970,9 @@ InterestResultPolicy ThinClientRegion::copyInterestList(
 }
 
 void ThinClientRegion::registerInterestGetValues(
-    const char* method, const VectorOfCacheableKey* keys,
-    const VectorOfCacheableKeyPtr& resultKeys) {
+    const char* method, const std::vector<std::shared_ptr<CacheableKey>>* keys,
+    const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>&
+        resultKeys) {
   try {
     auto values = std::make_shared<HashMapOfCacheable>();
     auto exceptions = std::make_shared<HashMapOfException>();
@@ -2937,7 +2991,7 @@ void ThinClientRegion::registerInterestGetValues(
     std::string msg(method);
     msg += " failed in getting values";
     throw EntryNotFoundException(msg.c_str(), nullptr, false,
-                                 ExceptionPtr(ex.clone()));
+                                 std::shared_ptr<Exception>(ex.clone()));
   }
 }
 
@@ -2990,14 +3044,13 @@ void ThinClientRegion::releaseGlobals(bool isFailover) {
   }
 }
 
-void ThinClientRegion::executeFunction(const char* func,
-                                       const CacheablePtr& args,
-                                       CacheableVectorPtr routingObj,
-                                       uint8_t getResult, ResultCollectorPtr rc,
-                                       int32_t retryAttempts,
-                                       uint32_t timeout) {
+void ThinClientRegion::executeFunction(
+    const char* func, const std::shared_ptr<Cacheable>& args,
+    std::shared_ptr<CacheableVector> routingObj, uint8_t getResult,
+    std::shared_ptr<ResultCollector> rc, int32_t retryAttempts,
+    uint32_t timeout) {
   int32_t attempt = 0;
-  CacheableHashSetPtr failedNodes = CacheableHashSet::create();
+  std::shared_ptr<CacheableHashSet> failedNodes = CacheableHashSet::create();
   // if pools retry attempts are not set then retry once on all available
   // endpoints
   if (retryAttempts == -1) {
@@ -3043,7 +3096,7 @@ void ThinClientRegion::executeFunction(const char* func,
       if (err == GF_FUNCTION_EXCEPTION) {
         reExecute = true;
         rc->clearResults();
-        CacheableHashSetPtr failedNodesIds(reply.getFailedNode());
+        std::shared_ptr<CacheableHashSet> failedNodesIds(reply.getFailedNode());
         failedNodes->clear();
         if (failedNodesIds) {
           LOGDEBUG(
@@ -3094,10 +3147,11 @@ void ThinClientRegion::executeFunction(const char* func,
   }
 }
 
-CacheableVectorPtr ThinClientRegion::reExecuteFunction(
-    const char* func, const CacheablePtr& args, CacheableVectorPtr routingObj,
-    uint8_t getResult, ResultCollectorPtr rc, int32_t retryAttempts,
-    CacheableHashSetPtr& failedNodes, uint32_t timeout) {
+std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
+    const char* func, const std::shared_ptr<Cacheable>& args,
+    std::shared_ptr<CacheableVector> routingObj, uint8_t getResult,
+    std::shared_ptr<ResultCollector> rc, int32_t retryAttempts,
+    std::shared_ptr<CacheableHashSet>& failedNodes, uint32_t timeout) {
   int32_t attempt = 0;
   bool reExecute = true;
   // if pools retry attempts are not set then retry once on all available
@@ -3136,7 +3190,7 @@ CacheableVectorPtr ThinClientRegion::reExecuteFunction(
       if (err == GF_FUNCTION_EXCEPTION) {
         reExecute = true;
         rc->clearResults();
-        CacheableHashSetPtr failedNodesIds(reply.getFailedNode());
+        std::shared_ptr<CacheableHashSet> failedNodesIds(reply.getFailedNode());
         failedNodes->clear();
         if (failedNodesIds) {
           LOGDEBUG(
@@ -3172,10 +3226,11 @@ CacheableVectorPtr ThinClientRegion::reExecuteFunction(
 }
 
 bool ThinClientRegion::executeFunctionSH(
-    const char* func, const CacheablePtr& args, uint8_t getResult,
-    ResultCollectorPtr rc,
-    const ClientMetadataService::ServerToKeysMapPtr& locationMap,
-    CacheableHashSetPtr& failedNodes, uint32_t timeout, bool allBuckets) {
+    const char* func, const std::shared_ptr<Cacheable>& args, uint8_t getResult,
+    std::shared_ptr<ResultCollector> rc,
+    const std::shared_ptr<ClientMetadataService::ServerToKeysMap>& locationMap,
+    std::shared_ptr<CacheableHashSet>& failedNodes, uint32_t timeout,
+    bool allBuckets) {
   bool reExecute = false;
   auto resultCollectorLock = std::make_shared<ACE_Recursive_Thread_Mutex>();
   const auto& userAttr =
@@ -3224,7 +3279,8 @@ bool ThinClientRegion::executeFunctionSH(
           ACE_Guard<ACE_Recursive_Thread_Mutex> guard(*resultCollectorLock);
           rc->clearResults();
         }
-        CacheableHashSetPtr failedNodeIds(currentReply->getFailedNode());
+        std::shared_ptr<CacheableHashSet> failedNodeIds(
+            currentReply->getFailedNode());
         if (failedNodeIds) {
           LOGDEBUG(
               "ThinClientRegion::executeFunctionSH with GF_FUNCTION_EXCEPTION "
@@ -3304,9 +3360,9 @@ GfErrType ThinClientRegion::getFuncAttributes(const char* func,
   return err;
 }
 
-GfErrType ThinClientRegion::getNoThrow_FullObject(EventIdPtr eventId,
-                                                  CacheablePtr& fullObject,
-                                                  VersionTagPtr& versionTag) {
+GfErrType ThinClientRegion::getNoThrow_FullObject(
+    std::shared_ptr<EventId> eventId, std::shared_ptr<Cacheable>& fullObject,
+    std::shared_ptr<VersionTag>& versionTag) {
   TcrMessageRequestEventValue fullObjectMsg(m_cache->createDataOutput(),
                                             eventId);
   TcrMessageReply reply(true, nullptr);
@@ -3320,27 +3376,30 @@ GfErrType ThinClientRegion::getNoThrow_FullObject(EventIdPtr eventId,
   return err;
 }
 
-void ThinClientRegion::txDestroy(const CacheableKeyPtr& key,
-                                 const SerializablePtr& aCallbackArgument,
-                                 VersionTagPtr versionTag) {
+void ThinClientRegion::txDestroy(
+    const std::shared_ptr<CacheableKey>& key,
+    const std::shared_ptr<Serializable>& aCallbackArgument,
+    std::shared_ptr<VersionTag> versionTag) {
   GfErrType err = destroyNoThrowTX(key, aCallbackArgument, -1,
                                    CacheEventFlags::NORMAL, versionTag);
   GfErrTypeToException("Region::destroyTX", err);
 }
 
-void ThinClientRegion::txInvalidate(const CacheableKeyPtr& key,
-                                    const SerializablePtr& aCallbackArgument,
-                                    VersionTagPtr versionTag) {
+void ThinClientRegion::txInvalidate(
+    const std::shared_ptr<CacheableKey>& key,
+    const std::shared_ptr<Serializable>& aCallbackArgument,
+    std::shared_ptr<VersionTag> versionTag) {
   GfErrType err = invalidateNoThrowTX(key, aCallbackArgument, -1,
                                       CacheEventFlags::NORMAL, versionTag);
   GfErrTypeToException("Region::invalidateTX", err);
 }
 
-void ThinClientRegion::txPut(const CacheableKeyPtr& key,
-                             const CacheablePtr& value,
-                             const SerializablePtr& aCallbackArgument,
-                             VersionTagPtr versionTag) {
-  CacheablePtr oldValue;
+void ThinClientRegion::txPut(
+    const std::shared_ptr<CacheableKey>& key,
+    const std::shared_ptr<Cacheable>& value,
+    const std::shared_ptr<Serializable>& aCallbackArgument,
+    std::shared_ptr<VersionTag> versionTag) {
+  std::shared_ptr<Cacheable> oldValue;
   int64_t sampleStartNanos = startStatOpTime();
   GfErrType err = putNoThrowTX(key, value, aCallbackArgument, oldValue, -1,
                                CacheEventFlags::NORMAL, versionTag);
@@ -3376,7 +3435,8 @@ void ChunkedInterestResponse::handleChunk(const uint8_t* chunk,
   }
 
   if (m_resultKeys == nullptr) {
-    m_resultKeys = std::make_shared<VectorOfCacheableKey>();
+    m_resultKeys =
+        std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>();
   }
   serializer::readObject(*input, *m_resultKeys);
   m_replyMsg.readSecureObjectPart(*input, false, true, isLastChunkWithSecurity);
@@ -3427,11 +3487,11 @@ void ChunkedQueryResponse::readObjectPartList(DataInput& input,
   for (int32_t index = 0; index < len; ++index) {
     if (input.read() == 2 /* for exception*/) {
       input.advanceCursor(input.readArrayLen());  // skipLen
-      CacheableStringPtr exMsgPtr = input.readNativeString();
+      std::shared_ptr<CacheableString> exMsgPtr = input.readNativeString();
       throw IllegalStateException(exMsgPtr->asChar());
     } else {
       if (isResultSet) {
-        CacheablePtr value;
+        std::shared_ptr<Cacheable> value;
         input.readObject(value);
         m_queryResults->push_back(value);
       } else {
@@ -3483,7 +3543,7 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
     // special case for scalar result
     partLen = input->readInt32();
     input->read();
-    CacheableInt32Ptr intVal = input->readObject<CacheableInt32>(true);
+    auto intVal = input->readObject<CacheableInt32>(true);
     m_queryResults->push_back(intVal);
 
     // TODO:
@@ -3521,7 +3581,7 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
       skip = true;
     }
     for (int i = 0; i < numOfFldNames; i++) {
-      CacheableStringPtr sptr = input->readNativeString();
+      auto sptr = input->readNativeString();
       if (!skip) {
         m_structFieldNames.push_back(sptr);
       }
@@ -3552,7 +3612,7 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
     int32_t arraySize = input->readArrayLen();
     skipClass(*input);
     for (int32_t arrayItem = 0; arrayItem < arraySize; ++arrayItem) {
-      SerializablePtr value;
+      std::shared_ptr<Serializable> value;
       if (isResultSet) {
         input->readObject(value);
         m_queryResults->push_back(value);
@@ -3697,8 +3757,8 @@ void ChunkedFunctionExecutionResponse::handleChunk(
   }
 
   // Read either object or exception string from sendException.
-  SerializablePtr value;
-  // CacheablePtr memberId;
+  std::shared_ptr<Serializable> value;
+  // std::shared_ptr<Cacheable> memberId;
   if (readPart) {
     input->readObject(value);
     // TODO: track this memberId for PrFxHa
@@ -3716,7 +3776,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
     value = CacheableString::create("Function exception result.");
   }
   if (m_rc != nullptr) {
-    CacheablePtr result = nullptr;
+    std::shared_ptr<Cacheable> result = nullptr;
     if (isExceptionPart) {
       result =
           std::make_shared<UserFunctionExecutionException>(value->toString());
@@ -3834,7 +3894,7 @@ void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
     const auto byte1 = input->read();
     m_msg.readSecureObjectPart(*input, false, true, isLastChunkWithSecurity);
 
-    PoolPtr pool = cache->getPoolManager().find(m_msg.getPoolName());
+    auto pool = cache->getPoolManager().find(m_msg.getPoolName());
     if (pool != nullptr && !pool->isDestroyed() &&
         pool->getPRSingleHopEnabled()) {
       ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(pool.get());
@@ -3897,7 +3957,7 @@ void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
     const auto byte1 = input->read();
     m_msg.readSecureObjectPart(*input, false, true, isLastChunkWithSecurity);
 
-    PoolPtr pool = cache->getPoolManager().find(m_msg.getPoolName());
+    auto pool = cache->getPoolManager().find(m_msg.getPoolName());
     if (pool != nullptr && !pool->isDestroyed() &&
         pool->getPRSingleHopEnabled()) {
       ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(pool.get());

@@ -327,7 +327,7 @@ namespace apache
         }
       }
 
-      void ManagedCacheListenerGeneric::close(const apache::geode::client::RegionPtr& region)
+      void ManagedCacheListenerGeneric::close(const std::shared_ptr<apache::geode::client::Region>& region)
       {
         try {
           auto mregion = Apache::Geode::Client::Region<Object^, Object^>::Create(region);
@@ -341,7 +341,7 @@ namespace apache
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
       }
-      void ManagedCacheListenerGeneric::afterRegionDisconnected(const apache::geode::client::RegionPtr& region)
+      void ManagedCacheListenerGeneric::afterRegionDisconnected(const std::shared_ptr<apache::geode::client::Region>& region)
       {
         try {
           auto mregion = Apache::Geode::Client::Region<Object^, Object^>::Create(region);

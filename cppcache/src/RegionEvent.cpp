@@ -20,8 +20,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-RegionEvent::RegionEvent(const RegionPtr& region,
-                         const SerializablePtr& aCallbackArgument,
+RegionEvent::RegionEvent(const std::shared_ptr<Region>& region,
+                         const std::shared_ptr<Serializable>& aCallbackArgument,
                          const bool remoteOrigin)
     : m_region(region),
       m_callbackArgument(aCallbackArgument),

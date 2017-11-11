@@ -41,7 +41,7 @@ const char* locatorsG =
 
 void initClient(const bool isthinClient) {
   if (cacheHelper == nullptr) {
-    PropertiesPtr props = Properties::create();
+    auto props = Properties::create();
     props->insert("ssl-enabled", "true");
     std::string keystore = std::string(ACE_OS::getenv("TESTSRC")) + "/keystore";
     std::string pubkey = keystore + "/client_truststore.pem";
@@ -140,7 +140,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateRegions1_PoolLocators)
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TESTPOOL1_",
                        true);
     createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TESTPOOL1_", true);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     try {
       regPtr->registerAllKeys(false, false, false);
       FAIL("Should have got NotConnectedException during registerAllKeys");

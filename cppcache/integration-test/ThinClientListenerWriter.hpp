@@ -30,9 +30,6 @@
 #define SERVER1 s2p1
 #define CLIENT3 s2p2
 
-class SimpleCacheListener;
-typedef std::shared_ptr<SimpleCacheListener> SimpleCacheListenerPtr;
-
 // The SimpleCacheListener class.
 class SimpleCacheListener : public CacheListener {
  private:
@@ -47,7 +44,7 @@ class SimpleCacheListener : public CacheListener {
   virtual void afterDestroy(const EntryEvent& event);
   virtual void afterRegionInvalidate(const RegionEvent& event);
   virtual void afterRegionDestroy(const RegionEvent& event);
-  virtual void close(const RegionPtr& region);
+  virtual void close(const std::shared_ptr<Region>& region);
   virtual void afterRegionClear(const RegionEvent& event);
 
   SimpleCacheListener() : CacheListener(), m_creates(0), m_clears(0) {
@@ -93,7 +90,7 @@ void SimpleCacheListener::afterRegionDestroy(const RegionEvent& event) {
       event.getRegion()->getName());
 }
 
-void SimpleCacheListener::close(const RegionPtr& region) {
+void SimpleCacheListener::close(const std::shared_ptr<Region>& region) {
   LOGINFO("SimpleCacheListener: Got an close event for %s region .",
           region.get()->getName());
 }
@@ -119,25 +116,25 @@ static int numberOfLocators = 0;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 const char* poolName = "__TESTPOOL1_";
-TallyListenerPtr regListener;
-SimpleCacheListenerPtr parentRegCacheListener;
-SimpleCacheListenerPtr subRegCacheListener;
+std::shared_ptr<TallyListener> regListener;
+std::shared_ptr<SimpleCacheListener> parentRegCacheListener;
+std::shared_ptr<SimpleCacheListener> subRegCacheListener;
 
-SimpleCacheListenerPtr distRegCacheListener;
-TallyWriterPtr regWriter;
+std::shared_ptr<SimpleCacheListener> distRegCacheListener;
+std::shared_ptr<TallyWriter> regWriter;
 
 #include "LocatorHelper.hpp"
 const char* myRegNames[] = {"DistRegionAck", "DistRegionNoAck", "ExampleRegion",
                             "SubRegion1", "SubRegion2"};
-void setCacheListener(const char* regName, TallyListenerPtr regListener) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheListener(const char* regName, std::shared_ptr<TallyListener> regListener) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(regListener);
 }
 
-void setCacheWriter(const char* regName, TallyWriterPtr regWriter) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheWriter(const char* regName, std::shared_ptr<TallyWriter> regWriter) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheWriter(regWriter);
 }
 
@@ -208,12 +205,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1withCachingEnabled_Pooled_Locator)
                        true);
 
     // create subregion
-    RegionPtr exmpRegptr = getHelper()->getRegion(myRegNames[2]);
-    RegionAttributesPtr lattribPtr = exmpRegptr->getAttributes();
-    RegionPtr subregPtr1 =
-        exmpRegptr->createSubregion(myRegNames[3], lattribPtr);
-    RegionPtr subregPtr2 =
-        exmpRegptr->createSubregion(myRegNames[4], lattribPtr);
+    auto exmpRegptr = getHelper()->getRegion(myRegNames[2]);
+    auto lattribPtr = exmpRegptr->getAttributes();
+    auto subregPtr1 = exmpRegptr->createSubregion(myRegNames[3], lattribPtr);
+    auto subregPtr2 = exmpRegptr->createSubregion(myRegNames[4], lattribPtr);
 
     LOGINFO(
         " CLIENT1 SetupClient1withCachingEnabled_Pooled_Locator subRegions "
@@ -223,7 +218,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, Register2WithTrue)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     regPtr0->registerAllKeys();
   }
 END_TASK_DEFINITION
@@ -231,11 +226,11 @@ END_TASK_DEFINITION
 // RegisterKeys
 DUNIT_TASK_DEFINITION(CLIENT2, RegisterKeys)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(myRegNames[0]);
+    auto regPtr0 = getHelper()->getRegion(myRegNames[0]);
 
-    RegionPtr exmpRegPtr = getHelper()->getRegion(myRegNames[2]);
-    RegionPtr subregPtr0 = exmpRegPtr->getSubregion(myRegNames[3]);
-    RegionPtr subregPtr1 = exmpRegPtr->getSubregion(myRegNames[4]);
+    auto exmpRegPtr = getHelper()->getRegion(myRegNames[2]);
+    auto subregPtr0 = exmpRegPtr->getSubregion(myRegNames[3]);
+    auto subregPtr1 = exmpRegPtr->getSubregion(myRegNames[4]);
 
     // 1. registerAllKeys on parent and both subregions
     regPtr0->registerAllKeys();
@@ -247,14 +242,14 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, Register2WithFalse)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     regPtr0->registerAllKeys(false, false, false);
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT3, Register3WithFalse)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     regPtr0->registerAllKeys(false, false, false);
   }
 END_TASK_DEFINITION
@@ -269,7 +264,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, SetupClient2_Pooled_Locator)
                        regListener, false);
     regWriter = std::make_shared<TallyWriter>();
     setCacheWriter(regionNames[0], regWriter);
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     // regPtr0->registerAllKeys();
   }
 END_TASK_DEFINITION
@@ -294,12 +289,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, SetupClient2withCachingEnabled_Pooled_Locator)
     setCacheWriter(myRegNames[2], regWriter);
 
     // create subregion
-    RegionPtr exmpRegptr = getHelper()->getRegion(myRegNames[2]);
-    RegionAttributesPtr lattribPtr = exmpRegptr->getAttributes();
-    RegionPtr subregPtr1 =
-        exmpRegptr->createSubregion(myRegNames[3], lattribPtr);
-    RegionPtr subregPtr2 =
-        exmpRegptr->createSubregion(myRegNames[4], lattribPtr);
+    auto exmpRegptr = getHelper()->getRegion(myRegNames[2]);
+    auto lattribPtr = exmpRegptr->getAttributes();
+    auto subregPtr1 = exmpRegptr->createSubregion(myRegNames[3], lattribPtr);
+    auto subregPtr2 = exmpRegptr->createSubregion(myRegNames[4], lattribPtr);
 
     LOGINFO(
         "CLIENT2 SetupClient2withCachingEnabled_Pooled_Locator:: subRegions "
@@ -308,7 +301,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, SetupClient2withCachingEnabled_Pooled_Locator)
     // Attach Listener to subRegion
     // Attache Listener
 
-    AttributesMutatorPtr subregAttrMutatorPtr =
+    auto subregAttrMutatorPtr =
         subregPtr1->getAttributesMutator();
     subRegCacheListener = std::make_shared<SimpleCacheListener>();
     subregAttrMutatorPtr->setCacheListener(subRegCacheListener);
@@ -368,19 +361,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, doEventOperations)
   {
     LOG("do entry operation from client 1");
 
-    RegionPtr regPtr0 = getHelper()->getRegion(myRegNames[0]);
-    RegionPtr exmpRegPtr = getHelper()->getRegion(myRegNames[2]);
+    auto regPtr0 = getHelper()->getRegion(myRegNames[0]);
+    auto exmpRegPtr = getHelper()->getRegion(myRegNames[2]);
 
-    RegionPtr subregPtr1 = exmpRegPtr->getSubregion(myRegNames[3]);
-    RegionPtr subregPtr2 = exmpRegPtr->getSubregion(myRegNames[4]);
+    auto subregPtr1 = exmpRegPtr->getSubregion(myRegNames[3]);
+    auto subregPtr2 = exmpRegPtr->getSubregion(myRegNames[4]);
 
     for (int index = 0; index < 5; index++) {
       char key[100] = {0};
       char value[100] = {0};
       ACE_OS::sprintf(key, "Key-%d", index);
       ACE_OS::sprintf(value, "Value-%d", index);
-      CacheableKeyPtr keyptr = CacheableKey::create(key);
-      CacheablePtr valuePtr = CacheableString::create(value);
+      std::shared_ptr<CacheableKey> keyptr = CacheableKey::create(key);
+      std::shared_ptr<Cacheable> valuePtr = CacheableString::create(value);
       regPtr0->put(keyptr, valuePtr);
       exmpRegPtr->put(keyptr, valuePtr);
       subregPtr1->put(keyptr, valuePtr);
@@ -441,15 +434,15 @@ DUNIT_TASK_DEFINITION(CLIENT2, validateListenerWriterEventsWithNBSTrue)
     ASSERT(parentRegCacheListener->getClears() == 1,
            "region.clear() should be called once");
 
-    RegionPtr exmpRegPtr = getHelper()->getRegion(myRegNames[2]);
+    auto exmpRegPtr = getHelper()->getRegion(myRegNames[2]);
     // LOGINFO(" Total Entries in ExampleRegion = %d ", exmpRegPtr->size());
     ASSERT(exmpRegPtr->size() == 0,
            "Client-2 ExampleRegion.clear() should have called and so "
            "Exampleregion size is expected to 0 ");
 
     // Verify entries in Sub-Region.
-    RegionPtr subregPtr1 = exmpRegPtr->getSubregion(myRegNames[3]);
-    RegionPtr subregPtr2 = exmpRegPtr->getSubregion(myRegNames[4]);
+    auto subregPtr1 = exmpRegPtr->getSubregion(myRegNames[3]);
+    auto subregPtr2 = exmpRegPtr->getSubregion(myRegNames[4]);
 
     // LOGINFO(" Total Entries in SubRegion-1 = %d ", subregPtr1->size());
     // LOGINFO(" Total Entries in SubRegion-2 = %d ", subregPtr2->size());

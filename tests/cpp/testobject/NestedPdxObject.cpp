@@ -26,7 +26,7 @@ using namespace testobject;
 
 ChildPdx::~ChildPdx() {}
 
-void ChildPdx::toData(PdxWriterPtr pw) {
+void ChildPdx::toData(std::shared_ptr<PdxWriter> pw) {
   LOGDEBUG("ChildPdx::toData() Started......");
 
   pw->writeInt("m_childId", m_childId);
@@ -37,7 +37,7 @@ void ChildPdx::toData(PdxWriterPtr pw) {
   LOGDEBUG("ChildPdx::toData() Done......");
 }
 
-void ChildPdx::fromData(PdxReaderPtr pr) {
+void ChildPdx::fromData(std::shared_ptr<PdxReader> pr) {
   LOGINFO("ChildPdx::fromData() start...");
 
   m_childId = pr->readInt("m_childId");
@@ -48,7 +48,7 @@ void ChildPdx::fromData(PdxReaderPtr pr) {
   LOGINFO("ChildPdx::fromData() end...");
 }
 
-CacheableStringPtr ChildPdx::toString() const {
+std::shared_ptr<CacheableString> ChildPdx::toString() const {
   char idbuf[1024];
   sprintf(idbuf, "ChildPdx: [m_childId=%d] [ m_childName=%s ]", m_childId,
           m_childName);
@@ -77,7 +77,7 @@ bool ChildPdx::equals(ChildPdx& other) const {
 
 ParentPdx::~ParentPdx() {}
 
-void ParentPdx::toData(PdxWriterPtr pw) {
+void ParentPdx::toData(std::shared_ptr<PdxWriter> pw) {
   LOGDEBUG("ParentPdx::toData() Started......");
 
   pw->writeInt("m_parentId", m_parentId);
@@ -103,7 +103,7 @@ void ParentPdx::toData(PdxWriterPtr pw) {
   LOGDEBUG("ParentPdx::toData() Done......");
 }
 
-void ParentPdx::fromData(PdxReaderPtr pr) {
+void ParentPdx::fromData(std::shared_ptr<PdxReader> pr) {
   LOGINFO("ParentPdx::fromData() start...");
 
   m_parentId = pr->readInt("m_parentId");
@@ -132,7 +132,7 @@ void ParentPdx::fromData(PdxReaderPtr pr) {
   LOGINFO("ParentPdx::fromData() end...");
 }
 
-CacheableStringPtr ParentPdx::toString() const {
+std::shared_ptr<CacheableString> ParentPdx::toString() const {
   char idbuf[1024];
   sprintf(idbuf,
           "ParentPdx: [m_parentId=%d] [ m_parentName=%s ] [ "

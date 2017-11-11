@@ -94,7 +94,7 @@ PortfolioPdx::~PortfolioPdx() {
   }
 }
 
-void PortfolioPdx::toData(PdxWriterPtr pw) {
+void PortfolioPdx::toData(std::shared_ptr<PdxWriter> pw) {
   pw->writeInt("ID", id);
   pw->markIdentityField("ID");
 
@@ -129,7 +129,7 @@ void PortfolioPdx::toData(PdxWriterPtr pw) {
   pw->writeByteArray("arrayZeroSize", arrayZeroSize, 0);
 }
 
-void PortfolioPdx::fromData(PdxReaderPtr pr) {
+void PortfolioPdx::fromData(std::shared_ptr<PdxReader> pr) {
   id = pr->readInt("ID");
   pkid = pr->readString("pkid");
 
@@ -153,7 +153,7 @@ void PortfolioPdx::fromData(PdxReaderPtr pr) {
   arrayZeroSize = pr->readByteArray("arrayZeroSize", arrayZeroSizeLen);
 }
 
-CacheableStringPtr PortfolioPdx::toString() const {
+std::shared_ptr<CacheableString> PortfolioPdx::toString() const {
   LOGINFO("PortfolioPdx::toString() Start");
   char idbuf[1024];
   sprintf(idbuf, "PortfolioPdxObject: [ id=%d ]", id);

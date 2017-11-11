@@ -124,11 +124,10 @@ class EventListener : public CacheListener {
     ASSERT(m_destroys == destroys, logmsg);
   }
 };
-typedef std::shared_ptr<EventListener> EventListenerPtr;
 
-void setCacheListener(const char* regName, EventListenerPtr monitor) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheListener(const char* regName, std::shared_ptr<EventListener> monitor) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(monitor);
 }
 
@@ -137,17 +136,9 @@ void setCacheListener(const char* regName, EventListenerPtr monitor) {
 // RegionOther means no interest registered so no events should arrive except
 // invalidates when NBS == false.
 
-EventListenerPtr clientTrueRegionTrue = nullptr;
-EventListenerPtr clientTrueRegionFalse = nullptr;
-EventListenerPtr clientTrueRegionOther = nullptr;
-/*
-EventListenerPtr clientFalseRegionTrue = nullptr;
-EventListenerPtr clientFalseRegionFalse = nullptr;
-EventListenerPtr clientFalseRegionOther = nullptr;
-EventListenerPtr clientDefaultRegionTrue = nullptr;
-EventListenerPtr clientDefaultRegionFalse = nullptr;
-EventListenerPtr clientDefaultRegionOther = nullptr;
-*/
+std::shared_ptr<EventListener> clientTrueRegionTrue = nullptr;
+std::shared_ptr<EventListener> clientTrueRegionFalse = nullptr;
+std::shared_ptr<EventListener> clientTrueRegionOther = nullptr;
 
 const char* regions[] = {"RegionTrue", "RegionFalse", "RegionOther"};
 const char* keysForRegex[] = {"key-regex-1", "key-regex-2", "key-regex-3"};
@@ -156,10 +147,11 @@ const char* keysForRegex[] = {"key-regex-1", "key-regex-2", "key-regex-3"};
 #include "ThinClientTasks_C2S2.hpp"
 #include "LocatorHelper.hpp"
 
-void initClientForInterestNotify(EventListenerPtr& mon1, EventListenerPtr& mon2,
-                                 EventListenerPtr& mon3, const char* nbs,
-                                 const char* clientName) {
-  PropertiesPtr props = Properties::create();
+void initClientForInterestNotify(std::shared_ptr<EventListener>& mon1,
+                                 std::shared_ptr<EventListener>& mon2,
+                                 std::shared_ptr<EventListener>& mon3,
+                                 const char* nbs, const char* clientName) {
+  auto props = Properties::create();
   // props->insert( "notify-by-subscription-override", nbs );
 
   initClient(true, props);
@@ -224,9 +216,9 @@ void feederDestroys() {
 }
 
 void registerInterests(const char* region, bool durable, bool receiveValues) {
-  RegionPtr regionPtr = getHelper()->getRegion(region);
+  auto regionPtr = getHelper()->getRegion(region);
 
-  VectorOfCacheableKey keysVector;
+  std::vector<std::shared_ptr<CacheableKey>> keysVector;
 
   keysVector.push_back(CacheableKey::create(keys[0]));
   keysVector.push_back(CacheableKey::create(keys[1]));
@@ -238,9 +230,9 @@ void registerInterests(const char* region, bool durable, bool receiveValues) {
 }
 
 void unregisterInterests(const char* region) {
-  RegionPtr regionPtr = getHelper()->getRegion(region);
+  auto regionPtr = getHelper()->getRegion(region);
 
-  VectorOfCacheableKey keysVector;
+  std::vector<std::shared_ptr<CacheableKey>> keysVector;
 
   keysVector.push_back(CacheableKey::create(keys[0]));
   keysVector.push_back(CacheableKey::create(keys[1]));

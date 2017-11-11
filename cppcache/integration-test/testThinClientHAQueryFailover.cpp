@@ -85,7 +85,7 @@ void initClient() {
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
   try {
-    SerializationRegistryPtr serializationRegistry =
+    auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
 
@@ -127,8 +127,8 @@ void createRegion(const char* name, bool ackMode,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   char* endpoints = nullptr;
-  RegionPtr regPtr = getHelper()->createRegion(
-      name, ackMode, false, nullptr, endpoints, clientNotificationEnabled);
+  auto regPtr = getHelper()->createRegion(name, ackMode, false, nullptr,
+                                          endpoints, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
@@ -141,7 +141,7 @@ const bool NO_ACK ATTR_UNUSED = false;
 KillServerThread* kst = nullptr;
 
 void initClientAndRegion(int redundancy) {
-  // PropertiesPtr pp  = Properties::create();
+  // std::shared_ptr<Properties> pp  = Properties::create();
   getHelper()->createPoolWithLocators("__TESTPOOL1_", locatorsG, true,
                                       redundancy);
   getHelper()->createRegionAndAttachPool(regionNames[0], USE_ACK,
@@ -169,7 +169,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
     initClient();
     initClientAndRegion(1);
 
-    RegionPtr rptr = getHelper()->cachePtr->getRegion(regionNames[0]);
+    auto rptr = getHelper()->cachePtr->getRegion(regionNames[0]);
 
     auto port1 = std::make_shared<Portfolio>(1, 100);
     auto port2 = std::make_shared<Portfolio>(2, 200);
@@ -199,17 +199,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     try {
       kst = new KillServerThread();
 
-      QueryServicePtr qs = nullptr;
+      std::shared_ptr<QueryService> qs = nullptr;
 
-      PoolPtr pool =
+      auto pool =
           getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
       qs = pool->getQueryService();
       LOG("Got query service from pool");
 
       for (int i = 0; i < 10000; i++) {
-        QueryPtr qry = qs->newQuery("select distinct * from /Portfolios");
+        auto qry = qs->newQuery("select distinct * from /Portfolios");
 
-        SelectResultsPtr results;
+        std::shared_ptr<SelectResults> results;
 
         // try
         //{

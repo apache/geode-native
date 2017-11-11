@@ -209,7 +209,7 @@ namespace apache
       }
 
 
-      void ManagedPersistenceManagerGeneric::write(const CacheableKeyPtr&  key, const CacheablePtr&  value, void *& PersistenceInfo)
+      void ManagedPersistenceManagerGeneric::write(const std::shared_ptr<native::CacheableKey>&  key, const std::shared_ptr<native::Cacheable>&  value, void *& PersistenceInfo)
       {
         m_managedptr->write(key, value);
       }
@@ -219,12 +219,12 @@ namespace apache
         throw gcnew System::NotSupportedException;
       }
 
-      void ManagedPersistenceManagerGeneric::init(const RegionPtr& region, const PropertiesPtr& diskProperties)
+      void ManagedPersistenceManagerGeneric::init(const std::shared_ptr<native::Region>& region, const std::shared_ptr<native::Properties>& diskProperties)
       {
         m_managedptr->init(region, diskProperties);
       }
 
-      CacheablePtr ManagedPersistenceManagerGeneric::read(const CacheableKeyPtr& key, void *& PersistenceInfo)
+     std::shared_ptr<native::Cacheable> ManagedPersistenceManagerGeneric::read(const std::shared_ptr<native::CacheableKey>& key, void *& PersistenceInfo)
       {
         return m_managedptr->read(key);
       }
@@ -234,7 +234,7 @@ namespace apache
         throw gcnew System::NotSupportedException;
       }
 
-      void ManagedPersistenceManagerGeneric::destroy(const CacheableKeyPtr& key, void *& PersistenceInfo)
+      void ManagedPersistenceManagerGeneric::destroy(const std::shared_ptr<native::CacheableKey>& key, void *& PersistenceInfo)
       {
         m_managedptr->destroy(key);
       }

@@ -69,7 +69,7 @@ class DummyCredentialGenerator3 : public CredentialGenerator {
     return "javaobject.DummyAuthorization.create";
   }
 
-  void getValidCredentials(PropertiesPtr& p) {
+  void getValidCredentials(std::shared_ptr<Properties>& p) {
     p->insert("security-username", "user1");
     p->insert("security-password", "user1");
     FWKDEBUG("inserted valid security-username "
@@ -77,7 +77,7 @@ class DummyCredentialGenerator3 : public CredentialGenerator {
              << p->find("security-password")->asChar());
   }
 
-  void getInvalidCredentials(PropertiesPtr& p) {
+  void getInvalidCredentials(std::shared_ptr<Properties>& p) {
     p->insert("security-username", "1user");
     p->insert("security-password", "user1");
     FWKDEBUG("inserted invalid security-username "
@@ -85,13 +85,15 @@ class DummyCredentialGenerator3 : public CredentialGenerator {
              << p->find("security-password")->asChar());
   }
 
-  void getAllowedCredentialsForOps(opCodeList& opCodes, PropertiesPtr& p,
+  void getAllowedCredentialsForOps(opCodeList& opCodes,
+                                   std::shared_ptr<Properties>& p,
                                    stringList* regionNames = NULL) {
     XmlAuthzCredentialGenerator authz(id());
     authz.getAllowedCredentials(opCodes, p, regionNames);
   }
 
-  void getDisallowedCredentialsForOps(opCodeList& opCodes, PropertiesPtr& p,
+  void getDisallowedCredentialsForOps(opCodeList& opCodes,
+                                      std::shared_ptr<Properties>& p,
                                       stringList* regionNames = NULL) {
     XmlAuthzCredentialGenerator authz(id());
     authz.getDisallowedCredentials(opCodes, p, regionNames);

@@ -228,7 +228,7 @@ namespace Apache
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
         //generic<class TPropKey, class TPropValue>
-        static Properties<TPropKey, TPropValue>^ Create( native::PropertiesPtr nativeptr )
+        static Properties<TPropKey, TPropValue>^ Create( std::shared_ptr<native::Properties> nativeptr )
         {
           return __nullptr == nativeptr ? nullptr :
             gcnew Properties<TPropKey, TPropValue>( nativeptr );
@@ -250,7 +250,7 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline Properties( native::PropertiesPtr nativeptr )
+        inline Properties( std::shared_ptr<native::Properties> nativeptr )
         {
           m_nativeptr = gcnew native_shared_ptr<native::Properties>(nativeptr);
         }
@@ -268,9 +268,9 @@ namespace Apache
           Apache::Geode::Client::IGeodeSerializable^ value)
         {
           TPropKey tpkey = Apache::Geode::Client::Serializable::
-            GetManagedValueGeneric<TPropKey>(SerializablePtr(SafeMSerializableConvertGeneric(key)));
+            GetManagedValueGeneric<TPropKey>(std::shared_ptr<apache::geode::client::Serializable>(SafeMSerializableConvertGeneric(key)));
           TPropValue tpvalue = Apache::Geode::Client::Serializable::
-            GetManagedValueGeneric<TPropValue>(SerializablePtr(SafeMSerializableConvertGeneric(value)));
+            GetManagedValueGeneric<TPropValue>(std::shared_ptr<apache::geode::client::Serializable>(SafeMSerializableConvertGeneric(value)));
           m_visitor->Invoke(tpkey, tpvalue);
         }
 

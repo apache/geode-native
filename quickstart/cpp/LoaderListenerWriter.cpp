@@ -49,11 +49,12 @@ using namespace apache::geode::client;
 // The LoaderListenerWriter QuickStart example.
 int main(int argc, char** argv) {
   try {
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
+    std::shared_ptr<CacheFactory> cacheFactory =
+        CacheFactory::createCacheFactory();
 
     // Create a Geode Cache with the "clientLoaderListenerWriter.xml" Cache
     // XML file.
-    CachePtr cachePtr =
+    auto cachePtr =
         cacheFactory
             ->set("cache-xml-file", "XMLs/clientLoaderListenerWriter.xml")
             ->create();
@@ -62,17 +63,19 @@ int main(int argc, char** argv) {
 
     // Get the example Region from the Cache which is declared in the Cache XML
     // file.
-    RegionPtr regionPtr = cachePtr->getRegion("exampleRegion");
+    auto regionPtr = cachePtr->getRegion("exampleRegion");
 
     LOGINFO("Obtained the Region from the Cache");
 
     // Plugin the SimpleCacheLoader, SimpleCacheListener and SimpleCacheWrite to
     // the Region.
-    AttributesMutatorPtr attrMutatorPtr = regionPtr->getAttributesMutator();
-    attrMutatorPtr->setCacheLoader(CacheLoaderPtr(new SimpleCacheLoader()));
+    auto attrMutatorPtr = regionPtr->getAttributesMutator();
+    attrMutatorPtr->setCacheLoader(
+        std::shared_ptr<CacheLoader>(new SimpleCacheLoader()));
     attrMutatorPtr->setCacheListener(
-        CacheListenerPtr(new SimpleCacheListener()));
-    attrMutatorPtr->setCacheWriter(CacheWriterPtr(new SimpleCacheWriter()));
+        std::shared_ptr<CacheListener>(new SimpleCacheListener()));
+    attrMutatorPtr->setCacheWriter(
+        std::shared_ptr<CacheWriter>(new SimpleCacheWriter()));
 
     LOGINFO("Attached the simple plugins on the Region");
 

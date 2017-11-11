@@ -116,7 +116,7 @@ void initClientCq(int redundancyLevel) {
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 
   try {
-    SerializationRegistryPtr serializationRegistry =
+    auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
 
@@ -168,9 +168,9 @@ void stepOne() {
 
   createRegionForCQ(regionNamesCq[0], USE_ACK, true, 1);
 
-  RegionPtr regptr = getHelper()->getRegion(regionNamesCq[0]);
-  RegionAttributesPtr lattribPtr = regptr->getAttributes();
-  RegionPtr subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
+  auto regptr = getHelper()->getRegion(regionNamesCq[0]);
+  auto lattribPtr = regptr->getAttributes();
+  auto subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
 
   QueryHelper* qh = &QueryHelper::getHelper();
 
@@ -187,9 +187,9 @@ END_TASK_DEFINITION
 void stepOne2() {
   initClientCq(1);
   createRegionForCQ(regionNamesCq[0], USE_ACK, true, 1);
-  RegionPtr regptr = getHelper()->getRegion(regionNamesCq[0]);
-  RegionAttributesPtr lattribPtr = regptr->getAttributes();
-  RegionPtr subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
+  auto regptr = getHelper()->getRegion(regionNamesCq[0]);
+  auto lattribPtr = regptr->getAttributes();
+  auto subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
 
   LOG("StepOne2 complete.");
 }
@@ -201,9 +201,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
     try {
-      PoolPtr pool =
+      auto pool =
           getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
-      QueryServicePtr qs;
+      std::shared_ptr<QueryService> qs;
       if (pool != nullptr) {
         qs = pool->getQueryService();
       } else {
@@ -212,13 +212,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       CqAttributesFactory cqFac;
       auto cqLstner = std::make_shared<MyCqListener>();
       cqFac.addCqListener(cqLstner);
-      CqAttributesPtr cqAttr = cqFac.create();
+      auto cqAttr = cqFac.create();
 
       char* qryStr = (char*)"select * from /Portfolios p where p.ID != 1";
       // char* qryStr = (char*)"select * from /Portfolios p where p.ID != 2";
       // char* qryStr = (char*)"select * from /Portfolios p where p.ID < 3";
-      CqQueryPtr qry = qs->newCq(cqName, qryStr, cqAttr);
-      SelectResultsPtr results;
+      auto qry = qs->newCq(cqName, qryStr, cqAttr);
+      std::shared_ptr<SelectResults> results;
       results = qry->executeWithInitialResults();
 
       SelectResultsIterator iter = results->getIterator();
@@ -228,9 +228,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       LOG(buf);
       while (iter.hasNext()) {
         count--;
-        SerializablePtr ser = iter.next();
-        PortfolioPtr portfolio(dynamic_cast<Portfolio*>(ser.get()));
-        PositionPtr position(dynamic_cast<Position*>(ser.get()));
+        std::shared_ptr<Serializable> ser = iter.next();
+        std::shared_ptr<Portfolio> portfolio(
+            dynamic_cast<Portfolio*>(ser.get()));
+        std::shared_ptr<Position> position(dynamic_cast<Position*>(ser.get()));
 
         if (portfolio != nullptr) {
           printf("   query pulled portfolio object ID %d, pkid %s\n",
@@ -277,8 +278,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepThree2)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
-    RegionPtr subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
+    auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
+    auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
     QueryHelper* qh = &QueryHelper::getHelper();
 
@@ -287,7 +288,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepThree2)
     for (int i = 1; i < 150; i++) {
       auto port = std::make_shared<Portfolio>(i, 20);
 
-      CacheableKeyPtr keyport = CacheableKey::create((char*)"port1-1");
+      std::shared_ptr<CacheableKey> keyport =
+          CacheableKey::create((char*)"port1-1");
       regPtr0->put(keyport, port);
       SLEEP(100);  // sleep a while to allow server query to complete
     }
@@ -300,19 +302,19 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree3)
   {
     // using region name as pool name
-    PoolPtr pool =
+    auto pool =
         getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
-    QueryServicePtr qs;
+    std::shared_ptr<QueryService> qs;
     if (pool != nullptr) {
       qs = pool->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    CqQueryPtr qry = qs->getCq(cqName);
+    auto qry = qs->getCq(cqName);
     ASSERT(qry != nullptr, "failed to get CqQuery");
-    CqAttributesPtr cqAttr = qry->getCqAttributes();
+    auto cqAttr = qry->getCqAttributes();
     ASSERT(cqAttr != nullptr, "failed to get CqAttributes");
-    CqListenerPtr cqLstner = nullptr;
+    std::shared_ptr<CqListener> cqLstner = nullptr;
     try {
       auto vl = cqAttr->getCqListeners();
       cqLstner = vl[0];
@@ -339,13 +341,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree3)
     kst->stop();
     myListener->setFailedOver();
     /*
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
-    RegionPtr subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
+    auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
+    auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
     for(int i=1; i < 150; i++)
     {
         auto port = std::make_shared<Portfolio>(i, 20);
 
-        CacheableKeyPtr keyport = CacheableKey::create("port1-1");
+        std::shared_ptr<CacheableKey> keyport = CacheableKey::create("port1-1");
         try {
           regPtr0->put(keyport, port);
         } catch (...)
@@ -364,8 +366,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepThree4)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
-    RegionPtr subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
+    auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
+    auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
     QueryHelper* qh = &QueryHelper::getHelper();
 
@@ -374,7 +376,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepThree4)
     for (int i = 1; i < 150; i++) {
       auto port = std::make_shared<Portfolio>(i, 20);
 
-      CacheableKeyPtr keyport = CacheableKey::create("port1-1");
+      std::shared_ptr<CacheableKey> keyport = CacheableKey::create("port1-1");
       regPtr0->put(keyport, port);
       SLEEP(100);  // sleep a while to allow server query to complete
     }
@@ -387,19 +389,19 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
   {
     // using region name as pool name
-    PoolPtr pool =
+    auto pool =
         getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
-    QueryServicePtr qs;
+    std::shared_ptr<QueryService> qs;
     if (pool != nullptr) {
       qs = pool->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    CqQueryPtr qry = qs->getCq(cqName);
+    auto qry = qs->getCq(cqName);
     ASSERT(qry != nullptr, "failed to get CqQuery");
-    CqAttributesPtr cqAttr = qry->getCqAttributes();
+    auto cqAttr = qry->getCqAttributes();
     ASSERT(cqAttr != nullptr, "failed to get CqAttributes");
-    CqListenerPtr cqLstner = nullptr;
+    std::shared_ptr<CqListener> cqLstner = nullptr;
     try {
       auto vl = cqAttr->getCqListeners();
       cqLstner = vl[0];

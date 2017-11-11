@@ -44,14 +44,15 @@ class CPPCACHE_EXPORT StructSetImpl
     : public StructSet,
       public std::enable_shared_from_this<StructSetImpl> {
  public:
-  StructSetImpl(const CacheableVectorPtr& values,
-                const std::vector<CacheableStringPtr>& fieldNames);
+  StructSetImpl(
+      const std::shared_ptr<CacheableVector>& values,
+      const std::vector<std::shared_ptr<CacheableString>>& fieldNames);
 
   bool isModifiable() const;
 
   int32_t size() const;
 
-  const SerializablePtr operator[](int32_t index) const;
+  const std::shared_ptr<Serializable> operator[](int32_t index) const;
 
   const int32_t getFieldIndex(const std::string& fieldname);
 
@@ -68,7 +69,7 @@ class CPPCACHE_EXPORT StructSetImpl
   virtual ~StructSetImpl();
 
  private:
-  CacheableVectorPtr m_structVector;
+  std::shared_ptr<CacheableVector> m_structVector;
 
   std::map<std::string, int32_t> m_fieldNameIndexMap;
 

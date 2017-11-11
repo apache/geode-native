@@ -21,9 +21,14 @@
 #define GEODE_INTEGRATION_TEST_DELTAEX_H_
 
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
+
+#include <geode/PdxWriter.hpp>
+#include <geode/PdxReader.hpp>
+#include <geode/Delta.hpp>
+
 #include "CacheHelper.hpp"
+
 class DeltaEx : public Cacheable, public Delta {
  private:
   std::shared_ptr<DeltaEx> shared_from_this() {
@@ -69,7 +74,7 @@ class DeltaEx : public Cacheable, public Delta {
   }
   virtual int32_t classId() const { return 1; }
   virtual uint32_t objectSize() const { return 0; }
-  DeltaPtr clone() {
+  std::shared_ptr<Delta> clone() {
     cloneCount++;
     return shared_from_this();
   }
@@ -117,19 +122,19 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
 
   const char* getClassName() const { return "PdxTests.PdxDeltaEx"; }
 
-  void toData(PdxWriterPtr pw) {
+  void toData(std::shared_ptr<PdxWriter> pw) {
     pw->writeInt("counter", m_counter);
     m_toDataCount++;
   }
 
-  void fromData(PdxReaderPtr pr) {
+  void fromData(std::shared_ptr<PdxReader> pr) {
     m_counter = pr->readInt("counter");
     m_fromDataCount++;
   }
 
   static PdxSerializable* createDeserializable() { return new PdxDeltaEx(); }
 
-  DeltaPtr clone() {
+  std::shared_ptr<Delta> clone() {
     m_cloneCount++;
     return shared_from_this();
   }
@@ -138,13 +143,12 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
 
   void setDelta(bool delta) { this->m_isDelta = delta; }
 
-  CacheableStringPtr toString() const {
+  std::shared_ptr<CacheableString> toString() const {
     char idbuf[1024];
     sprintf(idbuf, "PdxDeltaEx :: [counter=%d]  [isDelta=%d]", m_counter,
             m_isDelta);
     return CacheableString::create(idbuf);
   }
 };
-typedef std::shared_ptr<PdxDeltaEx> PdxDeltaExPtr;
 
 #endif  // GEODE_INTEGRATION_TEST_DELTAEX_H_

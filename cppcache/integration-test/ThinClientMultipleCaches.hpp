@@ -49,7 +49,7 @@ DUNIT_TASK_DEFINITION(SERVER1, CreateServer1)
   }
 END_TASK_DEFINITION
 
-RegionPtr createRegionFromCache(std::shared_ptr<Cache> cache) {
+std::shared_ptr<Region> createRegionFromCache(std::shared_ptr<Cache> cache) {
   auto poolFactory = cache->getPoolManager().createFactory();
   CacheHelper::getHelper().addServerLocatorEPs(locatorsG, poolFactory, true);
   poolFactory->create("DistRegionAck");

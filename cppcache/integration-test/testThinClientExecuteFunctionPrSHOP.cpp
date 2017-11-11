@@ -20,7 +20,8 @@
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 #include "testobject/VariousPdxTypes.hpp"
-
+#include <geode/UserFunctionExecutionException.hpp>
+#include <geode/FunctionService.hpp>
 using namespace PdxTests;
 /* This is to test
 1- funtion execution on pool
@@ -56,7 +57,7 @@ class MyResultCollector : public ResultCollector {
         m_addResultCount(0),
         m_getResultCount(0) {}
   ~MyResultCollector() {}
-  CacheableVectorPtr getResult(uint32_t timeout) {
+  std::shared_ptr<CacheableVector> getResult(uint32_t timeout) {
     m_getResultCount++;
     if (m_isResultReady == true) {
       return m_resultList;
@@ -71,7 +72,7 @@ class MyResultCollector : public ResultCollector {
     }
   }
 
-  void addResult(const CacheablePtr& resultItem) {
+  void addResult(const std::shared_ptr<Cacheable>& resultItem) {
     m_addResultCount++;
     if (resultItem == nullptr) {
       return;
@@ -96,13 +97,13 @@ class MyResultCollector : public ResultCollector {
   uint32_t getGetResultCount() { return m_getResultCount; }
 
  private:
-  CacheableVectorPtr m_resultList;
+  std::shared_ptr<CacheableVector> m_resultList;
   volatile bool m_isResultReady;
   uint32_t m_endResultCount;
   uint32_t m_addResultCount;
   uint32_t m_getResultCount;
 };
-typedef std::shared_ptr<MyResultCollector> MyResultCollectorPtr;
+
 class MyResultCollector2 : public ResultCollector {
  public:
   MyResultCollector2()
@@ -112,7 +113,7 @@ class MyResultCollector2 : public ResultCollector {
         m_addResultCount(0),
         m_getResultCount(0) {}
   ~MyResultCollector2() {}
-  CacheableVectorPtr getResult(uint32_t timeout) {
+  std::shared_ptr<CacheableVector> getResult(uint32_t timeout) {
     m_getResultCount++;
     if (m_isResultReady == true) {
       return m_resultList;
@@ -127,7 +128,7 @@ class MyResultCollector2 : public ResultCollector {
     }
   }
 
-  void addResult(const CacheablePtr& resultItem) {
+  void addResult(const std::shared_ptr<Cacheable>& resultItem) {
     m_addResultCount++;
     if (resultItem == nullptr) {
       return;
@@ -144,7 +145,7 @@ class MyResultCollector2 : public ResultCollector {
   uint32_t getGetResultCount() { return m_getResultCount; }
 
  private:
-  CacheableVectorPtr m_resultList;
+  std::shared_ptr<CacheableVector> m_resultList;
   volatile bool m_isResultReady;
   uint32_t m_endResultCount;
   uint32_t m_addResultCount;
@@ -182,7 +183,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
                        0, true, -1, -1, 60000, /*singlehop*/ true,
                        /*threadLocal*/ true);
 
-    RegionPtr regPtr0 =
+    auto regPtr0 =
         createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
     ;
     regPtr0->registerAllKeys();
@@ -193,29 +194,29 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+    auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     char buf[128];
 
     for (int i = 0; i < 230; i++) {
       sprintf(buf, "VALUE--%d", i);
-      CacheablePtr value(CacheableString::create(buf));
+      std::shared_ptr<Cacheable> value(CacheableString::create(buf));
       regPtr0->put(i, value);
     }
     LOG("Put done.");
     try {
       bool getResult = true;
       for (int k = 0; k < 210; k++) {
-        CacheableVectorPtr routingObj = CacheableVector::create();
+        std::shared_ptr<CacheableVector> routingObj = CacheableVector::create();
         for (int i = k; i < k + 20; i++) {
           routingObj->push_back(CacheableInt32::create(i));
         }
         LOGINFO("routingObj size = %d ", routingObj->size());
-        ExecutionPtr exe = FunctionService::onRegion(regPtr0);
+        auto exe = FunctionService::onRegion(regPtr0);
         ASSERT(exe != nullptr, "onRegion Returned nullptr");
 
-        CacheableVectorPtr resultList = CacheableVector::create();
+        std::shared_ptr<CacheableVector> resultList = CacheableVector::create();
         LOG("Executing getFuncName function");
-        CacheableVectorPtr executeFunctionResult =
+        std::shared_ptr<CacheableVector> executeFunctionResult =
             exe->withFilter(routingObj)->execute(getFuncName, 15)->getResult();
         if (executeFunctionResult == nullptr) {
           ASSERT(false, "executeFunctionResult is nullptr");
@@ -248,7 +249,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
         }
         LOGINFO("getFuncName done");
         auto myRC = std::make_shared<MyResultCollector>();
-        CacheableVectorPtr executeFunctionResult1 =
+        std::shared_ptr<CacheableVector> executeFunctionResult1 =
             exe->withFilter(routingObj)
                 ->withCollector(myRC)
                 ->execute(getFuncName, getResult)
@@ -291,7 +292,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
         }
         LOGINFO("getFuncName MyResultCollector done");
 
-        CacheableVectorPtr executeFunctionResult2 =
+        std::shared_ptr<CacheableVector> executeFunctionResult2 =
             exe->withFilter(routingObj)->execute(FEOnRegionPrSHOP)->getResult();
         if (executeFunctionResult2 == nullptr) {
           ASSERT(false, "executeFunctionResult2 is nullptr");
@@ -314,7 +315,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
         ////////////////////////////
 
         MyResultCollectorPtr2 myRC2(new MyResultCollector2());
-        CacheableVectorPtr executeFunctionResult21 =
+        std::shared_ptr<CacheableVector> executeFunctionResult21 =
             exe->withFilter(routingObj)
                 ->withCollector(myRC2)
                 ->execute(FEOnRegionPrSHOP)
@@ -345,7 +346,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
         /////////////////////// Done with ResultCollector
         ////////////////////////////////
 
-        CacheableVectorPtr executeFunctionResult3 =
+        std::shared_ptr<CacheableVector> executeFunctionResult3 =
             exe->withFilter(routingObj)
                 ->execute(FEOnRegionPrSHOP_OptimizeForWrite)
                 ->getResult();
@@ -369,7 +370,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
         ///////////////////////// Now same with ResultCollector
         ////////////////////////////
         MyResultCollectorPtr2 myRC3(new MyResultCollector2());
-        CacheableVectorPtr executeFunctionResult31 =
+        std::shared_ptr<CacheableVector> executeFunctionResult31 =
             exe->withFilter(routingObj)
                 ->withCollector(myRC3)
                 ->execute(FEOnRegionPrSHOP_OptimizeForWrite)
@@ -400,10 +401,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
             "withFilter");
       }
 
-      ExecutionPtr exc = FunctionService::onRegion(regPtr0);
+      auto exc = FunctionService::onRegion(regPtr0);
       ASSERT(exc != nullptr, "onRegion Returned nullptr");
       // Now w/o filter, chk for singlehop
-      CacheableVectorPtr executeFunctionResult2 =
+      std::shared_ptr<CacheableVector> executeFunctionResult2 =
           exc->execute(FEOnRegionPrSHOP)->getResult();
       if (executeFunctionResult2 == nullptr) {
         ASSERT(false, "executeFunctionResult2 is nullptr");
@@ -425,7 +426,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
 
       // Now w/o filter chk single hop
       MyResultCollectorPtr2 resultCollector(new MyResultCollector2());
-      CacheableVectorPtr executeFunctionResult21 =
+      std::shared_ptr<CacheableVector> executeFunctionResult21 =
           exc->withCollector(resultCollector)
               ->execute(FEOnRegionPrSHOP)
               ->getResult();
@@ -457,7 +458,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
 
       // Now w/o filter chk for singleHop
       MyResultCollectorPtr2 rC(new MyResultCollector2());
-      CacheableVectorPtr executeFunctionResult31 =
+      std::shared_ptr<CacheableVector> executeFunctionResult31 =
           exc->withCollector(rC)
               ->execute(FEOnRegionPrSHOP_OptimizeForWrite)
               ->getResult();
@@ -487,7 +488,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
           "Filter.");
 
       // Now w/o filter chk for singleHop
-      CacheableVectorPtr functionResult =
+      std::shared_ptr<CacheableVector> functionResult =
           exc->execute(FEOnRegionPrSHOP_OptimizeForWrite)->getResult();
       if (functionResult == nullptr) {
         ASSERT(false, "functionResult is nullptr");
@@ -509,12 +510,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
 
       char KeyStr[256] = {0};
       char valStr[256] = {0};
-      CacheableVectorPtr fil = CacheableVector::create();
+      std::shared_ptr<CacheableVector> fil = CacheableVector::create();
       for (int i = 0; i < 500; i++) {
         ACE_OS::snprintf(KeyStr, 256, "KEY--%d ", i);
         ACE_OS::snprintf(valStr, 256, "VALUE--%d ", i);
-        CacheableStringPtr keyport = CacheableString::create(KeyStr);
-        CacheablePtr valport = CacheableString::create(valStr);
+        std::shared_ptr<CacheableString> keyport =
+            CacheableString::create(KeyStr);
+        std::shared_ptr<Cacheable> valport = CacheableString::create(valStr);
         regPtr0->put(keyport, valport);
         fil->push_back(CacheableString::create(KeyStr));
       }
@@ -540,12 +542,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
       }
 
       // Fire N Forget without filter keys
-      CacheableArrayListPtr arrList = CacheableArrayList::create();
+      std::shared_ptr<CacheableArrayList> arrList = CacheableArrayList::create();
       for (int i = 10; i < 200; i++) {
         ACE_OS::snprintf(KeyStr, 256, "KEY--%d ", i);
         arrList->push_back(CacheableString::create(KeyStr));
       }
-      ExecutionPtr ex = FunctionService::onRegion(regPtr0);
+      auto ex = FunctionService::onRegion(regPtr0);
       ex->withArgs(arrList)->execute(putFuncIName);
       LOGINFO(
           "Executing ExecuteFunctionOnRegion on region for execKeys for "
@@ -565,11 +567,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
 
       ///////////////////TimeOut test //////////////////////
       LOGINFO("FETimeOut begin onRegion");
-      ExecutionPtr RexecutionPtr = FunctionService::onRegion(regPtr0);
-      CacheableVectorPtr fe =
-          RexecutionPtr->withArgs(CacheableInt32::create(5000 * 1000))
-              ->execute(FETimeOut, 5000 * 1000)
-              ->getResult();
+      auto rexecutionPtr = FunctionService::onRegion(regPtr0);
+      auto fe = rexecutionPtr->withArgs(CacheableInt32::create(5000 * 1000))
+                    ->execute(FETimeOut, 5000 * 1000)
+                    ->getResult();
       if (fe == nullptr) {
         ASSERT(false, "functionResult is nullptr");
       } else {

@@ -105,7 +105,7 @@ class PersonPdxSerializer : public PdxSerializer {
     return NULL;
   }
 
-  void* fromData(const char* className, PdxReaderPtr pr) {
+  void* fromData(const char* className, std::shared_ptr<PdxReader> pr) {
     if (strcmp(className, CLASSNAME) == 0) {
       Person* per = new Person();
 
@@ -121,7 +121,8 @@ class PersonPdxSerializer : public PdxSerializer {
     return NULL;
   }
 
-  bool toData(void* testObject, const char* className, PdxWriterPtr pw) {
+  bool toData(void* testObject, const char* className,
+              std::shared_ptr<PdxWriter> pw) {
     if (strcmp(className, CLASSNAME) == 0) {
       Person* per = reinterpret_cast<Person*>(testObject);
 
@@ -143,10 +144,11 @@ class PersonPdxSerializer : public PdxSerializer {
 int main(int argc, char** argv) {
   try {
     // Create a Geode Cache.
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
+    std::shared_ptr<CacheFactory> cacheFactory =
+        CacheFactory::createCacheFactory();
 
     // Create a Geode Cache with the "clientPdxSerializer.xml" Cache XML file.
-    CachePtr cachePtr =
+    auto cachePtr =
         cacheFactory->set("cache-xml-file", "XMLs/clientPdxSerializer.xml")
             ->create();
 
@@ -154,42 +156,42 @@ int main(int argc, char** argv) {
 
     // Get the example Region from the Cache which is declared in the Cache XML
     // file.
-    RegionPtr regionPtr = cachePtr->getRegion("Person");
+    auto regionPtr = cachePtr->getRegion("Person");
 
     LOGINFO("Obtained the Region from the Cache.");
 
     // Register PersonPdxSerializer to serialize the domain types(Person class)
     // as pdx format
     Serializable::registerPdxSerializer(
-        PdxSerializerPtr(new PersonPdxSerializer));
+        std::shared_ptr<PdxSerializer>(new PersonPdxSerializer));
     LOGINFO("Registered Person Query Objects");
 
     // Populate the Region with some Person objects.
     Person* p1 = new Person((char*)"John", 1 /*ID*/, 23 /*age*/);
-    PdxWrapperPtr pdxobj1(new PdxWrapper(p1, CLASSNAME));
+    std::shared_ptr<PdxWrapper> pdxobj1(new PdxWrapper(p1, CLASSNAME));
     regionPtr->put("Key1", pdxobj1);
 
     Person* p2 = new Person((char*)"Jack", 2 /*ID*/, 20 /*age*/);
-    PdxWrapperPtr pdxobj2(new PdxWrapper(p2, CLASSNAME));
+    std::shared_ptr<PdxWrapper> pdxobj2(new PdxWrapper(p2, CLASSNAME));
     regionPtr->put("Key2", pdxobj2);
 
     Person* p3 = new Person((char*)"Tony", 3 /*ID*/, 35 /*age*/);
-    PdxWrapperPtr pdxobj3(new PdxWrapper(p3, CLASSNAME));
+    std::shared_ptr<PdxWrapper> pdxobj3(new PdxWrapper(p3, CLASSNAME));
     regionPtr->put("Key3", pdxobj3);
 
     LOGINFO("Populated some Person Objects through PdxWrapper");
 
     // find the pool
-    PoolPtr poolPtr = cachePtr->getPoolManager().find("examplePool");
+    auto poolPtr = cachePtr->getPoolManager().find("examplePool");
 
     // Get the QueryService from the Pool.
-    QueryServicePtr qrySvcPtr = poolPtr->getQueryService();
+    auto qrySvcPtr = poolPtr->getQueryService();
 
     LOGINFO("Got the QueryService from the Pool");
 
     // Execute a Query which returns a ResultSet.
-    QueryPtr qryPtr = qrySvcPtr->newQuery("SELECT DISTINCT * FROM /Person");
-    SelectResultsPtr resultsPtr = qryPtr->execute();
+    auto qryPtr = qrySvcPtr->newQuery("SELECT DISTINCT * FROM /Person");
+    std::shared_ptr<SelectResults> resultsPtr = qryPtr->execute();
 
     LOGINFO("ResultSet Query returned %d rows", resultsPtr->size());
 
@@ -218,7 +220,7 @@ int main(int argc, char** argv) {
     LOGINFO("Region Query returned %d rows", resultsPtr->size());
 
     // Execute the Region selectValue() API.
-    PdxWrapperPtr pdxWrapperPtr =
+    auto pdxWrapperPtr =
         std::dynamic_pointer_cast<apache::geode::client::PdxWrapper>(
             regionPtr->selectValue("m_id = 3"));
     Person* per = reinterpret_cast<Person*>(pdxWrapperPtr->getObject());

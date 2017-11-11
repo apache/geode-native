@@ -24,8 +24,7 @@
 namespace apache {
 namespace geode {
 namespace client {
-
-SerializablePtr DataInput::readObjectInternal(int8_t typeId) {
+std::shared_ptr<Serializable> DataInput::readObjectInternal(int8_t typeId) {
   return getSerializationRegistry().deserialize(*this, typeId);
 }
 

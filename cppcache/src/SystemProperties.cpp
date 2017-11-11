@@ -171,9 +171,8 @@ const bool DefaultReadTimeoutUnitInMillis = false;
 const bool DefaultOnClientDisconnectClearPdxTypeIds = false;
 }  // namespace
 
-
-SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
-                                   const char* configFile)
+SystemProperties::SystemProperties(
+    const std::shared_ptr<Properties>& propertiesPtr, const char* configFile)
     : m_statisticsSampleInterval(DefaultSamplingInterval),
       m_statisticsEnabled(DefaultSamplingEnabled),
       m_appDomainEnabled(DefaultAppDomainEnabled),
@@ -243,9 +242,10 @@ SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
    public:
     explicit ProcessPropsVisitor(SystemProperties* sysProps)
         : m_sysProps(sysProps) {}
-    void visit(const CacheableKeyPtr& key, const CacheablePtr& value) {
-      CacheableStringPtr prop = key->toString();
-      CacheableStringPtr val;
+    void visit(const std::shared_ptr<CacheableKey>& key,
+               const std::shared_ptr<Cacheable>& value) {
+      std::shared_ptr<CacheableString> prop = key->toString();
+      std::shared_ptr<CacheableString> val;
       if (value != nullptr) {
         val = value->toString();
       }
@@ -254,7 +254,7 @@ SystemProperties::SystemProperties(const PropertiesPtr& propertiesPtr,
   } processPropsVisitor(this);
 
   m_securityPropertiesPtr = Properties::create();
-  PropertiesPtr givenConfigPtr = Properties::create();
+  auto givenConfigPtr = Properties::create();
   // Load the file from product tree.
   try {
     std::string defsysprops =

@@ -46,12 +46,12 @@ PkcsAuthInit::GetCredentials(
 {
   throw gcnew System::NotImplementedException();
   //Apache::Geode::Client::ManagedString mg_server( server );
-  //apache::geode::client::PropertiesPtr propsPtr = __nullptr;
+  //std::shared_ptr<apache::geode::client::Properties> propsPtr = __nullptr;
   //if (props != nullptr) {
   //  propsPtr = props->GetNative();
   //}
   //apache::geode::client::PKCSAuthInitInternal* nativeptr = new apache::geode::client::PKCSAuthInitInternal(true); 
-  //apache::geode::client::PropertiesPtr& newPropsPtr = nativeptr->getCredentials(propsPtr, mg_server.CharPtr);     
+  //std::shared_ptr<apache::geode::client::Properties>& newPropsPtr = nativeptr->getCredentials(propsPtr, mg_server.CharPtr);     
   //return Apache::Geode::Client::Properties<String^, Object^>::
-  //  CreateFromVoidPtr<String^, Object^>(newPropsPtr.get());
+  // std::shared_ptr<CreateFromVoid><String^, Object^>(newPropsPtr.get());
 }

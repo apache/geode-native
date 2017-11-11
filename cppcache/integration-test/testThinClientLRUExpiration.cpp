@@ -48,8 +48,8 @@ const char* regionNames[] = {"DistRegionAck1", "DistRegionAck2",
 const bool USE_ACK = true;
 const bool NO_ACK ATTR_UNUSED = false;
 
-TallyListenerPtr regListener;
-TallyWriterPtr regWriter;
+std::shared_ptr<TallyListener> regListener;
+std::shared_ptr<TallyWriter> regWriter;
 bool registerKey = true;
 void initClient(const bool isthinClient) {
   if (cacheHelper == nullptr) {
@@ -68,7 +68,7 @@ CacheHelper* getHelper() {
   ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
-void printAttribute(RegionAttributesPtr& attr) {
+void printAttribute(std::shared_ptr<RegionAttributes>& attr) {
   printf("CachingEnable: %s\n",
          attr->getCachingEnabled() ? "enabled" : "disabled");
   printf("InitialCapacity: %d\n", attr->getInitialCapacity());
@@ -89,26 +89,28 @@ void printAttribute(RegionAttributesPtr& attr) {
   // printf("getEndPoint: %s\n",attr->getEndpoints());
 }
 
-void setCacheListener(const char* regName, TallyListenerPtr regListener) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheListener(const char* regName,
+                      std::shared_ptr<TallyListener> regListener) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(regListener);
 }
 
-void setCacheWriter(const char* regName, TallyWriterPtr regWriter) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheWriter(const char* regName,
+                    std::shared_ptr<TallyWriter> regWriter) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheWriter(regWriter);
 }
 
 void getRegionAttr(const char* name) {
-  RegionPtr rptr = getHelper()->getRegion(name);
-  RegionAttributesPtr m_currRegionAttributesPtr = rptr->getAttributes();
+  auto rptr = getHelper()->getRegion(name);
+  auto m_currRegionAttributesPtr = rptr->getAttributes();
   printAttribute(m_currRegionAttributesPtr);
 }
 
 void ValidateDestroyRegion(const char* name) {
-  RegionPtr rptr = getHelper()->getRegion(name);
+  auto rptr = getHelper()->getRegion(name);
   if (rptr == nullptr) {
     return;
   }
@@ -133,7 +135,7 @@ void createRegion(const char* name, bool ackMode, int ettl, int eit, int rttl,
                   ExpirationAction::Action action = ExpirationAction::DESTROY) {
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr
+  std::shared_ptr<Region>
       regPtr =  // getHelper()->createRegion( name, ackMode, true,
                 // ettl,eit,rttl,rit,lel,action,endpoints,clientNotificationEnabled
                 // );
@@ -145,7 +147,7 @@ void createRegion(const char* name, bool ackMode, int ettl, int eit, int rttl,
 }
 
 void doRgnOperations(const char* name, int n, int rgnOpt = 0) {
-  CacheableStringPtr value;
+  std::shared_ptr<CacheableString> value;
   char buf[16];
   if (rgnOpt == 0) {
     memset(buf, 'A', 15);
@@ -154,11 +156,11 @@ void doRgnOperations(const char* name, int n, int rgnOpt = 0) {
     value = CacheableString::create(buf);
     ASSERT(value != nullptr, "Failed to create value.");
   }
-  RegionPtr rptr = getHelper()->getRegion(name);
+  auto rptr = getHelper()->getRegion(name);
   ASSERT(rptr != nullptr, "Region not found.");
   for (int i = 0; i < n; i++) {
     sprintf(buf, "KeyA - %d", i + 1);
-    CacheableKeyPtr key = CacheableKey::create(buf);
+    std::shared_ptr<CacheableKey> key = CacheableKey::create(buf);
     switch (rgnOpt) {
       case 0:
         rptr->put(key, value);
@@ -183,7 +185,7 @@ void doRgnOperations(const char* name, int n, int rgnOpt = 0) {
 }
 
 void dumpCounters(const char* regName) {
-  RegionPtr rptr = getHelper()->getRegion(regName);
+  auto rptr = getHelper()->getRegion(regName);
   printf("Region size: %d\n", rptr->size());
   if (regListener != nullptr) {
     printf("counts:: creates: %d, updates: %d, invalidates: %d, destroys: %d\n",
@@ -197,7 +199,7 @@ size_t getNumOfEntries(const char* regName, bool isValue = false) {
 
   useRegionSize = !useRegionSize;
   dumpCounters(regName);
-  RegionPtr rptr = getHelper()->getRegion(regName);
+  auto rptr = getHelper()->getRegion(regName);
   if (isValue) {
     auto v = rptr->values();
     printf("Region value size: %zd\n", v.size());
@@ -213,7 +215,7 @@ size_t getNumOfEntries(const char* regName, bool isValue = false) {
 
 void localDestroyRegion(const char* name) {
   LOG("localDestroyRegion() entered.");
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   regPtr->localDestroyRegion();
   ASSERT(regPtr->isDestroyed() == true, "Expected Region to be destroyed");
   LOG("Locally Region destroyed.");
@@ -1160,7 +1162,7 @@ DUNIT_TASK(CLIENT2, StepTwoCase13)
     regWriter = std::make_shared<TallyWriter>();
     setCacheListener(regionNames[5], regListener);
     setCacheWriter(regionNames[5], regWriter);
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[5]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[5]);
     regPtr0->registerAllKeys();
   }
 END_TASK(StepTwoCase13)

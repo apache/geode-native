@@ -34,15 +34,14 @@
 using namespace apache::geode::client::testframework::security;
 using namespace apache::geode::client;
 
-TallyListenerPtr regListener;
-TallyWriterPtr regWriter;
+std::shared_ptr<TallyListener> regListener;
+std::shared_ptr<TallyWriter> regWriter;
 
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 const char* regionNamesAuth[] = {"DistRegionAck"};
-
-CredentialGeneratorPtr credentialGeneratorHandler;
+std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
@@ -105,7 +104,7 @@ opCodeList::value_type tmpRArr[] = {OP_GET, OP_REGISTER_INTEREST,
 #define READER_CLIENT s2p1
 
 void initClientAuth() {
-  PropertiesPtr config = Properties::create();
+  auto config = Properties::create();
   opCodeList rt(tmpRArr, tmpRArr + sizeof tmpRArr / sizeof *tmpRArr);
   credentialGeneratorHandler->getAuthInit(config);
   credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config, nullptr);
@@ -120,9 +119,9 @@ void initClientAuth() {
   }
 }
 
-void setCacheWriter(const char* regName, TallyWriterPtr regWriter) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheWriter(const char* regName, std::shared_ptr<TallyWriter> regWriter) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheWriter(regWriter);
 }
 
@@ -155,7 +154,7 @@ END_TASK_DEFINITION
 void startClient() {
   initCredentialGenerator();
   initClientAuth();
-  RegionPtr rptr;
+  std::shared_ptr<Region> rptr;
   char buf[100];
   int i = 102;
   LOG("Creating region in READER_CLIENT , no-ack, no-cache, with-listener and "
@@ -167,9 +166,9 @@ void startClient() {
   rptr = getHelper()->getRegion(regionNamesAuth[0]);
   rptr->registerAllKeys();
   sprintf(buf, "%s: %d", rptr->getName(), i);
-  CacheableKeyPtr key = createKey(buf);
+  std::shared_ptr<CacheableKey> key = createKey(buf);
   sprintf(buf, "testUpdate::%s: value of %d", rptr->getName(), i);
-  CacheableStringPtr valuePtr = CacheableString::create(buf);
+  std::shared_ptr<CacheableString> valuePtr = CacheableString::create(buf);
   try {
     LOG("Trying put Operation");
     rptr->put(key, valuePtr);

@@ -24,9 +24,11 @@
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 #include "Serializable.hpp"
+#include "PdxSerializable.hpp"
 namespace apache {
 namespace geode {
 namespace client {
+class PdxSerializer;
 
 class TypeRegistry {
  public:
@@ -55,7 +57,7 @@ class TypeRegistry {
    * user domain classes.
    * @see PdxSerializer
    */
-  void registerPdxSerializer(PdxSerializerPtr pdxSerializer);
+  void registerPdxSerializer(std::shared_ptr<PdxSerializer> pdxSerializer);
 
  protected:
  private:

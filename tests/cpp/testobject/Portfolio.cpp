@@ -22,7 +22,8 @@ using namespace testobject;
 const char* Portfolio::secIds[] = {"SUN", "IBM",  "YHOO", "GOOG", "MSFT",
                                    "AOL", "APPL", "ORCL", "SAP",  "DELL"};
 
-Portfolio::Portfolio(int32_t i, uint32_t size, CacheableStringArrayPtr nm)
+Portfolio::Portfolio(int32_t i, uint32_t size,
+                     std::shared_ptr<CacheableStringArray> nm)
     : names(nm) {
   ID = i;
   char pkidbuf[1024];
@@ -98,7 +99,7 @@ void Portfolio::fromData(DataInput& input) {
   input.readBytes(&arrayZeroSize, &tmp);
 }
 
-CacheableStringPtr Portfolio::toString() const {
+std::shared_ptr<CacheableString> Portfolio::toString() const {
   char idbuf[1024];
   sprintf(idbuf, "PortfolioObject: [ ID=%d", ID);
   char pkidbuf[1024];

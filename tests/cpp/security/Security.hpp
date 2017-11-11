@@ -93,9 +93,10 @@ class Security : public FrameworkTest {
   //  int32_t doServerKeys();
 
   void checkTest(const char* taskId);
-  void getClientSecurityParams(PropertiesPtr prop, std::string credentials);
-  CacheablePtr getUserObject(const std::string& objType);
-  CacheableStringPtr getKey(int32_t max);
+  void getClientSecurityParams(std::shared_ptr<Properties> prop,
+                               std::string credentials);
+  std::shared_ptr<Cacheable> getUserObject(const std::string& objType);
+  std::shared_ptr<CacheableString> getKey(int32_t max);
   void runQuery(int32_t& queryCnt);
 
  private:
@@ -103,15 +104,15 @@ class Security : public FrameworkTest {
   void clearKeys();
   void initStrKeys(int32_t low, int32_t high, const std::string& keyBase);
   int32_t initValues(int32_t num, int32_t siz = 0, bool useDefault = true);
-  RegionPtr getRegionPtr(const char* reg = NULL);
+  std::shared_ptr<Region> getRegionPtr(const char* reg = NULL);
   bool checkReady(int32_t numClients);
 
-  CacheableStringPtr* m_KeysA;
+  std::shared_ptr<CacheableString>* m_KeysA;
   int32_t m_MaxKeys;
   int32_t m_KeyIndexBegin;
   int32_t m_MaxValues;
 
-  CacheableBytesPtr* m_CValue;
+  std::shared_ptr<CacheableBytes>* m_CValue;
 };
 
 }  // namespace security

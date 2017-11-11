@@ -21,7 +21,7 @@ using namespace apache::geode::client;
 ACE_TSS<TssConnectionWrapper>* TssConnectionWrapper::s_geodeTSSConn =
     new ACE_TSS<TssConnectionWrapper>();
 TssConnectionWrapper::TssConnectionWrapper() {
-  PoolPtr p = nullptr;
+  std::shared_ptr<Pool> p = nullptr;
   m_pool = p;
   m_tcrConn = nullptr;
 }
@@ -66,7 +66,7 @@ TcrConnection* TssConnectionWrapper::getSHConnection(TcrEndpoint* ep,
   return pw->getSHConnection(ep);
 }
 
-void TssConnectionWrapper::releaseSHConnections(PoolPtr pool) {
+void TssConnectionWrapper::releaseSHConnections(std::shared_ptr<Pool> pool) {
   std::string pn(pool->getName());
   poolVsEndpointConnMap::iterator iter = m_poolVsEndpointConnMap.find(pn);
   PoolWrapper* pw = nullptr;
@@ -113,7 +113,7 @@ PoolWrapper::PoolWrapper() {}
 
 PoolWrapper::~PoolWrapper() {}
 
-void PoolWrapper::releaseSHConnections(PoolPtr pool) {
+void PoolWrapper::releaseSHConnections(std::shared_ptr<Pool> pool) {
   for (EpNameVsConnection::iterator iter = m_EpnameVsConnection.begin();
        iter != m_EpnameVsConnection.end(); iter++) {
     TcrConnection* tmp = iter->second;

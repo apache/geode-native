@@ -36,7 +36,7 @@
 namespace apache {
 namespace geode {
 namespace client {
-
+class Query;
 /**
  * @class CqQuery CqQuery.hpp
  *
@@ -62,7 +62,7 @@ class CPPCACHE_EXPORT CqQuery  {
    * Get teh query object generated for this CQs query.
    * @return Query object fort he query string
    */
-  virtual QueryPtr getQuery() const = 0;
+  virtual std::shared_ptr<Query> getQuery() const = 0;
   /**
    * Get the name of the CQ.
    * @return the name of the CQ.
@@ -72,17 +72,18 @@ class CPPCACHE_EXPORT CqQuery  {
    * Get the statistics information of this CQ.
    * @return CqStatistics, the CqStatistics object.
    */
-  virtual const CqStatisticsPtr getStatistics() const = 0;
+  virtual const std::shared_ptr<CqStatistics> getStatistics() const = 0;
   /**
    * Get the Attributes of this CQ.
    * @return CqAttributes, the CqAttributes object.
    */
-  virtual const CqAttributesPtr getCqAttributes() const = 0;
+  virtual const std::shared_ptr<CqAttributes> getCqAttributes() const = 0;
   /**
    * Get the AttributesMutator of this CQ.
    * @return CqAttributesMutator, the CqAttributesMutator object.
    */
-  virtual const CqAttributesMutatorPtr getCqAttributesMutator() const = 0;
+  virtual const std::shared_ptr<CqAttributesMutator> getCqAttributesMutator()
+      const = 0;
   /**
    * Start executing the CQ or if this CQ is stopped earlier, resumes execution
    * of the CQ.
@@ -104,7 +105,7 @@ class CPPCACHE_EXPORT CqQuery  {
    * @throws CqException if failed to execute and get initial results.
    * @return CqResults resultset obtained by executing the query.
    */
-  virtual CqResultsPtr executeWithInitialResults(
+  virtual std::shared_ptr<CqResults> executeWithInitialResults(
       uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
 
   /**

@@ -154,7 +154,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwoPoolLoc_PDX)
   }
 END_TASK_DEFINITION
 
-void checkPdxInstanceToStringAtServer(RegionPtr regionPtr) {
+void checkPdxInstanceToStringAtServer(std::shared_ptr<Region> regionPtr) {
   auto keyport = CacheableKey::create("success");
   auto boolPtr =
       std::dynamic_pointer_cast<CacheableBoolean>(regionPtr->get(keyport));
@@ -164,7 +164,9 @@ void checkPdxInstanceToStringAtServer(RegionPtr regionPtr) {
 
 DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     serializationRegistry->setPdxSerializer(std::make_shared<TestPdxSerializer>());
 
     auto regPtr0 = getHelper()->getRegion("DistRegionAck");
@@ -196,7 +198,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, JavaGet)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     serializationRegistry->setPdxSerializer(std::make_shared<TestPdxSerializer>());
 
     LOGDEBUG("JavaGet-1 Line_309");
@@ -222,7 +226,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, putFromVersion1_PS)
     auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto key = CacheableKey::create(1);
 
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     serializationRegistry->setPdxSerializer(std::make_shared<TestPdxSerializerForV1>());
 
     // Create New object and wrap it in PdxWrapper (owner)
@@ -255,9 +261,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, putFromVersion2_PS)
     auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto key = CacheableKey::create(1);
 
-
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
-    serializationRegistry->setPdxSerializer(PdxSerializerPtr(new TestPdxSerializerForV2));
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
+    serializationRegistry->setPdxSerializer(
+        std::shared_ptr<PdxSerializer>(new TestPdxSerializerForV2));
 
     // Create New object and wrap it in PdxWrapper (owner)
     auto npt1 = new PdxTests::TestDiffTypePdxSV2(true);

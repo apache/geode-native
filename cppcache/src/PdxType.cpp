@@ -45,7 +45,7 @@ PdxType::~PdxType() {
 
 // PdxType::PdxType() : PdxType(nullptr, false) {}
 
-PdxType::PdxType(PdxTypeRegistryPtr pdxTypeRegistryPtr,
+PdxType::PdxType(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr,
                  const char* pdxDomainClassName, bool isLocal)
     : Serializable(),
       m_className(Utils::copyString(pdxDomainClassName)),
@@ -54,7 +54,7 @@ PdxType::PdxType(PdxTypeRegistryPtr pdxTypeRegistryPtr,
       m_varLenFieldIdx(0),
       m_isVarLenFieldAdded(false),
       m_noJavaClass(false),
-      m_pdxFieldTypes(new std::vector<PdxFieldTypePtr>()),
+      m_pdxFieldTypes(new std::vector<std::shared_ptr<PdxFieldType>>()),
       m_localToRemoteFieldMap(nullptr),
       m_remoteToLocalFieldMap(nullptr),
       m_geodeTypeId(0),
@@ -82,9 +82,10 @@ void PdxType::toData(DataOutput& output) const {
 
   output.writeArrayLen(static_cast<int32_t>(m_pdxFieldTypes->size()));
 
-  for (std::vector<PdxFieldTypePtr>::iterator it = m_pdxFieldTypes->begin();
+  for (std::vector<std::shared_ptr<PdxFieldType>>::iterator it =
+           m_pdxFieldTypes->begin();
        it != m_pdxFieldTypes->end(); ++it) {
-    PdxFieldTypePtr pdxPtr = *it;
+    auto pdxPtr = *it;
     pdxPtr->toData(output);
   }
 }
@@ -204,13 +205,13 @@ void PdxType::initRemoteToLocal() {
   //  -1 = local type don't have this VariableLengthType field
   //  -2 = local type don't have this FixedLengthType field
 
-  PdxTypePtr localPdxType = nullptr;
+  std::shared_ptr<PdxType> localPdxType = nullptr;
   //[TODO - open this up once PdxTypeRegistry is done]
   localPdxType = m_pdxTypeRegistryPtr->getLocalPdxType(m_className);
   m_numberOfFieldsExtra = 0;
 
   if (localPdxType != nullptr) {
-    std::vector<PdxFieldTypePtr>* localPdxFields =
+    std::vector<std::shared_ptr<PdxFieldType>>* localPdxFields =
         localPdxType->getPdxFieldTypes();
     int32_t fieldIdx = 0;
 
@@ -219,12 +220,12 @@ void PdxType::initRemoteToLocal() {
         "PdxType::initRemoteToLocal m_pdxFieldTypes->size() =%d AND "
         "localPdxFields->size()=%d",
         m_pdxFieldTypes->size(), localPdxFields->size());
-    for (std::vector<PdxFieldTypePtr>::iterator remotePdxField =
+    for (std::vector<std::shared_ptr<PdxFieldType>>::iterator remotePdxField =
              m_pdxFieldTypes->begin();
          remotePdxField != m_pdxFieldTypes->end(); ++remotePdxField) {
       bool found = false;
 
-      for (std::vector<PdxFieldTypePtr>::iterator localPdxfield =
+      for (std::vector<std::shared_ptr<PdxFieldType>>::iterator localPdxfield =
                localPdxFields->begin();
            localPdxfield != localPdxFields->end(); ++localPdxfield) {
         // PdxFieldType* remotePdx = (*(remotePdxField)).get();
@@ -265,11 +266,11 @@ void PdxType::initLocalToRemote() {
   // then mark m_localToRemoteFieldMap with remotePdxField sequenceId
   // 5. else if local field is not in remote type then -1
 
-  PdxTypePtr localPdxType = nullptr;
+  std::shared_ptr<PdxType> localPdxType = nullptr;
   localPdxType = m_pdxTypeRegistryPtr->getLocalPdxType(m_className);
 
   if (localPdxType != nullptr) {
-    std::vector<PdxFieldTypePtr>* localPdxFields =
+    std::vector<std::shared_ptr<PdxFieldType>>* localPdxFields =
         localPdxType->getPdxFieldTypes();
 
     int32_t fieldIdx = 0;
@@ -292,11 +293,10 @@ void PdxType::initLocalToRemote() {
     }
 
     for (; fieldIdx < localToRemoteFieldMapSize;) {
-      PdxFieldTypePtr localPdxField =
-          localPdxType->m_pdxFieldTypes->at(fieldIdx);
+      auto localPdxField = localPdxType->m_pdxFieldTypes->at(fieldIdx);
       bool found = false;
 
-      for (std::vector<PdxFieldTypePtr>::iterator remotePdxfield =
+      for (std::vector<std::shared_ptr<PdxFieldType>>::iterator remotePdxfield =
                m_pdxFieldTypes->begin();
            remotePdxfield != m_pdxFieldTypes->end(); ++remotePdxfield)
       // for each(PdxFieldType^ remotePdxfield in m_pdxFieldTypes)
@@ -328,7 +328,7 @@ void PdxType::InitializeType() {
 int32_t PdxType::getFieldPosition(const char* fieldName,
                                   uint8_t* offsetPosition, int32_t offsetSize,
                                   int32_t pdxStreamlen) {
-  PdxFieldTypePtr pft = this->getPdxField(fieldName);
+  auto pft = this->getPdxField(fieldName);
   if (pft != nullptr) {
     if (pft->IsVariableLengthType()) {
       return variableLengthFieldPosition(pft, offsetPosition, offsetSize,
@@ -343,7 +343,7 @@ int32_t PdxType::getFieldPosition(const char* fieldName,
 
 int32_t PdxType::getFieldPosition(int32_t fieldIdx, uint8_t* offsetPosition,
                                   int32_t offsetSize, int32_t pdxStreamlen) {
-  PdxFieldTypePtr pft = m_pdxFieldTypes->at(fieldIdx);
+  auto pft = m_pdxFieldTypes->at(fieldIdx);
   if (pft != nullptr) {
     if (pft->IsVariableLengthType()) {
       return variableLengthFieldPosition(pft, offsetPosition, offsetSize,
@@ -356,10 +356,9 @@ int32_t PdxType::getFieldPosition(int32_t fieldIdx, uint8_t* offsetPosition,
   return -1;
 }
 
-int32_t PdxType::fixedLengthFieldPosition(PdxFieldTypePtr fixLenField,
-                                          uint8_t* offsetPosition,
-                                          int32_t offsetSize,
-                                          int32_t pdxStreamlen) {
+int32_t PdxType::fixedLengthFieldPosition(
+    std::shared_ptr<PdxFieldType> fixLenField, uint8_t* offsetPosition,
+    int32_t offsetSize, int32_t pdxStreamlen) {
   int32_t offset = fixLenField->getVarLenOffsetIndex();
   if (fixLenField->getRelativeOffset() >= 0) {
     // starting fields
@@ -379,10 +378,9 @@ int32_t PdxType::fixedLengthFieldPosition(PdxFieldTypePtr fixLenField,
   }
 }
 
-int32_t PdxType::variableLengthFieldPosition(PdxFieldTypePtr varLenField,
-                                             uint8_t* offsetPosition,
-                                             int32_t offsetSize,
-                                             int32_t pdxStreamlen) {
+int32_t PdxType::variableLengthFieldPosition(
+    std::shared_ptr<PdxFieldType> varLenField, uint8_t* offsetPosition,
+    int32_t offsetSize, int32_t pdxStreamlen) {
   int32_t offset = varLenField->getVarLenOffsetIndex();
   if (offset == -1) {
     return /*first var len field*/ varLenField->getRelativeOffset();
@@ -422,13 +420,14 @@ int32_t* PdxType::getRemoteToLocalMap() {
   return m_remoteToLocalFieldMap;
 }
 
-PdxTypePtr PdxType::isContains(PdxTypePtr first, PdxTypePtr second) {
+std::shared_ptr<PdxType> PdxType::isContains(std::shared_ptr<PdxType> first,
+                                             std::shared_ptr<PdxType> second) {
   int j = 0;
   for (int i = 0; i < static_cast<int>(second->m_pdxFieldTypes->size()); i++) {
-    PdxFieldTypePtr secondPdt = second->m_pdxFieldTypes->at(i);
+    auto secondPdt = second->m_pdxFieldTypes->at(i);
     bool matched = false;
     for (; j < static_cast<int>(first->m_pdxFieldTypes->size()); j++) {
-      PdxFieldTypePtr firstPdt = first->m_pdxFieldTypes->at(j);
+      auto firstPdt = first->m_pdxFieldTypes->at(j);
       // PdxFieldType* firstType = firstPdt.get();
       // PdxFieldType* secondType = secondPdt.get();
       if (firstPdt->equals(secondPdt)) {
@@ -441,52 +440,56 @@ PdxTypePtr PdxType::isContains(PdxTypePtr first, PdxTypePtr second) {
   return first;
 }
 
-PdxTypePtr PdxType::clone() {
+std::shared_ptr<PdxType> PdxType::clone() {
   auto clone =
       std::make_shared<PdxType>(m_pdxTypeRegistryPtr, m_className, false);
   clone->m_geodeTypeId = 0;
   clone->m_numberOfVarLenFields = m_numberOfVarLenFields;
 
-  for (std::vector<PdxFieldTypePtr>::iterator it = m_pdxFieldTypes->begin();
+  for (std::vector<std::shared_ptr<PdxFieldType>>::iterator it =
+           m_pdxFieldTypes->begin();
        it != m_pdxFieldTypes->end(); ++it) {
-    PdxFieldTypePtr pdxPtr = *it;
+    auto pdxPtr = *it;
     clone->m_pdxFieldTypes->push_back(pdxPtr);
   }
   return clone;
 }
 
-PdxTypePtr PdxType::isLocalTypeContains(PdxTypePtr otherType) {
+std::shared_ptr<PdxType> PdxType::isLocalTypeContains(
+    std::shared_ptr<PdxType> otherType) {
   if (m_pdxFieldTypes->size() >= otherType->m_pdxFieldTypes->size()) {
     return isContains(shared_from_this(), otherType);
   }
   return nullptr;
 }
 
-PdxTypePtr PdxType::isRemoteTypeContains(PdxTypePtr remoteType) {
+std::shared_ptr<PdxType> PdxType::isRemoteTypeContains(
+    std::shared_ptr<PdxType> remoteType) {
   if (m_pdxFieldTypes->size() <= remoteType->m_pdxFieldTypes->size()) {
     return isContains(remoteType, shared_from_this());
   }
   return nullptr;
 }
 
-PdxTypePtr PdxType::mergeVersion(PdxTypePtr otherVersion) {
+std::shared_ptr<PdxType> PdxType::mergeVersion(
+    std::shared_ptr<PdxType> otherVersion) {
   // int nTotalFields = otherVersion->m_pdxFieldTypes->size();
-  PdxTypePtr contains = nullptr;
+  std::shared_ptr<PdxType> contains = nullptr;
 
   if (isLocalTypeContains(otherVersion) != nullptr) return shared_from_this();
 
   if (isRemoteTypeContains(otherVersion) != nullptr) return otherVersion;
 
   // need to create new one, clone of local
-  PdxTypePtr newone = clone();
+  auto newone = clone();
   int varLenFields = newone->getNumberOfVarLenFields();
 
-  for (std::vector<PdxFieldTypePtr>::iterator it =
+  for (std::vector<std::shared_ptr<PdxFieldType>>::iterator it =
            otherVersion->m_pdxFieldTypes->begin();
        it != otherVersion->m_pdxFieldTypes->end(); ++it) {
     bool found = false;
     // for each(PdxFieldType^ tmpNew in newone->m_pdxFieldTypes)
-    for (std::vector<PdxFieldTypePtr>::iterator it2 =
+    for (std::vector<std::shared_ptr<PdxFieldType>>::iterator it2 =
              newone->m_pdxFieldTypes->begin();
          it2 != newone->m_pdxFieldTypes->end(); ++it2) {
       if ((*it2)->equals(*it)) {
@@ -520,12 +523,12 @@ void PdxType::generatePositionMap() {
   int lastVarLenSeqId = 0;
   int prevFixedSizeOffsets = 0;
   // set offsets from back first
-  PdxFieldTypePtr previousField = nullptr;
+  std::shared_ptr<PdxFieldType> previousField = nullptr;
 
   for (int i = static_cast<int>(m_pdxFieldTypes->size()) - 1; i >= 0; i--) {
-    PdxFieldTypePtr tmpft = m_pdxFieldTypes->at(i);
+    auto tmpft = m_pdxFieldTypes->at(i);
     std::string temp = tmpft->getFieldName();
-    std::pair<std::string, PdxFieldTypePtr> pc(temp, tmpft);
+    std::pair<std::string, std::shared_ptr<PdxFieldType>> pc(temp, tmpft);
     m_fieldNameVsPdxType.insert(pc);
 
     if (tmpft->IsVariableLengthType()) {
@@ -557,7 +560,7 @@ void PdxType::generatePositionMap() {
   prevFixedSizeOffsets = 0;
   // now do optimization till you don't fine var len
   for (uint32_t i = 0; (i < m_pdxFieldTypes->size()) && !foundVarLen; i++) {
-    PdxFieldTypePtr tmpft = m_pdxFieldTypes->at(i);
+    auto tmpft = m_pdxFieldTypes->at(i);
 
     if (tmpft->IsVariableLengthType()) {
       tmpft->setVarLenOffsetIndex(-1);  // first var len field
@@ -571,7 +574,7 @@ void PdxType::generatePositionMap() {
   }
 }
 
-bool PdxType::Equals(PdxTypePtr otherObj) {
+bool PdxType::Equals(std::shared_ptr<PdxType> otherObj) {
   if (otherObj == nullptr) return false;
 
   PdxType* ot = dynamic_cast<PdxType*>(otherObj.get());

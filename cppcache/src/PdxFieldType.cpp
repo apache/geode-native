@@ -99,7 +99,7 @@ void PdxFieldType::fromData(DataInput& input) {
   }
 }
 
-bool PdxFieldType::equals(PdxFieldTypePtr otherObj) {
+bool PdxFieldType::equals(std::shared_ptr<PdxFieldType> otherObj) {
   if (otherObj == nullptr) return false;
 
   PdxFieldType* otherFieldType = dynamic_cast<PdxFieldType*>(otherObj.get());
@@ -143,7 +143,7 @@ int32_t PdxFieldType::getFixedTypeSize() const {
   return -1;
 }
 
-CacheableStringPtr PdxFieldType::toString() const {
+std::shared_ptr<CacheableString> PdxFieldType::toString() const {
   char stringBuf[1024];
   /* adongre  - Coverity II
    * CID 29208: Calling risky function (SECURE_CODING)[VERY RISKY]. Using

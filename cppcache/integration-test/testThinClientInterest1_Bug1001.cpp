@@ -28,7 +28,7 @@ using namespace test;
 #include "locator_globals.hpp"
 #include "LocatorHelper.hpp"
 
-CacheableStringPtr getUString(int index) {
+std::shared_ptr<CacheableString> getUString(int index) {
   std::wstring baseStr(40, L'\x20AC');
   wchar_t indexStr[15];
   swprintf(indexStr, 14, L"%10d", index);
@@ -37,7 +37,7 @@ CacheableStringPtr getUString(int index) {
                                  static_cast<int32_t>(baseStr.length()));
 }
 
-CacheableStringPtr getUAString(int index) {
+std::shared_ptr<CacheableString> getUAString(int index) {
   std::wstring baseStr(40, L'A');
   wchar_t indexStr[15];
   swprintf(indexStr, 14, L"%10d", index);
@@ -57,9 +57,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, populateServer)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     for (int i = 0; i < 5; i++) {
-      CacheableKeyPtr keyPtr = CacheableKey::create(keys[i]);
+      std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(keys[i]);
       regPtr->create(keyPtr, vals[i]);
     }
     SLEEP(200);
@@ -72,16 +72,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, setupClient2)
                        true);
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->registerAllKeys(false, true);
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, verify)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     for (int i = 0; i < 5; i++) {
-      CacheableKeyPtr keyPtr1 = CacheableKey::create(keys[i]);
+      std::shared_ptr<CacheableKey> keyPtr1 = CacheableKey::create(keys[i]);
       char buf[1024];
       sprintf(buf, "key[%s] should have been found", keys[i]);
       ASSERT(regPtr->containsKey(keyPtr1), buf);
@@ -91,9 +91,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, updateKeys)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     for (int index = 0; index < 5; ++index) {
-      CacheableKeyPtr keyPtr = CacheableKey::create(keys[index]);
+      std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(keys[index]);
       regPtr->put(keyPtr, nvals[index]);
     }
   }
@@ -102,9 +102,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, verifyUpdates)
   {
     SLEEP(2000);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     for (int index = 0; index < 5; ++index) {
-      CacheableKeyPtr keyPtr = CacheableKey::create(keys[index]);
+      std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(keys[index]);
       char buf[1024];
       sprintf(buf, "key[%s] should have been found", keys[index]);
       ASSERT(regPtr->containsKey(keyPtr), buf);
@@ -118,10 +118,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, PutUnicodeStrings)
   {
-    RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
+    auto reg0 = getHelper()->getRegion(regionNames[0]);
     for (int index = 0; index < 5; ++index) {
-      CacheableStringPtr key = getUString(index);
-      CacheablePtr val = Cacheable::create(index + 100);
+      std::shared_ptr<CacheableString> key = getUString(index);
+      std::shared_ptr<Cacheable> val = Cacheable::create(index + 100);
       reg0->put(key, val);
     }
     LOG("PutUnicodeStrings complete.");
@@ -130,17 +130,17 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, GetUnicodeStrings)
   {
-    RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
+    auto reg0 = getHelper()->getRegion(regionNames[0]);
     for (int index = 0; index < 5; ++index) {
-      CacheableStringPtr key = getUString(index);
+      std::shared_ptr<CacheableString> key = getUString(index);
       auto val = std::dynamic_pointer_cast<CacheableInt32>(reg0->get(key));
       ASSERT(val != nullptr, "expected non-null value in get");
       ASSERT(val->value() == (index + 100), "unexpected value in get");
     }
     reg0->unregisterAllKeys();
-    VectorOfCacheableKey vec;
+    std::vector<std::shared_ptr<CacheableKey>> vec;
     for (int index = 0; index < 5; ++index) {
-      CacheableStringPtr key = getUString(index);
+      std::shared_ptr<CacheableString> key = getUString(index);
       vec.push_back(key);
     }
     reg0->registerKeys(vec);
@@ -150,10 +150,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, UpdateUnicodeStrings)
   {
-    RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
+    auto reg0 = getHelper()->getRegion(regionNames[0]);
     for (int index = 0; index < 5; ++index) {
-      CacheableStringPtr key = getUString(index);
-      CacheablePtr val = CacheableFloat::create(index + 20.0F);
+      std::shared_ptr<CacheableString> key = getUString(index);
+      std::shared_ptr<Cacheable> val = CacheableFloat::create(index + 20.0F);
       reg0->put(key, val);
     }
     LOG("UpdateUnicodeStrings complete.");
@@ -163,9 +163,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, CheckUpdateUnicodeStrings)
   {
     SLEEP(2000);
-    RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
+    auto reg0 = getHelper()->getRegion(regionNames[0]);
     for (int index = 0; index < 5; ++index) {
-      CacheableStringPtr key = getUString(index);
+      std::shared_ptr<CacheableString> key = getUString(index);
       auto val = std::dynamic_pointer_cast<CacheableFloat>(
           reg0->getEntry(key)->getValue());
       ASSERT(val != nullptr, "expected non-null value in get");
@@ -177,10 +177,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, PutASCIIAsWideStrings)
   {
-    RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
+    auto reg0 = getHelper()->getRegion(regionNames[0]);
     for (int index = 0; index < 5; ++index) {
-      CacheableStringPtr key = getUAString(index);
-      CacheablePtr val = getUString(index + 20);
+      std::shared_ptr<CacheableString> key = getUAString(index);
+      std::shared_ptr<Cacheable> val = getUString(index + 20);
       reg0->put(key, val);
     }
     LOG("PutASCIIAsWideStrings complete.");
@@ -189,19 +189,19 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, GetASCIIAsWideStrings)
   {
-    RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
+    auto reg0 = getHelper()->getRegion(regionNames[0]);
     for (int index = 0; index < 5; ++index) {
-      CacheableStringPtr key = getUAString(index);
+      std::shared_ptr<CacheableString> key = getUAString(index);
       auto val = std::dynamic_pointer_cast<CacheableString>(reg0->get(key));
-      CacheableStringPtr expectedVal = getUString(index + 20);
+      std::shared_ptr<CacheableString> expectedVal = getUString(index + 20);
       ASSERT(val != nullptr, "expected non-null value in get");
       ASSERT(wcscmp(val->asWChar(), expectedVal->asWChar()) == 0,
              "unexpected value in get");
       ASSERT(*val.get() == *expectedVal.get(), "unexpected value in get");
     }
-    VectorOfCacheableKey vec;
+    std::vector<std::shared_ptr<CacheableKey>> vec;
     for (int index = 0; index < 5; ++index) {
-      CacheableStringPtr key = getUAString(index);
+      std::shared_ptr<CacheableString> key = getUAString(index);
       vec.push_back(key);
     }
     reg0->registerKeys(vec);
@@ -211,10 +211,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, UpdateASCIIAsWideStrings)
   {
-    RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
+    auto reg0 = getHelper()->getRegion(regionNames[0]);
     for (int index = 0; index < 5; ++index) {
-      CacheableStringPtr key = getUAString(index);
-      CacheablePtr val = getUAString(index + 10);
+      std::shared_ptr<CacheableString> key = getUAString(index);
+      std::shared_ptr<Cacheable> val = getUAString(index + 10);
       reg0->put(key, val);
     }
     LOG("UpdateASCIIAsWideStrings complete.");
@@ -224,11 +224,11 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, CheckUpdateASCIIAsWideStrings)
   {
     SLEEP(2000);
-    RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
+    auto reg0 = getHelper()->getRegion(regionNames[0]);
     for (int index = 0; index < 5; ++index) {
-      CacheableStringPtr key = getUAString(index);
+      std::shared_ptr<CacheableString> key = getUAString(index);
       auto val = std::dynamic_pointer_cast<CacheableString>(reg0->get(key));
-      CacheableStringPtr expectedVal = getUAString(index + 10);
+      std::shared_ptr<CacheableString> expectedVal = getUAString(index + 10);
       ASSERT(val != nullptr, "expected non-null value in get");
       ASSERT(*val.get() == *expectedVal.get(), "unexpected value in get");
     }
@@ -240,7 +240,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckUpdateBug1001)
   {
     try {
       const wchar_t* str = L"Pivotal";
-      CacheableStringPtr lCStringP = CacheableString::create(
+      std::shared_ptr<CacheableString> lCStringP = CacheableString::create(
           str, static_cast<int32_t>(wcslen(str) + 1) * sizeof(wchar_t));
       const wchar_t* lRtnCd ATTR_UNUSED = lCStringP->asWChar();
     } catch (const Exception& geodeExcp) {
@@ -250,7 +250,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckUpdateBug1001)
 
     try {
       const wchar_t* str = L"Pivotal?17?";
-      CacheableStringPtr lCStringP = CacheableString::create(
+      std::shared_ptr<CacheableString> lCStringP = CacheableString::create(
           str, static_cast<int32_t>(wcslen(str) + 1) * sizeof(wchar_t));
       const wchar_t* lRtnCd ATTR_UNUSED = lCStringP->asWChar();
     } catch (const Exception& geodeExcp) {

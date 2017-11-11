@@ -82,7 +82,7 @@ void UdpIpc::checkTest(const char *taskId) {
   std::lock_guard<spinlock_mutex> guard(m_lck);
   setTask(taskId);
   if (m_cache == nullptr) {
-    PropertiesPtr pp = Properties::create();
+    auto pp = Properties::create();
 
     cacheInitialize(pp);
 

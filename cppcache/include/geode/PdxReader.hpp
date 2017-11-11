@@ -26,9 +26,8 @@
 namespace apache {
 namespace geode {
 namespace client {
-
-class PdxReader;
-typedef std::shared_ptr<PdxReader> PdxReaderPtr;
+class CacheableDate;
+class CacheableObjectArray;
 
 /**
  * A PdxReader will be passed to PdxSerializable.fromData or
@@ -42,7 +41,7 @@ typedef std::shared_ptr<PdxReader> PdxReaderPtr;
  *
  * @note Implementations of PdxReader that are internal to the Native
  *       Client library may be returned to clients via instances of
- *       PdxReaderPtr. For those implementations, any
+ *       std::shared_ptr<PdxReader>. For those implementations, any
  *       non-<tt>nullptr</tt>, non-empty strings returned from
  *       PdxReader::readString() or PdxReader::readWideString() must
  *       be freed with DataInput::freeUTFMemory(). Arrays returned
@@ -189,15 +188,15 @@ class CPPCACHE_EXPORT PdxReader {
   virtual wchar_t* readWideString(const char* fieldName) = 0;
 
   /**
-   * Read a CacheablePtr value from the <code>PdxReader</code>.
-   * <p>C++ CacheablePtr is mapped to Java object</p>
+   * Read a std::shared_ptr<Cacheable> value from the <code>PdxReader</code>.
+   * <p>C++ std::shared_ptr<Cacheable> is mapped to Java object</p>
    * @param fieldName name of the field to read
-   * @return value of type CacheablePtr.
+   * @return value of type std::shared_ptr<Cacheable>.
    * @throws IllegalStateException if PdxReader doesn't has the named field.
    *
    * @see PdxReader#hasField
    */
-  virtual CacheablePtr readObject(const char* fieldName) = 0;
+  virtual std::shared_ptr<Cacheable> readObject(const char* fieldName) = 0;
 
   /**
    * Read a char* value from the <code>PdxReader</code> and sets array length.
@@ -340,15 +339,16 @@ class CPPCACHE_EXPORT PdxReader {
                                         int32_t& length) = 0;
 
   /**
-   * Read a CacheableObjectArrayPtr value from the <code>PdxReader</code>.
-   * C++ CacheableObjectArrayPtr is mapped to Java Object[].
+   * Read a std::shared_ptr<CacheableObjectArray> value from the
+   * <code>PdxReader</code>. C++ std::shared_ptr<CacheableObjectArray> is mapped
+   * to Java Object[].
    * @param fieldName name of the field to read
-   * @return value of type CacheableObjectArrayPtr.
+   * @return value of type std::shared_ptr<CacheableObjectArray>.
    * @throws IllegalStateException if PdxReader doesn't has the named field.
    *
    * @see PdxReader#hasField
    */
-  virtual CacheableObjectArrayPtr readObjectArray(const char* fieldName) = 0;
+  virtual std::shared_ptr<CacheableObjectArray> readObjectArray(const char* fieldName) = 0;
 
   /**
    * Read a int8_t** value from the <code>PdxReader</code> and sets
@@ -368,15 +368,16 @@ class CPPCACHE_EXPORT PdxReader {
                                          int32_t** elementLength) = 0;
 
   /**
-   * Read a CacheableDatePtr value from the <code>PdxReader</code>.
-   * <p>C++ CacheableDatePtr is mapped to Java Date</p>
+   * Read a std::shared_ptr<CacheableDate> value from the
+   * <code>PdxReader</code>. <p>C++ std::shared_ptr<CacheableDate> is mapped to
+   * Java Date</p>
    * @param fieldName name of the field to read
-   * @return value of type CacheableDatePtr.
+   * @return value of type std::shared_ptr<CacheableDate>.
    * @throws IllegalStateException if PdxReader doesn't has the named field.
    *
    * @see PdxReader#hasField
    */
-  virtual CacheableDatePtr readDate(const char* fieldName) = 0;
+  virtual std::shared_ptr<CacheableDate> readDate(const char* fieldName) = 0;
 
   /**
    * Checks if the named field exists and returns the result.
@@ -411,7 +412,7 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @return an object that represents the unread fields.
    */
-  virtual PdxUnreadFieldsPtr readUnreadFields() = 0;
+  virtual std::shared_ptr<PdxUnreadFields> readUnreadFields() = 0;
 };
 }  // namespace client
 }  // namespace geode

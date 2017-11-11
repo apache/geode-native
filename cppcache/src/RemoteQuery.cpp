@@ -27,9 +27,10 @@
 
 using namespace apache::geode::client;
 
-RemoteQuery::RemoteQuery(const char* querystr,
-                         const RemoteQueryServicePtr& queryService,
-                         ThinClientBaseDM* tccdmptr, ProxyCachePtr proxyCache) {
+RemoteQuery::RemoteQuery(
+    const char* querystr,
+    const std::shared_ptr<RemoteQueryService>& queryService,
+    ThinClientBaseDM* tccdmptr, std::shared_ptr<ProxyCache> proxyCache) {
   m_queryString = querystr;
   m_queryService = queryService;
   m_tccdm = tccdmptr;
@@ -37,7 +38,7 @@ RemoteQuery::RemoteQuery(const char* querystr,
   LOGFINEST("RemoteQuery: created a new query: %s", querystr);
 }
 
-SelectResultsPtr RemoteQuery::execute(uint32_t timeout) {
+std::shared_ptr<SelectResults> RemoteQuery::execute(uint32_t timeout) {
   GuardUserAttribures gua;
   if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);
@@ -45,8 +46,8 @@ SelectResultsPtr RemoteQuery::execute(uint32_t timeout) {
   return execute(timeout, "Query::execute", m_tccdm, nullptr);
 }
 
-SelectResultsPtr RemoteQuery::execute(CacheableVectorPtr paramList,
-                                      uint32_t timeout) {
+std::shared_ptr<SelectResults> RemoteQuery::execute(
+    std::shared_ptr<CacheableVector> paramList, uint32_t timeout) {
   GuardUserAttribures gua;
   if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);
@@ -54,9 +55,9 @@ SelectResultsPtr RemoteQuery::execute(CacheableVectorPtr paramList,
   return execute(timeout, "Query::execute", m_tccdm, paramList);
 }
 
-SelectResultsPtr RemoteQuery::execute(uint32_t timeout, const char* func,
-                                      ThinClientBaseDM* tcdm,
-                                      CacheableVectorPtr paramList) {
+std::shared_ptr<SelectResults> RemoteQuery::execute(
+    uint32_t timeout, const char* func, ThinClientBaseDM* tcdm,
+    std::shared_ptr<CacheableVector> paramList) {
   if ((timeout * 1000) >= 0x7fffffff) {
     char exMsg[1024];
     ACE_OS::snprintf(exMsg, 1023,
@@ -84,11 +85,11 @@ SelectResultsPtr RemoteQuery::execute(uint32_t timeout, const char* func,
   GfErrType err = executeNoThrow(timeout, reply, func, tcdm, paramList);
   GfErrTypeToException(func, err);
 
-  SelectResultsPtr sr;
+  std::shared_ptr<SelectResults> sr;
 
   LOGFINEST("%s: reading reply for query: %s", func, m_queryString.c_str());
-  CacheableVectorPtr values = resultCollector->getQueryResults();
-  const std::vector<CacheableStringPtr>& fieldNameVec =
+  std::shared_ptr<CacheableVector> values = resultCollector->getQueryResults();
+  const std::vector<std::shared_ptr<CacheableString>>& fieldNameVec =
       resultCollector->getStructFieldNames();
   size_t sizeOfFieldNamesVec = fieldNameVec.size();
   if (sizeOfFieldNamesVec == 0) {
@@ -120,9 +121,9 @@ SelectResultsPtr RemoteQuery::execute(uint32_t timeout, const char* func,
   return sr;
 }
 
-GfErrType RemoteQuery::executeNoThrow(uint32_t timeout, TcrMessageReply& reply,
-                                      const char* func, ThinClientBaseDM* tcdm,
-                                      CacheableVectorPtr paramList) {
+GfErrType RemoteQuery::executeNoThrow(
+    uint32_t timeout, TcrMessageReply& reply, const char* func,
+    ThinClientBaseDM* tcdm, std::shared_ptr<CacheableVector> paramList) {
   LOGFINEST("%s: executing query: %s", func, m_queryString.c_str());
 
   TryReadGuard guard(m_queryService->getLock(), m_queryService->invalid());

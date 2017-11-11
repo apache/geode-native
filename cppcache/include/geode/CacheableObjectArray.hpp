@@ -20,9 +20,12 @@
 #ifndef GEODE_CACHEABLEOBJECTARRAY_H_
 #define GEODE_CACHEABLEOBJECTARRAY_H_
 
+#include <vector>
+#include <memory>
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
-#include "VectorT.hpp"
+#include "Cacheable.hpp"
 
 /** @file
  */
@@ -36,7 +39,7 @@ namespace client {
  * that can serve as a distributable object for caching.
  */
 class CPPCACHE_EXPORT CacheableObjectArray : public Cacheable,
-                                             public VectorOfCacheable {
+                                             public std::vector<std::shared_ptr<Cacheable>> {
  public:
   /**
    *@brief serialize this object
@@ -72,7 +75,7 @@ class CPPCACHE_EXPORT CacheableObjectArray : public Cacheable,
   /**
    * Factory method for creating the default instance of CacheableObjectArray.
    */
-  inline static CacheableObjectArrayPtr create() {
+  inline static std::shared_ptr<CacheableObjectArray> create() {
     return std::make_shared<CacheableObjectArray>();
   }
 
@@ -80,7 +83,7 @@ class CPPCACHE_EXPORT CacheableObjectArray : public Cacheable,
    * Factory method for creating an instance of CacheableObjectArray with
    * given size.
    */
-  inline static CacheableObjectArrayPtr create(int32_t n) {
+  inline static std::shared_ptr<CacheableObjectArray> create(int32_t n) {
     return std::make_shared<CacheableObjectArray>(n);
   }
 
@@ -88,9 +91,9 @@ class CPPCACHE_EXPORT CacheableObjectArray : public Cacheable,
 
  protected:
   /** Constructor, used for deserialization. */
-  inline CacheableObjectArray() : VectorOfCacheable() {}
+  inline CacheableObjectArray() : std::vector<std::shared_ptr<Cacheable>>() {}
   /** Create a vector with n elements allocated. */
-  inline CacheableObjectArray(int32_t n) : VectorOfCacheable(n) {}
+  inline CacheableObjectArray(int32_t n) : std::vector<std::shared_ptr<Cacheable>>(n) {}
 
  private:
   // never implemented.

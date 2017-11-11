@@ -41,11 +41,11 @@ const char* poolName = "__TEST_POOL1__";
 const char* poolName1 = "clientPool";
 
 const char* serverGroup = "ServerGroup1";
-CachePtr cachePtr;
+std::shared_ptr<Cache> cachePtr;
 
 class putThread : public ACE_Task_Base {
  private:
-  RegionPtr regPtr;
+  std::shared_ptr<Region> regPtr;
 
  public:
   explicit putThread(const char* name) : regPtr(getHelper()->getRegion(name)) {}
@@ -71,8 +71,7 @@ class putThread : public ACE_Task_Base {
 };
 
 void doAttrTestingAndCreatePool(const char* poolName) {
-  PoolFactoryPtr poolFacPtr =
-      getHelper()->getCache()->getPoolManager().createFactory();
+  auto poolFacPtr = getHelper()->getCache()->getPoolManager().createFactory();
   poolFacPtr->setFreeConnectionTimeout(10000);
   poolFacPtr->setLoadConditioningInterval(60000);
   poolFacPtr->setSocketBufferSize(1024);
@@ -93,7 +92,7 @@ void doAttrTestingAndCreatePool(const char* poolName) {
   // poolFacPtr->setMultiuserSecurityMode(true);
   poolFacPtr->setPRSingleHopEnabled(false);
 
-  PoolPtr pptr = poolFacPtr->create(poolName);
+  auto pptr = poolFacPtr->create(poolName);
 
   // Validate the attributes
   ASSERT(pptr->getFreeConnectionTimeout() == 10000,
@@ -130,9 +129,9 @@ void doAttrTestingAndCreatePool(const char* poolName) {
 }
 
 void doAttrTesting(const char* poolName1) {
-  // PoolFactoryPtr poolFacPtr = cachePtr->getPoolFactory();
-  PoolPtr pptr = getHelper()->getCache()->getPoolManager().find(poolName1);
-  // PoolPtr pptr = poolFacPtr->find(poolName1);
+  // auto poolFacPtr = cachePtr->getPoolFactory();
+  auto pptr = getHelper()->getCache()->getPoolManager().find(poolName1);
+  // auto pptr = poolFacPtr->find(poolName1);
 
   ASSERT(strcmp(pptr->getName(), "clientPool") == 0,
          "Pool name should have been clientPool");
@@ -187,7 +186,7 @@ END_TASK(StartS12)
 
 DUNIT_TASK(CLIENT1, StartC1)
   {
-    PropertiesPtr props = Properties::create();
+    auto props = Properties::create();
     props->insert("redundancy-monitor-interval", "120");
     props->insert("statistic-sampling-enabled", "false");
     props->insert("statistic-sample-rate", "120");
@@ -197,10 +196,9 @@ DUNIT_TASK(CLIENT1, StartC1)
     doAttrTestingAndCreatePool(poolName);
 
     // Do PoolCreation testing , create another pool with same name
-    PoolFactoryPtr poolFacPtr =
-        getHelper()->getCache()->getPoolManager().createFactory();
+    auto poolFacPtr = getHelper()->getCache()->getPoolManager().createFactory();
     try {
-      PoolPtr pptr = poolFacPtr->create(poolName);
+      auto pptr = poolFacPtr->create(poolName);
       FAIL("Pool creation with same name should fail");
     } catch (IllegalStateException&) {
       LOG("OK:Pool creation with same name should fail");
@@ -215,7 +213,7 @@ END_TASK(StartC1)
 
 DUNIT_TASK(CLIENT2, StartC2)
   {
-    PropertiesPtr props = Properties::create();
+    auto props = Properties::create();
     std::string path = "cacheserver_pool_client.xml";
     std::string duplicateFile;
     CacheHelper::createDuplicateXMLFile(duplicateFile, path);

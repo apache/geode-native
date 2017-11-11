@@ -26,6 +26,8 @@
  *      Author: ankurs
  */
 
+#include <memory>
+
 #include <geode/geode_globals.hpp>
 #include <geode/geode_types.hpp>
 #include <geode/Cacheable.hpp>
@@ -89,8 +91,6 @@ enum OPERATION {
 
 class RegionCommit;
 
-_GF_PTR_DEF_(FarSideEntryOp, FarSideEntryOpPtr);
-
 class FarSideEntryOp {
  public:
   FarSideEntryOp(RegionCommit* region,
@@ -98,29 +98,28 @@ class FarSideEntryOp {
   virtual ~FarSideEntryOp();
 
   void fromData(DataInput& input, bool largeModCount, uint16_t memId);
-  void apply(RegionPtr& region);
-  static bool cmp(const FarSideEntryOpPtr& lhs, const FarSideEntryOpPtr& rhs) {
+  void apply(std::shared_ptr<Region>& region);
+  static bool cmp(const std::shared_ptr<FarSideEntryOp>& lhs, const std::shared_ptr<FarSideEntryOp>& rhs) {
     return lhs->m_modSerialNum > rhs->m_modSerialNum;
   }
-
-  //	EntryEventPtr getEntryEvent(Cache* cache);
 
  private:
   // UNUSED RegionCommit* m_region;
   int8_t m_op;
   int32_t m_modSerialNum;
   int32_t m_eventOffset;
-  CacheableKeyPtr m_key;
-  CacheablePtr m_value;
+  std::shared_ptr<CacheableKey> m_key;
+  std::shared_ptr<Cacheable> m_value;
   bool m_didDestroy;
-  SerializablePtr m_callbackArg;
-  VersionTagPtr m_versionTag;
+  std::shared_ptr<Serializable> m_callbackArg;
+  std::shared_ptr<VersionTag> m_versionTag;
   MemberListForVersionStamp& m_memberListForVersionStamp;
   // FilterRoutingInfo filterRoutingInfo;
   bool isDestroy(int8_t op);
   bool isInvalidate(int8_t op);
   void skipFilterRoutingInfo(DataInput& input);
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

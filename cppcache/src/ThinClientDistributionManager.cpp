@@ -309,7 +309,8 @@ bool ThinClientDistributionManager::postFailoverAction(TcrEndpoint* endpoint) {
   return true;
 }
 
-PropertiesPtr ThinClientDistributionManager::getCredentials(TcrEndpoint* ep) {
+std::shared_ptr<Properties> ThinClientDistributionManager::getCredentials(
+    TcrEndpoint* ep) {
   auto cacheImpl = m_connManager.getCacheImpl();
   const auto& distributedSystem = cacheImpl->getDistributedSystem();
   const auto& tmpSecurityProperties =
@@ -331,7 +332,7 @@ PropertiesPtr ThinClientDistributionManager::getCredentials(TcrEndpoint* ep) {
 }
 
 GfErrType ThinClientDistributionManager::sendUserCredentials(
-    PropertiesPtr credentials, TcrEndpoint* ep) {
+    std::shared_ptr<Properties> credentials, TcrEndpoint* ep) {
   LOGDEBUG("ThinClientPoolDM::sendUserCredentials");
 
   GfErrType err = GF_NOERR;

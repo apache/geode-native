@@ -106,8 +106,8 @@ class OtherType : public Serializable {
 
   uint32_t size() const { return sizeof(CData); }
 
-  static CacheablePtr uniqueCT(int32_t i,
-                               int32_t classIdToReturn = g_classIdToReturn) {
+  static std::shared_ptr<Cacheable> uniqueCT(
+      int32_t i, int32_t classIdToReturn = g_classIdToReturn) {
     OtherType* ot = new OtherType(classIdToReturn);
     ot->m_struct.a = (int)i;
     ot->m_struct.b = (i % 2 == 0) ? true : false;
@@ -119,10 +119,10 @@ class OtherType : public Serializable {
 
     printf("double hex 0x%016" PRIX64 "\n", ot->m_struct.e);
 
-    return CacheablePtr(ot);
+    return std::shared_ptr<Cacheable>(ot);
   }
 
-  static void validateCT(int32_t i, const CacheablePtr otPtr) {
+  static void validateCT(int32_t i, const std::shared_ptr<Cacheable> otPtr) {
     char logmsg[1000];
     sprintf(logmsg, "validateCT for %d", i);
     LOG(logmsg);
@@ -145,8 +145,7 @@ class OtherType : public Serializable {
 #define NoDist s2p2
 #define Sender s1p1
 #define Receiver s1p2
-
-RegionPtr regionPtr;
+std::shared_ptr<Region> regionPtr;
 
 DUNIT_TASK(Receiver, SetupR)
   {
@@ -161,7 +160,7 @@ DUNIT_TASK(Sender, SetupAndPutInts)
   {
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, nullptr, 0,
                        true);
-    SerializationRegistryPtr serializationRegistry =
+    auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     serializationRegistry->addType(OtherType::createDeserializable);

@@ -52,8 +52,8 @@ namespace Apache
       generic<class TKey, class TValue>
       TValue Region<TKey, TValue>::Get(TKey key, Object^ callbackArg)
       {
-        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-        native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+        std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+        std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
         GC::KeepAlive(m_nativeptr);
         auto nativeptr = this->get(keyptr, callbackptr);
         if (nativeptr == nullptr)
@@ -65,7 +65,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      native::SerializablePtr Region<TKey, TValue>::get(native::CacheableKeyPtr& keyptr, native::SerializablePtr& callbackptr)
+      std::shared_ptr<native::Serializable> Region<TKey, TValue>::get(std::shared_ptr<native::CacheableKey>& keyptr, std::shared_ptr<native::Serializable>& callbackptr)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
           try
@@ -80,7 +80,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      native::SerializablePtr Region<TKey, TValue>::get(native::CacheableKeyPtr& keyptr)
+      std::shared_ptr<native::Serializable> Region<TKey, TValue>::get(std::shared_ptr<native::CacheableKey>& keyptr)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
           try
@@ -118,9 +118,9 @@ namespace Apache
 
           try
           {
-            native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-            native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
-            native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+            std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+            std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
+            std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
             m_nativeptr->get()->put(keyptr, valueptr, callbackptr);
           }
           finally
@@ -134,7 +134,7 @@ namespace Apache
       generic<class TKey, class TValue>
       TValue Region<TKey, TValue>::default::get(TKey key)
       {
-        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+        std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
         GC::KeepAlive(m_nativeptr);
         auto nativeptr = this->get(keyptr);
         if (nativeptr == nullptr)
@@ -152,8 +152,8 @@ namespace Apache
 
         try
         {
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-          native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
+          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+          std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
           m_nativeptr->get()->put(keyptr, valueptr);
         }
         finally
@@ -168,7 +168,7 @@ namespace Apache
       System::Collections::Generic::IEnumerator<KeyValuePair<TKey, TValue>>^
         Region<TKey, TValue>::GetEnumerator()
       {
-        native::VectorOfRegionEntry vc;
+		std::vector<std::shared_ptr<native::RegionEntry>> vc;
 
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
@@ -199,7 +199,7 @@ namespace Apache
       System::Collections::IEnumerator^
         Region<TKey, TValue>::GetEnumeratorOld()
       {
-        native::VectorOfRegionEntry vc;
+		std::vector<std::shared_ptr<native::RegionEntry>> vc;
 
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
@@ -227,7 +227,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      bool Region<TKey, TValue>::AreValuesEqual(native::CacheablePtr& val1, native::CacheablePtr& val2)
+      bool Region<TKey, TValue>::AreValuesEqual(std::shared_ptr<native::Cacheable>& val1, std::shared_ptr<native::Cacheable>& val2)
       {
         if (val1 == nullptr && val2 == nullptr)
         {
@@ -265,7 +265,7 @@ namespace Apache
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::Contains(KeyValuePair<TKey, TValue> keyValuePair)
       {
-        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValuePair.Key);
+        std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValuePair.Key);
         GC::KeepAlive(m_nativeptr);
         auto nativeptr = this->get(keyptr);
         //This means that key is not present.
@@ -283,7 +283,7 @@ namespace Apache
 
         try
         {
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
           return m_nativeptr->get()->containsKeyOnServer(keyptr);
         }
         finally
@@ -298,7 +298,7 @@ namespace Apache
       bool Region<TKey, TValue>::TryGetValue(TKey key, TValue %val)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-        native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+        std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
         GC::KeepAlive(m_nativeptr);
         auto nativeptr = this->get(keyptr);
         if (nativeptr == nullptr) {
@@ -318,7 +318,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          native::VectorOfCacheableKey vc;
+          std::vector<std::shared_ptr<native::CacheableKey>> vc;
         try
         {
           vc = m_nativeptr->get()->serverKeys();
@@ -344,7 +344,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          native::VectorOfCacheable vc;
+          std::vector<std::shared_ptr<native::Cacheable>> vc;
         try
         {
           vc = m_nativeptr->get()->values();
@@ -372,8 +372,8 @@ namespace Apache
 
         try
         {
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-          native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
+          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+          std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
           m_nativeptr->get()->create(keyptr, valueptr);
         }
         finally
@@ -391,8 +391,8 @@ namespace Apache
 
         try
         {
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValuePair.Key);
-          native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValuePair.Value);
+          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValuePair.Key);
+          std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValuePair.Value);
           m_nativeptr->get()->create(keyptr, valueptr);
         }
         finally
@@ -410,9 +410,9 @@ namespace Apache
 
         try
         {
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-          native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
-          native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+          std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
+          std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
           m_nativeptr->get()->create(keyptr, valueptr, callbackptr);
         }
         finally
@@ -430,7 +430,7 @@ namespace Apache
 
         try
         {
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
           return m_nativeptr->get()->removeEx(keyptr);
         }
         finally
@@ -449,8 +449,8 @@ namespace Apache
 
         try
         {
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-          native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+          std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
           return m_nativeptr->get()->removeEx(keyptr, callbackptr);
         }
         finally
@@ -468,8 +468,8 @@ namespace Apache
 
         try
         {
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValuePair.Key);
-          native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValuePair.Value);
+          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValuePair.Key);
+          std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValuePair.Value);
           return m_nativeptr->get()->remove(keyptr, valueptr);
         }
         finally
@@ -487,9 +487,9 @@ namespace Apache
 
         try
         {
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-          native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
-          native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+          std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
+          std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
           GC::KeepAlive(m_nativeptr);
           return m_nativeptr->get()->remove(keyptr, valueptr, callbackptr);
         }
@@ -518,7 +518,7 @@ namespace Apache
 
         try
         {
-          native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+          std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
           m_nativeptr->get()->invalidateRegion(callbackptr);
         }
         finally
@@ -546,7 +546,7 @@ namespace Apache
 
         try
         {
-          native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+          std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
           m_nativeptr->get()->destroyRegion(callbackptr);
         }
         finally
@@ -575,8 +575,8 @@ namespace Apache
 
         try
         {
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-          native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+          std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
           m_nativeptr->get()->invalidate(keyptr, callbackptr);
         }
         finally
@@ -606,8 +606,8 @@ namespace Apache
           native::HashMapOfCacheable nativeMap;
         for each (KeyValuePair<TKey, TValue> keyValPair in map)
         {
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValPair.Key);
-          native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValPair.Value);
+          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValPair.Key);
+          std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValPair.Value);
           nativeMap.emplace(keyptr, valueptr);
         }
         try
@@ -631,11 +631,11 @@ namespace Apache
           native::HashMapOfCacheable nativeMap;
         for each (KeyValuePair<TKey, TValue> keyValPair in map)
         {
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValPair.Key);
-          native::CacheablePtr valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValPair.Value);
+          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValPair.Key);
+          std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValPair.Value);
           nativeMap.emplace(keyptr, valueptr);
         }
-        native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+        std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
         try
         {
           m_nativeptr->get()->putAll(nativeMap, timeout, callbackptr);
@@ -671,7 +671,7 @@ namespace Apache
         if (keys != nullptr) {
           _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-            native::VectorOfCacheableKey vecKeys;
+            std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
 
           for each(TKey item in keys)
           {
@@ -679,7 +679,7 @@ namespace Apache
               Serializable::GetUnmanagedValueGeneric<TKey>(item));
           }
 
-          native::HashMapOfCacheable native_value;
+         native::HashMapOfCacheable native_value;
         
           try
           {
@@ -713,7 +713,7 @@ namespace Apache
         if (keys != nullptr) {
           _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-            native::VectorOfCacheableKey vecKeys;
+            std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
 
           for each(TKey item in keys)
           {
@@ -721,11 +721,11 @@ namespace Apache
               Serializable::GetUnmanagedValueGeneric<TKey>(item));
           }
 
-          native::HashMapOfCacheablePtr valuesPtr;
+          std::shared_ptr<native::HashMapOfCacheable> valuesPtr;
           if (values != nullptr) {
             valuesPtr = std::make_shared<native::HashMapOfCacheable>();
           }
-         native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg, m_nativeptr->get()->getCache().get());
+         std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg, m_nativeptr->get()->getCache().get());
          native::HashMapOfCacheable native_value;
           try
           {
@@ -767,11 +767,11 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          native::VectorOfCacheableKey vecKeys;
+          std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
         for each(TKey item in keys)
           vecKeys.push_back(Serializable::GetUnmanagedValueGeneric<TKey>(item));
 
-        native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+        std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
 
         try
         {
@@ -928,7 +928,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          native::VectorOfRegion vsr;
+          std::vector<std::shared_ptr<native::Region>> vsr;
         try
         {
           vsr = m_nativeptr->get()->subregions(recursive);
@@ -958,7 +958,7 @@ namespace Apache
 
         try
         {
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
           auto nativeptr = m_nativeptr->get()->getEntry(keyptr);
           return RegionEntry<TKey, TValue>::Create(nativeptr);
         }
@@ -975,7 +975,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-        native::VectorOfRegionEntry vc;
+		std::vector<std::shared_ptr<native::RegionEntry>> vc;
         try
         {
           vc = m_nativeptr->get()->entries(recursive);
@@ -1012,7 +1012,7 @@ namespace Apache
 
         try
         {
-          native::CacheableKeyPtr keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
           return m_nativeptr->get()->containsValueForKey(keyptr);
         }
         finally
@@ -1050,7 +1050,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
         try
         {
-          native::SerializablePtr callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+          std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
           m_nativeptr->get()->clear(callbackptr);
         }
         finally
@@ -1075,7 +1075,7 @@ namespace Apache
 
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          native::VectorOfRegionEntry vc;
+		std::vector<std::shared_ptr<native::RegionEntry>> vc;
         try
         {
           vc = m_nativeptr->get()->entries(false);
@@ -1137,7 +1137,7 @@ namespace Apache
         {
           _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-            native::VectorOfCacheableKey vecKeys;
+            std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
 
           for each(TKey item in keys)
           {
@@ -1163,7 +1163,7 @@ namespace Apache
         {
           _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-            native::VectorOfCacheableKey vecKeys;
+            std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
 
           for each(TKey item in keys)
           {
@@ -1227,7 +1227,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          native::VectorOfCacheableKey vc;
+          std::vector<std::shared_ptr<native::CacheableKey>> vc;
         try
         {
           vc = m_nativeptr->get()->getInterestList();
@@ -1254,7 +1254,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          native::VectorOfCacheableString vc;
+          std::vector<std::shared_ptr<native::CacheableString>> vc;
         try
         {
           vc = m_nativeptr->get()->getInterestListRegex();

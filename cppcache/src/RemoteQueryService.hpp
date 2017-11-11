@@ -44,7 +44,7 @@ class CPPCACHE_EXPORT RemoteQueryService
 
   void init();
 
-  QueryPtr newQuery(const char* querystring);
+  std::shared_ptr<Query> newQuery(const char* querystring);
 
   inline ACE_RW_Thread_Mutex& getLock() { return m_rwLock; }
   inline const volatile bool& invalid() { return m_invalid; }
@@ -52,19 +52,20 @@ class CPPCACHE_EXPORT RemoteQueryService
   void close();
 
   ~RemoteQueryService() {}
-  virtual CqQueryPtr newCq(const char* querystr, const CqAttributesPtr& cqAttr,
-                           bool isDurable = false);
-  virtual CqQueryPtr newCq(const char* name, const char* querystr,
-                           const CqAttributesPtr& cqAttr,
-                           bool isDurable = false);
+  virtual std::shared_ptr<CqQuery> newCq(
+      const char* querystr, const std::shared_ptr<CqAttributes>& cqAttr,
+      bool isDurable = false);
+  virtual std::shared_ptr<CqQuery> newCq(
+      const char* name, const char* querystr,
+      const std::shared_ptr<CqAttributes>& cqAttr, bool isDurable = false);
   virtual void closeCqs();
   virtual QueryService::query_container_type getCqs();
-  virtual CqQueryPtr getCq(const char* name);
+  virtual std::shared_ptr<CqQuery> getCq(const char* name);
   virtual void executeCqs();
   virtual void stopCqs();
-  virtual CqServiceStatisticsPtr getCqServiceStatistics();
+  virtual std::shared_ptr<CqServiceStatistics> getCqServiceStatistics();
   void executeAllCqs(bool failover);
-  virtual CacheableArrayListPtr getAllDurableCqsFromServer();
+  virtual std::shared_ptr<CacheableArrayList> getAllDurableCqsFromServer();
   /**
    * execute all cqs on the endpoint after failover
    */
@@ -85,12 +86,11 @@ class CPPCACHE_EXPORT RemoteQueryService
   mutable ACE_RW_Thread_Mutex m_rwLock;
 
   ThinClientBaseDM* m_tccdm;
-  CqServicePtr m_cqService;
+  std::shared_ptr<CqService> m_cqService;
   CqPoolsConnected m_CqPoolsConnected;
   statistics::StatisticsFactory* m_statisticsFactory;
 };
 
-typedef std::shared_ptr<RemoteQueryService> RemoteQueryServicePtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

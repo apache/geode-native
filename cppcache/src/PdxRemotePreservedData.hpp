@@ -26,8 +26,6 @@
 namespace apache {
 namespace geode {
 namespace client {
-class PdxRemotePreservedData;
-typedef std::shared_ptr<PdxRemotePreservedData> PdxRemotePreservedDataPtr;
 
 class PdxRemotePreservedData : public PdxUnreadFields {
  private:
@@ -35,7 +33,7 @@ class PdxRemotePreservedData : public PdxUnreadFields {
   int32_t m_typeId;
   int32_t m_mergedTypeId;
   int32_t m_currentIndex;
-  SerializablePtr /*Object^*/ m_owner;
+  std::shared_ptr<Serializable> /*Object^*/ m_owner;
   long m_expiryTakId;
 
  public:
@@ -56,7 +54,7 @@ class PdxRemotePreservedData : public PdxUnreadFields {
   }
   PdxRemotePreservedData(int32_t typeId, int32_t mergedTypeId,
                          int32_t numberOfFields, /*Object^*/
-                         SerializablePtr owner) {
+                         std::shared_ptr<Serializable> owner) {
     m_typeId = typeId;
     m_mergedTypeId = mergedTypeId;
     m_currentIndex = 0;
@@ -66,7 +64,7 @@ class PdxRemotePreservedData : public PdxUnreadFields {
 
   void initialize(int32_t typeId, int32_t mergedTypeId,
                   int32_t numberOfFields, /*Object^*/
-                  SerializablePtr owner) {
+                  std::shared_ptr<Serializable> owner) {
     m_typeId = typeId;
     m_mergedTypeId = mergedTypeId;
     m_currentIndex = 0;
@@ -82,9 +80,9 @@ class PdxRemotePreservedData : public PdxUnreadFields {
 
   inline long getPreservedDataExpiryTaskId() { return m_expiryTakId; }
 
-  SerializablePtr getOwner() { return m_owner; }
+  std::shared_ptr<Serializable> getOwner() { return m_owner; }
 
-  void setOwner(SerializablePtr val) { m_owner = val; }
+  void setOwner(std::shared_ptr<Serializable> val) { m_owner = val; }
 
   inline std::vector<int8_t> getPreservedData(int32_t idx) {
     return m_preservedData[idx];
@@ -94,7 +92,7 @@ class PdxRemotePreservedData : public PdxUnreadFields {
     m_preservedData.push_back(inputVector);
   }
 
-  virtual bool equals(SerializablePtr otherObject) {
+  virtual bool equals(std::shared_ptr<Serializable> otherObject) {
     if (otherObject == nullptr) return false;
 
     if (m_owner == nullptr) return false;

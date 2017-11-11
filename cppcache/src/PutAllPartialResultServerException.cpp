@@ -22,7 +22,7 @@ namespace geode {
 namespace client {
 
 PutAllPartialResultServerException::PutAllPartialResultServerException(
-    PutAllPartialResultPtr result) {
+    std::shared_ptr<PutAllPartialResult> result) {
   LOGDEBUG("Partial keys are processed in putAll");
   m_result = result;
 }
@@ -34,25 +34,26 @@ PutAllPartialResultServerException::PutAllPartialResultServerException() {
 }
 
 void PutAllPartialResultServerException::consolidate(
-    PutAllPartialResultServerExceptionPtr pre) {
+    std::shared_ptr<PutAllPartialResultServerException> pre) {
   m_result->consolidate(pre->getResult());
 }
 
 void PutAllPartialResultServerException::consolidate(
-    PutAllPartialResultPtr otherResult) {
+    std::shared_ptr<PutAllPartialResult> otherResult) {
   m_result->consolidate(otherResult);
 }
 
-PutAllPartialResultPtr PutAllPartialResultServerException::getResult() {
+std::shared_ptr<PutAllPartialResult>
+PutAllPartialResultServerException::getResult() {
   return m_result;
 }
 
-VersionedCacheableObjectPartListPtr
+std::shared_ptr<VersionedCacheableObjectPartList>
 PutAllPartialResultServerException::getSucceededKeysAndVersions() {
   return m_result->getSucceededKeysAndVersions();
 }
 
-ExceptionPtr PutAllPartialResultServerException::getFailure() {
+std::shared_ptr<Exception> PutAllPartialResultServerException::getFailure() {
   return m_result->getFailure();
 }
 
@@ -60,11 +61,13 @@ bool PutAllPartialResultServerException::hasFailure() {
   return m_result->hasFailure();
 }
 
-CacheableKeyPtr PutAllPartialResultServerException::getFirstFailedKey() {
+std::shared_ptr<CacheableKey>
+PutAllPartialResultServerException::getFirstFailedKey() {
   return m_result->getFirstFailedKey();
 }
 
-CacheableStringPtr PutAllPartialResultServerException::getMessage() {
+std::shared_ptr<CacheableString>
+PutAllPartialResultServerException::getMessage() {
   return m_result->toString();
 }
 
@@ -96,7 +99,7 @@ int8_t PutAllPartialResultServerException::typeId() const {
 }
 
 PutAllPartialResultServerException::PutAllPartialResultServerException(
-    CacheableStringPtr msg)
+    std::shared_ptr<CacheableString> msg)
     : m_message(msg) {}
 
 }  // namespace client

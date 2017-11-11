@@ -23,8 +23,8 @@ namespace geode {
 namespace client {
 
 void LRUEntryFactory::newMapEntry(ExpiryTaskManager* expiryTaskManager,
-                                  const CacheableKeyPtr& key,
-                                  MapEntryImplPtr& result) const {
+                                  const std::shared_ptr<CacheableKey>& key,
+                                  std::shared_ptr<MapEntryImpl>& result) const {
   if (m_concurrencyChecksEnabled) {
     result = MapEntryT<VersionedLRUMapEntry, 0, 0>::create(key);
   } else {

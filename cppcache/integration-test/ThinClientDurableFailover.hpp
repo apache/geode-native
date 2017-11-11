@@ -58,8 +58,8 @@ class OperMonitor : public CacheListener {
   void check(const EntryEvent& event) {
     m_ops++;
 
-    CacheableKeyPtr key = event.getKey();
-    CacheableInt32Ptr value = nullptr;
+    std::shared_ptr<CacheableKey> key = event.getKey();
+    std::shared_ptr<CacheableInt32> value = nullptr;
     try {
       value = std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
     } catch (Exception&) {
@@ -132,16 +132,15 @@ class OperMonitor : public CacheListener {
   virtual void afterRegionInvalidate(const RegionEvent& event){};
   virtual void afterRegionDestroy(const RegionEvent& event){};
 };
-typedef std::shared_ptr<OperMonitor> OperMonitorPtr;
 
-void setCacheListener(const char* regName, OperMonitorPtr monitor) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheListener(const char* regName, std::shared_ptr<OperMonitor> monitor) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(monitor);
 }
 
-OperMonitorPtr mon1 = nullptr;
-OperMonitorPtr mon2 = nullptr;
+std::shared_ptr<OperMonitor> mon1 = nullptr;
+std::shared_ptr<OperMonitor> mon2 = nullptr;
 
 #include "ThinClientDurableInit.hpp"
 #include "ThinClientTasks_C2S2.hpp"
@@ -150,8 +149,9 @@ OperMonitorPtr mon2 = nullptr;
 const char* mixKeys[] = {"Key-1", "D-Key-1", "L-Key", "LD-Key"};
 const char* testRegex[] = {"D-Key-.*", "Key-.*"};
 
-void initClientCache(int redundancy, int durableTimeout, OperMonitorPtr& mon,
-                     int sleepDuration = 0, int durableIdx = 0) {
+void initClientCache(int redundancy, int durableTimeout,
+                     std::shared_ptr<OperMonitor>& mon, int sleepDuration = 0,
+                     int durableIdx = 0) {
   if (sleepDuration) SLEEP(sleepDuration);
 
   if (mon == nullptr) {
@@ -168,7 +168,7 @@ void initClientCache(int redundancy, int durableTimeout, OperMonitorPtr& mon,
 
   getHelper()->cachePtr->readyForEvents();
 
-  RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+  auto regPtr0 = getHelper()->getRegion(regionNames[0]);
 
   // for R =1 it will get a redundancy error
   try {

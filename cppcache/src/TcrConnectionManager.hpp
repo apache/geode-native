@@ -127,7 +127,7 @@ class CPPCACHE_EXPORT TcrConnectionManager {
     m_distMngrsLock.release();
   }
 
-  bool checkDupAndAdd(EventIdPtr eventid) {
+  bool checkDupAndAdd(std::shared_ptr<EventId> eventid) {
     return m_redundancyManager->checkDupAndAdd(eventid);
   }
 

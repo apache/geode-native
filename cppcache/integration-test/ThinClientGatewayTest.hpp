@@ -62,11 +62,9 @@ class MyListener : public CacheListener {
   int getNumEvents() { return m_events; }
 };
 
-typedef std::shared_ptr<MyListener> MyListenerPtr;
-
-void setCacheListener(const char* regName, TallyListenerPtr regListener) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheListener(const char* regName, std::shared_ptr<TallyListener> regListener) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(regListener);
 }
 
@@ -101,93 +99,91 @@ DUNIT_TASK_DEFINITION(SERVER2, StartServer2)
     LOG("SERVER started");
   }
 END_TASK_DEFINITION
+ std::shared_ptr<MyListener> reg1Listener1 = nullptr;
 
-MyListenerPtr reg1Listener1 = nullptr;
+ DUNIT_TASK_DEFINITION(SERVER2, SetupClient2)
+   {
+     // CacheHelper ch = getHelper();
+     reg1Listener1 = std::make_shared<MyListener>();
+     auto regPtr = createPooledRegion("exampleRegion", false, locHostPort2,
+                                      "poolName", true, reg1Listener1);
+     regPtr->registerAllKeys();
+   }
+ END_TASK_DEFINITION
 
-DUNIT_TASK_DEFINITION(SERVER2, SetupClient2)
-  {
-    // CacheHelper ch = getHelper();
-    reg1Listener1 = std::make_shared<MyListener>();
-    RegionPtr regPtr = createPooledRegion("exampleRegion", false, locHostPort2,
-                                          "poolName", true, reg1Listener1);
-    regPtr->registerAllKeys();
-  }
-END_TASK_DEFINITION
+ DUNIT_TASK_DEFINITION(SERVER1, SetupClient)
+   {
+     initClientWithPool(true, "poolName", locHostPort1, nullptr);
+     auto regPtr = createRegionAndAttachPool("exampleRegion", true, nullptr);
+     LOG(" region is created ");
+     for (int i = 0; i < 100; i++) {
+       LOG(" region is created put");
+       regPtr->put(i, i);
+     }
 
-DUNIT_TASK_DEFINITION(SERVER1, SetupClient)
-  {
-    initClientWithPool(true, "poolName", locHostPort1, nullptr);
-    RegionPtr regPtr =
-        createRegionAndAttachPool("exampleRegion", true, nullptr);
-    LOG(" region is created ");
-    for (int i = 0; i < 100; i++) {
-      LOG(" region is created put");
-      regPtr->put(i, i);
-    }
+     dunit::sleep(10000);
+   }
+ END_TASK_DEFINITION
 
-    dunit::sleep(10000);
-  }
-END_TASK_DEFINITION
+ DUNIT_TASK_DEFINITION(SERVER2, VerifyClient2Events)
+   {
+     LOGINFO(" nevents = %d got", reg1Listener1->getNumEvents());
+     ASSERT(reg1Listener1->getNumEvents() > 0,
+            "Events should be greater than zero");
+   }
+ END_TASK_DEFINITION
 
-DUNIT_TASK_DEFINITION(SERVER2, VerifyClient2Events)
-  {
-    LOGINFO(" nevents = %d got", reg1Listener1->getNumEvents());
-    ASSERT(reg1Listener1->getNumEvents() > 0,
-           "Events should be greater than zero");
-  }
-END_TASK_DEFINITION
+ DUNIT_TASK_DEFINITION(SERVER1, CloseCache1)
+   { cleanProc(); }
+ END_TASK_DEFINITION
 
-DUNIT_TASK_DEFINITION(SERVER1, CloseCache1)
-  { cleanProc(); }
-END_TASK_DEFINITION
+ DUNIT_TASK_DEFINITION(SERVER2, CloseCache2)
+   { cleanProc(); }
+ END_TASK_DEFINITION
 
-DUNIT_TASK_DEFINITION(SERVER2, CloseCache2)
-  { cleanProc(); }
-END_TASK_DEFINITION
+ DUNIT_TASK_DEFINITION(SERVER1, StopServer1)
+   {
+     CacheHelper::closeServer(1);
+     LOG("SERVER stopped");
+   }
+ END_TASK_DEFINITION
 
-DUNIT_TASK_DEFINITION(SERVER1, StopServer1)
-  {
-    CacheHelper::closeServer(1);
-    LOG("SERVER stopped");
-  }
-END_TASK_DEFINITION
+ DUNIT_TASK_DEFINITION(SERVER1, StopServer2)
+   {
+     CacheHelper::closeServer(2);
+     LOG("SERVER2stopped");
+   }
+ END_TASK_DEFINITION
 
-DUNIT_TASK_DEFINITION(SERVER1, StopServer2)
-  {
-    CacheHelper::closeServer(2);
-    LOG("SERVER2stopped");
-  }
-END_TASK_DEFINITION
+ DUNIT_TASK_DEFINITION(SERVER1, StopLocator1)
+   {
+     // stop locator
+     CacheHelper::closeLocator(1);
+     LOG("Locator1 stopped");
+   }
+ END_TASK_DEFINITION
 
-DUNIT_TASK_DEFINITION(SERVER1, StopLocator1)
-  {
-    // stop locator
-    CacheHelper::closeLocator(1);
-    LOG("Locator1 stopped");
-  }
-END_TASK_DEFINITION
+ DUNIT_TASK_DEFINITION(SERVER1, StopLocator2)
+   {
+     CacheHelper::closeLocator(1);
+     LOG("Locator2 stopped");
+   }
+ END_TASK_DEFINITION
 
-DUNIT_TASK_DEFINITION(SERVER1, StopLocator2)
-  {
-    CacheHelper::closeLocator(1);
-    LOG("Locator2 stopped");
-  }
-END_TASK_DEFINITION
-
-void runListenerInit(bool poolConfig = true, bool isLocator = true) {
-  CALL_TASK(StartLocator1);
-  CALL_TASK(StartLocator2);
-  CALL_TASK(StartServer1);
-  CALL_TASK(StartServer2);
-  CALL_TASK(SetupClient2);
-  CALL_TASK(SetupClient);
-  CALL_TASK(VerifyClient2Events);
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(StopServer1);
-  CALL_TASK(StopServer2);
-  CALL_TASK(StopLocator1);
-  CALL_TASK(StopLocator2);
+ void runListenerInit(bool poolConfig = true, bool isLocator = true) {
+   CALL_TASK(StartLocator1);
+   CALL_TASK(StartLocator2);
+   CALL_TASK(StartServer1);
+   CALL_TASK(StartServer2);
+   CALL_TASK(SetupClient2);
+   CALL_TASK(SetupClient);
+   CALL_TASK(VerifyClient2Events);
+   CALL_TASK(CloseCache1);
+   CALL_TASK(CloseCache2);
+   CALL_TASK(StopServer1);
+   CALL_TASK(StopServer2);
+   CALL_TASK(StopLocator1);
+   CALL_TASK(StopLocator2);
 }
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTGATEWAYTEST_H_

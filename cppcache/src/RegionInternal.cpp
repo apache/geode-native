@@ -37,21 +37,23 @@ const CacheEventFlags CacheEventFlags::CACHE_CLOSE(
 const CacheEventFlags CacheEventFlags::NOCACHEWRITER(
     CacheEventFlags::GF_NOCACHEWRITER);
 
-RegionInternal::RegionInternal(const CachePtr& cache,
-                               const RegionAttributesPtr& attributes)
+RegionInternal::RegionInternal(
+    const std::shared_ptr<Cache>& cache,
+    const std::shared_ptr<RegionAttributes>& attributes)
     : Region(cache), m_regionAttributes(attributes) {}
 
 RegionInternal::~RegionInternal() {}
 
-void RegionInternal::registerKeys(const VectorOfCacheableKey& keys,
-                                  bool isDurable, bool getInitialValues,
-                                  bool receiveValues) {
+void RegionInternal::registerKeys(
+    const std::vector<std::shared_ptr<CacheableKey>>& keys, bool isDurable,
+    bool getInitialValues, bool receiveValues) {
   throw UnsupportedOperationException(
       "registerKeys only supported by "
       "Thin Client Region.");
 }
 
-void RegionInternal::unregisterKeys(const VectorOfCacheableKey& keys) {
+void RegionInternal::unregisterKeys(
+    const std::vector<std::shared_ptr<CacheableKey>>& keys) {
   throw UnsupportedOperationException(
       "unregisterKeys only supported by "
       "Thin Client Region.");
@@ -80,8 +82,8 @@ void RegionInternal::unregisterRegex(const char* regex) {
       "unregisterRegex only supported by Thin Client Region.");
 }
 
-SelectResultsPtr RegionInternal::query(const char* predicate,
-                                       uint32_t timeout) {
+std::shared_ptr<SelectResults> RegionInternal::query(const char* predicate,
+                                                     uint32_t timeout) {
   throw UnsupportedOperationException(
       "query only supported by Thin Client Region.");
 }
@@ -91,19 +93,20 @@ bool RegionInternal::existsValue(const char* predicate, uint32_t timeout) {
       "existsValue only supported by Thin Client Region.");
 }
 
-SerializablePtr RegionInternal::selectValue(const char* predicate,
-                                            uint32_t timeout) {
+std::shared_ptr<Serializable> RegionInternal::selectValue(const char* predicate,
+                                                          uint32_t timeout) {
   throw UnsupportedOperationException(
       "selectValue only supported by Thin Client Region.");
 }
 
-TombstoneListPtr RegionInternal::getTombstoneList() {
+std::shared_ptr<TombstoneList> RegionInternal::getTombstoneList() {
   throw UnsupportedOperationException(
       "getTombstoneList only supported by LocalRegion.");
 }
 
-RegionEntryPtr RegionInternal::createRegionEntry(const CacheableKeyPtr& key,
-                                                 const CacheablePtr& value) {
+std::shared_ptr<RegionEntry> RegionInternal::createRegionEntry(
+    const std::shared_ptr<CacheableKey>& key,
+    const std::shared_ptr<Cacheable>& value) {
   return std::make_shared<RegionEntry>(shared_from_this(), key, value);
 }
 
@@ -165,7 +168,8 @@ void RegionInternal::setEntryIdleTimeout(int32_t duration) {
   }
 }
 
-void RegionInternal::setCacheListener(const CacheListenerPtr& aListener) {
+void RegionInternal::setCacheListener(
+    const std::shared_ptr<CacheListener>& aListener) {
   if (m_regionAttributes != nullptr) {
     m_regionAttributes->m_cacheListener = aListener;
   }
@@ -179,7 +183,7 @@ void RegionInternal::setCacheListener(const char* libpath,
 }
 
 void RegionInternal::setPartitionResolver(
-    const PartitionResolverPtr& aResolver) {
+    const std::shared_ptr<PartitionResolver>& aResolver) {
   if (m_regionAttributes != nullptr) {
     m_regionAttributes->m_partitionResolver = aResolver;
   }
@@ -192,7 +196,8 @@ void RegionInternal::setPartitionResolver(const char* libpath,
   }
 }
 
-void RegionInternal::setCacheLoader(const CacheLoaderPtr& aLoader) {
+void RegionInternal::setCacheLoader(
+    const std::shared_ptr<CacheLoader>& aLoader) {
   if (m_regionAttributes != nullptr) {
     m_regionAttributes->m_cacheLoader = aLoader;
   }
@@ -205,7 +210,8 @@ void RegionInternal::setCacheLoader(const char* libpath,
   }
 }
 
-void RegionInternal::setCacheWriter(const CacheWriterPtr& aWriter) {
+void RegionInternal::setCacheWriter(
+    const std::shared_ptr<CacheWriter>& aWriter) {
   if (m_regionAttributes != nullptr) {
     m_regionAttributes->m_cacheWriter = aWriter;
   }
@@ -231,24 +237,24 @@ void RegionInternal::setClientNotificationEnabled(
   }
 }
 
-void RegionInternal::txDestroy(const CacheableKeyPtr& key,
-                               const SerializablePtr& callBack,
-                               VersionTagPtr versionTag) {
+void RegionInternal::txDestroy(const std::shared_ptr<CacheableKey>& key,
+                               const std::shared_ptr<Serializable>& callBack,
+                               std::shared_ptr<VersionTag> versionTag) {
   throw UnsupportedOperationException(
       "txDestroy only supported by Thin Client Region.");
 }
 
-void RegionInternal::txInvalidate(const CacheableKeyPtr& key,
-                                  const SerializablePtr& callBack,
-                                  VersionTagPtr versionTag) {
+void RegionInternal::txInvalidate(const std::shared_ptr<CacheableKey>& key,
+                                  const std::shared_ptr<Serializable>& callBack,
+                                  std::shared_ptr<VersionTag> versionTag) {
   throw UnsupportedOperationException(
       "txInvalidate only supported by Thin Client Region.");
 }
 
-void RegionInternal::txPut(const CacheableKeyPtr& key,
-                           const CacheablePtr& value,
-                           const SerializablePtr& callBack,
-                           VersionTagPtr versionTag) {
+void RegionInternal::txPut(const std::shared_ptr<CacheableKey>& key,
+                           const std::shared_ptr<Cacheable>& value,
+                           const std::shared_ptr<Serializable>& callBack,
+                           std::shared_ptr<VersionTag> versionTag) {
   throw UnsupportedOperationException(
       "txPut only supported by Thin Client Region.");
 }

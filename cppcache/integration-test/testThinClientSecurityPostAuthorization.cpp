@@ -66,7 +66,7 @@ const char* locHostPort =
 const char* regionNamesAuth[] = {"DistRegionAck"};
 
 void initClientAuth(char userType, int clientNum = 1) {
-  PropertiesPtr config = Properties::create();
+  auto config = Properties::create();
   config->insert("security-client-auth-library", "securityImpl");
   config->insert("security-client-auth-factory",
                  "createUserPasswordAuthInitInstance");
@@ -123,7 +123,8 @@ const char* getServerSecurityParams() {
   return serverSecurityParams.c_str();
 }
 
-void getKeysVector(VectorOfCacheableKey& keysVec, int numKeys) {
+void getKeysVector(std::vector<std::shared_ptr<CacheableKey>>& keysVec,
+                   int numKeys) {
   for (int index = 0; index < numKeys; ++index) {
     keysVec.push_back(CacheableString::create(keys[index]));
   }
@@ -131,9 +132,9 @@ void getKeysVector(VectorOfCacheableKey& keysVec, int numKeys) {
 
 void checkValuesMap(HashMapOfCacheable& values, int clientNum, int numKeys) {
   int expectedNum = 0;
-  CacheableKeyPtr key;
-  CacheableStringPtr val;
-  CacheableStringPtr expectedVal;
+  std::shared_ptr<CacheableKey> key;
+  std::shared_ptr<CacheableString> val;
+  std::shared_ptr<CacheableString> expectedVal;
   for (int index = clientNum - 1; index < numKeys; index += clientNum) {
     ++expectedNum;
     key = CacheableString::create(keys[index]);
@@ -151,7 +152,7 @@ void checkValuesMap(HashMapOfCacheable& values, int clientNum, int numKeys) {
 void checkExceptionsMap(HashMapOfException& exceptions, int clientNum,
                         int numKeys) {
   int expectedNum = 0;
-  CacheableKeyPtr key;
+  std::shared_ptr<CacheableKey> key;
   for (int index = 0; index < numKeys; ++index) {
     if ((index + 1) % clientNum != 0) {
       ++expectedNum;
@@ -209,21 +210,21 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       verifyDestroyed(regionNamesAuth[0], keys[0]);
       destroyRegion(regionNamesAuth[0]);
 
-      CacheableKeyPtr key0 = CacheableKey::create(keys[0]);
-      CacheableStringPtr val0 = CacheableString::create(vals[0]);
-      CacheableKeyPtr key2 = CacheableKey::create(keys[2]);
-      CacheableStringPtr val2 = CacheableString::create(nvals[2]);
+      std::shared_ptr<CacheableKey> key0 = CacheableKey::create(keys[0]);
+      std::shared_ptr<CacheableString> val0 = CacheableString::create(vals[0]);
+      std::shared_ptr<CacheableKey> key2 = CacheableKey::create(keys[2]);
+      std::shared_ptr<CacheableString> val2 = CacheableString::create(nvals[2]);
 
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
       createEntry(regionNamesAuth[0], keys[0], vals[0]);
       createEntry(regionNamesAuth[0], keys[2], nvals[2]);
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
+      auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
       if (regPtr0 != nullptr) {
         regPtr0->registerAllKeys();
         regPtr0->unregisterAllKeys();
       }
 
-      VectorOfCacheableKey keysVec;
+      std::vector<std::shared_ptr<CacheableKey>> keysVec;
       keysVec.push_back(key0);
       keysVec.push_back(key2);
       auto values = regPtr0->getAll(keysVec);
@@ -259,8 +260,8 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
 
     try {
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
-      CacheableKeyPtr keyPtr = CacheableKey::create(keys[0]);
+      auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
+      std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(keys[0]);
       auto checkPtr =
           std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
       FAIL("Should get NotAuthorizedException");
@@ -285,9 +286,9 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
     initClientAuth('R', 2);
     createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
 
-    VectorOfCacheableKey keys;
+    std::vector<std::shared_ptr<CacheableKey>> keys;
     getKeysVector(keys, 6);
-    RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
+    auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
     auto values = rptr->getAll(keys);
 
     checkValuesMap(values, 2, 6);
@@ -301,9 +302,9 @@ DUNIT_TASK_DEFINITION(READER2_CLIENT, StepFour)
     initClientAuth('R', 3);
     createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
 
-    VectorOfCacheableKey keys;
+    std::vector<std::shared_ptr<CacheableKey>> keys;
     getKeysVector(keys, 6);
-    RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
+    auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
     auto values = rptr->getAll(keys);
 
     checkValuesMap(values, 3, 6);

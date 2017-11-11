@@ -87,10 +87,10 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   LOG(buf);
   free(buf);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
-  CacheableKeyPtr keyPtr = createKey(key);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
 
   if (noKey == false) {  // need to find the key!
     ASSERT(regPtr->containsKey(keyPtr), "Key not found in region.");
@@ -178,8 +178,8 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   // ack, caching
-  RegionPtr regPtr = getHelper()->createRegion(
-      name, ackMode, true, nullptr, endpoints, clientNotificationEnabled);
+  auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
+                                          endpoints, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
@@ -190,7 +190,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("createRegion_Pool() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr =
+  auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -202,10 +202,10 @@ void createEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Create entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
+  std::shared_ptr<CacheableString> valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
@@ -227,10 +227,10 @@ void updateEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Update entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
+  std::shared_ptr<CacheableString> valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
@@ -252,9 +252,9 @@ void doNetsearch(const char* name, const char* key, const char* value) {
       key, value, name);
   fflush(stdout);
   // Get entry created in Process A, verify entry is correct
-  CacheableKeyPtr keyPtr = CacheableKey::create(key);
+  std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(key);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
@@ -288,9 +288,9 @@ void invalidateEntry(const char* name, const char* key) {
   fprintf(stdout, "Invalidating entry -- key: %s  in region %s\n", key, name);
   fflush(stdout);
   // Invalidate entry, verify entry is invalidated
-  CacheableKeyPtr keyPtr = CacheableKey::create(key);
+  std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(key);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
@@ -309,9 +309,9 @@ void destroyEntry(const char* name, const char* key) {
   fprintf(stdout, "Destroying entry -- key: %s  in region %s\n", key, name);
   fflush(stdout);
   // Destroy entry, verify entry is destroyed
-  CacheableKeyPtr keyPtr = CacheableKey::create(key);
+  std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(key);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
@@ -325,7 +325,7 @@ void destroyEntry(const char* name, const char* key) {
 
 void destroyRegion(const char* name) {
   LOG("destroyRegion() entered.");
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   regPtr->destroyRegion();
   LOG("Region destroyed.");
 }
@@ -357,7 +357,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_Locator)
                        true);
     createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TEST_POOL1__",
                        true);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->registerAllKeys(false, false, false);
     regPtr = getHelper()->getRegion(regionNames[1]);
     regPtr->registerAllKeys(false, false, false);
@@ -375,7 +375,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_Locator)
                        true);
     createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TEST_POOL1__",
                        true);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->registerAllKeys(false, false, false);
     regPtr = getHelper()->getRegion(regionNames[1]);
     regPtr->registerAllKeys(false, false, false);
@@ -420,8 +420,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
-    RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
-    RegionPtr reg1 = getHelper()->getRegion(regionNames[1]);
+    auto reg0 = getHelper()->getRegion(regionNames[0]);
+    auto reg1 = getHelper()->getRegion(regionNames[1]);
     auto vec0 = reg0->serverKeys();
     auto vec1 = reg1->serverKeys();
     ASSERT(vec0.size() == 3, "Should have 3 keys in first region.");

@@ -41,10 +41,10 @@
 // Use the "geode" namespace.
 using namespace apache::geode::client;
 
-void distributedsystem(CachePtr cachePtr, char *hostname, int port,
-                       char *poolName, char *regionName) {
+void distributedsystem(std::shared_ptr<Cache> cachePtr, char *hostname,
+                       int port, char *poolName, char *regionName) {
   // create pool factory to create the pool.
-  PoolFactoryPtr poolFacPtr = cachePtr->getPoolManager().createFactory();
+  auto poolFacPtr = cachePtr->getPoolManager().createFactory();
 
   // adding host(endpoint) in pool
   poolFacPtr->addServer(hostname, port);
@@ -55,7 +55,7 @@ void distributedsystem(CachePtr cachePtr, char *hostname, int port,
   // creating pool with name "examplePool"
   poolFacPtr->create(poolName, *cachePtr.get());
 
-  RegionFactoryPtr regionFactory = cachePtr->createRegionFactory(CACHING_PROXY);
+  auto regionFactory = cachePtr->createRegionFactory(CACHING_PROXY);
 
   LOGINFO("Created the RegionFactory");
 
@@ -63,7 +63,7 @@ void distributedsystem(CachePtr cachePtr, char *hostname, int port,
   regionFactory->setPoolName(poolName);
 
   // creating first root region
-  RegionPtr regionPtr = regionFactory->create(regionName);
+  auto regionPtr = regionFactory->create(regionName);
 
   LOGINFO("Created Region.");
 
@@ -74,18 +74,18 @@ void distributedsystem(CachePtr cachePtr, char *hostname, int port,
   LOGINFO("Put the first Entry into the Region");
 
   // Put an Entry into the Region by manually creating a Key and a Value pair.
-  CacheableKeyPtr keyPtr = CacheableInt32::create(123);
-  CacheablePtr valuePtr = CacheableString::create("123");
+  std::shared_ptr<CacheableKey> keyPtr = CacheableInt32::create(123);
+  std::shared_ptr<Cacheable> valuePtr = CacheableString::create("123");
   regionPtr->put(keyPtr, valuePtr);
 
   LOGINFO("Put the second Entry into the Region");
 
   // Get Entries back out of the Region.
-  CacheablePtr result1Ptr = regionPtr->get("Key1");
+  std::shared_ptr<Cacheable> result1Ptr = regionPtr->get("Key1");
 
   LOGINFO("Obtained the first Entry from the Region");
 
-  CacheablePtr result2Ptr = regionPtr->get(keyPtr);
+  std::shared_ptr<Cacheable> result2Ptr = regionPtr->get(keyPtr);
 
   LOGINFO("Obtained the second Entry from the Region");
 
@@ -103,12 +103,12 @@ void distributedsystem(CachePtr cachePtr, char *hostname, int port,
 // The DistributedSystem QuickStart example.
 int main(int argc, char **argv) {
   try {
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
+    auto cacheFactory = CacheFactory::createCacheFactory();
 
     LOGINFO("Connected to the Geode Distributed System");
 
     // Create a Geode Cache.
-    CachePtr cachePtr = cacheFactory->create();
+    auto cachePtr = cacheFactory->create();
 
     LOGINFO("Created the Geode Cache");
 

@@ -23,9 +23,9 @@
 using namespace apache::geode::client;
 
 TEST(StructSetTest, Basic) {
-  CacheableVectorPtr values = CacheableVector::create();
-  std::vector<CacheableStringPtr> fieldNames;
-  
+  std::shared_ptr<CacheableVector> values = CacheableVector::create();
+  std::vector<std::shared_ptr<CacheableString>> fieldNames;
+
   size_t numOfFields = 10;
   
   for (size_t i = 0; i < numOfFields; i++) {
@@ -43,9 +43,9 @@ TEST(StructSetTest, Basic) {
 }
 
 TEST(StructSetTest, MissingFieldIndex) {
-  CacheableVectorPtr values = CacheableVector::create();
-  std::vector<CacheableStringPtr> fieldNames;
-  
+  std::shared_ptr<CacheableVector> values = CacheableVector::create();
+  std::vector<std::shared_ptr<CacheableString>> fieldNames;
+
   size_t numOfFields = 10;
   
   for (size_t i = 0; i < numOfFields; i++) {
@@ -63,9 +63,9 @@ TEST(StructSetTest, MissingFieldIndex) {
 }
 
 TEST(StructSetTest, MissingFieldName) {
-  CacheableVectorPtr values = CacheableVector::create();
-  std::vector<CacheableStringPtr> fieldNames;
-  
+  std::shared_ptr<CacheableVector> values = CacheableVector::create();
+  std::vector<std::shared_ptr<CacheableString>> fieldNames;
+
   size_t numOfFields = 10;
   
   for (size_t i = 0; i < numOfFields; i++) {

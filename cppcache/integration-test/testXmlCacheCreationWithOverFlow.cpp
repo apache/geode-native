@@ -17,8 +17,8 @@
 
 #define ROOT_NAME "testXmlCacheCreationWithOverFlow"
 
-#include <geode/GeodeCppCache.hpp>
-
+#include <geode/CacheFactory.hpp>
+#include <geode/Region.hpp>
 #include <string>
 #include <iostream>
 
@@ -28,8 +28,8 @@ using namespace apache::geode::client;
 
 int testXmlCacheCreationWithOverflow() {
   char* host_name = (char*)"XML_CACHE_CREATION_TEST";
-  CacheFactoryPtr cacheFactory;
-  CachePtr cptr;
+  std::shared_ptr<CacheFactory> cacheFactory;
+  std::shared_ptr<Cache> cptr;
   const uint32_t totalSubRegionsRoot1 = 2;
   const uint32_t totalRootRegions = 2;
 
@@ -97,13 +97,13 @@ int testXmlCacheCreationWithOverflow() {
     std::cout << "vc[" << i << "].m_reaPtr=" << vrp.at(i).get() << std::endl;
     std::cout << "vc[" << i << "]=" << vrp.at(i)->getName() << std::endl;
   }
-  RegionPtr regPtr1 = vrp.at(0);
+  auto regPtr1 = vrp.at(0);
 
   uint32_t i ATTR_UNUSED = 0;
   std::cout << "Test if the number of sub regions with the root region Root1 are "
           "correct"
        << std::endl;
-  VectorOfRegion vr = regPtr1->subregions(true);
+  auto vr = regPtr1->subregions(true);
   std::cout << "  vr.size=" << vr.size() << std::endl;
   if (vr.size() != totalSubRegionsRoot1) {
     std::cout << "Number of Subregions does not match" << std::endl;
@@ -120,13 +120,13 @@ int testXmlCacheCreationWithOverflow() {
   std::cout << "Test if the nesting of regions is correct" << std::endl;
   const char* parentName;
   const char* childName;
-  RegionPtr regPtr2 = vrp.at(1);
-  VectorOfRegion vsr = regPtr2->subregions(true);
+  auto regPtr2 = vrp.at(1);
+  auto vsr = regPtr2->subregions(true);
   for (uint32_t i = 0; i < static_cast<uint32_t>(vsr.size()); i++) {
     Region* regPtr = vsr.at(i).get();
     childName = regPtr->getName();
 
-    RegionPtr x = regPtr->getParentRegion();
+    auto x = regPtr->getParentRegion();
     parentName = (x.get())->getName();
     if (strcmp(childName, "SubSubRegion221") == 0) {
       if (strcmp(parentName, "SubRegion22") != 0) {
@@ -143,7 +143,7 @@ int testXmlCacheCreationWithOverflow() {
 
   std::cout << "Test the attributes of region" << std::endl;
 
-  RegionAttributesPtr raPtr = regPtr1->getAttributes();
+  auto raPtr = regPtr1->getAttributes();
   RegionAttributes* regAttr = raPtr.get();
   std::cout << "Attributes of root region Root1 are : " << std::endl;
 
@@ -191,7 +191,7 @@ int testXmlCacheCreationWithOverflow() {
   printf(" persistence function1 = %s\n", libFun);
   std::cout << "persistence library = " << regAttr->getPersistenceLibrary() << std::endl;
   std::cout << "persistence function = " << regAttr->getPersistenceFactory() << std::endl;
-  PropertiesPtr pconfig = regAttr->getPersistenceProperties();
+  auto pconfig = regAttr->getPersistenceProperties();
   if (pconfig != nullptr) {
     std::cout << " persistence property is not null" << std::endl;
     std::cout << " persistencedir = "
@@ -202,14 +202,14 @@ int testXmlCacheCreationWithOverflow() {
   }
   std::cout << "****Attributes of Root1 are correctly set****" << std::endl;
 
-  RegionAttributesPtr raPtr2 = regPtr2->getAttributes();
+  auto raPtr2 = regPtr2->getAttributes();
   const char* lib2 = raPtr2->getPersistenceLibrary();
   const char* libFun2 = raPtr2->getPersistenceFactory();
   printf(" persistence library2 = %s\n", lib2);
   printf(" persistence function2 = %s\n", libFun2);
   std::cout << "persistence library = " << raPtr2->getPersistenceLibrary() << std::endl;
   std::cout << "persistence function = " << raPtr2->getPersistenceFactory() << std::endl;
-  PropertiesPtr pconfig2 = raPtr2->getPersistenceProperties();
+  auto pconfig2 = raPtr2->getPersistenceProperties();
   if (pconfig2 != nullptr) {
     std::cout << " persistence property is not null for Root2" << std::endl;
     std::cout << " persistencedir2 = "

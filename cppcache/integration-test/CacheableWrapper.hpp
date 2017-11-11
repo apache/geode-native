@@ -29,13 +29,15 @@ using namespace apache::geode::client;
 
 class CacheableWrapper {
  protected:
-  CacheablePtr m_cacheableObject;
+  std::shared_ptr<Cacheable> m_cacheableObject;
 
  public:
-  CacheableWrapper(const CacheablePtr cacheableObject)
+  CacheableWrapper(const std::shared_ptr<Cacheable> cacheableObject)
       : m_cacheableObject(cacheableObject) {}
 
-  virtual CacheablePtr getCacheable() const { return m_cacheableObject; }
+  virtual std::shared_ptr<Cacheable> getCacheable() const {
+    return m_cacheableObject;
+  }
 
   virtual int maxKeys() const {
     throw IllegalArgumentException("Cannot call maxKeys.");
@@ -47,7 +49,8 @@ class CacheableWrapper {
 
   virtual void initRandomValue(int maxSize) = 0;
 
-  virtual uint32_t getCheckSum(const CacheablePtr object) const = 0;
+  virtual uint32_t getCheckSum(
+      const std::shared_ptr<Cacheable> object) const = 0;
 
   uint32_t getCheckSum() const { return getCheckSum(m_cacheableObject); }
 

@@ -80,10 +80,10 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   LOG(buf);
   free(buf);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
-  CacheableKeyPtr keyPtr = createKey(key);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
 
   LOG("Before contains key");
   // if the region is no ack, then we may need to wait...
@@ -176,7 +176,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("createRegion_Pool() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr =
+  auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -189,10 +189,10 @@ void createEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Create entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
+  std::shared_ptr<CacheableString> valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
@@ -214,10 +214,10 @@ void updateEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Update entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
+  std::shared_ptr<CacheableString> valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
@@ -239,9 +239,9 @@ void doNetsearch(const char* name, const char* key, const char* value) {
       key, value, name);
   fflush(stdout);
   // Get entry created in Process A, verify entry is correct
-  CacheableKeyPtr keyPtr = CacheableKey::create(key);
+  std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(key);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
@@ -253,7 +253,7 @@ void doNetsearch(const char* name, const char* key, const char* value) {
   ASSERT(!regPtr->containsValueForKey(keyPtr),
          "Value should not have been found in region.");
 
-  CacheablePtr theValue = regPtr->get(keyPtr);
+  std::shared_ptr<Cacheable> theValue = regPtr->get(keyPtr);
   auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
       theValue);  // force a netsearch
 
@@ -275,9 +275,9 @@ void invalidateEntry(const char* name, const char* key) {
   fprintf(stdout, "Invalidating entry -- key: %s  in region %s\n", key, name);
   fflush(stdout);
   // Invalidate entry, verify entry is invalidated
-  CacheableKeyPtr keyPtr = CacheableKey::create(key);
+  std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(key);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
@@ -296,9 +296,9 @@ void destroyEntry(const char* name, const char* key) {
   fprintf(stdout, "Destroying entry -- key: %s  in region %s\n", key, name);
   fflush(stdout);
   // Destroy entry, verify entry is destroyed
-  CacheableKeyPtr keyPtr = CacheableKey::create(key);
+  std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(key);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
@@ -312,7 +312,7 @@ void destroyEntry(const char* name, const char* key) {
 
 void destroyRegion(const char* name) {
   LOG("destroyRegion() entered.");
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   regPtr->localDestroyRegion();
   LOG("Region destroyed.");
 }
@@ -340,7 +340,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateRegions1_PoolLocators)
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TESTPOOL1_",
                        true);
     createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TESTPOOL1_", true);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->registerAllKeys(false, false, false);
     regPtr = getHelper()->getRegion(regionNames[1]);
     regPtr->registerAllKeys(false, false, false);
@@ -353,7 +353,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateRegions2_PoolLocators)
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TESTPOOL1_",
                        true);
     createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TESTPOOL1_", true);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->registerAllKeys(false, false, false);
     regPtr = getHelper()->getRegion(regionNames[1]);
     regPtr->registerAllKeys(false, false, false);

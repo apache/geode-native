@@ -35,7 +35,7 @@ uint32_t numOfEnt;
 std::string sqlite_dir = "SqLiteRegionData";
 
 // Return the number of keys and values in entries map.
-void getNumOfEntries(RegionPtr& regionPtr, uint32_t num) {
+void getNumOfEntries(std::shared_ptr<Region>& regionPtr, uint32_t num) {
   auto v = regionPtr->keys();
   auto vecValues = regionPtr->values();
   printf("Values vector size is %zd\n", vecValues.size());
@@ -43,14 +43,14 @@ void getNumOfEntries(RegionPtr& regionPtr, uint32_t num) {
   ASSERT(vecValues.size() == num, (char*)"size of value vec and num not equal");
 }
 
-void setAttributes(RegionAttributesPtr& attrsPtr,
+void setAttributes(std::shared_ptr<RegionAttributes>& attrsPtr,
                    std::string pDir = sqlite_dir) {
   AttributesFactory attrsFact;
   attrsFact.setCachingEnabled(true);
   attrsFact.setLruEntriesLimit(10);
   attrsFact.setInitialCapacity(1000);
   attrsFact.setDiskPolicy(DiskPolicyType::OVERFLOWS);
-  PropertiesPtr sqliteProperties = Properties::create();
+  auto sqliteProperties = Properties::create();
   sqliteProperties->insert("MaxPageCount", "1073741823");
   sqliteProperties->insert("PageSize", "65536");
   sqliteProperties->insert("PersistenceDirectory", pDir.c_str());
@@ -59,13 +59,13 @@ void setAttributes(RegionAttributesPtr& attrsPtr,
 
   attrsPtr = attrsFact.createRegionAttributes();
 }
-void setAttributesWithMirror(RegionAttributesPtr& attrsPtr) {
+void setAttributesWithMirror(std::shared_ptr<RegionAttributes>& attrsPtr) {
   AttributesFactory attrsFact;
   attrsFact.setCachingEnabled(true);
   attrsFact.setLruEntriesLimit(20);
   attrsFact.setInitialCapacity(1000);
   attrsFact.setDiskPolicy(DiskPolicyType::OVERFLOWS);
-  PropertiesPtr sqliteProperties = Properties::create();
+  auto sqliteProperties = Properties::create();
   sqliteProperties->insert("MaxPageCount", "1073741823");
   sqliteProperties->insert("PageSize", "65536");
   sqliteProperties->insert("PersistenceDirectory", sqlite_dir.c_str());
@@ -75,8 +75,8 @@ void setAttributesWithMirror(RegionAttributesPtr& attrsPtr) {
 }
 
 // Testing for attibute validation.
-void validateAttribute(RegionPtr& regionPtr) {
-  RegionAttributesPtr regAttr = regionPtr->getAttributes();
+void validateAttribute(std::shared_ptr<Region>& regionPtr) {
+  auto regAttr = regionPtr->getAttributes();
   int initialCapacity = regAttr->getInitialCapacity();
   ASSERT(initialCapacity == 1000, "Expected initial capacity to be 1000");
   const DiskPolicyType::PolicyType type = regAttr->getDiskPolicy();
@@ -84,15 +84,16 @@ void validateAttribute(RegionPtr& regionPtr) {
          "Expected Action should overflow to disk");
 }
 
-void checkOverflowTokenValues(RegionPtr& regionPtr, uint32_t num) {
-  VectorOfCacheableKey v = regionPtr->keys();
-  CacheableKeyPtr keyPtr;
-  CacheablePtr valuePtr;
+void checkOverflowTokenValues(std::shared_ptr<Region>& regionPtr,
+                              uint32_t num) {
+  auto v = regionPtr->keys();
+  std::shared_ptr<CacheableKey> keyPtr;
+  std::shared_ptr<Cacheable> valuePtr;
   int count = 0;
   int nonoverflowCount = 0;
   for (uint32_t i = 0; i < num; i++) {
     keyPtr = v.at(i);
-    RegionEntryPtr rPtr = regionPtr->getEntry(keyPtr);
+    auto rPtr = regionPtr->getEntry(keyPtr);
     valuePtr = rPtr->getValue();
     if (CacheableToken::isOverflowed(valuePtr) == true) {
       count++;
@@ -107,10 +108,10 @@ void checkOverflowTokenValues(RegionPtr& regionPtr, uint32_t num) {
          "Non overflowed entries should match key size");
 }
 
-void checkOverflowToken(RegionPtr& regionPtr, uint32_t lruLimit) {
-  VectorOfCacheableKey v = regionPtr->keys();
-  CacheableKeyPtr keyPtr;
-  CacheablePtr valuePtr;
+void checkOverflowToken(std::shared_ptr<Region>& regionPtr, uint32_t lruLimit) {
+  std::vector<std::shared_ptr<CacheableKey>> v = regionPtr->keys();
+  std::shared_ptr<CacheableKey> keyPtr;
+  std::shared_ptr<Cacheable> valuePtr;
   int normalCount = 0;
   int overflowCount = 0;
   int invalidCount = 0;
@@ -118,7 +119,7 @@ void checkOverflowToken(RegionPtr& regionPtr, uint32_t lruLimit) {
   int tombstoneCount = 0;
   for (uint32_t i = 0; i < static_cast<uint32_t>(v.size()); i++) {
     keyPtr = v.at(i);
-    RegionEntryPtr rPtr = regionPtr->getEntry(keyPtr);
+    auto rPtr = regionPtr->getEntry(keyPtr);
     valuePtr = rPtr->getValue();
     if (CacheableToken::isOverflowed(valuePtr) == true) {
       overflowCount++;
@@ -145,28 +146,29 @@ void checkOverflowToken(RegionPtr& regionPtr, uint32_t lruLimit) {
 }
 
 // Testing for put operation
-void doNput(RegionPtr& regionPtr, uint32_t num, uint32_t start = 0) {
+void doNput(std::shared_ptr<Region>& regionPtr, uint32_t num,
+            uint32_t start = 0) {
   char keybuf[100];
   // Put 1 KB of data locally for each entry
   char* text = new char[1024];
   memset(text, 'A', 1023);
   text[1023] = '\0';
-  CacheableStringPtr valuePtr = CacheableString::create(text);
+  std::shared_ptr<CacheableString> valuePtr = CacheableString::create(text);
 
   for (uint32_t i = start; i < num; i++) {
     sprintf(keybuf, "key-%d", i);
-    CacheableKeyPtr key = CacheableKey::create(keybuf);
+    std::shared_ptr<CacheableKey> key = CacheableKey::create(keybuf);
     printf("Putting key = %s\n", keybuf);
     regionPtr->put(key, valuePtr);
   }
 }
 
-void doNputLargeData(RegionPtr& regionPtr, int num) {
+void doNputLargeData(std::shared_ptr<Region>& regionPtr, int num) {
   // Put 1 MB of data locally for each entry
   char* text = new char[1024 * 1024 /* 1 MB */];
   memset(text, 'A', 1024 * 1024 - 1);
   text[1024 * 1024 - 1] = '\0';
-  CacheableStringPtr valuePtr = CacheableString::create(text);
+  std::shared_ptr<CacheableString> valuePtr = CacheableString::create(text);
   for (int item = 0; item < num; item++) {
     regionPtr->put(CacheableKey::create(item), valuePtr);
   }
@@ -175,7 +177,7 @@ void doNputLargeData(RegionPtr& regionPtr, int num) {
 }
 
 // Testing for get operation
-uint32_t doNgetLargeData(RegionPtr& regionPtr, int num) {
+uint32_t doNgetLargeData(std::shared_ptr<Region>& regionPtr, int num) {
   uint32_t countFound = 0;
   uint32_t countNotFound = 0;
 
@@ -194,7 +196,8 @@ uint32_t doNgetLargeData(RegionPtr& regionPtr, int num) {
 }
 
 // Testing for get operation
-uint32_t doNget(RegionPtr& regionPtr, uint32_t num, uint32_t start = 0) {
+uint32_t doNget(std::shared_ptr<Region>& regionPtr, uint32_t num,
+                uint32_t start = 0) {
   uint32_t countFound = 0;
   uint32_t countNotFound = 0;
 
@@ -221,10 +224,10 @@ uint32_t doNget(RegionPtr& regionPtr, uint32_t num, uint32_t start = 0) {
 /**
  *  Test the entry operation ( local invalidate, localDestroy ).
  */
-void testEntryDestroy(RegionPtr& regionPtr, uint32_t num) {
-  VectorOfCacheableKey v = regionPtr->keys();
-  VectorOfCacheable vecValues;
-  CacheablePtr valuePtr;
+void testEntryDestroy(std::shared_ptr<Region>& regionPtr, uint32_t num) {
+  auto v = regionPtr->keys();
+  std::vector<std::shared_ptr<Cacheable>> vecValues;
+  std::shared_ptr<Cacheable> valuePtr;
   for (uint32_t i = 45; i < 50; i++) {
     try {
       std::cout << "try to destroy key" << i << std::endl;
@@ -238,10 +241,10 @@ void testEntryDestroy(RegionPtr& regionPtr, uint32_t num) {
   ASSERT(v.size() == num - 5, (char*)"size of key vec not equal");
 }
 
-void testEntryInvalidate(RegionPtr& regionPtr, uint32_t num) {
-  VectorOfCacheableKey v = regionPtr->keys();
-  VectorOfCacheable vecValues;
-  CacheablePtr valuePtr;
+void testEntryInvalidate(std::shared_ptr<Region>& regionPtr, uint32_t num) {
+  auto v = regionPtr->keys();
+  std::vector<std::shared_ptr<Cacheable>> vecValues;
+  std::shared_ptr<Cacheable> valuePtr;
   for (uint32_t i = 40; i < 45; i++) {
     try {
       std::cout << "try to invalidate key" << i << std::endl;
@@ -257,12 +260,12 @@ void testEntryInvalidate(RegionPtr& regionPtr, uint32_t num) {
 
 class PutThread : public ACE_Task_Base {
  private:
-  RegionPtr m_regPtr;
+  std::shared_ptr<Region> m_regPtr;
   int m_min;
   int m_max;
 
  public:
-  PutThread(RegionPtr& regPtr, int min, int max)
+  PutThread(std::shared_ptr<Region>& regPtr, int min, int max)
       : m_regPtr(regPtr), m_min(min), m_max(max) {}
 
   int svc(void) {
@@ -279,8 +282,8 @@ class PutThread : public ACE_Task_Base {
   void stop() { wait(); }
 };
 
-void verifyGetAll(RegionPtr region, int startIndex) {
-  VectorOfCacheableKey keysVector;
+void verifyGetAll(std::shared_ptr<Region> region, int startIndex) {
+  std::vector<std::shared_ptr<CacheableKey>> keysVector;
   for (int i = 0; i <= 100; i++) keysVector.push_back(CacheableKey::create(i));
 
   // keysVector.push_back(CacheableKey::create(101)); //key not there
@@ -289,7 +292,7 @@ void verifyGetAll(RegionPtr region, int startIndex) {
     int i = startIndex;
     for (const auto& iter : valuesMap) {
       auto key = std::dynamic_pointer_cast<CacheableKey>(iter.first);
-      CacheablePtr mVal = iter.second;
+      std::shared_ptr<Cacheable> mVal = iter.second;
       if (mVal != nullptr) {
         int val = atoi(mVal->toString()->asChar());
         ASSERT(val == i, "value not matched");
@@ -298,8 +301,9 @@ void verifyGetAll(RegionPtr region, int startIndex) {
   }
 }
 
-void createRegion(RegionPtr& regionPtr, const char* regionName,
-                  PropertiesPtr& cacheProps, PropertiesPtr& sqLiteProps) {
+void createRegion(std::shared_ptr<Region>& regionPtr, const char* regionName,
+                  std::shared_ptr<Properties>& cacheProps,
+                  std::shared_ptr<Properties>& sqLiteProps) {
   auto cacheFactoryPtr = CacheFactory::createCacheFactory(cacheProps);
   auto cachePtr = CacheFactory::createCacheFactory()->create();
   ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
@@ -314,7 +318,7 @@ void createRegion(RegionPtr& regionPtr, const char* regionName,
   ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
 }
 
-void setSqLiteProperties(PropertiesPtr& sqliteProperties,
+void setSqLiteProperties(std::shared_ptr<Properties>& sqliteProperties,
                          int maxPageCount = 1073741823, int pageSize = 65536,
                          std::string pDir = sqlite_dir) {
   sqliteProperties = Properties::create();
@@ -326,9 +330,10 @@ void setSqLiteProperties(PropertiesPtr& sqliteProperties,
 }
 // creation of subregion.
 
-void createSubRegion(RegionPtr& regionPtr, RegionPtr& subRegion,
-                     const char* regionName, std::string pDir = sqlite_dir) {
-  RegionAttributesPtr regionAttributesPtr;
+void createSubRegion(std::shared_ptr<Region>& regionPtr,
+                     std::shared_ptr<Region>& subRegion, const char* regionName,
+                     std::string pDir = sqlite_dir) {
+  std::shared_ptr<RegionAttributes> regionAttributesPtr;
   setAttributes(regionAttributesPtr, pDir);
   subRegion = regionPtr->createSubregion(regionName, regionAttributesPtr);
   ASSERT(subRegion != nullptr, "Expected region to be NON-nullptr");
@@ -344,10 +349,10 @@ void createSubRegion(RegionPtr& regionPtr, RegionPtr& subRegion,
 BEGIN_TEST(OverFlowTest)
   {
     /** Creating a cache to manage regions. */
-    PropertiesPtr sqliteProperties;
-    PropertiesPtr cacheProperties = Properties::create();
+    std::shared_ptr<Properties> sqliteProperties;
+    auto cacheProperties = Properties::create();
     setSqLiteProperties(sqliteProperties);
-    RegionPtr regionPtr;
+    std::shared_ptr<Region> regionPtr;
     createRegion(regionPtr, "OverFlowRegion", cacheProperties,
                  sqliteProperties);
     ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
@@ -375,7 +380,7 @@ BEGIN_TEST(OverFlowTest)
     /** test to verify same region repeatedly to ensure that the persistece
     files are created and destroyed correctly */
 
-    RegionPtr subRegion;
+    std::shared_ptr<Region> subRegion;
     for (int i = 0; i < 10; i++) {
       createSubRegion(regionPtr, subRegion, "SubRegion");
       ASSERT(subRegion != nullptr, "Expected region to be NON-nullptr");
@@ -402,7 +407,7 @@ END_TEST(OverFlowTest)
 
 BEGIN_TEST(OverFlowTest_absPath)
   {
-    RegionAttributesPtr attrsPtr;
+    std::shared_ptr<RegionAttributes> attrsPtr;
     char currWDPath[512];
     char* wdPath = ACE_OS::getcwd(currWDPath, 512);
     ASSERT(wdPath != nullptr,
@@ -410,10 +415,10 @@ BEGIN_TEST(OverFlowTest_absPath)
     std::string absPersistenceDir = std::string(wdPath) + "/absSqLite";
 
     /** Creating a cache to manage regions. */
-    PropertiesPtr sqliteProperties;
-    PropertiesPtr cacheProperties = Properties::create();
+    std::shared_ptr<Properties> sqliteProperties;
+    auto cacheProperties = Properties::create();
     setSqLiteProperties(sqliteProperties, 1073741823, 65536, absPersistenceDir);
-    RegionPtr regionPtr;
+    std::shared_ptr<Region> regionPtr;
     createRegion(regionPtr, "OverFlowRegion", cacheProperties,
                  sqliteProperties);
     ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
@@ -441,7 +446,7 @@ BEGIN_TEST(OverFlowTest_absPath)
     /** check whether value get evicted and token gets set as overflow */
     checkOverflowTokenValues(regionPtr, 45);
 
-    RegionPtr subRegion;
+    std::shared_ptr<Region> subRegion;
     for (int i = 0; i < 10; i++) {
       createSubRegion(regionPtr, subRegion, "SubRegion", absPersistenceDir);
       ASSERT(subRegion != nullptr, "Expected region to be NON-nullptr");
@@ -539,9 +544,9 @@ BEGIN_TEST(OverFlowTest_HeapLRU)
     /** test to verify same region repeatedly to ensure that the persistece
     files are created and destroyed correctly */
 
-    RegionPtr subRegion;
+    std::shared_ptr<Region> subRegion;
     for (int i = 0; i < 10; i++) {
-      RegionAttributesPtr regionAttributesPtr;
+      std::shared_ptr<RegionAttributes> regionAttributesPtr;
       setAttributes(regionAttributesPtr);
       subRegion = regionPtr->createSubregion("SubRegion", regionAttributesPtr);
       ASSERT(subRegion != nullptr, "Expected region to be NON-nullptr");
@@ -567,15 +572,15 @@ END_TEST(OverFlowTest_HeapLRU)
 BEGIN_TEST(OverFlowTest_MultiThreaded)
   {
     /** Creating a cache to manage regions. */
-    CachePtr cachePtr = CacheFactory::createCacheFactory()->create();
+    auto cachePtr = CacheFactory::createCacheFactory()->create();
     ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
 
-    RegionAttributesPtr attrsPtr;
+    std::shared_ptr<RegionAttributes> attrsPtr;
     setAttributes(attrsPtr);
     ASSERT(attrsPtr != nullptr, "Expected region attributes to be NON-nullptr");
     /** Create a region with caching and LRU. */
 
-    RegionPtr regionPtr;
+    std::shared_ptr<Region> regionPtr;
     CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
     cacheImpl->createRegion("OverFlowRegion", attrsPtr, regionPtr);
     ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
@@ -608,15 +613,15 @@ END_TEST(OverFlowTest_MultiThreaded)
 BEGIN_TEST(OverFlowTest_PutGetAll)
   {
     /** Creating a cache to manage regions. */
-    CachePtr cachePtr = CacheFactory::createCacheFactory()->create();
+    auto cachePtr = CacheFactory::createCacheFactory()->create();
     ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
 
-    RegionAttributesPtr attrsPtr;
+    std::shared_ptr<RegionAttributes> attrsPtr;
     setAttributes(attrsPtr);
     ASSERT(attrsPtr != nullptr, "Expected region attributes to be NON-nullptr");
     /** Create a region with caching and LRU. */
 
-    RegionPtr regionPtr;
+    std::shared_ptr<Region> regionPtr;
     CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
     cacheImpl->createRegion("OverFlowRegion", attrsPtr, regionPtr);
     ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");

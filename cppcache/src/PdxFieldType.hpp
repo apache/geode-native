@@ -31,9 +31,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class PdxFieldType;
-typedef std::shared_ptr<PdxFieldType> PdxFieldTypePtr;
-
 class CPPCACHE_EXPORT PdxFieldType : public Serializable {
  private:
   std::string m_fieldName;
@@ -96,11 +93,11 @@ class CPPCACHE_EXPORT PdxFieldType : public Serializable {
     return size;
   }
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   virtual ~PdxFieldType();
 
-  bool equals(PdxFieldTypePtr otherObj);
+  bool equals(std::shared_ptr<PdxFieldType> otherObj);
 
   int32_t getVarLenOffsetIndex() const { return m_vlOffsetIndex; }
 

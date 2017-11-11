@@ -37,9 +37,10 @@
 namespace apache {
 namespace geode {
 namespace client {
-
-typedef PersistenceManagerPtr (*getPersistenceManagerInstance)(
-    const RegionPtr&);
+class Region;
+class PersistenceManager;
+typedef std::shared_ptr<PersistenceManager> (*getPersistenceManagerInstance)(
+    const std::shared_ptr<Region>&);
 
 /**
  * @class PersistenceManager PersistenceManager.hpp
@@ -55,23 +56,23 @@ class CPPCACHE_EXPORT PersistenceManager {
    */
  public:
   /**
-  * Returns the current persistence manager.
-  * @return persistence manager
-  */
-  static PersistenceManagerPtr getPersistenceManager();
+   * Returns the current persistence manager.
+   * @return persistence manager
+   */
+  static std::shared_ptr<PersistenceManager> getPersistenceManager();
 
   /**
-  * Writes a key, value pair of region to the disk. The actual file or database
-  * related write operations should be implemented
-  * in this method by the class implementing this method.
-  * @param key the key to write.
-  * @param value the value to write
-  * @param PersistenceInfo related persistence information.
-  * @throws RegionDestroyedException is the region is already destroyed.
-  * @throws OutofMemoryException if the disk is full
-  * @throws DiskFailureException if the write fails due to disk fail.
-  */
-  virtual void write(const CacheableKeyPtr& key, const CacheablePtr& value,
+   * Writes a key, value pair of region to the disk. The actual file or database
+   * related write operations should be implemented
+   * in this method by the class implementing this method.
+   * @param key the key to write.
+   * @param value the value to write
+   * @param PersistenceInfo related persistence information.
+   * @throws RegionDestroyedException is the region is already destroyed.
+   * @throws OutofMemoryException if the disk is full
+   * @throws DiskFailureException if the write fails due to disk fail.
+   */
+  virtual void write(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value,
                      void*& PersistenceInfo) = 0;
 
   /**
@@ -88,17 +89,17 @@ class CPPCACHE_EXPORT PersistenceManager {
    * @throws InitfailedException if the persistence manager cannot be
    * initialized.
    */
-  virtual void init(const RegionPtr& region,
-                    const PropertiesPtr& diskProperties) = 0;
+  virtual void init(const std::shared_ptr<Region>& region,
+                    const std::shared_ptr<Properties>& diskProperties) = 0;
 
   /**
-  * Reads the value for the key from the disk.
-  * @param key is the key for which the value has to be read.
-  * @param PersistenceInfo related persistence information.
-  * @returns value of type CacheablePtr.
-  * @throws DiskCorruptException if the data to be read is corrupt.
-  */
-  virtual CacheablePtr read(const CacheableKeyPtr& key,
+   * Reads the value for the key from the disk.
+   * @param key is the key for which the value has to be read.
+   * @param PersistenceInfo related persistence information.
+   * @returns value of type std::shared_ptr<Cacheable>.
+   * @throws DiskCorruptException if the data to be read is corrupt.
+   */
+  virtual std::shared_ptr<Cacheable> read(const std::shared_ptr<CacheableKey>& key,
                             void*& PersistenceInfo) = 0;
 
   /**
@@ -108,13 +109,13 @@ class CPPCACHE_EXPORT PersistenceManager {
   virtual bool readAll() = 0;
 
   /**
-  * destroys the entry specified by the key in the argument.
-  * @param key is the key of the entry which is being destroyed.
-  * @param PersistenceInfo related persistence information.
-  * @throws RegionDestroyedException is the region is already destroyed.
-  * @throws EntryNotFoundException if the entry is not found on the disk.
-  */
-  virtual void destroy(const CacheableKeyPtr& key, void*& PersistenceInfo) = 0;
+   * destroys the entry specified by the key in the argument.
+   * @param key is the key of the entry which is being destroyed.
+   * @param PersistenceInfo related persistence information.
+   * @throws RegionDestroyedException is the region is already destroyed.
+   * @throws EntryNotFoundException if the entry is not found on the disk.
+   */
+  virtual void destroy(const std::shared_ptr<CacheableKey>& key, void*& PersistenceInfo) = 0;
 
   /**
    * Closes the persistence manager instance.
@@ -122,7 +123,7 @@ class CPPCACHE_EXPORT PersistenceManager {
    */
   virtual void close() = 0;
 
-  PersistenceManager(const RegionPtr& regionPtr);
+  PersistenceManager(const std::shared_ptr<Region>& regionPtr);
   PersistenceManager();
   /**
     * @brief destructor
@@ -132,8 +133,12 @@ class CPPCACHE_EXPORT PersistenceManager {
  protected:
   /** Region for this persistence manager.
    */
-  const RegionPtr m_regionPtr;
+  const std::shared_ptr<Region> m_regionPtr;
 };
+
+
+typedef std::shared_ptr<PersistenceManager> (*getPersistenceManagerInstance)(
+    const std::shared_ptr<Region>&);
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

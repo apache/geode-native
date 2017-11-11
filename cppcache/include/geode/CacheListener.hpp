@@ -34,7 +34,7 @@ namespace client {
 
 class EntryEvent;
 class RegionEvent;
-
+class Region;
 /**
  * @class CacheListener CacheListener.hpp
  * An application plug-in that can be installed on a region.
@@ -184,16 +184,16 @@ class CPPCACHE_EXPORT CacheListener {
    * @see Region::destroyRegion
    */
 
-  virtual void close(const RegionPtr& region);
+  virtual void close(const std::shared_ptr<Region>& region);
   /**
    * Called when all the endpoints assosiated with region are down.
    * This will be called when all the endpoints are down for the first time.
    * If endpoints come up and again go down it will be called again.
    * This will also be called when all endpoints are down and region is attached
    * to the pool.
-   * @param region RegionPtr denotes the assosiated region.
+   * @param region std::shared_ptr<Region> denotes the assosiated region.
    */
-  virtual void afterRegionDisconnected(const RegionPtr& region);
+  virtual void afterRegionDisconnected(const std::shared_ptr<Region>& region);
 
  protected:
   /**

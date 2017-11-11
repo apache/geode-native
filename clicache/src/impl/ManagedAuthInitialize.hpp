@@ -101,7 +101,7 @@ namespace apache
         /// </param>
         /// <param name="server">It is the ID of the endpoint
         /// </param>
-        virtual PropertiesPtr getCredentials(const PropertiesPtr& securityprops, const char* server);
+        virtual std::shared_ptr<native::Properties> getCredentials(const std::shared_ptr<native::Properties>& securityprops, const char* server);
 
         virtual ~ManagedAuthInitializeGeneric() { }
 

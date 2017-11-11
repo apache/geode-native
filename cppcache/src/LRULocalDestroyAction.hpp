@@ -46,7 +46,7 @@ class CPPCACHE_EXPORT LRULocalDestroyAction : public virtual LRUAction {
  public:
   virtual ~LRULocalDestroyAction() {}
 
-  virtual bool evict(const MapEntryImplPtr& mePtr);
+  virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr);
 
   virtual LRUAction::Action getType() { return LRUAction::LOCAL_DESTROY; }
   friend class LRUAction;

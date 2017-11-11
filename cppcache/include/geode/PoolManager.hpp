@@ -35,8 +35,10 @@ namespace apache {
 namespace geode {
 namespace client {
 
+class FunctionService;
 class ThinClientPoolDM;
-typedef std::unordered_map<std::string, PoolPtr> HashMapOfPools;
+
+typedef std::unordered_map<std::string, std::shared_ptr<Pool>> HashMapOfPools;
 
 /**
  * Manages creation and access to {@link Pool connection pools} for clients.
@@ -58,7 +60,7 @@ class CPPCACHE_EXPORT PoolManager {
    * which is used to configure and create new {@link Pool}s.
    * @return the new pool factory
    */
-  PoolFactoryPtr createFactory();
+  std::shared_ptr<PoolFactory> createFactory();
 
   /**
    * Returns a map containing all the pools in this manager.
@@ -79,7 +81,7 @@ class CPPCACHE_EXPORT PoolManager {
    * @return the existing connection pool or <code>nullptr</code> if it does not
    * exist.
    */
-  PoolPtr find(const char* name);
+  std::shared_ptr<Pool> find(const char* name);
 
   /**
    * Find the pool used by the given region.
@@ -88,7 +90,7 @@ class CPPCACHE_EXPORT PoolManager {
    * region does
    * not have a pool.
    */
-  PoolPtr find(RegionPtr region);
+  std::shared_ptr<Pool> find(std::shared_ptr<Region> region);
 
   /**
    * Unconditionally destroys all created pools that are in this manager.
@@ -102,9 +104,9 @@ class CPPCACHE_EXPORT PoolManager {
  private:
   void removePool(const char* name);
 
-  void addPool(const char* name, const PoolPtr& pool);
+  void addPool(const char* name, const std::shared_ptr<Pool>& pool);
 
-  PoolPtr getDefaultPool();
+  std::shared_ptr<Pool> getDefaultPool();
 
   class Impl;
   std::unique_ptr<Impl, void (*)(Impl*)> m_pimpl;

@@ -90,10 +90,10 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   }
   free(buf);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
-  CacheableKeyPtr keyPtr = createKey(key);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
 
   // if the region is no ack, then we may need to wait...
   if (!isCreated) {
@@ -187,8 +187,8 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   LOG("createRegion() entered.");
   LOGINFO("Creating region --  %s  ackMode is %d", name, ackMode);
   // ack, caching
-  RegionPtr regPtr = getHelper()->createRegion(
-      name, ackMode, true, nullptr, endpoints, clientNotificationEnabled);
+  auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
+                                          endpoints, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
@@ -198,10 +198,10 @@ void createEntry(const char* name, const char* key, const char* value) {
   LOGINFO("Creating entry -- key: %s  value: %s in region %s", key, value,
           name);
   // Create entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
+  std::shared_ptr<CacheableString> valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
@@ -222,10 +222,10 @@ void updateEntry(const char* name, const char* key, const char* value) {
   LOGINFO("Updating entry -- key: %s  value: %s in region %s", key, value,
           name);
   // Update entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  std::shared_ptr<CacheableKey> keyPtr = createKey(key);
+  std::shared_ptr<CacheableString> valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
@@ -244,9 +244,9 @@ void doNetsearch(const char* name, const char* key, const char* value) {
   LOGINFO("Netsearching for entry -- key: %s  expecting value: %s in region %s",
           key, value, name);
   // Get entry created in Process A, verify entry is correct
-  CacheableKeyPtr keyPtr = CacheableKey::create(key);
+  std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create(key);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   LOGINFO("netsearch  region %s", regPtr->getName());
   ASSERT(regPtr != nullptr, "Region not found.");
 
@@ -315,8 +315,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, InitializeClient2)
     getHelper()->createPooledRegion(regionNames[1], NO_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
 
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
     // create a local entry to check for no change after register interest
     createEntry(regionNames[0], keys[1], nvals[1]);
     regPtr0->registerAllKeys(false, true);
@@ -337,8 +337,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, InitializeClient2Regex)
     createRegion(regionNames[0], USE_ACK, locatorsG, true);
     createRegion(regionNames[1], NO_ACK, locatorsG, true);
 
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
     // create a local entry to check for no change after register interest
     createEntry(regionNames[0], keys[1], nvals[1]);
     regPtr0->registerRegex(".*", false, true);
@@ -359,7 +359,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, VerifyClient1)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     regPtr0->registerAllKeys(false, false);
 
     ASSERT(regPtr0->size() == 1, "Expected one entry in region");
@@ -368,7 +368,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyClient1)
            "Expected region to not contain the value");
 
     // check the same for registerRegex(".*")
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
     regPtr1->registerRegex(".*", false, false);
 
     ASSERT(regPtr1->size() == 1, "Expected one entry in region");
@@ -387,8 +387,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, VerifyClient2)
   {
     // Client two should recieve all entries
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
 
     ASSERT(regPtr0->size() == 2, "Expected two entries in region");
     ASSERT(regPtr1->size() == 2, "Expected two entries in region");
@@ -446,8 +446,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, Client2UnregisterAllKeys)
   {
     // Client two unregister all keys
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
     regPtr0->unregisterAllKeys();
     regPtr1->unregisterAllKeys();
 

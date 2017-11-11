@@ -31,14 +31,14 @@ putThread *thread2 = nullptr;
 void createAuthzRegion() {
   initCredentialGenerator();
   initClientAuth('A');
-  RegionPtr rptr;
+  std::shared_ptr<Region> rptr;
   createRegion(regionNamesAuth[0], false, true);
   rptr = getHelper()->getRegion(regionNamesAuth[0]);
   rptr->registerAllKeys();
 }
 void verifyEntry(const char *value) {
-  RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
-  RegionEntryPtr entry = rptr->getEntry("key-1");
+  auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
+  auto entry = rptr->getEntry("key-1");
   ASSERT(entry != nullptr, "Key should have been found in region.");
   auto valuePtr = std::dynamic_pointer_cast<CacheableString>(entry->getValue());
   char buf1[1024];
@@ -92,7 +92,7 @@ END_TASK_DEFINITION
 // check that tracking work correctly with put.
 DUNIT_TASK_DEFINITION(CLIENT1, PutOnClient1)
   {
-    RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
+    auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
     thread1 = new putThread(rptr);
     thread1->setParams(0, 1, 1, true);
     thread1->start();
@@ -101,7 +101,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutOnClient1)
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, PutOnClient2)
   {
-    RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
+    auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
     thread2 = new putThread(rptr);
     thread2->setParams(0, 1, 1);
     thread2->start();
@@ -135,7 +135,7 @@ END_TASK_DEFINITION
 // check that tracking work correctly with destroy.
 DUNIT_TASK_DEFINITION(CLIENT1, DestroyOnClient1)
   {
-    RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
+    auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
     thread1 = new putThread(rptr);
     thread1->setParams(0, 1, 1, true);
     thread1->start();
@@ -144,7 +144,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, DestroyOnClient1)
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, DestroyOnClient2)
   {
-    RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
+    auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
     thread2 = new putThread(rptr);
     thread2->setParams(2, 1, 1);
     thread2->start();
@@ -177,7 +177,7 @@ END_TASK_DEFINITION
 // check that Conversion from Tracked Map Entry and back work correctly
 DUNIT_TASK_DEFINITION(CLIENT1, PutTrackedMapOnClient1)
   {
-    RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
+    auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
     thread1 = new putThread(rptr);
     thread1->setParams(0, 1, 1, true);
     thread1->start();
@@ -186,7 +186,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutTrackedMapOnClient1)
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, PutTrackedMapOnClient2)
   {
-    RegionPtr rptr = getHelper()->getRegion(regionNamesAuth[0]);
+    auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
     thread2 = new putThread(rptr);
     thread2->setParams(0, 10, 1, false, true);
     thread2->start();

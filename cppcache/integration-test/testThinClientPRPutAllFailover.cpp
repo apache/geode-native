@@ -43,15 +43,16 @@ using namespace test;
 #define SERVER1 s1p2
 #define SERVER2 s2p2
 
-TallyListenerPtr reg1Listener1;
+std::shared_ptr<TallyListener> reg1Listener1;
 bool isLocalServer = false;
 static bool isLocator = false;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-void setCacheListener(const char* regName, TallyListenerPtr regListener) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheListener(const char* regName,
+                      std::shared_ptr<TallyListener> regListener) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(regListener);
 }
 
@@ -107,9 +108,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_RegisterAllKeys)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     regPtr0->registerAllKeys();
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
     regPtr1->registerAllKeys();
     LOG("StepTwo_Pooled_EndPoint_RegisterAllKeys complete.");
   }
@@ -118,7 +119,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, PutAllOneTask)
   {
     LOG("PutAllOneTask started.");
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable entryMap;
     entryMap.clear();
     char key[256];
@@ -152,7 +153,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, PutAllTwoTask)
   {
     LOG("PutAllTwoTask started.");
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable entryMap;
     entryMap.clear();
     char key[256];
@@ -186,7 +187,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, PutAllThreeTask)
   {
     LOG("PutAllThreeTask started.");
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable entryMap;
     entryMap.clear();
     char key[256];
@@ -220,7 +221,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, PutAllFourTask)
   {
     LOG("PutAllFourTask started.");
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable entryMap;
     entryMap.clear();
     char key[256];
@@ -255,7 +256,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyAllPutAllTask)
   {
     LOG("VerifyAllPutAllTask started.");
 
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
     ASSERT(dataReg != nullptr, "Region not found.");
     LOGINFO("dataregion size is %d: ", dataReg->size());
     LOGINFO("dataregion getCreates is %d: ", reg1Listener1->getCreates());
@@ -284,9 +285,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllOneTask)
   {
     LOG("RemoveAllOneTask started.");
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable entryMap;
-    VectorOfCacheableKey keys;
+    std::vector<std::shared_ptr<CacheableKey>> keys;
     entryMap.clear();
     char key[256];
     char value[256];
@@ -320,9 +321,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllTwoTask)
   {
     LOG("RemoveAllTwoTask started.");
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable entryMap;
-    VectorOfCacheableKey keys;
+    std::vector<std::shared_ptr<CacheableKey>> keys;
     entryMap.clear();
     char key[256];
     char value[256];
@@ -356,9 +357,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllThreeTask)
   {
     LOG("RemoveAllThreeTask started.");
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable entryMap;
-    VectorOfCacheableKey keys;
+    std::vector<std::shared_ptr<CacheableKey>> keys;
     entryMap.clear();
     char key[256];
     char value[256];
@@ -394,9 +395,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllFourTask)
   {
     LOG("RemoveAllFourTask started.");
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable entryMap;
-    VectorOfCacheableKey keys;
+    std::vector<std::shared_ptr<CacheableKey>> keys;
     entryMap.clear();
     char key[256];
     char value[256];
@@ -432,7 +433,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyAllRemoveAllTask)
   {
     LOG("VerifyAllRemoveAllTask started.");
 
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
     ASSERT(dataReg != nullptr, "Region not found.");
     LOGINFO("dataregion size is %d: ", dataReg->size());
     LOGINFO("dataregion getDestroys is %d: ", reg1Listener1->getDestroys());

@@ -50,12 +50,13 @@ class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
  protected:
   bool encodeTimestamp;
   int32_t acctId;
-  CacheableStringPtr customerName;
+  std::shared_ptr<CacheableString> customerName;
   double netWorth;
-  CacheableHashMapPtr assets;
+  std::shared_ptr<CacheableHashMap> assets;
   uint64_t timestamp;
 
-  inline uint32_t getObjectSize(const SerializablePtr& obj) const {
+  inline uint32_t getObjectSize(
+      const std::shared_ptr<Serializable>& obj) const {
     return (obj == nullptr ? 0 : obj->objectSize());
   }
 
@@ -72,7 +73,7 @@ class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
   virtual void toData(apache::geode::client::DataOutput& output) const;
   virtual void fromData(apache::geode::client::DataInput& input);
   virtual int32_t classId() const { return 23; }
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   virtual uint32_t objectSize() const {
     uint32_t objectSize = sizeof(FastAssetAccount);
@@ -81,13 +82,13 @@ class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
 
   int getAcctId() { return acctId; }
 
-  CacheableStringPtr getCustomerName() { return customerName; }
+  std::shared_ptr<CacheableString> getCustomerName() { return customerName; }
 
   double getNetWorth() { return netWorth; }
 
   void incrementNetWorth() { ++netWorth; }
 
-  CacheableHashMapPtr getAssets() { return assets; }
+  std::shared_ptr<CacheableHashMap> getAssets() { return assets; }
   int getIndex() { return acctId; }
   uint64_t getTimestamp() {
     if (encodeTimestamp) {
@@ -119,7 +120,6 @@ class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
   }
 };
 
-typedef std::shared_ptr<FastAssetAccount> FastAssetAccountPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_FASTASSETACCOUNT_H_

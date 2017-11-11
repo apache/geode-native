@@ -27,7 +27,7 @@
 
 using namespace apache::geode::client;
 
-Pool::Pool(PoolAttributesPtr attr) : m_attrs(attr) {}
+Pool::Pool(std::shared_ptr<PoolAttributes> attr) : m_attrs(attr) {}
 Pool::~Pool() {}
 
 int Pool::getFreeConnectionTimeout() const {
@@ -69,8 +69,8 @@ bool Pool::getThreadLocalConnections() const {
 bool Pool::getMultiuserAuthentication() const {
   return m_attrs->getMultiuserSecureModeEnabled();
 }
-RegionServicePtr Pool::createSecureUserCache(PropertiesPtr credentials,
-                                             CacheImpl* cacheImpl) {
+std::shared_ptr<RegionService> Pool::createSecureUserCache(
+    std::shared_ptr<Properties> credentials, CacheImpl* cacheImpl) {
   if (this->getMultiuserAuthentication()) {
     if (cacheImpl == nullptr) {
       throw IllegalStateException("cache has not been created yet.");

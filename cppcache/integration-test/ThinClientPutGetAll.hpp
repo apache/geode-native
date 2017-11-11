@@ -59,13 +59,14 @@ const char* _regionNames[] = {"DistRegionAck"};
 
 #include "LocatorHelper.hpp"
 
-void verifyGetAll(RegionPtr region, bool addToLocalCache, const char** _vals,
-                  int startIndex, CacheablePtr callBack = nullptr) {
-  CacheableKeyPtr keyPtr0 = CacheableKey::create(_keys[0]);
-  CacheableKeyPtr keyPtr1 = CacheableKey::create(_keys[1]);
-  CacheableKeyPtr keyPtr2 = CacheableKey::create("keyNotThere");
+void verifyGetAll(std::shared_ptr<Region> region, bool addToLocalCache,
+                  const char** _vals, int startIndex,
+                  std::shared_ptr<Cacheable> callBack = nullptr) {
+  std::shared_ptr<CacheableKey> keyPtr0 = CacheableKey::create(_keys[0]);
+  std::shared_ptr<CacheableKey> keyPtr1 = CacheableKey::create(_keys[1]);
+  std::shared_ptr<CacheableKey> keyPtr2 = CacheableKey::create("keyNotThere");
 
-  VectorOfCacheableKey keys1;
+  std::vector<std::shared_ptr<CacheableKey>> keys1;
   keys1.push_back(keyPtr0);
   keys1.push_back(keyPtr1);
   keys1.push_back(keyPtr2);
@@ -96,9 +97,10 @@ void verifyGetAll(RegionPtr region, bool addToLocalCache, const char** _vals,
   }
 }
 
-void verifyGetAllWithCallBackArg(RegionPtr region, bool addToLocalCache,
-                                 const char** vals, int startIndex,
-                                 CacheablePtr callBack) {
+void verifyGetAllWithCallBackArg(std::shared_ptr<Region> region,
+                                 bool addToLocalCache, const char** vals,
+                                 int startIndex,
+                                 std::shared_ptr<Cacheable> callBack) {
   verifyGetAll(region, addToLocalCache, vals, startIndex, callBack);
 }
 
@@ -109,7 +111,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("createRegion_Pool() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr =
+  auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -148,7 +150,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllInitialValuesFromClientOne)
       map0.emplace(CacheableKey::create(_keys[i]),
                    CacheableString::create(_vals[i]));
     }
-    RegionPtr regPtr0 = getHelper()->getRegion(_regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(_regionNames[0]);
     regPtr0->putAll(map0);
     LOG("PutAllInitialValuesFromClientOne complete.");
   }
@@ -157,7 +159,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, GetAllInitialValuesFromClientTwo)
   {
     // getAll and validate key and value.
-    RegionPtr region = getHelper()->getRegion(_regionNames[0]);
+    auto region = getHelper()->getRegion(_regionNames[0]);
     verifyGetAll(region, true, _vals, 0);
     verifyGetAllWithCallBackArg(region, true, _vals, 0,
                                 CacheableInt32::create(1000));
@@ -173,7 +175,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllUpdatedValuesFromClientOne)
       map0.emplace(CacheableKey::create(_keys[i]),
                    CacheableString::create(_nvals[i]));
     }
-    RegionPtr regPtr0 = getHelper()->getRegion(_regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(_regionNames[0]);
     regPtr0->putAll(map0);
     LOG("PutAllUpdatedValuesFromClientOne complete.");
   }
@@ -181,7 +183,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, GetAllUpdatedValuesFromClientTwo)
   {
     // verify getAll get the data from local cache.
-    RegionPtr region = getHelper()->getRegion(_regionNames[0]);
+    auto region = getHelper()->getRegion(_regionNames[0]);
     verifyGetAll(region, true, _vals, 0);
     verifyGetAllWithCallBackArg(region, true, _vals, 0,
                                 CacheableInt32::create(1000));
@@ -193,7 +195,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetAllAfterLocalDestroyRegionOnClientTwo)
   {
     // getAll and validate key and value after localDestroyRegion and recreation
     // of region.
-    RegionPtr reg0 = getHelper()->getRegion(_regionNames[0]);
+    auto reg0 = getHelper()->getRegion(_regionNames[0]);
     reg0->localDestroyRegion();
     reg0 = nullptr;
     getHelper()->createPooledRegion(regionNames[0], USE_ACK, 0,
@@ -209,7 +211,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetAllAfterLocalDestroyRegionOnClientTwo_Pool)
   {
     // getAll and validate key and value after localDestroyRegion and recreation
     // of region.
-    RegionPtr reg0 = getHelper()->getRegion(_regionNames[0]);
+    auto reg0 = getHelper()->getRegion(_regionNames[0]);
     reg0->localDestroyRegion();
     reg0 = nullptr;
     createPooledRegion(_regionNames[0], USE_ACK, locatorsG, poolName, true,
@@ -224,7 +226,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, putallAndGetallPdxWithCallBackArg)
   {
     LOG("putallAndGetallPdxWithCallBackArg started.");
-    SerializationRegistryPtr serializationRegistry =
+    auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
@@ -310,7 +312,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putallAndGetallPdxWithCallBackArg)
     map0.emplace(CacheableInt32::create(29), p9);
     map0.emplace(CacheableInt32::create(30), p10);
 
-    RegionPtr regPtr0 = getHelper()->getRegion(_regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(_regionNames[0]);
     // TODO: Investigate whether callback is used
     regPtr0->putAll(map0, 15, CacheableInt32::create(1001));
     LOG("putallPdxWithCallBackArg on Pdx objects completed.");
@@ -327,7 +329,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putallAndGetallPdxWithCallBackArg)
     regPtr0->localDestroy(CacheableInt32::create(30));
     LOG("localDestroy on all Pdx objects completed.");
 
-    VectorOfCacheableKey keys1;
+    std::vector<std::shared_ptr<CacheableKey>> keys1;
     keys1.push_back(CacheableInt32::create(21));
     keys1.push_back(CacheableInt32::create(22));
     keys1.push_back(CacheableInt32::create(23));
@@ -400,7 +402,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, putallAndGetallPdx)
   {
     LOG("putallAndGetallPdx started.");
-    SerializationRegistryPtr serializationRegistry =
+    auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
@@ -485,7 +487,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putallAndGetallPdx)
     map0.emplace(CacheableInt32::create(28), p8);
     map0.emplace(CacheableInt32::create(29), p9);
     map0.emplace(CacheableInt32::create(30), p10);
-    RegionPtr regPtr0 = getHelper()->getRegion(_regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(_regionNames[0]);
     regPtr0->put(CacheableInt32::create(30), p10);
     regPtr0->putAll(map0);
     LOG("putAll on Pdx objects completed.");
@@ -502,7 +504,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putallAndGetallPdx)
     regPtr0->localDestroy(CacheableInt32::create(30));
     LOG("localDestroy on all Pdx objects completed.");
 
-    VectorOfCacheableKey keys1;
+    std::vector<std::shared_ptr<CacheableKey>> keys1;
     keys1.push_back(CacheableInt32::create(21));
     keys1.push_back(CacheableInt32::create(22));
     keys1.push_back(CacheableInt32::create(23));

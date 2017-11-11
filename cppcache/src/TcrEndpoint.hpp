@@ -41,6 +41,8 @@ class ThinClientBaseDM;
 class CacheImpl;
 class ThinClientPoolHADM;
 class ThinClientPoolDM;
+class QueryService;
+
 class CPPCACHE_EXPORT TcrEndpoint {
  public:
   TcrEndpoint(
@@ -183,13 +185,13 @@ class CPPCACHE_EXPORT TcrEndpoint {
   }
 
  protected:
-  PropertiesPtr getCredentials();
+  std::shared_ptr<Properties> getCredentials();
   volatile int m_maxConnections;
   FairQueue<TcrConnection> m_opConnections;
-  virtual bool checkDupAndAdd(EventIdPtr eventid);
+  virtual bool checkDupAndAdd(std::shared_ptr<EventId> eventid);
   virtual void processMarker();
   virtual void triggerRedundancyThread();
-  virtual QueryServicePtr getQueryService();
+  virtual std::shared_ptr<QueryService> getQueryService();
   virtual void sendRequestForChunkedResponse(const TcrMessage& request,
                                              TcrMessageReply& reply,
                                              TcrConnection* conn);

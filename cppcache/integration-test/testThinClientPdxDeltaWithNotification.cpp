@@ -85,7 +85,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("createRegion_Pool() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr =
+  auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -95,7 +95,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
 void createPooledExpirationRegion(const char* name, const char* poolname) {
   LOG("createPooledExpirationRegion() entered.");
   // Entry time-to-live = 1 second.
-  RegionPtr regPtr = getHelper()->createPooledRegionDiscOverFlow(
+  auto regPtr = getHelper()->createPooledRegionDiscOverFlow(
       name, true, locatorsG, poolname, true, true, 1, 0, 0, 0, 0, nullptr,
       ExpirationAction::LOCAL_INVALIDATE);
 }
@@ -105,7 +105,7 @@ void createPooledLRURegion(const char* name, bool ackMode, const char* locators,
                            bool clientNotificationEnabled = false,
                            bool cachingEnable = true) {
   LOG(" createPooledLRURegion entered");
-  RegionPtr regPtr = getHelper()->createPooledRegionDiscOverFlow(
+  auto regPtr = getHelper()->createPooledRegionDiscOverFlow(
       name, ackMode, locators, poolname, cachingEnable,
       clientNotificationEnabled, 0, 0, 0, 0, 3 /*LruLimit = 3*/);
   LOG(" createPooledLRURegion exited");
@@ -117,8 +117,8 @@ void createRegion(const char* name, bool ackMode,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   // ack, caching
-  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
-                                               clientNotificationEnabled);
+  auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
+                                          clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
@@ -126,7 +126,7 @@ void createRegion(const char* name, bool ackMode,
 void createLRURegion(const char* name, bool clientNotificationEnabled = false,
                      bool cachingEnable = true) {
   LOG(" createPooledLRURegion entered");
-  RegionPtr regPtr = getHelper()->createRegionDiscOverFlow(
+  auto regPtr = getHelper()->createRegionDiscOverFlow(
       name, cachingEnable, clientNotificationEnabled, 0, 0, 0, 0,
       3 /*LruLimit = 3*/);
   LOG(" createPooledLRURegion exited");
@@ -136,7 +136,7 @@ void createExpirationRegion(const char* name,
                             bool clientNotificationEnabled = false,
                             bool cachingEnable = true) {
   LOG(" createPooledLRURegion entered");
-  RegionPtr regPtr = getHelper()->createRegionDiscOverFlow(
+  auto regPtr = getHelper()->createRegionDiscOverFlow(
       name, cachingEnable, clientNotificationEnabled, 1, 0, 0, 0, 0,
       ExpirationAction::LOCAL_INVALIDATE);
   LOG(" createPooledLRURegion exited");
@@ -192,7 +192,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, Client1_PdxInit)
   {
     try {
-      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
       serializationRegistry->addPdxType(PdxDeltaEx::createDeserializable);
     } catch (IllegalStateException&) {
       //  ignore type reregistration exception.
@@ -203,14 +205,16 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, Client2_PdxInit)
   {
     try {
-      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
       serializationRegistry->addPdxType(PdxDeltaEx::createDeserializable);
     } catch (IllegalStateException&) {
       //  ignore type reregistration exception.
     }
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
-    RegionPtr regPtr2 = getHelper()->getRegion(regionNames[2]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr2 = getHelper()->getRegion(regionNames[2]);
     regPtr->registerRegex(".*");
     regPtr1->registerRegex(".*");
     regPtr2->registerRegex(".*");
@@ -226,11 +230,11 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, Client1_PdxPut)
   {
-    CacheableKeyPtr keyPtr = createKey(keys[0]);
+    std::shared_ptr<CacheableKey> keyPtr = createKey(keys[0]);
     PdxDeltaEx* ptr = new PdxDeltaEx();
     // auto pdxobj = std::make_shared<PdxDeltaEx>();
-    CacheablePtr valPtr(ptr);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    std::shared_ptr<Cacheable> valPtr(ptr);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->put(keyPtr, valPtr);
     // Client 2: fromDataCount = 1, fromDeltaCount = 0;
     ptr->setDelta(true);
@@ -238,8 +242,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1_PdxPut)
     // Client 2: fromDataCount = 1, fromDeltaCount = 1;
 
     PdxDeltaEx* ptr1 = new PdxDeltaEx();
-    CacheablePtr valPtr1(ptr1);
-    CacheableKeyPtr keyPtr1 = createKey(keys[1]);
+    std::shared_ptr<Cacheable> valPtr1(ptr1);
+    std::shared_ptr<CacheableKey> keyPtr1 = createKey(keys[1]);
     regPtr->put(keyPtr1, valPtr1);
     // Client 2: fromDataCount = 2, fromDeltaCount = 1;
     ptr1->setDelta(true);
@@ -256,11 +260,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1_PdxPut)
 
     // For LRU with notification and disc overflow.
     LOG("LRU with notification");
-    CacheableKeyPtr keyPtr2 = createKey(keys[2]);
-    CacheableKeyPtr keyPtr3 = createKey(keys[3]);
-    CacheableKeyPtr keyPtr4 = createKey("LRUKEY4");
-    CacheableKeyPtr keyPtr5 = createKey("LRUKEY5");
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+    std::shared_ptr<CacheableKey> keyPtr2 = createKey(keys[2]);
+    std::shared_ptr<CacheableKey> keyPtr3 = createKey(keys[3]);
+    std::shared_ptr<CacheableKey> keyPtr4 = createKey("LRUKEY4");
+    std::shared_ptr<CacheableKey> keyPtr5 = createKey("LRUKEY5");
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
 
     regPtr1->put(keyPtr2, valPtr1);
     // Client 2: fromDataCount = 4, fromDeltaCount = 2;
@@ -285,9 +289,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1_PdxPut)
     // oldValue for listeners, fromData()
     // is invoked, hence fromDataCount increases by 2.
 
-    RegionPtr regPtr2 = getHelper()->getRegion(regionNames[2]);
+    auto regPtr2 = getHelper()->getRegion(regionNames[2]);
     PdxDeltaEx* ptr2 = new PdxDeltaEx();
-    CacheablePtr valPtr2(ptr2);
+    std::shared_ptr<Cacheable> valPtr2(ptr2);
     regPtr2->put(1, valPtr2);
     // Client 2: fromDataCount = 12, fromDeltaCount = 3;
     // Sleep for 5 seconds to allow expiration at client 2.

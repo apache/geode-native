@@ -64,7 +64,7 @@ class PoolHelper {
 
   const std::string specName() { return m_spec; }
 
-  std::string poolAttributesToString(PoolPtr& pool) {
+  std::string poolAttributesToString(std::shared_ptr<Pool>& pool) {
     std::string sString;
     sString += "\npoolName: ";
     sString += FwkStrCvt(pool->getName()).toString();
@@ -106,7 +106,7 @@ class PoolHelper {
     sString += "\nPRSingleHopEnabled: ";
     sString += pool->getPRSingleHopEnabled() ? "true" : "false";
     sString += "\nLocator: ";
-    CacheableStringArrayPtr str =
+    std::shared_ptr<CacheableStringArray> str =
         dynamic_cast<CacheableStringArray*>(pool->getLocators().get());
     if (pool->getLocators() != nullptr && pool->getLocators()->length() > 0) {
       for (int32_t stri = 0; stri < str->length(); stri++) {
@@ -126,17 +126,17 @@ class PoolHelper {
     return sString;
   }
 
-  PoolPtr createPool() {
+  std::shared_ptr<Pool> createPool() {
     const char* poolName = m_pool->getName().c_str();
-    PoolPtr pptr = m_pool->m_poolManager.find(poolName);
+    auto pptr = m_pool->m_poolManager.find(poolName);
     if (pptr == nullptr) {
       pptr = m_pool->createPool();
     }
     FWKINFO(" Following are Pool attributes :" << poolAttributesToString(pptr));
     return pptr;
   }
-  PoolPtr createPoolForPerf() {
-    PoolPtr pptr = m_pool->createPool();
+  std::shared_ptr<Pool> createPoolForPerf() {
+    auto pptr = m_pool->createPool();
     FWKINFO(" Following are Pool attributes :" << poolAttributesToString(pptr));
     return pptr;
   }

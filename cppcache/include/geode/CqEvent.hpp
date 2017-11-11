@@ -35,7 +35,7 @@
 namespace apache {
 namespace geode {
 namespace client {
-
+class CqQuery;
 /**
  * @class CqEvent CqEvent.hpp
  *
@@ -61,7 +61,7 @@ class CPPCACHE_EXPORT CqEvent {
    * @see CqQuery
    * @return CqQuery object.
    */
-  virtual CqQueryPtr getCq() const = 0;
+  virtual std::shared_ptr<CqQuery> getCq() const = 0;
 
   /**
    * Get the operation on the base region that triggered this event.
@@ -82,7 +82,7 @@ class CPPCACHE_EXPORT CqEvent {
    * nullptr.
    * @return Object key.
    */
-  virtual CacheableKeyPtr getKey() const = 0;
+  virtual std::shared_ptr<CacheableKey> getKey() const = 0;
 
   /**
    * Get the new value of the modification.
@@ -90,7 +90,7 @@ class CPPCACHE_EXPORT CqEvent {
    * operation.
    * @return Object new/modified value.
    */
-  virtual CacheablePtr getNewValue() const = 0;
+  virtual std::shared_ptr<Cacheable> getNewValue() const = 0;
 
   /**
   * Get the delta modification.
@@ -98,7 +98,7 @@ class CPPCACHE_EXPORT CqEvent {
   *
   * @return CacheableBytes delta value.
   */
-  virtual CacheableBytesPtr getDeltaValue() const = 0;
+  virtual std::shared_ptr<CacheableBytes> getDeltaValue() const = 0;
 
  private:
   CqEvent(const CqEvent&);

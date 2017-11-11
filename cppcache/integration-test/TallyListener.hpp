@@ -20,13 +20,10 @@
  * limitations under the License.
  */
 
-#include <geode/GeodeCppCache.hpp>
+#include <geode/EntryEvent.hpp>
 #include <string>
 
 using namespace apache::geode::client;
-class TallyListener;
-
-typedef std::shared_ptr<TallyListener> TallyListenerPtr;
 
 class TallyListener : public CacheListener {
  private:
@@ -37,9 +34,9 @@ class TallyListener : public CacheListener {
   int m_clears;
   bool isListnerInvoked;
   bool isCallbackCalled;
-  CacheableKeyPtr m_lastKey;
-  CacheablePtr m_lastValue;
-  CacheableKeyPtr m_callbackArg;
+  std::shared_ptr<CacheableKey> m_lastKey;
+  std::shared_ptr<Cacheable> m_lastValue;
+  std::shared_ptr<CacheableKey> m_callbackArg;
   bool m_ignoreTimeout;
   bool m_quiet;
 
@@ -113,12 +110,12 @@ class TallyListener : public CacheListener {
   int getInvalidates() { return m_invalidates; }
   int getDestroys() { return m_destroys; }
   bool isListenerInvoked() { return isListnerInvoked; }
-  void setCallBackArg(const CacheableKeyPtr& callbackArg) {
+  void setCallBackArg(const std::shared_ptr<CacheableKey>& callbackArg) {
     m_callbackArg = callbackArg;
   }
-  CacheableKeyPtr getLastKey() { return m_lastKey; }
+  std::shared_ptr<CacheableKey> getLastKey() { return m_lastKey; }
 
-  CacheablePtr getLastValue() { return m_lastValue; }
+  std::shared_ptr<Cacheable> getLastValue() { return m_lastValue; }
   bool isCallBackArgCalled() { return isCallbackCalled; }
   void checkcallbackArg(const EntryEvent& event) {
     if (!isListnerInvoked) isListnerInvoked = true;

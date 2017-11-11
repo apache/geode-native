@@ -34,7 +34,10 @@ namespace client {
 
 class DataOutput;
 class DataInput;
-
+class Cache;
+class Serializable;
+class PdxSerializable;
+class CacheableString;
 typedef void (*CliCallbackMethod)(Cache &cache);
 
 /** @brief signature of functions passed to registerType. Such functions
@@ -109,7 +112,7 @@ class CPPCACHE_EXPORT Serializable
    * the subclasses.
    * The default implementation renders the classname.
    */
-  virtual CacheableStringPtr toString() const;
+  virtual std::shared_ptr<CacheableString> toString() const;
 
   /** Factory method that creates the Serializable object that matches the type
    * of value.
@@ -119,7 +122,7 @@ class CPPCACHE_EXPORT Serializable
    * apache::geode::client::createValueArr may be overloaded.
    */
   template <class PRIM>
-  inline static SerializablePtr create(const PRIM value);
+  inline static std::shared_ptr<Serializable> create(const PRIM value);
 
   /**
    * @brief destructor

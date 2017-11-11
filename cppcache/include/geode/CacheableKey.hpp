@@ -71,7 +71,7 @@ class CPPCACHE_EXPORT CacheableKey : public Cacheable {
    * the method apache::geode::client::createKeyArr may be overloaded.
    */
   template <class PRIM>
-  inline static CacheableKeyPtr create(const PRIM value);
+  inline static std::shared_ptr<CacheableKey> create(const PRIM value);
 
   struct hash {
     inline std::size_t operator()(const CacheableKey& s) const {
@@ -112,10 +112,11 @@ class CPPCACHE_EXPORT CacheableKey : public Cacheable {
 };
 
 template <class TKEY>
-inline CacheableKeyPtr createKey(const std::shared_ptr<TKEY>& value);
+inline std::shared_ptr<CacheableKey> createKey(
+    const std::shared_ptr<TKEY>& value);
 
 template <typename TKEY>
-inline CacheableKeyPtr createKey(const TKEY* value);
+inline std::shared_ptr<CacheableKey> createKey(const TKEY* value);
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
