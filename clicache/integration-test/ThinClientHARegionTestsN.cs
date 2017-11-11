@@ -84,7 +84,7 @@ namespace Apache.Geode.Client.UnitTests
     }
 
     public void InitClientForEventId_Pool(string locators, bool notification,
-      int redundancyLevel, int ackInterval, int dupCheckLife)
+      int redundancyLevel, TimeSpan ackInterval, TimeSpan dupCheckLife)
     {
       CacheHelper.Init();
       CacheHelper.CreatePool<object, object>("__TESTPOOL1_", locators, null,
@@ -847,13 +847,13 @@ namespace Apache.Geode.Client.UnitTests
       CacheHelper.StartJavaServerWithLocators(2, "GFECS2", 1);
       Util.Log("Cacheserver 2 started.");
 
-      m_client1.Call(InitClientForEventId_Pool, CacheHelper.Locators, false, 1, 10, 30);
+      m_client1.Call(InitClientForEventId_Pool, CacheHelper.Locators, false, 1, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(30));
 
       m_client1.Call(CreateHATCRegions, RegionNames, false,
         (string)null, false, true);
       Util.Log("StepOne complete.");
 
-      m_client2.Call(InitClientForEventId_Pool, CacheHelper.Locators, true, 1, 10, 30);
+      m_client2.Call(InitClientForEventId_Pool, CacheHelper.Locators, true, 1, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(30));
       m_client2.Call(CreateHATCRegions, RegionNames, false,
         (string)null, true, true);
       m_client2.Call(InitDupListeners);
@@ -892,12 +892,12 @@ namespace Apache.Geode.Client.UnitTests
       CacheHelper.StartJavaServerWithLocators(1, "GFECS1", 1);
       Util.Log("Cacheserver 1 started.");
 
-      m_client1.Call(InitClientForEventId_Pool, CacheHelper.Locators, false, 1, 3600, 3600);
+      m_client1.Call(InitClientForEventId_Pool, CacheHelper.Locators, false, 1, TimeSpan.FromSeconds(3600), TimeSpan.FromSeconds(3600));
       m_client1.Call(CreateHATCRegions, RegionNames, false,
        (string)null, false, true);
       Util.Log("StepOne complete.");
 
-      m_client2.Call(InitClientForEventId_Pool, CacheHelper.Locators, true, 1, 3600, 3600);
+      m_client2.Call(InitClientForEventId_Pool, CacheHelper.Locators, true, 1, TimeSpan.FromSeconds(3600), TimeSpan.FromSeconds(3600));
       m_client2.Call(CreateHATCRegions, RegionNames, false,
         (string)null, true, true);
       m_client2.Call(InitDupListeners);

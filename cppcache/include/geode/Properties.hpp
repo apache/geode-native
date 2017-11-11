@@ -23,6 +23,7 @@
 /**
  * @file
  */
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 #include "Serializable.hpp"
@@ -31,6 +32,7 @@
 #include "Cacheable.hpp"
 #include "CacheableKey.hpp"
 #include "CacheableString.hpp"
+#include "util/chrono/duration.hpp"
 
 namespace apache {
 namespace geode {
@@ -86,6 +88,12 @@ class CPPCACHE_EXPORT Properties : public Serializable {
    * @throws NullPointerException if the key is nullptr
    */
   void insert(const CacheableKeyPtr& key, const CacheablePtr& value);
+
+  template <class _Rep, class _Period>
+  void insert(const char* key,
+              const std::chrono::duration<_Rep, _Period>& value) {
+    insert(key, util::chrono::duration::to_string(value).c_str());
+  }
 
   /**
    * Remove the key from the collection.

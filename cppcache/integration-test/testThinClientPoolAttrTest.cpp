@@ -73,22 +73,23 @@ class putThread : public ACE_Task_Base {
 void doAttrTestingAndCreatePool(const char* poolName) {
   PoolFactoryPtr poolFacPtr =
       getHelper()->getCache()->getPoolManager().createFactory();
-  poolFacPtr->setFreeConnectionTimeout(10000);
-  poolFacPtr->setLoadConditioningInterval(60000);
+  poolFacPtr->setFreeConnectionTimeout(std::chrono::milliseconds(10000));
+  poolFacPtr->setLoadConditioningInterval(std::chrono::milliseconds(60000));
   poolFacPtr->setSocketBufferSize(1024);
-  poolFacPtr->setReadTimeout(10000);
+  poolFacPtr->setReadTimeout(std::chrono::milliseconds(10000));
   poolFacPtr->setMinConnections(4);
   poolFacPtr->setMaxConnections(8);
-  poolFacPtr->setIdleTimeout(5000);
+  poolFacPtr->setIdleTimeout(std::chrono::seconds(5));
   poolFacPtr->setRetryAttempts(5);
-  poolFacPtr->setPingInterval(120000);
-  poolFacPtr->setUpdateLocatorListInterval(122000);
-  poolFacPtr->setStatisticInterval(120000);
+  poolFacPtr->setPingInterval(std::chrono::milliseconds(120000));
+  poolFacPtr->setUpdateLocatorListInterval(std::chrono::milliseconds(122000));
+  poolFacPtr->setStatisticInterval(std::chrono::milliseconds(120000));
   poolFacPtr->setServerGroup(serverGroup);
   poolFacPtr->setSubscriptionEnabled(true);
   poolFacPtr->setSubscriptionRedundancy(1);
-  poolFacPtr->setSubscriptionMessageTrackingTimeout(500000);
-  poolFacPtr->setSubscriptionAckInterval(120000);
+  poolFacPtr->setSubscriptionMessageTrackingTimeout(
+      std::chrono::milliseconds(500000));
+  poolFacPtr->setSubscriptionAckInterval(std::chrono::milliseconds(120000));
   poolFacPtr->addLocator("localhost", CacheHelper::staticLocatorHostPort1);
   // poolFacPtr->setMultiuserSecurityMode(true);
   poolFacPtr->setPRSingleHopEnabled(false);
@@ -96,22 +97,26 @@ void doAttrTestingAndCreatePool(const char* poolName) {
   PoolPtr pptr = poolFacPtr->create(poolName);
 
   // Validate the attributes
-  ASSERT(pptr->getFreeConnectionTimeout() == 10000,
+  ASSERT(pptr->getFreeConnectionTimeout() == std::chrono::milliseconds(10000),
          "FreeConnectionTimeout Should have been 10000");
-  ASSERT(pptr->getLoadConditioningInterval() == 60000,
-         "LoadConditioningInterval Should have been 60000");
+  ASSERT(
+      pptr->getLoadConditioningInterval() == std::chrono::milliseconds(60000),
+      "LoadConditioningInterval Should have been 60000");
   ASSERT(pptr->getSocketBufferSize() == 1024,
          "SocketBufferSize Should have been 1024");
-  ASSERT(pptr->getReadTimeout() == 10000, "ReadTimeout Should have been 10000");
+  ASSERT(pptr->getReadTimeout() == std::chrono::milliseconds(10000),
+         "ReadTimeout Should have been 10000");
   ASSERT(pptr->getMinConnections() == 4, "MinConnections Should have been 4");
   ASSERT(pptr->getMaxConnections() == 8, "MaxConnections Should have been 8");
-  ASSERT(pptr->getIdleTimeout() == 5000, "IdleTimeout Should have been 5000");
+  ASSERT(pptr->getIdleTimeout() == std::chrono::seconds(5),
+         "IdleTimeout Should have been 5s");
   ASSERT(pptr->getRetryAttempts() == 5, "RetryAttempts Should have been 5");
-  ASSERT(pptr->getPingInterval() == 120000,
+  ASSERT(pptr->getPingInterval() == std::chrono::milliseconds(120000),
          "PingInterval Should have been 120000");
-  ASSERT(pptr->getUpdateLocatorListInterval() == 122000,
-         "UpdateLocatorListInterval Should have been 122000");
-  ASSERT(pptr->getStatisticInterval() == 120000,
+  ASSERT(
+      pptr->getUpdateLocatorListInterval() == std::chrono::milliseconds(122000),
+      "UpdateLocatorListInterval Should have been 122000");
+  ASSERT(pptr->getStatisticInterval() == std::chrono::milliseconds(120000),
          "StatisticInterval Should have been 120000");
   ASSERT(strcmp(pptr->getServerGroup(), "ServerGroup1") == 0,
          "ServerGroup Should have been ServerGroup1");
@@ -119,10 +124,12 @@ void doAttrTestingAndCreatePool(const char* poolName) {
          "SubscriptionEnabled Should have been true");
   ASSERT(pptr->getSubscriptionRedundancy() == 1,
          "SubscriptionRedundancy Should have been 1");
-  ASSERT(pptr->getSubscriptionMessageTrackingTimeout() == 500000,
+  ASSERT(pptr->getSubscriptionMessageTrackingTimeout() ==
+             std::chrono::milliseconds(500000),
          "SubscriptionMessageTrackingTimeout Should have been 500000");
-  ASSERT(pptr->getSubscriptionAckInterval() == 120000,
-         "SubscriptionAckInterval Should have been 120000");
+  ASSERT(
+      pptr->getSubscriptionAckInterval() == std::chrono::milliseconds(120000),
+      "SubscriptionAckInterval Should have been 120000");
   // ASSERT(pptr->getMultiuserSecurityMode()==true,"SetMultiuserSecurityMode
   // Should have been true");
   ASSERT(pptr->getPRSingleHopEnabled() == false,
@@ -136,21 +143,25 @@ void doAttrTesting(const char* poolName1) {
 
   ASSERT(strcmp(pptr->getName(), "clientPool") == 0,
          "Pool name should have been clientPool");
-  ASSERT(pptr->getFreeConnectionTimeout() == 10000,
+  ASSERT(pptr->getFreeConnectionTimeout() == std::chrono::milliseconds(10000),
          "FreeConnectionTimeout Should have been 10000");
-  ASSERT(pptr->getLoadConditioningInterval() == 1,
+  ASSERT(pptr->getLoadConditioningInterval() == std::chrono::seconds(1),
          "LoadConditioningInterval Should have been 1");
   ASSERT(pptr->getSocketBufferSize() == 1024,
          "SocketBufferSize Should have been 1024");
-  ASSERT(pptr->getReadTimeout() == 10, "ReadTimeout Should have been 10");
+  ASSERT(pptr->getReadTimeout() == std::chrono::seconds(10),
+         "ReadTimeout Should have been 10");
   ASSERT(pptr->getMinConnections() == 2, "MinConnections Should have been 2");
   ASSERT(pptr->getMaxConnections() == 5, "MaxConnections Should have been 5");
-  ASSERT(pptr->getIdleTimeout() == 5, "IdleTimeout Should have been 5");
+  ASSERT(pptr->getIdleTimeout() == std::chrono::milliseconds(5),
+         "IdleTimeout Should have been 5ms");
   ASSERT(pptr->getRetryAttempts() == 5, "RetryAttempts Should have been 5");
-  ASSERT(pptr->getPingInterval() == 1, "PingInterval Should have been 1");
-  ASSERT(pptr->getUpdateLocatorListInterval() == 25000,
-         "UpdateLocatorListInterval Should have been 25000");
-  ASSERT(pptr->getStatisticInterval() == 1,
+  ASSERT(pptr->getPingInterval() == std::chrono::seconds(1),
+         "PingInterval Should have been 1");
+  ASSERT(
+      pptr->getUpdateLocatorListInterval() == std::chrono::milliseconds(25000),
+      "UpdateLocatorListInterval Should have been 25000");
+  ASSERT(pptr->getStatisticInterval() == std::chrono::seconds(1),
          "StatisticInterval Should have been 1");
   ASSERT(strcmp(pptr->getServerGroup(), "ServerGroup1") == 0,
          "ServerGroup Should have been ServerGroup1");
@@ -158,9 +169,10 @@ void doAttrTesting(const char* poolName1) {
          "SubscriptionEnabled Should have been true");
   ASSERT(pptr->getSubscriptionRedundancy() == 1,
          "SubscriptionRedundancy Should have been 1");
-  ASSERT(pptr->getSubscriptionMessageTrackingTimeout() == 5,
-         "SubscriptionMessageTrackingTimeout Should have been 5");
-  ASSERT(pptr->getSubscriptionAckInterval() == 1,
+  ASSERT(
+      pptr->getSubscriptionMessageTrackingTimeout() == std::chrono::seconds(5),
+      "SubscriptionMessageTrackingTimeout Should have been 5");
+  ASSERT(pptr->getSubscriptionAckInterval() == std::chrono::seconds(1),
          "SubscriptionAckInterval Should have been 1");
   ASSERT(pptr->getPRSingleHopEnabled() == false,
          "PRSingleHopEnabled should have been false");
@@ -188,9 +200,9 @@ END_TASK(StartS12)
 DUNIT_TASK(CLIENT1, StartC1)
   {
     PropertiesPtr props = Properties::create();
-    props->insert("redundancy-monitor-interval", "120");
+    props->insert("redundancy-monitor-interval", "120s");
     props->insert("statistic-sampling-enabled", "false");
-    props->insert("statistic-sample-rate", "120");
+    props->insert("statistic-sample-rate", "120s");
 
     initClient(true, props);
 

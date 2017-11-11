@@ -24,14 +24,14 @@
 
 #include "native_shared_ptr.hpp"
 
-using namespace System;
-
 namespace Apache
 {
   namespace Geode
   {
     namespace Client
     {
+      using namespace System;
+
       namespace native = apache::geode::client;
 
 
@@ -56,13 +56,13 @@ namespace Apache
         /// If max connections is not set this setting has no effect.
         /// </remarks>
         /// <param>
-        /// connectionTimeout the connection timeout in milliseconds
+        /// connectionTimeout the connection timeout
         /// </param>
         /// <exception>
         /// IllegalArgumentException if connectionTimeout 
         /// is less than or equal to 0.
         /// </exception>
-        PoolFactory^ SetFreeConnectionTimeout(Int32 connectionTimeout);
+        PoolFactory^ SetFreeConnectionTimeout(TimeSpan connectionTimeout);
 
         /// <summary>
         /// Sets the load conditioning interval for this pool.
@@ -73,14 +73,14 @@ namespace Apache
         /// server to improve the load balance.
         /// </remarks>
         /// <param>
-        /// loadConditioningInterval the connection lifetime in milliseconds
+        /// loadConditioningInterval the connection lifetime
         /// A value of -1 disables load conditioning.
         /// </param>
         /// <exception>
         /// throws IllegalArgumentException if connectionLifetime
         /// is less than -1.
         /// </exception>
-        PoolFactory^ SetLoadConditioningInterval(Int32 loadConditioningInterval);
+        PoolFactory^ SetLoadConditioningInterval(TimeSpan loadConditioningInterval);
 
         /// <summary>
         /// Sets the socket buffer size for each connection made in this pool.
@@ -101,17 +101,17 @@ namespace Apache
         PoolFactory^ SetSocketBufferSize(Int32 bufferSize);
 
         /// <summary>
-        /// Sets the number of milliseconds to wait for a response from a server before
+        /// Sets the time to wait for a response from a server before
         /// timing out the operation and trying another server (if any are available).
         /// </summary>
         /// <param>
-        /// timeout number of milliseconds to wait for a response from a server
+        /// timeout to wait for a response from a server
         /// </param>
         /// <exception>
         /// throws IllegalArgumentException if timeout
         /// is less than or equal to 0.
         /// </exception>
-        PoolFactory^ SetReadTimeout(Int32 timeout);
+        PoolFactory^ SetReadTimeout(TimeSpan timeout);
 
         /// <summary>
         /// Set the minimum number of connections to keep available at all times.
@@ -154,13 +154,13 @@ namespace Apache
         /// been idle for longer than the idleTimeout will be closed.
         /// </remarks>
         /// <param>
-        /// idleTimeout The amount of time in milliseconds that an idle connection
+        /// idleTimeout The amount of time that an idle connection
         /// should live before expiring. -1 indicates that connections should never expire.
         /// </param>
         /// <exception>
         /// throws IllegalArgumentException if idleTimout is less than 0.
         /// </exception>
-        PoolFactory^ SetIdleTimeout(Int32 idleTimeout);
+        PoolFactory^ SetIdleTimeout(TimeSpan idleTimeout);
 
         /// <summary>
         /// Set the number of times to retry a request after timeout/exception.
@@ -187,25 +187,25 @@ namespace Apache
         /// see in CacheServer: setMaximumTimeBetweenPings(int)
         /// </remarks>
         /// <param>
-        /// pingInterval The amount of time in milliseconds between pings.
+        /// pingInterval The amount of time between pings.
         /// </param>
         /// <exception>
         /// throws IllegalArgumentException if pingInterval is less than 0.
         /// </exception>
-        PoolFactory^ SetPingInterval(Int32 pingInterval);
+        PoolFactory^ SetPingInterval(TimeSpan pingInterval);
 
         /// <summary>
         /// Set how often to update locator list from locator
         /// </summary>
         /// <param>
-        /// updateLocatorListInterval The amount of time in milliseconds between
+        /// updateLocatorListInterval The amount of time between
         /// updating locator list. If its set to 0 then client will not update
         /// the locator list.
         /// </param>
         /// <returns>
         /// a instance of <c>CacheFactory</c> 
         /// </returns>
-        PoolFactory^ SetUpdateLocatorListInterval(Int32 updateLocatorListInterval);
+        PoolFactory^ SetUpdateLocatorListInterval(TimeSpan updateLocatorListInterval);
 
         /// <summary>
         /// Set how often to send client statistics to the server.
@@ -216,14 +216,14 @@ namespace Apache
         /// to the server.
         /// </remarks>
         /// <param>
-        /// statisticInterval The amount of time in milliseconds between
+        /// statisticInterval The amount of time between
         /// sends of client statistics to the server.
         /// </param>
         /// <exception>
         /// throws IllegalArgumentException if statisticInterval
         /// is less than -1.
         /// </exception>
-        PoolFactory^ SetStatisticInterval(Int32 statisticInterval);
+        PoolFactory^ SetStatisticInterval(TimeSpan statisticInterval);
 
         /// <summary>
         /// Configures the group that all servers this pool connects to must belong to.
@@ -329,24 +329,24 @@ namespace Apache
         /// for this amount of time are expired from the list.
         /// </remarks>
         /// <param>
-        /// messageTrackingTimeout number of milliseconds to set the timeout to.
+        /// messageTrackingTimeout
         /// </param>
         /// <exception>
         /// throws IllegalArgumentException if messageTrackingTimeout is less than or equal to 0.
         /// </exception>
-        PoolFactory^ SetSubscriptionMessageTrackingTimeout(Int32 messageTrackingTimeout);
+        PoolFactory^ SetSubscriptionMessageTrackingTimeout(TimeSpan messageTrackingTimeout);
 
         /// <summary>
         /// Sets the is the interval in milliseconds to wait before sending
         /// acknowledgements to the bridge server for events received from the server subscriptions.
         /// </summary>
         /// <param>
-        /// ackInterval number of milliseconds to wait before sending event acknowledgements.
+        /// ackInterval wait before sending event acknowledgements.
         /// </param>
         /// <exception>
         /// throws IllegalArgumentException if ackInterval is less than or equal to 0.
         /// </exception>
-        PoolFactory^ SetSubscriptionAckInterval(Int32 ackInterval);
+        PoolFactory^ SetSubscriptionAckInterval(TimeSpan ackInterval);
 
         /// <summary>
         /// Enable ThreadLocalConnection.

@@ -33,8 +33,7 @@
 #include "CacheListenerAdapter.hpp"
 #include "CacheWriterAdapter.hpp"
 #include "impl/SafeConvert.hpp"
-
-using namespace System;
+#include "TimeSpanUtils.hpp"
 
 namespace Apache
 {
@@ -42,6 +41,8 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace System;
+
       namespace native = apache::geode::client;
 
       generic <class TKey, class TValue>
@@ -159,11 +160,11 @@ namespace Apache
       }
 
       generic <class TKey, class TValue>
-      System::Int32 Client::RegionAttributes<TKey, TValue>::RegionTimeToLive::get()
+      TimeSpan Client::RegionAttributes<TKey, TValue>::RegionTimeToLive::get()
       {
         try
         {
-          return m_nativeptr->get()->getRegionTimeToLive( );
+          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getRegionTimeToLive( ));
         }
         finally
         {
@@ -185,11 +186,11 @@ namespace Apache
       }
 
       generic <class TKey, class TValue>
-      System::Int32 Client::RegionAttributes<TKey, TValue>::RegionIdleTimeout::get()
+      TimeSpan Client::RegionAttributes<TKey, TValue>::RegionIdleTimeout::get()
       {
         try
         {
-          return m_nativeptr->get()->getRegionIdleTimeout( );
+          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getRegionIdleTimeout( ));
         }
         finally
         {
@@ -211,11 +212,11 @@ namespace Apache
       }
 
       generic <class TKey, class TValue>
-      System::Int32 Client::RegionAttributes<TKey, TValue>::EntryTimeToLive::get()
+      TimeSpan Client::RegionAttributes<TKey, TValue>::EntryTimeToLive::get()
       {
         try
         {
-          return m_nativeptr->get()->getEntryTimeToLive( );
+          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getEntryTimeToLive( ));
         }
         finally
         {
@@ -237,11 +238,11 @@ namespace Apache
       }
 
       generic <class TKey, class TValue>
-      System::Int32 Client::RegionAttributes<TKey, TValue>::EntryIdleTimeout::get()
+      TimeSpan Client::RegionAttributes<TKey, TValue>::EntryIdleTimeout::get()
       {
         try
         {
-          return m_nativeptr->get()->getEntryIdleTimeout( );
+          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getEntryIdleTimeout( ));
         }
         finally
         {

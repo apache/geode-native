@@ -43,8 +43,9 @@ void createRegionForCQ(const char* name, bool ackMode,
                        const CacheListenerPtr& listener = nullptr,
                        bool caching = true) {
   // Use region name as pool name to avoid recreating pools with the same name.
-  getHelper()->createPoolWithLocators(
-      name, locatorsG, clientNotificationEnabled, redundancyLevel, 1);
+  getHelper()->createPoolWithLocators(name, locatorsG,
+                                      clientNotificationEnabled,
+                                      redundancyLevel, std::chrono::seconds(1));
   createRegionAndAttachPool(name, ackMode, name, caching);
 }
 

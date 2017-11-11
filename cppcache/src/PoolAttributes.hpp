@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_POOLATTRIBUTES_H_
-#define GEODE_POOLATTRIBUTES_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,9 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_POOLATTRIBUTES_H_
+#define GEODE_POOLATTRIBUTES_H_
+
 #include <string>
 #include <vector>
-#include "ace/OS.h"
+#include <chrono>
+
+#include <ace/OS.h>
+
 #include <geode/geode_globals.hpp>
 #include <geode/geode_types.hpp>
 #include <geode/ExceptionTypes.hpp>
@@ -33,90 +37,136 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 class PoolAttributes {
  public:
   PoolAttributes();
 
-  int getFreeConnectionTimeout() const { return m_freeConnTimeout; }
-  void setFreeConnectionTimeout(int connectionTimeout) {
+  const std::chrono::milliseconds& getFreeConnectionTimeout() const {
+    return m_freeConnTimeout;
+  }
+
+  void setFreeConnectionTimeout(
+      const std::chrono::milliseconds& connectionTimeout) {
     m_freeConnTimeout = connectionTimeout;
   }
 
-  int getLoadConditioningInterval() const { return m_loadCondInterval; }
-  void setLoadConditioningInterval(int loadConditioningInterval) {
+  const std::chrono::milliseconds& getLoadConditioningInterval() const {
+    return m_loadCondInterval;
+  }
+
+  void setLoadConditioningInterval(
+      const std::chrono::milliseconds& loadConditioningInterval) {
     m_loadCondInterval = loadConditioningInterval;
   }
 
   int getSocketBufferSize() const { return m_sockBufferSize; }
+
   void setSocketBufferSize(int bufferSize) { m_sockBufferSize = bufferSize; }
 
-  int getReadTimeout() const { return m_readTimeout; }
-  void setReadTimeout(int timeout) { m_readTimeout = timeout; }
+  const std::chrono::milliseconds& getReadTimeout() const {
+    return m_readTimeout;
+  }
+
+  void setReadTimeout(const std::chrono::milliseconds& timeout) {
+    m_readTimeout = timeout;
+  }
+
   bool getThreadLocalConnectionSetting() { return m_isThreadLocalConn; }
+
   void setThreadLocalConnectionSetting(bool isThreadLocal) {
     m_isThreadLocalConn = isThreadLocal;
   }
+
   int getMinConnections() const { return m_minConns; }
+
   void setMinConnections(int minConnections) { m_minConns = minConnections; }
 
   int getMaxConnections() const { return m_maxConns; }
+
   void setMaxConnections(int maxConnections) { m_maxConns = maxConnections; }
 
-  long getIdleTimeout() const { return m_idleTimeout; }
-  void setIdleTimeout(long idleTimeout) { m_idleTimeout = idleTimeout; }
+  const std::chrono::milliseconds& getIdleTimeout() const {
+    return m_idleTimeout;
+  }
+
+  void setIdleTimeout(const std::chrono::milliseconds& idleTimeout) {
+    m_idleTimeout = idleTimeout;
+  }
 
   int getRetryAttempts() const { return m_retryAttempts; }
+
   void setRetryAttempts(int retryAttempts) { m_retryAttempts = retryAttempts; }
 
-  long getPingInterval() const { return m_pingInterval; }
+  const std::chrono::milliseconds& getPingInterval() const {
+    return m_pingInterval;
+  }
 
-  void setPingInterval(long pingInterval) { m_pingInterval = pingInterval; }
+  void setPingInterval(const std::chrono::milliseconds& pingInterval) {
+    m_pingInterval = pingInterval;
+  }
 
-  long getUpdateLocatorListInterval() const {
+  const std::chrono::milliseconds& getUpdateLocatorListInterval() const {
     return m_updateLocatorListInterval;
   }
 
-  void setUpdateLocatorListInterval(long updateLocatorListInterval) {
+  void setUpdateLocatorListInterval(
+      const std::chrono::milliseconds& updateLocatorListInterval) {
     m_updateLocatorListInterval = updateLocatorListInterval;
   }
 
-  int getStatisticInterval() const { return m_statsInterval; }
-  void setStatisticInterval(int statisticInterval) {
+  const std::chrono::milliseconds& getStatisticInterval() const {
+    return m_statsInterval;
+  }
+
+  void setStatisticInterval(
+      const std::chrono::milliseconds& statisticInterval) {
     m_statsInterval = statisticInterval;
   }
 
   const char* getServerGroup() const { return m_serverGrp.c_str(); }
+
   void setServerGroup(const char* group) { m_serverGrp = group; }
 
   bool getSubscriptionEnabled() const { return m_subsEnabled; }
+
   void setSubscriptionEnabled(bool enabled) { m_subsEnabled = enabled; }
 
   int getSubscriptionRedundancy() const { return m_redundancy; }
+
   void setSubscriptionRedundancy(int redundancy) { m_redundancy = redundancy; }
 
-  int getSubscriptionMessageTrackingTimeout() const {
+  const std::chrono::milliseconds& getSubscriptionMessageTrackingTimeout()
+      const {
     return m_msgTrackTimeout;
   }
-  void setSubscriptionMessageTrackingTimeout(int messageTrackingTimeout) {
+
+  void setSubscriptionMessageTrackingTimeout(
+      const std::chrono::milliseconds& messageTrackingTimeout) {
     m_msgTrackTimeout = messageTrackingTimeout;
   }
 
-  int getSubscriptionAckInterval() const { return m_subsAckInterval; }
+  const std::chrono::milliseconds& getSubscriptionAckInterval() const {
+    return m_subsAckInterval;
+  }
+
+  void setSubscriptionAckInterval(
+      const std::chrono::milliseconds& ackInterval) {
+    m_subsAckInterval = ackInterval;
+  }
 
   bool getPRSingleHopEnabled() const { return m_isPRSingleHopEnabled; }
 
   void setPRSingleHopEnabled(bool enabled) { m_isPRSingleHopEnabled = enabled; }
 
-  void setSubscriptionAckInterval(int ackInterval) {
-    m_subsAckInterval = ackInterval;
-  }
-
   bool getMultiuserSecureModeEnabled() const { return m_multiuserSecurityMode; }
+
   void setMultiuserSecureModeEnabled(bool multiuserSecureMode) {
     m_multiuserSecurityMode = multiuserSecureMode;
   }
 
   void addLocator(const char* host, int port);
+
   void addServer(const char* host, int port);
 
   PoolAttributesPtr clone();
@@ -126,21 +176,21 @@ class PoolAttributes {
 
  private:
   bool m_isThreadLocalConn;
-  int m_freeConnTimeout;
-  int m_loadCondInterval;
+  std::chrono::milliseconds m_freeConnTimeout;
+  std::chrono::milliseconds m_loadCondInterval;
   int m_sockBufferSize;
-  int m_readTimeout;
+  std::chrono::milliseconds m_readTimeout;
   int m_minConns;
   int m_maxConns;
   int m_retryAttempts;
-  int m_statsInterval;
+  std::chrono::milliseconds m_statsInterval;
   int m_redundancy;
-  int m_msgTrackTimeout;
-  int m_subsAckInterval;
+  std::chrono::milliseconds m_msgTrackTimeout;
+  std::chrono::milliseconds m_subsAckInterval;
 
-  long m_idleTimeout;
-  long m_pingInterval;
-  long m_updateLocatorListInterval;
+  std::chrono::milliseconds m_idleTimeout;
+  std::chrono::milliseconds m_pingInterval;
+  std::chrono::milliseconds m_updateLocatorListInterval;
 
   bool m_subsEnabled;
   bool m_multiuserSecurityMode;

@@ -383,27 +383,35 @@ PropertiesPtr RegionAttributes::getPersistenceProperties() {
   return m_persistenceProperties;
 }
 
-int RegionAttributes::getRegionTimeToLive() { return m_regionTimeToLive; }
+std::chrono::seconds RegionAttributes::getRegionTimeToLive() const {
+  return m_regionTimeToLive;
+}
 
-ExpirationAction::Action RegionAttributes::getRegionTimeToLiveAction() {
+ExpirationAction::Action RegionAttributes::getRegionTimeToLiveAction() const {
   return m_regionTimeToLiveExpirationAction;
 }
 
-int RegionAttributes::getRegionIdleTimeout() { return m_regionIdleTimeout; }
+std::chrono::seconds RegionAttributes::getRegionIdleTimeout() const {
+  return m_regionIdleTimeout;
+}
 
-ExpirationAction::Action RegionAttributes::getRegionIdleTimeoutAction() {
+ExpirationAction::Action RegionAttributes::getRegionIdleTimeoutAction() const {
   return m_regionIdleTimeoutExpirationAction;
 }
 
-int RegionAttributes::getEntryTimeToLive() { return m_entryTimeToLive; }
+std::chrono::seconds RegionAttributes::getEntryTimeToLive() const {
+  return m_entryTimeToLive;
+}
 
-ExpirationAction::Action RegionAttributes::getEntryTimeToLiveAction() {
+ExpirationAction::Action RegionAttributes::getEntryTimeToLiveAction() const {
   return m_entryTimeToLiveExpirationAction;
 }
 
-int RegionAttributes::getEntryIdleTimeout() { return m_entryIdleTimeout; }
+std::chrono::seconds RegionAttributes::getEntryIdleTimeout() const {
+  return m_entryIdleTimeout;
+}
 
-ExpirationAction::Action RegionAttributes::getEntryIdleTimeoutAction() {
+ExpirationAction::Action RegionAttributes::getEntryIdleTimeoutAction() const {
   return m_entryIdleTimeoutExpirationAction;
 }
 
@@ -473,13 +481,13 @@ void readCharStar(DataInput& in, char** field) {
 }  // namespace apache
 
 void RegionAttributes::toData(DataOutput& out) const {
-  out.writeInt(static_cast<int32_t>(m_regionTimeToLive));
+  out.writeInt(static_cast<int32_t>(m_regionTimeToLive.count()));
   out.writeInt(static_cast<int32_t>(m_regionTimeToLiveExpirationAction));
-  out.writeInt(static_cast<int32_t>(m_regionIdleTimeout));
+  out.writeInt(static_cast<int32_t>(m_regionIdleTimeout.count()));
   out.writeInt(static_cast<int32_t>(m_regionIdleTimeoutExpirationAction));
-  out.writeInt(static_cast<int32_t>(m_entryTimeToLive));
+  out.writeInt(static_cast<int32_t>(m_entryTimeToLive.count()));
   out.writeInt(static_cast<int32_t>(m_entryTimeToLiveExpirationAction));
-  out.writeInt(static_cast<int32_t>(m_entryIdleTimeout));
+  out.writeInt(static_cast<int32_t>(m_entryIdleTimeout.count()));
   out.writeInt(static_cast<int32_t>(m_entryIdleTimeoutExpirationAction));
   out.writeInt(static_cast<int32_t>(m_initialCapacity));
   out.writeFloat(m_loadFactor);
@@ -509,16 +517,16 @@ void RegionAttributes::toData(DataOutput& out) const {
 }
 
 void RegionAttributes::fromData(DataInput& in) {
-  m_regionTimeToLive = in.readInt32();
+  m_regionTimeToLive = std::chrono::seconds(in.readInt32());
   m_regionTimeToLiveExpirationAction =
       static_cast<ExpirationAction::Action>(in.readInt32());
-  m_regionIdleTimeout = in.readInt32();
+  m_regionIdleTimeout = std::chrono::seconds(in.readInt32());
   m_regionIdleTimeoutExpirationAction =
       static_cast<ExpirationAction::Action>(in.readInt32());
-  m_entryTimeToLive = in.readInt32();
+  m_entryTimeToLive = std::chrono::seconds(in.readInt32());
   m_entryTimeToLiveExpirationAction =
       static_cast<ExpirationAction::Action>(in.readInt32());
-  m_entryIdleTimeout = in.readInt32();
+  m_entryIdleTimeout = std::chrono::seconds(in.readInt32());
   m_entryIdleTimeoutExpirationAction =
       static_cast<ExpirationAction::Action>(in.readInt32());
   m_initialCapacity = in.readInt32();

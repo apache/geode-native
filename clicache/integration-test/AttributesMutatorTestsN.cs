@@ -56,7 +56,7 @@ namespace Apache.Geode.Client.UnitTests
     private UnitProcess m_client1, m_client2;
     private const string Key = "one";
     private const int Val = 1;
-    private const int TimeToLive = 5;
+    private static TimeSpan TimeToLive = TimeSpan.FromSeconds(5);
     private const string PeerRegionName = "PEER1";
     TallyListener<string, string> m_reg1Listener1, m_reg1Listener2;
     TallyListener<string, string> m_reg2Listener1, m_reg2Listener2;
@@ -264,11 +264,11 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        IRegion<string, int> region = CacheHelper.CreateLocalRegionWithETTL<string, int>(RegionName,
+        var region = CacheHelper.CreateLocalRegionWithETTL<string, int>(RegionName,
           ExpirationAction.LocalInvalidate, TimeToLive);
 
-        Apache.Geode.Client.RegionAttributes<string, int> newAttrs = region.Attributes;
-        int ttl = newAttrs.EntryTimeToLive;
+        var newAttrs = region.Attributes;
+        var ttl = newAttrs.EntryTimeToLive;
         Assert.AreEqual(TimeToLive, ttl);
 
         region[Key] = Val;

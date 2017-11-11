@@ -122,9 +122,9 @@ static int selector(const dirent* d) {
 void initClientWithStats() {
   PropertiesPtr pp = Properties::create();
   pp->insert("statistic-sampling-enabled", "true");
-  pp->insert("statistic-sample-rate", 1);
+  pp->insert("statistic-sample-rate", std::chrono::seconds(1));
   pp->insert("statistic-archive-file", "./statArchive.gfs");
-  pp->insert("notify-ack-interval", 1);
+  pp->insert("notify-ack-interval", std::chrono::seconds(1));
 
   initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, pp, 0, true);
   getHelper()->createPooledRegion(regionNames[0], USE_ACK, locatorsG,

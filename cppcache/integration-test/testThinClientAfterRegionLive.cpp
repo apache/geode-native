@@ -70,10 +70,10 @@ void createPooledRegionMine(bool callReadyForEventsAPI = false) {
   AttributesFactory af;
   af.setCachingEnabled(true);
   af.setLruEntriesLimit(0);
-  af.setEntryIdleTimeout(ExpirationAction::DESTROY, 0);
-  af.setEntryTimeToLive(ExpirationAction::DESTROY, 0);
-  af.setRegionIdleTimeout(ExpirationAction::DESTROY, 0);
-  af.setRegionTimeToLive(ExpirationAction::DESTROY, 0);
+  af.setEntryIdleTimeout(ExpirationAction::DESTROY, std::chrono::seconds(0));
+  af.setEntryTimeToLive(ExpirationAction::DESTROY, std::chrono::seconds(0));
+  af.setRegionIdleTimeout(ExpirationAction::DESTROY, std::chrono::seconds(0));
+  af.setRegionTimeToLive(ExpirationAction::DESTROY, std::chrono::seconds(0));
   af.setPoolName("__TEST_POOL1__");
   LOG("poolName = ");
   LOG("__TEST_POOL1__");

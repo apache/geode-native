@@ -505,7 +505,7 @@ namespace Apache.Geode.Client.UnitTests
         int initialCapacity = attrs.InitialCapacity;
         Assert.AreEqual(25, initialCapacity);
 
-        int regionIdleTO = attrs.RegionIdleTimeout;
+        var regionIdleTO = attrs.RegionIdleTimeout;
         Assert.AreEqual(20, regionIdleTO);
 
         ExpirationAction action1 = attrs.RegionIdleTimeoutAction;

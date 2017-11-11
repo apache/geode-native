@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TCPSSLCONN_H_
-#define GEODE_TCPSSLCONN_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,8 +15,14 @@
  * limitations under the License.
  */
 
-#include "TcpConn.hpp"
+#pragma once
+
+#ifndef GEODE_TCPSSLCONN_H_
+#define GEODE_TCPSSLCONN_H_
+
 #include <ace/DLL.h>
+
+#include "TcpConn.hpp"
 #include "../../cryptoimpl/Ssl.hpp"
 
 namespace apache {
@@ -45,23 +46,25 @@ class TcpSslConn : public TcpConn {
                   const char* privkeyfile);
 
  protected:
-  int32_t socketOp(SockOp op, char* buff, int32_t len, uint32_t waitSeconds);
+  int32_t socketOp(SockOp op, char* buff, int32_t len,
+                   std::chrono::microseconds waitSeconds) override;
 
-  void createSocket(ACE_SOCKET sock);
+  void createSocket(ACE_SOCKET sock) override;
 
  public:
-  TcpSslConn(const char* hostname, int32_t port, uint32_t waitSeconds,
-             int32_t maxBuffSizePool, const char* pubkeyfile,
-             const char* privkeyfile, const char* pemPassword)
+  TcpSslConn(const char* hostname, int32_t port,
+             std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool,
+             const char* pubkeyfile, const char* privkeyfile,
+             const char* pemPassword)
       : TcpConn(hostname, port, waitSeconds, maxBuffSizePool),
         m_ssl(nullptr),
         m_pubkeyfile(pubkeyfile),
         m_privkeyfile(privkeyfile),
         m_pemPassword(pemPassword){};
 
-  TcpSslConn(const char* ipaddr, uint32_t waitSeconds, int32_t maxBuffSizePool,
-             const char* pubkeyfile, const char* privkeyfile,
-             const char* pemPassword)
+  TcpSslConn(const char* ipaddr, std::chrono::microseconds waitSeconds,
+             int32_t maxBuffSizePool, const char* pubkeyfile,
+             const char* privkeyfile, const char* pemPassword)
       : TcpConn(ipaddr, waitSeconds, maxBuffSizePool),
         m_ssl(nullptr),
         m_pubkeyfile(pubkeyfile),
@@ -73,16 +76,17 @@ class TcpSslConn : public TcpConn {
   virtual ~TcpSslConn() {}
 
   // Close this tcp connection
-  void close();
+  void close() override;
 
   // Listen
-  void listen(ACE_INET_Addr addr,
-              uint32_t waitSeconds = DEFAULT_READ_TIMEOUT_SECS);
+  void listen(ACE_INET_Addr addr, std::chrono::microseconds waitSeconds =
+                                      DEFAULT_READ_TIMEOUT_SECS) override;
 
   // connect
-  void connect();
+  void connect() override;
 
-  void setOption(int32_t level, int32_t option, void* val, int32_t len) {
+  void setOption(int32_t level, int32_t option, void* val,
+                 int32_t len) override {
     GF_DEV_ASSERT(m_ssl != nullptr);
 
     if (m_ssl->setOption(level, option, val, len) == -1) {
@@ -92,7 +96,7 @@ class TcpSslConn : public TcpConn {
     }
   }
 
-  uint16_t getPort();
+  uint16_t getPort() override;
 };
 }  // namespace client
 }  // namespace geode

@@ -25,14 +25,14 @@
 #include "Log.hpp"
 #include "Properties.hpp"
 
-using namespace System;
-
 namespace Apache
 {
   namespace Geode
   {
     namespace Client
     {
+      using namespace System;
+
       namespace native = apache::geode::client;
 
       /// <summary>
@@ -54,9 +54,9 @@ namespace Apache
         /// how often the statistics thread writes to disk, in seconds.
         /// </summary>
         /// <returns>the statistics sampling interval</returns>
-        property System::Int32 StatisticsSampleInterval
+        property TimeSpan StatisticsSampleInterval
         {
-          System::Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>
@@ -144,36 +144,36 @@ namespace Apache
         /// Returns  the time between two consecutive ping to servers
         /// </summary>
         /// <returns>the PingInterval value</returns>
-        property System::Int32 PingInterval
+        property TimeSpan PingInterval
         {
-          System::Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>
         /// Returns  the time between two consecutive checks for redundancy for HA
         /// </summary>
         /// <returns>the RedundancyMonitorInterval value</returns>
-        property System::Int32 RedundancyMonitorInterval
+        property TimeSpan RedundancyMonitorInterval
         {
-          System::Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>
         /// Returns the periodic notify ack interval
         /// </summary>
         /// <returns>the NotifyAckInterval value</returns>
-        property System::Int32 NotifyAckInterval
+        property TimeSpan NotifyAckInterval
         {
-          System::Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>
         /// Returns the expiry time of an idle event id map entry for duplicate notification checking
         /// </summary>
         /// <returns>the NotifyDupCheckLife value</returns>
-        property System::Int32 NotifyDupCheckLife
+        property TimeSpan NotifyDupCheckLife
         {
-          System::Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>
@@ -333,18 +333,18 @@ namespace Apache
         /// Returns the durable client's timeout.
         /// </summary>
         /// <returns>the durable client timeout</returns>
-        property System::UInt32 DurableTimeout
+        property TimeSpan DurableTimeout
         {
-          System::UInt32 get();
+          TimeSpan get();
         }
 
         /// <summary>
         /// Returns the connect timeout used for server and locator handshakes.
         /// </summary>
         /// <returns>the connect timeout used for server and locator handshakes</returns>
-        property System::UInt32 ConnectTimeout
+        property TimeSpan ConnectTimeout
         {
-          System::UInt32 get();
+          TimeSpan get();
         }
 
         /// <summary>
@@ -360,19 +360,11 @@ namespace Apache
         /// Returns the timeout after which suspended transactions are rolled back.
         /// </summary>
         /// <returns>the timeout for suspended transactions</returns>
-        property System::UInt32 SuspendedTxTimeout
+        property TimeSpan SuspendedTxTimeout
         {
-          System::UInt32 get();
+          TimeSpan get();
         }
 
-        /// <summary>
-        /// This can be called to know whether read timeout unit is in milli second.
-        /// </summary>
-        /// <returns>true if enabled or false by default.</returns>
-        property bool ReadTimeoutUnitInMillis
-        {
-          bool get();
-        }
         /// <summary>
         /// True if app want to clear pdx types ids on client disconnect
         /// </summary>

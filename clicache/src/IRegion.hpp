@@ -1281,7 +1281,7 @@ namespace Apache
           /// if it is called by local region instance <see cref="Region.GetLocalView" />
           /// </exception>
           /// <seealso cref="Put" />
-          void PutAll(IDictionary<TKey, TValue>^ map, int timeout);
+          void PutAll(IDictionary<TKey, TValue>^ map, TimeSpan timeout);
 
           /// <summary>
           /// Puts a (IDictionary) generic collection of key/value pairs in this region.
@@ -1336,7 +1336,7 @@ namespace Apache
           /// if it is called by local region instance <see cref="Region.GetLocalView" />
           /// </exception>
           /// <seealso cref="Put" />
-          void PutAll(IDictionary<TKey, TValue>^ map, int timeout, Object^ callbackArg);
+          void PutAll(IDictionary<TKey, TValue>^ map, TimeSpan timeout, Object^ callbackArg);
 
           /// <summary>
           /// Removes all of the entries for the specified keys from this region.
@@ -1870,7 +1870,7 @@ namespace Apache
           /// The SelectResults which can either be a ResultSet or a StructSet.
           /// </returns>
           generic<class TResult>
-          ISelectResults<TResult>^ Query( String^ predicate, System::UInt32 timeout );
+          ISelectResults<TResult>^ Query( String^ predicate, TimeSpan timeout );
 
           /// <summary>
           /// Executes the query on the server based on the predicate
@@ -1967,7 +1967,7 @@ namespace Apache
           /// <returns>
           /// true if the result size is non-zero, false otherwise.
           /// </returns>
-          bool ExistsValue( String^ predicate, System::UInt32 timeout );
+          bool ExistsValue( String^ predicate, TimeSpan timeout );
 
           /// <summary>
           /// Executes the query on the server based on the predicate
@@ -2068,7 +2068,7 @@ namespace Apache
           /// The single ResultSet or StructSet item,
           /// or NULL of no results are available.
           /// </returns>
-          Object^ SelectValue( String^ predicate, System::UInt32 timeout );
+          Object^ SelectValue( String^ predicate, TimeSpan timeout );
 
       };
     }  // namespace Client

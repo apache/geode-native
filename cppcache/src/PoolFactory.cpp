@@ -14,22 +14,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <CacheImpl.hpp>
-#include <geode/PoolFactory.hpp>
-#include <geode/Pool.hpp>
-#include <PoolAttributes.hpp>
-#include <ThinClientPoolDM.hpp>
-#include <ThinClientPoolHADM.hpp>
-#include <geode/SystemProperties.hpp>
-#include <geode/PoolManager.hpp>
+
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/INET_Addr.h>
-#include <ThinClientPoolStickyDM.hpp>
-#include <ThinClientPoolStickyHADM.hpp>
+
+#include <geode/PoolFactory.hpp>
+#include <geode/Pool.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/PoolManager.hpp>
+
+#include "CacheImpl.hpp"
+#include "PoolAttributes.hpp"
+#include "ThinClientPoolDM.hpp"
+#include "ThinClientPoolHADM.hpp"
+#include "ThinClientPoolStickyDM.hpp"
+#include "ThinClientPoolStickyHADM.hpp"
 #include "CacheRegionHelper.hpp"
+
 using namespace apache::geode::client;
 
 constexpr const char* PoolFactory::DEFAULT_SERVER_GROUP;
+
+const std::chrono::milliseconds PoolFactory::DEFAULT_FREE_CONNECTION_TIMEOUT =
+    std::chrono::seconds{10};
+
+const std::chrono::milliseconds
+    PoolFactory::DEFAULT_LOAD_CONDITIONING_INTERVAL = std::chrono::minutes{5};
+
+const std::chrono::milliseconds PoolFactory::DEFAULT_READ_TIMEOUT =
+    std::chrono::seconds{10};
+
+const std::chrono::milliseconds PoolFactory::DEFAULT_IDLE_TIMEOUT =
+    std::chrono::seconds{5};
+
+const std::chrono::milliseconds PoolFactory::DEFAULT_PING_INTERVAL =
+    std::chrono::seconds{10};
+
+const std::chrono::milliseconds
+    PoolFactory::DEFAULT_UPDATE_LOCATOR_LIST_INTERVAL = std::chrono::seconds{5};
+
+const std::chrono::milliseconds PoolFactory::DEFAULT_STATISTIC_INTERVAL =
+    std::chrono::milliseconds{-1};
+
+const std::chrono::milliseconds
+    PoolFactory::DEFAULT_SUBSCRIPTION_MESSAGE_TRACKING_TIMEOUT =
+        std::chrono::seconds{900};
+
+const std::chrono::milliseconds PoolFactory::DEFAULT_SUBSCRIPTION_ACK_INTERVAL =
+    std::chrono::seconds{100};
 
 PoolFactory::PoolFactory(const Cache& cache)
     : m_attrs(std::make_shared<PoolAttributes>()),
@@ -39,69 +71,134 @@ PoolFactory::PoolFactory(const Cache& cache)
 
 PoolFactory::~PoolFactory() {}
 
-void PoolFactory::setFreeConnectionTimeout(int connectionTimeout) {
+void PoolFactory::setFreeConnectionTimeout(
+    std::chrono::milliseconds connectionTimeout) {
+  // TODO GEODE-3136 - Is this true?
+  if (connectionTimeout <= std::chrono::milliseconds::zero()) {
+    throw std::invalid_argument("connectionTimeout must greater than 0.");
+  }
+
   m_attrs->setFreeConnectionTimeout(connectionTimeout);
 }
-void PoolFactory::setLoadConditioningInterval(int loadConditioningInterval) {
+
+void PoolFactory::setLoadConditioningInterval(
+    std::chrono::milliseconds loadConditioningInterval) {
+  // TODO GEODE-3136 - Is this true?
+  if (loadConditioningInterval <= std::chrono::milliseconds::zero()) {
+    throw std::invalid_argument(
+        "loadConditioningInterval must greater than 0.");
+  }
+
   m_attrs->setLoadConditioningInterval(loadConditioningInterval);
 }
+
 void PoolFactory::setSocketBufferSize(int bufferSize) {
   m_attrs->setSocketBufferSize(bufferSize);
 }
+
 void PoolFactory::setThreadLocalConnections(bool threadLocalConnections) {
   m_attrs->setThreadLocalConnectionSetting(threadLocalConnections);
 }
-void PoolFactory::setReadTimeout(int timeout) {
+
+void PoolFactory::setReadTimeout(std::chrono::milliseconds timeout) {
+  // TODO GEODE-3136 - Is this true?
+  if (timeout <= std::chrono::milliseconds::zero()) {
+    throw std::invalid_argument("timeout must greater than 0.");
+  }
+
   m_attrs->setReadTimeout(timeout);
 }
+
 void PoolFactory::setMinConnections(int minConnections) {
   m_attrs->setMinConnections(minConnections);
 }
+
 void PoolFactory::setMaxConnections(int maxConnections) {
   m_attrs->setMaxConnections(maxConnections);
 }
-void PoolFactory::setIdleTimeout(long idleTimeout) {
+
+void PoolFactory::setIdleTimeout(std::chrono::milliseconds idleTimeout) {
   m_attrs->setIdleTimeout(idleTimeout);
 }
+
 void PoolFactory::setRetryAttempts(int retryAttempts) {
   m_attrs->setRetryAttempts(retryAttempts);
 }
-void PoolFactory::setPingInterval(long pingInterval) {
+
+void PoolFactory::setPingInterval(std::chrono::milliseconds pingInterval) {
+  // TODO GEODE-3136 - Is this true?
+  if (pingInterval <= std::chrono::milliseconds::zero()) {
+    throw std::invalid_argument("timeout must greater than 0.");
+  }
+
   m_attrs->setPingInterval(pingInterval);
 }
-void PoolFactory::setUpdateLocatorListInterval(long updateLocatorListInterval) {
+
+void PoolFactory::setUpdateLocatorListInterval(
+    const std::chrono::milliseconds updateLocatorListInterval) {
+  // TODO GEODE-3136 - Is this true?
+  if (updateLocatorListInterval < std::chrono::milliseconds::zero()) {
+    throw std::invalid_argument("timeout must be positive.");
+  }
+
   m_attrs->setUpdateLocatorListInterval(updateLocatorListInterval);
 }
-void PoolFactory::setStatisticInterval(int statisticInterval) {
+
+void PoolFactory::setStatisticInterval(
+    std::chrono::milliseconds statisticInterval) {
+  // TODO GEODE-3136 - Consider 0 to disable
+  if (statisticInterval.count() <= -1) {
+    throw std::invalid_argument("timeout must greater than -1.");
+  }
+
   m_attrs->setStatisticInterval(statisticInterval);
 }
+
 void PoolFactory::setServerGroup(const char* group) {
   m_attrs->setServerGroup(group);
 }
+
 void PoolFactory::addLocator(const char* host, int port) {
   addCheck(host, port);
   m_attrs->addLocator(host, port);
   m_addedServerOrLocator = true;
 }
+
 void PoolFactory::addServer(const char* host, int port) {
   addCheck(host, port);
   m_attrs->addServer(host, port);
   m_addedServerOrLocator = true;
 }
+
 void PoolFactory::setSubscriptionEnabled(bool enabled) {
   m_attrs->setSubscriptionEnabled(enabled);
 }
+
 void PoolFactory::setSubscriptionRedundancy(int redundancy) {
   m_isSubscriptionRedundancy = true;
   m_attrs->setSubscriptionRedundancy(redundancy);
 }
+
 void PoolFactory::setSubscriptionMessageTrackingTimeout(
-    int messageTrackingTimeout) {
+    std::chrono::milliseconds messageTrackingTimeout) {
+  // TODO GEODE-3136 - Is this true?
+  if (messageTrackingTimeout <= std::chrono::milliseconds::zero()) {
+    throw std::invalid_argument("timeout must greater than 0.");
+  }
+
   m_attrs->setSubscriptionMessageTrackingTimeout(messageTrackingTimeout);
 }
-void PoolFactory::setSubscriptionAckInterval(int ackInterval) {
+
+void PoolFactory::setSubscriptionAckInterval(
+    std::chrono::milliseconds ackInterval) {
+  // TODO GEODE-3136 - Is this true?
+  if (ackInterval <= std::chrono::milliseconds::zero()) {
+    throw std::invalid_argument("timeout must greater than 0.");
+  }
+
   m_attrs->setSubscriptionAckInterval(ackInterval);
 }
+
 void PoolFactory::setMultiuserAuthentication(bool multiuserAuthentication) {
   m_attrs->setMultiuserSecureModeEnabled(multiuserAuthentication);
 }

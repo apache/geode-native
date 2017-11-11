@@ -61,43 +61,44 @@ namespace Apache.Geode.Client.UnitTests
     }
     public ICollection<TResult> GetResult()
     {
-      return GetResult(50);
+      return GetResult(TimeSpan.FromSeconds(50));
     }
-
-    public ICollection<TResult> GetResult(UInt32 timeout) 
+    public ICollection<TResult> GetResult(TimeSpan timeout)
     {
       m_getResultCount++;
-      if (m_resultReady == true)
-      {
-        return m_results;
-      }
-      else
-      {
-        for (int i = 0; i < timeout; i++)
-        {
-          Thread.Sleep(1000);
-          if (m_resultReady == true)
-          {
-            return m_results;
+
+      lock (this) {
+        if (!m_resultReady) {
+          if (timeout > TimeSpan.Zero) {
+            if (!Monitor.Wait(this, timeout)) {
+              throw new FunctionExecutionException("Timeout waiting for result.");
+            }
+          } else {
+            throw new FunctionExecutionException("Results not ready.");
           }
-
         }
-        throw new FunctionExecutionException(
-                   "Result is not ready, endResults callback is called before invoking getResult() method");
-
       }
+
+      return m_results;
     }
+
     public void EndResults()
     {
       m_endResultCount++;
-      m_resultReady = true;
+
+      lock (this) {
+        m_resultReady = true;
+        Monitor.Pulse(this);
+      }
     }
+
     public void ClearResults(/*bool unused*/)
     {
       m_results.Clear();
       m_addResultCount = 0;
       m_getResultCount = 0;
       m_endResultCount = 0;
+      m_resultReady = false;
     }
   }
 
@@ -688,7 +689,7 @@ namespace Apache.Geode.Client.UnitTests
 
       Assert.IsTrue(exc != null, "onRegion Returned NULL");
 
-      Client.IResultCollector<object> rc = exc.WithArgs<ArrayList>(args1).Execute(RegionOperationsHAFunctionPrSHOP, 15);
+      Client.IResultCollector<object> rc = exc.WithArgs<ArrayList>(args1).Execute(RegionOperationsHAFunctionPrSHOP, TimeSpan.FromSeconds(15));
 
       ICollection<object> executeFunctionResult = rc.GetResult();
       List<Object> resultList = new List<Object>();
@@ -743,7 +744,7 @@ namespace Apache.Geode.Client.UnitTests
 
       Assert.IsTrue(exc != null, "onRegion Returned NULL");
 
-      Client.IResultCollector<object> rc = exc.WithArgs<ArrayList>(args1).Execute(RegionOperationsHAFunction, 15);
+      Client.IResultCollector<object> rc = exc.WithArgs<ArrayList>(args1).Execute(RegionOperationsHAFunction, TimeSpan.FromSeconds(15));
 
       ICollection<object> executeFunctionResult = rc.GetResult();
       List<Object> resultList = new List<Object>();
@@ -769,7 +770,7 @@ namespace Apache.Geode.Client.UnitTests
 
       Object[] filter = new Object[1];
       filter[0] = "KEY--" + 10;
-      rc = exc.WithArgs<ArrayList>(args1).WithFilter<Object>(filter).Execute(RegionOperationsHAFunction, 15);
+      rc = exc.WithArgs<ArrayList>(args1).WithFilter<Object>(filter).Execute(RegionOperationsHAFunction, TimeSpan.FromSeconds(15));
 
       executeFunctionResult = rc.GetResult();
       resultList = new List<Object>();
@@ -973,7 +974,7 @@ namespace Apache.Geode.Client.UnitTests
         Util.Log("filter count= {0}.", filter.Length);
 
         Execution<object> exc = Client.FunctionService<object>.OnRegion<object, object>(region);
-        IResultCollector<object> rc = exc.WithArgs<Object>(args).WithFilter<object>(filter).Execute(FuncTimeOutName, 5000 * 1000);
+        IResultCollector<object> rc = exc.WithArgs<Object>(args).WithFilter<object>(filter).Execute(FuncTimeOutName, TimeSpan.FromSeconds(5000));
         ICollection<object> FunctionResult = rc.GetResult();
         Util.Log("ExecuteFETimeOut onRegion FunctionResult.Count = {0} ", FunctionResult.Count);        
         foreach (Boolean item in FunctionResult)
@@ -987,7 +988,7 @@ namespace Apache.Geode.Client.UnitTests
 
       Pool pool = CacheHelper.DCache.GetPoolManager().Find(poolName);
       Execution<object> excs = Client.FunctionService<object>.OnServer(pool);
-      IResultCollector<object> rcs = excs.WithArgs<Object>(args).Execute(FuncTimeOutName, 5000 * 1000);
+      IResultCollector<object> rcs = excs.WithArgs<Object>(args).Execute(FuncTimeOutName, TimeSpan.FromSeconds(5000));
       ICollection<object> ServerFunctionResult = rcs.GetResult();
       Util.Log("ExecuteFETimeOut onServer FunctionResult.Count = {0} ", ServerFunctionResult.Count);
       foreach (Boolean item in ServerFunctionResult)
@@ -999,7 +1000,7 @@ namespace Apache.Geode.Client.UnitTests
 
 
       Execution<object> excss = Client.FunctionService<object>.OnServers(pool);
-      IResultCollector<object> rcss = excss.WithArgs<Object>(args).Execute(FuncTimeOutName, 5000 * 1000);
+      IResultCollector<object> rcss = excss.WithArgs<Object>(args).Execute(FuncTimeOutName, TimeSpan.FromSeconds(5000));
       ICollection<object> ServerFunctionResults = rcss.GetResult();
       Util.Log("ExecuteFETimeOut onServer FunctionResult.Count = {0} ", ServerFunctionResults.Count);
       foreach (Boolean item in ServerFunctionResults)
@@ -1324,7 +1325,7 @@ namespace Apache.Geode.Client.UnitTests
       Apache.Geode.Client.Execution<object> exc = Client.FunctionService<object>.OnServer(pool);
       Assert.IsTrue(exc != null, "onServer Returned NULL");
 
-      Client.IResultCollector<object> rc = exc.WithArgs<ArrayList>(args1).Execute(OnServerHAExceptionFunction, 15);
+      Client.IResultCollector<object> rc = exc.WithArgs<ArrayList>(args1).Execute(OnServerHAExceptionFunction, TimeSpan.FromSeconds(15));
 
       ICollection<object> executeFunctionResult = rc.GetResult();
 
@@ -1348,7 +1349,7 @@ namespace Apache.Geode.Client.UnitTests
         Assert.IsTrue(((string)resultList[i]) != null, "onServer Returned NULL");
       }
 
-      rc = exc.WithArgs<ArrayList>(args1).Execute(OnServerHAShutdownFunction, 15);
+      rc = exc.WithArgs<ArrayList>(args1).Execute(OnServerHAShutdownFunction, TimeSpan.FromSeconds(15));
 
       ICollection<object> executeFunctionResult1 = rc.GetResult();
 

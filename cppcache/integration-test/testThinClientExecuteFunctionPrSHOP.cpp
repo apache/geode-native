@@ -20,6 +20,7 @@
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 #include "testobject/VariousPdxTypes.hpp"
+#include <geode/DefaultResultCollector.hpp>
 
 using namespace PdxTests;
 /* This is to test
@@ -47,105 +48,74 @@ char* putFuncName = (char*)"MultiPutFunction";
 char* putFuncIName = (char*)"MultiPutFunctionI";
 char* FETimeOut = (char*)"FunctionExecutionTimeOut";
 
-class MyResultCollector : public ResultCollector {
+class MyResultCollector : public DefaultResultCollector {
  public:
   MyResultCollector()
-      : m_resultList(CacheableVector::create()),
-        m_isResultReady(false),
-        m_endResultCount(0),
-        m_addResultCount(0),
-        m_getResultCount(0) {}
-  ~MyResultCollector() {}
-  CacheableVectorPtr getResult(uint32_t timeout) {
+      : m_endResultCount(0), m_addResultCount(0), m_getResultCount(0) {}
+  ~MyResultCollector() noexcept {}
+
+  CacheableVectorPtr getResult(std::chrono::milliseconds timeout) override {
     m_getResultCount++;
-    if (m_isResultReady == true) {
-      return m_resultList;
-    } else {
-      for (uint32_t i = 0; i < timeout; i++) {
-        SLEEP(1);
-        if (m_isResultReady == true) return m_resultList;
-      }
-      throw FunctionExecutionException(
-          "Result is not ready, endResults callback is called before invoking "
-          "getResult() method");
-    }
+    return DefaultResultCollector::getResult(timeout);
   }
 
-  void addResult(const CacheablePtr& resultItem) {
+  void addResult(const CacheablePtr& resultItem) override {
     m_addResultCount++;
     if (resultItem == nullptr) {
       return;
     }
-    try {
-      auto result = std::dynamic_pointer_cast<CacheableArrayList>(resultItem);
-      for (int32_t i = 0; i < result->size(); i++) {
-        m_resultList->push_back(result->operator[](i));
+    if (auto results =
+            std::dynamic_pointer_cast<CacheableArrayList>(resultItem)) {
+      for (auto& result : *results) {
+        DefaultResultCollector::addResult(result);
       }
-    } catch (ClassCastException) {
-      auto result =
-          std::dynamic_pointer_cast<UserFunctionExecutionException>(resultItem);
-      m_resultList->push_back(result);
+    } else {
+      DefaultResultCollector::addResult(resultItem);
     }
   }
-  void endResults() {
-    m_isResultReady = true;
+
+  void endResults() override {
     m_endResultCount++;
+    DefaultResultCollector::endResults();
   }
+
   uint32_t getEndResultCount() { return m_endResultCount; }
   uint32_t getAddResultCount() { return m_addResultCount; }
   uint32_t getGetResultCount() { return m_getResultCount; }
 
  private:
-  CacheableVectorPtr m_resultList;
-  volatile bool m_isResultReady;
   uint32_t m_endResultCount;
   uint32_t m_addResultCount;
   uint32_t m_getResultCount;
 };
 typedef std::shared_ptr<MyResultCollector> MyResultCollectorPtr;
-class MyResultCollector2 : public ResultCollector {
+
+class MyResultCollector2 : public DefaultResultCollector {
  public:
   MyResultCollector2()
-      : m_resultList(CacheableVector::create()),
-        m_isResultReady(false),
-        m_endResultCount(0),
-        m_addResultCount(0),
-        m_getResultCount(0) {}
-  ~MyResultCollector2() {}
-  CacheableVectorPtr getResult(uint32_t timeout) {
+      : m_endResultCount(0), m_addResultCount(0), m_getResultCount(0) {}
+  ~MyResultCollector2() noexcept {}
+
+  CacheableVectorPtr getResult(std::chrono::milliseconds timeout) override {
     m_getResultCount++;
-    if (m_isResultReady == true) {
-      return m_resultList;
-    } else {
-      for (uint32_t i = 0; i < timeout; i++) {
-        SLEEP(1);
-        if (m_isResultReady == true) return m_resultList;
-      }
-      throw FunctionExecutionException(
-          "Result is not ready, endResults callback is called before invoking "
-          "getResult() method");
-    }
+    return DefaultResultCollector::getResult(timeout);
   }
 
-  void addResult(const CacheablePtr& resultItem) {
+  void addResult(const CacheablePtr& resultItem) override {
     m_addResultCount++;
-    if (resultItem == nullptr) {
-      return;
-    }
-    auto result = std::dynamic_pointer_cast<CacheableBoolean>(resultItem);
-    m_resultList->push_back(result);
+    DefaultResultCollector::addResult(resultItem);
   }
-  void endResults() {
-    m_isResultReady = true;
+
+  void endResults() override {
     m_endResultCount++;
+    DefaultResultCollector::endResults();
   }
+
   uint32_t getEndResultCount() { return m_endResultCount; }
   uint32_t getAddResultCount() { return m_addResultCount; }
   uint32_t getGetResultCount() { return m_getResultCount; }
 
  private:
-  CacheableVectorPtr m_resultList;
-  volatile bool m_isResultReady;
   uint32_t m_endResultCount;
   uint32_t m_addResultCount;
   uint32_t m_getResultCount;
@@ -203,7 +173,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
     }
     LOG("Put done.");
     try {
-      bool getResult = true;
       for (int k = 0; k < 210; k++) {
         CacheableVectorPtr routingObj = CacheableVector::create();
         for (int i = k; i < k + 20; i++) {
@@ -216,7 +185,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
         CacheableVectorPtr resultList = CacheableVector::create();
         LOG("Executing getFuncName function");
         CacheableVectorPtr executeFunctionResult =
-            exe->withFilter(routingObj)->execute(getFuncName, 15)->getResult();
+            exe->withFilter(routingObj)
+                ->execute(getFuncName, std::chrono::seconds(15))
+                ->getResult();
         if (executeFunctionResult == nullptr) {
           ASSERT(false, "executeFunctionResult is nullptr");
         } else {
@@ -248,11 +219,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
         }
         LOGINFO("getFuncName done");
         auto myRC = std::make_shared<MyResultCollector>();
-        CacheableVectorPtr executeFunctionResult1 =
-            exe->withFilter(routingObj)
-                ->withCollector(myRC)
-                ->execute(getFuncName, getResult)
-                ->getResult();
+        auto executeFunctionResult1 = exe->withFilter(routingObj)
+                                          ->withCollector(myRC)
+                                          ->execute(getFuncName)
+                                          ->getResult();
         LOGINFO("add result count = %d", myRC->getAddResultCount());
         LOGINFO("end result count = %d", myRC->getEndResultCount());
         LOGINFO("get result count = %d", myRC->getGetResultCount());
@@ -565,11 +535,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
 
       ///////////////////TimeOut test //////////////////////
       LOGINFO("FETimeOut begin onRegion");
-      ExecutionPtr RexecutionPtr = FunctionService::onRegion(regPtr0);
-      CacheableVectorPtr fe =
-          RexecutionPtr->withArgs(CacheableInt32::create(5000 * 1000))
-              ->execute(FETimeOut, 5000 * 1000)
-              ->getResult();
+      auto timeout = std::chrono::milliseconds(15000);
+      auto RexecutionPtr = FunctionService::onRegion(regPtr0);
+      auto fe = RexecutionPtr->withArgs(CacheableInt32::create(timeout.count()))
+                    ->execute(FETimeOut, timeout)
+                    ->getResult();
       if (fe == nullptr) {
         ASSERT(false, "functionResult is nullptr");
       } else {

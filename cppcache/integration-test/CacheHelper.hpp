@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_CACHEHELPER_H_
-#define GEODE_INTEGRATION_TEST_CACHEHELPER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,19 +15,27 @@
  * limitations under the License.
  */
 
-#include <geode/GeodeCppCache.hpp>
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_CACHEHELPER_H_
+#define GEODE_INTEGRATION_TEST_CACHEHELPER_H_
+
+#include <list>
+#include <chrono>
 #include <cstdlib>
-#include <geode/SystemProperties.hpp>
+
 #include <ace/OS.h>
 #include <ace/INET_Addr.h>
 #include <ace/SOCK_Acceptor.h>
 
+#include <geode/GeodeCppCache.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/PoolManager.hpp>
+
 #include "TimeBomb.hpp"
-#include <list>
-#include <chrono>
 #include "DistributedSystemImpl.hpp"
 #include "Utils.hpp"
-#include <geode/PoolManager.hpp>
+
 #ifndef ROOT_NAME
 #define ROOT_NAME "Root"
 #endif
@@ -120,16 +123,20 @@ class CacheHelper {
                          int32_t tombstonetimeout = -1);
 
   RegionPtr createRegion(
-      const char* name, bool ack, bool caching = true, int ettl = 0,
-      int eit = 0, int rttl = 0, int rit = 0, int lel = 0,
-      ExpirationAction::Action action = ExpirationAction::DESTROY,
+      const char* name, bool ack, bool caching = true,
+      const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& eit = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rit = std::chrono::seconds::zero(),
+      int lel = 0, ExpirationAction::Action action = ExpirationAction::DESTROY,
       const char* endpoints = 0, bool clientNotificationEnabled = false);
 
   PoolPtr createPool(const char* poolName, const char* locators,
                      const char* serverGroup, int redundancy = 0,
                      bool clientNotification = false,
-                     int subscriptionAckInterval = -1, int connections = -1,
-                     int loadConditioningInterval = -1,
+                     std::chrono::milliseconds subscriptionAckInterval =
+                         std::chrono::milliseconds::zero(),
+                     int connections = -1, int loadConditioningInterval = -1,
                      bool isMultiuserMode = false);
 
   // this will create pool even endpoints and locatorhost has been not defined
@@ -140,24 +147,31 @@ class CacheHelper {
 
   void logPoolAttributes(PoolPtr& pool);
 
-  void createPoolWithLocators(const char* name, const char* locators = nullptr,
-                              bool clientNotificationEnabled = false,
-                              int subscriptionRedundancy = -1,
-                              int subscriptionAckInterval = -1,
-                              int connections = -1,
-                              bool isMultiuserMode = false,
-                              const char* serverGroup = nullptr);
+  void createPoolWithLocators(
+      const char* name, const char* locators = nullptr,
+      bool clientNotificationEnabled = false, int subscriptionRedundancy = -1,
+      std::chrono::milliseconds subscriptionAckInterval =
+          std::chrono::milliseconds::zero(),
+      int connections = -1, bool isMultiuserMode = false,
+      const char* serverGroup = nullptr);
 
   RegionPtr createRegionAndAttachPool(
       const char* name, bool ack, const char* poolName = nullptr,
-      bool caching = true, int ettl = 0, int eit = 0, int rttl = 0, int rit = 0,
+      bool caching = true,
+      const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& eit = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rit = std::chrono::seconds::zero(),
       int lel = 0, ExpirationAction::Action action = ExpirationAction::DESTROY);
 
   RegionPtr createRegionAndAttachPool2(
       const char* name, bool ack, const char* poolName,
       const PartitionResolverPtr& aResolver = nullptr, bool caching = true,
-      int ettl = 0, int eit = 0, int rttl = 0, int rit = 0, int lel = 0,
-      ExpirationAction::Action action = ExpirationAction::DESTROY);
+      const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& eit = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rit = std::chrono::seconds::zero(),
+      int lel = 0, ExpirationAction::Action action = ExpirationAction::DESTROY);
 
   void addServerLocatorEPs(const char* epList, PoolFactoryPtr pfPtr,
                            bool poolLocators = true);
@@ -168,48 +182,66 @@ class CacheHelper {
   RegionPtr createPooledRegion(
       const char* name, bool ack, const char* locators = 0,
       const char* poolName = "__TEST_POOL1__", bool caching = true,
-      bool clientNotificationEnabled = false, int ettl = 0, int eit = 0,
-      int rttl = 0, int rit = 0, int lel = 0,
-      const CacheListenerPtr& cacheListener = nullptr,
+      bool clientNotificationEnabled = false,
+      const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& eit = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rit = std::chrono::seconds::zero(),
+      int lel = 0, const CacheListenerPtr& cacheListener = nullptr,
       ExpirationAction::Action action = ExpirationAction::DESTROY);
 
   RegionPtr createPooledRegionConcurrencyCheckDisabled(
       const char* name, bool ack, const char* locators = 0,
       const char* poolName = "__TEST_POOL1__", bool caching = true,
       bool clientNotificationEnabled = false,
-      bool concurrencyCheckEnabled = true, int ettl = 0, int eit = 0,
-      int rttl = 0, int rit = 0, int lel = 0,
-      const CacheListenerPtr& cacheListener = nullptr,
+      bool concurrencyCheckEnabled = true,
+      const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& eit = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rit = std::chrono::seconds::zero(),
+      int lel = 0, const CacheListenerPtr& cacheListener = nullptr,
       ExpirationAction::Action action = ExpirationAction::DESTROY);
 
   RegionPtr createRegionDiscOverFlow(
       const char* name, bool caching = true,
-      bool clientNotificationEnabled = false, int ettl = 0, int eit = 0,
-      int rttl = 0, int rit = 0, int lel = 0,
-      ExpirationAction::Action action = ExpirationAction::DESTROY);
+      bool clientNotificationEnabled = false,
+      const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& eit = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rit = std::chrono::seconds::zero(),
+      int lel = 0, ExpirationAction::Action action = ExpirationAction::DESTROY);
 
   RegionPtr createPooledRegionDiscOverFlow(
       const char* name, bool ack, const char* locators = 0,
       const char* poolName = "__TEST_POOL1__", bool caching = true,
-      bool clientNotificationEnabled = false, int ettl = 0, int eit = 0,
-      int rttl = 0, int rit = 0, int lel = 0,
-      const CacheListenerPtr& cacheListener = nullptr,
+      bool clientNotificationEnabled = false,
+      const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& eit = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rit = std::chrono::seconds::zero(),
+      int lel = 0, const CacheListenerPtr& cacheListener = nullptr,
       ExpirationAction::Action action = ExpirationAction::DESTROY);
 
   RegionPtr createPooledRegionSticky(
       const char* name, bool ack, const char* locators = 0,
       const char* poolName = "__TEST_POOL1__", bool caching = true,
-      bool clientNotificationEnabled = false, int ettl = 0, int eit = 0,
-      int rttl = 0, int rit = 0, int lel = 0,
-      const CacheListenerPtr& cacheListener = nullptr,
+      bool clientNotificationEnabled = false,
+      const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& eit = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rit = std::chrono::seconds::zero(),
+      int lel = 0, const CacheListenerPtr& cacheListener = nullptr,
       ExpirationAction::Action action = ExpirationAction::DESTROY);
 
   RegionPtr createPooledRegionStickySingleHop(
       const char* name, bool ack, const char* locators = 0,
       const char* poolName = "__TEST_POOL1__", bool caching = true,
-      bool clientNotificationEnabled = false, int ettl = 0, int eit = 0,
-      int rttl = 0, int rit = 0, int lel = 0,
-      const CacheListenerPtr& cacheListener = nullptr,
+      bool clientNotificationEnabled = false,
+      const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& eit = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
+      const std::chrono::seconds& rit = std::chrono::seconds::zero(),
+      int lel = 0, const CacheListenerPtr& cacheListener = nullptr,
       ExpirationAction::Action action = ExpirationAction::DESTROY);
 
   RegionPtr createSubregion(RegionPtr& parent, const char* name, bool ack,

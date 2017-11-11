@@ -33,7 +33,8 @@ ClientProxyMembershipIDFactory::ClientProxyMembershipIDFactory(
 
 std::unique_ptr<ClientProxyMembershipID> ClientProxyMembershipIDFactory::create(
     const char* hostname, uint32_t hostAddr, uint32_t hostPort,
-    const char* durableClientId, const uint32_t durableClntTimeOut) {
+    const char* durableClientId,
+    const std::chrono::seconds durableClntTimeOut) {
   return std::unique_ptr<ClientProxyMembershipID>(new ClientProxyMembershipID(
       dsName, randString, hostname, hostAddr, hostPort, durableClientId,
       durableClntTimeOut));

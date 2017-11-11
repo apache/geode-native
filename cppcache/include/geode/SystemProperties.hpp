@@ -67,9 +67,9 @@ class CPPCACHE_EXPORT SystemProperties {
 
   /**
    * Returns the sampling interval of the sampling thread.
-   * This would be how often the statistics thread writes to disk in seconds.
+   * This would be how often the statistics thread writes to disk.
    */
-  const uint32_t statisticsSampleInterval() const {
+  const std::chrono::milliseconds statisticsSampleInterval() const {
     return m_statisticsSampleInterval;
   }
 
@@ -157,24 +157,28 @@ class CPPCACHE_EXPORT SystemProperties {
   /**
    * Returns  the time between two consecutive ping to servers
    */
-  const int32_t pingInterval() const { return m_pingInterval; }
+  const std::chrono::seconds pingInterval() const { return m_pingInterval; }
   /**
    * Returns  the time between two consecutive checks for redundancy for HA
    */
-  const int32_t redundancyMonitorInterval() const {
+  const std::chrono::seconds redundancyMonitorInterval() const {
     return m_redundancyMonitorInterval;
   }
 
   /**
    * Returns the periodic notify ack interval
    */
-  const int32_t notifyAckInterval() const { return m_notifyAckInterval; }
+  const std::chrono::milliseconds notifyAckInterval() const {
+    return m_notifyAckInterval;
+  }
 
   /**
    * Returns the expiry time of an idle event id map entry for duplicate
    * notification checking
    */
-  const int32_t notifyDupCheckLife() const { return m_notifyDupCheckLife; }
+  const std::chrono::milliseconds notifyDupCheckLife() const {
+    return m_notifyDupCheckLife;
+  }
 
   /**
    * Returns the durable client ID
@@ -184,24 +188,30 @@ class CPPCACHE_EXPORT SystemProperties {
   /**
    * Returns the durable timeout
    */
-  const uint32_t durableTimeout() const { return m_durableTimeout; }
+  const std::chrono::seconds durableTimeout() const { return m_durableTimeout; }
 
   /**
    * Returns the connect timeout used for server and locator handshakes
    */
-  const uint32_t connectTimeout() const { return m_connectTimeout; }
+  const std::chrono::milliseconds connectTimeout() const {
+    return m_connectTimeout;
+  }
 
   /**
    * Returns the connect wait timeout(in millis) used for to connect to server
    * This is only applicable for linux
    */
-  const uint32_t connectWaitTimeout() const { return m_connectWaitTimeout; }
+  const std::chrono::milliseconds connectWaitTimeout() const {
+    return m_connectWaitTimeout;
+  }
 
   /**
    * Returns the connect wait timeout(in millis) used for to connect to server
    * This is only applicable for linux
    */
-  const uint32_t bucketWaitTimeout() const { return m_bucketWaitTimeout; }
+  const std::chrono::milliseconds bucketWaitTimeout() const {
+    return m_bucketWaitTimeout;
+  }
 
   /**
    * Returns client Queueconflation option
@@ -262,11 +272,6 @@ class CPPCACHE_EXPORT SystemProperties {
    * opertaion
    */
   bool disableChunkHandlerThread() const { return m_disableChunkHandlerThread; }
-
-  /**
-   * This can be call to know whether read timeout unit is in milli second
-   */
-  bool readTimeoutUnitInMillis() const { return m_readTimeoutUnitInMillis; }
 
   /**
    * This can be call multiple time to disable chunkhandler thread for those
@@ -367,17 +372,19 @@ class CPPCACHE_EXPORT SystemProperties {
   /**
    * Returns the timeout after which suspended transactions are rolled back.
    */
-  const uint32_t suspendedTxTimeout() const { return m_suspendedTxTimeout; }
+  const std::chrono::seconds suspendedTxTimeout() const {
+    return m_suspendedTxTimeout;
+  }
 
   /**
    * Returns the tombstone timeout .
    */
-  const uint32_t tombstoneTimeoutInMSec() const {
-    return m_tombstoneTimeoutInMSec;
+  const std::chrono::milliseconds tombstoneTimeout() const {
+    return m_tombstoneTimeout;
   }
 
  private:
-  uint32_t m_statisticsSampleInterval;
+  std::chrono::milliseconds m_statisticsSampleInterval;
 
   bool m_statisticsEnabled;
 
@@ -413,11 +420,11 @@ class CPPCACHE_EXPORT SystemProperties {
   int32_t m_heapLRULimit;
   int32_t m_heapLRUDelta;
   int32_t m_maxSocketBufferSize;
-  int32_t m_pingInterval;
-  int32_t m_redundancyMonitorInterval;
+  std::chrono::seconds m_pingInterval;
+  std::chrono::seconds m_redundancyMonitorInterval;
 
-  int32_t m_notifyAckInterval;
-  int32_t m_notifyDupCheckLife;
+  std::chrono::milliseconds m_notifyAckInterval;
+  std::chrono::milliseconds m_notifyDupCheckLife;
 
   PropertiesPtr m_securityPropertiesPtr;
 
@@ -425,11 +432,11 @@ class CPPCACHE_EXPORT SystemProperties {
   CacheableStringPtr m_securityClientKsPath;
 
   char* m_durableClientId;
-  uint32_t m_durableTimeout;
+  std::chrono::seconds m_durableTimeout;
 
-  uint32_t m_connectTimeout;
-  uint32_t m_connectWaitTimeout;
-  uint32_t m_bucketWaitTimeout;
+  std::chrono::milliseconds m_connectTimeout;
+  std::chrono::milliseconds m_connectWaitTimeout;
+  std::chrono::milliseconds m_bucketWaitTimeout;
 
   bool m_gridClient;
 
@@ -445,10 +452,9 @@ class CPPCACHE_EXPORT SystemProperties {
   char* m_conflateEvents;
 
   uint32_t m_threadPoolSize;
-  uint32_t m_suspendedTxTimeout;
-  uint32_t m_tombstoneTimeoutInMSec;
+  std::chrono::seconds m_suspendedTxTimeout;
+  std::chrono::milliseconds m_tombstoneTimeout;
   bool m_disableChunkHandlerThread;
-  bool m_readTimeoutUnitInMillis;
   bool m_onClientDisconnectClearPdxTypeIds;
 
  private:
@@ -457,6 +463,10 @@ class CPPCACHE_EXPORT SystemProperties {
    * the results internally:
    */
   void processProperty(const char* property, const char* value);
+  template <class _Rep, class _Period>
+  void parseDurationProperty(const std::string& property,
+                             const std::string& value,
+                             std::chrono::duration<_Rep, _Period>& duration);
 
  private:
   SystemProperties(const SystemProperties& rhs);  // never defined

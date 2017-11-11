@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_RESULTCOLLECTOR_H_
-#define GEODE_RESULTCOLLECTOR_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,10 +15,17 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_RESULTCOLLECTOR_H_
+#define GEODE_RESULTCOLLECTOR_H_
+
+#include <memory>
+#include <chrono>
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
-#include <memory>
-#include "VectorT.hpp"
+
 #include "CacheableBuiltins.hpp"
 
 /**
@@ -33,6 +35,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 /**
  * @class ResultCollector ResultCollector.hpp
  * Defines the interface for a container that gathers results from function
@@ -65,8 +68,9 @@ class CPPCACHE_EXPORT ResultCollector {
    * @brief public methods
    */
  public:
-  ResultCollector();
-  virtual ~ResultCollector();
+  ResultCollector() = default;
+  virtual ~ResultCollector() noexcept = default;
+
   /**
    * Returns the result of function execution, potentially blocking until all
    * the results are available.
@@ -74,39 +78,39 @@ class CPPCACHE_EXPORT ResultCollector {
    * will not
    * throw exception but will have exception {@link
    * UserFunctionExecutionException} as a part of results received.
-   * @param timeout in seconds, if result is not ready within this time,
+   * @param timeout if result is not ready within this time,
    * exception will be thrown
    * @return the result
    * @throws FunctionException if result retrieval fails
    * @see UserFunctionExecutionException
    */
   virtual CacheableVectorPtr getResult(
-      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
+
   /**
    * Adds a single function execution result to the ResultCollector
    *
    * @param resultOfSingleExecution
    * @since 5.8LA
    */
-  virtual void addResult(const CacheablePtr& resultOfSingleExecution);
+  virtual void addResult(const CacheablePtr& resultOfSingleExecution) = 0;
+
   /**
    * Geode will invoke this method when function execution has completed
    * and all results for the execution have been obtained and  added to the
    * ResultCollector}
    */
-  virtual void endResults();
+  virtual void endResults() = 0;
+
   /**
    * Geode will invoke this method before re-executing function (in case of
    * Function Execution HA) This is to clear the previous execution results from
    * the result collector
    * @since 6.5
    */
-  virtual void clearResults();
-
- private:
-  CacheableVectorPtr m_resultList;
-  volatile bool m_isResultReady;
+  virtual void clearResults() = 0;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

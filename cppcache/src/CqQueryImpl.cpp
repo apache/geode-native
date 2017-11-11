@@ -14,17 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <geode/VectorT.hpp>
-#include "CqQueryImpl.hpp"
 #include <geode/CqAttributesFactory.hpp>
+#include <geode/ExceptionTypes.hpp>
+
+#include "CqQueryImpl.hpp"
 #include "CqAttributesMutatorImpl.hpp"
-#include "util/Log.hpp"
 #include "ResultSetImpl.hpp"
 #include "StructSetImpl.hpp"
-#include <geode/ExceptionTypes.hpp>
 #include "ThinClientRegion.hpp"
 #include "ReadWriteLock.hpp"
 #include "ThinClientRegion.hpp"
+#include "util/bounds.hpp"
+#include "util/Log.hpp"
+
 using namespace apache::geode::client;
 
 CqQueryImpl::CqQueryImpl(const CqServicePtr& cqService,
@@ -359,7 +363,10 @@ bool CqQueryImpl::executeCq(TcrMessage::MsgType requestType) {
 }
 
 // for EXECUTE_INITIAL_RESULTS_REQUEST :
-CqResultsPtr CqQueryImpl::executeWithInitialResults(uint32_t timeout) {
+CqResultsPtr CqQueryImpl::executeWithInitialResults(
+    std::chrono::milliseconds timeout) {
+  util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
+
   GuardUserAttribures gua;
   if (m_proxyCache != nullptr) {
     gua.setProxyCache(m_proxyCache);
@@ -381,6 +388,7 @@ CqResultsPtr CqQueryImpl::executeWithInitialResults(uint32_t timeout) {
                                     ->createDataOutput(),
                                 m_cqName, m_queryString, CqState::RUNNING,
                                 isDurable(), m_tccdm);
+
   TcrMessageReply reply(true, m_tccdm);
   auto resultCollector = (new ChunkedQueryResponse(reply));
   reply.setChunkedResultHandler(
@@ -474,7 +482,7 @@ void CqQueryImpl::sendStopOrClose(TcrMessage::MsgType requestType) {
                              .getCacheImpl()
                              ->getCache()
                              ->createDataOutput(),
-                         m_cqName, -1, m_tccdm);
+                         m_cqName, std::chrono::milliseconds(-1), m_tccdm);
     err = m_tccdm->sendSyncRequest(msg, reply);
   } else if (requestType == TcrMessage::CLOSECQ_MSG_TYPE) {
     TcrMessageCloseCQ msg(m_cqService->getDM()
@@ -482,7 +490,7 @@ void CqQueryImpl::sendStopOrClose(TcrMessage::MsgType requestType) {
                               .getCacheImpl()
                               ->getCache()
                               ->createDataOutput(),
-                          m_cqName, -1, m_tccdm);
+                          m_cqName, std::chrono::milliseconds(-1), m_tccdm);
     err = m_tccdm->sendSyncRequest(msg, reply);
   }
 

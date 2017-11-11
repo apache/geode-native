@@ -49,7 +49,7 @@ class FairQueue {
   }
 
   /** wait sec time until notified */
-  T* getUntil(int64_t& sec) {
+  T* getUntil(std::chrono::microseconds& sec) {
     bool isClosed;
     T* mp = getNoGetLock(isClosed);
 
@@ -140,7 +140,8 @@ class FairQueue {
   }
 
   template <typename U>
-  T* getUntilWithToken(int64_t& sec, bool& isClosed, U* excludeList = nullptr) {
+  T* getUntilWithToken(std::chrono::microseconds& sec, bool& isClosed,
+                       U* excludeList = nullptr) {
     T* mp = nullptr;
 
     ACE_Guard<ACE_Token> _guard(m_queueGetLock);
@@ -164,7 +165,7 @@ class FairQueue {
         }
       } while (mp == nullptr && (currTime = ACE_OS::gettimeofday()) < stopAt &&
                !isClosed);
-      sec = (stopAt - currTime).sec();
+      sec = std::chrono::microseconds((stopAt - currTime).usec());
     }
 
     return mp;

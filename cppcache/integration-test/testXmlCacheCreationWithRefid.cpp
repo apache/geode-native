@@ -158,7 +158,7 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
     return -1;
   }
 
-  if (atts->getEntryIdleTimeout() != 10) {
+  if (atts->getEntryIdleTimeout().count() != 10) {
     LOGINFO("Entryidletimeout of SubRegion21 is not 10");
     return -1;
   }
@@ -168,7 +168,7 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
     return -1;
   }
 
-  if (atts->getRegionIdleTimeout() != 20) {
+  if (atts->getRegionIdleTimeout().count() != 20) {
     LOGINFO("Regionidletimeout of SubRegion21 is not 20");
     return -1;
   }
@@ -202,7 +202,7 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
     return -1;
   }
 
-  if (atts->getEntryIdleTimeout() != 10) {
+  if (atts->getEntryIdleTimeout().count() != 10) {
     LOGINFO("Entryidletimeout of Root2 is not 10");
     return -1;
   }
@@ -212,7 +212,7 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
     return -1;
   }
 
-  if (atts->getEntryTimeToLive() != 0) {
+  if (atts->getEntryTimeToLive().count() != 0) {
     LOGINFO("Entrytimetolive of Root2 is not 0");
     return -1;
   }
@@ -222,7 +222,7 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
     return -1;
   }
 
-  if (atts->getRegionIdleTimeout() != 0) {
+  if (atts->getRegionIdleTimeout().count() != 0) {
     LOGINFO("Regionidletimeout of Root2 is not 0");
     return -1;
   }
@@ -232,7 +232,7 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
     return -1;
   }
 
-  if (atts->getRegionTimeToLive() != 0) {
+  if (atts->getRegionTimeToLive().count() != 0) {
     LOGINFO("Regiontimetolive of Root2 is not 0");
     return -1;
   }

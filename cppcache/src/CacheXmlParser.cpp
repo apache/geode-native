@@ -14,10 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "CacheXmlParser.hpp"
-#include "CacheRegionHelper.hpp"
+
+#include <chrono>
+
+#include <geode/util/chrono/duration.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/PoolFactory.hpp>
+
+#include "CacheXmlParser.hpp"
+#include "CacheRegionHelper.hpp"
 #include "AutoDelete.hpp"
 #include "CacheImpl.hpp"
 
@@ -634,7 +639,9 @@ void CacheXmlParser::endPool() {
 void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
                                  const char* value) {
   if (strcmp(name, FREE_CONNECTION_TIMEOUT) == 0) {
-    factory->setFreeConnectionTimeout(atoi(value));
+    factory->setFreeConnectionTimeout(
+        util::chrono::duration::from_string<std::chrono::milliseconds>(
+            std::string(value)));
   } else if (strcmp(name, MULTIUSER_SECURE_MODE) == 0) {
     if (ACE_OS::strcasecmp(value, "true") == 0) {
       factory->setMultiuserAuthentication(true);
@@ -642,19 +649,29 @@ void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
       factory->setMultiuserAuthentication(false);
     }
   } else if (strcmp(name, IDLE_TIMEOUT) == 0) {
-    factory->setIdleTimeout(atoi(value));
+    factory->setIdleTimeout(
+        util::chrono::duration::from_string<std::chrono::milliseconds>(
+            std::string(value)));
   } else if (strcmp(name, LOAD_CONDITIONING_INTERVAL) == 0) {
-    factory->setLoadConditioningInterval(atoi(value));
+    factory->setLoadConditioningInterval(
+        util::chrono::duration::from_string<std::chrono::milliseconds>(
+            std::string(value)));
   } else if (strcmp(name, MAX_CONNECTIONS) == 0) {
     factory->setMaxConnections(atoi(value));
   } else if (strcmp(name, MIN_CONNECTIONS) == 0) {
     factory->setMinConnections(atoi(value));
   } else if (strcmp(name, PING_INTERVAL) == 0) {
-    factory->setPingInterval(atoi(value));
+    factory->setPingInterval(
+        util::chrono::duration::from_string<std::chrono::milliseconds>(
+            std::string(value)));
   } else if (strcmp(name, UPDATE_LOCATOR_LIST_INTERVAL) == 0) {
-    factory->setUpdateLocatorListInterval(atoi(value));
+    factory->setUpdateLocatorListInterval(
+        util::chrono::duration::from_string<std::chrono::milliseconds>(
+            std::string(value)));
   } else if (strcmp(name, READ_TIMEOUT) == 0) {
-    factory->setReadTimeout(atoi(value));
+    factory->setReadTimeout(
+        util::chrono::duration::from_string<std::chrono::milliseconds>(
+            std::string(value)));
   } else if (strcmp(name, RETRY_ATTEMPTS) == 0) {
     factory->setRetryAttempts(atoi(value));
   } else if (strcmp(name, SERVER_GROUP) == 0) {
@@ -662,9 +679,13 @@ void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
   } else if (strcmp(name, SOCKET_BUFFER_SIZE) == 0) {
     factory->setSocketBufferSize(atoi(value));
   } else if (strcmp(name, STATISTIC_INTERVAL) == 0) {
-    factory->setStatisticInterval(atoi(value));
+    factory->setStatisticInterval(
+        util::chrono::duration::from_string<std::chrono::milliseconds>(
+            std::string(value)));
   } else if (strcmp(name, SUBSCRIPTION_ACK_INTERVAL) == 0) {
-    factory->setSubscriptionAckInterval(atoi(value));
+    factory->setSubscriptionAckInterval(
+        util::chrono::duration::from_string<std::chrono::milliseconds>(
+            std::string(value)));
   } else if (strcmp(name, SUBSCRIPTION_ENABLED) == 0) {
     if (ACE_OS::strcasecmp(value, "true") == 0) {
       factory->setSubscriptionEnabled(true);
@@ -672,7 +693,9 @@ void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
       factory->setSubscriptionEnabled(false);
     }
   } else if (strcmp(name, SUBSCRIPTION_MTT) == 0) {
-    factory->setSubscriptionMessageTrackingTimeout(atoi(value));
+    factory->setSubscriptionMessageTrackingTimeout(
+        util::chrono::duration::from_string<std::chrono::milliseconds>(
+            std::string(value)));
   } else if (strcmp(name, SUBSCRIPTION_REDUNDANCY) == 0) {
     factory->setSubscriptionRedundancy(atoi(value));
   } else if (strcmp(name, THREAD_LOCAL_CONNECTIONS) == 0) {
@@ -1045,19 +1068,20 @@ void CacheXmlParser::startExpirationAttributes(const xmlChar** atts) {
         "<expirartion-attributes>";
     throw CacheXmlException(s.c_str());
   }
-  char* timeOut = nullptr;
-  int timeOutInt = 0;
+  std::string timeOut;
+  std::chrono::seconds timeOutSeconds;
   ExpirationAction::Action expire = ExpirationAction::INVALID_ACTION;
   for (int i = 0; (atts[i] != nullptr); i++) {
     if (strcmp(TIMEOUT, (char*)atts[i]) == 0) {
       i++;
-      timeOut = (char*)atts[i];
-      if (strcmp(timeOut, "") == 0) {
+      timeOut = std::string((char*)atts[i]);
+      if (timeOut.empty()) {
         std::string s =
             "XML:Value for attribute <timeout> needs to be specified";
         throw CacheXmlException(s.c_str());
       }
-      timeOutInt = atoi(timeOut);
+      timeOutSeconds =
+          util::chrono::duration::from_string<std::chrono::seconds>(timeOut);
     } else if (strcmp(ACTION, (char*)atts[i]) == 0) {
       i++;
       char* action = (char*)atts[i];
@@ -1096,14 +1120,15 @@ void CacheXmlParser::startExpirationAttributes(const xmlChar** atts) {
       throw CacheXmlException(s.c_str());
     }
   }
-  if (timeOut == nullptr || strcmp(timeOut, "") == 0) {
+  if (timeOut.empty()) {
     std::string s =
         "XML:The attribute <timeout> not specified in "
         "<expiration-attributes>.";
     throw CacheXmlException(s.c_str());
   }
 
-  auto expireAttr = std::make_shared<ExpirationAttributes>(timeOutInt, expire);
+  auto expireAttr =
+      std::make_shared<ExpirationAttributes>(timeOutSeconds, expire);
   if (!expireAttr) {
     throw UnknownException(
         "CacheXmlParser::startExpirationAttributes:Out of memeory");
@@ -1653,6 +1678,7 @@ void CacheXmlParser::endEntryIdleTime() {
       std::static_pointer_cast<ExpirationAttributes>(_stack.top());
   _stack.pop();
   auto attrsFactory = std::static_pointer_cast<AttributesFactory>(_stack.top());
+  // TODO GEODE-3136: consider string parser here.
   attrsFactory->setEntryIdleTimeout(expireAttr->getAction(),
                                     expireAttr->getTimeout());
   m_flagExpirationAttribute = false;

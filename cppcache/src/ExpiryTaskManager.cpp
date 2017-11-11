@@ -58,7 +58,20 @@ long ExpiryTaskManager::scheduleExpiryTask(ACE_Event_Handler* handler,
 
   ACE_Time_Value expTimeValue(expTime);
   ACE_Time_Value intervalValue(interval);
-  LOGFINER("Scheduled expiration ... in %d seconds.", expTime);
+  return m_reactor->schedule_timer(handler, 0, expTimeValue, intervalValue);
+}
+
+long ExpiryTaskManager::scheduleExpiryTask(
+    ACE_Event_Handler* handler, const std::chrono::microseconds expTime,
+    const std::chrono::microseconds interval, const bool cancelExistingTask) {
+  LOGFINER("ExpiryTaskManager: expTime %d, interval %d, cancelExistingTask %d",
+           expTime.count(), interval.count(), cancelExistingTask);
+  if (cancelExistingTask) {
+    m_reactor->cancel_timer(handler, 1);
+  }
+
+  const ACE_Time_Value expTimeValue(expTime);
+  const ACE_Time_Value intervalValue(interval);
   return m_reactor->schedule_timer(handler, 0, expTimeValue, intervalValue);
 }
 

@@ -158,8 +158,8 @@ void initClientCq(const bool isthinClient, int clientIdx) {
   credentialGeneratorHandler->getValidCredentials(userCreds);
 
   config->insert("durable-client-id", durableIds[clientIdx]);
-  config->insert("durable-timeout", 60);
-  config->insert("notify-ack-interval", 1);
+  config->insert("durable-timeout", std::chrono::seconds(60));
+  config->insert("notify-ack-interval", std::chrono::seconds(1));
 
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, config);

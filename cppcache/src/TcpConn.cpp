@@ -15,11 +15,6 @@
  * limitations under the License.
  */
 
-#include "TcpConn.hpp"
-#include <geode/DistributedSystem.hpp>
-#include <geode/SystemProperties.hpp>
-#include "util/Log.hpp"
-
 #include <memory.h>
 
 #include <ace/INET_Addr.h>
@@ -27,8 +22,18 @@
 #include <ace/SOCK_Connector.h>
 #include <ace/SOCK_Acceptor.h>
 #include <ace/OS.h>
+
+#include <geode/DistributedSystem.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/util/chrono/duration.hpp>
+
+#include "TcpConn.hpp"
 #include "CacheImpl.hpp"
-using namespace apache::geode::client;
+#include "util/Log.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
 
 void TcpConn::clearNagle(ACE_SOCKET sock) {
   int32_t val = 1;
@@ -127,38 +132,41 @@ void TcpConn::init() {
   connect();
 }
 
-TcpConn::TcpConn(const char *ipaddr, uint32_t waitSeconds,
+TcpConn::TcpConn(const char *ipaddr, std::chrono::microseconds waitSeconds,
                  int32_t maxBuffSizePool)
     : m_io(nullptr),
       m_addr(ipaddr),
-      m_waitMilliSeconds(waitSeconds * 1000),
+      m_waitMilliSeconds(waitSeconds),
       m_maxBuffSizePool(maxBuffSizePool),
       m_chunkSize(getDefaultChunkSize()) {}
 
-TcpConn::TcpConn(const char *hostname, int32_t port, uint32_t waitSeconds,
-                 int32_t maxBuffSizePool)
+TcpConn::TcpConn(const char *hostname, int32_t port,
+                 std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool)
     : m_io(nullptr),
       m_addr(port, hostname),
-      m_waitMilliSeconds(waitSeconds * 1000),
+      m_waitMilliSeconds(waitSeconds),
       m_maxBuffSizePool(maxBuffSizePool),
       m_chunkSize(getDefaultChunkSize()) {}
 
-void TcpConn::listen(const char *hostname, int32_t port, uint32_t waitSeconds) {
+void TcpConn::listen(const char *hostname, int32_t port,
+                     std::chrono::microseconds waitSeconds) {
   ACE_INET_Addr addr(port, hostname);
   listen(addr, waitSeconds);
 }
 
-void TcpConn::listen(const char *ipaddr, uint32_t waitSeconds) {
+void TcpConn::listen(const char *ipaddr,
+                     std::chrono::microseconds waitSeconds) {
   ACE_INET_Addr addr(ipaddr);
   listen(addr, waitSeconds);
 }
 
-void TcpConn::listen(ACE_INET_Addr addr, uint32_t waitSeconds) {
+void TcpConn::listen(ACE_INET_Addr addr,
+                     std::chrono::microseconds waitSeconds) {
   GF_DEV_ASSERT(m_io != nullptr);
 
   ACE_SOCK_Acceptor listener(addr, 1);
   int32_t retVal = 0;
-  if (waitSeconds > 0) {
+  if (waitSeconds > std::chrono::microseconds::zero()) {
     ACE_Time_Value wtime(waitSeconds);
     retVal = listener.accept(*m_io, 0, &wtime);
   } else {
@@ -168,22 +176,9 @@ void TcpConn::listen(ACE_INET_Addr addr, uint32_t waitSeconds) {
     char msg[256];
     int32_t lastError = ACE_OS::last_error();
     if (lastError == ETIME || lastError == ETIMEDOUT) {
-      /* adongre
-       * Coverity - II
-       * CID 29270: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-       * "sprintf" can cause a
-       * buffer overflow when done incorrectly. Because sprintf() assumes an
-       * arbitrarily long string,
-       * callers must be careful not to overflow the actual space of the
-       * destination.
-       * Use snprintf() instead, or correct precision specifiers.
-       * Fix : using ACE_OS::snprintf
-       */
-      ACE_OS::snprintf(
-          msg, 256,
-          "TcpConn::listen Attempt to listen timed out after %d seconds.",
-          waitSeconds);
-      throw TimeoutException(msg);
+      throw TimeoutException(
+          "TcpConn::listen Attempt to listen timed out after " +
+          util::chrono::duration::to_string(waitSeconds) + ".");
     }
     ACE_OS::snprintf(msg, 256, "TcpConn::listen failed with errno: %d: %s",
                      lastError, ACE_OS::strerror(lastError));
@@ -192,14 +187,15 @@ void TcpConn::listen(ACE_INET_Addr addr, uint32_t waitSeconds) {
 }
 
 void TcpConn::connect(const char *hostname, int32_t port,
-                      uint32_t waitSeconds) {
+                      std::chrono::microseconds waitSeconds) {
   ACE_INET_Addr addr(port, hostname);
   m_addr = addr;
   m_waitMilliSeconds = waitSeconds;
   connect();
 }
 
-void TcpConn::connect(const char *ipaddr, uint32_t waitSeconds) {
+void TcpConn::connect(const char *ipaddr,
+                      std::chrono::microseconds waitSeconds) {
   ACE_INET_Addr addr(ipaddr);
   m_addr = addr;
   m_waitMilliSeconds = waitSeconds;
@@ -210,18 +206,18 @@ void TcpConn::connect() {
   GF_DEV_ASSERT(m_io != nullptr);
 
   ACE_INET_Addr ipaddr = m_addr;
-  uint32_t waitMicroSeconds = m_waitMilliSeconds * 1000;
+  std::chrono::microseconds waitMicroSeconds = m_waitMilliSeconds;
 
   ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
 
   LOGFINER("Connecting plain socket stream to %s:%d waiting %d micro sec",
-           ipaddr.get_host_name(), ipaddr.get_port_number(), waitMicroSeconds);
+           ipaddr.get_host_name(), ipaddr.get_port_number(), waitMicroSeconds.count());
 
   ACE_SOCK_Connector conn;
   int32_t retVal = 0;
-  if (waitMicroSeconds > 0) {
+  if (waitMicroSeconds > std::chrono::microseconds::zero()) {
     // passing waittime as microseconds
-    ACE_Time_Value wtime(0, waitMicroSeconds);
+    ACE_Time_Value wtime(waitMicroSeconds);
     retVal = conn.connect(*m_io, ipaddr, &wtime);
   } else {
     retVal = conn.connect(*m_io, ipaddr);
@@ -230,13 +226,11 @@ void TcpConn::connect() {
     char msg[256];
     int32_t lastError = ACE_OS::last_error();
     if (lastError == ETIME || lastError == ETIMEDOUT) {
-      ACE_OS::snprintf(msg, 256,
-                       "TcpConn::connect Attempt to connect timed out after %d "
-                       "microseconds.",
-                       waitMicroSeconds);
       //  this is only called by constructor, so we must delete m_io
       GF_SAFE_DELETE(m_io);
-      throw TimeoutException(msg);
+      throw TimeoutException(
+          "TcpConn::connect Attempt to connect timed out after" +
+          util::chrono::duration::to_string(waitMicroSeconds) + ".");
     }
     ACE_OS::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
                      lastError, ACE_OS::strerror(lastError));
@@ -262,18 +256,18 @@ void TcpConn::close() {
   }
 }
 
-int32_t TcpConn::receive(char *buff, int32_t len, uint32_t waitSeconds,
-                         uint32_t waitMicroSeconds) {
+int32_t TcpConn::receive(char *buff, int32_t len,
+                         std::chrono::microseconds waitSeconds) {
   return socketOp(SOCK_READ, buff, len, waitSeconds);
 }
 
-int32_t TcpConn::send(const char *buff, int32_t len, uint32_t waitSeconds,
-                      uint32_t waitMicroSeconds) {
+int32_t TcpConn::send(const char *buff, int32_t len,
+                      std::chrono::microseconds waitSeconds) {
   return socketOp(SOCK_WRITE, const_cast<char *>(buff), len, waitSeconds);
 }
 
 int32_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, int32_t len,
-                          uint32_t waitSeconds) {
+                          std::chrono::microseconds waitSeconds) {
   {
     /*{
       ACE_HANDLE handle = m_io->get_handle();
@@ -302,8 +296,9 @@ int32_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, int32_t len,
     }
 #endif
 
-    ACE_Time_Value waitTime(0, waitSeconds /*now its in microSeconds*/);
-    ACE_Time_Value endTime(ACE_OS::gettimeofday() + waitTime);
+    ACE_Time_Value waitTime(waitSeconds);
+    ACE_Time_Value endTime(ACE_OS::gettimeofday());
+    endTime += waitTime;
     ACE_Time_Value sleepTime(0, 100);
     size_t readLen = 0;
     ssize_t retVal;
@@ -367,3 +362,7 @@ uint16_t TcpConn::getPort() {
   m_io->get_local_addr(*(ACE_Addr *)&localAddr);
   return localAddr.get_port_number();
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

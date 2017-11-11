@@ -23,8 +23,7 @@
 #include "impl/CacheLoader.hpp"
 #include "impl/CacheWriter.hpp"
 #include "impl/CacheListener.hpp"
-
-using namespace System;
+#include "TimeSpanUtils.hpp"
 
 namespace Apache
 {
@@ -32,14 +31,16 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace System;
+
       namespace native = apache::geode::client;
 
       generic<class TKey, class TValue>
-      System::Int32 AttributesMutator<TKey, TValue>::SetEntryIdleTimeout( System::Int32 idleTimeout )
+      TimeSpan AttributesMutator<TKey, TValue>::SetEntryIdleTimeout( TimeSpan idleTimeout )
       {
         try
         {
-          return m_nativeptr->get()->setEntryIdleTimeout( idleTimeout );
+          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->setEntryIdleTimeout( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(idleTimeout) ));
         }
         finally
         {
@@ -64,11 +65,11 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      System::Int32 AttributesMutator<TKey, TValue>::SetEntryTimeToLive( System::Int32 timeToLive )
+      TimeSpan AttributesMutator<TKey, TValue>::SetEntryTimeToLive( TimeSpan timeToLive )
       {
         try
         {
-          return m_nativeptr->get()->setEntryTimeToLive( timeToLive );
+          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->setEntryTimeToLive( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeToLive) ));
         }
         finally
         {
@@ -93,11 +94,11 @@ namespace Apache
      }
 
       generic<class TKey, class TValue>
-      System::Int32 AttributesMutator<TKey, TValue>::SetRegionIdleTimeout( System::Int32 idleTimeout )
+      TimeSpan AttributesMutator<TKey, TValue>::SetRegionIdleTimeout( TimeSpan idleTimeout )
       {
         try
         {
-          return m_nativeptr->get()->setRegionIdleTimeout( idleTimeout );
+          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->setRegionIdleTimeout( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(idleTimeout) ));
         }
         finally
         {
@@ -122,11 +123,11 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      System::Int32 AttributesMutator<TKey, TValue>::SetRegionTimeToLive( System::Int32 timeToLive )
+      TimeSpan AttributesMutator<TKey, TValue>::SetRegionTimeToLive( TimeSpan timeToLive )
       {
         try
         {
-          return m_nativeptr->get()->setRegionTimeToLive( timeToLive );
+          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->setRegionTimeToLive( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeToLive) ));
         }
         finally
         {

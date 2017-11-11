@@ -101,8 +101,8 @@ class ThinClientPoolDM
   virtual QueryServicePtr getQueryServiceWithoutCheck();
   virtual bool isEndpointAttached(TcrEndpoint* ep);
   GfErrType sendRequestToAllServers(const char* func, uint8_t getResult,
-                                    uint32_t timeout, CacheablePtr args,
-                                    ResultCollectorPtr& rs,
+                                    std::chrono::milliseconds timeout,
+                                    CacheablePtr args, ResultCollectorPtr& rs,
                                     CacheableStringPtr& exceptionPtr);
 
   GfErrType sendRequestToEP(const TcrMessage& request, TcrMessageReply& reply,
@@ -361,7 +361,7 @@ class ThinClientPoolDM
   bool m_isSecurityOn;
   bool m_isMultiUserMode;
 
-  TcrConnection* getUntil(int64_t& sec, GfErrType* error,
+  TcrConnection* getUntil(std::chrono::microseconds& sec, GfErrType* error,
                           std::set<ServerLocation>& excludeServers,
                           bool& maxConnLimit) {
     bool isClosed;
@@ -436,7 +436,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
   TcrEndpoint* m_ep;
   const char* m_func;
   uint8_t m_getResult;
-  uint32_t m_timeout;
+  std::chrono::milliseconds m_timeout;
   CacheablePtr m_args;
   GfErrType m_error;
   ResultCollectorPtr* m_rc;
@@ -450,7 +450,6 @@ class FunctionExecution : public PooledWork<GfErrType> {
     m_ep = nullptr;
     m_func = nullptr;
     m_getResult = 0;
-    m_timeout = 0;
     m_error = GF_NOERR;
     m_rc = nullptr;
     m_resultCollectorLock = nullptr;
@@ -461,9 +460,9 @@ class FunctionExecution : public PooledWork<GfErrType> {
 
   CacheableStringPtr getException() { return exceptionPtr; }
 
-  void setParameters(const char* func, uint8_t getResult, uint32_t timeout,
-                     CacheablePtr args, TcrEndpoint* ep,
-                     ThinClientPoolDM* poolDM,
+  void setParameters(const char* func, uint8_t getResult,
+                     std::chrono::milliseconds timeout, CacheablePtr args,
+                     TcrEndpoint* ep, ThinClientPoolDM* poolDM,
                      const std::shared_ptr<ACE_Recursive_Thread_Mutex>& rCL,
                      ResultCollectorPtr* rs, UserAttributesPtr userAttr) {
     exceptionPtr = nullptr;
@@ -550,7 +549,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
   ThinClientPoolDM* m_poolDM;
   const char* m_func;
   uint8_t m_getResult;
-  uint32_t m_timeout;
+  std::chrono::milliseconds m_timeout;
   CacheablePtr m_args;
   CacheableHashSetPtr m_routingObj;
   ResultCollectorPtr m_rc;
@@ -563,8 +562,8 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
  public:
   OnRegionFunctionExecution(
       const char* func, const Region* region, CacheablePtr args,
-      CacheableHashSetPtr routingObj, uint8_t getResult, uint32_t timeout,
-      ThinClientPoolDM* poolDM,
+      CacheableHashSetPtr routingObj, uint8_t getResult,
+      std::chrono::milliseconds timeout, ThinClientPoolDM* poolDM,
       const std::shared_ptr<ACE_Recursive_Thread_Mutex>& rCL,
       ResultCollectorPtr rs, UserAttributesPtr userAttr, bool isBGThread,
       const BucketServerLocationPtr& serverLocation, bool allBuckets)

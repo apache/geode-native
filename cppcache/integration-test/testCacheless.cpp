@@ -136,9 +136,10 @@ DUNIT_TASK_DEFINITION(s1p2, CreateNoCacheWListener)
     initClientWithPool(true, "__TEST_POOL1__", locHostPort, nullptr, nullptr, 0,
                        true);
     listener = std::make_shared<TallyListener>();
-    getHelper()->createPooledRegion(REGIONNAME, false, locHostPort,
-                                    "__TEST_POOL1__", true, true, 0, 0, 0, 0, 0,
-                                    listener);
+    getHelper()->createPooledRegion(
+        REGIONNAME, false, locHostPort, "__TEST_POOL1__", true, true,
+        std::chrono::seconds(0), std::chrono::seconds(0),
+        std::chrono::seconds(0), std::chrono::seconds(0), 0, listener);
   }
 END_TASK_DEFINITION
 
@@ -160,9 +161,10 @@ DUNIT_TASK_DEFINITION(s2p2, CreateRegionCache)
     initClientWithPool(true, "__TEST_POOL1__", locHostPort, nullptr, nullptr, 0,
                        true);
     listener = std::make_shared<TallyListener>();
-    getHelper()->createPooledRegion(REGIONNAME, false, locHostPort,
-                                    "__TEST_POOL1__", true, true, 0, 0, 0, 0, 0,
-                                    listener);
+    getHelper()->createPooledRegion(
+        REGIONNAME, false, locHostPort, "__TEST_POOL1__", true, true,
+        std::chrono::seconds(0), std::chrono::seconds(0),
+        std::chrono::seconds(0), std::chrono::seconds(0), 0, listener);
   }
 END_TASK_DEFINITION
 

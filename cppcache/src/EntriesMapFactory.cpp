@@ -39,8 +39,8 @@ EntriesMap* EntriesMapFactory::createMap(RegionInternal* region,
   uint8_t concurrency = attrs->getConcurrencyLevel();
   /** @TODO will need a statistics entry factory... */
   uint32_t lruLimit = attrs->getLruEntriesLimit();
-  uint32_t ttl = attrs->getEntryTimeToLive();
-  uint32_t idle = attrs->getEntryIdleTimeout();
+  const auto& ttl = attrs->getEntryTimeToLive();
+  const auto& idle = attrs->getEntryIdleTimeout();
   bool concurrencyChecksEnabled = attrs->getConcurrencyChecksEnabled();
   bool heapLRUEnabled = false;
 
@@ -60,7 +60,7 @@ EntriesMap* EntriesMapFactory::createMap(RegionInternal* region,
     } else {
       return nullptr;
     }
-    if (ttl != 0 || idle != 0) {
+    if (ttl.count() != 0 || idle.count() != 0) {
       result = new LRUEntriesMap(
           &expiryTaskmanager,
           std::unique_ptr<LRUExpEntryFactory>(
@@ -75,7 +75,7 @@ EntriesMap* EntriesMapFactory::createMap(RegionInternal* region,
           region, lruEvictionAction, lruLimit, concurrencyChecksEnabled,
           concurrency, heapLRUEnabled);
     }
-  } else if (ttl != 0 || idle != 0) {
+  } else if (ttl.count() > 0 || idle.count() > 0) {
     // create entries with a ExpEntryFactory.
     result = new ConcurrentEntriesMap(
         &expiryTaskmanager,

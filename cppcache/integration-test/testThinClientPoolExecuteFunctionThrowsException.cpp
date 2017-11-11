@@ -24,6 +24,8 @@
 #include <thread>
 #include <chrono>
 
+#include <geode/DefaultResultCollector.hpp>
+
 using namespace PdxTests;
 /* This is to test
 1- funtion execution on pool
@@ -105,57 +107,43 @@ char* FETimeOut = (char*)"FunctionExecutionTimeOut";
     }                                        \
   }                                          \
   ASSERT(found, "this returned value is invalid");
-class MyResultCollector : public ResultCollector {
+
+class MyResultCollector : public DefaultResultCollector {
  public:
   MyResultCollector()
-      : m_resultList(CacheableVector::create()),
-        m_isResultReady(false),
-        m_endResultCount(0),
-        m_addResultCount(0),
-        m_getResultCount(0) {}
+      : m_endResultCount(0), m_addResultCount(0), m_getResultCount(0) {}
   ~MyResultCollector() {}
-  CacheableVectorPtr getResult(uint32_t timeout) {
+
+  CacheableVectorPtr getResult(std::chrono::milliseconds timeout) override {
     m_getResultCount++;
-    if (m_isResultReady == true) {
-      return m_resultList;
-    } else {
-      for (uint32_t i = 0; i < timeout; i++) {
-        SLEEP(1);
-        if (m_isResultReady == true) return m_resultList;
-      }
-      throw FunctionExecutionException(
-          "Result is not ready, endResults callback is called before invoking "
-          "getResult() method");
-    }
+    return DefaultResultCollector::getResult(timeout);
   }
 
-  void addResult(const CacheablePtr& resultItem) {
+  void addResult(const CacheablePtr& resultItem) override {
     m_addResultCount++;
     if (resultItem == nullptr) {
       return;
     }
-    if (auto result =
+    if (auto results =
             std::dynamic_pointer_cast<CacheableArrayList>(resultItem)) {
-      for (int32_t i = 0; i < result->size(); i++) {
-        m_resultList->push_back(result->operator[](i));
+      for (auto& result : *results) {
+        DefaultResultCollector::addResult(result);
       }
     } else {
-      auto ex =
-          std::dynamic_pointer_cast<UserFunctionExecutionException>(resultItem);
-      m_resultList->push_back(ex);
+      DefaultResultCollector::addResult(resultItem);
     }
   }
-  void endResults() {
-    m_isResultReady = true;
+
+  void endResults() override {
     m_endResultCount++;
+    DefaultResultCollector::endResults();
   }
+
   uint32_t getEndResultCount() { return m_endResultCount; }
   uint32_t getAddResultCount() { return m_addResultCount; }
   uint32_t getGetResultCount() { return m_getResultCount; }
 
  private:
-  CacheableVectorPtr m_resultList;
-  volatile bool m_isResultReady;
   uint32_t m_endResultCount;
   uint32_t m_addResultCount;
   uint32_t m_getResultCount;
@@ -254,7 +242,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
     ResultCollectorPtr collector =
         funcExec->withArgs(args)->withFilter(filter)->execute(
-            exFuncNameSendException, 15);
+            exFuncNameSendException, std::chrono::seconds(15));
     ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     CacheableVectorPtr result = collector->getResult();
@@ -280,7 +268,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
     LOG("exFuncNameSendException done for bool argument.");
 
     collector = funcExec->withArgs(arrList)->withFilter(filter)->execute(
-        exFuncNameSendException, 15);
+        exFuncNameSendException, std::chrono::seconds(15));
     ASSERT(collector != nullptr, "onRegion collector for arrList nullptr");
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
@@ -293,7 +281,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       CacheableVectorPtr executeFunctionResult3 =
           funcExec->withArgs(arrList)
               ->withFilter(filter)
-              ->execute("ThinClientRegionExceptionTest", 15)
+              ->execute("ThinClientRegionExceptionTest",
+                        std::chrono::seconds(15))
               ->getResult();
       FAIL("Failed to throw expected exception.");
     } catch (...) {

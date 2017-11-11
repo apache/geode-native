@@ -16,11 +16,13 @@
  */
 
 #include <algorithm>
+#include <limits>
 
 #include <geode/SelectResultsIterator.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/UserFunctionExecutionException.hpp>
+#include <geode/Struct.hpp>
 
 #include "Utils.hpp"
 #include "CacheRegionHelper.hpp"
@@ -33,23 +35,18 @@
 #include "RegionGlobalLocks.hpp"
 #include "ReadWriteLock.hpp"
 #include "RemoteQuery.hpp"
-#include <geode/Struct.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 #include "AutoDelete.hpp"
 #include "UserAttributes.hpp"
 #include "PutAllPartialResultServerException.hpp"
 #include "VersionedCacheableObjectPartList.hpp"
-//#include "PutAllPartialResult.hpp"
-
-using namespace apache::geode::client;
+#include "util/bounds.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 void setTSSExceptionMessage(const char* exMsg);
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
 
 class PutAllWork : public PooledWork<GfErrType>,
                    private NonCopyable,
@@ -66,7 +63,7 @@ class PutAllWork : public PooledWork<GfErrType>,
   VectorOfCacheableKeyPtr m_keys;
   HashMapOfCacheablePtr m_map;
   VersionedCacheableObjectPartListPtr m_verObjPartListPtr;
-  uint32_t m_timeout;
+  std::chrono::milliseconds m_timeout;
   PutAllPartialResultServerExceptionPtr m_papException;
   bool m_isPapeReceived;
   ChunkedPutAllResponse* m_resultCollector;
@@ -77,7 +74,8 @@ class PutAllWork : public PooledWork<GfErrType>,
              const BucketServerLocationPtr& serverLocation,
              const RegionPtr& region, bool attemptFailover, bool isBGThread,
              const HashMapOfCacheablePtr map,
-             const VectorOfCacheableKeyPtr keys, uint32_t timeout,
+             const VectorOfCacheableKeyPtr keys,
+             std::chrono::milliseconds timeout,
              const SerializablePtr& aCallbackArgument)
       : m_poolDM(poolDM),
         m_serverLocation(serverLocation),
@@ -92,9 +90,9 @@ class PutAllWork : public PooledWork<GfErrType>,
         m_isPapeReceived(false)
   // UNUSED , m_aCallbackArgument(aCallbackArgument)
   {
-    m_request = new TcrMessagePutAll(
-        m_region->getCache()->createDataOutput(), m_region.get(), *m_map.get(),
-        static_cast<int>(m_timeout * 1000), m_poolDM, aCallbackArgument);
+    m_request = new TcrMessagePutAll(m_region->getCache()->createDataOutput(),
+                                     m_region.get(), *m_map.get(), m_timeout,
+                                     m_poolDM, aCallbackArgument);
     m_reply = new TcrMessageReply(true, m_poolDM);
 
     // create new instanceof VCOPL
@@ -611,7 +609,9 @@ void ThinClientRegion::unregisterAllKeys() {
 }
 
 SelectResultsPtr ThinClientRegion::query(const char* predicate,
-                                         uint32_t timeout) {
+                                         std::chrono::milliseconds timeout) {
+  util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
+
   CHECK_DESTROY_PENDING(TryReadGuard, Region::query);
 
   if (predicate == nullptr || predicate[0] == '\0') {
@@ -675,7 +675,10 @@ SelectResultsPtr ThinClientRegion::query(const char* predicate,
   return queryPtr->execute(timeout, "Region::query", m_tcrdm, nullptr);
 }
 
-bool ThinClientRegion::existsValue(const char* predicate, uint32_t timeout) {
+bool ThinClientRegion::existsValue(const char* predicate,
+                                   std::chrono::milliseconds timeout) {
+  util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
+
   SelectResultsPtr results = query(predicate, timeout);
 
   if (results == nullptr) {
@@ -736,8 +739,8 @@ GfErrType ThinClientRegion::unregisterKeysBeforeDestroyRegion() {
   return err;
 }
 
-SerializablePtr ThinClientRegion::selectValue(const char* predicate,
-                                              uint32_t timeout) {
+SerializablePtr ThinClientRegion::selectValue(
+    const char* predicate, std::chrono::milliseconds timeout) {
   SelectResultsPtr results = query(predicate, timeout);
 
   if (results == nullptr || results->size() == 0) {
@@ -915,7 +918,8 @@ void ThinClientRegion::clear(const SerializablePtr& aCallbackArgument) {
   /** @brief Create message and send to bridge server */
 
   TcrMessageClearRegion request(m_cache->createDataOutput(), this,
-                                aCallbackArgument, -1, m_tcrdm);
+                                aCallbackArgument,
+                                std::chrono::milliseconds(-1), m_tcrdm);
   TcrMessageReply reply(true, m_tcrdm);
   err = m_tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) GfErrTypeToException("Region::clear", err);
@@ -1309,20 +1313,21 @@ GfErrType ThinClientRegion::getAllNoThrow_remote(
 
 GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
     ThinClientPoolDM* tcrdm, const HashMapOfCacheable& map,
-    VersionedCacheableObjectPartListPtr& versionedObjPartList, uint32_t timeout,
+    VersionedCacheableObjectPartListPtr& versionedObjPartList,
+    std::chrono::milliseconds timeout,
     const SerializablePtr& aCallbackArgument) {
   LOGDEBUG(" ThinClientRegion::singleHopPutAllNoThrow_remote map size = %d",
            map.size());
-  RegionPtr region = shared_from_this();
+  auto region = shared_from_this();
 
-  GfErrType error = GF_NOERR;
+  auto error = GF_NOERR;
   /*Step-1::
    * populate the keys vector from the user Map and pass it to the
    * getServerToFilterMap to generate locationMap
    * If locationMap is nullptr try the old, existing putAll impl that may take
    * multiple n/w hops
    */
-  VectorOfCacheableKey userKeys = VectorOfCacheableKey();
+  auto userKeys = VectorOfCacheableKey();
   for (const auto& iter : map) {
     userKeys.push_back(iter.first);
   }
@@ -1357,7 +1362,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
    *  e. insert the worker into the vector.
    */
   std::vector<PutAllWork*> putAllWorkers;
-  auto* threadPool =
+  auto threadPool =
       CacheRegionHelper::getCacheImpl(getCache().get())->getThreadPool();
   int locationMapIndex = 0;
   for (const auto& locationIter : *locationMap) {
@@ -1378,21 +1383,9 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
       }
     }
 
-    // TEST-CODE :: PRINT each sub-Map entries
-    /*
-    LOGDEBUG("Printing map at %d locationMapindex ", locationMapIndex);
-    for (const auto& filteredMapIter : *filteredMap){
-      auto kPtr =
-    std::dynamic_pointer_cast<CacheableInt32>(filteredMapIter.first()) ;
-      auto vPtr =
-    std::dynamic_pointer_cast<CacheableInt32>(filteredMapIter.second());
-      LOGDEBUG("Key = %d  Value = %d ", kPtr->value(), vPtr->value() );
-    }
-    */
-
-    PutAllWork* worker = new PutAllWork(
-        tcrdm, serverLocation, region, true /*attemptFailover*/,
-        false /*isBGThread*/, filteredMap, keys, timeout, aCallbackArgument);
+    auto worker = new PutAllWork(tcrdm, serverLocation, region,
+                                 true /*attemptFailover*/, false /*isBGThread*/,
+                                 filteredMap, keys, timeout, aCallbackArgument);
     threadPool->perform(worker);
     putAllWorkers.push_back(worker);
     locationMapIndex++;
@@ -1620,16 +1613,16 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
 
 GfErrType ThinClientRegion::multiHopPutAllNoThrow_remote(
     const HashMapOfCacheable& map,
-    VersionedCacheableObjectPartListPtr& versionedObjPartList, uint32_t timeout,
+    VersionedCacheableObjectPartListPtr& versionedObjPartList,
+    std::chrono::milliseconds timeout,
     const SerializablePtr& aCallbackArgument) {
   // Multiple hop implementation
   LOGDEBUG("ThinClientRegion::multiHopPutAllNoThrow_remote ");
-  GfErrType err = GF_NOERR;
+  auto err = GF_NOERR;
 
   // Construct request/reply for putAll
-  TcrMessagePutAll request(m_cache->createDataOutput(), this, map,
-                           static_cast<int>(timeout * 1000), m_tcrdm,
-                           aCallbackArgument);
+  TcrMessagePutAll request(m_cache->createDataOutput(), this, map, timeout,
+                           m_tcrdm, aCallbackArgument);
   TcrMessageReply reply(true, m_tcrdm);
   request.setTimeout(timeout);
   reply.setTimeout(timeout);
@@ -1685,12 +1678,13 @@ GfErrType ThinClientRegion::multiHopPutAllNoThrow_remote(
 
 GfErrType ThinClientRegion::putAllNoThrow_remote(
     const HashMapOfCacheable& map,
-    VersionedCacheableObjectPartListPtr& versionedObjPartList, uint32_t timeout,
+    VersionedCacheableObjectPartListPtr& versionedObjPartList,
+    std::chrono::milliseconds timeout,
     const SerializablePtr& aCallbackArgument) {
   LOGDEBUG("ThinClientRegion::putAllNoThrow_remote");
 
-  ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
-  TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+  auto poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
+  auto txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
 
   if (poolDM != nullptr) {
     if (poolDM->getPRSingleHopEnabled() &&
@@ -2243,7 +2237,8 @@ GfErrType ThinClientRegion::destroyRegionNoThrow_remote(
 
   // do TCR destroyRegion
   TcrMessageDestroyRegion request(m_cache->createDataOutput(), this,
-                                  aCallbackArgument, -1, m_tcrdm);
+                                  aCallbackArgument,
+                                  std::chrono::milliseconds(-1), m_tcrdm);
   TcrMessageReply reply(true, m_tcrdm);
   err = m_tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) return err;
@@ -2995,7 +2990,7 @@ void ThinClientRegion::executeFunction(const char* func,
                                        CacheableVectorPtr routingObj,
                                        uint8_t getResult, ResultCollectorPtr rc,
                                        int32_t retryAttempts,
-                                       uint32_t timeout) {
+                                       std::chrono::milliseconds timeout) {
   int32_t attempt = 0;
   CacheableHashSetPtr failedNodes = CacheableHashSet::create();
   // if pools retry attempts are not set then retry once on all available
@@ -3068,7 +3063,7 @@ void ThinClientRegion::executeFunction(const char* func,
         LOGINFO(
             "function timeout. Name: %s, timeout: %d, params: %d, "
             "retryAttempts: %d ",
-            funcName.c_str(), timeout, getResult, retryAttempts);
+            funcName.c_str(), timeout.count(), getResult, retryAttempts);
         GfErrTypeToException("ExecuteOnRegion", GF_TIMOUT);
       } else if (err == GF_CLIENT_WAIT_TIMEOUT ||
                  err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA) {
@@ -3076,7 +3071,7 @@ void ThinClientRegion::executeFunction(const char* func,
             "function timeout, possibly bucket is not available or bucket "
             "blacklisted. Name: %s, timeout: %d, params: %d, retryAttempts: "
             "%d ",
-            funcName.c_str(), timeout, getResult, retryAttempts);
+            funcName.c_str(), timeout.count(), getResult, retryAttempts);
         GfErrTypeToException("ExecuteOnRegion", GF_CLIENT_WAIT_TIMEOUT);
       } else {
         LOGDEBUG("executeFunction err = %d ", err);
@@ -3097,7 +3092,7 @@ void ThinClientRegion::executeFunction(const char* func,
 CacheableVectorPtr ThinClientRegion::reExecuteFunction(
     const char* func, const CacheablePtr& args, CacheableVectorPtr routingObj,
     uint8_t getResult, ResultCollectorPtr rc, int32_t retryAttempts,
-    CacheableHashSetPtr& failedNodes, uint32_t timeout) {
+    CacheableHashSetPtr& failedNodes, std::chrono::milliseconds timeout) {
   int32_t attempt = 0;
   bool reExecute = true;
   // if pools retry attempts are not set then retry once on all available
@@ -3175,7 +3170,8 @@ bool ThinClientRegion::executeFunctionSH(
     const char* func, const CacheablePtr& args, uint8_t getResult,
     ResultCollectorPtr rc,
     const ClientMetadataService::ServerToKeysMapPtr& locationMap,
-    CacheableHashSetPtr& failedNodes, uint32_t timeout, bool allBuckets) {
+    CacheableHashSetPtr& failedNodes, std::chrono::milliseconds timeout,
+    bool allBuckets) {
   bool reExecute = false;
   auto resultCollectorLock = std::make_shared<ACE_Recursive_Thread_Mutex>();
   const auto& userAttr =
@@ -3950,3 +3946,7 @@ void ChunkedDurableCQListResponse::handleChunk(const uint8_t* chunk,
     m_resultList->push_back(input->readObject<CacheableString>());
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -26,7 +26,6 @@
 
 #include "IGeodeSerializable.hpp"
 
-using namespace System;
 
 namespace Apache
 {
@@ -34,6 +33,8 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace System;
+
       namespace native = apache::geode::client;
 
       generic<class TResult>
@@ -82,8 +83,7 @@ namespace Apache
         /// Executes the OQL Query on the cache server with the specified
         /// timeout and returns the results.
         /// </summary>
-        /// <param name="timeout">The time (in seconds) to wait for query response.
-        /// This should be less than or equal to 2^31/1000 i.e. 2147483.
+        /// <param name="timeout">The time to wait for query response.
         /// </param>
         /// <exception cref="IllegalArgumentException">
         /// if timeout parameter is greater than 2^31/1000.
@@ -103,7 +103,7 @@ namespace Apache
         /// An <see cref="ISelectResults"/> object which can either be a
         /// <see cref="ResultSet"/> or a <see cref="StructSet"/>.
         /// </returns>
-        ISelectResults<TResult>^ Execute( System::UInt32 timeout );
+        ISelectResults<TResult>^ Execute( TimeSpan timeout );
 
 		/// <summary>
         /// Executes the OQL Parameterized Query on the cache server with the specified
@@ -111,11 +111,10 @@ namespace Apache
         /// </summary>
 		/// <param name="paramList">The Parameter List for the specified Query.
         /// </param>
-        /// <param name="timeout">The time (in seconds) to wait for query response.
-        /// This should be less than or equal to 2^31/1000 i.e. 2147483.
+        /// <param name="timeout">The time to wait for query response.
         /// </param>
         /// <exception cref="IllegalArgumentException">
-        /// if timeout parameter is greater than 2^31/1000.
+        /// if timeout parameter is too long.
         /// </exception>
         /// <exception cref="QueryException">
         /// if some query error occurred at the server.
@@ -132,7 +131,7 @@ namespace Apache
         /// An <see cref="ISelectResults"/> object which can either be a
         /// <see cref="ResultSet"/> or a <see cref="StructSet"/>.
         /// </returns>
-        ISelectResults<TResult>^ Execute( array<Object^>^ paramList, System::UInt32 timeout );
+        ISelectResults<TResult>^ Execute( array<Object^>^ paramList, TimeSpan timeout );
 
         /// <summary>
         /// Executes the OQL Parameterized Query on the cache server with the specified

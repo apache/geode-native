@@ -33,6 +33,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 typedef std::map<std::string, std::vector<int8_t>*> FunctionToFunctionAttributes;
 
 class ExecutionImpl : public Execution {
@@ -55,17 +56,21 @@ class ExecutionImpl : public Execution {
         m_allServer(allServer),
         m_pool(pool),
         m_proxyCache(proxyCache) {}
-  virtual ExecutionPtr withFilter(CacheableVectorPtr routingObj);
-  virtual ExecutionPtr withArgs(CacheablePtr args);
-  virtual ExecutionPtr withCollector(ResultCollectorPtr rs);
+  virtual ExecutionPtr withFilter(CacheableVectorPtr routingObj) override;
+  virtual ExecutionPtr withArgs(CacheablePtr args) override;
+  virtual ExecutionPtr withCollector(ResultCollectorPtr rs) override;
   // java function has hasResult property. we put the hasResult argument
   // here as a kluge.
   virtual ResultCollectorPtr execute(const CacheableVectorPtr& routingObj,
                                      const CacheablePtr& args,
                                      const ResultCollectorPtr& rs,
-                                     const char* func, uint32_t timeout);
+                                     const char* func, std::chrono::milliseconds timeout) override;
+
   virtual ResultCollectorPtr execute(
-      const char* func, uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+      const char* func,
+      std::chrono::milliseconds timeout =
+          DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
+
   static void addResults(ResultCollectorPtr& collector,
                          const CacheableVectorPtr& results);
 
@@ -100,11 +105,15 @@ class ExecutionImpl : public Execution {
   static ACE_Recursive_Thread_Mutex m_func_attrs_lock;
   static FunctionToFunctionAttributes m_func_attrs;
   //  std::vector<int8_t> m_attributes;
+
   CacheableVectorPtr executeOnPool(
       std::string& func, uint8_t getResult, int32_t retryAttempts,
-      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
-  void executeOnAllServers(std::string& func, uint8_t getResult,
-                           uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+
+  void executeOnAllServers(
+      std::string& func, uint8_t getResult,
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+
   std::vector<int8_t>* getFunctionAttributes(const char* func);
   GfErrType getFuncAttributes(const char* func, std::vector<int8_t>** attr);
 

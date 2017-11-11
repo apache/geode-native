@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_SUSPENDEDTXEXPIRYHANDLER_H_
-#define GEODE_SUSPENDEDTXEXPIRYHANDLER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,8 +15,14 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_SUSPENDEDTXEXPIRYHANDLER_H_
+#define GEODE_SUSPENDEDTXEXPIRYHANDLER_H_
+
 #include <geode/geode_globals.hpp>
 #include <geode/Cache.hpp>
+
 #include "CacheTransactionManagerImpl.hpp"
 
 /**
@@ -31,7 +32,9 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 class CacheTransactionManagerImpl;
+
 /**
  * @class SuspendedTxExpiryHandler
  *
@@ -45,12 +48,14 @@ class CPPCACHE_EXPORT SuspendedTxExpiryHandler : public ACE_Event_Handler {
    * Constructor
    */
   SuspendedTxExpiryHandler(CacheTransactionManagerImpl* cacheTxMgr,
-                           TransactionIdPtr txid, uint32_t duration);
+                           TransactionIdPtr txid,
+                           std::chrono::seconds duration);
 
   /** This task object will be registered with the Timer Queue.
    *  When the timer expires the handle_timeout is invoked.
    */
   int handle_timeout(const ACE_Time_Value& current_time, const void* arg);
+
   /**
    * This is called when the task object needs to be cleaned up..
    */

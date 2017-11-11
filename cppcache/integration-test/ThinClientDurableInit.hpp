@@ -35,15 +35,17 @@ static int numberOfLocators = 1;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
-void initClientAndRegion(int redundancy, int ClientIdx,
-                         int subscriptionAckInterval = 1,
-                         int redundancyMonitorInterval = -1,
-                         int durableClientTimeout = 60) {
+void initClientAndRegion(
+    int redundancy, int ClientIdx,
+    std::chrono::seconds subscriptionAckInterval = std::chrono::seconds(1),
+    std::chrono::seconds redundancyMonitorInterval =
+        std::chrono::seconds::zero(),
+    std::chrono::seconds durableClientTimeout = std::chrono::seconds(60)) {
   PropertiesPtr pp = Properties::create();
   if (ClientIdx < 2) {
     pp->insert("durable-client-id", durableIds[ClientIdx]);
     pp->insert("durable-timeout", durableClientTimeout);
-    if (redundancyMonitorInterval > 0) {
+    if (redundancyMonitorInterval > std::chrono::seconds::zero()) {
       pp->insert("redundancy-monitor-interval", redundancyMonitorInterval);
     }
 
@@ -54,7 +56,7 @@ void initClientAndRegion(int redundancy, int ClientIdx,
   }
 }
 void initClientAndTwoRegions(int ClientIdx, int redundancy,
-                             int durableClientTimeout,
+                             std::chrono::seconds durableClientTimeout,
                              const char* conflation = nullptr,
                              const char* rNames[] = regionNames) {
   PropertiesPtr pp = Properties::create();
@@ -66,14 +68,13 @@ void initClientAndTwoRegions(int ClientIdx, int redundancy,
 
   initClient(true, pp);
   getHelper()->createPoolWithLocators("__TESTPOOL1_", locatorsG, true,
-                                      redundancy, 1);
+                                      redundancy, std::chrono::seconds(1));
   createRegionAndAttachPool(rNames[0], USE_ACK, "__TESTPOOL1_", true);
   createRegionAndAttachPool(rNames[1], USE_ACK, "__TESTPOOL1_", true);
 }
-void initClientAndTwoRegionsAndTwoPools(int ClientIdx, int redundancy,
-                                        int durableClientTimeout,
-                                        const char* conflation = nullptr,
-                                        const char* rNames[] = regionNames) {
+void initClientAndTwoRegionsAndTwoPools(
+    int ClientIdx, int redundancy, std::chrono::seconds durableClientTimeout,
+    const char* conflation = nullptr, const char* rNames[] = regionNames) {
   PropertiesPtr pp = Properties::create();
   pp->insert("durable-client-id", durableIds[ClientIdx]);
   pp->insert("durable-timeout", durableClientTimeout);
@@ -83,7 +84,7 @@ void initClientAndTwoRegionsAndTwoPools(int ClientIdx, int redundancy,
 
   initClient(true, pp);
   getHelper()->createPoolWithLocators("__TESTPOOL2_", locatorsG, true,
-                                      redundancy, 1);
+                                      redundancy, std::chrono::seconds(1));
   createRegionAndAttachPool(rNames[1], USE_ACK, "__TESTPOOL2_", true);
   // Calling readyForEvents() here instead of below causes duplicate durableId
   // exception reproduced.
@@ -97,7 +98,7 @@ void initClientAndTwoRegionsAndTwoPools(int ClientIdx, int redundancy,
   RegionPtr regPtr1 = getHelper()->getRegion(rNames[1]);
   regPtr1->registerAllKeys(true);
   getHelper()->createPoolWithLocators("__TESTPOOL1_", locatorsG, true,
-                                      redundancy, 1);
+                                      redundancy, std::chrono::seconds(1));
   createRegionAndAttachPool(rNames[0], USE_ACK, "__TESTPOOL1_", true);
   RegionPtr regPtr0 = getHelper()->getRegion(rNames[0]);
   regPtr0->registerAllKeys(true);

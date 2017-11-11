@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_NORESULT_H_
-#define GEODE_NORESULT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_NORESULT_H_
+#define GEODE_NORESULT_H_
 
 #include <geode/geode_globals.hpp>
 #include <geode/geode_types.hpp>
@@ -43,25 +43,29 @@ namespace client {
  */
 class CPPCACHE_EXPORT NoResult : public ResultCollector {
  public:
-  NoResult() {}
-  ~NoResult() {}
-  inline void addResult(const CacheablePtr& resultOfSingleExecution) {
+  NoResult() = default;
+  virtual ~NoResult() override = default;
+
+  inline void addResult(const CacheablePtr& resultOfSingleExecution) override {
     throw UnsupportedOperationException("can not add to NoResult");
   }
 
-  inline void endResults() {
+  inline void endResults() override {
     throw UnsupportedOperationException("can not close on NoResult");
   }
 
   inline CacheableVectorPtr getResult(
-      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) {
+      std::chrono::milliseconds timeout =
+          DEFAULT_QUERY_RESPONSE_TIMEOUT) override {
     throw FunctionExecutionException(
         "Cannot return any result, as Function.hasResult() is false");
   }
-  inline void clearResults() {
+
+  inline void clearResults() override {
     throw UnsupportedOperationException("can not clear results on NoResult");
   }
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

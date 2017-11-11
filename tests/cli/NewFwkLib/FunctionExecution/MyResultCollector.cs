@@ -26,7 +26,7 @@ namespace Apache.Geode.Client.FwkLib
   public class MyResultCollector<TResult> : Client.IResultCollector<TResult>
   {
     #region Private members
-    private bool m_resultReady = false;
+    private Boolean m_resultReady = false;
     //private CacheableVector m_results = null;
     ICollection<TResult> m_results = null;
     private int m_addResultCount = 0;
@@ -52,48 +52,47 @@ namespace Apache.Geode.Client.FwkLib
     public void AddResult(TResult result)
     {
       m_addResultCount++;
-      //CacheableArrayList rs = result as CacheableArrayList;
-      //List<Object> rs = result as List<Object>;
-      //for (int i = 0; i < rs.Count; i++)
-      //{
-      //  m_results.Add(rs[i]);
-      //}
       m_results.Add(result);
     }
     public ICollection<TResult> GetResult()
     {
-      return GetResult(50);
+      return GetResult(TimeSpan.FromSeconds(50));
     }
-    public ICollection<TResult> GetResult(UInt32 timeout)
+    public ICollection<TResult> GetResult(TimeSpan timeout)
     {
       m_getResultCount++;
-      if (m_resultReady == true)
+
+      lock(this)
       {
-        return m_results;
-      }
-      else
-      {
-        for (int i = 0; i < timeout; i++)
+        if (!m_resultReady)
         {
-          Thread.Sleep(1000);
-          if (m_resultReady == true)
-          {
-            return m_results;
+          if (timeout > TimeSpan.Zero) {
+            if (!Monitor.Wait(this, timeout)) {
+              throw new FunctionExecutionException("Timeout waiting for result.");
+            }
+          } else {
+            throw new FunctionExecutionException("Results not ready.");
           }
         }
-        throw new FunctionExecutionException(
-                   "Result is not ready, endResults callback is called before invoking getResult() method");
-
       }
+
+      return m_results;
     }
+
     public void EndResults()
     {
       m_endResultCount++;
-      m_resultReady = true;
+
+      lock (this) {
+        m_resultReady = true;
+        Monitor.Pulse(this);
+      }
     }
+
     public void ClearResults(/*bool unused*/)
     {
       m_results.Clear();
+      m_resultReady = false;
     }
 
   }
@@ -137,39 +136,39 @@ namespace Apache.Geode.Client.FwkLib
     }
     public ICollection<TResult> GetResult()
     {
-      return GetResult(50);
+      return GetResult(TimeSpan.FromSeconds(50));
     }
-    public ICollection<TResult> GetResult(UInt32 timeout)
+    public ICollection<TResult> GetResult(TimeSpan timeout)
     {
       m_getResultCount++;
-      if (m_resultReady == true)
-      {
-        return m_results;
-      }
-      else
-      {
-        for (int i = 0; i < timeout; i++)
-        {
-          Thread.Sleep(1000);
-          if (m_resultReady == true)
-          {
-            return m_results;
+
+      lock (this) {
+        if (!m_resultReady) {
+          if (timeout > TimeSpan.Zero) {
+            if (!Monitor.Wait(this, timeout)) {
+              throw new FunctionExecutionException("Timeout waiting for result.");
+            }
+          } else {
+            throw new FunctionExecutionException("Results not ready.");
           }
         }
-        throw new FunctionExecutionException(
-                   "Result is not ready, endResults callback is called before invoking getResult() method");
-
       }
+
+      return m_results;
     }
     public void ClearResults(/*bool unused*/)
     {
       m_clearResultCount++;
       m_results.Clear();
+      m_resultReady = false;
     }
     public void EndResults()
     {
       m_endResultCount++;
-      m_resultReady = true;
+      lock (this) {
+        m_resultReady = true;
+        Monitor.Pulse(this);
+      }
     }
 
   }

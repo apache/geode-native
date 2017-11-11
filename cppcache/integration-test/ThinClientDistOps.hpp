@@ -566,8 +566,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreatePoolForUpdateLocatorList)
     isMultiuserMode = false, int updateLocatorListInterval = 5000 )
     */
     initClient(true);
-    getHelper()->createPool("__TESTPOOL1_", locatorsG, nullptr, 0, false, -1,
-                            -1, -1, false);
+    getHelper()->createPool("__TESTPOOL1_", locatorsG, nullptr, 0, false,
+                            std::chrono::milliseconds::zero(), -1, -1, false);
     LOG("CreatePoolForUpdateLocatorList complete.");
   }
 END_TASK_DEFINITION
@@ -583,8 +583,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreatePoolForDontUpdateLocatorList)
     isMultiuserMode = false, int updateLocatorListInterval = 5000 )
     */
     initClient(true);
-    getHelper()->createPool("__TESTPOOL1_", locatorsG, nullptr, 0, false, -1,
-                            -1, -1, false);
+    getHelper()->createPool("__TESTPOOL1_", locatorsG, nullptr, 0, false,
+                            std::chrono::milliseconds::zero(), -1, -1, false);
     LOG("CreatePoolForDontUpdateLocatorList complete.");
   }
 END_TASK_DEFINITION
@@ -596,7 +596,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyUpdateLocatorListThread)
 
     PoolPtr pptr =
         getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
-    int updateIntervalSeconds = pptr->getUpdateLocatorListInterval() / 1000;
+    int updateIntervalSeconds = pptr->getUpdateLocatorListInterval().count() / 1000;
 
     int numLocatorListUpdates =
         CacheHelper::getNumLocatorListUpdates("Querying locator list at:");

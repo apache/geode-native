@@ -18,9 +18,11 @@
 
 #include <geode/SystemProperties.hpp>
 #include <geode/DistributedSystem.hpp>
-#include "../../cryptoimpl/Ssl.hpp"
 #include "CacheImpl.hpp"
-using namespace apache::geode::client;
+
+namespace apache {
+namespace geode {
+namespace client {
 
 Ssl* TcpSslConn::getSSLImpl(ACE_SOCKET sock, const char* pubkeyfile,
                             const char* privkeyfile) {
@@ -51,7 +53,8 @@ void TcpSslConn::createSocket(ACE_SOCKET sock) {
   m_ssl = getSSLImpl(sock, m_pubkeyfile, m_privkeyfile);
 }
 
-void TcpSslConn::listen(ACE_INET_Addr addr, uint32_t waitSeconds) {
+void TcpSslConn::listen(ACE_INET_Addr addr,
+                        std::chrono::microseconds waitSeconds) {
   GF_DEV_ASSERT(m_ssl != nullptr);
 
   int32_t retVal = m_ssl->listen(addr, waitSeconds);
@@ -60,24 +63,9 @@ void TcpSslConn::listen(ACE_INET_Addr addr, uint32_t waitSeconds) {
     char msg[256];
     int32_t lastError = ACE_OS::last_error();
     if (lastError == ETIME || lastError == ETIMEDOUT) {
-      /* adongre
-       * Coverity - II
-       * CID 29271: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-       * "sprintf" can cause a
-       * buffer overflow when done incorrectly. Because sprintf() assumes an
-       * arbitrarily long string,
-       * callers must be careful not to overflow the actual space of the
-       * destination.
-       * Use snprintf() instead, or correct precision specifiers.
-       * Fix : using ACE_OS::snprintf
-       */
-      // sprintf( msg, "TcpSslConn::listen Attempt to listen timed out after %d
-      // seconds.", waitSeconds );
-      ACE_OS::snprintf(
-          msg, 256,
-          "TcpSslConn::listen Attempt to listen timed out after %d seconds.",
-          waitSeconds);
-      throw TimeoutException(msg);
+      throw TimeoutException(
+          "TcpSslConn::listen Attempt to listen timed out after" +
+          util::chrono::duration::to_string(waitSeconds) + ".");
     }
     // sprintf( msg, "TcpSslConn::listen failed with errno: %d: %s", lastError,
     // ACE_OS::strerror(lastError) );
@@ -94,10 +82,10 @@ void TcpSslConn::connect() {
 
   // m_ssl->init();
 
-  uint32_t waitMicroSeconds = m_waitMilliSeconds * 1000;
+  std::chrono::microseconds waitMicroSeconds = m_waitMilliSeconds;
 
   LOGDEBUG("Connecting SSL socket stream to %s:%d waiting %d micro sec",
-           m_addr.get_host_name(), m_addr.get_port_number(), waitMicroSeconds);
+           m_addr.get_host_name(), m_addr.get_port_number(), waitMicroSeconds.count());
 
   int32_t retVal = m_ssl->connect(m_addr, waitMicroSeconds);
 
@@ -105,13 +93,11 @@ void TcpSslConn::connect() {
     char msg[256];
     int32_t lastError = ACE_OS::last_error();
     if (lastError == ETIME || lastError == ETIMEDOUT) {
-      ACE_OS::snprintf(msg, 256,
-                       "TcpSslConn::connect Attempt to connect timed out after "
-                       "%d micro-seconds.",
-                       waitMicroSeconds);
       // this is only called by constructor, so we must delete m_ssl
       GF_SAFE_DELETE(m_ssl);
-      throw TimeoutException(msg);
+      throw TimeoutException(
+          "TcpSslConn::connect Attempt to connect timed out after " +
+          util::chrono::duration::to_string(waitMicroSeconds) + ".");
     }
     ACE_OS::snprintf(msg, 256, "TcpSslConn::connect failed with errno: %d: %s",
                      lastError, ACE_OS::strerror(lastError));
@@ -132,7 +118,7 @@ void TcpSslConn::close() {
 }
 
 int32_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, int32_t len,
-                             uint32_t waitSeconds) {
+                             std::chrono::microseconds waitSeconds) {
   {
     GF_DEV_ASSERT(m_ssl != nullptr);
     GF_DEV_ASSERT(buff != nullptr);
@@ -147,8 +133,9 @@ int32_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, int32_t len,
     }
 #endif
     // passing wait time as micro seconds
-    ACE_Time_Value waitTime(0, waitSeconds);
-    ACE_Time_Value endTime(ACE_OS::gettimeofday() + waitTime);
+    ACE_Time_Value waitTime(waitSeconds);
+    ACE_Time_Value endTime(ACE_OS::gettimeofday());
+    endTime += waitTime;
     ACE_Time_Value sleepTime(0, 100);
     size_t readLen = 0;
     ssize_t retVal;
@@ -211,3 +198,7 @@ uint16_t TcpSslConn::getPort() {
   m_ssl->getLocalAddr(*(ACE_Addr*)&localAddr);
   return localAddr.get_port_number();
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

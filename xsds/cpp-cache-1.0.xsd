@@ -16,9 +16,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<xsd:schema xmlns="http://schema.pivotal.io/gemfire/gfcpp-cache" xmlns:nc="http://schema.pivotal.io/gemfire/gfcpp-cache"
-  elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://schema.pivotal.io/gemfire/gfcpp-cache"
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="9.0">
+<xsd:schema 
+    targetNamespace="http://geode.apache.org/schema/cpp-cache"
+    xmlns:nc="http://geode.apache.org/schema/cpp-cache"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+    version="1.0">
   <xsd:annotation>
     <xsd:documentation><![CDATA[
       This is the XML Schema for the GemFire distributed cache declarative
@@ -26,11 +30,11 @@ limitations under the License.
       of the following form:
 
   <client-cache
-      xmlns="http://schema.pivotal.io/gemfire/gfcpp-cache"
+      xmlns="http://geode.apache.org/schema/cpp-cache"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://schema.pivotal.io/gemfire/gfcpp-cache
-                          http://schema.pivotal.io/gemfire/gfcpp-cache/gfcpp-cache-9.0.xsd"
-      version="9.0">
+      xsi:schemaLocation="http://geode.apache.org/schema/cpp-cache
+                          http://geode.apache.org/schema/cpp-cache/cpp-cache-1.0.xsd"
+      version="1.0">
 
 The contents of a declarative XML file correspond to APIs found in the
 org.apache.geode.cache and org.apache.geode.cache.client
@@ -60,42 +64,26 @@ declarative caching XML file elements unless indicated otherwise.
               <xsd:element minOccurs="1" maxOccurs="unbounded" name="locator" type="nc:host-port-type" />
               <xsd:element minOccurs="1" maxOccurs="unbounded" name="server" type="nc:host-port-type" />
             </xsd:choice>
-            <xsd:attribute name="free-connection-timeout" type="xsd:string" />
-            <xsd:attribute name="load-conditioning-interval" type="xsd:string" />
+            <xsd:attribute name="name" type="xsd:string" use="required" />
+            <xsd:attribute name="free-connection-timeout" type="nc:duration-type" />
+            <xsd:attribute name="load-conditioning-interval" type="nc:duration-type" />
             <xsd:attribute name="min-connections" type="xsd:string" />
             <xsd:attribute name="max-connections" type="xsd:string" />
             <xsd:attribute name="retry-attempts" type="xsd:string" />
-            <xsd:attribute name="idle-timeout" type="xsd:string" />
-            <xsd:attribute name="ping-interval" type="xsd:string" />
-            <xsd:attribute name="name" type="xsd:string" use="required" />
-            <xsd:attribute name="read-timeout" type="xsd:string" />
+            <xsd:attribute name="idle-timeout" type="nc:duration-type" />
+            <xsd:attribute name="ping-interval" type="nc:duration-type" />
+            <xsd:attribute name="read-timeout" type="nc:duration-type" />
             <xsd:attribute name="server-group" type="xsd:string" />
             <xsd:attribute name="socket-buffer-size" type="xsd:string" />
             <xsd:attribute name="subscription-enabled" type="xsd:boolean" />
             <xsd:attribute name="subscription-message-tracking-timeout" type="xsd:string" />
             <xsd:attribute name="subscription-ack-interval" type="xsd:string" />
             <xsd:attribute name="subscription-redundancy" type="xsd:string" />
-            <xsd:attribute name="statistic-interval" type="xsd:string" />
+            <xsd:attribute name="statistic-interval" type="nc:duration-type" />
             <xsd:attribute name="pr-single-hop-enabled" type="xsd:string" />
             <xsd:attribute name="thread-local-connections" type="xsd:boolean" />
             <xsd:attribute name="multiuser-authentication" type="xsd:boolean" />
-            <xsd:attribute name="update-locator-list-interval">
-              <xsd:simpleType>
-                <xsd:restriction base="xsd:long">
-                  <xsd:minInclusive value="0" />
-                </xsd:restriction>
-              </xsd:simpleType>
-            </xsd:attribute>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element minOccurs="0" maxOccurs="unbounded" name="root-region">
-          <xsd:complexType>
-            <xsd:sequence>
-              <xsd:element minOccurs="0" maxOccurs="1" name="region-attributes" type="nc:region-attributes-type" />
-              <xsd:element minOccurs="0" maxOccurs="unbounded" name="region" type="nc:region-type" />
-            </xsd:sequence>
-            <xsd:attribute name="name" type="xsd:string" use="required" />
-          </xsd:complexType>
+            <xsd:attribute name="update-locator-list-interval" type="nc:duration-type" />
         </xsd:element>
         <xsd:element minOccurs="0" maxOccurs="unbounded" name="region" type="nc:region-type" />
         <xsd:element minOccurs="0" maxOccurs="1" name="pdx">
@@ -107,7 +95,7 @@ declarative caching XML file elements unless indicated otherwise.
       </xsd:choice>
       <xsd:attribute name="endpoints" type="xsd:string" />
       <xsd:attribute name="redundancy-level" type="xsd:string" />
-      <xsd:attribute name="version" type="version-type" use="required" fixed="9.0" />
+      <xsd:attribute name="version" type="nc:version-type" use="required" fixed="1.0" />
     </xsd:complexType>
   </xsd:element>
 
@@ -191,7 +179,7 @@ declarative caching XML file elements unless indicated otherwise.
     <xsd:sequence>
       <xsd:element name="expiration-attributes">
         <xsd:complexType>
-          <xsd:attribute name="timeout" type="xsd:string" use="required" />
+          <xsd:attribute name="timeout" type="nc:duration-type" use="required" />
           <xsd:attribute name="action">
             <xsd:simpleType>
               <xsd:restriction base="xsd:NMTOKEN">
@@ -227,6 +215,17 @@ declarative caching XML file elements unless indicated otherwise.
     </xsd:annotation>
     <xsd:restriction base="xsd:token">
       <xsd:pattern value="\.?[0-9]+(\.[0-9]+)*" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="duration-type">
+    <xsd:annotation>
+      <xsd:documentation>
+        Time duration in positive integer and unit.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:pattern value="\d+(h|min|s|ms|us|ns)" />
     </xsd:restriction>
   </xsd:simpleType>
 

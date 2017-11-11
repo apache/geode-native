@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_ATTRIBUTESFACTORY_H_
-#define GEODE_ATTRIBUTESFACTORY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,13 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_ATTRIBUTESFACTORY_H_
+#define GEODE_ATTRIBUTESFACTORY_H_
+
+#include <chrono>
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 #include "ExceptionTypes.hpp"
@@ -31,6 +33,7 @@
 #include "RegionAttributes.hpp"
 #include "DiskPolicyType.hpp"
 #include "Pool.hpp"
+#include "util/chrono/duration.hpp"
 
 /**
  * @file
@@ -151,8 +154,8 @@ namespace client {
 
 class CPPCACHE_EXPORT AttributesFactory {
   /**
-    * @brief public methods
-    */
+   * @brief public methods
+   */
  public:
   /**
    *@brief constructor
@@ -227,34 +230,48 @@ class CPPCACHE_EXPORT AttributesFactory {
   // EXPIRATION ATTRIBUTES
 
   /** Sets the idleTimeout expiration attributes for region entries for the next
-   * <code>RegionAttributes</code> created.
+   * <code>RegionAttributes</code> created. Will expire in no less than
+   * <code>idleTimeout</code>. Actual time may be longer depending on clock
+   * resolution.
+   *
    * @param action the expiration action for entries in this region.
-   * @param idleTimeout the idleTimeout in seconds for entries in this region.
+   * @param idleTimeout the idleTimeout for entries in this region.
    */
   void setEntryIdleTimeout(ExpirationAction::Action action,
-                           int32_t idleTimeout);
+                           std::chrono::seconds idleTimeout);
 
   /** Sets the timeToLive expiration attributes for region entries for the next
-   * <code>RegionAttributes</code> created.
+   * <code>RegionAttributes</code> created. Will expire in no less than
+   * <code>timeToLive</code>, actual time may be longer depending on clock
+   * resolution.
+   *
    * @param action the expiration action for entries in this region.
-   * @param timeToLive the timeToLive in seconds for entries in this region.
+   * @param timeToLive the timeToLive for entries in this region.
    */
-  void setEntryTimeToLive(ExpirationAction::Action action, int32_t timeToLive);
+  void setEntryTimeToLive(ExpirationAction::Action action,
+                          std::chrono::seconds timeToLive);
 
   /** Sets the idleTimeout expiration attributes for the region itself for the
-   * next <code>RegionAttributes</code> created.
+   * next <code>RegionAttributes</code> created. Will expire in no less than
+   * <code>idleTimeout</code>, actual time may be longer depending on clock
+   * resolution.
+   *
    * @param action the expiration action for entries in this region.
-   * @param idleTimeout the idleTimeout in seconds for the region as a whole.
+   * @param idleTimeout the idleTimeout for the region as a whole.
    */
   void setRegionIdleTimeout(ExpirationAction::Action action,
-                            int32_t idleTimeout);
+                            std::chrono::seconds idleTimeout);
 
   /** Sets the timeToLive expiration attributes for the region itself for the
-   * next <code>RegionAttributes</code> created.
+   * next <code>RegionAttributes</code> created. Will expire in no less than
+   * <code>timeToLive</code>, actual time may be longer depending on clock
+   * resolution.
+   *
    * @param action the expiration action for entries in this region.
-   * @param timeToLive the timeToLive in seconds for the region as a whole.
+   * @param timeToLive the timeToLive for the region as a whole.
    */
-  void setRegionTimeToLive(ExpirationAction::Action action, int32_t timeToLive);
+  void setRegionTimeToLive(ExpirationAction::Action action,
+                           std::chrono::seconds timeToLive);
 
   // PERSISTENCE
   /**
@@ -268,10 +285,10 @@ class CPPCACHE_EXPORT AttributesFactory {
                              const PropertiesPtr& config = nullptr);
 
   /** Sets the PersistenceManager for the next <code>RegionAttributes</code>
-  * created.
-  * @param persistenceManager a user defined PersistenceManager, nullptr if no
-  * resolver
-  */
+   * created.
+   * @param persistenceManager a user defined PersistenceManager, nullptr if no
+   * resolver
+   */
   void setPersistenceManager(const PersistenceManagerPtr& persistenceManager,
                              const PropertiesPtr& config = nullptr);
 
@@ -329,37 +346,37 @@ class CPPCACHE_EXPORT AttributesFactory {
   void setCachingEnabled(bool cachingEnabled);
 
   /**
-  * Sets the pool name attribute.
-  * This causes regions that use these attributes
-  * to be a client region which communicates with the
-  * servers that the connection pool communicates with.
-  * <p>If this attribute is set to <code>null</code> or <code>""</code>
-  * then the connection pool is disabled causing regions that use these
-  * attributes
-  * to be communicate with peers instead of servers.
-  * <p>The named connection pool must exist on the cache at the time these
-  * attributes are used to create a region. See {@link
-  * PoolManager#createFactory}
-  * for how to create a connection pool.
-  * @param name the name of the connection pool to use; if <code>null</code>
-  * or <code>""</code> then the connection pool is disabled for regions
-  * using these attributes.
-  */
+   * Sets the pool name attribute.
+   * This causes regions that use these attributes
+   * to be a client region which communicates with the
+   * servers that the connection pool communicates with.
+   * <p>If this attribute is set to <code>null</code> or <code>""</code>
+   * then the connection pool is disabled causing regions that use these
+   * attributes
+   * to be communicate with peers instead of servers.
+   * <p>The named connection pool must exist on the cache at the time these
+   * attributes are used to create a region. See {@link
+   * PoolManager#createFactory}
+   * for how to create a connection pool.
+   * @param name the name of the connection pool to use; if <code>null</code>
+   * or <code>""</code> then the connection pool is disabled for regions
+   * using these attributes.
+   */
   void setPoolName(const char* name);
 
   /**
-  * Sets cloning on region
-  * @param isClonable
-  * @see RegionAttributes#getCloningEnabled()
-  */
+   * Sets cloning on region
+   * @param isClonable
+   * @see RegionAttributes#getCloningEnabled()
+   */
   void setCloningEnabled(bool isClonable);
 
   /**
-  * Enables or disables concurrent modification checks
-  * @since 7.0
-  * @param concurrencyChecksEnabled whether to perform concurrency checks on
-  * operations
-  */
+   * Enables or disables concurrent modification checks
+   * @since 7.0
+   * @param concurrencyChecksEnabled whether to perform concurrency checks on
+   * operations
+   */
   void setConcurrencyChecksEnabled(bool concurrencyChecksEnabled);
 
   // FACTORY METHOD
@@ -374,7 +391,8 @@ class CPPCACHE_EXPORT AttributesFactory {
  private:
   RegionAttributes m_regionAttributes;
   static void validateAttributes(RegionAttributes& attrs);
-};
+};  // namespace client
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -63,17 +63,17 @@ namespace Apache
         /// <summary>
         /// get result 
         /// </summary>
-        virtual System::Collections::Generic::ICollection<TResult>^  GetResult(UInt32 timeout); 
+        virtual System::Collections::Generic::ICollection<TResult>^  GetResult(TimeSpan timeout); 
 
         /// <summary>
         ///Call back provided to caller, which is called after function execution is
         ///complete and caller can retrieve results using getResult()
         /// </summary>
-  //generic<class TKey>
-	virtual void EndResults(); 
+        //generic<class TKey>
+	      virtual void EndResults(); 
 
-  //generic<class TKey>
-  virtual void ClearResults();
+        //generic<class TKey>
+        virtual void ClearResults();
 
       internal:
 

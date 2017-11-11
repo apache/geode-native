@@ -46,7 +46,8 @@ class CPPCACHE_EXPORT TombstoneExpiryHandler : public ACE_Event_Handler {
    * Constructor
    */
   TombstoneExpiryHandler(TombstoneEntryPtr entryPtr,
-                         TombstoneList* tombstoneList, uint32_t duration,
+                         TombstoneList* tombstoneList,
+                         std::chrono::milliseconds duration,
                          CacheImpl* cacheImpl);
 
   /** This task object will be registered with the Timer Queue.
@@ -65,7 +66,7 @@ class CPPCACHE_EXPORT TombstoneExpiryHandler : public ACE_Event_Handler {
   TombstoneEntryPtr m_entryPtr;
   // Duration after which the task should be reset in case of
   // modification.
-  uint32_t m_duration;
+  std::chrono::milliseconds m_duration;
   CacheImpl* m_cacheImpl;
   // perform the actual expiration action
   void DoTheExpirationAction(const CacheableKeyPtr& key);

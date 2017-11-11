@@ -42,7 +42,8 @@ DUNIT_TASK(A, Init)
     Test.m_cache = cacheFactoryPtr->create();
 
     AttributesFactory af;
-    af.setEntryTimeToLive(ExpirationAction::LOCAL_INVALIDATE, 5);
+    af.setEntryTimeToLive(ExpirationAction::LOCAL_INVALIDATE,
+                          std::chrono::seconds(5));
     RegionAttributesPtr attrs = af.createRegionAttributes();
 
     CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(Test.m_cache.get());

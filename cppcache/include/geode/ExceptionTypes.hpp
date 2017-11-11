@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_EXCEPTIONTYPES_H_
-#define GEODE_EXCEPTIONTYPES_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_EXCEPTIONTYPES_H_
+#define GEODE_EXCEPTIONTYPES_H_
+
 /**
  * @file
  */
@@ -31,30 +31,27 @@ namespace apache {
 namespace geode {
 namespace client {
 
-#define _GF_EXCEPTION_DEF(x)                                                 \
-  const char _exception_name_##x[] = "apache::geode::client::" #x;           \
-  class x;                                                                   \
-  typedef std::shared_ptr<x> x##Ptr;                                         \
-  class CPPCACHE_EXPORT x : public apache::geode::client::Exception {        \
-   public:                                                                   \
-    x(const char* msg1, const char* msg2 = nullptr, bool forceStack = false, \
-      const ExceptionPtr& cause = nullptr)                                   \
-        : Exception(msg1, msg2, forceStack, cause) {}                        \
-    x(const x& other) : Exception(other) {}                                  \
-    virtual Exception* clone() const {                                       \
-      return new x(m_message, m_stack, m_cause);                             \
-    }                                                                        \
-    virtual ~x() {}                                                          \
-    virtual const char* getName() const { return _exception_name_##x; }      \
-    virtual void raise() { throw * this; }                                   \
-                                                                             \
-   protected:                                                                \
-    x(const CacheableStringPtr& message, const StackTracePtr& stack,         \
-      const ExceptionPtr& cause)                                             \
-        : Exception(message, stack, cause) {}                                \
-                                                                             \
-   private:                                                                  \
-    const x& operator=(const x&);                                            \
+#define _GF_EXCEPTION_DEF(x)                                            \
+  const char _exception_name_##x[] = "apache::geode::client::" #x;      \
+  class x;                                                              \
+  typedef std::shared_ptr<x> x##Ptr;                                    \
+  class CPPCACHE_EXPORT x : public apache::geode::client::Exception {   \
+   public:                                                              \
+    using Exception::Exception;                                         \
+    virtual Exception* clone() const {                                  \
+      return new x(m_message, m_stack, m_cause);                        \
+    }                                                                   \
+    virtual ~x() {}                                                     \
+    virtual const char* getName() const { return _exception_name_##x; } \
+    virtual void raise() { throw *this; }                               \
+                                                                        \
+   protected:                                                           \
+    x(const CacheableStringPtr& message, const StackTracePtr& stack,    \
+      const ExceptionPtr& cause)                                        \
+        : Exception(message, stack, cause) {}                           \
+                                                                        \
+   private:                                                             \
+    const x& operator=(const x&);                                       \
   }
 
 /*

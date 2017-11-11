@@ -30,45 +30,68 @@ using namespace apache::geode::client;
 Pool::Pool(PoolAttributesPtr attr) : m_attrs(attr) {}
 Pool::~Pool() {}
 
-int Pool::getFreeConnectionTimeout() const {
+std::chrono::milliseconds Pool::getFreeConnectionTimeout() const {
   return m_attrs->getFreeConnectionTimeout();
 }
-int Pool::getLoadConditioningInterval() const {
+
+std::chrono::milliseconds Pool::getLoadConditioningInterval() const {
   return m_attrs->getLoadConditioningInterval();
 }
+
 int Pool::getSocketBufferSize() const { return m_attrs->getSocketBufferSize(); }
-int Pool::getReadTimeout() const { return m_attrs->getReadTimeout(); }
+
+std::chrono::milliseconds Pool::getReadTimeout() const {
+  return m_attrs->getReadTimeout();
+}
+
 int Pool::getMinConnections() const { return m_attrs->getMinConnections(); }
+
 int Pool::getMaxConnections() const { return m_attrs->getMaxConnections(); }
-long Pool::getIdleTimeout() const { return m_attrs->getIdleTimeout(); }
-long Pool::getPingInterval() const { return m_attrs->getPingInterval(); }
-long Pool::getUpdateLocatorListInterval() const {
+
+std::chrono::milliseconds Pool::getIdleTimeout() const {
+  return m_attrs->getIdleTimeout();
+}
+
+std::chrono::milliseconds Pool::getPingInterval() const {
+  return m_attrs->getPingInterval();
+}
+
+std::chrono::milliseconds Pool::getUpdateLocatorListInterval() const {
   return m_attrs->getUpdateLocatorListInterval();
 }
-int Pool::getStatisticInterval() const {
+
+std::chrono::milliseconds Pool::getStatisticInterval() const {
   return m_attrs->getStatisticInterval();
 }
+
 int Pool::getRetryAttempts() const { return m_attrs->getRetryAttempts(); }
-// bool Pool::getThreadLocalConnections() const { return false; }
+
 bool Pool::getSubscriptionEnabled() const {
   return m_attrs->getSubscriptionEnabled();
 }
+
 int Pool::getSubscriptionRedundancy() const {
   return m_attrs->getSubscriptionRedundancy();
 }
-int Pool::getSubscriptionMessageTrackingTimeout() const {
+
+std::chrono::milliseconds Pool::getSubscriptionMessageTrackingTimeout() const {
   return m_attrs->getSubscriptionMessageTrackingTimeout();
 }
-int Pool::getSubscriptionAckInterval() const {
+
+std::chrono::milliseconds Pool::getSubscriptionAckInterval() const {
   return m_attrs->getSubscriptionAckInterval();
 }
+
 const char* Pool::getServerGroup() const { return m_attrs->getServerGroup(); }
+
 bool Pool::getThreadLocalConnections() const {
   return m_attrs->getThreadLocalConnectionSetting();
 }
+
 bool Pool::getMultiuserAuthentication() const {
   return m_attrs->getMultiuserSecureModeEnabled();
 }
+
 RegionServicePtr Pool::createSecureUserCache(PropertiesPtr credentials,
                                              CacheImpl* cacheImpl) {
   if (this->getMultiuserAuthentication()) {

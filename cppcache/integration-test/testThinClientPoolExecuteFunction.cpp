@@ -22,6 +22,8 @@
 
 #include <ace/ACE.h>
 
+#include <geode/DefaultResultCollector.hpp>
+
 using namespace PdxTests;
 /* This is to test
 1- funtion execution on pool
@@ -110,57 +112,46 @@ char* FETimeOut = (char*)"FunctionExecutionTimeOut";
     }                                        \
   }                                          \
   ASSERT(found, "this returned value is invalid");
-class MyResultCollector : public ResultCollector {
+
+class MyResultCollector : public DefaultResultCollector {
  public:
   MyResultCollector()
-      : m_resultList(CacheableVector::create()),
-        m_isResultReady(false),
+      : DefaultResultCollector(),
         m_endResultCount(0),
         m_addResultCount(0),
         m_getResultCount(0) {}
   ~MyResultCollector() {}
-  CacheableVectorPtr getResult(uint32_t timeout) {
+
+  CacheableVectorPtr getResult(std::chrono::milliseconds timeout) override {
     m_getResultCount++;
-    if (m_isResultReady == true) {
-      return m_resultList;
-    } else {
-      for (uint32_t i = 0; i < timeout; i++) {
-        SLEEP(1);
-        if (m_isResultReady == true) return m_resultList;
-      }
-      throw FunctionExecutionException(
-          "Result is not ready, endResults callback is called before invoking "
-          "getResult() method");
-    }
+    return DefaultResultCollector::getResult(timeout);
   }
 
-  void addResult(const CacheablePtr& resultItem) {
+  void addResult(const CacheablePtr& resultItem) override {
     m_addResultCount++;
     if (resultItem == nullptr) {
       return;
     }
-    if (auto result =
+    if (auto results =
             std::dynamic_pointer_cast<CacheableArrayList>(resultItem)) {
-      for (int32_t i = 0; i < result->size(); i++) {
-        m_resultList->push_back(result->operator[](i));
+      for (auto& result : *results) {
+        DefaultResultCollector::addResult(result);
       }
     } else {
-      auto ex =
-          std::dynamic_pointer_cast<UserFunctionExecutionException>(resultItem);
-      m_resultList->push_back(ex);
+      DefaultResultCollector::addResult(resultItem);
     }
   }
-  void endResults() {
-    m_isResultReady = true;
+
+  void endResults() override {
     m_endResultCount++;
+    DefaultResultCollector::endResults();
   }
+
   uint32_t getEndResultCount() { return m_endResultCount; }
   uint32_t getAddResultCount() { return m_addResultCount; }
   uint32_t getGetResultCount() { return m_getResultCount; }
 
  private:
-  CacheableVectorPtr m_resultList;
-  volatile bool m_isResultReady;
   uint32_t m_endResultCount;
   uint32_t m_addResultCount;
   uint32_t m_getResultCount;
@@ -271,7 +262,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
     SLEEP(10000);  // let the put finish
     try {
       CacheablePtr args = CacheableBoolean::create(1);
-      bool getResult = true;
       auto routingObj = CacheableVector::create();
       for (int i = 0; i < 34; i++) {
         if (i % 2 == 0) continue;
@@ -290,7 +280,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       auto exe2 = exe1->withArgs(args1);
 
       auto resultList = CacheableVector::create();
-      auto executeFunctionResult = exe1->execute(rjFuncName, 15)->getResult();
+      auto executeFunctionResult =
+          exe1->execute(rjFuncName, std::chrono::seconds(15))->getResult();
       if (executeFunctionResult == nullptr) {
         ASSERT(false, "echo String : executeFunctionResult is nullptr");
       } else {
@@ -306,15 +297,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
           FAIL("echo String : wrong argument type");
         }
       }
-      executeFunctionResult = exc->withFilter(routingObj)
-                                  ->withArgs(args)
-                                  ->execute(exFuncName, 15)
-                                  ->getResult();
+      executeFunctionResult =
+          exc->withFilter(routingObj)
+              ->withArgs(args)
+              ->execute(exFuncName, std::chrono::seconds(15))
+              ->getResult();
 
-      executeFunctionResult = exc->withFilter(routingObj)
-                                  ->withArgs(args)
-                                  ->execute(rjFuncName, 15)
-                                  ->getResult();
+      executeFunctionResult =
+          exc->withFilter(routingObj)
+              ->withArgs(args)
+              ->execute(rjFuncName, std::chrono::seconds(15))
+              ->getResult();
       if (executeFunctionResult == nullptr) {
         ASSERT(false, "echo String : executeFunctionResult is nullptr");
       } else {
@@ -328,10 +321,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         ASSERT(strcmp("echoString", str) == 0, "echoString is not eched back");
       }
       args = CacheableKey::create("echoBoolean");
-      executeFunctionResult = exc->withFilter(routingObj)
-                                  ->withArgs(args)
-                                  ->execute(rjFuncName, 15)
-                                  ->getResult();
+      executeFunctionResult =
+          exc->withFilter(routingObj)
+              ->withArgs(args)
+              ->execute(rjFuncName, std::chrono::seconds(15))
+              ->getResult();
       if (executeFunctionResult == nullptr) {
         ASSERT(false, "echo Boolean: executeFunctionResult is nullptr");
       } else {
@@ -347,7 +341,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
       executeFunctionResult = exc->withFilter(routingObj)
                                   ->withArgs(args)
-                                  ->execute(getFuncName, getResult)
+                                  ->execute(getFuncName)
                                   ->getResult();
       /****
        **decomposed from above long expression:
@@ -403,7 +397,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       executeFunctionResult = exc->withFilter(routingObj)
                                   ->withArgs(args)
                                   ->withCollector(myRC)
-                                  ->execute(getFuncName, getResult)
+                                  ->execute(getFuncName)
                                   ->getResult();
       sprintf(buf, "add result count = %d", myRC->getAddResultCount());
       LOG(buf);
@@ -440,8 +434,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         }
       }
       //     test put function without result
-      getResult = false;
-      exc->withFilter(routingObj)->withArgs(args)->execute(putFuncName, 15);
+      exc->withFilter(routingObj)
+          ->withArgs(args)
+          ->execute(putFuncName, std::chrono::seconds(15));
       SLEEP(10000);  // let the put finish
       for (int i = 0; i < 34; i++) {
         if (i % 2 == 0) continue;
@@ -455,11 +450,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       }
 
       args = routingObj;
-      getResult = true;
-      executeFunctionResult = exc->withArgs(args)
-                                  ->withFilter(routingObj)
-                                  ->execute(getFuncName, 15)
-                                  ->getResult();
+      executeFunctionResult =
+          exc->withArgs(args)
+              ->withFilter(routingObj)
+              ->execute(getFuncName, std::chrono::seconds(15))
+              ->getResult();
 
       if (executeFunctionResult == nullptr) {
         ASSERT(false, "get executeFunctionResult is nullptr");
@@ -523,13 +518,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       LOG("Adding filter done.");
 
       args = CacheableBoolean::create(1);
-      getResult = true;
 
       auto funcExec = FunctionService::onRegion(regPtr0);
       ASSERT(funcExec != nullptr, "onRegion Returned nullptr");
 
       auto collector = funcExec->withArgs(args)->withFilter(filter)->execute(
-          exFuncNameSendException, 15);
+          exFuncNameSendException, std::chrono::seconds(15));
       ASSERT(collector != nullptr, "onRegion collector nullptr");
 
       auto result = collector->getResult();
@@ -547,7 +541,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       LOG("exFuncNameSendException done for bool arguement.");
 
       collector = funcExec->withArgs(arrList)->withFilter(filter)->execute(
-          exFuncNameSendException, 15);
+          exFuncNameSendException, std::chrono::seconds(15));
       ASSERT(collector != nullptr, "onRegion collector for arrList nullptr");
 
       result = collector->getResult();
@@ -569,7 +563,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
       args = CacheableString::create("Multiple");
       collector = funcExec->withArgs(args)->withFilter(filter)->execute(
-          exFuncNameSendException, 15);
+          exFuncNameSendException, std::chrono::seconds(15));
       ASSERT(collector != nullptr, "onRegion collector for string nullptr");
       result = collector->getResult();
       LOGINFO("result->size() for Multiple String = %d ", result->size());
@@ -596,7 +590,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       result = funcExec->withArgs(args)
                    ->withFilter(filter)
                    ->withCollector(myRC1)
-                   ->execute(exFuncNameSendException, getResult)
+                   ->execute(exFuncNameSendException)
                    ->getResult();
       LOGINFO("add result count = %d", myRC1->getAddResultCount());
       LOGINFO("end result count = %d", myRC1->getEndResultCount());
@@ -631,7 +625,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
       // test data independant function
       //     test get function with result
-      getResult = true;
       args = routingObj;
       // ExecutionPtr exc=nullptr;
       // CacheableVectorPtr executeFunctionResult = nullptr;
@@ -639,7 +632,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       LOG("test data independant get function on one server");
       exc = FunctionService::onServer(getHelper()->cachePtr);
       executeFunctionResult =
-          exc->withArgs(args)->execute(getFuncIName, getResult)->getResult();
+          exc->withArgs(args)->execute(getFuncIName)->getResult();
       if (executeFunctionResult == nullptr) {
         ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
@@ -671,8 +664,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       }
       LOG("test data independant put function on one server");
       //     test put function without result
-      getResult = false;
-      exc->withArgs(args)->execute(putFuncIName, 15);
+      exc->withArgs(args)->execute(putFuncIName, std::chrono::seconds(15));
       SLEEP(500);  // let the put finish
       for (int i = 0; i < 34; i++) {
         if (i % 2 == 0) continue;
@@ -691,7 +683,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       //-----------------------Test with PdxObject
       // onServers-------------------------------//
 
-      getResult = true;
       try {
         SerializationRegistryPtr serializationRegistry =
             CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
@@ -719,10 +710,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       }
 
       auto pdxExc = FunctionService::onServers(getHelper()->cachePtr);
-      auto executeFunctionResultPdx =
-          pdxExc->withArgs(pdxRoutingObj)
-              ->execute(exFuncNamePdxType, getResult)
-              ->getResult();
+      auto executeFunctionResultPdx = pdxExc->withArgs(pdxRoutingObj)
+                                          ->execute(exFuncNamePdxType)
+                                          ->getResult();
       LOGINFO("FE on pdxObject done");
       if (executeFunctionResultPdx == nullptr) {
         ASSERT(false, "get executeFunctionResultPdx is nullptr");
@@ -792,7 +782,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       auto pdxInstanceExc = FunctionService::onServers(getHelper()->cachePtr);
       auto executeFunctionResultPdxInstance =
           pdxInstanceExc->withArgs(pdxInstanceRoutingObj)
-              ->execute(exFuncNamePdxType, getResult)
+              ->execute(exFuncNamePdxType)
               ->getResult();
       LOGINFO("FE on pdxObject done");
       if (executeFunctionResultPdxInstance == nullptr) {
@@ -861,10 +851,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       SLEEP(60000);  // let this servers gets all the data
 
       //---------------------------------------------------------------------
-      getResult = true;
       exc = FunctionService::onServers(getHelper()->cachePtr);
       executeFunctionResult =
-          exc->withArgs(args)->execute(getFuncIName, getResult)->getResult();
+          exc->withArgs(args)->execute(getFuncIName)->getResult();
       if (executeFunctionResult == nullptr) {
         ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
@@ -898,8 +887,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       LOG("test data independant put function on all servers");
       // test data independant function on all servers
       // test put
-      getResult = false;
-      exc->withArgs(args)->execute(putFuncIName, 15);
+      exc->withArgs(args)->execute(putFuncIName, std::chrono::seconds(15));
       SLEEP(10000);  // let the put finish
       for (int i = 0; i < 34; i++) {
         if (i % 2 == 0) continue;
@@ -915,11 +903,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       // onServers-------------------------------//
       LOG("OnServers with sendException");
       args = CacheableBoolean::create(1);
-      getResult = true;
       funcExec = FunctionService::onServers(getHelper()->cachePtr);
 
-      collector =
-          funcExec->withArgs(args)->execute(exFuncNameSendException, 15);
+      collector = funcExec->withArgs(args)->execute(exFuncNameSendException,
+                                                    std::chrono::seconds(15));
       ASSERT(collector != nullptr, "onServers collector for bool nullptr");
 
       result = collector->getResult();
@@ -936,8 +923,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         }
       }
 
-      collector =
-          funcExec->withArgs(arrList)->execute(exFuncNameSendException, 15);
+      collector = funcExec->withArgs(arrList)->execute(
+          exFuncNameSendException, std::chrono::seconds(15));
       ASSERT(collector != nullptr, "onServers collector for arrList nullptr");
 
       result = collector->getResult();
@@ -963,8 +950,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       LOG("exFuncNameSendException for string arguement.");
 
       args = CacheableString::create("Multiple");
-      collector =
-          funcExec->withArgs(args)->execute(exFuncNameSendException, 15);
+      collector = funcExec->withArgs(args)->execute(exFuncNameSendException,
+                                                    std::chrono::seconds(15));
       ASSERT(collector != nullptr, "onServers collector for string nullptr");
 
       result = collector->getResult();
@@ -987,7 +974,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       auto myRC2 = std::make_shared<MyResultCollector>();
       result = funcExec->withArgs(args)
                    ->withCollector(myRC2)
-                   ->execute(exFuncNameSendException, getResult)
+                   ->execute(exFuncNameSendException)
                    ->getResult();
       ASSERT(3 == myRC2->getAddResultCount(), "add result count is not 3");
       ASSERT(1 == myRC2->getEndResultCount(), "end result count is not 1");
@@ -1033,14 +1020,15 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, Client2OpTest)
   {
+    std::chrono::milliseconds timeout = std::chrono::seconds{15};
     auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     char buf[128];
     SLEEP(10000);
     try {
       LOGINFO("FETimeOut begin onRegion");
       auto RexecutionPtr = FunctionService::onRegion(regPtr0);
-      auto fe = RexecutionPtr->withArgs(CacheableInt32::create(5000 * 1000))
-                    ->execute(FETimeOut, 5000 * 1000)
+      auto fe = RexecutionPtr->withArgs(CacheableInt32::create(timeout.count()))
+                    ->execute(FETimeOut, timeout)
                     ->getResult();
       if (fe == nullptr) {
         ASSERT(false, "functionResult is nullptr");
@@ -1059,8 +1047,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client2OpTest)
 
       LOGINFO("FETimeOut begin onServer");
       auto serverExc = FunctionService::onServer(getHelper()->cachePtr);
-      auto vec = serverExc->withArgs(CacheableInt32::create(5000 * 1000))
-                     ->execute(FETimeOut, 5000 * 1000)
+      auto vec = serverExc->withArgs(CacheableInt32::create(timeout.count()))
+                     ->execute(FETimeOut, timeout)
                      ->getResult();
       if (vec == nullptr) {
         ASSERT(false, "functionResult is nullptr");
@@ -1079,8 +1067,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client2OpTest)
 
       LOGINFO("FETimeOut begin onServers");
       auto serversExc = FunctionService::onServers(getHelper()->cachePtr);
-      auto vecs = serversExc->withArgs(CacheableInt32::create(5000 * 1000))
-                      ->execute(FETimeOut, 5000 * 1000)
+      auto vecs = serversExc->withArgs(CacheableInt32::create(timeout.count()))
+                      ->execute(FETimeOut, timeout)
                       ->getResult();
       if (vecs == nullptr) {
         ASSERT(false, "functionResult is nullptr");
@@ -1174,7 +1162,8 @@ class putThread : public ACE_Task_Base {
           auto routingObj = CacheableVector::create();
           routingObj->push_back(key);
           auto exc = FunctionService::onRegion(regPtr0);
-          exc->execute(routingObj, args, rPtr, getFuncName2, 300 /*in millis*/)
+          exc->execute(routingObj, args, rPtr, getFuncName2,
+                       std::chrono::seconds(300))
               ->getResult();
         } catch (const TimeoutException& te) {
           LOGINFO("Timeout exception occurred %s", te.getMessage());
@@ -1216,7 +1205,8 @@ void executeFunction() {
     auto routingObj = CacheableVector::create();
     routingObj->push_back(key);
     auto exc = FunctionService::onRegion(regPtr0);
-    exc->execute(routingObj, args, rPtr, getFuncName2, 300 /*in millis*/)
+    exc->execute(routingObj, args, rPtr, getFuncName2,
+                 std::chrono::seconds(300))
         ->getResult();
   }
   LOGINFO("executeFunction failureCount %d", failureCount);

@@ -65,7 +65,7 @@ class CPPCACHE_EXPORT EventIdMap {
                              dereference_equal_to<EventSourcePtr>>
       map_type;
 
-  int32_t m_expiry;
+  std::chrono::milliseconds m_expiry;
   map_type m_map;
   ACE_Recursive_Thread_Mutex m_lock;
 
@@ -79,7 +79,7 @@ class CPPCACHE_EXPORT EventIdMap {
   void clear();
 
   /** Initialize with preset expiration time in seconds */
-  void init(int32_t expirySecs);
+  void init(std::chrono::milliseconds expirySecs);
 
   ~EventIdMap();
 
@@ -146,10 +146,10 @@ class CPPCACHE_EXPORT EventSequence {
   EventSequence(int64_t seqNum);
   ~EventSequence();
 
-  void touch(int32_t ageSecs);  // update deadline
-  void touch(
-      int64_t seqNum,
-      int32_t ageSecs);  // update deadline, clear acked flag and set seqNum
+  // update deadline
+  void touch(std::chrono::milliseconds ageSecs);
+  // update deadline, clear acked flag and set seqNum
+  void touch(int64_t seqNum, std::chrono::milliseconds ageSecs);
 
   // Accessors:
 

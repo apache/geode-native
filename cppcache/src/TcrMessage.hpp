@@ -20,31 +20,33 @@
 #ifndef GEODE_TCRMESSAGE_H_
 #define GEODE_TCRMESSAGE_H_
 
+#include <atomic>
+#include <string>
+#include <map>
+#include <vector>
+
 #include <ace/OS.h>
 
 #include <geode/geode_globals.hpp>
-#include <atomic>
 #include <geode/Cacheable.hpp>
 #include <geode/CacheableKey.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/VectorT.hpp>
+#include <geode/CacheableBuiltins.hpp>
+
 #include "InterestResultPolicy.hpp"
 #include "EventId.hpp"
 #include "EventIdMap.hpp"
-#include <geode/CacheableBuiltins.hpp>
 #include "TcrChunkedContext.hpp"
-#include <geode/VectorT.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 #include "BucketServerLocation.hpp"
 #include "FixedPartitionAttributesImpl.hpp"
 #include "VersionTag.hpp"
 #include "VersionedCacheableObjectPartList.hpp"
 #include "SerializationRegistry.hpp"
-#include <string>
-#include <map>
-#include <vector>
 
 namespace apache {
 namespace geode {
@@ -334,8 +336,8 @@ class CPPCACHE_EXPORT TcrMessage {
   int32_t getTransId() const;
   void setTransId(int32_t txId);
 
-  uint32_t getTimeout() const;
-  void setTimeout(uint32_t timeout);
+  std::chrono::milliseconds getTimeout() const;
+  void setTimeout(std::chrono::milliseconds timeout);
 
   /* we need a static method to generate ping */
   /* The caller should not delete the message since it is global. */
@@ -564,7 +566,9 @@ class CPPCACHE_EXPORT TcrMessage {
   void writeInterestResultPolicyPart(InterestResultPolicy policy);
   void writeIntPart(int32_t intValue);
   void writeBytePart(uint8_t byteValue);
-  void writeByteAndTimeOutPart(uint8_t byteValue, int32_t timeout);
+  void writeMillisecondsPart(std::chrono::milliseconds millis);
+  void writeByteAndTimeOutPart(uint8_t byteValue,
+                               std::chrono::milliseconds timeout);
   void chunkSecurityHeader(int skipParts, const uint8_t* bytes, int32_t len,
                            uint8_t isLastChunkAndSecurityHeader);
 
@@ -605,7 +609,7 @@ class CPPCACHE_EXPORT TcrMessage {
   const Region* m_region;
   std::string m_regex;
   char m_interestPolicy;
-  uint32_t m_timeout;
+  std::chrono::milliseconds m_timeout;
   bool m_isDurable;
   bool m_receiveValues;
   bool m_hasCqsPart;
@@ -622,7 +626,7 @@ class CPPCACHE_EXPORT TcrMessage {
   uint32_t m_numCqPart;
   uint32_t m_msgTypeForCq;  // new part since 7.0 for cq event message type.
   std::map<std::string, int>* m_cqs;
-  int32_t m_messageResponseTimeout;
+  std::chrono::milliseconds m_messageResponseTimeout;
   bool m_boolValue;
   std::unique_ptr<DataInput> m_delta;
   uint8_t* m_deltaBytes;
@@ -646,7 +650,7 @@ class TcrMessageDestroyRegion : public TcrMessage {
   TcrMessageDestroyRegion(std::unique_ptr<DataOutput> dataOutput,
                           const Region* region,
                           const SerializablePtr& aCallbackArgument,
-                          int messageResponsetimeout,
+                          std::chrono::milliseconds messageResponsetimeout,
                           ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageDestroyRegion() {}
@@ -659,7 +663,7 @@ class TcrMessageClearRegion : public TcrMessage {
   TcrMessageClearRegion(std::unique_ptr<DataOutput> dataOutput,
                         const Region* region,
                         const SerializablePtr& aCallbackArgument,
-                        int messageResponsetimeout,
+                        std::chrono::milliseconds messageResponsetimeout,
                         ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageClearRegion() {}
@@ -670,7 +674,8 @@ class TcrMessageClearRegion : public TcrMessage {
 class TcrMessageQuery : public TcrMessage {
  public:
   TcrMessageQuery(std::unique_ptr<DataOutput> dataOutput,
-                  const std::string& regionName, int messageResponsetimeout,
+                  const std::string& regionName,
+                  std::chrono::milliseconds messageResponsetimeout,
                   ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageQuery() {}
@@ -681,7 +686,8 @@ class TcrMessageQuery : public TcrMessage {
 class TcrMessageStopCQ : public TcrMessage {
  public:
   TcrMessageStopCQ(std::unique_ptr<DataOutput> dataOutput,
-                   const std::string& regionName, int messageResponsetimeout,
+                   const std::string& regionName,
+                   std::chrono::milliseconds messageResponsetimeout,
                    ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageStopCQ() {}
@@ -692,7 +698,8 @@ class TcrMessageStopCQ : public TcrMessage {
 class TcrMessageCloseCQ : public TcrMessage {
  public:
   TcrMessageCloseCQ(std::unique_ptr<DataOutput> dataOutput,
-                    const std::string& regionName, int messageResponsetimeout,
+                    const std::string& regionName,
+                    std::chrono::milliseconds messageResponsetimeout,
                     ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageCloseCQ() {}
@@ -702,12 +709,11 @@ class TcrMessageCloseCQ : public TcrMessage {
 
 class TcrMessageQueryWithParameters : public TcrMessage {
  public:
-  TcrMessageQueryWithParameters(std::unique_ptr<DataOutput> dataOutput,
-                                const std::string& regionName,
-                                const SerializablePtr& aCallbackArgument,
-                                CacheableVectorPtr paramList,
-                                int messageResponsetimeout,
-                                ThinClientBaseDM* connectionDM);
+  TcrMessageQueryWithParameters(
+      std::unique_ptr<DataOutput> dataOutput, const std::string& regionName,
+      const SerializablePtr& aCallbackArgument, CacheableVectorPtr paramList,
+      std::chrono::milliseconds messageResponsetimeout,
+      ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageQueryWithParameters() {}
 
@@ -912,7 +918,8 @@ class TcrMessageMakePrimary : public TcrMessage {
 class TcrMessagePutAll : public TcrMessage {
  public:
   TcrMessagePutAll(std::unique_ptr<DataOutput> dataOutput, const Region* region,
-                   const HashMapOfCacheable& map, int messageResponsetimeout,
+                   const HashMapOfCacheable& map,
+                   std::chrono::milliseconds messageResponsetimeout,
                    ThinClientBaseDM* connectionDM,
                    const SerializablePtr& aCallbackArgument);
 
@@ -963,7 +970,7 @@ class TcrMessageExecuteRegionFunction : public TcrMessage {
       std::unique_ptr<DataOutput> dataOutput, const std::string& funcName,
       const Region* region, const CacheablePtr& args,
       CacheableVectorPtr routingObj, uint8_t getResult,
-      CacheableHashSetPtr failedNodes, int32_t timeout,
+      CacheableHashSetPtr failedNodes, std::chrono::milliseconds timeout,
       ThinClientBaseDM* connectionDM = nullptr, int8_t reExecute = 0);
 
   virtual ~TcrMessageExecuteRegionFunction() {}
@@ -977,8 +984,8 @@ class TcrMessageExecuteRegionFunctionSingleHop : public TcrMessage {
       std::unique_ptr<DataOutput> dataOutput, const std::string& funcName,
       const Region* region, const CacheablePtr& args,
       CacheableHashSetPtr routingObj, uint8_t getResult,
-      CacheableHashSetPtr failedNodes, bool allBuckets, int32_t timeout,
-      ThinClientBaseDM* connectionDM);
+      CacheableHashSetPtr failedNodes, bool allBuckets,
+      std::chrono::milliseconds timeout, ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageExecuteRegionFunctionSingleHop() {}
 
@@ -1171,7 +1178,8 @@ class TcrMessageExecuteFunction : public TcrMessage {
   TcrMessageExecuteFunction(std::unique_ptr<DataOutput> dataOutput,
                             const std::string& funcName,
                             const CacheablePtr& args, uint8_t getResult,
-                            ThinClientBaseDM* connectionDM, int32_t timeout);
+                            ThinClientBaseDM* connectionDM,
+                            std::chrono::milliseconds timeout);
 
   virtual ~TcrMessageExecuteFunction() {}
 

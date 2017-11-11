@@ -76,8 +76,12 @@ CacheableKeyPtr do1Put(RegionPtr& rptr) {
   return key;
 }
 
-void setExpTimes(RegionAttributesPtr& attrs, int ettl = 0, int eit = 0,
-                 int rttl = 0, int rit = 0) {
+void setExpTimes(
+    RegionAttributesPtr& attrs,
+    const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
+    const std::chrono::seconds& eit = std::chrono::seconds::zero(),
+    const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
+    const std::chrono::seconds& rit = std::chrono::seconds::zero()) {
   AttributesFactory afact;
 
   afact.setEntryIdleTimeout(action, eit);
@@ -118,7 +122,8 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributesPtr attrs_2;
 
-    setExpTimes(attrs_2, 20, 2, 0, 0);
+    setExpTimes(attrs_2, std::chrono::seconds(20), std::chrono::seconds(2),
+                std::chrono::seconds(0), std::chrono::seconds(0));
 
     RegionPtr R2;
     cacheImpl->createRegion("R2", attrs_2, R2);
@@ -135,7 +140,8 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributesPtr attrs_3;
     // rttl = 20, reit = 2
-    setExpTimes(attrs_3, 0, 0, 20, 2);
+    setExpTimes(attrs_3, std::chrono::seconds(0), std::chrono::seconds(0),
+                std::chrono::seconds(20), std::chrono::seconds(2));
 
     RegionPtr R3;
     cacheImpl->createRegion("R3", attrs_3, R3);
@@ -147,7 +153,8 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributesPtr attrs_4;
 
-    setExpTimes(attrs_4, 5, 0, 0, 0);
+    setExpTimes(attrs_4, std::chrono::seconds(5), std::chrono::seconds(0),
+                std::chrono::seconds(0), std::chrono::seconds(0));
 
     RegionPtr R4;
     cacheImpl->createRegion("R4", attrs_4, R4);
@@ -165,7 +172,8 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributesPtr attrs_5;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_5, 0, 5, 0, 0);
+    setExpTimes(attrs_5, std::chrono::seconds(0), std::chrono::seconds(5),
+                std::chrono::seconds(0), std::chrono::seconds(0));
 
     RegionPtr R5;
     cacheImpl->createRegion("R5", attrs_5, R5);
@@ -192,7 +200,8 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributesPtr attrs_6;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_6, 0, 0, 5, 0);
+    setExpTimes(attrs_6, std::chrono::seconds(0), std::chrono::seconds(0),
+                std::chrono::seconds(5), std::chrono::seconds(0));
 
     RegionPtr R6;
     cacheImpl->createRegion("R6", attrs_6, R6);
@@ -210,7 +219,8 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributesPtr attrs_7;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_7, 0, 0, 0, 5);
+    setExpTimes(attrs_7, std::chrono::seconds(0), std::chrono::seconds(0),
+                std::chrono::seconds(0), std::chrono::seconds(5));
 
     RegionPtr R7;
     cacheImpl->createRegion("R7", attrs_7, R7);
@@ -228,7 +238,8 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributesPtr attrs_8;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_8, 10, 0, 0, 0);
+    setExpTimes(attrs_8, std::chrono::seconds(10), std::chrono::seconds(0),
+                std::chrono::seconds(0), std::chrono::seconds(0));
 
     RegionPtr R8;
     cacheImpl->createRegion("R8", attrs_8, R8);
@@ -247,7 +258,8 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributesPtr attrs_9;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_9, 0, 0, 0, 8);
+    setExpTimes(attrs_9, std::chrono::seconds(0), std::chrono::seconds(0),
+                std::chrono::seconds(0), std::chrono::seconds(8));
 
     RegionPtr R9;
     cacheImpl->createRegion("R9", attrs_9, R9);
@@ -268,7 +280,8 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributesPtr attrs_10;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_10, 6, 0, 0, 12);
+    setExpTimes(attrs_10, std::chrono::seconds(6), std::chrono::seconds(0),
+                std::chrono::seconds(0), std::chrono::seconds(12));
 
     RegionPtr R10;
     cacheImpl->createRegion("R10", attrs_10, R10);
@@ -288,7 +301,8 @@ BEGIN_TEST(TEST_EXPIRATION)
     RegionAttributesPtr attrs_11;
 
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_11, 0, 4, 0, 7);
+    setExpTimes(attrs_11, std::chrono::seconds(0), std::chrono::seconds(4),
+                std::chrono::seconds(0), std::chrono::seconds(7));
 
     RegionPtr R11;
     cacheImpl->createRegion("R11", attrs_11, R11);
@@ -314,7 +328,8 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributesPtr attrs_12;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_12, 5, 0, 0, 0);
+    setExpTimes(attrs_12, std::chrono::seconds(5), std::chrono::seconds(0),
+                std::chrono::seconds(0), std::chrono::seconds(0));
 
     RegionPtr R12;
     cacheImpl->createRegion("R12", attrs_12, R12);
@@ -332,7 +347,8 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributesPtr attrs_14;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_14, 0, 0, 10, 0);
+    setExpTimes(attrs_14, std::chrono::seconds(0), std::chrono::seconds(0),
+                std::chrono::seconds(10), std::chrono::seconds(0));
 
     RegionPtr R14;
     cacheImpl->createRegion("R14", attrs_14, R14);
@@ -346,7 +362,8 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributesPtr attrs_15;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_15, 0, 5, 0, 0);
+    setExpTimes(attrs_15, std::chrono::seconds(0), std::chrono::seconds(5),
+                std::chrono::seconds(0), std::chrono::seconds(0));
 
     RegionPtr R15;
     cacheImpl->createRegion("R15", attrs_15, R15);
@@ -365,7 +382,8 @@ BEGIN_TEST(TEST_EXPIRATION)
     //////////////
     RegionAttributesPtr attrs_18;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_18, 6, 3, 0, 0);
+    setExpTimes(attrs_18, std::chrono::seconds(6), std::chrono::seconds(3),
+                std::chrono::seconds(0), std::chrono::seconds(0));
 
     RegionPtr R18;
     cacheImpl->createRegion("R18", attrs_18, R18);
@@ -384,7 +402,8 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributesPtr attrs_19;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_19, 0, 0, 6, 3);
+    setExpTimes(attrs_19, std::chrono::seconds(0), std::chrono::seconds(0),
+                std::chrono::seconds(6), std::chrono::seconds(3));
 
     RegionPtr R19;
     cacheImpl->createRegion("R19x", attrs_19, R19);

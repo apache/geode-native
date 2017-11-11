@@ -14,14 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <vector>
-#include <tuple>
 
-#include "LocalRegion.hpp"
-#include "util/Log.hpp"
+#include <vector>
+
 #include <geode/SystemProperties.hpp>
 #include <geode/PoolManager.hpp>
 
+#include "LocalRegion.hpp"
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheableToken.hpp"
@@ -33,7 +32,8 @@
 #include "RegionGlobalLocks.hpp"
 #include "TXState.hpp"
 #include "VersionTag.hpp"
-#include "statistics/StatisticsManager.hpp"
+#include "util/bounds.hpp"
+#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {
@@ -145,7 +145,8 @@ void LocalRegion::invalidateRegion(const SerializablePtr& aCallbackArgument) {
   GfErrTypeToException("Region::invalidateRegion", err);
 }
 
-void LocalRegion::localInvalidateRegion(const SerializablePtr& aCallbackArgument) {
+void LocalRegion::localInvalidateRegion(
+    const SerializablePtr& aCallbackArgument) {
   GfErrType err =
       invalidateRegionNoThrow(aCallbackArgument, CacheEventFlags::LOCAL);
   GfErrTypeToException("Region::localInvalidateRegion", err);
@@ -346,15 +347,13 @@ void LocalRegion::localPut(const CacheableKeyPtr& key,
   GfErrTypeToException("Region::localPut", err);
 }
 
-void LocalRegion::putAll(const HashMapOfCacheable& map, uint32_t timeout,
+void LocalRegion::putAll(const HashMapOfCacheable& map,
+                         std::chrono::milliseconds timeout,
                          const SerializablePtr& aCallbackArgument) {
-  if ((timeout * 1000) >= 0x7fffffff) {
-    throw IllegalArgumentException(
-        "Region::putAll: timeout parameter "
-        "greater than maximum allowed (2^31/1000 i.e 2147483).");
-  }
-  int64_t sampleStartNanos = startStatOpTime();
-  GfErrType err = putAllNoThrow(map, timeout, aCallbackArgument);
+  util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
+
+  auto sampleStartNanos = startStatOpTime();
+  auto err = putAllNoThrow(map, timeout, aCallbackArgument);
   updateStatOpTime(m_regionStats->getStat(), m_regionStats->getPutAllTimeId(),
                    sampleStartNanos);
   // handleReplay(err, nullptr);
@@ -651,19 +650,18 @@ void LocalRegion::setPersistenceManager(PersistenceManagerPtr& pmPtr) {
 
 void LocalRegion::setRegionExpiryTask() {
   if (regionExpiryEnabled()) {
-    RegionInternalPtr rptr =
-        std::static_pointer_cast<RegionInternal>(shared_from_this());
-    uint32_t duration = getRegionExpiryDuration();
-    RegionExpiryHandler* handler =
-        new RegionExpiryHandler(rptr, getRegionExpiryAction(), duration);
-    long expiryTaskId =
+    auto rptr = std::static_pointer_cast<RegionInternal>(shared_from_this());
+    const auto& duration = getRegionExpiryDuration();
+    auto handler = new RegionExpiryHandler(rptr, getRegionExpiryAction(),
+                                           duration.count());
+    int64_t expiryTaskId =
         rptr->getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
-            handler, duration, 0);
+            handler, duration.count(), 0);
     handler->setExpiryTaskId(expiryTaskId);
     LOGFINE(
         "expiry for region [%s], expiry task id = %d, duration = %d, "
         "action = %d",
-        m_fullPath.c_str(), expiryTaskId, duration, getRegionExpiryAction());
+        m_fullPath.c_str(), expiryTaskId, duration.count(), getRegionExpiryAction());
   }
 }
 
@@ -672,13 +670,12 @@ void LocalRegion::registerEntryExpiryTask(MapEntryImplPtr& entry) {
   // the entry will register the expiry task for that entry
   ExpEntryProperties& expProps = entry->getExpProperties();
   expProps.initStartTime();
-  RegionInternalPtr rptr =
-      std::static_pointer_cast<RegionInternal>(shared_from_this());
-  uint32_t duration = getEntryExpiryDuration();
-  EntryExpiryHandler* handler =
-      new EntryExpiryHandler(rptr, entry, getEntryExpirationAction(), duration);
-  long id = rptr->getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
-      handler, duration, 0);
+  auto rptr = std::static_pointer_cast<RegionInternal>(shared_from_this());
+  const auto& duration = getEntryExpiryDuration();
+  auto handler = new EntryExpiryHandler(rptr, entry, getEntryExpirationAction(),
+                                        duration.count());
+  int64_t id = rptr->getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
+      handler, duration.count(), 0);
   if (Log::finestEnabled()) {
     CacheableKeyPtr key;
     entry->getKeyI(key);
@@ -686,7 +683,7 @@ void LocalRegion::registerEntryExpiryTask(MapEntryImplPtr& entry) {
         "entry expiry in region [%s], key [%s], task id = %d, "
         "duration = %d, action = %d",
         m_fullPath.c_str(), Utils::getCacheableKeyString(key)->asChar(), id,
-        duration, getEntryExpirationAction());
+        duration.count(), getEntryExpirationAction());
   }
   expProps.setExpiryTaskId(id);
 }
@@ -1807,11 +1804,10 @@ GfErrType LocalRegion::destroyNoThrow(const CacheableKeyPtr& key,
                                        versionTag);
 }
 
-GfErrType LocalRegion::destroyNoThrowTX(const CacheableKeyPtr& key,
-                                        const SerializablePtr& aCallbackArgument,
-                                        int updateCount,
-                                        const CacheEventFlags eventFlags,
-                                        VersionTagPtr versionTag) {
+GfErrType LocalRegion::destroyNoThrowTX(
+    const CacheableKeyPtr& key, const SerializablePtr& aCallbackArgument,
+    int updateCount, const CacheEventFlags eventFlags,
+    VersionTagPtr versionTag) {
   CacheablePtr oldValue;
   return updateNoThrowTX<DestroyActions>(key, nullptr, aCallbackArgument,
                                          oldValue, updateCount, eventFlags,
@@ -1840,22 +1836,20 @@ GfErrType LocalRegion::removeNoThrowEx(const CacheableKeyPtr& key,
                                         versionTag);
 }
 
-GfErrType LocalRegion::invalidateNoThrow(const CacheableKeyPtr& key,
-                                         const SerializablePtr& aCallbackArgument,
-                                         int updateCount,
-                                         const CacheEventFlags eventFlags,
-                                         VersionTagPtr versionTag) {
+GfErrType LocalRegion::invalidateNoThrow(
+    const CacheableKeyPtr& key, const SerializablePtr& aCallbackArgument,
+    int updateCount, const CacheEventFlags eventFlags,
+    VersionTagPtr versionTag) {
   CacheablePtr oldValue;
   return updateNoThrow<InvalidateActions>(key, nullptr, aCallbackArgument,
                                           oldValue, updateCount, eventFlags,
                                           versionTag);
 }
 
-GfErrType LocalRegion::invalidateNoThrowTX(const CacheableKeyPtr& key,
-                                           const SerializablePtr& aCallbackArgument,
-                                           int updateCount,
-                                           const CacheEventFlags eventFlags,
-                                           VersionTagPtr versionTag) {
+GfErrType LocalRegion::invalidateNoThrowTX(
+    const CacheableKeyPtr& key, const SerializablePtr& aCallbackArgument,
+    int updateCount, const CacheEventFlags eventFlags,
+    VersionTagPtr versionTag) {
   CacheablePtr oldValue;
   return updateNoThrowTX<InvalidateActions>(key, nullptr, aCallbackArgument,
                                             oldValue, updateCount, eventFlags,
@@ -1863,7 +1857,7 @@ GfErrType LocalRegion::invalidateNoThrowTX(const CacheableKeyPtr& key,
 }
 
 GfErrType LocalRegion::putAllNoThrow(const HashMapOfCacheable& map,
-                                     uint32_t timeout,
+                                     std::chrono::milliseconds timeout,
                                      const SerializablePtr& aCallbackArgument) {
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
   GfErrType err = GF_NOERR;
@@ -2039,8 +2033,9 @@ GfErrType LocalRegion::putAllNoThrow(const HashMapOfCacheable& map,
   return err;
 }
 
-GfErrType LocalRegion::removeAllNoThrow(const VectorOfCacheableKey& keys,
-                                        const SerializablePtr& aCallbackArgument) {
+GfErrType LocalRegion::removeAllNoThrow(
+    const VectorOfCacheableKey& keys,
+    const SerializablePtr& aCallbackArgument) {
   // 1. check destroy pending
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
   GfErrType err = GF_NOERR;
@@ -2133,8 +2128,9 @@ void LocalRegion::localClear(const SerializablePtr& aCallbackArgument) {
   GfErrType err = localClearNoThrow(aCallbackArgument, CacheEventFlags::LOCAL);
   if (err != GF_NOERR) GfErrTypeToException("LocalRegion::localClear", err);
 }
-GfErrType LocalRegion::localClearNoThrow(const SerializablePtr& aCallbackArgument,
-                                         const CacheEventFlags eventFlags) {
+GfErrType LocalRegion::localClearNoThrow(
+    const SerializablePtr& aCallbackArgument,
+    const CacheEventFlags eventFlags) {
   bool cachingEnabled = m_regionAttributes->getCachingEnabled();
   /*Update the stats for clear*/
   m_regionStats->incClears();
@@ -2221,7 +2217,8 @@ GfErrType LocalRegion::invalidateLocal(const char* name,
 }
 
 GfErrType LocalRegion::invalidateRegionNoThrow(
-    const SerializablePtr& aCallbackArgument, const CacheEventFlags eventFlags) {
+    const SerializablePtr& aCallbackArgument,
+    const CacheEventFlags eventFlags) {
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
   GfErrType err = GF_NOERR;
 
@@ -2782,7 +2779,7 @@ ExpirationAction::Action LocalRegion::adjustRegionExpiryAction(
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustRegionExpiryAction);
 
   RegionAttributesPtr attrs = m_regionAttributes;
-  bool hadExpiry = (getRegionExpiryDuration() != 0);
+  bool hadExpiry = (getRegionExpiryDuration().count() != 0);
   if (!hadExpiry) {
     throw IllegalStateException(
         "Cannot change region ExpirationAction for region created without "
@@ -2802,7 +2799,7 @@ ExpirationAction::Action LocalRegion::adjustEntryExpiryAction(
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustEntryExpiryAction);
 
   RegionAttributesPtr attrs = m_regionAttributes;
-  bool hadExpiry = (getEntryExpiryDuration() != 0);
+  bool hadExpiry = (getEntryExpiryDuration().count() != 0);
   if (!hadExpiry) {
     throw IllegalStateException(
         "Cannot change entry ExpirationAction for region created without "
@@ -2817,18 +2814,18 @@ ExpirationAction::Action LocalRegion::adjustEntryExpiryAction(
   return oldValue;
 }
 
-int32_t LocalRegion::adjustRegionExpiryDuration(int32_t duration) {
+std::chrono::seconds LocalRegion::adjustRegionExpiryDuration(
+    const std::chrono::seconds& duration) {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustRegionExpiryDuration);
 
-  RegionAttributesPtr attrs = m_regionAttributes;
-  bool hadExpiry = (getEntryExpiryDuration() != 0);
+  bool hadExpiry = (getEntryExpiryDuration().count() != 0);
   if (!hadExpiry) {
     throw IllegalStateException(
         "Cannot change region  expiration duration for region created "
         "without "
         "region expiry.");
   }
-  int32_t oldValue = getRegionExpiryDuration();
+  const auto& oldValue = getRegionExpiryDuration();
 
   setRegionTimeToLive(duration);
   setRegionIdleTimeout(duration);
@@ -2836,17 +2833,18 @@ int32_t LocalRegion::adjustRegionExpiryDuration(int32_t duration) {
   return oldValue;
 }
 
-int32_t LocalRegion::adjustEntryExpiryDuration(int32_t duration) {
+std::chrono::seconds LocalRegion::adjustEntryExpiryDuration(
+    const std::chrono::seconds& duration) {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustEntryExpiryDuration);
 
-  RegionAttributesPtr attrs = m_regionAttributes;
-  bool hadExpiry = (getEntryExpiryDuration() != 0);
+  bool hadExpiry = (getEntryExpiryDuration().count() != 0);
   if (!hadExpiry) {
     throw IllegalStateException(
         "Cannot change entry expiration duration for region created without "
         "entry expiry.");
   }
-  int32_t oldValue = getEntryExpiryDuration();
+  auto oldValue = getEntryExpiryDuration();
+
   setEntryTimeToLive(duration);
   setEntryIdleTimeout(duration);
 
@@ -2865,8 +2863,8 @@ bool LocalRegion::isStatisticsEnabled() {
 }
 
 bool LocalRegion::useModifiedTimeForRegionExpiry() {
-  uint32_t region_ttl = m_regionAttributes->getRegionTimeToLive();
-  if (region_ttl > 0) {
+  const auto& region_ttl = m_regionAttributes->getRegionTimeToLive();
+  if (region_ttl.count() > 0) {
     return true;
   } else {
     return false;
@@ -2874,8 +2872,7 @@ bool LocalRegion::useModifiedTimeForRegionExpiry() {
 }
 
 bool LocalRegion::useModifiedTimeForEntryExpiry() {
-  uint32_t entry_ttl = m_regionAttributes->getEntryTimeToLive();
-  if (entry_ttl > 0) {
+  if (m_regionAttributes->getEntryTimeToLive().count() > 0) {
     return true;
   } else {
     return false;
@@ -2884,7 +2881,7 @@ bool LocalRegion::useModifiedTimeForEntryExpiry() {
 
 bool LocalRegion::isEntryIdletimeEnabled() {
   if (m_regionAttributes->getCachingEnabled() &&
-      0 != m_regionAttributes->getEntryIdleTimeout()) {
+      0 != m_regionAttributes->getEntryIdleTimeout().count()) {
     return true;
   } else {
     return false;
@@ -2892,8 +2889,7 @@ bool LocalRegion::isEntryIdletimeEnabled() {
 }
 
 ExpirationAction::Action LocalRegion::getEntryExpirationAction() const {
-  uint32_t entry_ttl = m_regionAttributes->getEntryTimeToLive();
-  if (entry_ttl > 0) {
+  if (m_regionAttributes->getEntryTimeToLive().count() > 0) {
     return m_regionAttributes->getEntryTimeToLiveAction();
   } else {
     return m_regionAttributes->getEntryIdleTimeoutAction();
@@ -2901,29 +2897,29 @@ ExpirationAction::Action LocalRegion::getEntryExpirationAction() const {
 }
 
 ExpirationAction::Action LocalRegion::getRegionExpiryAction() const {
-  uint32_t region_ttl = m_regionAttributes->getRegionTimeToLive();
-  if (region_ttl > 0) {
+  const auto& region_ttl = m_regionAttributes->getRegionTimeToLive();
+  if (region_ttl.count() > 0) {
     return m_regionAttributes->getRegionTimeToLiveAction();
   } else {
     return m_regionAttributes->getRegionIdleTimeoutAction();
   }
 }
 
-uint32_t LocalRegion::getRegionExpiryDuration() const {
-  uint32_t region_ttl = m_regionAttributes->getRegionTimeToLive();
-  uint32_t region_idle = m_regionAttributes->getRegionIdleTimeout();
-  if (region_ttl > 0) {
+std::chrono::seconds LocalRegion::getRegionExpiryDuration() const {
+  const auto& region_ttl = m_regionAttributes->getRegionTimeToLive();
+  const auto& region_idle = m_regionAttributes->getRegionIdleTimeout();
+  if (region_ttl.count() > 0) {
     return region_ttl;
   } else {
     return region_idle;
   }
 }
 
-uint32_t LocalRegion::getEntryExpiryDuration() const {
-  uint32_t entry_ttl = m_regionAttributes->getEntryTimeToLive();
-  uint32_t entry_idle = m_regionAttributes->getEntryIdleTimeout();
+std::chrono::seconds LocalRegion::getEntryExpiryDuration() const {
+  const auto& entry_ttl = m_regionAttributes->getEntryTimeToLive();
+  const auto& entry_idle = m_regionAttributes->getEntryIdleTimeout();
 
-  if (entry_ttl > 0) {
+  if (entry_ttl.count() > 0) {
     return entry_ttl;
   } else {
     return entry_idle;
@@ -2933,24 +2929,23 @@ uint32_t LocalRegion::getEntryExpiryDuration() const {
 /** methods to be overridden by derived classes*/
 GfErrType LocalRegion::unregisterKeysBeforeDestroyRegion() { return GF_NOERR; }
 
-GfErrType LocalRegion::getNoThrow_remote(const CacheableKeyPtr& keyPtr,
-                                         CacheablePtr& valPtr,
-                                         const SerializablePtr& aCallbackArgument,
-                                         VersionTagPtr& versionTag) {
+GfErrType LocalRegion::getNoThrow_remote(
+    const CacheableKeyPtr& keyPtr, CacheablePtr& valPtr,
+    const SerializablePtr& aCallbackArgument, VersionTagPtr& versionTag) {
   return GF_NOERR;
 }
 
-GfErrType LocalRegion::putNoThrow_remote(const CacheableKeyPtr& keyPtr,
-                                         const CacheablePtr& cvalue,
-                                         const SerializablePtr& aCallbackArgument,
-                                         VersionTagPtr& versionTag,
-                                         bool checkDelta) {
+GfErrType LocalRegion::putNoThrow_remote(
+    const CacheableKeyPtr& keyPtr, const CacheablePtr& cvalue,
+    const SerializablePtr& aCallbackArgument, VersionTagPtr& versionTag,
+    bool checkDelta) {
   return GF_NOERR;
 }
 
 GfErrType LocalRegion::putAllNoThrow_remote(
     const HashMapOfCacheable& map,
-    VersionedCacheableObjectPartListPtr& putAllResponse, uint32_t timeout,
+    VersionedCacheableObjectPartListPtr& putAllResponse,
+    std::chrono::milliseconds timeout,
     const SerializablePtr& aCallbackArgument) {
   return GF_NOERR;
 }

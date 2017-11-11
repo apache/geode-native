@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_REGIONFACTORY_H_
-#define GEODE_REGIONFACTORY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,18 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_REGIONFACTORY_H_
+#define GEODE_REGIONFACTORY_H_
+
+#include <chrono>
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 #include "AttributesFactory.hpp"
+#include "util/chrono/duration.hpp"
+
 /**
  * @file
  */
@@ -110,38 +114,38 @@ class CPPCACHE_EXPORT RegionFactory {
   /** Sets the idleTimeout expiration attributes for region entries for the next
    * <code>RegionAttributes</code> created.
    * @param action the expiration action for entries in this region.
-   * @param idleTimeout the idleTimeout in seconds for entries in this region.
+   * @param idleTimeout the idleTimeout for entries in this region.
    * @return a reference to <code>this</code>
    */
   RegionFactory& setEntryIdleTimeout(ExpirationAction::Action action,
-                                     int32_t idleTimeout);
+                                     std::chrono::seconds idleTimeout);
 
   /** Sets the timeToLive expiration attributes for region entries for the next
    * <code>RegionAttributes</code> created.
    * @param action the expiration action for entries in this region.
-   * @param timeToLive the timeToLive in seconds for entries in this region.
+   * @param timeToLive the timeToLive for entries in this region.
    * @return a reference to <code>this</code>
    */
   RegionFactory& setEntryTimeToLive(ExpirationAction::Action action,
-                                    int32_t timeToLive);
+                                    std::chrono::seconds timeToLive);
 
   /** Sets the idleTimeout expiration attributes for the region itself for the
    * next <code>RegionAttributes</code> created.
    * @param action the expiration action for entries in this region.
-   * @param idleTimeout the idleTimeout in seconds for the region as a whole.
+   * @param idleTimeout the idleTimeout for the region as a whole.
    * @return a reference to <code>this</code>
    */
   RegionFactory& setRegionIdleTimeout(ExpirationAction::Action action,
-                                      int32_t idleTimeout);
+                                      std::chrono::seconds idleTimeout);
 
   /** Sets the timeToLive expiration attributes for the region itself for the
    * next <code>RegionAttributes</code> created.
    * @param action the expiration action for entries in this region.
-   * @param timeToLive the timeToLive in seconds for the region as a whole.
+   * @param timeToLive the timeToLive for the region as a whole.
    * @return a reference to <code>this</code>
    */
   RegionFactory& setRegionTimeToLive(ExpirationAction::Action action,
-                                     int32_t timeToLive);
+                                     std::chrono::seconds timeToLive);
 
   // PERSISTENCE
   /**
@@ -249,14 +253,6 @@ class CPPCACHE_EXPORT RegionFactory {
    */
   RegionFactory& setConcurrencyChecksEnabled(bool enable);
 
-  /**
-   * Sets time out for tombstones
-   * @since 7.0
-   * @param tombstoneTimeoutInMSec tombstone timeout in milli second
-   * @return a reference to <code>this</code>
-   */
-  RegionFactory& setTombstoneTimeout(uint32_t tombstoneTimeoutInMSec);
-
  private:
   RegionFactory(apache::geode::client::RegionShortcut preDefinedRegion,
                 CacheImpl* cacheImpl);
@@ -271,6 +267,7 @@ class CPPCACHE_EXPORT RegionFactory {
 
   friend class CacheImpl;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

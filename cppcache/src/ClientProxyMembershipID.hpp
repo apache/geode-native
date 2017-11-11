@@ -43,7 +43,8 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
                           const char* hostname, uint32_t hostAddr,
                           uint32_t hostPort,
                           const char* durableClientId = nullptr,
-                          const uint32_t durableClntTimeOut = 0);
+                          const std::chrono::seconds durableClntTimeOut =
+                              std::chrono::seconds::zero());
 
   // This constructor is only for testing and should not be used for any
   // other purpose. See testEntriesMapForVersioning.cpp for more details
@@ -73,10 +74,10 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   void initObjectVars(const char* hostname, uint8_t* hostAddr,
                       uint32_t hostAddrLen, bool hostAddrLocalMem,
                       uint32_t hostPort, const char* durableClientId,
-                      const uint32_t durableClntTimeOut, int32_t dcPort,
-                      int32_t vPID, int8_t vmkind, int8_t splitBrainFlag,
-                      const char* dsname, const char* uniqueTag,
-                      uint32_t vmViewId);
+                      const std::chrono::seconds durableClntTimeOut,
+                      int32_t dcPort, int32_t vPID, int8_t vmkind,
+                      int8_t splitBrainFlag, const char* dsname,
+                      const char* uniqueTag, uint32_t vmViewId);
 
   std::string getDSName() const { return m_dsname; }
   std::string getUniqueTag() const { return m_uniqueTag; }

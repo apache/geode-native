@@ -15,16 +15,13 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
 #include "Query.hpp"
 #include "ISelectResults.hpp"
 #include "ResultSet.hpp"
 #include "StructSet.hpp"
 #include "ExceptionTypes.hpp"
-//#include "Serializable.hpp"
 #include "impl/SafeConvert.hpp"
-
-using namespace System;
+#include "TimeSpanUtils.hpp"
 
 namespace Apache
 {
@@ -33,20 +30,23 @@ namespace Apache
     namespace Client
     {
 
+      using namespace System;
+      namespace native = apache::geode::client;
+
       generic<class TResult>
       ISelectResults<TResult>^ Query<TResult>::Execute(  )
       {
-        return Execute( DEFAULT_QUERY_RESPONSE_TIMEOUT );
+        return Execute( TimeSpanUtils::DurationToTimeSpan(native::DEFAULT_QUERY_RESPONSE_TIMEOUT) );
       }
 
       generic<class TResult>
-      ISelectResults<TResult>^ Query<TResult>::Execute( System::UInt32 timeout )
+      ISelectResults<TResult>^ Query<TResult>::Execute( TimeSpan timeout )
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
           try
           {
-            return WrapResults( m_nativeptr->get()->execute( timeout ));
+            return WrapResults( m_nativeptr->get()->execute( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout) ));
           }
           finally
           {
@@ -59,11 +59,11 @@ namespace Apache
       generic<class TResult>
       ISelectResults<TResult>^ Query<TResult>::Execute( array<Object^>^ paramList)
       {
-        return Execute(paramList, DEFAULT_QUERY_RESPONSE_TIMEOUT);
+        return Execute(paramList, TimeSpanUtils::DurationToTimeSpan(native::DEFAULT_QUERY_RESPONSE_TIMEOUT));
       }
 
       generic<class TResult>
-      ISelectResults<TResult>^ Query<TResult>::Execute( array<Object^>^ paramList, System::UInt32 timeout )
+      ISelectResults<TResult>^ Query<TResult>::Execute( array<Object^>^ paramList, TimeSpan timeout )
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
@@ -76,7 +76,7 @@ namespace Apache
 
           try
           {
-            return WrapResults( m_nativeptr->get()->execute(rsptr, timeout ));
+            return WrapResults( m_nativeptr->get()->execute(rsptr, TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout) ));
           }
           finally
           {

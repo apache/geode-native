@@ -47,7 +47,7 @@ int RegionExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
   try {
     CacheStatisticsPtr ptr = m_regionPtr->getStatistics();
     uint32_t lastTimeForExp = ptr->getLastAccessedTime();
-    if (m_regionPtr->getAttributes()->getRegionTimeToLive() > 0) {
+    if (m_regionPtr->getAttributes()->getRegionTimeToLive().count() > 0) {
       lastTimeForExp = ptr->getLastModifiedTime();
     }
 

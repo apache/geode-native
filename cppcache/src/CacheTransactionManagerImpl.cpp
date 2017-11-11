@@ -361,13 +361,15 @@ TransactionIdPtr CacheTransactionManagerImpl::suspend() {
   txState->releaseStickyConnection();
 
   // set the expiry handler for the suspended transaction
-  auto& sysProp = m_cache->getDistributedSystem().getSystemProperties();
-  SuspendedTxExpiryHandler* handler = new SuspendedTxExpiryHandler(
-      this, txState->getTransactionId(), sysProp.suspendedTxTimeout());
+  auto suspendedTxTimeout = m_cache->getDistributedSystem()
+                                .getSystemProperties()
+                                .suspendedTxTimeout();
+  auto handler = new SuspendedTxExpiryHandler(this, txState->getTransactionId(),
+                                              suspendedTxTimeout);
   long id = CacheRegionHelper::getCacheImpl(m_cache)
                 ->getExpiryTaskManager()
-                .scheduleExpiryTask(handler, sysProp.suspendedTxTimeout() * 60,
-                                    0, false);
+                .scheduleExpiryTask(handler, suspendedTxTimeout,
+                                    std::chrono::seconds::zero(), false);
   txState->setSuspendedExpiryTaskId(id);
 
   // add the transaction state to the list of suspended transactions
@@ -423,8 +425,8 @@ bool CacheTransactionManagerImpl::tryResume(TransactionIdPtr transactionId,
   return true;
 }
 
-bool CacheTransactionManagerImpl::tryResume(TransactionIdPtr transactionId,
-                                            int32_t waitTimeInMillisec) {
+bool CacheTransactionManagerImpl::tryResume(
+    TransactionIdPtr transactionId, std::chrono::milliseconds waitTime) {
   // get the current state of the thread
   if (TSSTXStateWrapper::s_geodeTSSTXState->getTXState() != nullptr) {
     LOGFINE("A transaction is already in progress. Cannot resume transaction.");
@@ -434,9 +436,8 @@ bool CacheTransactionManagerImpl::tryResume(TransactionIdPtr transactionId,
   if (!exists(transactionId)) return false;
 
   // get the transaction state of the suspended transaction
-  TXState* txState = removeSuspendedTxUntil(
-      (std::static_pointer_cast<TXId>(transactionId))->getId(),
-      waitTimeInMillisec);
+  TXState* txState = removeSuspendedTx(
+      (std::static_pointer_cast<TXId>(transactionId))->getId(), waitTime);
   if (txState == nullptr) return false;
 
   resumeTxUsingTxState(txState);
@@ -542,14 +543,12 @@ TXState* CacheTransactionManagerImpl::removeSuspendedTx(int32_t txId) {
   m_suspendedTXs.erase(it);
   return rettxState;
 }
-TXState* CacheTransactionManagerImpl::removeSuspendedTxUntil(
-    int32_t txId, int32_t waitTimeInMillisec) {
+TXState* CacheTransactionManagerImpl::removeSuspendedTx(
+    int32_t txId, std::chrono::milliseconds waitTime) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_suspendedTxLock);
   TXState* txState = nullptr;
   ACE_Time_Value currTime(ACE_OS::gettimeofday());
   ACE_Time_Value stopAt(currTime);
-  ACE_Time_Value waitTime;
-  waitTime.msec(waitTimeInMillisec);
   stopAt += waitTime;
 
   do {

@@ -279,7 +279,7 @@ namespace Apache.Geode.Client.UnitTests
       Assert.AreEqual(CacheHelper.CSTXManager.IsSuspended(tid), false, "Transaction should not be suspended");
       Assert.AreEqual(CacheHelper.CSTXManager.Exists(tid), false, "Transaction should NOT exist");
       Assert.AreEqual(CacheHelper.CSTXManager.TryResume(tid), false, "Transaction should not be resumed");
-      Assert.AreEqual(CacheHelper.CSTXManager.TryResume(tid, 3000), false, "Transaction should not be resumed");
+      Assert.AreEqual(CacheHelper.CSTXManager.TryResume(tid, TimeSpan.FromMilliseconds(3000)), false, "Transaction should not be resumed");
       Assert.AreEqual(0, o_region1.Region.Keys.Count, "There should be 0 values in the region after rollback");
       Assert.AreEqual(0, o_region2.Region.Keys.Count, "There should be 0 values in the region after rollback");
       bool resumeEx = false;
@@ -394,7 +394,7 @@ namespace Apache.Geode.Client.UnitTests
       Assert.AreEqual(CacheHelper.CSTXManager.IsSuspended(tid), false, "Transaction should not be suspended");
       Assert.AreEqual(CacheHelper.CSTXManager.Exists(tid), false, "Transaction should NOT exist");
       Assert.AreEqual(CacheHelper.CSTXManager.TryResume(tid), false, "Transaction should not be resumed");
-      Assert.AreEqual(CacheHelper.CSTXManager.TryResume(tid, 3000), false, "Transaction should not be resumed");
+      Assert.AreEqual(CacheHelper.CSTXManager.TryResume(tid, TimeSpan.FromMilliseconds(3000)), false, "Transaction should not be resumed");
       Assert.AreEqual(2, o_region1.Region.Keys.Count, "There should be four values in the region after commit");
       Assert.AreEqual(4, o_region2.Region.Keys.Count, "There should be four values in the region after commit");
       o_region1.DestroyOpWithPdxValue(1, null);
@@ -687,7 +687,7 @@ namespace Apache.Geode.Client.UnitTests
         if (m_tryResumeWithSleep)
         {
           m_txevent.Set();
-          CacheHelper.CSTXManager.TryResume(m_tid, 30000);
+          CacheHelper.CSTXManager.TryResume(m_tid, TimeSpan.FromMilliseconds(30000));
         }
         else
           CacheHelper.CSTXManager.Resume(m_tid);
@@ -712,7 +712,7 @@ namespace Apache.Geode.Client.UnitTests
             return;
           if (AssertCheckFail(CacheHelper.CSTXManager.TryResume(m_tid) == false, "Transaction should not be resumed"))
             return;
-          if (AssertCheckFail(CacheHelper.CSTXManager.TryResume(m_tid, 3000) == false, "Transaction should not be resumed"))
+          if (AssertCheckFail(CacheHelper.CSTXManager.TryResume(m_tid, TimeSpan.FromMilliseconds(3000)) == false, "Transaction should not be resumed"))
             return;
           if (AssertCheckFail(2 == o_region1.Region.Keys.Count, "There should be four values in the region after commit"))
             return;
@@ -730,7 +730,7 @@ namespace Apache.Geode.Client.UnitTests
             return;
           if (AssertCheckFail(CacheHelper.CSTXManager.TryResume(m_tid) == false, "Transaction should not be resumed"))
             return;
-          if (AssertCheckFail(CacheHelper.CSTXManager.TryResume(m_tid, 3000) == false, "Transaction should not be resumed"))
+          if (AssertCheckFail(CacheHelper.CSTXManager.TryResume(m_tid, TimeSpan.FromMilliseconds(3000)) == false, "Transaction should not be resumed"))
             return;
           if (AssertCheckFail(0 == o_region1.Region.Keys.Count, "There should be 0 values in the region after rollback"))
             return;

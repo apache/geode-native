@@ -24,15 +24,14 @@
 
 #include "native_shared_ptr.hpp"
 
-
-using namespace System;
-
 namespace Apache
 {
   namespace Geode
   {
     namespace Client
     {
+      using namespace System;
+
       namespace native = apache::geode::client;
 
       generic<class TKey, class TResult>
@@ -62,17 +61,17 @@ namespace Apache
         /// <summary>
         /// Returns the connection timeout of this pool.
         /// </summary>
-        property Int32 FreeConnectionTimeout
+        property TimeSpan FreeConnectionTimeout
         {
-          Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>
         /// Returns the load conditioning interval of this pool.
         /// </summary>
-        property Int32 LoadConditioningInterval
+        property TimeSpan LoadConditioningInterval
         {
-          Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>
@@ -86,9 +85,9 @@ namespace Apache
         /// <summary>
         /// Returns the read timeout of this pool.
         /// </summary>
-        property Int32 ReadTimeout
+        property TimeSpan ReadTimeout
         {
-          Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>
@@ -110,33 +109,33 @@ namespace Apache
         /// <summary>
         /// Get the Idle connection timeout for this pool.
         /// </summary>
-        property Int32 IdleTimeout
+        property TimeSpan IdleTimeout
         {
-          Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>
         /// Get the ping interval for this pool.
         /// </summary>
-        property Int32 PingInterval
+        property TimeSpan PingInterval
         {
-          Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>
         /// Get the update locator list interval for this pool.
         /// </summary>
-        property Int32 UpdateLocatorListInterval
+        property TimeSpan UpdateLocatorListInterval
         {
-          Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>
         /// Get the statistic interval for this pool.
         /// </summary>
-        property Int32 StatisticInterval
+        property TimeSpan StatisticInterval
         {
-          Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>
@@ -174,17 +173,17 @@ namespace Apache
         /// <summary>
         /// Returns the subscription message tracking timeout of this pool.
         /// </summary>
-        property Int32 SubscriptionMessageTrackingTimeout
+        property TimeSpan SubscriptionMessageTrackingTimeout
         {
-          Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>
         /// Returns the subscription ack interval of this pool.
         /// </summary>
-        property Int32 SubscriptionAckInterval
+        property TimeSpan SubscriptionAckInterval
         {
-          Int32 get();
+          TimeSpan get();
         }
 
         /// <summary>

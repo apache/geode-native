@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_EXCEPTION_H_
-#define GEODE_EXCEPTION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,12 +15,19 @@
  * limitations under the License.
  */
 
-/**
- * @file
- */
+#pragma once
+
+#ifndef GEODE_EXCEPTION_H_
+#define GEODE_EXCEPTION_H_
+
+#include <string>
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
+
+/**
+ * @file
+ */
 
 namespace apache {
 namespace geode {
@@ -58,11 +60,14 @@ class CPPCACHE_EXPORT Exception {
   Exception(const char* msg1, const char* msg2 = nullptr,
             bool forceTrace = false, const ExceptionPtr& cause = nullptr);
 
+  explicit Exception(const std::string& msg1);
+
   /** Creates an exception as a copy of the given other exception.
    * @param  other the original exception.
    *
    **/
-  Exception(const Exception& other);
+  Exception(const Exception& other) noexcept = default;
+  Exception(Exception&& other) noexcept = default;
 
   /** Create a clone of this exception. */
   virtual Exception* clone() const;
@@ -101,7 +106,7 @@ class CPPCACHE_EXPORT Exception {
    * Throw polymorphically; this allows storing an exception object
    * pointer and throwing it later.
    */
-  virtual void raise() { throw * this; }
+  virtual void raise() { throw *this; }
 
   inline ExceptionPtr getCause() const { return m_cause; }
 

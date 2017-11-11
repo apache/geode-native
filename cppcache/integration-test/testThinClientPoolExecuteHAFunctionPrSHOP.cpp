@@ -18,7 +18,7 @@
 #include "ThinClientHelper.hpp"
 #include <geode/FunctionService.hpp>
 #include <geode/Execution.hpp>
-#include <geode/ResultCollector.hpp>
+#include <geode/DefaultResultCollector.hpp>
 
 #define CLIENT1 s1p1
 #define LOCATOR1 s2p1
@@ -65,53 +65,48 @@ char* RegionOperationsHAFunctionPrSHOP =
     }                                        \
   }                                          \
   ASSERT(found, "this returned value is invalid");
-class MyResultCollector : public ResultCollector {
+
+class MyResultCollector : public DefaultResultCollector {
  public:
   MyResultCollector()
-      : m_resultList(CacheableVector::create()),
-        m_isResultReady(false),
-        m_endResultCount(0),
-        m_addResultCount(0),
-        m_getResultCount(0) {}
-  ~MyResultCollector() {}
-  CacheableVectorPtr getResult(uint32_t timeout) {
+      : m_endResultCount(0), m_addResultCount(0), m_getResultCount(0) {}
+  ~MyResultCollector() noexcept {}
+
+  CacheableVectorPtr getResult(std::chrono::milliseconds timeout) override {
     m_getResultCount++;
-    if (m_isResultReady == true) {
-      return m_resultList;
-    } else {
-      for (uint32_t i = 0; i < timeout; i++) {
-        SLEEP(1);
-        if (m_isResultReady == true) return m_resultList;
+    return DefaultResultCollector::getResult(timeout);
+  }
+
+  void addResult(const CacheablePtr& resultItem) override {
+    m_addResultCount++;
+    if (resultItem == nullptr) {
+      return;
+    }
+    if (auto results =
+            std::dynamic_pointer_cast<CacheableArrayList>(resultItem)) {
+      for (auto& result : *results) {
+        DefaultResultCollector::addResult(result);
       }
-      throw FunctionExecutionException(
-          "Result is not ready, endResults callback is called before invoking "
-          "getResult() method");
+    } else {
+      DefaultResultCollector::addResult(resultItem);
     }
   }
 
-  void addResult(const CacheablePtr& resultItem) {
-    m_addResultCount++;
-    if (resultItem == nullptr) return;
-    auto result = std::dynamic_pointer_cast<CacheableArrayList>(resultItem);
-    for (int32_t i = 0; i < result->size(); i++) {
-      m_resultList->push_back(result->operator[](i));
-    }
-  }
-  void endResults() {
-    m_isResultReady = true;
+  void endResults() override {
     m_endResultCount++;
+    DefaultResultCollector::endResults();
   }
+
   uint32_t getEndResultCount() { return m_endResultCount; }
   uint32_t getAddResultCount() { return m_addResultCount; }
   uint32_t getGetResultCount() { return m_getResultCount; }
 
  private:
-  CacheableVectorPtr m_resultList;
-  volatile bool m_isResultReady;
   uint32_t m_endResultCount;
   uint32_t m_addResultCount;
   uint32_t m_getResultCount;
 };
+
 DUNIT_TASK_DEFINITION(LOCATOR1, StartLocator1)
   {
     // starting locator
@@ -207,7 +202,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
       auto executeFunctionResult =
           exc->withArgs(routingObj)
-              ->execute(RegionOperationsHAFunctionPrSHOP, 15)
+              ->execute(RegionOperationsHAFunctionPrSHOP,
+                        std::chrono::seconds(15))
               ->getResult();
 
       if (executeFunctionResult == nullptr) {
@@ -289,7 +285,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
       // Test with HA exception
       auto executeFunctionResult =
           exc->withArgs(routingObj)
-              ->execute(OnServerHAExceptionFunction, 15)
+              ->execute(OnServerHAExceptionFunction, std::chrono::seconds(15))
               ->getResult();
 
       if (executeFunctionResult == nullptr) {
@@ -328,7 +324,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
       // Test with HA server shutdown
       auto executeFunctionResult1 =
           exc->withArgs(routingObj)
-              ->execute(OnServerHAShutdownFunction, 15)
+              ->execute(OnServerHAShutdownFunction, std::chrono::seconds(15))
               ->getResult();
 
       if (executeFunctionResult1 == nullptr) {

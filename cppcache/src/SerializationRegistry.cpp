@@ -259,8 +259,8 @@ PdxSerializablePtr SerializationRegistry::getPdxType(char* className) {
   return pdxObj;
 }
 
-void SerializationRegistry::setPdxSerializer(PdxSerializerPtr pdxSerializer) {
-  this->pdxSerializer = pdxSerializer;
+void SerializationRegistry::setPdxSerializer(PdxSerializerPtr serializer) {
+  this->pdxSerializer = serializer;
 }
 
 PdxSerializerPtr SerializationRegistry::getPdxSerializer() {

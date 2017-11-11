@@ -14,15 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <geode/geode_globals.hpp>
 #include <geode/geode_types.hpp>
-#include "ExecutionImpl.hpp"
 #include <geode/ExceptionTypes.hpp>
+#include <geode/DefaultResultCollector.hpp>
+
+#include "ExecutionImpl.hpp"
 #include "ThinClientRegion.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "NoResult.hpp"
 #include "UserAttributes.hpp"
-// using namespace apache::geode::client;
 
 FunctionToFunctionAttributes ExecutionImpl::m_func_attrs;
 ACE_Recursive_Thread_Mutex ExecutionImpl::m_func_attrs_lock;
@@ -72,14 +74,15 @@ std::vector<int8_t>* ExecutionImpl::getFunctionAttributes(const char* func) {
 ResultCollectorPtr ExecutionImpl::execute(const CacheableVectorPtr& routingObj,
                                           const CacheablePtr& args,
                                           const ResultCollectorPtr& rs,
-                                          const char* func, uint32_t timeout) {
+                                          const char* func, std::chrono::milliseconds timeout) {
   m_routingObj = routingObj;
   m_args = args;
   m_rc = rs;
   return execute(func, timeout);
 }
 
-ResultCollectorPtr ExecutionImpl::execute(const char* fn, uint32_t timeout) {
+ResultCollectorPtr ExecutionImpl::execute(const char* fn,
+                                          std::chrono::milliseconds timeout) {
   std::string func = fn;
   LOGDEBUG("ExecutionImpl::execute: ");
   GuardUserAttribures gua;
@@ -126,7 +129,7 @@ ResultCollectorPtr ExecutionImpl::execute(const char* fn, uint32_t timeout) {
   if (serverHasResult == false) {
     m_rc = std::make_shared<NoResult>();
   } else if (m_rc == nullptr) {
-    m_rc = std::make_shared<ResultCollector>();
+    m_rc = std::make_shared<DefaultResultCollector>();
   }
 
   uint8_t isHAHasResultOptimizeForWrite = 0;
@@ -401,7 +404,7 @@ void ExecutionImpl::addResults(ResultCollectorPtr& collector,
   }
 }
 void ExecutionImpl::executeOnAllServers(std::string& func, uint8_t getResult,
-                                        uint32_t timeout) {
+                                        std::chrono::milliseconds timeout) {
   ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.get());
   if (tcrdm == nullptr) {
     throw IllegalArgumentException(
@@ -441,10 +444,9 @@ void ExecutionImpl::executeOnAllServers(std::string& func, uint8_t getResult,
     }
   }
 }
-CacheableVectorPtr ExecutionImpl::executeOnPool(std::string& func,
-                                                uint8_t getResult,
-                                                int32_t retryAttempts,
-                                                uint32_t timeout) {
+CacheableVectorPtr ExecutionImpl::executeOnPool(
+    std::string& func, uint8_t getResult, int32_t retryAttempts,
+    std::chrono::milliseconds timeout) {
   ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.get());
   if (tcrdm == nullptr) {
     throw IllegalArgumentException(

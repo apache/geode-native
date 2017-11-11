@@ -267,9 +267,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       qs->executeCqs();
       LOG("CQ completed successfully");
       if (pool != nullptr) {
-        FunctionService::onServer(pool)
-            ->execute("securityTest", true)
-            ->getResult();
+        FunctionService::onServer(pool)->execute("securityTest")->getResult();
         LOG("Function execution completed successfully");
       } else {
         LOG("Skipping function execution for non pool case");
@@ -406,9 +404,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
 
     try {
       if (pool != nullptr) {
-        FunctionService::onServer(pool)
-            ->execute("securityTest", true)
-            ->getResult();
+        FunctionService::onServer(pool)->execute("securityTest")->getResult();
         //   FAIL("Function execution should not have completed successfully");
       } else {
         LOG("Skipping function execution for non pool case");
@@ -548,9 +544,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
 
     try {
       if (pool != nullptr) {
-        FunctionService::onServer(pool)
-            ->execute("securityTest", true)
-            ->getResult();
+        FunctionService::onServer(pool)->execute("securityTest")->getResult();
         FAIL("Function execution should not have completed successfully");
       } else {
         LOG("Skipping function execution for non pool case");

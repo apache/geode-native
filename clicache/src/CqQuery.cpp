@@ -25,8 +25,7 @@
 #include "ResultSet.hpp"
 #include "StructSet.hpp"
 #include "ExceptionTypes.hpp"
-
-using namespace System;
+#include "TimeSpanUtils.hpp"
 
 namespace Apache
 {
@@ -34,21 +33,23 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace System;
+
       namespace native = apache::geode::client;
 
       generic<class TKey, class TResult>
       ICqResults<TResult>^ CqQuery<TKey, TResult>::ExecuteWithInitialResults()
       {
-        return ExecuteWithInitialResults(DEFAULT_QUERY_RESPONSE_TIMEOUT);
+        return ExecuteWithInitialResults(TimeSpanUtils::DurationToTimeSpan(native::DEFAULT_QUERY_RESPONSE_TIMEOUT));
       }
 
       generic<class TKey, class TResult>
-      ICqResults<TResult>^ CqQuery<TKey, TResult>::ExecuteWithInitialResults(System::UInt32 timeout)
+      ICqResults<TResult>^ CqQuery<TKey, TResult>::ExecuteWithInitialResults(TimeSpan timeout)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
           try
           {
-            auto nativeptr = m_nativeptr->get()->executeWithInitialResults(timeout);
+            auto nativeptr = m_nativeptr->get()->executeWithInitialResults(TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
  
             if (auto structptr = std::dynamic_pointer_cast<native::StructSet>(nativeptr))
             {

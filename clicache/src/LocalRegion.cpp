@@ -553,13 +553,13 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      void LocalRegion<TKey, TValue>::PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map, int timeout)
+      void LocalRegion<TKey, TValue>::PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map, TimeSpan timeout)
       {
         throw gcnew System::NotSupportedException;
       }
 
       generic<class TKey, class TValue>
-      void LocalRegion<TKey, TValue>::PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map, int timeout, Object^ callbackArg)
+      void LocalRegion<TKey, TValue>::PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map, TimeSpan timeout, Object^ callbackArg)
       {
         throw gcnew System::NotSupportedException;
       }
@@ -942,7 +942,7 @@ namespace Apache
 
       generic<class TKey, class TValue>
       generic<class TResult>
-      ISelectResults<TResult>^ LocalRegion<TKey, TValue>::Query( String^ predicate, System::UInt32 timeout )
+      ISelectResults<TResult>^ LocalRegion<TKey, TValue>::Query( String^ predicate, TimeSpan timeout )
       {
         throw gcnew System::NotSupportedException;
       }
@@ -954,7 +954,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      bool LocalRegion<TKey, TValue>::ExistsValue( String^ predicate, System::UInt32 timeout )
+      bool LocalRegion<TKey, TValue>::ExistsValue( String^ predicate, TimeSpan timeout )
       {
         throw gcnew System::NotSupportedException;
       }
@@ -966,7 +966,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      Object^ LocalRegion<TKey, TValue>::SelectValue( String^ predicate, System::UInt32 timeout )
+      Object^ LocalRegion<TKey, TValue>::SelectValue( String^ predicate, TimeSpan timeout )
       {
         throw gcnew System::NotSupportedException;
       }

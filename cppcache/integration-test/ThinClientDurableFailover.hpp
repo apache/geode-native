@@ -162,7 +162,8 @@ void initClientCache(int redundancy, int durableTimeout, OperMonitorPtr& mon,
   // after the secondary comes up and is able to receive the QRM
   // otherwise it will get the unacked events from GII causing the
   // client to get 2 extra / replayed events.
-  initClientAndRegion(redundancy, durableIdx, 1, 1, 300);
+  initClientAndRegion(redundancy, durableIdx, std::chrono::seconds(1),
+                      std::chrono::seconds(1), std::chrono::seconds(300));
 
   setCacheListener(regionNames[0], mon);
 

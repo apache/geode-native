@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
 #include "Pool.hpp"
 #include "QueryService.hpp"
 #include "CacheableString.hpp"
 #include "Cache.hpp"
-//#include "Properties.hpp"
 #include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"
+#include "TimeSpanUtils.hpp"
 
-
-using namespace System;
 
 namespace Apache
 {
@@ -35,6 +32,7 @@ namespace Apache
     namespace Client
     {
 
+      using namespace System;
 
       String^ Pool::Name::get( )
       {
@@ -50,11 +48,11 @@ namespace Apache
       }
 
 
-      Int32 Pool::FreeConnectionTimeout::get()
+      TimeSpan Pool::FreeConnectionTimeout::get()
       {
         try
         {
-          return m_nativeptr->get()->getFreeConnectionTimeout();
+          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getFreeConnectionTimeout());
         }
         finally
         {
@@ -64,11 +62,11 @@ namespace Apache
       }
 
 
-      Int32 Pool::LoadConditioningInterval::get()
+      TimeSpan Pool::LoadConditioningInterval::get()
       {
         try
         {
-          return m_nativeptr->get()->getLoadConditioningInterval();
+          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getLoadConditioningInterval());
         }
         finally
         {
@@ -92,11 +90,11 @@ namespace Apache
       }
 
 
-      Int32 Pool::ReadTimeout::get()
+      TimeSpan Pool::ReadTimeout::get()
       {
         try
         {
-          return m_nativeptr->get()->getReadTimeout();
+          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getReadTimeout());
         }
         finally
         {
@@ -134,11 +132,11 @@ namespace Apache
       }
 
 
-      Int32 Pool::IdleTimeout::get()
+      TimeSpan Pool::IdleTimeout::get()
       {
         try
         {
-          return m_nativeptr->get()->getIdleTimeout();
+          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getIdleTimeout());
         }
         finally
         {
@@ -148,11 +146,11 @@ namespace Apache
       }
 
 
-      Int32 Pool::PingInterval::get()
+      TimeSpan Pool::PingInterval::get()
       {
         try
         {
-          return m_nativeptr->get()->getPingInterval();
+          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getPingInterval());
         }
         finally
         {
@@ -162,11 +160,11 @@ namespace Apache
       }
 
 
-      Int32 Pool::UpdateLocatorListInterval::get()
+      TimeSpan Pool::UpdateLocatorListInterval::get()
       {
         try
         {
-          return m_nativeptr->get()->getUpdateLocatorListInterval();
+          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getUpdateLocatorListInterval());
         }
         finally
         {
@@ -176,11 +174,11 @@ namespace Apache
       }
 
 
-      Int32 Pool::StatisticInterval::get()
+      TimeSpan Pool::StatisticInterval::get()
       {
         try
         {
-          return m_nativeptr->get()->getStatisticInterval();
+          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getStatisticInterval());
         }
         finally
         {
@@ -246,11 +244,11 @@ namespace Apache
       }
 
 
-      Int32 Pool::SubscriptionMessageTrackingTimeout::get()
+      TimeSpan Pool::SubscriptionMessageTrackingTimeout::get()
       {
         try
         {
-          return m_nativeptr->get()->getSubscriptionMessageTrackingTimeout();
+          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getSubscriptionMessageTrackingTimeout());
         }
         finally
         {
@@ -260,11 +258,11 @@ namespace Apache
       }
 
 
-      Int32 Pool::SubscriptionAckInterval::get()
+      TimeSpan Pool::SubscriptionAckInterval::get()
       {
         try
         {
-          return m_nativeptr->get()->getSubscriptionAckInterval();
+          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getSubscriptionAckInterval());
         }
         finally
         {

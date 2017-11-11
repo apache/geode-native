@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTHELPER_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTHELPER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTHELPER_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTHELPER_H_
+
+#include <chrono>
 
 #include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
@@ -420,8 +422,9 @@ RegionPtr createPooledRegion(const char* name, bool ackMode,
 
   // ack, caching
   RegionPtr regPtr = getHelper()->createPooledRegion(
-      name, ackMode, locators, poolname, caching, clientNotificationEnabled, 0,
-      0, 0, 0, 0, listener);
+      name, ackMode, locators, poolname, caching, clientNotificationEnabled,
+      std::chrono::seconds(0), std::chrono::seconds(0), std::chrono::seconds(0),
+      std::chrono::seconds(0), 0, listener);
 
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
@@ -437,8 +440,9 @@ PoolPtr findPool(const char* poolName) {
 PoolPtr createPool(const char* poolName, const char* locators,
                    const char* serverGroup, int redundancy = 0,
                    bool clientNotification = false,
-                   int subscriptionAckInterval = -1, int connections = -1,
-                   int loadConditioningInterval = -1) {
+                   std::chrono::milliseconds subscriptionAckInterval =
+                       std::chrono::milliseconds::zero(),
+                   int connections = -1, int loadConditioningInterval = -1) {
   LOG("createPool() entered.");
 
   PoolPtr poolPtr = getHelper()->createPool(
@@ -452,7 +456,8 @@ PoolPtr createPool(const char* poolName, const char* locators,
 PoolPtr createPoolAndDestroy(const char* poolName, const char* locators,
                              const char* serverGroup, int redundancy = 0,
                              bool clientNotification = false,
-                             int subscriptionAckInterval = -1,
+                             std::chrono::milliseconds subscriptionAckInterval =
+                                 std::chrono::milliseconds::zero(),
                              int connections = -1) {
   LOG("createPoolAndDestroy() entered.");
 
@@ -479,7 +484,10 @@ PoolPtr createPool2(const char* poolName, const char* locators,
 
 RegionPtr createRegionAndAttachPool(
     const char* name, bool ack, const char* poolName, bool caching = true,
-    int ettl = 0, int eit = 0, int rttl = 0, int rit = 0, int lel = 0,
+    const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
+    const std::chrono::seconds& eit = std::chrono::seconds::zero(),
+    const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
+    const std::chrono::seconds& rit = std::chrono::seconds::zero(), int lel = 0,
     ExpirationAction::Action action = ExpirationAction::DESTROY) {
   LOG("createRegionAndAttachPool() entered.");
   RegionPtr regPtr = getHelper()->createRegionAndAttachPool(

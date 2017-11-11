@@ -66,7 +66,7 @@ TEST_F(TcrMessageTest, intializeDefaultConstructor) {
 TEST_F(TcrMessageTest, testConstructor1MessageDataContentWithDESTROY_REGION) {
   const Region *region = nullptr;
   const SerializablePtr aCallbackArgument = nullptr;
-  int messageResponseTimeout = 1000;
+  std::chrono::milliseconds messageResponseTimeout{1000};
   ThinClientBaseDM *connectionDM = nullptr;
 
   TcrMessageDestroyRegion message(
@@ -85,7 +85,7 @@ TEST_F(TcrMessageTest, testConstructor1MessageDataContentWithDESTROY_REGION) {
 TEST_F(TcrMessageTest, testConstructor1MessageDataContentWithCLEAR_REGION) {
   const Region *region = nullptr;
   const SerializablePtr aCallbackArgument = nullptr;
-  int messageResponseTimeout = 1000;
+  std::chrono::milliseconds messageResponseTimeout{1000};
   ThinClientBaseDM *connectionDM = nullptr;
 
   TcrMessageClearRegion message(
@@ -100,7 +100,7 @@ TEST_F(TcrMessageTest, testConstructor1MessageDataContentWithCLEAR_REGION) {
 }
 
 TEST_F(TcrMessageTest, testQueryConstructorMessageDataCotent) {
-  int messageResponseTimeout = 1000;
+  std::chrono::milliseconds messageResponseTimeout{1000};
   ThinClientBaseDM *connectionDM = nullptr;
 
   TcrMessageCloseCQ message(
@@ -116,7 +116,7 @@ TEST_F(TcrMessageTest, testQueryConstructorMessageDataCotent) {
 }
 
 TEST_F(TcrMessageTest, testQueryConstructorWithQUERY) {
-  int messageResponseTimeout = 1000;
+  std::chrono::milliseconds messageResponseTimeout{1000};
   ThinClientBaseDM *connectionDM = nullptr;
 
   TcrMessageQuery message(
@@ -132,7 +132,7 @@ TEST_F(TcrMessageTest, testQueryConstructorWithQUERY) {
 }
 
 TEST_F(TcrMessageTest, testQueryConstructorWithSTOPCQ_MSG_TYPE) {
-  int messageResponseTimeout = 1000;
+  std::chrono::milliseconds messageResponseTimeout{1000};
   ThinClientBaseDM *connectionDM = nullptr;
 
   TcrMessageStopCQ message(
@@ -148,7 +148,7 @@ TEST_F(TcrMessageTest, testQueryConstructorWithSTOPCQ_MSG_TYPE) {
 }
 
 TEST_F(TcrMessageTest, testQueryConstructorWithCLOSECQ_MSG_TYPE) {
-  int messageResponseTimeout = 1000;
+  std::chrono::milliseconds messageResponseTimeout{1000};
   ThinClientBaseDM *connectionDM = nullptr;
 
   TcrMessageCloseCQ message(
@@ -165,7 +165,7 @@ TEST_F(TcrMessageTest, testQueryConstructorWithCLOSECQ_MSG_TYPE) {
 
 TEST_F(TcrMessageTest,
        testParameterizedQueryConstructorWithQUERY_WITH_PARAMETERS) {
-  int messageResponseTimeout = 1000;
+  std::chrono::milliseconds messageResponseTimeout{1000};
   ThinClientBaseDM *connectionDM = nullptr;
   const SerializablePtr aCallbackArgument = nullptr;
   CacheableVectorPtr paramList = CacheableVector::create();
@@ -578,7 +578,7 @@ TEST_F(TcrMessageTest, testConstructorEXECUTE_REGION_FUNCTION_SINGLE_HOP) {
       std::unique_ptr<DataOutputUnderTest>(new DataOutputUnderTest()),
       "myFuncName", region, myPtr, myHashCachePtr, 2, myHashCachePtr,
       false,  // allBuckets
-      1, static_cast<ThinClientBaseDM *>(nullptr));
+      std::chrono::milliseconds{1}, static_cast<ThinClientBaseDM *>(nullptr));
 
   EXPECT_EQ(TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP,
             message.getMessageType());
@@ -602,8 +602,9 @@ TEST_F(TcrMessageTest, testConstructorEXECUTE_REGION_FUNCTION) {
 
   TcrMessageExecuteRegionFunction testMessage(
       std::unique_ptr<DataOutputUnderTest>(new DataOutputUnderTest()),
-      "ExecuteRegion", region, myCacheablePtr, myVectPtr, 2, myHashCachePtr, 10,
-      static_cast<ThinClientBaseDM *>(nullptr), 10);
+      "ExecuteRegion", region, myCacheablePtr, myVectPtr, 2, myHashCachePtr,
+      std::chrono::milliseconds{10}, static_cast<ThinClientBaseDM *>(nullptr),
+      10);
 
   EXPECT_EQ(TcrMessage::EXECUTE_REGION_FUNCTION, testMessage.getMessageType());
   // this message is currently blank so this should change it if the impl
@@ -625,7 +626,7 @@ TEST_F(TcrMessageTest, DISABLED_testConstructorEXECUTE_FUNCTION) {
   TcrMessageExecuteFunction testMessage(
       std::unique_ptr<DataOutputUnderTest>(new DataOutputUnderTest()),
       "ExecuteFunction", myCacheablePtr, 1,
-      static_cast<ThinClientBaseDM *>(nullptr), 10);
+      static_cast<ThinClientBaseDM *>(nullptr), std::chrono::milliseconds{10});
 
   EXPECT_EQ(TcrMessage::EXECUTE_FUNCTION, testMessage.getMessageType());
 

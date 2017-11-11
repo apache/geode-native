@@ -18,6 +18,9 @@
 #include "ExceptionTypes.hpp"
 #include <cstdlib>
 
+#define _GF_MG_EXCEPTION_ADD3(x) { "apache::geode::client::" #x, gcnew CreateException2( x::Create ) }
+#define _GF_MG_EXCEPTION_ADD4(x,y) { "apache::geode::client::" #y, gcnew CreateException2( x::Create ) }
+
 using namespace System;
 
 namespace Apache
@@ -26,9 +29,6 @@ namespace Apache
   {
     namespace Client
     {
-
-#define _GF_MG_EXCEPTION_ADD3(x) { "apache::geode::client::" #x, gcnew CreateException2( x::Create ) }
-#define _GF_MG_EXCEPTION_ADD4(x,y) { "apache::geode::client::" #y, gcnew CreateException2( x::Create ) }
 
       Dictionary<String^, CreateException2^>^ GeodeException::Init( )
       {
@@ -96,8 +96,8 @@ namespace Apache
           _GF_MG_EXCEPTION_ADD3( InvalidDeltaException ),
           _GF_MG_EXCEPTION_ADD3( KeyNotFoundException ),
           _GF_MG_EXCEPTION_ADD3( CommitConflictException ),
-		  _GF_MG_EXCEPTION_ADD3( TransactionDataNodeHasDepartedException ),
-		  _GF_MG_EXCEPTION_ADD3( TransactionDataRebalancedException )
+          _GF_MG_EXCEPTION_ADD3( TransactionDataNodeHasDepartedException ),
+          _GF_MG_EXCEPTION_ADD3( TransactionDataRebalancedException )
         };
 
         Native2ManagedExMap = gcnew Dictionary<String^, CreateException2^>( );
@@ -112,7 +112,7 @@ namespace Apache
       System::Exception^ GeodeException::Get(const apache::geode::client::Exception& nativeEx)
       {
         Exception^ innerException = nullptr;
-        const apache::geode::client::ExceptionPtr& cause = nativeEx.getCause();
+        const auto cause = nativeEx.getCause();
         if (cause != nullptr) {
           innerException = GeodeException::Get(*cause);
         }
@@ -140,20 +140,21 @@ namespace Apache
                       gcnew array<Object^>{ mgMsg, innerException }));
                 if ( mgEx != nullptr ) {
                   return mgEx;
+                }
+              }
+            }
+
+          }
+          if (innerException == nullptr) {
+            return gcnew GeodeException(exName + ": " + exMsg,
+                gcnew GeodeException(GetStackTrace(nativeEx)));
+          }
+          else {
+            return gcnew GeodeException(exName + ": " + exMsg, innerException);
+          }
+        }
+      }
+
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
-        }
-        if (innerException == nullptr) {
-          return gcnew GeodeException(exName + ": " + exMsg,
-              gcnew GeodeException(GetStackTrace(nativeEx)));
-        }
-        else {
-          return gcnew GeodeException(exName + ": " + exMsg, innerException);
-        }
-      }
-      } // end namespace generic
-    }
-  }
-}

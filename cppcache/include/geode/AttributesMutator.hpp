@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_ATTRIBUTESMUTATOR_H_
-#define GEODE_ATTRIBUTESMUTATOR_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,18 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_ATTRIBUTESMUTATOR_H_
+#define GEODE_ATTRIBUTESMUTATOR_H_
+
+#include <chrono>
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 #include "ExpirationAction.hpp"
+#include "util/chrono/duration.hpp"
+
 /**
  * @file
  */
@@ -64,13 +68,13 @@ class CPPCACHE_EXPORT AttributesMutator {
   virtual ~AttributesMutator();
 
   /** Sets the idleTimeout duration for region entries.
-   * @param idleTimeout the idleTimeout in seconds for entries in this region.
+   * @param idleTimeout the idleTimeout for entries in this region.
    * @return the previous value.
    * @throw IllegalStateException if the new idleTimeout changes entry
    * expiration from
    *   disabled to enabled or enabled to disabled.
    */
-  int32_t setEntryIdleTimeout(int32_t idleTimeout);
+  std::chrono::seconds setEntryIdleTimeout(std::chrono::seconds idleTimeout);
 
   /** Set the idleTimeout Action for region entries.
    * @param action the idleTimeout ExpirationAction::Action for entries in this
@@ -81,13 +85,13 @@ class CPPCACHE_EXPORT AttributesMutator {
       ExpirationAction::Action action);
 
   /** Sets the timeToLive duration for region entries.
-   * @param timeToLive the timeToLive in seconds for entries in this region.
+   * @param timeToLive the timeToLive for entries in this region.
    * @return the previous value.
    * @throw IllegalStateException if the new timeToLive changes entry expiration
    * from
    *   disabled to enabled or enabled to disabled.
    */
-  int32_t setEntryTimeToLive(int32_t timeToLive);
+  std::chrono::seconds setEntryTimeToLive(std::chrono::seconds timeToLive);
 
   /** Set the timeToLive Action for region entries.
    * @param action the timeToLive ExpirationAction::Action for entries in this
@@ -104,7 +108,7 @@ class CPPCACHE_EXPORT AttributesMutator {
    * expiration from
    *   disabled to enabled or enabled to disabled.
    */
-  int32_t setRegionIdleTimeout(int32_t idleTimeout);
+  std::chrono::seconds setRegionIdleTimeout(std::chrono::seconds idleTimeout);
 
   /** Set the idleTimeout Action for the region itself.
    * @param action the idleTimeout ExpirationAction::Action for this region.
@@ -120,7 +124,7 @@ class CPPCACHE_EXPORT AttributesMutator {
    * expiration from
    *   disabled to enabled or enabled to disabled.
    */
-  int32_t setRegionTimeToLive(int32_t timeToLive);
+  std::chrono::seconds setRegionTimeToLive(std::chrono::seconds timeToLive);
 
   /** Set the timeToLive Action for the region itself.
    * @param action the timeToLive ExpirationAction::Action for this region.
@@ -186,6 +190,7 @@ class CPPCACHE_EXPORT AttributesMutator {
    */
   void setCacheWriter(const char* libpath, const char* factoryFuncName);
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

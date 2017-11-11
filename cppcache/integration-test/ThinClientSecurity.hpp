@@ -65,7 +65,7 @@ void createRegionForSecurity(const char* name, bool ackMode,
   printf("createRegionForSecurity poolname = %s \n", poolName);
   getHelper()->createPoolWithLocators(
       poolName, locatorsG, clientNotificationEnabled, subscriptionRedundancy,
-      -1, connections, isMultiuserMode);
+      std::chrono::milliseconds::zero(), connections, isMultiuserMode);
   createRegionAndAttachPool(name, ackMode, poolName, caching);
   setCacheListener(name, listener);
 }

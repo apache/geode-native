@@ -155,7 +155,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     try {
       LOG("EXECUTE 1 START");
 
-      results = qry->execute(3);
+      results = qry->execute(std::chrono::seconds(3));
 
       LOG("EXECUTE 1 STOP");
 
@@ -199,7 +199,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     try {
       LOG("EXECUTE 2 START");
 
-      results = qry->execute(850);
+      results = qry->execute(std::chrono::seconds(850));
 
       LOG("EXECUTE 2 STOP");
 
@@ -239,7 +239,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
     try {
       LOG("EXECUTE 3 START");
 
-      results = qry->execute(2);
+      results = qry->execute(std::chrono::seconds(2));
 
       LOG("EXECUTE 3 STOP");
 
@@ -283,7 +283,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
     try {
       LOG("EXECUTE 4 START");
 
-      results = qry->execute(850);
+      results = qry->execute(std::chrono::seconds(850));
 
       LOG("EXECUTE 4 STOP");
 
@@ -332,7 +332,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSeven)
           paramList->push_back(Cacheable::create(queryparamSetSS[5][j]));
         }
       }
-      results = qry->execute(paramList, 1);
+      results = qry->execute(paramList, std::chrono::seconds(1));
 
       LOG("EXECUTE Five STOP");
 
@@ -386,7 +386,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
         }
       }
 
-      results = qry->execute(paramList, 850);
+      results = qry->execute(paramList, std::chrono::seconds(850));
 
       LOG("EXECUTE 6 STOP");
 
@@ -426,7 +426,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyNegativeValueTimeout)
     try {
       LOG("Task::verifyNegativeValueTimeout - EXECUTE 1 START");
 
-      results = qry->execute(-3);
+      results = qry->execute(std::chrono::seconds(-3));
 
       LOG("Task::verifyNegativeValueTimeout - EXECUTE 1 STOP");
 
@@ -472,7 +472,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyLargeValueTimeout)
     try {
       LOG("Task:: verifyLargeValueTimeout - EXECUTE 1 START");
 
-      results = qry->execute(2147500);
+      results = qry->execute(std::chrono::seconds(2147500));
 
       LOG("Task:: verifyLargeValueTimeout - EXECUTE 1 STOP");
 

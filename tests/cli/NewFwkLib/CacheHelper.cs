@@ -276,7 +276,7 @@ namespace Apache.Geode.Client.FwkLib
     {
       Properties<string,string> config = new Properties<string,string>();
       config.Insert("durable-client-id", durableClientId);
-      config.Insert("durable-timeout", durableTimeout.ToString());
+      config.Insert("durable-timeout", durableTimeout.ToString() + "s");
       if (conflateEvents != null && conflateEvents.Length > 0)
       {
         config.Insert("conflate-events", conflateEvents);

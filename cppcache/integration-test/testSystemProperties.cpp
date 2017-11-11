@@ -45,7 +45,8 @@ const bool checkSecurityProperties(PropertiesPtr securityProperties,
 BEGIN_TEST(DEFAULT)
   {
     SystemProperties* sp = new SystemProperties(nullptr, "./non-existent");
-    ASSERT(sp->statisticsSampleInterval() == 1, "expected 1");
+    ASSERT(sp->statisticsSampleInterval() == std::chrono::seconds(1),
+           "expected 1");
     ASSERT(sp->statisticsEnabled() == true, "expected true");
     LOG(sp->statisticsArchiveFile());
     const char* safname = sp->statisticsArchiveFile();
@@ -78,7 +79,8 @@ BEGIN_TEST(CONFIG)
     Log::init(Log::Config, nullptr, 0);
 
     SystemProperties* sp = new SystemProperties(nullptr, "test.properties");
-    ASSERT(sp->statisticsSampleInterval() == 1, "expected 1");
+    ASSERT(sp->statisticsSampleInterval() == std::chrono::seconds(1),
+           "expected 1");
     ASSERT(sp->statisticsEnabled() == true, "expected true");
     const char* safname = sp->statisticsArchiveFile();
     int ret = strcmp(safname, "statArchive.gfs");
@@ -101,7 +103,8 @@ BEGIN_TEST(NEW_CONFIG)
 
     SystemProperties* sp = new SystemProperties(nullptr, filePath.c_str());
 
-    ASSERT(sp->statisticsSampleInterval() == 700, "expected 700");
+    ASSERT(sp->statisticsSampleInterval() == std::chrono::seconds(700),
+           "expected 700");
 
     ASSERT(sp->statisticsEnabled() == false, "expected false");
 
@@ -126,15 +129,17 @@ BEGIN_TEST(NEW_CONFIG)
     ret = strcmp(cxml, "cache.xml");
     ASSERT(ret == 0, "expected 0");
 
-    ASSERT(sp->pingInterval() == 123, "expected 123 pingInterval");
-    ASSERT(sp->redundancyMonitorInterval() == 456,
-           "expected 456 redundancyMonitorInterval");
+    ASSERT(sp->pingInterval() == std::chrono::seconds(123),
+           "expected 123 pingInterval");
+    ASSERT(sp->redundancyMonitorInterval() == std::chrono::seconds(456),
+           "expected 456s redundancyMonitorInterval");
 
     ASSERT(sp->heapLRULimit() == 100, "expected 100");
     ASSERT(sp->heapLRUDelta() == 10, "expected 10");
 
-    ASSERT(sp->notifyAckInterval() == 1234, "expected 1234 notifyAckInterval");
-    ASSERT(sp->notifyDupCheckLife() == 4321,
+    ASSERT(sp->notifyAckInterval() == std::chrono::milliseconds(1234),
+           "expected 1234 notifyAckInterval");
+    ASSERT(sp->notifyDupCheckLife() == std::chrono::milliseconds(4321),
            "expected 4321 notifyDupCheckLife");
 
     ASSERT(sp->logFileSizeLimit() == 1024000000, "expected 1024000000");
@@ -145,9 +150,11 @@ BEGIN_TEST(NEW_CONFIG)
     ret = strcmp(durableId, "testDurableId");
     ASSERT(ret == 0, "expected 0");
 
-    ASSERT(sp->durableTimeout() == 123, "expected 123 durableTimeOut");
+    ASSERT(sp->durableTimeout() == std::chrono::seconds(123),
+           "expected 123 durableTimeOut");
 
-    ASSERT(sp->connectTimeout() == 345, "expected 345 for connect timeout");
+    ASSERT(sp->connectTimeout() == std::chrono::milliseconds(345),
+           "expected 345 for connect timeout");
 
     PropertiesPtr securityProperties = sp->getSecurityProperties();
     ASSERT(checkSecurityProperties(securityProperties, "security-username",

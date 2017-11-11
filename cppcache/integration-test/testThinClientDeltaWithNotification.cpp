@@ -14,12 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * testThinClientDeltaWithNotification.cpp
- *
- *  Created on: May 8, 2009
- *      Author: abhaware
- */
 
 #define ROOT_NAME "testThinClientDeltaWithNotification"
 
@@ -98,8 +92,9 @@ void createPooledExpirationRegion(const char* name, const char* poolname) {
   LOG("createPooledExpirationRegion() entered.");
   // Entry time-to-live = 1 second.
   RegionPtr regPtr = getHelper()->createPooledRegionDiscOverFlow(
-      name, true, locatorsG, poolname, true, true, 1, 0, 0, 0, 0, nullptr,
-      ExpirationAction::LOCAL_INVALIDATE);
+      name, true, locatorsG, poolname, true, true, std::chrono::seconds(1),
+      std::chrono::seconds(0), std::chrono::seconds(0), std::chrono::seconds(0),
+      0, nullptr, ExpirationAction::LOCAL_INVALIDATE);
 }
 
 void createPooledLRURegion(const char* name, bool ackMode, const char* locators,
@@ -109,7 +104,9 @@ void createPooledLRURegion(const char* name, bool ackMode, const char* locators,
   LOG(" createPooledLRURegion entered");
   RegionPtr regPtr = getHelper()->createPooledRegionDiscOverFlow(
       name, ackMode, locators, poolname, cachingEnable,
-      clientNotificationEnabled, 0, 0, 0, 0, 3 /*LruLimit = 3*/);
+      clientNotificationEnabled, std::chrono::seconds(0),
+      std::chrono::seconds(0), std::chrono::seconds(0), std::chrono::seconds(0),
+      3 /*LruLimit = 3*/);
   LOG(" createPooledLRURegion exited");
 }
 
@@ -129,7 +126,8 @@ void createLRURegion(const char* name, bool clientNotificationEnabled = false,
                      bool cachingEnable = true) {
   LOG(" createPooledLRURegion entered");
   RegionPtr regPtr = getHelper()->createRegionDiscOverFlow(
-      name, cachingEnable, clientNotificationEnabled, 0, 0, 0, 0,
+      name, cachingEnable, clientNotificationEnabled, std::chrono::seconds(0),
+      std::chrono::seconds(0), std::chrono::seconds(0), std::chrono::seconds(0),
       3 /*LruLimit = 3*/);
   LOG(" createPooledLRURegion exited");
 }
@@ -139,8 +137,9 @@ void createExpirationRegion(const char* name,
                             bool cachingEnable = true) {
   LOG(" createPooledLRURegion entered");
   RegionPtr regPtr = getHelper()->createRegionDiscOverFlow(
-      name, cachingEnable, clientNotificationEnabled, 1, 0, 0, 0, 0,
-      ExpirationAction::LOCAL_INVALIDATE);
+      name, cachingEnable, clientNotificationEnabled, std::chrono::seconds(1),
+      std::chrono::seconds(0), std::chrono::seconds(0), std::chrono::seconds(0),
+      0, ExpirationAction::LOCAL_INVALIDATE);
   LOG(" createPooledLRURegion exited");
 }
 

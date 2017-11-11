@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CONNECTOR_H_
-#define GEODE_CONNECTOR_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,20 +15,32 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CONNECTOR_H_
+#define GEODE_CONNECTOR_H_
+
+#include <chrono>
+
 #include <geode/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
-
-/*
-These are superseded by the connect-timeout system property for SR # 6525.
-*/
-#define DEFAULT_TIMEOUT_SECONDS 15
-#define DEFAULT_CONNECT_TIMEOUT 10
-#define DEFAULT_READ_TIMEOUT_SECS DEFAULT_TIMEOUT_SECONDS
-#define DEFAULT_WRITE_TIMEOUT DEFAULT_TIMEOUT_SECONDS
 
 namespace apache {
 namespace geode {
 namespace client {
+
+constexpr std::chrono::microseconds DEFAULT_CONNECT_TIMEOUT =
+    std::chrono::seconds(10);
+
+constexpr std::chrono::milliseconds DEFAULT_TIMEOUT_SECONDS =
+    std::chrono::seconds(15);
+
+constexpr std::chrono::milliseconds DEFAULT_READ_TIMEOUT_SECS =
+    DEFAULT_TIMEOUT_SECONDS;
+
+constexpr std::chrono::milliseconds DEFAULT_WRITE_TIMEOUT =
+    DEFAULT_TIMEOUT_SECONDS;
+
 class Connector {
  public:
   /* create one socket connection with settings */
@@ -67,8 +74,8 @@ class Connector {
    * @exception  GeodeIOException, TimeoutException, IllegalArgumentException,
    * OutOfMemoryException.
    */
-  virtual int32_t receive(char *b, int32_t len, uint32_t waitSeconds,
-                          uint32_t waitMicroSeconds) = 0;
+  virtual int32_t receive(char *b, int32_t len,
+                          std::chrono::microseconds waitSeconds) = 0;
 
   /**
    * Writes <code>len</code> bytes from the specified byte array
@@ -81,8 +88,8 @@ class Connector {
    * @return     the actual number of bytes written.
    * @exception  GeodeIOException, TimeoutException, IllegalArgumentException.
    */
-  virtual int32_t send(const char *b, int32_t len, uint32_t waitSeconds,
-                       uint32_t waitMicroSeconds) = 0;
+  virtual int32_t send(const char *b, int32_t len,
+                       std::chrono::microseconds waitSeconds) = 0;
 
   /**
    * Initialises the connection.

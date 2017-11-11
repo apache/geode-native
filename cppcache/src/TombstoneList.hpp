@@ -42,14 +42,6 @@ class TombstoneEntry {
   TombstoneEntry(const MapEntryImplPtr& entry, int64_t tombstoneCreationTime)
       : m_entry(entry),
         m_tombstoneCreationTime(tombstoneCreationTime),
-        /* adongre
-         * Coverity - II
-         * CID 29289: Uninitialized scalar field (UNINIT_CTOR)
-         * Non-static class member "m_expiryTaskId" is not initialized in this
-         * constructor nor in any functions that it calls.
-         * Fix : Initialize the member
-         * also change the member initialization to initializer list
-         */
         m_expiryTaskId(0),
         m_handler(nullptr) {}
   virtual ~TombstoneEntry() {}

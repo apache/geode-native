@@ -134,97 +134,111 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
               bool enableTimeStatistics = true);
   virtual ~LocalRegion();
 
-  const char* getName() const;
-  const char* getFullPath() const;
-  RegionPtr getParentRegion() const;
-  RegionAttributesPtr getAttributes() const { return m_regionAttributes; }
-  AttributesMutatorPtr getAttributesMutator() const {
+  const char* getName() const override;
+  const char* getFullPath() const override;
+  RegionPtr getParentRegion() const override;
+  RegionAttributesPtr getAttributes() const override {
+    return m_regionAttributes;
+  }
+  AttributesMutatorPtr getAttributesMutator() const override {
     return std::make_shared<AttributesMutator>(
         std::const_pointer_cast<LocalRegion>(
             std::static_pointer_cast<const LocalRegion>(shared_from_this())));
   }
-  void updateAccessAndModifiedTime(bool modified);
-  CacheStatisticsPtr getStatistics() const;
-  virtual void clear(const SerializablePtr& aCallbackArgument = nullptr);
-  virtual void localClear(const SerializablePtr& aCallbackArgument = nullptr);
+  void updateAccessAndModifiedTime(bool modified) override;
+  CacheStatisticsPtr getStatistics() const override;
+  virtual void clear(
+      const SerializablePtr& aCallbackArgument = nullptr) override;
+  virtual void localClear(
+      const SerializablePtr& aCallbackArgument = nullptr) override;
   GfErrType localClearNoThrow(
       const SerializablePtr& aCallbackArgument = nullptr,
       const CacheEventFlags eventFlags = CacheEventFlags::NORMAL);
-  void invalidateRegion(const SerializablePtr& aCallbackArgument = nullptr);
-  void localInvalidateRegion(const SerializablePtr& aCallbackArgument = nullptr);
-  void destroyRegion(const SerializablePtr& aCallbackArgument = nullptr);
-  void localDestroyRegion(const SerializablePtr& aCallbackArgument = nullptr);
-  RegionPtr getSubregion(const char* path);
-  RegionPtr createSubregion(const char* subregionName,
-                            const RegionAttributesPtr& aRegionAttributes);
-  VectorOfRegion subregions(const bool recursive);
-  RegionEntryPtr getEntry(const CacheableKeyPtr& key);
+  void invalidateRegion(
+      const SerializablePtr& aCallbackArgument = nullptr) override;
+  void localInvalidateRegion(
+      const SerializablePtr& aCallbackArgument = nullptr) override;
+  void destroyRegion(
+      const SerializablePtr& aCallbackArgument = nullptr) override;
+  void localDestroyRegion(
+      const SerializablePtr& aCallbackArgument = nullptr) override;
+  RegionPtr getSubregion(const char* path) override;
+  RegionPtr createSubregion(
+      const char* subregionName,
+      const RegionAttributesPtr& aRegionAttributes) override;
+  VectorOfRegion subregions(const bool recursive) override;
+  RegionEntryPtr getEntry(const CacheableKeyPtr& key) override;
   void getEntry(const CacheableKeyPtr& key, CacheablePtr& valuePtr);
   CacheablePtr get(const CacheableKeyPtr& key,
-                   const SerializablePtr& aCallbackArgument);
+                   const SerializablePtr& aCallbackArgument) override;
   void put(const CacheableKeyPtr& key, const CacheablePtr& value,
-           const SerializablePtr& aCallbackArgument = nullptr);
+           const SerializablePtr& aCallbackArgument = nullptr) override;
   void localPut(const CacheableKeyPtr& key, const CacheablePtr& value,
-                const SerializablePtr& aCallbackArgument = nullptr);
+                const SerializablePtr& aCallbackArgument = nullptr) override;
   void create(const CacheableKeyPtr& key, const CacheablePtr& value,
-              const SerializablePtr& aCallbackArgument = nullptr);
+              const SerializablePtr& aCallbackArgument = nullptr) override;
   void localCreate(const CacheableKeyPtr& key, const CacheablePtr& value,
-                   const SerializablePtr& aCallbackArgument = nullptr);
+                   const SerializablePtr& aCallbackArgument = nullptr) override;
   void invalidate(const CacheableKeyPtr& key,
-                  const SerializablePtr& aCallbackArgument = nullptr);
-  void localInvalidate(const CacheableKeyPtr& key,
-                       const SerializablePtr& aCallbackArgument = nullptr);
+                  const SerializablePtr& aCallbackArgument = nullptr) override;
+  void localInvalidate(
+      const CacheableKeyPtr& key,
+      const SerializablePtr& aCallbackArgument = nullptr) override;
   void destroy(const CacheableKeyPtr& key,
-               const SerializablePtr& aCallbackArgument = nullptr);
-  void localDestroy(const CacheableKeyPtr& key,
-                    const SerializablePtr& aCallbackArgument = nullptr);
+               const SerializablePtr& aCallbackArgument = nullptr) override;
+  void localDestroy(
+      const CacheableKeyPtr& key,
+      const SerializablePtr& aCallbackArgument = nullptr) override;
   bool remove(const CacheableKeyPtr& key, const CacheablePtr& value,
-              const SerializablePtr& aCallbackArgument = nullptr);
+              const SerializablePtr& aCallbackArgument = nullptr) override;
   bool removeEx(const CacheableKeyPtr& key,
-                const SerializablePtr& aCallbackArgument = nullptr);
+                const SerializablePtr& aCallbackArgument = nullptr) override;
   bool localRemove(const CacheableKeyPtr& key, const CacheablePtr& value,
-                   const SerializablePtr& aCallbackArgument = nullptr);
+                   const SerializablePtr& aCallbackArgument = nullptr) override;
   bool localRemoveEx(const CacheableKeyPtr& key,
-                     const SerializablePtr& aCallbackArgument = nullptr);
-  VectorOfCacheableKey keys();
-  VectorOfCacheableKey serverKeys();
-  VectorOfCacheable values();
-  VectorOfRegionEntry entries(bool recursive);
+                     const SerializablePtr& aCallbackArgument = nullptr) override;
+  VectorOfCacheableKey keys() override;
+  VectorOfCacheableKey serverKeys() override;
+  VectorOfCacheable values() override;
+  VectorOfRegionEntry entries(bool recursive) override;
 
   HashMapOfCacheable getAll(const VectorOfCacheableKey& keys,
-                            const SerializablePtr& aCallbackArgument = nullptr);
+                            const SerializablePtr& aCallbackArgument = nullptr) override;
 
   HashMapOfCacheable getAll_internal(const VectorOfCacheableKey& keys,
                                      const SerializablePtr& aCallbackArgument,
-                                     bool addToLocalCache);
+                                     bool addToLocalCache) override;
 
   void putAll(const HashMapOfCacheable& map,
-              uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
-              const SerializablePtr& aCallbackArgument = nullptr);
+              std::chrono::milliseconds timeout = DEFAULT_RESPONSE_TIMEOUT,
+              const SerializablePtr& aCallbackArgument = nullptr) override;
   void removeAll(const VectorOfCacheableKey& keys,
-                 const SerializablePtr& aCallbackArgument = nullptr);
-  uint32_t size();
+                 const SerializablePtr& aCallbackArgument = nullptr) override;
+  uint32_t size() override;
   virtual uint32_t size_remote();
-  RegionServicePtr getRegionService() const;
+  RegionServicePtr getRegionService() const override;
   virtual bool containsValueForKey_remote(const CacheableKeyPtr& keyPtr) const;
-  bool containsValueForKey(const CacheableKeyPtr& keyPtr) const;
-  bool containsKey(const CacheableKeyPtr& keyPtr) const;
-  virtual bool containsKeyOnServer(const CacheableKeyPtr& keyPtr) const;
-  virtual VectorOfCacheableKey getInterestList() const;
-  virtual VectorOfCacheableString getInterestListRegex() const;
+  bool containsValueForKey(const CacheableKeyPtr& keyPtr) const  override;
+  bool containsKey(const CacheableKeyPtr& keyPtr) const override;
+  virtual bool containsKeyOnServer(const CacheableKeyPtr& keyPtr) const override;
+  virtual VectorOfCacheableKey getInterestList() const override;
+  virtual VectorOfCacheableString getInterestListRegex() const override;
 
   /** @brief Public Methods from RegionInternal
    *  There are all virtual methods
    */
-  PersistenceManagerPtr getPersistenceManager() { return m_persistenceManager; }
-  void setPersistenceManager(PersistenceManagerPtr& pmPtr);
+  PersistenceManagerPtr getPersistenceManager() override {
+    return m_persistenceManager;
+  }
+  void setPersistenceManager(PersistenceManagerPtr& pmPtr) override;
 
-  virtual GfErrType getNoThrow(const CacheableKeyPtr& key, CacheablePtr& value,
-                               const SerializablePtr& aCallbackArgument);
+  virtual GfErrType getNoThrow(
+      const CacheableKeyPtr& key, CacheablePtr& value,
+      const SerializablePtr& aCallbackArgument) override;
   virtual GfErrType getAllNoThrow(
       const VectorOfCacheableKey& keys, const HashMapOfCacheablePtr& values,
       const HashMapOfExceptionPtr& exceptions, const bool addToLocalCache,
-      const SerializablePtr& aCallbackArgument = nullptr);
+      const SerializablePtr& aCallbackArgument = nullptr) override;
   virtual GfErrType putNoThrow(const CacheableKeyPtr& key,
                                const CacheablePtr& value,
                                const SerializablePtr& aCallbackArgument,
@@ -232,7 +246,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                                const CacheEventFlags eventFlags,
                                VersionTagPtr versionTag,
                                DataInput* delta = nullptr,
-                               EventIdPtr eventId = nullptr);
+                               EventIdPtr eventId = nullptr) override;
   virtual GfErrType putNoThrowTX(const CacheableKeyPtr& key,
                                  const CacheablePtr& value,
                                  const SerializablePtr& aCallbackArgument,
@@ -246,12 +260,12 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                                   const SerializablePtr& aCallbackArgument,
                                   int updateCount,
                                   const CacheEventFlags eventFlags,
-                                  VersionTagPtr versionTag);
+                                  VersionTagPtr versionTag) override;
   virtual GfErrType destroyNoThrow(const CacheableKeyPtr& key,
                                    const SerializablePtr& aCallbackArgument,
                                    int updateCount,
                                    const CacheEventFlags eventFlags,
-                                   VersionTagPtr versionTag);
+                                   VersionTagPtr versionTag) override;
   virtual GfErrType destroyNoThrowTX(const CacheableKeyPtr& key,
                                      const SerializablePtr& aCallbackArgument,
                                      int updateCount,
@@ -262,7 +276,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                                   const SerializablePtr& aCallbackArgument,
                                   int updateCount,
                                   const CacheEventFlags eventFlags,
-                                  VersionTagPtr versionTag);
+                                  VersionTagPtr versionTag) override;
   virtual GfErrType removeNoThrowEx(const CacheableKeyPtr& key,
                                     const SerializablePtr& aCallbackArgument,
                                     int updateCount,
@@ -270,7 +284,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                                     VersionTagPtr versionTag);
   virtual GfErrType putAllNoThrow(
       const HashMapOfCacheable& map,
-      uint32_t timeout = DEFAULT_RESPONSE_TIMEOUT,
+      std::chrono::milliseconds timeout = DEFAULT_RESPONSE_TIMEOUT,
       const SerializablePtr& aCallbackArgument = nullptr);
   virtual GfErrType removeAllNoThrow(
       const VectorOfCacheableKey& keys,
@@ -279,17 +293,17 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                                       const SerializablePtr& aCallbackArgument,
                                       int updateCount,
                                       const CacheEventFlags eventFlags,
-                                      VersionTagPtr versionTag);
+                                      VersionTagPtr versionTag) override;
   virtual GfErrType invalidateNoThrowTX(const CacheableKeyPtr& keyPtr,
                                         const SerializablePtr& aCallbackArgument,
                                         int updateCount,
                                         const CacheEventFlags eventFlags,
                                         VersionTagPtr versionTag);
   GfErrType invalidateRegionNoThrow(const SerializablePtr& aCallbackArgument,
-                                    const CacheEventFlags eventFlags);
+                                    const CacheEventFlags eventFlags) override;
   GfErrType destroyRegionNoThrow(const SerializablePtr& aCallbackArgument,
                                  bool removeFromParent,
-                                 const CacheEventFlags eventFlags);
+                                 const CacheEventFlags eventFlags) override;
   void tombstoneOperationNoThrow(const CacheableHashMapPtr& tombstoneVersions,
                                  const CacheableHashSetPtr& tombstoneKeys);
 
@@ -307,46 +321,50 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                             const CacheEventFlags eventFlags,
                             VersionTagPtr versionTag);
 
-  void setRegionExpiryTask();
-  void acquireReadLock() { m_rwLock.acquire_read(); }
-  void releaseReadLock() { m_rwLock.release(); }
+  void setRegionExpiryTask() override;
+  void acquireReadLock() override { m_rwLock.acquire_read(); }
+  void releaseReadLock() override { m_rwLock.release(); }
 
   // behaviors for attributes mutator
-  uint32_t adjustLruEntriesLimit(uint32_t limit);
+  uint32_t adjustLruEntriesLimit(uint32_t limit) override;
   ExpirationAction::Action adjustRegionExpiryAction(
-      ExpirationAction::Action action);
+      ExpirationAction::Action action) override;
   ExpirationAction::Action adjustEntryExpiryAction(
-      ExpirationAction::Action action);
-  int32_t adjustRegionExpiryDuration(int32_t duration);
-  int32_t adjustEntryExpiryDuration(int32_t duration);
+      ExpirationAction::Action action) override;
+  std::chrono::seconds adjustRegionExpiryDuration(
+      const std::chrono::seconds& duration) override;
+  std::chrono::seconds adjustEntryExpiryDuration(
+      const std::chrono::seconds& duration) override;
 
   // other public methods
-  RegionStats* getRegionStats() { return m_regionStats; }
-  inline bool cacheEnabled() { return m_regionAttributes->getCachingEnabled(); }
+  RegionStats* getRegionStats() override { return m_regionStats; }
+  inline bool cacheEnabled() override {
+    return m_regionAttributes->getCachingEnabled();
+  }
   inline bool cachelessWithListener() {
     return !m_regionAttributes->getCachingEnabled() && (m_listener != nullptr);
   }
-  virtual bool isDestroyed() const { return m_destroyPending; }
+  virtual bool isDestroyed() const override { return m_destroyPending; }
   /* above public methods are inherited from RegionInternal */
 
-  virtual void adjustCacheListener(const CacheListenerPtr& aListener);
+  virtual void adjustCacheListener(const CacheListenerPtr& aListener) override;
   virtual void adjustCacheListener(const char* libpath,
-                                   const char* factoryFuncName);
-  virtual void adjustCacheLoader(const CacheLoaderPtr& aLoader);
+                                   const char* factoryFuncName) override;
+  virtual void adjustCacheLoader(const CacheLoaderPtr& aLoader) override;
   virtual void adjustCacheLoader(const char* libpath,
-                                 const char* factoryFuncName);
-  virtual void adjustCacheWriter(const CacheWriterPtr& aWriter);
+                                 const char* factoryFuncName) override;
+  virtual void adjustCacheWriter(const CacheWriterPtr& aWriter) override;
   virtual void adjustCacheWriter(const char* libpath,
-                                 const char* factoryFuncName);
-  virtual CacheImpl* getCacheImpl() const;
-  virtual void evict(int32_t percentage);
+                                 const char* factoryFuncName) override;
+  virtual CacheImpl* getCacheImpl() const override;
+  virtual void evict(int32_t percentage) override;
 
   virtual void acquireGlobals(bool isFailover){};
   virtual void releaseGlobals(bool isFailover){};
 
   virtual bool getProcessedMarker() { return true; }
   EntriesMap* getEntryMap() { return m_entries; }
-  virtual TombstoneListPtr getTombstoneList();
+  virtual TombstoneListPtr getTombstoneList() override;
 
  protected:
   /* virtual protected methods */
@@ -363,7 +381,8 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   virtual GfErrType putAllNoThrow_remote(
       const HashMapOfCacheable& map,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
-      uint32_t timeout, const SerializablePtr& aCallbackArgument);
+      std::chrono::milliseconds timeout,
+      const SerializablePtr& aCallbackArgument);
   virtual GfErrType removeAllNoThrow_remote(
       const VectorOfCacheableKey& keys,
       VersionedCacheableObjectPartListPtr& versionedObjPartList,
@@ -395,7 +414,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   virtual GfErrType destroyRegionNoThrow_remote(
       const SerializablePtr& aCallbackArgument);
   virtual GfErrType unregisterKeysBeforeDestroyRegion();
-  virtual const PoolPtr& getPool() { return m_attachedPool; }
+  virtual const PoolPtr& getPool() override { return m_attachedPool; }
 
   void setPool(const PoolPtr& p) { m_attachedPool = p; }
 
@@ -475,7 +494,8 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
       const SerializablePtr& aCallbackArgument, CacheEventFlags eventFlags,
       RegionEventType type);
   // functions related to expirations.
-  void updateAccessAndModifiedTimeForEntry(MapEntryImplPtr& ptr, bool modified);
+  void updateAccessAndModifiedTimeForEntry(MapEntryImplPtr& ptr,
+                                           bool modified) override;
   void registerEntryExpiryTask(MapEntryImplPtr& entry);
   VectorOfRegion subregions_internal(const bool recursive);
   void entries_internal(VectorOfRegionEntry& me, const bool recursive);
@@ -488,8 +508,8 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   bool isEntryIdletimeEnabled();
   ExpirationAction::Action getEntryExpirationAction() const;
   ExpirationAction::Action getRegionExpiryAction() const;
-  uint32_t getRegionExpiryDuration() const;
-  uint32_t getEntryExpiryDuration() const;
+  std::chrono::seconds getRegionExpiryDuration() const;
+  std::chrono::seconds getEntryExpiryDuration() const;
   void invokeAfterAllEndPointDisconnected();
   // Disallow copy constructor and assignment operator.
   LocalRegion(const LocalRegion&);

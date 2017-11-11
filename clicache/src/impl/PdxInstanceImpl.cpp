@@ -18,9 +18,10 @@
 #pragma once
 
 #include "begin_native.hpp"
-#include <CacheRegionHelper.hpp>
 #include <geode/Cache.hpp>
+#include <CacheRegionHelper.hpp>
 #include <CacheImpl.hpp>
+#include <CachePerfStats.hpp>
 #include "end_native.hpp"
 
 #include "PdxInstanceImpl.hpp"
@@ -34,17 +35,17 @@
 #include "PdxType.hpp"
 #include "Cache.hpp"
 
-using namespace System::Text;
-
 namespace Apache
 {
   namespace Geode
   {
     namespace Client
     {
-
       namespace Internal
       {
+        using namespace System;
+        using namespace System::Text;
+
         //this is for PdxInstanceFactory
         PdxInstanceImpl::PdxInstanceImpl(Dictionary<String^, Object^>^ fieldVsValue, PdxType^ pdxType, Apache::Geode::Client::Cache^ cache)
         {
@@ -77,6 +78,7 @@ namespace Apache
           //will it ever happen
           throw gcnew IllegalStateException("PdxInstance typeid is not defined yet, to get classname.");
         }
+
         Object^ PdxInstanceImpl::GetObject()
         {
           DataInput^ dataInput = gcnew DataInput(m_buffer, m_bufferLength, m_cache);
@@ -1418,13 +1420,10 @@ namespace Apache
             default:
             {
               writer->WriteObject(fieldName, value);
-              //throw gcnew IllegalStateException("ReadField unable to de-serialize  " 
-              //																	+ fieldName + " of " + type); 
-            }  // namespace Client
-            }  // namespace Geode
-          }  // namespace Apache
-
-      }
-    }
-  }
-}
+            }
+          }
+        }
+      }  // namespace Internal
+    }  // namespace Client
+  }  // namespace Geode
+}  // namespace Apache

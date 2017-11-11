@@ -265,7 +265,7 @@ namespace Apache.Geode.Client.FwkLib
             XmlAttributeCollection exAttrColl = nlrttl.Attributes;
             Apache.Geode.Client.ExpirationAction action = StrToExpirationAction(exAttrColl["action"].Value);
             string rttl = exAttrColl["timeout"].Value;
-            af.SetRegionTimeToLive(action, uint.Parse(rttl));
+            af.SetRegionTimeToLive(action, TimeSpan.FromSeconds(uint.Parse(rttl)));
           }
           else
           {
@@ -280,7 +280,7 @@ namespace Apache.Geode.Client.FwkLib
             XmlAttributeCollection exAttrColl = nlrit.Attributes;
             Apache.Geode.Client.ExpirationAction action = StrToExpirationAction(exAttrColl["action"].Value);
             string rit = exAttrColl["timeout"].Value;
-            af.SetRegionIdleTimeout(action, uint.Parse(rit));
+            af.SetRegionIdleTimeout(action, TimeSpan.FromSeconds(uint.Parse(rit)));
           }
           else
           {
@@ -295,7 +295,7 @@ namespace Apache.Geode.Client.FwkLib
             XmlAttributeCollection exAttrColl = nlettl.Attributes;
             Apache.Geode.Client.ExpirationAction action = StrToExpirationAction(exAttrColl["action"].Value);
             string ettl = exAttrColl["timeout"].Value;
-            af.SetEntryTimeToLive(action, uint.Parse(ettl));
+            af.SetEntryTimeToLive(action, TimeSpan.FromSeconds(uint.Parse(ettl)));
           }
           else
           {
@@ -310,7 +310,7 @@ namespace Apache.Geode.Client.FwkLib
             XmlAttributeCollection exAttrColl = nleit.Attributes;
             Apache.Geode.Client.ExpirationAction action = StrToExpirationAction(exAttrColl["action"].Value);
             string eit = exAttrColl["timeout"].Value;
-            af.SetEntryIdleTimeout(action, uint.Parse(eit));
+            af.SetEntryIdleTimeout(action, TimeSpan.FromSeconds(uint.Parse(eit)));
           }
           else
           {

@@ -36,6 +36,7 @@
 #include "IFixedPartitionResolver.hpp"
 #include "impl/SafeConvert.hpp"
 #include "ExceptionTypes.hpp"
+#include "TimeSpanUtils.hpp"
 
 #include "begin_native.hpp"
 #include <memory>
@@ -222,11 +223,11 @@ namespace Apache
       // EXPIRATION ATTRIBUTES
 
       generic<class TKey, class TValue>
-      void AttributesFactory<TKey, TValue>::SetEntryIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout )
+      void AttributesFactory<TKey, TValue>::SetEntryIdleTimeout( ExpirationAction action, TimeSpan idleTimeout )
       {
         try
         {
-          m_nativeptr->get()->setEntryIdleTimeout(static_cast<native::ExpirationAction::Action>( action ), idleTimeout );
+          m_nativeptr->get()->setEntryIdleTimeout(static_cast<native::ExpirationAction::Action>( action ), TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(idleTimeout) );
         }
         finally
         {
@@ -235,11 +236,11 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      void AttributesFactory<TKey, TValue>::SetEntryTimeToLive( ExpirationAction action, System::UInt32 timeToLive )
+      void AttributesFactory<TKey, TValue>::SetEntryTimeToLive( ExpirationAction action, TimeSpan timeToLive )
       {
         try
         {
-          m_nativeptr->get()->setEntryTimeToLive( static_cast<native::ExpirationAction::Action>( action ), timeToLive );
+          m_nativeptr->get()->setEntryTimeToLive( static_cast<native::ExpirationAction::Action>( action ), TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeToLive) );
         }
         finally
         {
@@ -248,11 +249,11 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      void AttributesFactory<TKey, TValue>::SetRegionIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout )
+      void AttributesFactory<TKey, TValue>::SetRegionIdleTimeout( ExpirationAction action, TimeSpan idleTimeout )
       {
         try
         {
-          m_nativeptr->get()->setRegionIdleTimeout( static_cast<native::ExpirationAction::Action>( action ), idleTimeout );
+          m_nativeptr->get()->setRegionIdleTimeout( static_cast<native::ExpirationAction::Action>( action ), TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(idleTimeout) );
         }
         finally
         {
@@ -261,11 +262,11 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      void AttributesFactory<TKey, TValue>::SetRegionTimeToLive( ExpirationAction action, System::UInt32 timeToLive )
+      void AttributesFactory<TKey, TValue>::SetRegionTimeToLive( ExpirationAction action, TimeSpan timeToLive )
       {
         try
         {
-          m_nativeptr->get()->setRegionTimeToLive( static_cast<native::ExpirationAction::Action>( action ), timeToLive );
+          m_nativeptr->get()->setRegionTimeToLive( static_cast<native::ExpirationAction::Action>( action ), TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeToLive) );
         }
         finally
         {

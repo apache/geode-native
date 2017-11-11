@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CRYPTOIMPL_SSL_H_
-#define GEODE_CRYPTOIMPL_SSL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * Ssl.hpp
- *
- *  Created on: 28-Apr-2010
- *      Author: ankurs
- */
+
+#pragma once
+
+#ifndef GEODE_CRYPTOIMPL_SSL_H_
+#define GEODE_CRYPTOIMPL_SSL_H_
+
+#include <chrono>
 
 #include <ace/INET_Addr.h>
 #include <ace/OS.h>
@@ -36,8 +32,8 @@ class Ssl {
  public:
   virtual ~Ssl(){};
   virtual int setOption(int, int, void*, int) = 0;
-  virtual int listen(ACE_INET_Addr, unsigned) = 0;
-  virtual int connect(ACE_INET_Addr, unsigned) = 0;
+  virtual int listen(ACE_INET_Addr, std::chrono::microseconds) = 0;
+  virtual int connect(ACE_INET_Addr, std::chrono::microseconds) = 0;
   virtual ssize_t recv(void*, size_t, const ACE_Time_Value*, size_t*) = 0;
   virtual ssize_t send(const void*, size_t, const ACE_Time_Value*, size_t*) = 0;
   virtual int getLocalAddr(ACE_Addr&) = 0;

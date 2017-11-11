@@ -650,23 +650,20 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
   } else {
     m_eventidmap.init(sysProp.notifyDupCheckLife());
   }
-  int millis = 100;
+
   if (m_HAenabled) {
+    std::chrono::milliseconds interval;
     if (m_poolHADM) {
       //  Set periodic ack interval in seconds.
-      millis = m_poolHADM->getSubscriptionAckInterval();
+      interval = m_poolHADM->getSubscriptionAckInterval();
 
     } else {
-      millis = sysProp.notifyAckInterval();
+      interval = sysProp.notifyAckInterval();
     }
-    if (millis < 100) millis = 100;
-    {
-      time_t secs = millis / 1000;
-      suseconds_t usecs = (millis % 1000) * 1000;
-      ACE_Time_Value duration(secs, usecs);
-      m_nextAckInc = duration;
+    if (interval < std::chrono::milliseconds(100)) {
+      interval = std::chrono::milliseconds(100);
     }
-
+    m_nextAckInc = ACE_Time_Value(interval);
     m_nextAck = ACE_OS::gettimeofday();
     m_nextAck += m_nextAckInc;
   }
@@ -675,13 +672,10 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
     m_locators = m_poolHADM->getLocators();
     if (m_locators->length() == 0) m_servers = m_poolHADM->getServers();
     if (m_locators->length() > 0) {
-      std::vector<std::string> locators;
       for (int item = 0; item < m_locators->length(); item++) {
         LOGDEBUG("ThinClientRedundancyManager::initialize: adding locator %s",
                  (*m_locators)[item]->asChar());
-        locators.push_back((*m_locators)[item]->asChar());
       }
-
     } else if (m_servers->length() > 0) {
       RandGen randgen;
       m_server = randgen(m_servers->length());
@@ -854,7 +848,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
       if (request.getMessageType() == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE) {
         // Timeout for this message type is set like so...
         reply.setTimeout(
-            dynamic_cast<ThinClientPoolDM*>(theHADM)->getReadTimeout() / 1000);
+            dynamic_cast<ThinClientPoolDM*>(theHADM)->getReadTimeout());
         opErr = theHADM->sendRequestToEP(request, reply, *iter);
       } else {
         opErr = theHADM->sendRequestToEP(request, reply, *iter);
@@ -1267,10 +1261,10 @@ void ThinClientRedundancyManager::startPeriodicAck() {
       "periodic ack task with id = %ld, notify-ack-interval = %ld, "
       "notify-dupcheck-life = %ld, periodic ack is %sabled",
       m_processEventIdMapTaskId,
-      m_poolHADM ? m_poolHADM->getSubscriptionAckInterval()
-                 : props.notifyAckInterval(),
-      m_poolHADM ? m_poolHADM->getSubscriptionMessageTrackingTimeout()
-                 : props.notifyDupCheckLife(),
+      (m_poolHADM ? m_poolHADM->getSubscriptionAckInterval()
+                 : props.notifyAckInterval()).count(),
+      (m_poolHADM ? m_poolHADM->getSubscriptionMessageTrackingTimeout()
+                 : props.notifyDupCheckLife()).count(),
       m_HAenabled ? "en" : "dis");
 }
 

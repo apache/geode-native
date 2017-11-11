@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_QUERY_H_
-#define GEODE_QUERY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_QUERY_H_
+#define GEODE_QUERY_H_
+
+#include <chrono>
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
@@ -50,11 +52,9 @@ class CPPCACHE_EXPORT Query {
   /**
    * Executes the OQL Query on the cache server and returns the results.
    *
-   * @param timeout The time (in seconds) to wait for query response, optional.
-   *        This should be less than or equal to 2^31/1000 i.e. 2147483.
+   * @param timeout The time to wait for query response, optional.
    *
-   * @throws IllegalArgumentException if timeout parameter is greater than
-   * 2^31/1000.
+   * @throws IllegalArgumentException If timeout exceeds 2147483647ms.
    * @throws QueryException if some query error occurred at the server.
    * @throws IllegalStateException if some error occurred.
    * @throws NotConnectedException if no java cache server is available.  For
@@ -66,18 +66,16 @@ class CPPCACHE_EXPORT Query {
    * ResultSet or a StructSet.
    */
   virtual SelectResultsPtr execute(
-      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
 
   /**
    * Executes the parameterized OQL Query on the cache server and returns the
    * results.
    *
    * @param paramList The query parameters list
-   * @param timeout The time (in seconds) to wait for query response, optional.
-   *       This should be less than or equal to 2^31/1000 i.e. 2147483.
+   * @param timeout The time to wait for query response, optional.
    *
-   * @throws IllegalArgumentException if timeout parameter is greater than
-   * 2^31/1000.
+   * @throws IllegalArgumentException If timeout exceeds 2147483647ms.
    * @throws QueryException if some query error occurred at the server.
    * @throws IllegalStateException if some error occurred.
    * @throws NotConnectedException if no java cache server is available.  For
@@ -91,7 +89,7 @@ class CPPCACHE_EXPORT Query {
 
   virtual SelectResultsPtr execute(
       CacheableVectorPtr paramList,
-      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
   /**
    * Get the query string provided when a new Query was created from a
    * QueryService.
@@ -117,6 +115,7 @@ class CPPCACHE_EXPORT Query {
    */
   virtual bool isCompiled() = 0;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

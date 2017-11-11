@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CACHETRANSACTIONMANAGER_H_
-#define GEODE_CACHETRANSACTIONMANAGER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,12 +15,14 @@
  * limitations under the License.
  */
 
-/* The specification of function behaviors is found in the corresponding .cpp
- * file.
- */
+#pragma once
+
+#ifndef GEODE_CACHETRANSACTIONMANAGER_H_
+#define GEODE_CACHETRANSACTIONMANAGER_H_
 
 //#### Warning: DO NOT directly include Region.hpp, include Cache.hpp instead.
 
+#include <chrono>
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 
@@ -155,14 +152,14 @@ class CPPCACHE_EXPORT CacheTransactionManager {
    *
    * @param transactionId
    *          the transaction to resume
-   * @param waitTimeInMilliSec
-   *          the maximum milliseconds to wait
+   * @param waitTime
+   *          the maximum time to wait
    * @return true if the transaction was resumed, false otherwise
    * @since 3.6.2
    * @see #tryResume(TransactionId)
    */
   virtual bool tryResume(TransactionIdPtr transactionId,
-                         int32_t waitTimeInMilliSec) = 0;
+                         std::chrono::milliseconds waitTime) = 0;
 
   /**
    * Reports the existence of a transaction for the given transactionId. This

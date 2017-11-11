@@ -27,7 +27,8 @@ TEST(ClientProxyMembershipIDFactoryTest, testCreate) {
   ClientProxyMembershipIDFactory factory("myDs");
 
   auto hostAddr = htonl(1);
-  auto id = factory.create("myHost", hostAddr, 2, "myClientID", 3);
+  auto id = factory.create("myHost", hostAddr, 2, "myClientID",
+                           std::chrono::seconds(3));
   ASSERT_NE(nullptr, id);
 
   EXPECT_EQ("myDs", id->getDSName());

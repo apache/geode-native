@@ -36,15 +36,15 @@
 #include "Properties.hpp"
 #include "Region.hpp"
 
-using namespace System;
-using namespace System::Collections::Generic;
-
 namespace Apache
 {
   namespace Geode
   {
     namespace Client
     {
+      using namespace System;
+      using namespace System::Collections::Generic;
+
       namespace native = apache::geode::client;
 
 			/// <summary>
@@ -125,7 +125,7 @@ namespace Apache
         /// the idleTimeout in seconds for entries in this region.
         /// </param>
         /// <returns>the instance of RegionFactory</returns>
-        RegionFactory^ SetEntryIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout );
+        RegionFactory^ SetEntryIdleTimeout( ExpirationAction action, TimeSpan idleTimeout );
 
         /// <summary>
         /// Sets the timeToLive expiration attributes for region entries for the next
@@ -138,7 +138,7 @@ namespace Apache
         /// the timeToLive in seconds for entries in this region.
         /// </param>
         /// <returns>the instance of RegionFactory</returns>
-        RegionFactory^ SetEntryTimeToLive( ExpirationAction action, System::UInt32 timeToLive );
+        RegionFactory^ SetEntryTimeToLive( ExpirationAction action, TimeSpan timeToLive );
 
         /// <summary>
         /// Sets the idleTimeout expiration attributes for the region itself for the
@@ -151,7 +151,7 @@ namespace Apache
         /// the idleTimeout in seconds for the region as a whole.
         /// </param>
         /// <returns>the instance of RegionFactory</returns>
-        RegionFactory^ SetRegionIdleTimeout( ExpirationAction action, System::UInt32 idleTimeout );
+        RegionFactory^ SetRegionIdleTimeout( ExpirationAction action, TimeSpan idleTimeout );
 
         /// <summary>
         /// Sets the timeToLive expiration attributes for the region itself for the
@@ -164,7 +164,7 @@ namespace Apache
         /// the timeToLive in seconds for the region as a whole.
         /// </param>
         /// <returns>the instance of RegionFactory</returns>
-        RegionFactory^ SetRegionTimeToLive( ExpirationAction action, System::UInt32 timeToLive );
+        RegionFactory^ SetRegionTimeToLive( ExpirationAction action, TimeSpan timeToLive );
 
 
         // PERSISTENCE

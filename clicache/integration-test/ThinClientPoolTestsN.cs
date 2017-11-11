@@ -74,25 +74,25 @@ namespace Apache.Geode.Client.UnitTests
       Client.Pool pool,
       string[] locators,
       string[] servers,
-      int freeConnectionTimeout,
-      int loadConditioningInterval,
+      TimeSpan freeConnectionTimeout,
+      TimeSpan loadConditioningInterval,
       int minConnections,
       int maxConnections,
       int retryAttempts,
-      int idleTimeout,
-      int pingInterval,
+      TimeSpan idleTimeout,
+      TimeSpan pingInterval,
       string name,
-      int readTimeout,
+      TimeSpan readTimeout,
       string serverGroup,
       int socketBufferSize,
       bool subscriptionEnabled,
-      int subscriptionMessageTrackingTimeout,
-      int subscriptionAckInterval,
+      TimeSpan subscriptionMessageTrackingTimeout,
+      TimeSpan subscriptionAckInterval,
       int subscriptionRedundancy,
-      int statisticInterval,
+      TimeSpan statisticInterval,
       int threadLocalConnections,
       bool prSingleHopEnabled,
-      int updateLocatorListInterval
+      TimeSpan updateLocatorListInterval
     )
     {
       if (pool == null)
@@ -272,14 +272,14 @@ namespace Apache.Geode.Client.UnitTests
 
       // ARB:
       // TODO: check if server list contains the two endpoints (currently using null argument for servers list)
-      bool check1 = checkPoolAttributes(poolOfRegion1, locators, null, 12345, 23456, 3, 7, 3, 5555, 12345,
-        "test_pool_1", 23456, "ServerGroup1", 32768, true, 900123, 567, 0, 10123, 5, true, 250001);
+      bool check1 = checkPoolAttributes(poolOfRegion1, locators, null, TimeSpan.FromMilliseconds(12345), TimeSpan.FromMilliseconds(23456), 3, 7, 3, TimeSpan.FromMilliseconds(5555), TimeSpan.FromMilliseconds(12345),
+        "test_pool_1", TimeSpan.FromMilliseconds(23456), "ServerGroup1", 32768, true, TimeSpan.FromMilliseconds(900123), TimeSpan.FromMilliseconds(567), 0, TimeSpan.FromMilliseconds(10123), 5, true, TimeSpan.FromMilliseconds(250001));
 
-      bool check2 = checkPoolAttributes(poolOfRegion2, null, servers, 23456, 34567, 2, 8, 5, 6666, 23456,
-        "test_pool_2", 34567, "ServerGroup2", 65536, false, 800222, 678, 1, 20345, 3, false, 5000);
+      bool check2 = checkPoolAttributes(poolOfRegion2, null, servers, TimeSpan.FromMilliseconds(23456), TimeSpan.FromMilliseconds(34567), 2, 8, 5, TimeSpan.FromMilliseconds(6666), TimeSpan.FromMilliseconds(23456),
+        "test_pool_2", TimeSpan.FromMilliseconds(34567), "ServerGroup2", 65536, false, TimeSpan.FromMilliseconds(800222), TimeSpan.FromMilliseconds(678), 1, TimeSpan.FromMilliseconds(20345), 3, false, TimeSpan.FromMilliseconds(5000));
 
-      bool check3 = checkPoolAttributes(poolOfSubRegion, null, servers, 23456, 34567, 2, 8, 5, 6666, 23456,
-        "test_pool_2", 34567, "ServerGroup2", 65536, false, 800222, 678, 1, 20345, 3, false, 5000);
+      bool check3 = checkPoolAttributes(poolOfSubRegion, null, servers, TimeSpan.FromMilliseconds(23456), TimeSpan.FromMilliseconds(34567), 2, 8, 5, TimeSpan.FromMilliseconds(6666), TimeSpan.FromMilliseconds(23456),
+        "test_pool_2", TimeSpan.FromMilliseconds(34567), "ServerGroup2", 65536, false, TimeSpan.FromMilliseconds(800222), TimeSpan.FromMilliseconds(678), 1, TimeSpan.FromMilliseconds(20345), 3, false, TimeSpan.FromMilliseconds(5000));
 
       Assert.IsTrue(check1, "Attribute check 1 failed");
       Assert.IsTrue(check2, "Attribute check 2 failed");
@@ -361,43 +361,43 @@ namespace Apache.Geode.Client.UnitTests
       CacheHelper.Init();
 
       PoolFactory factory = CacheHelper.DCache.GetPoolManager().CreateFactory();
-      factory.SetFreeConnectionTimeout(10000);
-      factory.SetLoadConditioningInterval(1);
+      factory.SetFreeConnectionTimeout(TimeSpan.FromSeconds(10000));
+      factory.SetLoadConditioningInterval(TimeSpan.FromSeconds(1));
       factory.SetSocketBufferSize(1024);
-      factory.SetReadTimeout(10);
+      factory.SetReadTimeout(TimeSpan.FromSeconds(10));
       factory.SetMinConnections(2);
       factory.SetMaxConnections(5);
-      factory.SetIdleTimeout(5);
+      factory.SetIdleTimeout(TimeSpan.FromSeconds(5));
       factory.SetRetryAttempts(5);
-      factory.SetPingInterval(1);
-      factory.SetUpdateLocatorListInterval(122000);
-      factory.SetStatisticInterval(1);
+      factory.SetPingInterval(TimeSpan.FromSeconds(1));
+      factory.SetUpdateLocatorListInterval(TimeSpan.FromMilliseconds(122000));
+      factory.SetStatisticInterval(TimeSpan.FromSeconds(1));
       factory.SetServerGroup("ServerGroup1");
       factory.SetSubscriptionEnabled(true);
       factory.SetSubscriptionRedundancy(1);
-      factory.SetSubscriptionMessageTrackingTimeout(5);
-      factory.SetSubscriptionAckInterval(1);
+      factory.SetSubscriptionMessageTrackingTimeout(TimeSpan.FromSeconds(5));
+      factory.SetSubscriptionAckInterval(TimeSpan.FromSeconds(1));
       factory.AddLocator("localhost", CacheHelper.LOCATOR_PORT_1);
       factory.SetPRSingleHopEnabled(false);
 
       Pool pool = factory.Create(poolName, CacheHelper.DCache);
 
-      Assert.AreEqual(10000, pool.FreeConnectionTimeout, "FreeConnectionTimeout");
-      Assert.AreEqual(1, pool.LoadConditioningInterval, "LoadConditioningInterval");
+      Assert.AreEqual(TimeSpan.FromSeconds(10000), pool.FreeConnectionTimeout, "FreeConnectionTimeout");
+      Assert.AreEqual(TimeSpan.FromSeconds(1), pool.LoadConditioningInterval, "LoadConditioningInterval");
       Assert.AreEqual(1024, pool.SocketBufferSize, "SocketBufferSize");
-      Assert.AreEqual(10, pool.ReadTimeout, "ReadTimeout");
+      Assert.AreEqual(TimeSpan.FromSeconds(10), pool.ReadTimeout, "ReadTimeout");
       Assert.AreEqual(2, pool.MinConnections, "MinConnections");
       Assert.AreEqual(5, pool.MaxConnections, "MaxConnections");
-      Assert.AreEqual(5, pool.IdleTimeout, "IdleTimeout");
+      Assert.AreEqual(TimeSpan.FromSeconds(5), pool.IdleTimeout, "IdleTimeout");
       Assert.AreEqual(5, pool.RetryAttempts, "RetryAttempts");
-      Assert.AreEqual(1, pool.PingInterval, "PingInterval");
-      Assert.AreEqual(122000, pool.UpdateLocatorListInterval, "UpdateLocatorListInterval");
-      Assert.AreEqual(1, pool.StatisticInterval, "StatisticInterval");
+      Assert.AreEqual(TimeSpan.FromSeconds(1), pool.PingInterval, "PingInterval");
+      Assert.AreEqual(TimeSpan.FromMilliseconds(122000), pool.UpdateLocatorListInterval, "UpdateLocatorListInterval");
+      Assert.AreEqual(TimeSpan.FromSeconds(1), pool.StatisticInterval, "StatisticInterval");
       Assert.AreEqual("ServerGroup1", pool.ServerGroup, "ServerGroup");
       Assert.AreEqual(true, pool.SubscriptionEnabled, "SubscriptionEnabled");
       Assert.AreEqual(1, pool.SubscriptionRedundancy, "SubscriptionRedundancy");
-      Assert.AreEqual(5, pool.SubscriptionMessageTrackingTimeout, "SubscriptionMessageTrackingTimeout");
-      Assert.AreEqual(1, pool.SubscriptionAckInterval, "SubscriptionAckInterval");
+      Assert.AreEqual(TimeSpan.FromSeconds(5), pool.SubscriptionMessageTrackingTimeout, "SubscriptionMessageTrackingTimeout");
+      Assert.AreEqual(TimeSpan.FromSeconds(1), pool.SubscriptionAckInterval, "SubscriptionAckInterval");
       Assert.AreEqual(false, pool.PRSingleHopEnabled, "PRSingleHopEnabled");
     }
 
@@ -414,22 +414,22 @@ namespace Apache.Geode.Client.UnitTests
       Pool pool = CacheHelper.DCache.GetPoolManager().Find(poolName);
 
       Assert.AreEqual("clientPool", pool.Name, "Pool Name");
-      Assert.AreEqual(10000, pool.FreeConnectionTimeout, "FreeConnectionTimeout");
-      Assert.AreEqual(1, pool.LoadConditioningInterval, "LoadConditioningInterval");
+      Assert.AreEqual(TimeSpan.FromSeconds(10000), pool.FreeConnectionTimeout, "FreeConnectionTimeout");
+      Assert.AreEqual(TimeSpan.FromSeconds(1), pool.LoadConditioningInterval, "LoadConditioningInterval");
       Assert.AreEqual(1024, pool.SocketBufferSize, "SocketBufferSize");
-      Assert.AreEqual(10, pool.ReadTimeout, "ReadTimeout");
+      Assert.AreEqual(TimeSpan.FromSeconds(10), pool.ReadTimeout, "ReadTimeout");
       Assert.AreEqual(2, pool.MinConnections, "MinConnections");
       Assert.AreEqual(5, pool.MaxConnections, "MaxConnections");
-      Assert.AreEqual(5, pool.IdleTimeout, "IdleTimeout");
+      Assert.AreEqual(TimeSpan.FromSeconds(5), pool.IdleTimeout, "IdleTimeout");
       Assert.AreEqual(5, pool.RetryAttempts, "RetryAttempts");
-      Assert.AreEqual(1, pool.PingInterval, "PingInterval");
-      Assert.AreEqual(25000, pool.UpdateLocatorListInterval, "UpdateLocatorListInterval");
-      Assert.AreEqual(1, pool.StatisticInterval, "StatisticInterval");
+      Assert.AreEqual(TimeSpan.FromSeconds(1), pool.PingInterval, "PingInterval");
+      Assert.AreEqual(TimeSpan.FromMilliseconds(25000), pool.UpdateLocatorListInterval, "UpdateLocatorListInterval");
+      Assert.AreEqual(TimeSpan.FromSeconds(1), pool.StatisticInterval, "StatisticInterval");
       Assert.AreEqual("ServerGroup1", pool.ServerGroup, "ServerGroup");
       Assert.AreEqual(true, pool.SubscriptionEnabled, "SubscriptionEnabled");
       Assert.AreEqual(1, pool.SubscriptionRedundancy, "SubscriptionRedundancy");
-      Assert.AreEqual(5, pool.SubscriptionMessageTrackingTimeout, "SubscriptionMessageTrackingTimeout");
-      Assert.AreEqual(1, pool.SubscriptionAckInterval, "SubscriptionAckInterval");
+      Assert.AreEqual(TimeSpan.FromSeconds(5), pool.SubscriptionMessageTrackingTimeout, "SubscriptionMessageTrackingTimeout");
+      Assert.AreEqual(TimeSpan.FromSeconds(1), pool.SubscriptionAckInterval, "SubscriptionAckInterval");
       Assert.AreEqual(false, pool.PRSingleHopEnabled, "PRSingleHopEnabled");
     }
 
