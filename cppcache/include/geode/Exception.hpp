@@ -60,7 +60,7 @@ class CPPCACHE_EXPORT Exception {
   Exception(const char* msg1, const char* msg2 = nullptr,
             bool forceTrace = false, const ExceptionPtr& cause = nullptr);
 
-  inline explicit Exception(const std::string& msg1);
+  explicit Exception(const std::string& msg1);
 
   /** Creates an exception as a copy of the given other exception.
    * @param  other the original exception.
