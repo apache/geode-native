@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_EXCEPTIONTYPES_H_
-#define GEODE_EXCEPTIONTYPES_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_EXCEPTIONTYPES_H_
+#define GEODE_EXCEPTIONTYPES_H_
 
 /**
  * @file
@@ -43,7 +43,7 @@ namespace client {
     }                                                                   \
     virtual ~x() {}                                                     \
     virtual const char* getName() const { return _exception_name_##x; } \
-    virtual void raise() { throw * this; }                              \
+    virtual void raise() { throw *this; }                               \
                                                                         \
    protected:                                                           \
     x(const CacheableStringPtr& message, const StackTracePtr& stack,    \

@@ -64,7 +64,7 @@ Exception::Exception(const char* msg1, const char* msg2, bool forceTrace,
   m_message = CacheableString::createNoCopy(msg, static_cast<int32_t>(len));
 }
 
-Exception::Exception(const std::string& msg1) { Exception(msg1.c_str()); }
+Exception::Exception(const std::string& msg1) : Exception(msg1.c_str()) {}
 
 Exception::~Exception() {}
 
@@ -112,11 +112,6 @@ size_t Exception::getStackTrace(char* buffer, size_t maxLength) const {
 }
 
 #endif
-
-Exception::Exception(const Exception& other) noexcept
-    : m_message(other.m_message),
-      m_stack(other.m_stack),
-      m_cause(other.m_cause) {}
 
 Exception::Exception(const CacheableStringPtr& message,
                      const StackTracePtr& stack, const ExceptionPtr& cause)

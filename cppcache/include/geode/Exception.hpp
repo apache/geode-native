@@ -60,13 +60,14 @@ class CPPCACHE_EXPORT Exception {
   Exception(const char* msg1, const char* msg2 = nullptr,
             bool forceTrace = false, const ExceptionPtr& cause = nullptr);
 
-  Exception(const std::string& msg1);
+  inline explicit Exception(const std::string& msg1);
 
   /** Creates an exception as a copy of the given other exception.
    * @param  other the original exception.
    *
    **/
-  Exception(const Exception& other) noexcept;
+  Exception(const Exception& other) noexcept = default;
+  Exception(Exception&& other) noexcept = default;
 
   /** Create a clone of this exception. */
   virtual Exception* clone() const;
