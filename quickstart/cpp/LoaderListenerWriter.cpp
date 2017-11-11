@@ -49,7 +49,8 @@ using namespace apache::geode::client;
 // The LoaderListenerWriter QuickStart example.
 int main(int argc, char** argv) {
   try {
-    std::shared_ptr<CacheFactory> cacheFactory = CacheFactory::createCacheFactory();
+    std::shared_ptr<CacheFactory> cacheFactory =
+        CacheFactory::createCacheFactory();
 
     // Create a Geode Cache with the "clientLoaderListenerWriter.xml" Cache
     // XML file.
@@ -69,10 +70,12 @@ int main(int argc, char** argv) {
     // Plugin the SimpleCacheLoader, SimpleCacheListener and SimpleCacheWrite to
     // the Region.
     auto attrMutatorPtr = regionPtr->getAttributesMutator();
-    attrMutatorPtr->setCacheLoader(std::shared_ptr<CacheLoader>(new SimpleCacheLoader()));
+    attrMutatorPtr->setCacheLoader(
+        std::shared_ptr<CacheLoader>(new SimpleCacheLoader()));
     attrMutatorPtr->setCacheListener(
         std::shared_ptr<CacheListener>(new SimpleCacheListener()));
-    attrMutatorPtr->setCacheWriter(std::shared_ptr<CacheWriter>(new SimpleCacheWriter()));
+    attrMutatorPtr->setCacheWriter(
+        std::shared_ptr<CacheWriter>(new SimpleCacheWriter()));
 
     LOGINFO("Attached the simple plugins on the Region");
 

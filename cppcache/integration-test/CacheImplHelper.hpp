@@ -46,9 +46,9 @@ class CacheImplHelper : public CacheHelper {
   CacheImplHelper(const std::shared_ptr<Properties>& configPtr = nullptr)
       : CacheHelper(configPtr) {}
 
-  virtual void createRegion(const char* regionName, std::shared_ptr<Region>& regionPtr,
-                            uint32_t size, bool ack = false,
-                            bool cacheServerClient = false,
+  virtual void createRegion(const char* regionName,
+                            std::shared_ptr<Region>& regionPtr, uint32_t size,
+                            bool ack = false, bool cacheServerClient = false,
                             bool cacheEnabled = true) {
     std::shared_ptr<RegionAttributes> regAttrs;
     AttributesFactory attrFactory;

@@ -54,7 +54,8 @@ bool StructSetImpl::isModifiable() const { return false; }
 
 int32_t StructSetImpl::size() const { return m_structVector->size(); }
 
-const std::shared_ptr<Serializable> StructSetImpl::operator[](int32_t index) const {
+const std::shared_ptr<Serializable> StructSetImpl::operator[](
+    int32_t index) const {
   if (index >= m_structVector->size()) {
     throw IllegalArgumentException("Index out of bounds");
   }

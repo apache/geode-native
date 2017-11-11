@@ -30,9 +30,10 @@
 using namespace apache::geode::client;
 
 ThinClientPoolRegion::ThinClientPoolRegion(
-    const std::string& name, CacheImpl* cache, const std::shared_ptr<RegionInternal>& rPtr,
-    const std::shared_ptr<RegionAttributes>& attributes, const std::shared_ptr<CacheStatistics>& stats,
-    bool shared)
+    const std::string& name, CacheImpl* cache,
+    const std::shared_ptr<RegionInternal>& rPtr,
+    const std::shared_ptr<RegionAttributes>& attributes,
+    const std::shared_ptr<CacheStatistics>& stats, bool shared)
     : ThinClientRegion(name, cache, rPtr, attributes, stats, shared) {}
 
 ThinClientPoolRegion::~ThinClientPoolRegion() { m_tcrdm = nullptr; }

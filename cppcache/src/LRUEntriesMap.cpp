@@ -110,7 +110,8 @@ LRUEntriesMap::~LRUEntriesMap() { delete m_action; }
  */
 GfErrType LRUEntriesMap::create(const std::shared_ptr<CacheableKey>& key,
                                 const std::shared_ptr<Cacheable>& newValue,
-                                std::shared_ptr<MapEntryImpl>& me, std::shared_ptr<Cacheable>& oldValue,
+                                std::shared_ptr<MapEntryImpl>& me,
+                                std::shared_ptr<Cacheable>& oldValue,
                                 int updateCount, int destroyTracker,
                                 std::shared_ptr<VersionTag> versionTag) {
   MapSegment* segmentRPtr = segmentFor(key);
@@ -195,7 +196,8 @@ void LRUEntriesMap::processLRU(int32_t numEntriesToEvict) {
 }
 
 GfErrType LRUEntriesMap::invalidate(const std::shared_ptr<CacheableKey>& key,
-                                    std::shared_ptr<MapEntryImpl>& me, std::shared_ptr<Cacheable>& oldValue,
+                                    std::shared_ptr<MapEntryImpl>& me,
+                                    std::shared_ptr<Cacheable>& oldValue,
                                     std::shared_ptr<VersionTag> versionTag) {
   int64_t newSize = 0;
   MapSegment* segmentRPtr = segmentFor(key);
@@ -248,9 +250,11 @@ GfErrType LRUEntriesMap::invalidate(const std::shared_ptr<CacheableKey>& key,
 }
 
 GfErrType LRUEntriesMap::put(const std::shared_ptr<CacheableKey>& key,
-                             const std::shared_ptr<Cacheable>& newValue, std::shared_ptr<MapEntryImpl>& me,
-                             std::shared_ptr<Cacheable>& oldValue, int updateCount,
-                             int destroyTracker, std::shared_ptr<VersionTag> versionTag,
+                             const std::shared_ptr<Cacheable>& newValue,
+                             std::shared_ptr<MapEntryImpl>& me,
+                             std::shared_ptr<Cacheable>& oldValue,
+                             int updateCount, int destroyTracker,
+                             std::shared_ptr<VersionTag> versionTag,
                              bool& isUpdate, DataInput* delta) {
   MapSegment* segmentRPtr = segmentFor(key);
   GF_D_ASSERT(segmentRPtr != nullptr);
@@ -323,7 +327,8 @@ GfErrType LRUEntriesMap::put(const std::shared_ptr<CacheableKey>& key,
         std::shared_ptr<Cacheable> tmpValue;
         segmentRPtr->getEntry(key, mePtr, tmpValue);
         mePtr->getLRUProperties().clearEvicted();
-        m_lruList.appendEntry(std::shared_ptr<MapEntryImpl>(mePtr->getImplPtr()));
+        m_lruList.appendEntry(
+            std::shared_ptr<MapEntryImpl>(mePtr->getImplPtr()));
         me = mePtr;
       }
     }
@@ -364,7 +369,8 @@ GfErrType LRUEntriesMap::put(const std::shared_ptr<CacheableKey>& key,
  * as recently used. Note, getEntry, entries, and values do not mark entries
  * as recently used.
  */
-bool LRUEntriesMap::get(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<Cacheable>& returnPtr,
+bool LRUEntriesMap::get(const std::shared_ptr<CacheableKey>& key,
+                        std::shared_ptr<Cacheable>& returnPtr,
                         std::shared_ptr<MapEntryImpl>& me) {
   char logkey[2048];
   key->logString(logkey, 2040);
@@ -444,8 +450,10 @@ bool LRUEntriesMap::get(const std::shared_ptr<CacheableKey>& key, std::shared_pt
 }
 
 GfErrType LRUEntriesMap::remove(const std::shared_ptr<CacheableKey>& key,
-                                std::shared_ptr<Cacheable>& result, std::shared_ptr<MapEntryImpl>& me,
-                                int updateCount, std::shared_ptr<VersionTag> versionTag,
+                                std::shared_ptr<Cacheable>& result,
+                                std::shared_ptr<MapEntryImpl>& me,
+                                int updateCount,
+                                std::shared_ptr<VersionTag> versionTag,
                                 bool afterRemote) {
   MapSegment* segmentRPtr = segmentFor(key);
   bool isEntryFound = true;
@@ -497,8 +505,9 @@ void LRUEntriesMap::updateMapSize(int64_t size) {
   }
 }
 
-std::shared_ptr<Cacheable> LRUEntriesMap::getFromDisk(const std::shared_ptr<CacheableKey>& key,
-                                        std::shared_ptr<MapEntryImpl>& me) const {
+std::shared_ptr<Cacheable> LRUEntriesMap::getFromDisk(
+    const std::shared_ptr<CacheableKey>& key,
+    std::shared_ptr<MapEntryImpl>& me) const {
   void* persistenceInfo = me->getLRUProperties().getPersistenceInfo();
   std::shared_ptr<Cacheable> tmpObj;
   try {

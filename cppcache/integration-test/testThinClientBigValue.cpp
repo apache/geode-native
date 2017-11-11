@@ -327,7 +327,8 @@ DUNIT_TASK(CLIENT2, VerifyManyPutsInt64)
       // std::shared_ptr<CacheableKey> key =
       // CacheableKey::create(CacheableInt64::create(index
       // * index * index));
-      std::shared_ptr<CacheableKey> key = CacheableInt64::create(index * index * index);
+      std::shared_ptr<CacheableKey> key =
+          CacheableInt64::create(index * index * index);
       auto entry = regPtr->getEntry(key);
       ASSERT(entry != nullptr, "expected non-null entry");
       auto valPtr =

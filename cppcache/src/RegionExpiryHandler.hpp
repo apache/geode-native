@@ -47,8 +47,8 @@ class CPPCACHE_EXPORT RegionExpiryHandler : public ACE_Event_Handler {
   /**
    * Constructor
    */
-  RegionExpiryHandler(std::shared_ptr<RegionInternal>& rptr, ExpirationAction::Action action,
-                      uint32_t duration);
+  RegionExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
+                      ExpirationAction::Action action, uint32_t duration);
 
   /** This handler object will be registered with the Timer Queue.
    *  When the timer expires the handle_timeout is invoked.

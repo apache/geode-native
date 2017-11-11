@@ -83,11 +83,16 @@ DUNIT_TASK(CLIENT1, StepOne)
 
     QueryHelper* qh = &QueryHelper::getHelper();
     std::shared_ptr<CacheableString> cstr[4] = {
-        std::shared_ptr<CacheableString>(CacheableString::create((const char*)"Taaa", 4)),
-        std::shared_ptr<CacheableString>(CacheableString::create((const char*)"Tbbb", 4)),
-        std::shared_ptr<CacheableString>(CacheableString::create((const char*)"Tccc", 4)),
-        std::shared_ptr<CacheableString>(CacheableString::create((const char*)"Tddd", 4))};
-    std::shared_ptr<CacheableStringArray> nm = CacheableStringArray::create(cstr, 4);
+        std::shared_ptr<CacheableString>(
+            CacheableString::create((const char*)"Taaa", 4)),
+        std::shared_ptr<CacheableString>(
+            CacheableString::create((const char*)"Tbbb", 4)),
+        std::shared_ptr<CacheableString>(
+            CacheableString::create((const char*)"Tccc", 4)),
+        std::shared_ptr<CacheableString>(
+            CacheableString::create((const char*)"Tddd", 4))};
+    std::shared_ptr<CacheableStringArray> nm =
+        CacheableStringArray::create(cstr, 4);
     qh->populatePortfolioData(regptr, 4, 3, 2, nm);
     qh->populatePositionData(subregPtr, 4, 3);
 
@@ -98,8 +103,7 @@ END_TASK(StepOne)
 DUNIT_TASK(CLIENT1, StepThree)
   {
     try {
-      auto qs =
-          getHelper()->cachePtr->getQueryService("__TEST_POOL1__");
+      auto qs = getHelper()->cachePtr->getQueryService("__TEST_POOL1__");
 
       char* qryStr = (char*)"select * from /Portfolios p where p.ID < 3";
       auto qry = qs->newQuery(qryStr);

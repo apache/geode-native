@@ -149,7 +149,8 @@ void initClientWithIntrest(int ClientIdx, std::shared_ptr<OperMonitor>& mon) {
   regPtr0->registerRegex(testRegex[1], false);
 }
 
-void initClientWithIntrest2(int ClientIdx, std::shared_ptr<OperMonitor>& monitor1,
+void initClientWithIntrest2(int ClientIdx,
+                            std::shared_ptr<OperMonitor>& monitor1,
                             std::shared_ptr<OperMonitor>& monitor2) {
   initClientAndTwoRegionsAndTwoPools(0, ClientIdx, 60);
   if (monitor1 == nullptr) {

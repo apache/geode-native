@@ -86,7 +86,7 @@ void Cache::close(bool keepalive) {
   } catch (...) {
   }
 }
- std::shared_ptr<Region> Cache::getRegion(const char* path) {
+std::shared_ptr<Region> Cache::getRegion(const char* path) {
   LOGDEBUG("Cache::getRegion");
   std::shared_ptr<Region> result;
   m_cacheImpl->getRegion(path, result);

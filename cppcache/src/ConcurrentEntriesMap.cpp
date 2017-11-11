@@ -70,12 +70,12 @@ void ConcurrentEntriesMap::clear() {
 
 ConcurrentEntriesMap::~ConcurrentEntriesMap() { delete[] m_segments; }
 
-GfErrType ConcurrentEntriesMap::create(const std::shared_ptr<CacheableKey>& key,
-                                       const std::shared_ptr<Cacheable>& newValue,
-                                       std::shared_ptr<MapEntryImpl>& me,
-                                       std::shared_ptr<Cacheable>& oldValue, int updateCount,
-                                       int destroyTracker,
-                                       std::shared_ptr<VersionTag> versionTag) {
+GfErrType ConcurrentEntriesMap::create(
+    const std::shared_ptr<CacheableKey>& key,
+    const std::shared_ptr<Cacheable>& newValue,
+    std::shared_ptr<MapEntryImpl>& me, std::shared_ptr<Cacheable>& oldValue,
+    int updateCount, int destroyTracker,
+    std::shared_ptr<VersionTag> versionTag) {
   GfErrType err = GF_NOERR;
   if ((err = segmentFor(key)->create(key, newValue, me, oldValue, updateCount,
                                      destroyTracker, versionTag)) == GF_NOERR &&
@@ -85,10 +85,10 @@ GfErrType ConcurrentEntriesMap::create(const std::shared_ptr<CacheableKey>& key,
   return err;
 }
 
-GfErrType ConcurrentEntriesMap::invalidate(const std::shared_ptr<CacheableKey>& key,
-                                           std::shared_ptr<MapEntryImpl>& me,
-                                           std::shared_ptr<Cacheable>& oldValue,
-                                           std::shared_ptr<VersionTag> versionTag) {
+GfErrType ConcurrentEntriesMap::invalidate(
+    const std::shared_ptr<CacheableKey>& key, std::shared_ptr<MapEntryImpl>& me,
+    std::shared_ptr<Cacheable>& oldValue,
+    std::shared_ptr<VersionTag> versionTag) {
   bool isTokenAdded = false;
   GfErrType err =
       segmentFor(key)->invalidate(key, me, oldValue, versionTag, isTokenAdded);
@@ -100,10 +100,11 @@ GfErrType ConcurrentEntriesMap::invalidate(const std::shared_ptr<CacheableKey>& 
 
 GfErrType ConcurrentEntriesMap::put(const std::shared_ptr<CacheableKey>& key,
                                     const std::shared_ptr<Cacheable>& newValue,
-                                    std::shared_ptr<MapEntryImpl>& me, std::shared_ptr<Cacheable>& oldValue,
+                                    std::shared_ptr<MapEntryImpl>& me,
+                                    std::shared_ptr<Cacheable>& oldValue,
                                     int updateCount, int destroyTracker,
-                                    std::shared_ptr<VersionTag> versionTag, bool& isUpdate,
-                                    DataInput* delta) {
+                                    std::shared_ptr<VersionTag> versionTag,
+                                    bool& isUpdate, DataInput* delta) {
   GfErrType err = GF_NOERR;
   if ((err = segmentFor(key)->put(key, newValue, me, oldValue, updateCount,
                                   destroyTracker, isUpdate, versionTag,
@@ -116,7 +117,8 @@ GfErrType ConcurrentEntriesMap::put(const std::shared_ptr<CacheableKey>& key,
   return err;
 }
 
-bool ConcurrentEntriesMap::get(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<Cacheable>& value,
+bool ConcurrentEntriesMap::get(const std::shared_ptr<CacheableKey>& key,
+                               std::shared_ptr<Cacheable>& value,
                                std::shared_ptr<MapEntryImpl>& me) {
   return segmentFor(key)->getEntry(key, me, value);
 }
@@ -129,7 +131,8 @@ void ConcurrentEntriesMap::getEntry(const std::shared_ptr<CacheableKey>& key,
 
 GfErrType ConcurrentEntriesMap::remove(const std::shared_ptr<CacheableKey>& key,
                                        std::shared_ptr<Cacheable>& result,
-                                       std::shared_ptr<MapEntryImpl>& me, int updateCount,
+                                       std::shared_ptr<MapEntryImpl>& me,
+                                       int updateCount,
                                        std::shared_ptr<VersionTag> versionTag,
                                        bool afterRemote) {
   bool isEntryFound = true;
@@ -142,26 +145,30 @@ GfErrType ConcurrentEntriesMap::remove(const std::shared_ptr<CacheableKey>& key,
   return err;
 }
 
-bool ConcurrentEntriesMap::containsKey(const std::shared_ptr<CacheableKey>& key) const {
+bool ConcurrentEntriesMap::containsKey(
+    const std::shared_ptr<CacheableKey>& key) const {
   //  MapSegment* segment = segmentFor( key );
   return segmentFor(key)->containsKey(key);
 }
 
-void ConcurrentEntriesMap::getKeys(std::vector<std::shared_ptr<CacheableKey>>& result) const {
+void ConcurrentEntriesMap::getKeys(
+    std::vector<std::shared_ptr<CacheableKey>>& result) const {
   result.reserve(this->size());
   for (int index = 0; index < m_concurrency; ++index) {
     m_segments[index].getKeys(result);
   }
 }
 
-void ConcurrentEntriesMap::getEntries(std::vector<std::shared_ptr<RegionEntry>>& result) const {
+void ConcurrentEntriesMap::getEntries(
+    std::vector<std::shared_ptr<RegionEntry>>& result) const {
   result.reserve(this->size());
   for (int index = 0; index < m_concurrency; ++index) {
     m_segments[index].getEntries(result);
   }
 }
 
-void ConcurrentEntriesMap::getValues(std::vector<std::shared_ptr<Cacheable>>& result) const {
+void ConcurrentEntriesMap::getValues(
+    std::vector<std::shared_ptr<Cacheable>>& result) const {
   result.reserve(this->size());
   for (int index = 0; index < m_concurrency; ++index) {
     m_segments[index].getValues(result);
@@ -170,11 +177,10 @@ void ConcurrentEntriesMap::getValues(std::vector<std::shared_ptr<Cacheable>>& re
 
 uint32_t ConcurrentEntriesMap::size() const { return m_size; }
 
-int ConcurrentEntriesMap::addTrackerForEntry(const std::shared_ptr<CacheableKey>& key,
-                                             std::shared_ptr<Cacheable>& oldValue,
-                                             bool addIfAbsent,
-                                             bool failIfPresent,
-                                             bool incUpdateCount) {
+int ConcurrentEntriesMap::addTrackerForEntry(
+    const std::shared_ptr<CacheableKey>& key,
+    std::shared_ptr<Cacheable>& oldValue, bool addIfAbsent, bool failIfPresent,
+    bool incUpdateCount) {
   // This function is disabled if concurrency checks are enabled. The versioning
   // changes takes care of the version and no need for tracking the entry
   if (m_concurrencyChecksEnabled) return -1;
@@ -182,7 +188,8 @@ int ConcurrentEntriesMap::addTrackerForEntry(const std::shared_ptr<CacheableKey>
                                              failIfPresent, incUpdateCount);
 }
 
-void ConcurrentEntriesMap::removeTrackerForEntry(const std::shared_ptr<CacheableKey>& key) {
+void ConcurrentEntriesMap::removeTrackerForEntry(
+    const std::shared_ptr<CacheableKey>& key) {
   // This function is disabled if concurrency checks are enabled. The versioning
   // changes takes care of the version and no need for tracking the entry
   if (m_concurrencyChecksEnabled) return;
@@ -230,12 +237,14 @@ void ConcurrentEntriesMap::reapTombstones(
     m_segments[index].reapTombstones(gcVersions);
   }
 }
-void ConcurrentEntriesMap::reapTombstones(std::shared_ptr<CacheableHashSet> removedKeys) {
+void ConcurrentEntriesMap::reapTombstones(
+    std::shared_ptr<CacheableHashSet> removedKeys) {
   for (int index = 0; index < m_concurrency; ++index) {
     m_segments[index].reapTombstones(removedKeys);
   }
 }
 GfErrType ConcurrentEntriesMap::isTombstone(std::shared_ptr<CacheableKey>& key,
-                                            std::shared_ptr<MapEntryImpl>& me, bool& result) {
+                                            std::shared_ptr<MapEntryImpl>& me,
+                                            bool& result) {
   return segmentFor(key)->isTombstone(key, me, result);
 }

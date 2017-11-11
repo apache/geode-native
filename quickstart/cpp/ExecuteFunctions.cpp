@@ -50,14 +50,14 @@ int main(int argc, char** argv) {
 
     // Create a Geode Cache.
     auto cachePtr = cacheFactory->setSubscriptionEnabled(true)
-                            ->addServer("localhost", 50505)
-                            ->addServer("localhost", 40404)
-                            ->create();
+                        ->addServer("localhost", 50505)
+                        ->addServer("localhost", 40404)
+                        ->create();
     LOGINFO("Created the Geode Cache");
 
     // Create the example Region Programmatically
     auto regPtr0 = cachePtr->createRegionFactory(CACHING_PROXY)
-                            ->create("partition_region");
+                       ->create("partition_region");
     LOGINFO("Created the Region");
 
     regPtr0->registerAllKeys();
@@ -84,7 +84,8 @@ int main(int argc, char** argv) {
 
     LOGINFO("test data independent function with result on one server");
     std::shared_ptr<Cacheable> args = routingObj;
-    auto exc = FunctionService::onServer((std::shared_ptr<RegionService>)cachePtr);
+    auto exc =
+        FunctionService::onServer((std::shared_ptr<RegionService>)cachePtr);
     std::shared_ptr<CacheableVector> executeFunctionResult =
         exc->withArgs(args)->execute(getFuncIName)->getResult();
     if (executeFunctionResult == nullptr) {

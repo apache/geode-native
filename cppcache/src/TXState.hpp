@@ -45,8 +45,10 @@ class TXState {
   bool isReplay() { return m_replay; }
   bool isPrepared() { return m_prepared; }
   void setPrepared() { m_prepared = true; }
-  void recordTXOperation(ServerRegionOperation op, const char* regionName,
-                         std::shared_ptr<CacheableKey> key, std::shared_ptr<std::vector<std::shared_ptr<Cacheable>>> arguments);
+  void recordTXOperation(
+      ServerRegionOperation op, const char* regionName,
+      std::shared_ptr<CacheableKey> key,
+      std::shared_ptr<std::vector<std::shared_ptr<Cacheable>>> arguments);
   std::shared_ptr<Cacheable> replay(bool isRollback);
   void releaseStickyConnection();
 

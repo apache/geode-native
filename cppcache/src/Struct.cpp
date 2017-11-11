@@ -27,7 +27,8 @@ namespace client {
 
 Struct::Struct() : m_parent(nullptr), m_lastAccessIndex(0) {}
 
-Struct::Struct(StructSet* ssPtr, std::vector<std::shared_ptr<Serializable>>& fieldValues) {
+Struct::Struct(StructSet* ssPtr,
+               std::vector<std::shared_ptr<Serializable>>& fieldValues) {
   m_parent = ssPtr;
   m_fieldValues.insert(m_fieldValues.end(), fieldValues.begin(),
                        fieldValues.end());
@@ -106,7 +107,8 @@ const std::shared_ptr<Serializable> Struct::operator[](int32_t index) const {
   return m_fieldValues[index];
 }
 
-const std::shared_ptr<Serializable> Struct::operator[](const std::string& fieldName) const {
+const std::shared_ptr<Serializable> Struct::operator[](
+    const std::string& fieldName) const {
   int32_t index;
   if (m_parent == nullptr) {
     const auto& iter = m_fieldNames.find(fieldName);

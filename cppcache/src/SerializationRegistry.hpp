@@ -207,12 +207,15 @@ class CPPCACHE_EXPORT SerializationRegistry {
 
   void removeType2(int64_t compId);
 
-  int32_t GetPDXIdForType(std::shared_ptr<Pool> pool, std::shared_ptr<Serializable> pdxType) const;
+  int32_t GetPDXIdForType(std::shared_ptr<Pool> pool,
+                          std::shared_ptr<Serializable> pdxType) const;
 
-  std::shared_ptr<Serializable> GetPDXTypeById(std::shared_ptr<Pool> pool, int32_t typeId) const;
+  std::shared_ptr<Serializable> GetPDXTypeById(std::shared_ptr<Pool> pool,
+                                               int32_t typeId) const;
 
   int32_t GetEnumValue(std::shared_ptr<Pool> pool, std::shared_ptr<Serializable> enumInfo) const;
-  std::shared_ptr<Serializable> GetEnum(std::shared_ptr<Pool> pool, int32_t val) const;
+  std::shared_ptr<Serializable> GetEnum(std::shared_ptr<Pool> pool,
+                                        int32_t val) const;
 
   std::shared_ptr<PdxSerializable> getPdxType(char* className);
 

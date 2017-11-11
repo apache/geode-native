@@ -28,19 +28,27 @@ using namespace apache::geode::client::testframework::security;
 CredentialGenerator::registeredClassMap* CredentialGenerator::generatormap =
     NULL;
 
-std::shared_ptr<CredentialGenerator> CredentialGenerator::create(std::string scheme) {
+std::shared_ptr<CredentialGenerator> CredentialGenerator::create(
+    std::string scheme) {
   if (generators().find(scheme) != generators().end()) {
     return generators()[scheme];
 
     // first call to create, nothing will be registered until now.
   } else if (generators().size() == 0) {
-    registerScheme(std::shared_ptr<CredentialGenerator>(new CredentialGenerator()));
-    registerScheme(std::shared_ptr<CredentialGenerator>(new DummyCredentialGenerator()));
-    registerScheme(std::shared_ptr<CredentialGenerator>(new DummyCredentialGenerator2()));
-    registerScheme(std::shared_ptr<CredentialGenerator>(new DummyCredentialGenerator3()));
-    registerScheme(std::shared_ptr<CredentialGenerator>(new LdapUserCredentialGenerator()));
-    registerScheme(std::shared_ptr<CredentialGenerator>(new PKCSCredentialGenerator()));
-    registerScheme(std::shared_ptr<CredentialGenerator>(new NoopCredentialGenerator()));
+    registerScheme(
+        std::shared_ptr<CredentialGenerator>(new CredentialGenerator()));
+    registerScheme(
+        std::shared_ptr<CredentialGenerator>(new DummyCredentialGenerator()));
+    registerScheme(
+        std::shared_ptr<CredentialGenerator>(new DummyCredentialGenerator2()));
+    registerScheme(
+        std::shared_ptr<CredentialGenerator>(new DummyCredentialGenerator3()));
+    registerScheme(std::shared_ptr<CredentialGenerator>(
+        new LdapUserCredentialGenerator()));
+    registerScheme(
+        std::shared_ptr<CredentialGenerator>(new PKCSCredentialGenerator()));
+    registerScheme(
+        std::shared_ptr<CredentialGenerator>(new NoopCredentialGenerator()));
     return create(scheme);
 
   } else {

@@ -40,10 +40,11 @@ namespace client {
 class ThinClientPoolDM;
 class ClientMetadata;
 
-typedef std::vector<std::shared_ptr<BucketServerLocation>> BucketServerLocationsType;
+typedef std::vector<std::shared_ptr<BucketServerLocation>>
+    BucketServerLocationsType;
 
 typedef std::vector<BucketServerLocationsType> BucketServerLocationsListType;
-typedef std::map<std::string, std::vector<int> > FixedMapType;
+typedef std::map<std::string, std::vector<int>> FixedMapType;
 
 class CPPCACHE_EXPORT ClientMetadata : public NonAssignable {
  private:
@@ -70,9 +71,10 @@ class CPPCACHE_EXPORT ClientMetadata : public NonAssignable {
   void setPreviousone(std::shared_ptr<ClientMetadata> cptr) { m_previousOne = cptr; }
   ~ClientMetadata();
   ClientMetadata();
-  ClientMetadata(int totalNumBuckets, std::shared_ptr<CacheableString> colocatedWith,
-                 ThinClientPoolDM* tcrdm,
-                 std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>* fpaSet);
+  ClientMetadata(
+      int totalNumBuckets, std::shared_ptr<CacheableString> colocatedWith,
+      ThinClientPoolDM* tcrdm,
+      std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>* fpaSet);
   void getServerLocation(int bucketId, bool tryPrimary,
                          std::shared_ptr<BucketServerLocation>& serverLocation,
                          int8_t& version);
@@ -89,9 +91,9 @@ class CPPCACHE_EXPORT ClientMetadata : public NonAssignable {
   std::shared_ptr<CacheableHashSet>& getFixedPartitionNames() {
     /* if(m_fpaMap.size() >0)
      {
-       std::shared_ptr<CacheableHashSet> partitionNames = CacheableHashSet::create();
-       for ( FixedMapType::iterator it=m_fpaMap.begin() ; it != m_fpaMap.end();
-     it++ ) {
+       std::shared_ptr<CacheableHashSet> partitionNames =
+     CacheableHashSet::create(); for ( FixedMapType::iterator
+     it=m_fpaMap.begin() ; it != m_fpaMap.end(); it++ ) {
          partitionNames->insert(CacheableString::create(((*it).first).c_str()));
        }
        return partitionNames;

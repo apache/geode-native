@@ -113,9 +113,9 @@ std::shared_ptr<CacheableString> ClientMetadata::getColocatedWith() {
   return m_colocatedWith;
 }
 
-void ClientMetadata::getServerLocation(int bucketId, bool tryPrimary,
-                                       std::shared_ptr<BucketServerLocation>& serverLocation,
-                                       int8_t& version) {
+void ClientMetadata::getServerLocation(
+    int bucketId, bool tryPrimary,
+    std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
   // ReadGuard guard (m_readWriteLock);
   checkBucketId(bucketId);
   // BucketServerLocationsType locations =
@@ -337,8 +337,8 @@ void ClientMetadata::populateDummyServers(int bucketId,
   m_bucketServerLocationsList[bucketId] = locations;
 }
 
-int ClientMetadata::assignFixedBucketId(const char* partitionName,
-                                        std::shared_ptr<CacheableKey> resolvekey) {
+int ClientMetadata::assignFixedBucketId(
+    const char* partitionName, std::shared_ptr<CacheableKey> resolvekey) {
   LOGDEBUG(
       "FPR assignFixedBucketId partititonname = %s , m_fpaMap.size() = %d ",
       partitionName, m_fpaMap.size());
@@ -354,17 +354,18 @@ int ClientMetadata::assignFixedBucketId(const char* partitionName,
   }
 }
 
-std::vector<std::shared_ptr<BucketServerLocation>> ClientMetadata::adviseServerLocations(
-    int bucketId) {
+std::vector<std::shared_ptr<BucketServerLocation>>
+ClientMetadata::adviseServerLocations(int bucketId) {
   checkBucketId(bucketId);
   return m_bucketServerLocationsList[bucketId];
 }
 
-std::shared_ptr<BucketServerLocation> ClientMetadata::advisePrimaryServerLocation(
-    int bucketId) {
+std::shared_ptr<BucketServerLocation>
+ClientMetadata::advisePrimaryServerLocation(int bucketId) {
   std::vector<std::shared_ptr<BucketServerLocation>> locations =
       adviseServerLocations(bucketId);
-  for (std::vector<std::shared_ptr<BucketServerLocation>>::iterator iter = locations.begin();
+  for (std::vector<std::shared_ptr<BucketServerLocation>>::iterator iter =
+           locations.begin();
        iter != locations.end(); ++iter) {
     std::shared_ptr<BucketServerLocation> location = *iter;
     if (location->isPrimary()) {
@@ -374,7 +375,8 @@ std::shared_ptr<BucketServerLocation> ClientMetadata::advisePrimaryServerLocatio
   return nullptr;
 }
 
-std::shared_ptr<BucketServerLocation> ClientMetadata::adviseRandomServerLocation() {
+std::shared_ptr<BucketServerLocation>
+ClientMetadata::adviseRandomServerLocation() {
   if (m_bucketServerLocationsList.size() > 0) {
     RandGen randGen;
     size_t random = randGen(m_bucketServerLocationsList.size());

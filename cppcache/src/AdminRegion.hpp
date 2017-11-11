@@ -71,7 +71,8 @@ class AdminRegion : private NonCopyable,
   const bool& isDestroyed();
   void close();
   void init();
-  void put(const std::shared_ptr<CacheableKey>& keyPtr, const std::shared_ptr<Cacheable>& valuePtr);
+  void put(const std::shared_ptr<CacheableKey>& keyPtr,
+           const std::shared_ptr<Cacheable>& valuePtr);
   friend class apache::geode::statistics::HostStatSampler;
 };
 

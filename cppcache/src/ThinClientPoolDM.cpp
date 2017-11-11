@@ -65,12 +65,13 @@ class GetAllWork : public PooledWork<GfErrType>,
   const std::shared_ptr<Serializable>& m_aCallbackArgument;
 
  public:
-  GetAllWork(ThinClientPoolDM* poolDM, const std::shared_ptr<Region>& region,
-             const std::shared_ptr<BucketServerLocation>& serverLocation,
-             const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>& keys, bool attemptFailover,
-             bool isBGThread, bool addToLocalCache,
-             ChunkedGetAllResponse* responseHandler,
-             const std::shared_ptr<Serializable>& aCallbackArgument)
+  GetAllWork(
+      ThinClientPoolDM* poolDM, const std::shared_ptr<Region>& region,
+      const std::shared_ptr<BucketServerLocation>& serverLocation,
+      const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>& keys,
+      bool attemptFailover, bool isBGThread, bool addToLocalCache,
+      ChunkedGetAllResponse* responseHandler,
+      const std::shared_ptr<Serializable>& aCallbackArgument)
       : m_poolDM(poolDM),
         m_serverLocation(serverLocation),
         m_attemptFailover(attemptFailover),
@@ -613,8 +614,9 @@ void ThinClientPoolDM::addConnection(TcrConnection* conn) {
   ++m_poolSize;
 }
 GfErrType ThinClientPoolDM::sendRequestToAllServers(
-    const char* func, uint8_t getResult, uint32_t timeout, std::shared_ptr<Cacheable> args,
-    std::shared_ptr<ResultCollector>& rs, std::shared_ptr<CacheableString>& exceptionPtr) {
+    const char* func, uint8_t getResult, uint32_t timeout,
+    std::shared_ptr<Cacheable> args, std::shared_ptr<ResultCollector>& rs,
+    std::shared_ptr<CacheableString>& exceptionPtr) {
   GfErrType err = GF_NOERR;
 
   getStats().setCurClientOps(++m_clientOps);
@@ -696,9 +698,11 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
   return finalErrorReturn;
 }
 
-const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getLocators() const {
+const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getLocators()
+    const {
   int32_t size = static_cast<int32_t>(m_attrs->m_initLocList.size());
-  std::shared_ptr<CacheableString>* ptrArr = new std::shared_ptr<CacheableString>[size];
+  std::shared_ptr<CacheableString>* ptrArr =
+      new std::shared_ptr<CacheableString>[size];
 
   for (int i = 0; i < size; ++i) {
     ptrArr[i] = CacheableString::create(
@@ -945,7 +949,8 @@ TcrConnection* ThinClientPoolDM::getConnectionInMultiuserMode(
   }
 }
 
-int32_t ThinClientPoolDM::GetPDXIdForType(std::shared_ptr<Serializable> pdxType) {
+int32_t ThinClientPoolDM::GetPDXIdForType(
+    std::shared_ptr<Serializable> pdxType) {
   LOGDEBUG("ThinClientPoolDM::GetPDXIdForType:");
 
   GfErrType err = GF_NOERR;
@@ -985,7 +990,8 @@ int32_t ThinClientPoolDM::GetPDXIdForType(std::shared_ptr<Serializable> pdxType)
   return pdxTypeId;
 }
 
-void ThinClientPoolDM::AddPdxType(std::shared_ptr<Serializable> pdxType, int32_t pdxTypeId) {
+void ThinClientPoolDM::AddPdxType(std::shared_ptr<Serializable> pdxType,
+                                  int32_t pdxTypeId) {
   LOGDEBUG("ThinClientPoolDM::GetPDXIdForType:");
 
   GfErrType err = GF_NOERR;
@@ -1095,7 +1101,8 @@ std::shared_ptr<Serializable> ThinClientPoolDM::GetEnum(int32_t val) {
   return reply.getValue();
 }
 
-void ThinClientPoolDM::AddEnum(std::shared_ptr<Serializable> enumInfo, int enumVal) {
+void ThinClientPoolDM::AddEnum(std::shared_ptr<Serializable> enumInfo,
+                               int enumVal) {
   LOGDEBUG("ThinClientPoolDM::AddEnum:");
 
   GfErrType err = GF_NOERR;
@@ -1117,10 +1124,9 @@ void ThinClientPoolDM::AddEnum(std::shared_ptr<Serializable> enumInfo, int enumV
   }
 }
 
-GfErrType ThinClientPoolDM::sendUserCredentials(std::shared_ptr<Properties> credentials,
-                                                TcrConnection*& conn,
-                                                bool isBGThread,
-                                                bool& isServerException) {
+GfErrType ThinClientPoolDM::sendUserCredentials(
+    std::shared_ptr<Properties> credentials, TcrConnection*& conn,
+    bool isBGThread, bool& isServerException) {
   LOGDEBUG("ThinClientPoolDM::sendUserCredentials:");
 
   GfErrType err = GF_NOERR;
@@ -1206,8 +1212,8 @@ TcrEndpoint* ThinClientPoolDM::getSingleHopServer(
 }
 
 TcrEndpoint* ThinClientPoolDM::getEndPoint(
-    const std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version,
-    std::set<ServerLocation>& excludeServers) {
+    const std::shared_ptr<BucketServerLocation>& serverLocation,
+    int8_t& version, std::set<ServerLocation>& excludeServers) {
   TcrEndpoint* ep = nullptr;
   if (serverLocation->isValid()) {
     if (excludeServer(serverLocation->getEpString(), excludeServers)) {
@@ -1239,7 +1245,8 @@ TcrEndpoint* ThinClientPoolDM::getEndPoint(
     if (m_attrs->m_initLocList.size()) {
       std::string servGrp = this->getServerGroup();
       if (servGrp.length() > 0) {
-        std::shared_ptr<CacheableStringArray> groups = serverLocation->getServerGroups();
+        std::shared_ptr<CacheableStringArray> groups =
+            serverLocation->getServerGroups();
         if ((groups != nullptr) && (groups->length() > 0)) {
           for (int i = 0; i < groups->length(); i++) {
             std::shared_ptr<CacheableString> cs = (*groups)[i];
@@ -1345,7 +1352,8 @@ GfErrType ThinClientPoolDM::sendSyncRequest(TcrMessage& request,
 
 GfErrType ThinClientPoolDM::sendSyncRequest(
     TcrMessage& request, TcrMessageReply& reply, bool attemptFailover,
-    bool isBGThread, const std::shared_ptr<BucketServerLocation>& serverLocation) {
+    bool isBGThread,
+    const std::shared_ptr<BucketServerLocation>& serverLocation) {
   LOGDEBUG("ThinClientPoolDM::sendSyncRequest: ....%d %s",
            request.getMessageType(), m_poolName.c_str());
   // Increment clientOps

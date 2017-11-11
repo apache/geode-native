@@ -207,10 +207,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1withCachingEnabled_Pooled_Locator)
     // create subregion
     auto exmpRegptr = getHelper()->getRegion(myRegNames[2]);
     auto lattribPtr = exmpRegptr->getAttributes();
-    auto subregPtr1 =
-        exmpRegptr->createSubregion(myRegNames[3], lattribPtr);
-    auto subregPtr2 =
-        exmpRegptr->createSubregion(myRegNames[4], lattribPtr);
+    auto subregPtr1 = exmpRegptr->createSubregion(myRegNames[3], lattribPtr);
+    auto subregPtr2 = exmpRegptr->createSubregion(myRegNames[4], lattribPtr);
 
     LOGINFO(
         " CLIENT1 SetupClient1withCachingEnabled_Pooled_Locator subRegions "
@@ -293,10 +291,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, SetupClient2withCachingEnabled_Pooled_Locator)
     // create subregion
     auto exmpRegptr = getHelper()->getRegion(myRegNames[2]);
     auto lattribPtr = exmpRegptr->getAttributes();
-    auto subregPtr1 =
-        exmpRegptr->createSubregion(myRegNames[3], lattribPtr);
-    auto subregPtr2 =
-        exmpRegptr->createSubregion(myRegNames[4], lattribPtr);
+    auto subregPtr1 = exmpRegptr->createSubregion(myRegNames[3], lattribPtr);
+    auto subregPtr2 = exmpRegptr->createSubregion(myRegNames[4], lattribPtr);
 
     LOGINFO(
         "CLIENT2 SetupClient2withCachingEnabled_Pooled_Locator:: subRegions "

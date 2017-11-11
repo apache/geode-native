@@ -69,8 +69,8 @@ bool Pool::getThreadLocalConnections() const {
 bool Pool::getMultiuserAuthentication() const {
   return m_attrs->getMultiuserSecureModeEnabled();
 }
-std::shared_ptr<RegionService> Pool::createSecureUserCache(std::shared_ptr<Properties> credentials,
-                                             CacheImpl* cacheImpl) {
+std::shared_ptr<RegionService> Pool::createSecureUserCache(
+    std::shared_ptr<Properties> credentials, CacheImpl* cacheImpl) {
   if (this->getMultiuserAuthentication()) {
     if (cacheImpl == nullptr) {
       throw IllegalStateException("cache has not been created yet.");

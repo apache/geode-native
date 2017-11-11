@@ -323,7 +323,8 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
         // TODO:
         // FunctionService::onServer(pool)->execute("securityTest",
         // true)->getResult();
-        // std::shared_ptr<FunctionService> funcServ = virtualCache->getFunctionService();
+        // std::shared_ptr<FunctionService> funcServ =
+        // virtualCache->getFunctionService();
         // funcServ->onServer()->execute("securityTest", true)->getResult();
         FunctionService::onServer(virtualCache)
             ->execute("securityTest", true)
@@ -376,9 +377,8 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
         auto funcExec = FunctionService::onRegion(regionPtr);
         ASSERT(funcExec != nullptr, "onRegion Returned nullptr");
 
-        auto collector =
-            funcExec->withArgs(args)->withFilter(filter)->execute(
-                exFuncNameSendException, 15);
+        auto collector = funcExec->withArgs(args)->withFilter(filter)->execute(
+            exFuncNameSendException, 15);
         ASSERT(collector != nullptr, "onRegion collector nullptr");
 
         std::shared_ptr<CacheableVector> result = collector->getResult();
@@ -702,7 +702,8 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       // FunctionService::onServer(pool)->execute("securityTest",
       // true)->getResult();
       // FAIL("Function execution should not have completed successfully");
-      //  std::shared_ptr<FunctionService> funcServ = virtualCache->getFunctionService();
+      //  std::shared_ptr<FunctionService> funcServ =
+      //  virtualCache->getFunctionService();
       // funcServ->onServer()->execute("securityTest", true)->getResult();
       FunctionService::onServer(virtualCache)
           ->execute("securityTest", true)
@@ -717,7 +718,8 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       // FunctionService::onServer(pool)->execute("securityTest",
       // true)->getResult();
       // FAIL("Function execution should not have completed successfully");
-      // std::shared_ptr<FunctionService> funcServ = virtualCache->getFunctionService();
+      // std::shared_ptr<FunctionService> funcServ =
+      // virtualCache->getFunctionService();
       // funcServ->onServers()->execute("securityTest", true)->getResult();
       FunctionService::onServers(virtualCache)
           ->execute("securityTest", true)
@@ -1008,7 +1010,8 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
       // FunctionService::onServer(pool)->execute("securityTest",
       // true)->getResult();
       // FAIL("Function execution should not have completed successfully");
-      // std::shared_ptr<FunctionService> funcServ = virtualCache->getFunctionService();
+      // std::shared_ptr<FunctionService> funcServ =
+      // virtualCache->getFunctionService();
       // funcServ->onServer()->execute("securityTest", true)->getResult();
       FunctionService::onServer(virtualCache)
           ->execute("securityTest", true)

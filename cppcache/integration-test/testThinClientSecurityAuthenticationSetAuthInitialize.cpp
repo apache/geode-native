@@ -51,8 +51,8 @@ class UserPasswordAuthInit : public AuthInitialize {
 
   ~UserPasswordAuthInit() {}
 
-  std::shared_ptr<Properties> getCredentials(const std::shared_ptr<Properties>& securityprops,
-                               const char* server) {
+  std::shared_ptr<Properties> getCredentials(
+      const std::shared_ptr<Properties>& securityprops, const char* server) {
     // LOGDEBUG("UserPasswordAuthInit: inside userPassword::getCredentials");
     std::shared_ptr<Cacheable> userName;
     if (securityprops == nullptr ||
@@ -64,7 +64,8 @@ class UserPasswordAuthInit : public AuthInitialize {
 
     auto credentials = Properties::create();
     credentials->insert(SECURITY_USERNAME, userName->toString()->asChar());
-    std::shared_ptr<CacheableString> passwd = securityprops->find(SECURITY_PASSWORD);
+    std::shared_ptr<CacheableString> passwd =
+        securityprops->find(SECURITY_PASSWORD);
     // If password is not provided then use empty string as the password.
     if (passwd == nullptr) {
       passwd = CacheableString::create("");

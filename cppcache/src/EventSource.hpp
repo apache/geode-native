@@ -95,7 +95,6 @@ class CPPCACHE_EXPORT EventSource {
   };
 };
 
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

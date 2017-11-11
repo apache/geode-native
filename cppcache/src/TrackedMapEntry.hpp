@@ -30,8 +30,8 @@ class TrackedMapEntry : public MapEntry {
  public:
   // Constructor should be invoked only when starting the tracking
   // of a MapEntry, so m_trackingNumber is initialized with 1.
-  inline TrackedMapEntry(const std::shared_ptr<MapEntryImpl>& entry, int trackingNumber,
-                         int updateCount)
+  inline TrackedMapEntry(const std::shared_ptr<MapEntryImpl>& entry,
+                         int trackingNumber, int updateCount)
       : m_entry(const_cast<std::shared_ptr<MapEntryImpl>&>(entry)),
         m_trackingNumber(trackingNumber),
         m_updateCount(updateCount) {}

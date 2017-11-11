@@ -22,9 +22,10 @@ namespace apache {
 namespace geode {
 namespace client {
 
-void LRUExpEntryFactory::newMapEntry(ExpiryTaskManager* expiryTaskManager,
-                                     const std::shared_ptr<CacheableKey>& key,
-                                     std::shared_ptr<MapEntryImpl>& result) const {
+void LRUExpEntryFactory::newMapEntry(
+    ExpiryTaskManager* expiryTaskManager,
+    const std::shared_ptr<CacheableKey>& key,
+    std::shared_ptr<MapEntryImpl>& result) const {
   if (m_concurrencyChecksEnabled) {
     result = MapEntryT<VersionedLRUExpMapEntry, 0, 0>::create(expiryTaskManager,
                                                               key);

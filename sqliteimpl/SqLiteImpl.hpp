@@ -49,7 +49,8 @@ class SqLiteImpl : public PersistenceManager {
    * @throws InitfailedException if persistence directory/environment directory
    * initialization fails.
    */
-  void init(const std::shared_ptr<Region>& regionptr, const std::shared_ptr<Properties>& diskProperties);
+  void init(const std::shared_ptr<Region>& regionptr,
+            const std::shared_ptr<Properties>& diskProperties);
 
   /**
    * Stores a key-value pair in the SqLite implementation.
@@ -57,8 +58,8 @@ class SqLiteImpl : public PersistenceManager {
    * @param value the value to write
    * @throws DiskFailureException if the write fails due to disk failure.
    */
-  void write(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value,
-             void*& dbHandle);
+  void write(const std::shared_ptr<CacheableKey>& key,
+             const std::shared_ptr<Cacheable>& value, void*& dbHandle);
 
   /**
    * Writes the entire region into the SqLite implementation.
@@ -73,7 +74,8 @@ class SqLiteImpl : public PersistenceManager {
    * @throws IllegalArgumentException if the key is NULL.
    * @throws DiskCorruptException if the data to be read is corrupt.
    */
-  std::shared_ptr<Cacheable> read(const std::shared_ptr<CacheableKey>& key, void*& dbHandle);
+  std::shared_ptr<Cacheable> read(const std::shared_ptr<CacheableKey>& key,
+                                  void*& dbHandle);
 
   /**
    * Read all the keys and values for a region stored in SqLite.

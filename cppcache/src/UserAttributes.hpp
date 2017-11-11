@@ -73,8 +73,8 @@ class CPPCACHE_EXPORT UserAttributes {
   // servers
  public:
   ~UserAttributes();
-  UserAttributes(std::shared_ptr<Properties> credentials, std::shared_ptr<Pool> pool,
-                 ProxyCache* proxyCache);
+  UserAttributes(std::shared_ptr<Properties> credentials,
+                 std::shared_ptr<Pool> pool, ProxyCache* proxyCache);
 
   bool isCacheClosed();
 
@@ -118,7 +118,6 @@ class CPPCACHE_EXPORT UserAttributes {
   UserAttributes(const UserAttributes&);
   UserAttributes& operator=(const UserAttributes&);
 };
-
 
 class TSSUserAttributesWrapper {
  private:

@@ -85,13 +85,15 @@ class DummyCredentialGenerator3 : public CredentialGenerator {
              << p->find("security-password")->asChar());
   }
 
-  void getAllowedCredentialsForOps(opCodeList& opCodes, std::shared_ptr<Properties>& p,
+  void getAllowedCredentialsForOps(opCodeList& opCodes,
+                                   std::shared_ptr<Properties>& p,
                                    stringList* regionNames = NULL) {
     XmlAuthzCredentialGenerator authz(id());
     authz.getAllowedCredentials(opCodes, p, regionNames);
   }
 
-  void getDisallowedCredentialsForOps(opCodeList& opCodes, std::shared_ptr<Properties>& p,
+  void getDisallowedCredentialsForOps(opCodeList& opCodes,
+                                      std::shared_ptr<Properties>& p,
                                       stringList* regionNames = NULL) {
     XmlAuthzCredentialGenerator authz(id());
     authz.getDisallowedCredentials(opCodes, p, regionNames);

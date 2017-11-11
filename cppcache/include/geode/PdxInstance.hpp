@@ -76,10 +76,12 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
   virtual bool hasField(const char* fieldname) = 0;
 
   /**
-   * Reads the named field and set its value in std::shared_ptr<Cacheable> type out param.
-   * std::shared_ptr<Cacheable> type is corresponding to java object type.
+   * Reads the named field and set its value in std::shared_ptr<Cacheable> type
+   * out param. std::shared_ptr<Cacheable> type is corresponding to java object
+   * type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with std::shared_ptr<Cacheable> type.
+   * @param value value of the field to be set with std::shared_ptr<Cacheable>
+   * type.
    * @throws IllegalStateException if PdxInstance doesn't has the named field.
    * For deserialization C++ Native Client requires the domain class to be
    * registered.
@@ -362,10 +364,12 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
                         int32_t& length) const = 0;
 
   /**
-   * Reads the named field and set its value in std::shared_ptr<CacheableDate> type out param.
-   * std::shared_ptr<CacheableDate> type is corresponding to java Java.util.date type.
+   * Reads the named field and set its value in std::shared_ptr<CacheableDate>
+   * type out param. std::shared_ptr<CacheableDate> type is corresponding to
+   * java Java.util.date type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with std::shared_ptr<CacheableDate> type.
+   * @param value value of the field to be set with
+   * std::shared_ptr<CacheableDate> type.
    * @throws IllegalStateException if PdxInstance doesn't has the named field.
    *
    * @see PdxInstance#hasField
@@ -390,14 +394,14 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
                         int32_t*& elementLength) const = 0;
 
   /**
-   * Reads the named field and set its value in std::shared_ptr<CacheableObjectArray> type out
-   * param.
-   * For deserialization C++ Native Client requires the domain class to be
-   * registered.
-   * std::shared_ptr<CacheableObjectArray> type is corresponding to java Object[] type.
+   * Reads the named field and set its value in
+   * std::shared_ptr<CacheableObjectArray> type out param. For deserialization
+   * C++ Native Client requires the domain class to be registered.
+   * std::shared_ptr<CacheableObjectArray> type is corresponding to java
+   * Object[] type.
    * @param fieldname name of the field to read.
-   * @param value value of the field to be set with std::shared_ptr<CacheableObjectArray>
-   * type.
+   * @param value value of the field to be set with
+   * std::shared_ptr<CacheableObjectArray> type.
    * @throws IllegalStateException if PdxInstance doesn't has the named field.
    *
    * @see serializationRegistry->addPdxType

@@ -53,9 +53,9 @@ class CPPCACHE_EXPORT PreservedDataExpiryHandler : public ACE_Event_Handler {
   /**
    * Constructor
    */
-  PreservedDataExpiryHandler(const std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
-                             const std::shared_ptr<PdxSerializable>& pdxObjectPtr,
-                             uint32_t duration);
+  PreservedDataExpiryHandler(
+      const std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
+      const std::shared_ptr<PdxSerializable>& pdxObjectPtr, uint32_t duration);
 
   /** This task object will be registered with the Timer Queue.
    *  When the timer expires the handle_timeout is invoked.

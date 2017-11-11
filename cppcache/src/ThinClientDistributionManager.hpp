@@ -68,7 +68,8 @@ class ThinClientDistributionManager : public ThinClientBaseDM {
 
   std::shared_ptr<Properties> getCredentials(TcrEndpoint* ep);
 
-  GfErrType sendUserCredentials(std::shared_ptr<Properties> credentials, TcrEndpoint* ep);
+  GfErrType sendUserCredentials(std::shared_ptr<Properties> credentials,
+                                TcrEndpoint* ep);
 
   volatile int m_activeEndpoint;
 

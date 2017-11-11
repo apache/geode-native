@@ -46,7 +46,6 @@ const char* locatorsG =
 
 //---------------------------------------------------------------------------------
 
-
 class CallbackListener : public CacheListener {
  private:
   int m_creates;
@@ -171,37 +170,39 @@ class CallbackListener : public CacheListener {
  std::shared_ptr<CacheableString> callBackStrPtr;
  std::shared_ptr<Cacheable> callBackPortFolioPtr;
 
-void setCacheListener(const char* regName, std::shared_ptr<CallbackListener> regListener) {
-  auto reg = getHelper()->getRegion(regName);
-  auto attrMutator = reg->getAttributesMutator();
-  attrMutator->setCacheListener(regListener);
-}
+ void setCacheListener(const char* regName,
+                       std::shared_ptr<CallbackListener> regListener) {
+   auto reg = getHelper()->getRegion(regName);
+   auto attrMutator = reg->getAttributesMutator();
+   attrMutator->setCacheListener(regListener);
+ }
 
-void validateEventCount(int line) {
-  LOGINFO("ValidateEvents called from line (%d).", line);
-  int num = reg1Listener1->getCreates();
-  char buf[1024];
-  sprintf(buf, "Didn't get expected callback arg in aftercreate event");
-  ASSERT(7 == num, buf);
-  num = reg1Listener1->getUpdates();
-  sprintf(buf, "Didn't get expected callback arg in afterupdate events");
-  ASSERT(3 == num, buf);
-  num = reg1Listener1->getInvalidates();
-  sprintf(buf, "Didn't get expected callback arg in afterInvalidates events");
-  ASSERT(2 == num, buf);
-  num = reg1Listener1->getDestroys();
-  sprintf(buf, "Didn't get expected callback arg in afterdestroy events");
-  ASSERT(5 == num, buf);
-  num = reg1Listener1->getRegionInvalidates();
-  sprintf(buf,
-          "Didn't get expected callback arg in afterRegionInvalidates events");
-  ASSERT(1 == num, buf);
-  num = reg1Listener1->getRegionDestroys();
-  sprintf(buf, "Didn't get expected callback arg in afterRegiondestroy events");
-  ASSERT(1 == num, buf);
-  num = reg1Listener1->getRegionClear();
-  sprintf(buf, "Didn't get expected callback arg in afterRegionClear events");
-  ASSERT(1 == num, buf);
+ void validateEventCount(int line) {
+   LOGINFO("ValidateEvents called from line (%d).", line);
+   int num = reg1Listener1->getCreates();
+   char buf[1024];
+   sprintf(buf, "Didn't get expected callback arg in aftercreate event");
+   ASSERT(7 == num, buf);
+   num = reg1Listener1->getUpdates();
+   sprintf(buf, "Didn't get expected callback arg in afterupdate events");
+   ASSERT(3 == num, buf);
+   num = reg1Listener1->getInvalidates();
+   sprintf(buf, "Didn't get expected callback arg in afterInvalidates events");
+   ASSERT(2 == num, buf);
+   num = reg1Listener1->getDestroys();
+   sprintf(buf, "Didn't get expected callback arg in afterdestroy events");
+   ASSERT(5 == num, buf);
+   num = reg1Listener1->getRegionInvalidates();
+   sprintf(buf,
+           "Didn't get expected callback arg in afterRegionInvalidates events");
+   ASSERT(1 == num, buf);
+   num = reg1Listener1->getRegionDestroys();
+   sprintf(buf,
+           "Didn't get expected callback arg in afterRegiondestroy events");
+   ASSERT(1 == num, buf);
+   num = reg1Listener1->getRegionClear();
+   sprintf(buf, "Didn't get expected callback arg in afterRegionClear events");
+   ASSERT(1 == num, buf);
 }
 
 DUNIT_TASK_DEFINITION(SERVER1, StartServer)

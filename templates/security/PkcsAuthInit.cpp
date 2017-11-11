@@ -91,8 +91,8 @@ static bool s_initDone = openSSLInit();
 }
 // end of extern "C"
 
-std::shared_ptr<Properties> PKCSAuthInit::getCredentials(const std::shared_ptr<Properties>& securityprops,
-                                           const char* server) {
+std::shared_ptr<Properties> PKCSAuthInit::getCredentials(
+    const std::shared_ptr<Properties>& securityprops, const char* server) {
   if (!s_initDone) {
     throw AuthenticationFailedException(
         "PKCSAuthInit::getCredentials: "
@@ -104,7 +104,8 @@ std::shared_ptr<Properties> PKCSAuthInit::getCredentials(const std::shared_ptr<P
         "No security-* properties are set.");
   }
 
-  std::shared_ptr<CacheableString> keyStoreptr = securityprops->find(KEYSTORE_FILE_PATH);
+  std::shared_ptr<CacheableString> keyStoreptr =
+      securityprops->find(KEYSTORE_FILE_PATH);
 
   const char* keyStorePath = keyStoreptr->asChar();
 
@@ -114,7 +115,8 @@ std::shared_ptr<Properties> PKCSAuthInit::getCredentials(const std::shared_ptr<P
         "key-store file path property KEYSTORE_FILE_PATH not set.");
   }
 
-  std::shared_ptr<CacheableString> aliasptr = securityprops->find(KEYSTORE_ALIAS);
+  std::shared_ptr<CacheableString> aliasptr =
+      securityprops->find(KEYSTORE_ALIAS);
 
   const char* alias = aliasptr->asChar();
 
@@ -124,7 +126,8 @@ std::shared_ptr<Properties> PKCSAuthInit::getCredentials(const std::shared_ptr<P
         "key-store alias property KEYSTORE_ALIAS not set.");
   }
 
-  std::shared_ptr<CacheableString> keyStorePassptr = securityprops->find(KEYSTORE_PASSWORD);
+  std::shared_ptr<CacheableString> keyStorePassptr =
+      securityprops->find(KEYSTORE_PASSWORD);
 
   const char* keyStorePass = keyStorePassptr->asChar();
 

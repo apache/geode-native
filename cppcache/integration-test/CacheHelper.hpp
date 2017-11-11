@@ -58,7 +58,8 @@ class CacheHelper {
   static std::string unitTestOutputFile();
   static int getNumLocatorListUpdates(const char* s);
 
-  CacheHelper(const char* member_id, const std::shared_ptr<Properties>& configPtr = nullptr,
+  CacheHelper(const char* member_id,
+              const std::shared_ptr<Properties>& configPtr = nullptr,
               const bool noRootRegion = false);
 
   /** rootRegionPtr will still be null... */
@@ -68,23 +69,26 @@ class CacheHelper {
   CacheHelper(const std::shared_ptr<Properties>& configPtr = nullptr,
               const bool noRootRegion = false);
 
-  CacheHelper(const bool isThinclient, const std::shared_ptr<Properties>& configPtr = nullptr,
+  CacheHelper(const bool isThinclient,
+              const std::shared_ptr<Properties>& configPtr = nullptr,
               const bool noRootRegion = false);
 
-  CacheHelper(const bool isThinclient, const std::shared_ptr<AuthInitialize>& authInitialize,
+  CacheHelper(const bool isThinclient,
+              const std::shared_ptr<AuthInitialize>& authInitialize,
               const std::shared_ptr<Properties>& configPtr = nullptr);
 
   CacheHelper(const bool isThinclient, bool pdxIgnoreUnreadFields,
-              bool pdxReadSerialized, const std::shared_ptr<Properties>& configPtr = nullptr,
+              bool pdxReadSerialized,
+              const std::shared_ptr<Properties>& configPtr = nullptr,
               const bool noRootRegion = false);
 
   CacheHelper(const bool isthinClient, const char* poolName,
               const char* locators, const char* serverGroup,
-              const std::shared_ptr<Properties>& configPtr = nullptr, int redundancy = 0,
-              bool clientNotification = false, int subscriptionAckInterval = -1,
-              int connections = -1, int loadConditioningInterval = -1,
-              bool isMultiuserMode = false, bool prSingleHop = false,
-              bool threadLocal = false);
+              const std::shared_ptr<Properties>& configPtr = nullptr,
+              int redundancy = 0, bool clientNotification = false,
+              int subscriptionAckInterval = -1, int connections = -1,
+              int loadConditioningInterval = -1, bool isMultiuserMode = false,
+              bool prSingleHop = false, bool threadLocal = false);
 
   CacheHelper(const int redundancyLevel,
               const std::shared_ptr<Properties>& configPtr = nullptr);
@@ -95,29 +99,31 @@ class CacheHelper {
 
   void disconnect(bool keepalive = false);
 
-  void createPlainRegion(const char* regionName, std::shared_ptr<Region>& regionPtr);
+  void createPlainRegion(const char* regionName,
+                         std::shared_ptr<Region>& regionPtr);
 
-  void createPlainRegion(const char* regionName, std::shared_ptr<Region>& regionPtr,
-                         uint32_t size);
+  void createPlainRegion(const char* regionName,
+                         std::shared_ptr<Region>& regionPtr, uint32_t size);
 
-  void createLRURegion(const char* regionName, std::shared_ptr<Region>& regionPtr);
+  void createLRURegion(const char* regionName,
+                       std::shared_ptr<Region>& regionPtr);
 
-  void createLRURegion(const char* regionName, std::shared_ptr<Region>& regionPtr,
-                       uint32_t size);
+  void createLRURegion(const char* regionName,
+                       std::shared_ptr<Region>& regionPtr, uint32_t size);
 
-  void createDistRegion(const char* regionName, std::shared_ptr<Region>& regionPtr);
+  void createDistRegion(const char* regionName,
+                        std::shared_ptr<Region>& regionPtr);
 
-  void createDistRegion(const char* regionName, std::shared_ptr<Region>& regionPtr,
-                        uint32_t size);
+  void createDistRegion(const char* regionName,
+                        std::shared_ptr<Region>& regionPtr, uint32_t size);
 
   std::shared_ptr<Region> getRegion(const char* name);
 
-  std::shared_ptr<Region> createRegion(const char* name, bool ack, bool caching,
-                         const std::shared_ptr<CacheListener>& listener,
-                         bool clientNotificationEnabled = false,
-                         bool scopeLocal = false,
-                         bool concurrencyCheckEnabled = false,
-                         int32_t tombstonetimeout = -1);
+  std::shared_ptr<Region> createRegion(
+      const char* name, bool ack, bool caching,
+      const std::shared_ptr<CacheListener>& listener,
+      bool clientNotificationEnabled = false, bool scopeLocal = false,
+      bool concurrencyCheckEnabled = false, int32_t tombstonetimeout = -1);
 
   std::shared_ptr<Region> createRegion(
       const char* name, bool ack, bool caching = true, int ettl = 0,
@@ -126,17 +132,21 @@ class CacheHelper {
       const char* endpoints = 0, bool clientNotificationEnabled = false);
 
   std::shared_ptr<Pool> createPool(const char* poolName, const char* locators,
-                     const char* serverGroup, int redundancy = 0,
-                     bool clientNotification = false,
-                     int subscriptionAckInterval = -1, int connections = -1,
-                     int loadConditioningInterval = -1,
-                     bool isMultiuserMode = false);
+                                   const char* serverGroup, int redundancy = 0,
+                                   bool clientNotification = false,
+                                   int subscriptionAckInterval = -1,
+                                   int connections = -1,
+                                   int loadConditioningInterval = -1,
+                                   bool isMultiuserMode = false);
 
   // this will create pool even endpoints and locatorhost has been not defined
   std::shared_ptr<Pool> createPool2(const char* poolName, const char* locators,
-                      const char* serverGroup, const char* servers = nullptr,
-                      int redundancy = 0, bool clientNotification = false,
-                      int subscriptionAckInterval = -1, int connections = -1);
+                                    const char* serverGroup,
+                                    const char* servers = nullptr,
+                                    int redundancy = 0,
+                                    bool clientNotification = false,
+                                    int subscriptionAckInterval = -1,
+                                    int connections = -1);
 
   void logPoolAttributes(std::shared_ptr<Pool>& pool);
 
@@ -155,14 +165,16 @@ class CacheHelper {
 
   std::shared_ptr<Region> createRegionAndAttachPool2(
       const char* name, bool ack, const char* poolName,
-      const std::shared_ptr<PartitionResolver>& aResolver = nullptr, bool caching = true,
-      int ettl = 0, int eit = 0, int rttl = 0, int rit = 0, int lel = 0,
-      ExpirationAction::Action action = ExpirationAction::DESTROY);
+      const std::shared_ptr<PartitionResolver>& aResolver = nullptr,
+      bool caching = true, int ettl = 0, int eit = 0, int rttl = 0, int rit = 0,
+      int lel = 0, ExpirationAction::Action action = ExpirationAction::DESTROY);
 
-  void addServerLocatorEPs(const char* epList, std::shared_ptr<PoolFactory> pfPtr,
+  void addServerLocatorEPs(const char* epList,
+                           std::shared_ptr<PoolFactory> pfPtr,
                            bool poolLocators = true);
 
-  void addServerLocatorEPs(const char* epList, std::shared_ptr<CacheFactory> cacheFac,
+  void addServerLocatorEPs(const char* epList,
+                           std::shared_ptr<CacheFactory> cacheFac,
                            bool poolLocators = true);
 
   std::shared_ptr<Region> createPooledRegion(
@@ -212,8 +224,9 @@ class CacheHelper {
       const std::shared_ptr<CacheListener>& cacheListener = nullptr,
       ExpirationAction::Action action = ExpirationAction::DESTROY);
 
-  std::shared_ptr<Region> createSubregion(std::shared_ptr<Region>& parent, const char* name, bool ack,
-                            bool caching, const std::shared_ptr<CacheListener>& listener);
+  std::shared_ptr<Region> createSubregion(
+      std::shared_ptr<Region>& parent, const char* name, bool ack, bool caching,
+      const std::shared_ptr<CacheListener>& listener);
 
   std::shared_ptr<CacheableString> createCacheable(const char* value);
 

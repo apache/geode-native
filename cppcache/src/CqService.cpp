@@ -82,10 +82,9 @@ bool CqService::checkAndAcquireLock() {
   }
 }
 
-std::shared_ptr<CqQuery> CqService::newCq(const std::string& cqName,
-                            const std::string& queryString,
-                            const std::shared_ptr<CqAttributes>& cqAttributes,
-                            bool isDurable) {
+std::shared_ptr<CqQuery> CqService::newCq(
+    const std::string& cqName, const std::string& queryString,
+    const std::shared_ptr<CqAttributes>& cqAttributes, bool isDurable) {
   if (queryString.empty()) {
     throw IllegalArgumentException("Null queryString is passed. ");
   } else if (cqAttributes == nullptr) {
@@ -345,7 +344,9 @@ void CqService::closeCqs(query_container_type& cqs) {
  * Get statistics information for all CQs
  * @return the CqServiceStatistics
  */
-std::shared_ptr<CqServiceStatistics> CqService::getCqServiceStatistics() { return m_stats; }
+std::shared_ptr<CqServiceStatistics> CqService::getCqServiceStatistics() {
+  return m_stats;
+}
 
 /**
  * Close the CQ Service after cleanup if any.
@@ -414,7 +415,8 @@ void CqService::receiveNotification(TcrMessage* msg) {
  * @param value
  */
 void CqService::invokeCqListeners(const std::map<std::string, int>* cqs,
-                                  uint32_t messageType, std::shared_ptr<CacheableKey> key,
+                                  uint32_t messageType,
+                                  std::shared_ptr<CacheableKey> key,
                                   std::shared_ptr<Cacheable> value,
                                   std::shared_ptr<CacheableBytes> deltaValue,
                                   std::shared_ptr<EventId> eventId) {

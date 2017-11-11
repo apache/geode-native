@@ -45,9 +45,12 @@ class CPPCACHE_EXPORT EntryEvent {
 
  public:
   /** Constructor, given all values. */
-  EntryEvent(const std::shared_ptr<Region>& region, const std::shared_ptr<CacheableKey>& key,
-             const std::shared_ptr<Cacheable>& oldValue, const std::shared_ptr<Cacheable>& newValue,
-             const std::shared_ptr<Serializable>& aCallbackArgument, const bool remoteOrigin);
+  EntryEvent(const std::shared_ptr<Region>& region,
+             const std::shared_ptr<CacheableKey>& key,
+             const std::shared_ptr<Cacheable>& oldValue,
+             const std::shared_ptr<Cacheable>& newValue,
+             const std::shared_ptr<Serializable>& aCallbackArgument,
+             const bool remoteOrigin);
 
   /** Destructor. */
   virtual ~EntryEvent();
@@ -78,7 +81,9 @@ class CPPCACHE_EXPORT EntryEvent {
    * this event. See the {@link Region} interface methods that take
    * a callbackArgument parameter.
    */
-  inline std::shared_ptr<Serializable> getCallbackArgument() const { return m_callbackArgument; }
+  inline std::shared_ptr<Serializable> getCallbackArgument() const {
+    return m_callbackArgument;
+  }
 
   /** If the event originated in a remote process, returns true. */
   inline bool remoteOrigin() const { return m_remoteOrigin; }

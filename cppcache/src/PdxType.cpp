@@ -82,7 +82,8 @@ void PdxType::toData(DataOutput& output) const {
 
   output.writeArrayLen(static_cast<int32_t>(m_pdxFieldTypes->size()));
 
-  for (std::vector<std::shared_ptr<PdxFieldType>>::iterator it = m_pdxFieldTypes->begin();
+  for (std::vector<std::shared_ptr<PdxFieldType>>::iterator it =
+           m_pdxFieldTypes->begin();
        it != m_pdxFieldTypes->end(); ++it) {
     auto pdxPtr = *it;
     pdxPtr->toData(output);
@@ -292,8 +293,7 @@ void PdxType::initLocalToRemote() {
     }
 
     for (; fieldIdx < localToRemoteFieldMapSize;) {
-      auto localPdxField =
-          localPdxType->m_pdxFieldTypes->at(fieldIdx);
+      auto localPdxField = localPdxType->m_pdxFieldTypes->at(fieldIdx);
       bool found = false;
 
       for (std::vector<std::shared_ptr<PdxFieldType>>::iterator remotePdxfield =
@@ -356,10 +356,9 @@ int32_t PdxType::getFieldPosition(int32_t fieldIdx, uint8_t* offsetPosition,
   return -1;
 }
 
-int32_t PdxType::fixedLengthFieldPosition(std::shared_ptr<PdxFieldType> fixLenField,
-                                          uint8_t* offsetPosition,
-                                          int32_t offsetSize,
-                                          int32_t pdxStreamlen) {
+int32_t PdxType::fixedLengthFieldPosition(
+    std::shared_ptr<PdxFieldType> fixLenField, uint8_t* offsetPosition,
+    int32_t offsetSize, int32_t pdxStreamlen) {
   int32_t offset = fixLenField->getVarLenOffsetIndex();
   if (fixLenField->getRelativeOffset() >= 0) {
     // starting fields
@@ -379,10 +378,9 @@ int32_t PdxType::fixedLengthFieldPosition(std::shared_ptr<PdxFieldType> fixLenFi
   }
 }
 
-int32_t PdxType::variableLengthFieldPosition(std::shared_ptr<PdxFieldType> varLenField,
-                                             uint8_t* offsetPosition,
-                                             int32_t offsetSize,
-                                             int32_t pdxStreamlen) {
+int32_t PdxType::variableLengthFieldPosition(
+    std::shared_ptr<PdxFieldType> varLenField, uint8_t* offsetPosition,
+    int32_t offsetSize, int32_t pdxStreamlen) {
   int32_t offset = varLenField->getVarLenOffsetIndex();
   if (offset == -1) {
     return /*first var len field*/ varLenField->getRelativeOffset();
@@ -422,7 +420,8 @@ int32_t* PdxType::getRemoteToLocalMap() {
   return m_remoteToLocalFieldMap;
 }
 
-std::shared_ptr<PdxType> PdxType::isContains(std::shared_ptr<PdxType> first, std::shared_ptr<PdxType> second) {
+std::shared_ptr<PdxType> PdxType::isContains(std::shared_ptr<PdxType> first,
+                                             std::shared_ptr<PdxType> second) {
   int j = 0;
   for (int i = 0; i < static_cast<int>(second->m_pdxFieldTypes->size()); i++) {
     auto secondPdt = second->m_pdxFieldTypes->at(i);
@@ -447,7 +446,8 @@ std::shared_ptr<PdxType> PdxType::clone() {
   clone->m_geodeTypeId = 0;
   clone->m_numberOfVarLenFields = m_numberOfVarLenFields;
 
-  for (std::vector<std::shared_ptr<PdxFieldType>>::iterator it = m_pdxFieldTypes->begin();
+  for (std::vector<std::shared_ptr<PdxFieldType>>::iterator it =
+           m_pdxFieldTypes->begin();
        it != m_pdxFieldTypes->end(); ++it) {
     auto pdxPtr = *it;
     clone->m_pdxFieldTypes->push_back(pdxPtr);
@@ -455,21 +455,24 @@ std::shared_ptr<PdxType> PdxType::clone() {
   return clone;
 }
 
-std::shared_ptr<PdxType> PdxType::isLocalTypeContains(std::shared_ptr<PdxType> otherType) {
+std::shared_ptr<PdxType> PdxType::isLocalTypeContains(
+    std::shared_ptr<PdxType> otherType) {
   if (m_pdxFieldTypes->size() >= otherType->m_pdxFieldTypes->size()) {
     return isContains(shared_from_this(), otherType);
   }
   return nullptr;
 }
 
-std::shared_ptr<PdxType> PdxType::isRemoteTypeContains(std::shared_ptr<PdxType> remoteType) {
+std::shared_ptr<PdxType> PdxType::isRemoteTypeContains(
+    std::shared_ptr<PdxType> remoteType) {
   if (m_pdxFieldTypes->size() <= remoteType->m_pdxFieldTypes->size()) {
     return isContains(remoteType, shared_from_this());
   }
   return nullptr;
 }
 
-std::shared_ptr<PdxType> PdxType::mergeVersion(std::shared_ptr<PdxType> otherVersion) {
+std::shared_ptr<PdxType> PdxType::mergeVersion(
+    std::shared_ptr<PdxType> otherVersion) {
   // int nTotalFields = otherVersion->m_pdxFieldTypes->size();
   std::shared_ptr<PdxType> contains = nullptr;
 

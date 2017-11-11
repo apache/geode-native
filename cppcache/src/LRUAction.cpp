@@ -48,7 +48,8 @@ LRUAction* LRUAction::newLRUAction(const LRUAction::Action& actionType,
   return result;
 }
 
-bool LRUOverFlowToDiskAction::evict(const std::shared_ptr<MapEntryImpl>& mePtr) {
+bool LRUOverFlowToDiskAction::evict(
+    const std::shared_ptr<MapEntryImpl>& mePtr) {
   if (m_regionPtr->isDestroyed()) {
     LOGERROR(
         "[internal error] :: OverflowAction: region is being destroyed, so not "
@@ -99,7 +100,8 @@ bool LRUOverFlowToDiskAction::evict(const std::shared_ptr<MapEntryImpl>& mePtr) 
   return true;
 }
 
-bool LRULocalInvalidateAction::evict(const std::shared_ptr<MapEntryImpl>& mePtr) {
+bool LRULocalInvalidateAction::evict(
+    const std::shared_ptr<MapEntryImpl>& mePtr) {
   std::shared_ptr<VersionTag> versionTag;
   std::shared_ptr<CacheableKey> keyPtr;
   mePtr->getKeyI(keyPtr);

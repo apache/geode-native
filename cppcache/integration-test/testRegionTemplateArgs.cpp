@@ -24,7 +24,8 @@
 
 using namespace apache::geode::client;
 
-bool CheckBytesEqual(std::shared_ptr<CacheableBytes> result, std::shared_ptr<Cacheable> expected) {
+bool CheckBytesEqual(std::shared_ptr<CacheableBytes> result,
+                     std::shared_ptr<Cacheable> expected) {
   auto expectedPtr = std::dynamic_pointer_cast<CacheableBytes>(expected);
   // Assume that the bytes are really a char*
   return (strcmp((char*)result->value(), (char*)expectedPtr->value()) == 0);
@@ -35,7 +36,8 @@ bool CheckBytesEqual(std::shared_ptr<CacheableBytes> result, std::shared_ptr<Cac
 
 BEGIN_TEST(CheckTemplates)
   {
-    std::shared_ptr<CacheFactory> cacheFactoryPtr = CacheFactory::createCacheFactory();
+    std::shared_ptr<CacheFactory> cacheFactoryPtr =
+        CacheFactory::createCacheFactory();
     auto cache = cacheFactoryPtr->create();
     AttributesFactory afact;
     std::shared_ptr<RegionAttributes> attrs = afact.createRegionAttributes();
@@ -52,7 +54,8 @@ BEGIN_TEST(CheckTemplates)
     const char baseKey[] = "test base key";
     const char baseVal[] = "test base value";
     int int32Key = 100;
-    std::shared_ptr<CacheableString> stringPtr = CacheableString::create(stringKey);
+    std::shared_ptr<CacheableString> stringPtr =
+        CacheableString::create(stringKey);
     std::shared_ptr<CacheableInt32> int32Ptr = CacheableInt32::create(int32Key);
     std::shared_ptr<CacheableBytes> bytesPtr = CacheableBytes::create(
         reinterpret_cast<const uint8_t*>(stringVal), sizeof(stringVal));

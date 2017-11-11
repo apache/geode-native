@@ -65,7 +65,8 @@ std::shared_ptr<Query> RemoteQueryService::newQuery(const char* querystring) {
           "QueryService::newQuery: Cache has been closed.");
     }
     LOGDEBUG("RemoteQueryService: creating a new query: %s", querystring);
-    return std::shared_ptr<Query>(new RemoteQuery(querystring, shared_from_this(), m_tccdm));
+    return std::shared_ptr<Query>(
+        new RemoteQuery(querystring, shared_from_this(), m_tccdm));
   } else {
     std::shared_ptr<UserAttributes> ua =
         TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
@@ -76,8 +77,8 @@ std::shared_ptr<Query> RemoteQueryService::newQuery(const char* querystring) {
           "QueryService::newQuery: Cache has been closed.");
     }
     LOGDEBUG("RemoteQueryService: creating a new query: %s", querystring);
-    return std::shared_ptr<Query>(new RemoteQuery(querystring, shared_from_this(), m_tccdm,
-                                    ua->getProxyCache()));
+    return std::shared_ptr<Query>(new RemoteQuery(
+        querystring, shared_from_this(), m_tccdm, ua->getProxyCache()));
   }
 }
 
@@ -143,9 +144,9 @@ void RemoteQueryService::executeAllCqs(bool failover) {
     LOGFINE("RemoteQueryService: no cq to execute after failover");
   }
 }
- std::shared_ptr<CqQuery> RemoteQueryService::newCq(const char* querystr,
-                                     const std::shared_ptr<CqAttributes>& cqAttr,
-                                     bool isDurable) {
+std::shared_ptr<CqQuery> RemoteQueryService::newCq(
+    const char* querystr, const std::shared_ptr<CqAttributes>& cqAttr,
+    bool isDurable) {
   TryReadGuard guard(m_rwLock, m_invalid);
 
   if (m_invalid) {
@@ -158,9 +159,9 @@ void RemoteQueryService::executeAllCqs(bool failover) {
   name += querystr;
   return m_cqService->newCq(name, qs, cqAttr, isDurable);
 }
- std::shared_ptr<CqQuery> RemoteQueryService::newCq(const char* name, const char* querystr,
-                                     const std::shared_ptr<CqAttributes>& cqAttr,
-                                     bool isDurable) {
+std::shared_ptr<CqQuery> RemoteQueryService::newCq(
+    const char* name, const char* querystr,
+    const std::shared_ptr<CqAttributes>& cqAttr, bool isDurable) {
   TryReadGuard guard(m_rwLock, m_invalid);
 
   if (m_invalid) {

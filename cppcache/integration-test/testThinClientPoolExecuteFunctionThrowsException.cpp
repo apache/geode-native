@@ -17,8 +17,6 @@
 
 #define ROOT_NAME "testThinClientPoolExecuteFunctionThrowsException"
 
-
-
 #include <thread>
 #include <chrono>
 
@@ -59,42 +57,48 @@ char* FEOnRegionPrSHOP_OptimizeForWrite =
     (char*)"FEOnRegionPrSHOP_OptimizeForWrite";
 char* FETimeOut = (char*)"FunctionExecutionTimeOut";
 
-#define verifyGetResults()                                                    \
-  bool found = false;                                                         \
-  for (int j = 0; j < 34; j++) {                                              \
-    if (j % 2 == 0) continue;                                                 \
-    sprintf(buf, "VALUE--%d", j);                                             \
-    if (strcmp(buf, dynCast<std::shared_ptr<CacheableString>>(resultList->operator[](i))    \
-                        ->asChar()) == 0) {                                   \
-      LOGINFO(                                                                \
-          "buf = %s "                                                         \
-          "dynCast<std::shared_ptr<CacheableString>>(resultList->operator[](i))->asChar() " \
-          "= %s ",                                                            \
-          buf,                                                                \
-          dynCast<std::shared_ptr<CacheableString>>(resultList->operator[](i))->asChar());  \
-      found = true;                                                           \
-      break;                                                                  \
-    }                                                                         \
-  }                                                                           \
+#define verifyGetResults()                                                     \
+  bool found = false;                                                          \
+  for (int j = 0; j < 34; j++) {                                               \
+    if (j % 2 == 0) continue;                                                  \
+    sprintf(buf, "VALUE--%d", j);                                              \
+    if (strcmp(buf, dynCast<std::shared_ptr<CacheableString>>(                 \
+                        resultList->operator[](i))                             \
+                        ->asChar()) == 0) {                                    \
+      LOGINFO(                                                                 \
+          "buf = %s "                                                          \
+          "dynCast<std::shared_ptr<CacheableString>>(resultList->operator[]("  \
+          "i))->asChar() "                                                     \
+          "= %s ",                                                             \
+          buf,                                                                 \
+          dynCast<std::shared_ptr<CacheableString>>(resultList->operator[](i)) \
+              ->asChar());                                                     \
+      found = true;                                                            \
+      break;                                                                   \
+    }                                                                          \
+  }                                                                            \
   ASSERT(found, "this returned value is invalid");
 
-#define verifyGetKeyResults()                                                 \
-  bool found = false;                                                         \
-  for (int j = 0; j < 34; j++) {                                              \
-    if (j % 2 == 0) continue;                                                 \
-    sprintf(buf, "KEY--%d", j);                                               \
-    if (strcmp(buf, dynCast<std::shared_ptr<CacheableString>>(resultList->operator[](i))    \
-                        ->asChar()) == 0) {                                   \
-      LOGINFO(                                                                \
-          "buf = %s "                                                         \
-          "dynCast<std::shared_ptr<CacheableString>>(resultList->operator[](i))->asChar() " \
-          "= %s ",                                                            \
-          buf,                                                                \
-          dynCast<std::shared_ptr<CacheableString>>(resultList->operator[](i))->asChar());  \
-      found = true;                                                           \
-      break;                                                                  \
-    }                                                                         \
-  }                                                                           \
+#define verifyGetKeyResults()                                                  \
+  bool found = false;                                                          \
+  for (int j = 0; j < 34; j++) {                                               \
+    if (j % 2 == 0) continue;                                                  \
+    sprintf(buf, "KEY--%d", j);                                                \
+    if (strcmp(buf, dynCast<std::shared_ptr<CacheableString>>(                 \
+                        resultList->operator[](i))                             \
+                        ->asChar()) == 0) {                                    \
+      LOGINFO(                                                                 \
+          "buf = %s "                                                          \
+          "dynCast<std::shared_ptr<CacheableString>>(resultList->operator[]("  \
+          "i))->asChar() "                                                     \
+          "= %s ",                                                             \
+          buf,                                                                 \
+          dynCast<std::shared_ptr<CacheableString>>(resultList->operator[](i)) \
+              ->asChar());                                                     \
+      found = true;                                                            \
+      break;                                                                   \
+    }                                                                          \
+  }                                                                            \
   ASSERT(found, "this returned KEY is invalid");
 
 #define verifyPutResults()                   \

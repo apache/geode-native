@@ -88,8 +88,9 @@ class CPPCACHE_EXPORT QueryService {
    *
    * @endnativeclient
    */
-  virtual std::shared_ptr<CqQuery> newCq(const char* name, const char* querystr,
-                           const std::shared_ptr<CqAttributes>& cqAttr, bool isDurable = false) = 0;
+  virtual std::shared_ptr<CqQuery> newCq(
+      const char* name, const char* querystr,
+      const std::shared_ptr<CqAttributes>& cqAttr, bool isDurable = false) = 0;
   /**
    * @nativeclient
    * Constructs a new named continuous query, represented by an instance of
@@ -122,8 +123,9 @@ class CPPCACHE_EXPORT QueryService {
    *
    * @endnativeclient
    */
-  virtual std::shared_ptr<CqQuery> newCq(const char* querystr, const std::shared_ptr<CqAttributes>& cqAttr,
-                           bool isDurable = false) = 0;
+  virtual std::shared_ptr<CqQuery> newCq(
+      const char* querystr, const std::shared_ptr<CqAttributes>& cqAttr,
+      bool isDurable = false) = 0;
   /**
    * @nativeclient
    * Close all CQs, and release resources

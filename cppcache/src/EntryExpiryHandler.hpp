@@ -48,7 +48,8 @@ class CPPCACHE_EXPORT EntryExpiryHandler : public ACE_Event_Handler {
   /**
    * Constructor
    */
-  EntryExpiryHandler(std::shared_ptr<RegionInternal>& rptr, std::shared_ptr<MapEntryImpl>& entryPtr,
+  EntryExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
+                     std::shared_ptr<MapEntryImpl>& entryPtr,
                      ExpirationAction::Action action, uint32_t duration);
 
   /** This task object will be registered with the Timer Queue.

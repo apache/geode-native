@@ -52,26 +52,30 @@ class CPPCACHE_EXPORT RegionFactory {
    * @param cacheLoader the cache loader or nullptr if no loader
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setCacheLoader(const std::shared_ptr<CacheLoader>& cacheLoader);
+  RegionFactory& setCacheLoader(
+      const std::shared_ptr<CacheLoader>& cacheLoader);
 
   /** Sets the cache writer for the next <code>RegionAttributes</code> created.
    * @param cacheWriter the cache writer or nullptr if no cache writer
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setCacheWriter(const std::shared_ptr<CacheWriter>& cacheWriter);
+  RegionFactory& setCacheWriter(
+      const std::shared_ptr<CacheWriter>& cacheWriter);
 
   /** Sets the CacheListener for the next <code>RegionAttributes</code> created.
    * @param aListener a user defined CacheListener, nullptr if no listener
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setCacheListener(const std::shared_ptr<CacheListener>& aListener);
+  RegionFactory& setCacheListener(
+      const std::shared_ptr<CacheListener>& aListener);
 
   /** Sets the PartitionResolver for the next <code>RegionAttributes</code>
    * created.
    * @param aResolver a user defined PartitionResolver, nullptr if no resolver
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setPartitionResolver(const std::shared_ptr<PartitionResolver>& aResolver);
+  RegionFactory& setPartitionResolver(
+      const std::shared_ptr<PartitionResolver>& aResolver);
 
   /**
    * Sets the library path for the library that will be invoked for the loader
@@ -152,9 +156,9 @@ class CPPCACHE_EXPORT RegionFactory {
    * this must be used to set the PersistenceManager.
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setPersistenceManager(const char* libpath,
-                                       const char* factoryFuncName,
-                                       const std::shared_ptr<Properties>& config = nullptr);
+  RegionFactory& setPersistenceManager(
+      const char* libpath, const char* factoryFuncName,
+      const std::shared_ptr<Properties>& config = nullptr);
 
   /** Sets the PersistenceManager for the next <code>RegionAttributes</code>
    * created.

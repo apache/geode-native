@@ -119,7 +119,8 @@ void PoolStatsSampler::putStatsInAdminRegion() {
           gets, puts, misses, numListeners, numThreads, cpuTime, numCPU);
       ClientProxyMembershipID* memId = m_distMan->getMembershipId();
       clientId = memId->getDSMemberIdForThinClientUse();
-      std::shared_ptr<CacheableKey> keyPtr = CacheableString::create(clientId.c_str());
+      std::shared_ptr<CacheableKey> keyPtr =
+          CacheableString::create(clientId.c_str());
       m_adminRegion->put(keyPtr, obj);
     }
   } catch (const AllConnectionsInUseException&) {

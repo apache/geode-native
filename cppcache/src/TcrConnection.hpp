@@ -286,7 +286,8 @@ class CPPCACHE_EXPORT TcrConnection {
     return *m_connectionManager;
   }
 
-  std::shared_ptr<CacheableBytes> encryptBytes(std::shared_ptr<CacheableBytes> data) {
+  std::shared_ptr<CacheableBytes> encryptBytes(
+      std::shared_ptr<CacheableBytes> data) {
     if (m_dh != nullptr) {
       return m_dh->encrypt(data);
     } else {
@@ -294,7 +295,8 @@ class CPPCACHE_EXPORT TcrConnection {
     }
   }
 
-  std::shared_ptr<CacheableBytes> decryptBytes(std::shared_ptr<CacheableBytes> data) {
+  std::shared_ptr<CacheableBytes> decryptBytes(
+      std::shared_ptr<CacheableBytes> data) {
     if (m_dh != nullptr) {
       return m_dh->decrypt(data);
     } else {
@@ -347,7 +349,7 @@ class CPPCACHE_EXPORT TcrConnection {
    * "msgLength < 0U".
    */
   std::shared_ptr<CacheableBytes> readHandshakeData(int32_t msgLength,
-                                      uint32_t connectTimeout);
+                                                    uint32_t connectTimeout);
 
   /**
    * Reads raw bytes (without appending nullptr terminator) from socket and
@@ -358,10 +360,10 @@ class CPPCACHE_EXPORT TcrConnection {
    * change the input parameter from unint32_t to int32_t
    * as the comparasion case is valid
    */
-  // std::shared_ptr<CacheableBytes> readHandshakeRawData( uint32_t msgLength, uint32_t
-  // connectTimeout );
+  // std::shared_ptr<CacheableBytes> readHandshakeRawData( uint32_t msgLength,
+  // uint32_t connectTimeout );
   std::shared_ptr<CacheableBytes> readHandshakeRawData(int32_t msgLength,
-                                         uint32_t connectTimeout);
+                                                       uint32_t connectTimeout);
   /**
    * Reads a string from socket and handles error conditions in case of
    * Handshake.
@@ -372,7 +374,8 @@ class CPPCACHE_EXPORT TcrConnection {
    * Reads a byte array (using initial length) from socket and handles error
    * conditions in case of Handshake.
    */
-  std::shared_ptr<CacheableBytes> readHandshakeByteArray(uint32_t connectTimeout);
+  std::shared_ptr<CacheableBytes> readHandshakeByteArray(
+      uint32_t connectTimeout);
 
   /**
    * Send data to the connection till sendTimeoutSec

@@ -66,7 +66,8 @@ namespace security {
  * authorization schemes.
  * <p>
  * Usage:
- *    std::shared_ptr<CredentialGenerator> cg = CredentialGenerator::create( schemeStr );
+ *    std::shared_ptr<CredentialGenerator> cg = CredentialGenerator::create(
+ * schemeStr );
  *   @param schemeStr can be one of the following
  *    DUMMY - simple username/password authentication
  *    LDAP  - LDAP server based authentication.

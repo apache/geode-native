@@ -117,7 +117,8 @@ Exception::Exception(const Exception& other)
       m_cause(other.m_cause) {}
 
 Exception::Exception(const std::shared_ptr<CacheableString>& message,
-                     const std::shared_ptr<StackTrace>& stack, const std::shared_ptr<Exception>& cause)
+                     const std::shared_ptr<StackTrace>& stack,
+                     const std::shared_ptr<Exception>& cause)
     : m_message(message), m_stack(stack), m_cause(cause) {}
 
 Exception* Exception::clone() const {

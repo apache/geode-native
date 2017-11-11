@@ -85,7 +85,8 @@ class CPPCACHE_EXPORT Properties : public Serializable {
    *
    * @throws NullPointerException if the key is nullptr
    */
-  void insert(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value);
+  void insert(const std::shared_ptr<CacheableKey>& key,
+              const std::shared_ptr<Cacheable>& value);
 
   /**
    * Remove the key from the collection.

@@ -32,8 +32,8 @@ using namespace apache::geode::client;
  * In the future, a EntriesMap facade can be put over the SharedRegionData to
  * support shared regions directly.
  */
-EntriesMap* EntriesMapFactory::createMap(RegionInternal* region,
-                                         const std::shared_ptr<RegionAttributes>& attrs) {
+EntriesMap* EntriesMapFactory::createMap(
+    RegionInternal* region, const std::shared_ptr<RegionAttributes>& attrs) {
   EntriesMap* result = nullptr;
   uint32_t initialCapacity = attrs->getInitialCapacity();
   uint8_t concurrency = attrs->getConcurrencyLevel();

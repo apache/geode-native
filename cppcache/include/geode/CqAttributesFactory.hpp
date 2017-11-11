@@ -88,7 +88,8 @@ class CPPCACHE_EXPORT CqAttributesFactory  {
    * a
    * nullptr element
    */
-  void initCqListeners(const std::vector<std::shared_ptr<CqListener>>& cqListeners);
+  void initCqListeners(
+      const std::vector<std::shared_ptr<CqListener>>& cqListeners);
 
   /**
    * Creates a <code>CqAttributes</code> with the current settings.

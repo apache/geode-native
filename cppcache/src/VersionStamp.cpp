@@ -60,10 +60,9 @@ uint16_t VersionStamp::getMemberId() const { return m_memberID; }
 // This is based on the basicprocessVersionTag function of
 // AbstractRegionEntry.java
 // Any change to the java function should be reflected here as well.
-GfErrType VersionStamp::processVersionTag(const RegionInternal* region,
-                                          const std::shared_ptr<CacheableKey>& keyPtr,
-                                          const std::shared_ptr<VersionTag>& tag,
-                                          const bool deltaCheck) const {
+GfErrType VersionStamp::processVersionTag(
+    const RegionInternal* region, const std::shared_ptr<CacheableKey>& keyPtr,
+    const std::shared_ptr<VersionTag>& tag, const bool deltaCheck) const {
   char key[256];
   int16_t keyLen = keyPtr->logString(key, 256);
   std::string keystr(key, keyLen);
@@ -174,11 +173,10 @@ GfErrType VersionStamp::checkForConflict(const RegionInternal* region,
   return GF_NOERR;
 }
 
-GfErrType VersionStamp::checkForDeltaConflict(const RegionInternal* region,
-                                              const std::string& keystr,
-                                              const int64_t stampVersion,
-                                              const int64_t tagVersion,
-                                              const std::shared_ptr<VersionTag>& tag) const {
+GfErrType VersionStamp::checkForDeltaConflict(
+    const RegionInternal* region, const std::string& keystr,
+    const int64_t stampVersion, const int64_t tagVersion,
+    const std::shared_ptr<VersionTag>& tag) const {
   auto memberList = region->getCacheImpl()->getMemberListForVersionStamp();
   auto tcRegion = dynamic_cast<const ThinClientRegion*>(region);
   ThinClientPoolDM* poolDM = nullptr;

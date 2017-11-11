@@ -71,7 +71,8 @@ namespace client {
 
 class RegionInternal;
 typedef ::ACE_Hash_Map_Manager_Ex<
-    std::shared_ptr<CacheableKey>, std::shared_ptr<MapEntry>, ::ACE_Hash<std::shared_ptr<CacheableKey>>,
+    std::shared_ptr<CacheableKey>, std::shared_ptr<MapEntry>,
+    ::ACE_Hash<std::shared_ptr<CacheableKey>>,
     ::ACE_Equal_To<std::shared_ptr<CacheableKey>>, ::ACE_Null_Mutex>
     CacheableKeyHashMap;
 
@@ -149,8 +150,9 @@ class CPPCACHE_EXPORT MapSegment {
 
   inline GfErrType putNoEntry(const std::shared_ptr<CacheableKey>& key,
                               const std::shared_ptr<Cacheable>& newValue,
-                              std::shared_ptr<MapEntryImpl>& newEntry, int updateCount,
-                              int destroyTracker, std::shared_ptr<VersionTag> versionTag,
+                              std::shared_ptr<MapEntryImpl>& newEntry,
+                              int updateCount, int destroyTracker,
+                              std::shared_ptr<VersionTag> versionTag,
                               VersionStamp* versionStamp = nullptr) {
     if (!m_concurrencyChecksEnabled) {
       if (updateCount >= 0) {
@@ -180,15 +182,17 @@ class CPPCACHE_EXPORT MapSegment {
   }
 
   GfErrType putForTrackedEntry(const std::shared_ptr<CacheableKey>& key,
-                               const std::shared_ptr<Cacheable>& newValue, std::shared_ptr<MapEntry>& entry,
-                               std::shared_ptr<MapEntryImpl>& entryImpl, int updateCount,
-                               VersionStamp& versionStamp,
+                               const std::shared_ptr<Cacheable>& newValue,
+                               std::shared_ptr<MapEntry>& entry,
+                               std::shared_ptr<MapEntryImpl>& entryImpl,
+                               int updateCount, VersionStamp& versionStamp,
                                DataInput* delta = nullptr);
 
   std::shared_ptr<Cacheable> getFromDisc(std::shared_ptr<CacheableKey> key, std::shared_ptr<MapEntryImpl>& entryImpl);
 
   GfErrType removeWhenConcurrencyEnabled(
-      const std::shared_ptr<CacheableKey>& key, std::shared_ptr<Cacheable>& oldValue, std::shared_ptr<MapEntryImpl>& me,
+      const std::shared_ptr<CacheableKey>& key,
+      std::shared_ptr<Cacheable>& oldValue, std::shared_ptr<MapEntryImpl>& me,
       int updateCount, std::shared_ptr<VersionTag> versionTag, bool afterRemote,
       bool& isEntryFound, int64_t expiryTaskID, TombstoneExpiryHandler* handler,
       bool& expTaskSet);
@@ -229,17 +233,22 @@ class CPPCACHE_EXPORT MapSegment {
    * @brief put a new value in the map, failing if key already exists.
    * return error code if key already existing or something goes wrong.
    */
-  GfErrType create(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& newValue,
-                   std::shared_ptr<MapEntryImpl>& me, std::shared_ptr<Cacheable>& oldValue, int updateCount,
+  GfErrType create(const std::shared_ptr<CacheableKey>& key,
+                   const std::shared_ptr<Cacheable>& newValue,
+                   std::shared_ptr<MapEntryImpl>& me,
+                   std::shared_ptr<Cacheable>& oldValue, int updateCount,
                    int destroyTracker, std::shared_ptr<VersionTag> versionTag);
 
   /**
    * @brief put a value in the map, replacing if key already exists.
    * return error code is something goes wrong.
    */
-  GfErrType put(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& newValue,
-                std::shared_ptr<MapEntryImpl>& me, std::shared_ptr<Cacheable>& oldValue, int updateCount,
-                int destroyTracker, bool& isUpdate, std::shared_ptr<VersionTag> versionTag,
+  GfErrType put(const std::shared_ptr<CacheableKey>& key,
+                const std::shared_ptr<Cacheable>& newValue,
+                std::shared_ptr<MapEntryImpl>& me,
+                std::shared_ptr<Cacheable>& oldValue, int updateCount,
+                int destroyTracker, bool& isUpdate,
+                std::shared_ptr<VersionTag> versionTag,
                 DataInput* delta = nullptr);
 
   GfErrType invalidate(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<MapEntryImpl>& me,
@@ -249,7 +258,8 @@ class CPPCACHE_EXPORT MapSegment {
   /**
    * @brief remove an entry from the map, setting oldValue.
    */
-  GfErrType remove(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<Cacheable>& oldValue,
+  GfErrType remove(const std::shared_ptr<CacheableKey>& key,
+                   std::shared_ptr<Cacheable>& oldValue,
                    std::shared_ptr<MapEntryImpl>& me, int updateCount,
                    std::shared_ptr<VersionTag> versionTag, bool afterRemote,
                    bool& isEntryFound);
@@ -283,9 +293,9 @@ class CPPCACHE_EXPORT MapSegment {
 
   inline uint32_t rehashCount() { return m_rehashCount; }
 
-  int addTrackerForEntry(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<Cacheable>& oldValue,
-                         bool addIfAbsent, bool failIfPresent,
-                         bool incUpdateCount);
+  int addTrackerForEntry(const std::shared_ptr<CacheableKey>& key,
+                         std::shared_ptr<Cacheable>& oldValue, bool addIfAbsent,
+                         bool failIfPresent, bool incUpdateCount);
 
   void removeTrackerForEntry(const std::shared_ptr<CacheableKey>& key);
 
@@ -300,8 +310,8 @@ class CPPCACHE_EXPORT MapSegment {
   bool removeActualEntry(const std::shared_ptr<CacheableKey>& key, bool cancelTask = true);
 
   bool unguardedRemoveActualEntryWithoutCancelTask(
-      const std::shared_ptr<CacheableKey>& key, TombstoneExpiryHandler*& handler,
-      int64_t& taskid);
+      const std::shared_ptr<CacheableKey>& key,
+      TombstoneExpiryHandler*& handler, int64_t& taskid);
 
   bool unguardedRemoveActualEntry(const std::shared_ptr<CacheableKey>& key,
                                   bool cancelTask = true);

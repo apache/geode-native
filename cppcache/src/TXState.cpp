@@ -129,9 +129,10 @@ void TXState::releaseStickyConnection() {
   // manager.releaseThreadLocalConnection();
 }
 
-void TXState::recordTXOperation(ServerRegionOperation op,
-                                const char* regionName, std::shared_ptr<CacheableKey> key,
-                                std::shared_ptr<std::vector<std::shared_ptr<Cacheable>>> arguments) {
+void TXState::recordTXOperation(
+    ServerRegionOperation op, const char* regionName,
+    std::shared_ptr<CacheableKey> key,
+    std::shared_ptr<std::vector<std::shared_ptr<Cacheable>>> arguments) {
   m_operations.push_back(std::shared_ptr<TransactionalOperation>(
       new TransactionalOperation(op, regionName, key, arguments)));
 }

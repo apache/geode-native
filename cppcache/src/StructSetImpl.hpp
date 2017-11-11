@@ -44,8 +44,9 @@ class CPPCACHE_EXPORT StructSetImpl
     : public StructSet,
       public std::enable_shared_from_this<StructSetImpl> {
  public:
-  StructSetImpl(const std::shared_ptr<CacheableVector>& values,
-                const std::vector<std::shared_ptr<CacheableString>>& fieldNames);
+  StructSetImpl(
+      const std::shared_ptr<CacheableVector>& values,
+      const std::vector<std::shared_ptr<CacheableString>>& fieldNames);
 
   bool isModifiable() const;
 

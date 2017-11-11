@@ -110,7 +110,9 @@ class CPPCACHE_EXPORT CacheableDate : public CacheableKey {
   /**
    * Factory method for creating an instance of CacheableDate
    */
-  static std::shared_ptr<CacheableDate> create() { return std::make_shared<CacheableDate>(); }
+  static std::shared_ptr<CacheableDate> create() {
+    return std::make_shared<CacheableDate>();
+  }
 
   static std::shared_ptr<CacheableDate> create(const time_t& value) {
     return std::make_shared<CacheableDate>(value);
@@ -154,11 +156,13 @@ class CPPCACHE_EXPORT CacheableDate : public CacheableKey {
   FRIEND_STD_SHARED_PTR(CacheableDate)
 };
 
-inline std::shared_ptr<CacheableKey> createKey(const CacheableDate::time_point& value) {
+inline std::shared_ptr<CacheableKey> createKey(
+    const CacheableDate::time_point& value) {
   return CacheableDate::create(value);
 }
 
-inline std::shared_ptr<Cacheable> createValue(const CacheableDate::time_point& value) {
+inline std::shared_ptr<Cacheable> createValue(
+    const CacheableDate::time_point& value) {
   return CacheableDate::create(value);
 }
 

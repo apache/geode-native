@@ -87,7 +87,8 @@ void initClientWithPool(const bool isthinClient, const char* poolName,
 }
 
 /* For HA Clients */
-void initClient(int redundancyLevel, const std::shared_ptr<Properties>& configPtr = nullptr) {
+void initClient(int redundancyLevel,
+                const std::shared_ptr<Properties>& configPtr = nullptr) {
   if (cacheHelper == nullptr) {
     auto config = configPtr;
     if (config == nullptr) {
@@ -374,13 +375,13 @@ void createRegion(const char* name, bool ackMode,
   fflush(stdout);
   // ack, caching
   auto regPtr = getHelper()->createRegion(name, ackMode, caching, listener,
-                                               clientNotificationEnabled);
+                                          clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
-std::shared_ptr<Region> createOverflowRegion(const char* name, bool ackMode, int lel = 0,
-                               bool clientNotificationEnabled = true,
-                               bool caching = true) {
+std::shared_ptr<Region> createOverflowRegion(
+    const char* name, bool ackMode, int lel = 0,
+    bool clientNotificationEnabled = true, bool caching = true) {
   std::string bdb_dir = "BDB";
   std::string bdb_dirEnv = "BDBEnv";
   AttributesFactory af;
@@ -405,11 +406,11 @@ std::shared_ptr<Region> createOverflowRegion(const char* name, bool ackMode, int
   return regionPtr;
 }
 
-std::shared_ptr<Region> createPooledRegion(const char* name, bool ackMode,
-                             const char* locators, const char* poolname,
-                             bool clientNotificationEnabled = false,
-                             const std::shared_ptr<CacheListener>& listener = nullptr,
-                             bool caching = true) {
+std::shared_ptr<Region> createPooledRegion(
+    const char* name, bool ackMode, const char* locators, const char* poolname,
+    bool clientNotificationEnabled = false,
+    const std::shared_ptr<CacheListener>& listener = nullptr,
+    bool caching = true) {
   LOG("createPooledRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
@@ -435,10 +436,11 @@ std::shared_ptr<Pool> findPool(const char* poolName) {
   return poolPtr;
 }
 std::shared_ptr<Pool> createPool(const char* poolName, const char* locators,
-                   const char* serverGroup, int redundancy = 0,
-                   bool clientNotification = false,
-                   int subscriptionAckInterval = -1, int connections = -1,
-                   int loadConditioningInterval = -1) {
+                                 const char* serverGroup, int redundancy = 0,
+                                 bool clientNotification = false,
+                                 int subscriptionAckInterval = -1,
+                                 int connections = -1,
+                                 int loadConditioningInterval = -1) {
   LOG("createPool() entered.");
 
   auto poolPtr = getHelper()->createPool(
@@ -449,16 +451,15 @@ std::shared_ptr<Pool> createPool(const char* poolName, const char* locators,
   return poolPtr;
 }
 
-std::shared_ptr<Pool> createPoolAndDestroy(const char* poolName, const char* locators,
-                             const char* serverGroup, int redundancy = 0,
-                             bool clientNotification = false,
-                             int subscriptionAckInterval = -1,
-                             int connections = -1) {
+std::shared_ptr<Pool> createPoolAndDestroy(
+    const char* poolName, const char* locators, const char* serverGroup,
+    int redundancy = 0, bool clientNotification = false,
+    int subscriptionAckInterval = -1, int connections = -1) {
   LOG("createPoolAndDestroy() entered.");
 
-  auto poolPtr = getHelper()->createPool(
-      poolName, locators, serverGroup, redundancy, clientNotification,
-      subscriptionAckInterval, connections);
+  auto poolPtr = getHelper()->createPool(poolName, locators, serverGroup,
+                                         redundancy, clientNotification,
+                                         subscriptionAckInterval, connections);
   ASSERT(poolPtr != nullptr, "Failed to create pool.");
   poolPtr->destroy();
   LOG("Pool created and destroyed.");
@@ -466,8 +467,10 @@ std::shared_ptr<Pool> createPoolAndDestroy(const char* poolName, const char* loc
 }
 // this will create pool even endpoints and locatorhost has been not defined
 std::shared_ptr<Pool> createPool2(const char* poolName, const char* locators,
-                    const char* serverGroup, const char* servers = nullptr,
-                    int redundancy = 0, bool clientNotification = false) {
+                                  const char* serverGroup,
+                                  const char* servers = nullptr,
+                                  int redundancy = 0,
+                                  bool clientNotification = false) {
   LOG("createPool2() entered.");
 
   auto poolPtr = getHelper()->createPool2(
@@ -662,7 +665,8 @@ class RegionOperations {
   RegionOperations(const char* name)
       : m_regionPtr(getHelper()->getRegion(name)) {}
 
-  void putOp(int keys = 1, const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
+  void putOp(int keys = 1,
+             const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     char keybuf[100];
     char valbuf[100];
     for (int i = 1; i <= keys; i++) {
@@ -672,8 +676,9 @@ class RegionOperations {
       m_regionPtr->put(keybuf, valPtr, aCallbackArgument);
     }
   }
-  void invalidateOp(int keys = 1,
-                    const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
+  void invalidateOp(
+      int keys = 1,
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     char keybuf[100];
     char valbuf[100];
     for (int i = 1; i <= keys; i++) {
@@ -682,7 +687,9 @@ class RegionOperations {
       m_regionPtr->localInvalidate(keybuf, aCallbackArgument);
     }
   }
-  void destroyOp(int keys = 1, const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
+  void destroyOp(
+      int keys = 1,
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     char keybuf[100];
     char valbuf[100];
     for (int i = 1; i <= keys; i++) {
@@ -691,7 +698,9 @@ class RegionOperations {
       m_regionPtr->destroy(keybuf, aCallbackArgument);
     }
   }
-  void removeOp(int keys = 1, const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
+  void removeOp(
+      int keys = 1,
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     char keybuf[100];
     char valbuf[100];
     for (int i = 1; i <= keys; i++) {

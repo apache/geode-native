@@ -26,7 +26,8 @@ namespace geode {
 namespace client {
 class ThinClientPoolStickyDM : public ThinClientPoolDM {
  public:
-  ThinClientPoolStickyDM(const char* name, std::shared_ptr<PoolAttributes> poolAttrs,
+  ThinClientPoolStickyDM(const char* name,
+                         std::shared_ptr<PoolAttributes> poolAttrs,
                          TcrConnectionManager& connManager)
       : ThinClientPoolDM(name, poolAttrs, connManager) {
     m_sticky = true;

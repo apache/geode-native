@@ -54,14 +54,17 @@ class ThinClientTallyLoader : public TallyLoader {
 
   virtual ~ThinClientTallyLoader() {}
 
-  std::shared_ptr<Cacheable> load(const std::shared_ptr<Region>& rp, const std::shared_ptr<CacheableKey>& key,
-                    const std::shared_ptr<Serializable>& aCallbackArgument) {
+  std::shared_ptr<Cacheable> load(
+      const std::shared_ptr<Region>& rp,
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Serializable>& aCallbackArgument) {
     int32_t loadValue = std::dynamic_pointer_cast<CacheableInt32>(
                             TallyLoader::load(rp, key, aCallbackArgument))
                             ->value();
     char lstrvalue[32];
     sprintf(lstrvalue, "%i", loadValue);
-    std::shared_ptr<CacheableString> lreturnValue = CacheableString::create(lstrvalue);
+    std::shared_ptr<CacheableString> lreturnValue =
+        CacheableString::create(lstrvalue);
     if (key != nullptr && (nullptr != rp->getAttributes()->getEndpoints() ||
                            rp->getAttributes()->getPoolName() != nullptr)) {
       LOGDEBUG("Putting the value (%s) for local region clients only ",
@@ -72,19 +75,22 @@ class ThinClientTallyLoader : public TallyLoader {
   }
 };
 
-void setCacheListener(const char* regName, std::shared_ptr<TallyListener> regListener) {
+void setCacheListener(const char* regName,
+                      std::shared_ptr<TallyListener> regListener) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(regListener);
 }
 
-void setCacheLoader(const char* regName, std::shared_ptr<TallyLoader> regLoader) {
+void setCacheLoader(const char* regName,
+                    std::shared_ptr<TallyLoader> regLoader) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheLoader(regLoader);
 }
 
-void setCacheWriter(const char* regName, std::shared_ptr<TallyWriter> regWriter) {
+void setCacheWriter(const char* regName,
+                    std::shared_ptr<TallyWriter> regWriter) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheWriter(regWriter);

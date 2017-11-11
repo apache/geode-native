@@ -70,20 +70,22 @@ class QueryHelper {
 
   virtual ~QueryHelper() { ; }
 
-  virtual void populatePortfolioData(std::shared_ptr<Region>& pregion, int setSize,
-                                     int numSets, int32_t objSize = 1,
-                                     std::shared_ptr<CacheableStringArray> nm = nullptr);
-  virtual void populatePositionData(std::shared_ptr<Region>& pregion, int setSize,
-                                    int numSets);
-  virtual void populatePortfolioPdxData(std::shared_ptr<Region>& pregion, int setSize,
-                                        int numSets, int32_t objSize = 1,
+  virtual void populatePortfolioData(
+      std::shared_ptr<Region>& pregion, int setSize, int numSets,
+      int32_t objSize = 1, std::shared_ptr<CacheableStringArray> nm = nullptr);
+  virtual void populatePositionData(std::shared_ptr<Region>& pregion,
+                                    int setSize, int numSets);
+  virtual void populatePortfolioPdxData(std::shared_ptr<Region>& pregion,
+                                        int setSize, int numSets,
+                                        int32_t objSize = 1,
                                         char** nm = nullptr);
-  virtual void populatePositionPdxData(std::shared_ptr<Region>& pregion, int setSize,
-                                       int numSets);
+  virtual void populatePositionPdxData(std::shared_ptr<Region>& pregion,
+                                       int setSize, int numSets);
   virtual void populatePDXObject(std::shared_ptr<Region>& pregion);
   virtual void getPDXObject(std::shared_ptr<Region>& pregion);
 
-  virtual bool verifyRS(std::shared_ptr<SelectResults>& resultset, int rowCount);
+  virtual bool verifyRS(std::shared_ptr<SelectResults>& resultset,
+                        int rowCount);
   virtual bool verifySS(std::shared_ptr<SelectResults>& structset, int rowCount,
                         int fieldCount);
 
@@ -155,9 +157,9 @@ QueryHelper* QueryHelper::singleton = nullptr;
 
 //===========================================================================================
 
-void QueryHelper::populatePortfolioData(std::shared_ptr<Region>& rptr, int setSize,
-                                        int numSets, int32_t objSize,
-                                        std::shared_ptr<CacheableStringArray> nm) {
+void QueryHelper::populatePortfolioData(
+    std::shared_ptr<Region>& rptr, int setSize, int numSets, int32_t objSize,
+    std::shared_ptr<CacheableStringArray> nm) {
   // lets reset the counter for uniform population of position objects
   Position::resetCounter();
 
@@ -183,8 +185,8 @@ void QueryHelper::populatePortfolioData(std::shared_ptr<Region>& rptr, int setSi
 const char* secIds[] = {"SUN", "IBM",  "YHOO", "GOOG", "MSFT",
                         "AOL", "APPL", "ORCL", "SAP",  "DELL"};
 
-void QueryHelper::populatePositionData(std::shared_ptr<Region>& rptr, int setSize,
-                                       int numSets) {
+void QueryHelper::populatePositionData(std::shared_ptr<Region>& rptr,
+                                       int setSize, int numSets) {
   int numSecIds = sizeof(secIds) / sizeof(char*);
 
   for (int set = 1; set <= numSets; set++) {
@@ -202,9 +204,9 @@ void QueryHelper::populatePositionData(std::shared_ptr<Region>& rptr, int setSiz
   // positionSetSize = setSize; positionNumSets = numSets;
 }
 
-void QueryHelper::populatePortfolioPdxData(std::shared_ptr<Region>& rptr, int setSize,
-                                           int numSets, int32_t objSize,
-                                           char** nm) {
+void QueryHelper::populatePortfolioPdxData(std::shared_ptr<Region>& rptr,
+                                           int setSize, int numSets,
+                                           int32_t objSize, char** nm) {
   // lets reset the counter for uniform population of position objects
   PositionPdx::resetCounter();
 
@@ -228,8 +230,8 @@ void QueryHelper::populatePortfolioPdxData(std::shared_ptr<Region>& rptr, int se
   printf("all puts done \n");
 }
 
-void QueryHelper::populatePositionPdxData(std::shared_ptr<Region>& rptr, int setSize,
-                                          int numSets) {
+void QueryHelper::populatePositionPdxData(std::shared_ptr<Region>& rptr,
+                                          int setSize, int numSets) {
   int numSecIds = sizeof(secIds) / sizeof(char*);
 
   for (int set = 1; set <= numSets; set++) {
@@ -307,13 +309,13 @@ void QueryHelper::getPDXObject(std::shared_ptr<Region>& rptr) {
   */
 }
 
-bool QueryHelper::verifyRS(std::shared_ptr<SelectResults>& resultSet, int expectedRows) {
+bool QueryHelper::verifyRS(std::shared_ptr<SelectResults>& resultSet,
+                           int expectedRows) {
   if (!std::dynamic_pointer_cast<ResultSet>(resultSet)) {
     return false;
   }
 
-  auto rsptr =
-      std::static_pointer_cast<ResultSet>(resultSet);
+  auto rsptr = std::static_pointer_cast<ResultSet>(resultSet);
 
   int foundRows = 0;
 
@@ -330,8 +332,8 @@ bool QueryHelper::verifyRS(std::shared_ptr<SelectResults>& resultSet, int expect
   return false;
 }
 
-bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet, int expectedRows,
-                           int expectedFields) {
+bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
+                           int expectedRows, int expectedFields) {
   if (!std::dynamic_pointer_cast<StructSet>(structSet)) {
     if (expectedRows == 0 && expectedFields == 0) {
       return true;  // quite possible we got a null set back.

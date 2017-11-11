@@ -58,7 +58,9 @@ class CPPCACHE_EXPORT TombstoneExpiryHandler : public ACE_Event_Handler {
    */
   int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask);
 
-  void setTombstoneEntry(std::shared_ptr<TombstoneEntry> entryPtr) { m_entryPtr = entryPtr; }
+  void setTombstoneEntry(std::shared_ptr<TombstoneEntry> entryPtr) {
+    m_entryPtr = entryPtr;
+  }
 
  private:
   // The entry contained in the tombstone list

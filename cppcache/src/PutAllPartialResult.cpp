@@ -30,7 +30,8 @@ PutAllPartialResult::PutAllPartialResult(
 // Add all succeededKeys and firstfailedKey.
 // Before calling this, we must read PutAllPartialResultServerException and
 // formulate obj of type PutAllPartialResult.
-void PutAllPartialResult::consolidate(std::shared_ptr<PutAllPartialResult> other) {
+void PutAllPartialResult::consolidate(
+    std::shared_ptr<PutAllPartialResult> other) {
   {
     WriteGuard guard(g_readerWriterLock);
     m_succeededKeys->addAll(other->getSucceededKeysAndVersions());
@@ -43,7 +44,8 @@ void PutAllPartialResult::addKeysAndVersions(
   this->m_succeededKeys->addAll(keysAndVersion);
 }
 
-void PutAllPartialResult::addKeys(std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> m_keys) {
+void PutAllPartialResult::addKeys(
+    std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> m_keys) {
   {
     WriteGuard guard(g_readerWriterLock);
     if (m_succeededKeys->getVersionedTagsize() > 0) {

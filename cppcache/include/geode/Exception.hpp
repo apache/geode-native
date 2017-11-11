@@ -56,7 +56,8 @@ class CPPCACHE_EXPORT Exception {
    *               retrieved using <code>getCause</code>
    **/
   Exception(const char* msg1, const char* msg2 = nullptr,
-            bool forceTrace = false, const std::shared_ptr<Exception>& cause = nullptr);
+            bool forceTrace = false,
+            const std::shared_ptr<Exception>& cause = nullptr);
 
   /** Creates an exception as a copy of the given other exception.
    * @param  other the original exception.
@@ -107,7 +108,8 @@ class CPPCACHE_EXPORT Exception {
 
  protected:
   /** internal constructor used to clone this exception */
-  Exception(const std::shared_ptr<CacheableString>& message, const std::shared_ptr<StackTrace>& stack,
+  Exception(const std::shared_ptr<CacheableString>& message,
+            const std::shared_ptr<StackTrace>& stack,
             const std::shared_ptr<Exception>& cause);
 
   static bool s_exceptionStackTraceEnabled;

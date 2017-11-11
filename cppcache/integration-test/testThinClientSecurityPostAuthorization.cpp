@@ -123,7 +123,8 @@ const char* getServerSecurityParams() {
   return serverSecurityParams.c_str();
 }
 
-void getKeysVector(std::vector<std::shared_ptr<CacheableKey>>& keysVec, int numKeys) {
+void getKeysVector(std::vector<std::shared_ptr<CacheableKey>>& keysVec,
+                   int numKeys) {
   for (int index = 0; index < numKeys; ++index) {
     keysVec.push_back(CacheableString::create(keys[index]));
   }

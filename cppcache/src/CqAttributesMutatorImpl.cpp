@@ -17,15 +17,18 @@
 #include "CqAttributesMutatorImpl.hpp"
 #include "CqAttributesImpl.hpp"
 using namespace apache::geode::client;
-CqAttributesMutatorImpl::CqAttributesMutatorImpl(const std::shared_ptr<CqAttributes>& impl)
+CqAttributesMutatorImpl::CqAttributesMutatorImpl(
+    const std::shared_ptr<CqAttributes>& impl)
     : m_cqAttributes(impl) {}
 
-void CqAttributesMutatorImpl::addCqListener(const std::shared_ptr<CqListener>& aListener) {
+void CqAttributesMutatorImpl::addCqListener(
+    const std::shared_ptr<CqListener>& aListener) {
   std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)
       ->addCqListener(aListener);
 }
 
-void CqAttributesMutatorImpl::removeCqListener(const std::shared_ptr<CqListener>& aListener) {
+void CqAttributesMutatorImpl::removeCqListener(
+    const std::shared_ptr<CqListener>& aListener) {
   std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)
       ->removeCqListener(aListener);
 }

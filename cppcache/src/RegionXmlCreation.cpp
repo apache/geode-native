@@ -26,15 +26,16 @@ void RegionXmlCreation::addSubregion(
   subRegions.push_back(regionPtr);
 }
 
-void RegionXmlCreation::setAttributes(std::shared_ptr<RegionAttributes> attrsPtr) {
+void RegionXmlCreation::setAttributes(
+    std::shared_ptr<RegionAttributes> attrsPtr) {
   regAttrs = attrsPtr;
 }
  std::shared_ptr<RegionAttributes> RegionXmlCreation::getAttributes() { return regAttrs; }
 
-void RegionXmlCreation::fillIn(std::shared_ptr<Region> regionPtr) {
-  for (const auto& regXmlCreation : subRegions) {
-    regXmlCreation->create(regionPtr);
-  }
+ void RegionXmlCreation::fillIn(std::shared_ptr<Region> regionPtr) {
+   for (const auto& regXmlCreation : subRegions) {
+     regXmlCreation->create(regionPtr);
+   }
 }
 
 void RegionXmlCreation::createRoot(Cache* cache) {

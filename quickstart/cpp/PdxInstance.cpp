@@ -60,7 +60,8 @@ class Person {
 int main(int argc, char** argv) {
   try {
     // Create a Geode Cache.
-    std::shared_ptr<CacheFactory> cacheFactory = CacheFactory::createCacheFactory();
+    std::shared_ptr<CacheFactory> cacheFactory =
+        CacheFactory::createCacheFactory();
 
     auto cachePtr =
         cacheFactory->set("cache-xml-file", "XMLs/clientPdxInstance.xml")
@@ -93,7 +94,9 @@ int main(int argc, char** argv) {
 
     LOGINFO("Populated PdxInstance Object");
 
-    auto retPdxInstance = std::dynamic_pointer_cast<apache::geode::client::PdxInstance>(regionPtr->get("Key1"));
+    auto retPdxInstance =
+        std::dynamic_pointer_cast<apache::geode::client::PdxInstance>(
+            regionPtr->get("Key1"));
 
     LOGINFO("Got PdxInstance Object");
 

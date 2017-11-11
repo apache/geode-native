@@ -25,8 +25,9 @@
 namespace apache {
 namespace geode {
 namespace client {
-std::shared_ptr<CacheableString> convertBytesToString(const uint8_t* bytes, int32_t length,
-                                        size_t maxLength) {
+std::shared_ptr<CacheableString> convertBytesToString(const uint8_t* bytes,
+                                                      int32_t length,
+                                                      size_t maxLength) {
   if (bytes != NULL) {
     std::string str;
     size_t totalBytes = 0;
@@ -122,7 +123,8 @@ std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
         "No security-* properties are set.");
   }
 
-  std::shared_ptr<CacheableString> keyStoreptr = securityprops->find(KEYSTORE_FILE_PATH1);
+  std::shared_ptr<CacheableString> keyStoreptr =
+      securityprops->find(KEYSTORE_FILE_PATH1);
 
   const char* keyStorePath = keyStoreptr->asChar();
 
@@ -132,7 +134,8 @@ std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
         "key-store file path property KEYSTORE_FILE_PATH not set.");
   }
 
-  std::shared_ptr<CacheableString> aliasptr = securityprops->find(KEYSTORE_ALIAS1);
+  std::shared_ptr<CacheableString> aliasptr =
+      securityprops->find(KEYSTORE_ALIAS1);
 
   const char* alias = aliasptr->asChar();
 
@@ -142,7 +145,8 @@ std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
         "key-store alias property KEYSTORE_ALIAS not set.");
   }
 
-  std::shared_ptr<CacheableString> keyStorePassptr = securityprops->find(KEYSTORE_PASSWORD1);
+  std::shared_ptr<CacheableString> keyStorePassptr =
+      securityprops->find(KEYSTORE_PASSWORD1);
 
   const char* keyStorePass = keyStorePassptr->asChar();
 

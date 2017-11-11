@@ -28,7 +28,8 @@ std::string g_default_persistence_directory = "GeodeRegionData";
 
 using namespace apache::geode::client;
 
-void SqLiteImpl::init(const std::shared_ptr<Region>& region, const std::shared_ptr<Properties>& diskProperties) {
+void SqLiteImpl::init(const std::shared_ptr<Region>& region,
+                      const std::shared_ptr<Properties>& diskProperties) {
   // Set the default values
 
   int maxPageCount = 0;
@@ -38,8 +39,10 @@ void SqLiteImpl::init(const std::shared_ptr<Region>& region, const std::shared_p
   std::string regionName = region->getName();
   if (diskProperties != nullptr) {
     std::shared_ptr<CacheableString> maxPageCountPtr = diskProperties->find(MAX_PAGE_COUNT);
-    std::shared_ptr<CacheableString> pageSizePtr = diskProperties->find(PAGE_SIZE);
-    std::shared_ptr<CacheableString> persDir = diskProperties->find(PERSISTENCE_DIR);
+    std::shared_ptr<CacheableString> pageSizePtr =
+        diskProperties->find(PAGE_SIZE);
+    std::shared_ptr<CacheableString> persDir =
+        diskProperties->find(PERSISTENCE_DIR);
 
     if (maxPageCountPtr != nullptr) {
       maxPageCount = atoi(maxPageCountPtr->asChar());
@@ -108,7 +111,8 @@ void SqLiteImpl::init(const std::shared_ptr<Region>& region, const std::shared_p
   }
 }
 
-void SqLiteImpl::write(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value,
+void SqLiteImpl::write(const std::shared_ptr<CacheableKey>& key,
+                       const std::shared_ptr<Cacheable>& value,
                        void*& dbHandle) {
   // Serialize key and value.
   auto* cache = m_regionPtr->getCache().get();

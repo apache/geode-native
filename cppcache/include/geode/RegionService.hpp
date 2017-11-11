@@ -93,9 +93,9 @@ class CPPCACHE_EXPORT RegionService {
   virtual std::shared_ptr<Region> getRegion(const char* name) = 0;
 
   /**
-  * Gets the QueryService from which a new Query can be obtained.
-  * @returns A smart pointer to the QueryService.
-  */
+   * Gets the QueryService from which a new Query can be obtained.
+   * @returns A smart pointer to the QueryService.
+   */
   virtual std::shared_ptr<QueryService> getQueryService() = 0;
 
   /**
@@ -109,12 +109,12 @@ class CPPCACHE_EXPORT RegionService {
   virtual std::vector<std::shared_ptr<Region>> rootRegions() = 0;
 
   /**
-  * Returns a factory that can create a {@link PdxInstance}.
-  * @param className the fully qualified class name that the PdxInstance will
-  * become
-  * when it is fully deserialized.
-  * @return the factory
-  */
+   * Returns a factory that can create a {@link PdxInstance}.
+   * @param className the fully qualified class name that the PdxInstance will
+   * become
+   * when it is fully deserialized.
+   * @return the factory
+   */
   virtual std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
       const char* className) = 0;
 };

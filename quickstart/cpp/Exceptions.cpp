@@ -102,8 +102,8 @@ int main(int argc, char** argv) {
       // If the settings are the same it returns the existing Cache instance.
       auto cacheFactory2 = CacheFactory::createCacheFactory(prp);
       auto cachePtr1 = cacheFactory2->setSubscriptionEnabled(true)
-                               ->addServer("localhost", 40405)
-                               ->create();
+                           ->addServer("localhost", 40405)
+                           ->create();
       LOGINFO("UNEXPECTED: Cache create should not have succeeded");
 
       return 1;

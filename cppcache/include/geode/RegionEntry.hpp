@@ -93,10 +93,11 @@ class CPPCACHE_EXPORT RegionEntry {
 
  private:
   /**
-    * @brief constructors
-    * created by region
-    */
-  RegionEntry(const std::shared_ptr<Region>& region, const std::shared_ptr<CacheableKey>& key,
+   * @brief constructors
+   * created by region
+   */
+  RegionEntry(const std::shared_ptr<Region>& region,
+              const std::shared_ptr<CacheableKey>& key,
               const std::shared_ptr<Cacheable>& value);
   std::shared_ptr<Region> m_region;
   std::shared_ptr<CacheableKey> m_key;

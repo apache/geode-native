@@ -59,7 +59,8 @@ class TestUtils {
     return cacheImpl.getPdxTypeRegistry()->testNumberOfPreservedData();
   }
 
-  static bool waitForKey(std::shared_ptr<CacheableKey>& keyPtr, std::shared_ptr<Region>& rptr, int maxTry,
+  static bool waitForKey(std::shared_ptr<CacheableKey>& keyPtr,
+                         std::shared_ptr<Region>& rptr, int maxTry,
                          uint32_t msleepTime) {
     int tries = 0;
     bool found = false;
@@ -69,8 +70,9 @@ class TestUtils {
     }
     return found;
   }
-  static bool waitForValueForKey(std::shared_ptr<CacheableKey>& keyPtr, std::shared_ptr<Region>& rptr,
-                                 int maxTry, uint32_t msleepTime) {
+  static bool waitForValueForKey(std::shared_ptr<CacheableKey>& keyPtr,
+                                 std::shared_ptr<Region>& rptr, int maxTry,
+                                 uint32_t msleepTime) {
     int tries = 0;
     bool found = false;
     while ((tries < maxTry) && (!(found = rptr->containsValueForKey(keyPtr)))) {
@@ -79,7 +81,8 @@ class TestUtils {
     }
     return found;
   }
-  static bool waitForValueForKeyGoAway(std::shared_ptr<CacheableKey>& keyPtr, std::shared_ptr<Region>& rptr,
+  static bool waitForValueForKeyGoAway(std::shared_ptr<CacheableKey>& keyPtr,
+                                       std::shared_ptr<Region>& rptr,
                                        int maxTry, uint32_t msleepTime) {
     int tries = 0;
     bool found = true;
@@ -89,8 +92,8 @@ class TestUtils {
     }
     return found;
   }
-  static bool waitForValueNotNULL(std::shared_ptr<CacheableString>& valPtr, int maxTry,
-                                  uint32_t msleepTime) {
+  static bool waitForValueNotNULL(std::shared_ptr<CacheableString>& valPtr,
+                                  int maxTry, uint32_t msleepTime) {
     int tries = 0;
     bool found = false;
     // @TODO: ? How will valPtr every point to something else in this loop?
@@ -102,8 +105,9 @@ class TestUtils {
   }
 
   static int waitForValue(std::shared_ptr<CacheableKey>& keyPtr, int expected,
-                          std::shared_ptr<CacheableString>& valPtr, std::shared_ptr<Region>& rptr,
-                          int maxTry, uint32_t msleepTime) {
+                          std::shared_ptr<CacheableString>& valPtr,
+                          std::shared_ptr<Region>& rptr, int maxTry,
+                          uint32_t msleepTime) {
     int tries = 0;
     int val = 0;
     do {

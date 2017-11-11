@@ -55,11 +55,13 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @param fieldName
    *          name of the field whose value will be set
    * @param value
-   *          value that will be set to the field of type std::shared_ptr<Cacheable>
+   *          value that will be set to the field of type
+   * std::shared_ptr<Cacheable>
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, std::shared_ptr<Cacheable> value) = 0;
+  virtual void setField(const char* fieldName,
+                        std::shared_ptr<Cacheable> value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -209,15 +211,18 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * The setField method has copy-on-write semantics.
    * So for the modifications to be stored in the cache the WritablePdxInstance
    * must be put into a region after setField has been called one or more times.
-   * std::shared_ptr<CacheableDate> type is corresponding to java Java.util.date type.
+   * std::shared_ptr<CacheableDate> type is corresponding to java Java.util.date
+   * type.
    * @param fieldName
    *          name of the field whose value will be set
    * @param value
-   *          value that will be set to the field of type std::shared_ptr<CacheableDate>
+   *          value that will be set to the field of type
+   * std::shared_ptr<CacheableDate>
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, std::shared_ptr<CacheableDate> value) = 0;
+  virtual void setField(const char* fieldName,
+                        std::shared_ptr<CacheableDate> value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -496,7 +501,8 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * The setField method has copy-on-write semantics.
    * So for the modifications to be stored in the cache the WritablePdxInstance
    * must be put into a region after setField has been called one or more times.
-   * std::shared_ptr<CacheableObjectArray> type is corresponding to java Object[] type.
+   * std::shared_ptr<CacheableObjectArray> type is corresponding to java
+   * Object[] type.
    * @param fieldName
    *          name of the field whose value will be set
    * @param value

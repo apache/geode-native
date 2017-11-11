@@ -89,7 +89,8 @@ class PdxType : public Serializable,
   std::shared_ptr<PdxType> clone();
   void generatePositionMap();
 
-  std::shared_ptr<PdxType> isLocalTypeContains(std::shared_ptr<PdxType> otherType);
+  std::shared_ptr<PdxType> isLocalTypeContains(
+      std::shared_ptr<PdxType> otherType);
   std::shared_ptr<PdxType> isRemoteTypeContains(std::shared_ptr<PdxType> localType);
 
   std::shared_ptr<PdxType> shared_from_this() {

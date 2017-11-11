@@ -38,7 +38,8 @@ class TestData {
 /* setup recipient */
 DUNIT_TASK(A, Init)
   {
-    std::shared_ptr<CacheFactory> cacheFactoryPtr = CacheFactory::createCacheFactory();
+    std::shared_ptr<CacheFactory> cacheFactoryPtr =
+        CacheFactory::createCacheFactory();
     Test.m_cache = cacheFactoryPtr->create();
 
     AttributesFactory af;

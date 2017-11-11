@@ -411,7 +411,8 @@ void createIntEntry(const char* name, const char* key, const int value) {
   LOG("Entry created.");
 }
 
-void setCacheListener(const char* regName, std::shared_ptr<DupChecker> checker) {
+void setCacheListener(const char* regName,
+                      std::shared_ptr<DupChecker> checker) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(checker);

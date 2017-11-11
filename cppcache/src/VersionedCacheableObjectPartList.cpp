@@ -37,9 +37,8 @@ void VersionedCacheableObjectPartList::toData(DataOutput& output) const {
       "VersionedCacheableObjectPartList::toData not implemented");
 }
 
-void VersionedCacheableObjectPartList::readObjectPart(int32_t index,
-                                                      DataInput& input,
-                                                      std::shared_ptr<CacheableKey> keyPtr) {
+void VersionedCacheableObjectPartList::readObjectPart(
+    int32_t index, DataInput& input, std::shared_ptr<CacheableKey> keyPtr) {
   std::shared_ptr<CacheableString> exMsgPtr;
   std::shared_ptr<Exception> ex;
   auto objType = input.read();
@@ -119,7 +118,8 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
         "data. Returning,");
   }
 
-  auto localKeys = std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>();
+  auto localKeys =
+      std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>();
   if (m_hasKeys) {
     len = static_cast<int32_t>(input.readUnsignedVL());
 
@@ -200,11 +200,11 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
         }
         case FLAG_FULL_TAG: {
           if (persistent) {
-            versionTag =
-                std::shared_ptr<VersionTag>(new DiskVersionTag(memberListForVersionStamp));
+            versionTag = std::shared_ptr<VersionTag>(
+                new DiskVersionTag(memberListForVersionStamp));
           } else {
-            versionTag =
-                std::shared_ptr<VersionTag>(new VersionTag(memberListForVersionStamp));
+            versionTag = std::shared_ptr<VersionTag>(
+                new VersionTag(memberListForVersionStamp));
           }
           versionTag->fromData(input);
           versionTag->replaceNullMemberId(getEndpointMemId());
@@ -213,11 +213,11 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
 
         case FLAG_TAG_WITH_NEW_ID: {
           if (persistent) {
-            versionTag =
-                std::shared_ptr<VersionTag>(new DiskVersionTag(memberListForVersionStamp));
+            versionTag = std::shared_ptr<VersionTag>(
+                new DiskVersionTag(memberListForVersionStamp));
           } else {
-            versionTag =
-                std::shared_ptr<VersionTag>(new VersionTag(memberListForVersionStamp));
+            versionTag = std::shared_ptr<VersionTag>(
+                new VersionTag(memberListForVersionStamp));
           }
           versionTag->fromData(input);
           ids.push_back(versionTag->getInternalMemID());
@@ -226,11 +226,11 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
 
         case FLAG_TAG_WITH_NUMBER_ID: {
           if (persistent) {
-            versionTag =
-                std::shared_ptr<VersionTag>(new DiskVersionTag(memberListForVersionStamp));
+            versionTag = std::shared_ptr<VersionTag>(
+                new DiskVersionTag(memberListForVersionStamp));
           } else {
-            versionTag =
-                std::shared_ptr<VersionTag>(new VersionTag(memberListForVersionStamp));
+            versionTag = std::shared_ptr<VersionTag>(
+                new VersionTag(memberListForVersionStamp));
           }
           versionTag->fromData(input);
           int32_t idNumber = input.readUnsignedVL();
@@ -241,8 +241,8 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
       }
       m_versionTags[index] = versionTag;
     }
-  } else {  // if consistancyEnabled=false, we need to pass empty or std::shared_ptr<NULL>
-            // m_versionTags
+  } else {  // if consistancyEnabled=false, we need to pass empty or
+            // std::shared_ptr<NULL> m_versionTags
     for (int32_t index = 0; index < len; ++index) {
       std::shared_ptr<VersionTag> versionTag;
       m_versionTags[index] = versionTag;

@@ -112,7 +112,8 @@ class CPPCACHE_EXPORT CacheableKey : public Cacheable {
 };
 
 template <class TKEY>
-inline std::shared_ptr<CacheableKey> createKey(const std::shared_ptr<TKEY>& value);
+inline std::shared_ptr<CacheableKey> createKey(
+    const std::shared_ptr<TKEY>& value);
 
 template <typename TKEY>
 inline std::shared_ptr<CacheableKey> createKey(const TKEY* value);

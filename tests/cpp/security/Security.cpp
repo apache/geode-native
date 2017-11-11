@@ -504,8 +504,8 @@ int32_t Security::verifyInterestList()
     for(int32_t i = 0; i < (int32_t) keys.size(); i++)
     {
       keyPtr = keys.at(i);
-      valuePtr = std::dynamic_pointer_cast<CacheableBytes>( region->get(keyPtr) );
-      valueSize = valuePtr->length();
+      valuePtr = std::dynamic_pointer_cast<CacheableBytes>( region->get(keyPtr)
+); valueSize = valuePtr->length();
 
       if( (int32_t)valueSize == payload )
       {
@@ -740,7 +740,7 @@ int32_t Security::checkValues() {
 }
 
 // ----------------------------------------------------------------------------
- std::shared_ptr<Region> Security::getRegionPtr(const char *reg) {
+std::shared_ptr<Region> Security::getRegionPtr(const char *reg) {
   std::shared_ptr<Region> region;
   std::string name;
 

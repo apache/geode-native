@@ -78,7 +78,8 @@ BEGIN_TEST(LinkageTest)
   }
 
   std::shared_ptr<Cache> cachePtr;
-  std::shared_ptr<CacheFactory> cacheFactoryPtr = CacheFactory::createCacheFactory();
+  std::shared_ptr<CacheFactory> cacheFactoryPtr =
+      CacheFactory::createCacheFactory();
   cachePtr = cacheFactoryPtr->create();
   // Cache cache;
   ASSERT((!cachePtr->isClosed()), "cache shouldn't be closed.");

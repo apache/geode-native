@@ -98,7 +98,8 @@ const char* regions[] = {"ConflatedRegion", "NonConflatedRegion"};
 #include "ThinClientTasks_C2S2.hpp"
 #include "LocatorHelper.hpp"
 
-void initClientCache(std::shared_ptr<OperMonitor>& mon1, std::shared_ptr<OperMonitor>& mon2, int durableIdx,
+void initClientCache(std::shared_ptr<OperMonitor>& mon1,
+                     std::shared_ptr<OperMonitor>& mon2, int durableIdx,
                      const char* conflation) {
   initClientAndTwoRegions(durableIdx, 0, 300, conflation, regions);
 

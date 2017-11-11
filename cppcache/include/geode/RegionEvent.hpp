@@ -45,7 +45,8 @@ class CPPCACHE_EXPORT RegionEvent {
   /** Constructor. */
   RegionEvent();
   /** Constructor, given the values. */
-  RegionEvent(const std::shared_ptr<Region>& region, const std::shared_ptr<Serializable>& aCallbackArgument,
+  RegionEvent(const std::shared_ptr<Region>& region,
+              const std::shared_ptr<Serializable>& aCallbackArgument,
               const bool remoteOrigin);
 
   /** Destructor. */
@@ -59,7 +60,9 @@ class CPPCACHE_EXPORT RegionEvent {
    * this event. See the {@link Region} interface methods that take
    * a callbackArgument parameter.
    */
-  inline std::shared_ptr<Serializable> getCallbackArgument() const { return m_callbackArgument; }
+  inline std::shared_ptr<Serializable> getCallbackArgument() const {
+    return m_callbackArgument;
+  }
 
   /** If the event originated in a remote process, returns true. */
   inline bool remoteOrigin() const { return m_remoteOrigin; }

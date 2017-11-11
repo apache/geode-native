@@ -22,12 +22,12 @@
 
 using namespace apache::geode::client;
 
-
 std::shared_ptr<Pool> PoolXmlCreation::create(Cache& cache) {
   return poolFactory->create(poolName.c_str());
 }
 
-PoolXmlCreation::PoolXmlCreation(const char* name, std::shared_ptr<PoolFactory> factory) {
+PoolXmlCreation::PoolXmlCreation(const char* name,
+                                 std::shared_ptr<PoolFactory> factory) {
   poolName = name;
   poolFactory = factory;
 }

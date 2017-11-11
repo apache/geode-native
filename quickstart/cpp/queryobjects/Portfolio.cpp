@@ -24,7 +24,8 @@ using namespace testobject;
 const char* Portfolio::secIds[] = {"SUN", "IBM",  "YHOO", "GOOG", "MSFT",
                                    "AOL", "APPL", "ORCL", "SAP",  "DELL"};
 
-Portfolio::Portfolio(int32_t i, uint32_t size, std::shared_ptr<CacheableStringArray> nm)
+Portfolio::Portfolio(int32_t i, uint32_t size,
+                     std::shared_ptr<CacheableStringArray> nm)
     : names(nm) {
   ID = i;
   char pkidbuf[1024];

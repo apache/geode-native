@@ -37,7 +37,8 @@ static int numberOfLocators = 1;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
-void setCacheListener(const char* regName, const std::shared_ptr<CacheListener>& listener) {
+void setCacheListener(const char* regName,
+                      const std::shared_ptr<CacheListener>& listener) {
   if (listener != nullptr) {
     auto reg = getHelper()->getRegion(regName);
     auto attrMutator = reg->getAttributesMutator();
@@ -45,12 +46,11 @@ void setCacheListener(const char* regName, const std::shared_ptr<CacheListener>&
   }
 }
 
-void createRegionForSecurity(const char* name, bool ackMode,
-                             bool clientNotificationEnabled = false,
-                             const std::shared_ptr<CacheListener>& listener = nullptr,
-                             bool caching = true, int connections = -1,
-                             bool isMultiuserMode = false,
-                             int subscriptionRedundancy = -1) {
+void createRegionForSecurity(
+    const char* name, bool ackMode, bool clientNotificationEnabled = false,
+    const std::shared_ptr<CacheListener>& listener = nullptr,
+    bool caching = true, int connections = -1, bool isMultiuserMode = false,
+    int subscriptionRedundancy = -1) {
   char msg[128] = {'\0'};
   LOG(msg);
   LOG(" pool is creating");
@@ -74,7 +74,8 @@ std::shared_ptr<Pool> getPool(const char* name) {
   return getHelper()->getCache()->getPoolManager().find(name);
 }
 
-std::shared_ptr<RegionService> getVirtualCache(std::shared_ptr<Properties> creds, std::shared_ptr<Pool> pool) {
+std::shared_ptr<RegionService> getVirtualCache(
+    std::shared_ptr<Properties> creds, std::shared_ptr<Pool> pool) {
   auto cachePtr = getHelper()->getCache();
   return cachePtr->createAuthenticatedView(creds, pool->getName());
 }

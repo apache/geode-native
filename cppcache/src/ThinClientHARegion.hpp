@@ -49,8 +49,8 @@ class CPPCACHE_EXPORT ThinClientHARegion : public ThinClientRegion {
   ThinClientHARegion(const std::string& name, CacheImpl* cache,
                      const std::shared_ptr<RegionInternal>& rPtr,
                      const std::shared_ptr<RegionAttributes>& attributes,
-                     const std::shared_ptr<CacheStatistics>& stats, bool shared = false,
-                     bool enableNotification = true);
+                     const std::shared_ptr<CacheStatistics>& stats,
+                     bool shared = false, bool enableNotification = true);
 
   virtual ~ThinClientHARegion() {
     if (m_poolDM) m_tcrdm = nullptr;
@@ -64,9 +64,9 @@ class CPPCACHE_EXPORT ThinClientHARegion : public ThinClientRegion {
   void addDisMessToQueue();
 
  protected:
-  virtual GfErrType getNoThrow_FullObject(std::shared_ptr<EventId> eventId,
-                                          std::shared_ptr<Cacheable>& fullObject,
-                                          std::shared_ptr<VersionTag>& versionTag);
+  virtual GfErrType getNoThrow_FullObject(
+      std::shared_ptr<EventId> eventId, std::shared_ptr<Cacheable>& fullObject,
+      std::shared_ptr<VersionTag>& versionTag);
 
  private:
   std::shared_ptr<RegionAttributes> m_attribute;

@@ -92,7 +92,7 @@ void createRegionCachingDisabled(const char* name, bool ackMode,
   fflush(stdout);
   // ack, caching
   auto regPtr = getHelper()->createRegion(name, ackMode, false, nullptr,
-                                               clientNotificationEnabled);
+                                          clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
@@ -110,7 +110,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1)
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TESTPOOL1_", true,
                        false);  // without LRU
     try {
-      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
       serializationRegistry->addType(DeltaEx::create);
     } catch (IllegalStateException&) {
       //  ignore exception caused by type reregistration.
@@ -123,7 +125,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1_NoPools)
     initClientNoPools();
     createRegionCachingDisabled(regionNames[0], USE_ACK, true);  // without LRU
     try {
-      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
       serializationRegistry->addType(DeltaEx::create);
     } catch (IllegalStateException&) {
       //  ignore exception caused by type reregistration.
@@ -137,7 +141,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2)
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TESTPOOL1_", true,
                        false);
     try {
-      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
       serializationRegistry->addType(DeltaEx::create);
     } catch (IllegalStateException&) {
       //  ignore exception caused by type reregistration.
@@ -152,7 +158,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_NoPools)
     initClientNoPools();
     createRegionCachingDisabled(regionNames[0], USE_ACK, true);  // without LRU
     try {
-      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
       serializationRegistry->addType(DeltaEx::create);
     } catch (IllegalStateException&) {
       //  ignore exception caused by type reregistration.

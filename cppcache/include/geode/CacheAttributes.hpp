@@ -51,7 +51,7 @@ namespace client {
  */
 class CacheAttributesFactory;
 
-class CPPCACHE_EXPORT CacheAttributes  {
+class CPPCACHE_EXPORT CacheAttributes {
   /**
    * @brief public static methods
    */

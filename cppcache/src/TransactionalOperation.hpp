@@ -57,8 +57,10 @@ class CacheableKey;
 
 class TransactionalOperation {
  public:
-  TransactionalOperation(ServerRegionOperation op, const char* regionName,
-                         std::shared_ptr<CacheableKey> key, std::shared_ptr<std::vector<std::shared_ptr<Cacheable>>> arguments);
+  TransactionalOperation(
+      ServerRegionOperation op, const char* regionName,
+      std::shared_ptr<CacheableKey> key,
+      std::shared_ptr<std::vector<std::shared_ptr<Cacheable>>> arguments);
   virtual ~TransactionalOperation();
 
   std::shared_ptr<Cacheable> replay(Cache* cache);

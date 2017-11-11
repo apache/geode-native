@@ -204,9 +204,8 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  auto regPtr =
-      getHelper()->createRegion(name, ackMode, cachingEnable, nullptr,
-                                endpoints, clientNotificationEnabled);
+  auto regPtr = getHelper()->createRegion(name, ackMode, cachingEnable, nullptr,
+                                          endpoints, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
@@ -558,11 +557,10 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CreatePoolForUpdateLocatorList)
   {
     /*
-    std::shared_ptr<Pool>  createPool(const char* poolName, const char* locators, const char*
-    serverGroup,
-                  const char* servers = nullptr, int redundancy = 0, bool
-    clientNotification = false, int subscriptionAckInterval = -1,
-                  int connections = -1, int loadConditioningInterval = - 1, bool
+    std::shared_ptr<Pool>  createPool(const char* poolName, const char*
+    locators, const char* serverGroup, const char* servers = nullptr, int
+    redundancy = 0, bool clientNotification = false, int subscriptionAckInterval
+    = -1, int connections = -1, int loadConditioningInterval = - 1, bool
     isMultiuserMode = false, int updateLocatorListInterval = 5000 )
     */
     initClient(true);
@@ -575,11 +573,10 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CreatePoolForDontUpdateLocatorList)
   {
     /*
-    std::shared_ptr<Pool>  createPool(const char* poolName, const char* locators, const char*
-    serverGroup,
-                  const char* servers = nullptr, int redundancy = 0, bool
-    clientNotification = false, int subscriptionAckInterval = -1,
-                  int connections = -1, int loadConditioningInterval = - 1, bool
+    std::shared_ptr<Pool>  createPool(const char* poolName, const char*
+    locators, const char* serverGroup, const char* servers = nullptr, int
+    redundancy = 0, bool clientNotification = false, int subscriptionAckInterval
+    = -1, int connections = -1, int loadConditioningInterval = - 1, bool
     isMultiuserMode = false, int updateLocatorListInterval = 5000 )
     */
     initClient(true);
@@ -594,8 +591,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyUpdateLocatorListThread)
     int sleepSeconds = 60;
     dunit::sleep(sleepSeconds * 1000);
 
-    auto pptr =
-        getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
+    auto pptr = getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
     int updateIntervalSeconds = pptr->getUpdateLocatorListInterval() / 1000;
 
     int numLocatorListUpdates =
@@ -750,7 +746,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight_Pool)
     auto reg = getHelper()->getRegion(regionNames[2]);
     LOG("REGION Created with Caching Enabled false");
     std::shared_ptr<CacheableKey> keyPtr = createKey(CREATE_TWICE_KEY);
-    std::shared_ptr<CacheableString> valPtr = CacheableString::create(CREATE_TWICE_VALUE);
+    std::shared_ptr<CacheableString> valPtr =
+        CacheableString::create(CREATE_TWICE_VALUE);
     try {
       reg->create(keyPtr, valPtr);
       char message[200];
@@ -778,14 +775,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight_Pool_Sticky)
     auto reg = getHelper()->getRegion(regionNames[2]);
     LOG("REGION Created with Caching Enabled false");
     std::shared_ptr<CacheableKey> keyPtr = createKey(CREATE_TWICE_KEY);
-    std::shared_ptr<CacheableString> valPtr = CacheableString::create(CREATE_TWICE_VALUE);
+    std::shared_ptr<CacheableString> valPtr =
+        CacheableString::create(CREATE_TWICE_VALUE);
 
     auto reg0 = getHelper()->getRegion(regionNames[0]);
     auto reg1 = getHelper()->getRegion(regionNames[1]);
     reg0->localInvalidate(createKey(keys[1]));
     reg1->localInvalidate(createKey(keys[3]));
-    auto pool =
-        getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
+    auto pool = getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
     ASSERT(pool != nullptr, "Pool Should have been found");
     doNetsearch(regionNames[0], keys[1], nvals[1]);
     doNetsearch(regionNames[1], keys[3], nvals[3]);

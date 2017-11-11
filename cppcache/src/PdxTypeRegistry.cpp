@@ -41,7 +41,8 @@ size_t PdxTypeRegistry::testNumberOfPreservedData() const {
 }
 
 int32_t PdxTypeRegistry::getPDXIdForType(const char* type, const char* poolname,
-                                         std::shared_ptr<PdxType> nType, bool checkIfThere) {
+                                         std::shared_ptr<PdxType> nType,
+                                         bool checkIfThere) {
   // WriteGuard guard(g_readerWriterLock);
   if (checkIfThere) {
     auto lpdx = getLocalPdxType(type);
@@ -117,7 +118,8 @@ void PdxTypeRegistry::clear() {
   }
 }
 
-void PdxTypeRegistry::addPdxType(int32_t typeId, std::shared_ptr<PdxType> pdxType) {
+void PdxTypeRegistry::addPdxType(int32_t typeId,
+                                 std::shared_ptr<PdxType> pdxType) {
   WriteGuard guard(g_readerWriterLock);
   std::pair<int32_t, std::shared_ptr<PdxType>> pc(typeId, pdxType);
   typeIdToPdxType.insert(pc);
@@ -142,7 +144,8 @@ void PdxTypeRegistry::addLocalPdxType(const char* localType,
       std::pair<std::string, std::shared_ptr<PdxType>>(localType, pdxType));
 }
 
-std::shared_ptr<PdxType> PdxTypeRegistry::getLocalPdxType(const char* localType) {
+std::shared_ptr<PdxType> PdxTypeRegistry::getLocalPdxType(
+    const char* localType) {
   ReadGuard guard(g_readerWriterLock);
   std::shared_ptr<PdxType> localTypePtr = nullptr;
   TypeNameVsPdxType::iterator it;
@@ -157,7 +160,8 @@ std::shared_ptr<PdxType> PdxTypeRegistry::getLocalPdxType(const char* localType)
 void PdxTypeRegistry::setMergedType(int32_t remoteTypeId,
                                     std::shared_ptr<PdxType> mergedType) {
   WriteGuard guard(g_readerWriterLock);
-  std::pair<int32_t, std::shared_ptr<PdxType>> mergedTypePair(remoteTypeId, mergedType);
+  std::pair<int32_t, std::shared_ptr<PdxType>> mergedTypePair(remoteTypeId,
+                                                              mergedType);
   remoteTypeIdToMergedPdxType.insert(mergedTypePair);
 }
 
@@ -172,9 +176,10 @@ std::shared_ptr<PdxType> PdxTypeRegistry::getMergedType(int32_t remoteTypeId) {
   return retVal;
 }
 
-void PdxTypeRegistry::setPreserveData(std::shared_ptr<PdxSerializable> obj,
-                                      std::shared_ptr<PdxRemotePreservedData> pData,
-                                      ExpiryTaskManager& expiryTaskManager) {
+void PdxTypeRegistry::setPreserveData(
+    std::shared_ptr<PdxSerializable> obj,
+    std::shared_ptr<PdxRemotePreservedData> pData,
+    ExpiryTaskManager& expiryTaskManager) {
   WriteGuard guard(getPreservedDataLock());
   pData->setOwner(obj);
   if (preserveData.find(obj) != preserveData.end()) {

@@ -198,9 +198,8 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  auto regPtr =
-      getHelper()->createRegion(name, ackMode, cachingEnable, nullptr,
-                                endpoints, clientNotificationEnabled);
+  auto regPtr = getHelper()->createRegion(name, ackMode, cachingEnable, nullptr,
+                                          endpoints, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
@@ -435,7 +434,9 @@ class SuspendTransactionThread : public ACE_Task_Base {
   }
   void start() { activate(); }
   void stop() { wait(); }
-  std::shared_ptr<TransactionId> getSuspendedTx() { return m_suspendedTransaction; }
+  std::shared_ptr<TransactionId> getSuspendedTx() {
+    return m_suspendedTransaction;
+  }
 };
 class ResumeTransactionThread : public ACE_Task_Base {
  private:
@@ -447,8 +448,9 @@ class ResumeTransactionThread : public ACE_Task_Base {
   ACE_Auto_Event* m_txEvent;
 
  public:
-  ResumeTransactionThread(std::shared_ptr<TransactionId> suspendedTransaction, bool commit,
-                          bool tryResumeWithSleep, ACE_Auto_Event* txEvent)
+  ResumeTransactionThread(std::shared_ptr<TransactionId> suspendedTransaction,
+                          bool commit, bool tryResumeWithSleep,
+                          ACE_Auto_Event* txEvent)
       : m_suspendedTransaction(suspendedTransaction),
         m_commit(commit),
         m_tryResumeWithSleep(tryResumeWithSleep),
@@ -608,7 +610,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeCommit)
     txManager->begin();
     createEntry(regionNames[0], keys[4], vals[4]);
     createEntry(regionNames[1], keys[5], vals[5]);
-    std::shared_ptr<TransactionId> m_suspendedTransaction = txManager->suspend();
+    std::shared_ptr<TransactionId> m_suspendedTransaction =
+        txManager->suspend();
 
     ASSERT(
         !regPtr0->containsKeyOnServer(keyPtr4),
@@ -727,7 +730,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeRollback)
     txManager->begin();
     createEntry(regionNames[0], keys[4], vals[4]);
     createEntry(regionNames[1], keys[5], vals[5]);
-    std::shared_ptr<TransactionId> m_suspendedTransaction = txManager->suspend();
+    std::shared_ptr<TransactionId> m_suspendedTransaction =
+        txManager->suspend();
 
     ASSERT(
         !regPtr0->containsKeyOnServer(keyPtr4),
@@ -1038,7 +1042,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1KeyThriceWithoutSticky)
     auto reg = getHelper()->getRegion(regionNames[2]);
     LOG("REGION Created with Caching Enabled false");
     std::shared_ptr<CacheableKey> keyPtr = createKey(CREATE_TWICE_KEY);
-    std::shared_ptr<CacheableString> valPtr = CacheableString::create(CREATE_TWICE_VALUE);
+    std::shared_ptr<CacheableString> valPtr =
+        CacheableString::create(CREATE_TWICE_VALUE);
     try {
       reg->create(keyPtr, valPtr);
       char message[200];
@@ -1066,14 +1071,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1KeyThriceWithSticky)
     auto reg = getHelper()->getRegion(regionNames[2]);
     LOG("REGION Created with Caching Enabled false");
     std::shared_ptr<CacheableKey> keyPtr = createKey(CREATE_TWICE_KEY);
-    std::shared_ptr<CacheableString> valPtr = CacheableString::create(CREATE_TWICE_VALUE);
+    std::shared_ptr<CacheableString> valPtr =
+        CacheableString::create(CREATE_TWICE_VALUE);
 
     auto reg0 = getHelper()->getRegion(regionNames[0]);
     auto reg1 = getHelper()->getRegion(regionNames[1]);
     reg0->localInvalidate(createKey(keys[1]));
     reg1->localInvalidate(createKey(keys[3]));
-    auto pool =
-        getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
+    auto pool = getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
     ASSERT(pool != nullptr, "Pool Should have been found");
     doNetsearch(regionNames[0], keys[1], nvals[1]);
     doNetsearch(regionNames[1], keys[3], nvals[3]);

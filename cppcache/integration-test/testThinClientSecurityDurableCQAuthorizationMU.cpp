@@ -269,7 +269,8 @@ std::shared_ptr<Pool> getPool(const char* name) {
   return getHelper()->getCache()->getPoolManager().find(name);
 }
 
-std::shared_ptr<RegionService> getVirtualCache(std::shared_ptr<Properties> creds, const char* name) {
+std::shared_ptr<RegionService> getVirtualCache(
+    std::shared_ptr<Properties> creds, const char* name) {
   return getHelper()->getCache()->createAuthenticatedView(creds, name);
 }
 
@@ -320,8 +321,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
         cqFac.addCqListener(cqLstner);
         auto cqAttr = cqFac.create();
         printf("adding new cq = %s , %d", cqNames[i], durableCq);
-        auto qry =
-            qs->newCq(cqNames[i], queryStrings[i], cqAttr, durableCq);
+        auto qry = qs->newCq(cqNames[i], queryStrings[i], cqAttr, durableCq);
         qry->execute();
       }
 
@@ -385,7 +385,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
-    // std::shared_ptr<Cache> userCache = getVirtualCache(userCreds, regionNamesCq[0]);
+    // std::shared_ptr<Cache> userCache = getVirtualCache(userCreds,
+    // regionNamesCq[0]);
     auto qs = userQueryService;
 
     char buf[1024];
@@ -439,7 +440,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepFour2)
   {
     SLEEP(15000);  // sleep .25 min
-    // std::shared_ptr<Cache> userCache = getVirtualCache(userCreds, regionNamesCq[0]);
+    // std::shared_ptr<Cache> userCache = getVirtualCache(userCreds,
+    // regionNamesCq[0]);
     userQueryService = userCache->getQueryService();
     auto qs = userQueryService;
 

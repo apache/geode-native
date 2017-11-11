@@ -136,12 +136,12 @@ class CPPCACHE_EXPORT CacheFactory
   bool pdxReadSerialized;
   std::shared_ptr<AuthInitialize> authInitialize;
 
-  std::shared_ptr<Cache> create(const char* name,
-                  const std::shared_ptr<CacheAttributes>& attrs = nullptr);
+  std::shared_ptr<Cache> create(
+      const char* name,
+      const std::shared_ptr<CacheAttributes>& attrs = nullptr);
 
   void create_(const char* name, const char* id_data,
-               std::shared_ptr<Cache>& cptr,
-               bool readPdxSerialized);
+               std::shared_ptr<Cache>& cptr, bool readPdxSerialized);
 
   // no instances allowed
   CacheFactory();

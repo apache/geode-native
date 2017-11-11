@@ -149,8 +149,9 @@ std::shared_ptr<OperMonitor> mon2 = nullptr;
 const char* mixKeys[] = {"Key-1", "D-Key-1", "L-Key", "LD-Key"};
 const char* testRegex[] = {"D-Key-.*", "Key-.*"};
 
-void initClientCache(int redundancy, int durableTimeout, std::shared_ptr<OperMonitor>& mon,
-                     int sleepDuration = 0, int durableIdx = 0) {
+void initClientCache(int redundancy, int durableTimeout,
+                     std::shared_ptr<OperMonitor>& mon, int sleepDuration = 0,
+                     int durableIdx = 0) {
   if (sleepDuration) SLEEP(sleepDuration);
 
   if (mon == nullptr) {

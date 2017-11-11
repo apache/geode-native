@@ -88,9 +88,10 @@ class ThinClientPoolDM
   virtual GfErrType sendSyncRequest(TcrMessage& request, TcrMessageReply& reply,
                                     bool attemptFailover = true,
                                     bool isBGThread = false);
-  GfErrType sendSyncRequest(TcrMessage& request, TcrMessageReply& reply,
-                            bool attemptFailover, bool isBGThread,
-                            const std::shared_ptr<BucketServerLocation>& serverLocation);
+  GfErrType sendSyncRequest(
+      TcrMessage& request, TcrMessageReply& reply, bool attemptFailover,
+      bool isBGThread,
+      const std::shared_ptr<BucketServerLocation>& serverLocation);
 
   // Pool Specific Fns.
   virtual const std::shared_ptr<CacheableStringArray> getLocators() const;
@@ -100,10 +101,10 @@ class ThinClientPoolDM
   virtual std::shared_ptr<QueryService> getQueryService();
   virtual std::shared_ptr<QueryService> getQueryServiceWithoutCheck();
   virtual bool isEndpointAttached(TcrEndpoint* ep);
-  GfErrType sendRequestToAllServers(const char* func, uint8_t getResult,
-                                    uint32_t timeout, std::shared_ptr<Cacheable> args,
-                                    std::shared_ptr<ResultCollector>& rs,
-                                    std::shared_ptr<CacheableString>& exceptionPtr);
+  GfErrType sendRequestToAllServers(
+      const char* func, uint8_t getResult, uint32_t timeout,
+      std::shared_ptr<Cacheable> args, std::shared_ptr<ResultCollector>& rs,
+      std::shared_ptr<CacheableString>& exceptionPtr);
 
   GfErrType sendRequestToEP(const TcrMessage& request, TcrMessageReply& reply,
                             TcrEndpoint* currentEndpoint);
@@ -181,8 +182,8 @@ class ThinClientPoolDM
 
   virtual inline bool isSticky() { return m_sticky; }
   virtual TcrEndpoint* getEndPoint(
-      const std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version,
-      std::set<ServerLocation>& excludeServers);
+      const std::shared_ptr<BucketServerLocation>& serverLocation,
+      int8_t& version, std::set<ServerLocation>& excludeServers);
 
   ClientMetadataService* getClientMetaDataService() {
     return m_clientMetadataService;
@@ -351,9 +352,11 @@ class ThinClientPoolDM
   bool hasExpired(TcrConnection* conn);
 
   std::shared_ptr<Properties> getCredentials(TcrEndpoint* ep);
-  GfErrType sendUserCredentials(std::shared_ptr<Properties> credentials, TcrConnection*& conn,
-                                bool isBGThread, bool& isServerException);
-  TcrConnection* getConnectionInMultiuserMode(std::shared_ptr<UserAttributes> userAttribute);
+  GfErrType sendUserCredentials(std::shared_ptr<Properties> credentials,
+                                TcrConnection*& conn, bool isBGThread,
+                                bool& isServerException);
+  TcrConnection* getConnectionInMultiuserMode(
+      std::shared_ptr<UserAttributes> userAttribute);
 
   // get endpoint using the endpoint string
   TcrEndpoint* getEndPoint(std::string epNameStr);
@@ -464,7 +467,8 @@ class FunctionExecution : public PooledWork<GfErrType> {
                      std::shared_ptr<Cacheable> args, TcrEndpoint* ep,
                      ThinClientPoolDM* poolDM,
                      const std::shared_ptr<ACE_Recursive_Thread_Mutex>& rCL,
-                     std::shared_ptr<ResultCollector>* rs, std::shared_ptr<UserAttributes> userAttr) {
+                     std::shared_ptr<ResultCollector>* rs,
+                     std::shared_ptr<UserAttributes> userAttr) {
     exceptionPtr = nullptr;
     m_resultCollectorLock = rCL;
     m_rc = rs;
@@ -562,11 +566,13 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
  public:
   OnRegionFunctionExecution(
       const char* func, const Region* region, std::shared_ptr<Cacheable> args,
-      std::shared_ptr<CacheableHashSet> routingObj, uint8_t getResult, uint32_t timeout,
-      ThinClientPoolDM* poolDM,
+      std::shared_ptr<CacheableHashSet> routingObj, uint8_t getResult,
+      uint32_t timeout, ThinClientPoolDM* poolDM,
       const std::shared_ptr<ACE_Recursive_Thread_Mutex>& rCL,
-      std::shared_ptr<ResultCollector> rs, std::shared_ptr<UserAttributes> userAttr, bool isBGThread,
-      const std::shared_ptr<BucketServerLocation>& serverLocation, bool allBuckets)
+      std::shared_ptr<ResultCollector> rs,
+      std::shared_ptr<UserAttributes> userAttr, bool isBGThread,
+      const std::shared_ptr<BucketServerLocation>& serverLocation,
+      bool allBuckets)
       : m_serverLocation(serverLocation),
         m_isBGThread(isBGThread),
         m_poolDM(poolDM),

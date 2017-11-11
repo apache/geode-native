@@ -45,7 +45,8 @@ class CPPCACHE_EXPORT NoResult : public ResultCollector {
  public:
   NoResult() {}
   ~NoResult() {}
-  inline void addResult(const std::shared_ptr<Cacheable>& resultOfSingleExecution) {
+  inline void addResult(
+      const std::shared_ptr<Cacheable>& resultOfSingleExecution) {
     throw UnsupportedOperationException("can not add to NoResult");
   }
 

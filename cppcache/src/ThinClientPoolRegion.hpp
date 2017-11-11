@@ -39,7 +39,8 @@ class ThinClientPoolRegion : public ThinClientRegion {
   ThinClientPoolRegion(const std::string& name, CacheImpl* cache,
                        const std::shared_ptr<RegionInternal>& rPtr,
                        const std::shared_ptr<RegionAttributes>& attributes,
-                       const std::shared_ptr<CacheStatistics>& stats, bool shared = false);
+                       const std::shared_ptr<CacheStatistics>& stats,
+                       bool shared = false);
 
   virtual void initTCR();
   virtual ~ThinClientPoolRegion();

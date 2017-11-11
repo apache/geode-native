@@ -35,7 +35,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-
 class FunctionService;
 class ThinClientPoolDM;
 

@@ -193,7 +193,8 @@ class TestPdxSerializer : public PdxSerializer {
     }
   }
 
-  bool toData(void *testObject, const char *className, std::shared_ptr<PdxWriter> pw) {
+  bool toData(void *testObject, const char *className,
+              std::shared_ptr<PdxWriter> pw) {
     ASSERT(strcmp(className, CLASSNAME1) == 0 ||
                strcmp(className, CLASSNAME2) == 0,
            "Unexpected classname in toData");

@@ -47,9 +47,11 @@ class DiffieHellman {
   std::shared_ptr<CacheableBytes> getPublicKey(void);
   void setPublicKeyOther(const std::shared_ptr<CacheableBytes>& pubkey);
   void computeSharedSecret(void);
-  std::shared_ptr<CacheableBytes> encrypt(const std::shared_ptr<CacheableBytes>& cleartext);
+  std::shared_ptr<CacheableBytes> encrypt(
+      const std::shared_ptr<CacheableBytes>& cleartext);
   std::shared_ptr<CacheableBytes> encrypt(const uint8_t* cleartext, int len);
-  std::shared_ptr<CacheableBytes> decrypt(const std::shared_ptr<CacheableBytes>& cleartext);
+  std::shared_ptr<CacheableBytes> decrypt(
+      const std::shared_ptr<CacheableBytes>& cleartext);
   std::shared_ptr<CacheableBytes> decrypt(const uint8_t* cleartext, int len);
   bool verify(const std::shared_ptr<CacheableString>& subject,
               const std::shared_ptr<CacheableBytes>& challenge,
@@ -63,9 +65,9 @@ class DiffieHellman {
   void* m_dhCtx;
   static void* getOpenSSLFuncPtr(const char* function_name);
 
-  // OpenSSL Func Ptrs: Declare Func Ptr type and a static variable of std::shared_ptr<Func>
-  // type.
-  // Convention: <Orig Func Name>_Type and <Orig Func Name>_Ptr
+  // OpenSSL Func Ptrs: Declare Func Ptr type and a static variable of
+  // std::shared_ptr<Func> type. Convention: <Orig Func Name>_Type and <Orig
+  // Func Name>_Ptr
   typedef int (*gf_initDhKeys_Type)(void** dhCtx, const char* dhAlgo,
                                     const char* ksPath);
   typedef void (*gf_clearDhKeys_Type)(void* dhCtx);

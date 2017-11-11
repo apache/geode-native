@@ -599,7 +599,9 @@ class CPPCACHE_EXPORT DataInput {
    * Read a <code>Serializable</code> object from the <code>DataInput</code>.
    * Null objects are handled.
    */
-  inline void readObject(std::shared_ptr<Serializable>& ptr) { ptr = readObjectInternal(); }
+  inline void readObject(std::shared_ptr<Serializable>& ptr) {
+    ptr = readObjectInternal();
+  }
 
   inline void readObject(wchar_t* value) {
     uint16_t temp = readInt16();

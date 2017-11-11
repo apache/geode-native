@@ -45,7 +45,6 @@ class ThinClientRegion;
  *
  */
 
-
 class VersionedCacheableObjectPartList : public CacheableObjectPartList {
  private:
   bool m_regionIsVersioned;
@@ -78,20 +77,20 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   }*/
 
  public:
-  VersionedCacheableObjectPartList(const std::vector<std::shared_ptr<CacheableKey>>* keys,
-                                   uint32_t* keysOffset,
-                                   const std::shared_ptr<HashMapOfCacheable>& values,
-                                   const std::shared_ptr<HashMapOfException>& exceptions,
-                                   const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>& resultKeys,
-                                   ThinClientRegion* region,
-                                   MapOfUpdateCounters* trackerMap,
-                                   int32_t destroyTracker, bool addToLocalCache,
-                                   uint16_t m_dsmemId,
-                                   ACE_Recursive_Thread_Mutex& responseLock)
+  VersionedCacheableObjectPartList(
+      const std::vector<std::shared_ptr<CacheableKey>>* keys,
+      uint32_t* keysOffset, const std::shared_ptr<HashMapOfCacheable>& values,
+      const std::shared_ptr<HashMapOfException>& exceptions,
+      const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>&
+          resultKeys,
+      ThinClientRegion* region, MapOfUpdateCounters* trackerMap,
+      int32_t destroyTracker, bool addToLocalCache, uint16_t m_dsmemId,
+      ACE_Recursive_Thread_Mutex& responseLock)
       : CacheableObjectPartList(keys, keysOffset, values, exceptions,
                                 resultKeys, region, trackerMap, destroyTracker,
                                 addToLocalCache),
-        m_tempKeys(std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>()),
+        m_tempKeys(
+            std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>()),
         m_responseLock(responseLock) {
     m_regionIsVersioned = false;
     m_serializeValues = false;
@@ -100,9 +99,9 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     m_hasKeys = false;
   }
 
-  VersionedCacheableObjectPartList(std::vector<std::shared_ptr<CacheableKey>>* keys,
-                                   int32_t totalMapSize,
-                                   ACE_Recursive_Thread_Mutex& responseLock)
+  VersionedCacheableObjectPartList(
+      std::vector<std::shared_ptr<CacheableKey>>* keys, int32_t totalMapSize,
+      ACE_Recursive_Thread_Mutex& responseLock)
       : m_tempKeys(keys), m_responseLock(responseLock) {
     m_regionIsVersioned = false;
     m_serializeValues = false;
@@ -135,9 +134,10 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     this->m_hasKeys = false;
   }
 
-  VersionedCacheableObjectPartList(ThinClientRegion* region,
-                                   std::vector<std::shared_ptr<CacheableKey>>* keys,
-                                   ACE_Recursive_Thread_Mutex& responseLock)
+  VersionedCacheableObjectPartList(
+      ThinClientRegion* region,
+      std::vector<std::shared_ptr<CacheableKey>>* keys,
+      ACE_Recursive_Thread_Mutex& responseLock)
       : CacheableObjectPartList(region),
         m_tempKeys(keys),
         m_responseLock(responseLock) {
@@ -175,7 +175,8 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
 
   inline VersionedCacheableObjectPartList(
       uint16_t endpointMemId, ACE_Recursive_Thread_Mutex& responseLock)
-      : m_tempKeys(std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>()),
+      : m_tempKeys(
+            std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>()),
         m_responseLock(responseLock) {
     m_regionIsVersioned = false;
     m_serializeValues = false;
@@ -238,7 +239,8 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   void addAllKeys(std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> keySet) {
     if (!this->m_hasKeys) {
       this->m_hasKeys = true;
-      this->m_tempKeys = std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>(*keySet);
+      this->m_tempKeys =
+          std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>(*keySet);
     } else {
       for (int i = 0; i < keySet->size(); i++) {
         this->m_tempKeys->push_back(keySet->at(i));

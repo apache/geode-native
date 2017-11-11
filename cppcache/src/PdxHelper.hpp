@@ -37,7 +37,8 @@ namespace client {
 
 class PdxHelper {
  private:
-  static void createMergedType(std::shared_ptr<PdxType> localType, std::shared_ptr<PdxType> remoteType,
+  static void createMergedType(std::shared_ptr<PdxType> localType,
+                               std::shared_ptr<PdxType> remoteType,
                                DataInput& dataInput);
 
  public:
@@ -54,11 +55,12 @@ class PdxHelper {
                            const std::shared_ptr<PdxSerializable>& pdxObject);
 
   static std::shared_ptr<PdxSerializable> deserializePdx(DataInput& dataInput,
-                                           bool forceDeserialize);
+                                                         bool forceDeserialize);
 
   static std::shared_ptr<PdxSerializable> deserializePdx(DataInput& dataInput,
-                                           bool forceDeserialize,
-                                           int32_t typeId, int32_t length);
+                                                         bool forceDeserialize,
+                                                         int32_t typeId,
+                                                         int32_t length);
 
   static int32_t readInt16(uint8_t* offsetPosition);
 
@@ -77,9 +79,11 @@ class PdxHelper {
   static int32_t readInt(uint8_t* offsetPosition, int size);
 
   static int32_t getEnumValue(const char* enumClassName, const char* enumName,
-                              int hashcode, std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
+                              int hashcode,
+                              std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
-  static std::shared_ptr<EnumInfo> getEnum(int enumId, std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
+  static std::shared_ptr<EnumInfo> getEnum(
+      int enumId, std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
   static CacheImpl* getCacheImpl();
 };

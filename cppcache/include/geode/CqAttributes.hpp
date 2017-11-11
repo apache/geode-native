@@ -55,7 +55,8 @@ class CPPCACHE_EXPORT CqAttributes {
    * Get the CqListeners set with the CQ.
    * Returns all the Listeners associated with this CQ.
    * @see CqListener
-   * @param[out] std::vector<std::shared_ptr<CqListener>> of std::shared_ptr<CqListner>
+   * @param[out] std::vector<std::shared_ptr<CqListener>> of
+   * std::shared_ptr<CqListner>
    */
   virtual listener_container_type getCqListeners() = 0;
 };

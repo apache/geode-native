@@ -39,7 +39,8 @@ class MapSegment;
 class TombstoneExpiryHandler;
 class TombstoneEntry {
  public:
-  TombstoneEntry(const std::shared_ptr<MapEntryImpl>& entry, int64_t tombstoneCreationTime)
+  TombstoneEntry(const std::shared_ptr<MapEntryImpl>& entry,
+                 int64_t tombstoneCreationTime)
       : m_entry(entry),
         m_tombstoneCreationTime(tombstoneCreationTime),
         /* adongre
@@ -74,8 +75,8 @@ class TombstoneList {
   TombstoneList(MapSegment* mapSegment, CacheImpl* cacheImpl)
       : m_mapSegment(mapSegment), m_cacheImpl(cacheImpl) {}
   virtual ~TombstoneList() { cleanUp(); }
-  void add(const std::shared_ptr<MapEntryImpl>& entry, TombstoneExpiryHandler* handler,
-           long taskID);
+  void add(const std::shared_ptr<MapEntryImpl>& entry,
+           TombstoneExpiryHandler* handler, long taskID);
 
   // Reaps the tombstones which have been gc'ed on server.
   // A map that has identifier for ClientProxyMembershipID as key
@@ -94,9 +95,10 @@ class TombstoneList {
  private:
   void removeEntryFromMapSegment(std::shared_ptr<CacheableKey> key);
   void unguardedRemoveEntryFromMapSegment(std::shared_ptr<CacheableKey> key);
-  typedef std::unordered_map<std::shared_ptr<CacheableKey>, std::shared_ptr<TombstoneEntry>,
-                             dereference_hash<std::shared_ptr<CacheableKey>>,
-                             dereference_equal_to<std::shared_ptr<CacheableKey>>>
+  typedef std::unordered_map<
+      std::shared_ptr<CacheableKey>, std::shared_ptr<TombstoneEntry>,
+      dereference_hash<std::shared_ptr<CacheableKey>>,
+      dereference_equal_to<std::shared_ptr<CacheableKey>>>
       TombstoneMap;
   TombstoneMap m_tombstoneMap;
   ACE_Recursive_Thread_Mutex m_queueLock;

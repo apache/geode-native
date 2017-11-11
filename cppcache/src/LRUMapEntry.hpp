@@ -78,7 +78,8 @@ class CPPCACHE_EXPORT LRUMapEntry : public MapEntryImpl,
   inline explicit LRUMapEntry(bool noInit)
       : MapEntryImpl(true), LRUEntryProperties(true) {}
 
-  inline LRUMapEntry(const std::shared_ptr<CacheableKey>& key) : MapEntryImpl(key) {}
+  inline LRUMapEntry(const std::shared_ptr<CacheableKey>& key)
+      : MapEntryImpl(key) {}
 
  private:
   // disabled

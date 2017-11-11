@@ -65,7 +65,7 @@ extern ClientCleanup gClientCleanup;
 #define SEED 0
 #define RANDOM_NUMBER_OFFSET 14000
 #define RANDOM_NUMBER_DIVIDER 15000
- std::shared_ptr<Cache> CacheHelper::getCache() { return cachePtr; }
+std::shared_ptr<Cache> CacheHelper::getCache() { return cachePtr; }
 
 CacheHelper& CacheHelper::getHelper() {
   if (singleton == nullptr) {
@@ -74,7 +74,8 @@ CacheHelper& CacheHelper::getHelper() {
   return *singleton;
 }
 
-CacheHelper::CacheHelper(const char* member_id, const std::shared_ptr<Properties>& configPtr,
+CacheHelper::CacheHelper(const char* member_id,
+                         const std::shared_ptr<Properties>& configPtr,
                          const bool noRootRegion) {
   auto pp = configPtr;
   if (pp == nullptr) {
@@ -183,7 +184,8 @@ CacheHelper::CacheHelper(const bool isThinclient,
 }
 
 CacheHelper::CacheHelper(const bool isThinclient, bool pdxIgnoreUnreadFields,
-                         bool pdxReadSerialized, const std::shared_ptr<Properties>& configPtr,
+                         bool pdxReadSerialized,
+                         const std::shared_ptr<Properties>& configPtr,
                          const bool noRootRegion) {
   auto pp = configPtr;
   if (pp == nullptr) {
@@ -207,11 +209,11 @@ CacheHelper::CacheHelper(const bool isThinclient, bool pdxIgnoreUnreadFields,
 
 CacheHelper::CacheHelper(const bool isthinClient, const char* poolName,
                          const char* locators, const char* serverGroup,
-                         const std::shared_ptr<Properties>& configPtr, int redundancy,
-                         bool clientNotification, int subscriptionAckInterval,
-                         int connections, int loadConditioningInterval,
-                         bool isMultiuserMode, bool prSingleHop,
-                         bool threadLocal) {
+                         const std::shared_ptr<Properties>& configPtr,
+                         int redundancy, bool clientNotification,
+                         int subscriptionAckInterval, int connections,
+                         int loadConditioningInterval, bool isMultiuserMode,
+                         bool prSingleHop, bool threadLocal) {
   auto pp = configPtr;
   if (pp == nullptr) {
     pp = Properties::create();
@@ -342,7 +344,8 @@ void CacheHelper::createLRURegion(const char* regionName,
                                   std::shared_ptr<Region>& regionPtr) {
   createLRURegion(regionName, regionPtr, 10);
 }
-void CacheHelper::createLRURegion(const char* regionName, std::shared_ptr<Region>& regionPtr,
+void CacheHelper::createLRURegion(const char* regionName,
+                                  std::shared_ptr<Region>& regionPtr,
                                   uint32_t size) {
   std::shared_ptr<RegionAttributes> regAttrs;
   AttributesFactory attrFactory;
@@ -362,7 +365,8 @@ void CacheHelper::createDistRegion(const char* regionName,
   createDistRegion(regionName, regionPtr, 10);
 }
 
-void CacheHelper::createDistRegion(const char* regionName, std::shared_ptr<Region>& regionPtr,
+void CacheHelper::createDistRegion(const char* regionName,
+                                   std::shared_ptr<Region>& regionPtr,
                                    uint32_t size) {
   std::shared_ptr<RegionAttributes> regAttrs;
   AttributesFactory attrFactory;
@@ -377,37 +381,35 @@ void CacheHelper::createDistRegion(const char* regionName, std::shared_ptr<Regio
   ASSERT(regionPtr != nullptr, "failed to create region.");
 }
  std::shared_ptr<Region> CacheHelper::getRegion(const char* name) {
-  return cachePtr->getRegion(name);
+   return cachePtr->getRegion(name);
+ }
+
+ std::shared_ptr<Region> CacheHelper::createRegion(
+     const char* name, bool ack, bool caching,
+     const std::shared_ptr<CacheListener>& listener,
+     bool clientNotificationEnabled, bool scopeLocal,
+     bool concurrencyCheckEnabled, int32_t tombstonetimeout) {
+   AttributesFactory af;
+   af.setCachingEnabled(caching);
+   if (listener != nullptr) {
+     af.setCacheListener(listener);
+   }
+   if (concurrencyCheckEnabled) {
+     af.setConcurrencyChecksEnabled(concurrencyCheckEnabled);
+   }
+
+   std::shared_ptr<RegionAttributes> rattrsPtr = af.createRegionAttributes();
+
+   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
+   std::shared_ptr<Region> regionPtr;
+   cacheImpl->createRegion(name, rattrsPtr, regionPtr);
+   return regionPtr;
 }
 
-std::shared_ptr<Region> CacheHelper::createRegion(const char* name, bool ack, bool caching,
-                                    const std::shared_ptr<CacheListener>& listener,
-                                    bool clientNotificationEnabled,
-                                    bool scopeLocal,
-                                    bool concurrencyCheckEnabled,
-                                    int32_t tombstonetimeout) {
-  AttributesFactory af;
-  af.setCachingEnabled(caching);
-  if (listener != nullptr) {
-    af.setCacheListener(listener);
-  }
-  if (concurrencyCheckEnabled) {
-    af.setConcurrencyChecksEnabled(concurrencyCheckEnabled);
-  }
-
-  std::shared_ptr<RegionAttributes> rattrsPtr = af.createRegionAttributes();
-
-  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
-  std::shared_ptr<Region> regionPtr;
-  cacheImpl->createRegion(name, rattrsPtr, regionPtr);
-  return regionPtr;
-}
-
-std::shared_ptr<Region> CacheHelper::createRegion(const char* name, bool ack, bool caching,
-                                    int ettl, int eit, int rttl, int rit,
-                                    int lel, ExpirationAction::Action action,
-                                    const char* endpoints,
-                                    bool clientNotificationEnabled) {
+std::shared_ptr<Region> CacheHelper::createRegion(
+    const char* name, bool ack, bool caching, int ettl, int eit, int rttl,
+    int rit, int lel, ExpirationAction::Action action, const char* endpoints,
+    bool clientNotificationEnabled) {
   AttributesFactory af;
   af.setCachingEnabled(caching);
   af.setLruEntriesLimit(lel);
@@ -424,12 +426,10 @@ std::shared_ptr<Region> CacheHelper::createRegion(const char* name, bool ack, bo
   return regionPtr;
 }
 
-std::shared_ptr<Pool> CacheHelper::createPool(const char* poolName, const char* locators,
-                                const char* serverGroup, int redundancy,
-                                bool clientNotification,
-                                int subscriptionAckInterval, int connections,
-                                int loadConditioningInterval,
-                                bool isMultiuserMode) {
+std::shared_ptr<Pool> CacheHelper::createPool(
+    const char* poolName, const char* locators, const char* serverGroup,
+    int redundancy, bool clientNotification, int subscriptionAckInterval,
+    int connections, int loadConditioningInterval, bool isMultiuserMode) {
   // printf(" in createPool isMultiuserMode = %d \n", isMultiuserMode);
   auto poolFacPtr = getCache()->getPoolManager().createFactory();
 
@@ -458,10 +458,10 @@ std::shared_ptr<Pool> CacheHelper::createPool(const char* poolName, const char* 
 }
 
 // this will create pool even endpoints and locatorhost has been not defined
-std::shared_ptr<Pool> CacheHelper::createPool2(const char* poolName, const char* locators,
-                                 const char* serverGroup, const char* servers,
-                                 int redundancy, bool clientNotification,
-                                 int subscriptionAckInterval, int connections) {
+std::shared_ptr<Pool> CacheHelper::createPool2(
+    const char* poolName, const char* locators, const char* serverGroup,
+    const char* servers, int redundancy, bool clientNotification,
+    int subscriptionAckInterval, int connections) {
   auto poolFacPtr = getCache()->getPoolManager().createFactory();
 
   if (servers != 0)  // with explicit server list
@@ -525,10 +525,9 @@ void CacheHelper::createPoolWithLocators(const char* name, const char* locators,
                                          const char* serverGroup) {
   LOG("createPool() entered.");
   printf(" in createPoolWithLocators isMultiuserMode = %d\n", isMultiuserMode);
-  auto poolPtr =
-      createPool(name, locators, serverGroup, subscriptionRedundancy,
-                 clientNotificationEnabled, subscriptionAckInterval,
-                 connections, -1, isMultiuserMode);
+  auto poolPtr = createPool(name, locators, serverGroup, subscriptionRedundancy,
+                            clientNotificationEnabled, subscriptionAckInterval,
+                            connections, -1, isMultiuserMode);
   ASSERT(poolPtr != nullptr, "Failed to create pool.");
   logPoolAttributes(poolPtr);
   LOG("Pool created.");
@@ -558,8 +557,8 @@ std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool(
 
 std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool2(
     const char* name, bool ack, const char* poolName,
-    const std::shared_ptr<PartitionResolver>& aResolver, bool caching, int ettl, int eit,
-    int rttl, int rit, int lel, ExpirationAction::Action action) {
+    const std::shared_ptr<PartitionResolver>& aResolver, bool caching, int ettl,
+    int eit, int rttl, int rit, int lel, ExpirationAction::Action action) {
   RegionShortcut preDefRA = PROXY;
   if (caching) {
     preDefRA = CACHING_PROXY;
@@ -598,7 +597,6 @@ void CacheHelper::addServerLocatorEPs(const char* epList, std::shared_ptr<PoolFa
     }
   }
 }
-
 
 std::shared_ptr<Region> CacheHelper::createPooledRegion(
     const char* name, bool ack, const char* locators, const char* poolName,
@@ -642,7 +640,8 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionConcurrencyCheckDisabled(
     const char* name, bool ack, const char* locators, const char* poolName,
     bool caching, bool clientNotificationEnabled, bool concurrencyCheckEnabled,
     int ettl, int eit, int rttl, int rit, int lel,
-    const std::shared_ptr<CacheListener>& cacheListener, ExpirationAction::Action action) {
+    const std::shared_ptr<CacheListener>& cacheListener,
+    ExpirationAction::Action action) {
   auto poolFacPtr = getCache()->getPoolManager().createFactory();
   poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
 

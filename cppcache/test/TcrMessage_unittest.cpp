@@ -188,7 +188,8 @@ TEST_F(TcrMessageTest, testConstructorWithCONTAINS_KEY) {
       std::unique_ptr<DataOutputUnderTest>(new DataOutputUnderTest()),
       static_cast<const Region *>(nullptr),
       CacheableString::create(
-          "mykey"),  // static_cast<const std::shared_ptr<CacheableKey>>(nullptr),
+          "mykey"),  // static_cast<const
+                     // std::shared_ptr<CacheableKey>>(nullptr),
       static_cast<const std::shared_ptr<Serializable>>(nullptr),
       true,  // isContainsKey
       static_cast<ThinClientBaseDM *>(nullptr));
@@ -215,7 +216,8 @@ TEST_F(TcrMessageTest, testConstructor2WithREQUEST) {
       std::unique_ptr<DataOutputUnderTest>(new DataOutputUnderTest()),
       static_cast<const Region *>(nullptr),
       CacheableString::create(
-          "mykey"),  // static_cast<const std::shared_ptr<CacheableKey>>(nullptr),
+          "mykey"),  // static_cast<const
+                     // std::shared_ptr<CacheableKey>>(nullptr),
       static_cast<const std::shared_ptr<Serializable>>(nullptr),
       static_cast<ThinClientBaseDM *>(nullptr));
 
@@ -249,7 +251,8 @@ TEST_F(TcrMessageTest, testConstructor2WithINVALIDATE) {
       std::unique_ptr<DataOutputUnderTest>(new DataOutputUnderTest()),
       static_cast<const Region *>(nullptr),
       CacheableString::create(
-          "mykey"),  // static_cast<const std::shared_ptr<CacheableKey>>(nullptr),
+          "mykey"),  // static_cast<const
+                     // std::shared_ptr<CacheableKey>>(nullptr),
       static_cast<const std::shared_ptr<Serializable>>(nullptr),
       static_cast<ThinClientBaseDM *>(nullptr));
 
@@ -597,7 +600,8 @@ TEST_F(TcrMessageTest, testConstructorEXECUTE_REGION_FUNCTION) {
   const Region *region = nullptr;
 
   std::shared_ptr<CacheableHashSet> myHashCachePtr = CacheableHashSet::create();
-  std::shared_ptr<Cacheable> myCacheablePtr(CacheableString::createDeserializable());
+  std::shared_ptr<Cacheable> myCacheablePtr(
+      CacheableString::createDeserializable());
   std::shared_ptr<CacheableVector> myVectPtr = CacheableVector::create();
 
   TcrMessageExecuteRegionFunction testMessage(
@@ -620,7 +624,8 @@ TEST_F(TcrMessageTest, testConstructorEXECUTE_REGION_FUNCTION) {
 }
 
 TEST_F(TcrMessageTest, DISABLED_testConstructorEXECUTE_FUNCTION) {
-  std::shared_ptr<Cacheable> myCacheablePtr(CacheableString::createDeserializable());
+  std::shared_ptr<Cacheable> myCacheablePtr(
+      CacheableString::createDeserializable());
 
   TcrMessageExecuteFunction testMessage(
       std::unique_ptr<DataOutputUnderTest>(new DataOutputUnderTest()),
@@ -638,7 +643,8 @@ TEST_F(TcrMessageTest, DISABLED_testConstructorEXECUTE_FUNCTION) {
 }
 
 TEST_F(TcrMessageTest, testConstructorEXECUTECQ_MSG_TYPE) {
-  std::shared_ptr<Cacheable> myCacheablePtr(CacheableString::createDeserializable());
+  std::shared_ptr<Cacheable> myCacheablePtr(
+      CacheableString::createDeserializable());
 
   TcrMessageExecuteCq testMessage(
       std::unique_ptr<DataOutputUnderTest>(new DataOutputUnderTest()),
@@ -655,7 +661,8 @@ TEST_F(TcrMessageTest, testConstructorEXECUTECQ_MSG_TYPE) {
 }
 
 TEST_F(TcrMessageTest, testConstructorWithGinormousQueryEXECUTECQ_MSG_TYPE) {
-  std::shared_ptr<Cacheable> myCacheablePtr(CacheableString::createDeserializable());
+  std::shared_ptr<Cacheable> myCacheablePtr(
+      CacheableString::createDeserializable());
 
   std::ostringstream oss;
   oss << "select * from /somewhere s where s.data.id in SET(";
@@ -687,7 +694,8 @@ TEST_F(TcrMessageTest, testConstructorWithGinormousQueryEXECUTECQ_MSG_TYPE) {
 }
 
 TEST_F(TcrMessageTest, testConstructorEXECUTECQ_WITH_IR_MSG_TYPE) {
-  std::shared_ptr<Cacheable> myCacheablePtr(CacheableString::createDeserializable());
+  std::shared_ptr<Cacheable> myCacheablePtr(
+      CacheableString::createDeserializable());
 
   TcrMessageExecuteCqWithIr testMessage(
       std::unique_ptr<DataOutputUnderTest>(new DataOutputUnderTest()),

@@ -51,7 +51,8 @@ class CPPCACHE_EXPORT ConcurrentEntriesMap : public EntriesMap {
    * Return a reference to the segment for which the given key would
    * be stored.
    */
-  virtual MapSegment* segmentFor(const std::shared_ptr<CacheableKey>& key) const {
+  virtual MapSegment* segmentFor(
+      const std::shared_ptr<CacheableKey>& key) const {
     return &(m_segments[segmentIdx(key)]);
   }
 
@@ -88,34 +89,43 @@ class CPPCACHE_EXPORT ConcurrentEntriesMap : public EntriesMap {
   virtual void clear();
 
   virtual GfErrType put(const std::shared_ptr<CacheableKey>& key,
-                        const std::shared_ptr<Cacheable>& newValue, std::shared_ptr<MapEntryImpl>& me,
+                        const std::shared_ptr<Cacheable>& newValue,
+                        std::shared_ptr<MapEntryImpl>& me,
                         std::shared_ptr<Cacheable>& oldValue, int updateCount,
-                        int destroyTracker, std::shared_ptr<VersionTag> versionTag,
+                        int destroyTracker,
+                        std::shared_ptr<VersionTag> versionTag,
                         bool& isUpdate = EntriesMap::boolVal,
                         DataInput* delta = nullptr);
-  virtual GfErrType invalidate(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<MapEntryImpl>& me,
+  virtual GfErrType invalidate(const std::shared_ptr<CacheableKey>& key,
+                               std::shared_ptr<MapEntryImpl>& me,
                                std::shared_ptr<Cacheable>& oldValue,
                                std::shared_ptr<VersionTag> versionTag);
   virtual GfErrType create(const std::shared_ptr<CacheableKey>& key,
-                           const std::shared_ptr<Cacheable>& newValue, std::shared_ptr<MapEntryImpl>& me,
-                           std::shared_ptr<Cacheable>& oldValue, int updateCount,
-                           int destroyTracker, std::shared_ptr<VersionTag> versionTag);
-  virtual bool get(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<Cacheable>& value,
+                           const std::shared_ptr<Cacheable>& newValue,
+                           std::shared_ptr<MapEntryImpl>& me,
+                           std::shared_ptr<Cacheable>& oldValue,
+                           int updateCount, int destroyTracker,
+                           std::shared_ptr<VersionTag> versionTag);
+  virtual bool get(const std::shared_ptr<CacheableKey>& key,
+                   std::shared_ptr<Cacheable>& value,
                    std::shared_ptr<MapEntryImpl>& me);
 
   /**
    * @brief get MapEntry for key.
    * TODO: return GfErrType like other methods
    */
-  virtual void getEntry(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<MapEntryImpl>& result,
+  virtual void getEntry(const std::shared_ptr<CacheableKey>& key,
+                        std::shared_ptr<MapEntryImpl>& result,
                         std::shared_ptr<Cacheable>& value) const;
 
   /**
    * @brief remove the entry for key from the map.
    */
-  virtual GfErrType remove(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<Cacheable>& result,
+  virtual GfErrType remove(const std::shared_ptr<CacheableKey>& key,
+                           std::shared_ptr<Cacheable>& result,
                            std::shared_ptr<MapEntryImpl>& me, int updateCount,
-                           std::shared_ptr<VersionTag> versionTag, bool afterRemote);
+                           std::shared_ptr<VersionTag> versionTag,
+                           bool afterRemote);
 
   /**
    * @brief return true if there exists an entry for the key.
@@ -125,12 +135,14 @@ class CPPCACHE_EXPORT ConcurrentEntriesMap : public EntriesMap {
   /**
    * @brief return the all the keys in a list.
    */
-  virtual void getKeys(std::vector<std::shared_ptr<CacheableKey>>& result) const;
+  virtual void getKeys(
+      std::vector<std::shared_ptr<CacheableKey>>& result) const;
 
   /**
    * @brief return all the entries in a list.
    */
-  virtual void getEntries(std::vector<std::shared_ptr<RegionEntry>>& result) const;
+  virtual void getEntries(
+      std::vector<std::shared_ptr<RegionEntry>>& result) const;
 
   /**
    * @brief return all values in a list.
@@ -143,8 +155,9 @@ class CPPCACHE_EXPORT ConcurrentEntriesMap : public EntriesMap {
   virtual uint32_t size() const;
 
   virtual int addTrackerForEntry(const std::shared_ptr<CacheableKey>& key,
-                                 std::shared_ptr<Cacheable>& oldValue, bool addIfAbsent,
-                                 bool failIfPresent, bool incUpdateCount);
+                                 std::shared_ptr<Cacheable>& oldValue,
+                                 bool addIfAbsent, bool failIfPresent,
+                                 bool incUpdateCount);
 
   virtual void removeTrackerForEntry(const std::shared_ptr<CacheableKey>& key);
 
@@ -159,7 +172,8 @@ class CPPCACHE_EXPORT ConcurrentEntriesMap : public EntriesMap {
   /**
    * for internal testing, returns if an entry is a tombstone
    */
-  virtual GfErrType isTombstone(std::shared_ptr<CacheableKey>& key, std::shared_ptr<MapEntryImpl>& me,
+  virtual GfErrType isTombstone(std::shared_ptr<CacheableKey>& key,
+                                std::shared_ptr<MapEntryImpl>& me,
                                 bool& result);
 
   /**

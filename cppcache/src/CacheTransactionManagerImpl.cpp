@@ -117,7 +117,6 @@ void CacheTransactionManagerImpl::commit() {
       std::static_pointer_cast<TXCommitMessage>(reply.getValue());
   txCleaner.clean();
   commit->apply(m_cache);
-
 }
 
 void CacheTransactionManagerImpl::rollback() {
@@ -247,7 +246,8 @@ std::shared_ptr<TransactionId> CacheTransactionManagerImpl::suspend() {
   return txState->getTransactionId();
 }
 
-void CacheTransactionManagerImpl::resume(std::shared_ptr<TransactionId> transactionId) {
+void CacheTransactionManagerImpl::resume(
+    std::shared_ptr<TransactionId> transactionId) {
   // get the current state of the thread
   if (TSSTXStateWrapper::s_geodeTSSTXState->getTXState() != nullptr) {
     GfErrTypeThrowException("A transaction is already in progress",

@@ -52,10 +52,13 @@ class ThinClientBaseDM;
 
 class CqEventImpl : public CqEvent {
  public:
-  CqEventImpl(std::shared_ptr<CqQuery>& cQuery, CqOperation::CqOperationType baseOp,
-              CqOperation::CqOperationType cqOp, std::shared_ptr<CacheableKey>& key,
+  CqEventImpl(std::shared_ptr<CqQuery>& cQuery,
+              CqOperation::CqOperationType baseOp,
+              CqOperation::CqOperationType cqOp,
+              std::shared_ptr<CacheableKey>& key,
               std::shared_ptr<Cacheable>& value, ThinClientBaseDM* tcrdm,
-              std::shared_ptr<CacheableBytes> deltaBytes, std::shared_ptr<EventId> eventId);
+              std::shared_ptr<CacheableBytes> deltaBytes,
+              std::shared_ptr<EventId> eventId);
 
   std::shared_ptr<CqQuery> getCq() const;
 

@@ -157,8 +157,8 @@ std::vector<std::shared_ptr<Region>> ProxyCache::rootRegions() {
   return regions;
 }
 
-ProxyCache::ProxyCache(std::shared_ptr<Properties> credentials, std::shared_ptr<Pool> pool,
-                       CacheImpl* cacheImpl)
+ProxyCache::ProxyCache(std::shared_ptr<Properties> credentials,
+                       std::shared_ptr<Pool> pool, CacheImpl* cacheImpl)
     : m_remoteQueryService(nullptr),
       m_isProxyCacheClosed(false),
       m_userAttributes(

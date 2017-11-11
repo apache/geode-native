@@ -42,19 +42,23 @@ namespace geode {
 namespace client {
 
 struct PdxTypeLessThan {
-  bool operator()(std::shared_ptr<PdxType> const& n1, std::shared_ptr<PdxType> const& n2) const {
+  bool operator()(std::shared_ptr<PdxType> const& n1,
+                  std::shared_ptr<PdxType> const& n2) const {
     // call to PdxType::operator <()
     return *n1 < *n2;
   }
 };
 
 typedef std::map<int32_t, std::shared_ptr<PdxType>> TypeIdVsPdxType;
-typedef std::map</*char**/ std::string, std::shared_ptr<PdxType>> TypeNameVsPdxType;
-typedef std::unordered_map<std::shared_ptr<PdxSerializable>, std::shared_ptr<PdxRemotePreservedData>,
+typedef std::map</*char**/ std::string, std::shared_ptr<PdxType>>
+    TypeNameVsPdxType;
+typedef std::unordered_map<std::shared_ptr<PdxSerializable>,
+                           std::shared_ptr<PdxRemotePreservedData>,
                            dereference_hash<std::shared_ptr<CacheableKey>>,
                            dereference_equal_to<std::shared_ptr<CacheableKey>>>
     PreservedHashMap;
-typedef std::map<std::shared_ptr<PdxType>, int32_t, PdxTypeLessThan> PdxTypeToTypeIdMap;
+typedef std::map<std::shared_ptr<PdxType>, int32_t, PdxTypeLessThan>
+    PdxTypeToTypeIdMap;
 
 class CPPCACHE_EXPORT PdxTypeRegistry
     : public std::enable_shared_from_this<PdxTypeRegistry> {
@@ -110,7 +114,8 @@ class CPPCACHE_EXPORT PdxTypeRegistry
                        std::shared_ptr<PdxRemotePreservedData> preserveDataPtr,
                        ExpiryTaskManager& expiryTaskManager);
 
-  std::shared_ptr<PdxRemotePreservedData> getPreserveData(std::shared_ptr<PdxSerializable> obj);
+  std::shared_ptr<PdxRemotePreservedData> getPreserveData(
+      std::shared_ptr<PdxSerializable> obj);
 
   void clear();
 

@@ -19,10 +19,12 @@
 #include <geode/PoolManager.hpp>
 #include "CqQueryImpl.hpp"
 
-ProxyRemoteQueryService::ProxyRemoteQueryService(std::shared_ptr<ProxyCache> cptr)
+ProxyRemoteQueryService::ProxyRemoteQueryService(
+    std::shared_ptr<ProxyCache> cptr)
     : m_proxyCache(cptr) {}
 
-std::shared_ptr<Query> ProxyRemoteQueryService::newQuery(const char* querystring) {
+std::shared_ptr<Query> ProxyRemoteQueryService::newQuery(
+    const char* querystring) {
   if (!m_proxyCache->isClosed()) {
     auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
     auto pool = m_proxyCache->m_cacheImpl->getCache()->getPoolManager().find(
@@ -49,9 +51,9 @@ void ProxyRemoteQueryService::unSupportedException(const char* operationName) {
   throw UnsupportedOperationException(msg);
 }
 
- std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(const char* querystr,
-                                          const std::shared_ptr<CqAttributes>& cqAttr,
-                                          bool isDurable) {
+std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
+    const char* querystr, const std::shared_ptr<CqAttributes>& cqAttr,
+    bool isDurable) {
   if (!m_proxyCache->isClosed()) {
     auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
     auto pool = m_proxyCache->m_cacheImpl->getCache()->getPoolManager().find(
@@ -72,15 +74,15 @@ void ProxyRemoteQueryService::unSupportedException(const char* operationName) {
   throw IllegalStateException("Logical Cache has been closed.");
 }
 
-void ProxyRemoteQueryService::addCqQuery(const std::shared_ptr<CqQuery>& cqQuery) {
+void ProxyRemoteQueryService::addCqQuery(
+    const std::shared_ptr<CqQuery>& cqQuery) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
   m_cqQueries.push_back(cqQuery);
 }
 
-std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(const char* name,
-                                          const char* querystr,
-                                          const std::shared_ptr<CqAttributes>& cqAttr,
-                                          bool isDurable) {
+std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
+    const char* name, const char* querystr,
+    const std::shared_ptr<CqAttributes>& cqAttr, bool isDurable) {
   if (!m_proxyCache->isClosed()) {
     auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
     auto pool = m_proxyCache->m_cacheImpl->getCache()->getPoolManager().find(
@@ -189,12 +191,14 @@ void ProxyRemoteQueryService::stopCqs() {
   }
 }
 
-std::shared_ptr<CqServiceStatistics> ProxyRemoteQueryService::getCqServiceStatistics() {
+std::shared_ptr<CqServiceStatistics>
+ProxyRemoteQueryService::getCqServiceStatistics() {
   unSupportedException("getCqServiceStatistics()");
   return nullptr;
 }
 
-std::shared_ptr<CacheableArrayList> ProxyRemoteQueryService::getAllDurableCqsFromServer() {
+std::shared_ptr<CacheableArrayList>
+ProxyRemoteQueryService::getAllDurableCqsFromServer() {
   unSupportedException("getAllDurableCqsFromServer()");
   return nullptr;
 }

@@ -272,8 +272,8 @@ class CPPCACHE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
    * @returns Logical instance of cache to do operations on behalf of one
    * particular user.
    */
-  virtual std::shared_ptr<RegionService> createSecureUserCache(std::shared_ptr<Properties> credentials,
-                                                 CacheImpl* cacheImpl);
+  virtual std::shared_ptr<RegionService> createSecureUserCache(
+      std::shared_ptr<Properties> credentials, CacheImpl* cacheImpl);
 
   Pool(const Pool&);
 

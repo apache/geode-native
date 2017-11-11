@@ -72,9 +72,11 @@ int MapSegment::acquire() { return m_segmentMutex.acquire(); }
 int MapSegment::release() { return m_segmentMutex.release(); }
 
 GfErrType MapSegment::create(const std::shared_ptr<CacheableKey>& key,
-                             const std::shared_ptr<Cacheable>& newValue, std::shared_ptr<MapEntryImpl>& me,
-                             std::shared_ptr<Cacheable>& oldValue, int updateCount,
-                             int destroyTracker, std::shared_ptr<VersionTag> versionTag) {
+                             const std::shared_ptr<Cacheable>& newValue,
+                             std::shared_ptr<MapEntryImpl>& me,
+                             std::shared_ptr<Cacheable>& oldValue,
+                             int updateCount, int destroyTracker,
+                             std::shared_ptr<VersionTag> versionTag) {
   int64_t taskid = -1;
   TombstoneExpiryHandler* handler = nullptr;
   GfErrType err = GF_NOERR;
@@ -138,10 +140,12 @@ GfErrType MapSegment::create(const std::shared_ptr<CacheableKey>& key,
  * @brief put a value in the map, replacing if key already exists.
  */
 GfErrType MapSegment::put(const std::shared_ptr<CacheableKey>& key,
-                          const std::shared_ptr<Cacheable>& newValue, std::shared_ptr<MapEntryImpl>& me,
+                          const std::shared_ptr<Cacheable>& newValue,
+                          std::shared_ptr<MapEntryImpl>& me,
                           std::shared_ptr<Cacheable>& oldValue, int updateCount,
                           int destroyTracker, bool& isUpdate,
-                          std::shared_ptr<VersionTag> versionTag, DataInput* delta) {
+                          std::shared_ptr<VersionTag> versionTag,
+                          DataInput* delta) {
   int64_t taskid = -1;
   TombstoneExpiryHandler* handler = nullptr;
   GfErrType err = GF_NOERR;
@@ -206,8 +210,10 @@ GfErrType MapSegment::put(const std::shared_ptr<CacheableKey>& key,
 }
 
 GfErrType MapSegment::invalidate(const std::shared_ptr<CacheableKey>& key,
-                                 std::shared_ptr<MapEntryImpl>& me, std::shared_ptr<Cacheable>& oldValue,
-                                 std::shared_ptr<VersionTag> versionTag, bool& isTokenAdded) {
+                                 std::shared_ptr<MapEntryImpl>& me,
+                                 std::shared_ptr<Cacheable>& oldValue,
+                                 std::shared_ptr<VersionTag> versionTag,
+                                 bool& isTokenAdded) {
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
   int status;
   isTokenAdded = false;
@@ -252,7 +258,8 @@ GfErrType MapSegment::invalidate(const std::shared_ptr<CacheableKey>& key,
 }
 
 GfErrType MapSegment::removeWhenConcurrencyEnabled(
-    const std::shared_ptr<CacheableKey>& key, std::shared_ptr<Cacheable>& oldValue, std::shared_ptr<MapEntryImpl>& me,
+    const std::shared_ptr<CacheableKey>& key,
+    std::shared_ptr<Cacheable>& oldValue, std::shared_ptr<MapEntryImpl>& me,
     int updateCount, std::shared_ptr<VersionTag> versionTag, bool afterRemote,
     bool& isEntryFound, int64_t expiryTaskID, TombstoneExpiryHandler* handler,
     bool& expTaskSet) {
@@ -320,10 +327,11 @@ GfErrType MapSegment::removeWhenConcurrencyEnabled(
 /**
  * @brief remove entry, setting oldValue.
  */
-GfErrType MapSegment::remove(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<Cacheable>& oldValue,
+GfErrType MapSegment::remove(const std::shared_ptr<CacheableKey>& key,
+                             std::shared_ptr<Cacheable>& oldValue,
                              std::shared_ptr<MapEntryImpl>& me, int updateCount,
-                             std::shared_ptr<VersionTag> versionTag, bool afterRemote,
-                             bool& isEntryFound) {
+                             std::shared_ptr<VersionTag> versionTag,
+                             bool afterRemote, bool& isEntryFound) {
   int status;
   std::shared_ptr<MapEntry> entry;
   if (m_concurrencyChecksEnabled) {
@@ -370,8 +378,8 @@ GfErrType MapSegment::remove(const std::shared_ptr<CacheableKey>& key, std::shar
   return GF_NOERR;
 }
 
-bool MapSegment::unguardedRemoveActualEntry(const std::shared_ptr<CacheableKey>& key,
-                                            bool cancelTask) {
+bool MapSegment::unguardedRemoveActualEntry(
+    const std::shared_ptr<CacheableKey>& key, bool cancelTask) {
   std::shared_ptr<MapEntry> entry;
   m_tombstoneList->eraseEntryFromTombstoneList(key, cancelTask);
   if (m_map->unbind(key, entry) == -1) {
@@ -400,7 +408,8 @@ bool MapSegment::removeActualEntry(const std::shared_ptr<CacheableKey>& key,
 /**
  * @brief get MapEntry for key. throws NoEntryException if absent.
  */
-bool MapSegment::getEntry(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<MapEntryImpl>& result,
+bool MapSegment::getEntry(const std::shared_ptr<CacheableKey>& key,
+                          std::shared_ptr<MapEntryImpl>& result,
                           std::shared_ptr<Cacheable>& value) {
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
   int status;
@@ -514,8 +523,9 @@ void MapSegment::getValues(std::vector<std::shared_ptr<Cacheable>>& result) {
 // versioning
 // changes takes care of the version and no need for tracking the entry
 int MapSegment::addTrackerForEntry(const std::shared_ptr<CacheableKey>& key,
-                                   std::shared_ptr<Cacheable>& oldValue, bool addIfAbsent,
-                                   bool failIfPresent, bool incUpdateCount) {
+                                   std::shared_ptr<Cacheable>& oldValue,
+                                   bool addIfAbsent, bool failIfPresent,
+                                   bool incUpdateCount) {
   if (m_concurrencyChecksEnabled) return -1;
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
   std::shared_ptr<MapEntry> entry;
@@ -562,7 +572,8 @@ int MapSegment::addTrackerForEntry(const std::shared_ptr<CacheableKey>& key,
 // This function will not get called if concurrency checks are enabled. The
 // versioning
 // changes takes care of the version and no need for tracking the entry
-void MapSegment::removeTrackerForEntry(const std::shared_ptr<CacheableKey>& key) {
+void MapSegment::removeTrackerForEntry(
+    const std::shared_ptr<CacheableKey>& key) {
   if (m_concurrencyChecksEnabled) return;
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
   std::shared_ptr<MapEntry> entry;
@@ -628,17 +639,19 @@ void MapSegment::rehash() {  // Only called from put, segment must already be
   m_rehashCount++;
 }
 
-std::shared_ptr<Cacheable> MapSegment::getFromDisc(std::shared_ptr<CacheableKey> key,
-                                     std::shared_ptr<MapEntryImpl>& entryImpl) {
+std::shared_ptr<Cacheable> MapSegment::getFromDisc(
+    std::shared_ptr<CacheableKey> key,
+    std::shared_ptr<MapEntryImpl>& entryImpl) {
   LocalRegion* lregion = static_cast<LocalRegion*>(m_region);
   EntriesMap* em = lregion->getEntryMap();
   return em->getFromDisk(key, entryImpl);
 }
 
 GfErrType MapSegment::putForTrackedEntry(
-    const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& newValue,
-    std::shared_ptr<MapEntry>& entry, std::shared_ptr<MapEntryImpl>& entryImpl, int updateCount,
-    VersionStamp& versionStamp, DataInput* delta) {
+    const std::shared_ptr<CacheableKey>& key,
+    const std::shared_ptr<Cacheable>& newValue,
+    std::shared_ptr<MapEntry>& entry, std::shared_ptr<MapEntryImpl>& entryImpl,
+    int updateCount, VersionStamp& versionStamp, DataInput* delta) {
   if (updateCount < 0 || m_concurrencyChecksEnabled) {
     // for a non-tracked put (e.g. from notification) go ahead with the
     // create/update and increment the update counter
@@ -723,7 +736,8 @@ void MapSegment::reapTombstones(std::shared_ptr<CacheableHashSet> removedKeys) {
   m_tombstoneList->reapTombstones(removedKeys);
 }
 
-GfErrType MapSegment::isTombstone(std::shared_ptr<CacheableKey> key, std::shared_ptr<MapEntryImpl>& me,
+GfErrType MapSegment::isTombstone(std::shared_ptr<CacheableKey> key,
+                                  std::shared_ptr<MapEntryImpl>& me,
                                   bool& result) {
   std::shared_ptr<Cacheable> value;
   std::shared_ptr<MapEntry> entry;

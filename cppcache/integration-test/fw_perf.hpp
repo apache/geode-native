@@ -230,7 +230,8 @@ class Thread : public ACE_Task_Base {
 //
 //    argsv[0] = strdup( pbuf );
 //    argsv[1] = 0;
-//    std::shared_ptr<ACE_Service_Object_> svcObj = ACE_SVC_INVOKE( ACE_Name_Acceptor );
+//    std::shared_ptr<ACE_Service_Object_> svcObj = ACE_SVC_INVOKE(
+//    ACE_Name_Acceptor );
 //
 //    if ( svcObj->init( 1, argsv ) == -1 ) {
 //      fprintf( stdout, "Failed to construct the Naming Service." );

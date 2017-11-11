@@ -183,7 +183,7 @@ void createRegion(const char* name, bool ackMode,
   fflush(stdout);
   // ack, caching
   auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
-                                               clientNotificationEnabled);
+                                          clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }

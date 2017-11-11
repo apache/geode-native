@@ -54,7 +54,7 @@ class RegionCommit {
  private:
   std::shared_ptr<CacheableString> m_regionPath;
   std::shared_ptr<CacheableString> m_parentRegionPath;
-  std::vector< std::shared_ptr<FarSideEntryOp> > m_farSideEntryOps;
+  std::vector<std::shared_ptr<FarSideEntryOp>> m_farSideEntryOps;
   MemberListForVersionStamp& m_memberListForVersionStamp;
 };
 }  // namespace client

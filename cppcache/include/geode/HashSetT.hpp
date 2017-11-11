@@ -32,7 +32,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-typedef std::unordered_set<std::shared_ptr<CacheableKey>, dereference_hash<std::shared_ptr<CacheableKey>>,
+typedef std::unordered_set<std::shared_ptr<CacheableKey>,
+                           dereference_hash<std::shared_ptr<CacheableKey>>,
                            dereference_equal_to<std::shared_ptr<CacheableKey>>>
     HashSetOfCacheableKey;
 

@@ -50,23 +50,27 @@ class CPPCACHE_EXPORT RemoteQuery : public Query {
   std::shared_ptr<ProxyCache> m_proxyCache;
 
  public:
-  RemoteQuery(const char* querystr, const std::shared_ptr<RemoteQueryService>& queryService,
-              ThinClientBaseDM* tccdmptr, std::shared_ptr<ProxyCache> proxyCache = nullptr);
+  RemoteQuery(const char* querystr,
+              const std::shared_ptr<RemoteQueryService>& queryService,
+              ThinClientBaseDM* tccdmptr,
+              std::shared_ptr<ProxyCache> proxyCache = nullptr);
 
   //@TODO check the return type, is it ok. second option could be to pass
   // SelectResults by reference as a parameter.
-  std::shared_ptr<SelectResults> execute(uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+  std::shared_ptr<SelectResults> execute(
+      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   //@TODO check the return type, is it ok. second option could be to pass
   // SelectResults by reference as a parameter.
-  std::shared_ptr<SelectResults> execute(std::shared_ptr<CacheableVector> paramList = nullptr,
-                           uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+  std::shared_ptr<SelectResults> execute(
+      std::shared_ptr<CacheableVector> paramList = nullptr,
+      uint32_t timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   // executes a query using a given distribution manager
   // used by Region.query() and Region.getAll()
-  std::shared_ptr<SelectResults> execute(uint32_t timeout, const char* func,
-                           ThinClientBaseDM* tcdm,
-                           std::shared_ptr<CacheableVector> paramList);
+  std::shared_ptr<SelectResults> execute(
+      uint32_t timeout, const char* func, ThinClientBaseDM* tcdm,
+      std::shared_ptr<CacheableVector> paramList);
 
   // nothrow version of execute()
   GfErrType executeNoThrow(uint32_t timeout, TcrMessageReply& reply,

@@ -53,7 +53,8 @@ class CacheTransactionManagerImpl
   virtual void resume(std::shared_ptr<TransactionId> transactionId);
   virtual bool isSuspended(std::shared_ptr<TransactionId> transactionId);
   virtual bool tryResume(std::shared_ptr<TransactionId> transactionId);
-  bool tryResume(std::shared_ptr<TransactionId> transactionId, bool cancelExpiryTask);
+  bool tryResume(std::shared_ptr<TransactionId> transactionId,
+                 bool cancelExpiryTask);
   virtual bool tryResume(std::shared_ptr<TransactionId> transactionId,
                          int32_t waitTimeInMillisec);
   virtual bool exists(std::shared_ptr<TransactionId> transactionId);

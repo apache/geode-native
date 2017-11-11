@@ -29,12 +29,12 @@
 #include "ThinClientRegion.hpp"
 using namespace apache::geode::client;
 
-CqQueryImpl::CqQueryImpl(const std::shared_ptr<CqService>& cqService,
-                         const std::string& cqName,
-                         const std::string& queryString,
-                         const std::shared_ptr<CqAttributes>& cqAttributes,
-                         StatisticsFactory* factory, const bool isDurable,
-                         const std::shared_ptr<UserAttributes>& userAttributesPtr)
+CqQueryImpl::CqQueryImpl(
+    const std::shared_ptr<CqService>& cqService, const std::string& cqName,
+    const std::string& queryString,
+    const std::shared_ptr<CqAttributes>& cqAttributes,
+    StatisticsFactory* factory, const bool isDurable,
+    const std::shared_ptr<UserAttributes>& userAttributesPtr)
     : m_cqName(cqName),
       m_queryString(queryString),
       m_cqService(cqService),
@@ -224,7 +224,9 @@ std::shared_ptr<Query> CqQueryImpl::getQuery() const { return m_query; }
 /**
  * @see org.apache.geode.cache.query.CqQuery#getStatistics()
  */
-const std::shared_ptr<CqStatistics> CqQueryImpl::getStatistics() const { return m_stats; }
+const std::shared_ptr<CqStatistics> CqQueryImpl::getStatistics() const {
+  return m_stats;
+}
 
 const std::shared_ptr<CqAttributes> CqQueryImpl::getCqAttributes() const {
   return m_cqAttributes;

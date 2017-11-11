@@ -106,10 +106,11 @@ class CPPCACHE_EXPORT Execution {
    * @return either a default result collector or one specified by {@link
    * #withCollector(ResultCollector)}
    */
-  virtual std::shared_ptr<ResultCollector> execute(const std::shared_ptr<CacheableVector>& routingObj,
-                                     const std::shared_ptr<Cacheable>& args,
-                                     const std::shared_ptr<ResultCollector>& rs,
-                                     const char* func, uint32_t timeout) = 0;
+  virtual std::shared_ptr<ResultCollector> execute(
+      const std::shared_ptr<CacheableVector>& routingObj,
+      const std::shared_ptr<Cacheable>& args,
+      const std::shared_ptr<ResultCollector>& rs, const char* func,
+      uint32_t timeout) = 0;
 };
 }  // namespace client
 }  // namespace geode

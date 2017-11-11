@@ -38,7 +38,7 @@ namespace client {
   class CPPCACHE_EXPORT x : public apache::geode::client::Exception {        \
    public:                                                                   \
     x(const char* msg1, const char* msg2 = nullptr, bool forceStack = false, \
-      const std::shared_ptr<Exception>& cause = nullptr)                                   \
+      const std::shared_ptr<Exception>& cause = nullptr)                     \
         : Exception(msg1, msg2, forceStack, cause) {}                        \
     x(const x& other) : Exception(other) {}                                  \
     virtual Exception* clone() const {                                       \
@@ -49,8 +49,9 @@ namespace client {
     virtual void raise() { throw * this; }                                   \
                                                                              \
    protected:                                                                \
-    x(const std::shared_ptr<CacheableString>& message, const std::shared_ptr<StackTrace>& stack,         \
-      const std::shared_ptr<Exception>& cause)                                             \
+    x(const std::shared_ptr<CacheableString>& message,                       \
+      const std::shared_ptr<StackTrace>& stack,                              \
+      const std::shared_ptr<Exception>& cause)                               \
         : Exception(message, stack, cause) {}                                \
                                                                              \
    private:                                                                  \

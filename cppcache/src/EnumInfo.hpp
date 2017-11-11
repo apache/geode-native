@@ -57,7 +57,9 @@ class CPPCACHE_EXPORT EnumInfo : public CacheableKey {
   virtual int32_t hashcode() const;
 
   virtual int8_t DSFID() const;
-  std::shared_ptr<CacheableString> getEnumClassName() const { return m_enumClassName; }
+  std::shared_ptr<CacheableString> getEnumClassName() const {
+    return m_enumClassName;
+  }
   std::shared_ptr<CacheableString> getEnumName() const { return m_enumName; }
   int32_t getEnumOrdinal() const { return m_ordinal; }
 };

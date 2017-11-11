@@ -134,10 +134,10 @@ Serializable* TXCommitMessage::create(
 }
 
 void TXCommitMessage::apply(Cache* cache) {
-  for (std::vector<std::shared_ptr<RegionCommit>>::iterator iter = m_regions.begin();
+  for (std::vector<std::shared_ptr<RegionCommit>>::iterator iter =
+           m_regions.begin();
        m_regions.end() != iter; iter++) {
-    auto regionCommit =
-        std::static_pointer_cast<RegionCommit>(*iter);
+    auto regionCommit = std::static_pointer_cast<RegionCommit>(*iter);
     regionCommit->apply(cache);
   }
 }

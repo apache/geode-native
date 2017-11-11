@@ -72,7 +72,7 @@ void setCacheListener(const char* regName, std::shared_ptr<OperMonitor> monitor)
 }
  std::shared_ptr<OperMonitor> mon1 = nullptr;
 
-const char* mixKeys[] = {"D-Key-1"};
+ const char* mixKeys[] = {"D-Key-1"};
 
 #include "ThinClientDurableInit.hpp"
 #include "ThinClientTasks_C2S2.hpp"

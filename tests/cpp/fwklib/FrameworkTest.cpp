@@ -228,8 +228,9 @@ const FwkPool* FrameworkTest::getPoolSnippet(const std::string& name) const {
 }
 // ----------------------------------------------------------------------------
 
-void FrameworkTest::cacheInitialize(std::shared_ptr<Properties>& props,
-                                    const std::shared_ptr<CacheAttributes>& cAttrs) {
+void FrameworkTest::cacheInitialize(
+    std::shared_ptr<Properties>& props,
+    const std::shared_ptr<CacheAttributes>& cAttrs) {
   std::shared_ptr<CacheFactory> cacheFactory;
   try {
     std::string name = getStringValue("systemName");

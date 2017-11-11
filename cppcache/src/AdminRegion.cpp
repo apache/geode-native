@@ -26,7 +26,7 @@ namespace geode {
 namespace client {
 
 std::shared_ptr<AdminRegion> AdminRegion::create(CacheImpl* cache,
-                                   ThinClientBaseDM* distMan) {
+                                                 ThinClientBaseDM* distMan) {
   auto adminRegion = std::make_shared<AdminRegion>();
 
   auto& props = cache->getDistributedSystem().getSystemProperties();

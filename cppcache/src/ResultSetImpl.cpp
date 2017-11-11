@@ -34,7 +34,8 @@ int32_t ResultSetImpl::size() const {
   return static_cast<int32_t>(m_resultSetVector->size());
 }
 
-const std::shared_ptr<Serializable> ResultSetImpl::operator[](int32_t index) const {
+const std::shared_ptr<Serializable> ResultSetImpl::operator[](
+    int32_t index) const {
   if (index >= m_resultSetVector->size()) {
     throw IllegalArgumentException("index out of bounds");
   }

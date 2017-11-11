@@ -81,7 +81,8 @@ void TombstoneList::add(const std::shared_ptr<MapEntryImpl>& entry,
 void TombstoneList::reapTombstones(std::map<uint16_t, int64_t>& gcVersions) {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
-  std::unordered_set<std::shared_ptr<CacheableKey>, dereference_hash<std::shared_ptr<CacheableKey>>,
+  std::unordered_set<std::shared_ptr<CacheableKey>,
+                     dereference_hash<std::shared_ptr<CacheableKey>>,
                      dereference_equal_to<std::shared_ptr<CacheableKey>>>
       tobeDeleted;
   for (const auto& queIter : m_tombstoneMap) {
@@ -104,7 +105,8 @@ void TombstoneList::reapTombstones(std::map<uint16_t, int64_t>& gcVersions) {
 }
 
 // Reaps the tombstones whose keys are specified in the hash set .
-void TombstoneList::reapTombstones(std::shared_ptr<CacheableHashSet> removedKeys) {
+void TombstoneList::reapTombstones(
+    std::shared_ptr<CacheableHashSet> removedKeys) {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
   for (auto queIter = removedKeys->begin(); queIter != removedKeys->end();
@@ -113,12 +115,14 @@ void TombstoneList::reapTombstones(std::shared_ptr<CacheableHashSet> removedKeys
   }
 }
 // Call this when the lock of MapSegment has not been taken
-void TombstoneList::removeEntryFromMapSegment(std::shared_ptr<CacheableKey> key) {
+void TombstoneList::removeEntryFromMapSegment(
+    std::shared_ptr<CacheableKey> key) {
   m_mapSegment->removeActualEntry(key, false);
 }
 
 // Call this when the lock of MapSegment has already been taken
-void TombstoneList::unguardedRemoveEntryFromMapSegment(std::shared_ptr<CacheableKey> key) {
+void TombstoneList::unguardedRemoveEntryFromMapSegment(
+    std::shared_ptr<CacheableKey> key) {
   m_mapSegment->unguardedRemoveActualEntry(key);
 }
 
@@ -129,8 +133,8 @@ bool TombstoneList::exists(const std::shared_ptr<CacheableKey>& key) const {
   return false;
 }
 
-void TombstoneList::eraseEntryFromTombstoneList(const std::shared_ptr<CacheableKey>& key,
-                                                bool cancelTask) {
+void TombstoneList::eraseEntryFromTombstoneList(
+    const std::shared_ptr<CacheableKey>& key, bool cancelTask) {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
   if (exists(key)) {
@@ -148,7 +152,8 @@ void TombstoneList::eraseEntryFromTombstoneList(const std::shared_ptr<CacheableK
 }
 
 long TombstoneList::eraseEntryFromTombstoneListWithoutCancelTask(
-    const std::shared_ptr<CacheableKey>& key, TombstoneExpiryHandler*& handler) {
+    const std::shared_ptr<CacheableKey>& key,
+    TombstoneExpiryHandler*& handler) {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
   long taskid = -1;

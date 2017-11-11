@@ -268,7 +268,8 @@ wchar_t* PdxReaderWithTypeCollector::readWideString(const char* fieldName) {
   }
 }
 
-std::shared_ptr<Serializable> PdxReaderWithTypeCollector::readObject(const char* fieldName) {
+std::shared_ptr<Serializable> PdxReaderWithTypeCollector::readObject(
+    const char* fieldName) {
   // field is collected after reading
   checkType(fieldName, PdxFieldTypes::OBJECT, "Serializable");
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
@@ -554,8 +555,8 @@ wchar_t** PdxReaderWithTypeCollector::readWideStringArray(const char* fieldName,
   }
 }
 
-std::shared_ptr<CacheableObjectArray> PdxReaderWithTypeCollector::readObjectArray(
-    const char* fieldName) {
+std::shared_ptr<CacheableObjectArray>
+PdxReaderWithTypeCollector::readObjectArray(const char* fieldName) {
   checkType(fieldName, PdxFieldTypes::OBJECT_ARRAY, "Object[]");
   m_newPdxType->addVariableLengthTypeField(fieldName, "Object[]",
                                            PdxFieldTypes::OBJECT_ARRAY);
@@ -566,7 +567,8 @@ std::shared_ptr<CacheableObjectArray> PdxReaderWithTypeCollector::readObjectArra
   if (position != -1) {
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
-    std::shared_ptr<CacheableObjectArray> retVal = PdxLocalReader::readObjectArray(fieldName);
+    std::shared_ptr<CacheableObjectArray> retVal =
+        PdxLocalReader::readObjectArray(fieldName);
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
@@ -601,7 +603,8 @@ int8_t** PdxReaderWithTypeCollector::readArrayOfByteArrays(
   }
 }
 
-std::shared_ptr<CacheableDate> PdxReaderWithTypeCollector::readDate(const char* fieldName) {
+std::shared_ptr<CacheableDate> PdxReaderWithTypeCollector::readDate(
+    const char* fieldName) {
   checkType(fieldName, PdxFieldTypes::DATE, "Date");
   m_newPdxType->addFixedLengthTypeField(fieldName, "Date", PdxFieldTypes::DATE,
                                         PdxTypes::DATE_SIZE);

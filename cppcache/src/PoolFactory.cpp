@@ -106,7 +106,9 @@ void PoolFactory::setMultiuserAuthentication(bool multiuserAuthentication) {
   m_attrs->setMultiuserSecureModeEnabled(multiuserAuthentication);
 }
 
-void PoolFactory::reset() { m_attrs = std::shared_ptr<PoolAttributes>(new PoolAttributes); }
+void PoolFactory::reset() {
+  m_attrs = std::shared_ptr<PoolAttributes>(new PoolAttributes);
+}
 
 void PoolFactory::setPRSingleHopEnabled(bool enabled) {
   m_attrs->setPRSingleHopEnabled(enabled);

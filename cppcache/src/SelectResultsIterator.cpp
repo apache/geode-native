@@ -25,8 +25,9 @@ namespace apache {
 namespace geode {
 namespace client {
 
-SelectResultsIterator::SelectResultsIterator(const std::shared_ptr<CacheableVector>& vectorSR,
-                                             std::shared_ptr<SelectResults> srp)
+SelectResultsIterator::SelectResultsIterator(
+    const std::shared_ptr<CacheableVector>& vectorSR,
+    std::shared_ptr<SelectResults> srp)
     : m_vectorSR(vectorSR), m_nextIndex(0), m_srp(srp) {}
 
 bool SelectResultsIterator::hasNext() const {

@@ -538,7 +538,8 @@ int PdxTypesIgnoreUnreadFieldsV2::getHashCode() {
   return 1;
 }
 
-bool PdxTypesIgnoreUnreadFieldsV2::equals(std::shared_ptr<PdxSerializable> obj) {
+bool PdxTypesIgnoreUnreadFieldsV2::equals(
+    std::shared_ptr<PdxSerializable> obj) {
   if (obj == nullptr) return false;
 
   auto pap = std::dynamic_pointer_cast<PdxTypesIgnoreUnreadFieldsV2>(obj);
@@ -609,7 +610,8 @@ void PdxTypesIgnoreUnreadFieldsV2::fromData(std::shared_ptr<PdxReader> pr) {
   m_i6 = pr->readInt("i6");
 }
 
-std::shared_ptr<CacheableString> PdxTypesIgnoreUnreadFieldsV2::toString() const {
+std::shared_ptr<CacheableString> PdxTypesIgnoreUnreadFieldsV2::toString()
+    const {
   char idbuf[4096];
   sprintf(idbuf,
           "PdxTypesV1R1:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_i5=%d] "

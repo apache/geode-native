@@ -29,10 +29,9 @@
 
 using namespace apache::geode::client;
 
-TombstoneExpiryHandler::TombstoneExpiryHandler(std::shared_ptr<TombstoneEntry> entryPtr,
-                                               TombstoneList* tombstoneList,
-                                               uint32_t duration,
-                                               CacheImpl* cacheImpl)
+TombstoneExpiryHandler::TombstoneExpiryHandler(
+    std::shared_ptr<TombstoneEntry> entryPtr, TombstoneList* tombstoneList,
+    uint32_t duration, CacheImpl* cacheImpl)
     : m_entryPtr(entryPtr),
       m_duration(duration),
       m_tombstoneList(tombstoneList),

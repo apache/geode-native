@@ -91,7 +91,8 @@ class CPPCACHE_EXPORT Utils {
     str.append(typeIdName);
   }
 
-  inline static std::shared_ptr<CacheableString> demangleTypeName(const char* typeIdName) {
+  inline static std::shared_ptr<CacheableString> demangleTypeName(
+      const char* typeIdName) {
 #ifdef __GNUC__
     size_t len;
     char* demangledName = _gnuDemangledName(typeIdName, len);
@@ -125,7 +126,8 @@ class CPPCACHE_EXPORT Utils {
     return result;
   }
 
-  static std::shared_ptr<CacheableString> getCacheableString(const std::shared_ptr<Cacheable>& val) {
+  static std::shared_ptr<CacheableString> getCacheableString(
+      const std::shared_ptr<Cacheable>& val) {
     if (val != nullptr) {
       if (const auto key = std::dynamic_pointer_cast<CacheableKey>(val)) {
         return getCacheableKeyString(key);
@@ -150,7 +152,8 @@ class CPPCACHE_EXPORT Utils {
 
   // Check objectSize() implementation return value and log a warning at most
   // once.
-  inline static uint32_t checkAndGetObjectSize(const std::shared_ptr<Cacheable>& theObject) {
+  inline static uint32_t checkAndGetObjectSize(
+      const std::shared_ptr<Cacheable>& theObject) {
     uint32_t objectSize = theObject->objectSize();
     static bool youHaveBeenWarned = false;
     if ((objectSize == 0 || objectSize == (static_cast<uint32_t>(-1))) &&

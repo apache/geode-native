@@ -24,8 +24,10 @@ using namespace apache::geode::client;
 CqEventImpl::CqEventImpl(std::shared_ptr<CqQuery>& cQuery,
                          CqOperation::CqOperationType baseOp,
                          CqOperation::CqOperationType cqOp,
-                         std::shared_ptr<CacheableKey>& key, std::shared_ptr<Cacheable>& value,
-                         ThinClientBaseDM* tcrdm, std::shared_ptr<CacheableBytes> deltaBytes,
+                         std::shared_ptr<CacheableKey>& key,
+                         std::shared_ptr<Cacheable>& value,
+                         ThinClientBaseDM* tcrdm,
+                         std::shared_ptr<CacheableBytes> deltaBytes,
                          std::shared_ptr<EventId> eventId)
     : m_error(false) {
   m_cQuery = cQuery;
@@ -39,7 +41,7 @@ CqEventImpl::CqEventImpl(std::shared_ptr<CqQuery>& cQuery,
   m_eventId = eventId;
 }
 
- std::shared_ptr<CqQuery> CqEventImpl::getCq() const { return m_cQuery; }
+std::shared_ptr<CqQuery> CqEventImpl::getCq() const { return m_cQuery; }
 
 CqOperation::CqOperationType CqEventImpl::getBaseOperation() const {
   return m_baseOp;
@@ -102,4 +104,6 @@ std::string CqEventImpl::toString() {
   return buffer;
 }
 
-std::shared_ptr<CacheableBytes> CqEventImpl::getDeltaValue() const { return m_deltaValue; }
+std::shared_ptr<CacheableBytes> CqEventImpl::getDeltaValue() const {
+  return m_deltaValue;
+}

@@ -33,7 +33,8 @@ namespace client {
 struct DistributedMemberWithIntIdentifier {
  public:
   DistributedMemberWithIntIdentifier(
-      std::shared_ptr<DSMemberForVersionStamp> dsmember = nullptr, uint16_t id = 0) {
+      std::shared_ptr<DSMemberForVersionStamp> dsmember = nullptr,
+      uint16_t id = 0) {
     this->m_member = dsmember;
     this->m_identifier = id;
   }
@@ -49,7 +50,8 @@ class MemberListForVersionStamp {
   std::shared_ptr<DSMemberForVersionStamp> getDSMember(uint16_t memberId);
 
  private:
-  std::unordered_map<uint32_t, std::shared_ptr<DSMemberForVersionStamp>> m_members1;
+  std::unordered_map<uint32_t, std::shared_ptr<DSMemberForVersionStamp>>
+      m_members1;
   std::unordered_map<std::string, DistributedMemberWithIntIdentifier>
       m_members2;
 

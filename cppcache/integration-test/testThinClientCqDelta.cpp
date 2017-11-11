@@ -177,8 +177,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2)
     }
     auto regPtr = getHelper()->getRegion(regionNames[0]);
 
-    auto pool =
-        getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
+    auto pool = getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
     std::shared_ptr<QueryService> qs;
     qs = pool->getQueryService();
     CqAttributesFactory cqFac;

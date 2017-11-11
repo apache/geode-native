@@ -220,14 +220,16 @@ void CPPCodeGenerator::startMethod(const Method::Type type,
 
   switch (type) {
     case Method::TODATA: {
-      varVec.push_back("std::shared_ptr<apache::geode::client::PdxWriter> __var");
+      varVec.push_back(
+          "std::shared_ptr<apache::geode::client::PdxWriter> __var");
 
       genFunctionHeader("toData", className, "void", varVec, true, false,
                         m_cppFormatter, methodPrefix);
       break;
     }
     case Method::FROMDATA: {
-      varVec.push_back("std::shared_ptr<apache::geode::client::PdxReader> __var ");
+      varVec.push_back(
+          "std::shared_ptr<apache::geode::client::PdxReader> __var ");
 
       genFunctionHeader("fromData", className, "void", varVec, true, false,
                         m_cppFormatter, methodPrefix);

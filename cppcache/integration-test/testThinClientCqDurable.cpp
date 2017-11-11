@@ -800,7 +800,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyCqs1)
       qs = getHelper()->cachePtr->getQueryService();
     }
 
-    std::shared_ptr<CacheableArrayList> durableCqListPtr = qs->getAllDurableCqsFromServer();
+    std::shared_ptr<CacheableArrayList> durableCqListPtr =
+        qs->getAllDurableCqsFromServer();
 
     ASSERT(durableCqListPtr != nullptr, "Durable CQ List should not be null");
     ASSERT(durableCqListPtr->size() == 2, "Durable CQ List lenght should be 2");
@@ -824,7 +825,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyCqsAfterClientup1)
       qs = getHelper()->cachePtr->getQueryService();
     }
 
-    std::shared_ptr<CacheableArrayList> durableCqListPtr = qs->getAllDurableCqsFromServer();
+    std::shared_ptr<CacheableArrayList> durableCqListPtr =
+        qs->getAllDurableCqsFromServer();
     ASSERT(durableCqListPtr != nullptr, "Durable CQ List should not be null");
     ASSERT(durableCqListPtr->size() == 4, "Durable CQ List length should be 4");
     ASSERT(
@@ -852,7 +854,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyCqs2)
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    std::shared_ptr<CacheableArrayList> durableCqListPtr = qs->getAllDurableCqsFromServer();
+    std::shared_ptr<CacheableArrayList> durableCqListPtr =
+        qs->getAllDurableCqsFromServer();
     ASSERT(durableCqListPtr != nullptr, "Durable CQ List should not be null");
     ASSERT(durableCqListPtr->size() == 4, "Durable CQ List lenght should be 4");
     ASSERT(isDurableCQName(durableCqListPtr->at(0)->toString()->asChar(), 2,
@@ -880,7 +883,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyCqsAfterClientup2)
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    std::shared_ptr<CacheableArrayList> durableCqListPtr = qs->getAllDurableCqsFromServer();
+    std::shared_ptr<CacheableArrayList> durableCqListPtr =
+        qs->getAllDurableCqsFromServer();
     ASSERT(durableCqListPtr != nullptr, "Durable CQ List should not be null");
     ASSERT(durableCqListPtr->size() == 8, "Durable CQ List lenght should be 8");
     ASSERT(
@@ -911,8 +915,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyCqsAfterClientup2)
 END_TASK_DEFINITION
 
 void verifyEmptyDurableCQList() {
-  auto pool =
-      getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
+  auto pool = getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
   std::shared_ptr<QueryService> qs;
   if (pool != nullptr) {
     qs = pool->getQueryService();
@@ -920,7 +923,8 @@ void verifyEmptyDurableCQList() {
     qs = getHelper()->cachePtr->getQueryService();
   }
 
-  std::shared_ptr<CacheableArrayList> durableCqListPtr = qs->getAllDurableCqsFromServer();
+  std::shared_ptr<CacheableArrayList> durableCqListPtr =
+      qs->getAllDurableCqsFromServer();
   ASSERT(durableCqListPtr == nullptr, "Durable CQ List should be null");
 }
 

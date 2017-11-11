@@ -57,29 +57,36 @@ class CPPCACHE_EXPORT EntriesMap {
    * @brief put a value in the map, replacing if key already exists.
    */
   virtual GfErrType put(const std::shared_ptr<CacheableKey>& key,
-                        const std::shared_ptr<Cacheable>& newValue, std::shared_ptr<MapEntryImpl>& me,
+                        const std::shared_ptr<Cacheable>& newValue,
+                        std::shared_ptr<MapEntryImpl>& me,
                         std::shared_ptr<Cacheable>& oldValue, int updateCount,
-                        int destroyTracker, std::shared_ptr<VersionTag> versionTag,
+                        int destroyTracker,
+                        std::shared_ptr<VersionTag> versionTag,
                         bool& isUpdate = EntriesMap::boolVal,
                         DataInput* delta = nullptr) = 0;
-  virtual GfErrType invalidate(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<MapEntryImpl>& me,
+  virtual GfErrType invalidate(const std::shared_ptr<CacheableKey>& key,
+                               std::shared_ptr<MapEntryImpl>& me,
                                std::shared_ptr<Cacheable>& oldValue,
                                std::shared_ptr<VersionTag> versionTag) = 0;
   virtual GfErrType create(const std::shared_ptr<CacheableKey>& key,
-                           const std::shared_ptr<Cacheable>& newValue, std::shared_ptr<MapEntryImpl>& me,
-                           std::shared_ptr<Cacheable>& oldValue, int updateCount,
-                           int destroyTracker, std::shared_ptr<VersionTag> versionTag) = 0;
+                           const std::shared_ptr<Cacheable>& newValue,
+                           std::shared_ptr<MapEntryImpl>& me,
+                           std::shared_ptr<Cacheable>& oldValue,
+                           int updateCount, int destroyTracker,
+                           std::shared_ptr<VersionTag> versionTag) = 0;
 
   /**
    * @brief get a value out of the map; returns false if absent
    */
-  virtual bool get(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<Cacheable>& value,
+  virtual bool get(const std::shared_ptr<CacheableKey>& key,
+                   std::shared_ptr<Cacheable>& value,
                    std::shared_ptr<MapEntryImpl>& me) = 0;
 
   /**
    * @brief get MapEntry for key; returns nullptr if absent
    */
-  virtual void getEntry(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<MapEntryImpl>& result,
+  virtual void getEntry(const std::shared_ptr<CacheableKey>& key,
+                        std::shared_ptr<MapEntryImpl>& result,
                         std::shared_ptr<Cacheable>& value) const = 0;
   /** @brief remove all entries in the map. */
   virtual void clear() = 0;
@@ -88,9 +95,11 @@ class CPPCACHE_EXPORT EntriesMap {
    * @brief remove the entry for key from the map;
    *   returns false and nullptr MapEntry if absent
    */
-  virtual GfErrType remove(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<Cacheable>& result,
+  virtual GfErrType remove(const std::shared_ptr<CacheableKey>& key,
+                           std::shared_ptr<Cacheable>& result,
                            std::shared_ptr<MapEntryImpl>& me, int updateCount,
-                           std::shared_ptr<VersionTag> versionTag, bool afterRemote) = 0;
+                           std::shared_ptr<VersionTag> versionTag,
+                           bool afterRemote) = 0;
 
   /**
    * @brief return true if there exists an entry for the key.
@@ -100,17 +109,20 @@ class CPPCACHE_EXPORT EntriesMap {
   /**
    * @brief return the all the keys in a vector.
    */
-  virtual void getKeys(std::vector<std::shared_ptr<CacheableKey>>& result) const = 0;
+  virtual void getKeys(
+      std::vector<std::shared_ptr<CacheableKey>>& result) const = 0;
 
   /**
    * @brief return all the entries in a vector.
    */
-  virtual void getEntries(std::vector<std::shared_ptr<RegionEntry>>& result) const = 0;
+  virtual void getEntries(
+      std::vector<std::shared_ptr<RegionEntry>>& result) const = 0;
 
   /**
    * @brief return all values in a vector.
    */
-  virtual void getValues(std::vector<std::shared_ptr<Cacheable>>& result) const = 0;
+  virtual void getValues(
+      std::vector<std::shared_ptr<Cacheable>>& result) const = 0;
 
   /** @brief return the number of entries in the map. */
   virtual uint32_t size() const = 0;
@@ -126,10 +138,12 @@ class CPPCACHE_EXPORT EntriesMap {
    * operation and update counter sould be incremented for the entry.
    */
   virtual int addTrackerForEntry(const std::shared_ptr<CacheableKey>& key,
-                                 std::shared_ptr<Cacheable>& oldValue, bool addIfAbsent,
-                                 bool failIfPresent, bool incUpdateCount) = 0;
+                                 std::shared_ptr<Cacheable>& oldValue,
+                                 bool addIfAbsent, bool failIfPresent,
+                                 bool incUpdateCount) = 0;
 
-  virtual void removeTrackerForEntry(const std::shared_ptr<CacheableKey>& key) = 0;
+  virtual void removeTrackerForEntry(
+      const std::shared_ptr<CacheableKey>& key) = 0;
 
   /**
    * Add trackers for all the entries and returns the map of keys to
@@ -150,21 +164,25 @@ class CPPCACHE_EXPORT EntriesMap {
    * SYNCHRONIZE_SEGMENT_FOR_KEY( keyPtr ) creates a guard that locks
    * and release the segment.
    */
-  virtual MapSegment* segmentFor(const std::shared_ptr<CacheableKey>& key) const = 0;
+  virtual MapSegment* segmentFor(
+      const std::shared_ptr<CacheableKey>& key) const = 0;
 
-  virtual std::shared_ptr<Cacheable> getFromDisk(const std::shared_ptr<CacheableKey>& key,
-                                   std::shared_ptr<MapEntryImpl>& me) const {
+  virtual std::shared_ptr<Cacheable> getFromDisk(
+      const std::shared_ptr<CacheableKey>& key,
+      std::shared_ptr<MapEntryImpl>& me) const {
     return nullptr;
   }
 
   virtual void reapTombstones(std::map<uint16_t, int64_t>& gcVersions) = 0;
 
-  virtual void reapTombstones(std::shared_ptr<CacheableHashSet> removedKeys) = 0;
+  virtual void reapTombstones(
+      std::shared_ptr<CacheableHashSet> removedKeys) = 0;
 
   /**
    * for internal testing, returns if an entry is a tombstone
    */
-  virtual GfErrType isTombstone(std::shared_ptr<CacheableKey>& key, std::shared_ptr<MapEntryImpl>& me,
+  virtual GfErrType isTombstone(std::shared_ptr<CacheableKey>& key,
+                                std::shared_ptr<MapEntryImpl>& me,
                                 bool& result) = 0;
 
   static bool boolVal;

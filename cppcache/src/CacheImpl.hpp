@@ -240,8 +240,8 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   std::shared_ptr<RegionInternal> createRegion_internal(
       const std::string& name,
       const std::shared_ptr<RegionInternal>& rootRegion,
-      const std::shared_ptr<RegionAttributes>& attrs, const std::shared_ptr<CacheStatistics>& csptr,
-      bool shared);
+      const std::shared_ptr<RegionAttributes>& attrs,
+      const std::shared_ptr<CacheStatistics>& csptr, bool shared);
 
   /**
    * Send the "client ready" message to the server.

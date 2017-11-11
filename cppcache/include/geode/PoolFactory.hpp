@@ -470,9 +470,8 @@ class CPPCACHE_EXPORT PoolFactory {
 
   /**
    * Sets whether Pool is in multi user secure mode.
-   * If its in multiuser mode then app needs to get std::shared_ptr<RegionService> instance of
-   * Cache.
-   * Deafult value is false.
+   * If its in multiuser mode then app needs to get
+   * std::shared_ptr<RegionService> instance of Cache. Deafult value is false.
    */
   void setMultiuserAuthentication(bool multiuserAuthentication);
 

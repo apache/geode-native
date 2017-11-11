@@ -158,7 +158,8 @@ const char* testRegex[] = {"D-Key-.*", "Key-.*"};
 #include "ThinClientTasks_C2S2.hpp"
 
 void initClientCache(int durableIdx, int redundancy, int durableTimeout,
-                     std::shared_ptr<OperMonitor>& mon1, std::shared_ptr<OperMonitor>& mon2,
+                     std::shared_ptr<OperMonitor>& mon1,
+                     std::shared_ptr<OperMonitor>& mon2,
                      int sleepDuration = 0) {
   // Sleep before starting , Used for Timeout testing.
   if (sleepDuration) SLEEP(sleepDuration);

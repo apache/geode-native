@@ -48,7 +48,6 @@ const stringList::value_type QRArr[] = {"Portfolios", "Positions"};
 
 const char* PRiUsnm = "%s%d";
 
-
 class XmlAuthzCredentialGenerator {
  private:
   ID m_id;

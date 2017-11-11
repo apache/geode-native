@@ -65,100 +65,97 @@ std::string checkNullString(const std::string* str) {
     return ((str == nullptr) ? "(null)" : *str);
 }
 
-void _printFields(std::shared_ptr<Cacheable> field, Struct* ssptr, int32_t& fields) {
- try {
-  if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(field)) {
-  printf("   pulled %s :- ID %d, pkid %s\n",
-           ssptr->getFieldName(fields).c_str(), portfolio->getID(),
-           checkNullString(portfolio->getPkid()->asChar()));
-    printf("   pulled %s :- ID %d, pkid %s\n",
-           ssptr->getFieldName(fields).c_str(), portfolio->getID(),
-           checkNullString(portfolio->getPkid()->asChar()));
-  } else if (auto position = std::dynamic_pointer_cast<Position>(field)) {
-    printf("   pulled %s :- secId %s, shares %d\n",
-           ssptr->getFieldName(fields).c_str(),
-           checkNullString(position->getSecId()->asChar()),
-           position->getSharesOutstanding());
-  } else if (auto portfolioPdx =
-                 std::dynamic_pointer_cast<PortfolioPdx>(field)) {
-    printf("   pulled %s :- ID %d, pkid %s\n",
-           ssptr->getFieldName(fields).c_str(),
-           portfolioPdx->getID(),
-           checkNullString(portfolioPdx->getPkid()));
-  } else if (auto positionPdx = std::dynamic_pointer_cast<PositionPdx>(field)) {
-    printf("   pulled %s :- secId %s, shares %d\n",
-           ssptr->getFieldName(fields).c_str(),
-           checkNullString(positionPdx->getSecId()),
-           positionPdx->getSharesOutstanding());
-  } else {
-    if (auto str = std::dynamic_pointer_cast<CacheableString>(field)) {
-      if (str->isWideString()) {
-        printf("   pulled %s :- %S\n",
-               ssptr->getFieldName(fields).c_str(),
-               checkNullString(str->asWChar()));
-      } else {
-        printf("   pulled %s :- %s\n",
-               ssptr->getFieldName(fields).c_str(),
-               checkNullString(str->asChar()));
-      }
-    } else if (auto boolptr =
-                   std::dynamic_pointer_cast<CacheableBoolean>(field)) {
-      printf("   pulled %s :- %s\n",
+void _printFields(std::shared_ptr<Cacheable> field, Struct* ssptr,
+                  int32_t& fields) {
+  try {
+    if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(field)) {
+      printf("   pulled %s :- ID %d, pkid %s\n",
+             ssptr->getFieldName(fields).c_str(), portfolio->getID(),
+             checkNullString(portfolio->getPkid()->asChar()));
+      printf("   pulled %s :- ID %d, pkid %s\n",
+             ssptr->getFieldName(fields).c_str(), portfolio->getID(),
+             checkNullString(portfolio->getPkid()->asChar()));
+    } else if (auto position = std::dynamic_pointer_cast<Position>(field)) {
+      printf("   pulled %s :- secId %s, shares %d\n",
              ssptr->getFieldName(fields).c_str(),
-             boolptr->toString()->asChar());
+             checkNullString(position->getSecId()->asChar()),
+             position->getSharesOutstanding());
+    } else if (auto portfolioPdx =
+                   std::dynamic_pointer_cast<PortfolioPdx>(field)) {
+      printf("   pulled %s :- ID %d, pkid %s\n",
+             ssptr->getFieldName(fields).c_str(), portfolioPdx->getID(),
+             checkNullString(portfolioPdx->getPkid()));
+    } else if (auto positionPdx =
+                   std::dynamic_pointer_cast<PositionPdx>(field)) {
+      printf("   pulled %s :- secId %s, shares %d\n",
+             ssptr->getFieldName(fields).c_str(),
+             checkNullString(positionPdx->getSecId()),
+             positionPdx->getSharesOutstanding());
     } else {
-      if (auto ptr = std::dynamic_pointer_cast<CacheableKey>(field)) {
-        char buff[1024] = {'\0'};
-        ptr->logString(&buff[0], 1024);
-        printf("   pulled %s :- %s \n",
-               ssptr->getFieldName(fields).c_str(), buff);
-      } else if (auto strArr =
-                     std::dynamic_pointer_cast<CacheableStringArray>(field)) {
-        printf(" string array object printing \n\n");
-        for (int stri = 0; stri < strArr->length(); stri++) {
-          if (strArr->operator[](stri)->isWideString()) {
-            printf("   pulled %s(%d) - %S \n",
-                   ssptr->getFieldName(fields).c_str(), stri,
-                   checkNullString(strArr->operator[](stri)->asWChar()));
-          } else {
-            printf("   pulled %s(%d) - %s \n",
-                   ssptr->getFieldName(fields).c_str(), stri,
-                   checkNullString(strArr->operator[](stri)->asChar()));
-          }
+      if (auto str = std::dynamic_pointer_cast<CacheableString>(field)) {
+        if (str->isWideString()) {
+          printf("   pulled %s :- %S\n", ssptr->getFieldName(fields).c_str(),
+                 checkNullString(str->asWChar()));
+        } else {
+          printf("   pulled %s :- %s\n", ssptr->getFieldName(fields).c_str(),
+                 checkNullString(str->asChar()));
         }
-      } else if (auto map =
-                     std::dynamic_pointer_cast<CacheableHashMap>(field)) {
-        int index = 0;
-        for (const auto& iter : *map) {
-          printf("   hashMap %d of %zd ... \n", ++index, map->size());
-          _printFields(iter.first, ssptr, fields);
-          _printFields(iter.second, ssptr, fields);
-        }
-        printf("   end of map \n");
-      } else if (auto structimpl = std::dynamic_pointer_cast<Struct>(field)) {
-        printf("   structImpl %s {\n",
-               ssptr->getFieldName(fields).c_str());
-        for (int32_t inner_fields = 0; inner_fields < structimpl->length();
-             inner_fields++) {
-          std::shared_ptr<Serializable> field = (*structimpl)[inner_fields];
-          if (field == nullptr) {
-            printf("we got null fields here, probably we have nullptr data\n");
-            continue;
-          }
-
-          _printFields(field, structimpl.get(), inner_fields);
-
-        }  // end of field iterations
-        printf("   } //end of %s\n",
-               ssptr->getFieldName(fields).c_str());
+      } else if (auto boolptr =
+                     std::dynamic_pointer_cast<CacheableBoolean>(field)) {
+        printf("   pulled %s :- %s\n", ssptr->getFieldName(fields).c_str(),
+               boolptr->toString()->asChar());
       } else {
-        printf(
-            "unknown field data.. couldn't even convert it to Cacheable "
-            "variants\n");
-      }
-    }
+        if (auto ptr = std::dynamic_pointer_cast<CacheableKey>(field)) {
+          char buff[1024] = {'\0'};
+          ptr->logString(&buff[0], 1024);
+          printf("   pulled %s :- %s \n", ssptr->getFieldName(fields).c_str(),
+                 buff);
+        } else if (auto strArr =
+                       std::dynamic_pointer_cast<CacheableStringArray>(field)) {
+          printf(" string array object printing \n\n");
+          for (int stri = 0; stri < strArr->length(); stri++) {
+            if (strArr->operator[](stri)->isWideString()) {
+              printf("   pulled %s(%d) - %S \n",
+                     ssptr->getFieldName(fields).c_str(), stri,
+                     checkNullString(strArr->operator[](stri)->asWChar()));
+            } else {
+              printf("   pulled %s(%d) - %s \n",
+                     ssptr->getFieldName(fields).c_str(), stri,
+                     checkNullString(strArr->operator[](stri)->asChar()));
+            }
+          }
+        } else if (auto map =
+                       std::dynamic_pointer_cast<CacheableHashMap>(field)) {
+          int index = 0;
+          for (const auto& iter : *map) {
+            printf("   hashMap %d of %zd ... \n", ++index, map->size());
+            _printFields(iter.first, ssptr, fields);
+            _printFields(iter.second, ssptr, fields);
+          }
+          printf("   end of map \n");
+        } else if (auto structimpl = std::dynamic_pointer_cast<Struct>(field)) {
+          printf("   structImpl %s {\n", ssptr->getFieldName(fields).c_str());
+          for (int32_t inner_fields = 0; inner_fields < structimpl->length();
+               inner_fields++) {
+            std::shared_ptr<Serializable> field = (*structimpl)[inner_fields];
+            if (field == nullptr) {
+              printf(
+                  "we got null fields here, probably we have nullptr data\n");
+              continue;
+            }
 
-  }  // end of else
+            _printFields(field, structimpl.get(), inner_fields);
+
+          }  // end of field iterations
+          printf("   } //end of %s\n", ssptr->getFieldName(fields).c_str());
+        } else {
+          printf(
+              "unknown field data.. couldn't even convert it to Cacheable "
+              "variants\n");
+        }
+      }
+
+    }  // end of else
   } catch (const std::out_of_range& e) {
     printf("Caught a non-fatal out_of_range exception: %s", e.what());
   }
@@ -230,7 +227,9 @@ void compareMaps(HashMapOfCacheable& map, HashMapOfCacheable& expectedMap) {
 void stepOne() {
   initGridClient(true);
   try {
-    auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     serializationRegistry->addType(Position::createDeserializable);
     serializationRegistry->addType(Portfolio::createDeserializable);

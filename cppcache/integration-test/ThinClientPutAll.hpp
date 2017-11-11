@@ -207,8 +207,8 @@ void createRegion(const char* name, bool ackMode, bool isCacheEnabled,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  auto regPtr = getHelper()->createRegion(
-      name, ackMode, isCacheEnabled, nullptr, clientNotificationEnabled);
+  auto regPtr = getHelper()->createRegion(name, ackMode, isCacheEnabled,
+                                          nullptr, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
@@ -398,7 +398,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
     try {
-      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
       serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
       serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
       serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
@@ -436,7 +438,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
   {
     try {
-      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
       serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
       serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
       serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);

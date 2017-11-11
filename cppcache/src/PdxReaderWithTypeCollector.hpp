@@ -34,8 +34,9 @@ class PdxReaderWithTypeCollector : public PdxLocalReader {
   void checkType(const char* fieldName, int8_t typeId, const char* fieldType);
 
  public:
-  PdxReaderWithTypeCollector(DataInput& dataInput, std::shared_ptr<PdxType> pdxType,
-                             int pdxlen, std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
+  PdxReaderWithTypeCollector(DataInput& dataInput,
+                             std::shared_ptr<PdxType> pdxType, int pdxlen,
+                             std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
   virtual ~PdxReaderWithTypeCollector();
 
@@ -162,7 +163,8 @@ class PdxReaderWithTypeCollector : public PdxLocalReader {
 
   virtual wchar_t** readWideStringArray(const char* fieldName, int32_t& length);
 
-  virtual std::shared_ptr<CacheableObjectArray> readObjectArray(const char* fieldName);
+  virtual std::shared_ptr<CacheableObjectArray> readObjectArray(
+      const char* fieldName);
 
   virtual int8_t** readArrayOfByteArrays(const char* fieldName,
                                          int32_t& arrayLength,

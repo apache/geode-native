@@ -45,7 +45,8 @@ class EventSequence;
 class EventIdMap;
 class EventSource;
 
-typedef std::pair<std::shared_ptr<EventSource>, std::shared_ptr<EventSequence>> EventIdMapEntry;
+typedef std::pair<std::shared_ptr<EventSource>, std::shared_ptr<EventSequence>>
+    EventIdMapEntry;
 typedef std::vector<EventIdMapEntry> EventIdMapEntryList;
 
 typedef ACE_Guard<ACE_Recursive_Thread_Mutex> MapGuard;
@@ -60,7 +61,8 @@ typedef ACE_Guard<ACE_Recursive_Thread_Mutex> MapGuard;
  */
 class CPPCACHE_EXPORT EventIdMap {
  private:
-  typedef std::unordered_map<std::shared_ptr<EventSource>, std::shared_ptr<EventSequence>,
+  typedef std::unordered_map<std::shared_ptr<EventSource>,
+                             std::shared_ptr<EventSequence>,
                              dereference_hash<std::shared_ptr<EventSource>>,
                              dereference_equal_to<std::shared_ptr<EventSource>>>
       map_type;

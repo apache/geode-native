@@ -112,7 +112,8 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
    *
    * This should be used only for ASCII strings.
    */
-  static std::shared_ptr<CacheableString> create(const char* value, int32_t len = 0) {
+  static std::shared_ptr<CacheableString> create(const char* value,
+                                                 int32_t len = 0) {
     if (nullptr == value) {
       return nullptr;
     }
@@ -132,7 +133,8 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
    *
    * CAUTION: use this only when you really know what you are doing.
    */
-  static std::shared_ptr<CacheableString> createNoCopy(char* value, int32_t len = 0) {
+  static std::shared_ptr<CacheableString> createNoCopy(char* value,
+                                                       int32_t len = 0) {
     if (nullptr == value) {
       return nullptr;
     }
@@ -148,7 +150,8 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
    *
    * This should be used for non-ASCII strings.
    */
-  static std::shared_ptr<CacheableString> create(const wchar_t* value, int32_t len = 0) {
+  static std::shared_ptr<CacheableString> create(const wchar_t* value,
+                                                 int32_t len = 0) {
     if (nullptr == value) {
       return nullptr;
     }
@@ -168,7 +171,8 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
    *
    * CAUTION: use this only when you really know what you are doing.
    */
-  static std::shared_ptr<CacheableString> createNoCopy(wchar_t* value, int32_t len = 0) {
+  static std::shared_ptr<CacheableString> createNoCopy(wchar_t* value,
+                                                       int32_t len = 0) {
     if (nullptr == value) {
       return nullptr;
     }

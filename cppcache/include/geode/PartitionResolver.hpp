@@ -90,7 +90,8 @@ class CPPCACHE_EXPORT PartitionResolver {
    * @return object associated with entry event which allows the Partitioned
    * Region to store associated data together
    */
-  virtual std::shared_ptr<CacheableKey> getRoutingObject(const EntryEvent& opDetails) = 0;
+  virtual std::shared_ptr<CacheableKey> getRoutingObject(
+      const EntryEvent& opDetails) = 0;
 
  protected:
   /**

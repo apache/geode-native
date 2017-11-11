@@ -46,7 +46,8 @@ void CacheListener::afterRegionClear(const RegionEvent& event) {}
 
 void CacheListener::afterRegionLive(const RegionEvent& event) {}
 
-void CacheListener::afterRegionDisconnected(const std::shared_ptr<Region>& region) {}
+void CacheListener::afterRegionDisconnected(
+    const std::shared_ptr<Region>& region) {}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

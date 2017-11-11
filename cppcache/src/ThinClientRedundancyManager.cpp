@@ -811,12 +811,10 @@ bool ThinClientRedundancyManager::sendMakePrimaryMesg(
      * is supposed to fail due to notauthorized exception then causing
      * subsequent maintainredundancy calls to fail for other ops like CQ
     if ( request != nullptr && region != nullptr ) {
-      const std::vector<std::shared_ptr<CacheableKey>>* keys = request->getKeys( );
-      bool isDurable = request->isDurable( );
-      if ( keys == nullptr || keys->empty( ) ) {
-        const std::string& regex = request->getRegex( );
-        if ( !regex.empty( ) ) {
-          region->addRegex( regex, isDurable );
+      const std::vector<std::shared_ptr<CacheableKey>>* keys = request->getKeys(
+    ); bool isDurable = request->isDurable( ); if ( keys == nullptr ||
+    keys->empty( ) ) { const std::string& regex = request->getRegex( ); if (
+    !regex.empty( ) ) { region->addRegex( regex, isDurable );
         }
       } else {
         region->addKeys( *keys, isDurable );
@@ -1276,7 +1274,8 @@ void ThinClientRedundancyManager::startPeriodicAck() {
 
 // notification dup check with the help of eventidmap - called by
 // ThinClientRegion
-bool ThinClientRedundancyManager::checkDupAndAdd(std::shared_ptr<EventId> eventid) {
+bool ThinClientRedundancyManager::checkDupAndAdd(
+    std::shared_ptr<EventId> eventid) {
   EventIdMapEntry entry = EventIdMap::make(eventid);
   return m_eventidmap.put(entry.first, entry.second, true);
 }

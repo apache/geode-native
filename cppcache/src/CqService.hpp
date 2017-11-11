@@ -133,9 +133,10 @@ class CPPCACHE_EXPORT CqService
    * release.
    *
    */
-  std::shared_ptr<CqQuery> newCq(const std::string& cqName, const std::string& queryString,
-                   const std::shared_ptr<CqAttributes>& cqAttributes,
-                   const bool isDurable = false);
+  std::shared_ptr<CqQuery> newCq(
+      const std::string& cqName, const std::string& queryString,
+      const std::shared_ptr<CqAttributes>& cqAttributes,
+      const bool isDurable = false);
 
   /**
    * Adds the given CQ and cqQuery object into the CQ map.
@@ -228,8 +229,10 @@ class CPPCACHE_EXPORT CqService
    * @param value
    */
   void invokeCqListeners(const std::map<std::string, int>* cqs,
-                         uint32_t messageType, std::shared_ptr<CacheableKey> key,
-                         std::shared_ptr<Cacheable> value, std::shared_ptr<CacheableBytes> deltaValue,
+                         uint32_t messageType,
+                         std::shared_ptr<CacheableKey> key,
+                         std::shared_ptr<Cacheable> value,
+                         std::shared_ptr<CacheableBytes> deltaValue,
                          std::shared_ptr<EventId> eventId);
   /**
    * Returns the Operation for the given EnumListenerEvent type.

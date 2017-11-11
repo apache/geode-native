@@ -514,7 +514,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
       for (int i = 0; i < 500; i++) {
         ACE_OS::snprintf(KeyStr, 256, "KEY--%d ", i);
         ACE_OS::snprintf(valStr, 256, "VALUE--%d ", i);
-        std::shared_ptr<CacheableString> keyport = CacheableString::create(KeyStr);
+        std::shared_ptr<CacheableString> keyport =
+            CacheableString::create(KeyStr);
         std::shared_ptr<Cacheable> valport = CacheableString::create(valStr);
         regPtr0->put(keyport, valport);
         fil->push_back(CacheableString::create(KeyStr));
@@ -567,10 +568,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
       ///////////////////TimeOut test //////////////////////
       LOGINFO("FETimeOut begin onRegion");
       auto rexecutionPtr = FunctionService::onRegion(regPtr0);
-      auto fe =
-          rexecutionPtr->withArgs(CacheableInt32::create(5000 * 1000))
-              ->execute(FETimeOut, 5000 * 1000)
-              ->getResult();
+      auto fe = rexecutionPtr->withArgs(CacheableInt32::create(5000 * 1000))
+                    ->execute(FETimeOut, 5000 * 1000)
+                    ->getResult();
       if (fe == nullptr) {
         ASSERT(false, "functionResult is nullptr");
       } else {

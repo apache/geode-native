@@ -110,7 +110,8 @@ class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
    * @return a {@link CacheableEnum} representing C++ enum.
    */
   static std::shared_ptr<CacheableEnum> create(const char* enumClassName,
-                                 const char* enumName, int32_t ordinal) {
+                                               const char* enumName,
+                                               int32_t ordinal) {
     return std::make_shared<CacheableEnum>(enumClassName, enumName, ordinal);
   }
 

@@ -31,7 +31,8 @@ ACE_BEGIN_VERSIONED_NAMESPACE_DECL
 template <>
 class ACE_Hash<std::shared_ptr<apache::geode::client::CacheableKey>> {
  public:
-  u_long operator()(const std::shared_ptr<apache::geode::client::CacheableKey>& key) {
+  u_long operator()(
+      const std::shared_ptr<apache::geode::client::CacheableKey>& key) {
     return key->hashcode();
   }
 };
@@ -39,8 +40,9 @@ class ACE_Hash<std::shared_ptr<apache::geode::client::CacheableKey>> {
 template <>
 class ACE_Equal_To<std::shared_ptr<apache::geode::client::CacheableKey>> {
  public:
-  int operator()(const std::shared_ptr<apache::geode::client::CacheableKey>& lhs,
-                 const std::shared_ptr<apache::geode::client::CacheableKey>& rhs) const {
+  int operator()(
+      const std::shared_ptr<apache::geode::client::CacheableKey>& lhs,
+      const std::shared_ptr<apache::geode::client::CacheableKey>& rhs) const {
     return (*lhs.get() == *rhs.get());
   }
 };
@@ -51,7 +53,8 @@ namespace geode {
 namespace client {
 
 typedef ACE_Hash_Map_Manager_Ex<
-    std::shared_ptr<CacheableKey>, std::shared_ptr<Cacheable>, ACE_Hash<std::shared_ptr<CacheableKey>>,
+    std::shared_ptr<CacheableKey>, std::shared_ptr<Cacheable>,
+    ACE_Hash<std::shared_ptr<CacheableKey>>,
     ACE_Equal_To<std::shared_ptr<CacheableKey>>, ACE_Recursive_Thread_Mutex>
     CacheableKeyCacheableMap;
 
@@ -70,7 +73,9 @@ class PropertiesFile {
   void readFile(const std::string& fileName);
   char* nextBufferLine(char** cursor, char* bufbegin, size_t totalLen);
 };
- std::shared_ptr<Properties> Properties::create() { return std::shared_ptr<Properties>(new Properties()); }
+std::shared_ptr<Properties> Properties::create() {
+  return std::shared_ptr<Properties>(new Properties());
+}
 
 Properties::Properties() : Serializable() {
   m_map = (void*)new CacheableKeyCacheableMap();

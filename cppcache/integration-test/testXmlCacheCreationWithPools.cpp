@@ -55,7 +55,8 @@ bool findString(string& item, std::shared_ptr<CacheableStringArray> array) {
   return false;
 }
 
-bool checkStringArray(SLIST& first, std::shared_ptr<CacheableStringArray> second) {
+bool checkStringArray(SLIST& first,
+                      std::shared_ptr<CacheableStringArray> second) {
   if (second == nullptr && first.size() > 0) return false;
 
   if (second == nullptr && first.size() == 0) return true;
@@ -71,12 +72,13 @@ bool checkStringArray(SLIST& first, std::shared_ptr<CacheableStringArray> second
   return true;
 }
 
-bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators, SLIST& servers,
-                      int freeConnectionTimeout, int loadConditioningInterval,
-                      int minConnections, int maxConnections, int retryAttempts,
-                      int idleTimeout, int pingInterval, const char* name,
-                      int readTimeout, const char* serverGroup,
-                      int socketBufferSize, bool subscriptionEnabled,
+bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
+                      SLIST& servers, int freeConnectionTimeout,
+                      int loadConditioningInterval, int minConnections,
+                      int maxConnections, int retryAttempts, int idleTimeout,
+                      int pingInterval, const char* name, int readTimeout,
+                      const char* serverGroup, int socketBufferSize,
+                      bool subscriptionEnabled,
                       int subscriptionMessageTrackingTimeout,
                       int subscriptionAckInterval, int subscriptionRedundancy,
                       int statisticInterval, int threadLocalConnections,

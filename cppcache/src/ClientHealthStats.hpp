@@ -66,9 +66,11 @@ class ClientHealthStats : public Serializable {
   /**
    * Factory method for creating an instance of ClientHealthStats
    */
-  static std::shared_ptr<ClientHealthStats> create(int gets, int puts, int misses,
-                                     int listCalls, int numThreads,
-                                     int64_t cpuTime = 0, int cpus = 0) {
+  static std::shared_ptr<ClientHealthStats> create(int gets, int puts,
+                                                   int misses, int listCalls,
+                                                   int numThreads,
+                                                   int64_t cpuTime = 0,
+                                                   int cpus = 0) {
     return std::shared_ptr<ClientHealthStats>(new ClientHealthStats(
         gets, puts, misses, listCalls, numThreads, cpuTime, cpus));
   }

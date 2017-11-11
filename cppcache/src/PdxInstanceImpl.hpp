@@ -345,15 +345,18 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
                         int32_t& length) const;
 
   /**
-   * Reads the named field and set its value in std::shared_ptr<CacheableDate> type out param.
-   * std::shared_ptr<CacheableDate> type is corresponding to java Java.util.date type.
+   * Reads the named field and set its value in std::shared_ptr<CacheableDate>
+   * type out param. std::shared_ptr<CacheableDate> type is corresponding to
+   * java Java.util.date type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with std::shared_ptr<CacheableDate> type.
+   * @param value value of the field to be set with
+   * std::shared_ptr<CacheableDate> type.
    * @throws IllegalStateException if PdxInstance doesn't has the named field.
    *
    * @see PdxInstance#hasField
    */
-  virtual std::shared_ptr<CacheableDate> getCacheableDateField(const char* fieldname) const;
+  virtual std::shared_ptr<CacheableDate> getCacheableDateField(
+      const char* fieldname) const;
 
   /**
    * Reads the named field and set its value in array of byte arrays type out
@@ -371,10 +374,12 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
                         int32_t& arrayLength, int32_t*& elementLength) const;
 
   /**
-   * Reads the named field and set its value in std::shared_ptr<Cacheable> type out param.
-   * std::shared_ptr<Cacheable> type is corresponding to java object type.
+   * Reads the named field and set its value in std::shared_ptr<Cacheable> type
+   * out param. std::shared_ptr<Cacheable> type is corresponding to java object
+   * type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with std::shared_ptr<Cacheable> type.
+   * @param value value of the field to be set with std::shared_ptr<Cacheable>
+   * type.
    * @throws IllegalStateException if PdxInstance doesn't has the named field.
    * For deserialization C++ Native Client requires the domain class to be
    * registered.
@@ -382,17 +387,18 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @see serializationRegistry->addPdxType
    * @see PdxInstance#hasField
    */
-  virtual std::shared_ptr<Cacheable> getCacheableField(const char* fieldname) const;
+  virtual std::shared_ptr<Cacheable> getCacheableField(
+      const char* fieldname) const;
 
   /**
-   * Reads the named field and set its value in std::shared_ptr<CacheableObjectArray> type out
-   * param.
-   * For deserialization C++ Native Client requires the domain class to be
-   * registered.
-   * std::shared_ptr<CacheableObjectArray> type is corresponding to java Object[] type.
+   * Reads the named field and set its value in
+   * std::shared_ptr<CacheableObjectArray> type out param. For deserialization
+   * C++ Native Client requires the domain class to be registered.
+   * std::shared_ptr<CacheableObjectArray> type is corresponding to java
+   * Object[] type.
    * @param fieldname name of the field to read.
-   * @param value value of the field to be set with std::shared_ptr<CacheableObjectArray>
-   * type.
+   * @param value value of the field to be set with
+   * std::shared_ptr<CacheableObjectArray> type.
    * @throws IllegalStateException if PdxInstance doesn't has the named field.
    *
    * @see serializationRegistry->addPdxType
@@ -549,15 +555,18 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * The setField method has copy-on-write semantics.
    * So for the modifications to be stored in the cache the WritablePdxInstance
    * must be put into a region after setField has been called one or more times.
-   * std::shared_ptr<CacheableDate> type is corresponding to java Java.util.date type.
+   * std::shared_ptr<CacheableDate> type is corresponding to java Java.util.date
+   * type.
    * @param fieldName
    *          name of the field whose value will be set
    * @param value
-   *          value that will be set to the field of type std::shared_ptr<CacheableDate>
+   *          value that will be set to the field of type
+   * std::shared_ptr<CacheableDate>
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, std::shared_ptr<CacheableDate> value);
+  virtual void setField(const char* fieldName,
+                        std::shared_ptr<CacheableDate> value);
 
   /**
    * Set the existing named field to the given value.
@@ -832,18 +841,21 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @param fieldName
    *          name of the field whose value will be set
    * @param value
-   *          value that will be assigned to the field of type std::shared_ptr<Cacheable>
+   *          value that will be assigned to the field of type
+   * std::shared_ptr<Cacheable>
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, std::shared_ptr<Cacheable> value);
+  virtual void setField(const char* fieldName,
+                        std::shared_ptr<Cacheable> value);
 
   /**
    * Set the existing named field to the given value.
    * The setField method has copy-on-write semantics.
    * So for the modifications to be stored in the cache the WritablePdxInstance
    * must be put into a region after setField has been called one or more times.
-   * std::shared_ptr<CacheableObjectArray> type is corresponding to java Object[] type.
+   * std::shared_ptr<CacheableObjectArray> type is corresponding to java
+   * Object[] type.
    * @param fieldName
    *          name of the field whose value will be set
    * @param value
@@ -852,7 +864,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, std::shared_ptr<CacheableObjectArray> value);
+  virtual void setField(const char* fieldName,
+                        std::shared_ptr<CacheableObjectArray> value);
 
   /**
    * Checks if the named field was {@link PdxWriter#markIdentityField}marked as
@@ -1010,8 +1023,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
 
   PdxInstanceImpl(uint8_t* buffer, int length, int typeId,
                   CachePerfStats* cacheStats,
-                  std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry, const Cache* cache,
-                  bool enableTimeStatistics)
+                  std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry,
+                  const Cache* cache, bool enableTimeStatistics)
       : m_buffer(DataInput::getBufferCopy(buffer, length)),
         m_bufferLength(length),
         m_typeId(typeId),
@@ -1025,8 +1038,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
 
   PdxInstanceImpl(FieldVsValues fieldVsValue, std::shared_ptr<PdxType> pdxType,
                   CachePerfStats* cacheStats,
-                  std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry, const Cache* cache,
-                  bool enableTimeStatistics);
+                  std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry,
+                  const Cache* cache, bool enableTimeStatistics);
 
   PdxInstanceImpl(const PdxInstanceImpl& other) = delete;
 
@@ -1048,26 +1061,30 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
   const Cache* m_cache;
   bool m_enableTimeStatistics;
 
-  std::vector<std::shared_ptr<PdxFieldType>> getIdentityPdxFields(std::shared_ptr<PdxType> pt) const;
+  std::vector<std::shared_ptr<PdxFieldType>> getIdentityPdxFields(
+      std::shared_ptr<PdxType> pt) const;
 
-  int getOffset(DataInput& dataInput, std::shared_ptr<PdxType> pt, int sequenceId) const;
+  int getOffset(DataInput& dataInput, std::shared_ptr<PdxType> pt,
+                int sequenceId) const;
 
-  int getRawHashCode(std::shared_ptr<PdxType> pt, std::shared_ptr<PdxFieldType> pField,
+  int getRawHashCode(std::shared_ptr<PdxType> pt,
+                     std::shared_ptr<PdxFieldType> pField,
                      DataInput& dataInput) const;
 
   int getNextFieldPosition(DataInput& dataInput, int fieldId,
                            std::shared_ptr<PdxType> pt) const;
 
-  int getSerializedLength(DataInput& dataInput, std::shared_ptr<PdxType> pt) const;
+  int getSerializedLength(DataInput& dataInput,
+                          std::shared_ptr<PdxType> pt) const;
 
-  bool hasDefaultBytes(std::shared_ptr<PdxFieldType> pField, DataInput& dataInput, int start,
-                       int end) const;
+  bool hasDefaultBytes(std::shared_ptr<PdxFieldType> pField,
+                       DataInput& dataInput, int start, int end) const;
 
   bool compareDefaultBytes(DataInput& dataInput, int start, int end,
                            int8_t* defaultBytes, int32_t length) const;
 
-  void writeField(std::shared_ptr<PdxWriter> writer, const char* fieldName, int typeId,
-                  std::shared_ptr<Cacheable> value);
+  void writeField(std::shared_ptr<PdxWriter> writer, const char* fieldName,
+                  int typeId, std::shared_ptr<Cacheable> value);
 
   void writeUnmodifieldField(DataInput& dataInput, int startPos, int endPos,
                              std::shared_ptr<PdxLocalWriter> localWriter);
@@ -1076,8 +1093,9 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
                           int sequenceId) const;
 
   bool compareRawBytes(PdxInstanceImpl& other, std::shared_ptr<PdxType> myPT,
-                       std::shared_ptr<PdxFieldType> myF, DataInput& myDataInput,
-                       std::shared_ptr<PdxType> otherPT, std::shared_ptr<PdxFieldType> otherF,
+                       std::shared_ptr<PdxFieldType> myF,
+                       DataInput& myDataInput, std::shared_ptr<PdxType> otherPT,
+                       std::shared_ptr<PdxFieldType> otherF,
                        DataInput& otherDataInput) const;
 
   void equatePdxFields(std::vector<std::shared_ptr<PdxFieldType>>& my,
@@ -1091,28 +1109,36 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
 
   static int enumerateVectorHashCode(std::shared_ptr<CacheableVector> vec);
 
-  static int enumerateArrayListHashCode(std::shared_ptr<CacheableArrayList> arrList);
+  static int enumerateArrayListHashCode(
+      std::shared_ptr<CacheableArrayList> arrList);
 
-  static int enumerateLinkedListHashCode(std::shared_ptr<CacheableLinkedList> linkedList);
+  static int enumerateLinkedListHashCode(
+      std::shared_ptr<CacheableLinkedList> linkedList);
 
-  static int enumerateObjectArrayHashCode(std::shared_ptr<CacheableObjectArray> objArray);
+  static int enumerateObjectArrayHashCode(
+      std::shared_ptr<CacheableObjectArray> objArray);
 
   static int enumerateSetHashCode(std::shared_ptr<CacheableHashSet> set);
 
-  static int enumerateLinkedSetHashCode(std::shared_ptr<CacheableLinkedHashSet> linkedset);
+  static int enumerateLinkedSetHashCode(
+      std::shared_ptr<CacheableLinkedHashSet> linkedset);
 
-  static int enumerateHashTableCode(std::shared_ptr<CacheableHashTable> hashTable);
+  static int enumerateHashTableCode(
+      std::shared_ptr<CacheableHashTable> hashTable);
 
-  static bool deepArrayEquals(std::shared_ptr<Cacheable> obj, std::shared_ptr<Cacheable> otherObj);
+  static bool deepArrayEquals(std::shared_ptr<Cacheable> obj,
+                              std::shared_ptr<Cacheable> otherObj);
 
-  static bool enumerateObjectArrayEquals(std::shared_ptr<CacheableObjectArray> Obj,
-                                         std::shared_ptr<CacheableObjectArray> OtherObj);
+  static bool enumerateObjectArrayEquals(
+      std::shared_ptr<CacheableObjectArray> Obj,
+      std::shared_ptr<CacheableObjectArray> OtherObj);
 
   static bool enumerateVectorEquals(std::shared_ptr<CacheableVector> Obj,
                                     std::shared_ptr<CacheableVector> OtherObj);
 
-  static bool enumerateArrayListEquals(std::shared_ptr<CacheableArrayList> Obj,
-                                       std::shared_ptr<CacheableArrayList> OtherObj);
+  static bool enumerateArrayListEquals(
+      std::shared_ptr<CacheableArrayList> Obj,
+      std::shared_ptr<CacheableArrayList> OtherObj);
 
   static bool enumerateMapEquals(std::shared_ptr<CacheableHashMap> Obj,
                                  std::shared_ptr<CacheableHashMap> OtherObj);
@@ -1120,11 +1146,13 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
   static bool enumerateSetEquals(std::shared_ptr<CacheableHashSet> Obj,
                                  std::shared_ptr<CacheableHashSet> OtherObj);
 
-  static bool enumerateLinkedSetEquals(std::shared_ptr<CacheableLinkedHashSet> Obj,
-                                       std::shared_ptr<CacheableLinkedHashSet> OtherObj);
+  static bool enumerateLinkedSetEquals(
+      std::shared_ptr<CacheableLinkedHashSet> Obj,
+      std::shared_ptr<CacheableLinkedHashSet> OtherObj);
 
-  static bool enumerateHashTableEquals(std::shared_ptr<CacheableHashTable> Obj,
-                                       std::shared_ptr<CacheableHashTable> OtherObj);
+  static bool enumerateHashTableEquals(
+      std::shared_ptr<CacheableHashTable> Obj,
+      std::shared_ptr<CacheableHashTable> OtherObj);
 
   std::unique_ptr<DataInput> getDataInputForField(const char* fieldname) const;
 

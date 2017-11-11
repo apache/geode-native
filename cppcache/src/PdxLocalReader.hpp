@@ -53,7 +53,8 @@ class PdxLocalReader : public PdxReader {
  public:
   PdxLocalReader(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
-  PdxLocalReader(DataInput& input, std::shared_ptr<PdxType> remoteType, int32_t pdxLen,
+  PdxLocalReader(DataInput& input, std::shared_ptr<PdxType> remoteType,
+                 int32_t pdxLen,
                  std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
   virtual ~PdxLocalReader();
@@ -61,7 +62,8 @@ class PdxLocalReader : public PdxReader {
   void MoveStream();
 
   virtual std::shared_ptr<PdxRemotePreservedData> getPreservedData(
-      std::shared_ptr<PdxType> mergedVersion, std::shared_ptr<PdxSerializable> pdxObject);
+      std::shared_ptr<PdxType> mergedVersion,
+      std::shared_ptr<PdxSerializable> pdxObject);
 
   /**
    * Read a char value from the <code>PdxReader</code>.
@@ -198,7 +200,8 @@ class PdxLocalReader : public PdxReader {
 
   virtual wchar_t** readWideStringArray(const char* fieldName, int32_t& length);
 
-  virtual std::shared_ptr<CacheableObjectArray> readObjectArray(const char* fieldName);
+  virtual std::shared_ptr<CacheableObjectArray> readObjectArray(
+      const char* fieldName);
 
   virtual int8_t** readArrayOfByteArrays(const char* fieldName,
                                          int32_t& arrayLength,
@@ -216,7 +219,6 @@ class PdxLocalReader : public PdxReader {
   virtual std::shared_ptr<PdxUnreadFields> readUnreadFields();
 
  protected:
-
   std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
 };
 }  // namespace client

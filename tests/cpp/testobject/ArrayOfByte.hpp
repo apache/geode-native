@@ -48,7 +48,7 @@ namespace testobject {
 class TESTOBJECT_EXPORT ArrayOfByte {
  public:
   static std::shared_ptr<CacheableBytes> init(int size, bool encodeKey,
-                                bool encodeTimestamp) {
+                                              bool encodeTimestamp) {
     if (encodeKey) {
       DataOutputInternal dos;
       try {

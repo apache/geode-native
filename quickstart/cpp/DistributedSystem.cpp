@@ -41,8 +41,8 @@
 // Use the "geode" namespace.
 using namespace apache::geode::client;
 
-void distributedsystem(std::shared_ptr<Cache> cachePtr, char *hostname, int port,
-                       char *poolName, char *regionName) {
+void distributedsystem(std::shared_ptr<Cache> cachePtr, char *hostname,
+                       int port, char *poolName, char *regionName) {
   // create pool factory to create the pool.
   auto poolFacPtr = cachePtr->getPoolManager().createFactory();
 

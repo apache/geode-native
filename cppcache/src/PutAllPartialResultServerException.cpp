@@ -43,7 +43,8 @@ void PutAllPartialResultServerException::consolidate(
   m_result->consolidate(otherResult);
 }
 
-std::shared_ptr<PutAllPartialResult> PutAllPartialResultServerException::getResult() {
+std::shared_ptr<PutAllPartialResult>
+PutAllPartialResultServerException::getResult() {
   return m_result;
 }
 
@@ -60,11 +61,13 @@ bool PutAllPartialResultServerException::hasFailure() {
   return m_result->hasFailure();
 }
 
-std::shared_ptr<CacheableKey> PutAllPartialResultServerException::getFirstFailedKey() {
+std::shared_ptr<CacheableKey>
+PutAllPartialResultServerException::getFirstFailedKey() {
   return m_result->getFirstFailedKey();
 }
 
-std::shared_ptr<CacheableString> PutAllPartialResultServerException::getMessage() {
+std::shared_ptr<CacheableString>
+PutAllPartialResultServerException::getMessage() {
   return m_result->toString();
 }
 

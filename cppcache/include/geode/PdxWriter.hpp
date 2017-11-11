@@ -399,9 +399,9 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxWriter> writeArrayOfByteArrays(const char* fieldName,
-                                              int8_t** array, int arrayLength,
-                                              int* elementLength) = 0;
+  virtual std::shared_ptr<PdxWriter> writeArrayOfByteArrays(
+      const char* fieldName, int8_t** array, int arrayLength,
+      int* elementLength) = 0;
 
   /**
    * Indicate that the given field name should be included in hashCode and

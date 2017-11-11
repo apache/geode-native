@@ -42,14 +42,17 @@ class ThinClientTallyLoader : public TallyLoader {
 
   virtual ~ThinClientTallyLoader() {}
 
-  std::shared_ptr<Cacheable> load(const std::shared_ptr<Region>& rp, const std::shared_ptr<CacheableKey>& key,
-                    const std::shared_ptr<Serializable>& aCallbackArgument) {
+  std::shared_ptr<Cacheable> load(
+      const std::shared_ptr<Region>& rp,
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Serializable>& aCallbackArgument) {
     int32_t loadValue = std::dynamic_pointer_cast<CacheableInt32>(
                             TallyLoader::load(rp, key, aCallbackArgument))
                             ->value();
     char lstrvalue[32];
     sprintf(lstrvalue, "%i", loadValue);
-    std::shared_ptr<CacheableString> lreturnValue = CacheableString::create(lstrvalue);
+    std::shared_ptr<CacheableString> lreturnValue =
+        CacheableString::create(lstrvalue);
     if (key != nullptr && (nullptr != rp->getAttributes()->getEndpoints() ||
                            rp->getAttributes()->getPoolName() != nullptr)) {
       LOGDEBUG("Putting the value (%s) for local region clients only ",
@@ -101,8 +104,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient)
     std::string clientXml = path;
     clientXml += "/";
     clientXml += clientXmlFile;
-    std::shared_ptr<CacheFactory> cacheFactoryPtr = CacheFactory::createCacheFactory()->set(
-        "cache-xml-file", clientXml.c_str());
+    std::shared_ptr<CacheFactory> cacheFactoryPtr =
+        CacheFactory::createCacheFactory()->set("cache-xml-file",
+                                                clientXml.c_str());
     cachePtr = cacheFactoryPtr->create();
     LOGINFO("Created the Geode Cache");
 

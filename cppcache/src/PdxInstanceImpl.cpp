@@ -64,7 +64,8 @@ std::shared_ptr<PdxFieldType> PdxInstanceImpl::m_DefaultPdxFieldType(
     new PdxFieldType("default", "default", static_cast<uint8_t>(-1),
                      -1 /*field index*/, false, 1, -1 /*var len field idx*/));
 
-bool sortFunc(std::shared_ptr<PdxFieldType> field1, std::shared_ptr<PdxFieldType> field2) {
+bool sortFunc(std::shared_ptr<PdxFieldType> field1,
+              std::shared_ptr<PdxFieldType> field2) {
   int diff = ACE_OS::strcmp(field1->getFieldName(), field2->getFieldName());
   if (diff < 0) {
     return true;
@@ -77,7 +78,8 @@ PdxInstanceImpl::~PdxInstanceImpl() { GF_SAFE_DELETE_ARRAY(m_buffer); }
 
 PdxInstanceImpl::PdxInstanceImpl(
     apache::geode::client::FieldVsValues fieldVsValue,
-    std::shared_ptr<apache::geode::client::PdxType> pdxType, CachePerfStats* cacheStats,
+    std::shared_ptr<apache::geode::client::PdxType> pdxType,
+    CachePerfStats* cacheStats,
     std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry, const Cache* cache,
     bool enableTimeStatistics)
     : m_pdxType(pdxType),
@@ -92,8 +94,9 @@ PdxInstanceImpl::PdxInstanceImpl(
   m_pdxType->InitializeType();  // to generate static position map
 }
 
-void PdxInstanceImpl::writeField(std::shared_ptr<PdxWriter> writer, const char* fieldName,
-                                 int typeId, std::shared_ptr<Cacheable> value) {
+void PdxInstanceImpl::writeField(std::shared_ptr<PdxWriter> writer,
+                                 const char* fieldName, int typeId,
+                                 std::shared_ptr<Cacheable> value) {
   switch (typeId) {
     case PdxFieldTypes::INT: {
       CacheableInt32* val = dynamic_cast<CacheableInt32*>(value.get());
@@ -254,7 +257,8 @@ void PdxInstanceImpl::writeField(std::shared_ptr<PdxWriter> writer, const char* 
       break;
     }
     case PdxFieldTypes::DATE: {
-      std::shared_ptr<CacheableDate> date = std::dynamic_pointer_cast<CacheableDate>(value);
+      std::shared_ptr<CacheableDate> date =
+          std::dynamic_pointer_cast<CacheableDate>(value);
       if (date != nullptr) {
         writer->writeDate(fieldName, date);
       }
@@ -303,7 +307,8 @@ std::shared_ptr<WritablePdxInstance> PdxInstanceImpl::createWriter() {
 }
 
 bool PdxInstanceImpl::enumerateObjectArrayEquals(
-    std::shared_ptr<CacheableObjectArray> Obj, std::shared_ptr<CacheableObjectArray> OtherObj) {
+    std::shared_ptr<CacheableObjectArray> Obj,
+    std::shared_ptr<CacheableObjectArray> OtherObj) {
   if (Obj == nullptr && OtherObj == nullptr) {
     return true;
   } else if (Obj == nullptr && OtherObj != nullptr) {
@@ -324,8 +329,9 @@ bool PdxInstanceImpl::enumerateObjectArrayEquals(
   return true;
 }
 
-bool PdxInstanceImpl::enumerateVectorEquals(std::shared_ptr<CacheableVector> Obj,
-                                            std::shared_ptr<CacheableVector> OtherObj) {
+bool PdxInstanceImpl::enumerateVectorEquals(
+    std::shared_ptr<CacheableVector> Obj,
+    std::shared_ptr<CacheableVector> OtherObj) {
   if (Obj == nullptr && OtherObj == nullptr) {
     return true;
   } else if (Obj == nullptr && OtherObj != nullptr) {
@@ -346,8 +352,9 @@ bool PdxInstanceImpl::enumerateVectorEquals(std::shared_ptr<CacheableVector> Obj
   return true;
 }
 
-bool PdxInstanceImpl::enumerateArrayListEquals(std::shared_ptr<CacheableArrayList> Obj,
-                                               std::shared_ptr<CacheableArrayList> OtherObj) {
+bool PdxInstanceImpl::enumerateArrayListEquals(
+    std::shared_ptr<CacheableArrayList> Obj,
+    std::shared_ptr<CacheableArrayList> OtherObj) {
   if (Obj == nullptr && OtherObj == nullptr) {
     return true;
   } else if (Obj == nullptr && OtherObj != nullptr) {
@@ -368,8 +375,9 @@ bool PdxInstanceImpl::enumerateArrayListEquals(std::shared_ptr<CacheableArrayLis
   return true;
 }
 
-bool PdxInstanceImpl::enumerateMapEquals(std::shared_ptr<CacheableHashMap> Obj,
-                                         std::shared_ptr<CacheableHashMap> OtherObj) {
+bool PdxInstanceImpl::enumerateMapEquals(
+    std::shared_ptr<CacheableHashMap> Obj,
+    std::shared_ptr<CacheableHashMap> OtherObj) {
   if (Obj == nullptr && OtherObj == nullptr) {
     return true;
   } else if (Obj == nullptr && OtherObj != nullptr) {
@@ -395,8 +403,9 @@ bool PdxInstanceImpl::enumerateMapEquals(std::shared_ptr<CacheableHashMap> Obj,
   return true;
 }
 
-bool PdxInstanceImpl::enumerateHashTableEquals(std::shared_ptr<CacheableHashTable> Obj,
-                                               std::shared_ptr<CacheableHashTable> OtherObj) {
+bool PdxInstanceImpl::enumerateHashTableEquals(
+    std::shared_ptr<CacheableHashTable> Obj,
+    std::shared_ptr<CacheableHashTable> OtherObj) {
   if (Obj == nullptr && OtherObj == nullptr) {
     return true;
   } else if (Obj == nullptr && OtherObj != nullptr) {
@@ -422,8 +431,9 @@ bool PdxInstanceImpl::enumerateHashTableEquals(std::shared_ptr<CacheableHashTabl
   return true;
 }
 
-bool PdxInstanceImpl::enumerateSetEquals(std::shared_ptr<CacheableHashSet> Obj,
-                                         std::shared_ptr<CacheableHashSet> OtherObj) {
+bool PdxInstanceImpl::enumerateSetEquals(
+    std::shared_ptr<CacheableHashSet> Obj,
+    std::shared_ptr<CacheableHashSet> OtherObj) {
   if (Obj == nullptr && OtherObj == nullptr) {
     return true;
   } else if (Obj == nullptr && OtherObj != nullptr) {
@@ -444,7 +454,8 @@ bool PdxInstanceImpl::enumerateSetEquals(std::shared_ptr<CacheableHashSet> Obj,
 }
 
 bool PdxInstanceImpl::enumerateLinkedSetEquals(
-    std::shared_ptr<CacheableLinkedHashSet> Obj, std::shared_ptr<CacheableLinkedHashSet> OtherObj) {
+    std::shared_ptr<CacheableLinkedHashSet> Obj,
+    std::shared_ptr<CacheableLinkedHashSet> OtherObj) {
   if (Obj == nullptr && OtherObj == nullptr) {
     return true;
   } else if (Obj == nullptr && OtherObj != nullptr) {
@@ -464,7 +475,8 @@ bool PdxInstanceImpl::enumerateLinkedSetEquals(
   return true;
 }
 
-bool PdxInstanceImpl::deepArrayEquals(std::shared_ptr<Cacheable> obj, std::shared_ptr<Cacheable> otherObj) {
+bool PdxInstanceImpl::deepArrayEquals(std::shared_ptr<Cacheable> obj,
+                                      std::shared_ptr<Cacheable> otherObj) {
   if (obj == nullptr && otherObj == nullptr) {
     return true;
   } else if (obj == nullptr && otherObj != nullptr) {
@@ -550,7 +562,8 @@ bool PdxInstanceImpl::deepArrayEquals(std::shared_ptr<Cacheable> obj, std::share
   }
 }
 
-int PdxInstanceImpl::enumerateMapHashCode(std::shared_ptr<CacheableHashMap> map) {
+int PdxInstanceImpl::enumerateMapHashCode(
+    std::shared_ptr<CacheableHashMap> map) {
   int h = 0;
   for (const auto& itr : *map) {
     h = h + ((deepArrayHashCode(itr.first)) ^
@@ -559,7 +572,8 @@ int PdxInstanceImpl::enumerateMapHashCode(std::shared_ptr<CacheableHashMap> map)
   return h;
 }
 
-int PdxInstanceImpl::enumerateSetHashCode(std::shared_ptr<CacheableHashSet> set) {
+int PdxInstanceImpl::enumerateSetHashCode(
+    std::shared_ptr<CacheableHashSet> set) {
   int h = 0;
   for (const auto& itr : *set) {
     h = h + deepArrayHashCode(itr);
@@ -567,7 +581,8 @@ int PdxInstanceImpl::enumerateSetHashCode(std::shared_ptr<CacheableHashSet> set)
   return h;
 }
 
-int PdxInstanceImpl::enumerateLinkedSetHashCode(std::shared_ptr<CacheableLinkedHashSet> set) {
+int PdxInstanceImpl::enumerateLinkedSetHashCode(
+    std::shared_ptr<CacheableLinkedHashSet> set) {
   int h = 0;
   for (const auto& itr : *set) {
     h = h + deepArrayHashCode(itr);
@@ -575,7 +590,8 @@ int PdxInstanceImpl::enumerateLinkedSetHashCode(std::shared_ptr<CacheableLinkedH
   return h;
 }
 
-int PdxInstanceImpl::enumerateHashTableCode(std::shared_ptr<CacheableHashTable> hashTable) {
+int PdxInstanceImpl::enumerateHashTableCode(
+    std::shared_ptr<CacheableHashTable> hashTable) {
   int h = 0;
   for (const auto& itr : *hashTable) {
     h = h + ((deepArrayHashCode(itr.first)) ^
@@ -593,7 +609,8 @@ int PdxInstanceImpl::enumerateObjectArrayHashCode(
   return h;
 }
 
-int PdxInstanceImpl::enumerateVectorHashCode(std::shared_ptr<CacheableVector> vec) {
+int PdxInstanceImpl::enumerateVectorHashCode(
+    std::shared_ptr<CacheableVector> vec) {
   int h = 1;
   for (int i = 0; i < vec->size(); i++) {
     h = h * 31 + deepArrayHashCode(vec->at(i));
@@ -601,7 +618,8 @@ int PdxInstanceImpl::enumerateVectorHashCode(std::shared_ptr<CacheableVector> ve
   return h;
 }
 
-int PdxInstanceImpl::enumerateArrayListHashCode(std::shared_ptr<CacheableArrayList> arrList) {
+int PdxInstanceImpl::enumerateArrayListHashCode(
+    std::shared_ptr<CacheableArrayList> arrList) {
   int h = 1;
   for (int i = 0; i < arrList->size(); i++) {
     h = h * 31 + deepArrayHashCode(arrList->at(i));
@@ -663,7 +681,8 @@ int PdxInstanceImpl::deepArrayHashCode(std::shared_ptr<Cacheable> obj) {
       if (pdxInstPtr != nullptr) {
         return pdxInstPtr->hashcode();
       } else {
-        // Chk if it is of std::shared_ptr<CacheableKey> type, eg: CacheableInt32
+        // Chk if it is of std::shared_ptr<CacheableKey> type, eg:
+        // CacheableInt32
         auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj);
         if (keyType != nullptr) {
           return keyType->hashcode();
@@ -696,7 +715,8 @@ int32_t PdxInstanceImpl::hashcode() const {
 
   auto pt = getPdxType();
 
-  std::vector<std::shared_ptr<PdxFieldType>> pdxIdentityFieldList = getIdentityPdxFields(pt);
+  std::vector<std::shared_ptr<PdxFieldType>> pdxIdentityFieldList =
+      getIdentityPdxFields(pt);
 
   auto dataInput = m_cache->createDataInput(m_buffer, m_bufferLength);
 
@@ -741,7 +761,8 @@ int32_t PdxInstanceImpl::hashcode() const {
       }
       case PdxFieldTypes::OBJECT_ARRAY: {
         setOffsetForObject(*dataInput, pt, pField->getSequenceId());
-        std::shared_ptr<CacheableObjectArray> objectArray = CacheableObjectArray::create();
+        std::shared_ptr<CacheableObjectArray> objectArray =
+            CacheableObjectArray::create();
         objectArray->fromData(*dataInput);
         hashCode =
             31 * hashCode +
@@ -929,7 +950,7 @@ void PdxInstanceImpl::getField(const char* fieldname, char*** value,
   auto dataInput = getDataInputForField(fieldname);
   dataInput->readStringArray(value, length);
 }
- std::shared_ptr<CacheableDate> PdxInstanceImpl::getCacheableDateField(
+std::shared_ptr<CacheableDate> PdxInstanceImpl::getCacheableDateField(
     const char* fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   auto value = CacheableDate::create();
@@ -937,17 +958,17 @@ void PdxInstanceImpl::getField(const char* fieldname, char*** value,
   return value;
 }
  std::shared_ptr<Cacheable> PdxInstanceImpl::getCacheableField(const char* fieldname) const {
-  auto dataInput = getDataInputForField(fieldname);
-  std::shared_ptr<Cacheable> value;
-  dataInput->readObject(value);
-  return value;
+   auto dataInput = getDataInputForField(fieldname);
+   std::shared_ptr<Cacheable> value;
+   dataInput->readObject(value);
+   return value;
 }
  std::shared_ptr<CacheableObjectArray> PdxInstanceImpl::getCacheableObjectArrayField(
     const char* fieldname) const {
-  auto dataInput = getDataInputForField(fieldname);
-  auto value = CacheableObjectArray::create();
-  value->fromData(*dataInput);
-  return value;
+   auto dataInput = getDataInputForField(fieldname);
+   auto value = CacheableObjectArray::create();
+   value->fromData(*dataInput);
+   return value;
 }
 
 void PdxInstanceImpl::getField(const char* fieldname, int8_t*** value,
@@ -1397,7 +1418,8 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
   return true;
 }
 
-bool PdxInstanceImpl::compareRawBytes(PdxInstanceImpl& other, std::shared_ptr<PdxType> myPT,
+bool PdxInstanceImpl::compareRawBytes(PdxInstanceImpl& other,
+                                      std::shared_ptr<PdxType> myPT,
                                       std::shared_ptr<PdxFieldType> myF,
                                       DataInput& myDataInput,
                                       std::shared_ptr<PdxType> otherPT,
@@ -1527,7 +1549,8 @@ void PdxInstanceImpl::toData(std::shared_ptr<PdxWriter> writer) /*const*/ {
       auto currPf = pdxFieldList->at(i);
       LOGDEBUG("toData1 filedname = %s , isVarLengthType = %d ",
                currPf->getFieldName(), currPf->IsVariableLengthType());
-      std::shared_ptr<Cacheable> value = m_updatedFields[currPf->getFieldName()];
+      std::shared_ptr<Cacheable> value =
+          m_updatedFields[currPf->getFieldName()];
       writeField(writer, currPf->getFieldName(), currPf->getTypeId(), value);
     }
   }

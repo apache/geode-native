@@ -47,7 +47,8 @@ int main(int argc, char** argv) {
     auto prptr = Properties::create();
     prptr->insert("cache-xml-file", "XMLs/clientRefIDExample.xml");
 
-    std::shared_ptr<CacheFactory> cacheFactory = CacheFactory::createCacheFactory(prptr);
+    std::shared_ptr<CacheFactory> cacheFactory =
+        CacheFactory::createCacheFactory(prptr);
 
     auto cachePtr = cacheFactory->create();
 

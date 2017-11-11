@@ -76,8 +76,8 @@ std::shared_ptr<CacheableKey> do1Put(std::shared_ptr<Region>& rptr) {
   return key;
 }
 
-void setExpTimes(std::shared_ptr<RegionAttributes>& attrs, int ettl = 0, int eit = 0,
-                 int rttl = 0, int rit = 0) {
+void setExpTimes(std::shared_ptr<RegionAttributes>& attrs, int ettl = 0,
+                 int eit = 0, int rttl = 0, int rit = 0) {
   AttributesFactory afact;
 
   afact.setEntryIdleTimeout(action, eit);

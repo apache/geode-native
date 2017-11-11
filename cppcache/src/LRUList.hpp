@@ -23,7 +23,6 @@
 #include <atomic>
 #include <memory>
 
-
 #include <geode/geode_globals.hpp>
 #include "util/concurrent/spinlock_mutex.hpp"
 
@@ -86,7 +85,6 @@ using util::concurrent::spinlock_mutex;
 template <typename TEntry, typename TCreateEntry>
 class LRUList {
  protected:
-
   /**
    * @brief The entries in the LRU List are instances of LRUListNode.
    * This maintains the evicted and recently used state for each entry.
@@ -98,7 +96,9 @@ class LRUList {
 
     inline ~LRUListNode() {}
 
-    inline void getEntry(std::shared_ptr<TEntry>& result) const { result = m_entry; }
+    inline void getEntry(std::shared_ptr<TEntry>& result) const {
+      result = m_entry;
+    }
 
     inline LRUListNode* getNextLRUListNode() const { return m_nextLRUListNode; }
 

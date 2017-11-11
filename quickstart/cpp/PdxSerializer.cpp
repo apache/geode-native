@@ -121,7 +121,8 @@ class PersonPdxSerializer : public PdxSerializer {
     return NULL;
   }
 
-  bool toData(void* testObject, const char* className, std::shared_ptr<PdxWriter> pw) {
+  bool toData(void* testObject, const char* className,
+              std::shared_ptr<PdxWriter> pw) {
     if (strcmp(className, CLASSNAME) == 0) {
       Person* per = reinterpret_cast<Person*>(testObject);
 
@@ -143,7 +144,8 @@ class PersonPdxSerializer : public PdxSerializer {
 int main(int argc, char** argv) {
   try {
     // Create a Geode Cache.
-    std::shared_ptr<CacheFactory> cacheFactory = CacheFactory::createCacheFactory();
+    std::shared_ptr<CacheFactory> cacheFactory =
+        CacheFactory::createCacheFactory();
 
     // Create a Geode Cache with the "clientPdxSerializer.xml" Cache XML file.
     auto cachePtr =

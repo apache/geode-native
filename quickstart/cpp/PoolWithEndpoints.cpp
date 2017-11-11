@@ -44,7 +44,8 @@ int main(int argc, char** argv) {
   try {
     // Create CacheFactory using the settings from the geode.properties file by
     // default.
-    std::shared_ptr<CacheFactory> cacheFactory = CacheFactory::createCacheFactory();
+    std::shared_ptr<CacheFactory> cacheFactory =
+        CacheFactory::createCacheFactory();
 
     LOGINFO("Created CacheFactory");
 
@@ -58,8 +59,7 @@ int main(int argc, char** argv) {
     pfact->addServer("localhost", 40404);
     auto pptr = pfact->create("examplePool");
 
-    auto regionFactory =
-        cachePtr->createRegionFactory(CACHING_PROXY);
+    auto regionFactory = cachePtr->createRegionFactory(CACHING_PROXY);
 
     LOGINFO("Created the RegionFactory");
 

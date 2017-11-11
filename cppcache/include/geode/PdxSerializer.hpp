@@ -60,7 +60,8 @@ class CPPCACHE_EXPORT PdxSerializer  {
    * @param className the class name whose object need to de-serialize
    * @param pr the PdxReader stream to use for reading the object data
    */
-  virtual void* fromData(const char* className, std::shared_ptr<PdxReader> pr) = 0;
+  virtual void* fromData(const char* className,
+                         std::shared_ptr<PdxReader> pr) = 0;
 
   /**
    * Serializes this object in geode PDX format.

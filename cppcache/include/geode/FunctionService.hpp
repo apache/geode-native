@@ -134,11 +134,14 @@ class CPPCACHE_EXPORT FunctionService {
   virtual ~FunctionService() {}
 
  private:
-  static std::shared_ptr<Execution> onServerWithPool(const std::shared_ptr<Pool>& pool);
+  static std::shared_ptr<Execution> onServerWithPool(
+      const std::shared_ptr<Pool>& pool);
 
-  static std::shared_ptr<Execution> onServerWithCache(const std::shared_ptr<RegionService>& cache);
+  static std::shared_ptr<Execution> onServerWithCache(
+      const std::shared_ptr<RegionService>& cache);
 
-  static std::shared_ptr<Execution> onServersWithPool(const std::shared_ptr<Pool>& pool);
+  static std::shared_ptr<Execution> onServersWithPool(
+      const std::shared_ptr<Pool>& pool);
 
   static std::shared_ptr<Execution> onServersWithCache(const std::shared_ptr<RegionService>& cache);
 };

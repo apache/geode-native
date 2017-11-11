@@ -49,7 +49,8 @@ using namespace testobject;
 // The PdxRemoteQuery QuickStart example.
 int main(int argc, char** argv) {
   try {
-    std::shared_ptr<CacheFactory> cacheFactory = CacheFactory::createCacheFactory();
+    std::shared_ptr<CacheFactory> cacheFactory =
+        CacheFactory::createCacheFactory();
 
     // Create a Geode Cache with the "clientPdxRemoteQuery.xml" Cache XML
     // file.
@@ -73,9 +74,12 @@ int main(int argc, char** argv) {
     LOGINFO("Registered PDX Type Query Objects");
 
     // Populate the Region with some Pdx Type objects, i.e PortfolioPdx objects.
-    std::shared_ptr<PortfolioPdx> port1Ptr(new PortfolioPdx(1 /*ID*/, 10 /*size*/));
-    std::shared_ptr<PortfolioPdx> port2Ptr(new PortfolioPdx(2 /*ID*/, 20 /*size*/));
-    std::shared_ptr<PortfolioPdx> port3Ptr(new PortfolioPdx(3 /*ID*/, 30 /*size*/));
+    std::shared_ptr<PortfolioPdx> port1Ptr(
+        new PortfolioPdx(1 /*ID*/, 10 /*size*/));
+    std::shared_ptr<PortfolioPdx> port2Ptr(
+        new PortfolioPdx(2 /*ID*/, 20 /*size*/));
+    std::shared_ptr<PortfolioPdx> port3Ptr(
+        new PortfolioPdx(3 /*ID*/, 30 /*size*/));
     regionPtr->put("Key1", port1Ptr);
     regionPtr->put("Key2", port2Ptr);
     regionPtr->put("Key3", port3Ptr);

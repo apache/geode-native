@@ -107,7 +107,8 @@ class CPPCACHE_EXPORT ProxyCache
    */
   virtual ~ProxyCache();
 
-  ProxyCache(std::shared_ptr<Properties> credentials, std::shared_ptr<Pool> pool, CacheImpl* cacheImpl);
+  ProxyCache(std::shared_ptr<Properties> credentials,
+             std::shared_ptr<Pool> pool, CacheImpl* cacheImpl);
 
   /**
    * Returns a factory that can create a {@link PdxInstance}.

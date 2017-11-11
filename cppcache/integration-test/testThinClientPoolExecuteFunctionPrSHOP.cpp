@@ -211,7 +211,8 @@ bool validateResultTypeIsUserFunctionExecutionException(
 }
 
 template <class _T>
-bool validateResultType(const int32_t index, const std::shared_ptr<Cacheable>& result) {
+bool validateResultType(const int32_t index,
+                        const std::shared_ptr<Cacheable>& result) {
   return false;
 }
 

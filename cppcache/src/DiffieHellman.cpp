@@ -131,7 +131,8 @@ std::shared_ptr<CacheableBytes> DiffieHellman::getPublicKey(void) {
   return CacheableBytes::createNoCopy(pubKeyPtr, keyLen);
 }
 
-void DiffieHellman::setPublicKeyOther(const std::shared_ptr<CacheableBytes>& pubkey) {
+void DiffieHellman::setPublicKeyOther(
+    const std::shared_ptr<CacheableBytes>& pubkey) {
   return gf_setPublicKeyOther_Ptr(m_dhCtx, pubkey->value(), pubkey->length());
 }
 
@@ -139,10 +140,11 @@ void DiffieHellman::computeSharedSecret(void) {
   return gf_computeSharedSecret_Ptr(m_dhCtx);
 }
 
-std::shared_ptr<CacheableBytes> DiffieHellman::encrypt(const std::shared_ptr<CacheableBytes>& cleartext) {
-	const uint8_t *data = cleartext->value();
-	int length = cleartext->length();
-	return encrypt(data, length);
+std::shared_ptr<CacheableBytes> DiffieHellman::encrypt(
+    const std::shared_ptr<CacheableBytes>& cleartext) {
+  const uint8_t* data = cleartext->value();
+  int length = cleartext->length();
+  return encrypt(data, length);
 }
 
 std::shared_ptr<CacheableBytes> DiffieHellman::encrypt(const uint8_t* cleartext, int len) {
@@ -154,8 +156,8 @@ std::shared_ptr<CacheableBytes> DiffieHellman::encrypt(const uint8_t* cleartext,
 
 std::shared_ptr<CacheableBytes> DiffieHellman::decrypt(const std::shared_ptr<CacheableBytes>& cleartext) {
 	const uint8_t *data = cleartext->value();
-	int length = cleartext->length();
-	return decrypt(data, length);
+        int length = cleartext->length();
+        return decrypt(data, length);
 }
 
 std::shared_ptr<CacheableBytes> DiffieHellman::decrypt(const uint8_t* cleartext, int len) {

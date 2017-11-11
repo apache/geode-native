@@ -205,7 +205,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, transactionPutOnClient2)
 
     txManager->begin();
     std::shared_ptr<CacheableKey> keyPtr1 = CacheableKey::create("key-1");
-    std::shared_ptr<CacheableString> valPtr = CacheableString::create("client2-value1");
+    std::shared_ptr<CacheableString> valPtr =
+        CacheableString::create("client2-value1");
     rptr->put(keyPtr1, valPtr);
 
     std::shared_ptr<CacheableKey> keyPtr2 = CacheableKey::create("key-2");

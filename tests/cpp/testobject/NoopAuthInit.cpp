@@ -31,8 +31,8 @@ LIBEXP AuthInitialize* createNoopAuthInitInstance() {
 }
 }
 
-std::shared_ptr<Properties> NoopAuthInit::getCredentials(const std::shared_ptr<Properties>& securityprops,
-                                           const char* server) {
+std::shared_ptr<Properties> NoopAuthInit::getCredentials(
+    const std::shared_ptr<Properties>& securityprops, const char* server) {
   LOGINFO("rjk: calling NoopAuthInit::getCredentials");
   auto credentials = Properties::create();
   return credentials;

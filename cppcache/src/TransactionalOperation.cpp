@@ -32,17 +32,17 @@ namespace apache {
 namespace geode {
 namespace client {
 
-TransactionalOperation::TransactionalOperation(ServerRegionOperation op,
-                                               const char* regionName,
-                                               std::shared_ptr<CacheableKey> key,
-                                               std::shared_ptr<std::vector<std::shared_ptr<Cacheable>>> arguments)
+TransactionalOperation::TransactionalOperation(
+    ServerRegionOperation op, const char* regionName,
+    std::shared_ptr<CacheableKey> key,
+    std::shared_ptr<std::vector<std::shared_ptr<Cacheable>>> arguments)
     : m_operation(op),
       m_regionName(regionName),
       m_key(key),
       m_arguments(arguments) {}
 
 TransactionalOperation::~TransactionalOperation() {}
- std::shared_ptr<Cacheable> TransactionalOperation::replay(Cache* cache) {
+std::shared_ptr<Cacheable> TransactionalOperation::replay(Cache* cache) {
   std::shared_ptr<Cacheable> result = nullptr;
 
   switch (m_operation) {
@@ -92,7 +92,8 @@ TransactionalOperation::~TransactionalOperation() {}
           std::static_pointer_cast<RegionInternal>(
               cache->getRegion(m_regionName))
               ->getAll_internal(
-                  *std::dynamic_pointer_cast<std::vector<std::shared_ptr<CacheableKey>>>(
+                  *std::dynamic_pointer_cast<
+                      std::vector<std::shared_ptr<CacheableKey>>>(
                       m_arguments->at(0)),
                   nullptr,
                   std::static_pointer_cast<CacheableBoolean>(m_arguments->at(3))

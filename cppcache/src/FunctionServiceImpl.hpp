@@ -57,7 +57,8 @@ class CPPCACHE_EXPORT FunctionServiceImpl : public FunctionService {
 
   FunctionServiceImpl(std::shared_ptr<ProxyCache> proxyCache);
 
-  static std::shared_ptr<FunctionService> getFunctionService(std::shared_ptr<ProxyCache> proxyCache);
+  static std::shared_ptr<FunctionService> getFunctionService(
+      std::shared_ptr<ProxyCache> proxyCache);
 
   std::shared_ptr<ProxyCache> m_proxyCache;
   friend class ProxyCache;

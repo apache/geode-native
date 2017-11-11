@@ -305,7 +305,8 @@ bool TcrConnection::InitTcrConnection(
   ConnErrType error = sendData(data, msgLengh, connectTimeout, false);
 
   if (error == CONN_NOERR) {
-    std::shared_ptr<CacheableBytes> acceptanceCode = readHandshakeData(1, connectTimeout);
+    std::shared_ptr<CacheableBytes> acceptanceCode =
+        readHandshakeData(1, connectTimeout);
 
     LOGDEBUG(" Handshake: Got Accept Code %d", (*acceptanceCode)[0]);
     /* adongre */
@@ -320,7 +321,8 @@ bool TcrConnection::InitTcrConnection(
     // if diffie-hellman based credential encryption is enabled
     if (isDhOn && (*acceptanceCode)[0] == REPLY_OK) {
       // read the server's DH public key
-      std::shared_ptr<CacheableBytes> pubKeyBytes = readHandshakeByteArray(connectTimeout);
+      std::shared_ptr<CacheableBytes> pubKeyBytes =
+          readHandshakeByteArray(connectTimeout);
       LOGDEBUG(" Handshake: Got pubKeySize %d", pubKeyBytes->length());
 
       // set the server's public key on client's DH side
@@ -333,7 +335,8 @@ bool TcrConnection::InitTcrConnection(
 
       if (requireServerAuth) {
         // Read Subject Name
-        std::shared_ptr<CacheableString> subjectName = readHandshakeString(connectTimeout);
+        std::shared_ptr<CacheableString> subjectName =
+            readHandshakeString(connectTimeout);
         LOGDEBUG("Got subject %s", subjectName->asChar());
         // read the server's signature bytes
         std::shared_ptr<CacheableBytes> responseBytes =
@@ -349,7 +352,8 @@ bool TcrConnection::InitTcrConnection(
       }
 
       // read the challenge bytes from the server
-      std::shared_ptr<CacheableBytes> challengeBytes = readHandshakeByteArray(connectTimeout);
+      std::shared_ptr<CacheableBytes> challengeBytes =
+          readHandshakeByteArray(connectTimeout);
       LOGDEBUG("Handshake: Got challengeSize %d", challengeBytes->length());
 
       // encrypt the credentials and challenge bytes
@@ -389,7 +393,8 @@ bool TcrConnection::InitTcrConnection(
       }
     }
 
-    std::shared_ptr<CacheableBytes> serverQueueStatus = readHandshakeData(1, connectTimeout);
+    std::shared_ptr<CacheableBytes> serverQueueStatus =
+        readHandshakeData(1, connectTimeout);
 
     //  TESTING: Durable clients - set server queue status.
     // 0 - Non-Redundant , 1- Redundant , 2- Primary
@@ -400,7 +405,8 @@ bool TcrConnection::InitTcrConnection(
     } else {
       m_hasServerQueue = NON_REDUNDANT_SERVER;
     }
-    std::shared_ptr<CacheableBytes> queueSizeMsg = readHandshakeData(4, connectTimeout);
+    std::shared_ptr<CacheableBytes> queueSizeMsg =
+        readHandshakeData(4, connectTimeout);
     auto dI = cacheImpl->getCache()->createDataInput(queueSizeMsg->value(),
                                                      queueSizeMsg->length());
     int32_t queueSize = 0;
@@ -427,7 +433,8 @@ bool TcrConnection::InitTcrConnection(
 
     if (!isClientNotification) {
       // Read and ignore the DistributedMember object
-      std::shared_ptr<CacheableBytes> arrayLenHeader = readHandshakeData(1, connectTimeout);
+      std::shared_ptr<CacheableBytes> arrayLenHeader =
+          readHandshakeData(1, connectTimeout);
       int32_t recvMsgLen = static_cast<int32_t>((*arrayLenHeader)[0]);
       // now check for array length headers - since GFE 5.7
       if (static_cast<int8_t>((*arrayLenHeader)[0]) == -2) {
@@ -1199,10 +1206,10 @@ void TcrConnection::close() {
  * < 0U".
  * Changing the unint32_t to int32_t
  */
-// std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeData(uint32_t msgLength,
-// uint32_t connectTimeout )
-std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeData(int32_t msgLength,
-                                                   uint32_t connectTimeout) {
+// std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeData(uint32_t
+// msgLength, uint32_t connectTimeout )
+std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeData(
+    int32_t msgLength, uint32_t connectTimeout) {
   ConnErrType error = CONN_NOERR;
   if (msgLength < 0) {
     msgLength = 0;
@@ -1242,8 +1249,8 @@ std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeData(int32_t msgLeng
  * change the input parameter from unint32_t to int32_t
  * as the comparasion case is valid
  */
-std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeRawData(int32_t msgLength,
-                                                      uint32_t connectTimeout) {
+std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeRawData(
+    int32_t msgLength, uint32_t connectTimeout) {
   ConnErrType error = CONN_NOERR;
   if (msgLength < 0) {
     msgLength = 0;

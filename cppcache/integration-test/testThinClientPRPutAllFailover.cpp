@@ -49,7 +49,8 @@ static bool isLocator = false;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-void setCacheListener(const char* regName, std::shared_ptr<TallyListener> regListener) {
+void setCacheListener(const char* regName,
+                      std::shared_ptr<TallyListener> regListener) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(regListener);

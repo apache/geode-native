@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-
 #include <string>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
@@ -267,13 +266,20 @@ DUNIT_TASK_DEFINITION(CLIENT1, putCacheableObjectArrayWithPdxFields)
     auto rptr = getHelper()->getRegion(regionNames[0]);
 
     // Creating CacheableobjectArray of type PdxObject
-    std::shared_ptr<CacheableObjectArray> objectArray = CacheableObjectArray::create();
-    objectArray->push_back(std::shared_ptr<Address>(new Address(1, "street0", "city0")));
-    objectArray->push_back(std::shared_ptr<Address>(new Address(2, "street1", "city1")));
-    objectArray->push_back(std::shared_ptr<Address>(new Address(3, "street2", "city2")));
-    objectArray->push_back(std::shared_ptr<Address>(new Address(4, "street3", "city3")));
-    objectArray->push_back(std::shared_ptr<Address>(new Address(5, "street4", "city4")));
-    objectArray->push_back(std::shared_ptr<Address>(new Address(6, "street5", "city5")));
+    std::shared_ptr<CacheableObjectArray> objectArray =
+        CacheableObjectArray::create();
+    objectArray->push_back(
+        std::shared_ptr<Address>(new Address(1, "street0", "city0")));
+    objectArray->push_back(
+        std::shared_ptr<Address>(new Address(2, "street1", "city1")));
+    objectArray->push_back(
+        std::shared_ptr<Address>(new Address(3, "street2", "city2")));
+    objectArray->push_back(
+        std::shared_ptr<Address>(new Address(4, "street3", "city3")));
+    objectArray->push_back(
+        std::shared_ptr<Address>(new Address(5, "street4", "city4")));
+    objectArray->push_back(
+        std::shared_ptr<Address>(new Address(6, "street5", "city5")));
     objectArray->push_back(std::shared_ptr<Address>(new Address(7, "street6", "city6")));
     objectArray->push_back(std::shared_ptr<Address>(new Address(8, "street7", "city7")));
     objectArray->push_back(std::shared_ptr<Address>(new Address(9, "street8", "city8")));
@@ -1763,7 +1769,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     }
 
     wpiPtr = pIPtr->createWriter();
-    std::shared_ptr<CacheableLinkedHashSet> linkedhashset = CacheableLinkedHashSet::create();
+    std::shared_ptr<CacheableLinkedHashSet> linkedhashset =
+        CacheableLinkedHashSet::create();
     linkedhashset->insert(CacheableInt32::create(3));
     linkedhashset->insert(CacheableInt32::create(4));
     linkedhashset->insert(CacheableInt32::create(5));

@@ -31,7 +31,8 @@ class PdxRemoteReader : public PdxLocalReader {
   int32_t m_currentIndex;
 
  public:
-  PdxRemoteReader(DataInput& dataInput, std::shared_ptr<PdxType> remoteType, int32_t pdxLen,
+  PdxRemoteReader(DataInput& dataInput, std::shared_ptr<PdxType> remoteType,
+                  int32_t pdxLen,
                   std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry)
       : PdxLocalReader(dataInput, remoteType, pdxLen, pdxTypeRegistry) {
     m_currentIndex = 0;
@@ -191,7 +192,8 @@ class PdxRemoteReader : public PdxLocalReader {
 
   virtual wchar_t** readWideStringArray(const char* fieldName, int32_t& length);
 
-  virtual std::shared_ptr<CacheableObjectArray> readObjectArray(const char* fieldName);
+  virtual std::shared_ptr<CacheableObjectArray> readObjectArray(
+      const char* fieldName);
 
   virtual int8_t** readArrayOfByteArrays(const char* fieldName,
                                          int32_t& arrayLength,

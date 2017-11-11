@@ -72,13 +72,14 @@ void createRegion(const char* name, bool ackMode,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
-                                               clientNotificationEnabled);
+                                          clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 
 void checkGets(int maxKeys, int8_t keyTypeId, int8_t valTypeId,
-               const std::shared_ptr<Region>& dataReg, const std::shared_ptr<Region>& verifyReg) {
+               const std::shared_ptr<Region>& dataReg,
+               const std::shared_ptr<Region>& verifyReg) {
   for (int i = 0; i < maxKeys; i++) {
     CacheableWrapper* tmpkey =
         CacheableWrapperFactory::createInstance(keyTypeId);

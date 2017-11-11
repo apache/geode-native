@@ -68,8 +68,10 @@ class CPPCACHE_EXPORT CacheLoader  {
    *
    *@see Region::get .
    */
-  virtual std::shared_ptr<Cacheable> load(const std::shared_ptr<Region>& rp, const std::shared_ptr<CacheableKey>& key,
-                            const std::shared_ptr<Serializable>& aCallbackArgument) = 0;
+  virtual std::shared_ptr<Cacheable> load(
+      const std::shared_ptr<Region>& rp,
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Serializable>& aCallbackArgument) = 0;
 
   /** Called when the region containing this callback is destroyed, when
    * the cache is closed.

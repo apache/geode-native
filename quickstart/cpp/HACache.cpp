@@ -41,7 +41,8 @@ using namespace apache::geode::client;
 // The HA QuickStart example.
 int main(int argc, char** argv) {
   try {
-    std::shared_ptr<CacheFactory> cacheFactory = CacheFactory::createCacheFactory();
+    std::shared_ptr<CacheFactory> cacheFactory =
+        CacheFactory::createCacheFactory();
 
     LOGINFO("Connected to the Geode Distributed System");
 

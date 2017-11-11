@@ -48,7 +48,8 @@ int main(int argc, char** argv) {
     properties->insert("cache-xml-file", "XMLs/clientSecurity.xml");
 
     // overriding secProp properties.
-    std::shared_ptr<CacheFactory> cacheFactory = CacheFactory::createCacheFactory(properties);
+    std::shared_ptr<CacheFactory> cacheFactory =
+        CacheFactory::createCacheFactory(properties);
 
     LOGINFO("Connected to the Geode Distributed System");
 

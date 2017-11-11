@@ -93,7 +93,8 @@ class Security : public FrameworkTest {
   //  int32_t doServerKeys();
 
   void checkTest(const char* taskId);
-  void getClientSecurityParams(std::shared_ptr<Properties> prop, std::string credentials);
+  void getClientSecurityParams(std::shared_ptr<Properties> prop,
+                               std::string credentials);
   std::shared_ptr<Cacheable> getUserObject(const std::string& objType);
   std::shared_ptr<CacheableString> getKey(int32_t max);
   void runQuery(int32_t& queryCnt);

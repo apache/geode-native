@@ -309,7 +309,8 @@ bool ThinClientDistributionManager::postFailoverAction(TcrEndpoint* endpoint) {
   return true;
 }
 
-std::shared_ptr<Properties> ThinClientDistributionManager::getCredentials(TcrEndpoint* ep) {
+std::shared_ptr<Properties> ThinClientDistributionManager::getCredentials(
+    TcrEndpoint* ep) {
   auto cacheImpl = m_connManager.getCacheImpl();
   const auto& distributedSystem = cacheImpl->getDistributedSystem();
   const auto& tmpSecurityProperties =

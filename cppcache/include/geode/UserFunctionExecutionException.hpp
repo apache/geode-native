@@ -99,8 +99,8 @@ class UserFunctionExecutionException : public Serializable {
   std::shared_ptr<CacheableString> getMessage() { return m_message; }
 
   /**
-   *@brief return as std::shared_ptr<CacheableString> the Exception name returned from geode
-   *sendException api.
+   *@brief return as std::shared_ptr<CacheableString> the Exception name
+   *returned from geode sendException api.
    **/
   std::shared_ptr<CacheableString> getName() {
     const char* msg = "UserFunctionExecutionException";

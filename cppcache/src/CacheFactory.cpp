@@ -57,7 +57,8 @@ std::shared_ptr<CacheFactory> CacheFactory::createCacheFactory(
 }
 
 void CacheFactory::create_(const char* name, const char* id_data,
-                           std::shared_ptr<Cache>& cptr, bool readPdxSerialized) {
+                           std::shared_ptr<Cache>& cptr,
+                           bool readPdxSerialized) {
   cptr = nullptr;
   if (name == nullptr) {
     throw IllegalArgumentException("CacheFactory::create: name is nullptr");
@@ -126,8 +127,9 @@ std::shared_ptr<Cache> CacheFactory::create() {
   return cache;
 }
 
-std::shared_ptr<Cache> CacheFactory::create(const char* name,
-                              const std::shared_ptr<CacheAttributes>& attrs /*= nullptr*/) {
+std::shared_ptr<Cache> CacheFactory::create(
+    const char* name,
+    const std::shared_ptr<CacheAttributes>& attrs /*= nullptr*/) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
 
   std::shared_ptr<Cache> cptr;
@@ -163,7 +165,8 @@ std::shared_ptr<Cache> CacheFactory::create(const char* name,
 
 CacheFactory::~CacheFactory() {}
 
-std::shared_ptr<CacheFactory> CacheFactory::set(const char* name, const char* value) {
+std::shared_ptr<CacheFactory> CacheFactory::set(const char* name,
+                                                const char* value) {
   if (this->dsProp == nullptr) {
     this->dsProp = Properties::create();
   }
@@ -177,7 +180,8 @@ std::shared_ptr<CacheFactory> CacheFactory::setAuthInitialize(
   return shared_from_this();
 }
 
-std::shared_ptr<CacheFactory> CacheFactory::setPdxIgnoreUnreadFields(bool ignore) {
+std::shared_ptr<CacheFactory> CacheFactory::setPdxIgnoreUnreadFields(
+    bool ignore) {
   ignorePdxUnreadFields = ignore;
   return shared_from_this();
 }

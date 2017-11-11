@@ -106,8 +106,8 @@ class OtherType : public Serializable {
 
   uint32_t size() const { return sizeof(CData); }
 
-  static std::shared_ptr<Cacheable> uniqueCT(int32_t i,
-                               int32_t classIdToReturn = g_classIdToReturn) {
+  static std::shared_ptr<Cacheable> uniqueCT(
+      int32_t i, int32_t classIdToReturn = g_classIdToReturn) {
     OtherType* ot = new OtherType(classIdToReturn);
     ot->m_struct.a = (int)i;
     ot->m_struct.b = (i % 2 == 0) ? true : false;
@@ -145,7 +145,7 @@ class OtherType : public Serializable {
 #define NoDist s2p2
 #define Sender s1p1
 #define Receiver s1p2
- std::shared_ptr<Region> regionPtr;
+std::shared_ptr<Region> regionPtr;
 
 DUNIT_TASK(Receiver, SetupR)
   {

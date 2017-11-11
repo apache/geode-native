@@ -45,7 +45,8 @@ LRUList<TEntry, TCreateEntry>::~LRUList() {
 }
 
 template <typename TEntry, typename TCreateEntry>
-void LRUList<TEntry, TCreateEntry>::appendEntry(const std::shared_ptr<TEntry>& entry) {
+void LRUList<TEntry, TCreateEntry>::appendEntry(
+    const std::shared_ptr<TEntry>& entry) {
   std::lock_guard<spinlock_mutex> lk(m_tailLock);
 
   LRUListNode* aNode = new LRUListNode(entry);
@@ -65,7 +66,8 @@ void LRUList<TEntry, TCreateEntry>::appendNode(LRUListNode* aNode) {
 }
 
 template <typename TEntry, typename TCreateEntry>
-void LRUList<TEntry, TCreateEntry>::getLRUEntry(std::shared_ptr<TEntry>& result) {
+void LRUList<TEntry, TCreateEntry>::getLRUEntry(
+    std::shared_ptr<TEntry>& result) {
   bool isLast = false;
   LRUListNode* aNode;
   while (true) {

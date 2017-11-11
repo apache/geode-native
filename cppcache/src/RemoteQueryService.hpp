@@ -52,11 +52,12 @@ class CPPCACHE_EXPORT RemoteQueryService
   void close();
 
   ~RemoteQueryService() {}
-  virtual std::shared_ptr<CqQuery> newCq(const char* querystr, const std::shared_ptr<CqAttributes>& cqAttr,
-                           bool isDurable = false);
-  virtual std::shared_ptr<CqQuery> newCq(const char* name, const char* querystr,
-                           const std::shared_ptr<CqAttributes>& cqAttr,
-                           bool isDurable = false);
+  virtual std::shared_ptr<CqQuery> newCq(
+      const char* querystr, const std::shared_ptr<CqAttributes>& cqAttr,
+      bool isDurable = false);
+  virtual std::shared_ptr<CqQuery> newCq(
+      const char* name, const char* querystr,
+      const std::shared_ptr<CqAttributes>& cqAttr, bool isDurable = false);
   virtual void closeCqs();
   virtual QueryService::query_container_type getCqs();
   virtual std::shared_ptr<CqQuery> getCq(const char* name);

@@ -38,14 +38,17 @@ AttributesFactory::AttributesFactory(
 
 AttributesFactory::~AttributesFactory() {}
 
-void AttributesFactory::setCacheLoader(const std::shared_ptr<CacheLoader>& cacheLoader) {
+void AttributesFactory::setCacheLoader(
+    const std::shared_ptr<CacheLoader>& cacheLoader) {
   m_regionAttributes.m_cacheLoader = cacheLoader;
 }
 
-void AttributesFactory::setCacheWriter(const std::shared_ptr<CacheWriter>& cacheWriter) {
+void AttributesFactory::setCacheWriter(
+    const std::shared_ptr<CacheWriter>& cacheWriter) {
   m_regionAttributes.m_cacheWriter = cacheWriter;
 }
-void AttributesFactory::setCacheListener(const std::shared_ptr<CacheListener>& aListener) {
+void AttributesFactory::setCacheListener(
+    const std::shared_ptr<CacheListener>& aListener) {
   m_regionAttributes.m_cacheListener = aListener;
 }
 void AttributesFactory::setPartitionResolver(
@@ -183,8 +186,9 @@ void AttributesFactory::setPersistenceManager(
   m_regionAttributes.m_persistenceProperties = props;
 }
 
-void AttributesFactory::setPersistenceManager(const char* lib, const char* func,
-                                              const std::shared_ptr<Properties>& config) {
+void AttributesFactory::setPersistenceManager(
+    const char* lib, const char* func,
+    const std::shared_ptr<Properties>& config) {
   m_regionAttributes.setPersistenceManager(lib, func, config);
 }
 

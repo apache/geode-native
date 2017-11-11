@@ -82,7 +82,8 @@ class CPPCACHE_EXPORT CqQuery  {
    * Get the AttributesMutator of this CQ.
    * @return CqAttributesMutator, the CqAttributesMutator object.
    */
-  virtual const std::shared_ptr<CqAttributesMutator> getCqAttributesMutator() const = 0;
+  virtual const std::shared_ptr<CqAttributesMutator> getCqAttributesMutator()
+      const = 0;
   /**
    * Start executing the CQ or if this CQ is stopped earlier, resumes execution
    * of the CQ.

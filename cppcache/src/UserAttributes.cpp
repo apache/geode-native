@@ -19,7 +19,8 @@
 
 using namespace apache::geode::client;
 
-UserAttributes::UserAttributes(std::shared_ptr<Properties> credentials, std::shared_ptr<Pool> pool,
+UserAttributes::UserAttributes(std::shared_ptr<Properties> credentials,
+                               std::shared_ptr<Pool> pool,
                                ProxyCache* proxyCache)
     : m_isUserAuthenticated(false), m_pool(pool) {
   m_credentials = credentials;
@@ -81,7 +82,7 @@ void UserAttributes::unAuthenticateEP(TcrEndpoint* endpoint) {
       uca->setUnAuthenticated();
   }*/
 }
- std::shared_ptr<Pool> UserAttributes::getPool() { return m_pool; }
+std::shared_ptr<Pool> UserAttributes::getPool() { return m_pool; }
 
 UserConnectionAttributes* UserAttributes::getConnectionAttribute(
     TcrEndpoint* ep) {
@@ -125,22 +126,24 @@ std::shared_ptr<Properties> UserAttributes::getCredentials() {
 }
  std::shared_ptr<ProxyCache> UserAttributes::getProxyCache() { return m_proxyCache; }
 
-ACE_TSS<TSSUserAttributesWrapper>
-    TSSUserAttributesWrapper::s_geodeTSSUserAttributes;
+ ACE_TSS<TSSUserAttributesWrapper>
+     TSSUserAttributesWrapper::s_geodeTSSUserAttributes;
 
-GuardUserAttribures::GuardUserAttribures(std::shared_ptr<ProxyCache> proxyCache) {
-  setProxyCache(proxyCache);
-}
+ GuardUserAttribures::GuardUserAttribures(
+     std::shared_ptr<ProxyCache> proxyCache) {
+   setProxyCache(proxyCache);
+ }
 
-void GuardUserAttribures::setProxyCache(std::shared_ptr<ProxyCache> proxyCache) {
-  m_proxyCache = proxyCache;
-  LOGDEBUG("GuardUserAttribures::GuardUserAttribures:");
-  if (m_proxyCache != nullptr && !proxyCache->isClosed()) {
-    TSSUserAttributesWrapper::s_geodeTSSUserAttributes->setUserAttributes(
-        proxyCache->m_userAttributes);
-  } else {
-    throw CacheClosedException("User Cache has been closed");
-  }
+ void GuardUserAttribures::setProxyCache(
+     std::shared_ptr<ProxyCache> proxyCache) {
+   m_proxyCache = proxyCache;
+   LOGDEBUG("GuardUserAttribures::GuardUserAttribures:");
+   if (m_proxyCache != nullptr && !proxyCache->isClosed()) {
+     TSSUserAttributesWrapper::s_geodeTSSUserAttributes->setUserAttributes(
+         proxyCache->m_userAttributes);
+   } else {
+     throw CacheClosedException("User Cache has been closed");
+   }
 }
 
 GuardUserAttribures::GuardUserAttribures() { m_proxyCache = nullptr; }

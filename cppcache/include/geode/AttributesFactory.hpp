@@ -197,7 +197,8 @@ class CPPCACHE_EXPORT AttributesFactory {
    * created.
    * @param aResolver a user defined PartitionResolver, nullptr if no resolver
    */
-  void setPartitionResolver(const std::shared_ptr<PartitionResolver>& aResolver);
+  void setPartitionResolver(
+      const std::shared_ptr<PartitionResolver>& aResolver);
 
   /**
    * Sets the library path for the library that will be invoked for the loader
@@ -264,16 +265,18 @@ class CPPCACHE_EXPORT AttributesFactory {
    * directly, then
    * this must be used to set the PersistenceManager.
    */
-  void setPersistenceManager(const char* libpath, const char* factoryFuncName,
-                             const std::shared_ptr<Properties>& config = nullptr);
+  void setPersistenceManager(
+      const char* libpath, const char* factoryFuncName,
+      const std::shared_ptr<Properties>& config = nullptr);
 
   /** Sets the PersistenceManager for the next <code>RegionAttributes</code>
   * created.
   * @param persistenceManager a user defined PersistenceManager, nullptr if no
   * resolver
   */
-  void setPersistenceManager(const std::shared_ptr<PersistenceManager>& persistenceManager,
-                             const std::shared_ptr<Properties>& config = nullptr);
+  void setPersistenceManager(
+      const std::shared_ptr<PersistenceManager>& persistenceManager,
+      const std::shared_ptr<Properties>& config = nullptr);
 
  public:
   // DISTRIBUTION ATTRIBUTES

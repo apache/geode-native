@@ -634,7 +634,9 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
 
   std::shared_ptr<CacheableDate> getDate() { return m_date; }
 
-  std::shared_ptr<CacheableObjectArray> getCacheableObjectArray() { return m_objectArray; }
+  std::shared_ptr<CacheableObjectArray> getCacheableObjectArray() {
+    return m_objectArray;
+  }
 
   std::shared_ptr<CacheableEnum> getEnum() { return m_pdxEnum; }
 

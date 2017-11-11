@@ -43,14 +43,16 @@ DeltaTestImpl::DeltaTestImpl() : apache::geode::client::Delta(nullptr) {
   toDeltaCounter = 0;
   fromDeltaCounter = 0;
 }
-DeltaTestImpl::DeltaTestImpl(int intValue, std::shared_ptr<CacheableString> strptr)
+DeltaTestImpl::DeltaTestImpl(int intValue,
+                             std::shared_ptr<CacheableString> strptr)
     : apache::geode::client::Delta(nullptr),
       intVar(intValue),
       str(strptr),
       doubleVar(0),
       toDeltaCounter(0),
       fromDeltaCounter(0) {}
-DeltaTestImpl::DeltaTestImpl(std::shared_ptr<DeltaTestImpl> rhs) : apache::geode::client::Delta(nullptr) {
+DeltaTestImpl::DeltaTestImpl(std::shared_ptr<DeltaTestImpl> rhs)
+    : apache::geode::client::Delta(nullptr) {
   intVar = rhs->intVar;
   str = CacheableString::create(rhs->str->asChar());
   doubleVar = rhs->doubleVar;
@@ -58,9 +60,10 @@ DeltaTestImpl::DeltaTestImpl(std::shared_ptr<DeltaTestImpl> rhs) : apache::geode
                  ? nullptr
                  : CacheableBytes::create(rhs->byteArr->value(),
                                           rhs->byteArr->length()));
-  testObj = (rhs->testObj == nullptr
-                 ? nullptr
-                 : std::shared_ptr<TestObject1>(new TestObject1(*(rhs->testObj.get()))));
+  testObj =
+      (rhs->testObj == nullptr ? nullptr
+                               : std::shared_ptr<TestObject1>(
+                                     new TestObject1(*(rhs->testObj.get()))));
   toDeltaCounter = rhs->getToDeltaCounter();
   fromDeltaCounter = rhs->getFromDeltaCounter();
 }

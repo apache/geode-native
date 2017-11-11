@@ -290,8 +290,7 @@ void CacheImpl::close(bool keepalive) {
        ++q) {
     // TODO: remove dynamic_cast here by having RegionInternal in the regions
     // map
-    auto rImpl =
-        std::dynamic_pointer_cast<RegionInternal>((*q).int_id_);
+    auto rImpl = std::dynamic_pointer_cast<RegionInternal>((*q).int_id_);
     if (rImpl != nullptr) {
       rImpl->destroyRegionNoThrow(
           nullptr, false,
@@ -351,9 +350,10 @@ void CacheImpl::validateRegionAttributes(
 // We'll pass a nullptr loader function pointer and let the region.get method to
 // do a load using a real C++ loader, instead of passing a member function
 // pointer here
-void CacheImpl::createRegion(const char* name,
-                             const std::shared_ptr<RegionAttributes>& aRegionAttributes,
-                             std::shared_ptr<Region>& regionPtr) {
+void CacheImpl::createRegion(
+    const char* name,
+    const std::shared_ptr<RegionAttributes>& aRegionAttributes,
+    std::shared_ptr<Region>& regionPtr) {
   {
     ACE_Guard<ACE_Thread_Mutex> _guard(m_initDoneLock);
     if (!m_initDone) {
@@ -542,8 +542,8 @@ void CacheImpl::getRegion(const char* path, std::shared_ptr<Region>& rptr) {
 
 std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
     const std::string& name, const std::shared_ptr<RegionInternal>& rootRegion,
-    const std::shared_ptr<RegionAttributes>& attrs, const std::shared_ptr<CacheStatistics>& csptr,
-    bool shared) {
+    const std::shared_ptr<RegionAttributes>& attrs,
+    const std::shared_ptr<CacheStatistics>& csptr, bool shared) {
   if (attrs == nullptr) {
     throw IllegalArgumentException(
         "createRegion: "
@@ -619,7 +619,7 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
   return rptr;
 }
 
-void CacheImpl::rootRegions(std::vector<std::shared_ptr<Region>> & regions) {
+void CacheImpl::rootRegions(std::vector<std::shared_ptr<Region>>& regions) {
   regions.clear();
   MapOfRegionGuard guard(m_regions->mutex());
   if (m_regions->current_size() == 0) return;
@@ -743,7 +743,8 @@ RegionFactory CacheImpl::createRegionFactory(RegionShortcut preDefinedRegion) {
   return RegionFactory(preDefinedRegion, this);
 }
 
-std::map<std::string, std::shared_ptr<RegionAttributes>> CacheImpl::getRegionShortcut() {
+std::map<std::string, std::shared_ptr<RegionAttributes>>
+CacheImpl::getRegionShortcut() {
   std::map<std::string, std::shared_ptr<RegionAttributes>> preDefined;
 
   {
@@ -788,13 +789,15 @@ std::shared_ptr<PdxTypeRegistry> CacheImpl::getPdxTypeRegistry() const {
   return m_pdxTypeRegistry;
 }
 
-std::shared_ptr<SerializationRegistry> CacheImpl::getSerializationRegistry() const {
+std::shared_ptr<SerializationRegistry> CacheImpl::getSerializationRegistry()
+    const {
   return m_serializationRegistry;
 }
 
 ThreadPool* CacheImpl::getThreadPool() { return m_threadPool; }
 
-std::shared_ptr<CacheTransactionManager> CacheImpl::getCacheTransactionManager() {
+std::shared_ptr<CacheTransactionManager>
+CacheImpl::getCacheTransactionManager() {
   return m_cacheTXManager;
 }
 

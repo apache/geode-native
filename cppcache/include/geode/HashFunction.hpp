@@ -35,7 +35,8 @@ namespace client {
 typedef int32_t (*Hasher)(const std::shared_ptr<SharedBase>&);
 
 /** typedef for the hashing key equality function. */
-typedef bool (*EqualTo)(const std::shared_ptr<SharedBase>&, const std::shared_ptr<SharedBase>&);
+typedef bool (*EqualTo)(const std::shared_ptr<SharedBase>&,
+                        const std::shared_ptr<SharedBase>&);
 
 class HashSB {
  private:
@@ -47,7 +48,9 @@ class HashSB {
  public:
   HashSB(const Hasher hashFn) : m_hashFn(hashFn) {}
 
-  int32_t operator()(const std::shared_ptr<SharedBase>& p) const { return m_hashFn(p); }
+  int32_t operator()(const std::shared_ptr<SharedBase>& p) const {
+    return m_hashFn(p);
+  }
 };
 
 class EqualToSB {
@@ -60,7 +63,8 @@ class EqualToSB {
  public:
   EqualToSB(const EqualTo equalFn) : m_equalFn(equalFn) {}
 
-  bool operator()(const std::shared_ptr<SharedBase>& x, const std::shared_ptr<SharedBase>& y) const {
+  bool operator()(const std::shared_ptr<SharedBase>& x,
+                  const std::shared_ptr<SharedBase>& y) const {
     return m_equalFn(x, y);
   }
 };

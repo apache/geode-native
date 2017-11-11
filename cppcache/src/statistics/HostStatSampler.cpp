@@ -594,7 +594,8 @@ void HostStatSampler::putStatsInAdminRegion() {
           clientId = memId->getDSMemberIdForThinClientUse();
         }
 
-        std::shared_ptr<CacheableKey> keyPtr = CacheableString::create(clientId.c_str());
+        std::shared_ptr<CacheableKey> keyPtr =
+            CacheableString::create(clientId.c_str());
         adminRgn->put(keyPtr, obj);
       }
     }

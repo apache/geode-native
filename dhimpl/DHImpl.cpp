@@ -386,7 +386,8 @@ unsigned char *gf_encryptDH(const unsigned char *cleartext, int len,
   return ciphertext;
 }
 
-// std::shared_ptr<CacheableBytes> decrypt(const uint8_t * ciphertext, int len) {
+// std::shared_ptr<CacheableBytes> decrypt(const uint8_t * ciphertext, int len)
+// {
 //  LOGDH("DH: Used unimplemented decrypt!");
 //  return NULL;
 //}

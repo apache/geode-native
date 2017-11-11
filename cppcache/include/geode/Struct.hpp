@@ -53,7 +53,8 @@ class CPPCACHE_EXPORT Struct : public Serializable {
   /**
    * Constructor - meant only for internal use.
    */
-  Struct(StructSet* ssPtr, std::vector<std::shared_ptr<Serializable>>& fieldValues);
+  Struct(StructSet* ssPtr,
+         std::vector<std::shared_ptr<Serializable>>& fieldValues);
 
   /**
    * Factory function for registration of <code>Struct</code>.
@@ -76,7 +77,8 @@ class CPPCACHE_EXPORT Struct : public Serializable {
    * @returns A smart pointer to the field value.
    * @throws IllegalArgumentException if the field name is not found.
    */
-  const std::shared_ptr<Serializable> operator[](const std::string& fieldName) const;
+  const std::shared_ptr<Serializable> operator[](
+      const std::string& fieldName) const;
 
   /**
    * Get the parent StructSet of this Struct.

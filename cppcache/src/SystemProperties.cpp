@@ -171,9 +171,8 @@ const bool DefaultReadTimeoutUnitInMillis = false;
 const bool DefaultOnClientDisconnectClearPdxTypeIds = false;
 }  // namespace
 
-
-SystemProperties::SystemProperties(const std::shared_ptr<Properties>& propertiesPtr,
-                                   const char* configFile)
+SystemProperties::SystemProperties(
+    const std::shared_ptr<Properties>& propertiesPtr, const char* configFile)
     : m_statisticsSampleInterval(DefaultSamplingInterval),
       m_statisticsEnabled(DefaultSamplingEnabled),
       m_appDomainEnabled(DefaultAppDomainEnabled),
@@ -243,7 +242,8 @@ SystemProperties::SystemProperties(const std::shared_ptr<Properties>& properties
    public:
     explicit ProcessPropsVisitor(SystemProperties* sysProps)
         : m_sysProps(sysProps) {}
-    void visit(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value) {
+    void visit(const std::shared_ptr<CacheableKey>& key,
+               const std::shared_ptr<Cacheable>& value) {
       std::shared_ptr<CacheableString> prop = key->toString();
       std::shared_ptr<CacheableString> val;
       if (value != nullptr) {

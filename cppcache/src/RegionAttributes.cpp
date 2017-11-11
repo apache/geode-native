@@ -705,8 +705,9 @@ void RegionAttributes::setCacheWriter(const char* lib, const char* func) {
   copyStringAttribute(m_cacheWriterFactory, func);
 }
 
-void RegionAttributes::setPersistenceManager(const char* lib, const char* func,
-                                             const std::shared_ptr<Properties>& config) {
+void RegionAttributes::setPersistenceManager(
+    const char* lib, const char* func,
+    const std::shared_ptr<Properties>& config) {
   GF_R_ASSERT(lib != nullptr);
   GF_R_ASSERT(func != nullptr);
   copyStringAttribute(m_persistenceLibrary, lib);

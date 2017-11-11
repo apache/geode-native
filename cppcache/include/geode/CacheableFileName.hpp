@@ -75,7 +75,8 @@ class CPPCACHE_EXPORT CacheableFileName : public CacheableString {
    * Factory method for creating an instance of CacheableFileName from a
    * C string optionally given the length.
    */
-  static std::shared_ptr<CacheableFileName> create(const char* value, int32_t len = 0) {
+  static std::shared_ptr<CacheableFileName> create(const char* value,
+                                                   int32_t len = 0) {
     std::shared_ptr<CacheableFileName> str = nullptr;
     if (value != nullptr) {
       str = std::make_shared<CacheableFileName>();
@@ -88,7 +89,8 @@ class CPPCACHE_EXPORT CacheableFileName : public CacheableString {
    * Factory method for creating an instance of CacheableFileName from a
    * wide-character C string optionally given the length.
    */
-  static std::shared_ptr<CacheableFileName> create(const wchar_t* value, int32_t len = 0) {
+  static std::shared_ptr<CacheableFileName> create(const wchar_t* value,
+                                                   int32_t len = 0) {
     std::shared_ptr<CacheableFileName> str = nullptr;
     if (value != nullptr) {
       str = std::make_shared<CacheableFileName>();

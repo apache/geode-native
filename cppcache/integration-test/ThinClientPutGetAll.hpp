@@ -59,8 +59,9 @@ const char* _regionNames[] = {"DistRegionAck"};
 
 #include "LocatorHelper.hpp"
 
-void verifyGetAll(std::shared_ptr<Region> region, bool addToLocalCache, const char** _vals,
-                  int startIndex, std::shared_ptr<Cacheable> callBack = nullptr) {
+void verifyGetAll(std::shared_ptr<Region> region, bool addToLocalCache,
+                  const char** _vals, int startIndex,
+                  std::shared_ptr<Cacheable> callBack = nullptr) {
   std::shared_ptr<CacheableKey> keyPtr0 = CacheableKey::create(_keys[0]);
   std::shared_ptr<CacheableKey> keyPtr1 = CacheableKey::create(_keys[1]);
   std::shared_ptr<CacheableKey> keyPtr2 = CacheableKey::create("keyNotThere");
@@ -96,8 +97,9 @@ void verifyGetAll(std::shared_ptr<Region> region, bool addToLocalCache, const ch
   }
 }
 
-void verifyGetAllWithCallBackArg(std::shared_ptr<Region> region, bool addToLocalCache,
-                                 const char** vals, int startIndex,
+void verifyGetAllWithCallBackArg(std::shared_ptr<Region> region,
+                                 bool addToLocalCache, const char** vals,
+                                 int startIndex,
                                  std::shared_ptr<Cacheable> callBack) {
   verifyGetAll(region, addToLocalCache, vals, startIndex, callBack);
 }

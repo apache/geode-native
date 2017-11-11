@@ -55,8 +55,8 @@ void PdxHelper::serializePdx(DataOutput& output,
           std::const_pointer_cast<Serializable>(pdxObject.shared_from_this())));
 }
 
-void PdxHelper::serializePdx(DataOutput& output,
-                             const std::shared_ptr<PdxSerializable>& pdxObject) {
+void PdxHelper::serializePdx(
+    DataOutput& output, const std::shared_ptr<PdxSerializable>& pdxObject) {
   const char* pdxClassname = nullptr;
 
   auto pdxII = std::dynamic_pointer_cast<PdxInstanceImpl>(pdxObject);
@@ -92,9 +92,8 @@ void PdxHelper::serializePdx(DataOutput& output,
   if (localPdxType == nullptr) {
     // need to grab type info, as fromdata is not called yet
 
-    auto ptc =
-        std::make_shared<PdxWriterWithTypeCollector>(output, pdxType,
-                                                     pdxTypeRegistry);
+    auto ptc = std::make_shared<PdxWriterWithTypeCollector>(output, pdxType,
+                                                            pdxTypeRegistry);
     pdxObject->toData(std::dynamic_pointer_cast<PdxWriter>(ptc));
     auto nType = ptc->getPdxLocalType();
 
@@ -128,8 +127,7 @@ void PdxHelper::serializePdx(DataOutput& output,
     std::shared_ptr<PdxRemoteWriter> prw = nullptr;
 
     if (pd != nullptr) {
-      auto mergedPdxType =
-          pdxTypeRegistry->getPdxType(pd->getMergedTypeId());
+      auto mergedPdxType = pdxTypeRegistry->getPdxType(pd->getMergedTypeId());
       prw = std::make_shared<PdxRemoteWriter>(output, mergedPdxType, pd,
                                               pdxTypeRegistry);
     } else {
@@ -150,9 +148,9 @@ void PdxHelper::serializePdx(DataOutput& output,
   }
 }
 
-std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
-                                             bool forceDeserialize,
-                                             int32_t typeId, int32_t length) {
+std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
+    DataInput& dataInput, bool forceDeserialize, int32_t typeId,
+    int32_t length) {
   char* pdxClassname = nullptr;
   std::shared_ptr<PdxSerializable> pdxObjectptr = nullptr;
   std::shared_ptr<PdxType> pdxLocalType = nullptr;
@@ -175,19 +173,17 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
     pdxObjectptr = serializationRegistry->getPdxType(pdxClassname);
     if (pType->isLocal())  // local type no need to read Unread data
     {
-      auto plr = std::make_shared<PdxLocalReader>(
-          dataInput, pType, length, pdxTypeRegistry);
+      auto plr = std::make_shared<PdxLocalReader>(dataInput, pType, length,
+                                                  pdxTypeRegistry);
       pdxObjectptr->fromData(std::dynamic_pointer_cast<PdxReader>(plr));
       plr->MoveStream();
     } else {
-      auto prr = std::make_shared<PdxRemoteReader>(
-          dataInput, pType, length, pdxTypeRegistry);
+      auto prr = std::make_shared<PdxRemoteReader>(dataInput, pType, length,
+                                                   pdxTypeRegistry);
       pdxObjectptr->fromData(std::dynamic_pointer_cast<PdxReader>(prr));
-      auto mergedVersion =
-          pdxTypeRegistry->getMergedType(pType->getTypeId());
+      auto mergedVersion = pdxTypeRegistry->getMergedType(pType->getTypeId());
 
-      auto preserveData =
-          prr->getPreservedData(mergedVersion, pdxObjectptr);
+      auto preserveData = prr->getPreservedData(mergedVersion, pdxObjectptr);
       if (preserveData != nullptr) {
         pdxTypeRegistry->setPreserveData(
             pdxObjectptr, preserveData,
@@ -217,9 +213,8 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
     auto pdxRealObject = pdxObjectptr;
     if (pdxLocalType == nullptr)  // need to know local type
     {
-      auto prtc =
-          std::make_shared<PdxReaderWithTypeCollector>(dataInput, pType, length,
-                                                       pdxTypeRegistry);
+      auto prtc = std::make_shared<PdxReaderWithTypeCollector>(
+          dataInput, pType, length, pdxTypeRegistry);
       pdxObjectptr->fromData(std::dynamic_pointer_cast<PdxReader>(prtc));
 
       // Check for the PdxWrapper
@@ -248,11 +243,9 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
         // create merge type
         createMergedType(pdxLocalType, pType, dataInput);
 
-        auto mergedVersion =
-            pdxTypeRegistry->getMergedType(pType->getTypeId());
+        auto mergedVersion = pdxTypeRegistry->getMergedType(pType->getTypeId());
 
-        auto preserveData =
-            prtc->getPreservedData(mergedVersion, pdxObjectptr);
+        auto preserveData = prtc->getPreservedData(mergedVersion, pdxObjectptr);
         if (preserveData != nullptr) {
           pdxTypeRegistry->setPreserveData(pdxObjectptr, preserveData,
                                            cacheImpl->getExpiryTaskManager());
@@ -264,19 +257,17 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
       LOGDEBUG("Adding type %d ", pType->getTypeId());
       pdxTypeRegistry->addPdxType(pType->getTypeId(),
                                   pType);  // adding remote type
-      auto prr = std::make_shared<PdxRemoteReader>(
-          dataInput, pType, length, pdxTypeRegistry);
+      auto prr = std::make_shared<PdxRemoteReader>(dataInput, pType, length,
+                                                   pdxTypeRegistry);
       pdxObjectptr->fromData(std::dynamic_pointer_cast<PdxReader>(prr));
 
       // Check for PdxWrapper to getObject.
 
       createMergedType(pdxLocalType, pType, dataInput);
 
-      auto mergedVersion =
-          pdxTypeRegistry->getMergedType(pType->getTypeId());
+      auto mergedVersion = pdxTypeRegistry->getMergedType(pType->getTypeId());
 
-      auto preserveData =
-          prr->getPreservedData(mergedVersion, pdxObjectptr);
+      auto preserveData = prr->getPreservedData(mergedVersion, pdxObjectptr);
       if (preserveData != nullptr) {
         pdxTypeRegistry->setPreserveData(pdxObjectptr, preserveData,
                                          cacheImpl->getExpiryTaskManager());
@@ -287,8 +278,8 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
   return pdxObjectptr;
 }
 
-std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
-                                             bool forceDeserialize) {
+std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
+    DataInput& dataInput, bool forceDeserialize) {
   auto cacheImpl = CacheRegionHelper::getCacheImpl(dataInput.getCache());
   auto pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
   auto serializationRegistry = cacheImpl->getSerializationRegistry();
@@ -339,7 +330,8 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
   }
 }
 
-void PdxHelper::createMergedType(std::shared_ptr<PdxType> localType, std::shared_ptr<PdxType> remoteType,
+void PdxHelper::createMergedType(std::shared_ptr<PdxType> localType,
+                                 std::shared_ptr<PdxType> remoteType,
                                  DataInput& dataInput) {
   auto mergedVersion = localType->mergeVersion(remoteType);
   auto cacheImpl = CacheRegionHelper::getCacheImpl(dataInput.getCache());
@@ -419,15 +411,16 @@ int32_t PdxHelper::readInt(uint8_t* offsetPosition, int size) {
   throw;
 }
 
-int32_t PdxHelper::getEnumValue(const char* enumClassName, const char* enumName,
-                                int hashcode,
-                                std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry) {
+int32_t PdxHelper::getEnumValue(
+    const char* enumClassName, const char* enumName, int hashcode,
+    std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry) {
   const auto& ei =
       std::make_shared<EnumInfo>(enumClassName, enumName, hashcode);
   return pdxTypeRegistry->getEnumValue(ei);
 }
 
-std::shared_ptr<EnumInfo> PdxHelper::getEnum(int enumId, std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry) {
+std::shared_ptr<EnumInfo> PdxHelper::getEnum(
+    int enumId, std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry) {
   const auto& ei = pdxTypeRegistry->getEnum(enumId);
   return ei;
 }

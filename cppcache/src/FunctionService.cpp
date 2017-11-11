@@ -27,7 +27,8 @@
 
 using namespace apache::geode::client;
 
- std::shared_ptr<Execution> FunctionService::onRegion(const std::shared_ptr<Region>& region) {
+std::shared_ptr<Execution> FunctionService::onRegion(
+    const std::shared_ptr<Region>& region) {
   LOGDEBUG("FunctionService::onRegion(std::shared_ptr<Region> region)");
   if (region == nullptr) {
     throw NullPointerException("FunctionService::onRegion: region is null");
@@ -43,7 +44,9 @@ using namespace apache::geode::client;
 
   if (pool->getMultiuserAuthentication()) {
     if (auto pr = std::dynamic_pointer_cast<ProxyRegion>(realRegion)) {
-      LOGDEBUG("FunctionService::onRegion(std::shared_ptr<Region> region) proxy cache");
+      LOGDEBUG(
+          "FunctionService::onRegion(std::shared_ptr<Region> region) proxy "
+          "cache");
       // it is in multiuser mode
       proxyCache = pr->m_proxyCache;
       auto userAttachedPool = proxyCache->m_userAttributes->getPool();
@@ -74,7 +77,8 @@ using namespace apache::geode::client;
   return std::make_shared<ExecutionImpl>(realRegion, proxyCache, pool);
 }
 
-std::shared_ptr<Execution> FunctionService::onServerWithPool(const std::shared_ptr<Pool>& pool) {
+std::shared_ptr<Execution> FunctionService::onServerWithPool(
+    const std::shared_ptr<Pool>& pool) {
   if (pool == nullptr) {
     throw NullPointerException("FunctionService::onServer: pool is null");
   }
@@ -86,7 +90,8 @@ std::shared_ptr<Execution> FunctionService::onServerWithPool(const std::shared_p
   return std::make_shared<ExecutionImpl>(pool);
 }
 
-std::shared_ptr<Execution> FunctionService::onServersWithPool(const std::shared_ptr<Pool>& pool) {
+std::shared_ptr<Execution> FunctionService::onServersWithPool(
+    const std::shared_ptr<Pool>& pool) {
   if (pool == nullptr) {
     throw NullPointerException("FunctionService::onServers: pool is null");
   }
@@ -99,7 +104,8 @@ std::shared_ptr<Execution> FunctionService::onServersWithPool(const std::shared_
   return std::make_shared<ExecutionImpl>(pool, true);
 }
 
-std::shared_ptr<Execution> FunctionService::onServerWithCache(const std::shared_ptr<RegionService>& cache) {
+std::shared_ptr<Execution> FunctionService::onServerWithCache(
+    const std::shared_ptr<RegionService>& cache) {
   if (cache->isClosed()) {
     throw IllegalStateException("Cache has been closed");
   }

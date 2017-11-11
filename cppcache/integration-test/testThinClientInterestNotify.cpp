@@ -147,9 +147,10 @@ const char* keysForRegex[] = {"key-regex-1", "key-regex-2", "key-regex-3"};
 #include "ThinClientTasks_C2S2.hpp"
 #include "LocatorHelper.hpp"
 
-void initClientForInterestNotify(std::shared_ptr<EventListener>& mon1, std::shared_ptr<EventListener>& mon2,
-                                 std::shared_ptr<EventListener>& mon3, const char* nbs,
-                                 const char* clientName) {
+void initClientForInterestNotify(std::shared_ptr<EventListener>& mon1,
+                                 std::shared_ptr<EventListener>& mon2,
+                                 std::shared_ptr<EventListener>& mon3,
+                                 const char* nbs, const char* clientName) {
   auto props = Properties::create();
   // props->insert( "notify-by-subscription-override", nbs );
 

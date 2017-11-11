@@ -126,7 +126,6 @@ class TcrChunkedResult {
   inline std::shared_ptr<Exception>& getException() { return m_ex; }
 };
 
-
 /**
  * Holds the context for a chunk including the chunk bytes, length and the
  * {@link TcrChunkedResult} object.

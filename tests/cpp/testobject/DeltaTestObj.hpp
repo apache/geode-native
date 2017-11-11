@@ -43,7 +43,8 @@ class TESTOBJECT_EXPORT DeltaTestObj : public DeltaTestImpl {
   bool enableFailure;
 
  public:
-  DeltaTestObj(int intVal, std::shared_ptr<CacheableString> str, bool enableFail = false)
+  DeltaTestObj(int intVal, std::shared_ptr<CacheableString> str,
+               bool enableFail = false)
       : DeltaTestImpl(intVal, str), enableFailure(enableFail) {
     // DeltaTestImpl::DeltaTestImpl(intVal, str);
   }

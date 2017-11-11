@@ -105,7 +105,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxEnumQuery)
     LOG("pdxEnumQuery started ");
 
     try {
-      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
       serializationRegistry->addPdxType(PdxEnumTestClass::createDeserializable);
       LOG("PdxEnumTestClass Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
@@ -113,7 +115,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxEnumQuery)
     }
 
     auto rptr = getHelper()->getRegion("DistRegionAck");
-    std::shared_ptr<SelectResults> results = rptr->query("m_enumid.name = 'id2'");
+    std::shared_ptr<SelectResults> results =
+        rptr->query("m_enumid.name = 'id2'");
     ASSERT(results->size() == 1, "query result should have one item");
     auto rsptr = std::dynamic_pointer_cast<ResultSet>(results);
     SelectResultsIterator iter = rsptr->getIterator();

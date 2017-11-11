@@ -48,13 +48,15 @@ std::shared_ptr<TallyWriter> regWriter;
 
 #include "LocatorHelper.hpp"
 
-void setCacheListener(const char* regName, std::shared_ptr<TallyListener> regListener) {
+void setCacheListener(const char* regName,
+                      std::shared_ptr<TallyListener> regListener) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(regListener);
 }
 
-void setCacheWriter(const char* regName, std::shared_ptr<TallyWriter> regWriter) {
+void setCacheWriter(const char* regName,
+                    std::shared_ptr<TallyWriter> regWriter) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheWriter(regWriter);

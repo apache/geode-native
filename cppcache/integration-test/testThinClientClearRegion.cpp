@@ -89,7 +89,8 @@ DUNIT_TASK(CLIENT2, SetupClient2)
                                     "__TEST_POOL1__", true, true);
     auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->registerAllKeys();
-    std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create((const char*)"key01");
+    std::shared_ptr<CacheableKey> keyPtr =
+        CacheableKey::create((const char*)"key01");
     std::shared_ptr<CacheableBytes> valPtr =
         CacheableBytes::create(reinterpret_cast<const uint8_t*>("value01"), 7);
     regPtr->put(keyPtr, valPtr);
@@ -110,7 +111,8 @@ DUNIT_TASK(CLIENT2, VerifyClear)
   {
     auto regPtr = getHelper()->getRegion(regionNames[0]);
     ASSERT(regPtr->size() == 0, "size incorrect");
-    std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create((const char*)"key02");
+    std::shared_ptr<CacheableKey> keyPtr =
+        CacheableKey::create((const char*)"key02");
     std::shared_ptr<CacheableBytes> valPtr =
         CacheableBytes::create(reinterpret_cast<const uint8_t*>("value02"), 7);
     regPtr->put(keyPtr, valPtr);
@@ -127,7 +129,8 @@ DUNIT_TASK(CLIENT1, VerifyClear1)
     ASSERT(regPtr->size() == 1, "size incorrect");
     regPtr->localClear();
     ASSERT(regPtr->size() == 0, "size incorrect");
-    std::shared_ptr<CacheableKey> keyPtr = CacheableKey::create((const char*)"key02");
+    std::shared_ptr<CacheableKey> keyPtr =
+        CacheableKey::create((const char*)"key02");
     ASSERT(regPtr->containsKeyOnServer(keyPtr), "key should be there");
     auto attr = regPtr->getAttributes();
     std::shared_ptr<CacheListener> clp = attr->getCacheListener();

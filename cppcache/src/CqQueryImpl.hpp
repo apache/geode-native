@@ -92,11 +92,12 @@ class CqQueryImpl : public CqQuery,
    * Constructor.
    */
  public:
-  CqQueryImpl(const std::shared_ptr<CqService>& cqService, const std::string& cqName,
-              const std::string& queryString,
-              const std::shared_ptr<CqAttributes>& cqAttributes, statistics::StatisticsFactory* factory,
-              const bool isDurable = false,
-              const std::shared_ptr<UserAttributes>& userAttributesPtr = nullptr);
+  CqQueryImpl(
+      const std::shared_ptr<CqService>& cqService, const std::string& cqName,
+      const std::string& queryString,
+      const std::shared_ptr<CqAttributes>& cqAttributes,
+      statistics::StatisticsFactory* factory, const bool isDurable = false,
+      const std::shared_ptr<UserAttributes>& userAttributesPtr = nullptr);
 
   ~CqQueryImpl();
 

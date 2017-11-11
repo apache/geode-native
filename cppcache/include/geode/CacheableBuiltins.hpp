@@ -345,34 +345,38 @@ class CacheableContainerType : public Cacheable, public TBase {
   extern const char tStr_##k[];                                               \
   TEMPLATE_EXPORT                                                             \
   CacheableKeyType<p, GeodeTypeIds::k, tName_##k, tStr_##k, sz>;              \
-  typedef CacheableKeyType<p, GeodeTypeIds::k, tName_##k, tStr_##k, sz> _##k; \
-
+  typedef CacheableKeyType<p, GeodeTypeIds::k, tName_##k, tStr_##k, sz> _##k;
 
 // use a class instead of typedef for bug #283
-#define _GF_CACHEABLE_KEY_TYPE_(p, k, sz)                                      \
-  class CPPCACHE_EXPORT k : public _##k {                                      \
-   protected:                                                                  \
-    inline k() : _##k() {}                                                     \
-    inline k(const p value) : _##k(value) {}                                   \
-    FRIEND_STD_SHARED_PTR(k)                                                   \
-                                                                               \
-   public:                                                                     \
-    /** Factory function registered with serialization registry. */            \
-    static Serializable* createDeserializable() { return new k(); }            \
-    /** Factory function to create a new default instance. */                  \
-    inline static std::shared_ptr<k> create() { return std::make_shared<k>(); }            \
-    /** Factory function to create an instance with the given value. */        \
-    inline static std::shared_ptr<k> create(const p value) {                               \
-      return std::make_shared<k>(value);                                       \
-    }                                                                          \
-  };                                                                           \
-  inline std::shared_ptr<CacheableKey> createKey(const p value) { return k::create(value); } \
-  inline std::shared_ptr<Cacheable> createValue(const p value) { return k::create(value); }
+#define _GF_CACHEABLE_KEY_TYPE_(p, k, sz)                               \
+  class CPPCACHE_EXPORT k : public _##k {                               \
+   protected:                                                           \
+    inline k() : _##k() {}                                              \
+    inline k(const p value) : _##k(value) {}                            \
+    FRIEND_STD_SHARED_PTR(k)                                            \
+                                                                        \
+   public:                                                              \
+    /** Factory function registered with serialization registry. */     \
+    static Serializable* createDeserializable() { return new k(); }     \
+    /** Factory function to create a new default instance. */           \
+    inline static std::shared_ptr<k> create() {                         \
+      return std::make_shared<k>();                                     \
+    }                                                                   \
+    /** Factory function to create an instance with the given value. */ \
+    inline static std::shared_ptr<k> create(const p value) {            \
+      return std::make_shared<k>(value);                                \
+    }                                                                   \
+  };                                                                    \
+  inline std::shared_ptr<CacheableKey> createKey(const p value) {       \
+    return k::create(value);                                            \
+  }                                                                     \
+  inline std::shared_ptr<Cacheable> createValue(const p value) {        \
+    return k::create(value);                                            \
+  }
 
 #define _GF_CACHEABLE_ARRAY_TYPE_DEF_(p, c)               \
   TEMPLATE_EXPORT CacheableArrayType<p, GeodeTypeIds::c>; \
-  typedef CacheableArrayType<p, GeodeTypeIds::c> _##c;    
-
+  typedef CacheableArrayType<p, GeodeTypeIds::c> _##c;
 
 // use a class instead of typedef for bug #283
 #define _GF_CACHEABLE_ARRAY_TYPE_(p, c)                                       \
@@ -395,13 +399,15 @@ class CacheableContainerType : public Cacheable, public TBase {
     /** Factory function registered with serialization registry. */           \
     static Serializable* createDeserializable() { return new c(); }           \
     /** Factory function to create a new default instance. */                 \
-    inline static std::shared_ptr<c> create() { return std::make_shared<c>(); }           \
+    inline static std::shared_ptr<c> create() {                               \
+      return std::make_shared<c>();                                           \
+    }                                                                         \
     /** Factory function to create a cacheable array of given size. */        \
-    inline static std::shared_ptr<c> create(int32_t length) {                             \
+    inline static std::shared_ptr<c> create(int32_t length) {                 \
       return std::make_shared<c>(length);                                     \
     }                                                                         \
     /** Create a cacheable array copying from the given array. */             \
-    inline static std::shared_ptr<c> create(const p* value, int32_t length) {             \
+    inline static std::shared_ptr<c> create(const p* value, int32_t length) { \
       return nullptr == value ? nullptr                                       \
                               : std::make_shared<c>(value, length, true);     \
     }                                                                         \
@@ -413,15 +419,14 @@ class CacheableContainerType : public Cacheable, public TBase {
      * not deleted (apart from this class) and is allocated on the heap       \
      * using the "new" operator.                                              \
      */                                                                       \
-    inline static std::shared_ptr<c> createNoCopy(p* value, int32_t length) {             \
+    inline static std::shared_ptr<c> createNoCopy(p* value, int32_t length) { \
       return nullptr == value ? nullptr : std::make_shared<c>(value, length); \
     }                                                                         \
   };
 
 #define _GF_CACHEABLE_CONTAINER_TYPE_DEF_(p, c)               \
   TEMPLATE_EXPORT CacheableContainerType<p, GeodeTypeIds::c>; \
-  typedef CacheableContainerType<p, GeodeTypeIds::c> _##c;    
-
+  typedef CacheableContainerType<p, GeodeTypeIds::c> _##c;
 
 // use a class instead of typedef for bug #283
 #define _GF_CACHEABLE_CONTAINER_TYPE_(p, c)                            \
@@ -436,9 +441,11 @@ class CacheableContainerType : public Cacheable, public TBase {
     /** Factory function registered with serialization registry. */    \
     static Serializable* createDeserializable() { return new c(); }    \
     /** Factory function to create a default instance. */              \
-    inline static std::shared_ptr<c> create() { return std::make_shared<c>(); }    \
+    inline static std::shared_ptr<c> create() {                        \
+      return std::make_shared<c>();                                    \
+    }                                                                  \
     /** Factory function to create an instance with the given size. */ \
-    inline static std::shared_ptr<c> create(const int32_t n) {                     \
+    inline static std::shared_ptr<c> create(const int32_t n) {         \
       return std::make_shared<c>(n);                                   \
     }                                                                  \
   };
@@ -597,7 +604,8 @@ _GF_CACHEABLE_CONTAINER_TYPE_DEF_(std::vector<std::shared_ptr<Cacheable>>, Cache
 _GF_CACHEABLE_CONTAINER_TYPE_(std::vector<std::shared_ptr<Cacheable>>, CacheableArrayList);
 
 // linketlist for JSON formattor issue
-_GF_CACHEABLE_CONTAINER_TYPE_DEF_(std::vector<std::shared_ptr<Cacheable>>, CacheableLinkedList);
+_GF_CACHEABLE_CONTAINER_TYPE_DEF_(std::vector<std::shared_ptr<Cacheable>>,
+                                  CacheableLinkedList);
 /**
  * A mutable <code>Cacheable</code> array list wrapper that can serve as
  * a distributable object for caching.

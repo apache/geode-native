@@ -96,14 +96,14 @@ class CacheableObjectPartList : public Cacheable {
    *        map of exceptions and region to populate with the values
    *        obtained in fromData
    */
-  CacheableObjectPartList(const std::vector<std::shared_ptr<CacheableKey>>* keys,
-                          uint32_t* keysOffset,
-                          const std::shared_ptr<HashMapOfCacheable>& values,
-                          const std::shared_ptr<HashMapOfException>& exceptions,
-                          const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>& resultKeys,
-                          ThinClientRegion* region,
-                          MapOfUpdateCounters* trackerMap,
-                          int32_t destroyTracker, bool addToLocalCache)
+  CacheableObjectPartList(
+      const std::vector<std::shared_ptr<CacheableKey>>* keys,
+      uint32_t* keysOffset, const std::shared_ptr<HashMapOfCacheable>& values,
+      const std::shared_ptr<HashMapOfException>& exceptions,
+      const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>&
+          resultKeys,
+      ThinClientRegion* region, MapOfUpdateCounters* trackerMap,
+      int32_t destroyTracker, bool addToLocalCache)
       : m_keys(keys),
         m_keysOffset(keysOffset),
         m_values(values),

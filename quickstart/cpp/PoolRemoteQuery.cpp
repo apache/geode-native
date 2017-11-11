@@ -49,7 +49,8 @@ using namespace testobject;
 // The PoolRemoteQuery QuickStart example.
 int main(int argc, char** argv) {
   try {
-    std::shared_ptr<CacheFactory> cacheFactory = CacheFactory::createCacheFactory();
+    std::shared_ptr<CacheFactory> cacheFactory =
+        CacheFactory::createCacheFactory();
 
     // Create a Geode Cache with the "clientRemoteQueryWithPool.xml" Cache XML
     // file.

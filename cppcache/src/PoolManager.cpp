@@ -95,7 +95,8 @@ std::shared_ptr<Pool> PoolManager::Impl::find(std::shared_ptr<Region> region) {
 
 const HashMapOfPools& PoolManager::Impl::getAll() { return m_connectionPools; }
 
-void PoolManager::Impl::addPool(const char* name, const std::shared_ptr<Pool>& pool) {
+void PoolManager::Impl::addPool(const char* name,
+                                const std::shared_ptr<Pool>& pool) {
   std::lock_guard<std::recursive_mutex> guard(m_connectionPoolsLock);
 
   if (!m_defaultPool) {
@@ -104,7 +105,9 @@ void PoolManager::Impl::addPool(const char* name, const std::shared_ptr<Pool>& p
 
   m_connectionPools.emplace(name, pool);
 }
- std::shared_ptr<Pool> PoolManager::Impl::getDefaultPool() { return m_defaultPool; }
+std::shared_ptr<Pool> PoolManager::Impl::getDefaultPool() {
+  return m_defaultPool;
+}
 
 PoolManager::PoolManager(const Cache& cache)
     : m_pimpl(new Impl(cache), [](Impl* impl) { delete impl; }) {}
@@ -112,14 +115,17 @@ PoolManager::PoolManager(const Cache& cache)
 void PoolManager::removePool(const char* name) { m_pimpl->removePool(name); }
  std::shared_ptr<PoolFactory> PoolManager::createFactory() { return m_pimpl->createFactory(); }
 
-void PoolManager::close(bool keepAlive) { m_pimpl->close(keepAlive); }
+ void PoolManager::close(bool keepAlive) { m_pimpl->close(keepAlive); }
  std::shared_ptr<Pool> PoolManager::find(const char* name) { return m_pimpl->find(name); }
  std::shared_ptr<Pool> PoolManager::find(std::shared_ptr<Region> region) { return m_pimpl->find(region); }
 
-const HashMapOfPools& PoolManager::getAll() { return m_pimpl->getAll(); }
+ const HashMapOfPools& PoolManager::getAll() { return m_pimpl->getAll(); }
 
-void PoolManager::addPool(const char* name, const std::shared_ptr<Pool>& pool) {
-  m_pimpl->addPool(name, pool);
+ void PoolManager::addPool(const char* name,
+                           const std::shared_ptr<Pool>& pool) {
+   m_pimpl->addPool(name, pool);
 }
 
-std::shared_ptr<Pool> PoolManager::getDefaultPool() { return m_pimpl->getDefaultPool(); }
+std::shared_ptr<Pool> PoolManager::getDefaultPool() {
+  return m_pimpl->getDefaultPool();
+}

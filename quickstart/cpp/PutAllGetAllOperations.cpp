@@ -45,8 +45,7 @@ int main(int argc, char** argv) {
     LOGINFO("Created the Geode Cache");
 
     // Set Attributes for the region.
-    auto regionFactory =
-        cachePtr->createRegionFactory(CACHING_PROXY);
+    auto regionFactory = cachePtr->createRegionFactory(CACHING_PROXY);
 
     // Create exampleRegion.
     auto regionPtr = regionFactory->create("exampleRegion");

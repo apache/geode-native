@@ -118,7 +118,7 @@ void createRegion(const char* name, bool ackMode,
   fflush(stdout);
   // ack, caching
   auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
-                                               clientNotificationEnabled);
+                                          clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
@@ -192,7 +192,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, Client1_PdxInit)
   {
     try {
-      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
       serializationRegistry->addPdxType(PdxDeltaEx::createDeserializable);
     } catch (IllegalStateException&) {
       //  ignore type reregistration exception.
@@ -203,7 +205,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, Client2_PdxInit)
   {
     try {
-      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
       serializationRegistry->addPdxType(PdxDeltaEx::createDeserializable);
     } catch (IllegalStateException&) {
       //  ignore type reregistration exception.

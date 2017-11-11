@@ -27,7 +27,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-
 /** Implement a non-mutable int64_t wrapper that can serve as a distributable
  * key object for cacheing as well as being a 64 bit value. */
 class CPPCACHE_EXPORT CacheableToken : public Cacheable {
@@ -44,8 +43,12 @@ class CPPCACHE_EXPORT CacheableToken : public Cacheable {
  public:
   inline static std::shared_ptr<CacheableToken>& invalid() { return invalidToken; }
   inline static std::shared_ptr<CacheableToken>& destroyed() { return destroyedToken; }
-  inline static std::shared_ptr<CacheableToken>& overflowed() { return overflowedToken; }
-  inline static std::shared_ptr<CacheableToken>& tombstone() { return tombstoneToken; }
+  inline static std::shared_ptr<CacheableToken>& overflowed() {
+    return overflowedToken;
+  }
+  inline static std::shared_ptr<CacheableToken>& tombstone() {
+    return tombstoneToken;
+  }
   /**
    *@brief serialize this object
    **/

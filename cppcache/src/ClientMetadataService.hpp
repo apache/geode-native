@@ -45,7 +45,8 @@ namespace client {
 
 class ClienMetadata;
 
-typedef std::map<std::string, std::shared_ptr<ClientMetadata>> RegionMetadataMapType;
+typedef std::map<std::string, std::shared_ptr<ClientMetadata>>
+    RegionMetadataMapType;
 
 class BucketStatus {
  private:
@@ -129,9 +130,11 @@ class ClientMetadataService : public ACE_Task_Base,
   void getClientPRMetadata(const char* regionFullPath);
 
   void getBucketServerLocation(
-      const std::shared_ptr<Region>& region, const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& value, const std::shared_ptr<Serializable>& aCallbackArgument,
-      bool isPrimary, std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version);
+      const std::shared_ptr<Region>& region,
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Cacheable>& value,
+      const std::shared_ptr<Serializable>& aCallbackArgument, bool isPrimary,
+      std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version);
 
   void removeBucketServerLocation(BucketServerLocation serverLocation);
 
@@ -143,68 +146,80 @@ class ClientMetadataService : public ACE_Task_Base,
   void enqueueForMetadataRefresh(const char* regionFullPath,
                                  int8_t serverGroupFlag);
 
-  typedef std::unordered_map<std::shared_ptr<BucketServerLocation>, std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>,
-                             dereference_hash<std::shared_ptr<BucketServerLocation>>,
-                             dereference_equal_to<std::shared_ptr<BucketServerLocation>>>
+  typedef std::unordered_map<
+      std::shared_ptr<BucketServerLocation>,
+      std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>,
+      dereference_hash<std::shared_ptr<BucketServerLocation>>,
+      dereference_equal_to<std::shared_ptr<BucketServerLocation>>>
       ServerToFilterMap;
 
-  std::shared_ptr<ServerToFilterMap> getServerToFilterMap(const std::vector<std::shared_ptr<CacheableKey>>& keys,
-                                            const std::shared_ptr<Region>& region,
-                                            bool isPrimary);
+  std::shared_ptr<ServerToFilterMap> getServerToFilterMap(
+      const std::vector<std::shared_ptr<CacheableKey>>& keys,
+      const std::shared_ptr<Region>& region, bool isPrimary);
 
   void markPrimaryBucketForTimeout(
-      const std::shared_ptr<Region>& region, const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& value, const std::shared_ptr<Serializable>& aCallbackArgument,
-      bool isPrimary, std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version);
+      const std::shared_ptr<Region>& region,
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Cacheable>& value,
+      const std::shared_ptr<Serializable>& aCallbackArgument, bool isPrimary,
+      std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version);
 
   void markPrimaryBucketForTimeoutButLookSecondaryBucket(
-      const std::shared_ptr<Region>& region, const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& value, const std::shared_ptr<Serializable>& aCallbackArgument,
-      bool isPrimary, std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version);
+      const std::shared_ptr<Region>& region,
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Cacheable>& value,
+      const std::shared_ptr<Serializable>& aCallbackArgument, bool isPrimary,
+      std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version);
 
   bool isBucketMarkedForTimeout(const char* regionFullPath, int32_t bucketid);
 
   typedef std::unordered_set<int32_t> BucketSet;
-  typedef std::unordered_map<std::shared_ptr<BucketServerLocation>, std::shared_ptr<BucketSet>,
-                             dereference_hash<std::shared_ptr<BucketServerLocation>>,
-                             dereference_equal_to<std::shared_ptr<BucketServerLocation>>>
+  typedef std::unordered_map<
+      std::shared_ptr<BucketServerLocation>, std::shared_ptr<BucketSet>,
+      dereference_hash<std::shared_ptr<BucketServerLocation>>,
+      dereference_equal_to<std::shared_ptr<BucketServerLocation>>>
       ServerToBucketsMap;
 
   std::shared_ptr<BucketServerLocation> findNextServer(
       const ServerToBucketsMap& serverToBucketsMap,
       const BucketSet& currentBucketSet);
 
-  typedef std::unordered_map<int32_t, std::shared_ptr<CacheableHashSet>> BucketToKeysMap;
+  typedef std::unordered_map<int32_t, std::shared_ptr<CacheableHashSet>>
+      BucketToKeysMap;
 
   std::shared_ptr<BucketToKeysMap> groupByBucketOnClientSide(
-      const std::shared_ptr<Region>& region, const std::shared_ptr<CacheableVector>& keySet,
+      const std::shared_ptr<Region>& region,
+      const std::shared_ptr<CacheableVector>& keySet,
       const std::shared_ptr<ClientMetadata>& metadata);
 
-  typedef std::unordered_map<std::shared_ptr<BucketServerLocation>, std::shared_ptr<CacheableHashSet>,
-                             dereference_hash<std::shared_ptr<BucketServerLocation>>,
-                             dereference_equal_to<std::shared_ptr<BucketServerLocation>>>
+  typedef std::unordered_map<
+      std::shared_ptr<BucketServerLocation>, std::shared_ptr<CacheableHashSet>,
+      dereference_hash<std::shared_ptr<BucketServerLocation>>,
+      dereference_equal_to<std::shared_ptr<BucketServerLocation>>>
       ServerToKeysMap;
 
   std::shared_ptr<ServerToKeysMap> getServerToFilterMapFESHOP(
-      const std::shared_ptr<CacheableVector>& keySet, const std::shared_ptr<Region>& region,
-      bool isPrimary);
+      const std::shared_ptr<CacheableVector>& keySet,
+      const std::shared_ptr<Region>& region, bool isPrimary);
 
-  std::shared_ptr<ClientMetadataService::ServerToBucketsMap> groupByServerToAllBuckets(
-      const std::shared_ptr<Region>& region, bool optimizeForWrite);
+  std::shared_ptr<ClientMetadataService::ServerToBucketsMap>
+  groupByServerToAllBuckets(const std::shared_ptr<Region>& region,
+                            bool optimizeForWrite);
 
-  std::shared_ptr<ClientMetadataService::ServerToBucketsMap> groupByServerToBuckets(
-      const std::shared_ptr<ClientMetadata>& metadata, const BucketSet& bucketSet,
-      bool optimizeForWrite);
+  std::shared_ptr<ClientMetadataService::ServerToBucketsMap>
+  groupByServerToBuckets(const std::shared_ptr<ClientMetadata>& metadata,
+                         const BucketSet& bucketSet, bool optimizeForWrite);
 
   std::shared_ptr<ClientMetadataService::ServerToBucketsMap> pruneNodes(
-      const std::shared_ptr<ClientMetadata>& metadata, const BucketSet& buckets);
+      const std::shared_ptr<ClientMetadata>& metadata,
+      const BucketSet& buckets);
 
  private:
+  std::shared_ptr<ClientMetadata> SendClientPRMetadata(
+      const char* regionPath, std::shared_ptr<ClientMetadata> cptr);
 
-  std::shared_ptr<ClientMetadata> SendClientPRMetadata(const char* regionPath,
-                                         std::shared_ptr<ClientMetadata> cptr);
-
-  std::shared_ptr<ClientMetadata> getClientMetadata(const std::shared_ptr<Region>& region);
+  std::shared_ptr<ClientMetadata> getClientMetadata(
+      const std::shared_ptr<Region>& region);
 
  private:
   // ACE_Recursive_Thread_Mutex m_regionMetadataLock;

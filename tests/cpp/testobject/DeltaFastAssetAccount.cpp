@@ -24,7 +24,9 @@ using namespace testobject;
 DeltaFastAssetAccount::DeltaFastAssetAccount(int index, bool encodeTimestp,
                                              int maxVal, int asstSize,
                                              bool getbfrUpdate)
-    : apache::geode::client::Delta(nullptr), encodeTimestamp(encodeTimestp), acctId(index) {
+    : apache::geode::client::Delta(nullptr),
+      encodeTimestamp(encodeTimestp),
+      acctId(index) {
   customerName = CacheableString::create("Milton Moneybags");
   netWorth = 0.0;
   assets = CacheableHashMap::create();

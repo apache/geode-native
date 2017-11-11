@@ -56,8 +56,8 @@ void RegionCommit::apply(Cache* cache) {
   }
 }
 
-void RegionCommit::fillEvents(Cache* cache,
-                              std::vector<std::shared_ptr<FarSideEntryOp>>& ops) {
+void RegionCommit::fillEvents(
+    Cache* cache, std::vector<std::shared_ptr<FarSideEntryOp>>& ops) {
   for (auto& entryOp : m_farSideEntryOps) {
     ops.push_back(std::static_pointer_cast<FarSideEntryOp>(entryOp));
   }

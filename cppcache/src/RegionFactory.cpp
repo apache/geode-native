@@ -45,7 +45,8 @@ RegionFactory::RegionFactory(RegionShortcut preDefinedRegion,
 
 std::shared_ptr<Region> RegionFactory::create(const char* name) {
   std::shared_ptr<Region> retRegionPtr = nullptr;
-  std::shared_ptr<RegionAttributes> regAttr = m_attributeFactory->createRegionAttributes();
+  std::shared_ptr<RegionAttributes> regAttr =
+      m_attributeFactory->createRegionAttributes();
   if (m_preDefinedRegion != LOCAL && (regAttr->getPoolName() == nullptr ||
                                       strlen(regAttr->getPoolName()) == 0)) {
     auto pool = m_cacheImpl->getPoolManager().getDefaultPool();
@@ -196,7 +197,8 @@ RegionFactory& RegionFactory::setPersistenceManager(
 }
 
 RegionFactory& RegionFactory::setPersistenceManager(
-    const char* lib, const char* func, const std::shared_ptr<Properties>& config) {
+    const char* lib, const char* func,
+    const std::shared_ptr<Properties>& config) {
   m_attributeFactory->setPersistenceManager(lib, func, config);
   return *this;
 }

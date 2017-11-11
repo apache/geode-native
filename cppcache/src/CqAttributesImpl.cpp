@@ -67,15 +67,17 @@ void CqAttributesImpl::setCqListeners(
   }
 }
 
-void CqAttributesImpl::removeCqListener(const std::shared_ptr<CqListener>& cql) {
+void CqAttributesImpl::removeCqListener(
+    const std::shared_ptr<CqListener>& cql) {
   if (cql == nullptr) {
     throw IllegalArgumentException("removeCqListener parameter was null");
   }
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
   if (!m_cqListeners.empty()) {
     m_cqListeners.erase(
-        std::remove_if(m_cqListeners.begin(), m_cqListeners.end(),
-                       [cql](std::shared_ptr<CqListener> l) -> bool { return cql == l; }),
+        std::remove_if(
+            m_cqListeners.begin(), m_cqListeners.end(),
+            [cql](std::shared_ptr<CqListener> l) -> bool { return cql == l; }),
         m_cqListeners.end());
     try {
       cql->close();

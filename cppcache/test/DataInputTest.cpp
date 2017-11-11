@@ -151,7 +151,9 @@ class TestDataInput {
     return m_dataInput.readDirectObject(typeId);
   }
 
-  void readObject(std::shared_ptr<Serializable> &ptr) { m_dataInput.readObject(ptr); }
+  void readObject(std::shared_ptr<Serializable> &ptr) {
+    m_dataInput.readObject(ptr);
+  }
 
   void readCharArray(char **value, int32_t &length) {
     m_dataInput.readCharArray(value, length);

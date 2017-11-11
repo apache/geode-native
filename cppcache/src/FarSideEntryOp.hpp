@@ -91,7 +91,6 @@ enum OPERATION {
 
 class RegionCommit;
 
-
 class FarSideEntryOp {
  public:
   FarSideEntryOp(RegionCommit* region,
@@ -103,7 +102,6 @@ class FarSideEntryOp {
   static bool cmp(const std::shared_ptr<FarSideEntryOp>& lhs, const std::shared_ptr<FarSideEntryOp>& rhs) {
     return lhs->m_modSerialNum > rhs->m_modSerialNum;
   }
-
 
  private:
   // UNUSED RegionCommit* m_region;

@@ -82,36 +82,46 @@ class CPPCACHE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
   virtual ~LRUEntriesMap();
 
   virtual GfErrType put(const std::shared_ptr<CacheableKey>& key,
-                        const std::shared_ptr<Cacheable>& newValue, std::shared_ptr<MapEntryImpl>& me,
+                        const std::shared_ptr<Cacheable>& newValue,
+                        std::shared_ptr<MapEntryImpl>& me,
                         std::shared_ptr<Cacheable>& oldValue, int updateCount,
-                        int destroyTracker, std::shared_ptr<VersionTag> versionTag,
+                        int destroyTracker,
+                        std::shared_ptr<VersionTag> versionTag,
                         bool& isUpdate = EntriesMap::boolVal,
                         DataInput* delta = nullptr);
-  virtual GfErrType invalidate(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<MapEntryImpl>& me,
+  virtual GfErrType invalidate(const std::shared_ptr<CacheableKey>& key,
+                               std::shared_ptr<MapEntryImpl>& me,
                                std::shared_ptr<Cacheable>& oldValue,
                                std::shared_ptr<VersionTag> versionTag);
   virtual GfErrType create(const std::shared_ptr<CacheableKey>& key,
-                           const std::shared_ptr<Cacheable>& newValue, std::shared_ptr<MapEntryImpl>& me,
-                           std::shared_ptr<Cacheable>& oldValue, int updateCount,
-                           int destroyTracker, std::shared_ptr<VersionTag> versionTag);
-  virtual bool get(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<Cacheable>& returnPtr,
+                           const std::shared_ptr<Cacheable>& newValue,
+                           std::shared_ptr<MapEntryImpl>& me,
+                           std::shared_ptr<Cacheable>& oldValue,
+                           int updateCount, int destroyTracker,
+                           std::shared_ptr<VersionTag> versionTag);
+  virtual bool get(const std::shared_ptr<CacheableKey>& key,
+                   std::shared_ptr<Cacheable>& returnPtr,
                    std::shared_ptr<MapEntryImpl>& me);
-  virtual std::shared_ptr<Cacheable> getFromDisk(const std::shared_ptr<CacheableKey>& key,
-                                   std::shared_ptr<MapEntryImpl>& me) const;
+  virtual std::shared_ptr<Cacheable> getFromDisk(
+      const std::shared_ptr<CacheableKey>& key,
+      std::shared_ptr<MapEntryImpl>& me) const;
   GfErrType processLRU();
   void processLRU(int32_t numEntriesToEvict);
   GfErrType evictionHelper();
   void updateMapSize(int64_t size);
-  inline void setPersistenceManager(std::shared_ptr<PersistenceManager>& pmPtr) {
+  inline void setPersistenceManager(
+      std::shared_ptr<PersistenceManager>& pmPtr) {
     m_pmPtr = pmPtr;
   }
 
   /**
    * @brief remove an entry, marking it evicted for LRUList maintainance.
    */
-  virtual GfErrType remove(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<Cacheable>& result,
+  virtual GfErrType remove(const std::shared_ptr<CacheableKey>& key,
+                           std::shared_ptr<Cacheable>& result,
                            std::shared_ptr<MapEntryImpl>& me, int updateCount,
-                           std::shared_ptr<VersionTag> versionTag, bool afterRemote);
+                           std::shared_ptr<VersionTag> versionTag,
+                           bool afterRemote);
 
   virtual void close();
 

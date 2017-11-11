@@ -229,7 +229,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       while (iter.hasNext()) {
         count--;
         std::shared_ptr<Serializable> ser = iter.next();
-        std::shared_ptr<Portfolio> portfolio(dynamic_cast<Portfolio*>(ser.get()));
+        std::shared_ptr<Portfolio> portfolio(
+            dynamic_cast<Portfolio*>(ser.get()));
         std::shared_ptr<Position> position(dynamic_cast<Position*>(ser.get()));
 
         if (portfolio != nullptr) {
@@ -287,7 +288,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepThree2)
     for (int i = 1; i < 150; i++) {
       auto port = std::make_shared<Portfolio>(i, 20);
 
-      std::shared_ptr<CacheableKey> keyport = CacheableKey::create((char*)"port1-1");
+      std::shared_ptr<CacheableKey> keyport =
+          CacheableKey::create((char*)"port1-1");
       regPtr0->put(keyport, port);
       SLEEP(100);  // sleep a while to allow server query to complete
     }

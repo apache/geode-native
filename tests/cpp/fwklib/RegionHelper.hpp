@@ -87,7 +87,8 @@ class RegionHelper {
     *  @param attr Return a string describing this region.
     *  @retval A String representing aRegion.
     */
-  static std::string regionAttributesToString(std::shared_ptr<RegionAttributes>& attr) {
+  static std::string regionAttributesToString(
+      std::shared_ptr<RegionAttributes>& attr) {
     std::string sString;
 
     sString += "\ncaching: ";
@@ -210,7 +211,8 @@ class RegionHelper {
     return createRootRegion(cachePtr, regionName);
   }
 
-  std::shared_ptr<Region> createRootRegion(std::shared_ptr<Cache>& cachePtr, std::string regionName) {
+  std::shared_ptr<Region> createRootRegion(std::shared_ptr<Cache>& cachePtr,
+                                           std::string regionName) {
     if (regionName.empty()) {
       regionName = m_region->getName();
       FWKINFO("region name is " << regionName);

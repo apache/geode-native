@@ -38,8 +38,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-
-
 class CPPCACHE_EXPORT LRUEntryProperties;
 class CacheImpl;
 
@@ -206,13 +204,21 @@ class MapEntryImpl : public MapEntry,
 
   inline void setValueI(const std::shared_ptr<Cacheable>& value) { m_value = value; }
 
-  virtual void getKey(std::shared_ptr<CacheableKey>& result) const { getKeyI(result); }
+  virtual void getKey(std::shared_ptr<CacheableKey>& result) const {
+    getKeyI(result);
+  }
 
-  virtual void getValue(std::shared_ptr<Cacheable>& result) const { getValueI(result); }
+  virtual void getValue(std::shared_ptr<Cacheable>& result) const {
+    getValueI(result);
+  }
 
-  virtual void setValue(const std::shared_ptr<Cacheable>& value) { setValueI(value); }
+  virtual void setValue(const std::shared_ptr<Cacheable>& value) {
+    setValueI(value);
+  }
 
-  virtual std::shared_ptr<MapEntryImpl> getImplPtr() { return shared_from_this(); }
+  virtual std::shared_ptr<MapEntryImpl> getImplPtr() {
+    return shared_from_this();
+  }
 
   virtual LRUEntryProperties& getLRUProperties() {
     throw FatalInternalException(

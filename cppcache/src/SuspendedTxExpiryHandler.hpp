@@ -45,7 +45,8 @@ class CPPCACHE_EXPORT SuspendedTxExpiryHandler : public ACE_Event_Handler {
    * Constructor
    */
   SuspendedTxExpiryHandler(CacheTransactionManagerImpl* cacheTxMgr,
-                           std::shared_ptr<TransactionId> txid, uint32_t duration);
+                           std::shared_ptr<TransactionId> txid,
+                           uint32_t duration);
 
   /** This task object will be registered with the Timer Queue.
    *  When the timer expires the handle_timeout is invoked.

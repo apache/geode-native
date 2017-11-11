@@ -54,8 +54,8 @@ class CPPCACHE_EXPORT AuthInitialize {
    * @remarks This method can modify the given set of properties. For
    * example it may invoke external agents or even interact with the user.
    */
-  virtual std::shared_ptr<Properties> getCredentials(const std::shared_ptr<Properties>& securityprops,
-                                       const char* server) = 0;
+  virtual std::shared_ptr<Properties> getCredentials(
+      const std::shared_ptr<Properties>& securityprops, const char* server) = 0;
 
   /**@brief Invoked before the cache goes down. */
   virtual void close() = 0;

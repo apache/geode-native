@@ -62,7 +62,8 @@ PdxWrapper::PdxWrapper(void *userObject, const char *className,
   m_sizer = m_serializer->getObjectSizer(className);
 }
 
-PdxWrapper::PdxWrapper(const char *className, std::shared_ptr<PdxSerializer> pdxSerializerPtr)
+PdxWrapper::PdxWrapper(const char *className,
+                       std::shared_ptr<PdxSerializer> pdxSerializerPtr)
     : m_serializer(pdxSerializerPtr) {
   if (className != nullptr) {
     m_className = Utils::copyString(className);

@@ -21,7 +21,6 @@
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 
-
 #include "locator_globals.hpp"
 #include "LocatorHelper.hpp"
 

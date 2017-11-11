@@ -101,8 +101,7 @@ void runWithUserRoot(std::shared_ptr<Cache> cachePtr) {
 
   // Execute a Query which returns a ResultSet.
   auto qrySvcPtr = userCache1->getQueryService();
-  auto qryPtr =
-      qrySvcPtr->newQuery("SELECT DISTINCT * FROM /partition_region");
+  auto qryPtr = qrySvcPtr->newQuery("SELECT DISTINCT * FROM /partition_region");
   std::shared_ptr<SelectResults> resultsPtr = qryPtr->execute();
 
   LOGINFO("ResultSet Query returned %d rows", resultsPtr->size());
@@ -151,10 +150,10 @@ int main(int argc, char** argv) {
     // overriding secProp properties.
 
     // Create a Geode Cache.
-    std::shared_ptr<CacheFactory> cacheFactory = CacheFactory::createCacheFactory(secProp);
+    std::shared_ptr<CacheFactory> cacheFactory =
+        CacheFactory::createCacheFactory(secProp);
 
-    auto cachePtr =
-        cacheFactory->setMultiuserAuthentication(true)->create();
+    auto cachePtr = cacheFactory->setMultiuserAuthentication(true)->create();
 
     LOGINFO("Created the Geode Cache with multiuser enable.");
 

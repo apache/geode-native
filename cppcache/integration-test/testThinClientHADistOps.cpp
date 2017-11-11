@@ -219,8 +219,8 @@ void createRegion(const char* name, bool ackMode,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   char* endpoints = nullptr;
-  auto regPtr = getHelper()->createRegion(
-      name, ackMode, true, nullptr, endpoints, clientNotificationEnabled);
+  auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
+                                          endpoints, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
@@ -234,8 +234,8 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   fflush(stdout);
   auto poolPtr = getHelper()->createPool(
       poolname, locators, nullptr, reduendency, clientNotificationEnabled);
-  auto regPtr = getHelper()->createRegionAndAttachPool(
-      name, ackMode, poolname, cachingEnable);
+  auto regPtr = getHelper()->createRegionAndAttachPool(name, ackMode, poolname,
+                                                       cachingEnable);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }

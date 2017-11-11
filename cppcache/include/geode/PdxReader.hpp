@@ -339,8 +339,9 @@ class CPPCACHE_EXPORT PdxReader {
                                         int32_t& length) = 0;
 
   /**
-   * Read a std::shared_ptr<CacheableObjectArray> value from the <code>PdxReader</code>.
-   * C++ std::shared_ptr<CacheableObjectArray> is mapped to Java Object[].
+   * Read a std::shared_ptr<CacheableObjectArray> value from the
+   * <code>PdxReader</code>. C++ std::shared_ptr<CacheableObjectArray> is mapped
+   * to Java Object[].
    * @param fieldName name of the field to read
    * @return value of type std::shared_ptr<CacheableObjectArray>.
    * @throws IllegalStateException if PdxReader doesn't has the named field.
@@ -367,8 +368,9 @@ class CPPCACHE_EXPORT PdxReader {
                                          int32_t** elementLength) = 0;
 
   /**
-   * Read a std::shared_ptr<CacheableDate> value from the <code>PdxReader</code>.
-   * <p>C++ std::shared_ptr<CacheableDate> is mapped to Java Date</p>
+   * Read a std::shared_ptr<CacheableDate> value from the
+   * <code>PdxReader</code>. <p>C++ std::shared_ptr<CacheableDate> is mapped to
+   * Java Date</p>
    * @param fieldName name of the field to read
    * @return value of type std::shared_ptr<CacheableDate>.
    * @throws IllegalStateException if PdxReader doesn't has the named field.

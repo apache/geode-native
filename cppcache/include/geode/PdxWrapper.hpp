@@ -113,7 +113,8 @@ class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
  private:
   /** hide default constructor */
   PdxWrapper();
-  PdxWrapper(const char* className, std::shared_ptr<PdxSerializer> pdxSerializerPtr);
+  PdxWrapper(const char* className,
+             std::shared_ptr<PdxSerializer> pdxSerializerPtr);
 
   FRIEND_STD_SHARED_PTR(PdxWrapper)
 

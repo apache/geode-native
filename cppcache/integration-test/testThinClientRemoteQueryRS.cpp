@@ -57,7 +57,9 @@ void stepOne() {
   // Create just one pool and attach all regions to that.
   initClient(true);
   try {
-    auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     serializationRegistry->addType(Position::createDeserializable);
     serializationRegistry->addType(Portfolio::createDeserializable);
     serializationRegistry->addPdxType(PositionPdx::createDeserializable);
@@ -204,14 +206,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
         if (!m_isPdx) {
           std::shared_ptr<Serializable> ser = (*rsptr)[rows];
           if (std::dynamic_pointer_cast<Portfolio>(ser)) {
-            auto portfolio =
-                std::static_pointer_cast<Portfolio>(ser);
+            auto portfolio = std::static_pointer_cast<Portfolio>(ser);
             printf(
                 "   query idx %d pulled portfolio object ID %d, pkid  :: %s\n",
                 i, portfolio->getID(), portfolio->getPkid()->asChar());
           } else if (std::dynamic_pointer_cast<Position>(ser)) {
-            auto position =
-                std::static_pointer_cast<Position>(ser);
+            auto position = std::static_pointer_cast<Position>(ser);
             printf(
                 "   query idx %d pulled position object secId %s, shares  :: "
                 "%d\n",
@@ -229,15 +229,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
         } else {
           std::shared_ptr<Serializable> pdxser = (*rsptr)[rows];
           if (std::dynamic_pointer_cast<PortfolioPdx>(pdxser)) {
-            auto portfoliopdx =
-                std::static_pointer_cast<PortfolioPdx>(pdxser);
+            auto portfoliopdx = std::static_pointer_cast<PortfolioPdx>(pdxser);
             printf(
                 "   query idx %d pulled portfolioPdx object ID %d, pkid %s  :: "
                 "\n",
                 i, portfoliopdx->getID(), portfoliopdx->getPkid());
           } else if (std::dynamic_pointer_cast<PositionPdx>(pdxser)) {
-            auto positionpdx =
-                std::static_pointer_cast<PositionPdx>(pdxser);
+            auto positionpdx = std::static_pointer_cast<PositionPdx>(pdxser);
             printf(
                 "   query idx %d pulled positionPdx object secId %s, shares %d "
                 " "
@@ -296,8 +294,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
       }
 
       if (resultsetQueries[i].category != unsupported) {
-        auto qry =
-            qs->newQuery(const_cast<char*>(resultsetQueries[i].query()));
+        auto qry = qs->newQuery(const_cast<char*>(resultsetQueries[i].query()));
         std::shared_ptr<SelectResults> results = qry->execute();
         if (!qh->verifyRS(results, (qh->isExpectedRowsConstantRS(i)
                                         ? resultsetRowCounts[i]
@@ -320,15 +317,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
           if (!m_isPdx) {
             std::shared_ptr<Serializable> ser = (*rsptr)[rows];
             if (std::dynamic_pointer_cast<Portfolio>(ser)) {
-              auto portfolio =
-                  std::static_pointer_cast<Portfolio>(ser);
+              auto portfolio = std::static_pointer_cast<Portfolio>(ser);
               printf(
                   "   query idx %d pulled portfolio object ID %d, pkid  :: "
                   "%s\n",
                   i, portfolio->getID(), portfolio->getPkid()->asChar());
             } else if (std::dynamic_pointer_cast<Position>(ser)) {
-              auto position =
-                  std::static_pointer_cast<Position>(ser);
+              auto position = std::static_pointer_cast<Position>(ser);
               printf(
                   "   query idx %d pulled position object secId %s, shares  :: "
                   "%d\n",
@@ -347,17 +342,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
             std::shared_ptr<Serializable> pdxser = (*rsptr)[rows];
             if (std::dynamic_pointer_cast<PortfolioPdx>(pdxser)) {
               auto portfoliopdx =
-                  std::static_pointer_cast<PortfolioPdx>(
-                      pdxser);
+                  std::static_pointer_cast<PortfolioPdx>(pdxser);
               printf(
                   "   query idx %d pulled portfolioPdx object ID %d, pkid %s  "
                   ":: "
                   "\n",
                   i, portfoliopdx->getID(), portfoliopdx->getPkid());
             } else if (std::dynamic_pointer_cast<PositionPdx>(pdxser)) {
-              auto positionpdx =
-                  std::static_pointer_cast<PositionPdx>(
-                      pdxser);
+              auto positionpdx = std::static_pointer_cast<PositionPdx>(pdxser);
               printf(
                   "   query idx %d pulled positionPdx object secId %s, shares "
                   "%d "
@@ -447,14 +439,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
           if (!m_isPdx) {
             std::shared_ptr<Serializable> ser = (*rsptr)[rows];
             if (std::dynamic_pointer_cast<Portfolio>(ser)) {
-              auto portfolio =
-                  std::static_pointer_cast<Portfolio>(ser);
+              auto portfolio = std::static_pointer_cast<Portfolio>(ser);
               printf(
                   "   query idx %d pulled portfolio object ID %d, pkid %s : \n",
                   i, portfolio->getID(), portfolio->getPkid()->asChar());
             } else if (std::dynamic_pointer_cast<Position>(ser)) {
-              auto position =
-                  std::static_pointer_cast<Position>(ser);
+              auto position = std::static_pointer_cast<Position>(ser);
               printf(
                   "   query idx %d pulled position object secId %s, shares %d  "
                   ": "
@@ -473,16 +463,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
           } else {
             std::shared_ptr<Serializable> ser = (*rsptr)[rows];
             if (std::dynamic_pointer_cast<PortfolioPdx>(ser)) {
-              auto portfoliopdx =
-                  std::static_pointer_cast<PortfolioPdx>(ser);
+              auto portfoliopdx = std::static_pointer_cast<PortfolioPdx>(ser);
               printf(
                   "   query idx %d pulled portfolioPdx object ID %d, pkid %s  "
                   ": "
                   "\n",
                   i, portfoliopdx->getID(), portfoliopdx->getPkid());
             } else if (std::dynamic_pointer_cast<PositionPdx>(ser)) {
-              auto positionpdx =
-                  std::static_pointer_cast<PositionPdx>(ser);
+              auto positionpdx = std::static_pointer_cast<PositionPdx>(ser);
               printf(
                   "   query idx %d pulled positionPdx object secId %s, shares "
                   "%d "
@@ -525,8 +513,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, DoQueryRSError)
 
     for (int i = 0; i < QueryStrings::RSsize(); i++) {
       if (resultsetQueries[i].category == unsupported) {
-        auto qry =
-            qs->newQuery(const_cast<char*>(resultsetQueries[i].query()));
+        auto qry = qs->newQuery(const_cast<char*>(resultsetQueries[i].query()));
 
         try {
           std::shared_ptr<SelectResults> results = qry->execute();

@@ -801,8 +801,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ)
     auto cqLstner = std::make_shared<MyCqStatusListener>(100);
     cqFac.addCqListener(cqLstner);
     auto cqAttr = cqFac.create();
-    auto cq =
-        qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
+    auto cq = qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
 
     cq->execute();
     SLEEP(20000);
@@ -828,8 +827,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
     cqFac.addCqListener(cqLstner);
     auto cqAttr = cqFac.create();
 
-    auto cq =
-        qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
+    auto cq = qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
     cq->execute();
     SLEEP(20000);
 
@@ -1067,8 +1065,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
     cqFac.addCqListener(cqStatusLstner);
     auto cqAttr = cqFac.create();
 
-    auto cq =
-        qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
+    auto cq = qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
     cq->execute();
     SLEEP(20000);
     LOG("ProcessCQ Query executed.");

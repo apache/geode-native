@@ -43,7 +43,8 @@ BEGIN_TEST(TestRegionLRULastTen)
     sprintf(buf, "%d", i);
     std::shared_ptr<CacheableKey> key = CacheableKey::create(buf);
     sprintf(buf, "value of %d", i);
-    std::shared_ptr<CacheableString> valuePtr = cacheHelper.createCacheable(buf);
+    std::shared_ptr<CacheableString> valuePtr =
+        cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
     auto vecKeys = regionPtr->keys();
     ASSERT(vecKeys.size() == (i + 1), "expected more entries");
@@ -53,7 +54,8 @@ BEGIN_TEST(TestRegionLRULastTen)
     sprintf(buf, "%d", i);
     std::shared_ptr<CacheableKey> key = CacheableKey::create(buf);
     sprintf(buf, "value of %d", i);
-    std::shared_ptr<CacheableString> valuePtr = cacheHelper.createCacheable(buf);
+    std::shared_ptr<CacheableString> valuePtr =
+        cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
     auto vecKeys = regionPtr->keys();
     cacheHelper.showKeys(vecKeys);
@@ -87,7 +89,8 @@ BEGIN_TEST(TestRegionNoLRU)
     sprintf(buf, "%d", i);
     std::shared_ptr<CacheableKey> key = CacheableKey::create(buf);
     sprintf(buf, "value of %d", i);
-    std::shared_ptr<CacheableString> valuePtr = cacheHelper.createCacheable(buf);
+    std::shared_ptr<CacheableString> valuePtr =
+        cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
     auto vecKeys = regionPtr->keys();
     cacheHelper.showKeys(vecKeys);
@@ -113,7 +116,8 @@ BEGIN_TEST(TestRegionLRULocal)
     sprintf(buf, "%d", i);
     std::shared_ptr<CacheableKey> key = CacheableKey::create(buf);
     sprintf(buf, "value of %d", i);
-    std::shared_ptr<CacheableString> valuePtr = cacheHelper.createCacheable(buf);
+    std::shared_ptr<CacheableString> valuePtr =
+        cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
     auto vecKeys = regionPtr->keys();
     ASSERT(vecKeys.size() == (i < 10 ? i + 1 : 10), "expected more entries");
@@ -139,7 +143,8 @@ BEGIN_TEST(TestRecentlyUsedBit)
     sprintf(buf, "%d", i);
     std::shared_ptr<CacheableKey> key = CacheableKey::create(buf);
     sprintf(buf, "value of %d", i);
-    std::shared_ptr<CacheableString> valuePtr = cacheHelper.createCacheable(buf);
+    std::shared_ptr<CacheableString> valuePtr =
+        cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
   }
   sprintf(buf, "%d", 15);
@@ -150,7 +155,8 @@ BEGIN_TEST(TestRecentlyUsedBit)
   for (i = 20; i < 35; i++) {
     sprintf(buf, "%d", i);
     std::shared_ptr<CacheableKey> key = CacheableKey::create(buf);
-    std::shared_ptr<CacheableString> valuePtr = cacheHelper.createCacheable(buf);
+    std::shared_ptr<CacheableString> valuePtr =
+        cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
     auto vecKeys = regionPtr->keys();
     cacheHelper.showKeys(vecKeys);
@@ -160,7 +166,8 @@ BEGIN_TEST(TestRecentlyUsedBit)
   {
     sprintf(buf, "%d", 35);
     std::shared_ptr<CacheableKey> key = CacheableKey::create(buf);
-    std::shared_ptr<CacheableString> valuePtr = cacheHelper.createCacheable(buf);
+    std::shared_ptr<CacheableString> valuePtr =
+        cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
     auto vecKeys = regionPtr->keys();
     cacheHelper.showKeys(vecKeys);
@@ -182,7 +189,8 @@ BEGIN_TEST(TestEmptiedMap)
     sprintf(buf, "%d", i);
     std::shared_ptr<CacheableKey> key = CacheableKey::create(buf);
     sprintf(buf, "value of %d", i);
-    std::shared_ptr<CacheableString> valuePtr = cacheHelper.createCacheable(buf);
+    std::shared_ptr<CacheableString> valuePtr =
+        cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
     auto vecKeys = regionPtr->keys();
     ASSERT(vecKeys.size() == (i + 1), "expected more entries");
@@ -203,7 +211,8 @@ BEGIN_TEST(TestEmptiedMap)
     sprintf(buf, "%d", i);
     std::shared_ptr<CacheableKey> key = CacheableKey::create(buf);
     sprintf(buf, "value of %d", i);
-    std::shared_ptr<CacheableString> valuePtr = cacheHelper.createCacheable(buf);
+    std::shared_ptr<CacheableString> valuePtr =
+        cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
   }
   vecKeys = regionPtr->keys();

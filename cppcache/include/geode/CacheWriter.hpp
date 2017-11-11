@@ -157,18 +157,18 @@ class CPPCACHE_EXPORT CacheWriter  {
   virtual bool beforeRegionDestroy(const RegionEvent& event);
 
   /** Called when the region containing this callback is destroyed, when
-     * the cache is closed.
-     *
-     * <p>Implementations should clean up any external
-     * resources, such as database connections. Any runtime exceptions this
+   * the cache is closed.
+   *
+   * <p>Implementations should clean up any external
+   * resources, such as database connections. Any runtime exceptions this
    * method
-     * throws will be logged.
-     *
-     * <p>It is possible for this method to be called multiple times on a single
-     * callback instance, so implementations must be tolerant of this.
-     *
-     * @see Cache::close
-     * @see Region::destroyRegion
+   * throws will be logged.
+   *
+   * <p>It is possible for this method to be called multiple times on a single
+   * callback instance, so implementations must be tolerant of this.
+   *
+   * @see Cache::close
+   * @see Region::destroyRegion
    */
   virtual void close(const std::shared_ptr<Region>& rp);
 

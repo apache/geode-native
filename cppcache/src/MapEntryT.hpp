@@ -112,12 +112,14 @@ class MapEntryT : public TBase {
 
   virtual int getUpdateCount() const { return UPDATE_COUNT; }
 
-  inline static std::shared_ptr<MapEntryT> create(const std::shared_ptr<CacheableKey>& key) {
+  inline static std::shared_ptr<MapEntryT> create(
+      const std::shared_ptr<CacheableKey>& key) {
     return std::make_shared<MapEntryT>(key);
   }
 
   inline static std::shared_ptr<MapEntryT> create(
-      ExpiryTaskManager* expiryTaskManager, const std::shared_ptr<CacheableKey>& key) {
+      ExpiryTaskManager* expiryTaskManager,
+      const std::shared_ptr<CacheableKey>& key) {
     return std::make_shared<MapEntryT>(expiryTaskManager, key);
   }
 

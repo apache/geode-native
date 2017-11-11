@@ -1388,7 +1388,6 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, Get2)
   {
-
     try {
       auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
 
@@ -2348,8 +2347,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
     auto funcExec = FunctionService::onRegion(regPtr0);
 
     auto collector = funcExec->withArgs(args)
-                                       ->withFilter(routingObj)
-                                       ->execute("ComparePdxTypes", true);
+                         ->withFilter(routingObj)
+                         ->execute("ComparePdxTypes", true);
     ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     std::shared_ptr<CacheableVector> result = collector->getResult();
@@ -2515,8 +2514,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
     auto funcExec = FunctionService::onRegion(regPtr0);
 
     auto collector = funcExec->withArgs(args)
-                                       ->withFilter(routingObj)
-                                       ->execute("ComparePdxTypes", true);
+                         ->withFilter(routingObj)
+                         ->execute("ComparePdxTypes", true);
     ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     std::shared_ptr<CacheableVector> result = collector->getResult();
@@ -3295,13 +3294,20 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     std::shared_ptr<CacheableObjectArray> m_objectArray;
 
     m_objectArray = CacheableObjectArray::create();
-    m_objectArray->push_back(std::shared_ptr<Address>(new Address(1, "street0", "city0")));
-    m_objectArray->push_back(std::shared_ptr<Address>(new Address(2, "street1", "city1")));
-    m_objectArray->push_back(std::shared_ptr<Address>(new Address(3, "street2", "city2")));
-    m_objectArray->push_back(std::shared_ptr<Address>(new Address(4, "street3", "city3")));
-    m_objectArray->push_back(std::shared_ptr<Address>(new Address(5, "street4", "city4")));
-    m_objectArray->push_back(std::shared_ptr<Address>(new Address(6, "street5", "city5")));
-    m_objectArray->push_back(std::shared_ptr<Address>(new Address(7, "street6", "city6")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(1, "street0", "city0")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(2, "street1", "city1")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(3, "street2", "city2")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(4, "street3", "city3")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(5, "street4", "city4")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(6, "street5", "city5")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(7, "street6", "city6")));
     m_objectArray->push_back(std::shared_ptr<Address>(new Address(8, "street7", "city7")));
     m_objectArray->push_back(std::shared_ptr<Address>(new Address(9, "street8", "city8")));
     m_objectArray->push_back(std::shared_ptr<Address>(new Address(10, "street9", "city9")));

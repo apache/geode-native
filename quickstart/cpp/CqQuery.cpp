@@ -46,8 +46,10 @@ class MyCqListener : public CqListener {
  public:
   void onEvent(const CqEvent& cqe) {
     char* opStr = (char*)"Default";
-    std::shared_ptr<Portfolio> portfolio(dynamic_cast<Portfolio*>(cqe.getNewValue().get()));
-    std::shared_ptr<CacheableString> key(dynamic_cast<CacheableString*>(cqe.getKey().get()));
+    std::shared_ptr<Portfolio> portfolio(
+        dynamic_cast<Portfolio*>(cqe.getNewValue().get()));
+    std::shared_ptr<CacheableString> key(
+        dynamic_cast<CacheableString*>(cqe.getKey().get()));
     switch (cqe.getQueryOperation()) {
       case CqOperation::OP_TYPE_CREATE: {
         opStr = (char*)"CREATE";
@@ -81,8 +83,8 @@ int main(int argc, char** argv) {
     auto cacheFactory = CacheFactory::createCacheFactory();
 
     auto cachePtr = cacheFactory->addServer("localhost", 50505)
-                            ->setSubscriptionEnabled(true)
-                            ->create();
+                        ->setSubscriptionEnabled(true)
+                        ->create();
 
     LOGINFO("Created the Geode Cache");
 

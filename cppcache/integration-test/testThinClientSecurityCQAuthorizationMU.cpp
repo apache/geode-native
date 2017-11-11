@@ -250,7 +250,8 @@ std::shared_ptr<Pool> getPool(const char* name) {
   return getHelper()->getCache()->getPoolManager().find(name);
 }
 
-std::shared_ptr<RegionService> getVirtualCache(std::shared_ptr<Properties> creds, const char* name) {
+std::shared_ptr<RegionService> getVirtualCache(
+    std::shared_ptr<Properties> creds, const char* name) {
   return getHelper()->getCache()->createAuthenticatedView(creds, name);
 }
 
@@ -348,7 +349,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
-    // std::shared_ptr<Cache> userCache = getVirtualCache(userCreds, regionNamesCq[0]);
+    // std::shared_ptr<Cache> userCache = getVirtualCache(userCreds,
+    // regionNamesCq[0]);
     std::shared_ptr<QueryService> qs;
 
     qs = userQueryService;

@@ -35,20 +35,20 @@ namespace apache {
 namespace geode {
 namespace client {
 class CqQuery;
-typedef std::unordered_map<std::shared_ptr<CacheableKey>, int, CacheableKey::hash,
-                           CacheableKey::equal_to>
+typedef std::unordered_map<std::shared_ptr<CacheableKey>, int,
+                           CacheableKey::hash, CacheableKey::equal_to>
     MapOfUpdateCounters;
 
 class Region;
 
 /** Map type used to hold root regions in the Cache, and subRegions. */
-typedef ACE_Hash_Map_Manager_Ex<std::string, std::shared_ptr<Region>, ACE_Hash<std::string>,
-                                ACE_Equal_To<std::string>,
-                                ACE_Recursive_Thread_Mutex>
+typedef ACE_Hash_Map_Manager_Ex<
+    std::string, std::shared_ptr<Region>, ACE_Hash<std::string>,
+    ACE_Equal_To<std::string>, ACE_Recursive_Thread_Mutex>
     MapOfRegionWithLock;
-typedef ACE_Hash_Map_Manager_Ex<std::string, std::shared_ptr<CqQuery>, ACE_Hash<std::string>,
-                                ACE_Equal_To<std::string>,
-                                ACE_Recursive_Thread_Mutex>
+typedef ACE_Hash_Map_Manager_Ex<
+    std::string, std::shared_ptr<CqQuery>, ACE_Hash<std::string>,
+    ACE_Equal_To<std::string>, ACE_Recursive_Thread_Mutex>
     MapOfCqQueryWithLock;
 
 /** Guard type for locking a MapOfRegionWithLock while iterating or performing

@@ -26,7 +26,8 @@
 
 FunctionToFunctionAttributes ExecutionImpl::m_func_attrs;
 ACE_Recursive_Thread_Mutex ExecutionImpl::m_func_attrs_lock;
-std::shared_ptr<Execution> ExecutionImpl::withFilter(std::shared_ptr<CacheableVector> routingObj) {
+std::shared_ptr<Execution> ExecutionImpl::withFilter(
+    std::shared_ptr<CacheableVector> routingObj) {
   // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (routingObj == nullptr) {
     throw IllegalArgumentException("Execution::withFilter: filter is null");
@@ -40,7 +41,8 @@ std::shared_ptr<Execution> ExecutionImpl::withFilter(std::shared_ptr<CacheableVe
   return std::make_shared<ExecutionImpl>(routingObj, m_args, m_rc, m_region,
                                          m_allServer, m_pool, m_proxyCache);
 }
-std::shared_ptr<Execution> ExecutionImpl::withArgs(std::shared_ptr<Cacheable> args) {
+std::shared_ptr<Execution> ExecutionImpl::withArgs(
+    std::shared_ptr<Cacheable> args) {
   // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (args == nullptr) {
     throw IllegalArgumentException("Execution::withArgs: args is null");
@@ -49,7 +51,8 @@ std::shared_ptr<Execution> ExecutionImpl::withArgs(std::shared_ptr<Cacheable> ar
   return std::make_shared<ExecutionImpl>(m_routingObj, args, m_rc, m_region,
                                          m_allServer, m_pool, m_proxyCache);
 }
-std::shared_ptr<Execution> ExecutionImpl::withCollector(std::shared_ptr<ResultCollector> rs) {
+std::shared_ptr<Execution> ExecutionImpl::withCollector(
+    std::shared_ptr<ResultCollector> rs) {
   // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (rs == nullptr) {
     throw IllegalArgumentException(
@@ -69,17 +72,19 @@ std::vector<int8_t>* ExecutionImpl::getFunctionAttributes(const char* func) {
   return nullptr;
 }
 
- std::shared_ptr<ResultCollector> ExecutionImpl::execute(const std::shared_ptr<CacheableVector>& routingObj,
-                                          const std::shared_ptr<Cacheable>& args,
-                                          const std::shared_ptr<ResultCollector>& rs,
-                                          const char* func, uint32_t timeout) {
+std::shared_ptr<ResultCollector> ExecutionImpl::execute(
+    const std::shared_ptr<CacheableVector>& routingObj,
+    const std::shared_ptr<Cacheable>& args,
+    const std::shared_ptr<ResultCollector>& rs, const char* func,
+    uint32_t timeout) {
   m_routingObj = routingObj;
   m_args = args;
   m_rc = rs;
   return execute(func, timeout);
 }
 
-std::shared_ptr<ResultCollector> ExecutionImpl::execute(const char* fn, uint32_t timeout) {
+std::shared_ptr<ResultCollector> ExecutionImpl::execute(const char* fn,
+                                                        uint32_t timeout) {
   std::string func = fn;
   LOGDEBUG("ExecutionImpl::execute: ");
   GuardUserAttribures gua;
@@ -389,8 +394,9 @@ GfErrType ExecutionImpl::getFuncAttributes(const char* func,
   return err;
 }
 
-void ExecutionImpl::addResults(std::shared_ptr<ResultCollector>& collector,
-                               const std::shared_ptr<CacheableVector>& results) {
+void ExecutionImpl::addResults(
+    std::shared_ptr<ResultCollector>& collector,
+    const std::shared_ptr<CacheableVector>& results) {
   if (results == nullptr || collector == nullptr) {
     return;
   }
@@ -441,10 +447,9 @@ void ExecutionImpl::executeOnAllServers(std::string& func, uint8_t getResult,
     }
   }
 }
-std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(std::string& func,
-                                                uint8_t getResult,
-                                                int32_t retryAttempts,
-                                                uint32_t timeout) {
+std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
+    std::string& func, uint8_t getResult, int32_t retryAttempts,
+    uint32_t timeout) {
   ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.get());
   if (tcrdm == nullptr) {
     throw IllegalArgumentException(

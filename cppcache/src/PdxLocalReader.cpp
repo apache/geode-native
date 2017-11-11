@@ -41,7 +41,8 @@ PdxLocalReader::PdxLocalReader(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry)
       m_remoteToLocalMapSize(0),
       m_pdxTypeRegistry(pdxTypeRegistry) {}
 
-PdxLocalReader::PdxLocalReader(DataInput& input, std::shared_ptr<PdxType> remoteType,
+PdxLocalReader::PdxLocalReader(DataInput& input,
+                               std::shared_ptr<PdxType> remoteType,
                                int32_t pdxLen,
                                std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry)
     : m_dataInput(&input),
@@ -159,7 +160,8 @@ wchar_t* PdxLocalReader::readWideString(const char* fieldName) {
   return str;
 }
 
-std::shared_ptr<Serializable> PdxLocalReader::readObject(const char* fieldName) {
+std::shared_ptr<Serializable> PdxLocalReader::readObject(
+    const char* fieldName) {
   checkEmptyFieldName(fieldName);
   std::shared_ptr<Serializable> ptr;
   m_dataInput->readObject(ptr);
@@ -255,7 +257,8 @@ wchar_t** PdxLocalReader::readWideStringArray(const char* fieldName,
   return stringArray;
 }
 
-std::shared_ptr<CacheableObjectArray> PdxLocalReader::readObjectArray(const char* fieldName) {
+std::shared_ptr<CacheableObjectArray> PdxLocalReader::readObjectArray(
+    const char* fieldName) {
   checkEmptyFieldName(fieldName);
   std::shared_ptr<CacheableObjectArray> coa = CacheableObjectArray::create();
   coa->fromData(*m_dataInput);
@@ -283,7 +286,8 @@ std::shared_ptr<CacheableDate> PdxLocalReader::readDate(const char* fieldName) {
 }
 
 std::shared_ptr<PdxRemotePreservedData> PdxLocalReader::getPreservedData(
-    std::shared_ptr<PdxType> mergedVersion, std::shared_ptr<PdxSerializable> pdxObject) {
+    std::shared_ptr<PdxType> mergedVersion,
+    std::shared_ptr<PdxSerializable> pdxObject) {
   int nFieldExtra = m_pdxType->getNumberOfExtraFields();
   LOGDEBUG(
       "PdxLocalReader::getPreservedData::nFieldExtra = %d AND "
@@ -351,8 +355,8 @@ bool PdxLocalReader::isIdentityField(const char* fieldName) {
   return (pft != nullptr) && (pft->getIdentityField());
 }
 
-void PdxLocalReader::readCollection(const char* fieldName,
-                                    std::shared_ptr<CacheableArrayList>& collection) {
+void PdxLocalReader::readCollection(
+    const char* fieldName, std::shared_ptr<CacheableArrayList>& collection) {
   collection = m_dataInput->readObject<CacheableArrayList>();
 }
 

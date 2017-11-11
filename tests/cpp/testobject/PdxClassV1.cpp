@@ -514,7 +514,8 @@ int PdxTypesIgnoreUnreadFieldsV1::getHashCode() {
   return 1;
 }
 
-bool PdxTypesIgnoreUnreadFieldsV1::equals(std::shared_ptr<PdxSerializable> obj) {
+bool PdxTypesIgnoreUnreadFieldsV1::equals(
+    std::shared_ptr<PdxSerializable> obj) {
   if (obj == nullptr) return false;
 
   auto pap = std::dynamic_pointer_cast<PdxTypesIgnoreUnreadFieldsV1>(obj);
@@ -560,7 +561,8 @@ void PdxTypesIgnoreUnreadFieldsV1::fromData(std::shared_ptr<PdxReader> pr) {
   if (!hasField) throw Exception("i4 is an valid field");
 }
 
-std::shared_ptr<CacheableString> PdxTypesIgnoreUnreadFieldsV1::toString() const {
+std::shared_ptr<CacheableString> PdxTypesIgnoreUnreadFieldsV1::toString()
+    const {
   char idbuf[4096];
   sprintf(idbuf, "PdxTypesV1R1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d ]",
           m_i1, m_i2, m_i3, m_i4);
