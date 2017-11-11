@@ -80,16 +80,16 @@ TEST(util_chrono_durationTest, assert_bounds) {
   ASSERT_NO_THROW(protocolTimeoutLimit(std::chrono::milliseconds(2147483647)));
 
   ASSERT_THROW(protocolTimeoutLimit(std::chrono::milliseconds(2147483648)),
-               std::invalid_argument);
+               apache::geode::client::IllegalArgumentException);
 
   ASSERT_THROW(protocolTimeoutLimit(std::chrono::hours(2400)),
-               std::invalid_argument);
+               apache::geode::client::IllegalArgumentException);
 
   ASSERT_NO_THROW(protocolTimeoutLimit(std::chrono::milliseconds(0)));
 
   ASSERT_THROW(protocolTimeoutLimit(std::chrono::milliseconds(-2)),
-               std::invalid_argument);
+               apache::geode::client::IllegalArgumentException);
 
   ASSERT_THROW(protocolTimeoutLimit(std::chrono::hours(-2400)),
-               std::invalid_argument);
+               apache::geode::client::IllegalArgumentException);
 }
