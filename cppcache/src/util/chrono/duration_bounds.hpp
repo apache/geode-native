@@ -39,8 +39,14 @@ template <class LimitRep, class LimitPeriod,
 struct assert_bounds {
   template <class Rep, class Period>
   inline void operator()(const std::chrono::duration<Rep, Period> value) const {
-    constexpr auto min = std::chrono::duration<LimitRep, LimitPeriod>(lower);
-    constexpr auto max = std::chrono::duration<LimitRep, LimitPeriod>(upper);
+    /* Visual C++ library fails to account for overflow when comparing durations
+     * of different periods. To compensate we convert the bounds into the
+     * highest resolution duration defined in C++11.
+     */
+    constexpr std::chrono::nanoseconds min =
+        std::chrono::duration<LimitRep, LimitPeriod>(lower);
+    constexpr std::chrono::nanoseconds max =
+        std::chrono::duration<LimitRep, LimitPeriod>(upper);
     if (value > max) {
       throw IllegalArgumentException("Duration exceeds maximum of " +
                                      to_string(max));
