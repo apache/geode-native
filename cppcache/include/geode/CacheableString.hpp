@@ -308,6 +308,31 @@ inline CacheablePtr createValueArr(const wchar_t* value) {
   return CacheableString::create(value);
 }
 
+template <typename TVALUE>
+inline CacheablePtr createValue(const TVALUE* value) {
+  return CacheableString::create(value);
+}
+
+template <class TKEY>
+inline CacheableKeyPtr createKey(const std::shared_ptr<TKEY>& value) {
+  return CacheableKeyPtr(value);
+}
+
+template <typename TKEY>
+inline CacheableKeyPtr createKey(const TKEY* value) {
+  return createKeyArr(value);
+}
+
+template <class PRIM>
+inline CacheableKeyPtr CacheableKey::create(const PRIM value) {
+  return createKey(value);
+}
+
+template <class PRIM>
+inline SerializablePtr Serializable::create(const PRIM value) {
+  return createKey(value);
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

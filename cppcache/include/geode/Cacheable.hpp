@@ -35,10 +35,10 @@ typedef SerializablePtr CacheablePtr;
 typedef Serializable Cacheable;
 
 template <typename TVALUE>
-inline CacheablePtr createValue(const std::shared_ptr<TVALUE>& value);
+inline CacheablePtr createValue(const std::shared_ptr<TVALUE>& value) {
+  return std::dynamic_pointer_cast<Cacheable>(value);
+}
 
-template <typename TVALUE>
-inline CacheablePtr createValue(const TVALUE* value);
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
