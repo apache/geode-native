@@ -99,7 +99,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient)
     const char* clientXmlFile = "client_Loader.xml";
     static char* path = ACE_OS::getenv("TESTSRC");
     std::string clientXml = path;
-    clientXml += "/";
+    clientXml += "/resources/";
     clientXml += clientXmlFile;
     CacheFactoryPtr cacheFactoryPtr = CacheFactory::createCacheFactory()->set(
         "cache-xml-file", clientXml.c_str());

@@ -249,12 +249,13 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
 
 BEGIN_TEST(ValidXmlTestRefid)
   {
-    int res = testXmlCacheCreationWithRefid("/valid_cache_refid.xml");
+    int res = testXmlCacheCreationWithRefid("/resources/valid_cache_refid.xml");
     if (res != 0) {
       FAIL("Test Failed.");
     }
 
-    res = testXmlCacheCreationWithRefid("/valid_cache_region_refid.xml");
+    res = testXmlCacheCreationWithRefid(
+        "/resources/valid_cache_region_refid.xml");
     if (res != 0) {
       FAIL("Test Failed.");
     }

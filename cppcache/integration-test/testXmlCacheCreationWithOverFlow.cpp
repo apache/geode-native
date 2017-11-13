@@ -50,7 +50,7 @@ int testXmlCacheCreationWithOverflow() {
        << std::endl;
 
   try {
-    std::string filePath = directory + "/non-existent.xml";
+    std::string filePath = directory + "/resources/non-existent.xml";
     cptr = cacheFactory->set("cache-xml-file", filePath.c_str())->create();
     return -1;
   } catch (CacheXmlException& ex) {
@@ -63,7 +63,7 @@ int testXmlCacheCreationWithOverflow() {
 
   /// return 0;
   try {
-    std::string filePath = directory + "/valid_overflowAttr.xml";
+    std::string filePath = directory + "/resources/valid_overflowAttr.xml";
     std::cout << "getPdxIgnoreUnreadFields should return true.1" << std::endl;
     cptr = cacheFactory->set("cache-xml-file", filePath.c_str())->create();
     if (cptr->getPdxIgnoreUnreadFields() != false) {

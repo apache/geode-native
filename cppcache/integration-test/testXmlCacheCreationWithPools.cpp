@@ -480,8 +480,7 @@ int testXmlDeclarativeCacheCreation() {
   CacheFactoryPtr cacheFactory;
   CachePtr cptr;
 
-  char* path = ACE_OS::getenv("TESTSRC");
-  std::string directory(path);
+  std::string directory(ACE_OS::getenv("TESTSRC"));
 
   std::cout << "create DistributedSytem with name=" << host_name << std::endl;
   try {
@@ -493,7 +492,8 @@ int testXmlDeclarativeCacheCreation() {
   }
 
   try {
-    std::string filePath = directory + "/valid_declarative_cache_creation.xml";
+    std::string filePath =
+        directory + "/resources/valid_declarative_cache_creation.xml";
     cptr = cacheFactory->set("cache-xml-file", filePath.c_str())->create();
 
   } catch (Exception& ex) {

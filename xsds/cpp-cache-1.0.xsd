@@ -84,6 +84,7 @@ declarative caching XML file elements unless indicated otherwise.
             <xsd:attribute name="thread-local-connections" type="xsd:boolean" />
             <xsd:attribute name="multiuser-authentication" type="xsd:boolean" />
             <xsd:attribute name="update-locator-list-interval" type="nc:duration-type" />
+          </xsd:complexType>
         </xsd:element>
         <xsd:element minOccurs="0" maxOccurs="unbounded" name="region" type="nc:region-type" />
         <xsd:element minOccurs="0" maxOccurs="1" name="pdx">

@@ -96,7 +96,7 @@ BEGIN_TEST(NEW_CONFIG)
     // When the tests are run from the build script the environment variable
     // TESTSRC is set.
     std::string testsrc(ACE_OS::getenv("TESTSRC"));
-    std::string filePath = testsrc + "/system.properties";
+    std::string filePath = testsrc + "/resources/system.properties";
 
     // Make sure product can at least log to stdout.
     Log::init(Log::Config, nullptr, 0);

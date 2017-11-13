@@ -1391,6 +1391,9 @@ void CacheHelper::createDuplicateXMLFile(std::string& originalFile,
   currDir += PATH_SEP;
   std::string testSrc = ACE_OS::getenv("TESTSRC");
   testSrc += PATH_SEP;
+  testSrc += "resources";
+  testSrc += PATH_SEP;
+
   // file name will have hostport1.xml(i.e. CacheHelper::staticHostPort1) as
   // suffix
 
