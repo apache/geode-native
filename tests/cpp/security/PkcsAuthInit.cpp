@@ -58,15 +58,17 @@ uint8_t* createSignature(EVP_PKEY* key, X509* cert,
   if (key == NULL || cert == NULL || inputBuffer == NULL) {
     return NULL;
   }
-  const EVP_MD* signatureDigest = EVP_get_digestbyobj(cert->sig_alg->algorithm);
-  EVP_MD_CTX signatureCtx;
-  EVP_MD_CTX_init(&signatureCtx);
+  const ASN1_OBJECT *macobj;
+  const X509_ALGOR *algorithm;
+  X509_ALGOR_get0(&macobj, NULL, NULL, algorithm);
+  const EVP_MD* signatureDigest = EVP_get_digestbyobj(macobj);
+  EVP_MD_CTX* signatureCtx = EVP_MD_CTX_new();
   uint8_t* signatureData = new uint8_t[EVP_PKEY_size(key)];
   bool result =
-      (EVP_SignInit_ex(&signatureCtx, signatureDigest, NULL) &&
-       EVP_SignUpdate(&signatureCtx, inputBuffer, inputBufferLen) &&
-       EVP_SignFinal(&signatureCtx, signatureData, signatureLen, key));
-  EVP_MD_CTX_cleanup(&signatureCtx);
+      (EVP_SignInit_ex(signatureCtx, signatureDigest, NULL) &&
+       EVP_SignUpdate(signatureCtx, inputBuffer, inputBufferLen) &&
+       EVP_SignFinal(signatureCtx, signatureData, signatureLen, key));
+  EVP_MD_CTX_free(signatureCtx);
   if (result) {
     return signatureData;
   }

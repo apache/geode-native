@@ -88,27 +88,32 @@ ASN1_SEQUENCE(
 
   m_dh = DH_new();
 
-  LOGDH(" DHInit: P ptr is %p", m_dh->p);
-  LOGDH(" DHInit: G ptr is %p", m_dh->g);
-  LOGDH(" DHInit: length is %d", m_dh->length);
-
   int ret = -1;
 
-  ret = BN_dec2bn(&m_dh->p, dhP);
+  const BIGNUM* pbn,* gbn;
+  DH_get0_pqg(m_dh, &pbn, NULL, &gbn);
+  ret = BN_dec2bn((BIGNUM**)&pbn, dhP);
   LOGDH(" DHInit: BN_dec2bn dhP ret %d", ret);
 
-  ret = BN_dec2bn(&m_dh->g, dhG);
+  LOGDH(" DHInit: P ptr is %p", pbn);
+  LOGDH(" DHInit: G ptr is %p", gbn);
+  LOGDH(" DHInit: length is %d", DH_get_length(m_dh));
+
+  ret = BN_dec2bn((BIGNUM**)&gbn, dhP);
   LOGDH(" DHInit: BN_dec2bn dhG ret %d", ret);
 
-  m_dh->length = dhL;
+  DH_set_length(m_dh, dhL);
 
   ret = DH_generate_key(m_dh);
   LOGDH(" DHInit: DH_generate_key ret %d", ret);
 
-  ret = BN_num_bits(m_dh->priv_key);
+  const BIGNUM* pub_key, *priv_key;
+  DH_get0_key(m_dh, &pub_key, &priv_key);
+
+  ret = BN_num_bits(priv_key);
   LOGDH(" DHInit: BN_num_bits priv_key is %d", ret);
 
-  ret = BN_num_bits(m_dh->pub_key);
+  ret = BN_num_bits(pub_key);
   LOGDH(" DHInit: BN_num_bits pub_key is %d", ret);
 
   int codes = 0;
@@ -177,11 +182,14 @@ void gf_clearDhKeys(void) {
 }
 
 unsigned char *gf_getPublicKey(int *pLen) {
-  if (m_dh->pub_key == NULL || pLen == NULL) {
+  const BIGNUM* pub_key, *priv_key;
+  DH_get0_key(m_dh, &pub_key, &priv_key);
+
+  if (pub_key == NULL || pLen == NULL) {
     return NULL;
   }
 
-  int numBytes = BN_num_bytes(m_dh->pub_key);
+  int numBytes = BN_num_bytes(pub_key);
 
   if (numBytes <= 0) {
     return NULL;
@@ -228,7 +236,11 @@ void gf_setPublicKeyOther(const unsigned char *pubkey, int length) {
   EVP_PKEY *evppkey = DH_PUBKEY_get(dhpubkey);
   LOGDH(" setPubKeyOther: after dhpubkey get evp ptr is %p", evppkey);
   LOGDH(" setPubKeyOther: before BNdup ptr is %p", m_pubKeyOther);
-  m_pubKeyOther = BN_dup(evppkey->pkey.dh->pub_key);
+
+  const BIGNUM* pub_key, *priv_key;
+  DH* dh = EVP_PKEY_get1_DH(evppkey);
+  DH_get0_key(dh, &pub_key, &priv_key);
+  m_pubKeyOther = BN_dup(pub_key);
   LOGDH(" setPubKeyOther: after BNdup ptr is %p", m_pubKeyOther);
   EVP_PKEY_free(evppkey);
   DH_PUBKEY_free(dhpubkey);
@@ -335,8 +347,7 @@ unsigned char *gf_encryptDH(const unsigned char *cleartext, int len,
   unsigned char *ciphertext =
       new unsigned char[len + 50];  // give enough room for padding
   int outlen, tmplen;
-  EVP_CIPHER_CTX ctx;
-  EVP_CIPHER_CTX_init(&ctx);
+  EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
 
   int ret = -123;
 
@@ -345,24 +356,24 @@ unsigned char *gf_encryptDH(const unsigned char *cleartext, int len,
   // init openssl cipher context
   if (m_skAlgo == "AES") {
     int keySize = m_keySize > 128 ? m_keySize / 8 : 16;
-    ret = EVP_EncryptInit_ex(&ctx, cipherFunc, NULL, (unsigned char *)m_key,
+    ret = EVP_EncryptInit_ex(ctx, cipherFunc, NULL, (unsigned char *)m_key,
                              (unsigned char *)m_key + keySize);
   } else if (m_skAlgo == "Blowfish") {
     int keySize = m_keySize > 128 ? m_keySize / 8 : 16;
-    ret = EVP_EncryptInit_ex(&ctx, cipherFunc, NULL, NULL,
+    ret = EVP_EncryptInit_ex(ctx, cipherFunc, NULL, NULL,
                              (unsigned char *)m_key + keySize);
     LOGDH("DHencrypt: init BF ret %d", ret);
-    EVP_CIPHER_CTX_set_key_length(&ctx, keySize);
+    EVP_CIPHER_CTX_set_key_length(ctx, keySize);
     LOGDH("DHencrypt: BF keysize is %d", keySize);
-    ret = EVP_EncryptInit_ex(&ctx, NULL, NULL, (unsigned char *)m_key, NULL);
+    ret = EVP_EncryptInit_ex(ctx, NULL, NULL, (unsigned char *)m_key, NULL);
   } else if (m_skAlgo == "DESede") {
-    ret = EVP_EncryptInit_ex(&ctx, cipherFunc, NULL, (unsigned char *)m_key,
+    ret = EVP_EncryptInit_ex(ctx, cipherFunc, NULL, (unsigned char *)m_key,
                              (unsigned char *)m_key + 24);
   }
 
   LOGDH(" DHencrypt: init ret %d", ret);
 
-  if (!EVP_EncryptUpdate(&ctx, ciphertext, &outlen, cleartext, len)) {
+  if (!EVP_EncryptUpdate(ctx, ciphertext, &outlen, cleartext, len)) {
     LOGDH(" DHencrypt: enc update ret NULL");
     return NULL;
   }
@@ -371,14 +382,14 @@ unsigned char *gf_encryptDH(const unsigned char *cleartext, int len,
    */
   tmplen = 0;
 
-  if (!EVP_EncryptFinal_ex(&ctx, ciphertext + outlen, &tmplen)) {
+  if (!EVP_EncryptFinal_ex(ctx, ciphertext + outlen, &tmplen)) {
     LOGDH("DHencrypt: enc final ret NULL");
     return NULL;
   }
 
   outlen += tmplen;
 
-  ret = EVP_CIPHER_CTX_cleanup(&ctx);
+  ret = EVP_CIPHER_CTX_cleanup(ctx);
 
   LOGDH("DHencrypt: in len is %d, out len is %d", len, outlen);
 
@@ -427,27 +438,25 @@ bool gf_verifyDH(const char *subject, const unsigned char *challenge,
     return false;
   }
 
-#ifdef _DEBUG
-  int rsalen = RSA_size(evpkey->pkey.rsa);
-  LOGDH("Challenge response length is %d, rsalen is %d", responseLen, rsalen);
-#endif
+  const ASN1_OBJECT *macobj;
+  const X509_ALGOR *algorithm;
+  X509_ALGOR_get0(&macobj, NULL, NULL, algorithm);
 
-  const EVP_MD *signatureDigest = EVP_get_digestbyobj(cert->sig_alg->algorithm);
-  EVP_MD_CTX signatureCtx;
-  EVP_MD_CTX_init(&signatureCtx);
+  const EVP_MD *signatureDigest = EVP_get_digestbyobj(macobj);
+  EVP_MD_CTX* signatureCtx = EVP_MD_CTX_new();
 
-  int result1 = EVP_VerifyInit_ex(&signatureCtx, signatureDigest, NULL);
+  int result1 = EVP_VerifyInit_ex(signatureCtx, signatureDigest, NULL);
   LOGDH(" Result of VerifyInit is %d", result1);
 
-  int result2 = EVP_VerifyUpdate(&signatureCtx, challenge, challengeLen);
+  int result2 = EVP_VerifyUpdate(signatureCtx, challenge, challengeLen);
   LOGDH(" Result of VerifyUpdate is %d", result2);
 
-  int result3 = EVP_VerifyFinal(&signatureCtx, response, responseLen, evpkey);
+  int result3 = EVP_VerifyFinal(signatureCtx, response, responseLen, evpkey);
   LOGDH(" Result of VerifyFinal is %d", result3);
 
   bool result = (result1 == 1 && result2 == 1 && result3 == 1);
 
-  EVP_MD_CTX_cleanup(&signatureCtx);
+  EVP_MD_CTX_free(signatureCtx);
 
   if (result == false) {
     *reason = DH_ERR_INVALID_SIGN;
@@ -463,21 +472,22 @@ int DH_PUBKEY_set(DH_PUBKEY **x, EVP_PKEY *pkey) {
   unsigned char *s, *p = NULL;
   int i;
   ASN1_INTEGER *asn1int = NULL;
+  DH* dh = EVP_PKEY_get1_DH(pkey);
 
   if (x == NULL) return (0);
 
   if ((pk = DH_PUBKEY_new()) == NULL) goto err;
   a = pk->algor;
 
-  LOGDH(" key type for OBJ NID is %d", pkey->type);
+  LOGDH(" key type for OBJ NID is %d", EVP_PKEY_base_id(pkey));
 
   /* set the algorithm id */
-  if ((o = OBJ_nid2obj(pkey->type)) == NULL) goto err;
+  if ((o = OBJ_nid2obj(EVP_PKEY_base_id(pkey))) == NULL) goto err;
   ASN1_OBJECT_free(a->algorithm);
   a->algorithm = o;
 
   /* Set the parameter list */
-  if (!pkey->save_parameters || (pkey->type == EVP_PKEY_RSA)) {
+  if (EVP_PKEY_base_id(pkey) == EVP_PKEY_RSA) {
     if ((a->parameter == NULL) || (a->parameter->type != V_ASN1_NULL)) {
       ASN1_TYPE_free(a->parameter);
       if (!(a->parameter = ASN1_TYPE_new())) {
@@ -486,11 +496,11 @@ int DH_PUBKEY_set(DH_PUBKEY **x, EVP_PKEY *pkey) {
       }
       a->parameter->type = V_ASN1_NULL;
     }
-  } else if (pkey->type == EVP_PKEY_DH) {
+  } else if (EVP_PKEY_base_id(pkey) == EVP_PKEY_DH) {
     unsigned char *pp;
-    DH *dh;
 
-    dh = pkey->pkey.dh;
+    const BIGNUM* pub_key, *priv_key;
+    DH_get0_key(dh, &pub_key, &priv_key);
     ASN1_TYPE_free(a->parameter);
     if ((i = i2d_DHparams(dh, NULL)) <= 0) goto err;
     if (!(p = reinterpret_cast<unsigned char *>(OPENSSL_malloc(i)))) {
@@ -521,7 +531,10 @@ int DH_PUBKEY_set(DH_PUBKEY **x, EVP_PKEY *pkey) {
     goto err;
   }
 
-  asn1int = BN_to_ASN1_INTEGER(pkey->pkey.dh->pub_key, NULL);
+  const BIGNUM* pub_key, *priv_key;
+  DH_get0_key(dh, &pub_key, &priv_key);
+
+  asn1int = BN_to_ASN1_INTEGER(pub_key, NULL);
   if ((i = i2d_ASN1_INTEGER(asn1int, NULL)) <= 0) goto err;
   if ((s = reinterpret_cast<unsigned char *>(OPENSSL_malloc(i + 1))) == NULL) {
     X509err(X509_F_X509_PUBKEY_SET, ERR_R_MALLOC_FAILURE);
@@ -529,7 +542,7 @@ int DH_PUBKEY_set(DH_PUBKEY **x, EVP_PKEY *pkey) {
   }
   p = s;
   i2d_ASN1_INTEGER(asn1int, &p);
-  if (!M_ASN1_BIT_STRING_set(pk->public_key, s, i)) {
+  if (!ASN1_BIT_STRING_set(pk->public_key, s, i)) {
     X509err(X509_F_X509_PUBKEY_SET, ERR_R_MALLOC_FAILURE);
     goto err;
   }
@@ -559,42 +572,56 @@ EVP_PKEY *DH_PUBKEY_get(DH_PUBKEY *key) {
   X509_ALGOR *a;
   ASN1_INTEGER *asn1int = NULL;
 
-  if (key == NULL) goto err;
-
-  if (key->pkey != NULL) {
-    CRYPTO_add(&key->pkey->references, 1, CRYPTO_LOCK_EVP_PKEY);
+  if (key == NULL) {
+    EVP_PKEY_up_ref(key->pkey);
     return (key->pkey);
   }
 
-  if (key->public_key == NULL) goto err;
+  if (key->pkey != NULL) {
+    EVP_PKEY_up_ref(key->pkey);
+    return (key->pkey);
+  }
+
+  if (key->public_key == NULL) {
+    if (asn1int != NULL) ASN1_INTEGER_free(asn1int);
+    if (ret != NULL) EVP_PKEY_free(ret);
+    return (NULL);
+  }
 
   type = OBJ_obj2nid(key->algor->algorithm);
 
   LOGDH("DHPUBKEY type is %d", type);
 
   if ((ret = EVP_PKEY_new()) == NULL) {
-    X509err(X509_F_X509_PUBKEY_GET, ERR_R_MALLOC_FAILURE);
-    goto err;
+    X509err(X509_F_X509_PUBKEY_DECODE, ERR_R_MALLOC_FAILURE);
+    if (asn1int != NULL) ASN1_INTEGER_free(asn1int);
+    if (ret != NULL) EVP_PKEY_free(ret);
+    return (NULL);
   }
-  ret->type = EVP_PKEY_type(type);
 
-  LOGDH(" DHPUBKEY evppkey type is %d", ret->type);
+  LOGDH(" DHPUBKEY evppkey type is %d", EVP_PKEY_base_id(ret));
 
   /* the parameters must be extracted before the public key */
 
   a = key->algor;
 
-  if (ret->type == EVP_PKEY_DH) {
+  if (EVP_PKEY_base_id(ret) == EVP_PKEY_DH) {
     if (a->parameter && (a->parameter->type == V_ASN1_SEQUENCE)) {
-      if ((ret->pkey.dh = DH_new()) == NULL) {
-        X509err(X509_F_X509_PUBKEY_GET, ERR_R_MALLOC_FAILURE);
-        goto err;
+      if ((EVP_PKEY_set1_DH(ret, DH_new())) == 0) {
+        X509err(X509_F_X509_PUBKEY_DECODE, ERR_R_MALLOC_FAILURE);
+        if (asn1int != NULL) ASN1_INTEGER_free(asn1int);
+        if (ret != NULL) EVP_PKEY_free(ret);
+        return (NULL);
       }
       cp = p = a->parameter->value.sequence->data;
       j = a->parameter->value.sequence->length;
-      if (!d2i_DHparams(&ret->pkey.dh, &cp, j)) goto err;
+      DH* dh = EVP_PKEY_get1_DH(ret);
+      if (!d2i_DHparams(&dh, &cp, j)) {
+        if (asn1int != NULL) ASN1_INTEGER_free(asn1int);
+        if (ret != NULL) EVP_PKEY_free(ret);
+        return (NULL);
+      }
     }
-    ret->save_parameters = 1;
   }
 
   p = key->public_key->data;
@@ -603,11 +630,11 @@ EVP_PKEY *DH_PUBKEY_get(DH_PUBKEY *key) {
   asn1int = d2i_ASN1_INTEGER(NULL, &p, j);
   LOGDH("after d2i asn1 integer ptr is %p", asn1int);
 
-  ret->pkey.dh->pub_key = ASN1_INTEGER_to_BN(asn1int, NULL);
-  LOGDH(" after asn1int to bn ptr is %p", ret->pkey.dh->pub_key);
+  DH* dh = EVP_PKEY_get1_DH(ret);
+  DH_set0_key(dh, ASN1_INTEGER_to_BN(asn1int, NULL), NULL);
 
   key->pkey = ret;
-  CRYPTO_add(&ret->references, 1, CRYPTO_LOCK_EVP_PKEY);
+  EVP_PKEY_up_ref(key->pkey);
 
   if (asn1int != NULL) ASN1_INTEGER_free(asn1int);
   return (ret);
